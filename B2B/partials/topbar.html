@@ -1,0 +1,56 @@
+<header class="b2b-topbar">
+  <button type="button" id="search-trigger" class="topbar-search-trigger">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+    <span>Buscar cliente, evento ou contrato…</span>
+    <kbd>⌘K</kbd>
+  </button>
+
+  <div class="flex items-center gap-2 flex-shrink-0">
+    <div class="topbar-icon-btn-wrap">
+      <button type="button" id="notif-trigger" class="topbar-icon-btn" aria-label="Notificações">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+        <span class="topbar-icon-dot" id="notif-dot" style="display:none;"></span>
+      </button>
+      <div class="topbar-dropdown" id="notif-dropdown" style="right:0;left:auto;">
+        <p class="topbar-dropdown-title">Notificações</p>
+        <div id="notif-list"></div>
+      </div>
+    </div>
+
+    <div class="topbar-icon-btn-wrap">
+      <button type="button" id="quickcreate-trigger" class="btn-primary" style="padding:0.55rem 0.9rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+        <span class="hidden sm:inline">Novo</span>
+      </button>
+      <div class="topbar-dropdown" id="quickcreate-dropdown" style="width:220px;right:0;left:auto;">
+        <a href="contratos.html" class="topbar-dropdown-item">Novo orçamento/contrato</a>
+        <a href="agenda.html" class="topbar-dropdown-item">Novo evento na agenda</a>
+        <a href="produtos.html" class="topbar-dropdown-item">Novo produto/serviço</a>
+      </div>
+    </div>
+
+    <div class="topbar-icon-btn-wrap">
+      <button type="button" id="avatar-trigger" class="topbar-avatar-btn">
+        <img id="topbar-user-avatar" class="b2b-avatar" style="width:34px;height:34px;" alt="Perfil">
+      </button>
+      <div class="topbar-dropdown" id="avatar-dropdown" style="right:0;left:auto;width:200px;">
+        <a href="configuracoes.html" class="topbar-dropdown-item">Meu perfil</a>
+        <a href="configuracoes.html" class="topbar-dropdown-item">Configurações</a>
+        <div class="topbar-dropdown-divider"></div>
+        <a href="index.html" class="topbar-dropdown-item" style="color:#B91C1C;">Sair</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Command palette -->
+<div class="modal-backdrop" id="command-palette" style="align-items:flex-start;padding-top:12vh;">
+  <div class="modal-card" style="max-width:560px;padding:0;overflow:visible;">
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-zinc-200">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+      <input id="command-input" type="text" class="flex-1 border-none outline-none text-sm" placeholder="Buscar cliente, evento ou contrato…" autocomplete="off">
+      <kbd>ESC</kbd>
+    </div>
+    <div id="command-results" class="max-h-80 overflow-y-auto p-2"></div>
+  </div>
+</div>

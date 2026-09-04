@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
     },
     rsvp: {
-      title: 'Seus Convidados',
+      title: 'Lista de Convidados',
       actionText: null,
       actionHandler: null,
       subItems: [
@@ -436,11 +436,14 @@ document.addEventListener('DOMContentLoaded', () => {
       content.classList.toggle('active', content.id === `tab-${tabKey}`);
     });
 
+    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode');
+
     // Ativa os modos e sub-seções correspondentes
     if (tabKey === 'edit-site') {
       document.body.classList.add('editor-split-mode');
       switchEditorSubSection(state.activeSubSection || 'home', 'Aparência');
     } else if (tabKey === 'gifts') {
+      document.body.classList.add('gifts-mode');
       switchGiftsSubSection('my-gifts');
     } else if (tabKey === 'rsvp') {
       document.body.classList.add('rsvp-mode');
@@ -749,37 +752,59 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let builderState = {
     bgColor: '#FBFBFA',
-    font: 'font-serif-title',
+    font: 'font-playfair',
     titleColor: '#18181B',
+    titleSize: 36,
+    titleBold: false,
+    titleItalic: true,
+    titleUnderline: false,
+    titleAlign: 'center',
     descFont: 'font-sans',
     descColor: '#52525B',
+    descSize: 14,
+    descBold: false,
+    descItalic: false,
+    descUnderline: false,
+    descAlign: 'center',
     gradientOpacity: 80,
     gradientColor: '#FBFBFA',
     coverImage: 'assets/wedding_hero_banner.jpg',
-    accentColor: '#4E96EF',
+    bgImage: null,
+    venueImage: 'assets/theme_garden.jpg',
+    closingImage: 'assets/wedding_hero_banner.jpg',
+    accentColor: '#FBFBFA',
+    btnTextColor: '#18181B',
+    btnRadius: 28,
     prefaces: [
       '"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)',
       'COM A BÊNÇÃO DE DEUS,'
-    ]
+    ],
+    slots: [null, null, null, null],
+    music: {
+      tracks: [
+        { url: 'https://www.youtube.com/watch?v=lp-EO5I60KA', placement: 'all' }
+      ],
+      autoplay: true
+    }
   };
 
   const templatesPresets = {
     buxton: {
       bgColor: '#F4F1EA',
-      font: 'font-serif-title',
+      font: 'font-playfair',
       titleColor: '#18181B',
       descFont: 'font-serif',
       descColor: '#52525B',
       gradientOpacity: 80,
       gradientColor: '#F4F1EA',
       coverImage: 'assets/theme_garden.jpg',
-      accentColor: '#4E96EF',
+      accentColor: '#FBFBFA',
       headline: 'CONVIDAM VOCÊ PARA O SEU CASAMENTO',
       subtitle: 'Celebrando o amor em harmonia com a natureza.'
     },
     rose: {
       bgColor: '#FFF1F2',
-      font: 'font-serif-title',
+      font: 'font-playfair',
       titleColor: '#881337',
       descFont: 'font-sans',
       descColor: '#4C0519',
@@ -838,6 +863,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const desc = document.getElementById('editor-active-sub-desc');
     const btnTemplate = document.getElementById('btn-open-template-modal');
 
+    // Sincroniza as abas horizontais do painel
+    document.querySelectorAll('.editor-sub-tab-btn').forEach(tab => {
+      const tabKey = tab.getAttribute('data-editor-tab');
+      if (tabKey === subId) {
+        tab.className = 'editor-sub-tab-btn active pb-3 border-b-2 border-[#4E96EF] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
+      } else {
+        tab.className = 'editor-sub-tab-btn pb-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 font-medium text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
+      }
+    });
+
     // O botão "Usar template" deve aparecer SOMENTE no menu "Aparência"
     if (btnTemplate) {
       if (subId === 'home') {
@@ -862,7 +897,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (subId === 'invite-print') {
         title.textContent = 'Produzir convite';
       } else {
-        title.textContent = subLabel;
+        title.textContent = subLabel || 'Personalizar';
       }
     }
 
@@ -871,6 +906,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPanel = document.getElementById(`editor-form-${subId}`);
     if (targetPanel) targetPanel.classList.remove('hidden');
   }
+
+  // Listener de clique para as abas horizontais do painel de personalização
+  document.addEventListener('click', (e) => {
+    const tabBtn = e.target.closest('.editor-sub-tab-btn');
+    if (tabBtn) {
+      const tabId = tabBtn.getAttribute('data-editor-tab');
+      const tabLabel = tabBtn.textContent.trim();
+      if (tabId) {
+        switchEditorSubSection(tabId, tabLabel);
+      }
+    }
+  });
 
   function cleanSlug(str) {
     return (str || '')
@@ -884,10 +931,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function validateSlugAvailability(slug, currentEventId) {
     const statusBadge = document.getElementById('editor-url-status-badge');
     const helperText = document.getElementById('editor-url-helper-text');
+    const statusIcon = document.getElementById('editor-url-status-icon');
+    const inputWrapper = document.getElementById('editor-slug-input-wrapper');
     
     const cleaned = cleanSlug(slug);
 
     if (!cleaned || cleaned.length < 3) {
+      if (statusIcon) {
+        statusIcon.innerHTML = '';
+      }
       if (statusBadge) {
         statusBadge.className = 'px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 font-bold text-xs border border-amber-200 flex items-center gap-1.5';
         statusBadge.innerHTML = `
@@ -897,6 +949,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Mínimo 3 letras</span>
         `;
       }
+      if (inputWrapper) {
+        inputWrapper.classList.remove('border-rose-400', 'border-emerald-400', 'focus-within:ring-rose-400');
+        inputWrapper.classList.add('border-zinc-200');
+      }
       if (helperText) {
         helperText.textContent = 'O link deve ter pelo menos 3 caracteres.';
         helperText.className = 'text-[11px] text-amber-600 font-medium';
@@ -904,12 +960,25 @@ document.addEventListener('DOMContentLoaded', () => {
       return { available: false, slug: cleaned };
     }
 
-    // Lista de slugs já ocupados (outros eventos no state e base do sistema)
-    const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app'];
+    // Lista de slugs já ocupados (outros eventos no database e palavras reservadas do sistema)
+    const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
     if (existsInOtherEvents || isReserved) {
+      if (statusIcon) {
+        statusIcon.innerHTML = `
+          <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-50 text-rose-500 border border-rose-200 flex items-center justify-center shadow-2xs animate-in fade-in duration-200" title="URL já utilizada">
+            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </div>
+        `;
+      }
+      if (inputWrapper) {
+        inputWrapper.classList.add('border-rose-400');
+        inputWrapper.classList.remove('border-zinc-200', 'border-emerald-400');
+      }
       if (statusBadge) {
         statusBadge.className = 'px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1.5';
         statusBadge.innerHTML = `
@@ -920,12 +989,26 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       }
       if (helperText) {
-        helperText.textContent = `O endereço "love.com/c/${cleaned}" já está em uso. Tente adicionar seu sobrenome ou ano.`;
+        helperText.textContent = 'essa url ja esta sendo usada, por favor escolha outra.';
         helperText.className = 'text-[11px] text-rose-600 font-medium';
       }
       return { available: false, slug: cleaned };
     }
 
+    // Slug liberado / sem uso no database
+    if (statusIcon) {
+      statusIcon.innerHTML = `
+        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs animate-in fade-in duration-200" title="URL disponível">
+          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+          </svg>
+        </div>
+      `;
+    }
+    if (inputWrapper) {
+      inputWrapper.classList.add('border-emerald-400');
+      inputWrapper.classList.remove('border-rose-400', 'border-zinc-200');
+    }
     if (statusBadge) {
       statusBadge.className = 'px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200 flex items-center gap-1.5';
       statusBadge.innerHTML = `
@@ -936,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
     if (helperText) {
-      helperText.textContent = `Perfeito! Seu site ficará acessível em: love.com/c/${cleaned}`;
+      helperText.textContent = `Perfeito! Seu site ficará acessível em: love.com.br/${cleaned}`;
       helperText.className = 'text-[11px] text-emerald-600 font-medium';
     }
     return { available: true, slug: cleaned };
@@ -1004,8 +1087,280 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // =========================================================================
+  // GESTÃO DE MÚSICA DO EVENTO (URL do YouTube, Onde Tocar, Autoplay e Player)
+  // =========================================================================
+  let isMusicPlaying = false;
+
+  function renderMusicTracks() {
+    const container = document.getElementById('music-tracks-container');
+    if (!container) return;
+
+    if (!builderState.music) {
+      builderState.music = {
+        tracks: [{ url: 'https://www.youtube.com/watch?v=lp-EO5I60KA', placement: 'all' }],
+        autoplay: true
+      };
+    }
+    if (!Array.isArray(builderState.music.tracks) || builderState.music.tracks.length === 0) {
+      builderState.music.tracks = [{ url: '', placement: 'all' }];
+    }
+
+    container.innerHTML = '';
+
+    builderState.music.tracks.forEach((track, idx) => {
+      const row = document.createElement('div');
+      row.className = 'music-track-row flex flex-col sm:flex-row items-start gap-2 sm:gap-3 p-3 bg-zinc-50/70 border border-[#EAEAEF] rounded relative';
+
+      const colUrl = document.createElement('div');
+      colUrl.className = 'flex-1 w-full flex flex-col justify-start';
+      colUrl.innerHTML = `
+        <label class="block text-[10px] sm:text-[11px] font-bold uppercase text-zinc-500 tracking-wider font-sans mb-1 leading-4">URL DO VÍDEO</label>
+        <input type="text" class="music-track-url w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#4E96EF] text-zinc-800 placeholder:text-zinc-400 font-sans" placeholder="Ex: https://www.youtube.com/watch?v=XXXXXX" data-track-index="${idx}">
+        <span class="text-[10px] text-zinc-400 block font-sans mt-1 leading-4">Ex: https://www.youtube.com/watch?v=XXXXXX</span>
+      `;
+      const inputUrl = colUrl.querySelector('input');
+      inputUrl.value = track.url || '';
+
+      const colPlacement = document.createElement('div');
+      colPlacement.className = 'w-full sm:w-56 flex flex-col justify-start';
+      colPlacement.innerHTML = `
+        <label class="block text-[10px] sm:text-[11px] font-bold uppercase text-zinc-500 tracking-wider font-sans mb-1 leading-4">ONDE TOCAR *</label>
+        <div class="relative">
+          <select class="music-track-placement w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#4E96EF] text-zinc-800 cursor-pointer appearance-none pr-7 font-sans" data-track-index="${idx}">
+            <option value="all">Todas as páginas</option>
+            <option value="localizacao">Localização</option>
+            <option value="lista_presentes">Lista de presentes</option>
+            <option value="anfitrioes">Anfitriões</option>
+            <option value="confirmacao_presenca">Confirmação de presença</option>
+            <option value="dress_code">Dress code</option>
+          </select>
+          <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          </div>
+        </div>
+        <span class="text-[10px] block font-sans mt-1 leading-4 invisible select-none">&nbsp;</span>
+      `;
+      const selectPlacement = colPlacement.querySelector('select');
+      selectPlacement.value = track.placement || 'all';
+
+      const btnRemove = document.createElement('button');
+      btnRemove.type = 'button';
+      btnRemove.className = 'btn-remove-music-track self-end sm:self-start text-zinc-400 hover:text-red-500 transition-colors p-1.5 cursor-pointer sm:mt-[23px]';
+      btnRemove.setAttribute('data-track-index', idx);
+      btnRemove.setAttribute('title', 'Remover música');
+      btnRemove.innerHTML = `<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+
+      row.appendChild(colUrl);
+      row.appendChild(colPlacement);
+      row.appendChild(btnRemove);
+      container.appendChild(row);
+    });
+
+    const toggleAutoplay = document.getElementById('music-autoplay-toggle');
+    if (toggleAutoplay) {
+      toggleAutoplay.checked = builderState.music.autoplay !== false;
+    }
+
+    updateFloatingMusicWidget();
+  }
+
+  function getYouTubeVideoId(url) {
+    if (!url) return null;
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    return match ? match[1] : null;
+  }
+
+  function updateFloatingMusicWidget() {
+    const widget = document.getElementById('live-preview-floating-music');
+    if (!widget) return;
+
+    const firstTrack = builderState.music?.tracks?.find(t => t.url && t.url.trim());
+    if (!firstTrack) {
+      widget.classList.add('hidden');
+      return;
+    }
+    widget.classList.remove('hidden');
+
+    const musicIcon = document.getElementById('music-note-icon');
+    if (musicIcon) {
+      if (isMusicPlaying) {
+        musicIcon.classList.add('text-emerald-500', 'animate-pulse');
+        musicIcon.classList.remove('text-[#4E96EF]');
+        widget.title = 'Pausar música do evento';
+      } else {
+        musicIcon.classList.remove('text-emerald-500', 'animate-pulse');
+        musicIcon.classList.add('text-[#4E96EF]');
+        widget.title = 'Tocar música do evento';
+      }
+    }
+  }
+
+  function toggleLiveMusic() {
+    const firstTrack = builderState.music?.tracks?.find(t => t.url && t.url.trim());
+    if (!firstTrack) {
+      showToast('Insira um link do YouTube válido no campo de música.', '🎵');
+      return;
+    }
+
+    const iframe = document.getElementById('youtube-audio-iframe');
+    const videoId = getYouTubeVideoId(firstTrack.url);
+
+    if (!isMusicPlaying) {
+      isMusicPlaying = true;
+      if (iframe && videoId) {
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&loop=1`;
+      }
+      showToast('Reproduzindo música do convite... 🎶', '✨');
+    } else {
+      isMusicPlaying = false;
+      if (iframe) {
+        iframe.src = '';
+      }
+      showToast('Música pausada.', '⏸️');
+    }
+    updateFloatingMusicWidget();
+  }
+
+  // Listener para Botão "+ Adicionar música"
+  const btnAddMusic = document.getElementById('btn-add-music-track');
+  if (btnAddMusic) {
+    btnAddMusic.addEventListener('click', () => {
+      if (!builderState.music) builderState.music = { tracks: [], autoplay: true };
+      builderState.music.tracks.push({ url: '', placement: 'all' });
+      renderMusicTracks();
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.music = builderState.music;
+      setTimeout(() => {
+        const inputs = document.querySelectorAll('.music-track-url');
+        if (inputs.length) inputs[inputs.length - 1].focus();
+      }, 50);
+    });
+  }
+
+  // Delegação de eventos para inputs, selects, exclusão e player flutuante
+  document.addEventListener('input', (e) => {
+    if (e.target.classList.contains('music-track-url')) {
+      const idx = parseInt(e.target.dataset.trackIndex, 10);
+      if (builderState.music?.tracks?.[idx]) {
+        builderState.music.tracks[idx].url = e.target.value.trim();
+        const activeEv = getActiveEvent();
+        if (activeEv) activeEv.music = builderState.music;
+        updateFloatingMusicWidget();
+      }
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('music-track-placement')) {
+      const idx = parseInt(e.target.dataset.trackIndex, 10);
+      if (builderState.music?.tracks?.[idx]) {
+        builderState.music.tracks[idx].placement = e.target.value;
+        const activeEv = getActiveEvent();
+        if (activeEv) activeEv.music = builderState.music;
+      }
+    }
+    if (e.target.id === 'music-autoplay-toggle') {
+      if (builderState.music) {
+        builderState.music.autoplay = e.target.checked;
+        const activeEv = getActiveEvent();
+        if (activeEv) activeEv.music = builderState.music;
+      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const btnRemove = e.target.closest('.btn-remove-music-track');
+    if (btnRemove) {
+      const idx = parseInt(btnRemove.dataset.trackIndex, 10);
+      if (builderState.music?.tracks) {
+        builderState.music.tracks.splice(idx, 1);
+        if (builderState.music.tracks.length === 0) {
+          builderState.music.tracks.push({ url: '', placement: 'all' });
+        }
+        renderMusicTracks();
+        const activeEv = getActiveEvent();
+        if (activeEv) activeEv.music = builderState.music;
+      }
+      return;
+    }
+
+    const floatMusicBtn = e.target.closest('#live-preview-floating-music');
+    if (floatMusicBtn) {
+      toggleLiveMusic();
+    }
+  });
+
+  function updateTitleFontSelectDisplay(val) {
+    const sel = document.getElementById('editor-select-title-font');
+    if (!sel) return;
+    let fontClass = val || 'font-playfair';
+    if (fontClass === 'font-serif-title') fontClass = 'font-playfair';
+    if (fontClass === 'font-serif') fontClass = 'font-garamond';
+    if (fontClass === 'font-modern') fontClass = 'font-outfit';
+    if (fontClass === 'font-clean') fontClass = 'font-inter';
+    if (fontClass === 'font-sans') fontClass = 'font-inter';
+    if (fontClass === 'font-cinzel') fontClass = 'font-playfair';
+    
+    sel.value = fontClass;
+    if (!sel.value) sel.value = 'font-playfair';
+    
+    const fontMap = {
+      'font-playfair': "'Playfair Display', Georgia, serif",
+      'font-garamond': "'EB Garamond', Garamond, serif",
+      'font-outfit': "'Outfit', sans-serif",
+      'font-inter': "'Inter', sans-serif",
+      'font-arial': "Arial, Helvetica, sans-serif",
+      'font-cursive': "'Great Vibes', cursive"
+    };
+    if (fontMap[sel.value]) {
+      sel.style.setProperty('font-family', fontMap[sel.value], 'important');
+    }
+  }
+
+  function updateDescFontSelectDisplay(val) {
+    const sel = document.getElementById('editor-select-desc-font');
+    if (!sel) return;
+    let fontClass = val || 'font-sans';
+    if (fontClass === 'font-clean') fontClass = 'font-clean';
+    if (fontClass === 'font-inter') fontClass = 'font-sans';
+    sel.value = fontClass;
+    if (!sel.value) sel.value = 'font-sans';
+    
+    const descFontMap = {
+      'font-sans': "'Inter', sans-serif",
+      'font-serif': "'EB Garamond', Garamond, serif",
+      'font-clean': "'Outfit', sans-serif"
+    };
+    if (descFontMap[sel.value]) {
+      sel.style.setProperty('font-family', descFontMap[sel.value], 'important');
+    }
+  }
+
+  // Retorna a imagem de capa padrão inteligente de acordo com o tipo/tema do evento
+  function getDefaultCoverForEventType(typeKey = '', typeLabel = '') {
+    const t = `${typeKey || ''} ${typeLabel || ''}`.toLowerCase();
+    if (t.includes('birthday') || t.includes('anivers') || t.includes('niver')) {
+      return 'assets/birthday_hero_banner.jpg';
+    }
+    if (t.includes('baby') || t.includes('bebe') || t.includes('bebê')) {
+      return 'assets/advisor_sophia.jpg';
+    }
+    if (t.includes('bridal') || t.includes('panela')) {
+      return 'assets/bouquet_roses.jpg';
+    }
+    if (t.includes('reveal') || t.includes('revelacao') || t.includes('revelação')) {
+      return 'assets/orchid_luxury.jpg';
+    }
+    if (t.includes('anniversary') || t.includes('bodas')) {
+      return 'assets/wedding_sunset_couple.jpg';
+    }
+    return 'assets/wedding_hero_banner.jpg';
+  }
+
   function renderEditorForm() {
     const activeEvent = getActiveEvent();
+    if (!activeEvent) return;
     
     // Inputs do formulário
     const inputTitle = document.getElementById('editor-event-title');
@@ -1035,6 +1390,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ])];
     renderEditorPrefaces();
 
+    if (activeEvent.music) {
+      builderState.music = JSON.parse(JSON.stringify(activeEvent.music));
+    }
+    renderMusicTracks();
+
     // Renderiza dados detalhados na sub-seção "Informações"
     if (activeEvent.eventDetails) {
       const inputDataDate = document.getElementById('editor-data-date');
@@ -1059,31 +1419,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     builderState.bgColor = activeEvent.bgColor || '#FBFBFA';
-    builderState.font = activeEvent.fontFamily || 'font-serif-title';
+    let initialFont = activeEvent.fontFamily || builderState.font || 'font-playfair';
+    if (initialFont === 'font-serif-title') initialFont = 'font-playfair';
+    if (initialFont === 'font-serif') initialFont = 'font-garamond';
+    if (initialFont === 'font-modern') initialFont = 'font-outfit';
+    builderState.font = initialFont;
     builderState.titleColor = activeEvent.titleColor || '#18181B';
     builderState.descFont = activeEvent.descFont || 'font-sans';
     builderState.descColor = activeEvent.descColor || '#52525B';
+    builderState.titleSize = activeEvent.titleSize || builderState.titleSize || 36;
+    builderState.descSize = activeEvent.descSize || builderState.descSize || 14;
     builderState.gradientOpacity = activeEvent.gradientOpacity !== undefined ? activeEvent.gradientOpacity : 80;
     builderState.gradientColor = activeEvent.gradientColor || builderState.bgColor;
-    builderState.coverImage = activeEvent.coverImage || 'assets/wedding_hero_banner.jpg';
-    builderState.accentColor = activeEvent.accentColor || '#4E96EF';
 
-    // Sincroniza os controles da sub-seção Aparência
-    const selTitleFont = document.getElementById('editor-select-title-font');
-    if (selTitleFont) selTitleFont.value = builderState.font || 'font-serif-title';
+    const defaultCover = getDefaultCoverForEventType(activeEvent.type || '', activeEvent.title || '');
+    if (!activeEvent.hasCustomCoverImage && (!activeEvent.coverImage || activeEvent.coverImage === 'assets/wedding_hero_banner.jpg')) {
+      builderState.coverImage = defaultCover;
+    } else {
+      builderState.coverImage = activeEvent.coverImage || defaultCover;
+    }
+    
+    builderState.bgImage = activeEvent.bgImage || null;
+    builderState.accentColor = (activeEvent.accentColor && activeEvent.accentColor !== '#4E96EF') ? activeEvent.accentColor : '#FBFBFA';
+    builderState.titleBold = activeEvent.titleBold || false;
+    builderState.titleItalic = activeEvent.titleItalic !== undefined ? activeEvent.titleItalic : true;
+    builderState.titleUnderline = activeEvent.titleUnderline || false;
+    builderState.titleAlign = activeEvent.titleAlign || 'center';
+
+    builderState.descBold = activeEvent.descBold || false;
+    builderState.descItalic = activeEvent.descItalic !== undefined ? activeEvent.descItalic : false;
+    builderState.descUnderline = activeEvent.descUnderline || false;
+    builderState.descAlign = activeEvent.descAlign || 'center';
+
+    // Sincroniza os controles da sub-seção Aparência com aplicação da fonte
+    updateTitleFontSelectDisplay(builderState.font);
 
     const titlePicker = document.getElementById('editor-title-color-picker');
     const swatchTitleBtn = document.getElementById('swatch-title-color-btn');
     if (titlePicker) titlePicker.value = builderState.titleColor || '#18181B';
     if (swatchTitleBtn) swatchTitleBtn.style.backgroundColor = builderState.titleColor || '#18181B';
 
-    const selDescFont = document.getElementById('editor-select-desc-font');
-    if (selDescFont) selDescFont.value = builderState.descFont || 'font-sans';
+    const titleSizeSlider = document.getElementById('editor-title-size-slider');
+    const titleSizeVal = document.getElementById('editor-title-size-val');
+    if (titleSizeSlider) titleSizeSlider.value = builderState.titleSize;
+    if (titleSizeVal) titleSizeVal.textContent = builderState.titleSize + 'px';
+
+    updateDescFontSelectDisplay(builderState.descFont);
 
     const descPicker = document.getElementById('editor-desc-color-picker');
     const swatchDescBtn = document.getElementById('swatch-desc-color-btn');
     if (descPicker) descPicker.value = builderState.descColor || '#52525B';
     if (swatchDescBtn) swatchDescBtn.style.backgroundColor = builderState.descColor || '#52525B';
+
+    const descSizeSlider = document.getElementById('editor-desc-size-slider');
+    const descSizeVal = document.getElementById('editor-desc-size-val');
+    if (descSizeSlider) descSizeSlider.value = builderState.descSize;
+    if (descSizeVal) descSizeVal.textContent = builderState.descSize + 'px';
 
     const gradSlider = document.getElementById('editor-gradient-opacity-slider');
     const gradVal = document.getElementById('gradient-opacity-value');
@@ -1103,6 +1494,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgPicker) bgPicker.value = builderState.bgColor || '#FBFBFA';
     if (swatchBgBtn) swatchBgBtn.style.backgroundColor = builderState.bgColor || '#FBFBFA';
 
+    syncTextFormatButtons();
+    updateButtonColorUI(builderState.accentColor || '#FBFBFA');
+    updateButtonTextColorUI(builderState.btnTextColor || activeEvent.btnTextColor || '#18181B');
+    updateBgImageUI(builderState.bgImage);
+    const btnRadiusSlider = document.getElementById('editor-btn-radius-slider');
+    const btnRadiusVal = document.getElementById('editor-btn-radius-val');
+    const bRad = builderState.btnRadius !== undefined ? builderState.btnRadius : 28;
+    if (btnRadiusSlider) btnRadiusSlider.value = bRad;
+    if (btnRadiusVal) {
+      if (bRad >= 28) btnRadiusVal.textContent = 'Total';
+      else if (bRad === 0) btnRadiusVal.textContent = '0px (Reto)';
+      else btnRadiusVal.textContent = `${bRad}px`;
+    }
     updateLiveSitePreview();
   }
 
@@ -1141,8 +1545,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeBgColor = builderState.bgColor || '#FBFBFA';
 
     if (previewColumn) previewColumn.style.setProperty('background-color', activeBgColor, 'important');
-    if (previewContainer) previewContainer.style.setProperty('background-color', activeBgColor, 'important');
-    if (previewBody) previewBody.style.setProperty('background-color', activeBgColor, 'important');
+    if (previewContainer) {
+      previewContainer.style.setProperty('background-color', activeBgColor, 'important');
+      if (builderState.bgImage) {
+        previewContainer.style.setProperty('background-image', `url('${builderState.bgImage}')`, 'important');
+        previewContainer.style.setProperty('background-size', 'cover', 'important');
+        previewContainer.style.setProperty('background-position', 'center', 'important');
+        previewContainer.style.setProperty('background-repeat', 'no-repeat', 'important');
+      } else {
+        previewContainer.style.setProperty('background-image', 'none', 'important');
+      }
+    }
+    if (previewBody) {
+      if (builderState.bgImage) {
+        previewBody.style.setProperty('background-color', 'transparent', 'important');
+      } else {
+        previewBody.style.setProperty('background-color', activeBgColor, 'important');
+      }
+    }
     
     // Identifica se a cor de fundo escolhida é escura para adaptar contraste dos textos
     function isDarkBg(hexColor) {
@@ -1156,119 +1576,281 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const isDark = isDarkBg(activeBgColor);
 
-    // Degradê da Foto de Capa (Cor + Opacidade ajustáveis)
+    // Degradê da Foto de Capa (Transparência da Borda acompanha a cor do fundo)
     if (coverGradient) {
-      const gradColor = builderState.gradientColor || activeBgColor;
-      const gradOpacity = (builderState.gradientOpacity !== undefined ? builderState.gradientOpacity : 80) / 100;
+      const gradColor = builderState.bgColor || activeBgColor;
+      builderState.gradientColor = gradColor;
+      const gradOpacity = (builderState.gradientOpacity !== undefined ? builderState.gradientOpacity : 75) / 100;
       coverGradient.style.background = `linear-gradient(to top, ${gradColor} 0%, ${gradColor} 30%, transparent 100%)`;
       coverGradient.style.opacity = gradOpacity;
     }
 
-    // 2. Capa do Casal
-    if (previewCover && builderState.coverImage) {
-      previewCover.style.backgroundImage = `url('${builderState.coverImage}')`;
+    // 2. Capa do Casal na Prévia
+    const coverFilledContainer = document.getElementById('cover-image-filled-container');
+    const coverEmptySlot = document.getElementById('cover-image-empty-slot');
+    const hasCoverImg = !!(builderState.coverImage || activeEvent?.coverImage);
+
+    if (hasCoverImg) {
+      if (coverFilledContainer) coverFilledContainer.classList.remove('hidden');
+      if (coverEmptySlot) coverEmptySlot.classList.add('hidden');
+      if (previewCover) previewCover.style.backgroundImage = `url('${builderState.coverImage || activeEvent.coverImage}')`;
+    } else {
+      if (coverFilledContainer) coverFilledContainer.classList.add('hidden');
+      if (coverEmptySlot) coverEmptySlot.classList.remove('hidden');
     }
-    const coverThumb = document.getElementById('editor-cover-thumb-preview');
-    if (coverThumb && builderState.coverImage) {
-      coverThumb.src = builderState.coverImage;
+
+    // Imagem do Local / Evento na Prévia (Alternância entre Imagem Ativa e Slot Vazio com +)
+    const venueImg = document.getElementById('live-preview-venue-img');
+    const venueFilledContainer = document.getElementById('venue-image-filled-container');
+    const venueEmptySlot = document.getElementById('venue-image-empty-slot');
+    const hasVenueImg = !!(builderState.venueImage || activeEvent?.venueImage);
+
+    if (hasVenueImg) {
+      if (venueFilledContainer) venueFilledContainer.classList.remove('hidden');
+      if (venueEmptySlot) venueEmptySlot.classList.add('hidden');
+      if (venueImg) venueImg.src = builderState.venueImage || activeEvent.venueImage;
+    } else {
+      if (venueFilledContainer) venueFilledContainer.classList.add('hidden');
+      if (venueEmptySlot) venueEmptySlot.classList.remove('hidden');
+    }
+
+    // Imagem de Fechamento / Rodapé do Casal na Prévia
+    const closingImg = document.getElementById('live-preview-closing-img');
+    const closingFilledContainer = document.getElementById('closing-image-filled-container');
+    const closingEmptySlot = document.getElementById('closing-image-empty-slot');
+    const hasClosingImg = !!(builderState.closingImage || activeEvent?.closingImage);
+
+    if (hasClosingImg) {
+      if (closingFilledContainer) closingFilledContainer.classList.remove('hidden');
+      if (closingEmptySlot) closingEmptySlot.classList.add('hidden');
+      if (closingImg) closingImg.src = builderState.closingImage || activeEvent.closingImage;
+    } else {
+      if (closingFilledContainer) closingFilledContainer.classList.add('hidden');
+      if (closingEmptySlot) closingEmptySlot.classList.remove('hidden');
     }
 
     const descFont = builderState.descFont || 'font-sans';
     const descColor = builderState.descColor || (isDark ? '#E4E4E7' : '#52525B');
+    const titleSize = builderState.titleSize || 36;
+    const descSize = builderState.descSize || 14;
 
-    // 3. Epígrafes / Prefácios Dinâmicos
-    if (previewPrefacesContainer && !previewPrefacesContainer.contains(document.activeElement)) {
-      previewPrefacesContainer.innerHTML = '';
-      const prefaces = builderState.prefaces !== undefined
-        ? builderState.prefaces
-        : (activeEvent.prefaces || ['"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)', 'COM A BÊNÇÃO DE DEUS,']);
+    const descFontMap = {
+      'font-sans': "'Inter', sans-serif",
+      'font-serif': "'EB Garamond', Georgia, serif",
+      'font-clean': "'Outfit', sans-serif"
+    };
+    const actualDescFamily = descFontMap[descFont] || "'Inter', sans-serif";
 
-      if (!prefaces || prefaces.length === 0) {
-        const pEl = document.createElement('p');
-        pEl.contentEditable = "true";
-        pEl.spellcheck = false;
-        pEl.setAttribute('data-placeholder', 'Digite a epígrafe ou citação...');
-        pEl.className = `editable-live-box text-[11px] sm:text-xs italic font-serif leading-relaxed px-2`;
-        pEl.style.color = descColor;
-        pEl.dataset.empty = "true";
-        previewPrefacesContainer.appendChild(pEl);
+    const fontMap = {
+      'font-playfair': "'Playfair Display', Georgia, serif",
+      'font-serif-title': "'Playfair Display', Georgia, serif",
+      'font-garamond': "'EB Garamond', Garamond, serif",
+      'font-serif': "'EB Garamond', Garamond, serif",
+      'font-outfit': "'Outfit', sans-serif",
+      'font-modern': "'Outfit', sans-serif",
+      'font-sans-title': "'Outfit', sans-serif",
+      'font-inter': "'Inter', sans-serif",
+      'font-sans': "'Inter', sans-serif",
+      'font-clean': "'Inter', sans-serif",
+      'font-arial': "Arial, Helvetica, sans-serif",
+      'font-cursive': "'Great Vibes', cursive",
+      'font-greatvibes': "'Great Vibes', cursive"
+    };
+
+    // 3. EXATAMENTE 4 SLOTS DE TÍTULO E TEXTO (MÁXIMO 4 CAIXINHAS UNIFORMES E REORDENÁVEIS)
+    if (!builderState.slots || !Array.isArray(builderState.slots)) {
+      builderState.slots = [null, null, null, null];
+    }
+    while (builderState.slots.length < 4) builderState.slots.push(null);
+    if (builderState.slots.length > 4) builderState.slots = builderState.slots.slice(0, 4);
+
+    let draggedSlotIndex = null;
+
+    for (let i = 0; i < 4; i++) {
+      const slotContainer = document.getElementById(`invite-slot-${i}`);
+      if (!slotContainer) continue;
+
+      slotContainer.setAttribute('draggable', 'true');
+      slotContainer.setAttribute('data-slot', i);
+
+      const slotData = builderState.slots[i];
+      const isEditingText = slotContainer.querySelector('.editable-live-box') && slotContainer.querySelector('.editable-live-box') === document.activeElement;
+
+      const reorderControls = `
+        <div class="slot-reorder-controls">
+          ${i > 0 ? `<button type="button" class="btn-slot-move btn-slot-up" data-slot="${i}" title="Subir posição"><svg class="w-2.5 h-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></button>` : ''}
+          ${i < 3 ? `<button type="button" class="btn-slot-move btn-slot-down" data-slot="${i}" title="Descer posição"><svg class="w-2.5 h-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></button>` : ''}
+        </div>
+      `;
+
+
+      if (!slotData) {
+        // SLOT VAZIO: Exibe a caixinha pontilhada uniforme com o botão circular (+) no centro
+        slotContainer.innerHTML = `
+          ${reorderControls}
+          <div class="invite-slot-box-empty">
+            <div class="relative">
+              <button type="button" class="btn-slot-add w-7 h-7 rounded-full bg-[#4E96EF] hover:bg-[#3A80D8] text-white shadow-xs flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer" data-slot="${i}" title="Adicionar Título ou Texto">
+                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              </button>
+              <div id="dropdown-slot-${i}" class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 w-36 bg-white border border-[#EAEAEF] rounded-lg shadow-xl p-1 z-30 space-y-0.5 animate-fade-in">
+                <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#4E96EF] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="title">
+                  <span class="w-4 h-4 rounded bg-blue-100/70 text-[#4E96EF] flex items-center justify-center font-bold text-[10px]">T</span>
+                  <span>Título</span>
+                </button>
+                <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#4E96EF] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="text">
+                  <span class="w-4 h-4 rounded bg-zinc-100 text-zinc-600 flex items-center justify-center font-bold text-[10px]">¶</span>
+                  <span>Texto</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
       } else {
-        prefaces.forEach(pText => {
-          const pEl = document.createElement('p');
-          pEl.contentEditable = "true";
-          pEl.spellcheck = false;
-          pEl.setAttribute('data-placeholder', 'Digite a epígrafe ou citação...');
-          if (pText && (pText.includes('"') || pText.includes('(') || pText.length > 30)) {
-            pEl.className = `editable-live-box text-[11px] sm:text-xs italic font-serif leading-relaxed px-2`;
-            pEl.textContent = pText;
+        // SLOT PREENCHIDO COM TÍTULO OU TEXTO (LIMPO E SEM ÍCONES INTERNOS)
+        if (!isEditingText) {
+          slotContainer.innerHTML = '';
+          slotContainer.insertAdjacentHTML('beforeend', reorderControls);
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'live-block-wrapper relative group/block text-center';
+
+          const box = document.createElement('div');
+          box.contentEditable = "true";
+          box.spellcheck = false;
+          box.dataset.slotIndex = i;
+
+          if (slotData.type === 'title') {
+            box.className = `editable-live-box live-block-title leading-tight ${builderState.font || 'font-playfair'}`;
+            box.setAttribute('data-placeholder', 'Digite o título...');
+            box.textContent = slotData.content || '';
+            box.style.setProperty('font-family', fontMap[builderState.font || 'font-playfair'] || "'Playfair Display', Georgia, serif", 'important');
+            box.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+            box.style.setProperty('font-size', `${titleSize}px`, 'important');
+            box.style.setProperty('font-weight', builderState.titleBold ? 'bold' : 'normal', 'important');
+            box.style.setProperty('font-style', builderState.titleItalic ? 'italic' : 'normal', 'important');
+            box.style.setProperty('text-decoration', builderState.titleUnderline ? 'underline' : 'none', 'important');
+            box.style.setProperty('text-align', builderState.titleAlign || 'center', 'important');
           } else {
-            pEl.className = `editable-live-box text-[10px] font-bold tracking-[0.25em] uppercase`;
-            pEl.textContent = pText || '';
+            // Estilização tipográfica inteligente e elegante para textos
+            const isQuote = slotData.content && (slotData.content.includes('"') || slotData.content.includes('('));
+            const isUppercaseCall = slotData.content && (slotData.content.includes('BÊNÇÃO') || slotData.content.includes('CONVIDAM') || slotData.content.toUpperCase() === slotData.content);
+
+            let trackingClass = '';
+            if (isUppercaseCall) trackingClass = 'uppercase tracking-[0.22em] font-bold text-[10px] sm:text-[11px]';
+            else if (isQuote) trackingClass = 'font-serif text-xs sm:text-sm';
+            else trackingClass = 'text-xs sm:text-sm';
+
+            box.className = `editable-live-box live-block-text leading-relaxed ${trackingClass} ${descFont}`;
+            if (builderState.descItalic) box.classList.add('italic');
+            box.setAttribute('data-placeholder', 'Digite o texto...');
+            box.textContent = slotData.content || '';
+            box.style.setProperty('font-family', actualDescFamily, 'important');
+            box.style.setProperty('color', descColor, 'important');
+            box.style.setProperty('font-size', isQuote ? `${Math.round(descSize * 0.9)}px` : (isUppercaseCall ? `${Math.round(descSize * 0.78)}px` : `${descSize}px`), 'important');
+            box.style.setProperty('font-weight', builderState.descBold ? 'bold' : (isUppercaseCall ? 'bold' : 'normal'), 'important');
+            box.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+            box.style.setProperty('text-decoration', builderState.descUnderline ? 'underline' : 'none', 'important');
+            box.style.setProperty('text-align', builderState.descAlign || 'center', 'important');
           }
-          pEl.style.color = descColor;
-          if (!pText || !pText.trim()) pEl.dataset.empty = "true";
-          previewPrefacesContainer.appendChild(pEl);
-        });
-      }
-    }
 
-    // 4. Nomes do Casal / Anfitriões com Tipografia & Cor Personalizadas
-    if (previewTitle) {
-      if (document.activeElement !== previewTitle) {
-        previewTitle.textContent = titleVal || '';
+          if (!slotData.content || !slotData.content.trim()) {
+            box.dataset.empty = "true";
+          }
+
+          box.addEventListener('focus', () => { slotContainer.draggable = false; });
+          box.addEventListener('blur', () => { slotContainer.draggable = true; });
+
+          box.addEventListener('input', () => {
+            const val = (box.innerText || box.textContent || '').replace(/\u200B/g, '').replace(/[↗✎]/g, '').trim();
+            slotData.content = box.innerText;
+            if (!val) {
+              box.dataset.empty = "true";
+            } else {
+              delete box.dataset.empty;
+            }
+            if (slotData.type === 'title' && i === 2) {
+              const inputTitle = document.getElementById('editor-event-title');
+              if (inputTitle) inputTitle.value = val;
+              const activeEv = getActiveEvent();
+              if (activeEv) activeEv.title = val;
+            }
+          });
+
+          // Botão Excluir (✕) - remove o campo e faz o (+) voltar imediatamente naquele slot
+          const btnDel = document.createElement('button');
+          btnDel.type = 'button';
+          btnDel.className = 'btn-delete-text-block';
+          btnDel.title = 'Excluir campo e voltar ao botão +';
+          btnDel.innerHTML = `<svg class="w-3 h-3 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+          btnDel.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            builderState.slots[i] = null;
+            updateLiveSitePreview();
+          });
+
+          wrapper.appendChild(box);
+          wrapper.appendChild(btnDel);
+          slotContainer.appendChild(wrapper);
+        } else {
+          // Atualiza estilos em tempo real sem resetar foco
+          const box = slotContainer.querySelector('.editable-live-box');
+          if (box) {
+            if (slotData.type === 'title') {
+              box.style.setProperty('font-family', fontMap[builderState.font || 'font-playfair'] || "'Playfair Display', Georgia, serif", 'important');
+              box.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+              box.style.setProperty('font-size', `${titleSize}px`, 'important');
+              box.style.setProperty('font-weight', builderState.titleBold ? 'bold' : 'normal', 'important');
+              box.style.setProperty('font-style', builderState.titleItalic ? 'italic' : 'normal', 'important');
+              box.style.setProperty('text-decoration', builderState.titleUnderline ? 'underline' : 'none', 'important');
+              box.style.setProperty('text-align', builderState.titleAlign || 'center', 'important');
+            } else {
+              box.style.setProperty('font-family', actualDescFamily, 'important');
+              box.style.setProperty('color', descColor, 'important');
+              box.style.setProperty('font-size', `${descSize}px`, 'important');
+              box.style.setProperty('font-weight', builderState.descBold ? 'bold' : 'normal', 'important');
+              box.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+              box.classList.toggle('italic', !!builderState.descItalic);
+              box.style.setProperty('text-decoration', builderState.descUnderline ? 'underline' : 'none', 'important');
+              box.style.setProperty('text-align', builderState.descAlign || 'center', 'important');
+            }
+          }
+        }
       }
-      previewTitle.setAttribute('data-placeholder', 'Digite os nomes dos anfitriões...');
-      const currentFont = builderState.font || 'font-playfair';
-      previewTitle.className = `editable-live-box text-3xl sm:text-4xl font-normal italic leading-tight ${currentFont}`;
-      
-      const fontMap = {
-        'font-playfair': "'Playfair Display', Georgia, serif",
-        'font-serif-title': "'Playfair Display', Georgia, serif",
-        'font-garamond': "'EB Garamond', Garamond, serif",
-        'font-serif': "'EB Garamond', Garamond, serif",
-        'font-outfit': "'Outfit', sans-serif",
-        'font-modern': "'Outfit', sans-serif",
-        'font-sans-title': "'Outfit', sans-serif",
-        'font-inter': "'Inter', sans-serif",
-        'font-sans': "'Inter', sans-serif",
-        'font-clean': "'Inter', sans-serif",
-        'font-arial': "Arial, Helvetica, sans-serif",
-        'font-cursive': "'Great Vibes', cursive",
-        'font-greatvibes': "'Great Vibes', cursive"
+
+      // Handlers de Drag & Drop para o slotContainer
+      slotContainer.ondragstart = (e) => {
+        draggedSlotIndex = i;
+        slotContainer.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', i);
       };
-      if (fontMap[currentFont]) {
-        previewTitle.style.fontFamily = fontMap[currentFont];
-      }
-      
-      if (builderState.titleColor) {
-        previewTitle.style.color = builderState.titleColor;
-      } else {
-        previewTitle.style.color = isDark ? '#FFFFFF' : '#18181B';
-      }
-      const rawTitle = (previewTitle.innerText || previewTitle.textContent || '').replace(/\u200B/g, '').replace(/[↗✎]/g, '').trim();
-      if (!rawTitle) {
-        previewTitle.dataset.empty = "true";
-        if (previewTitle.innerHTML === '<br>' || previewTitle.innerHTML === '<br/>') previewTitle.innerHTML = '';
-      } else {
-        delete previewTitle.dataset.empty;
-      }
-    }
 
-    // 5. Chamada
-    if (previewHeadline) {
-      if (document.activeElement !== previewHeadline) {
-        previewHeadline.textContent = headlineVal || '';
-      }
-      previewHeadline.setAttribute('data-placeholder', 'Digite a frase de chamada...');
-      previewHeadline.className = `editable-live-box text-[10px] sm:text-[11px] uppercase font-bold tracking-[0.22em] ${descFont}`;
-      previewHeadline.style.color = descColor;
-      const rawHead = (previewHeadline.innerText || previewHeadline.textContent || '').replace(/\u200B/g, '').replace(/↗/g, '').trim();
-      if (!rawHead) {
-        previewHeadline.dataset.empty = "true";
-        if (previewHeadline.innerHTML === '<br>' || previewHeadline.innerHTML === '<br/>') previewHeadline.innerHTML = '';
-      } else {
-        delete previewHeadline.dataset.empty;
-      }
+      slotContainer.ondragend = () => {
+        slotContainer.classList.remove('is-dragging');
+        document.querySelectorAll('.invite-slot-wrapper').forEach(w => w.classList.remove('drag-over', 'is-dragging'));
+      };
+
+      slotContainer.ondragover = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        slotContainer.classList.add('drag-over');
+      };
+
+      slotContainer.ondragleave = () => {
+        slotContainer.classList.remove('drag-over');
+      };
+
+      slotContainer.ondrop = (e) => {
+        e.preventDefault();
+        slotContainer.classList.remove('drag-over');
+        if (draggedSlotIndex !== null && draggedSlotIndex !== i) {
+          const moved = builderState.slots.splice(draggedSlotIndex, 1)[0];
+          builderState.slots.splice(i, 0, moved);
+          draggedSlotIndex = null;
+          updateLiveSitePreview();
+        }
+      };
     }
 
     // 6. Data & Horário
@@ -1306,8 +1888,9 @@ document.addEventListener('DOMContentLoaded', () => {
         previewFormattedDate.textContent = 'DATA DO EVENTO';
         previewFormattedDate.style.opacity = '0.45';
       }
-      previewFormattedDate.className = `text-xs sm:text-sm font-bold tracking-[0.2em] uppercase ${descFont}`;
-      previewFormattedDate.style.color = builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B');
+      previewFormattedDate.className = `font-bold tracking-[0.2em] uppercase ${descFont}`;
+      previewFormattedDate.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+      previewFormattedDate.style.setProperty('font-size', `${Math.round(descSize * 0.95)}px`, 'important');
     }
     if (previewFormattedTime) {
       if (rawTime) {
@@ -1317,21 +1900,38 @@ document.addEventListener('DOMContentLoaded', () => {
         previewFormattedTime.textContent = 'Horário do evento';
         previewFormattedTime.style.opacity = '0.45';
       }
-      previewFormattedTime.className = `text-[11px] font-medium ${descFont}`;
-      previewFormattedTime.style.color = descColor;
+      previewFormattedTime.className = `font-medium ${descFont}`;
+      previewFormattedTime.style.setProperty('color', descColor, 'important');
+      previewFormattedTime.style.setProperty('font-family', actualDescFamily, 'important');
+      previewFormattedTime.style.setProperty('font-size', `${Math.round(descSize * 0.82)}px`, 'important');
+      previewFormattedTime.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+    }
+
+    const dateTimeBox = document.getElementById('live-preview-date-time-box');
+    if (dateTimeBox) {
+      dateTimeBox.style.setProperty('border-color', descColor + '35', 'important');
     }
 
     // 7. Local & Endereço
     const venueNameVal = (inputDataLocation && inputDataLocation.value !== undefined && inputDataLocation.value.length > 0) ? inputDataLocation.value : (activeEvent.eventDetails?.locationName || activeEvent.location || 'VILLA BISUTTI - ESPAÇO JARDIM');
     const venueAddrVal = (inputDataAddress && inputDataAddress.value !== undefined && inputDataAddress.value.length > 0) ? inputDataAddress.value : (activeEvent.eventDetails?.address || 'Av. Cidade Jardim, 1200 - São Paulo, SP');
 
+    const venueLabel = document.getElementById('live-preview-venue-label');
+    if (venueLabel) {
+      venueLabel.style.setProperty('color', descColor, 'important');
+      venueLabel.style.setProperty('font-family', actualDescFamily, 'important');
+      venueLabel.style.setProperty('font-size', `${Math.round(descSize * 0.85)}px`, 'important');
+      venueLabel.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+    }
+
     if (previewVenueName) {
       if (document.activeElement !== previewVenueName) {
         previewVenueName.textContent = venueNameVal ? venueNameVal.toUpperCase() : '';
       }
       previewVenueName.setAttribute('data-placeholder', 'Nome do local / espaço...');
-      previewVenueName.className = `editable-live-box text-xs sm:text-sm font-bold uppercase tracking-wider ${descFont}`;
-      previewVenueName.style.color = builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B');
+      previewVenueName.className = `editable-live-box font-bold uppercase tracking-wider ${descFont}`;
+      previewVenueName.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+      previewVenueName.style.setProperty('font-size', `${Math.round(descSize * 0.95)}px`, 'important');
       const rawVName = (previewVenueName.innerText || previewVenueName.textContent || '').replace(/\u200B/g, '').replace(/↗/g, '').trim();
       if (!rawVName) {
         previewVenueName.dataset.empty = "true";
@@ -1345,8 +1945,11 @@ document.addEventListener('DOMContentLoaded', () => {
         previewVenueAddress.textContent = venueAddrVal || '';
       }
       previewVenueAddress.setAttribute('data-placeholder', 'Endereço completo do evento...');
-      previewVenueAddress.className = `editable-live-box text-[11px] max-w-[260px] mx-auto leading-relaxed ${descFont}`;
-      previewVenueAddress.style.color = descColor;
+      previewVenueAddress.className = `editable-live-box max-w-[260px] mx-auto leading-relaxed ${descFont}`;
+      previewVenueAddress.style.setProperty('color', descColor, 'important');
+      previewVenueAddress.style.setProperty('font-family', actualDescFamily, 'important');
+      previewVenueAddress.style.setProperty('font-size', `${Math.round(descSize * 0.82)}px`, 'important');
+      previewVenueAddress.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
       const rawVAddr = (previewVenueAddress.innerText || previewVenueAddress.textContent || '').replace(/\u200B/g, '').replace(/↗/g, '').trim();
       if (!rawVAddr) {
         previewVenueAddress.dataset.empty = "true";
@@ -1356,17 +1959,47 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    const countdownLabel = document.getElementById('live-preview-countdown-label');
+    if (countdownLabel) {
+      countdownLabel.style.setProperty('color', descColor, 'important');
+      countdownLabel.style.setProperty('font-family', actualDescFamily, 'important');
+      countdownLabel.style.setProperty('font-size', `${Math.round(descSize * 0.85)}px`, 'important');
+      countdownLabel.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+    }
+
+    const actionsLabel = document.getElementById('live-preview-actions-label');
+    if (actionsLabel) {
+      actionsLabel.style.setProperty('color', descColor, 'important');
+      actionsLabel.style.setProperty('font-family', actualDescFamily, 'important');
+      actionsLabel.style.setProperty('font-size', `${Math.round(descSize * 0.68)}px`, 'important');
+      actionsLabel.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+    }
+
     // 8. Fechamento
     if (previewClosingNames) {
       previewClosingNames.textContent = titleVal || 'Anfitriões';
       previewClosingNames.className = `text-xl italic ${builderState.font || 'font-serif-title'}`;
-      previewClosingNames.style.color = builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B');
+      previewClosingNames.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
     }
 
-    // 9. Botão Destaque
-    if (previewActionBtn) {
-      previewActionBtn.style.backgroundColor = builderState.accentColor || '#4E96EF';
-    }
+    // 9. Botões do Convite (Cor do Botão, Cor do Texto & Arredondamento da Borda)
+    const btnRadius = builderState.btnRadius !== undefined ? builderState.btnRadius : 28;
+    const radiusCss = btnRadius >= 28 ? '9999px' : `${btnRadius}px`;
+    const btnColor = builderState.accentColor || '#FBFBFA';
+    const btnTextColor = builderState.btnTextColor || '#18181B';
+
+    const inviteButtons = document.querySelectorAll('#live-preview-buttons-container button, .live-preview-custom-btn');
+    inviteButtons.forEach(btn => {
+      btn.style.setProperty('border-radius', radiusCss, 'important');
+      btn.style.setProperty('background-color', btnColor, 'important');
+      btn.style.setProperty('color', btnTextColor, 'important');
+      btn.querySelectorAll('*').forEach(child => {
+        child.style.setProperty('color', btnTextColor, 'important');
+      });
+    });
+
+    // 10. Widget Flutuante de Música
+    updateFloatingMusicWidget();
   }
 
   function applyTemplate(templateId, notify = true) {
@@ -1405,13 +2038,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const bgPickerEl = document.getElementById('editor-bg-color-picker');
     const swatchBgBtn = document.getElementById('swatch-bg-color-btn');
 
-    if (selTitleFont) selTitleFont.value = builderState.font;
+    updateTitleFontSelectDisplay(builderState.font);
     if (titleColorPicker) titleColorPicker.value = builderState.titleColor;
     if (swatchTitleBtn) swatchTitleBtn.style.backgroundColor = builderState.titleColor;
 
-    if (selDescFont) selDescFont.value = builderState.descFont;
+    const titleSizeSlider = document.getElementById('editor-title-size-slider');
+    const titleSizeVal = document.getElementById('editor-title-size-val');
+    if (titleSizeSlider) titleSizeSlider.value = builderState.titleSize || 36;
+    if (titleSizeVal) titleSizeVal.textContent = (builderState.titleSize || 36) + 'px';
+
+    updateDescFontSelectDisplay(builderState.descFont);
     if (descColorPicker) descColorPicker.value = builderState.descColor;
     if (swatchDescBtn) swatchDescBtn.style.backgroundColor = builderState.descColor;
+
+    const descSizeSlider = document.getElementById('editor-desc-size-slider');
+    const descSizeVal = document.getElementById('editor-desc-size-val');
+    if (descSizeSlider) descSizeSlider.value = builderState.descSize || 14;
+    if (descSizeVal) descSizeVal.textContent = (builderState.descSize || 14) + 'px';
 
     if (gradOpacitySlider) gradOpacitySlider.value = builderState.gradientOpacity;
     if (gradOpacityVal) gradOpacityVal.textContent = builderState.gradientOpacity + '%';
@@ -1503,6 +2146,8 @@ document.addEventListener('DOMContentLoaded', () => {
     activeEvent.fontFamily = builderState.font;
     activeEvent.coverImage = builderState.coverImage;
     activeEvent.accentColor = builderState.accentColor;
+    activeEvent.music = JSON.parse(JSON.stringify(builderState.music || { tracks: [], autoplay: true }));
+    activeEvent.closingImage = builderState.closingImage;
 
     updateAllCelebrationData();
     renderEventsSwitcher();
@@ -1553,19 +2198,37 @@ document.addEventListener('DOMContentLoaded', () => {
   if (selTitleFont) {
     selTitleFont.addEventListener('change', (e) => {
       builderState.font = e.target.value;
+      updateTitleFontSelectDisplay(e.target.value);
       const activeEv = getActiveEvent();
       if (activeEv) activeEv.fontFamily = e.target.value;
       updateLiveSitePreview();
     });
   }
   if (titleColorPicker) {
-    titleColorPicker.addEventListener('input', (e) => {
+    const handleTitleColor = (e) => {
       builderState.titleColor = e.target.value;
       if (swatchTitleBtn) swatchTitleBtn.style.backgroundColor = e.target.value;
       const activeEv = getActiveEvent();
       if (activeEv) activeEv.titleColor = e.target.value;
       updateLiveSitePreview();
-    });
+    };
+    titleColorPicker.addEventListener('input', handleTitleColor);
+    titleColorPicker.addEventListener('change', handleTitleColor);
+  }
+
+  const titleSizeSlider = document.getElementById('editor-title-size-slider');
+  const titleSizeVal = document.getElementById('editor-title-size-val');
+  if (titleSizeSlider) {
+    const handleTitleSize = (e) => {
+      const val = parseInt(e.target.value, 10);
+      builderState.titleSize = val;
+      if (titleSizeVal) titleSizeVal.textContent = val + 'px';
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.titleSize = val;
+      updateLiveSitePreview();
+    };
+    titleSizeSlider.addEventListener('input', handleTitleSize);
+    titleSizeSlider.addEventListener('change', handleTitleSize);
   }
 
   // 2. Fonte dos Textos / Descrição e Cor
@@ -1576,19 +2239,37 @@ document.addEventListener('DOMContentLoaded', () => {
   if (selDescFont) {
     selDescFont.addEventListener('change', (e) => {
       builderState.descFont = e.target.value;
+      updateDescFontSelectDisplay(e.target.value);
       const activeEv = getActiveEvent();
       if (activeEv) activeEv.descFont = e.target.value;
       updateLiveSitePreview();
     });
   }
   if (descColorPicker) {
-    descColorPicker.addEventListener('input', (e) => {
+    const handleDescColor = (e) => {
       builderState.descColor = e.target.value;
       if (swatchDescBtn) swatchDescBtn.style.backgroundColor = e.target.value;
       const activeEv = getActiveEvent();
       if (activeEv) activeEv.descColor = e.target.value;
       updateLiveSitePreview();
-    });
+    };
+    descColorPicker.addEventListener('input', handleDescColor);
+    descColorPicker.addEventListener('change', handleDescColor);
+  }
+
+  const descSizeSlider = document.getElementById('editor-desc-size-slider');
+  const descSizeVal = document.getElementById('editor-desc-size-val');
+  if (descSizeSlider) {
+    const handleDescSize = (e) => {
+      const val = parseInt(e.target.value, 10);
+      builderState.descSize = val;
+      if (descSizeVal) descSizeVal.textContent = val + 'px';
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descSize = val;
+      updateLiveSitePreview();
+    };
+    descSizeSlider.addEventListener('input', handleDescSize);
+    descSizeSlider.addEventListener('change', handleDescSize);
   }
 
   // 3. Opacidade e Cor do Degradê
@@ -1625,22 +2306,434 @@ document.addEventListener('DOMContentLoaded', () => {
     selBgPreset.addEventListener('change', (e) => {
       const color = e.target.value;
       builderState.bgColor = color;
+      builderState.gradientColor = color;
       if (bgPickerEl) bgPickerEl.value = color.startsWith('#') ? color : '#FBFBFA';
       if (swatchBgBtn) swatchBgBtn.style.backgroundColor = color;
       const activeEv = getActiveEvent();
-      if (activeEv) activeEv.bgColor = color;
+      if (activeEv) {
+        activeEv.bgColor = color;
+        activeEv.gradientColor = color;
+      }
       updateLiveSitePreview();
     });
   }
   if (bgPickerEl) {
     bgPickerEl.addEventListener('input', (e) => {
-      builderState.bgColor = e.target.value;
-      if (swatchBgBtn) swatchBgBtn.style.backgroundColor = e.target.value;
+      const color = e.target.value;
+      builderState.bgColor = color;
+      builderState.gradientColor = color;
+      if (swatchBgBtn) swatchBgBtn.style.backgroundColor = color;
       const activeEv = getActiveEvent();
-      if (activeEv) activeEv.bgColor = e.target.value;
+      if (activeEv) {
+        activeEv.bgColor = color;
+        activeEv.gradientColor = color;
+      }
       updateLiveSitePreview();
     });
   }
+
+  // 5. Cor dos Botões (Preset Sugerido + Custom Picker)
+  const selBtnPreset = document.getElementById('editor-select-btn-preset');
+  const btnColorPickerEl = document.getElementById('editor-btn-color-picker');
+  const swatchBtnColor = document.getElementById('swatch-btn-color-btn');
+  const btnColorDisplay = document.getElementById('btn-color-code-display');
+  const btnColorSample = document.getElementById('btn-color-preview-sample');
+
+  function updateButtonColorUI(color) {
+    if (!color) return;
+    if (btnColorPickerEl) btnColorPickerEl.value = color.startsWith('#') ? color : '#FBFBFA';
+    if (swatchBtnColor) swatchBtnColor.style.backgroundColor = color;
+    if (btnColorDisplay) btnColorDisplay.textContent = color.toUpperCase();
+    if (btnColorSample) btnColorSample.style.backgroundColor = color;
+    if (selBtnPreset) {
+      const matchOpt = Array.from(selBtnPreset.options).find(opt => opt.value.toLowerCase() === color.toLowerCase());
+      if (matchOpt) {
+        selBtnPreset.value = matchOpt.value;
+      }
+    }
+  }
+
+  if (selBtnPreset) {
+    selBtnPreset.addEventListener('change', (e) => {
+      const color = e.target.value;
+      builderState.accentColor = color;
+      updateButtonColorUI(color);
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.accentColor = color;
+      }
+      updateLiveSitePreview();
+    });
+  }
+
+  if (btnColorPickerEl) {
+    btnColorPickerEl.addEventListener('input', (e) => {
+      const color = e.target.value;
+      builderState.accentColor = color;
+      updateButtonColorUI(color);
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.accentColor = color;
+      }
+      updateLiveSitePreview();
+    });
+  }
+
+  // Cor do Texto do Botão (Preset + Custom Picker)
+  const selBtnTextPreset = document.getElementById('editor-select-btn-text-preset');
+  const btnTextColorPicker = document.getElementById('editor-btn-text-color-picker');
+  const swatchBtnTextBtn = document.getElementById('swatch-btn-text-color-btn');
+
+  function updateButtonTextColorUI(color) {
+    if (!color) return;
+    if (btnTextColorPicker) btnTextColorPicker.value = color.startsWith('#') ? color : '#18181B';
+    if (swatchBtnTextBtn) swatchBtnTextBtn.style.backgroundColor = color;
+    if (selBtnTextPreset) {
+      const matchOpt = Array.from(selBtnTextPreset.options).find(opt => opt.value.toLowerCase() === color.toLowerCase());
+      if (matchOpt) {
+        selBtnTextPreset.value = matchOpt.value;
+      }
+    }
+  }
+
+  if (selBtnTextPreset) {
+    selBtnTextPreset.addEventListener('change', (e) => {
+      const color = e.target.value;
+      builderState.btnTextColor = color;
+      updateButtonTextColorUI(color);
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.btnTextColor = color;
+      }
+      updateLiveSitePreview();
+    });
+  }
+
+  if (btnTextColorPicker) {
+    btnTextColorPicker.addEventListener('input', (e) => {
+      const color = e.target.value;
+      builderState.btnTextColor = color;
+      updateButtonTextColorUI(color);
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.btnTextColor = color;
+      }
+      updateLiveSitePreview();
+    });
+  }
+
+  // Slider de Arredondamento da Borda dos Botões
+  const btnRadiusSlider = document.getElementById('editor-btn-radius-slider');
+  const btnRadiusVal = document.getElementById('editor-btn-radius-val');
+
+  if (btnRadiusSlider) {
+    btnRadiusSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      builderState.btnRadius = val;
+      if (btnRadiusVal) {
+        if (val >= 28) {
+          btnRadiusVal.textContent = 'Total';
+        } else if (val === 0) {
+          btnRadiusVal.textContent = '0px (Reto)';
+        } else {
+          btnRadiusVal.textContent = `${val}px`;
+        }
+      }
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.btnRadius = val;
+      }
+      updateLiveSitePreview();
+    });
+  }
+
+  // Sincronização e Handlers de Estilo Dobrável (Foldable Accordion) & Formatação de Texto
+  function syncTextFormatButtons() {
+    function setBtnActive(btn, isActive) {
+      if (!btn) return;
+      if (isActive) {
+        btn.classList.add('bg-[#4E96EF]', 'text-white', 'shadow-2xs');
+        btn.classList.remove('text-zinc-700', 'text-zinc-600', 'hover:bg-white');
+      } else {
+        btn.classList.remove('bg-[#4E96EF]', 'text-white', 'shadow-2xs');
+        btn.classList.add('text-zinc-700', 'hover:bg-white');
+      }
+    }
+
+    // Título: B, I, U
+    setBtnActive(document.getElementById('btn-title-bold'), builderState.titleBold);
+    setBtnActive(document.getElementById('btn-title-italic'), builderState.titleItalic);
+    setBtnActive(document.getElementById('btn-title-underline'), builderState.titleUnderline);
+
+    // Título: Alinhamento
+    const tAlign = builderState.titleAlign || 'center';
+    setBtnActive(document.getElementById('btn-title-align-left'), tAlign === 'left');
+    setBtnActive(document.getElementById('btn-title-align-center'), tAlign === 'center');
+    setBtnActive(document.getElementById('btn-title-align-right'), tAlign === 'right');
+
+    // Descrição: B, I, U
+    setBtnActive(document.getElementById('btn-desc-bold'), builderState.descBold);
+    setBtnActive(document.getElementById('btn-desc-italic'), builderState.descItalic);
+    setBtnActive(document.getElementById('btn-desc-underline'), builderState.descUnderline);
+
+    // Descrição: Alinhamento
+    const dAlign = builderState.descAlign || 'center';
+    setBtnActive(document.getElementById('btn-desc-align-left'), dAlign === 'left');
+    setBtnActive(document.getElementById('btn-desc-align-center'), dAlign === 'center');
+    setBtnActive(document.getElementById('btn-desc-align-right'), dAlign === 'right');
+  }
+
+  // Accordion Dobrável: Estilo do Título e Estilo da Descrição
+  const btnToggleTitle = document.getElementById('btn-toggle-title-style');
+  const btnToggleDesc = document.getElementById('btn-toggle-desc-style');
+  const contentTitle = document.getElementById('content-title-style');
+  const contentDesc = document.getElementById('content-desc-style');
+  const arrowTitle = document.getElementById('arrow-title-style');
+  const arrowDesc = document.getElementById('arrow-desc-style');
+
+  function toggleTitleAccordion() {
+    if (!contentTitle) return;
+    const isTitleOpen = !contentTitle.classList.contains('hidden');
+    if (isTitleOpen) {
+      contentTitle.classList.add('hidden');
+      if (arrowTitle) arrowTitle.classList.remove('rotate-90');
+    } else {
+      contentTitle.classList.remove('hidden');
+      if (arrowTitle) arrowTitle.classList.add('rotate-90');
+    }
+  }
+
+  function toggleDescAccordion() {
+    if (!contentDesc) return;
+    const isDescOpen = !contentDesc.classList.contains('hidden');
+    if (isDescOpen) {
+      contentDesc.classList.add('hidden');
+      if (arrowDesc) arrowDesc.classList.remove('rotate-90');
+    } else {
+      contentDesc.classList.remove('hidden');
+      if (arrowDesc) arrowDesc.classList.add('rotate-90');
+    }
+  }
+
+  if (btnToggleTitle) {
+    btnToggleTitle.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleTitleAccordion();
+    });
+  }
+
+  if (btnToggleDesc) {
+    btnToggleDesc.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleDescAccordion();
+    });
+  }
+
+  // Listeners para B, I, U e Alinhamento do Título
+  const btnTitleBold = document.getElementById('btn-title-bold');
+  const btnTitleItalic = document.getElementById('btn-title-italic');
+  const btnTitleUnderline = document.getElementById('btn-title-underline');
+  const btnTitleAlignLeft = document.getElementById('btn-title-align-left');
+  const btnTitleAlignCenter = document.getElementById('btn-title-align-center');
+  const btnTitleAlignRight = document.getElementById('btn-title-align-right');
+
+  if (btnTitleBold) {
+    btnTitleBold.addEventListener('click', () => {
+      builderState.titleBold = !builderState.titleBold;
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnTitleItalic) {
+    btnTitleItalic.addEventListener('click', () => {
+      builderState.titleItalic = !builderState.titleItalic;
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnTitleUnderline) {
+    btnTitleUnderline.addEventListener('click', () => {
+      builderState.titleUnderline = !builderState.titleUnderline;
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnTitleAlignLeft) {
+    btnTitleAlignLeft.addEventListener('click', () => {
+      builderState.titleAlign = 'left';
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnTitleAlignCenter) {
+    btnTitleAlignCenter.addEventListener('click', () => {
+      builderState.titleAlign = 'center';
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnTitleAlignRight) {
+    btnTitleAlignRight.addEventListener('click', () => {
+      builderState.titleAlign = 'right';
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+
+  // Listeners para B, I, U e Alinhamento da Descrição
+  const btnDescBold = document.getElementById('btn-desc-bold');
+  const btnDescItalic = document.getElementById('btn-desc-italic');
+  const btnDescUnderline = document.getElementById('btn-desc-underline');
+  const btnDescAlignLeft = document.getElementById('btn-desc-align-left');
+  const btnDescAlignCenter = document.getElementById('btn-desc-align-center');
+  const btnDescAlignRight = document.getElementById('btn-desc-align-right');
+
+  if (btnDescBold) {
+    btnDescBold.addEventListener('click', () => {
+      builderState.descBold = !builderState.descBold;
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descBold = builderState.descBold;
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnDescItalic) {
+    btnDescItalic.addEventListener('click', () => {
+      builderState.descItalic = !builderState.descItalic;
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descItalic = builderState.descItalic;
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnDescUnderline) {
+    btnDescUnderline.addEventListener('click', () => {
+      builderState.descUnderline = !builderState.descUnderline;
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descUnderline = builderState.descUnderline;
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnDescAlignLeft) {
+    btnDescAlignLeft.addEventListener('click', () => {
+      builderState.descAlign = 'left';
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descAlign = 'left';
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnDescAlignCenter) {
+    btnDescAlignCenter.addEventListener('click', () => {
+      builderState.descAlign = 'center';
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descAlign = 'center';
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+  if (btnDescAlignRight) {
+    btnDescAlignRight.addEventListener('click', () => {
+      builderState.descAlign = 'right';
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.descAlign = 'right';
+      syncTextFormatButtons();
+      updateLiveSitePreview();
+    });
+  }
+
+  // ==========================================
+  // CONTROLE DOS 4 SLOTS COM BOTÃO (+) E DROPDOWN DE OPÇÕES (MÁXIMO 4 CAIXINHAS)
+  // ==========================================
+  document.addEventListener('click', (e) => {
+    // 1. Clique no botão (+) de um slot
+    const addBtn = e.target.closest('.btn-slot-add');
+    if (addBtn) {
+      e.stopPropagation();
+      const slotIdx = addBtn.getAttribute('data-slot');
+      document.querySelectorAll('[id^="dropdown-slot-"]').forEach(dd => {
+        if (dd.id !== `dropdown-slot-${slotIdx}`) dd.classList.add('hidden');
+      });
+      const dd = document.getElementById(`dropdown-slot-${slotIdx}`);
+      if (dd) dd.classList.toggle('hidden');
+      return;
+    }
+
+    // 2. Clique em uma opção (Título ou Texto) do dropdown de um slot
+    const pickBtn = e.target.closest('.btn-slot-pick');
+    if (pickBtn) {
+      e.stopPropagation();
+      const slotIdx = parseInt(pickBtn.getAttribute('data-slot'), 10);
+      const type = pickBtn.getAttribute('data-type');
+
+      const dd = document.getElementById(`dropdown-slot-${slotIdx}`);
+      if (dd) dd.classList.add('hidden');
+
+      if (!builderState.slots) {
+        builderState.slots = [null, null, null, null];
+      }
+
+      const defaultContent = type === 'title'
+        ? (slotIdx === 2 ? 'Beatriz & Lucas' : (slotIdx === 0 ? 'Casamento' : 'Título'))
+        : (slotIdx === 0 ? '"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)' : (slotIdx === 1 ? 'COM A BÊNÇÃO DE DEUS,' : 'CONVIDAM VOCÊ PARA O SEU CASAMENTO'));
+
+      builderState.slots[slotIdx] = {
+        type: type,
+        content: defaultContent
+      };
+
+      updateLiveSitePreview();
+
+      // Foca automaticamente no campo adicionado para digitação imediata
+      setTimeout(() => {
+        const slotEl = document.getElementById(`invite-slot-${slotIdx}`);
+        const box = slotEl ? slotEl.querySelector('.editable-live-box') : null;
+        if (box) {
+          box.focus();
+          const range = document.createRange();
+          range.selectNodeContents(box);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      }, 70);
+      return;
+    }
+
+    // 3. Clique em Subir (↑)
+    const upBtn = e.target.closest('.btn-slot-up');
+    if (upBtn) {
+      e.stopPropagation();
+      const idx = parseInt(upBtn.getAttribute('data-slot'), 10);
+      if (idx > 0) {
+        const temp = builderState.slots[idx];
+        builderState.slots[idx] = builderState.slots[idx - 1];
+        builderState.slots[idx - 1] = temp;
+        updateLiveSitePreview();
+      }
+      return;
+    }
+
+    // 4. Clique em Descer (↓)
+    const downBtn = e.target.closest('.btn-slot-down');
+    if (downBtn) {
+      e.stopPropagation();
+      const idx = parseInt(downBtn.getAttribute('data-slot'), 10);
+      if (idx < 3) {
+        const temp = builderState.slots[idx];
+        builderState.slots[idx] = builderState.slots[idx + 1];
+        builderState.slots[idx + 1] = temp;
+        updateLiveSitePreview();
+      }
+      return;
+    }
+
+    // 5. Clique fora: fecha todos os dropdowns de slot abertos
+    if (!e.target.closest('.invite-slot-wrapper')) {
+      document.querySelectorAll('[id^="dropdown-slot-"]').forEach(dd => dd.classList.add('hidden'));
+    }
+  });
 
   // 5. Listeners para Templates Sugeridos (Featured Themes)
   document.querySelectorAll('#featured-themes-list .theme-card').forEach(card => {
@@ -1668,6 +2761,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cropAspectBadge = document.getElementById('crop-aspect-badge');
 
   let cropState = {
+    target: 'cover',
     x: 0,
     y: 0,
     zoom: 1,
@@ -1689,8 +2783,29 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetCropState() {
     cropState.x = 0;
     cropState.y = 0;
-    cropState.zoom = 1;
     cropState.rotation = 0;
+
+    if (cropImageTarget && cropViewportContainer) {
+      const vW = cropViewportContainer.clientWidth || 550;
+      const vH = cropViewportContainer.clientHeight || 320;
+      const nW = cropImageTarget.naturalWidth || 800;
+      const nH = cropImageTarget.naturalHeight || 600;
+
+      // Dimensiona para que a imagem inteira caiba visível no container de recorte
+      const fitScale = Math.min((vW * 0.95) / nW, (vH * 0.95) / nH, 1);
+      const baseW = Math.round(nW * fitScale);
+      const baseH = Math.round(nH * fitScale);
+
+      cropImageTarget.style.width = `${baseW}px`;
+      cropImageTarget.style.height = `${baseH}px`;
+      cropImageTarget.style.maxWidth = 'none';
+      cropImageTarget.style.maxHeight = 'none';
+
+      cropState.zoom = 1;
+    } else {
+      cropState.zoom = 1;
+    }
+
     updateCropTransform();
   }
 
@@ -1702,6 +2817,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
+          cropState.target = 'cover';
           cropState.rawImageSrc = event.target.result;
           cropState.fileName = file.name;
           
@@ -1709,6 +2825,25 @@ document.addEventListener('DOMContentLoaded', () => {
             cropImageTarget.src = cropState.rawImageSrc;
             cropImageTarget.onload = () => {
               resetCropState();
+              cropState.ratio = '16/9';
+              if (cropAspectBadge) cropAspectBadge.textContent = '16:9 Panorâmico';
+              document.querySelectorAll('.btn-crop-aspect').forEach(b => {
+                if (b.getAttribute('data-ratio') === '16/9') {
+                  b.classList.add('active', 'border-blue-600', 'bg-blue-50', 'text-blue-700');
+                  b.classList.remove('border-slate-200', 'text-slate-600');
+                } else {
+                  b.classList.remove('active', 'border-blue-600', 'bg-blue-50', 'text-blue-700');
+                  b.classList.add('border-slate-200', 'text-slate-600');
+                }
+              });
+              if (cropOverlayBox) {
+                cropOverlayBox.style.width = '85%';
+                cropOverlayBox.style.height = '60%';
+              }
+              const titleEl = document.querySelector('#modal-crop-cover h3');
+              if (titleEl) titleEl.textContent = 'Ajustar Foto de Capa';
+              const descEl = document.querySelector('#modal-crop-cover p');
+              if (descEl) descEl.textContent = 'Selecione e recorte o enquadramento perfeito para o cabeçalho do seu evento.';
               openModal(cropModal);
               showToast('Selecione e ajuste o enquadramento da sua foto de capa.', '✂️');
             };
@@ -1718,6 +2853,262 @@ document.addEventListener('DOMContentLoaded', () => {
         // Limpa valor do input para permitir selecionar o mesmo arquivo novamente
         inputCoverFile.value = '';
       }
+    });
+  }
+
+  // Listener para Botão Alterar Imagem de Capa no Live Preview
+  const btnChangeCoverImg = document.getElementById('btn-change-cover-img');
+  if (btnChangeCoverImg && inputCoverFile) {
+    btnChangeCoverImg.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      inputCoverFile.click();
+    });
+  }
+
+  // Listener para Adicionar Imagem de Capa a partir do Slot Vazio (+)
+  const coverEmptySlot = document.getElementById('cover-image-empty-slot');
+  if (coverEmptySlot && inputCoverFile) {
+    coverEmptySlot.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      inputCoverFile.click();
+    });
+  }
+
+  // Listener para Excluir Imagem de Capa (botão ✕)
+  const btnDeleteCoverImg = document.getElementById('btn-delete-cover-img');
+  if (btnDeleteCoverImg) {
+    btnDeleteCoverImg.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      builderState.coverImage = '';
+      builderState.hasCustomCoverImage = false;
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.coverImage = '';
+        activeEv.hasCustomCoverImage = false;
+      }
+      updateLiveSitePreview();
+      showToast('Foto de capa removida. Clique em + para adicionar uma nova.', '🗑️');
+    });
+  }
+
+  // Helper e Listeners para Imagem de Fundo do Convite
+  function updateBgImageUI(imgUrl) {
+    const thumb = document.getElementById('editor-bg-thumb-preview');
+    const icon = document.getElementById('editor-bg-placeholder-icon');
+    const btnRemove = document.getElementById('btn-remove-bg-image');
+    const uploadText = document.getElementById('editor-bg-upload-text');
+
+    if (imgUrl) {
+      if (thumb) {
+        thumb.src = imgUrl;
+        thumb.classList.remove('hidden');
+      }
+      if (icon) icon.classList.add('hidden');
+      if (btnRemove) btnRemove.classList.remove('hidden');
+      if (uploadText) uploadText.textContent = 'Alterar imagem de fundo';
+    } else {
+      if (thumb) {
+        thumb.src = '';
+        thumb.classList.add('hidden');
+      }
+      if (icon) icon.classList.remove('hidden');
+      if (btnRemove) btnRemove.classList.add('hidden');
+      if (uploadText) uploadText.textContent = 'Adicionar imagem de fundo';
+    }
+  }
+
+  const inputBgFile = document.getElementById('editor-bg-file-input');
+  if (inputBgFile) {
+    inputBgFile.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          builderState.bgImage = event.target.result;
+          const activeEv = getActiveEvent();
+          if (activeEv) activeEv.bgImage = event.target.result;
+          updateBgImageUI(event.target.result);
+          updateLiveSitePreview();
+          showToast('Imagem de fundo adicionada!', '🖼️');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  const btnRemoveBg = document.getElementById('btn-remove-bg-image');
+  if (btnRemoveBg) {
+    btnRemoveBg.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      builderState.bgImage = null;
+      const activeEv = getActiveEvent();
+      if (activeEv) activeEv.bgImage = null;
+      if (inputBgFile) inputBgFile.value = '';
+      updateBgImageUI(null);
+      updateLiveSitePreview();
+      showToast('Imagem de fundo removida.', '🗑️');
+    });
+  }
+
+  // Listener para Upload da Imagem do Local / Evento no Live Preview
+  const btnChangeVenueImg = document.getElementById('btn-change-venue-img');
+  const inputVenueFile = document.getElementById('venue-image-file-input');
+  if (btnChangeVenueImg && inputVenueFile) {
+    btnChangeVenueImg.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      inputVenueFile.click();
+    });
+
+    inputVenueFile.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          cropState.target = 'venue';
+          cropState.rawImageSrc = event.target.result;
+          cropState.fileName = file.name;
+          
+          if (cropImageTarget) {
+            cropImageTarget.src = cropState.rawImageSrc;
+            cropImageTarget.onload = () => {
+              resetCropState();
+              cropState.ratio = '1/1';
+              if (cropAspectBadge) cropAspectBadge.textContent = '1:1 Quadrado';
+              document.querySelectorAll('.btn-crop-aspect').forEach(b => {
+                if (b.getAttribute('data-ratio') === '1/1') {
+                  b.classList.add('active', 'border-blue-600', 'bg-blue-50', 'text-blue-700');
+                  b.classList.remove('border-slate-200', 'text-slate-600');
+                } else {
+                  b.classList.remove('active', 'border-blue-600', 'bg-blue-50', 'text-blue-700');
+                  b.classList.add('border-slate-200', 'text-slate-600');
+                }
+              });
+              if (cropOverlayBox) {
+                cropOverlayBox.style.width = '240px';
+                cropOverlayBox.style.height = '240px';
+              }
+              const titleEl = document.querySelector('#modal-crop-cover h3');
+              if (titleEl) titleEl.textContent = 'Ajustar Imagem do Evento / Local';
+              const descEl = document.querySelector('#modal-crop-cover p');
+              if (descEl) descEl.textContent = 'Ajuste o enquadramento quadrado perfeito para a imagem do seu evento.';
+              openModal(cropModal);
+              showToast('Ajuste o enquadramento quadrado da imagem.', '✂️');
+            };
+          }
+        };
+        reader.readAsDataURL(file);
+        inputVenueFile.value = '';
+      }
+    });
+  }
+
+  // Listener para Excluir Imagem do Evento / Local (botão ✕)
+  const btnDeleteVenueImg = document.getElementById('btn-delete-venue-img');
+  if (btnDeleteVenueImg) {
+    btnDeleteVenueImg.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      builderState.venueImage = '';
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.venueImage = '';
+      }
+      updateLiveSitePreview();
+      showToast('Imagem removida com sucesso. Clique em + para adicionar uma nova.', '🗑️');
+    });
+  }
+
+  // Listener para Adicionar Imagem a partir do Slot Vazio (+)
+  const venueEmptySlot = document.getElementById('venue-image-empty-slot');
+  if (venueEmptySlot && inputVenueFile) {
+    venueEmptySlot.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      inputVenueFile.click();
+    });
+  }
+
+  // Listener para Upload da Imagem de Fechamento / Rodapé do Casal
+  const btnChangeClosingImg = document.getElementById('btn-change-closing-img');
+  const inputClosingFile = document.getElementById('closing-image-file-input');
+  if (btnChangeClosingImg && inputClosingFile) {
+    btnChangeClosingImg.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      inputClosingFile.click();
+    });
+
+    inputClosingFile.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          cropState.target = 'closing';
+          cropState.rawImageSrc = event.target.result;
+          cropState.fileName = file.name;
+
+          if (cropImageTarget) {
+            cropImageTarget.src = cropState.rawImageSrc;
+            cropImageTarget.onload = () => {
+              resetCropState();
+              cropState.ratio = '16/9';
+              if (cropAspectBadge) cropAspectBadge.textContent = '16:9 Panorâmico';
+              document.querySelectorAll('.btn-crop-aspect').forEach(b => {
+                if (b.getAttribute('data-ratio') === '16/9') {
+                  b.classList.add('active', 'border-blue-600', 'bg-blue-50', 'text-blue-700');
+                  b.classList.remove('border-slate-200', 'text-slate-600');
+                } else {
+                  b.classList.remove('active', 'border-blue-600', 'bg-blue-50', 'text-blue-700');
+                  b.classList.add('border-slate-200', 'text-slate-600');
+                }
+              });
+              if (cropOverlayBox) {
+                cropOverlayBox.style.width = '85%';
+                cropOverlayBox.style.height = '60%';
+              }
+              const titleEl = document.querySelector('#modal-crop-cover h3');
+              if (titleEl) titleEl.textContent = 'Ajustar Imagem de Encerramento';
+              const descEl = document.querySelector('#modal-crop-cover p');
+              if (descEl) descEl.textContent = 'Ajuste o enquadramento perfeito para a imagem final do convite.';
+              openModal(cropModal);
+              showToast('Ajuste o enquadramento da imagem de encerramento.', '✂️');
+            };
+          }
+        };
+        reader.readAsDataURL(file);
+        inputClosingFile.value = '';
+      }
+    });
+  }
+
+  // Listener para Excluir Imagem de Encerramento (botão ✕)
+  const btnDeleteClosingImg = document.getElementById('btn-delete-closing-img');
+  if (btnDeleteClosingImg) {
+    btnDeleteClosingImg.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      builderState.closingImage = '';
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.closingImage = '';
+      }
+      updateLiveSitePreview();
+      showToast('Imagem de encerramento removida com sucesso. Clique em + para adicionar uma nova.', '🗑️');
+    });
+  }
+
+  // Listener para Adicionar Imagem a partir do Slot Vazio (+) de Encerramento
+  const closingEmptySlot = document.getElementById('closing-image-empty-slot');
+  if (closingEmptySlot && inputClosingFile) {
+    closingEmptySlot.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      inputClosingFile.click();
     });
   }
 
@@ -1820,13 +3211,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (btnCropZoomIn) {
     btnCropZoomIn.addEventListener('click', () => {
-      cropState.zoom = Math.min(3, cropState.zoom + 0.2);
+      cropState.zoom = Math.min(3, +(cropState.zoom + 0.15).toFixed(2));
       updateCropTransform();
     });
   }
   if (btnCropZoomOut) {
     btnCropZoomOut.addEventListener('click', () => {
-      cropState.zoom = Math.max(1, cropState.zoom - 0.2);
+      cropState.zoom = Math.max(0.4, +(cropState.zoom - 0.15).toFixed(2));
       updateCropTransform();
     });
   }
@@ -1856,7 +3247,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cropState.ratio = ratio;
 
       if (cropOverlayBox) {
-        if (ratio === '21/9') {
+        if (ratio === '1/1') {
+          cropOverlayBox.style.width = '240px';
+          cropOverlayBox.style.height = '240px';
+          if (cropAspectBadge) cropAspectBadge.textContent = '1:1 Quadrado';
+        } else if (ratio === '21/9') {
           cropOverlayBox.style.width = '90%';
           cropOverlayBox.style.height = '42%';
           if (cropAspectBadge) cropAspectBadge.textContent = '21:9 Ultra-Wide';
@@ -1886,7 +3281,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let targetWidth = 1920;
         let targetHeight = 1080;
 
-        if (cropState.ratio === '21/9') {
+        if (cropState.ratio === '1/1') {
+          targetWidth = 1200;
+          targetHeight = 1200;
+        } else if (cropState.ratio === '21/9') {
           targetHeight = 822;
         } else if (cropState.ratio === '4/3') {
           targetHeight = 1440;
@@ -1929,25 +3327,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
 
-        // Aplica na capa e atualiza preview em tempo real (Persistente)
-        builderState.hasCustomCoverImage = true;
-        builderState.coverImage = croppedDataUrl;
-        const activeEv = getActiveEvent();
-        if (activeEv) {
-          activeEv.coverImage = croppedDataUrl;
-          activeEv.hasCustomCoverImage = true;
-        }
-        const thumb = document.getElementById('editor-cover-preview-thumb');
-        const fileNameEl = document.getElementById('editor-cover-file-name');
-        const editorCoverThumb = document.getElementById('editor-cover-thumb-preview');
-        if (thumb) thumb.src = croppedDataUrl;
-        if (editorCoverThumb) editorCoverThumb.src = croppedDataUrl;
-        if (fileNameEl) fileNameEl.textContent = cropState.fileName || 'foto-capa-recortada.jpg';
+        if (cropState.target === 'venue') {
+          // Aplica na imagem do local / evento
+          builderState.venueImage = croppedDataUrl;
+          const activeEv = getActiveEvent();
+          if (activeEv) {
+            activeEv.venueImage = croppedDataUrl;
+          }
+          const venueImg = document.getElementById('live-preview-venue-img');
+          if (venueImg) venueImg.src = croppedDataUrl;
 
-        updateLiveSitePreview();
-        closeModal(cropModal);
-        showToast('Foto de capa recortada e aplicada com sucesso!', '✂️');
-        triggerConfetti();
+          updateLiveSitePreview();
+          closeModal(cropModal);
+          showToast('Imagem do local recortada e aplicada com sucesso!', '✨');
+          triggerConfetti();
+        } else if (cropState.target === 'closing') {
+          // Aplica na imagem de encerramento / rodapé do casal
+          builderState.closingImage = croppedDataUrl;
+          const activeEv = getActiveEvent();
+          if (activeEv) {
+            activeEv.closingImage = croppedDataUrl;
+          }
+          const closingImg = document.getElementById('live-preview-closing-img');
+          if (closingImg) closingImg.src = croppedDataUrl;
+
+          updateLiveSitePreview();
+          closeModal(cropModal);
+          showToast('Imagem de encerramento aplicada com sucesso!', '✨');
+          triggerConfetti();
+        } else {
+          // Aplica na capa e atualiza preview em tempo real (Persistente)
+          builderState.hasCustomCoverImage = true;
+          builderState.coverImage = croppedDataUrl;
+          const activeEv = getActiveEvent();
+          if (activeEv) {
+            activeEv.coverImage = croppedDataUrl;
+            activeEv.hasCustomCoverImage = true;
+          }
+          const thumb = document.getElementById('editor-cover-preview-thumb');
+          const fileNameEl = document.getElementById('editor-cover-file-name');
+          const editorCoverThumb = document.getElementById('editor-cover-thumb-preview');
+          if (thumb) thumb.src = croppedDataUrl;
+          if (editorCoverThumb) editorCoverThumb.src = croppedDataUrl;
+          if (fileNameEl) fileNameEl.textContent = cropState.fileName || 'foto-capa-recortada.jpg';
+
+          updateLiveSitePreview();
+          closeModal(cropModal);
+          showToast('Foto de capa recortada e aplicada com sucesso!', '✂️');
+          triggerConfetti();
+        }
       };
       img.src = cropState.rawImageSrc;
     });
@@ -2309,7 +3737,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tableBody.innerHTML = `
         <tr>
           <td colspan="4" class="py-6 text-center text-slate-400">
-            Nenhum convidado cadastrado ainda. Cadastre convidados no menu "Seus Convidados" para enviar convites online.
+            Nenhum convidado cadastrado ainda. Cadastre convidados no menu "Lista de Convidados" para enviar convites online.
           </td>
         </tr>
       `;
@@ -2447,35 +3875,96 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 6. LISTA DE PRESENTES (Meus Presentes & Presentes Recebidos)
   // ==========================================
-  // Funções do Drawer de Adicionar Presente
-  function openGiftDrawer() {
-    const drawer = document.getElementById('drawer-add-gift');
-    const backdrop = document.getElementById('gift-drawer-backdrop');
-    if (drawer) {
-      drawer.classList.remove('hidden');
-      drawer.style.setProperty('display', 'flex', 'important');
-      drawer.classList.add('open');
-    }
-    if (backdrop) {
-      backdrop.classList.remove('hidden');
-      backdrop.style.setProperty('display', 'block', 'important');
-      backdrop.classList.add('open');
+  function switchGiftModalTab(tabKey) {
+    const tabCustom = document.getElementById('tab-btn-gift-custom');
+    const tabRandom = document.getElementById('tab-btn-gift-random');
+    const panelCustom = document.getElementById('gift-modal-panel-custom');
+    const panelRandom = document.getElementById('gift-modal-panel-random');
+
+    if (tabKey === 'random') {
+      if (tabCustom) {
+        tabCustom.className = 'flex-1 py-1.5 px-3 rounded-lg text-zinc-500 hover:text-zinc-800 transition-all cursor-pointer';
+      }
+      if (tabRandom) {
+        tabRandom.className = 'flex-1 py-1.5 px-3 rounded-lg text-zinc-900 bg-white shadow-xs transition-all cursor-pointer';
+      }
+      if (panelCustom) panelCustom.classList.add('hidden');
+      if (panelRandom) panelRandom.classList.remove('hidden');
+      renderQuickGiftsInModal();
+    } else {
+      if (tabCustom) {
+        tabCustom.className = 'flex-1 py-1.5 px-3 rounded-lg text-zinc-900 bg-white shadow-xs transition-all cursor-pointer';
+      }
+      if (tabRandom) {
+        tabRandom.className = 'flex-1 py-1.5 px-3 rounded-lg text-zinc-500 hover:text-zinc-800 transition-all cursor-pointer';
+      }
+      if (panelCustom) panelCustom.classList.remove('hidden');
+      if (panelRandom) panelRandom.classList.add('hidden');
     }
   }
 
+  function openGiftModal(initialTab = 'custom') {
+    const modal = document.getElementById('modal-add-gift');
+    if (!modal) return;
+    switchGiftModalTab(initialTab);
+    openModal(modal);
+  }
+
+  function closeGiftModal() {
+    const modal = document.getElementById('modal-add-gift');
+    if (modal) closeModal(modal);
+  }
+
+  function openGiftDrawer() {
+    openGiftModal('custom');
+  }
+
   function closeGiftDrawer() {
-    const drawer = document.getElementById('drawer-add-gift');
-    const backdrop = document.getElementById('gift-drawer-backdrop');
-    if (drawer) {
-      drawer.classList.remove('open');
-      drawer.style.setProperty('display', 'none', 'important');
-      drawer.classList.add('hidden');
-    }
-    if (backdrop) {
-      backdrop.classList.remove('open');
-      backdrop.style.setProperty('display', 'none', 'important');
-      backdrop.classList.add('hidden');
-    }
+    closeGiftModal();
+  }
+
+  function renderQuickGiftsInModal() {
+    const container = document.getElementById('modal-quick-gifts-list');
+    if (!container) return;
+    container.innerHTML = '';
+
+    randomGiftsPool.forEach(item => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'w-full p-2.5 rounded-xl border border-zinc-200/80 hover:border-[#4E96EF] bg-zinc-50/70 hover:bg-blue-50/40 flex items-center justify-between text-left transition-all group cursor-pointer';
+      card.innerHTML = `
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-zinc-200">
+          <div class="min-w-0">
+            <h5 class="text-xs font-bold text-zinc-900 group-hover:text-[#4E96EF] truncate transition-colors">${item.title}</h5>
+            <span class="text-[11px] font-bold text-emerald-600">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+          </div>
+        </div>
+        <span class="text-xs font-bold text-[#4E96EF] flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">+ Adicionar</span>
+      `;
+      card.addEventListener('click', () => {
+        const activeEvent = getActiveEvent();
+        if (!activeEvent.giftList) activeEvent.giftList = [];
+        activeEvent.giftList.unshift({
+          id: `gift-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          title: item.title,
+          category: item.category,
+          price: item.price,
+          type: 'virtual',
+          marketplaceUrl: null,
+          received: 0,
+          status: 'Disponível para Presentear',
+          image: item.image,
+          contributorsCount: 0
+        });
+        activeEvent.presentesRecebidos += 1;
+        closeGiftModal();
+        renderHostGifts();
+        updateAllCelebrationData();
+        triggerConfetti();
+      });
+      container.appendChild(card);
+    });
   }
 
   const randomGiftsPool = [
@@ -2534,60 +4023,93 @@ document.addEventListener('DOMContentLoaded', () => {
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
     if (totalValueEl) totalValueEl.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    // 2. Card para Criar Presente Aleatório (AO LADO ESQUERDO DE CRIAR PRESENTE)
+    // 2. Primeiro Card: Adicionar Aleatório
     const randomCard = document.createElement('div');
-    randomCard.className = 'group rounded-2xl border-2 border-dashed border-slate-200 hover:border-indigo-500 bg-white hover:bg-indigo-50/20 p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all aspect-square shadow-sm hover:shadow-md';
+    randomCard.className = 'group bg-white pt-2.5 px-4 pb-5 sm:pt-3 sm:px-5 sm:pb-6 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[420px] sm:min-h-[460px] lg:min-h-[500px]';
     randomCard.innerHTML = `
-      <div class="w-14 h-14 rounded-full bg-indigo-50 border-2 border-indigo-200 shadow-sm flex items-center justify-center text-indigo-600 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all">
-        <!-- Ícone Random / Shuffle -->
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M22 18h-5.9c-1.3 0-2.5-.7-3.3-1.8l-.5-.8"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="m18 14 4 4-4 4"/>
-        </svg>
+      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0">
+        <span class="w-4 h-4 p-1 block"></span>
       </div>
-      <span class="font-bold text-slate-800 group-hover:text-indigo-600 text-xs sm:text-sm block transition-colors leading-tight mt-3">
-        Presente Aleatório
-      </span>
+      <div class="w-full flex-1 flex flex-col items-center justify-center p-4 my-auto">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#4E96EF] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#4E96EF] group-hover:scale-110 transition-all shadow-2xs">
+          <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M22 18h-5.9c-1.3 0-2.5-.7-3.3-1.8l-.5-.8"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="m18 14 4 4-4 4"/>
+          </svg>
+        </div>
+        <h4 class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-[#4E96EF] mt-5 transition-colors font-sans">
+          Adicionar Aleatório
+        </h4>
+        <p class="text-xs text-zinc-400 mt-1">Gera ou escolhe presentes prontos com 1 clique</p>
+      </div>
+      <div class="w-full pt-4 mt-auto opacity-0 pointer-events-none">
+        <p class="text-sm font-bold">-</p>
+      </div>
     `;
-    randomCard.addEventListener('click', createRandomGift);
+    randomCard.addEventListener('click', () => openGiftModal('random'));
     container.appendChild(randomCard);
 
-    // 3. Card para Criar Presente (SEGUNDA OPÇÃO)
+    // 4. Segundo Card: Adicionar Presente
     const addCard = document.createElement('div');
-    addCard.className = 'group rounded-2xl border-2 border-dashed border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all aspect-square shadow-sm hover:shadow-md';
+    addCard.className = 'group bg-white pt-2.5 px-4 pb-5 sm:pt-3 sm:px-5 sm:pb-6 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[420px] sm:min-h-[460px] lg:min-h-[500px]';
     addCard.innerHTML = `
-      <div class="w-14 h-14 rounded-full bg-blue-50 border-2 border-blue-200 shadow-sm flex items-center justify-center text-blue-600 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-        </svg>
+      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0">
+        <span class="w-4 h-4 p-1 block"></span>
       </div>
-      <span class="font-bold text-slate-800 group-hover:text-blue-600 text-xs sm:text-sm block transition-colors leading-tight mt-3">
-        Criar presente
-      </span>
+      <div class="w-full flex-1 flex flex-col items-center justify-center p-4 my-auto">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#4E96EF] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#4E96EF] group-hover:scale-110 transition-all shadow-2xs">
+          <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+        </div>
+        <h4 class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-[#4E96EF] mt-5 transition-colors font-sans">
+          Adicionar Presente
+        </h4>
+        <p class="text-xs text-zinc-400 mt-1">Personalize nome, foto, valor e categoria</p>
+      </div>
+      <div class="w-full pt-4 mt-auto opacity-0 pointer-events-none">
+        <p class="text-sm font-bold">-</p>
+      </div>
     `;
-    addCard.addEventListener('click', openGiftDrawer);
+    addCard.addEventListener('click', () => openGiftModal('custom'));
     container.appendChild(addCard);
 
-    // 3. Renderiza os cards de presentes no formato limpo da referência (imagem principal no topo, nome e preço embaixo)
+    // 5. Renderiza os cards de presentes (5 por linha no desktop, 2 no mobile, sem gaps, imagens maiores)
     giftList.forEach(gift => {
       const card = document.createElement('div');
-      card.className = 'group flex flex-col items-center text-center transition-all relative';
+      card.className = 'group bg-white pt-2.5 px-4 pb-5 sm:pt-3 sm:px-5 sm:pb-6 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 cursor-pointer min-h-[420px] sm:min-h-[460px] lg:min-h-[500px]';
 
       card.innerHTML = `
-        <div class="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-          <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        <!-- Topo do Card: Coração de Favorito à direita -->
+        <div class="w-full flex items-center justify-end text-zinc-400 mb-1">
+          <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-1 cursor-pointer" title="Favoritar">
+            <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Imagem do Produto em Destaque com Botão X no Canto Superior Direito -->
+        <div class="relative w-full flex-1 flex items-center justify-center p-1 sm:p-2 my-auto min-h-[220px] sm:min-h-[260px] lg:min-h-[300px]">
+          <img src="${gift.image}" alt="${gift.title}" class="w-full h-56 sm:h-64 lg:h-72 object-contain group-hover:scale-105 transition-transform duration-300">
           
-          <button type="button" class="btn-delete-gift absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 hover:bg-rose-500 text-slate-500 hover:text-white shadow-md flex items-center justify-center text-xs font-bold transition-all opacity-0 group-hover:opacity-100" title="Excluir presente" data-gift-id="${gift.id}">
+          <!-- Botão X de exclusão no canto superior direito da imagem -->
+          <button type="button" class="btn-delete-gift absolute top-1 right-1 sm:top-2 sm:right-2 w-7 h-7 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-xs font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80" title="Excluir presente" data-gift-id="${gift.id}">
             ✕
           </button>
         </div>
 
-        <div class="pt-3 w-full px-1">
-          <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-snug line-clamp-2" title="${gift.title}">${gift.title}</h4>
-          <div class="text-xs sm:text-sm font-semibold text-slate-600 mt-1">R$ ${gift.price.toFixed(2).replace('.', ',')}</div>
+        <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->
+        <div class="w-full pt-4 space-y-1.5 mt-auto">
+          <h4 class="text-xs sm:text-sm font-serif italic text-zinc-800 line-clamp-2 px-1 leading-snug" title="${gift.title}">
+            ${gift.title}
+          </h4>
+          <p class="text-sm sm:text-base font-bold text-zinc-900 mt-1">
+            R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
         </div>
       `;
 
@@ -2599,6 +4121,20 @@ document.addEventListener('DOMContentLoaded', () => {
           activeEvent.giftList = activeEvent.giftList.filter(g => g.id !== gift.id);
           renderHostGifts();
           showToast(`Presente "${gift.title}" excluído da lista.`, '🗑️');
+        });
+      }
+
+      // Evento de favoritar presente
+      const btnFav = card.querySelector('.btn-fav-gift');
+      if (btnFav) {
+        btnFav.addEventListener('click', (e) => {
+          e.stopPropagation();
+          btnFav.classList.toggle('text-rose-500');
+          btnFav.classList.toggle('text-zinc-300');
+          const svg = btnFav.querySelector('svg');
+          if (svg) {
+            svg.classList.toggle('fill-rose-500');
+          }
         });
       }
 
@@ -2665,15 +4201,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHostAddGift = document.getElementById('btn-host-add-gift');
   if (btnHostAddGift) {
-    btnHostAddGift.addEventListener('click', openGiftDrawer);
+    btnHostAddGift.addEventListener('click', () => openGiftModal('custom'));
   }
 
-  const btnCloseGiftDrawer = document.getElementById('btn-close-gift-drawer');
-  const giftDrawerBackdrop = document.getElementById('gift-drawer-backdrop');
-  if (btnCloseGiftDrawer) btnCloseGiftDrawer.addEventListener('click', closeGiftDrawer);
-  if (giftDrawerBackdrop) giftDrawerBackdrop.addEventListener('click', closeGiftDrawer);
+  const btnCloseGiftModal = document.getElementById('btn-close-gift-modal');
+  if (btnCloseGiftModal) btnCloseGiftModal.addEventListener('click', closeGiftModal);
 
-  // Adicionar Presente Fictício à comemoração ativa
+  // Alternância das abas dentro do Modal de Adicionar Presente
+  const tabBtnGiftCustom = document.getElementById('tab-btn-gift-custom');
+  if (tabBtnGiftCustom) {
+    tabBtnGiftCustom.addEventListener('click', () => switchGiftModalTab('custom'));
+  }
+
+  const tabBtnGiftRandom = document.getElementById('tab-btn-gift-random');
+  if (tabBtnGiftRandom) {
+    tabBtnGiftRandom.addEventListener('click', () => switchGiftModalTab('random'));
+  }
+
+  // Botão "Gerar Presente Aleatório" dentro do Modal
+  const btnModalTriggerRandom = document.getElementById('btn-modal-trigger-random');
+  if (btnModalTriggerRandom) {
+    btnModalTriggerRandom.addEventListener('click', () => {
+      createRandomGift();
+      closeGiftModal();
+      showToast('Presente aleatório gerado e adicionado à lista!', '🎲');
+      triggerConfetti();
+    });
+  }
+
+  // Adicionar Presente à comemoração ativa
   const formAddGift = document.getElementById('form-add-gift');
   if (formAddGift) {
     // Preset image picker
@@ -2681,10 +4237,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-gift-img-preset').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.btn-gift-img-preset').forEach(b => {
-          b.classList.remove('active', 'border-blue-600');
+          b.classList.remove('active', 'border-[#4E96EF]');
           b.classList.add('border-transparent');
         });
-        btn.classList.add('active', 'border-blue-600');
+        btn.classList.add('active', 'border-[#4E96EF]');
         btn.classList.remove('border-transparent');
         const imgSrc = btn.getAttribute('data-img-src');
         if (imgSrc) {
@@ -2718,10 +4274,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       activeEvent.presentesRecebidos += 1;
-      closeGiftDrawer();
+      formAddGift.reset();
+      closeGiftModal();
       renderHostGifts();
       updateAllCelebrationData();
-      showToast(`Presente fictício "${title}" adicionado à lista!`, '🎁');
+      showToast(`Presente "${title}" adicionado à lista!`, '🎁');
       triggerConfetti();
     });
   }
@@ -2810,7 +4367,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 7. SEUS CONVIDADOS & RSVP (Layout idêntico ao Casar.com)
+  // 7. LISTA DE CONVIDADOS & RSVP (Layout idêntico ao Casar.com)
   // ==========================================
   let currentRsvpFilter = 'all';
 
@@ -3381,6 +4938,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Função para avançar da escolha do tipo para o formulário
   function proceedToEventForm(typeKey, typeLabel) {
     selectedNewType = typeKey || 'custom';
+    createdCoverImageSrc = getDefaultCoverForEventType(selectedNewType, typeLabel);
+
+    const pageNewCoverImg = document.getElementById('page-new-event-cover-img');
+    if (pageNewCoverImg) {
+      pageNewCoverImg.src = createdCoverImageSrc;
+    }
+
     if (modalSelectEventType) closeModal(modalSelectEventType);
 
     openCreateEventPage(false, true);
@@ -3388,7 +4952,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputName = document.getElementById('page-new-event-name');
     if (inputName) {
       if (!inputName.value) {
-        inputName.placeholder = `Ex: ${typeLabel || 'Novo Evento'} de Beatriz & Lucas`;
+        if (selectedNewType === 'birthday') {
+          inputName.placeholder = 'Ex: Aniversário de Lucas';
+        } else {
+          inputName.placeholder = `Ex: ${typeLabel || 'Novo Evento'} de Beatriz & Lucas`;
+        }
       }
       setTimeout(() => inputName.focus(), 150);
     }
@@ -3558,7 +5126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         daysLeft: 90,
         slug: slug,
         publicUrl: `https://love.com.br/${slug}`,
-        coverImage: createdCoverImageSrc,
+        coverImage: createdCoverImageSrc || getDefaultCoverForEventType(selectedNewType, name),
         theme: themeSelect ? themeSelect.options[themeSelect.selectedIndex].text : 'Minimalista',
         colorAccent: '#4E96EF',
         totalArrecadado: 0.00,
@@ -3566,7 +5134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         totalConvidados: 50,
         presentesRecebidos: 0,
         siteSections: {
-          heroHeadline: `Bem-vindo ao ${name}!`,
+          heroHeadline: selectedNewType === 'birthday' ? 'CONVIDA VOCÊ PARA COMEMORAR O SEU ANIVERSÁRIO' : `Bem-vindo ao ${name}!`,
           heroSubtitle: desc || 'Estamos muito felizes em celebrar este momento com você.',
           aboutText: 'Criamos este espaço para compartilhar todos os detalhes com nossos convidados especiais.',
           inviteText: `Celebração no dia ${startDate} às ${startTime}. Aguardamos sua presença!`,
@@ -3850,7 +5418,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeB2BItemId = 'venue-villa-bisutti';
   let b2bSearchQuery = '';
 
+  let b2bMarketplaceInitialized = false;
   function initB2BMarketplace() {
+    if (b2bMarketplaceInitialized) return;
+    b2bMarketplaceInitialized = true;
+
     // 12.1 Navegação por Abas Principais B2B (Explorar, Mensagens, Favoritos)
     const b2bNavTabs = document.querySelectorAll('.tab-b2b-nav');
     b2bNavTabs.forEach(tab => {
@@ -4367,7 +5939,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let activeB2BConversationId = 'mariana-assessoria';
 
-  const b2bConversationsData = [
+  const DEFAULT_B2B_CONVERSATIONS = [
     {
       id: 'mariana-assessoria',
       name: 'Mariana & Co. Assessoria',
@@ -4456,6 +6028,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
+  let b2bConversationsData = [];
+  try {
+    const savedConvs = localStorage.getItem('love_b2b_chat_conversations');
+    if (savedConvs) {
+      b2bConversationsData = JSON.parse(savedConvs);
+    }
+  } catch (err) {
+    console.error('Erro ao ler conversas salvas', err);
+  }
+  if (!b2bConversationsData || !b2bConversationsData.length) {
+    b2bConversationsData = JSON.parse(JSON.stringify(DEFAULT_B2B_CONVERSATIONS));
+  }
+
+  function saveB2BConversations() {
+    try {
+      localStorage.setItem('love_b2b_chat_conversations', JSON.stringify(b2bConversationsData));
+      window.dispatchEvent(new CustomEvent('love:chat-updated', { detail: { conversations: b2bConversationsData } }));
+    } catch (err) {
+      console.error('Erro ao persistir conversas do chat', err);
+    }
+  }
+
+  // Hub global de chat Love - Conecta esta tela com a futura tela dos assessores
+  window.LoveChatService = {
+    getConversations: () => b2bConversationsData,
+    getConversation: (id) => b2bConversationsData.find(c => c.id === id),
+    getActiveConversationId: () => activeB2BConversationId,
+    setActiveConversationId: (id) => {
+      activeB2BConversationId = id;
+      const c = b2bConversationsData.find(conv => conv.id === id);
+      if (c) c.unread = 0;
+      saveB2BConversations();
+      renderB2BChat();
+    },
+    sendMessage: (convId, text, sender = 'me', attachment = null) => {
+      const conv = b2bConversationsData.find(c => c.id === convId) || b2bConversationsData[0];
+      if (!conv) return null;
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const msgObj = {
+        sender: sender, // 'me' (noivos) ou 'them' (assessor)
+        text: text || '',
+        time: timeStr,
+        attachment: attachment || null
+      };
+
+      conv.messages.push(msgObj);
+      conv.lastMessage = text || (attachment ? (attachment.type === 'image' ? '📷 Foto enviada' : `📎 ${attachment.name}`) : '');
+      conv.time = timeStr;
+
+      // Reordena conversa para o topo da lista
+      const idx = b2bConversationsData.indexOf(conv);
+      if (idx > 0) {
+        b2bConversationsData.splice(idx, 1);
+        b2bConversationsData.unshift(conv);
+      }
+
+      saveB2BConversations();
+      renderB2BChat();
+      return msgObj;
+    }
+  };
+
+  // Sincronização em tempo real entre diferentes abas ou portais (Noivos <-> Assessor)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'love_b2b_chat_conversations' && e.newValue) {
+      try {
+        b2bConversationsData = JSON.parse(e.newValue);
+        renderB2BChat();
+      } catch (err) {
+        console.error('Erro ao sincronizar chat entre abas', err);
+      }
+    }
+  });
+
   function switchB2BView(viewId, targetVendorId) {
     const exploreView = document.getElementById('b2b-explore-view');
     const messagesView = document.getElementById('b2b-messages-view');
@@ -4490,6 +6138,8 @@ document.addEventListener('DOMContentLoaded', () => {
         b.classList.toggle('active', b.textContent.includes(targetLabel));
       });
     }
+
+    initB2BMarketplace();
 
     if (viewId === 'messages') {
       document.body.classList.add('b2b-chat-mode');
@@ -4844,6 +6494,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const activeConv = b2bConversationsData.find(c => c.id === activeB2BConversationId) || b2bConversationsData[0];
     if (!activeConv) return;
+    activeB2BConversationId = activeConv.id;
 
     if (nameEl) nameEl.textContent = activeConv.name;
     if (statusEl) statusEl.textContent = `${activeConv.category} • ${activeConv.online ? 'Online agora' : 'Online recentemente'}`;
@@ -4851,24 +6502,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     container.innerHTML = `
       <div class="flex justify-center my-2">
-        <span class="px-3 py-1 bg-white border border-zinc-200 text-zinc-400 text-[11px] rounded-full shadow-2xs">Hoje, 31 de Agosto</span>
+        <span class="px-3 py-1 bg-white border border-zinc-200 text-zinc-400 text-[11px] rounded-full shadow-2xs">Hoje</span>
       </div>
     `;
 
     activeConv.messages.forEach(msg => {
       const isMe = msg.sender === 'me';
       const row = document.createElement('div');
-      row.className = `flex items-end gap-2.5 ${isMe ? 'justify-end' : 'justify-start'}`;
+      row.className = `flex items-end gap-2.5 ${isMe ? 'justify-end' : 'justify-start'} animate-fade-in`;
+
+      let attachmentHTML = '';
+      if (msg.attachment) {
+        if (msg.attachment.type === 'image') {
+          attachmentHTML = `
+            <div class="mt-2 rounded-xl overflow-hidden max-w-xs border border-white/20 shadow-xs cursor-pointer">
+              <img src="${msg.attachment.url}" alt="${msg.attachment.name || 'Foto'}" class="w-full h-auto object-cover max-h-56 hover:scale-102 transition-transform">
+            </div>
+          `;
+        } else {
+          attachmentHTML = `
+            <div class="mt-2 inline-flex items-center gap-2.5 px-3 py-2 rounded-xl ${isMe ? 'bg-white/15' : 'bg-zinc-100'} border border-zinc-200/50 text-xs">
+              <span class="text-base">📄</span>
+              <div class="min-w-0">
+                <p class="font-medium truncate max-w-[170px]">${msg.attachment.name || 'Arquivo'}</p>
+                ${msg.attachment.size ? `<span class="text-[10px] opacity-75">${msg.attachment.size}</span>` : ''}
+              </div>
+            </div>
+          `;
+        }
+      }
 
       if (isMe) {
         row.innerHTML = `
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-            <div class="bg-[#4E96EF] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left">
-              ${msg.text}
+            <div class="bg-[#4E96EF] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left" style="color: #FFFFFF !important;">
+              ${msg.text ? `<p class="whitespace-pre-wrap break-words text-white" style="color: #FFFFFF !important;">${msg.text}</p>` : ''}
+              ${attachmentHTML}
             </div>
             <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
               <span>${msg.time || 'Agora'}</span>
-              <span class="text-blue-500 font-bold">✓✓</span>
+              <span class="text-[#4E96EF] font-bold">✓✓</span>
             </div>
           </div>
           <div class="w-7 h-7 rounded-full bg-zinc-800 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-2xs">
@@ -4880,7 +6553,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-full object-cover flex-shrink-0 border border-zinc-200 mb-4">
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
             <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
-              ${msg.text}
+              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${msg.text}</p>` : ''}
+              ${attachmentHTML}
             </div>
             <span class="text-[10px] text-zinc-400 pl-1 block">${msg.time || 'Agora'}</span>
           </div>
@@ -4897,61 +6571,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('b2b-chat-form');
     const chatInput = document.getElementById('b2b-chat-input');
     const chatSearch = document.getElementById('b2b-chat-search-input');
+    const chatAttachBtn = document.getElementById('b2b-chat-attach-btn');
+    const chatFileInput = document.getElementById('b2b-chat-file-input');
 
-    if (chatSearch) {
+    if (chatSearch && !chatSearch.dataset.bound) {
+      chatSearch.dataset.bound = "true";
       chatSearch.addEventListener('input', (e) => {
         renderB2BChatContacts(e.target.value);
       });
     }
 
-    if (chatForm && chatInput) {
+    if (chatAttachBtn && chatFileInput && !chatAttachBtn.dataset.bound) {
+      chatAttachBtn.dataset.bound = "true";
+      chatAttachBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        chatFileInput.click();
+      });
+
+      chatFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const convId = activeB2BConversationId || (b2bConversationsData[0] && b2bConversationsData[0].id);
+        if (!convId) return;
+
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            window.LoveChatService.sendMessage(convId, '', 'me', {
+              type: 'image',
+              name: file.name,
+              url: evt.target.result
+            });
+            showToast(`Foto "${file.name}" enviada no chat!`, '📷');
+          };
+          reader.readAsDataURL(file);
+        } else {
+          window.LoveChatService.sendMessage(convId, `Documento compartilhado: ${file.name}`, 'me', {
+            type: 'file',
+            name: file.name,
+            size: (file.size / 1024).toFixed(1) + ' KB'
+          });
+          showToast(`Arquivo "${file.name}" compartilhado!`, '📎');
+        }
+        chatFileInput.value = '';
+      });
+    }
+
+    if (chatForm && !chatForm.dataset.bound) {
+      chatForm.dataset.bound = "true";
+
       chatForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (!chatInput) return;
         const text = chatInput.value.trim();
         if (!text) return;
 
-        const activeConv = b2bConversationsData.find(c => c.id === activeB2BConversationId);
-        if (!activeConv) return;
+        const convId = activeB2BConversationId || (b2bConversationsData[0] && b2bConversationsData[0].id);
+        if (!convId) return;
 
-        const now = new Date();
-        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-        activeConv.messages.push({
-          sender: 'me',
-          text: text,
-          time: timeStr
-        });
-        activeConv.lastMessage = text;
-        activeConv.time = timeStr;
-
+        // 1. Envia mensagem do casal
+        window.LoveChatService.sendMessage(convId, text, 'me');
         chatInput.value = '';
-        renderB2BChat();
 
-        // Resposta automatizada realista do fornecedor
+        // 2. Resposta automatizada realista do assessor/fornecedor (caso não esteja com assessor conectado)
         setTimeout(() => {
           const replies = [
             'Perfeito! Recebemos sua mensagem e entraremos em contato com todos os detalhes.',
             'Excelente! Já estamos preparando o orçamento atualizado para vocês.',
             'Maravilha! Fico à total disposição para agendarmos uma apresentação.',
-            'Combinado! Em instantes enviaremos a proposta formatada em PDF.'
+            'Combinado! Em instantes enviaremos a proposta formatada em PDF.',
+            'Anotado! Já incluímos no cronograma de alinhamento.'
           ];
           const randomReply = replies[Math.floor(Math.random() * replies.length)];
-
-          activeConv.messages.push({
-            sender: 'them',
-            text: randomReply,
-            time: timeStr
-          });
-          activeConv.lastMessage = randomReply;
-          renderB2BChat();
-        }, 1100);
-      });
-    }
-
-    const chatAttachBtn = document.getElementById('b2b-chat-attach-btn');
-    if (chatAttachBtn) {
-      chatAttachBtn.addEventListener('click', () => {
-        showToast('Selecione um arquivo ou foto para anexar à conversa.', '📎');
+          window.LoveChatService.sendMessage(convId, randomReply, 'them');
+        }, 1200);
       });
     }
   }
@@ -5508,6 +7202,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // Inicializa módulo B2B e sistema de chat messenger
+  initB2BMarketplace();
 
   // Início padrão na página pública
   switchView('public');

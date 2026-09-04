@@ -1,0 +1,17 @@
+{
+  "name": "love-platform",
+  "version": "1.0.0",
+  "description": "Love - Plataforma de Casamento e Eventos",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "love",
+    "wedding",
+    "events"
+  ],
+  "author": "",
+  "license": "ISC"
+}

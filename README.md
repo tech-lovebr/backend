@@ -57,12 +57,14 @@ Love/
 
 ## 🚀 3. Como Visualizar no Navegador
 
-O servidor local já está ativo no host:
+O servidor local de alta performance está ativo no host:
 - **URL Local:** `http://localhost:8090/`
 
-Para reiniciar ou rodar em outra porta:
+Para iniciar ou reiniciar o servidor:
 ```bash
-python3 -m http.server 8090 --directory Love
+npm start
+# ou
+node server.js
 ```
 
 ---

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funções — Portal do Fornecedor Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#4E96EF">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="font-sans" data-page="funcoes">
+
+  <div class="b2b-shell">
+    <div id="shell-sidebar"></div>
+
+    <div class="b2b-main">
+      <div id="shell-topbar"></div>
+
+      <main class="b2b-content">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-header-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
+              <h2 class="text-base font-bold text-zinc-900">Funções</h2>
+            </div>
+            <button type="button" id="member-add-btn" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Convidar pessoa
+            </button>
+          </div>
+          <p class="text-sm text-zinc-500 mb-5" style="margin-top:-0.75rem;">Adicione pessoas da sua equipe para acessar a gestão da sua conta e defina o que cada uma pode ver ou editar.</p>
+
+          <div class="overflow-x-auto -mx-1">
+            <table class="leads-table w-full">
+              <thead>
+                <tr><th>Pessoa</th><th>Função</th><th>Acesso</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody id="team-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal convidar/editar pessoa -->
+  <div class="modal-backdrop" id="member-modal">
+    <div class="modal-card">
+      <div class="flex items-center justify-between mb-5">
+        <h3 id="member-modal-title" class="text-base font-bold text-zinc-900">Convidar pessoa</h3>
+        <button type="button" id="member-modal-close" class="text-zinc-400 hover:text-zinc-700" aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <form id="member-form" class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="member-name" class="field-label">Nome</label>
+            <input id="member-name" type="text" class="field-input" placeholder="Ex: Marcos Vinícius">
+          </div>
+          <div>
+            <label for="member-email" class="field-label">E-mail</label>
+            <input id="member-email" type="email" class="field-input" placeholder="pessoa@empresa.com.br">
+          </div>
+        </div>
+
+        <div>
+          <label for="member-role" class="field-label">Função</label>
+          <select id="member-role" class="field-select">
+            <option value="Administrador">Administrador</option>
+            <option value="Operacional" selected>Operacional</option>
+            <option value="Financeiro">Financeiro</option>
+            <option value="Visualizador">Visualizador</option>
+            <option value="Personalizado">Personalizado</option>
+          </select>
+          <p id="member-role-desc" class="role-template-desc"></p>
+        </div>
+
+        <div>
+          <label class="field-label mb-1">Permissões (áreas que essa pessoa pode acessar)</label>
+          <div class="permission-grid" id="member-permissions"></div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button type="submit" class="btn-primary">Salvar</button>
+          <button type="button" id="member-modal-cancel" class="btn-secondary">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/funcoes.js"></script>
+</body>
+</html>

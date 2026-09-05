@@ -71,9 +71,9 @@ function renderAgenda() {
 
   if (listEl) {
     const sorted = [...B2B_DATA.proximosEventos].sort((a, b) => a.day - b.day);
-    const accentByStatus = { confirmado: '#4E96EF', 'visita técnica': '#B45309', reunião: '#7E22CE' };
+    const accentByStatus = { confirmado: '#537bae', 'visita técnica': '#B45309', reunião: '#7E22CE' };
     listEl.innerHTML = sorted.map(ev => `
-      <a href="agenda.html" class="agenda-item" style="border-left-color:${accentByStatus[ev.status] || '#4E96EF'};">
+      <a href="agenda.html" class="agenda-item" style="border-left-color:${accentByStatus[ev.status] || '#537bae'};">
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-zinc-900 truncate">${ev.client} · ${ev.event}</p>
           <p class="text-xs text-zinc-500 truncate mt-0.5">Dia ${ev.day} · ${ev.local}</p>

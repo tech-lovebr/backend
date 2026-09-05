@@ -4,14 +4,14 @@
    ========================================================================== */
 
 :root {
-  --primary-color: #4E96EF;
-  --primary-blue: #4E96EF;
-  --primary-blue-hover: #3A80D8;
-  --primary-gradient: linear-gradient(135deg, #4E96EF 0%, #3A80D8 100%);
+  --primary-color: #537bae;
+  --primary-blue: #537bae;
+  --primary-blue-hover: #416799;
+  --primary-gradient: linear-gradient(135deg, #537bae 0%, #416799 100%);
   
-  --secondary-color: #F7B99E;
-  --secondary-peach: #F7B99E;
-  --secondary-hover: #E5A487;
+  --secondary-color: #5c7aaa;
+  --secondary-peach: #5c7aaa;
+  --secondary-hover: #4e6891;
   
   --coral-accent: #E11D48;
   --bg-dashboard: #FFFFFF;
@@ -25,14 +25,18 @@
 
   --navbar-height-desktop: 76px;
   --navbar-height-mobile: 60px;
-  --rail-width-desktop: 68px;
+  --rail-width-desktop: 80px;
   --drawer-width-desktop: 240px;
   --bottom-bar-height-mobile: 60px;
+
+  /* Border Radius Tokens */
+  --radius-card: 10px;
+  --radius-control: 12px;
 }
 
 .text-logo-blue,
 .color-logo-blue {
-  color: #4E96EF !important;
+  color: #537bae !important;
 }
 
 /* Reset & Base */
@@ -83,9 +87,9 @@ p:not(footer p) {
   line-height: 1.6;
 }
 
-/* Footer Global: Fundo Azul Oficial Love #4E96EF e Textos 100% Brancos */
+/* Footer Global: Fundo Azul Oficial Love #537bae e Textos 100% Brancos */
 footer {
-  background-color: #4E96EF !important;
+  background-color: #537bae !important;
   border-top-color: rgba(255, 255, 255, 0.15) !important;
 }
 
@@ -119,16 +123,40 @@ footer button:hover {
 }
 
 /* ==========================================================================
-   PADRONIZAÇÃO: BORDER RADIUS MÍNIMO EM TODAS AS CAIXAS DA PLATAFORMA (4px)
+   PADRONIZAÇÃO GLOBAL DE BORDER RADIUS
+   --radius-card: 10px — cards, tabelas, modal (presentes, convidados confirmados, guia de primeiros passos, etc.)
+   --radius-control: 12px — botões, campos de formulário, item de menu do sidebar, ícones de métrica
    ========================================================================== */
-.rounded-3xl,
-.rounded-2xl,
-.rounded-xl,
-.rounded-lg,
-.rounded-md,
-.rounded,
-.rounded-sm {
-  border-radius: 4px !important;
+
+/* 1. Cards, Tabelas, Modais e Painéis: 10px */
+.card,
+.dashboard-card,
+.metric-kpi-item,
+.metric-card,
+.ticket-card,
+.modal-container-custom,
+.modal-card-custom,
+.glass-dropdown,
+.gift-fee-card,
+.theme-card,
+.border-gradient-wrapper,
+.border-gradient-wrapper-glow,
+.appearance-card-block,
+#quick-start-guide-widget,
+#quick-start-all-done-banner,
+.table-container,
+table,
+.gifts-card,
+.guest-card,
+.vendor-card,
+.rsvp-card,
+.gift-drawer,
+.guest-details-drawer,
+.contracted-vendor-drawer,
+.rounded-3xl:not(button):not(input):not(select):not(textarea):not(.rail-icon-btn):not(#btn-user-account-menu):not(.metric-icon-box):not(.rounded-full):not([class*="rounded-full"]),
+.rounded-2xl:not(button):not(input):not(select):not(textarea):not(.rail-icon-btn):not(#btn-user-account-menu):not(.metric-icon-box):not(.rounded-full):not([class*="rounded-full"]),
+.rounded-xl:not(button):not(input):not(select):not(textarea):not(.rail-icon-btn):not(#btn-user-account-menu):not(.metric-icon-box):not([onclick*="click"]):not(.rounded-full):not([class*="rounded-full"]) {
+  border-radius: var(--radius-card, 10px) !important;
 }
 
 .rounded-t-3xl,
@@ -137,8 +165,8 @@ footer button:hover {
 .rounded-t-lg,
 .rounded-t-md,
 .rounded-t {
-  border-top-left-radius: 4px !important;
-  border-top-right-radius: 4px !important;
+  border-top-left-radius: var(--radius-card, 10px) !important;
+  border-top-right-radius: var(--radius-card, 10px) !important;
 }
 
 .rounded-b-3xl,
@@ -147,8 +175,8 @@ footer button:hover {
 .rounded-b-lg,
 .rounded-b-md,
 .rounded-b {
-  border-bottom-left-radius: 4px !important;
-  border-bottom-right-radius: 4px !important;
+  border-bottom-left-radius: var(--radius-card, 10px) !important;
+  border-bottom-right-radius: var(--radius-card, 10px) !important;
 }
 
 .rounded-l-3xl,
@@ -157,8 +185,8 @@ footer button:hover {
 .rounded-l-lg,
 .rounded-l-md,
 .rounded-l {
-  border-top-left-radius: 4px !important;
-  border-bottom-left-radius: 4px !important;
+  border-top-left-radius: var(--radius-card, 10px) !important;
+  border-bottom-left-radius: var(--radius-card, 10px) !important;
 }
 
 .rounded-r-3xl,
@@ -167,21 +195,8 @@ footer button:hover {
 .rounded-r-lg,
 .rounded-r-md,
 .rounded-r {
-  border-top-right-radius: 4px !important;
-  border-bottom-right-radius: 4px !important;
-}
-
-/* Todas as Caixas, Cards, Dropdowns e Modais da Plataforma */
-.metric-kpi-item,
-.ticket-card,
-.metric-card,
-.modal-card-custom,
-.glass-dropdown,
-.gift-fee-card,
-.theme-card,
-.border-gradient-wrapper,
-.border-gradient-wrapper-glow {
-  border-radius: 4px !important;
+  border-top-right-radius: var(--radius-card, 10px) !important;
+  border-bottom-right-radius: var(--radius-card, 10px) !important;
 }
 
 /* Borda (stroke) das caixas em cinza bem claro */
@@ -199,22 +214,26 @@ footer button:hover {
   margin-bottom: 0 !important;
 }
 
-/* Todos os Botões, Inputs, Selects e Textareas com Border Radius Mínimo (4px) */
-button:not(.rail-icon-btn):not(#btn-close-sub-drawer-mobile):not(.rounded-full):not([class*="rounded-full"]),
+/* 2. Controles: Botões, Campos de Formulário, Menu do Sidebar e Ícones de Métrica: 12px */
+button:not(#btn-close-sub-drawer-mobile):not(.rounded-full):not([class*="rounded-full"]),
 .btn-brand,
 .btn-white,
 .btn-cta-coral,
 .btn-trigger-register,
+.rail-icon-btn,
+#btn-user-account-menu,
 input:not([type="checkbox"]):not([type="radio"]):not(.rounded-full):not([class*="rounded-full"]),
 select,
-textarea {
-  border-radius: 4px !important;
-  font-size: 0.875rem;
-  font-weight: 500;
+textarea,
+.metric-icon-box,
+[class*="p-3.5 rounded-xl"],
+[class*="p-3 rounded-xl"],
+[class*="rounded-xl"][onclick*="click"] {
+  border-radius: var(--radius-control, 12px) !important;
 }
 
 .btn-text-format {
-  border-radius: 4px !important;
+  border-radius: var(--radius-control, 12px) !important;
   font-size: 0.75rem !important;
   font-weight: 600 !important;
   padding: 0 !important;
@@ -223,7 +242,7 @@ textarea {
 
 .btn-title-align,
 .btn-desc-align {
-  border-radius: 4px !important;
+  border-radius: var(--radius-control, 12px) !important;
   padding: 0 !important;
   min-width: 0 !important;
 }
@@ -232,7 +251,7 @@ textarea {
 .ticket-card {
   position: relative;
   background-color: #FFFFFF;
-  border-radius: 4px !important;
+  border-radius: var(--radius-card, 10px) !important;
 }
 
 .ticket-notch {
@@ -382,19 +401,51 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   width: calc(100% - var(--rail-width-desktop)) !important;
   right: 0 !important;
   z-index: 50 !important;
-  background-color: #FFFFFF !important;
-  border-bottom: 1px solid var(--border-light) !important;
+  background-color: #537bae !important;
+  background: linear-gradient(105deg, #537bae 0%, #486fa1 45%, #385b88 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 20px -2px rgba(35, 62, 94, 0.28) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   padding: 0 1.5rem !important;
 }
 
+.dashboard-top-navbar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+#btn-dash-header-chat svg,
+#btn-notifications-menu svg {
+  width: 23px !important;
+  height: 23px !important;
+  stroke-width: 2.15px !important;
+}
+
+#btn-dash-header-chat svg *,
+#btn-notifications-menu svg * {
+  stroke-width: 2.15px !important;
+}
+
+/* Bolinhas de Notificações e Chat/Mensagens na Cor Secundária (#27394f) */
+.badge-header-chat,
+.badge-header-notifications,
+.badge-chat-dot {
+  background-color: #27394f !important;
+}
+
 /* 2. Narrow Icon Rail (Leftmost Sidebar on Desktop) */
 .sidebar-icon-rail {
-  width: var(--rail-width-desktop) !important; /* 68px */
-  background-color: #4E96EF !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+  width: var(--rail-width-desktop) !important; /* 80px */
+  background-color: #FAFAFA !important;
+  border-right: 1px solid #E4E4E7 !important;
   position: fixed !important;
   top: 0 !important;
   bottom: 0 !important;
@@ -405,9 +456,31 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   flex-direction: column !important;
   justify-content: space-between !important;
   align-items: center !important;
-  padding-top: calc(var(--navbar-height-desktop) + 1.125rem) !important; /* ~94px: Home icon starts right below header line */
+  padding-top: 0 !important;
   padding-bottom: 1.25rem !important;
   transition: all 0.3s ease;
+}
+
+.sidebar-brand-top {
+  width: 100% !important;
+  height: var(--navbar-height-desktop) !important; /* 76px - aligns with header */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-bottom: 1px solid #E4E4E7 !important;
+  background-color: #FAFAFA !important;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-brand-top img {
+  width: 36px !important;
+  height: 36px !important;
+  object-fit: contain !important;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sidebar-brand-top a:hover img {
+  transform: scale(1.08);
 }
 
 .sidebar-icon-rail > div:first-child {
@@ -419,17 +492,17 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
 }
 
 .rail-icon-btn {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 16px !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: var(--radius-control, 12px) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: #FFFFFF !important;
+  color: #71717A !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   cursor: pointer !important;
   pointer-events: auto !important;
-  border: none !important;
+  border: 1px solid transparent !important;
   background: transparent !important;
   position: relative;
   flex-shrink: 0 !important;
@@ -437,55 +510,72 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
 }
 
 .rail-icon-btn svg {
-  width: 22px !important;
-  height: 22px !important;
-  color: #FFFFFF !important;
-  stroke: #FFFFFF !important;
-  transition: transform 0.2s ease;
+  width: 23px !important;
+  height: 23px !important;
+  color: #71717A !important;
+  stroke: #71717A !important;
+  stroke-width: 2.15px !important;
+  transition: transform 0.2s ease, color 0.2s ease, stroke 0.2s ease;
 }
 
-/* Hover: fundo translúcido sutil e suave */
+.rail-icon-btn svg *,
+#btn-user-account-menu svg * {
+  stroke-width: 2.15px !important;
+}
+
+/* Hover: fundo sutil suave */
 .rail-icon-btn:hover {
-  color: #FFFFFF !important;
-  background-color: rgba(255, 255, 255, 0.18) !important;
+  color: #18181B !important;
+  background-color: #F4F4F5 !important;
   transform: translateY(-1px);
 }
 
-.rail-icon-btn:hover svg {
-  color: #FFFFFF !important;
-  stroke: #FFFFFF !important;
+.rail-icon-btn:hover svg,
+.rail-icon-btn:hover svg * {
+  color: #18181B !important;
+  stroke: #18181B !important;
 }
 
 .rail-icon-btn:active {
   transform: scale(0.96);
 }
 
-/* Ícone ativo: quadrado branco puro (#FFFFFF) com ícone azul (#4E96EF) */
+/* Ícone ativo: card branco puro (#FFFFFF) com borda sutil e ícone azul (#537bae) */
 .rail-icon-btn.active {
   background-color: #FFFFFF !important;
-  color: #4E96EF !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  color: #537bae !important;
+  border: 1px solid #E4E4E7 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 
-.rail-icon-btn.active svg {
-  color: #4E96EF !important;
-  stroke: #4E96EF !important;
+.rail-icon-btn.active svg,
+.rail-icon-btn.active svg * {
+  color: #537bae !important;
+  stroke: #537bae !important;
+  stroke-width: 2.25px !important;
 }
 
 .rail-icon-btn.active:hover {
   background-color: #FFFFFF !important;
-  color: #3A80D8 !important;
+  color: #416799 !important;
+  border-color: #CBD5E1 !important;
   transform: translateY(-1px);
 }
 
-/* Botão Perfil no final da barra (quadrado translúcido esbranquiçado) */
+.rail-icon-btn.active:hover svg,
+.rail-icon-btn.active:hover svg * {
+  color: #416799 !important;
+  stroke: #416799 !important;
+}
+
+/* Botão Perfil no final da barra (quadrado sutil em harmonia com offwhite) */
 #btn-user-account-menu {
-  background-color: rgba(255, 255, 255, 0.22) !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  border-radius: 16px !important;
-  width: 46px !important;
-  height: 46px !important;
+  background-color: #F4F4F5 !important;
+  color: #71717A !important;
+  border: 1px solid #E4E4E7 !important;
+  border-radius: var(--radius-control, 12px) !important;
+  width: 48px !important;
+  height: 48px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -493,21 +583,25 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
 }
 
 #btn-user-account-menu svg {
-  width: 22px !important;
-  height: 22px !important;
-  color: #FFFFFF !important;
-  stroke: #FFFFFF !important;
+  width: 23px !important;
+  height: 23px !important;
+  color: #71717A !important;
+  stroke: #71717A !important;
+  stroke-width: 2.15px !important;
 }
 
 #btn-user-account-menu:hover {
-  background-color: rgba(255, 255, 255, 0.35) !important;
-  color: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: #537bae !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
   transform: translateY(-1px);
 }
 
-#btn-user-account-menu:hover svg {
-  color: #FFFFFF !important;
-  stroke: #FFFFFF !important;
+#btn-user-account-menu:hover svg,
+#btn-user-account-menu:hover svg * {
+  color: #537bae !important;
+  stroke: #537bae !important;
 }
 
 /* 3. Secondary Sub-sidebar (Flyout Drawer) */
@@ -645,15 +739,19 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
     left: 0 !important;
     right: 0 !important;
     border-right: none !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-top: 1px solid #E4E4E7 !important;
     flex-direction: row !important;
     justify-content: space-around !important;
     align-items: center !important;
     padding: 0 0.5rem !important;
     padding-top: 0 !important;
     z-index: 50 !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12) !important;
-    background-color: #4E96EF !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05) !important;
+    background-color: #FAFAFA !important;
+  }
+
+  .sidebar-brand-top {
+    display: none !important;
   }
 
   .sidebar-icon-rail > div:first-child {
@@ -692,10 +790,10 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
     border-radius: 9999px !important;
     background: #FFFFFF !important;
     background-color: #FFFFFF !important;
-    color: #4E96EF !important;
+    color: #537bae !important;
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2) !important;
     transform: translateY(-14px) !important;
-    border: 3.5px solid #4E96EF !important;
+    border: 3.5px solid #537bae !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -706,8 +804,8 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   .sidebar-icon-rail .rail-icon-btn.mobile-center-edit svg {
     width: 22px !important;
     height: 22px !important;
-    color: #4E96EF !important;
-    stroke: #4E96EF !important;
+    color: #537bae !important;
+    stroke: #537bae !important;
   }
 
   .sidebar-icon-rail .rail-icon-btn[data-rail-tab="edit-site"]:active,
@@ -716,7 +814,7 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active {
     background: #F8FAFC !important;
     background-color: #F8FAFC !important;
-    color: #3A80D8 !important;
+    color: #416799 !important;
   }
 
   .sidebar-icon-rail .rail-icon-btn[data-rail-tab="wallet"] {
@@ -832,8 +930,8 @@ textarea,
 }
 
 .music-track-url:focus {
-  border-color: #4E96EF !important;
-  box-shadow: 0 0 0 1px #4E96EF !important;
+  border-color: #537bae !important;
+  box-shadow: 0 0 0 1px #537bae !important;
 }
 
 .music-track-placement {
@@ -860,8 +958,8 @@ textarea,
 }
 
 .music-track-placement:focus {
-  border-color: #4E96EF !important;
-  box-shadow: 0 0 0 1px #4E96EF !important;
+  border-color: #537bae !important;
+  box-shadow: 0 0 0 1px #537bae !important;
 }
 
 /* Alturas uniformes para Cor do Fundo e Estilo dos Botões */
@@ -906,7 +1004,7 @@ input[class*="pl-12"], input.pl-12 { padding-left: 3rem !important; }
 input.rounded-full, input[class*="rounded-full"] { border-radius: 9999px !important; }
 input.rounded-xl, input[class*="rounded-xl"],
 input.rounded-2xl, input[class*="rounded-2xl"],
-input.rounded-lg, input[class*="rounded-lg"] { border-radius: 4px !important; }
+input.rounded-lg, input[class*="rounded-lg"] { border-radius: var(--radius-control, 12px) !important; }
 
 /* Slug & Nested Transparent Inputs */
 #page-new-event-slug,
@@ -1006,7 +1104,7 @@ label,
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 0.875rem;
-  border-radius: 6px !important; /* rounded-md */
+  border-radius: var(--radius-control, 12px) !important;
   padding: 0.5rem 1rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1030,7 +1128,7 @@ label,
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 0.875rem;
-  border-radius: 6px !important; /* rounded-md */
+  border-radius: var(--radius-control, 12px) !important;
   padding: 0.5rem 1rem;
   border: 1px solid #E4E4E7; /* border-zinc-200 */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -1052,7 +1150,7 @@ label,
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 0.875rem;
-  border-radius: 6px !important; /* rounded-md */
+  border-radius: var(--radius-control, 12px) !important;
   padding: 0.625rem 1.25rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
@@ -1183,7 +1281,7 @@ label,
   position: absolute;
   width: 28rem;
   height: 28rem;
-  background: radial-gradient(circle, rgba(78, 150, 239, 0.18) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(83, 123, 174, 0.18) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 70%);
   filter: blur(80px);
   border-radius: 9999px;
   pointer-events: none;
@@ -1220,7 +1318,7 @@ label,
 }
 
 .border-gradient-wrapper-glow {
-  background: linear-gradient(135deg, rgba(78, 150, 239, 0.4) 0%, rgba(139, 92, 246, 0.2) 50%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(83, 123, 174, 0.4) 0%, rgba(139, 92, 246, 0.2) 50%, rgba(255, 255, 255, 0.05) 100%);
   padding: 1px;
   border-radius: 1.5rem;
 }
@@ -1232,7 +1330,7 @@ label,
 
 .hover-lift-glow:hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 14px 34px -6px rgba(78, 150, 239, 0.25) !important;
+  box-shadow: 0 14px 34px -6px rgba(83, 123, 174, 0.25) !important;
 }
 
 .hover-lift-purple:hover {
@@ -1616,7 +1714,7 @@ body.editor-split-mode #editor-form-column {
 }
 
 .invite-slot-box-empty:hover {
-  border-color: #4E96EF !important;
+  border-color: #537bae !important;
   background-color: rgba(250, 250, 250, 0.85) !important;
 }
 
@@ -1656,8 +1754,8 @@ body.editor-split-mode #editor-form-column {
 
 .invite-slot-wrapper.drag-over {
   border-radius: 8px;
-  background-color: rgba(78, 150, 239, 0.08) !important;
-  box-shadow: 0 0 0 2px #4E96EF !important;
+  background-color: rgba(83, 123, 174, 0.08) !important;
+  box-shadow: 0 0 0 2px #537bae !important;
 }
 
 .slot-drag-handle {
@@ -1678,7 +1776,7 @@ body.editor-split-mode #editor-form-column {
 .invite-slot-wrapper:hover .slot-drag-handle,
 .invite-slot-box-empty:hover .slot-drag-handle {
   opacity: 1;
-  color: #4E96EF;
+  color: #537bae;
 }
 
 /* Setas de Subir e Descer ao passar o mouse */
@@ -1715,18 +1813,18 @@ body.editor-split-mode #editor-form-column {
 }
 
 .btn-slot-move:hover {
-  background-color: #4E96EF;
-  border-color: #4E96EF;
+  background-color: #537bae;
+  border-color: #537bae;
   color: #FFFFFF;
 }
 
 .editable-live-box:hover {
-  border-color: #4E96EF !important;
+  border-color: #537bae !important;
   background-color: transparent !important;
 }
 
 .editable-live-box:hover::after {
-  color: #4E96EF !important;
+  color: #537bae !important;
   opacity: 1;
   transform: scaleX(-1) scale(1.15);
 }
@@ -1734,16 +1832,16 @@ body.editor-split-mode #editor-form-column {
 /* Modo de Edição Ativo (Foco / Clique) */
 .editable-live-box:focus,
 .editable-live-box.is-editing {
-  border-color: #4E96EF !important;
+  border-color: #537bae !important;
   border-style: solid !important;
   background-color: transparent !important;
   outline: none !important;
-  box-shadow: 0 0 0 2px rgba(78, 150, 239, 0.18) !important;
+  box-shadow: 0 0 0 2px rgba(83, 123, 174, 0.18) !important;
 }
 
 .editable-live-box:focus::after,
 .editable-live-box.is-editing::after {
-  color: #4E96EF !important;
+  color: #537bae !important;
   opacity: 1;
   transform: scaleX(-1);
 }
@@ -1780,8 +1878,7 @@ body.editor-split-mode .dashboard-main-area > footer {
    CONVIDADOS & B2B FULLSCREEN (Barra de Busca Grudada no Topo e Sidebar)
    ========================================================================== */
 body.rsvp-mode .dashboard-main-area,
-body.b2b-mode .dashboard-main-area,
-body.gifts-mode .dashboard-main-area {
+body.b2b-mode .dashboard-main-area {
   margin-left: calc(var(--rail-width-desktop) + var(--drawer-width-desktop)) !important;
   padding-top: var(--navbar-height-desktop) !important;
   padding-left: 0 !important;
@@ -1792,14 +1889,12 @@ body.gifts-mode .dashboard-main-area {
 }
 
 body.rsvp-mode .dashboard-main-area.full-width,
-body.b2b-mode .dashboard-main-area.full-width,
-body.gifts-mode .dashboard-main-area.full-width {
+body.b2b-mode .dashboard-main-area.full-width {
   margin-left: var(--rail-width-desktop) !important;
 }
 
 body.rsvp-mode .dashboard-main-area > .dashboard-content-wrapper,
-body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper,
-body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper {
+body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   padding-left: 0 !important;
@@ -1810,16 +1905,14 @@ body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper {
 }
 
 body.rsvp-mode .dashboard-main-area > .dashboard-content-wrapper > *,
-body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper > *,
-body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper > * {
+body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper > * {
   margin-top: 0 !important;
 }
 
 body.rsvp-mode #tab-rsvp,
 body.rsvp-mode #tab-rsvp-messages,
 body.rsvp-mode #tab-rsvp-broadcast,
-body.b2b-mode #tab-b2b,
-body.gifts-mode #tab-gifts {
+body.b2b-mode #tab-b2b {
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
@@ -1828,12 +1921,74 @@ body.gifts-mode #tab-gifts {
 }
 
 body.rsvp-mode .dashboard-main-area > footer,
-body.b2b-mode .dashboard-main-area > footer,
-body.gifts-mode .dashboard-main-area > footer {
+body.b2b-mode .dashboard-main-area > footer {
   width: 100% !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
   margin-top: 2.5rem !important;
+}
+
+/* Presentes: Respiro padronizado de 2rem nas laterais e topo limpo */
+body.gifts-mode .dashboard-main-area {
+  margin-left: calc(var(--rail-width-desktop) + var(--drawer-width-desktop)) !important;
+  padding-top: calc(var(--navbar-height-desktop) + 1.75rem) !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  padding-bottom: 3.5rem !important;
+  min-height: 100vh !important;
+  background-color: #FFFFFF !important;
+  box-sizing: border-box !important;
+}
+
+body.gifts-mode .dashboard-main-area.full-width {
+  margin-left: var(--rail-width-desktop) !important;
+}
+
+body.gifts-mode #tab-gifts {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Grade Responsiva com Estética Premium para Meus Presentes (Máximo de 5 colunas em tela cheia) */
+body.gifts-mode #host-gifts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  gap: 0.875rem !important;
+}
+
+@media (min-width: 440px) {
+  body.gifts-mode #host-gifts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  body.gifts-mode #host-gifts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  body.gifts-mode #host-gifts-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  body.gifts-mode #host-gifts-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  body.gifts-mode #host-gifts-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 1.25rem !important;
+  }
 }
 
 /* Chat Full-Bleed Messenger (Sem Rodapé, Tela Completa) */
@@ -1928,7 +2083,7 @@ body.b2b-chat-mode .dashboard-main-area > footer {
 /* =========================================================
    CONTROLE DESLIZANTE MODERNO (Soft Inset Track + 3D Disc Thumb)
 /* =========================================================
-   CONTROLE DESLIZANTE SLIM (Track Suave + Bolinha Azul #4E96EF)
+   CONTROLE DESLIZANTE SLIM (Track Suave + Bolinha Azul #537bae)
    ========================================================= */
 input[type="range"].love-modern-slider {
   -webkit-appearance: none;
@@ -1963,25 +2118,25 @@ input[type="range"].love-modern-slider::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #4E96EF !important;
+  background: #537bae !important;
   border: 2.5px solid #FFFFFF !important;
-  box-shadow: 0 2px 6px rgba(78, 150, 239, 0.45), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 6px rgba(83, 123, 174, 0.45), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
   cursor: grab;
   margin-top: -6px; /* (6px track - 18px thumb) / 2 = -6px */
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input[type="range"].love-modern-slider::-webkit-slider-thumb:hover {
-  background: #3A80D8 !important;
+  background: #416799 !important;
   transform: scale(1.15);
-  box-shadow: 0 3px 8px rgba(78, 150, 239, 0.6), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 3px 8px rgba(83, 123, 174, 0.6), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
 }
 
 input[type="range"].love-modern-slider::-webkit-slider-thumb:active {
   cursor: grabbing;
   background: #2563EB !important;
   transform: scale(0.95);
-  box-shadow: 0 1px 4px rgba(78, 150, 239, 0.5) !important;
+  box-shadow: 0 1px 4px rgba(83, 123, 174, 0.5) !important;
 }
 
 /* Firefox */
@@ -1998,17 +2153,17 @@ input[type="range"].love-modern-slider::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #4E96EF !important;
+  background: #537bae !important;
   border: 2.5px solid #FFFFFF !important;
-  box-shadow: 0 2px 6px rgba(78, 150, 239, 0.45), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 6px rgba(83, 123, 174, 0.45), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
   cursor: grab;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input[type="range"].love-modern-slider::-moz-range-thumb:hover {
-  background: #3A80D8 !important;
+  background: #416799 !important;
   transform: scale(1.15);
-  box-shadow: 0 3px 8px rgba(78, 150, 239, 0.6) !important;
+  box-shadow: 0 3px 8px rgba(83, 123, 174, 0.6) !important;
 }
 
 input[type="range"].love-modern-slider::-moz-range-thumb:active {
@@ -2016,4 +2171,104 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
   background: #2563EB !important;
   transform: scale(0.95);
 }
+
+/* ==========================================================================
+   Botões Salvar Alterações em Aparência (#27394f)
+   ========================================================================== */
+#btn-save-edit-site,
+.btn-save-appearance,
+#btn-save-header-edit,
+#btn-save-mobile-edit {
+  background-color: #27394f !important;
+  color: #FFFFFF !important;
+}
+
+#btn-save-edit-site:hover,
+.btn-save-appearance:hover,
+#btn-save-header-edit:hover,
+#btn-save-mobile-edit:hover {
+  background-color: #1d2b3c !important;
+}
+
+/* Abas de Navegação RSVP: Sublinhado 100% Reto sem Curvas nas Pontas, Thicker (3px) e Cor #27394f */
+.rsvp-tab-link,
+button.rsvp-tab-link {
+  border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 3px solid transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
+}
+
+.rsvp-tab-link.active,
+button.rsvp-tab-link.active {
+  border-bottom: 3px solid #27394f !important;
+  border-color: #27394f !important;
+  border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  -moz-border-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  color: #27394f !important;
+}
+
+/* Cards de Compartilhamento Social (WhatsApp, Facebook, Twitter) */
+.share-social-card {
+  background-color: #FAFAFA !important;
+  border: 1px solid #E5E7EB !important;
+  color: #5c7aaa !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.share-social-card:hover {
+  background-color: #F4F4F5 !important;
+  border-color: #5c7aaa !important;
+  color: #4e6891 !important;
+}
+
+.share-social-card svg {
+  color: #5c7aaa !important;
+  fill: currentColor !important;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.share-social-card:hover svg {
+  color: #4e6891 !important;
+  transform: scale(1.08);
+}
+
+.share-social-card span {
+  color: #5c7aaa !important;
+  transition: color 0.2s ease;
+}
+
+.share-social-card:hover span {
+  color: #4e6891 !important;
+}
+
+/* Botão Salvar Local (Modal de Local) - Cor #27394f */
+#btn-modal-save-venue {
+  background-color: #27394f !important;
+  color: #FFFFFF !important;
+}
+
+#btn-modal-save-venue:hover {
+  background-color: #1d2b3c !important;
+}
+
+
+
 

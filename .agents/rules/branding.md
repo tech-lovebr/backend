@@ -1,14 +1,18 @@
 # Regras e Diretrizes Visuais da Plataforma Love
 
 ## Cores Oficiais da Marca
-- **Cor Primária**: `#4E96EF` (Azul Love / `#4e96ef`)
-  - Variação Hover: `#3A80D8`
-  - Token CSS: `--primary-color: #4E96EF;` ou `--primary-blue: #4E96EF;`
+- **Cor Primária**: `#537bae` (Azul Love / `#537bae`)
+  - Variação Hover: `#416799`
+  - Token CSS: `--primary-color: #537bae;` ou `--primary-blue: #537bae;`
   - Classes / Destaques: Botões principais, links ativos, badges de destaque, barras de progresso ativas.
 
-- **Cor Secundária**: `#F7B99E` (Pêssego / Rosa Suave / `#f7b99e`)
-  - Variação Hover: `#E5A487`
-  - Token CSS: `--secondary-color: #F7B99E;` ou `--secondary-peach: #F7B99E;`
+- **Cor Secundária**: `#5c7aaa` (Azul Secundário / `#5c7aaa`)
+  - Variação Hover: `#4e6891`
+  - Token CSS: `--secondary-color: #5c7aaa;` ou `--secondary-peach: #5c7aaa;`
   - Aplicações: Acentos secundários, fundos suaves, elementos de apoio e contrastes elegantes.
 
 > **Sempre que o usuário se referir a "cor primária" ou "cor secundária", utilize exatamente essas referências.**
+
+## Border Radius Padronizado (Design System)
+- `--radius-card: 10px;` — cards, tabelas, modais (presentes, convidados confirmados, guia de primeiros passos, containers de dados).
+- `--radius-control: 12px;` — botões, campos de formulário, itens de menu do sidebar, ícones de métrica.

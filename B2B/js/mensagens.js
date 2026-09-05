@@ -146,7 +146,7 @@ function renderContactsList(searchQuery = '') {
     const isActive = conv.id === activeConvId;
     const item = document.createElement('div');
     item.className = `p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
-      isActive ? 'bg-[#EBF4FF] border-l-4 border-[#4E96EF]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
+      isActive ? 'bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
     }`;
 
     item.innerHTML = `
@@ -156,13 +156,13 @@ function renderContactsList(searchQuery = '') {
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-1 mb-0.5">
-          <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#3A80D8] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
+          <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#44688F] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
           <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
         </div>
         <span class="inline-block text-[10px] font-medium text-zinc-500 bg-white/70 px-1.5 py-0.5 rounded border border-zinc-200/60 mb-1">${conv.category}</span>
         <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
       </div>
-      ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #F7B99E;"></span>` : ''}
+      ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #27394f;"></span>` : ''}
     `;
 
     item.addEventListener('click', () => {
@@ -231,13 +231,13 @@ function renderActiveChat() {
     if (isMe) {
       row.innerHTML = `
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-          <div class="bg-[#4E96EF] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left" style="color: #FFFFFF !important;">
+          <div class="bg-[#537bae] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left" style="color: #FFFFFF !important;">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words text-white" style="color: #FFFFFF !important;">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>
           <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
             <span>${msg.time || 'Agora'}</span>
-            <span class="text-[#4E96EF] font-bold">✓✓</span>
+            <span class="text-[#537bae] font-bold">✓✓</span>
           </div>
         </div>
         <div class="w-7 h-7 rounded-full bg-zinc-800 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-2xs">

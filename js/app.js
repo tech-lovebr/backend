@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.modal-backdrop-custom').forEach(modal => {
     modal.classList.remove('open');
     modal.addEventListener('click', (e) => {
+      if (modal.getAttribute('data-no-backdrop-close') === 'true') return;
       if (e.target === modal) closeModal(modal);
     });
     modal.querySelectorAll('[data-close-modal]').forEach(btn => {
@@ -148,7 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-backdrop-custom.open').forEach(m => closeModal(m));
+      document.querySelectorAll('.modal-backdrop-custom.open').forEach(m => {
+        if (m.getAttribute('data-no-backdrop-close') === 'true') return;
+        closeModal(m);
+      });
       closeGuestDrawer();
       closeGiftDrawer();
       closeContractedVendorDrawer();
@@ -226,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'all', label: 'Todos os Convidados' },
+        { id: 'all', label: 'Todos' },
         { id: 'messages', label: 'Recados recebidos' },
         { id: 'whatsapp', label: 'Disparo WhatsApp' }
       ]
@@ -248,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'explore', label: 'Explorar' },
         { id: 'messages', label: 'Mensagens' },
-        { id: 'contracted', label: 'Contratados' },
+        { id: 'contracted', label: 'Meus contratos' },
         { id: 'insurance', label: 'Serviços' },
         { id: 'favorites', label: 'Favoritos' }
       ]
@@ -342,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.dashboard-tab-content').forEach(content => {
         content.classList.toggle('active', content.id === 'tab-overview');
       });
+      renderQuickStartChecklist();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -385,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           let badgeMarkup = '';
           if (item.id === 'messages' && unreadCount > 0) {
-            badgeMarkup = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold text-zinc-900 shadow-sm ml-auto" style="background-color: #F7B99E;">${unreadCount}</span>`;
+            badgeMarkup = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm ml-auto" style="background-color: #27394f;">${unreadCount}</span>`;
           }
 
           btn.innerHTML = `<span>${item.label}</span>${badgeMarkup}`;
@@ -460,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Listener robusto para os ícones da barra lateral
+  // Listener robusto para os ícones da barra lateral (com alternância abre/fecha se clicar novamente)
   document.addEventListener('click', (e) => {
     const railBtn = e.target.closest('.rail-icon-btn');
     if (railBtn) {
@@ -468,6 +473,25 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tab) {
         e.preventDefault();
         e.stopPropagation();
+
+        // Se o usuário ainda não criou seu primeiro evento, bloqueia o acesso aos outros menus
+        if (!state.hasEventCreated) {
+          showToast('Crie seu primeiro evento para desbloquear os menus do painel.', '🔒');
+          return;
+        }
+
+        // Se clicar mais 1 vez no ícone da aba ativa (exceto 'overview' que não possui submenu):
+        // Faz o reverso: se o submenu estiver aberto, fecha; se estiver fechado, reabre!
+        if (state.currentTab === tab && tab !== 'overview') {
+          const isDrawerOpen = elements.subDrawer && !elements.subDrawer.classList.contains('hidden-drawer');
+          if (isDrawerOpen) {
+            foldSubDrawer();
+          } else {
+            expandSubDrawer();
+          }
+          return;
+        }
+
         switchRailTab(tab);
       }
     }
@@ -478,6 +502,109 @@ document.addEventListener('DOMContentLoaded', () => {
   if (homeEventDateBadge) {
     homeEventDateBadge.addEventListener('click', () => {
       switchRailTab('info-event');
+    });
+  }
+
+  // Listener e Dropdown para Encaminhar / Compartilhar site do evento na Home
+  const btnShareDropdownTrigger = document.getElementById('btn-dash-share-dropdown-trigger');
+  const shareDropdownMenu = document.getElementById('dash-share-dropdown-menu');
+  const btnDropdownViewSite = document.getElementById('btn-dropdown-view-site');
+  const btnDropdownShareSite = document.getElementById('btn-dropdown-share-site');
+  const modalShareSite = document.getElementById('modal-share-event-site');
+  const shareUrlInput = document.getElementById('share-modal-url-input');
+  const btnShareModalCopy = document.getElementById('btn-share-modal-copy');
+  const shareModalCopyText = document.getElementById('share-modal-copy-text');
+  const btnShareWhatsapp = document.getElementById('btn-share-whatsapp');
+  const btnShareFacebook = document.getElementById('btn-share-facebook');
+  const btnShareTwitter = document.getElementById('btn-share-twitter');
+
+  if (btnShareDropdownTrigger && shareDropdownMenu) {
+    btnShareDropdownTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      shareDropdownMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!shareDropdownMenu.contains(e.target) && e.target !== btnShareDropdownTrigger) {
+        shareDropdownMenu.classList.add('hidden');
+      }
+    });
+  }
+
+  function getActiveEventShareUrl() {
+    const activeEv = getActiveEvent();
+    return activeEv.publicUrl || `https://love.com.br/${activeEv.slug || 'beatriz-e-lucas'}`;
+  }
+
+  if (btnDropdownViewSite) {
+    btnDropdownViewSite.addEventListener('click', () => {
+      if (shareDropdownMenu) shareDropdownMenu.classList.add('hidden');
+      const url = getActiveEventShareUrl();
+      window.open(url, '_blank');
+    });
+  }
+
+  function openShareSiteModal() {
+    const activeEv = getActiveEvent();
+    const url = getActiveEventShareUrl();
+    const eventTitle = activeEv.title || 'Nosso Evento Especial';
+
+    if (shareUrlInput) {
+      shareUrlInput.value = url;
+    }
+
+    if (btnShareWhatsapp) {
+      const msg = `Olá! Convido você para acessar o site oficial do nosso evento e acompanhar todos os detalhes: ${url}`;
+      btnShareWhatsapp.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+    }
+
+    if (btnShareFacebook) {
+      btnShareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    }
+
+    if (btnShareTwitter) {
+      const tweet = `Confira o site oficial de ${eventTitle}:`;
+      btnShareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}&url=${encodeURIComponent(url)}`;
+    }
+
+    if (modalShareSite) {
+      openModal(modalShareSite);
+    }
+  }
+
+  if (btnDropdownShareSite) {
+    btnDropdownShareSite.addEventListener('click', () => {
+      if (shareDropdownMenu) shareDropdownMenu.classList.add('hidden');
+      openShareSiteModal();
+    });
+  }
+
+  if (btnShareModalCopy) {
+    btnShareModalCopy.addEventListener('click', async () => {
+      const url = shareUrlInput ? shareUrlInput.value : getActiveEventShareUrl();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+        } else if (shareUrlInput) {
+          shareUrlInput.select();
+          document.execCommand('copy');
+        }
+        if (shareModalCopyText) shareModalCopyText.textContent = 'Copiado!';
+        if (btnShareModalCopy) {
+          btnShareModalCopy.classList.remove('bg-[#537bae]', 'hover:bg-[#416799]');
+          btnShareModalCopy.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        }
+        showToast('Link do evento copiado para a área de transferência! 📋', '✨');
+        setTimeout(() => {
+          if (shareModalCopyText) shareModalCopyText.textContent = 'Copiar';
+          if (btnShareModalCopy) {
+            btnShareModalCopy.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+            btnShareModalCopy.classList.add('bg-[#537bae]', 'hover:bg-[#416799]');
+          }
+        }, 2500);
+      } catch (err) {
+        showToast('Não foi possível copiar automaticamente. Selecione e copie manualmente.', '⚠️');
+      }
     });
   }
 
@@ -593,12 +720,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const kpiGiftsSubtext = document.getElementById('kpi-gifts-subtext');
     const overviewUrl = document.getElementById('overview-public-url');
 
-    if (hubTitle) hubTitle.innerHTML = `Olá, <span style="color: #4E96EF;" class="text-[#4E96EF] text-logo-blue font-semibold">${activeEvent.hostName || activeEvent.title}</span>!`;
+    if (hubTitle) {
+      const rawName = activeEvent.hostName || activeEvent.title || 'Beatriz';
+      const firstName = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê|Bodas)\s+/i, '');
+      hubTitle.innerHTML = `Olá, <span id="dash-hub-user-first-name">${firstName}</span>!`;
+    }
+    const hubCoupleName = document.getElementById('dash-hub-couple-name');
+    if (hubCoupleName) {
+      hubCoupleName.textContent = activeEvent.hostName ? activeEvent.hostName.toLowerCase() : 'gabriel & joana';
+    }
+    const kpiGuestsAdded = document.getElementById('kpi-guests-added-count');
+    if (kpiGuestsAdded) {
+      kpiGuestsAdded.textContent = `${activeEvent.convidadosConfirmados || 2}`;
+    }
     const hubDateText = document.getElementById('dash-hub-event-date-text');
     const hubLocText = document.getElementById('dash-hub-event-location-text');
     const hasLocation = activeEvent.location && activeEvent.location.trim() !== '' && activeEvent.location !== 'Adicionar Local';
     if (hubDateText) hubDateText.textContent = activeEvent.date || '18 de Outubro de 2026';
-    if (hubLocText) hubLocText.textContent = hasLocation ? activeEvent.location : 'Adicionar Local';
+    if (hubLocText) hubLocText.textContent = hasLocation ? activeEvent.location : 'Local do evento';
     
     // Atualização dos Convites Enviados
     if (kpiInvites) {
@@ -625,9 +764,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (count === 0) {
         homeB2bChatStatus.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-zinc-400"></span><span class="text-zinc-500 font-medium">Você ainda não encontrou fornecedores.</span>`;
       } else if (count === 1) {
-        homeB2bChatStatus.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-[#4E96EF] font-semibold">Você está falando com 1 fornecedor</span>`;
+        homeB2bChatStatus.innerHTML = `<span class="inline-block w-2 h-2 rounded-full" style="background-color: #27394f;"></span><span class="text-[#537bae] font-semibold">Você está falando com 1 fornecedor</span>`;
       } else {
-        homeB2bChatStatus.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-[#4E96EF] font-semibold">Você está falando com ${count} fornecedores</span>`;
+        homeB2bChatStatus.innerHTML = `<span class="inline-block w-2 h-2 rounded-full" style="background-color: #27394f;"></span><span class="text-[#537bae] font-semibold">Você está falando com ${count} fornecedores</span>`;
       }
     }
     
@@ -643,6 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rsvpTitle) rsvpTitle.textContent = 'Lista de convidados';
     if (walletTitle) walletTitle.textContent = 'Financeiro';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
+    updateBudgetKPIs();
 
 
     // 3.5 B2B: Localização e Fornecedores Baseados no Evento Ativo
@@ -662,6 +802,170 @@ document.addEventListener('DOMContentLoaded', () => {
     renderGuestsTable();
     renderHomeConfirmedGuests();
     renderWalletTransactions();
+    renderQuickStartChecklist();
+  }
+
+  // ==========================================
+  // GUIA DE PRIMEIROS PASSOS (Checklist de Progresso da Plataforma)
+  // ==========================================
+  const quickStartTasksData = [
+    {
+      id: 'vendors',
+      title: 'Favoritar primeiros fornecedores',
+      desc: 'Espaços, buffet, foto e música',
+      tab: 'b2b',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 0c.168.082.344.148.528.196m12.444 0c.184-.048.36-.114.528-.196"/></svg>'
+    },
+    {
+      id: 'budget',
+      title: 'Definir orçamento do evento',
+      desc: 'Organize metas e saldo da carteira',
+      tab: 'wallet',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8m-3-5h6a1.5 1.5 0 0 0 0-3H9a1.5 1.5 0 0 0 0 3h6a1.5 1.5 0 0 1 0 3H9"/></svg>'
+    },
+    {
+      id: 'savethedate',
+      title: 'Escolher Save the Date',
+      desc: 'Garanta a data na agenda dos convidados',
+      tab: 'edit-site',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="6" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg>'
+    },
+    {
+      id: 'registry',
+      title: 'Criar lista de presentes virtual',
+      desc: 'Cadastre presentes em dinheiro ou cotas',
+      tab: 'gifts',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>'
+    },
+    {
+      id: 'website',
+      title: 'Personalizar site do evento',
+      desc: 'Adicione fotos, história e contagem',
+      tab: 'edit-site',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>'
+    },
+    {
+      id: 'guests',
+      title: 'Cadastrar primeiros convidados',
+      desc: 'Adicione os primeiros contatos para o RSVP',
+      tab: 'rsvp',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>'
+    }
+  ];
+
+  function isQuickStartTaskAchieved(taskId, activeEvent) {
+    if (!activeEvent) return false;
+    try {
+      const key = `love_quick_start_achieved_${activeEvent.id}`;
+      const saved = JSON.parse(localStorage.getItem(key) || '[]');
+      if (saved.includes(taskId)) return true;
+    } catch (e) {}
+
+    // Avaliação automática de marcos alcançados pela plataforma no evento
+    switch (taskId) {
+      case 'vendors':
+        return Boolean(activeEvent.vendorsFavorited || (activeEvent.fornecedores && activeEvent.fornecedores.length > 0));
+      case 'budget':
+        return Boolean(
+          activeEvent.budgetConfigured || 
+          (activeEvent.budgetTotal && activeEvent.budgetTotal > 0) ||
+          localStorage.getItem(`love_budget_configured_${activeEvent.id}`) === 'true'
+        );
+      case 'savethedate':
+        return Boolean(activeEvent.saveTheDateChosen || activeEvent.hasSaveTheDate);
+      case 'registry':
+        return Boolean(activeEvent.registryCompleted || activeEvent.presentesRecebidos > 50);
+      case 'website':
+        return Boolean(activeEvent.sitePersonalizado || activeEvent.isPublished);
+      case 'guests':
+        return Boolean(activeEvent.guestsImported || activeEvent.convidadosConfirmados > 200);
+      default:
+        return false;
+    }
+  }
+
+  window.markPlatformTaskAchieved = function(taskId) {
+    const activeEvent = getActiveEvent();
+    if (!activeEvent) return;
+    try {
+      const key = `love_quick_start_achieved_${activeEvent.id}`;
+      const saved = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!saved.includes(taskId)) {
+        saved.push(taskId);
+        localStorage.setItem(key, JSON.stringify(saved));
+      }
+    } catch (e) {}
+    renderQuickStartChecklist();
+  };
+
+  function renderQuickStartChecklist() {
+    const listEl = document.getElementById('quick-start-tasks-list');
+    const counterBadge = document.getElementById('quick-start-counter-badge');
+    const progressBar = document.getElementById('quick-start-progress-bar');
+    const allDoneBanner = document.getElementById('quick-start-all-done-banner');
+    if (!listEl) return;
+
+    const activeEvent = getActiveEvent();
+    const total = quickStartTasksData.length;
+
+    // Avalia quais tarefas foram alcançadas na plataforma
+    const achievedTasks = quickStartTasksData.filter(t => isQuickStartTaskAchieved(t.id, activeEvent));
+    const completedCount = achievedTasks.length;
+
+    // Atualiza contador e barra de progresso verde
+    if (counterBadge) counterBadge.textContent = `${completedCount}/${total}`;
+    if (progressBar) {
+      const percent = Math.round((completedCount / total) * 100);
+      progressBar.style.width = `${percent}%`;
+    }
+
+    // Exibe mensagem quando todas as tarefas estiverem em check (6/6)
+    const isAllDone = completedCount >= total;
+    if (allDoneBanner) {
+      if (isAllDone) {
+        allDoneBanner.classList.remove('hidden');
+      } else {
+        allDoneBanner.classList.add('hidden');
+      }
+    }
+
+    // Regra de revelação progressiva de tarefas:
+    // Começa exibindo as tarefas concluídas + as próximas tarefas pendentes.
+    // Conforme novas tarefas vão sendo alcançadas pela plataforma, novas tarefas vão aparecendo até todas estarem visíveis!
+    const visibleCount = Math.min(total, Math.max(3, completedCount + 2));
+    const visibleTasks = quickStartTasksData.slice(0, visibleCount);
+
+    listEl.innerHTML = visibleTasks.map((task) => {
+      const isDone = isQuickStartTaskAchieved(task.id, activeEvent);
+      return `
+        <div class="group p-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${isDone ? '' : (task.id === 'budget' ? `onclick="navigateToBudget()"` : `onclick="switchRailTab('${task.tab}')"`)} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
+          <div class="flex items-center gap-3 min-w-0">
+            <!-- Ícone da Categoria (SEM círculo de check) -->
+            <div class="w-7 h-7 rounded-xl ${isDone ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-700 group-hover:bg-zinc-200/70'} flex items-center justify-center flex-shrink-0 transition-colors">
+              ${isDone ? '<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>' : task.icon}
+            </div>
+
+            <!-- Título e Descrição (Riscado automaticamente quando alcançado) -->
+            <div class="min-w-0">
+              <span class="text-xs sm:text-sm ${isDone ? 'line-through text-zinc-400 font-normal' : 'text-zinc-800 group-hover:text-zinc-950 font-medium'} truncate block transition-all font-sans">
+                ${task.title}
+              </span>
+              <span class="text-[10px] ${isDone ? 'text-zinc-400/80 line-through' : 'text-zinc-500'} block truncate font-sans">
+                ${task.desc}
+              </span>
+            </div>
+          </div>
+
+          <!-- Indicador à Direita: Concluído ou Seta -->
+          <div class="flex-shrink-0 pl-2">
+            ${isDone 
+              ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 font-sans">Concluído</span>' 
+              : '<span class="text-zinc-400 group-hover:text-zinc-600 text-xs font-bold pl-1 font-sans">›</span>'
+            }
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   // ==========================================
@@ -722,11 +1026,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <div class="py-2.5 px-2 hover:bg-zinc-50 rounded-xl transition-colors flex items-center justify-between gap-3 group">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-8 h-8 rounded-full bg-blue-50 text-[#4E96EF] font-bold text-xs flex items-center justify-center flex-shrink-0 border border-blue-100/80">
+            <div class="w-8 h-8 rounded-full bg-blue-50 text-[#537bae] font-bold text-xs flex items-center justify-center flex-shrink-0 border border-blue-100/80">
               ${initials}
             </div>
             <div class="min-w-0">
-              <p class="text-xs font-semibold text-zinc-900 truncate leading-tight group-hover:text-[#4E96EF] transition-colors">${guest.name}</p>
+              <p class="text-xs font-semibold text-zinc-900 truncate leading-tight group-hover:text-[#537bae] transition-colors">${guest.name}</p>
               <p class="text-[11px] text-zinc-400 truncate mt-0.5">${subtext}${guest.table ? ` • ${guest.table}` : ''}</p>
             </div>
           </div>
@@ -811,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gradientOpacity: 80,
       gradientColor: '#FFF1F2',
       coverImage: 'assets/wedding_hero_banner.jpg',
-      accentColor: '#F7B99E',
+      accentColor: '#5c7aaa',
       headline: 'CONVIDAM VOCÊ PARA O SEU CASAMENTO',
       subtitle: 'Um romance clássico sob o encanto das flores.'
     },
@@ -837,7 +1141,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gradientOpacity: 85,
       gradientColor: '#0F172A',
       coverImage: 'assets/theme_dark.jpg',
-      accentColor: '#4E96EF',
+      accentColor: '#537bae',
       headline: 'CONVIDAM VOCÊ PARA O SEU CASAMENTO',
       subtitle: 'Uma noite inesquecível de elegância e sofisticação.'
     },
@@ -867,7 +1171,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.editor-sub-tab-btn').forEach(tab => {
       const tabKey = tab.getAttribute('data-editor-tab');
       if (tabKey === subId) {
-        tab.className = 'editor-sub-tab-btn active pb-3 border-b-2 border-[#4E96EF] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
+        tab.className = 'editor-sub-tab-btn active pb-3 border-b-2 border-[#537bae] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
       } else {
         tab.className = 'editor-sub-tab-btn pb-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 font-medium text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
       }
@@ -901,13 +1205,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // O botão salvar alterações embaixo da prévia deve aparecer SOMENTE em "Aparência"
+    const previewSaveContainer = document.getElementById('preview-save-btn-container');
+    if (previewSaveContainer) {
+      if (subId === 'home') {
+        previewSaveContainer.classList.remove('hidden');
+      } else {
+        previewSaveContainer.classList.add('hidden');
+      }
+    }
+
+    // O botão salvar alterações no canto direito ao lado do título (Informações, Anfitriões, Convite)
+    const headerSaveContainer = document.getElementById('editor-header-save-container');
+    if (headerSaveContainer) {
+      if (['data', 'about', 'invite-online', 'invite-print'].includes(subId)) {
+        headerSaveContainer.classList.remove('hidden');
+      } else {
+        headerSaveContainer.classList.add('hidden');
+      }
+    }
+
     // Oculta todos os sub-formulários e exibe o selecionado
     document.querySelectorAll('.editor-sub-panel').forEach(panel => panel.classList.add('hidden'));
     const targetPanel = document.getElementById(`editor-form-${subId}`);
     if (targetPanel) targetPanel.classList.remove('hidden');
   }
 
-  // Listener de clique para as abas horizontais do painel de personalização
+  // Listener de clique para as abas horizontais e itens da sub-sidebar do painel de personalização
   document.addEventListener('click', (e) => {
     const tabBtn = e.target.closest('.editor-sub-tab-btn');
     if (tabBtn) {
@@ -915,6 +1239,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const tabLabel = tabBtn.textContent.trim();
       if (tabId) {
         switchEditorSubSection(tabId, tabLabel);
+      }
+    }
+
+    const drawerItem = e.target.closest('.sub-drawer-item');
+    if (drawerItem && drawerItem.hasAttribute('data-sub-id')) {
+      const subId = drawerItem.getAttribute('data-sub-id');
+      const subLabel = drawerItem.querySelector('span') ? drawerItem.querySelector('span').textContent.trim() : '';
+      if (drawerItem.closest('#drawer-sub-items-list')) {
+        drawerItem.closest('#drawer-sub-items-list').querySelectorAll('.sub-drawer-item').forEach(b => b.classList.remove('active'));
+        drawerItem.classList.add('active');
+        if (state.currentTab === 'edit-site' || !state.currentTab) {
+          switchEditorSubSection(subId, subLabel);
+        }
       }
     }
   });
@@ -1042,7 +1379,7 @@ document.addEventListener('DOMContentLoaded', () => {
       row.className = 'flex items-center gap-2';
       row.innerHTML = `
         <div class="flex-1 relative">
-          <input type="text" value="${prefaceText.replace(/"/g, '&quot;')}" placeholder="Ex: 'Um cordão de três dobras...' ou 'Com a bênção de Deus,'" class="preface-input-field w-full text-xs p-2.5 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] text-zinc-800 font-medium" data-index="${idx}">
+          <input type="text" value="${prefaceText.replace(/"/g, '&quot;')}" placeholder="Ex: 'Um cordão de três dobras...' ou 'Com a bênção de Deus,'" class="preface-input-field w-full text-xs p-2.5 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium" data-index="${idx}">
         </div>
         ${builderState.prefaces.length > 1 ? `
           <button type="button" class="btn-remove-preface p-2.5 rounded-xl border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 transition-colors flex-shrink-0 cursor-pointer" title="Remover esta epígrafe" data-index="${idx}">
@@ -1116,7 +1453,7 @@ document.addEventListener('DOMContentLoaded', () => {
       colUrl.className = 'flex-1 w-full flex flex-col justify-start';
       colUrl.innerHTML = `
         <label class="block text-[10px] sm:text-[11px] font-bold uppercase text-zinc-500 tracking-wider font-sans mb-1 leading-4">URL DO VÍDEO</label>
-        <input type="text" class="music-track-url w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#4E96EF] text-zinc-800 placeholder:text-zinc-400 font-sans" placeholder="Ex: https://www.youtube.com/watch?v=XXXXXX" data-track-index="${idx}">
+        <input type="text" class="music-track-url w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 placeholder:text-zinc-400 font-sans" placeholder="Ex: https://www.youtube.com/watch?v=XXXXXX" data-track-index="${idx}">
         <span class="text-[10px] text-zinc-400 block font-sans mt-1 leading-4">Ex: https://www.youtube.com/watch?v=XXXXXX</span>
       `;
       const inputUrl = colUrl.querySelector('input');
@@ -1127,7 +1464,7 @@ document.addEventListener('DOMContentLoaded', () => {
       colPlacement.innerHTML = `
         <label class="block text-[10px] sm:text-[11px] font-bold uppercase text-zinc-500 tracking-wider font-sans mb-1 leading-4">ONDE TOCAR *</label>
         <div class="relative">
-          <select class="music-track-placement w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#4E96EF] text-zinc-800 cursor-pointer appearance-none pr-7 font-sans" data-track-index="${idx}">
+          <select class="music-track-placement w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 cursor-pointer appearance-none pr-7 font-sans" data-track-index="${idx}">
             <option value="all">Todas as páginas</option>
             <option value="localizacao">Localização</option>
             <option value="lista_presentes">Lista de presentes</option>
@@ -1186,11 +1523,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (musicIcon) {
       if (isMusicPlaying) {
         musicIcon.classList.add('text-emerald-500', 'animate-pulse');
-        musicIcon.classList.remove('text-[#4E96EF]');
+        musicIcon.classList.remove('text-[#537bae]');
         widget.title = 'Pausar música do evento';
       } else {
         musicIcon.classList.remove('text-emerald-500', 'animate-pulse');
-        musicIcon.classList.add('text-[#4E96EF]');
+        musicIcon.classList.add('text-[#537bae]');
         widget.title = 'Tocar música do evento';
       }
     }
@@ -1381,8 +1718,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputLocation) inputLocation.value = activeEvent.location;
     if (inputHeadline) inputHeadline.value = activeEvent.siteSections?.heroHeadline || 'CONVIDAM VOCÊ PARA O SEU CASAMENTO';
     if (inputSubtitle) inputSubtitle.value = activeEvent.siteSections?.heroSubtitle || 'A REALIZAR-SE';
+    const inputAboutTitle = document.getElementById('editor-about-title');
+    if (inputAboutTitle) inputAboutTitle.value = activeEvent.siteSections?.aboutTitle || 'Sobre os Anfitriões & Nossa História';
     if (inputAbout) inputAbout.value = activeEvent.siteSections?.aboutText || '';
     if (inputInvite) inputInvite.value = activeEvent.siteSections?.inviteText || '';
+
+    const inputOnlineTitle = document.getElementById('editor-online-invite-title');
+    const inputOnlineMsg = document.getElementById('editor-online-invite-msg');
+    const inputOnlineDresscode = document.getElementById('editor-online-invite-dresscode');
+    const inputOnlineRsvp = document.getElementById('editor-online-invite-rsvp-deadline');
+
+    if (inputOnlineTitle && activeEvent.onlineInvite?.title) inputOnlineTitle.value = activeEvent.onlineInvite.title;
+    if (inputOnlineMsg && activeEvent.onlineInvite?.message) inputOnlineMsg.value = activeEvent.onlineInvite.message;
+    if (inputOnlineDresscode && activeEvent.onlineInvite?.dresscode) inputOnlineDresscode.value = activeEvent.onlineInvite.dresscode;
+    if (inputOnlineRsvp && activeEvent.onlineInvite?.rsvpDeadline) inputOnlineRsvp.value = activeEvent.onlineInvite.rsvpDeadline;
 
     builderState.prefaces = [...(activeEvent.prefaces && activeEvent.prefaces.length ? activeEvent.prefaces : [
       '"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)',
@@ -1440,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     builderState.bgImage = activeEvent.bgImage || null;
-    builderState.accentColor = (activeEvent.accentColor && activeEvent.accentColor !== '#4E96EF') ? activeEvent.accentColor : '#FBFBFA';
+    builderState.accentColor = (activeEvent.accentColor && activeEvent.accentColor !== '#537bae') ? activeEvent.accentColor : '#FBFBFA';
     builderState.titleBold = activeEvent.titleBold || false;
     builderState.titleItalic = activeEvent.titleItalic !== undefined ? activeEvent.titleItalic : true;
     builderState.titleUnderline = activeEvent.titleUnderline || false;
@@ -1690,15 +2039,15 @@ document.addEventListener('DOMContentLoaded', () => {
           ${reorderControls}
           <div class="invite-slot-box-empty">
             <div class="relative">
-              <button type="button" class="btn-slot-add w-7 h-7 rounded-full bg-[#4E96EF] hover:bg-[#3A80D8] text-white shadow-xs flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer" data-slot="${i}" title="Adicionar Título ou Texto">
+              <button type="button" class="btn-slot-add w-7 h-7 rounded-full bg-[#537bae] hover:bg-[#416799] text-white shadow-xs flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer" data-slot="${i}" title="Adicionar Título ou Texto">
                 <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               </button>
               <div id="dropdown-slot-${i}" class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 w-36 bg-white border border-[#EAEAEF] rounded-lg shadow-xl p-1 z-30 space-y-0.5 animate-fade-in">
-                <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#4E96EF] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="title">
-                  <span class="w-4 h-4 rounded bg-blue-100/70 text-[#4E96EF] flex items-center justify-center font-bold text-[10px]">T</span>
+                <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#537bae] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="title">
+                  <span class="w-4 h-4 rounded bg-blue-100/70 text-[#537bae] flex items-center justify-center font-bold text-[10px]">T</span>
                   <span>Título</span>
                 </button>
-                <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#4E96EF] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="text">
+                <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#537bae] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="text">
                   <span class="w-4 h-4 rounded bg-zinc-100 text-zinc-600 flex items-center justify-center font-bold text-[10px]">¶</span>
                   <span>Texto</span>
                 </button>
@@ -2070,11 +2419,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const cardId = card.getAttribute('data-theme-id');
       const badge = card.querySelector('.theme-check-badge');
       if (cardId === templateId) {
-        card.classList.add('active', 'border-2', 'border-[#4E96EF]');
+        card.classList.add('active', 'border-2', 'border-[#537bae]');
         card.classList.remove('border-zinc-200/80');
         if (badge) badge.classList.remove('hidden');
       } else {
-        card.classList.remove('active', 'border-2', 'border-[#4E96EF]');
+        card.classList.remove('active', 'border-2', 'border-[#537bae]');
         card.classList.add('border-zinc-200/80');
         if (badge) badge.classList.add('hidden');
       }
@@ -2094,8 +2443,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputLocation = document.getElementById('editor-event-location');
     const inputHeadline = document.getElementById('editor-hero-headline');
     const inputSubtitle = document.getElementById('editor-hero-subtitle');
+    const inputAboutTitle = document.getElementById('editor-about-title');
     const inputAbout = document.getElementById('editor-about-text');
     const inputInvite = document.getElementById('editor-invite-text');
+    const inputOnlineTitle = document.getElementById('editor-online-invite-title');
+    const inputOnlineMsg = document.getElementById('editor-online-invite-msg');
+    const inputOnlineDresscode = document.getElementById('editor-online-invite-dresscode');
+    const inputOnlineRsvp = document.getElementById('editor-online-invite-rsvp-deadline');
 
     if (inputTitle && inputTitle.value) activeEvent.title = inputTitle.value;
     if (inputSlug && inputSlug.value) {
@@ -2109,8 +2463,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputLocation && inputLocation.value) activeEvent.location = inputLocation.value;
     if (inputHeadline && inputHeadline.value) activeEvent.siteSections.heroHeadline = inputHeadline.value;
     if (inputSubtitle && inputSubtitle.value) activeEvent.siteSections.heroSubtitle = inputSubtitle.value;
+    if (inputAboutTitle && inputAboutTitle.value) activeEvent.siteSections.aboutTitle = inputAboutTitle.value;
     if (inputAbout && inputAbout.value) activeEvent.siteSections.aboutText = inputAbout.value;
     if (inputInvite && inputInvite.value) activeEvent.siteSections.inviteText = inputInvite.value;
+
+    if (inputOnlineTitle || inputOnlineMsg || inputOnlineDresscode || inputOnlineRsvp) {
+      if (!activeEvent.onlineInvite) activeEvent.onlineInvite = {};
+      if (inputOnlineTitle && inputOnlineTitle.value) activeEvent.onlineInvite.title = inputOnlineTitle.value;
+      if (inputOnlineMsg && inputOnlineMsg.value) activeEvent.onlineInvite.message = inputOnlineMsg.value;
+      if (inputOnlineDresscode && inputOnlineDresscode.value) activeEvent.onlineInvite.dresscode = inputOnlineDresscode.value;
+      if (inputOnlineRsvp && inputOnlineRsvp.value) activeEvent.onlineInvite.rsvpDeadline = inputOnlineRsvp.value;
+    }
 
     activeEvent.prefaces = [...(builderState.prefaces || [])];
 
@@ -2452,10 +2815,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function setBtnActive(btn, isActive) {
       if (!btn) return;
       if (isActive) {
-        btn.classList.add('bg-[#4E96EF]', 'text-white', 'shadow-2xs');
+        btn.classList.add('bg-[#537bae]', 'text-white', 'shadow-2xs');
         btn.classList.remove('text-zinc-700', 'text-zinc-600', 'hover:bg-white');
       } else {
-        btn.classList.remove('bg-[#4E96EF]', 'text-white', 'shadow-2xs');
+        btn.classList.remove('bg-[#537bae]', 'text-white', 'shadow-2xs');
         btn.classList.add('text-zinc-700', 'hover:bg-white');
       }
     }
@@ -3402,11 +3765,11 @@ document.addEventListener('DOMContentLoaded', () => {
   templateCards.forEach(card => {
     card.addEventListener('click', () => {
       templateCards.forEach(c => {
-        c.classList.remove('ring-2', 'ring-[#4E96EF]', 'border-[#4E96EF]', 'bg-blue-50/40');
+        c.classList.remove('ring-2', 'ring-[#537bae]', 'border-[#537bae]', 'bg-blue-50/40');
         c.classList.add('border-zinc-100/80', 'bg-zinc-50');
       });
       card.classList.remove('border-zinc-100/80', 'bg-zinc-50');
-      card.classList.add('ring-2', 'ring-[#4E96EF]', 'border-[#4E96EF]', 'bg-blue-50/40');
+      card.classList.add('ring-2', 'ring-[#537bae]', 'border-[#537bae]', 'bg-blue-50/40');
 
       const tmplId = card.getAttribute('data-template-id');
       if (tmplId) {
@@ -3446,7 +3809,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileEditContainer.innerHTML = `
         <div>
           <label class="block text-xs font-bold text-zinc-700 mb-1.5">Título do Evento ou Nomes do Casal</label>
-          <input type="text" id="mobile-field-title" value="${inputTitleVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] font-bold text-zinc-900">
+          <input type="text" id="mobile-field-title" value="${inputTitleVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] font-bold text-zinc-900">
         </div>
       `;
     } else if (target === 'headline') {
@@ -3455,7 +3818,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileEditContainer.innerHTML = `
         <div>
           <label class="block text-xs font-bold text-zinc-700 mb-1.5">Frase de Chamada</label>
-          <input type="text" id="mobile-field-headline" value="${inputHeadlineVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] text-zinc-800">
+          <input type="text" id="mobile-field-headline" value="${inputHeadlineVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800">
         </div>
       `;
     } else if (target === 'datetime') {
@@ -3466,11 +3829,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-zinc-700 mb-1.5">Data do Evento</label>
-            <input type="date" id="mobile-field-date" value="${inputDateVal}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] text-zinc-800 font-medium">
+            <input type="date" id="mobile-field-date" value="${inputDateVal}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium">
           </div>
           <div>
             <label class="block text-xs font-bold text-zinc-700 mb-1.5">Horário de Início</label>
-            <input type="time" id="mobile-field-time" value="${inputTimeVal}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] text-zinc-800 font-medium">
+            <input type="time" id="mobile-field-time" value="${inputTimeVal}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium">
           </div>
         </div>
       `;
@@ -3482,11 +3845,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="space-y-3">
           <div>
             <label class="block text-xs font-bold text-zinc-700 mb-1.5">Nome do Espaço / Local</label>
-            <input type="text" id="mobile-field-location" value="${inputLocVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] font-bold text-zinc-900">
+            <input type="text" id="mobile-field-location" value="${inputLocVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] font-bold text-zinc-900">
           </div>
           <div>
             <label class="block text-xs font-bold text-zinc-700 mb-1.5">Endereço Completo</label>
-            <input type="text" id="mobile-field-address" value="${inputAddrVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF] text-zinc-800">
+            <input type="text" id="mobile-field-address" value="${inputAddrVal.replace(/"/g, '&quot;')}" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800">
           </div>
         </div>
       `;
@@ -3497,14 +3860,14 @@ document.addEventListener('DOMContentLoaded', () => {
       prefaces.forEach((p) => {
         html += `
           <div class="flex items-center gap-2">
-            <input type="text" class="mobile-preface-input flex-1 text-sm p-2.5 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF]" value="${p.replace(/"/g, '&quot;')}">
+            <input type="text" class="mobile-preface-input flex-1 text-sm p-2.5 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae]" value="${p.replace(/"/g, '&quot;')}">
             <button type="button" onclick="this.parentElement.remove()" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
           </div>
         `;
       });
       html += `
         </div>
-        <button type="button" id="btn-add-mobile-preface-row" class="text-xs font-bold text-[#4E96EF] flex items-center gap-1 mt-2 cursor-pointer">
+        <button type="button" id="btn-add-mobile-preface-row" class="text-xs font-bold text-[#537bae] flex items-center gap-1 mt-2 cursor-pointer">
           <span>+ Adicionar outra epígrafe</span>
         </button>
       `;
@@ -3518,7 +3881,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
             div.innerHTML = `
-              <input type="text" class="mobile-preface-input flex-1 text-sm p-2.5 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E96EF]" placeholder="Nova citação ou epígrafe...">
+              <input type="text" class="mobile-preface-input flex-1 text-sm p-2.5 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae]" placeholder="Nova citação ou epígrafe...">
               <button type="button" onclick="this.parentElement.remove()" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center text-xs font-bold cursor-pointer">✕</button>
             `;
             wrapper.appendChild(div);
@@ -3931,16 +4294,16 @@ document.addEventListener('DOMContentLoaded', () => {
     randomGiftsPool.forEach(item => {
       const card = document.createElement('button');
       card.type = 'button';
-      card.className = 'w-full p-2.5 rounded-xl border border-zinc-200/80 hover:border-[#4E96EF] bg-zinc-50/70 hover:bg-blue-50/40 flex items-center justify-between text-left transition-all group cursor-pointer';
+      card.className = 'w-full p-2.5 rounded-xl border border-zinc-200/80 hover:border-[#537bae] bg-zinc-50/70 hover:bg-blue-50/40 flex items-center justify-between text-left transition-all group cursor-pointer';
       card.innerHTML = `
         <div class="flex items-center gap-2.5 min-w-0 pr-2">
-          <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-zinc-200">
+          <img src="${item.image}" alt="${item.title}" class="w-12 h-12 rounded-[10px] object-cover flex-shrink-0 border border-zinc-200 shadow-2xs">
           <div class="min-w-0">
-            <h5 class="text-xs font-bold text-zinc-900 group-hover:text-[#4E96EF] truncate transition-colors">${item.title}</h5>
+            <h5 class="text-xs font-bold text-zinc-900 group-hover:text-[#537bae] truncate transition-colors">${item.title}</h5>
             <span class="text-[11px] font-bold text-emerald-600">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
           </div>
         </div>
-        <span class="text-xs font-bold text-[#4E96EF] flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">+ Adicionar</span>
+        <span class="text-xs font-bold text-[#537bae] flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">+ Adicionar</span>
       `;
       card.addEventListener('click', () => {
         const activeEvent = getActiveEvent();
@@ -4025,14 +4388,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Primeiro Card: Adicionar Aleatório
     const randomCard = document.createElement('div');
-    randomCard.className = 'group bg-white pt-2.5 px-4 pb-5 sm:pt-3 sm:px-5 sm:pb-6 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[420px] sm:min-h-[460px] lg:min-h-[500px]';
+    randomCard.className = 'group bg-white p-3 sm:p-3.5 border border-zinc-200/80 rounded-[10px] flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 hover:shadow-xs cursor-pointer min-h-[255px] sm:min-h-[275px] md:min-h-[290px]';
     randomCard.innerHTML = `
-      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0">
-        <span class="w-4 h-4 p-1 block"></span>
+      <div class="w-full flex items-center justify-end text-zinc-400 mb-0.5 opacity-0">
+        <span class="w-3.5 h-3.5 p-0.5 block"></span>
       </div>
-      <div class="w-full flex-1 flex flex-col items-center justify-center p-4 my-auto">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#4E96EF] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#4E96EF] group-hover:scale-110 transition-all shadow-2xs">
-          <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <div class="w-full flex-1 flex flex-col items-center justify-center p-2 my-auto">
+        <div class="w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
+          <svg class="w-5 h-5 sm:w-5.5 sm:h-5.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/>
@@ -4040,13 +4403,13 @@ document.addEventListener('DOMContentLoaded', () => {
             <path stroke-linecap="round" stroke-linejoin="round" d="m18 14 4 4-4 4"/>
           </svg>
         </div>
-        <h4 class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-[#4E96EF] mt-5 transition-colors font-sans">
+        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-2.5 transition-colors font-sans">
           Adicionar Aleatório
         </h4>
-        <p class="text-xs text-zinc-400 mt-1">Gera ou escolhe presentes prontos com 1 clique</p>
+        <p class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Gera presentes prontos</p>
       </div>
-      <div class="w-full pt-4 mt-auto opacity-0 pointer-events-none">
-        <p class="text-sm font-bold">-</p>
+      <div class="w-full pt-1 mt-auto opacity-0 pointer-events-none">
+        <p class="text-xs font-bold">-</p>
       </div>
     `;
     randomCard.addEventListener('click', () => openGiftModal('random'));
@@ -4054,38 +4417,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Segundo Card: Adicionar Presente
     const addCard = document.createElement('div');
-    addCard.className = 'group bg-white pt-2.5 px-4 pb-5 sm:pt-3 sm:px-5 sm:pb-6 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[420px] sm:min-h-[460px] lg:min-h-[500px]';
+    addCard.className = 'group bg-white p-3 sm:p-3.5 border border-zinc-200/80 rounded-[10px] flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 hover:shadow-xs cursor-pointer min-h-[255px] sm:min-h-[275px] md:min-h-[290px]';
     addCard.innerHTML = `
-      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0">
-        <span class="w-4 h-4 p-1 block"></span>
+      <div class="w-full flex items-center justify-end text-zinc-400 mb-0.5 opacity-0">
+        <span class="w-3.5 h-3.5 p-0.5 block"></span>
       </div>
-      <div class="w-full flex-1 flex flex-col items-center justify-center p-4 my-auto">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#4E96EF] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#4E96EF] group-hover:scale-110 transition-all shadow-2xs">
-          <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <div class="w-full flex-1 flex flex-col items-center justify-center p-2 my-auto">
+        <div class="w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
+          <svg class="w-5 h-5 sm:w-5.5 sm:h-5.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
           </svg>
         </div>
-        <h4 class="text-sm sm:text-base font-bold text-zinc-900 group-hover:text-[#4E96EF] mt-5 transition-colors font-sans">
+        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-2.5 transition-colors font-sans">
           Adicionar Presente
         </h4>
-        <p class="text-xs text-zinc-400 mt-1">Personalize nome, foto, valor e categoria</p>
+        <p class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Nome, foto e valor</p>
       </div>
-      <div class="w-full pt-4 mt-auto opacity-0 pointer-events-none">
-        <p class="text-sm font-bold">-</p>
+      <div class="w-full pt-1 mt-auto opacity-0 pointer-events-none">
+        <p class="text-xs font-bold">-</p>
       </div>
     `;
     addCard.addEventListener('click', () => openGiftModal('custom'));
     container.appendChild(addCard);
 
-    // 5. Renderiza os cards de presentes (5 por linha no desktop, 2 no mobile, sem gaps, imagens maiores)
+    // 5. Renderiza os cards de presentes (máximo 5 por linha em telas cheias, reduzindo gradualmente conforme a tela diminui)
     giftList.forEach(gift => {
       const card = document.createElement('div');
-      card.className = 'group bg-white pt-2.5 px-4 pb-5 sm:pt-3 sm:px-5 sm:pb-6 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 cursor-pointer min-h-[420px] sm:min-h-[460px] lg:min-h-[500px]';
+      card.className = 'group bg-white p-3 sm:p-3.5 border border-zinc-200/80 rounded-[10px] flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 hover:shadow-xs cursor-pointer min-h-[255px] sm:min-h-[275px] md:min-h-[290px]';
 
       card.innerHTML = `
         <!-- Topo do Card: Coração de Favorito à direita -->
         <div class="w-full flex items-center justify-end text-zinc-400 mb-1">
-          <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-1 cursor-pointer" title="Favoritar">
+          <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-0.5 cursor-pointer" title="Favoritar">
             <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
             </svg>
@@ -4093,21 +4456,21 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <!-- Imagem do Produto em Destaque com Botão X no Canto Superior Direito -->
-        <div class="relative w-full flex-1 flex items-center justify-center p-1 sm:p-2 my-auto min-h-[220px] sm:min-h-[260px] lg:min-h-[300px]">
-          <img src="${gift.image}" alt="${gift.title}" class="w-full h-56 sm:h-64 lg:h-72 object-contain group-hover:scale-105 transition-transform duration-300">
+        <div class="relative w-full aspect-square flex items-center justify-center my-auto overflow-hidden rounded-[10px] bg-zinc-50 border border-zinc-100">
+          <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover rounded-[10px] group-hover:scale-105 transition-transform duration-300">
           
           <!-- Botão X de exclusão no canto superior direito da imagem -->
-          <button type="button" class="btn-delete-gift absolute top-1 right-1 sm:top-2 sm:right-2 w-7 h-7 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-xs font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80" title="Excluir presente" data-gift-id="${gift.id}">
+          <button type="button" class="btn-delete-gift absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/90 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
             ✕
           </button>
         </div>
 
         <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->
-        <div class="w-full pt-4 space-y-1.5 mt-auto">
-          <h4 class="text-xs sm:text-sm font-serif italic text-zinc-800 line-clamp-2 px-1 leading-snug" title="${gift.title}">
+        <div class="w-full pt-2 space-y-0.5 mt-auto">
+          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-1 px-1 leading-snug" title="${gift.title}">
             ${gift.title}
           </h4>
-          <p class="text-sm sm:text-base font-bold text-zinc-900 mt-1">
+          <p class="text-xs sm:text-sm font-bold text-zinc-900 mt-0.5">
             R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
@@ -4237,10 +4600,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-gift-img-preset').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.btn-gift-img-preset').forEach(b => {
-          b.classList.remove('active', 'border-[#4E96EF]');
+          b.classList.remove('active', 'border-[#537bae]');
           b.classList.add('border-transparent');
         });
-        btn.classList.add('active', 'border-[#4E96EF]');
+        btn.classList.add('active', 'border-[#537bae]');
         btn.classList.remove('border-transparent');
         const imgSrc = btn.getAttribute('data-img-src');
         if (imgSrc) {
@@ -4407,13 +4770,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (countDeclined) countDeclined.textContent = declinedCount;
     if (countPending) countPending.textContent = pendingCount;
 
-    // 3. Atualiza Abas com Underline
+    // 3. Atualiza Abas com Underline 100% Reto (Sem Curva no Final), Thicker (3px) e Cor #27394f
     document.querySelectorAll('.rsvp-tab-link').forEach(tab => {
       const tabFilter = tab.getAttribute('data-filter');
+      tab.style.borderRadius = '0px';
+      tab.style.webkitBorderRadius = '0px';
       if (tabFilter === activeFilter) {
-        tab.className = 'rsvp-tab-link active pb-3 border-b-2 border-[#4E96EF] text-zinc-900 transition-all cursor-pointer whitespace-nowrap font-semibold';
+        tab.className = 'rsvp-tab-link active pb-3 text-[#27394f] rounded-none transition-all cursor-pointer whitespace-nowrap font-bold';
+        tab.style.borderBottom = '3px solid #27394f';
+        tab.style.borderColor = '#27394f';
+        tab.style.color = '#27394f';
       } else {
-        tab.className = 'rsvp-tab-link pb-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 transition-all cursor-pointer whitespace-nowrap font-medium';
+        tab.className = 'rsvp-tab-link pb-3 text-zinc-500 hover:text-zinc-800 rounded-none transition-all cursor-pointer whitespace-nowrap font-medium';
+        tab.style.borderBottom = '3px solid transparent';
+        tab.style.borderColor = 'transparent';
+        tab.style.color = '';
       }
     });
 
@@ -4436,46 +4807,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     filteredGuests.forEach(guest => {
+      // Status RSVP limpo: sem fundo colorido e sem ícones de check/pendente
       const statusBadges = {
-        confirmed: '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap">✓ Confirmado</span>',
-        pending: '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/80 whitespace-nowrap">⏳ Pendente</span>',
-        declined: '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200/80 whitespace-nowrap">✕ Recusado</span>'
+        confirmed: '<span class="text-xs sm:text-sm font-medium text-emerald-700 whitespace-nowrap">Confirmado</span>',
+        pending: '<span class="text-xs sm:text-sm font-medium text-amber-700 whitespace-nowrap">Pendente</span>',
+        declined: '<span class="text-xs sm:text-sm font-medium text-rose-600 whitespace-nowrap">Recusado</span>'
       };
 
       const giftsCount = guest.giftsBought ? guest.giftsBought.length : 0;
+      // Ícone de presente normal (SVG) sem fundo verde e sem emoji
       const giftsBadge = giftsCount > 0 
-        ? `<span class="hidden sm:inline-flex text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200 ml-1.5 flex-shrink-0" title="${giftsCount} presente(s) comprado(s)">🎁 ${giftsCount}</span>`
+        ? `<span class="inline-flex items-center gap-1 text-xs font-medium text-zinc-600 ml-2 flex-shrink-0" title="${giftsCount} presente(s) comprado(s)">
+            <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 0h-1.5m1.5 0v11.25m0-11.25a2.25 2.25 0 1 0-2.25-2.25m2.25 2.25a2.25 2.25 0 1 1 2.25-2.25M3.75 12h16.5m-16.5 0a2.25 2.25 0 0 0-2.25 2.25v5.25a2.25 2.25 0 0 0 2.25 2.25h16.5a2.25 2.25 0 0 0 2.25-2.25v-5.25a2.25 2.25 0 0 0-2.25-2.25m-16.5 0V7.5a2.25 2.25 0 0 1 2.25-2.25h12a2.25 2.25 0 0 1 2.25 2.25V12"/></svg>
+            <span>${giftsCount}</span>
+          </span>`
         : '';
-
-      const compText = guest.companions > 0 
-        ? `+${guest.companions} (${guest.adults || 2} ad.${guest.children ? `, ${guest.children} cr.` : ''})` 
-        : 'Individual';
 
       const row = document.createElement('tr');
       row.className = 'border-b border-zinc-100 hover:bg-zinc-50/70 transition-colors text-xs sm:text-sm cursor-pointer group';
       row.innerHTML = `
-        <td class="py-3 px-4 sm:px-6">
+        <td class="py-3 px-2 sm:px-4">
           <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center justify-center flex-shrink-0">
               ${guest.name ? guest.name.substring(0, 1).toUpperCase() : 'C'}
             </div>
             <div class="min-w-0 flex-1 truncate">
-              <span class="font-medium text-zinc-900 group-hover:text-[#4E96EF] transition-colors block truncate">${guest.name}</span>
-              <span class="text-[11px] text-zinc-400 md:hidden block truncate">${compText} ${guest.table ? `• ${guest.table}` : ''}</span>
+              <span class="font-medium text-zinc-900 group-hover:text-[#537bae] transition-colors block truncate">${guest.name}</span>
+              ${guest.table ? `<span class="text-[11px] text-zinc-400 block truncate">Mesa: ${guest.table}</span>` : ''}
             </div>
             ${giftsBadge}
           </div>
         </td>
-        <td class="py-3 px-4 text-zinc-600 hidden md:table-cell truncate">
-          <span class="font-normal text-zinc-600">${compText}</span>
-          ${guest.table ? `<span class="text-[11px] text-zinc-400 block truncate">📍 ${guest.table}</span>` : ''}
-        </td>
-        <td class="py-3 px-4">
+        <td class="py-3 px-2 sm:px-4">
           <div class="flex items-center">
             ${statusBadges[guest.status] || guest.status}
           </div>
         </td>
-        <td class="py-3 px-4 sm:px-6 text-right">
+        <td class="py-3 px-2 sm:px-4 text-right">
           <button type="button" class="btn-open-guest-drawer p-1.5 rounded-md hover:bg-zinc-200/60 text-zinc-400 hover:text-zinc-800 transition-all cursor-pointer inline-flex items-center justify-center" title="Ver detalhes do convidado" data-guest-id="${guest.id}">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="1.25"></circle>
@@ -4819,6 +5187,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchWalletSubSection(subId, subLabel) {
     const title = document.getElementById('wallet-header-title');
     const desc = document.getElementById('wallet-header-desc');
+    const headerActions = document.getElementById('wallet-header-actions');
+
+    if (headerActions) {
+      if (subId === 'wallet-budget' || subId === 'wallet-statement') {
+        headerActions.classList.add('hidden');
+      } else {
+        headerActions.classList.remove('hidden');
+      }
+    }
 
     if (title) {
       if (subId === 'wallet-digital') {
@@ -4827,6 +5204,8 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (subId === 'wallet-budget') {
         title.textContent = 'Orçamento';
         if (desc) desc.textContent = 'Planeje metas, controle custos comprometidos e gerencie despesas de fornecedores do evento.';
+        checkAndPromptBudgetSetup();
+        renderBudgetExpensesTable();
       } else if (subId === 'wallet-statement') {
         title.textContent = 'Extrato';
         if (desc) desc.textContent = 'Histórico completo de entradas de presentes, saques PIX realizados e conciliação financeira.';
@@ -4914,6 +5293,541 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(`Saque PIX de R$ ${val.toFixed(2).replace('.', ',')} transferido com sucesso!`, '💸');
       triggerConfetti();
     });
+  }
+
+  // ==========================================
+  // 8.5 MÓDULO DE ORÇAMENTO & ONBOARDING POPUP
+  // ==========================================
+  window.navigateToBudget = function() {
+    switchRailTab('wallet');
+    if (elements.drawerSubItemsList) {
+      elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
+        b.classList.toggle('active', b.textContent.includes('Orçamento'));
+      });
+    }
+    switchWalletSubSection('wallet-budget', 'Orçamento');
+  };
+
+  function checkAndPromptBudgetSetup() {
+    const activeEv = getActiveEvent();
+    if (!activeEv) return;
+
+    const isConfigured = Boolean(
+      activeEv.budgetConfigured || 
+      (activeEv.budgetTotal && activeEv.budgetTotal > 0) ||
+      localStorage.getItem(`love_budget_configured_${activeEv.id}`) === 'true'
+    );
+
+    if (isConfigured) {
+      updateBudgetKPIs();
+      return;
+    }
+
+    const modal = document.getElementById('modal-setup-budget');
+    if (!modal) return;
+
+    const inputLoc = document.getElementById('budget-setup-location');
+    const inputGuests = document.getElementById('budget-setup-guests');
+    const inputTotal = document.getElementById('budget-setup-total');
+    const reqMsg = document.getElementById('budget-setup-required-msg');
+
+    if (reqMsg) reqMsg.classList.add('hidden');
+    if (inputTotal) {
+      inputTotal.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20');
+      inputTotal.value = '';
+    }
+
+    // Localização preenchida se já salva no evento
+    if (inputLoc) {
+      const hasLoc = activeEv.location && activeEv.location.trim() !== '' && activeEv.location !== 'Adicionar Local';
+      inputLoc.value = hasLoc ? activeEv.location : '';
+    }
+
+    // Quantidade de convidados
+    if (inputGuests) {
+      const g = activeEv.convidadosTotal || (activeEv.convidadosConfirmados > 0 ? activeEv.convidadosConfirmados : 100);
+      inputGuests.value = g;
+    }
+
+    updateBudgetSetupPreview();
+    openModal(modal);
+  }
+
+  function updateBudgetSetupPreview() {
+    const activeEv = getActiveEvent();
+    const inputLoc = document.getElementById('budget-setup-location');
+    const inputGuests = document.getElementById('budget-setup-guests');
+    const inputTotal = document.getElementById('budget-setup-total');
+
+    const previewLoc = document.getElementById('budget-preview-loc');
+    const previewGuests = document.getElementById('budget-preview-guests');
+    const previewRange = document.getElementById('budget-preview-range');
+    const previewAvg = document.getElementById('budget-preview-avg');
+    const donutAmount = document.getElementById('budget-donut-amount');
+    const pillVal = document.getElementById('budget-preview-pill-val');
+
+    let loc = (inputLoc && inputLoc.value.trim()) || (activeEv && activeEv.location && activeEv.location !== 'Adicionar Local' ? activeEv.location : 'São Paulo, SP');
+    if (previewLoc) previewLoc.textContent = loc;
+
+    let guests = parseInt(inputGuests ? inputGuests.value : 100, 10);
+    if (isNaN(guests) || guests <= 0) guests = 100;
+    if (previewGuests) previewGuests.textContent = guests.toLocaleString('pt-BR');
+
+    let rawTotal = inputTotal ? inputTotal.value.replace(/\D/g, '') : '';
+    let totalVal = rawTotal ? parseInt(rawTotal, 10) : null;
+
+    const minEst = Math.round(guests * 570);
+    const maxEst = Math.round(guests * 860);
+    const avgEst = Math.round(guests * 720);
+
+    const formatK = (val) => `${Math.round(val / 1000)}k`;
+
+    if (previewRange) previewRange.textContent = `R$ ${formatK(minEst)}–R$ ${formatK(maxEst)}`;
+    if (previewAvg) previewAvg.textContent = `R$ ${formatK(avgEst)}`;
+
+    const displayAmount = totalVal || avgEst;
+    if (donutAmount) donutAmount.textContent = `R$ ${displayAmount.toLocaleString('pt-BR')}`;
+
+    const venueAmount = Math.round(displayAmount * 0.208);
+    if (pillVal) pillVal.textContent = `R$ ${venueAmount.toLocaleString('pt-BR')}`;
+  }
+
+  function initBudgetSetupModal() {
+    const modal = document.getElementById('modal-setup-budget');
+    if (!modal) return;
+
+    const inputLoc = document.getElementById('budget-setup-location');
+    const inputGuests = document.getElementById('budget-setup-guests');
+    const inputTotal = document.getElementById('budget-setup-total');
+    const reqMsg = document.getElementById('budget-setup-required-msg');
+    const btnSubmit = document.getElementById('btn-submit-budget-setup');
+
+    if (inputLoc) inputLoc.addEventListener('input', updateBudgetSetupPreview);
+    if (inputGuests) inputGuests.addEventListener('input', updateBudgetSetupPreview);
+
+    if (inputTotal) {
+      inputTotal.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val) {
+          const num = parseInt(val, 10);
+          e.target.value = num.toLocaleString('pt-BR');
+          if (reqMsg) reqMsg.classList.add('hidden');
+          inputTotal.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20');
+        } else {
+          e.target.value = '';
+        }
+        updateBudgetSetupPreview();
+      });
+    }
+
+    if (btnSubmit) {
+      btnSubmit.addEventListener('click', () => {
+        const activeEv = getActiveEvent();
+        if (!activeEv) return;
+
+        const rawTotal = inputTotal ? inputTotal.value.replace(/\D/g, '') : '';
+        const totalNum = parseInt(rawTotal, 10);
+
+        if (!rawTotal || isNaN(totalNum) || totalNum <= 0) {
+          if (reqMsg) reqMsg.classList.remove('hidden');
+          if (inputTotal) {
+            inputTotal.classList.add('border-rose-500', 'ring-2', 'ring-rose-500/20');
+            inputTotal.focus();
+          }
+          return;
+        }
+
+        activeEv.budgetTotal = totalNum;
+        activeEv.budgetConfigured = true;
+
+        if (inputLoc && inputLoc.value.trim()) {
+          activeEv.location = inputLoc.value.trim();
+          const hubLocText = document.getElementById('dash-hub-event-location-text');
+          if (hubLocText) hubLocText.textContent = activeEv.location;
+          const fieldLoc = document.getElementById('field-event-location');
+          if (fieldLoc) fieldLoc.value = activeEv.location;
+        }
+
+        if (inputGuests && inputGuests.value) {
+          const g = parseInt(inputGuests.value, 10);
+          if (g > 0) activeEv.convidadosTotal = g;
+        }
+
+        try {
+          localStorage.setItem(`love_budget_configured_${activeEv.id}`, 'true');
+          localStorage.setItem(`love_budget_total_${activeEv.id}`, totalNum.toString());
+        } catch (e) {}
+
+        if (typeof window.markPlatformTaskAchieved === 'function') {
+          window.markPlatformTaskAchieved('budget');
+        }
+
+        updateBudgetKPIs();
+        closeModal(modal);
+        showToast('Orçamento definido com sucesso!', '✨');
+      });
+    }
+  }
+
+  function getContractedVendorsList() {
+    const list = [];
+    if (window.LOVE_DATA && Array.isArray(window.LOVE_DATA.contractedVendors)) {
+      window.LOVE_DATA.contractedVendors.forEach(v => {
+        if (v.name && !list.some(item => item.name.toLowerCase() === v.name.toLowerCase())) {
+          list.push({ name: v.name, category: v.category || '' });
+        }
+      });
+    }
+    const activeEv = getActiveEvent();
+    if (activeEv && Array.isArray(activeEv.fornecedores)) {
+      activeEv.fornecedores.forEach(v => {
+        const name = typeof v === 'string' ? v : v.name;
+        if (name && !list.some(item => item.name.toLowerCase() === name.toLowerCase())) {
+          list.push({ name, category: v.category || '' });
+        }
+      });
+    }
+    return list;
+  }
+
+  function getBudgetExpenses() {
+    const activeEv = getActiveEvent();
+    if (!activeEv) return [];
+
+    try {
+      const stored = localStorage.getItem(`love_budget_expenses_${activeEv.id}`);
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+
+    return [
+      {
+        id: 'exp-1',
+        item: 'Espaço Quintal da Villa',
+        vendor: 'Villa Bisutti Casa do Ator',
+        category: 'Local',
+        estimated: 25000,
+        actual: 22000,
+        paid: 15000
+      },
+      {
+        id: 'exp-2',
+        item: 'Buffet Gastronomia Nobre',
+        vendor: 'Buffet Gastronomia Nobre',
+        category: 'Alimentação',
+        estimated: 18000,
+        actual: 16500,
+        paid: 10000
+      },
+      {
+        id: 'exp-3',
+        item: 'Estúdio Fotografia & Cinema',
+        vendor: 'Estúdio Fotografia & Cinema',
+        category: 'Fotografia e mídia',
+        estimated: 8000,
+        actual: 7800,
+        paid: 7800
+      },
+      {
+        id: 'exp-4',
+        item: 'Decoração Floral Jardim Real',
+        vendor: 'Decoração Floral Jardim Real',
+        category: 'Decoração',
+        estimated: 10000,
+        actual: 6200,
+        paid: 3000
+      },
+      {
+        id: 'exp-5',
+        item: 'DJ & Iluminação Pista',
+        vendor: '',
+        category: 'Música',
+        estimated: 5500,
+        actual: 0,
+        paid: 0
+      },
+      {
+        id: 'exp-6',
+        item: 'Bar de Coquetéis & Drinks',
+        vendor: '',
+        category: 'Serviços de bar',
+        estimated: 4200,
+        actual: 0,
+        paid: 0
+      }
+    ];
+  }
+
+  function saveBudgetExpenses(expenses) {
+    const activeEv = getActiveEvent();
+    if (!activeEv) return;
+    try {
+      localStorage.setItem(`love_budget_expenses_${activeEv.id}`, JSON.stringify(expenses));
+    } catch (e) {}
+  }
+
+  function renderBudgetExpensesTable() {
+    const tbody = document.getElementById('budget-expenses-tbody');
+    if (!tbody) return;
+
+    const expenses = getBudgetExpenses();
+    let totalEstimated = 0;
+    let totalActual = 0;
+    let totalPaid = 0;
+
+    tbody.innerHTML = expenses.map((exp) => {
+      const estimatedNum = Number(exp.estimated) || 0;
+      const actualNum = Number(exp.actual) || 0;
+      const paidNum = Number(exp.paid) || 0;
+
+      totalEstimated += estimatedNum;
+      totalActual += actualNum;
+      totalPaid += paidNum;
+
+      const hasVendor = exp.vendor && exp.vendor.trim() !== '';
+
+      return `
+        <tr class="hover:bg-zinc-50/70 transition-colors group">
+          <!-- Item -->
+          <td class="py-3.5 px-4">
+            <div class="font-bold text-zinc-900 font-sans">${exp.item}</div>
+            <div class="text-[10px] text-zinc-400 font-normal uppercase tracking-wider mt-0.5 font-sans">${exp.category || 'Geral'}</div>
+          </td>
+
+          <!-- Fornecedor -->
+          <td class="py-3.5 px-4 text-xs font-sans">
+            ${hasVendor 
+              ? `<div class="font-semibold text-zinc-800 flex items-center gap-1.5">
+                   <span>${exp.vendor}</span>
+                   <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/60">Contrato</span>
+                 </div>`
+              : `<button type="button" onclick="openAddExpenseModalWithItem('${exp.id}', '${encodeURIComponent(exp.item)}', '${encodeURIComponent(exp.category || 'Local')}')" class="text-xs font-semibold text-zinc-700 hover:text-[#537bae] underline decoration-zinc-300 underline-offset-4 cursor-pointer transition-colors font-sans">
+                   + Adicionar fornecedor
+                 </button>`
+            }
+          </td>
+
+          <!-- Estimado -->
+          <td class="py-3.5 px-4 font-semibold text-zinc-600 font-sans">
+            ${estimatedNum > 0 ? `R$ ${estimatedNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—'}
+          </td>
+
+          <!-- Valor Real -->
+          <td class="py-3.5 px-4 font-bold ${actualNum > 0 ? 'text-zinc-900' : 'text-zinc-400'} font-sans">
+            ${actualNum > 0 ? `R$ ${actualNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—'}
+          </td>
+
+          <!-- Valor Pago -->
+          <td class="py-3.5 px-4 font-sans">
+            ${paidNum > 0 
+              ? `<span class="font-bold text-emerald-700 bg-emerald-50/80 px-2.5 py-1 rounded-lg border border-emerald-200/60 inline-block text-xs">
+                   R$ ${paidNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                 </span>`
+              : `<span class="text-zinc-400 text-xs font-normal">—</span>`
+            }
+          </td>
+
+          <!-- Ações -->
+          <td class="py-3.5 px-4 text-right">
+            <div class="inline-flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+              <button type="button" onclick="showToast('Lembrete configurado para ${exp.item}!', '🔔')" class="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer" title="Lembrete">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+              </button>
+              <button type="button" onclick="deleteBudgetExpense('${exp.id}')" class="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Excluir item">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Atualiza footer da tabela (TFoot)
+    const tfootCount = document.getElementById('budget-tfoot-count');
+    const tfootEstimated = document.getElementById('budget-tfoot-estimated');
+    const tfootActual = document.getElementById('budget-tfoot-actual');
+    const tfootPaid = document.getElementById('budget-tfoot-paid');
+    const tfootDue = document.getElementById('budget-tfoot-due');
+
+    if (tfootCount) tfootCount.textContent = `${expenses.length} ${expenses.length === 1 ? 'item' : 'itens'}`;
+    if (tfootEstimated) tfootEstimated.textContent = `R$ ${totalEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (tfootActual) tfootActual.textContent = `R$ ${totalActual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (tfootPaid) tfootPaid.textContent = `R$ ${totalPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    
+    const due = Math.max(0, totalActual - totalPaid);
+    if (tfootDue) tfootDue.textContent = `R$ ${due.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} a vencer`;
+
+    // Atualiza KPIs do topo
+    const activeEv = getActiveEvent();
+    let savedTotal = activeEv && activeEv.budgetTotal;
+    if (!savedTotal && activeEv) {
+      const stored = localStorage.getItem(`love_budget_total_${activeEv.id}`);
+      if (stored) savedTotal = parseInt(stored, 10);
+    }
+    if (!savedTotal) savedTotal = totalEstimated || 85000;
+
+    const kpiTotal = document.getElementById('kpi-budget-total');
+    const kpiSpent = document.getElementById('kpi-budget-spent');
+    const kpiPaidTotal = document.getElementById('kpi-budget-paid-total');
+
+    if (kpiTotal) kpiTotal.textContent = `R$ ${savedTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (kpiSpent) kpiSpent.textContent = `R$ ${totalActual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (kpiPaidTotal) kpiPaidTotal.textContent = `R$ ${totalPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+  }
+
+  window.deleteBudgetExpense = function(expId) {
+    let expenses = getBudgetExpenses();
+    expenses = expenses.filter(e => e.id !== expId);
+    saveBudgetExpenses(expenses);
+    renderBudgetExpensesTable();
+    showToast('Item removido do orçamento.', '🗑️');
+  };
+
+  window.openAddExpenseModalWithItem = function(expId, encodedItem, encodedCategory) {
+    const modal = document.getElementById('modal-add-budget-expense');
+    if (!modal) return;
+    const inputItem = document.getElementById('expense-item-name');
+    const selectCat = document.getElementById('expense-category-select');
+    const inputVendor = document.getElementById('expense-vendor-input');
+
+    if (inputItem) inputItem.value = decodeURIComponent(encodedItem || '');
+    if (selectCat) selectCat.value = decodeURIComponent(encodedCategory || 'Local');
+    if (inputVendor) {
+      inputVendor.value = '';
+      inputVendor.focus();
+    }
+    openModal(modal);
+  };
+
+  function initAddBudgetExpenseModal() {
+    const modal = document.getElementById('modal-add-budget-expense');
+    const btnOpen = document.getElementById('btn-open-add-expense');
+    const form = document.getElementById('form-add-budget-expense');
+    const inputVendor = document.getElementById('expense-vendor-input');
+    const suggestionsBox = document.getElementById('expense-vendor-suggestions');
+    const selectCat = document.getElementById('expense-category-select');
+
+    if (btnOpen) {
+      btnOpen.addEventListener('click', () => {
+        if (form) form.reset();
+        if (suggestionsBox) suggestionsBox.classList.add('hidden');
+        openModal(modal);
+      });
+    }
+
+    if (inputVendor && suggestionsBox) {
+      inputVendor.addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        if (!query) {
+          suggestionsBox.classList.add('hidden');
+          suggestionsBox.innerHTML = '';
+          return;
+        }
+
+        const contractedVendors = getContractedVendorsList();
+        const matches = contractedVendors.filter(v => v.name.toLowerCase().includes(query));
+
+        if (matches.length === 0) {
+          suggestionsBox.classList.add('hidden');
+          suggestionsBox.innerHTML = '';
+          return;
+        }
+
+        suggestionsBox.innerHTML = matches.map(v => `
+          <div class="px-3.5 py-2.5 hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs transition-colors" data-vendor-name="${v.name}" data-vendor-cat="${v.category}">
+            <div>
+              <span class="font-bold text-zinc-900 block">${v.name}</span>
+              ${v.category ? `<span class="text-[10px] text-zinc-500">${v.category}</span>` : ''}
+            </div>
+            <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+              Meus contratos
+            </span>
+          </div>
+        `).join('');
+
+        suggestionsBox.querySelectorAll('[data-vendor-name]').forEach(el => {
+          el.addEventListener('click', () => {
+            inputVendor.value = el.getAttribute('data-vendor-name');
+            const vCat = el.getAttribute('data-vendor-cat');
+            if (vCat && selectCat) {
+              Array.from(selectCat.options).forEach(opt => {
+                if (vCat.toLowerCase().includes(opt.value.toLowerCase()) || opt.value.toLowerCase().includes(vCat.toLowerCase())) {
+                  selectCat.value = opt.value;
+                }
+              });
+            }
+            suggestionsBox.classList.add('hidden');
+          });
+        });
+
+        suggestionsBox.classList.remove('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!inputVendor.contains(e.target) && !suggestionsBox.contains(e.target)) {
+          suggestionsBox.classList.add('hidden');
+        }
+      });
+    }
+
+    // Formatação monetária nos inputs de valores
+    ['expense-estimated-input', 'expense-actual-input', 'expense-paid-input'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', (e) => {
+          let val = e.target.value.replace(/\D/g, '');
+          if (val) {
+            const num = parseFloat(val) / 100;
+            e.target.value = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          } else {
+            e.target.value = '';
+          }
+        });
+      }
+    });
+
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const inputItem = document.getElementById('expense-item-name');
+        const inputEstimated = document.getElementById('expense-estimated-input');
+        const inputActual = document.getElementById('expense-actual-input');
+        const inputPaid = document.getElementById('expense-paid-input');
+
+        const itemName = inputItem ? inputItem.value.trim() : '';
+        if (!itemName) return;
+
+        const parseMoney = (inputEl) => {
+          if (!inputEl || !inputEl.value) return 0;
+          const cleaned = inputEl.value.replace(/\./g, '').replace(',', '.');
+          const val = parseFloat(cleaned);
+          return isNaN(val) ? 0 : val;
+        };
+
+        const newItem = {
+          id: `exp-${Date.now()}`,
+          item: itemName,
+          vendor: inputVendor ? inputVendor.value.trim() : '',
+          category: selectCat ? selectCat.value : 'Local',
+          estimated: parseMoney(inputEstimated),
+          actual: parseMoney(inputActual),
+          paid: parseMoney(inputPaid)
+        };
+
+        const expenses = getBudgetExpenses();
+        expenses.unshift(newItem);
+        saveBudgetExpenses(expenses);
+
+        renderBudgetExpensesTable();
+        closeModal(modal);
+        form.reset();
+        showToast(`Despesa "${newItem.item}" adicionada com sucesso!`, '💰');
+      });
+    }
+  }
+
+  function updateBudgetKPIs() {
+    renderBudgetExpensesTable();
   }
 
   // ==========================================
@@ -5128,7 +6042,7 @@ document.addEventListener('DOMContentLoaded', () => {
         publicUrl: `https://love.com.br/${slug}`,
         coverImage: createdCoverImageSrc || getDefaultCoverForEventType(selectedNewType, name),
         theme: themeSelect ? themeSelect.options[themeSelect.selectedIndex].text : 'Minimalista',
-        colorAccent: '#4E96EF',
+        colorAccent: '#537bae',
         totalArrecadado: 0.00,
         convidadosConfirmados: 0,
         totalConvidados: 50,
@@ -5344,12 +6258,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(() => {
           elements.dashHeader.btnCopyShareUrl.textContent = 'Copiado! ✓';
-          elements.dashHeader.btnCopyShareUrl.classList.remove('bg-[#4E96EF]');
+          elements.dashHeader.btnCopyShareUrl.classList.remove('bg-[#537bae]');
           elements.dashHeader.btnCopyShareUrl.classList.add('bg-emerald-600');
           setTimeout(() => {
             elements.dashHeader.btnCopyShareUrl.textContent = 'Copiar';
             elements.dashHeader.btnCopyShareUrl.classList.remove('bg-emerald-600');
-            elements.dashHeader.btnCopyShareUrl.classList.add('bg-[#4E96EF]');
+            elements.dashHeader.btnCopyShareUrl.classList.add('bg-[#537bae]');
           }, 2000);
         }).catch(() => {
           elements.dashHeader.shareUrlInput.select();
@@ -5437,11 +6351,11 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bPills.forEach(pill => {
       pill.addEventListener('click', () => {
         b2bPills.forEach(p => {
-          p.classList.remove('border-[#4E96EF]', 'text-zinc-900', 'font-semibold', 'active');
+          p.classList.remove('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
           p.classList.add('border-transparent', 'text-zinc-500', 'font-medium');
         });
         pill.classList.remove('border-transparent', 'text-zinc-500', 'font-medium');
-        pill.classList.add('border-[#4E96EF]', 'text-zinc-900', 'font-semibold', 'active');
+        pill.classList.add('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
 
         currentB2BCategory = pill.getAttribute('data-category') || 'venues';
         renderB2BExplore();
@@ -5625,7 +6539,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
           <div>
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold ${tagBg}">${tagText}</span>
-            <h3 class="text-base sm:text-lg font-bold text-zinc-900 mt-2 leading-snug truncate group-hover:text-[#4E96EF] transition-colors">${item.name}</h3>
+            <h3 class="text-base sm:text-lg font-bold text-zinc-900 mt-2 leading-snug truncate group-hover:text-[#537bae] transition-colors">${item.name}</h3>
             <p class="text-xs sm:text-sm text-zinc-600 mt-1 leading-relaxed line-clamp-2">${description}</p>
             <p class="text-xs sm:text-sm font-medium text-zinc-500 mt-2.5 flex flex-wrap items-center gap-2">
               <span>${locationText}</span>
@@ -5647,7 +6561,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button type="button" class="btn-supplier-details px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-semibold transition-all cursor-pointer">
                 Ver Detalhes
               </button>
-              <button type="button" class="btn-supplier-contact px-4 py-2 rounded-xl bg-[#4E96EF] hover:bg-[#3A80D8] text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
+              <button type="button" class="btn-supplier-contact px-4 py-2 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
                 Solicitar Orçamento
               </button>
             </div>
@@ -5696,11 +6610,11 @@ document.addEventListener('DOMContentLoaded', () => {
       pin.innerHTML = `
         <div class="relative flex flex-col items-center">
           <div class="pin-badge ${
-            isSelected ? 'bg-[#4E96EF] text-white scale-110 shadow-lg ring-2 ring-white' : 'bg-amber-500 text-white shadow-md hover:bg-[#4E96EF] hover:scale-105'
+            isSelected ? 'bg-[#537bae] text-white scale-110 shadow-lg ring-2 ring-white' : 'bg-amber-500 text-white shadow-md hover:bg-[#537bae] hover:scale-105'
           } text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap transition-all flex items-center gap-1">
             <span>${venue.price.split(' ')[1] || venue.price}</span>
           </div>
-          <div class="w-2 h-2 ${isSelected ? 'bg-[#4E96EF]' : 'bg-amber-500'} rotate-45 -mt-1 shadow-xs"></div>
+          <div class="w-2 h-2 ${isSelected ? 'bg-[#537bae]' : 'bg-amber-500'} rotate-45 -mt-1 shadow-xs"></div>
 
           <!-- Mini Popup Card no Hover/Click do Pino -->
           <div class="pin-popup absolute bottom-full mb-2 hidden group-hover:block w-48 bg-white rounded-xl border border-zinc-200 shadow-xl p-2 z-30 pointer-events-none animate-fade-in">
@@ -5719,11 +6633,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (card) {
           card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           document.querySelectorAll('.b2b-item-card').forEach(c => {
-            c.classList.remove('border-[#4E96EF]', 'shadow-md', 'ring-1', 'ring-[#4E96EF]/30');
+            c.classList.remove('border-[#537bae]', 'shadow-md', 'ring-1', 'ring-[#537bae]/30');
             c.classList.add('border-zinc-200', 'shadow-2xs');
           });
           card.classList.remove('border-zinc-200', 'shadow-2xs');
-          card.classList.add('border-[#4E96EF]', 'shadow-md', 'ring-1', 'ring-[#4E96EF]/30');
+          card.classList.add('border-[#537bae]', 'shadow-md', 'ring-1', 'ring-[#537bae]/30');
         }
       });
 
@@ -5733,7 +6647,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function highlightMapPin(venueId) {
     document.querySelectorAll('#b2b-map-pins-container .pin-badge').forEach(b => {
-      b.classList.remove('bg-[#4E96EF]', 'scale-110', 'ring-2', 'ring-white');
+      b.classList.remove('bg-[#537bae]', 'scale-110', 'ring-2', 'ring-white');
       b.classList.add('bg-amber-500');
     });
     const activePin = document.getElementById(`map-pin-${venueId}`);
@@ -5741,7 +6655,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const badge = activePin.querySelector('.pin-badge');
       if (badge) {
         badge.classList.remove('bg-amber-500');
-        badge.classList.add('bg-[#4E96EF]', 'scale-110', 'ring-2', 'ring-white');
+        badge.classList.add('bg-[#537bae]', 'scale-110', 'ring-2', 'ring-white');
       }
     }
   }
@@ -5783,7 +6697,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <!-- Botão Direto para o Chat Messenger -->
             <div class="flex items-center gap-2">
-              <button type="button" class="btn-open-chat-with-advisor bg-[#4E96EF] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer" data-chat-id="${adv.chatId}">
+              <button type="button" class="btn-open-chat-with-advisor bg-[#537bae] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer" data-chat-id="${adv.chatId}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                 <span>Conversar no Chat</span>
               </button>
@@ -5870,7 +6784,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div>
             <div class="flex items-center justify-between">
               <h4 class="font-bold text-zinc-900 text-base">${item.name}</h4>
-              <span class="text-sm font-black text-[#4E96EF]">${item.price}</span>
+              <span class="text-sm font-black text-[#537bae]">${item.price}</span>
             </div>
             <p class="text-xs text-zinc-500">${item.location}</p>
             <div class="flex items-center gap-1 text-xs text-amber-500 font-bold mt-1">
@@ -5888,7 +6802,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="font-bold text-zinc-800">${item.area}</span>
             </div>
           </div>
-          <button type="button" class="btn-mobile-chat-cta w-full bg-[#4E96EF] text-white py-3 rounded-xl font-bold text-xs shadow-md cursor-pointer">
+          <button type="button" class="btn-mobile-chat-cta w-full bg-[#537bae] text-white py-3 rounded-xl font-bold text-xs shadow-md cursor-pointer">
             Conversar com o Espaço no Chat
           </button>
         </div>
@@ -5914,7 +6828,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </div>
           <p class="text-xs text-zinc-600 leading-relaxed">${item.about}</p>
-          <button type="button" class="btn-mobile-chat-cta w-full bg-[#4E96EF] text-white py-3 rounded-xl font-bold text-xs shadow-md cursor-pointer">
+          <button type="button" class="btn-mobile-chat-cta w-full bg-[#537bae] text-white py-3 rounded-xl font-bold text-xs shadow-md cursor-pointer">
             Abrir Conversa no Chat
           </button>
         </div>
@@ -6129,7 +7043,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const b2bItemMap = {
         'explore': 'Explorar',
         'messages': 'Mensagens',
-        'contracted': 'Contratados',
+        'contracted': 'Meus contratos',
         'insurance': 'Serviços',
         'favorites': 'Favoritos'
       };
@@ -6174,11 +7088,11 @@ document.addEventListener('DOMContentLoaded', () => {
           const favPill = document.querySelector('.b2b-category-pill[data-category="favorites"]');
           if (favPill) {
             document.querySelectorAll('.b2b-category-pill').forEach(p => {
-              p.classList.remove('border-[#4E96EF]', 'text-zinc-900', 'font-semibold', 'active');
+              p.classList.remove('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
               p.classList.add('border-transparent', 'text-zinc-500', 'font-medium');
             });
             favPill.classList.remove('border-transparent', 'text-zinc-500', 'font-medium');
-            favPill.classList.add('border-[#4E96EF]', 'text-zinc-900', 'font-semibold', 'active');
+            favPill.classList.add('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
           }
         } else if (viewId === 'explore' && currentB2BCategory === 'favorites') {
           currentB2BCategory = 'venues';
@@ -6251,10 +7165,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <div class="flex items-center gap-2.5">
               <button type="button" class="btn-contracted-chat px-4 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2">
-                <svg class="w-4 h-4 text-[#4E96EF]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                <svg class="w-4 h-4 text-[#537bae]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                 <span>Chat</span>
               </button>
-              <button type="button" class="btn-contracted-actions px-5 py-2.5 rounded-xl bg-[#4E96EF] hover:bg-[#3A80D8] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer flex items-center gap-2">
+              <button type="button" class="btn-contracted-actions px-5 py-2.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer flex items-center gap-2">
                 <span>Ver Contrato & Ações</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
               </button>
@@ -6359,7 +7273,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
             <span class="text-[10px] text-zinc-400 block font-medium">Valor Já Quitado</span>
-            <span class="text-base font-black text-[#4E96EF] mt-0.5 block">${vendor.paidValue || vendor.negotiatedValue}</span>
+            <span class="text-base font-black text-[#537bae] mt-0.5 block">${vendor.paidValue || vendor.negotiatedValue}</span>
           </div>
         </div>
 
@@ -6456,7 +7370,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');
       item.className = `p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
-        isActive ? 'bg-[#EBF4FF] border-l-4 border-[#4E96EF]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
+        isActive ? 'bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
       }`;
 
       item.innerHTML = `
@@ -6466,13 +7380,13 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-1 mb-0.5">
-            <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#3A80D8] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
+            <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
             <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
           </div>
           <span class="inline-block text-[10px] font-medium text-zinc-500 bg-white/70 px-1.5 py-0.5 rounded border border-zinc-200/60 mb-1">${conv.category}</span>
           <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
         </div>
-        ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #F7B99E;"></span>` : ''}
+        ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #27394f;"></span>` : ''}
       `;
 
       item.addEventListener('click', () => {
@@ -6535,13 +7449,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMe) {
         row.innerHTML = `
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-            <div class="bg-[#4E96EF] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left" style="color: #FFFFFF !important;">
+            <div class="bg-[#537bae] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left" style="color: #FFFFFF !important;">
               ${msg.text ? `<p class="whitespace-pre-wrap break-words text-white" style="color: #FFFFFF !important;">${msg.text}</p>` : ''}
               ${attachmentHTML}
             </div>
             <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
               <span>${msg.time || 'Agora'}</span>
-              <span class="text-[#4E96EF] font-bold">✓✓</span>
+              <span class="text-[#537bae] font-bold">✓✓</span>
             </div>
           </div>
           <div class="w-7 h-7 rounded-full bg-zinc-800 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-2xs">
@@ -7005,10 +7919,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <title>Tags de Lembrancinhas e Convite - ${activeEv.title}</title>
               <style>
                 body { font-family: sans-serif; padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-                .tag { border: 2px dashed #4E96EF; border-radius: 12px; padding: 15px; text-align: center; }
+                .tag { border: 2px dashed #537bae; border-radius: 12px; padding: 15px; text-align: center; }
                 .title { font-size: 14px; font-weight: bold; color: #1E293B; margin-bottom: 5px; }
                 .subtitle { font-size: 11px; color: #64748B; margin-bottom: 10px; }
-                .url { font-size: 11px; font-weight: bold; color: #4E96EF; word-break: break-all; }
+                .url { font-size: 11px; font-weight: bold; color: #537bae; word-break: break-all; }
               </style>
             </head>
             <body>
@@ -7186,7 +8100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
-  document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"]').forEach(el => {
+  document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
     if (!el.closest('.modal-container-custom')) {
       const clickTarget = el.tagName.toLowerCase() === 'img' ? el.parentElement : el;
       if (clickTarget) {
@@ -7202,6 +8116,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // Inicializa modal de onboarding do orçamento e modal de nova despesa
+  initBudgetSetupModal();
+  initAddBudgetExpenseModal();
 
   // Inicializa módulo B2B e sistema de chat messenger
   initB2BMarketplace();

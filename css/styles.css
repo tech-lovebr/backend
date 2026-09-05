@@ -2295,38 +2295,42 @@ button.rsvp-tab-link.active::after {
   background-color: #27394f !important;
 }
 
-/* Cards de Compartilhamento Social (WhatsApp, Facebook, Twitter) */
+/* Cards de Compartilhamento Social (WhatsApp, Facebook, Twitter (X)) */
 .share-social-card {
   background-color: #FAFAFA !important;
   border: 1px solid #E5E7EB !important;
-  color: #5c7aaa !important;
+  color: #27394f !important;
   transition: all 0.2s ease-in-out;
 }
 
 .share-social-card:hover {
   background-color: #F4F4F5 !important;
-  border-color: #5c7aaa !important;
-  color: #4e6891 !important;
+  border-color: #27394f !important;
+  color: #1d2b3c !important;
 }
 
 .share-social-card svg {
-  color: #5c7aaa !important;
+  color: #27394f !important;
   fill: currentColor !important;
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .share-social-card:hover svg {
-  color: #4e6891 !important;
+  color: #1d2b3c !important;
   transform: scale(1.08);
 }
 
 .share-social-card span {
-  color: #5c7aaa !important;
+  color: #27394f !important;
   transition: color 0.2s ease;
 }
 
 .share-social-card:hover span {
-  color: #4e6891 !important;
+  color: #1d2b3c !important;
 }
 
 /* Botão Salvar Local (Modal de Local) - Cor #27394f */

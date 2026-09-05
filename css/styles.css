@@ -2190,39 +2190,109 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
   background-color: #1d2b3c !important;
 }
 
-/* Abas de Navegação RSVP: Sublinhado 100% Reto sem Curvas nas Pontas, Thicker (3px) e Cor #27394f */
-.rsvp-tab-link,
-button.rsvp-tab-link {
-  border-radius: 0px !important;
-  -webkit-border-radius: 0px !important;
-  -moz-border-radius: 0px !important;
-  border-top-left-radius: 0px !important;
-  border-top-right-radius: 0px !important;
-  border-bottom-left-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-  border-top: none !important;
-  border-left: none !important;
-  border-right: none !important;
-  border-bottom: 3px solid transparent !important;
-  outline: none !important;
-  box-shadow: none !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background: transparent !important;
+/* ==========================================================================
+   COMPONENTE UNIVERSAL DE ABAS DE NAVEGAÇÃO (LOVE TABS COMPONENT)
+   Reutilizável em toda a plataforma.
+   - Linha horizontal de texto (links ou botões) com espaçamento uniforme.
+   - Indicador de aba ativa (underline):
+       position: absolute;
+       bottom: -6px; (logo abaixo do texto da aba)
+       width: 100%; (largura dinâmica com base no texto)
+       height: 3px; (espessura reta, sólida)
+       background-color: #27394f;
+       sem curva no final (border-radius: 0px).
+   ========================================================================== */
+.love-tabs-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1.75rem !important; /* Espaçamento igual entre abas (28px / sm:gap-8) */
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 0.5rem !important;
+  position: relative !important;
+  width: 100% !important;
 }
 
+.love-tabs-nav::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Item de Aba (Link ou Botão) */
+.love-tab-item,
+.rsvp-tab-link,
+button.love-tab-item,
+button.rsvp-tab-link {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+  -webkit-border-radius: 0px !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 0.875rem !important; /* text-sm */
+  line-height: 1.25rem !important;
+  font-weight: 500 !important;
+  color: #71717A !important; /* zinc-500 */
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  user-select: none !important;
+  transition: color 0.15s ease !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.love-tab-item:hover,
+.rsvp-tab-link:hover {
+  color: #18181B !important; /* zinc-900 */
+}
+
+/* Aba Ativa */
+.love-tab-item.active,
 .rsvp-tab-link.active,
+button.love-tab-item.active,
 button.rsvp-tab-link.active {
-  border-bottom: 3px solid #27394f !important;
-  border-color: #27394f !important;
+  color: #18181B !important;
+  font-weight: 700 !important;
+}
+
+/* Indicador de Aba Ativa (Underline Universal)
+   - position: absolute
+   - bottom: -6px (logo abaixo do texto)
+   - width: 100% (largura dinâmica com base no texto)
+   - height: 3px (linha horizontal reta, sólida)
+   - sem curva no final (border-radius: 0px)
+*/
+.love-tab-item::after,
+.rsvp-tab-link::after,
+button.love-tab-item::after,
+button.rsvp-tab-link::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -6px !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 3px !important;
+  background-color: transparent !important;
   border-radius: 0px !important;
   -webkit-border-radius: 0px !important;
   -moz-border-radius: 0px !important;
-  border-top-left-radius: 0px !important;
-  border-top-right-radius: 0px !important;
-  border-bottom-left-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-  color: #27394f !important;
+  border: none !important;
+  pointer-events: none !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.love-tab-item.active::after,
+.rsvp-tab-link.active::after,
+button.love-tab-item.active::after,
+button.rsvp-tab-link.active::after {
+  background-color: #27394f !important;
 }
 
 /* Cards de Compartilhamento Social (WhatsApp, Facebook, Twitter) */

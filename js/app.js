@@ -619,9 +619,14 @@ document.addEventListener('DOMContentLoaded', () => {
     state.events.forEach(evt => {
       const isActive = evt.id === state.activeEventId;
       const item = document.createElement('div');
-      item.className = `p-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${isActive ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'hover:bg-slate-50 text-slate-700'}`;
+      item.className = `p-2.5 rounded-[10px] text-xs font-bold cursor-pointer transition-all flex items-center justify-between gap-2 ${
+        isActive 
+          ? 'bg-slate-100/90 text-[#27394f] border border-[#27394f]/25' 
+          : 'hover:bg-slate-50 text-slate-700 border border-transparent'
+      }`;
       item.innerHTML = `
-        <span class="block truncate">${evt.title}</span>
+        <span class="block truncate font-bold" style="${isActive ? 'color: #27394f !important;' : ''}">${evt.title}</span>
+        ${isActive ? '<span class="text-[#27394f] text-xs font-bold flex-shrink-0" style="color: #27394f !important;">✓</span>' : ''}
       `;
 
       item.addEventListener('click', () => {
@@ -4770,21 +4775,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (countDeclined) countDeclined.textContent = declinedCount;
     if (countPending) countPending.textContent = pendingCount;
 
-    // 3. Atualiza Abas com Underline 100% Reto (Sem Curva no Final), Thicker (3px) e Cor #27394f
+    // 3. Atualiza Abas Universais (love-tab-item) com Underline Reta via ::after (position: absolute; bottom: -6px;)
     document.querySelectorAll('.rsvp-tab-link').forEach(tab => {
       const tabFilter = tab.getAttribute('data-filter');
-      tab.style.borderRadius = '0px';
-      tab.style.webkitBorderRadius = '0px';
+      tab.style.borderBottom = '';
+      tab.style.borderColor = '';
+      tab.style.color = '';
+      tab.style.borderRadius = '';
+      tab.style.webkitBorderRadius = '';
       if (tabFilter === activeFilter) {
-        tab.className = 'rsvp-tab-link active pb-3 text-[#27394f] rounded-none transition-all cursor-pointer whitespace-nowrap font-bold';
-        tab.style.borderBottom = '3px solid #27394f';
-        tab.style.borderColor = '#27394f';
-        tab.style.color = '#27394f';
+        tab.className = 'love-tab-item rsvp-tab-link active cursor-pointer whitespace-nowrap font-bold';
       } else {
-        tab.className = 'rsvp-tab-link pb-3 text-zinc-500 hover:text-zinc-800 rounded-none transition-all cursor-pointer whitespace-nowrap font-medium';
-        tab.style.borderBottom = '3px solid transparent';
-        tab.style.borderColor = 'transparent';
-        tab.style.color = '';
+        tab.className = 'love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium';
       }
     });
 
@@ -5085,6 +5087,32 @@ document.addEventListener('DOMContentLoaded', () => {
       renderGuestsTable(filter, searchVal);
     });
   });
+
+  // =========================================================================
+  // COMPONENTE UNIVERSAL DE ABAS DE NAVEGAÇÃO (TABS)
+  // Reutilizável em qualquer seção da plataforma (links ou botões)
+  // =========================================================================
+  window.initLoveTabs = function(containerSelector, onTabChange) {
+    const containers = typeof containerSelector === 'string' 
+      ? document.querySelectorAll(containerSelector) 
+      : [containerSelector];
+
+    containers.forEach(container => {
+      if (!container) return;
+      const tabs = container.querySelectorAll('.love-tab-item');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const tabId = tab.getAttribute('data-tab') || tab.getAttribute('data-filter') || tab.textContent.trim();
+          if (typeof onTabChange === 'function') {
+            onTabChange(tabId, tab);
+          }
+        });
+      });
+    });
+  };
 
   // ==========================================
   // 7.1. RECADOS RECEBIDOS DOS CONVIDADOS

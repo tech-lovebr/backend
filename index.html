@@ -2141,18 +2141,18 @@
               <p class="text-xs sm:text-sm text-zinc-500">Gerencie confirmações de presença, acompanhantes e grupos de convidados.</p>
             </div>
 
-            <!-- Abas de Navegação com Underline Sublinhado 100% Reto (Sem Curva no Final), Thicker na Cor #27394f -->
-            <div class="border-b border-zinc-200/80 flex items-center gap-6 sm:gap-8 overflow-x-auto text-xs sm:text-sm font-semibold no-scrollbar -mb-px">
-              <button class="rsvp-tab-link active pb-3 text-[#27394f] rounded-none transition-all cursor-pointer whitespace-nowrap font-bold" data-filter="all" style="border-bottom: 3px solid #27394f !important; border-radius: 0px !important; -webkit-border-radius: 0px !important;">
+            <!-- Componente Universal de Abas de Navegação (love-tabs-nav) -->
+            <div class="love-tabs-nav flex items-center gap-6 sm:gap-8 overflow-x-auto text-xs sm:text-sm font-semibold no-scrollbar">
+              <button type="button" class="love-tab-item rsvp-tab-link active cursor-pointer whitespace-nowrap font-bold" data-filter="all">
                 Todos (<span id="count-rsvp-all">0</span>)
               </button>
-              <button class="rsvp-tab-link pb-3 text-zinc-500 hover:text-zinc-800 rounded-none transition-all cursor-pointer whitespace-nowrap font-medium" data-filter="confirmed" style="border-bottom: 3px solid transparent !important; border-radius: 0px !important; -webkit-border-radius: 0px !important;">
+              <button type="button" class="love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium" data-filter="confirmed">
                 Confirmados (<span id="count-rsvp-confirmed">0</span>)
               </button>
-              <button class="rsvp-tab-link pb-3 text-zinc-500 hover:text-zinc-800 rounded-none transition-all cursor-pointer whitespace-nowrap font-medium" data-filter="declined" style="border-bottom: 3px solid transparent !important; border-radius: 0px !important; -webkit-border-radius: 0px !important;">
+              <button type="button" class="love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium" data-filter="declined">
                 Recusados (<span id="count-rsvp-declined">0</span>)
               </button>
-              <button class="rsvp-tab-link pb-3 text-zinc-500 hover:text-zinc-800 rounded-none transition-all cursor-pointer whitespace-nowrap font-medium" data-filter="pending" style="border-bottom: 3px solid transparent !important; border-radius: 0px !important; -webkit-border-radius: 0px !important;">
+              <button type="button" class="love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium" data-filter="pending">
                 Pendentes (<span id="count-rsvp-pending">0</span>)
               </button>
             </div>

@@ -2465,37 +2465,37 @@
           </div>
 
           <!-- SUB-PAINEL 3: EXTRATO (Statement) -->
-          <div id="wallet-sub-statement" class="wallet-sub-panel hidden space-y-6">
+          <div id="wallet-sub-statement" class="wallet-sub-panel hidden space-y-6 w-full">
             
-            <div class="bg-white rounded-2xl border border-zinc-200/80 shadow-xs overflow-hidden p-6 space-y-4">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 pb-4">
-                <div>
-                  <h4 class="font-bold text-zinc-900 text-sm">Extrato Completo de Movimentações</h4>
-                  <p class="text-xs text-zinc-500">Histórico detalhado de presentes recebidos, saques PIX e conciliação bancária.</p>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                  <button type="button" onclick="showToast('Exportando extrato em formato PDF...', '📥')" class="btn-white text-xs py-2 px-3.5 font-bold rounded-xl border border-zinc-200 hover:border-zinc-400 text-zinc-800 shadow-2xs flex items-center gap-1.5 cursor-pointer">
-                    <span>Exportar Extrato (PDF) 📥</span>
-                  </button>
-                </div>
+            <!-- Header do Extrato -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-200/80">
+              <div>
+                <h4 class="font-bold text-zinc-900 text-base sm:text-lg font-sans tracking-tight">Extrato Completo de Movimentações</h4>
+                <p class="text-xs sm:text-sm text-zinc-500 font-sans mt-0.5">Histórico detalhado de presentes recebidos, saques PIX e conciliação bancária.</p>
               </div>
+              
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="showToast('Exportando extrato em formato PDF...', '📥')" class="btn-white text-xs py-2 px-3.5 font-bold rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-400 text-zinc-800 shadow-2xs flex items-center gap-1.5 cursor-pointer font-sans transition-all">
+                  <span>Exportar Extrato (PDF) 📥</span>
+                </button>
+              </div>
+            </div>
 
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-zinc-50 text-[11px] font-bold uppercase tracking-wider text-zinc-500 border-b border-zinc-100">
-                    <tr>
-                      <th class="py-3 px-4">Descrição / Convidado</th>
-                      <th class="py-3 px-4">Data</th>
-                      <th class="py-3 px-4">Status</th>
-                      <th class="py-3 px-4 text-right">Valor Líquido</th>
-                    </tr>
-                  </thead>
-                  <tbody id="wallet-transactions-list" class="divide-y divide-zinc-100">
-                    <!-- Linhas renderizadas dinamicamente via JS -->
-                  </tbody>
-                </table>
-              </div>
+            <!-- Tabela em Tela Cheia / Sem Caixa com Moldura/Sombra (100% do Espaço) -->
+            <div class="w-full overflow-x-auto min-h-[220px]">
+              <table class="w-full text-left">
+                <thead class="bg-zinc-100/60 border-y border-[#EAEAEF]">
+                  <tr class="text-[11px] sm:text-xs font-bold text-zinc-900 font-sans uppercase tracking-wider">
+                    <th class="py-3 px-4 sm:px-6">Descrição / Convidado</th>
+                    <th class="py-3 px-4 sm:px-6">Data</th>
+                    <th class="py-3 px-4 sm:px-6">Status</th>
+                    <th class="py-3 px-4 sm:px-6 text-right">Valor Líquido</th>
+                  </tr>
+                </thead>
+                <tbody id="wallet-transactions-list" class="divide-y divide-zinc-100 font-sans">
+                  <!-- Linhas renderizadas dinamicamente via JS -->
+                </tbody>
+              </table>
             </div>
 
           </div>

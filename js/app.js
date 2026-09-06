@@ -5803,19 +5803,19 @@ document.addEventListener('DOMContentLoaded', () => {
     activeEvent.wallet.transactions.forEach(tx => {
       const isNegative = tx.amount < 0;
       const row = document.createElement('tr');
-      row.className = 'border-b border-gray-100 hover:bg-slate-50/80 transition-colors text-xs sm:text-sm';
+      row.className = 'border-b border-zinc-100 hover:bg-zinc-50/80 transition-colors text-xs sm:text-sm font-sans';
       row.innerHTML = `
-        <td class="py-3.5 px-4">
-          <div class="font-bold text-slate-900">${tx.title}</div>
-          <div class="text-[11px] text-slate-500">${tx.guest} • ${tx.method}</div>
+        <td class="py-3.5 px-4 sm:px-6">
+          <div class="font-bold text-zinc-900 font-sans">${tx.title}</div>
+          <div class="text-[11px] text-zinc-500 font-sans">${tx.guest} • ${tx.method}</div>
         </td>
-        <td class="py-3.5 px-4 text-slate-500 text-xs">${tx.date}</td>
-        <td class="py-3.5 px-4">
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${tx.status === 'Disponível' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}">
+        <td class="py-3.5 px-4 sm:px-6 text-zinc-500 text-xs font-sans">${tx.date}</td>
+        <td class="py-3.5 px-4 sm:px-6 font-sans">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold font-sans ${tx.status === 'Disponível' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}">
             ● ${tx.status}
           </span>
         </td>
-        <td class="py-3.5 px-4 text-right font-extrabold ${isNegative ? 'text-slate-800' : 'text-emerald-600'}">
+        <td class="py-3.5 px-4 sm:px-6 text-right font-extrabold font-sans ${isNegative ? 'text-zinc-800' : 'text-emerald-600'}">
           ${isNegative ? '-' : '+'} R$ ${Math.abs(tx.amount).toFixed(2).replace('.', ',')}
         </td>
       `;

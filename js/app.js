@@ -4292,11 +4292,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openGiftDrawer() {
-    openGiftModal('custom');
+    const drawer = document.getElementById('drawer-add-gift');
+    const backdrop = document.getElementById('gift-drawer-backdrop');
+    if (backdrop) {
+      backdrop.classList.remove('hidden');
+      backdrop.style.setProperty('display', 'block', 'important');
+      backdrop.classList.add('open');
+    }
+    if (drawer) {
+      drawer.classList.remove('hidden');
+      drawer.style.setProperty('display', 'flex', 'important');
+      drawer.classList.add('open');
+    }
   }
 
   function closeGiftDrawer() {
-    closeGiftModal();
+    const drawer = document.getElementById('drawer-add-gift');
+    const backdrop = document.getElementById('gift-drawer-backdrop');
+    if (drawer) {
+      drawer.classList.remove('open');
+      drawer.style.setProperty('display', 'none', 'important');
+      drawer.classList.add('hidden');
+    }
+    if (backdrop) {
+      backdrop.classList.remove('open');
+      backdrop.style.setProperty('display', 'none', 'important');
+      backdrop.classList.add('hidden');
+    }
   }
 
   function renderQuickGiftsInModal() {
@@ -4450,7 +4472,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="text-xs font-bold">-</p>
       </div>
     `;
-    addCard.addEventListener('click', () => openGiftModal('custom'));
+    addCard.addEventListener('click', () => openGiftDrawer());
     container.appendChild(addCard);
 
     // 4. Renderiza os itens de presentes separados por linha vertical (sem caixa ou borda cinza delimitadora em volta da imagem)
@@ -4577,11 +4599,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHostAddGift = document.getElementById('btn-host-add-gift');
   if (btnHostAddGift) {
-    btnHostAddGift.addEventListener('click', () => openGiftModal('custom'));
+    btnHostAddGift.addEventListener('click', () => openGiftDrawer());
   }
 
   const btnCloseGiftModal = document.getElementById('btn-close-gift-modal');
   if (btnCloseGiftModal) btnCloseGiftModal.addEventListener('click', closeGiftModal);
+
+  // Listeners para fechar o Drawer Lateral de Adicionar Presente
+  const btnCloseGiftDrawer = document.getElementById('btn-close-gift-drawer');
+  const giftDrawerBackdrop = document.getElementById('gift-drawer-backdrop');
+  if (btnCloseGiftDrawer) btnCloseGiftDrawer.addEventListener('click', closeGiftDrawer);
+  if (giftDrawerBackdrop) giftDrawerBackdrop.addEventListener('click', closeGiftDrawer);
 
   // Alternância das abas dentro do Modal de Adicionar Presente
   const tabBtnGiftCustom = document.getElementById('tab-btn-gift-custom');
@@ -4605,13 +4633,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Adicionar Presente à comemoração ativa
+  // Adicionar Presente via Drawer (Nome, Imagem, Descrição Opcional, Valor)
   const formAddGift = document.getElementById('form-add-gift');
   if (formAddGift) {
-    // Preset image picker
     let selectedGiftImage = 'assets/card_lecreuset.jpg';
+    const giftDropzone = document.getElementById('gift-image-dropzone');
+    const giftFileInput = document.getElementById('gift-file-input');
+    const giftPreviewImg = document.getElementById('gift-image-preview-img');
+    const giftUrlInput = document.getElementById('gift-image-url-input');
+
+    // Clique na área de upload para selecionar arquivo do computador
+    if (giftDropzone && giftFileInput) {
+      giftDropzone.addEventListener('click', () => giftFileInput.click());
+      giftFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            selectedGiftImage = event.target.result;
+            if (giftPreviewImg) giftPreviewImg.src = event.target.result;
+            if (giftUrlInput) giftUrlInput.value = event.target.result;
+            document.querySelectorAll('.btn-gift-img-preset').forEach(b => {
+              b.classList.remove('active', 'border-[#537bae]');
+              b.classList.add('border-transparent');
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Seleção de presets de imagem da galeria
     document.querySelectorAll('.btn-gift-img-preset').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         document.querySelectorAll('.btn-gift-img-preset').forEach(b => {
           b.classList.remove('active', 'border-[#537bae]');
           b.classList.add('border-transparent');
@@ -4621,8 +4676,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const imgSrc = btn.getAttribute('data-img-src');
         if (imgSrc) {
           selectedGiftImage = imgSrc;
-          const urlInput = document.getElementById('gift-image-url-input');
-          if (urlInput) urlInput.value = imgSrc;
+          if (giftPreviewImg) giftPreviewImg.src = imgSrc;
+          if (giftUrlInput) giftUrlInput.value = imgSrc;
         }
       });
     });
@@ -4630,16 +4685,18 @@ document.addEventListener('DOMContentLoaded', () => {
     formAddGift.addEventListener('submit', (e) => {
       e.preventDefault();
       const activeEvent = getActiveEvent();
-      const title = document.getElementById('gift-title-input').value;
-      const price = parseFloat(document.getElementById('gift-price-input').value) || 250;
-      const category = document.getElementById('gift-category-input').value || 'Cotas & Lua de Mel';
-      const urlInput = document.getElementById('gift-image-url-input')?.value;
-      const image = urlInput && urlInput.trim() ? urlInput.trim() : selectedGiftImage;
+      if (!activeEvent.giftList) activeEvent.giftList = [];
+
+      const title = document.getElementById('gift-title-input')?.value?.trim() || 'Presente Especial';
+      const price = parseFloat(document.getElementById('gift-price-input')?.value) || 250;
+      const description = document.getElementById('gift-description-input')?.value?.trim() || '';
+      const image = giftUrlInput?.value || giftPreviewImg?.src || selectedGiftImage;
 
       activeEvent.giftList.unshift({
-        id: `gift-${Date.now()}`,
+        id: `gift-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         title: title,
-        category: category,
+        description: description,
+        category: 'Presentes & Cotas',
         price: price,
         type: 'virtual',
         marketplaceUrl: null,
@@ -4649,8 +4706,13 @@ document.addEventListener('DOMContentLoaded', () => {
         contributorsCount: 0
       });
 
-      activeEvent.presentesRecebidos += 1;
+      activeEvent.presentesRecebidos = (activeEvent.presentesRecebidos || 0) + 1;
       formAddGift.reset();
+      selectedGiftImage = 'assets/card_lecreuset.jpg';
+      if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
+      if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+      
+      closeGiftDrawer();
       closeGiftModal();
       renderHostGifts();
       updateAllCelebrationData();

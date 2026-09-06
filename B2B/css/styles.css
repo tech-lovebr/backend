@@ -55,9 +55,9 @@ p { color: #52525B; line-height: 1.6; }
   color: #FFFFFF !important;
 }
 
-/* Balão de mensagem enviado pelo usuário (Degradê do Header + Alta Transparência / Efeito Vitrificado) */
+/* Balão de mensagem enviado pelo usuário (Degradê Suave do Header + Alta Transparência / Efeito Vitrificado) */
 .chat-bubble-user-glass {
-  background: linear-gradient(180deg, rgba(83, 123, 174, 0.48) 0%, rgba(72, 111, 161, 0.52) 45%, rgba(56, 91, 136, 0.62) 100%) !important;
+  background: linear-gradient(180deg, rgba(83, 123, 174, 0.48) 0%, rgba(74, 112, 159, 0.52) 50%, rgba(65, 103, 153, 0.60) 100%) !important;
   backdrop-filter: blur(16px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
   border: 1px solid rgba(255, 255, 255, 0.38) !important;

@@ -454,11 +454,17 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   stroke-width: 2.15px !important;
 }
 
-/* Bolinhas de Notificações e Chat/Mensagens na Cor Secundária (#27394f) */
+/* Bolinhas de Notificações e Chat/Mensagens na Cor Secundária (#27394f) - Sem anel ou sublinhado branco */
 .badge-header-chat,
 .badge-header-notifications,
 .badge-chat-dot {
   background-color: #27394f !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  ring: none !important;
+  --tw-ring-offset-shadow: none !important;
+  --tw-ring-shadow: none !important;
 }
 
 /* 2. Narrow Icon Rail (Leftmost Sidebar on Desktop) */

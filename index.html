@@ -1916,37 +1916,37 @@
              ================================================================= -->
         <section id="tab-gifts" class="dashboard-tab-content space-y-6">
           
-          <!-- 1. Cabeçalho: Meus Presentes (Título) + Subtítulo + Linha Horizontal (Igual a Home) -->
-          <div class="pb-5 border-b border-zinc-200/80">
-            <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus Presentes</h2>
-            <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Todos os presentes cadastrados são fictícios.</p>
-          </div>
-
-          <!-- 2. Abaixo os 2 Dados em 2 Caixas Separadas (Total de Presentes & Valor Total) -->
-          <div id="gifts-summary-stats" class="grid grid-cols-2 gap-3 sm:gap-4 max-w-sm sm:max-w-md">
-            
-            <!-- Caixa 1: Total de Presentes -->
-            <div class="bg-white rounded-[10px] border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all p-3 sm:p-3.5 space-y-1.5 group">
-              <div>
-                <h4 class="font-bold text-xs sm:text-sm text-zinc-900 leading-tight font-sans">Total de presentes</h4>
-                <p class="text-[10px] sm:text-[11px] text-zinc-500 font-normal leading-tight mt-0.5 font-sans">Itens na lista</p>
-              </div>
-              <div class="flex items-baseline gap-2 pt-0.5">
-                <span id="gifts-total-count" class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">0</span>
-              </div>
+          <!-- 1. Cabeçalho: Meus Presentes (Título) à esquerda + Dados à direita + Linha Horizontal -->
+          <div class="pb-5 border-b border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus Presentes</h2>
+              <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Todos os presentes cadastrados são fictícios.</p>
             </div>
 
-            <!-- Caixa 2: Valor Total -->
-            <div class="bg-white rounded-[10px] border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all p-3 sm:p-3.5 space-y-1.5 group">
-              <div>
-                <h4 class="font-bold text-xs sm:text-sm text-zinc-900 leading-tight font-sans">Valor total</h4>
-                <p class="text-[10px] sm:text-[11px] text-zinc-500 font-normal leading-tight mt-0.5 font-sans">Soma da lista</p>
+            <!-- Dados à direita do título: Total de Presentes & Valor Total -->
+            <div id="gifts-summary-stats" class="grid grid-cols-2 gap-3 sm:gap-4 w-full sm:w-auto min-w-[280px] sm:min-w-[340px] max-w-sm">
+              <!-- Caixa 1: Total de Presentes -->
+              <div class="bg-white rounded-[10px] border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all p-3 sm:p-3.5 space-y-1.5 group">
+                <div>
+                  <h4 class="font-bold text-xs sm:text-sm text-zinc-900 leading-tight font-sans">Total de presentes</h4>
+                  <p class="text-[10px] sm:text-[11px] text-zinc-500 font-normal leading-tight mt-0.5 font-sans">Itens na lista</p>
+                </div>
+                <div class="flex items-baseline gap-2 pt-0.5">
+                  <span id="gifts-total-count" class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">0</span>
+                </div>
               </div>
-              <div class="flex items-baseline gap-2 pt-0.5">
-                <span id="gifts-total-value" class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">R$ 0,00</span>
+
+              <!-- Caixa 2: Valor Total -->
+              <div class="bg-white rounded-[10px] border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all p-3 sm:p-3.5 space-y-1.5 group">
+                <div>
+                  <h4 class="font-bold text-xs sm:text-sm text-zinc-900 leading-tight font-sans">Valor total</h4>
+                  <p class="text-[10px] sm:text-[11px] text-zinc-500 font-normal leading-tight mt-0.5 font-sans">Soma da lista</p>
+                </div>
+                <div class="flex items-baseline gap-2 pt-0.5">
+                  <span id="gifts-total-value" class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">R$ 0,00</span>
+                </div>
               </div>
             </div>
-
           </div>
 
           <!-- 3. Lista de Presentes (Grid de Produtos Fictícios) -->

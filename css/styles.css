@@ -2501,14 +2501,3 @@ button.rsvp-tab-link.active::after {
   background-color: #4e6891 !important;
 }
 
-#btn-do-email-login,
-#btn-register-submit {
-  background-color: #F25421 !important;
-  color: #FFFFFF !important;
-}
-#btn-do-email-login:hover,
-#btn-register-submit:hover {
-  background-color: #d94414 !important;
-}
-
-

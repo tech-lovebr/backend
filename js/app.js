@@ -754,6 +754,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (kpiArrecadado) kpiArrecadado.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (kpiRsvp) kpiRsvp.textContent = `${activeEvent.convidadosConfirmados}`;
+    const kpiRsvpRate = document.getElementById('kpi-rsvp-rate-badge');
+    if (kpiRsvpRate) {
+      const total = activeEvent.convidadosTotal || 210;
+      const confirmed = activeEvent.convidadosConfirmados !== undefined ? activeEvent.convidadosConfirmados : 185;
+      const pct = Math.round((confirmed / total) * 100);
+      kpiRsvpRate.textContent = `${pct}% RSVP`;
+    }
     if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados || 160} adultos • ${activeEvent.criancasConfirmadas || 25} crianças confirmadas`;
     if (kpiGifts) kpiGifts.textContent = `${activeEvent.presentesRecebidos}`;
     if (kpiGiftsSubtext) kpiGiftsSubtext.textContent = `Total de R$ ${activeEvent.totalArrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} arrecadados`;

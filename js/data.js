@@ -114,6 +114,7 @@ const LOVE_DATA = {
           received: 1200.00,
           status: 'Completo (100%)',
           image: 'assets/card_safari.jpg',
+          buyerName: 'Carlos Eduardo & Família',
           contributorsCount: 4
         },
         {
@@ -124,6 +125,7 @@ const LOVE_DATA = {
           received: 799.00,
           status: 'Resgatado em PIX',
           image: 'assets/card_lecreuset.jpg',
+          buyerName: 'Mariana Silveira',
           contributorsCount: 1
         },
         {
@@ -134,6 +136,7 @@ const LOVE_DATA = {
           received: 890.00,
           status: 'Resgatado em PIX',
           image: 'assets/card_espresso.jpg',
+          buyerName: 'Rodrigo & Camila',
           contributorsCount: 2
         },
         {
@@ -144,6 +147,7 @@ const LOVE_DATA = {
           received: 650.00,
           status: 'Completo (100%)',
           image: 'assets/card_kayak.jpg',
+          buyerName: 'Guilherme Siqueira',
           contributorsCount: 3
         },
         {
@@ -154,6 +158,7 @@ const LOVE_DATA = {
           received: 450.00,
           status: 'Disponível na Loja',
           image: 'assets/card_bedding.jpg',
+          buyerName: 'Fernanda & Thiago Rossi',
           contributorsCount: 1
         },
         {
@@ -164,6 +169,7 @@ const LOVE_DATA = {
           received: 0.00,
           status: 'Disponível para Presentear',
           image: 'assets/bouquet_roses.jpg',
+          buyerName: null,
           contributorsCount: 0
         }
       ],

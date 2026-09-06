@@ -4459,12 +4459,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Renderiza apenas os itens de presentes reais (cards de adicionar aleatório e adicionar presente removidos)
     filteredGifts.forEach(gift => {
+      const buyerName = gift.buyerName || (gift.received > 0 ? (activeEvent.receivedGifts?.find(r => r.giftTitle === gift.title || r.id === gift.id)?.guestName || 'Convidado') : null);
+      const isPurchased = Boolean(buyerName);
+
       const card = document.createElement('div');
       card.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
 
+      if (isPurchased) {
+        card.setAttribute('title', `Presente recebido por: ${buyerName}`);
+      }
+
       card.innerHTML = `
-        <!-- Topo do Card: Coração de Favorito à direita -->
-        <div class="w-full flex items-center justify-end text-zinc-400 mb-1">
+        <!-- Topo do Card: Coração de Favorito à direita + Tag de Recebido à esquerda se comprado -->
+        <div class="w-full flex items-center justify-between text-zinc-400 mb-1">
+          ${isPurchased ? `
+            <span class="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-2xs font-sans">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Recebido
+            </span>
+          ` : `<span></span>`}
           <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-1 cursor-pointer" title="Favoritar">
             <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -4472,14 +4485,31 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </div>
 
-        <!-- Imagem do Produto direta na célula com Botão X no Canto Superior Direito -->
+        <!-- Imagem do Produto com Ação Bloqueada ou Botão X no Canto Superior Direito -->
         <div class="relative w-full flex-1 flex items-center justify-center p-2 my-auto">
           <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[190px] sm:max-w-[210px] md:max-w-[230px] aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
           
-          <!-- Botão X de exclusão no canto superior direito da imagem -->
-          <button type="button" class="btn-delete-gift absolute top-1 right-1 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
-            ✕
-          </button>
+          ${isPurchased ? `
+            <!-- Botão de exclusão bloqueado (Presente já comprado) -->
+            <div class="btn-delete-blocked absolute top-1 right-1 w-6 h-6 rounded-full bg-zinc-100/90 border border-zinc-200/80 text-zinc-400 flex items-center justify-center text-[10px] shadow-2xs z-10 cursor-not-allowed opacity-0 group-hover:opacity-100 transition-opacity" title="Presente recebido por: ${buyerName} (Bloqueado para exclusão)">
+              <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+              </svg>
+            </div>
+          ` : `
+            <!-- Botão X de exclusão no canto superior direito da imagem -->
+            <button type="button" class="btn-delete-gift absolute top-1 right-1 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
+              ✕
+            </button>
+          `}
+
+          <!-- Hover Pill: Presente recebido por: Nome do Convidado -->
+          ${isPurchased ? `
+            <div class="absolute inset-x-2 bottom-1 mx-auto w-fit max-w-[95%] bg-zinc-900/95 text-white text-[11px] font-medium py-1.5 px-3 rounded-full shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 flex items-center gap-1.5 truncate font-sans">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse"></span>
+              <span class="truncate">Presente recebido por: <strong class="font-bold text-white">${buyerName}</strong></span>
+            </div>
+          ` : ''}
         </div>
 
         <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->
@@ -4493,7 +4523,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // Evento de exclusão do presente
+      // Evento de exclusão do presente (apenas se não foi comprado)
       const btnDelete = card.querySelector('.btn-delete-gift');
       if (btnDelete) {
         btnDelete.addEventListener('click', (e) => {
@@ -4502,6 +4532,15 @@ document.addEventListener('DOMContentLoaded', () => {
           const searchInput = document.getElementById('gifts-search-input');
           renderHostGifts(searchInput ? searchInput.value : '');
           showToast(`Presente "${gift.title}" excluído da lista.`, '🗑️');
+        });
+      }
+
+      // Se tentar clicar no botão bloqueado
+      const btnBlocked = card.querySelector('.btn-delete-blocked');
+      if (btnBlocked) {
+        btnBlocked.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showToast(`Este presente já foi recebido por ${buyerName} e não pode ser excluído.`, '🔒');
         });
       }
 

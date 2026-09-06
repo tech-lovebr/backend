@@ -557,17 +557,14 @@
               <!-- Notificação 1: Presente Comprado -->
               <div class="py-2.5 px-2 hover:bg-slate-50/80 rounded-xl transition-colors cursor-pointer" onclick="document.querySelector('[data-rail-tab=\'gifts\']').click(); document.getElementById('dropdown-notifications').classList.add('hidden');">
                 <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm flex-shrink-0 border border-emerald-100 shadow-sm">
-                    🎁
+                  <div class="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 0 0 0-4.5H3a2.25 2.25 0 0 0 0 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 0 1 0-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 0 0 0-4.5c-1.864 0-3.75 2.25-3.75 4.5"/></svg>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-xs text-slate-800 leading-snug">
+                    <p class="text-xs text-slate-800 leading-snug font-sans">
                       <strong class="text-slate-900 font-bold">Mariana Silveira</strong> comprou um <strong class="text-slate-900 font-bold">Jogo de Talheres Tramontina 24 Peças</strong> na sua lista de presentes.
                     </p>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">+ R$ 380,00 recebidos via PIX ⚡</span>
-                      <span class="text-[10px] text-slate-400">• Há 25 minutos</span>
-                    </div>
+                    <span class="text-[11px] text-slate-400 mt-1 block font-sans">Há 25 minutos</span>
                   </div>
                 </div>
               </div>
@@ -575,20 +572,17 @@
               <!-- Notificação 2: Resposta de Fornecedor -->
               <div class="py-2.5 px-2 hover:bg-slate-50/80 rounded-xl transition-colors cursor-pointer" onclick="document.querySelector('[data-rail-tab=\'b2b\']').click(); document.getElementById('dropdown-notifications').classList.add('hidden');">
                 <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm flex-shrink-0 border border-blue-100 shadow-sm">
-                    💬
+                  <div class="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.502 49.188 49.188 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v5.992z"/></svg>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-xs text-slate-800 leading-snug">
+                    <p class="text-xs text-slate-800 leading-snug font-sans">
                       <strong class="text-slate-900 font-bold">Villa Bisutti - Espaço Jardim</strong> respondeu sua mensagem sobre a disponibilidade do local.
                     </p>
-                    <p class="text-[11px] text-slate-500 italic mt-0.5 bg-slate-50/80 p-1.5 rounded-lg border border-slate-100">
+                    <p class="text-[11px] text-slate-500 italic mt-0.5 font-sans">
                       "Olá Beatriz! Temos a data de 18 de Outubro disponível para vocês..."
                     </p>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Mensagem do Fornecedor</span>
-                      <span class="text-[10px] text-slate-400">• Há 1 hora</span>
-                    </div>
+                    <span class="text-[11px] text-slate-400 mt-1 block font-sans">Há 1 hora</span>
                   </div>
                 </div>
               </div>
@@ -596,20 +590,17 @@
               <!-- Notificação 3: Confirmação de Presença -->
               <div class="py-2.5 px-2 hover:bg-slate-50/80 rounded-xl transition-colors cursor-pointer" onclick="document.querySelector('[data-rail-tab=\'rsvp\']').click(); document.getElementById('dropdown-notifications').classList.add('hidden');">
                 <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0 border border-[#5c7aaa]/50 shadow-sm" style="background-color: #F0F4F8; color: #537bae;">
-                    ✨
+                  <div class="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-xs text-slate-800 leading-snug">
+                    <p class="text-xs text-slate-800 leading-snug font-sans">
                       <strong class="text-slate-900 font-bold">Carlos Eduardo & Família</strong> confirmaram presença no seu evento (2 adultos, 1 criança).
                     </p>
-                    <p class="text-[11px] text-slate-500 italic mt-0.5">
+                    <p class="text-[11px] text-slate-500 italic mt-0.5 font-sans">
                       "Muito felizes por vocês! Mal podemos esperar..."
                     </p>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#5c7aaa]/50" style="background-color: #F0F4F8; color: #537bae;">RSVP Confirmado</span>
-                      <span class="text-[10px] text-slate-400">• Hoje, às 14:22</span>
-                    </div>
+                    <span class="text-[11px] text-slate-400 mt-1 block font-sans">Hoje, às 14:22</span>
                   </div>
                 </div>
               </div>

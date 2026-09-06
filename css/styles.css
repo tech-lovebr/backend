@@ -214,6 +214,25 @@ table,
   margin-bottom: 0 !important;
 }
 
+/* Caixas de Aparência com o mesmo Border Radius da Home (--radius-card: 10px) */
+.appearance-card-block > div,
+.appearance-card-block,
+#editor-card-bg-color,
+#editor-card-btn-style,
+#editor-form-home .border.rounded,
+#editor-form-home .border.rounded-2xl,
+.editor-sub-panel > div[class*="border"] {
+  border-radius: var(--radius-card, 10px) !important;
+}
+
+.appearance-card-block > div > div:first-child,
+#editor-card-bg-color > div:first-child,
+#editor-card-btn-style > div:first-child,
+.editor-sub-panel > div[class*="border"] > div:first-child {
+  border-top-left-radius: calc(var(--radius-card, 10px) - 1px) !important;
+  border-top-right-radius: calc(var(--radius-card, 10px) - 1px) !important;
+}
+
 /* 2. Controles: Botões, Campos de Formulário, Menu do Sidebar e Ícones de Métrica: 12px */
 button:not(#btn-close-sub-drawer-mobile):not(.rounded-full):not([class*="rounded-full"]),
 .btn-brand,

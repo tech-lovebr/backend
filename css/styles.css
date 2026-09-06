@@ -2074,6 +2074,7 @@ body.b2b-chat-mode .dashboard-main-area > footer {
    ========================================================================== */
 .guest-details-drawer,
 .gift-drawer,
+.budget-expense-drawer,
 .contracted-vendor-drawer {
   position: fixed;
   top: 0;
@@ -2092,6 +2093,7 @@ body.b2b-chat-mode .dashboard-main-area > footer {
 
 .guest-details-drawer.open,
 .gift-drawer.open,
+.budget-expense-drawer.open,
 .contracted-vendor-drawer.open {
   display: flex !important;
   transform: translateX(0);
@@ -2099,6 +2101,7 @@ body.b2b-chat-mode .dashboard-main-area > footer {
 
 .guest-drawer-backdrop,
 .gift-drawer-backdrop,
+.budget-expense-drawer-backdrop,
 .contracted-drawer-backdrop {
   display: none !important;
   position: fixed;
@@ -2111,6 +2114,7 @@ body.b2b-chat-mode .dashboard-main-area > footer {
 
 .guest-drawer-backdrop.open,
 .gift-drawer-backdrop.open,
+.budget-expense-drawer-backdrop.open,
 .contracted-drawer-backdrop.open {
   display: block !important;
 }

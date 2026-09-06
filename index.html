@@ -4516,45 +4516,50 @@
   </div>
 
   <!-- =======================================================================
-       MODAL: ADICIONAR DESPESA / ITEM DE ORÇAMENTO (Pop-up Padrão Love)
+       DRAWER LATERAL: ADICIONAR DESPESA / ITEM DE ORÇAMENTO
        ======================================================================= -->
-  <div id="modal-add-budget-expense" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
-    <div class="modal-container-custom bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative p-6 sm:p-8 space-y-5 font-sans">
-      
-      <!-- Close Button -->
-      <button data-close-modal class="absolute top-4 right-4 w-9 h-9 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center text-sm cursor-pointer transition-colors" title="Fechar">✕</button>
+  <div id="budget-expense-drawer-backdrop" class="budget-expense-drawer-backdrop hidden" style="display: none !important;"></div>
 
-      <!-- Header do Modal -->
-      <div class="space-y-1">
-        <h3 class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">Adicionar Despesa</h3>
-        <p class="text-xs text-zinc-500 font-sans">Cadastre um novo item ou contrato para acompanhar no seu orçamento.</p>
+  <aside id="drawer-add-budget-expense" class="budget-expense-drawer hidden" style="display: none !important;" aria-label="Adicionar Despesa">
+    <!-- Header do Drawer: Mesmo padrão de título das páginas com linha horizontal cortando -->
+    <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Despesa</h2>
+        <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre um novo item ou contrato para acompanhar no seu orçamento.</p>
       </div>
+      <button id="btn-close-add-expense-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
 
-      <!-- Formulário de Adição de Despesa -->
-      <form id="form-add-budget-expense" class="space-y-4 pt-1">
+    <!-- Conteúdo do Formulário -->
+    <div class="flex-1 overflow-y-auto px-6 sm:px-8 py-6 font-sans">
+      <form id="form-add-budget-expense" class="space-y-5 text-left">
         
         <!-- Campo 1: Item -->
-        <div>
-          <label for="expense-item-name" class="block text-xs font-bold text-zinc-700 mb-1 font-sans">Item <span class="text-rose-500">*</span></label>
-          <input type="text" id="expense-item-name" required placeholder="Ex: Espaço, Buffet, Fotógrafo..." class="w-full px-3.5 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 transition-all font-sans">
+        <div class="space-y-1.5">
+          <label for="expense-item-name" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Item <span class="text-rose-500">*</span></label>
+          <input type="text" id="expense-item-name" required placeholder="Ex: Espaço, Buffet, Fotógrafo..." class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans">
         </div>
 
         <!-- Campo 2: Fornecedor (Digitável com Autocomplete de Meus Contratos) -->
-        <div class="relative">
-          <label for="expense-vendor-input" class="block text-xs font-bold text-zinc-700 mb-1 font-sans">Fornecedor</label>
-          <input type="text" id="expense-vendor-input" autocomplete="off" placeholder="Digite o nome do fornecedor..." class="w-full px-3.5 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 transition-all font-sans">
+        <div class="relative space-y-1.5">
+          <label for="expense-vendor-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Fornecedor</label>
+          <input type="text" id="expense-vendor-input" autocomplete="off" placeholder="Digite o nome do fornecedor..." class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans">
           
           <!-- Dropdown de Sugestões de Meus Contratos -->
           <div id="expense-vendor-suggestions" class="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl border border-zinc-200 shadow-xl max-h-48 overflow-y-auto hidden z-30 divide-y divide-zinc-100 font-sans">
             <!-- Injetado dinamicamente via JS -->
           </div>
-          <p class="text-[10.5px] text-zinc-400 mt-1 font-sans">Fornecedores de 'Meus contratos' aparecem como sugestão ao digitar.</p>
+          <p class="text-[10.5px] text-zinc-400 font-sans">Fornecedores de 'Meus contratos' aparecem como sugestão ao digitar.</p>
         </div>
 
-        <!-- Campo 3: Categoria (Dropdown com as 14 categorias solicitadas) -->
-        <div>
-          <label for="expense-category-select" class="block text-xs font-bold text-zinc-700 mb-1 font-sans">Categoria <span class="text-rose-500">*</span></label>
-          <select id="expense-category-select" required class="w-full px-3.5 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-medium text-zinc-900 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white transition-all font-sans cursor-pointer">
+        <!-- Campo 3: Categoria -->
+        <div class="space-y-1.5">
+          <label for="expense-category-select" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Categoria <span class="text-rose-500">*</span></label>
+          <select id="expense-category-select" required class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans cursor-pointer">
             <option value="Local">Local</option>
             <option value="Alimentação">Alimentação</option>
             <option value="Fotografia e mídia">Fotografia e mídia</option>
@@ -4575,44 +4580,44 @@
         <!-- Valores: Estimado, Real e Pago em Grid de 3 Colunas -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           <!-- Valor Estimado -->
-          <div>
-            <label for="expense-estimated-input" class="block text-xs font-bold text-zinc-700 mb-1 font-sans">Estimado</label>
+          <div class="space-y-1.5">
+            <label for="expense-estimated-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Estimado</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
-              <input type="text" id="expense-estimated-input" placeholder="0,00" class="w-full pl-9 pr-2.5 py-2 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans">
+              <input type="text" id="expense-estimated-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
             </div>
           </div>
 
           <!-- Valor Real -->
-          <div>
-            <label for="expense-actual-input" class="block text-xs font-bold text-zinc-700 mb-1 font-sans">Valor Real</label>
+          <div class="space-y-1.5">
+            <label for="expense-actual-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor Real</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
-              <input type="text" id="expense-actual-input" placeholder="0,00" class="w-full pl-9 pr-2.5 py-2 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans">
+              <input type="text" id="expense-actual-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
             </div>
           </div>
 
           <!-- Valor Pago -->
-          <div>
-            <label for="expense-paid-input" class="block text-xs font-bold text-zinc-700 mb-1 font-sans">Valor Pago</label>
+          <div class="space-y-1.5">
+            <label for="expense-paid-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor Pago</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
-              <input type="text" id="expense-paid-input" placeholder="0,00" class="w-full pl-9 pr-2.5 py-2 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-emerald-700 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans">
+              <input type="text" id="expense-paid-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-emerald-700 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
             </div>
           </div>
         </div>
 
-        <!-- Botão Adicionar -->
-        <div class="pt-3">
-          <button type="submit" id="btn-submit-add-expense" class="w-full py-3.5 rounded-[var(--radius-control,12px)] bg-[#5c7aaa] hover:bg-[#4e6891] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer font-sans">
-            Adicionar Despesa
+        <!-- Botão Adicionar Despesa com a Cor Secundária (#5c7aaa) -->
+        <div class="pt-4 border-t border-zinc-200/80">
+          <button type="submit" id="btn-submit-add-expense" class="w-full py-3.5 rounded-[var(--radius-control,12px)] bg-[#5c7aaa] hover:bg-[#4e6891] text-white text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all cursor-pointer font-sans flex items-center justify-center gap-2" style="background-color: #5c7aaa !important;">
+            <span>Adicionar Despesa</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
           </button>
         </div>
 
       </form>
-
     </div>
-  </div>
+  </aside>
 
   <!-- =======================================================================
        MODAL: ESCOLHA DE TEMPLATES / DESIGNS DO SITE (Pop-up Padrão Love)

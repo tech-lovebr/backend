@@ -5797,20 +5797,47 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function initAddBudgetExpenseModal() {
-    const modal = document.getElementById('modal-add-budget-expense');
+    const drawer = document.getElementById('drawer-add-budget-expense');
+    const backdrop = document.getElementById('budget-expense-drawer-backdrop');
     const btnOpen = document.getElementById('btn-open-add-expense');
+    const btnClose = document.getElementById('btn-close-add-expense-drawer');
     const form = document.getElementById('form-add-budget-expense');
     const inputVendor = document.getElementById('expense-vendor-input');
     const suggestionsBox = document.getElementById('expense-vendor-suggestions');
     const selectCat = document.getElementById('expense-category-select');
 
-    if (btnOpen) {
-      btnOpen.addEventListener('click', () => {
-        if (form) form.reset();
-        if (suggestionsBox) suggestionsBox.classList.add('hidden');
-        openModal(modal);
-      });
-    }
+    const openDrawer = () => {
+      if (form) form.reset();
+      if (suggestionsBox) suggestionsBox.classList.add('hidden');
+      if (backdrop) {
+        backdrop.classList.remove('hidden');
+        backdrop.style.setProperty('display', 'block', 'important');
+        backdrop.classList.add('open');
+      }
+      if (drawer) {
+        drawer.classList.remove('hidden');
+        drawer.style.setProperty('display', 'flex', 'important');
+        drawer.classList.add('open');
+      }
+    };
+
+    const closeDrawer = () => {
+      if (drawer) {
+        drawer.classList.remove('open');
+        drawer.style.setProperty('display', 'none', 'important');
+        drawer.classList.add('hidden');
+      }
+      if (backdrop) {
+        backdrop.classList.remove('open');
+        backdrop.style.setProperty('display', 'none', 'important');
+        backdrop.classList.add('hidden');
+      }
+      if (suggestionsBox) suggestionsBox.classList.add('hidden');
+    };
+
+    if (btnOpen) btnOpen.addEventListener('click', openDrawer);
+    if (btnClose) btnClose.addEventListener('click', closeDrawer);
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
     if (inputVendor && suggestionsBox) {
       inputVendor.addEventListener('input', (e) => {
@@ -5917,7 +5944,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveBudgetExpenses(expenses);
 
         renderBudgetExpensesTable();
-        closeModal(modal);
+        closeDrawer();
         form.reset();
         showToast(`Despesa "${newItem.item}" adicionada com sucesso!`, '💰');
       });

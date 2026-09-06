@@ -5756,11 +5756,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerActions = document.getElementById('wallet-header-actions');
 
     if (headerActions) {
-      if (subId === 'wallet-budget' || subId === 'wallet-statement') {
-        headerActions.classList.add('hidden');
-      } else {
-        headerActions.classList.remove('hidden');
-      }
+      headerActions.classList.add('hidden');
     }
 
     if (title) {

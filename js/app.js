@@ -8345,7 +8345,9 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       dropdownNotifications?.classList.add('hidden');
       dropdownUserAccount?.classList.add('hidden');
-      switchRailTab('suppliers');
+      const badgeChat = document.querySelector('.badge-header-chat');
+      if (badgeChat) badgeChat.classList.add('hidden');
+      switchRailTab('b2b');
       switchB2BView('messages');
     });
   }
@@ -8357,6 +8359,18 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdownUserAccount?.classList.add('hidden');
       dropdownNotifications.classList.toggle('hidden');
     });
+
+    const btnMarkRead = dropdownNotifications.querySelector('button');
+    if (btnMarkRead) {
+      btnMarkRead.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const badgeNotif = document.querySelector('.badge-header-notifications');
+        if (badgeNotif) badgeNotif.classList.add('hidden');
+        const badgeCount = dropdownNotifications.querySelector('span[style*="#27394f"]');
+        if (badgeCount) badgeCount.textContent = '0 novas';
+        showToast('Todas as notificações foram marcadas como lidas.', '✓');
+      });
+    }
   }
 
   // Fecha dropdowns ao clicar fora

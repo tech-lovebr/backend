@@ -456,7 +456,24 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
 
 /* Bolinhas de Notificações e Chat/Mensagens na Cor Secundária (#27394f) - Sem anel ou sublinhado branco */
 .badge-header-chat,
-.badge-header-notifications,
+.badge-header-notifications {
+  background-color: #27394f !important;
+  color: #FFFFFF !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  ring: none !important;
+  --tw-ring-offset-shadow: none !important;
+  --tw-ring-shadow: none !important;
+}
+
 .badge-chat-dot {
   background-color: #27394f !important;
   box-shadow: none !important;

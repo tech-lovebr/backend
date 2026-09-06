@@ -231,7 +231,7 @@ function renderActiveChat() {
     if (isMe) {
       row.innerHTML = `
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-          <div class="bg-[#537bae] text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed shadow-xs text-left" style="color: #FFFFFF !important;">
+          <div class="chat-bubble-user-glass text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left" style="color: #FFFFFF !important;">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words text-white" style="color: #FFFFFF !important;">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>

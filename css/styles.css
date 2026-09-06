@@ -2371,3 +2371,15 @@ button.rsvp-tab-link.active::after {
     max-width: calc(100% + 2.5rem) !important;
   }
 }
+
+/* Botão Adicionar Despesa (Orçamento) - Cor Secundária #5c7aaa */
+#btn-open-add-expense,
+#btn-submit-add-expense {
+  background-color: #5c7aaa !important;
+  color: #FFFFFF !important;
+}
+
+#btn-open-add-expense:hover,
+#btn-submit-add-expense:hover {
+  background-color: #4e6891 !important;
+}

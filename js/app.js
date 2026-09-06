@@ -4399,16 +4399,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
     if (totalValueEl) totalValueEl.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    // 2. Primeiro Card: Adicionar Aleatório
+    // 2. Primeiro Item: Adicionar Aleatório (Com separação por linha vertical e horizontal)
     const randomCard = document.createElement('div');
-    randomCard.className = 'group bg-white p-3 sm:p-3.5 border border-zinc-200/80 rounded-[10px] flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 hover:shadow-xs cursor-pointer min-h-[255px] sm:min-h-[275px] md:min-h-[290px]';
+    randomCard.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
     randomCard.innerHTML = `
-      <div class="w-full flex items-center justify-end text-zinc-400 mb-0.5 opacity-0">
-        <span class="w-3.5 h-3.5 p-0.5 block"></span>
+      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0 pointer-events-none">
+        <span class="w-4 h-4 p-0.5 block"></span>
       </div>
-      <div class="w-full flex-1 flex flex-col items-center justify-center p-2 my-auto">
-        <div class="w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
-          <svg class="w-5 h-5 sm:w-5.5 sm:h-5.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <div class="w-full flex-1 flex flex-col items-center justify-center p-3 my-auto">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
+          <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/>
@@ -4416,71 +4416,71 @@ document.addEventListener('DOMContentLoaded', () => {
             <path stroke-linecap="round" stroke-linejoin="round" d="m18 14 4 4-4 4"/>
           </svg>
         </div>
-        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-2.5 transition-colors font-sans">
+        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-4 transition-colors font-sans">
           Adicionar Aleatório
         </h4>
-        <p class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Gera presentes prontos</p>
+        <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">Gera presentes prontos</p>
       </div>
-      <div class="w-full pt-1 mt-auto opacity-0 pointer-events-none">
+      <div class="w-full pt-2 mt-auto opacity-0 pointer-events-none">
         <p class="text-xs font-bold">-</p>
       </div>
     `;
     randomCard.addEventListener('click', () => openGiftModal('random'));
     container.appendChild(randomCard);
 
-    // 4. Segundo Card: Adicionar Presente
+    // 3. Segundo Item: Adicionar Presente (Com separação por linha vertical e horizontal)
     const addCard = document.createElement('div');
-    addCard.className = 'group bg-white p-3 sm:p-3.5 border border-zinc-200/80 rounded-[10px] flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 hover:shadow-xs cursor-pointer min-h-[255px] sm:min-h-[275px] md:min-h-[290px]';
+    addCard.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
     addCard.innerHTML = `
-      <div class="w-full flex items-center justify-end text-zinc-400 mb-0.5 opacity-0">
-        <span class="w-3.5 h-3.5 p-0.5 block"></span>
+      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0 pointer-events-none">
+        <span class="w-4 h-4 p-0.5 block"></span>
       </div>
-      <div class="w-full flex-1 flex flex-col items-center justify-center p-2 my-auto">
-        <div class="w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
-          <svg class="w-5 h-5 sm:w-5.5 sm:h-5.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <div class="w-full flex-1 flex flex-col items-center justify-center p-3 my-auto">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
+          <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
           </svg>
         </div>
-        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-2.5 transition-colors font-sans">
+        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-4 transition-colors font-sans">
           Adicionar Presente
         </h4>
-        <p class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5">Nome, foto e valor</p>
+        <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">Nome, foto e valor</p>
       </div>
-      <div class="w-full pt-1 mt-auto opacity-0 pointer-events-none">
+      <div class="w-full pt-2 mt-auto opacity-0 pointer-events-none">
         <p class="text-xs font-bold">-</p>
       </div>
     `;
     addCard.addEventListener('click', () => openGiftModal('custom'));
     container.appendChild(addCard);
 
-    // 5. Renderiza os cards de presentes (máximo 5 por linha em telas cheias, reduzindo gradualmente conforme a tela diminui)
+    // 4. Renderiza os itens de presentes separados por linha vertical (sem caixa ou borda cinza delimitadora em volta da imagem)
     giftList.forEach(gift => {
       const card = document.createElement('div');
-      card.className = 'group bg-white p-3 sm:p-3.5 border border-zinc-200/80 rounded-[10px] flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 hover:shadow-xs cursor-pointer min-h-[255px] sm:min-h-[275px] md:min-h-[290px]';
+      card.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
 
       card.innerHTML = `
         <!-- Topo do Card: Coração de Favorito à direita -->
         <div class="w-full flex items-center justify-end text-zinc-400 mb-1">
-          <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-0.5 cursor-pointer" title="Favoritar">
+          <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-1 cursor-pointer" title="Favoritar">
             <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
             </svg>
           </button>
         </div>
 
-        <!-- Imagem do Produto em Destaque com Botão X no Canto Superior Direito -->
-        <div class="relative w-full aspect-square flex items-center justify-center my-auto overflow-hidden rounded-[10px] bg-zinc-50 border border-zinc-100">
-          <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover rounded-[10px] group-hover:scale-105 transition-transform duration-300">
+        <!-- Imagem do Produto direta na célula (sem caixinha ou moldura cinza em volta) com Botão X no Canto Superior Direito -->
+        <div class="relative w-full flex-1 flex items-center justify-center p-2 my-auto">
+          <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[190px] sm:max-w-[210px] md:max-w-[230px] aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
           
           <!-- Botão X de exclusão no canto superior direito da imagem -->
-          <button type="button" class="btn-delete-gift absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/90 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
+          <button type="button" class="btn-delete-gift absolute top-1 right-1 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
             ✕
           </button>
         </div>
 
         <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->
-        <div class="w-full pt-2 space-y-0.5 mt-auto">
-          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-1 px-1 leading-snug" title="${gift.title}">
+        <div class="w-full pt-3 space-y-1 mt-auto">
+          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-2 px-1 leading-snug" title="${gift.title}">
             ${gift.title}
           </h4>
           <p class="text-xs sm:text-sm font-bold text-zinc-900 mt-0.5">

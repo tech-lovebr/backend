@@ -2738,34 +2738,34 @@
                   <div class="h-px bg-zinc-200 flex-1"></div>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
-                  <!-- Checklist do Evento -->
-                  <div class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60">
-                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    <span class="text-xs font-bold text-zinc-900 leading-tight">Checklist do Evento</span>
+                  <!-- 1. Checklist do Evento -->
+                  <div onclick="navigateToChecklist()" class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60" title="Ver checklist do evento">
+                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    <span class="text-xs font-bold text-zinc-900 leading-tight font-sans">Checklist do Evento</span>
                   </div>
 
-                  <!-- Chat da Assessoria -->
-                  <div onclick="document.querySelector('[data-rail-tab=\'b2b\']')?.click()" class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60">
-                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-                    <span class="text-xs font-bold text-zinc-900 leading-tight">Chat Assessoria</span>
+                  <!-- 2. Orçamento -->
+                  <div onclick="navigateToBudget()" class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60" title="Gerenciar orçamento">
+                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m-3-5h6a1.5 1.5 0 0 0 0-3H9a1.5 1.5 0 0 0 0 3h6a1.5 1.5 0 0 1 0 3H9"/></svg>
+                    <span class="text-xs font-bold text-zinc-900 leading-tight font-sans">Orçamento</span>
                   </div>
 
-                  <!-- Cotas & Lua de Mel -->
-                  <div class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60">
-                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M2 18h20M12 2v10M17 12a5 5 0 0 0-10 0"/></svg>
-                    <span class="text-xs font-bold text-zinc-900 leading-tight">Cotas de Lua de Mel</span>
+                  <!-- 3. Mapeamento de Mesas -->
+                  <div onclick="navigateToTables()" class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60" title="Organizar mesas dos convidados">
+                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="4" rx="2"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12"/></svg>
+                    <span class="text-xs font-bold text-zinc-900 leading-tight font-sans">Mapeamento de Mesas</span>
                   </div>
 
-                  <!-- Documentação & Cartório -->
-                  <div class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60">
-                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="14" x="3" y="5" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M15 9h2M15 13h2M6 16a3 3 0 0 1 6 0"/></svg>
-                    <span class="text-xs font-bold text-zinc-900 leading-tight">Cartório & Documentos</span>
+                  <!-- 4. Papelaria -->
+                  <div onclick="navigateToStationery()" class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60" title="Produzir convite e papelaria">
+                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14" rx="1"/></svg>
+                    <span class="text-xs font-bold text-zinc-900 leading-tight font-sans">Papelaria</span>
                   </div>
 
-                  <!-- Dicas & Artigos -->
-                  <div class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60">
-                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10M6 14h6"/></svg>
-                    <span class="text-xs font-bold text-zinc-900 leading-tight">Dicas & Artigos</span>
+                  <!-- 5. Fornecedores -->
+                  <div onclick="navigateToVendors()" class="bg-[#F4F4F6] hover:bg-[#EAEAEE] transition-all p-3 rounded-xl flex items-center gap-2 cursor-pointer shadow-2xs border border-zinc-200/60" title="Explorar fornecedores">
+                    <svg class="w-4 h-4 text-zinc-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 0c.168.082.344.148.528.196m12.444 0c.184-.048.36-.114.528-.196"/></svg>
+                    <span class="text-xs font-bold text-zinc-900 leading-tight font-sans">Fornecedores</span>
                   </div>
                 </div>
               </div>

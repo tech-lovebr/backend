@@ -5874,6 +5874,47 @@ document.addEventListener('DOMContentLoaded', () => {
     switchWalletSubSection('wallet-budget', 'Orçamento');
   };
 
+  window.navigateToTables = function() {
+    switchRailTab('rsvp');
+    if (elements.drawerSubItemsList) {
+      elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
+        b.classList.toggle('active', b.textContent.includes('Organizar mesas'));
+      });
+    }
+    document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
+    const target = document.getElementById('tab-rsvp-tables');
+    if (target) target.classList.add('active');
+    renderTablesOrganization();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.navigateToStationery = function() {
+    switchRailTab('edit-site');
+    if (elements.drawerSubItemsList) {
+      elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
+        b.classList.toggle('active', b.textContent.includes('Produzir convite'));
+      });
+    }
+    switchEditorSubSection('invite-print', 'Produzir convite');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.navigateToChecklist = function() {
+    const guideWidget = document.getElementById('quick-start-guide-widget');
+    if (guideWidget) {
+      guideWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      guideWidget.classList.add('ring-2', 'ring-[#537bae]', 'ring-offset-2');
+      setTimeout(() => {
+        guideWidget.classList.remove('ring-2', 'ring-[#537bae]', 'ring-offset-2');
+      }, 2000);
+    }
+  };
+
+  window.navigateToVendors = function() {
+    switchRailTab('b2b');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   function checkAndPromptBudgetSetup() {
     const activeEv = getActiveEvent();
     if (!activeEv) return;

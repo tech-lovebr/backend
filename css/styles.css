@@ -1918,10 +1918,11 @@ body.editor-split-mode .dashboard-main-area > footer {
 }
 
 /* ==========================================================================
-   CONVIDADOS & B2B FULLSCREEN (Barra de Busca Grudada no Topo e Sidebar)
+   CONVIDADOS, PRESENTES & B2B FULLSCREEN (Barra de Busca Grudada no Topo e Sidebar)
    ========================================================================== */
 body.rsvp-mode .dashboard-main-area,
-body.b2b-mode .dashboard-main-area {
+body.b2b-mode .dashboard-main-area,
+body.gifts-mode .dashboard-main-area {
   margin-left: calc(var(--rail-width-desktop) + var(--drawer-width-desktop)) !important;
   padding-top: var(--navbar-height-desktop) !important;
   padding-left: 0 !important;
@@ -1932,12 +1933,14 @@ body.b2b-mode .dashboard-main-area {
 }
 
 body.rsvp-mode .dashboard-main-area.full-width,
-body.b2b-mode .dashboard-main-area.full-width {
+body.b2b-mode .dashboard-main-area.full-width,
+body.gifts-mode .dashboard-main-area.full-width {
   margin-left: var(--rail-width-desktop) !important;
 }
 
 body.rsvp-mode .dashboard-main-area > .dashboard-content-wrapper,
-body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper {
+body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper,
+body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   padding-left: 0 !important;
@@ -1948,7 +1951,8 @@ body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper {
 }
 
 body.rsvp-mode .dashboard-main-area > .dashboard-content-wrapper > *,
-body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper > * {
+body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper > *,
+body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper > * {
   margin-top: 0 !important;
 }
 
@@ -1956,7 +1960,8 @@ body.rsvp-mode #tab-rsvp,
 body.rsvp-mode #tab-rsvp-messages,
 body.rsvp-mode #tab-rsvp-tables,
 body.rsvp-mode #tab-rsvp-broadcast,
-body.b2b-mode #tab-b2b {
+body.b2b-mode #tab-b2b,
+body.gifts-mode #tab-gifts {
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
@@ -1965,32 +1970,12 @@ body.b2b-mode #tab-b2b {
 }
 
 body.rsvp-mode .dashboard-main-area > footer,
-body.b2b-mode .dashboard-main-area > footer {
+body.b2b-mode .dashboard-main-area > footer,
+body.gifts-mode .dashboard-main-area > footer {
   width: 100% !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
   margin-top: 2.5rem !important;
-}
-
-/* Presentes: Respiro padronizado de 2rem nas laterais e topo limpo */
-body.gifts-mode .dashboard-main-area {
-  margin-left: calc(var(--rail-width-desktop) + var(--drawer-width-desktop)) !important;
-  padding-top: calc(var(--navbar-height-desktop) + 1.75rem) !important;
-  padding-left: 2rem !important;
-  padding-right: 2rem !important;
-  padding-bottom: 3.5rem !important;
-  min-height: 100vh !important;
-  background-color: #FFFFFF !important;
-  box-sizing: border-box !important;
-}
-
-body.gifts-mode .dashboard-main-area.full-width {
-  margin-left: var(--rail-width-desktop) !important;
-}
-
-body.gifts-mode #tab-gifts {
-  width: 100% !important;
-  max-width: 100% !important;
 }
 
 /* Grade Responsiva Contínua para Meus Presentes com Linhas Divisórias Verticais e Horizontais */

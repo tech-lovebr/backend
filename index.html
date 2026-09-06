@@ -1922,12 +1922,12 @@
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
               </div>
-              <input type="text" id="gifts-search-input" placeholder="Buscar presente..." class="w-full pl-10 pr-4 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-200 bg-zinc-50/70 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors shadow-2xs font-sans">
+              <input type="text" id="gifts-search-input" placeholder="Buscar um presente..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50/70 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors shadow-2xs font-sans">
             </div>
 
             <div class="flex items-center gap-2">
               <!-- Botão Adicionar Presente Aleatório (Ícone de Random) -->
-              <button type="button" id="btn-host-add-random-gift" title="Adicionar presente aleatório" class="btn-white text-xs py-2.5 px-3 font-semibold flex items-center justify-center gap-1.5 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 text-zinc-700 shadow-2xs cursor-pointer hover:bg-zinc-50 transition-colors">
+              <button type="button" id="btn-host-add-random-gift" title="Adicionar presente aleatório" class="btn-white text-xs py-2.5 px-3 font-semibold flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 hover:border-zinc-300 text-zinc-700 shadow-2xs cursor-pointer hover:bg-zinc-50 transition-colors">
                 <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
                   <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
@@ -1938,48 +1938,33 @@
               </button>
 
               <!-- Botão Adicionar Presente (Abre o Drawer) -->
-              <button type="button" id="btn-host-add-gift" class="btn-brand text-xs py-2.5 px-4 font-semibold flex items-center justify-center gap-1.5 rounded-[var(--radius-control,12px)] shadow-2xs cursor-pointer">
+              <button type="button" id="btn-host-add-gift" class="btn-brand text-xs py-2.5 px-4 font-semibold flex items-center justify-center gap-1.5 rounded-xl shadow-2xs cursor-pointer">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>Adicionar presente</span>
+                <span>Adicionar Presente</span>
               </button>
             </div>
           </div>
 
-          <!-- Conteúdo Principal de Meus Presentes (Full Width com padding padronizado) -->
-          <div class="px-6 sm:px-8 py-6 space-y-6 w-full max-w-none">
+          <!-- Conteúdo Principal de Meus Presentes (Sem caixas, Full Width) -->
+          <div class="px-6 sm:px-8 py-6 space-y-5 w-full max-w-none">
             
-            <!-- 1. Cabeçalho: Meus presentes (Título) à esquerda + Dados à direita + Linha Horizontal -->
-            <div class="pb-5 border-b border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus presentes</h2>
-                <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Todos os presentes cadastrados são fictícios.</p>
-              </div>
+            <!-- Título da Seção: Meus presentes -->
+            <div class="space-y-1">
+              <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus presentes</h2>
+              <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 font-sans">Todos os presentes cadastrados são fictícios.</p>
+            </div>
 
-            <!-- Dados à direita do título: Total de Presentes & Valor Total -->
-            <div id="gifts-summary-stats" class="grid grid-cols-2 gap-3 sm:gap-4 w-full sm:w-auto min-w-[280px] sm:min-w-[340px] max-w-sm">
-              <!-- Caixa 1: Total de Presentes -->
-              <div class="bg-white rounded-[10px] border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all p-3 sm:p-3.5 space-y-1.5 group">
-                <div>
-                  <h4 class="font-bold text-xs sm:text-sm text-zinc-900 leading-tight font-sans">Total de presentes</h4>
-                  <p class="text-[10px] sm:text-[11px] text-zinc-500 font-normal leading-tight mt-0.5 font-sans">Itens na lista</p>
-                </div>
-                <div class="flex items-baseline gap-2 pt-0.5">
-                  <span id="gifts-total-count" class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">0</span>
-                </div>
+            <!-- Componente Universal de Abas de Navegação (love-tabs-nav) igual a Lista de Convidados -->
+            <div id="gifts-summary-stats" class="love-tabs-nav flex items-center justify-between overflow-x-auto text-xs sm:text-sm font-semibold no-scrollbar">
+              <div class="flex items-center gap-6 sm:gap-8">
+                <button type="button" class="love-tab-item active cursor-pointer whitespace-nowrap font-bold" data-filter="all">
+                  Todos (<span id="gifts-total-count">0</span>)
+                </button>
               </div>
-
-              <!-- Caixa 2: Valor Total -->
-              <div class="bg-white rounded-[10px] border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all p-3 sm:p-3.5 space-y-1.5 group">
-                <div>
-                  <h4 class="font-bold text-xs sm:text-sm text-zinc-900 leading-tight font-sans">Valor total</h4>
-                  <p class="text-[10px] sm:text-[11px] text-zinc-500 font-normal leading-tight mt-0.5 font-sans">Soma da lista</p>
-                </div>
-                <div class="flex items-baseline gap-2 pt-0.5">
-                  <span id="gifts-total-value" class="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight font-sans">R$ 0,00</span>
-                </div>
+              <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium">
+                Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
               </div>
             </div>
-          </div>
 
           <!-- 3. Lista de Presentes (Grid de Produtos Fictícios - 100% Full-Bleed sem margens laterais) -->
           <div id="gifts-panel-products" class="pt-1 gifts-grid-full-bleed overflow-hidden">

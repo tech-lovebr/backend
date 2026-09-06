@@ -1210,24 +1210,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // O botão salvar alterações embaixo da prévia deve aparecer SOMENTE em "Aparência"
+    // O botão salvar alterações no rodapé da prévia foi removido
     const previewSaveContainer = document.getElementById('preview-save-btn-container');
     if (previewSaveContainer) {
-      if (subId === 'home') {
-        previewSaveContainer.classList.remove('hidden');
-      } else {
-        previewSaveContainer.classList.add('hidden');
-      }
+      previewSaveContainer.classList.add('hidden');
     }
 
-    // O botão salvar alterações no canto direito ao lado do título (Informações, Anfitriões, Convite)
+    // O botão salvar alterações fica sempre à direita do título (Aparência, Informações, etc.)
     const headerSaveContainer = document.getElementById('editor-header-save-container');
     if (headerSaveContainer) {
-      if (['data', 'about', 'invite-online', 'invite-print'].includes(subId)) {
-        headerSaveContainer.classList.remove('hidden');
-      } else {
-        headerSaveContainer.classList.add('hidden');
-      }
+      headerSaveContainer.classList.remove('hidden');
     }
 
     // Oculta todos os sub-formulários e exibe o selecionado
@@ -4187,6 +4179,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSaveEditor = document.getElementById('btn-save-edit-site');
   if (btnSaveEditor) {
     btnSaveEditor.addEventListener('click', () => {
+      saveEditorChanges();
+      showToast('Alterações salvas e sincronizadas com o site do evento!', '✨');
+      triggerConfetti();
+    });
+  }
+
+  const btnSaveHeaderEdit = document.getElementById('btn-save-header-edit');
+  if (btnSaveHeaderEdit) {
+    btnSaveHeaderEdit.addEventListener('click', () => {
       saveEditorChanges();
       showToast('Alterações salvas e sincronizadas com o site do evento!', '✨');
       triggerConfetti();

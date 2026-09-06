@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'all', label: 'Todos' },
         { id: 'messages', label: 'Recados recebidos' },
-        { id: 'tables', label: 'Organizar mesas' },
+        { id: 'tables', label: 'Mapear mesas' },
         { id: 'whatsapp', label: 'Disparo WhatsApp' }
       ]
     },
@@ -5878,7 +5878,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('rsvp');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Organizar mesas'));
+        b.classList.toggle('active', b.textContent.includes('Mapear mesas'));
       });
     }
     document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));

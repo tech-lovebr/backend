@@ -1937,6 +1937,7 @@ body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper > * {
 
 body.rsvp-mode #tab-rsvp,
 body.rsvp-mode #tab-rsvp-messages,
+body.rsvp-mode #tab-rsvp-tables,
 body.rsvp-mode #tab-rsvp-broadcast,
 body.b2b-mode #tab-b2b {
   width: 100% !important;
@@ -2439,3 +2440,47 @@ button.rsvp-tab-link.active::after {
   color: #FFFFFF !important;
   text-shadow: 0 1px 2px rgba(15, 23, 42, 0.25) !important;
 }
+
+/* Drawer: Organizar Mesas */
+.table-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 55;
+  transition: opacity 0.3s ease;
+  display: none !important;
+}
+.table-drawer-backdrop.open {
+  display: block !important;
+}
+
+.table-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 520px;
+  background-color: #FFFFFF;
+  z-index: 60;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: none !important;
+}
+.table-drawer.open {
+  transform: translateX(0);
+  display: flex !important;
+}
+
+#btn-open-add-table-modal,
+#btn-submit-add-table {
+  background-color: #5c7aaa !important;
+  color: #FFFFFF !important;
+}
+#btn-open-add-table-modal:hover,
+#btn-submit-add-table:hover {
+  background-color: #4e6891 !important;
+}
+

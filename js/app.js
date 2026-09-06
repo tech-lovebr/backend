@@ -232,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'all', label: 'Todos' },
         { id: 'messages', label: 'Recados recebidos' },
+        { id: 'tables', label: 'Organizar mesas' },
         { id: 'whatsapp', label: 'Disparo WhatsApp' }
       ]
     },
@@ -406,13 +407,21 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (tabKey === 'info-event') {
               switchInfoSubSection(item.id, item.label);
             } else if (tabKey === 'rsvp') {
+              document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
               if (item.id === 'messages') {
-                document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
-                const target = document.getElementById('tab-rsvp-messages');
+                const target = document.getElementById('tab-rsvp-messages') || document.getElementById('tab-messages');
                 if (target) target.classList.add('active');
                 renderRecadosMural();
+              } else if (item.id === 'tables') {
+                const target = document.getElementById('tab-rsvp-tables');
+                if (target) target.classList.add('active');
+                renderTablesOrganization();
+              } else if (item.id === 'whatsapp') {
+                const target = document.getElementById('tab-rsvp');
+                if (target) target.classList.add('active');
+                renderGuestsTable('all');
+                showToast('Selecione os convidados na lista para enviar convite via WhatsApp.', '💬');
               } else {
-                document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
                 const target = document.getElementById('tab-rsvp');
                 if (target) target.classList.add('active');
                 renderGuestsTable('all');
@@ -5251,6 +5260,465 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================
+  // 7.2. ORGANIZAR MESAS DOS CONVIDADOS
+  // ==========================================
+  let activeTableSectorFilter = 'all';
+  let activeTableSearchQuery = '';
+  let targetTableForAssignment = null;
+
+  function getEventTables() {
+    const activeEvent = getActiveEvent();
+    const eventId = (activeEvent && activeEvent.id) || 'default';
+    const stored = localStorage.getItem(`love_tables_${eventId}`);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    const defaultTables = [
+      { id: 'tbl-1', name: 'Mesa 01 - Noivos e Pais', sector: 'Salão Principal', capacity: 8, notes: 'Mesa de honra central' },
+      { id: 'tbl-2', name: 'Mesa 02 - Padrinhos Noiva', sector: 'Salão Principal', capacity: 10, notes: 'Próxima ao palco' },
+      { id: 'tbl-3', name: 'Mesa 03 - Padrinhos Noivo', sector: 'Salão Principal', capacity: 10, notes: 'Próxima ao bar' },
+      { id: 'tbl-4', name: 'Mesa 04 (Família)', sector: 'Salão Principal', capacity: 10, notes: 'Família paterna e materna' },
+      { id: 'tbl-5', name: 'Mesa 05 - Família Paterna', sector: 'Área Externa', capacity: 8, notes: 'Jardim coberto' },
+      { id: 'tbl-6', name: 'Mesa 06 - Primos e Jovens', sector: 'Área Externa', capacity: 10, notes: 'Ambiente descontraído' },
+      { id: 'tbl-7', name: 'Mesa 07 - Colegas de Trabalho', sector: 'Mezanino', capacity: 8, notes: 'Vista panorâmica' },
+      { id: 'tbl-8', name: 'Mesa 08 (Amigos Faculdade)', sector: 'Salão Principal', capacity: 10, notes: 'Próxima à pista' }
+    ];
+    localStorage.setItem(`love_tables_${eventId}`, JSON.stringify(defaultTables));
+    return defaultTables;
+  }
+
+  function saveEventTables(tables) {
+    const activeEvent = getActiveEvent();
+    const eventId = (activeEvent && activeEvent.id) || 'default';
+    localStorage.setItem(`love_tables_${eventId}`, JSON.stringify(tables));
+  }
+
+  function renderTablesOrganization() {
+    const container = document.getElementById('tables-grid-container');
+    if (!container) return;
+
+    const tables = getEventTables();
+    const activeEvent = getActiveEvent();
+    const guests = (activeEvent && activeEvent.guests) || [];
+
+    // Calcular KPIs
+    let totalCapacity = 0;
+    let totalOccupied = 0;
+    
+    // Mapear convidados por mesa
+    const guestsByTable = {};
+    tables.forEach(t => {
+      guestsByTable[t.id] = [];
+      totalCapacity += (parseInt(t.capacity) || 0);
+    });
+
+    let unassignedCount = 0;
+
+    guests.forEach(g => {
+      const gSeats = 1 + (parseInt(g.companions) || 0);
+      let assignedTable = null;
+
+      if (g.table && g.table !== 'Mesa a Definir' && g.table.trim() !== '') {
+        assignedTable = tables.find(t => 
+          t.name.trim().toLowerCase() === g.table.trim().toLowerCase() ||
+          t.id === g.table
+        );
+      }
+
+      if (assignedTable) {
+        guestsByTable[assignedTable.id].push(g);
+        totalOccupied += gSeats;
+      } else {
+        unassignedCount += gSeats;
+      }
+    });
+
+    // Atualizar indicadores numéricos
+    const statTotal = document.getElementById('tables-stat-total');
+    const statCap = document.getElementById('tables-stat-capacity');
+    const statOcc = document.getElementById('tables-stat-occupied');
+    const statOccRate = document.getElementById('tables-stat-occupancy-rate');
+    const statUnassigned = document.getElementById('tables-stat-unassigned');
+    const countAll = document.getElementById('tables-count-all');
+
+    if (statTotal) statTotal.textContent = tables.length;
+    if (statCap) statCap.textContent = totalCapacity;
+    if (statOcc) statOcc.textContent = totalOccupied;
+    if (statOccRate) {
+      const pct = totalCapacity > 0 ? Math.round((totalOccupied / totalCapacity) * 100) : 0;
+      statOccRate.textContent = `(${pct}%)`;
+    }
+    if (statUnassigned) statUnassigned.textContent = unassignedCount;
+    if (countAll) countAll.textContent = tables.length;
+
+    // Filtragem por setor e busca
+    const filteredTables = tables.filter(tbl => {
+      if (activeTableSectorFilter !== 'all' && tbl.sector !== activeTableSectorFilter) {
+        return false;
+      }
+      if (activeTableSearchQuery) {
+        const q = activeTableSearchQuery.toLowerCase();
+        const matchesName = tbl.name.toLowerCase().includes(q);
+        const matchesSector = tbl.sector.toLowerCase().includes(q);
+        const tblGuests = guestsByTable[tbl.id] || [];
+        const matchesGuest = tblGuests.some(g => g.name.toLowerCase().includes(q));
+        return matchesName || matchesSector || matchesGuest;
+      }
+      return true;
+    });
+
+    container.innerHTML = '';
+
+    if (filteredTables.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-full py-16 px-6 text-center bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 space-y-3 shadow-xs">
+          <div class="w-12 h-12 mx-auto rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
+          </div>
+          <h4 class="text-sm font-bold text-zinc-900 font-sans">Nenhuma mesa encontrada</h4>
+          <p class="text-xs text-zinc-500 max-w-sm mx-auto font-sans">Não encontramos mesas com o filtro ou busca selecionados. Você pode cadastrar uma nova mesa a qualquer momento.</p>
+        </div>
+      `;
+      return;
+    }
+
+    filteredTables.forEach(tbl => {
+      const tblGuests = guestsByTable[tbl.id] || [];
+      const occPlaces = tblGuests.reduce((acc, g) => acc + 1 + (parseInt(g.companions) || 0), 0);
+      const cap = parseInt(tbl.capacity) || 8;
+      const pct = Math.min(100, Math.round((occPlaces / cap) * 100));
+      const isFull = occPlaces >= cap;
+
+      const card = document.createElement('div');
+      card.className = 'bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 p-5 shadow-xs flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow font-sans';
+      
+      // Lista de convidados acomodados
+      let guestsListMarkup = '';
+      if (tblGuests.length === 0) {
+        guestsListMarkup = `
+          <div class="py-6 text-center text-zinc-400 text-xs italic font-sans">
+            Nenhum convidado acomodado ainda.
+          </div>
+        `;
+      } else {
+        guestsListMarkup = `
+          <div class="space-y-2 max-h-48 overflow-y-auto pr-1 divide-y divide-zinc-100">
+            ${tblGuests.map(g => {
+              const compCount = parseInt(g.companions) || 0;
+              const seats = 1 + compCount;
+              return `
+                <div class="pt-2 first:pt-0 flex items-center justify-between gap-2 group">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-7 h-7 rounded-full bg-[#537bae]/10 text-[#537bae] flex items-center justify-center font-bold text-xs flex-shrink-0">
+                      ${g.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-xs font-semibold text-zinc-900 truncate font-sans">${g.name}</p>
+                      <span class="text-[10px] text-zinc-400 font-sans block">${seats} ${seats === 1 ? 'lugar' : 'lugares'} ${compCount > 0 ? `(+${compCount} acomp.)` : ''}</span>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-remove-guest-table text-zinc-400 hover:text-rose-600 p-1 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer" data-guest-id="${g.id}" title="Desocupar lugar">
+                    <svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="space-y-3.5">
+          <!-- Header do Card da Mesa -->
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-zinc-900 text-sm sm:text-base leading-tight font-sans">${tbl.name}</h3>
+              </div>
+              <span class="inline-block mt-1 text-[11px] font-semibold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-md font-sans">
+                ${tbl.sector}
+              </span>
+            </div>
+            <button type="button" class="btn-delete-table p-1.5 text-zinc-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer" data-table-id="${tbl.id}" title="Excluir mesa">
+              <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+            </button>
+          </div>
+
+          <!-- Barra de Lotação com cor primária #537bae -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs font-sans">
+              <span class="font-bold ${isFull ? 'text-rose-600' : 'text-zinc-700'}">${occPlaces} / ${cap} lugares</span>
+              <span class="text-[11px] font-semibold text-zinc-500">${pct}% ocupada</span>
+            </div>
+            <div class="w-full bg-zinc-100 rounded-full h-2 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300" style="width: ${pct}%; background-color: ${isFull ? '#e11d48' : '#537bae'};"></div>
+            </div>
+          </div>
+
+          <!-- Lista de Convidados -->
+          <div class="pt-1">
+            <span class="text-[10.5px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5 font-sans">Convidados Sentados</span>
+            ${guestsListMarkup}
+          </div>
+        </div>
+
+        <!-- Botão Acomodar Convidado com raio padronizado 12px -->
+        <div class="pt-3 border-t border-zinc-100">
+          <button type="button" class="btn-open-assign-guest w-full py-2.5 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-[#537bae] text-zinc-700 hover:text-[#537bae] hover:bg-[#537bae]/5 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 font-sans" data-table-id="${tbl.id}" data-table-name="${tbl.name}">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            <span>Acomodar Convidado</span>
+          </button>
+        </div>
+      `;
+
+      // Eventos dos botões do card
+      const btnDelete = card.querySelector('.btn-delete-table');
+      if (btnDelete) {
+        btnDelete.addEventListener('click', () => {
+          const updated = getEventTables().filter(t => t.id !== tbl.id);
+          // Atualiza convidados que estavam nesta mesa
+          guests.forEach(g => {
+            if (g.table && (g.table.toLowerCase() === tbl.name.toLowerCase() || g.table === tbl.id)) {
+              g.table = 'Mesa a Definir';
+            }
+          });
+          saveEventTables(updated);
+          renderTablesOrganization();
+          showToast(`Mesa "${tbl.name}" removida.`, '🗑️');
+        });
+      }
+
+      // Remover convidado da mesa
+      card.querySelectorAll('.btn-remove-guest-table').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const gId = btn.getAttribute('data-guest-id');
+          const guest = guests.find(g => g.id === gId);
+          if (guest) {
+            guest.table = 'Mesa a Definir';
+            renderTablesOrganization();
+            showToast(`${guest.name} retirado(a) da mesa.`, 'ℹ️');
+          }
+        });
+      });
+
+      // Abrir gaveta para acomodar convidado
+      const btnAssign = card.querySelector('.btn-open-assign-guest');
+      if (btnAssign) {
+        btnAssign.addEventListener('click', () => {
+          openAssignGuestDrawer(tbl);
+        });
+      }
+
+      container.appendChild(card);
+    });
+  }
+
+  // Gaveta: Acomodar Convidado na Mesa
+  function openAssignGuestDrawer(table) {
+    targetTableForAssignment = table;
+    const drawer = document.getElementById('drawer-assign-table-guest');
+    const backdrop = document.getElementById('assign-guest-modal-backdrop');
+    const targetLabel = document.getElementById('assign-guest-table-target-name');
+    const inputSearch = document.getElementById('assign-guest-filter-input');
+    const container = document.getElementById('assign-guest-list-container');
+
+    if (targetLabel) targetLabel.textContent = `Acomodar em: ${table.name} (${table.sector})`;
+    if (inputSearch) inputSearch.value = '';
+
+    const renderList = (filter = '') => {
+      if (!container) return;
+      container.innerHTML = '';
+      const activeEvent = getActiveEvent();
+      const guests = (activeEvent && activeEvent.guests) || [];
+
+      const q = filter.toLowerCase();
+      const availableGuests = guests.filter(g => {
+        const matchesQuery = !q || g.name.toLowerCase().includes(q);
+        return matchesQuery;
+      });
+
+      if (availableGuests.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-zinc-400 text-xs font-sans">
+            Nenhum convidado encontrado.
+          </div>
+        `;
+        return;
+      }
+
+      availableGuests.forEach(g => {
+        const compCount = parseInt(g.companions) || 0;
+        const seats = 1 + compCount;
+        const isCurrentTable = g.table && (g.table.toLowerCase() === table.name.toLowerCase() || g.table === table.id);
+
+        const row = document.createElement('div');
+        row.className = 'p-3 rounded-xl border border-zinc-200 hover:border-[#537bae] hover:bg-zinc-50 flex items-center justify-between gap-3 transition-colors cursor-pointer font-sans';
+        row.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-8 h-8 rounded-full bg-[#537bae]/10 text-[#537bae] flex items-center justify-center font-bold text-xs flex-shrink-0">
+              ${g.name.charAt(0).toUpperCase()}
+            </div>
+            <div class="min-w-0">
+              <h4 class="text-xs sm:text-sm font-bold text-zinc-900 truncate font-sans">${g.name}</h4>
+              <span class="text-[11px] text-zinc-400 font-sans block">${seats} ${seats === 1 ? 'lugar' : 'lugares'} ${compCount > 0 ? `(+${compCount} acomp.)` : ''} • Atual: ${g.table || 'Sem mesa'}</span>
+            </div>
+          </div>
+          <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-bold ${isCurrentTable ? 'bg-zinc-100 text-zinc-400 pointer-events-none' : 'bg-[#537bae] hover:bg-[#416799] text-white shadow-xs'} transition-all cursor-pointer font-sans flex-shrink-0">
+            ${isCurrentTable ? 'Já nesta mesa' : 'Acomodar'}
+          </button>
+        `;
+
+        if (!isCurrentTable) {
+          row.addEventListener('click', () => {
+            g.table = table.name;
+            closeAssignGuestDrawer();
+            renderTablesOrganization();
+            showToast(`${g.name} acomodado(a) na ${table.name}!`, '🪑');
+          });
+        }
+
+        container.appendChild(row);
+      });
+    };
+
+    renderList('');
+
+    if (inputSearch) {
+      inputSearch.oninput = (e) => renderList(e.target.value);
+    }
+
+    if (backdrop) {
+      backdrop.classList.remove('hidden');
+      backdrop.style.setProperty('display', 'block', 'important');
+      backdrop.classList.add('open');
+    }
+    if (drawer) {
+      drawer.classList.remove('hidden');
+      drawer.style.setProperty('display', 'flex', 'important');
+      drawer.classList.add('open');
+    }
+  }
+
+  function closeAssignGuestDrawer() {
+    const drawer = document.getElementById('drawer-assign-table-guest');
+    const backdrop = document.getElementById('assign-guest-modal-backdrop');
+    if (drawer) {
+      drawer.classList.remove('open');
+      drawer.style.setProperty('display', 'none', 'important');
+      drawer.classList.add('hidden');
+    }
+    if (backdrop) {
+      backdrop.classList.remove('open');
+      backdrop.style.setProperty('display', 'none', 'important');
+      backdrop.classList.add('hidden');
+    }
+    targetTableForAssignment = null;
+  }
+
+  // Inicializador de Mesas e Gaveta de Adicionar Mesa
+  function initTablesOrganization() {
+    // Setor tabs
+    const sectorNav = document.getElementById('tables-sectors-nav');
+    if (sectorNav) {
+      sectorNav.querySelectorAll('.love-tab-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sectorNav.querySelectorAll('.love-tab-item').forEach(b => {
+            b.classList.remove('active', 'font-bold');
+            b.classList.add('font-medium');
+          });
+          btn.classList.add('active', 'font-bold');
+          btn.classList.remove('font-medium');
+          activeTableSectorFilter = btn.getAttribute('data-sector') || 'all';
+          renderTablesOrganization();
+        });
+      });
+    }
+
+    // Busca de mesas
+    const inputSearch = document.getElementById('tables-search-input');
+    if (inputSearch) {
+      inputSearch.addEventListener('input', (e) => {
+        activeTableSearchQuery = e.target.value.trim();
+        renderTablesOrganization();
+      });
+    }
+
+    // Gaveta Adicionar Mesa
+    const btnOpenAdd = document.getElementById('btn-open-add-table-modal');
+    const btnCloseAdd = document.getElementById('btn-close-add-table-drawer');
+    const drawerAdd = document.getElementById('drawer-add-table');
+    const backdropAdd = document.getElementById('table-drawer-backdrop');
+    const formAdd = document.getElementById('form-add-table');
+
+    const openAddDrawer = () => {
+      if (formAdd) formAdd.reset();
+      if (backdropAdd) {
+        backdropAdd.classList.remove('hidden');
+        backdropAdd.style.setProperty('display', 'block', 'important');
+        backdropAdd.classList.add('open');
+      }
+      if (drawerAdd) {
+        drawerAdd.classList.remove('hidden');
+        drawerAdd.style.setProperty('display', 'flex', 'important');
+        drawerAdd.classList.add('open');
+      }
+    };
+
+    const closeAddDrawer = () => {
+      if (drawerAdd) {
+        drawerAdd.classList.remove('open');
+        drawerAdd.style.setProperty('display', 'none', 'important');
+        drawerAdd.classList.add('hidden');
+      }
+      if (backdropAdd) {
+        backdropAdd.classList.remove('open');
+        backdropAdd.style.setProperty('display', 'none', 'important');
+        backdropAdd.classList.add('hidden');
+      }
+    };
+
+    if (btnOpenAdd) btnOpenAdd.addEventListener('click', openAddDrawer);
+    if (btnCloseAdd) btnCloseAdd.addEventListener('click', closeAddDrawer);
+    if (backdropAdd) backdropAdd.addEventListener('click', closeAddDrawer);
+
+    if (formAdd) {
+      formAdd.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('table-name-input').value.trim();
+        const sector = document.getElementById('table-sector-select').value;
+        const capacity = parseInt(document.getElementById('table-capacity-input').value) || 8;
+        const notes = document.getElementById('table-notes-input').value.trim();
+
+        if (!name) return;
+
+        const tables = getEventTables();
+        const newTable = {
+          id: `tbl-${Date.now()}`,
+          name: name,
+          sector: sector,
+          capacity: capacity,
+          notes: notes
+        };
+
+        tables.push(newTable);
+        saveEventTables(tables);
+        closeAddDrawer();
+        renderTablesOrganization();
+        showToast(`Mesa "${name}" adicionada com sucesso!`, '🪑');
+      });
+    }
+
+    // Gaveta Acomodar Convidado fechar
+    const btnCloseAssign = document.getElementById('btn-close-assign-table-guest');
+    const backdropAssign = document.getElementById('assign-guest-modal-backdrop');
+    if (btnCloseAssign) btnCloseAssign.addEventListener('click', closeAssignGuestDrawer);
+    if (backdropAssign) backdropAssign.addEventListener('click', closeAssignGuestDrawer);
+  }
+
   // Adicionar Convidado à comemoração ativa
   const formAddGuest = document.getElementById('form-add-guest');
   if (formAddGuest) {
@@ -8245,6 +8713,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa modal de onboarding do orçamento e modal de nova despesa
   initBudgetSetupModal();
   initAddBudgetExpenseModal();
+  initTablesOrganization();
 
   // Inicializa módulo B2B e sistema de chat messenger
   initB2BMarketplace();

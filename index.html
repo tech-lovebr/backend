@@ -2169,13 +2169,89 @@
         <!-- =================================================================
              PAGE 3.1: RECADOS RECEBIDOS (Mural de Mensagens dos Convidados)
              ================================================================= -->
-        <section id="tab-messages" class="dashboard-tab-content space-y-6">
-          <div class="pb-4 border-b border-zinc-200">
-            <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Recados recebidos</h2>
+        <section id="tab-rsvp-messages" class="dashboard-tab-content space-y-6 px-6 sm:px-8 py-6">
+          <div class="pb-5 border-b border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Recados recebidos</h2>
+              <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Mensagens de carinho deixadas pelos seus convidados ao confirmar presença.</p>
+            </div>
           </div>
 
           <div id="recados-mural-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Renderizado dinamicamente via JS com recados da comemoração ativa -->
+          </div>
+        </section>
+
+        <!-- =================================================================
+             PAGE 3.2: ORGANIZAR MESAS (Distribuição e Assentos dos Convidados)
+             ================================================================= -->
+        <section id="tab-rsvp-tables" class="dashboard-tab-content space-y-6 px-6 sm:px-8 py-6">
+          <!-- Top Header com Título, Subtítulo e Linha Horizontal Cortando -->
+          <div class="pb-5 border-b border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Organizar mesas</h2>
+              <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Distribua e organize seus convidados confirmados por mesa ou setor do evento.</p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button type="button" id="btn-open-add-table-modal" class="px-4 py-2.5 rounded-[var(--radius-control,12px)] bg-[#5c7aaa] hover:bg-[#4e6891] text-white text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all cursor-pointer font-sans flex items-center gap-2" style="background-color: #5c7aaa !important;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>Adicionar Mesa</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards de Métricas / KPIs das Mesas -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 p-4 shadow-xs">
+              <span class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-sans">Total de Mesas</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="tables-stat-total" class="text-2xl font-bold text-zinc-900 font-sans">0</span>
+                <span class="text-xs text-zinc-500 font-sans">mesas ativas</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 p-4 shadow-xs">
+              <span class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-sans">Capacidade Total</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="tables-stat-capacity" class="text-2xl font-bold text-zinc-900 font-sans">0</span>
+                <span class="text-xs text-zinc-500 font-sans">lugares</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 p-4 shadow-xs">
+              <span class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-sans">Assentos Ocupados</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="tables-stat-occupied" class="text-2xl font-bold text-[#537bae] font-sans">0</span>
+                <span id="tables-stat-occupancy-rate" class="text-xs text-emerald-600 font-semibold font-sans">(0%)</span>
+              </div>
+            </div>
+            <div class="bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 p-4 shadow-xs">
+              <span class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-sans">Sem Mesa Atribuída</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="tables-stat-unassigned" class="text-2xl font-bold text-amber-600 font-sans">0</span>
+                <span class="text-xs text-zinc-500 font-sans">convidados</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros de Setor e Busca Rápida -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div class="love-tabs-nav flex items-center gap-6 overflow-x-auto text-xs sm:text-sm font-semibold no-scrollbar" id="tables-sectors-nav">
+              <button type="button" class="love-tab-item active cursor-pointer whitespace-nowrap font-bold" data-sector="all">Todas as mesas (<span id="tables-count-all">0</span>)</button>
+              <button type="button" class="love-tab-item cursor-pointer whitespace-nowrap font-medium" data-sector="Salão Principal">Salão Principal</button>
+              <button type="button" class="love-tab-item cursor-pointer whitespace-nowrap font-medium" data-sector="Área Externa">Área Externa</button>
+              <button type="button" class="love-tab-item cursor-pointer whitespace-nowrap font-medium" data-sector="Mezanino">Mezanino</button>
+            </div>
+
+            <div class="relative w-full sm:w-64">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </span>
+              <input type="text" id="tables-search-input" placeholder="Buscar mesa ou convidado..." class="w-full pl-9 pr-3 py-2 rounded-[var(--radius-control,12px)] border border-zinc-200 bg-zinc-50/70 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
+            </div>
+          </div>
+
+          <!-- Grid de Mesas -->
+          <div id="tables-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Renderizado dinamicamente via JS -->
           </div>
         </section>
 
@@ -4616,6 +4692,93 @@
         </div>
 
       </form>
+    </div>
+  </aside>
+
+  <!-- =======================================================================
+       DRAWER LATERAL: ADICIONAR MESA (Organizar Mesas)
+       ======================================================================= -->
+  <div id="table-drawer-backdrop" class="table-drawer-backdrop hidden" style="display: none !important;"></div>
+
+  <aside id="drawer-add-table" class="table-drawer hidden" style="display: none !important;" aria-label="Adicionar Mesa">
+    <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Mesa</h2>
+        <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre uma nova mesa e defina o setor e a capacidade de assentos.</p>
+      </div>
+      <button id="btn-close-add-table-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 sm:px-8 py-6 font-sans">
+      <form id="form-add-table" class="space-y-5 text-left">
+        <div class="space-y-1.5">
+          <label for="table-name-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Nome da Mesa <span class="text-rose-500">*</span></label>
+          <input type="text" id="table-name-input" required placeholder="Ex: Mesa 09 - Amigos de Infância" class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans">
+        </div>
+
+        <div class="space-y-1.5">
+          <label for="table-sector-select" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Setor / Ambiente <span class="text-rose-500">*</span></label>
+          <select id="table-sector-select" class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans cursor-pointer">
+            <option value="Salão Principal">Salão Principal</option>
+            <option value="Área Externa">Área Externa</option>
+            <option value="Mezanino">Mezanino</option>
+            <option value="Pista de Dança">Pista de Dança</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label for="table-capacity-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Capacidade de Lugares <span class="text-rose-500">*</span></label>
+          <input type="number" id="table-capacity-input" required min="1" max="30" value="8" class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans">
+        </div>
+
+        <div class="space-y-1.5">
+          <label for="table-notes-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Observações (Opcional)</label>
+          <textarea id="table-notes-input" rows="3" placeholder="Ex: Próxima à mesa dos noivos, espaço para berço ou carrinho..." class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans resize-none"></textarea>
+        </div>
+
+        <div class="pt-4 border-t border-zinc-200/80">
+          <button type="submit" id="btn-submit-add-table" class="w-full py-3.5 rounded-[var(--radius-control,12px)] bg-[#5c7aaa] hover:bg-[#4e6891] text-white text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all cursor-pointer font-sans flex items-center justify-center gap-2" style="background-color: #5c7aaa !important;">
+            <span>Salvar Mesa</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <!-- =======================================================================
+       DRAWER LATERAL: ACOMODAR CONVIDADO À MESA (Organizar Mesas)
+       ======================================================================= -->
+  <div id="assign-guest-modal-backdrop" class="table-drawer-backdrop hidden" style="display: none !important;"></div>
+
+  <aside id="drawer-assign-table-guest" class="table-drawer hidden" style="display: none !important;" aria-label="Acomodar Convidado">
+    <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Acomodar na Mesa</h2>
+        <p id="assign-guest-table-target-name" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Selecione um convidado para acomodar nesta mesa.</p>
+      </div>
+      <button id="btn-close-assign-table-guest" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 sm:px-8 py-6 font-sans space-y-4">
+      <div class="relative">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </span>
+        <input type="text" id="assign-guest-filter-input" placeholder="Buscar convidado..." class="w-full pl-9 pr-3 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-200 bg-zinc-50/70 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
+      </div>
+
+      <div id="assign-guest-list-container" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+        <!-- Lista de convidados renderizada dinamicamente via JS -->
+      </div>
     </div>
   </aside>
 

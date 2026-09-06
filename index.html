@@ -2517,15 +2517,15 @@
               </div>
             </div>
 
-            <!-- Tabela em Tela Cheia / Sem Caixa com Moldura/Sombra (100% do Espaço) -->
-            <div class="w-full overflow-x-auto min-h-[220px]">
-              <table class="w-full text-left">
-                <thead class="bg-zinc-100/60 border-y border-[#EAEAEF]">
-                  <tr class="text-[11px] sm:text-xs font-bold text-zinc-900 font-sans uppercase tracking-wider">
-                    <th class="py-3 px-4 sm:px-6">Descrição / Convidado</th>
-                    <th class="py-3 px-4 sm:px-6">Data</th>
-                    <th class="py-3 px-4 sm:px-6">Status</th>
-                    <th class="py-3 px-4 sm:px-6 text-right">Valor Líquido</th>
+            <!-- Tabela em Tela Cheia 100% do Espaço (Full Bleed sem margens laterais, igual ao Orçamento) -->
+            <div class="w-full overflow-x-auto min-h-[220px] budget-table-full-bleed">
+              <table class="w-full text-left border-collapse font-sans">
+                <thead class="bg-zinc-100/70 border-y border-zinc-200">
+                  <tr class="text-[11px] sm:text-xs font-bold text-zinc-700 font-sans uppercase tracking-wider">
+                    <th class="py-3.5 pl-6 sm:pl-8 pr-4">Descrição / Convidado</th>
+                    <th class="py-3.5 px-4">Data</th>
+                    <th class="py-3.5 px-4">Status</th>
+                    <th class="py-3.5 pl-4 pr-6 sm:pr-8 text-right">Valor Líquido</th>
                   </tr>
                 </thead>
                 <tbody id="wallet-transactions-list" class="divide-y divide-zinc-100 font-sans">

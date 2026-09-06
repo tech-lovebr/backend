@@ -87,9 +87,10 @@ p:not(footer p) {
   line-height: 1.6;
 }
 
-/* Footer Global: Fundo Azul Oficial Love #537bae e Textos 100% Brancos */
+/* Footer Global: Degradê Vertical do Header (#537bae -> #486fa1 -> #385b88) e Textos 100% Brancos */
 footer {
   background-color: #537bae !important;
+  background: linear-gradient(180deg, #537bae 0%, #486fa1 45%, #385b88 100%) !important;
   border-top-color: rgba(255, 255, 255, 0.15) !important;
 }
 

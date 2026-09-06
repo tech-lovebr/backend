@@ -2343,6 +2343,18 @@ button.rsvp-tab-link.active::after {
   background-color: #1d2b3c !important;
 }
 
+/* Botão Enviar Mensagem no Chat - Cor Secundária #27394f */
+#b2b-chat-send-btn,
+#chat-send-btn {
+  background-color: #27394f !important;
+  color: #FFFFFF !important;
+}
+
+#b2b-chat-send-btn:hover,
+#chat-send-btn:hover {
+  background-color: #1d2b3c !important;
+}
+
 
 
 

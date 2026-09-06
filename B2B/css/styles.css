@@ -1073,3 +1073,13 @@ body[data-page="mensagens"] .chat-shell {
   .conv-list { width: 240px; }
   .bubble { max-width: 80%; }
 }
+
+/* Botão Enviar Mensagem no Chat - Cor Secundária #27394f */
+#chat-send-btn {
+  background-color: #27394f !important;
+  color: #FFFFFF !important;
+}
+
+#chat-send-btn:hover {
+  background-color: #1d2b3c !important;
+}

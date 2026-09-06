@@ -2000,8 +2000,9 @@ body.gifts-mode #host-gifts-grid {
   grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   gap: 0 !important;
   border-top: 1px solid rgba(228, 228, 231, 0.9) !important;
-  border-left: 1px solid rgba(228, 228, 231, 0.9) !important;
+  border-left: none !important;
   background-color: #FFFFFF !important;
+  width: 100% !important;
 }
 
 @media (min-width: 440px) {
@@ -2412,20 +2413,24 @@ button.rsvp-tab-link.active::after {
   background-color: #1d2b3c !important;
 }
 
-/* Tabela de Orçamento Full-Bleed (Preenchimento total 100% da tela sem margens laterais) */
-.budget-table-full-bleed {
+/* Tabela de Orçamento, Extrato e Grade de Presentes Full-Bleed (Preenchimento total 100% da tela sem margens laterais) */
+.budget-table-full-bleed,
+.statement-table-full-bleed,
+.gifts-grid-full-bleed {
   margin-left: -2rem !important;
   margin-right: -2rem !important;
   width: calc(100% + 4rem) !important;
   max-width: calc(100% + 4rem) !important;
 }
 
-@media (max-width: 768px) {
-  .budget-table-full-bleed {
-    margin-left: -1.25rem !important;
-    margin-right: -1.25rem !important;
-    width: calc(100% + 2.5rem) !important;
-    max-width: calc(100% + 2.5rem) !important;
+@media (max-width: 639px) {
+  .budget-table-full-bleed,
+  .statement-table-full-bleed,
+  .gifts-grid-full-bleed {
+    margin-left: -1.5rem !important;
+    margin-right: -1.5rem !important;
+    width: calc(100% + 3rem) !important;
+    max-width: calc(100% + 3rem) !important;
   }
 }
 

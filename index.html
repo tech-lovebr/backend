@@ -2368,12 +2368,12 @@
               </button>
             </div>
 
-            <!-- TABELA 100% FULL-WIDTH SEM CAIXA OU PADDINGS EXTERNOS (Fiel à imagem) -->
-            <div class="w-full overflow-x-auto">
+            <!-- TABELA 100% FULL-WIDTH SEM CAIXA OU PADDINGS EXTERNOS (Preenchimento Total) -->
+            <div class="w-full overflow-x-auto budget-table-full-bleed">
               <table class="w-full text-left border-collapse font-sans">
                 <thead>
                   <tr class="bg-zinc-100/70 border-y border-zinc-200 text-[11px] font-bold text-zinc-700 uppercase tracking-wider">
-                    <th class="py-3.5 px-4 font-bold">Item</th>
+                    <th class="py-3.5 pl-6 sm:pl-8 pr-4 font-bold">Item</th>
                     <th class="py-3.5 px-4 font-bold">Fornecedor</th>
                     <th class="py-3.5 px-4 font-bold">
                       <span class="inline-flex items-center gap-1">
@@ -2383,7 +2383,7 @@
                     </th>
                     <th class="py-3.5 px-4 font-bold">Valor Real</th>
                     <th class="py-3.5 px-4 font-bold">Valor Pago</th>
-                    <th class="py-3.5 px-4 text-right"></th>
+                    <th class="py-3.5 pl-4 pr-6 sm:pr-8 text-right"></th>
                   </tr>
                 </thead>
                 <tbody id="budget-expenses-tbody" class="divide-y divide-zinc-200/80 text-xs sm:text-sm">
@@ -2391,7 +2391,7 @@
                 </tbody>
                 <tfoot class="border-t-2 border-zinc-900 font-bold text-xs sm:text-sm text-zinc-900 bg-zinc-50/40">
                   <tr>
-                    <td class="py-4 px-4 font-black text-sm sm:text-base">Total geral</td>
+                    <td class="py-4 pl-6 sm:pl-8 pr-4 font-black text-sm sm:text-base">Total geral</td>
                     <td class="py-4 px-4 text-zinc-500 font-normal text-xs" id="budget-tfoot-count">—</td>
                     <td class="py-4 px-4 font-black text-zinc-900" id="budget-tfoot-estimated">R$ 0,00</td>
                     <td class="py-4 px-4 font-black text-zinc-900" id="budget-tfoot-actual">R$ 0,00</td>
@@ -2401,7 +2401,7 @@
                         <span id="budget-tfoot-due" class="text-[10px] text-zinc-400 font-normal">R$ 0,00 a vencer</span>
                       </div>
                     </td>
-                    <td class="py-4 px-4"></td>
+                    <td class="py-4 pl-4 pr-6 sm:pr-8"></td>
                   </tr>
                 </tfoot>
               </table>

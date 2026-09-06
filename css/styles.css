@@ -2355,6 +2355,19 @@ button.rsvp-tab-link.active::after {
   background-color: #1d2b3c !important;
 }
 
+/* Tabela de Orçamento Full-Bleed (Preenchimento total 100% da tela sem margens laterais) */
+.budget-table-full-bleed {
+  margin-left: -2rem !important;
+  margin-right: -2rem !important;
+  width: calc(100% + 4rem) !important;
+  max-width: calc(100% + 4rem) !important;
+}
 
-
-
+@media (max-width: 768px) {
+  .budget-table-full-bleed {
+    margin-left: -1.25rem !important;
+    margin-right: -1.25rem !important;
+    width: calc(100% + 2.5rem) !important;
+    max-width: calc(100% + 2.5rem) !important;
+  }
+}

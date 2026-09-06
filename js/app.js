@@ -5616,7 +5616,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <tr class="hover:bg-zinc-50/70 transition-colors group">
           <!-- Item -->
-          <td class="py-3.5 px-4">
+          <td class="py-3.5 pl-6 sm:pl-8 pr-4">
             <div class="font-bold text-zinc-900 font-sans">${exp.item}</div>
             <div class="text-[10px] text-zinc-400 font-normal uppercase tracking-wider mt-0.5 font-sans">${exp.category || 'Geral'}</div>
           </td>
@@ -5655,7 +5655,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
 
           <!-- Ações -->
-          <td class="py-3.5 px-4 text-right">
+          <td class="py-3.5 pl-4 pr-6 sm:pr-8 text-right">
             <div class="inline-flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
               <button type="button" onclick="showToast('Lembrete configurado para ${exp.item}!', '🔔')" class="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer" title="Lembrete">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>

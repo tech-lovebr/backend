@@ -4403,10 +4403,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     activeEvent.giftList.unshift(newGift);
-    renderHostGifts();
+    const searchInput = document.getElementById('gifts-search-input');
+    renderHostGifts(searchInput ? searchInput.value : '');
+    showToast(`"${randomItem.title}" adicionado à lista!`, '🎁');
   }
 
-  function renderHostGifts() {
+  function renderHostGifts(searchQuery = '') {
     const container = document.getElementById('host-gifts-grid');
     const headerTitle = document.getElementById('gifts-header-title');
     const headerSub = document.getElementById('gifts-header-subtitle');
@@ -4414,7 +4416,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalCountEl = document.getElementById('gifts-total-count');
     const totalValueEl = document.getElementById('gifts-total-value');
 
-    if (headerTitle) headerTitle.textContent = 'Meus Presentes';
+    if (headerTitle) headerTitle.textContent = 'Meus presentes';
     if (headerSub) headerSub.textContent = 'Todos os presentes cadastrados são fictícios.';
     if (summaryStats) summaryStats.classList.remove('hidden');
 
@@ -4430,62 +4432,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
     if (totalValueEl) totalValueEl.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    // 2. Primeiro Item: Adicionar Aleatório (Com separação por linha vertical e horizontal)
-    const randomCard = document.createElement('div');
-    randomCard.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
-    randomCard.innerHTML = `
-      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0 pointer-events-none">
-        <span class="w-4 h-4 p-0.5 block"></span>
-      </div>
-      <div class="w-full flex-1 flex flex-col items-center justify-center p-3 my-auto">
-        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
-          <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M22 18h-5.9c-1.3 0-2.5-.7-3.3-1.8l-.5-.8"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="m18 14 4 4-4 4"/>
-          </svg>
-        </div>
-        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-4 transition-colors font-sans">
-          Adicionar Aleatório
-        </h4>
-        <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">Gera presentes prontos</p>
-      </div>
-      <div class="w-full pt-2 mt-auto opacity-0 pointer-events-none">
-        <p class="text-xs font-bold">-</p>
-      </div>
-    `;
-    randomCard.addEventListener('click', () => openGiftModal('random'));
-    container.appendChild(randomCard);
+    // Filtra presentes caso haja busca ativa
+    let filteredGifts = giftList;
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      filteredGifts = giftList.filter(g => g.title && g.title.toLowerCase().includes(q));
+    }
 
-    // 3. Segundo Item: Adicionar Presente (Com separação por linha vertical e horizontal)
-    const addCard = document.createElement('div');
-    addCard.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/50 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
-    addCard.innerHTML = `
-      <div class="w-full flex items-center justify-end text-zinc-400 mb-1 opacity-0 pointer-events-none">
-        <span class="w-4 h-4 p-0.5 block"></span>
-      </div>
-      <div class="w-full flex-1 flex flex-col items-center justify-center p-3 my-auto">
-        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-dashed border-zinc-300 group-hover:border-[#537bae] group-hover:bg-blue-50/40 flex items-center justify-center text-zinc-400 group-hover:text-[#537bae] group-hover:scale-105 transition-all shadow-2xs">
-          <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
-        </div>
-        <h4 class="text-xs sm:text-sm font-bold text-zinc-900 group-hover:text-[#537bae] mt-4 transition-colors font-sans">
-          Adicionar Presente
-        </h4>
-        <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">Nome, foto e valor</p>
-      </div>
-      <div class="w-full pt-2 mt-auto opacity-0 pointer-events-none">
-        <p class="text-xs font-bold">-</p>
-      </div>
-    `;
-    addCard.addEventListener('click', () => openGiftDrawer());
-    container.appendChild(addCard);
+    if (filteredGifts.length === 0) {
+      if (searchQuery && searchQuery.trim()) {
+        container.innerHTML = `
+          <div class="col-span-full py-16 text-center border-r border-b border-zinc-200/80 bg-white">
+            <p class="text-xs sm:text-sm text-zinc-500 font-medium font-sans">Nenhum presente encontrado para "${searchQuery}".</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="col-span-full py-16 text-center space-y-3 border-r border-b border-zinc-200/80 bg-white">
+            <p class="text-xs sm:text-sm text-zinc-500 font-medium font-sans">Sua lista de presentes está vazia.</p>
+            <button type="button" onclick="openGiftDrawer()" class="btn-brand text-xs py-2 px-3.5 font-semibold rounded-[var(--radius-control,12px)] cursor-pointer">Adicionar presente</button>
+          </div>
+        `;
+      }
+      return;
+    }
 
-    // 4. Renderiza os itens de presentes separados por linha vertical (sem caixa ou borda cinza delimitadora em volta da imagem)
-    giftList.forEach(gift => {
+    // 2. Renderiza apenas os itens de presentes reais (cards de adicionar aleatório e adicionar presente removidos)
+    filteredGifts.forEach(gift => {
       const card = document.createElement('div');
       card.className = 'group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all hover:bg-zinc-50/40 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px]';
 
@@ -4499,7 +4472,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </div>
 
-        <!-- Imagem do Produto direta na célula (sem caixinha ou moldura cinza em volta) com Botão X no Canto Superior Direito -->
+        <!-- Imagem do Produto direta na célula com Botão X no Canto Superior Direito -->
         <div class="relative w-full flex-1 flex items-center justify-center p-2 my-auto">
           <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[190px] sm:max-w-[210px] md:max-w-[230px] aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
           
@@ -4526,7 +4499,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnDelete.addEventListener('click', (e) => {
           e.stopPropagation();
           activeEvent.giftList = activeEvent.giftList.filter(g => g.id !== gift.id);
-          renderHostGifts();
+          const searchInput = document.getElementById('gifts-search-input');
+          renderHostGifts(searchInput ? searchInput.value : '');
           showToast(`Presente "${gift.title}" excluído da lista.`, '🗑️');
         });
       }
@@ -4609,6 +4583,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnHostAddGift = document.getElementById('btn-host-add-gift');
   if (btnHostAddGift) {
     btnHostAddGift.addEventListener('click', () => openGiftDrawer());
+  }
+
+  const btnHostAddRandomGift = document.getElementById('btn-host-add-random-gift');
+  if (btnHostAddRandomGift) {
+    btnHostAddRandomGift.addEventListener('click', () => {
+      createRandomGift();
+      triggerConfetti();
+    });
+  }
+
+  const inputGiftsSearch = document.getElementById('gifts-search-input');
+  if (inputGiftsSearch) {
+    inputGiftsSearch.addEventListener('input', (e) => {
+      renderHostGifts(e.target.value);
+    });
   }
 
   const btnCloseGiftModal = document.getElementById('btn-close-gift-modal');
@@ -4730,8 +4719,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Alternar sub-seção da Lista de Presentes (Meus Presentes vs Configurações)
+  // Alternar sub-seção da Lista de Presentes (Meus presentes vs Configurações)
   function switchGiftsSubSection(subId) {
+    const topSearchBar = document.getElementById('gifts-top-search-bar');
     const panelProducts = document.getElementById('gifts-panel-products');
     const panelSettings = document.getElementById('gifts-panel-settings');
     const summaryStats = document.getElementById('gifts-summary-stats');
@@ -4739,18 +4729,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerSub = document.getElementById('gifts-header-subtitle');
 
     if (subId === 'gift-settings') {
+      if (topSearchBar) topSearchBar.classList.add('hidden');
       if (panelProducts) panelProducts.classList.add('hidden');
       if (panelSettings) panelSettings.classList.remove('hidden');
       if (summaryStats) summaryStats.classList.add('hidden');
       if (headerTitle) headerTitle.textContent = 'Configurações da Lista';
       if (headerSub) headerSub.textContent = 'Configure taxas, parcelamento sem juros para convidados e preferências.';
     } else {
+      if (topSearchBar) topSearchBar.classList.remove('hidden');
       if (panelProducts) panelProducts.classList.remove('hidden');
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.remove('hidden');
-      if (headerTitle) headerTitle.textContent = 'Meus Presentes';
+      if (headerTitle) headerTitle.textContent = 'Meus presentes';
       if (headerSub) headerSub.textContent = 'Todos os presentes cadastrados são fictícios.';
-      renderHostGifts();
+      const searchInput = document.getElementById('gifts-search-input');
+      renderHostGifts(searchInput ? searchInput.value : '');
     }
   }
 

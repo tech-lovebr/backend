@@ -4584,13 +4584,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }`;
 
       card.innerHTML = `
-        <!-- Topo do Card: Coração de Favorito à direita -->
-        <div class="w-full flex items-center justify-end text-zinc-400 mb-1">
-          <button type="button" class="btn-fav-gift text-zinc-300 hover:text-rose-500 transition-colors p-1 cursor-pointer" title="Favoritar">
+        <!-- Topo do Card: Título acima da imagem com botão de Favorito no canto -->
+        <div class="w-full relative px-6 mb-2">
+          <button type="button" class="btn-fav-gift absolute top-0 right-0 text-zinc-300 hover:text-rose-500 transition-colors p-1 cursor-pointer" title="Favoritar">
             <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
             </svg>
           </button>
+          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-2 leading-snug min-h-[2.5rem] flex items-center justify-center text-center" ${isPurchased ? '' : `title="${gift.title}"`}>
+            ${gift.title}
+          </h4>
         </div>
 
         <!-- Imagem do Produto com Ação Bloqueada ou Botão X no Canto Superior Direito -->
@@ -4614,12 +4617,9 @@ document.addEventListener('DOMContentLoaded', () => {
           `}
         </div>
 
-        <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->
-        <div class="w-full pt-3 space-y-1 mt-auto">
-          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-2 px-1 leading-snug" ${isPurchased ? '' : `title="${gift.title}"`}>
-            ${gift.title}
-          </h4>
-          <p class="text-xs sm:text-sm font-bold text-zinc-900 mt-0.5">
+        <!-- Valor do Produto em Destaque Embaixo da Imagem -->
+        <div class="w-full pt-2.5 mt-auto text-center">
+          <p class="text-xs sm:text-sm font-bold text-zinc-900">
             R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>

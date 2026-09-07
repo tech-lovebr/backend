@@ -2385,15 +2385,6 @@ document.addEventListener('DOMContentLoaded', () => {
       countdownLabel.style.setProperty('font-size', `${Math.round(descSize * 0.85)}px`, 'important');
       countdownLabel.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
     }
-
-    const actionsLabel = document.getElementById('live-preview-actions-label');
-    if (actionsLabel) {
-      actionsLabel.style.setProperty('color', descColor, 'important');
-      actionsLabel.style.setProperty('font-family', actualDescFamily, 'important');
-      actionsLabel.style.setProperty('font-size', `${Math.round(descSize * 0.68)}px`, 'important');
-      actionsLabel.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
-    }
-
     // 8. Fechamento
     if (previewClosingNames) {
       previewClosingNames.textContent = titleVal || 'Anfitriões';

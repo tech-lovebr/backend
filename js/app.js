@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'all', label: 'Todos' },
+        { id: 'all', label: 'Meus convidados' },
         { id: 'tables', label: 'Mapear mesas' },
         { id: 'whatsapp', label: 'Disparo WhatsApp' }
       ]

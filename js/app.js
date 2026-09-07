@@ -801,7 +801,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (giftsTitle) giftsTitle.textContent = `Lista de Presentes: ${activeEvent.title}`;
     if (rsvpTitle) rsvpTitle.textContent = 'Lista de convidados';
-    if (walletTitle) walletTitle.textContent = 'Financeiro';
+    if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
 
@@ -5870,17 +5870,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (title) {
       if (subId === 'wallet-digital') {
         title.textContent = 'Carteira Digital';
-        if (desc) desc.textContent = 'Acompanhe seu saldo disponível, arrecadações em dinheiro e solicite resgates instantâneos via PIX.';
+        if (desc) {
+          desc.textContent = '';
+          desc.classList.add('hidden');
+        }
       } else if (subId === 'wallet-budget') {
         title.textContent = 'Orçamento';
-        if (desc) desc.textContent = 'Planeje metas, controle custos comprometidos e gerencie despesas de fornecedores do evento.';
+        if (desc) {
+          desc.textContent = 'Planeje metas, controle custos comprometidos e gerencie despesas de fornecedores do evento.';
+          desc.classList.remove('hidden');
+        }
         checkAndPromptBudgetSetup();
         renderBudgetExpensesTable();
       } else if (subId === 'wallet-statement') {
         title.textContent = 'Extrato';
-        if (desc) desc.textContent = 'Histórico completo de entradas de presentes, saques PIX realizados e conciliação financeira.';
+        if (desc) {
+          desc.textContent = 'Histórico completo de entradas de presentes, saques PIX realizados e conciliação financeira.';
+          desc.classList.remove('hidden');
+        }
       } else {
         title.textContent = subLabel;
+        if (desc) desc.classList.add('hidden');
       }
     }
 

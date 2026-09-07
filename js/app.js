@@ -4746,7 +4746,15 @@ document.addEventListener('DOMContentLoaded', () => {
     { title: 'Jantar Romântico à Luz de Velas em Paris', price: 750.00, category: 'honeymoon', image: 'assets/wedding_table_dinner.jpg' },
     { title: 'Passeio de Barco no Pôr do Sol em Santorini', price: 580.00, category: 'honeymoon', image: 'assets/wedding_sunset_couple.jpg' },
     { title: 'Cota de Hospedagem em Bangalô Sobre as Águas', price: 1500.00, category: 'honeymoon', image: 'assets/theme_coastal.jpg' },
-    { title: 'Degustação de Vinhos & Queijos em Toscana', price: 340.00, category: 'honeymoon', image: 'assets/theme_garden.jpg' }
+    { title: 'Degustação de Vinhos & Queijos em Toscana', price: 340.00, category: 'honeymoon', image: 'assets/theme_garden.jpg' },
+    { title: 'Camiseta: "Fui obrigado a comparecer"', price: 79.90, category: 'clothing', image: 'assets/card_espresso.jpg' },
+    { title: 'Caneta que dá choque', price: 49.90, category: 'toys', image: 'assets/card_safari.jpg' },
+    { title: 'Capivara de pelúcia em tamanho real', price: 250.00, category: 'toys', image: 'assets/card_bedding.jpg' },
+    { title: 'Almofada em formato de coxinha', price: 59.90, category: 'home', image: 'assets/bouquet_roses.jpg' },
+    { title: 'Mini karaokê de chuveiro', price: 129.90, category: 'kitchen', image: 'assets/card_espresso.jpg' },
+    { title: 'Sino para pedir lanches da cama', price: 39.90, category: 'home', image: 'assets/card_kayak.jpg' },
+    { title: 'Paciência (pacote com 100g)', price: 19.90, category: 'food', image: 'assets/card_bedding.jpg' },
+    { title: 'Kit anti-ressaca', price: 89.90, category: 'health', image: 'assets/card_lecreuset.jpg' }
   ];
 
   function createRandomGift() {

@@ -2398,12 +2398,53 @@ button.b2b-category-pill::after {
 
 /* Tabela de Orçamento, Extrato e Grade de Presentes Full-Bleed (Preenchimento total 100% da tela sem margens laterais) */
 .budget-table-full-bleed,
-.statement-table-full-bleed,
 .gifts-grid-full-bleed {
   margin-left: -2rem !important;
   margin-right: -2rem !important;
   width: calc(100% + 4rem) !important;
   max-width: calc(100% + 4rem) !important;
+}
+
+/* RSVP mode: use standard lateral margin (2rem) for tables */
+body.rsvp-mode .budget-table-full-bleed {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+@media (max-width: 639px) {
+  .budget-table-full-bleed,
+  .gifts-grid-full-bleed {
+    margin-left: -1.5rem !important;
+    margin-right: -1.5rem !important;
+    width: calc(100% + 3rem) !important;
+    max-width: calc(100% + 3rem) !important;
+  }
+
+  /* RSVP mode: adjust mobile margins */
+  body.rsvp-mode .budget-table-full-bleed {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+  margin-left: -2rem !important;
+  margin-right: -2rem !important;
+  width: calc(100% + 4rem) !important;
+  max-width: calc(100% + 4rem) !important;
+}
+
+/* Extrato: use standard lateral margin (2rem) */
+.statement-table-full-bleed {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 }
 
 @media (max-width: 639px) {

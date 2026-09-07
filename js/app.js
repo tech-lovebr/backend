@@ -4601,12 +4601,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[190px] sm:max-w-[210px] md:max-w-[230px] aspect-square object-cover ${isPurchased ? '' : 'group-hover:scale-105'} transition-transform duration-300">
           
           ${isPurchased ? `
-            <!-- Ícone de Presente sobre a imagem -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-sm border border-zinc-200/80 flex items-center justify-center text-[#537bae]">
+            <!-- Ícone de Presente e Nome do Convidado sobre a imagem -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 gap-1.5 px-2">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-sm border border-zinc-200/80 flex items-center justify-center text-[#537bae] shrink-0">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 0 0 0-4.5H3a2.25 2.25 0 0 0 0 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 0 1 0-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 0 0 0-4.5c-1.864 0-3.75 2.25-3.75 4.5"/>
                 </svg>
+              </div>
+              <div class="px-2.5 py-0.5 sm:py-1 rounded-full bg-white/90 backdrop-blur-xs shadow-sm border border-zinc-200/80 text-[#537bae] text-[11px] sm:text-xs font-semibold font-sans max-w-[92%] truncate text-center">
+                ${buyerName}
               </div>
             </div>
           ` : `

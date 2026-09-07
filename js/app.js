@@ -1077,7 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let builderState = {
     buttonIconsStyle: 'animado',
-    ornamentsStyle: 'sem',
+    ornamentsStyle: 'nenhum',
     bgColor: '#FBFBFA',
     font: 'font-playfair',
     titleColor: '#18181B',
@@ -1786,8 +1786,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bIcons === 'classico' || bIcons === 'retro') bIcons = 'animado';
     builderState.buttonIconsStyle = bIcons;
     builderState.themeStyle = bIcons;
-    let oStyle = activeEvent.ornamentsStyle || 'sem';
-    if (oStyle === 'classico') oStyle = 'sem';
+    let oStyle = activeEvent.ornamentsStyle || 'nenhum';
+    if (oStyle === 'sem' || oStyle === 'classico') oStyle = 'nenhum';
     builderState.ornamentsStyle = oStyle;
     builderState.bgColor = activeEvent.bgColor || '#FBFBFA';
     let initialFont = activeEvent.fontFamily || builderState.font || 'font-playfair';
@@ -2423,8 +2423,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // 9.5 Renderização dos Ornamentos (Sem, Moderno)
-    const ornamentStyle = builderState.ornamentsStyle || 'sem';
+    // 9.5 Renderização dos Ornamentos (Nenhum, Moderno)
+    const ornamentStyle = builderState.ornamentsStyle || 'nenhum';
     const venueOrnament = document.getElementById('venue-ornament-top');
     const closingOrnament = document.getElementById('closing-ornament-top');
 
@@ -2607,7 +2607,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeEvent.closingImage = builderState.closingImage;
     activeEvent.buttonIconsStyle = builderState.buttonIconsStyle || 'animado';
     activeEvent.themeStyle = builderState.buttonIconsStyle || 'animado';
-    activeEvent.ornamentsStyle = builderState.ornamentsStyle || 'sem';
+    activeEvent.ornamentsStyle = builderState.ornamentsStyle || 'nenhum';
 
     updateAllCelebrationData();
     renderEventsSwitcher();

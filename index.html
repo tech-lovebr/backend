@@ -2167,7 +2167,38 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button type="button" id="btn-host-add-guest" class="btn-brand text-xs py-2.5 px-4 font-semibold flex items-center justify-center gap-1.5 rounded-xl shadow-2xs cursor-pointer">
+              <!-- Dropdown Menu de Status (ao lado esquerdo de Adicionar Convidado, no mesmo padrão de Ordenar em Fornecedores) -->
+              <div class="relative flex-shrink-0" id="rsvp-status-container">
+                <button type="button" id="btn-rsvp-status-dropdown" class="px-3.5 py-2.5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white hover:bg-zinc-50 text-xs font-medium text-zinc-700 flex items-center gap-2 transition-all cursor-pointer shadow-2xs">
+                  <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 12h9.75m-9.75 6h9.75M3.75 6H7.5M3.75 12H7.5m-3.75 6H7.5"/>
+                  </svg>
+                  <span>Status: <strong id="rsvp-status-label" class="font-semibold text-zinc-900">Todos (<span id="count-rsvp-label">0</span>)</strong></span>
+                  <svg class="w-3.5 h-3.5 text-zinc-400 transition-transform duration-200" id="rsvp-status-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="rsvp-status-menu" class="hidden absolute right-0 top-full mt-1.5 w-52 bg-white rounded-xl border border-zinc-200/90 shadow-lg py-1.5 z-30 animate-fade-in">
+                  <button type="button" class="rsvp-status-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer active" data-filter="all">
+                    <span>Todos (<span id="count-rsvp-opt-all">0</span>)</span>
+                    <span class="rsvp-status-check text-[#537bae]">✓</span>
+                  </button>
+                  <button type="button" class="rsvp-status-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-filter="confirmed">
+                    <span>Confirmados (<span id="count-rsvp-opt-confirmed">0</span>)</span>
+                    <span class="rsvp-status-check text-[#537bae] hidden">✓</span>
+                  </button>
+                  <button type="button" class="rsvp-status-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-filter="declined">
+                    <span>Recusados (<span id="count-rsvp-opt-declined">0</span>)</span>
+                    <span class="rsvp-status-check text-[#537bae] hidden">✓</span>
+                  </button>
+                  <button type="button" class="rsvp-status-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-filter="pending">
+                    <span>Pendentes (<span id="count-rsvp-opt-pending">0</span>)</span>
+                    <span class="rsvp-status-check text-[#537bae] hidden">✓</span>
+                  </button>
+                </div>
+              </div>
+
+              <button type="button" id="btn-host-add-guest" class="btn-brand text-xs py-2.5 px-4 font-semibold flex items-center justify-center gap-1.5 rounded-xl shadow-2xs cursor-pointer whitespace-nowrap">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 <span>Adicionar Convidado</span>
               </button>
@@ -2180,24 +2211,6 @@
             <!-- Título da Seção: Convidados -->
             <div>
               <h2 id="rsvp-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Convidados</h2>
-            </div>
-
-            <!-- Barra Superior de Abas Sublinhadas -->
-            <div class="flex items-center justify-between border-b border-zinc-200/80 pb-0">
-              <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar -mb-px">
-                <button type="button" class="rsvp-tab-link active pb-2.5 px-3 border-b-2 border-[#537bae] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer" data-filter="all">
-                  Todos (<span id="count-rsvp-all">0</span>)
-                </button>
-                <button type="button" class="rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer" data-filter="confirmed">
-                  Confirmados (<span id="count-rsvp-confirmed">0</span>)
-                </button>
-                <button type="button" class="rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer" data-filter="declined">
-                  Recusados (<span id="count-rsvp-declined">0</span>)
-                </button>
-                <button type="button" class="rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer" data-filter="pending">
-                  Pendentes (<span id="count-rsvp-pending">0</span>)
-                </button>
-              </div>
             </div>
 
             <!-- Tabela em Tela Cheia / Sem Caixa com Moldura/Sombra -->

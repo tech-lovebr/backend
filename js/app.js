@@ -4967,30 +4967,40 @@ document.addEventListener('DOMContentLoaded', () => {
     if (summaryDeclined) summaryDeclined.textContent = activeEvent.convidadosRecusados || 10;
     if (summaryPending) summaryPending.textContent = activeEvent.convidadosPendentes || 25;
 
-    // 2. Contagens das Abas
+    // 2. Contagens do Menu de Status
     const totalCount = activeEvent.guests.length;
     const confirmedCount = activeEvent.guests.filter(g => g.status === 'confirmed').length;
     const declinedCount = activeEvent.guests.filter(g => g.status === 'declined').length;
     const pendingCount = activeEvent.guests.filter(g => g.status === 'pending').length;
 
-    const countAll = document.getElementById('count-rsvp-all');
-    const countConfirmed = document.getElementById('count-rsvp-confirmed');
-    const countDeclined = document.getElementById('count-rsvp-declined');
-    const countPending = document.getElementById('count-rsvp-pending');
+    const countOptAll = document.getElementById('count-rsvp-opt-all');
+    const countOptConfirmed = document.getElementById('count-rsvp-opt-confirmed');
+    const countOptDeclined = document.getElementById('count-rsvp-opt-declined');
+    const countOptPending = document.getElementById('count-rsvp-opt-pending');
 
-    if (countAll) countAll.textContent = totalCount;
-    if (countConfirmed) countConfirmed.textContent = confirmedCount;
-    if (countDeclined) countDeclined.textContent = declinedCount;
-    if (countPending) countPending.textContent = pendingCount;
+    if (countOptAll) countOptAll.textContent = totalCount;
+    if (countOptConfirmed) countOptConfirmed.textContent = confirmedCount;
+    if (countOptDeclined) countOptDeclined.textContent = declinedCount;
+    if (countOptPending) countOptPending.textContent = pendingCount;
 
-    // 3. Atualiza Abas de Convidados com Underline na cor primária #537bae
-    document.querySelectorAll('.rsvp-tab-link').forEach(tab => {
-      const tabFilter = tab.getAttribute('data-filter');
-      if (tabFilter === activeFilter) {
-        tab.className = 'rsvp-tab-link active pb-2.5 px-3 border-b-2 border-[#537bae] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
-      } else {
-        tab.className = 'rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer';
-      }
+    // 3. Atualiza Label do Botão de Status e Checks
+    const statusLabel = document.getElementById('rsvp-status-label');
+    const statusLabelsMap = {
+      'all': `Todos (${totalCount})`,
+      'confirmed': `Confirmados (${confirmedCount})`,
+      'declined': `Recusados (${declinedCount})`,
+      'pending': `Pendentes (${pendingCount})`
+    };
+    if (statusLabel) {
+      statusLabel.textContent = statusLabelsMap[activeFilter] || `Todos (${totalCount})`;
+    }
+
+    document.querySelectorAll('.rsvp-status-option').forEach(opt => {
+      const optFilter = opt.getAttribute('data-filter');
+      const isSelected = optFilter === activeFilter;
+      opt.classList.toggle('active', isSelected);
+      const check = opt.querySelector('.rsvp-status-check');
+      if (check) check.classList.toggle('hidden', !isSelected);
     });
 
     // 4. Filtragem por Status e por Busca
@@ -5282,12 +5292,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Listeners das abas com underline (Todos, Confirmados, Recusados, Pendentes)
-  document.querySelectorAll('.rsvp-tab-link').forEach(btn => {
-    btn.addEventListener('click', () => {
+  // Dropdown de Status de Convidados (Todos, Confirmados, Recusados, Pendentes)
+  const btnRsvpStatus = document.getElementById('btn-rsvp-status-dropdown');
+  const rsvpStatusMenu = document.getElementById('rsvp-status-menu');
+  const rsvpStatusChevron = document.getElementById('rsvp-status-chevron');
+
+  if (btnRsvpStatus && rsvpStatusMenu) {
+    btnRsvpStatus.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = rsvpStatusMenu.classList.contains('hidden');
+      rsvpStatusMenu.classList.toggle('hidden', !isHidden);
+      if (rsvpStatusChevron) rsvpStatusChevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!rsvpStatusMenu.contains(e.target) && !btnRsvpStatus.contains(e.target)) {
+        rsvpStatusMenu.classList.add('hidden');
+        if (rsvpStatusChevron) rsvpStatusChevron.style.transform = 'rotate(0deg)';
+      }
+    });
+  }
+
+  document.querySelectorAll('.rsvp-status-option').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const filter = btn.getAttribute('data-filter') || 'all';
       const searchVal = inputRsvpSearch ? inputRsvpSearch.value : '';
       renderGuestsTable(filter, searchVal);
+      if (rsvpStatusMenu) rsvpStatusMenu.classList.add('hidden');
+      if (rsvpStatusChevron) rsvpStatusChevron.style.transform = 'rotate(0deg)';
     });
   });
 

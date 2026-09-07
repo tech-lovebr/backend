@@ -4610,27 +4610,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
               </div>
             </div>
-
-            <!-- Botão de exclusão bloqueado (Presente já comprado) -->
-            <div class="btn-delete-blocked absolute top-1 right-1 w-6 h-6 rounded-full bg-zinc-100/90 border border-zinc-200/80 text-zinc-400 flex items-center justify-center text-[10px] shadow-2xs z-10 cursor-not-allowed opacity-0 group-hover:opacity-100 transition-opacity" title="Presente recebido por: ${buyerName} (Bloqueado para exclusão)">
-              <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-              </svg>
-            </div>
           ` : `
             <!-- Botão X de exclusão no canto superior direito da imagem -->
             <button type="button" class="btn-delete-gift absolute top-1 right-1 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
               ✕
             </button>
           `}
-
-          <!-- Hover Box: Presente recebido por: Nome do Convidado -->
-          ${isPurchased ? `
-            <div class="absolute inset-x-2 bottom-1.5 mx-auto w-[92%] max-w-[210px] bg-white border border-[#5c7aaa]/30 text-[#5c7aaa] py-2 px-2.5 rounded-xl shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 flex flex-col items-center justify-center text-center font-sans">
-              <span class="text-[10px] text-zinc-400 font-normal leading-tight">Presente recebido por:</span>
-              <strong class="font-bold text-[#5c7aaa] text-xs leading-snug mt-0.5 break-words">${buyerName}</strong>
-            </div>
-          ` : ''}
         </div>
 
         <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->

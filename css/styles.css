@@ -87,10 +87,10 @@ p:not(footer p) {
   line-height: 1.6;
 }
 
-/* Footer Global: Degradê Vertical Azul Puro e Textos 100% Brancos */
+/* Footer Global: Degradê Vertical (#537bae -> #4970a1) e Textos 100% Brancos */
 footer {
-  background-color: #306eb1 !important;
-  background: linear-gradient(180deg, #3b7ec4 0%, #306eb1 50%, #245d9d 100%) !important;
+  background-color: #537bae !important;
+  background: linear-gradient(180deg, #537bae 0%, #4970a1 100%) !important;
   border-top-color: rgba(255, 255, 255, 0.15) !important;
 }
 
@@ -445,8 +445,8 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   width: calc(100% - var(--rail-width-desktop)) !important;
   right: 0 !important;
   z-index: 50 !important;
-  background-color: #306eb1 !important;
-  background: linear-gradient(180deg, #3b7ec4 0%, #306eb1 50%, #245d9d 100%) !important;
+  background-color: #537bae !important;
+  background: linear-gradient(180deg, #537bae 0%, #4970a1 100%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 0 4px 20px -2px rgba(24, 75, 138, 0.28) !important;
   display: flex !important;

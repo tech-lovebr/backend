@@ -2265,11 +2265,9 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
 /* Item de Aba (Link ou Botão) no padrão oficial Love */
 .love-tab-item,
 .rsvp-tab-link,
-.gift-tab-link,
 .b2b-category-pill,
 button.love-tab-item,
 button.rsvp-tab-link,
-button.gift-tab-link,
 button.b2b-category-pill {
   position: relative !important;
   display: inline-flex !important;
@@ -2302,7 +2300,6 @@ button.b2b-category-pill {
 
 .love-tab-item:hover,
 .rsvp-tab-link:hover,
-.gift-tab-link:hover,
 .b2b-category-pill:hover {
   color: #18181B !important; /* zinc-900 */
   border-bottom-color: #D4D4D8 !important; /* zinc-300 */
@@ -2311,11 +2308,9 @@ button.b2b-category-pill {
 /* Aba Ativa - Linha uniforme oficial de 2px na cor primária sem corte */
 .love-tab-item.active,
 .rsvp-tab-link.active,
-.gift-tab-link.active,
 .b2b-category-pill.active,
 button.love-tab-item.active,
 button.rsvp-tab-link.active,
-button.gift-tab-link.active,
 button.b2b-category-pill.active {
   color: #18181B !important;
   font-weight: 600 !important;
@@ -2326,11 +2321,9 @@ button.b2b-category-pill.active {
 
 .love-tab-item::after,
 .rsvp-tab-link::after,
-.gift-tab-link::after,
 .b2b-category-pill::after,
 button.love-tab-item::after,
 button.rsvp-tab-link::after,
-button.gift-tab-link::after,
 button.b2b-category-pill::after {
   display: none !important;
 }

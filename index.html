@@ -860,6 +860,14 @@
 
                   <!-- Foto do Local da Cerimônia / Aquarela -->
                   <div class="pt-2" id="venue-image-section-wrapper">
+                    <!-- Ornamento Clássico Acima da Imagem do Local -->
+                    <div id="venue-ornament-top" class="ornament-top py-1.5 flex items-center justify-center text-zinc-400">
+                      <svg class="w-24 h-4 text-zinc-400" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M50 4 C42 4 38 10 25 10 C15 10 8 7 0 10 C8 13 15 10 25 10 C38 10 42 16 50 16 C58 16 62 10 75 10 C85 10 92 13 100 10 C92 7 85 10 75 10 C62 10 58 4 50 4 Z"/>
+                        <circle cx="50" cy="10" r="2" fill="currentColor"/>
+                      </svg>
+                    </div>
+
                     <!-- Estado 1: Imagem Ativa (com botão Alterar e botão ✕ para excluir) -->
                     <div id="venue-image-filled-container" class="group/venue-img w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80 bg-zinc-50 relative">
                       <img id="live-preview-venue-img" src="assets/wedding_table_dinner.jpg" class="w-full h-full object-cover" alt="Local da Cerimônia">
@@ -918,6 +926,14 @@
 
                   <!-- Foto de Mãos Dadas / Fechamento do Casal -->
                   <div class="pt-2" id="closing-image-section-wrapper">
+                    <!-- Ornamento Clássico Acima da Imagem de Fechamento -->
+                    <div id="closing-ornament-top" class="ornament-top py-1.5 flex items-center justify-center text-zinc-400">
+                      <svg class="w-24 h-4 text-zinc-400" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M50 4 C42 4 38 10 25 10 C15 10 8 7 0 10 C8 13 15 10 25 10 C38 10 42 16 50 16 C58 16 62 10 75 10 C85 10 92 13 100 10 C92 7 85 10 75 10 C62 10 58 4 50 4 Z"/>
+                        <circle cx="50" cy="10" r="2" fill="currentColor"/>
+                      </svg>
+                    </div>
+
                     <!-- Estado 1: Imagem Ativa (com botão Alterar e botão ✕ para excluir) -->
                     <div id="closing-image-filled-container" class="group/closing-img w-full h-44 rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80 bg-zinc-50 relative">
                       <img id="live-preview-closing-img" src="assets/wedding_hero_banner.jpg" class="w-full h-full object-cover object-bottom" alt="Detalhe do Casal">
@@ -985,7 +1001,95 @@
                 <input type="file" id="editor-bg-file-input" accept="image/*" class="hidden">
                 <input type="text" id="editor-event-title" value="" class="hidden">
                 <input type="text" id="editor-hero-headline" value="" class="hidden">
-                <div id="editor-prefaces-list" class="hidden"></div>
+                <!-- CAIXA 1: TEMA -->
+                <div class="border border-[#EAEAEF] rounded-2xl bg-white shadow-2xs overflow-hidden flex flex-col justify-between mb-8">
+                  <div class="bg-zinc-100/60 border-b border-[#EAEAEF] px-3.5 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between">
+                    <h3 class="editor-card-header-title text-xs sm:text-sm font-bold text-zinc-900 tracking-tight font-sans">Tema</h3>
+                    <span class="text-[11px] text-zinc-400 font-normal font-sans">Estilo e acabamento do convite</span>
+                  </div>
+
+                  <div class="p-3.5 sm:p-4 lg:p-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3" id="editor-theme-options-list">
+                      
+                      <!-- Opção 1: Clássico -->
+                      <button type="button" class="theme-style-option-btn active text-left p-3.5 rounded-xl border-2 border-[#537bae] bg-[#537bae]/5 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]" data-theme-style="classico">
+                        <div class="flex items-center justify-between w-full mb-2">
+                          <span class="w-7 h-7 rounded-lg bg-[#537bae]/10 text-[#537bae] flex items-center justify-center text-xs font-serif font-bold">
+                            ❦
+                          </span>
+                          <span class="theme-radio-check w-4 h-4 rounded-full border-2 border-[#537bae] bg-[#537bae] flex items-center justify-center text-white text-[9px] font-bold">
+                            ✓
+                          </span>
+                        </div>
+                        <div>
+                          <h4 class="text-xs sm:text-sm font-bold text-zinc-900 font-sans tracking-tight">Clássico</h4>
+                          <p class="text-[11px] text-zinc-500 font-normal leading-relaxed mt-1 font-sans">Ornamentos clássicos acima das imagens, sem emojis nos botões.</p>
+                        </div>
+                      </button>
+
+                      <!-- Opção 2: Animado -->
+                      <button type="button" class="theme-style-option-btn text-left p-3.5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white hover:bg-zinc-50/50 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]" data-theme-style="animado">
+                        <div class="flex items-center justify-between w-full mb-2">
+                          <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+                            ✨
+                          </span>
+                          <span class="theme-radio-check w-4 h-4 rounded-full border-2 border-zinc-300 bg-transparent flex items-center justify-center text-white text-[9px] font-bold">
+                          </span>
+                        </div>
+                        <div>
+                          <h4 class="text-xs sm:text-sm font-bold text-zinc-900 font-sans tracking-tight">Animado</h4>
+                          <p class="text-[11px] text-zinc-500 font-normal leading-relaxed mt-1 font-sans">Sem ornamentos, emojis nos botões.</p>
+                        </div>
+                      </button>
+
+                      <!-- Opção 3: Moderno -->
+                      <button type="button" class="theme-style-option-btn text-left p-3.5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white hover:bg-zinc-50/50 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]" data-theme-style="moderno">
+                        <div class="flex items-center justify-between w-full mb-2">
+                          <span class="w-7 h-7 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center text-xs">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                          </span>
+                          <span class="theme-radio-check w-4 h-4 rounded-full border-2 border-zinc-300 bg-transparent flex items-center justify-center text-white text-[9px] font-bold">
+                          </span>
+                        </div>
+                        <div>
+                          <h4 class="text-xs sm:text-sm font-bold text-zinc-900 font-sans tracking-tight">Moderno</h4>
+                          <p class="text-[11px] text-zinc-500 font-normal leading-relaxed mt-1 font-sans">Botões sem emojis, com ícones normais.</p>
+                        </div>
+                      </button>
+
+                      <!-- Opção 4: Minimalista -->
+                      <button type="button" class="theme-style-option-btn text-left p-3.5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white hover:bg-zinc-50/50 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]" data-theme-style="minimalista">
+                        <div class="flex items-center justify-between w-full mb-2">
+                          <span class="w-7 h-7 rounded-lg bg-zinc-100 text-zinc-700 flex items-center justify-center text-[11px] font-mono">
+                            ―
+                          </span>
+                          <span class="theme-radio-check w-4 h-4 rounded-full border-2 border-zinc-300 bg-transparent flex items-center justify-center text-white text-[9px] font-bold">
+                          </span>
+                        </div>
+                        <div>
+                          <h4 class="text-xs sm:text-sm font-bold text-zinc-900 font-sans tracking-tight">Minimalista</h4>
+                          <p class="text-[11px] text-zinc-500 font-normal leading-relaxed mt-1 font-sans">Linhas ultrafinas, ausência de ornamentos e fundo limpo. Apenas texto simples, sem ícones ou emojis.</p>
+                        </div>
+                      </button>
+
+                      <!-- Opção 5: Retrô -->
+                      <button type="button" class="theme-style-option-btn text-left p-3.5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white hover:bg-zinc-50/50 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]" data-theme-style="retro">
+                        <div class="flex items-center justify-between w-full mb-2">
+                          <span class="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-[10px] font-mono font-bold">
+                            8bit
+                          </span>
+                          <span class="theme-radio-check w-4 h-4 rounded-full border-2 border-zinc-300 bg-transparent flex items-center justify-center text-white text-[9px] font-bold">
+                          </span>
+                        </div>
+                        <div>
+                          <h4 class="text-xs sm:text-sm font-bold text-zinc-900 font-sans tracking-tight">Retrô</h4>
+                          <p class="text-[11px] text-zinc-500 font-normal leading-relaxed mt-1 font-sans">Bordas grossas pixeladas ou estilo vintage dos anos 80/90, ícones ou caracteres em estilo 8-bit.</p>
+                        </div>
+                      </button>
+
+                    </div>
+                  </div>
+                </div>
 
                 <!-- GRADE RESPONSIVA: TÍTULOS & DESCRIÇÃO (Gap e margem generosos de 32px) -->
                 <div class="appearance-card-block grid grid-cols-1 2xl:grid-cols-2 gap-6 lg:gap-8 mb-8">

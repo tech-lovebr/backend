@@ -1076,6 +1076,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. EDITOR DA COMEMORAÇÃO & CRIADOR DE SITES (Aparência)
   // ==========================================
   let builderState = {
+    themeStyle: 'classico',
     bgColor: '#FBFBFA',
     font: 'font-playfair',
     titleColor: '#18181B',
@@ -1780,6 +1781,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputDataGeneralInfo) inputDataGeneralInfo.value = activeEvent.eventDetails.generalInfo || '';
     }
 
+    builderState.themeStyle = activeEvent.themeStyle || 'classico';
     builderState.bgColor = activeEvent.bgColor || '#FBFBFA';
     let initialFont = activeEvent.fontFamily || builderState.font || 'font-playfair';
     if (initialFont === 'font-serif-title') initialFont = 'font-playfair';
@@ -1859,6 +1861,7 @@ document.addEventListener('DOMContentLoaded', () => {
     syncTextFormatButtons();
     updateButtonColorUI(builderState.accentColor || '#FBFBFA');
     updateButtonTextColorUI(builderState.btnTextColor || activeEvent.btnTextColor || '#18181B');
+    updateThemeStyleUI(builderState.themeStyle);
     updateBgImageUI(builderState.bgImage);
     const btnRadiusSlider = document.getElementById('editor-btn-radius-slider');
     const btnRadiusVal = document.getElementById('editor-btn-radius-val');
@@ -2344,15 +2347,99 @@ document.addEventListener('DOMContentLoaded', () => {
       previewClosingNames.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
     }
 
-    // 9. Botões do Convite (Cor do Botão, Cor do Texto & Arredondamento da Borda)
+    // 9. Estilo do Tema & Botões do Convite
+    const currentThemeStyle = builderState.themeStyle || 'classico';
     const btnRadius = builderState.btnRadius !== undefined ? builderState.btnRadius : 28;
     const radiusCss = btnRadius >= 28 ? '9999px' : `${btnRadius}px`;
     const btnColor = builderState.accentColor || '#FBFBFA';
     const btnTextColor = builderState.btnTextColor || '#18181B';
 
+    // Ornamentos clássicos acima das imagens no preview
+    const venueOrnament = document.getElementById('venue-ornament-top');
+    const closingOrnament = document.getElementById('closing-ornament-top');
+    if (currentThemeStyle === 'classico') {
+      if (venueOrnament) venueOrnament.classList.remove('hidden');
+      if (closingOrnament) closingOrnament.classList.remove('hidden');
+    } else {
+      if (venueOrnament) venueOrnament.classList.add('hidden');
+      if (closingOrnament) closingOrnament.classList.add('hidden');
+    }
+
+    // Configuração dos botões de ação do convite conforme cada tema
+    const actionButtonsConfig = [
+      {
+        text: 'Localização',
+        emoji: '📍 Localização',
+        iconSvg: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>',
+        retro: '[▶] Localização'
+      },
+      {
+        text: 'Lista de Presentes',
+        emoji: '🎁 Lista de Presentes',
+        iconSvg: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H4.5a1.5 1.5 0 01-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 000-4.5H3a2.25 2.25 0 000 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 010-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 000-4.5c-1.864 0-3.75 2.25-3.75 4.5"/></svg>',
+        retro: '[★] Lista de Presentes'
+      },
+      {
+        text: 'Confirmação de Presença',
+        emoji: '✓ Confirmação de Presença',
+        iconSvg: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+        retro: '[✔] Confirmação'
+      },
+      {
+        text: 'Anfitriões',
+        emoji: '👥 Anfitriões',
+        iconSvg: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>',
+        retro: '[▲] Anfitriões'
+      },
+      {
+        text: 'Dress Code',
+        emoji: '👗 Dress Code',
+        iconSvg: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.386l3.86-2.268c.827-.486 1.134-1.503.748-2.33l-2.268-4.86a2.25 2.25 0 00-.733-.872L9.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>',
+        retro: '[✦] Dress Code'
+      }
+    ];
+
     const inviteButtons = document.querySelectorAll('#live-preview-buttons-container button, .live-preview-custom-btn');
-    inviteButtons.forEach(btn => {
-      btn.style.setProperty('border-radius', radiusCss, 'important');
+    inviteButtons.forEach((btn, idx) => {
+      const config = actionButtonsConfig[idx];
+
+      if (config) {
+        if (currentThemeStyle === 'animado') {
+          btn.innerHTML = `<span>${config.emoji}</span>`;
+          btn.style.boxShadow = '';
+          btn.style.borderWidth = '1px';
+          btn.style.borderColor = 'rgba(0,0,0,0.08)';
+          btn.style.setProperty('border-radius', radiusCss, 'important');
+        } else if (currentThemeStyle === 'moderno') {
+          btn.innerHTML = `<span class="inline-flex items-center gap-1.5">${config.iconSvg} <span>${config.text}</span></span>`;
+          btn.style.boxShadow = '';
+          btn.style.borderWidth = '1px';
+          btn.style.borderColor = 'rgba(0,0,0,0.08)';
+          btn.style.setProperty('border-radius', radiusCss, 'important');
+        } else if (currentThemeStyle === 'minimalista') {
+          btn.innerHTML = `<span>${config.text}</span>`;
+          btn.style.boxShadow = 'none';
+          btn.style.borderWidth = '1px';
+          btn.style.borderColor = 'rgba(0,0,0,0.08)';
+          btn.style.setProperty('border-radius', radiusCss, 'important');
+        } else if (currentThemeStyle === 'retro') {
+          btn.innerHTML = `<span class="font-mono text-[11px] font-bold tracking-tight">${config.retro}</span>`;
+          btn.style.borderWidth = '2px';
+          btn.style.borderColor = '#18181B';
+          btn.style.boxShadow = '3px 3px 0px #18181B';
+          btn.style.setProperty('border-radius', '6px', 'important');
+        } else {
+          // clássico: sem emojis nos botões
+          btn.innerHTML = `<span>${config.text}</span>`;
+          btn.style.boxShadow = '';
+          btn.style.borderWidth = '1px';
+          btn.style.borderColor = 'rgba(0,0,0,0.08)';
+          btn.style.setProperty('border-radius', radiusCss, 'important');
+        }
+      } else {
+        btn.style.setProperty('border-radius', radiusCss, 'important');
+      }
+
       btn.style.setProperty('background-color', btnColor, 'important');
       btn.style.setProperty('color', btnTextColor, 'important');
       btn.querySelectorAll('*').forEach(child => {
@@ -2524,6 +2611,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeEvent.accentColor = builderState.accentColor;
     activeEvent.music = JSON.parse(JSON.stringify(builderState.music || { tracks: [], autoplay: true }));
     activeEvent.closingImage = builderState.closingImage;
+    activeEvent.themeStyle = builderState.themeStyle || 'classico';
 
     updateAllCelebrationData();
     renderEventsSwitcher();
@@ -3267,6 +3355,59 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       updateLiveSitePreview();
       showToast('Foto de capa removida. Clique em + para adicionar uma nova.', '🗑️');
+    });
+  }
+
+  // Helper e Listeners para o Tema em Aparência
+  function updateThemeStyleUI(themeKey) {
+    const list = document.getElementById('editor-theme-options-list');
+    if (!list) return;
+
+    list.querySelectorAll('.theme-style-option-btn').forEach(btn => {
+      const key = btn.getAttribute('data-theme-style');
+      const radioCheck = btn.querySelector('.theme-radio-check');
+      if (key === themeKey) {
+        btn.className = 'theme-style-option-btn active text-left p-3.5 rounded-xl border-2 border-[#537bae] bg-[#537bae]/5 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]';
+        if (radioCheck) {
+          radioCheck.className = 'theme-radio-check w-4 h-4 rounded-full border-2 border-[#537bae] bg-[#537bae] flex items-center justify-center text-white text-[9px] font-bold';
+          radioCheck.textContent = '✓';
+        }
+      } else {
+        btn.className = 'theme-style-option-btn text-left p-3.5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white hover:bg-zinc-50/50 transition-all cursor-pointer flex flex-col justify-between group hover:shadow-xs min-h-[140px]';
+        if (radioCheck) {
+          radioCheck.className = 'theme-radio-check w-4 h-4 rounded-full border-2 border-zinc-300 bg-transparent flex items-center justify-center text-white text-[9px] font-bold';
+          radioCheck.textContent = '';
+        }
+      }
+    });
+  }
+
+  const themeOptionsList = document.getElementById('editor-theme-options-list');
+  if (themeOptionsList) {
+    themeOptionsList.addEventListener('click', (e) => {
+      const btn = e.target.closest('.theme-style-option-btn');
+      if (!btn) return;
+
+      const themeStyle = btn.getAttribute('data-theme-style');
+      if (!themeStyle) return;
+
+      builderState.themeStyle = themeStyle;
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.themeStyle = themeStyle;
+      }
+
+      updateThemeStyleUI(themeStyle);
+      updateLiveSitePreview();
+
+      const themeTitles = {
+        classico: 'Clássico',
+        animado: 'Animado',
+        moderno: 'Moderno',
+        minimalista: 'Minimalista',
+        retro: 'Retrô'
+      };
+      showToast(`Tema alterado para: ${themeTitles[themeStyle] || themeStyle}`, '🎨');
     });
   }
 

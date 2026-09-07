@@ -4649,11 +4649,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
           `}
 
-          <!-- Hover Pill: Presente recebido por: Nome do Convidado -->
+          <!-- Hover Box: Presente recebido por: Nome do Convidado -->
           ${isPurchased ? `
-            <div class="absolute inset-x-2 bottom-1 mx-auto w-fit max-w-[95%] bg-zinc-900/95 text-white text-[11px] font-medium py-1.5 px-3 rounded-full shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 flex items-center gap-1.5 truncate font-sans">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse"></span>
-              <span class="truncate">Presente recebido por: <strong class="font-bold text-white">${buyerName}</strong></span>
+            <div class="absolute inset-x-2 bottom-1.5 mx-auto w-[92%] max-w-[210px] bg-white border border-[#5c7aaa]/30 text-[#5c7aaa] py-2 px-2.5 rounded-xl shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 flex flex-col items-center justify-center text-center font-sans">
+              <span class="text-[10px] text-zinc-400 font-normal leading-tight">Presente recebido por:</span>
+              <strong class="font-bold text-[#5c7aaa] text-xs leading-snug mt-0.5 break-words">${buyerName}</strong>
             </div>
           ` : ''}
         </div>

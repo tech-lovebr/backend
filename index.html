@@ -2027,29 +2027,15 @@
           <!-- Conteúdo Principal de Meus Presentes -->
           <div class="px-6 sm:px-8 py-6 space-y-5 w-full max-w-none">
             
-            <!-- Header da Seção com Título, Subtítulo e Botão Adicionar Presente (como na referência) -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus presentes</h2>
-                <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 font-sans mt-1">Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.</p>
-              </div>
-
-              <div class="flex items-center gap-2.5 shrink-0">
-                <button type="button" id="btn-host-add-gift-header" onclick="openGiftDrawer()" class="btn-brand text-xs sm:text-sm py-2.5 px-4 font-semibold flex items-center justify-center gap-2 rounded-[var(--radius-control,12px)] shadow-2xs cursor-pointer font-sans">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                  <span>Adicionar presente</span>
-                </button>
-              </div>
+            <!-- Header da Seção com Título e Subtítulo -->
+            <div>
+              <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus presentes</h2>
+              <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 font-sans mt-1">Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.</p>
             </div>
 
-            <!-- Barra de Abas e Estatísticas: Todos sublinhado + Valor Total à Direita -->
-            <div class="flex items-center justify-between border-b border-zinc-200/80 pb-0">
-              <div class="flex items-center gap-2 -mb-px">
-                <button type="button" class="pb-2.5 px-3 border-b-2 border-[#537bae] text-[#537bae] font-semibold text-xs sm:text-sm whitespace-nowrap font-sans cursor-pointer">
-                  Todos (<span id="gifts-total-count">0</span>)
-                </button>
-              </div>
-              <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium pb-2">
+            <!-- Barra Superior de Estatísticas: Valor Total -->
+            <div id="gifts-summary-stats" class="flex items-center justify-end border-b border-zinc-200/80 pb-2 text-xs sm:text-sm text-zinc-500 font-sans font-medium">
+              <div>
                 Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
               </div>
             </div>

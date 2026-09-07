@@ -1696,7 +1696,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fontClass === 'font-modern') fontClass = 'font-outfit';
     if (fontClass === 'font-clean') fontClass = 'font-inter';
     if (fontClass === 'font-sans') fontClass = 'font-inter';
-    if (fontClass === 'font-cinzel') fontClass = 'font-playfair';
     
     sel.value = fontClass;
     if (!sel.value) sel.value = 'font-playfair';
@@ -1704,7 +1703,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const fontMap = {
       'font-playfair': "'Playfair Display', Georgia, serif",
       'font-garamond': "'EB Garamond', Garamond, serif",
+      'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+      'font-cinzel': "'Cinzel', serif",
+      'font-lora': "'Lora', Georgia, serif",
       'font-outfit': "'Outfit', sans-serif",
+      'font-montserrat': "'Montserrat', sans-serif",
       'font-inter': "'Inter', sans-serif",
       'font-arial': "Arial, Helvetica, sans-serif",
       'font-cursive': "'Great Vibes', cursive"
@@ -1726,6 +1729,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const descFontMap = {
       'font-sans': "'Inter', sans-serif",
       'font-serif': "'EB Garamond', Garamond, serif",
+      'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+      'font-cinzel': "'Cinzel', serif",
+      'font-lora': "'Lora', Georgia, serif",
+      'font-montserrat': "'Montserrat', sans-serif",
+      'font-sans-title': "'Outfit', sans-serif",
       'font-clean': "'Outfit', sans-serif"
     };
     if (descFontMap[sel.value]) {
@@ -2056,6 +2064,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const descFontMap = {
       'font-sans': "'Inter', sans-serif",
       'font-serif': "'EB Garamond', Georgia, serif",
+      'font-garamond': "'EB Garamond', Georgia, serif",
+      'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+      'font-cinzel': "'Cinzel', serif",
+      'font-lora': "'Lora', Georgia, serif",
+      'font-montserrat': "'Montserrat', sans-serif",
+      'font-sans-title': "'Outfit', sans-serif",
+      'font-outfit': "'Outfit', sans-serif",
       'font-clean': "'Outfit', sans-serif"
     };
     const actualDescFamily = descFontMap[descFont] || "'Inter', sans-serif";
@@ -2065,6 +2080,10 @@ document.addEventListener('DOMContentLoaded', () => {
       'font-serif-title': "'Playfair Display', Georgia, serif",
       'font-garamond': "'EB Garamond', Garamond, serif",
       'font-serif': "'EB Garamond', Garamond, serif",
+      'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+      'font-cinzel': "'Cinzel', serif",
+      'font-lora': "'Lora', Georgia, serif",
+      'font-montserrat': "'Montserrat', sans-serif",
       'font-outfit': "'Outfit', sans-serif",
       'font-modern': "'Outfit', sans-serif",
       'font-sans-title': "'Outfit', sans-serif",

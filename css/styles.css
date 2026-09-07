@@ -309,6 +309,30 @@ textarea,
   font-family: 'EB Garamond', Garamond, Georgia, serif !important;
 }
 
+.font-cormorant,
+#live-preview-title.font-cormorant,
+#live-preview-closing-names.font-cormorant {
+  font-family: 'Cormorant Garamond', Garamond, Georgia, serif !important;
+}
+
+.font-cinzel,
+#live-preview-title.font-cinzel,
+#live-preview-closing-names.font-cinzel {
+  font-family: 'Cinzel', Georgia, serif !important;
+}
+
+.font-lora,
+#live-preview-title.font-lora,
+#live-preview-closing-names.font-lora {
+  font-family: 'Lora', Georgia, serif !important;
+}
+
+.font-montserrat,
+#live-preview-title.font-montserrat,
+#live-preview-closing-names.font-montserrat {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
 .font-outfit,
 .font-modern,
 .font-sans-title,

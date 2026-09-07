@@ -5032,18 +5032,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (countDeclined) countDeclined.textContent = declinedCount;
     if (countPending) countPending.textContent = pendingCount;
 
-    // 3. Atualiza Abas Universais (love-tab-item) com Underline Reta via ::after (position: absolute; bottom: -6px;)
+    // 3. Atualiza Abas de Convidados com Underline na cor primária #537bae
     document.querySelectorAll('.rsvp-tab-link').forEach(tab => {
       const tabFilter = tab.getAttribute('data-filter');
-      tab.style.borderBottom = '';
-      tab.style.borderColor = '';
-      tab.style.color = '';
-      tab.style.borderRadius = '';
-      tab.style.webkitBorderRadius = '';
       if (tabFilter === activeFilter) {
-        tab.className = 'love-tab-item rsvp-tab-link active cursor-pointer whitespace-nowrap font-bold';
+        tab.className = 'rsvp-tab-link active pb-2.5 px-3 border-b-2 border-[#537bae] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer';
       } else {
-        tab.className = 'love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium';
+        tab.className = 'rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer';
       }
     });
 

@@ -2058,14 +2058,14 @@
               <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 font-sans">Todos os presentes cadastrados são fictícios.</p>
             </div>
 
-            <!-- Componente Universal de Abas de Navegação (love-tabs-nav) igual a Lista de Convidados -->
-            <div id="gifts-summary-stats" class="love-tabs-nav flex items-center justify-between overflow-x-auto text-xs sm:text-sm font-semibold no-scrollbar">
-              <div class="flex items-center gap-6 sm:gap-8">
-                <button type="button" class="love-tab-item active cursor-pointer whitespace-nowrap font-bold" data-filter="all">
+            <!-- Barra Superior de Abas Sublinhadas igual a Lista de Convidados e Explorar -->
+            <div id="gifts-summary-stats" class="flex items-center justify-between border-b border-zinc-200/80 pb-0">
+              <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar -mb-px">
+                <button type="button" class="gift-tab-link active pb-2.5 px-3 border-b-2 border-[#537bae] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer" data-filter="all">
                   Todos (<span id="gifts-total-count">0</span>)
                 </button>
               </div>
-              <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium">
+              <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium pb-2.5">
                 Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
               </div>
             </div>
@@ -2246,20 +2246,22 @@
               <p class="text-xs sm:text-sm text-zinc-500">Gerencie confirmações de presença, acompanhantes e grupos de convidados.</p>
             </div>
 
-            <!-- Componente Universal de Abas de Navegação (love-tabs-nav) -->
-            <div class="love-tabs-nav flex items-center gap-6 sm:gap-8 overflow-x-auto text-xs sm:text-sm font-semibold no-scrollbar">
-              <button type="button" class="love-tab-item rsvp-tab-link active cursor-pointer whitespace-nowrap font-bold" data-filter="all">
-                Todos (<span id="count-rsvp-all">0</span>)
-              </button>
-              <button type="button" class="love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium" data-filter="confirmed">
-                Confirmados (<span id="count-rsvp-confirmed">0</span>)
-              </button>
-              <button type="button" class="love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium" data-filter="declined">
-                Recusados (<span id="count-rsvp-declined">0</span>)
-              </button>
-              <button type="button" class="love-tab-item rsvp-tab-link cursor-pointer whitespace-nowrap font-medium" data-filter="pending">
-                Pendentes (<span id="count-rsvp-pending">0</span>)
-              </button>
+            <!-- Barra Superior de Abas Sublinhadas -->
+            <div class="flex items-center justify-between border-b border-zinc-200/80 pb-0">
+              <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar -mb-px">
+                <button type="button" class="rsvp-tab-link active pb-2.5 px-3 border-b-2 border-[#537bae] text-zinc-900 font-semibold text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer" data-filter="all">
+                  Todos (<span id="count-rsvp-all">0</span>)
+                </button>
+                <button type="button" class="rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer" data-filter="confirmed">
+                  Confirmados (<span id="count-rsvp-confirmed">0</span>)
+                </button>
+                <button type="button" class="rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer" data-filter="declined">
+                  Recusados (<span id="count-rsvp-declined">0</span>)
+                </button>
+                <button type="button" class="rsvp-tab-link pb-2.5 px-3 border-b-2 border-transparent text-zinc-500 hover:text-zinc-800 hover:border-zinc-300 text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer" data-filter="pending">
+                  Pendentes (<span id="count-rsvp-pending">0</span>)
+                </button>
+              </div>
             </div>
 
             <!-- Tabela em Tela Cheia / Sem Caixa com Moldura/Sombra -->

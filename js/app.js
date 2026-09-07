@@ -1288,7 +1288,103 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.editor-sub-panel').forEach(panel => panel.classList.add('hidden'));
     const targetPanel = document.getElementById(`editor-form-${subId}`);
     if (targetPanel) targetPanel.classList.remove('hidden');
+
+    // Alterna a prévia ao vivo: no submenu "about" (Anfitriões), exibe como se parece a página de anfitriões (capa no início, 2 campos de título/texto, quem são os anfitriões, SEM botões)
+    const mainPreviewContent = document.getElementById('live-preview-main-content');
+    const hostsPreviewContent = document.getElementById('live-preview-hosts-content');
+
+    if (subId === 'about') {
+      if (mainPreviewContent) mainPreviewContent.classList.add('hidden');
+      if (hostsPreviewContent) hostsPreviewContent.classList.remove('hidden');
+      updateHostsPreview();
+    } else {
+      if (mainPreviewContent) mainPreviewContent.classList.remove('hidden');
+      if (hostsPreviewContent) hostsPreviewContent.classList.add('hidden');
+    }
   }
+
+  function updateHostsPreview() {
+    const titleEl = document.getElementById('live-preview-hosts-title');
+    const descEl = document.getElementById('live-preview-hosts-desc');
+    const listEl = document.getElementById('live-preview-hosts-list');
+    const inputTitle = document.getElementById('editor-about-title');
+    const inputDesc = document.getElementById('editor-about-text');
+
+    const activeEvent = getActiveEvent();
+
+    if (titleEl) {
+      const val = (inputTitle && inputTitle.value.trim()) || activeEvent?.siteSections?.aboutTitle || 'Sobre os Anfitriões & Nossa História';
+      titleEl.textContent = val;
+      titleEl.className = `text-xl sm:text-2xl font-bold tracking-tight leading-snug italic ${builderState.font || 'font-serif'}`;
+      titleEl.style.setProperty('color', builderState.titleColor || '#18181B', 'important');
+    }
+
+    if (descEl) {
+      const descVal = (inputDesc && inputDesc.value.trim()) || activeEvent?.siteSections?.aboutText || 'Conte aos convidados sobre os anfitriões a história dessa celebração.';
+      descEl.textContent = descVal;
+      const descFontMap = {
+        'font-sans': "'Inter', sans-serif",
+        'font-serif': "'EB Garamond', Georgia, serif",
+        'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+        'font-cinzel': "'Cinzel', serif",
+        'font-lora': "'Lora', Georgia, serif",
+        'font-montserrat': "'Montserrat', sans-serif"
+      };
+      const actualDescFamily = descFontMap[builderState.descFont] || "'Inter', sans-serif";
+      descEl.style.setProperty('font-family', actualDescFamily, 'important');
+      descEl.style.setProperty('color', builderState.descColor || '#52525B', 'important');
+    }
+
+    if (listEl) {
+      const hostsTeamItems = document.querySelectorAll('#hosts-team-list > div');
+      if (hostsTeamItems && hostsTeamItems.length > 0) {
+        listEl.innerHTML = Array.from(hostsTeamItems).map(item => {
+          const nameEl = item.querySelector('p.font-bold');
+          const avatarEl = item.querySelector('.rounded-full');
+          const badgeEl = item.querySelector('span');
+
+          const nameText = nameEl ? (nameEl.childNodes[0]?.textContent?.trim() || nameEl.textContent?.trim()) : 'Anfitrião';
+          const initials = avatarEl ? avatarEl.textContent.trim() : nameText.substring(0, 2).toUpperCase();
+          const roleText = badgeEl ? badgeEl.textContent.trim() : 'Anfitrião';
+          const isCreator = roleText.includes('Criador');
+
+          return `
+            <div class="p-3 rounded-xl bg-white border border-zinc-200/80 shadow-2xs flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full ${isCreator ? 'bg-[#537bae]' : 'bg-zinc-800'} text-white font-bold text-xs flex items-center justify-center shrink-0">
+                ${initials}
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-bold text-zinc-900 truncate">${nameText}</p>
+                <span class="inline-block text-[10px] font-semibold ${isCreator ? 'text-[#537bae] bg-blue-50 border-blue-100' : 'text-zinc-700 bg-zinc-100 border-zinc-200'} px-2 py-0.5 rounded-md border mt-0.5">${roleText}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        listEl.innerHTML = `
+          <div class="p-3 rounded-xl bg-white border border-zinc-200/80 shadow-2xs flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#537bae] text-white font-bold text-xs flex items-center justify-center shrink-0">
+              BS
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-bold text-zinc-900 truncate">Beatriz Silveira</p>
+              <span class="inline-block text-[10px] font-semibold text-[#537bae] bg-blue-50 border-blue-100 px-2 py-0.5 rounded-md border mt-0.5">Criador(a)</span>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-white border border-zinc-200/80 shadow-2xs flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-zinc-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
+              LM
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-bold text-zinc-900 truncate">Lucas Mendonça</p>
+              <span class="inline-block text-[10px] font-semibold text-zinc-700 bg-zinc-100 border-zinc-200 px-2 py-0.5 rounded-md border mt-0.5">Anfitrião</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+  }
+  window.updateHostsPreview = updateHostsPreview;
 
   // Listener de clique para as abas horizontais e itens da sub-sidebar do painel de personalização
   document.addEventListener('click', (e) => {
@@ -2497,6 +2593,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 10. Widget Flutuante de Música
     updateFloatingMusicWidget();
+
+    // 11. Sincroniza a prévia de anfitriões caso ativa
+    if (typeof updateHostsPreview === 'function') {
+      updateHostsPreview();
+    }
   }
 
   function applyTemplate(templateId, notify = true) {
@@ -4424,6 +4525,32 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(`Convite de co-gestão enviado para ${email}! O anfitrião terá acesso total e poderá realizar saques.`, '📩');
       triggerConfetti();
       if (inputEmail) inputEmail.value = '';
+      updateHostsPreview();
+    });
+  }
+
+  // Listeners em tempo real para os campos de Anfitriões refletirem instantaneamente na prévia ao lado
+  const inputAboutTitleEl = document.getElementById('editor-about-title');
+  if (inputAboutTitleEl) {
+    inputAboutTitleEl.addEventListener('input', () => {
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        if (!activeEv.siteSections) activeEv.siteSections = {};
+        activeEv.siteSections.aboutTitle = inputAboutTitleEl.value;
+      }
+      updateHostsPreview();
+    });
+  }
+
+  const inputAboutTextEl = document.getElementById('editor-about-text');
+  if (inputAboutTextEl) {
+    inputAboutTextEl.addEventListener('input', () => {
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        if (!activeEv.siteSections) activeEv.siteSections = {};
+        activeEv.siteSections.aboutText = inputAboutTextEl.value;
+      }
+      updateHostsPreview();
     });
   }
 

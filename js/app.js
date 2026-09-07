@@ -4855,12 +4855,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${gift.title}
               </h4>
               ${isPurchased ? `
-                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-[#537bae] border border-blue-100 font-sans shrink-0">
-                  ● Recebido
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-[#537bae] border border-[#EAEAEF] font-sans shrink-0">
+                  Recebido
                 </span>
               ` : `
-                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 font-sans shrink-0">
-                  ● Ativo
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-emerald-700 border border-[#EAEAEF] font-sans shrink-0">
+                  Ativo
                 </span>
               `}
             </div>
@@ -7655,8 +7655,8 @@ document.addEventListener('DOMContentLoaded', () => {
               <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
                 ${item.name}
               </h4>
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 font-sans shrink-0">
-                ● Ativo
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-emerald-700 border border-[#EAEAEF] font-sans shrink-0">
+                Ativo
               </span>
             </div>
             <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">

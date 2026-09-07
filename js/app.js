@@ -222,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'my-gifts', label: 'Meus presentes' },
+        { id: 'messages', label: 'Recados recebidos' },
         { id: 'gift-settings', label: 'Configurações' }
       ]
     },
@@ -231,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'all', label: 'Todos' },
-        { id: 'messages', label: 'Recados recebidos' },
         { id: 'tables', label: 'Mapear mesas' },
         { id: 'whatsapp', label: 'Disparo WhatsApp' }
       ]
@@ -403,16 +403,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tabKey === 'edit-site') {
               switchEditorSubSection(item.id, item.label);
             } else if (tabKey === 'gifts') {
-              switchGiftsSubSection(item.id);
+              if (item.id === 'messages') {
+                document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
+                const target = document.getElementById('tab-rsvp-messages') || document.getElementById('tab-messages');
+                if (target) target.classList.add('active');
+                renderRecadosMural();
+              } else {
+                document.querySelectorAll('.dashboard-tab-content').forEach(c => {
+                  c.classList.toggle('active', c.id === 'tab-gifts');
+                });
+                switchGiftsSubSection(item.id);
+              }
             } else if (tabKey === 'info-event') {
               switchInfoSubSection(item.id, item.label);
             } else if (tabKey === 'rsvp') {
               document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
-              if (item.id === 'messages') {
-                const target = document.getElementById('tab-rsvp-messages') || document.getElementById('tab-messages');
-                if (target) target.classList.add('active');
-                renderRecadosMural();
-              } else if (item.id === 'tables') {
+              if (item.id === 'tables') {
                 const target = document.getElementById('tab-rsvp-tables');
                 if (target) target.classList.add('active');
                 renderTablesOrganization();
@@ -4864,6 +4870,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerTitle = document.getElementById('gifts-header-title');
     const headerSub = document.getElementById('gifts-header-subtitle');
 
+    if (subId === 'messages') {
+      document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
+      const target = document.getElementById('tab-rsvp-messages') || document.getElementById('tab-messages');
+      if (target) target.classList.add('active');
+      renderRecadosMural();
+      return;
+    }
+
     if (subId === 'gift-settings') {
       if (topSearchBar) topSearchBar.classList.add('hidden');
       if (panelProducts) panelProducts.classList.add('hidden');
@@ -4877,7 +4891,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.remove('hidden');
       if (headerTitle) headerTitle.textContent = 'Meus presentes';
-      if (headerSub) headerSub.textContent = 'Todos os presentes cadastrados são fictícios.';
+      if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
       const searchInput = document.getElementById('gifts-search-input');
       renderHostGifts(searchInput ? searchInput.value : '');
     }

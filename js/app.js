@@ -877,6 +877,27 @@ document.addEventListener('DOMContentLoaded', () => {
       desc: 'Adicione os primeiros contatos para o RSVP',
       tab: 'rsvp',
       icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>'
+    },
+    {
+      id: 'tables',
+      title: 'Organizar mesas do evento',
+      desc: 'Distribua os convidados nos setores da festa',
+      tab: 'rsvp',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>'
+    },
+    {
+      id: 'pix',
+      title: 'Configurar chave Pix da carteira',
+      desc: 'Receba os presentes em dinheiro na sua conta',
+      tab: 'wallet',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0v10.5m0-10.5h19.5m0 0v10.5m0 0a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25m19.5 0H2.25"/></svg>'
+    },
+    {
+      id: 'share',
+      title: 'Compartilhar link com convidados',
+      desc: 'Envie o link do site pelo WhatsApp',
+      tab: 'edit-site',
+      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>'
     }
   ];
 
@@ -906,6 +927,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return Boolean(activeEvent.sitePersonalizado || activeEvent.isPublished);
       case 'guests':
         return Boolean(activeEvent.guestsImported || activeEvent.convidadosConfirmados > 200);
+      case 'tables':
+        return Boolean(activeEvent.tablesConfigured || (activeEvent.mesas && activeEvent.mesas.length > 0));
+      case 'pix':
+        return Boolean(activeEvent.pixConfigured || activeEvent.chavePix || activeEvent.carteiraChavePix);
+      case 'share':
+        return Boolean(activeEvent.siteShared || localStorage.getItem(`love_site_shared_${activeEvent.id}`) === 'true');
       default:
         return false;
     }
@@ -957,15 +984,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Regra de revelação progressiva de tarefas:
-    // Começa exibindo as tarefas concluídas + as próximas tarefas pendentes.
-    // Conforme novas tarefas vão sendo alcançadas pela plataforma, novas tarefas vão aparecendo até todas estarem visíveis!
-    const visibleCount = Math.min(total, Math.max(3, completedCount + 2));
+    // Começa exibindo as 6 tarefas iniciais.
+    // Conforme as tarefas vão sendo concluídas, novas tarefas vão aparecendo até todas as 9 estarem visíveis!
+    const visibleCount = Math.min(total, Math.max(6, completedCount + 2));
     const visibleTasks = quickStartTasksData.slice(0, visibleCount);
 
     listEl.innerHTML = visibleTasks.map((task) => {
       const isDone = isQuickStartTaskAchieved(task.id, activeEvent);
+      const clickAction = isDone 
+        ? '' 
+        : (task.id === 'budget' 
+            ? 'onclick="navigateToBudget()"' 
+            : (task.id === 'tables' 
+                ? 'onclick="navigateToTables()"' 
+                : (task.id === 'pix' 
+                    ? 'onclick="navigateToPix()"' 
+                    : (task.id === 'share' 
+                        ? 'onclick="openShareModal()"' 
+                        : `onclick="switchRailTab('${task.tab}')"`))));
       return `
-        <div class="group p-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${isDone ? '' : (task.id === 'budget' ? `onclick="navigateToBudget()"` : `onclick="switchRailTab('${task.tab}')"`)} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
+        <div class="group p-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${clickAction} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
           <div class="flex items-center gap-3 min-w-0">
             <!-- Ícone da Categoria (SEM círculo de check) -->
             <div class="w-7 h-7 rounded-xl ${isDone ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-700 group-hover:bg-zinc-200/70'} flex items-center justify-center flex-shrink-0 transition-colors">
@@ -6074,6 +6112,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     switchEditorSubSection('invite-print', 'Produzir convite');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.navigateToPix = function() {
+    switchRailTab('wallet');
+    if (elements.drawerSubItemsList) {
+      elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
+        b.classList.toggle('active', b.textContent.includes('Carteira Digital'));
+      });
+    }
+    switchWalletSubSection('wallet-digital', 'Carteira Digital');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.openShareModal = function() {
+    const modal = document.getElementById('modal-share-event-site');
+    if (modal) modal.classList.remove('hidden');
   };
 
   window.navigateToChecklist = function() {

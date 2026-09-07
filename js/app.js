@@ -7620,52 +7620,66 @@ document.addEventListener('DOMContentLoaded', () => {
         tagBg = 'bg-emerald-50 text-emerald-700';
       }
 
-      const description = item.description || item.about || (item.role ? `${item.role} • Especialista em casamentos memoráveis.` : 'Serviços completos e atendimento de excelência para o seu casamento.');
-      const locationText = item.location || item.neighborhood || 'São Paulo - SP';
-      const priceText = item.price || item.startingPrice || item.priceLabel || 'Sob consulta';
-      const countLabel = item.weddingsCount ? `${item.weddingsCount} Casamentos` : `${item.reviewsCount || 20} Avaliações`;
+      let displayPrice = 'R$ 12.000';
+      if (item.priceNum) {
+        displayPrice = `R$ ${item.priceNum.toLocaleString('pt-BR')}`;
+      } else if (item.price && typeof item.price === 'string') {
+        displayPrice = item.price.startsWith('R$') ? item.price : `R$ ${item.price}`;
+      } else if (item.startingPrice && typeof item.startingPrice === 'string') {
+        displayPrice = item.startingPrice.startsWith('R$') ? item.startingPrice : `R$ ${item.startingPrice}`;
+      } else if (typeof item.price === 'number') {
+        displayPrice = `R$ ${item.price.toLocaleString('pt-BR')}`;
+      }
+
+      let categoryLabel = item.category || item.subcategory || (item.type === 'advisor' ? 'Assessoria' : item.type === 'photo' ? 'Fotografia' : item.type === 'buffet' ? 'Gastronomia' : 'Locais & Espaços');
 
       const card = document.createElement('div');
       card.id = `card-${item.id}`;
-      card.className = 'b2b-item-card bg-white rounded-2xl border border-zinc-200/80 p-4 sm:p-5 flex flex-col md:flex-row gap-5 items-stretch shadow-xs hover:shadow-md transition-all group relative cursor-pointer';
+      card.className = 'b2b-item-card group bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md cursor-pointer';
 
       card.innerHTML = `
-        <div class="relative w-full md:w-80 lg:w-96 h-48 md:h-52 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-          <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-zinc-400 ${item.isFavorite ? 'text-rose-500' : ''} flex items-center justify-center transition-all shadow-xs" title="Favoritar">
-            <svg class="w-4 h-4 ${item.isFavorite ? 'fill-rose-500' : 'fill-none'} stroke-current" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <!-- Topo do Card: Imagem de Vitrine com Fundo Suave e Botão de Favoritar -->
+        <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden border-b border-zinc-100">
+          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          <button type="button" class="btn-toggle-card-fav absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors shadow-2xs cursor-pointer border border-zinc-200/80 z-10" title="Favoritar">
+            <svg class="w-3.5 h-3.5 ${item.isFavorite ? 'fill-rose-500 text-rose-500' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+            </svg>
           </button>
         </div>
 
-        <div class="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+        <!-- Corpo do Card: Título com Badge de Status, Subtítulo, Valor e Botões -->
+        <div class="p-4 sm:p-5 flex flex-col justify-between flex-1 space-y-3.5 text-left">
           <div>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold ${tagBg}">${tagText}</span>
-            <h3 class="text-base sm:text-lg font-bold text-zinc-900 mt-2 leading-snug truncate group-hover:text-[#537bae] transition-colors">${item.name}</h3>
-            <p class="text-xs sm:text-sm text-zinc-600 mt-1 leading-relaxed line-clamp-2">${description}</p>
-            <p class="text-xs sm:text-sm font-medium text-zinc-500 mt-2.5 flex flex-wrap items-center gap-2">
-              <span>${locationText}</span>
-              <span>•</span>
-              <span class="font-semibold text-zinc-900">${priceText}</span>
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
+                ${item.name}
+              </h4>
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 font-sans shrink-0">
+                ● Ativo
+              </span>
+            </div>
+            <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">
+              ${categoryLabel}
             </p>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 mt-3 border-t border-zinc-100">
-            <div class="flex items-center gap-2">
-              <div class="flex -space-x-1.5 overflow-hidden">
-                <div class="w-6 h-6 rounded-full bg-blue-100 border border-white flex items-center justify-center text-[10px] font-bold text-blue-600">👰</div>
-                <div class="w-6 h-6 rounded-full bg-emerald-100 border border-white flex items-center justify-center text-[10px] font-bold text-emerald-600">🤵</div>
-              </div>
-              <span class="text-xs font-semibold text-zinc-700">+${countLabel}</span>
-            </div>
+          <div>
+            <p class="text-base sm:text-lg font-bold text-zinc-900 font-sans">
+              ${displayPrice}
+            </p>
+          </div>
 
-            <div class="flex items-center gap-2">
-              <button type="button" class="btn-supplier-details px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 text-xs font-semibold transition-all cursor-pointer">
-                Ver Detalhes
-              </button>
-              <button type="button" class="btn-supplier-contact px-4 py-2 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
-                Solicitar Orçamento
-              </button>
-            </div>
+          <!-- Linha de Ações: Botão Editar + Botão Excluir Lixeira -->
+          <div class="flex items-center gap-2 pt-1 mt-auto">
+            <button type="button" class="btn-supplier-details flex-1 py-2 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-all font-sans cursor-pointer text-center">
+              Editar
+            </button>
+            <button type="button" class="btn-delete-supplier p-2 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 transition-all cursor-pointer shrink-0 flex items-center justify-center" title="Excluir item">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+              </svg>
+            </button>
           </div>
         </div>
       `;
@@ -7681,9 +7695,20 @@ document.addEventListener('DOMContentLoaded', () => {
         openB2BMobileModal(item, item.type || 'venue');
       });
 
-      card.querySelector('.btn-supplier-contact')?.addEventListener('click', (e) => {
+      card.querySelector('.btn-delete-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        switchB2BView('messages', item.chatId || 'mariana-assessoria');
+        // Remove item from data array
+        if (item.type === 'venue' && window.LOVE_DATA.venues) {
+          window.LOVE_DATA.venues = window.LOVE_DATA.venues.filter(v => v.id !== item.id);
+        } else if (item.type === 'advisor' && window.LOVE_DATA.advisors) {
+          window.LOVE_DATA.advisors = window.LOVE_DATA.advisors.filter(a => a.id !== item.id);
+        } else if (item.type === 'photo' && window.LOVE_DATA.photo) {
+          window.LOVE_DATA.photo = window.LOVE_DATA.photo.filter(p => p.id !== item.id);
+        } else if (item.type === 'buffet' && window.LOVE_DATA.buffet) {
+          window.LOVE_DATA.buffet = window.LOVE_DATA.buffet.filter(b => b.id !== item.id);
+        }
+        renderB2BExplore();
+        showToast(`Item "${item.name}" excluído do catálogo.`, '🗑️');
       });
 
       card.addEventListener('click', () => {

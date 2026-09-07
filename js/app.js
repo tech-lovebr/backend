@@ -4533,7 +4533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalValueEl = document.getElementById('gifts-total-value');
 
     if (headerTitle) headerTitle.textContent = 'Meus presentes';
-    if (headerSub) headerSub.textContent = 'Todos os presentes cadastrados são fictícios.';
+    if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
     if (summaryStats) summaryStats.classList.remove('hidden');
 
     if (!container) return;

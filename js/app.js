@@ -4597,7 +4597,62 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) closeModal(modal);
   }
 
+  let editingGiftId = null;
+
   function openGiftDrawer() {
+    editingGiftId = null;
+    const formAddGift = document.getElementById('form-add-gift');
+    const drawerTitle = document.getElementById('drawer-gift-heading-title');
+    const drawerSub = document.getElementById('drawer-gift-heading-sub');
+    const btnSubmitText = document.getElementById('btn-submit-gift-text');
+    const giftPreviewImg = document.getElementById('gift-image-preview-img');
+    const giftUrlInput = document.getElementById('gift-image-url-input');
+
+    if (formAddGift) formAddGift.reset();
+    selectedGiftImage = 'assets/card_lecreuset.jpg';
+    if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
+    if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+    if (drawerTitle) drawerTitle.textContent = 'Adicionar Presente';
+    if (drawerSub) drawerSub.textContent = 'Cadastre um novo presente fictício para sua lista de presentes.';
+    if (btnSubmitText) btnSubmitText.textContent = 'Adicionar Presente';
+
+    const drawer = document.getElementById('drawer-add-gift');
+    const backdrop = document.getElementById('gift-drawer-backdrop');
+    if (backdrop) {
+      backdrop.classList.remove('hidden');
+      backdrop.style.setProperty('display', 'block', 'important');
+      backdrop.classList.add('open');
+    }
+    if (drawer) {
+      drawer.classList.remove('hidden');
+      drawer.style.setProperty('display', 'flex', 'important');
+      drawer.classList.add('open');
+    }
+  }
+
+  function openGiftDrawerForEdit(gift) {
+    editingGiftId = gift.id;
+    const titleInput = document.getElementById('gift-title-input');
+    const priceInput = document.getElementById('gift-price-input');
+    const descInput = document.getElementById('gift-description-input');
+    const giftPreviewImg = document.getElementById('gift-image-preview-img');
+    const giftUrlInput = document.getElementById('gift-image-url-input');
+    const drawerTitle = document.getElementById('drawer-gift-heading-title');
+    const drawerSub = document.getElementById('drawer-gift-heading-sub');
+    const btnSubmitText = document.getElementById('btn-submit-gift-text');
+
+    if (titleInput) titleInput.value = gift.title || '';
+    if (priceInput) priceInput.value = gift.price !== undefined ? gift.price : '';
+    if (descInput) descInput.value = gift.description || '';
+    const imgSrc = gift.image || 'assets/card_lecreuset.jpg';
+    selectedGiftImage = imgSrc;
+    if (giftPreviewImg) giftPreviewImg.src = imgSrc;
+    if (giftUrlInput) giftUrlInput.value = imgSrc;
+
+    if (drawerTitle) drawerTitle.textContent = 'Editar Presente';
+    if (drawerSub) drawerSub.textContent = 'Modifique os detalhes ou o valor deste presente.';
+    if (btnSubmitText) btnSubmitText.textContent = 'Salvar Alterações';
+
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
     if (backdrop) {
@@ -4613,6 +4668,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeGiftDrawer() {
+    editingGiftId = null;
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
     if (drawer) {
@@ -4754,62 +4810,95 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // 2. Renderiza apenas os itens de presentes reais (cards de adicionar aleatório e adicionar presente removidos)
+    // 2. Renderiza os itens de presentes reais no estilo da imagem de referência
     filteredGifts.forEach(gift => {
       const buyerName = gift.buyerName || (gift.received > 0 ? (activeEvent.receivedGifts?.find(r => r.giftTitle === gift.title || r.id === gift.id)?.guestName || 'Convidado') : null);
       const isPurchased = Boolean(buyerName);
 
       const card = document.createElement('div');
-      card.className = `group bg-white p-3 sm:p-4 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all duration-200 ${
-        isPurchased ? 'opacity-40 hover:opacity-100 cursor-default' : 'hover:bg-zinc-50/40 cursor-pointer'
+      card.className = `group bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
+        isPurchased ? 'opacity-55 hover:opacity-100' : ''
       }`;
 
       card.innerHTML = `
-        <!-- Topo do Card: Título acima da imagem com botão de Favorito no canto -->
-        <div class="w-full relative px-5 mb-1">
-          <button type="button" class="btn-fav-gift absolute top-0 right-0 text-zinc-300 hover:text-rose-500 transition-colors p-0.5 cursor-pointer" title="Favoritar">
-            <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-            </svg>
-          </button>
-          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-2 leading-snug min-h-[2rem] flex items-center justify-center text-center" ${isPurchased ? '' : `title="${gift.title}"`}>
-            ${gift.title}
-          </h4>
-        </div>
-
-        <!-- Imagem do Produto com Ação Bloqueada ou Botão X no Canto Superior Direito -->
-        <div class="relative w-full flex items-center justify-center py-1">
-          <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[200px] sm:max-w-[220px] aspect-square object-cover ${isPurchased ? '' : 'group-hover:scale-105'} transition-transform duration-300">
+        <!-- Topo do Card: Imagem com Proporção Ampla e Background Suave -->
+        <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden border-b border-zinc-100">
+          <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
           
           ${isPurchased ? `
             <!-- Ícone de Presente e Nome do Convidado sobre a imagem -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 gap-1.5 px-2">
-              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-sm border border-zinc-200/80 flex items-center justify-center text-[#537bae] shrink-0">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex flex-col items-center justify-center pointer-events-none z-10 gap-2 p-3">
+              <div class="w-10 h-10 rounded-full bg-white shadow-sm border border-zinc-200/80 flex items-center justify-center text-[#537bae] shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 0 0 0-4.5H3a2.25 2.25 0 0 0 0 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 0 1 0-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 0 0 0-4.5c-1.864 0-3.75 2.25-3.75 4.5"/>
                 </svg>
               </div>
-              <div class="px-2.5 py-0.5 sm:py-1 rounded-full bg-white/90 backdrop-blur-xs shadow-sm border border-zinc-200/80 text-[#537bae] text-[11px] sm:text-xs font-semibold font-sans max-w-[92%] truncate text-center">
+              <div class="px-3 py-1 rounded-full bg-white shadow-sm border border-zinc-200/80 text-[#5c7aaa] text-xs font-semibold font-sans max-w-[90%] truncate text-center">
                 ${buyerName}
               </div>
             </div>
           ` : `
-            <!-- Botão X de exclusão no canto superior direito da imagem -->
-            <button type="button" class="btn-delete-gift absolute top-1 right-1 w-6 h-6 rounded-full bg-white/95 hover:bg-rose-500 text-zinc-400 hover:text-white flex items-center justify-center text-[11px] font-bold transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-sm border border-zinc-200/80 z-10" title="Excluir presente" data-gift-id="${gift.id}">
-              ✕
+            <!-- Botão de Favoritar no topo direito da imagem -->
+            <button type="button" class="btn-fav-gift absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors shadow-2xs cursor-pointer border border-zinc-200/80 z-10" title="Favoritar">
+              <svg class="w-3.5 h-3.5 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+              </svg>
             </button>
           `}
         </div>
 
-        <!-- Valor do Produto em Destaque Embaixo da Imagem -->
-        <div class="w-full pt-1 text-center">
-          <p class="text-xs sm:text-sm font-bold text-zinc-900">
-            R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
+        <!-- Corpo do Card: Título com Badge de Status, Subtítulo, Valor e Botões -->
+        <div class="p-4 sm:p-5 flex flex-col justify-between flex-1 space-y-3.5 text-left">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight" title="${gift.title}">
+                ${gift.title}
+              </h4>
+              ${isPurchased ? `
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-[#537bae] border border-blue-100 font-sans shrink-0">
+                  ● Recebido
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 font-sans shrink-0">
+                  ● Ativo
+                </span>
+              `}
+            </div>
+            <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">
+              ${gift.category || 'Presente fictício'}
+            </p>
+          </div>
+
+          <div>
+            <p class="text-base sm:text-lg font-bold text-zinc-900 font-sans">
+              R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
+          </div>
+
+          <!-- Linha de Ações: Botão Editar + Botão Excluir Lixeira -->
+          <div class="flex items-center gap-2 pt-1 mt-auto">
+            <button type="button" class="btn-edit-gift flex-1 py-2 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-all font-sans cursor-pointer text-center">
+              Editar
+            </button>
+            <button type="button" class="btn-delete-gift p-2 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 transition-all cursor-pointer shrink-0 flex items-center justify-center" title="Excluir presente" data-gift-id="${gift.id}">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+              </svg>
+            </button>
+          </div>
         </div>
       `;
 
-      // Evento de exclusão do presente (apenas se não foi comprado)
+      // Evento de edição do presente
+      const btnEdit = card.querySelector('.btn-edit-gift');
+      if (btnEdit) {
+        btnEdit.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openGiftDrawerForEdit(gift);
+        });
+      }
+
+      // Evento de exclusão do presente
       const btnDelete = card.querySelector('.btn-delete-gift');
       if (btnDelete) {
         btnDelete.addEventListener('click', (e) => {
@@ -4983,6 +5072,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const price = parseFloat(document.getElementById('gift-price-input')?.value) || 250;
       const description = document.getElementById('gift-description-input')?.value?.trim() || '';
       const image = giftUrlInput?.value || giftPreviewImg?.src || selectedGiftImage;
+
+      if (editingGiftId) {
+        const giftItem = activeEvent.giftList.find(g => g.id === editingGiftId);
+        if (giftItem) {
+          giftItem.title = title;
+          giftItem.description = description;
+          giftItem.price = price;
+          giftItem.image = image;
+        }
+        editingGiftId = null;
+        formAddGift.reset();
+        selectedGiftImage = 'assets/card_lecreuset.jpg';
+        if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
+        if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+        closeGiftDrawer();
+        renderHostGifts();
+        updateAllCelebrationData();
+        showToast(`Presente "${title}" atualizado com sucesso!`, '✅');
+        return;
+      }
 
       activeEvent.giftList.unshift({
         id: `gift-${Date.now()}-${Math.floor(Math.random() * 1000)}`,

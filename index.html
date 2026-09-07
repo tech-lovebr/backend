@@ -2024,29 +2024,41 @@
             </div>
           </div>
 
-          <!-- Conteúdo Principal de Meus Presentes (Sem caixas, Full Width) -->
+          <!-- Conteúdo Principal de Meus Presentes -->
           <div class="px-6 sm:px-8 py-6 space-y-5 w-full max-w-none">
             
-            <!-- Título da Seção: Meus presentes -->
-            <div>
-              <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus presentes</h2>
-              <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 font-sans mt-1">Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.</p>
+            <!-- Header da Seção com Título, Subtítulo e Botão Adicionar Presente (como na referência) -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 id="gifts-header-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Meus presentes</h2>
+                <p id="gifts-header-subtitle" class="text-xs sm:text-sm text-zinc-500 font-sans mt-1">Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.</p>
+              </div>
+
+              <div class="flex items-center gap-2.5 shrink-0">
+                <button type="button" id="btn-host-add-gift-header" onclick="openGiftDrawer()" class="btn-brand text-xs sm:text-sm py-2.5 px-4 font-semibold flex items-center justify-center gap-2 rounded-[var(--radius-control,12px)] shadow-2xs cursor-pointer font-sans">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  <span>Adicionar presente</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Barra Superior de Estatísticas: Todos e Valor Total (Sem active tab, sem linha horizontal) -->
-            <div id="gifts-summary-stats" class="flex items-center justify-end gap-5 text-xs sm:text-sm text-zinc-500 font-sans font-medium">
-              <div>
-                Todos (<span id="gifts-total-count" class="font-semibold text-zinc-900 font-sans">0</span>)
+            <!-- Barra de Abas e Estatísticas: Todos sublinhado + Valor Total à Direita -->
+            <div class="flex items-center justify-between border-b border-zinc-200/80 pb-0">
+              <div class="flex items-center gap-2 -mb-px">
+                <button type="button" class="pb-2.5 px-3 border-b-2 border-[#537bae] text-[#537bae] font-semibold text-xs sm:text-sm whitespace-nowrap font-sans cursor-pointer">
+                  Todos (<span id="gifts-total-count">0</span>)
+                </button>
               </div>
-              <div>
+              <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium pb-2">
                 Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
               </div>
             </div>
 
-          <!-- 3. Lista de Presentes (Grid de Produtos Fictícios - 100% Full-Bleed sem margens laterais) -->
-          <div id="gifts-panel-products" class="pt-1 gifts-grid-full-bleed overflow-hidden">
-            <div id="host-gifts-grid" class="w-full grid grid-cols-1 min-[440px]:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-0 border-t border-zinc-200/80 bg-white">
-              <!-- Inserido dinamicamente via JS de acordo com a comemoração ativa -->
+            <!-- 3. Grid de Presentes: Até 4 presentes por linha, caixas no estilo da imagem anexada -->
+            <div id="gifts-panel-products" class="pt-2 w-full">
+              <div id="host-gifts-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                <!-- Inserido dinamicamente via JS de acordo com a comemoração ativa -->
+              </div>
             </div>
           </div>
 
@@ -4053,8 +4065,8 @@
     <!-- Header do Drawer: Mesmo estilo dos títulos das páginas com linha horizontal cortando -->
     <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
       <div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Presente</h2>
-        <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre um novo presente fictício para sua lista de presentes.</p>
+        <h2 id="drawer-gift-heading-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Presente</h2>
+        <p id="drawer-gift-heading-sub" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre um novo presente fictício para sua lista de presentes.</p>
       </div>
       <button id="btn-close-gift-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -4112,7 +4124,7 @@
         <!-- 5. Botão Submeter -->
         <div class="pt-4 border-t border-zinc-200/80">
           <button type="submit" class="w-full py-3.5 rounded-[12px] bg-[#537bae] hover:bg-[#416799] text-white text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer font-sans">
-            <span>Adicionar Presente</span>
+            <span id="btn-submit-gift-text">Adicionar Presente</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
           </button>
         </div>

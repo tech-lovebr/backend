@@ -4583,10 +4583,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isPurchased ? 'opacity-40 hover:opacity-100' : 'hover:bg-zinc-50/40'
       }`;
 
-      if (isPurchased) {
-        card.setAttribute('title', `Presente recebido por: ${buyerName}`);
-      }
-
       card.innerHTML = `
         <!-- Topo do Card: Coração de Favorito à direita -->
         <div class="w-full flex items-center justify-end text-zinc-400 mb-1">
@@ -4620,7 +4616,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Detalhes do Produto: Título em fonte clássica/itálica e Preço em destaque -->
         <div class="w-full pt-3 space-y-1 mt-auto">
-          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-2 px-1 leading-snug" title="${gift.title}">
+          <h4 class="text-xs sm:text-[13px] font-serif italic text-zinc-800 line-clamp-2 px-1 leading-snug" ${isPurchased ? '' : `title="${gift.title}"`}>
             ${gift.title}
           </h4>
           <p class="text-xs sm:text-sm font-bold text-zinc-900 mt-0.5">
@@ -4641,14 +4637,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // Se tentar clicar no botão bloqueado
-      const btnBlocked = card.querySelector('.btn-delete-blocked');
-      if (btnBlocked) {
-        btnBlocked.addEventListener('click', (e) => {
-          e.stopPropagation();
-          showToast(`Este presente já foi recebido por ${buyerName} e não pode ser excluído.`, '🔒');
-        });
-      }
 
       // Evento de favoritar presente
       const btnFav = card.querySelector('.btn-fav-gift');

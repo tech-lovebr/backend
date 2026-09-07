@@ -2406,7 +2406,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.style.borderColor = 'rgba(0,0,0,0.08)';
       btn.style.setProperty('border-radius', radiusCss, 'important');
       btn.style.setProperty('font-family', "'EB Garamond', Georgia, serif", 'important');
-      btn.style.setProperty('font-size', '0.875rem', 'important');
+      btn.style.setProperty('font-size', '0.725rem', 'important');
+      btn.style.setProperty('text-transform', 'none', 'important');
       btn.style.setProperty('letter-spacing', '0.01em', 'important');
 
       btn.style.setProperty('background-color', btnColor, 'important');

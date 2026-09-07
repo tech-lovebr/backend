@@ -4579,8 +4579,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const isPurchased = Boolean(buyerName);
 
       const card = document.createElement('div');
-      card.className = `group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all duration-200 cursor-pointer min-h-[350px] sm:min-h-[380px] lg:min-h-[410px] ${
-        isPurchased ? 'opacity-40 hover:opacity-100' : 'hover:bg-zinc-50/40'
+      card.className = `group bg-white pt-3 px-4 pb-6 sm:pt-4 sm:px-5 sm:pb-7 border-r border-b border-zinc-200/80 flex flex-col justify-between items-center text-center relative transition-all duration-200 min-h-[350px] sm:min-h-[380px] lg:min-h-[410px] ${
+        isPurchased ? 'opacity-40 hover:opacity-100 cursor-default' : 'hover:bg-zinc-50/40 cursor-pointer'
       }`;
 
       card.innerHTML = `
@@ -4595,7 +4595,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <!-- Imagem do Produto com Ação Bloqueada ou Botão X no Canto Superior Direito -->
         <div class="relative w-full flex-1 flex items-center justify-center p-2 my-auto">
-          <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[190px] sm:max-w-[210px] md:max-w-[230px] aspect-square object-cover group-hover:scale-105 transition-transform duration-300">
+          <img src="${gift.image}" alt="${gift.title}" class="w-full max-w-[190px] sm:max-w-[210px] md:max-w-[230px] aspect-square object-cover ${isPurchased ? '' : 'group-hover:scale-105'} transition-transform duration-300">
           
           ${isPurchased ? `
             <!-- Ícone de Presente sobre a imagem -->

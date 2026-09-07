@@ -860,6 +860,9 @@
 
                   <!-- Foto do Local da Cerimônia / Aquarela -->
                   <div class="pt-2" id="venue-image-section-wrapper">
+                    <!-- Ornamento Acima da Imagem do Local -->
+                    <div id="venue-ornament-top" class="ornament-top py-1.5 flex items-center justify-center text-zinc-400 hidden"></div>
+
                     <!-- Estado 1: Imagem Ativa (com botão Alterar e botão ✕ para excluir) -->
                     <div id="venue-image-filled-container" class="group/venue-img w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80 bg-zinc-50 relative">
                       <img id="live-preview-venue-img" src="assets/wedding_table_dinner.jpg" class="w-full h-full object-cover" alt="Local da Cerimônia">
@@ -918,6 +921,9 @@
 
                   <!-- Foto de Mãos Dadas / Fechamento do Casal -->
                   <div class="pt-2" id="closing-image-section-wrapper">
+                    <!-- Ornamento Acima da Imagem de Fechamento -->
+                    <div id="closing-ornament-top" class="ornament-top py-1.5 flex items-center justify-center text-zinc-400 hidden"></div>
+
                     <!-- Estado 1: Imagem Ativa (com botão Alterar e botão ✕ para excluir) -->
                     <div id="closing-image-filled-container" class="group/closing-img w-full h-44 rounded-2xl overflow-hidden shadow-xs border border-zinc-200/80 bg-zinc-50 relative">
                       <img id="live-preview-closing-img" src="assets/wedding_hero_banner.jpg" class="w-full h-full object-cover object-bottom" alt="Detalhe do Casal">
@@ -1188,6 +1194,25 @@
                         </div>
                         <div class="flex items-center gap-2 sm:gap-3 w-full">
                           <input type="range" id="editor-gradient-opacity-slider" min="0" max="100" value="75" class="love-modern-slider flex-1 min-w-0 w-full">
+                        </div>
+                      </div>
+
+                      <!-- 4. Ornamentos de Fundo (Sem, Clássico, Moderno) -->
+                      <div class="space-y-1.5 w-full pt-1.5 sm:pt-2 border-t border-[#EAEAEF]">
+                        <p class="text-[11px] sm:text-xs text-zinc-500 font-normal">Ornamentos</p>
+                        <div class="w-full flex items-center justify-between gap-2 sm:gap-3 p-1 sm:p-1.5 bg-zinc-50/70 border border-[#EAEAEF] rounded">
+                          <div class="flex-1 min-w-0 px-1 sm:px-2">
+                            <div class="relative flex items-center">
+                              <select id="editor-select-ornaments" class="w-full bg-transparent text-xs sm:text-sm font-normal text-zinc-900 focus:outline-none cursor-pointer appearance-none pr-5 sm:pr-6 truncate font-sans">
+                                <option value="sem" selected>Sem</option>
+                                <option value="classico">Clássico</option>
+                                <option value="moderno">Moderno</option>
+                              </select>
+                              <div class="absolute right-0 pointer-events-none text-[#537bae]">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

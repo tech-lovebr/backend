@@ -1077,6 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let builderState = {
     buttonIconsStyle: 'animado',
+    ornamentsStyle: 'sem',
     bgColor: '#FBFBFA',
     font: 'font-playfair',
     titleColor: '#18181B',
@@ -1785,6 +1786,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bIcons === 'classico' || bIcons === 'retro') bIcons = 'animado';
     builderState.buttonIconsStyle = bIcons;
     builderState.themeStyle = bIcons;
+    builderState.ornamentsStyle = activeEvent.ornamentsStyle || 'sem';
     builderState.bgColor = activeEvent.bgColor || '#FBFBFA';
     let initialFont = activeEvent.fontFamily || builderState.font || 'font-playfair';
     if (initialFont === 'font-serif-title') initialFont = 'font-playfair';
@@ -1866,6 +1868,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateButtonTextColorUI(builderState.btnTextColor || activeEvent.btnTextColor || '#18181B');
     const selBtnIcons = document.getElementById('editor-select-btn-icons');
     if (selBtnIcons) selBtnIcons.value = builderState.buttonIconsStyle;
+    const selOrnaments = document.getElementById('editor-select-ornaments');
+    if (selOrnaments) selOrnaments.value = builderState.ornamentsStyle;
     updateBgImageUI(builderState.bgImage);
     const btnRadiusSlider = document.getElementById('editor-btn-radius-slider');
     const btnRadiusVal = document.getElementById('editor-btn-radius-val');
@@ -2417,6 +2421,28 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // 9.5 Renderização dos Ornamentos (Sem, Clássico, Moderno)
+    const ornamentStyle = builderState.ornamentsStyle || 'sem';
+    const venueOrnament = document.getElementById('venue-ornament-top');
+    const closingOrnament = document.getElementById('closing-ornament-top');
+
+    const classicalSvg = '<svg class="w-24 h-4 text-zinc-400" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M50 4 C42 4 38 10 25 10 C15 10 8 7 0 10 C8 13 15 10 25 10 C38 10 42 16 50 16 C58 16 62 10 75 10 C85 10 92 13 100 10 C92 7 85 10 75 10 C62 10 58 4 50 4 Z"/><circle cx="50" cy="10" r="2" fill="currentColor"/></svg>';
+    const modernSvg = '<svg class="w-28 h-3 text-zinc-400" viewBox="0 0 120 12" fill="none" stroke="currentColor" stroke-width="1"><line x1="0" y1="6" x2="48" y2="6" stroke="currentColor" stroke-width="0.8" opacity="0.4"/><polygon points="60,2 64,6 60,10 56,6" fill="currentColor" opacity="0.6"/><line x1="72" y1="6" x2="120" y2="6" stroke="currentColor" stroke-width="0.8" opacity="0.4"/></svg>';
+
+    [venueOrnament, closingOrnament].forEach(el => {
+      if (!el) return;
+      if (ornamentStyle === 'classico') {
+        el.innerHTML = classicalSvg;
+        el.classList.remove('hidden');
+      } else if (ornamentStyle === 'moderno') {
+        el.innerHTML = modernSvg;
+        el.classList.remove('hidden');
+      } else {
+        el.innerHTML = '';
+        el.classList.add('hidden');
+      }
+    });
+
     // 10. Widget Flutuante de Música
     updateFloatingMusicWidget();
   }
@@ -2583,6 +2609,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeEvent.closingImage = builderState.closingImage;
     activeEvent.buttonIconsStyle = builderState.buttonIconsStyle || 'animado';
     activeEvent.themeStyle = builderState.buttonIconsStyle || 'animado';
+    activeEvent.ornamentsStyle = builderState.ornamentsStyle || 'sem';
 
     updateAllCelebrationData();
     renderEventsSwitcher();
@@ -2893,6 +2920,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (activeEv) {
         activeEv.buttonIconsStyle = val;
         activeEv.themeStyle = val;
+      }
+      updateLiveSitePreview();
+    });
+  }
+
+  // Dropdown de Ornamentos (Sem, Clássico, Moderno)
+  const selectOrnaments = document.getElementById('editor-select-ornaments');
+  if (selectOrnaments) {
+    selectOrnaments.addEventListener('change', (e) => {
+      const val = e.target.value;
+      builderState.ornamentsStyle = val;
+      const activeEv = getActiveEvent();
+      if (activeEv) {
+        activeEv.ornamentsStyle = val;
       }
       updateLiveSitePreview();
     });

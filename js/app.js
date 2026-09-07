@@ -806,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
     if (giftsTitle) giftsTitle.textContent = `Lista de Presentes: ${activeEvent.title}`;
-    if (rsvpTitle) rsvpTitle.textContent = 'Lista de convidados';
+    if (rsvpTitle) rsvpTitle.textContent = 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();

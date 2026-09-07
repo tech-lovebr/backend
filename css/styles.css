@@ -2266,9 +2266,11 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
 .love-tab-item,
 .rsvp-tab-link,
 .gift-tab-link,
+.b2b-category-pill,
 button.love-tab-item,
 button.rsvp-tab-link,
-button.gift-tab-link {
+button.gift-tab-link,
+button.b2b-category-pill {
   position: relative !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -2295,34 +2297,41 @@ button.gift-tab-link {
   transition: all 0.15s ease !important;
   -webkit-appearance: none !important;
   appearance: none !important;
-  margin-bottom: -1px !important;
+  margin-bottom: 0 !important;
 }
 
 .love-tab-item:hover,
 .rsvp-tab-link:hover,
-.gift-tab-link:hover {
+.gift-tab-link:hover,
+.b2b-category-pill:hover {
   color: #18181B !important; /* zinc-900 */
   border-bottom-color: #D4D4D8 !important; /* zinc-300 */
 }
 
-/* Aba Ativa */
+/* Aba Ativa - Linha uniforme oficial de 2px na cor primária sem corte */
 .love-tab-item.active,
 .rsvp-tab-link.active,
 .gift-tab-link.active,
+.b2b-category-pill.active,
 button.love-tab-item.active,
 button.rsvp-tab-link.active,
-button.gift-tab-link.active {
+button.gift-tab-link.active,
+button.b2b-category-pill.active {
   color: #18181B !important;
   font-weight: 600 !important;
-  border-bottom-color: #537bae !important; /* Cor Primária Oficial */
+  border-bottom: 2px solid #537bae !important; /* Cor Primária Oficial */
+  border-bottom-color: #537bae !important;
+  z-index: 10 !important;
 }
 
 .love-tab-item::after,
 .rsvp-tab-link::after,
 .gift-tab-link::after,
+.b2b-category-pill::after,
 button.love-tab-item::after,
 button.rsvp-tab-link::after,
-button.gift-tab-link::after {
+button.gift-tab-link::after,
+button.b2b-category-pill::after {
   display: none !important;
 }
 

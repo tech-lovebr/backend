@@ -4968,34 +4968,11 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedGiftImage = event.target.result;
             if (giftPreviewImg) giftPreviewImg.src = event.target.result;
             if (giftUrlInput) giftUrlInput.value = event.target.result;
-            document.querySelectorAll('.btn-gift-img-preset').forEach(b => {
-              b.classList.remove('active', 'border-[#537bae]');
-              b.classList.add('border-transparent');
-            });
           };
           reader.readAsDataURL(file);
         }
       });
     }
-
-    // Seleção de presets de imagem da galeria
-    document.querySelectorAll('.btn-gift-img-preset').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.btn-gift-img-preset').forEach(b => {
-          b.classList.remove('active', 'border-[#537bae]');
-          b.classList.add('border-transparent');
-        });
-        btn.classList.add('active', 'border-[#537bae]');
-        btn.classList.remove('border-transparent');
-        const imgSrc = btn.getAttribute('data-img-src');
-        if (imgSrc) {
-          selectedGiftImage = imgSrc;
-          if (giftPreviewImg) giftPreviewImg.src = imgSrc;
-          if (giftUrlInput) giftUrlInput.value = imgSrc;
-        }
-      });
-    });
 
     formAddGift.addEventListener('submit', (e) => {
       e.preventDefault();

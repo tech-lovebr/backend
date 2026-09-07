@@ -7306,7 +7306,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 12. B2B MARKETPLACE & ENCONTRAR FORNECEDORES (SPLIT SCREEN LISTA & MAPA/DETALHES)
   // ==========================================
-  let currentB2BCategory = 'venues';
+  let currentB2BCategory = 'all';
   let currentB2BSort = 'recommended';
   let activeB2BItemId = 'venue-villa-bisutti';
   let b2bSearchQuery = '';
@@ -7330,13 +7330,13 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bPills.forEach(pill => {
       pill.addEventListener('click', () => {
         b2bPills.forEach(p => {
-          p.classList.remove('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
+          p.classList.remove('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
           p.classList.add('border-transparent', 'text-zinc-500', 'font-medium');
         });
         pill.classList.remove('border-transparent', 'text-zinc-500', 'font-medium');
-        pill.classList.add('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
+        pill.classList.add('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
 
-        currentB2BCategory = pill.getAttribute('data-category') || 'venues';
+        currentB2BCategory = pill.getAttribute('data-category') || 'all';
         renderB2BExplore();
       });
     });
@@ -7429,15 +7429,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let items = [];
     let categoryName = 'fornecedores';
 
-    if (currentB2BCategory === 'venues' || currentB2BCategory === 'all') {
+    if (currentB2BCategory === 'all') {
+      const allVenues = (window.LOVE_DATA.venues || []).map(v => ({ ...v, type: 'venue' }));
+      const allAdvisors = (window.LOVE_DATA.advisors || []).map(a => ({ ...a, type: 'advisor' }));
+      const allPhoto = (window.LOVE_DATA.photo || []).map(p => ({ ...p, type: 'photo' }));
+      const allBuffet = (window.LOVE_DATA.buffet || []).map(b => ({ ...b, type: 'buffet' }));
+      items = [...allVenues, ...allAdvisors, ...allPhoto, ...allBuffet];
+      categoryName = 'todos os fornecedores';
+    } else if (currentB2BCategory === 'venues') {
       items = (window.LOVE_DATA.venues || []).map(v => ({ ...v, type: 'venue' }));
       categoryName = 'locais & espaços';
-    } else if (currentB2BCategory === 'advisors') {
+    } else if (currentB2BCategory === 'advisors' || currentB2BCategory === 'assessoria') {
       items = (window.LOVE_DATA.advisors || []).map(a => ({ ...a, type: 'advisor' }));
-      categoryName = 'assessores & cerimonial';
+      categoryName = 'assessoria';
+    } else if (currentB2BCategory === 'cerimonial') {
+      items = (window.LOVE_DATA.advisors || []).map(a => ({ ...a, type: 'advisor' }));
+      categoryName = 'cerimonial';
+    } else if (currentB2BCategory === 'decor') {
+      items = (window.LOVE_DATA.venues || []).slice(0, 3).map(v => ({ ...v, type: 'decor', category: 'Decoração' }));
+      categoryName = 'decoração';
     } else if (currentB2BCategory === 'photo') {
       items = (window.LOVE_DATA.photo || []).map(p => ({ ...p, type: 'photo' }));
-      categoryName = 'profissionais de foto & vídeo';
+      categoryName = 'fotografia';
     } else if (currentB2BCategory === 'buffet') {
       items = (window.LOVE_DATA.buffet || []).map(b => ({ ...b, type: 'buffet' }));
       categoryName = 'buffets & gastronomia';
@@ -8067,14 +8080,14 @@ document.addEventListener('DOMContentLoaded', () => {
           const favPill = document.querySelector('.b2b-category-pill[data-category="favorites"]');
           if (favPill) {
             document.querySelectorAll('.b2b-category-pill').forEach(p => {
-              p.classList.remove('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
+              p.classList.remove('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
               p.classList.add('border-transparent', 'text-zinc-500', 'font-medium');
             });
             favPill.classList.remove('border-transparent', 'text-zinc-500', 'font-medium');
-            favPill.classList.add('border-[#537bae]', 'text-zinc-900', 'font-semibold', 'active');
+            favPill.classList.add('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
           }
         } else if (viewId === 'explore' && currentB2BCategory === 'favorites') {
-          currentB2BCategory = 'venues';
+          currentB2BCategory = 'all';
         }
         renderB2BExplore();
       }

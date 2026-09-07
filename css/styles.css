@@ -421,8 +421,8 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   width: calc(100% - var(--rail-width-desktop)) !important;
   right: 0 !important;
   z-index: 50 !important;
-  background-color: #537bae !important;
-  background: linear-gradient(180deg, #537bae 0%, #4a709f 50%, #416799 100%) !important;
+  background-color: #5c7aaa !important;
+  background: linear-gradient(180deg, #5c7aaa 0%, #53709d 50%, #4e6891 100%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 0 4px 20px -2px rgba(35, 62, 94, 0.28) !important;
   display: flex !important;

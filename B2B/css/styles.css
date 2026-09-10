@@ -1318,6 +1318,7 @@ body[data-theme="dark"] .responsavel-add-btn { border-color: rgba(255, 255, 255,
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
   padding: 1.5rem;
+  min-width: 0;
 }
 
 .dash-card-header {

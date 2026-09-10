@@ -1990,7 +1990,7 @@ body[data-theme="dark"] .faq-item p { color: rgba(255, 255, 255, 0.75); }
 .plans-grid .plan-card:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none; }
 .plans-grid .plan-card:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
-.plan-card.featured { box-shadow: var(--shadow-soft); }
+.plan-card.featured { background: #EBF4FF; box-shadow: var(--shadow-soft); }
 
 .plan-card-badge {
   position: absolute;

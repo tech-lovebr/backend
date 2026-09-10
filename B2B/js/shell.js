@@ -91,6 +91,18 @@ async function loadShell() {
   ]);
   if (sidebarMount) sidebarMount.innerHTML = sidebarHtml;
   if (topbarMount) topbarMount.innerHTML = topbarHtml;
+
+  const main = document.querySelector('.b2b-main');
+  if (main && !main.querySelector('.b2b-footer')) {
+    const year = new Date().getFullYear();
+    const footer = document.createElement('footer');
+    footer.className = 'b2b-footer';
+    footer.innerHTML = `
+      <span>© ${year} Love Eventos. Todos os direitos reservados.</span>
+      <a href="faq.html">Central de ajuda</a>
+    `;
+    main.appendChild(footer);
+  }
 }
 
 function initSidebarState() {

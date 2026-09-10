@@ -270,6 +270,10 @@ body.sidebar-collapsed .sidebar-toggle-icon.icon-expand { display: block; }
 .sidebar-nav-item:hover { background: rgba(0, 0, 0, 0.045); color: #18181B; }
 .sidebar-nav-item:hover svg:not(.sidebar-chevron) { color: #18181B; }
 
+.sidebar-nav-item.sidebar-nav-label { cursor: default; }
+.sidebar-nav-item.sidebar-nav-label:hover { background: transparent; color: #52525B; }
+.sidebar-nav-item.sidebar-nav-label:hover svg:not(.sidebar-chevron) { color: #94A3B8; }
+
 .sidebar-nav-item.active {
   background: #FFFFFF;
   color: var(--primary-color);
@@ -303,21 +307,10 @@ body.sidebar-collapsed .sidebar-toggle-icon.icon-expand { display: block; }
   transition: transform 0.2s ease;
 }
 
-.sidebar-nav-toggle .nav-badge + .sidebar-chevron { margin-left: 0.4rem; }
-.sidebar-nav-group.open > .sidebar-nav-toggle .sidebar-chevron { transform: rotate(180deg); }
-
 .sidebar-subnav {
-  max-height: 0;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  padding: 0 0 0 2.5rem;
-  transition: max-height 0.22s ease, padding 0.22s ease;
-}
-
-.sidebar-nav-group.open .sidebar-subnav {
-  max-height: 240px;
   padding: 0.2rem 0 0.4rem 2.5rem;
 }
 

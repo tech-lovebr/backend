@@ -531,8 +531,8 @@ body[data-theme="dark"] .b2b-footer {
   gap: 0.5rem;
   margin-bottom: 0.6rem;
 }
-.b2b-footer-logo .sidebar-icon-light, .b2b-footer-logo .sidebar-icon-dark { width: 24px; height: 24px; object-fit: contain; }
-.b2b-footer-logo .sidebar-word-light, .b2b-footer-logo .sidebar-word-dark { height: 12px; width: auto; object-fit: contain; }
+.b2b-footer-logo .sidebar-icon-light, .b2b-footer-logo .sidebar-icon-dark { width: 36px; height: 36px; object-fit: contain; }
+.b2b-footer-logo .sidebar-word-light, .b2b-footer-logo .sidebar-word-dark { height: 18px; width: auto; object-fit: contain; }
 
 .b2b-footer-desc {
   font-size: 0.8125rem;

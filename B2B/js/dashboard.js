@@ -15,7 +15,14 @@ function renderGreeting() {
   const now = new Date();
   const dateStr = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
   setText('greeting-date', capitalize(dateStr));
-  setText('greeting-title', `Olá, ${B2B_DATA.professional.name},`);
+  setText('greeting-title', `${getBrasiliaGreeting()}, ${B2B_DATA.professional.name}`);
+}
+
+function getBrasiliaGreeting() {
+  const hour = Number(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', hour12: false }).format(new Date()));
+  if (hour >= 5 && hour < 12) return 'Bom dia';
+  if (hour >= 12 && hour < 18) return 'Boa tarde';
+  return 'Boa noite';
 }
 
 function renderStats() {
@@ -71,9 +78,9 @@ function renderAgenda() {
 
   if (listEl) {
     const sorted = [...B2B_DATA.proximosEventos].sort((a, b) => a.day - b.day);
-    const accentByStatus = { confirmado: '#537bae', 'visita técnica': '#B45309', reunião: '#7E22CE' };
+    const accentByStatus = { confirmado: 'var(--primary-blue)', 'visita técnica': '#B45309', reunião: '#7E22CE' };
     listEl.innerHTML = sorted.map(ev => `
-      <a href="agenda.html" class="agenda-item" style="border-left-color:${accentByStatus[ev.status] || '#537bae'};">
+      <a href="agenda.html" class="agenda-item" style="border-left-color:${accentByStatus[ev.status] || 'var(--primary-blue)'};">
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-zinc-900 truncate">${ev.client} · ${ev.event}</p>
           <p class="text-xs text-zinc-500 truncate mt-0.5">Dia ${ev.day} · ${ev.local}</p>
@@ -86,41 +93,51 @@ function renderAgenda() {
   }
 }
 
-/* -------------------- Tarefas (checklist com adicionar) -------------------- */
+/* -------------------- Tarefas (tabela) -------------------- */
+
+const TAREFA_STATUS_LABEL = { andamento: 'Em andamento', feito: 'Feito', parado: 'Parado' };
+const TAREFA_STATUS_ORDER = ['andamento', 'feito', 'parado'];
 
 function renderTarefas() {
-  const wrap = document.getElementById('tarefas-list');
-  if (!wrap) return;
+  const table = document.getElementById('tarefas-table');
+  if (!table) return;
 
   if (!B2B_DATA.tarefas.length) {
-    wrap.innerHTML = `<p class="text-sm text-zinc-500 py-2">Parece que está tudo resolvido, você não tem nenhuma tarefa.</p>`;
+    table.innerHTML = `<tr><td class="text-sm text-zinc-500 py-4">Parece que está tudo resolvido, você não tem nenhuma tarefa.</td></tr>`;
     return;
   }
 
-  wrap.innerHTML = B2B_DATA.tarefas.map(t => `
-    <div class="tarefa-item">
-      <label class="tarefa-label">
-        <input type="checkbox" data-tarefa-id="${t.id}" ${t.done ? 'checked' : ''}>
-        <span class="tarefa-check"></span>
-        <span class="tarefa-text ${t.done ? 'done' : ''}">${escapeHtml(t.text)}</span>
-      </label>
-      <button type="button" class="tarefa-remove" data-remove-id="${t.id}" aria-label="Excluir tarefa">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-      </button>
-    </div>
-  `).join('');
+  table.innerHTML = `
+    <thead>
+      <tr><th>Tarefa</th><th>Responsável</th><th>Status</th><th>Prazo</th></tr>
+    </thead>
+    <tbody>
+      ${B2B_DATA.tarefas.map(t => `
+        <tr data-tarefa-id="${t.id}">
+          <td>
+            <label class="tarefa-row-label">
+              <input type="checkbox" class="tarefas-row-check" data-tarefa-id="${t.id}" ${t.status === 'feito' ? 'checked' : ''}>
+              <span class="${t.status === 'feito' ? 'tarefa-text-cell done' : 'tarefa-text-cell'}">${escapeHtml(t.text)}</span>
+            </label>
+          </td>
+          <td>
+            ${t.responsavel
+              ? `<img src="${t.responsavel}" alt="Responsável" class="member-avatar" style="width:26px;height:26px;">`
+              : `<button type="button" class="responsavel-add-btn" aria-label="Atribuir responsável">+</button>`}
+          </td>
+          <td>
+            <span class="status-badge status-tarefa-${t.status}">${TAREFA_STATUS_LABEL[t.status] || t.status}</span>
+          </td>
+          <td class="prazo-text">${escapeHtml(t.prazo || '')}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
 
-  wrap.querySelectorAll('[data-tarefa-id]').forEach(input => {
+  table.querySelectorAll('.tarefas-row-check').forEach(input => {
     input.addEventListener('change', () => {
       const t = B2B_DATA.tarefas.find(x => x.id === input.dataset.tarefaId);
-      if (t) t.done = input.checked;
-      renderTarefas();
-    });
-  });
-
-  wrap.querySelectorAll('[data-remove-id]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      B2B_DATA.tarefas = B2B_DATA.tarefas.filter(t => t.id !== btn.dataset.removeId);
+      if (t) t.status = input.checked ? 'feito' : 'andamento';
       renderTarefas();
     });
   });
@@ -129,38 +146,10 @@ function renderTarefas() {
 function initTarefaAddButton() {
   const btn = document.getElementById('tarefa-add-btn');
   if (!btn) return;
-  btn.addEventListener('click', showTarefaInput);
-}
-
-function showTarefaInput() {
-  const wrap = document.getElementById('tarefas-list');
-  if (!wrap || document.getElementById('tarefa-new-input')) return;
-
-  const row = document.createElement('div');
-  row.className = 'tarefa-item';
-  row.innerHTML = `
-    <span class="tarefa-check" style="border-style:dashed;"></span>
-    <input type="text" id="tarefa-new-input" class="tarefa-new-input" placeholder="Nova tarefa…">
-  `;
-  wrap.appendChild(row);
-
-  const input = row.querySelector('#tarefa-new-input');
-  input.focus();
-
-  // Evita duplo-commit: Enter dispara commit(), e remover o input do DOM
-  // (via renderTarefas) reentra em "blur" no mesmo elemento.
-  let committed = false;
-  const commit = () => {
-    if (committed) return;
-    committed = true;
-    const text = input.value.trim();
-    if (text) B2B_DATA.tarefas.push({ id: 't' + Date.now(), text, done: false });
+  btn.addEventListener('click', () => {
+    const text = prompt('Nova tarefa:');
+    if (!text || !text.trim()) return;
+    B2B_DATA.tarefas.push({ id: 't' + Date.now(), text: text.trim(), status: 'andamento', prazo: '', responsavel: null });
     renderTarefas();
-  };
-
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); commit(); }
-    if (e.key === 'Escape') { committed = true; renderTarefas(); }
   });
-  input.addEventListener('blur', commit);
 }

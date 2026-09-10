@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planos e recursos — Portal do Fornecedor Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#183b54">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=43">
+</head>
+<body class="font-sans" data-page="planos">
+
+  <div class="b2b-shell">
+    <div id="shell-sidebar"></div>
+    <div id="shell-topbar"></div>
+
+    <main class="b2b-content">
+
+      <div class="plans-intro">
+        <p class="greeting-date">Planos e recursos</p>
+        <h1 class="greeting-title">Escolha o plano ideal</h1>
+      </div>
+
+      <div class="plans-grid">
+        <div class="plan-card">
+          <div class="plan-card-body">
+            <p class="plan-card-title">Grátis</p>
+            <p class="plan-card-desc">Ferramentas básicas para começar a atender seus clientes na Love.</p>
+
+            <div class="plan-price">
+              <span class="plan-price-amount">R$ 0</span>
+              <span class="plan-price-period">/mês</span>
+            </div>
+
+            <ul class="plan-features">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Apenas você</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>CRM com até 20 leads</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Agenda e contratos básicos</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Vitrine com até 3 produtos</span>
+              </li>
+            </ul>
+
+            <button type="button" class="btn-secondary plan-card-cta" id="plan-cta-free">Seu plano atual</button>
+          </div>
+        </div>
+
+        <div class="plan-card featured">
+          <p class="plan-card-badge">Recomendado</p>
+          <div class="plan-card-body">
+            <p class="plan-card-title">Pro</p>
+            <p class="plan-card-desc">Recursos avançados para escalar o seu negócio na Love.</p>
+
+            <div class="plan-price">
+              <span class="plan-price-amount" id="plan-price-pro" data-monthly="82" data-annual="74">R$ 82</span>
+              <span class="plan-price-period">/mês</span>
+            </div>
+
+            <div class="plan-billing-toggle" role="group" aria-label="Forma de pagamento">
+              <button type="button" class="plan-billing-option active" data-cycle="monthly">
+                <span class="plan-billing-option-title">Mensal</span>
+              </button>
+              <button type="button" class="plan-billing-option" data-cycle="annual">
+                <span class="plan-billing-option-title">Anual</span>
+                <span class="plan-billing-option-discount">-10%</span>
+              </button>
+            </div>
+
+            <ul class="plan-features">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Colaboradores ilimitados</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>CRM avançado com automações</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Relatórios financeiros completos</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Vitrine em destaque na busca</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span>Suporte prioritário</span>
+              </li>
+            </ul>
+
+            <button type="button" class="btn-primary plan-card-cta" id="plan-cta-pro">Fazer upgrade</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/planos.js"></script>
+</body>
+</html>

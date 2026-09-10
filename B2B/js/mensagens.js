@@ -145,8 +145,8 @@ function renderContactsList(searchQuery = '') {
   filtered.forEach(conv => {
     const isActive = conv.id === activeConvId;
     const item = document.createElement('div');
-    item.className = `p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
-      isActive ? 'bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
+    item.className = `conv-item p-3.5 flex items-start gap-3 cursor-pointer transition-colors border-l-4 ${
+      isActive ? 'active' : 'hover:bg-zinc-200/50 border-transparent'
     }`;
 
     item.innerHTML = `
@@ -156,7 +156,7 @@ function renderContactsList(searchQuery = '') {
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-1 mb-0.5">
-          <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#44688F] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
+          <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
           <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
         </div>
         <span class="inline-block text-[10px] font-medium text-zinc-500 bg-white/70 px-1.5 py-0.5 rounded border border-zinc-200/60 mb-1">${conv.category}</span>
@@ -231,13 +231,13 @@ function renderActiveChat() {
     if (isMe) {
       row.innerHTML = `
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-          <div class="chat-bubble-user-glass text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left" style="color: #FFFFFF !important;">
-            ${msg.text ? `<p class="whitespace-pre-wrap break-words text-white" style="color: #FFFFFF !important;">${escapeMsg(msg.text)}</p>` : ''}
+          <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
+            ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>
           <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
             <span>${msg.time || 'Agora'}</span>
-            <span class="text-[#537bae] font-bold">✓✓</span>
+            <span class="chat-read-check font-bold">✓✓</span>
           </div>
         </div>
         <div class="w-7 h-7 rounded-full bg-zinc-800 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-2xs">

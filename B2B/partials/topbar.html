@@ -5,11 +5,21 @@
     <kbd>⌘K</kbd>
   </button>
 
-  <div class="flex items-center gap-2 flex-shrink-0">
+  <a href="planos.html" id="header-upgrade-btn" class="topbar-upgrade-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5m0 0-6 6m6-6 6 6" /></svg>
+    <span>Upgrade</span>
+  </a>
+
+  <div class="flex items-center gap-2 flex-shrink-0 ml-auto">
+    <a href="mensagens.html" class="topbar-icon-plain" data-page="mensagens" aria-label="Mensagens" title="Mensagens">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 10.5h7.5m-7.5 3h4.5m-6-8.25h10.5A2.25 2.25 0 0 1 21 7.5v7.5a2.25 2.25 0 0 1-2.25 2.25H9l-4.5 3.75v-3.75H4.5A2.25 2.25 0 0 1 2.25 15V7.5A2.25 2.25 0 0 1 4.5 5.25h.75Z" /></svg>
+      <span class="topbar-icon-badge" id="nav-msg-badge-header" style="display:none;">0</span>
+    </a>
+
     <div class="topbar-icon-btn-wrap">
-      <button type="button" id="notif-trigger" class="topbar-icon-btn" aria-label="Notificações">
+      <button type="button" id="notif-trigger" class="topbar-icon-plain" aria-label="Notificações">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
-        <span class="topbar-icon-dot" id="notif-dot" style="display:none;"></span>
+        <span class="topbar-icon-badge" id="notif-dot" style="display:none;">0</span>
       </button>
       <div class="topbar-dropdown" id="notif-dropdown" style="right:0;left:auto;">
         <p class="topbar-dropdown-title">Notificações</p>
@@ -18,26 +28,53 @@
     </div>
 
     <div class="topbar-icon-btn-wrap">
-      <button type="button" id="quickcreate-trigger" class="btn-primary" style="padding:0.55rem 0.9rem;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-        <span class="hidden sm:inline">Novo</span>
-      </button>
-      <div class="topbar-dropdown" id="quickcreate-dropdown" style="width:220px;right:0;left:auto;">
-        <a href="contratos.html" class="topbar-dropdown-item">Novo orçamento/contrato</a>
-        <a href="agenda.html" class="topbar-dropdown-item">Novo evento na agenda</a>
-        <a href="produtos.html" class="topbar-dropdown-item">Novo produto/serviço</a>
-      </div>
-    </div>
-
-    <div class="topbar-icon-btn-wrap">
       <button type="button" id="avatar-trigger" class="topbar-avatar-btn">
-        <img id="topbar-user-avatar" class="b2b-avatar" style="width:34px;height:34px;" alt="Perfil">
+        <span id="topbar-user-avatar" class="b2b-avatar" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.8125rem;"></span>
       </button>
-      <div class="topbar-dropdown" id="avatar-dropdown" style="right:0;left:auto;width:200px;">
-        <a href="configuracoes.html" class="topbar-dropdown-item">Meu perfil</a>
-        <a href="configuracoes.html" class="topbar-dropdown-item">Configurações</a>
+      <div class="topbar-dropdown profile-dropdown" id="avatar-dropdown" style="right:0;left:auto;">
+        <div class="profile-dropdown-header">
+          <span id="profile-dropdown-avatar" class="profile-dropdown-avatar"></span>
+          <div class="min-w-0">
+            <p class="profile-dropdown-name" id="profile-dropdown-name">—</p>
+            <p class="profile-dropdown-email" id="profile-dropdown-email">—</p>
+            <a href="configuracoes.html" class="profile-dropdown-link">Perfil e Preferências</a>
+          </div>
+        </div>
+
         <div class="topbar-dropdown-divider"></div>
-        <a href="index.html" class="topbar-dropdown-item" style="color:#B91C1C;">Sair</a>
+
+        <div class="profile-dropdown-account">
+          <p class="profile-dropdown-account-label">Conta</p>
+          <p class="profile-dropdown-account-name" id="profile-dropdown-company">—</p>
+          <p class="profile-dropdown-account-doc" id="profile-dropdown-doc">—</p>
+        </div>
+
+        <div class="topbar-dropdown-divider"></div>
+
+        <a href="guias.html" class="topbar-dropdown-item">Guia de início</a>
+        <a href="funcoes.html" class="topbar-dropdown-item">Adicionar colaborador</a>
+        <a href="planos.html" class="topbar-dropdown-item">Planos e recursos</a>
+        <a href="configuracoes.html" class="topbar-dropdown-item">Configurações</a>
+
+        <div class="topbar-dropdown-divider"></div>
+
+        <div class="theme-toggle" id="theme-toggle" role="group" aria-label="Tema">
+          <button type="button" class="theme-toggle-btn" data-theme-option="light">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-6.364-2.25-1.591-1.591M3 12h2.25m.386-6.364L7.227 7.227M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z" /></svg>
+            Light
+          </button>
+          <button type="button" class="theme-toggle-btn" data-theme-option="dark">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+            Dark
+          </button>
+        </div>
+
+        <div class="topbar-dropdown-divider"></div>
+
+        <div class="profile-dropdown-footer">
+          <a href="index.html" style="color:#B91C1C;">Sair</a>
+          <a href="#">Política de privacidade</a>
+        </div>
       </div>
     </div>
   </div>

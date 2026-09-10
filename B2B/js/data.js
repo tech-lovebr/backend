@@ -6,10 +6,12 @@
 const B2B_DATA = {
   professional: {
     name: 'Sophia Ramos',
+    email: 'sophia@sophiaeventos.com.br',
     role: 'Fornecedora de Eventos',
     company: 'Sophia Eventos & Decoração',
+    document: 'CNPJ 12.345.678/0001-90',
     avatar: '../assets/advisor_sophia.jpg',
-    plan: 'Plano Pro'
+    plan: 'Gratuito'
   },
 
   modules: {
@@ -95,9 +97,9 @@ const B2B_DATA = {
   ],
 
   tarefas: [
-    { id: 't1', text: 'Enviar contrato ajustado para Marina & Rafael', done: false },
-    { id: 't2', text: 'Confirmar cardápio do buffet com Beatriz Andrade', done: false },
-    { id: 't3', text: 'Atualizar fotos da vitrine com o evento de julho', done: true }
+    { id: 't1', text: 'Enviar contrato ajustado para Marina & Rafael', status: 'andamento', prazo: 'set 3', responsavel: '../assets/advisor_sophia.jpg' },
+    { id: 't2', text: 'Confirmar cardápio do buffet com Beatriz Andrade', status: 'feito', prazo: 'set 4', responsavel: null },
+    { id: 't3', text: 'Atualizar fotos da vitrine com o evento de julho', status: 'parado', prazo: 'set 5', responsavel: null }
   ],
 
   leads: [

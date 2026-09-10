@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajuda — Portal do Fornecedor Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#183b54">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=43">
+</head>
+<body class="font-sans" data-page="faq">
+
+  <div class="b2b-shell">
+    <div id="shell-sidebar"></div>
+    <div id="shell-topbar"></div>
+
+    <main class="b2b-content">
+      <div class="guias-layout">
+
+        <aside class="guias-sidebar">
+          <h1 class="text-base font-bold text-zinc-900 mb-3">Ajuda</h1>
+          <nav class="flex flex-col gap-0.5" id="faq-categories">
+            <button type="button" class="guide-link guide-link--active" data-category="produtos">Produtos e Serviços</button>
+            <button type="button" class="guide-link" data-category="contratos">Contratos e Pagamentos</button>
+            <button type="button" class="guide-link" data-category="crm">CRM e Mensagens</button>
+            <button type="button" class="guide-link" data-category="colaboradores">Colaboradores e Funções</button>
+            <button type="button" class="guide-link" data-category="planos">Planos e Upgrade</button>
+            <button type="button" class="guide-link" data-category="conta">Conta e Configurações</button>
+          </nav>
+        </aside>
+
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-header-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+              <h2 class="text-base font-bold text-zinc-900" id="faq-category-title">Produtos e Serviços</h2>
+            </div>
+          </div>
+
+          <div class="faq-list" data-category-panel="produtos">
+            <details class="faq-item" open>
+              <summary>Como cadastro ou edito meus produtos e serviços?</summary>
+              <p>Acesse <strong>Produtos e Serviços</strong> no menu lateral, dentro de Negócios, e clique em "Adicionar produto". Você pode editar preço, descrição e fotos de qualquer item a qualquer momento.</p>
+            </details>
+            <details class="faq-item">
+              <summary>As mudanças no catálogo aparecem na vitrine automaticamente?</summary>
+              <p>Sim. Assim que você salva uma alteração em um produto ou serviço, ela reflete na vitrine que os anfitriões veem dentro dos eventos, sem precisar de nenhum passo extra.</p>
+            </details>
+          </div>
+
+          <div class="faq-list" data-category-panel="contratos" style="display:none;">
+            <details class="faq-item" open>
+              <summary>Como recebo os pagamentos dos contratos fechados?</summary>
+              <p>Os repasses referentes aos contratos assinados aparecem na área <strong>Financeiro</strong>, junto com o histórico de recebimentos e pendências.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Como envio um contrato para assinatura do cliente?</summary>
+              <p>Em <strong>Contratos</strong>, clique em "Novo orçamento/contrato", preencha os dados do evento e envie o link de assinatura direto para o cliente.</p>
+            </details>
+          </div>
+
+          <div class="faq-list" data-category-panel="crm" style="display:none;">
+            <details class="faq-item" open>
+              <summary>Como acompanho os leads que chegam pela plataforma?</summary>
+              <p>Todo novo interesse de um anfitrião vira um lead automaticamente em <strong>CRM</strong>, onde você acompanha o estágio da negociação até o fechamento.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Como falo com um cliente diretamente pelo portal?</summary>
+              <p>Use o menu <strong>Mensagens</strong> para conversar com cada cliente — o histórico da conversa fica salvo junto com os dados do lead ou contrato.</p>
+            </details>
+          </div>
+
+          <div class="faq-list" data-category-panel="colaboradores" style="display:none;">
+            <details class="faq-item" open>
+              <summary>Como convido um colaborador para minha conta?</summary>
+              <p>Acesse <strong>Funções</strong> no menu lateral, clique em "Convidar pessoa" e escolha a função (Administrador, Operacional, Financeiro ou Visualizador) — ou personalize exatamente quais áreas essa pessoa pode acessar.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Posso limitar o que cada colaborador acessa?</summary>
+              <p>Sim. Ao convidar alguém, você escolhe uma função pronta ou personaliza o acesso módulo por módulo, liberando só o que essa pessoa precisa ver.</p>
+            </details>
+          </div>
+
+          <div class="faq-list" data-category-panel="planos" style="display:none;">
+            <details class="faq-item" open>
+              <summary>Como funciona o upgrade para o plano Pro?</summary>
+              <p>No plano Pro você libera CRM avançado, relatórios financeiros completos e colaboradores ilimitados na sua conta. É possível solicitar o upgrade a qualquer momento em <strong>Planos e recursos</strong>.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Posso voltar para o plano Gratuito depois?</summary>
+              <p>Sim, o downgrade pode ser feito a qualquer momento na página de <strong>Planos e recursos</strong>, sem multa ou período de carência.</p>
+            </details>
+          </div>
+
+          <div class="faq-list" data-category-panel="conta" style="display:none;">
+            <details class="faq-item" open>
+              <summary>Como altero os dados da minha empresa (CNPJ/CPF)?</summary>
+              <p>Vá em <strong>Configurações</strong> a partir do seu perfil, no canto superior direito da tela, para atualizar os dados cadastrais da conta.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Ainda preciso de ajuda. Como falo com o suporte?</summary>
+              <p>Use a busca no topo da tela (⌘K) para encontrar rapidamente clientes, contratos ou produtos, ou envie uma mensagem pelo menu <strong>Mensagens</strong> que nossa equipe responde por lá.</p>
+            </details>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/faq.js"></script>
+</body>
+</html>

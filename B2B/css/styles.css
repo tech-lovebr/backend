@@ -296,7 +296,7 @@ body.sidebar-collapsed .sidebar-toggle-icon.icon-expand { display: block; }
 
 .sidebar-nav-item .nav-badge { margin-left: auto; }
 
-#nav-msg-badge-rail { background: #EBF4FF; color: #122c3f; }
+#nav-msg-badge { background: #EBF4FF; color: #122c3f; }
 
 .sidebar-chevron {
   width: 15px;

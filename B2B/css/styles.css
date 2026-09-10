@@ -469,13 +469,15 @@ body[data-theme="dark"] .guias-sidebar h1 { color: #ebf4ff !important; }
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+  background-color: var(--bg-light);
   transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .b2b-topbar {
   height: var(--topbar-height);
-  background: var(--bg-light);
+  background: var(--bg-dashboard);
   border-bottom: 1px solid var(--border-light);
+  border-top-left-radius: var(--radius-card);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -486,7 +488,7 @@ body[data-theme="dark"] .guias-sidebar h1 { color: #ebf4ff !important; }
   flex-shrink: 0;
 }
 
-body[data-theme="dark"] .b2b-topbar { background: #333333 !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .b2b-topbar { background: #252525 !important; border-bottom-color: #404040 !important; }
 
 .b2b-content {
   padding: 2rem;
@@ -509,8 +511,8 @@ body.page-leaving .b2b-content { opacity: 0; transition: opacity .15s ease; }
 }
 
 body[data-theme="dark"] .b2b-shell,
-body[data-theme="dark"] .b2b-main,
 body[data-theme="dark"] .b2b-content { background-color: #252525 !important; }
+body[data-theme="dark"] .b2b-main { background-color: #333333 !important; }
 
 .b2b-view { display: none; }
 .b2b-view.active { display: block; }
@@ -1988,10 +1990,11 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
 
 @media (max-width: 768px) {
   .b2b-sidebar { display: none; }
-  .b2b-main { margin-left: 0; }
+  .b2b-main { margin-left: 0; background-color: var(--bg-dashboard); }
+  body[data-theme="dark"] .b2b-main { background-color: #252525 !important; }
   .b2b-content { padding: 1.25rem 1rem 6rem; }
 
-  .b2b-topbar { padding: 0 1rem; gap: 0.5rem; }
+  .b2b-topbar { padding: 0 1rem; gap: 0.5rem; border-top-left-radius: 0; }
 
   .topbar-search-trigger {
     width: auto;

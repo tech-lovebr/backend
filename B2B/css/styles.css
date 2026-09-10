@@ -147,36 +147,49 @@ p { color: #52525B; line-height: 1.6; }
    ========================================================================== */
 
 .landing-header {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2.5rem);
+  max-width: 1080px;
   z-index: 50;
-  background: #FFFFFF;
-  border-bottom: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  box-shadow: 0 8px 30px rgba(24, 59, 84, 0.08);
 }
 
 .landing-header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: 0.6rem 0.6rem 0.6rem 1.375rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .landing-logo { display: flex; align-items: center; }
-.landing-logo img { height: 30px; width: auto; object-fit: contain; }
+.landing-logo img { height: 26px; width: auto; object-fit: contain; }
 
 .landing-header-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
+.landing-header-actions .btn-secondary { background: rgba(255, 255, 255, 0.6); }
+.landing-header-actions .btn-primary,
+.landing-header-actions .btn-secondary { padding: 0.55rem 1.1rem; }
+
 .landing-hero {
-  background: var(--primary-gradient);
+  background:
+    radial-gradient(ellipse 900px 560px at 50% 0%, #EBF4FF 0%, rgba(235, 244, 255, 0) 65%),
+    radial-gradient(ellipse 500px 400px at 90% 15%, #EBF4FF 0%, rgba(235, 244, 255, 0) 60%),
+    #FFFFFF;
   position: relative;
   overflow: hidden;
-  padding: 6rem 1.5rem 7rem;
+  padding: 11rem 1.5rem 7rem;
   text-align: center;
 }
 
@@ -185,11 +198,12 @@ p { color: #52525B; line-height: 1.6; }
   content: '';
   position: absolute;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(24, 59, 84, 0.05);
+  filter: blur(2px);
 }
 
-.landing-hero::before { width: 480px; height: 480px; top: -160px; right: -160px; }
-.landing-hero::after { width: 360px; height: 360px; bottom: -140px; left: -100px; background: rgba(255, 255, 255, 0.06); }
+.landing-hero::before { width: 420px; height: 420px; top: -180px; right: -140px; }
+.landing-hero::after { width: 320px; height: 320px; bottom: -160px; left: -100px; background: rgba(24, 59, 84, 0.04); }
 
 .landing-hero-inner {
   max-width: 720px;
@@ -199,16 +213,21 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 .landing-hero-eyebrow {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #EBF4FF;
+  color: var(--primary-blue);
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
 }
 
 .landing-hero-title {
-  color: #FFFFFF;
+  color: #10233A;
   font-size: 2.75rem;
   font-weight: 800;
   line-height: 1.15;
@@ -217,7 +236,7 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 .landing-hero-subtitle {
-  color: rgba(255, 255, 255, 0.85);
+  color: #52667A;
   font-size: 1.0625rem;
   line-height: 1.6;
   max-width: 560px;
@@ -247,27 +266,28 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 .btn-hero-primary {
-  background: #FFFFFF;
-  color: var(--primary-blue);
+  background: var(--primary-blue);
+  color: #FFFFFF;
   border: none;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 20px rgba(24, 59, 84, 0.25);
 }
-.btn-hero-primary:hover { background: #F4F4F5; }
+.btn-hero-primary:hover { background: var(--primary-blue-hover); }
 
 .btn-hero-secondary {
-  background: transparent;
-  color: #FFFFFF;
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  background: #FFFFFF;
+  color: #10233A;
+  border: 1.5px solid var(--border-light);
 }
-.btn-hero-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.8); }
+.btn-hero-secondary:hover { background: #F4F4F5; }
 
 @media (max-width: 640px) {
-  .landing-hero { padding: 4rem 1.25rem 5rem; }
+  .landing-hero { padding: 7.5rem 1.25rem 4rem; }
   .landing-hero-title { font-size: 2rem; }
-  .landing-header-inner { padding: 0.875rem 1rem; }
-  .landing-header-actions { gap: 0.5rem; }
+  .landing-header { width: calc(100% - 1.5rem); top: 0.875rem; }
+  .landing-header-inner { padding: 0.5rem 0.5rem 0.5rem 1rem; }
+  .landing-header-actions { gap: 0.4rem; }
   .landing-header-actions .btn-secondary,
-  .landing-header-actions .btn-primary { padding: 0.55rem 0.85rem; font-size: 0.8125rem; }
+  .landing-header-actions .btn-primary { padding: 0.5rem 0.75rem; font-size: 0.8125rem; }
 }
 
 /* ==========================================================================

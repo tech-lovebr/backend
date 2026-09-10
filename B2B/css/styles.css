@@ -143,6 +143,134 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 /* ==========================================================================
+   LANDING (institucional do Portal do Fornecedor, antes do login)
+   ========================================================================== */
+
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.landing-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.landing-logo { display: flex; align-items: center; }
+.landing-logo img { height: 30px; width: auto; object-fit: contain; }
+
+.landing-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.landing-hero {
+  background: var(--primary-gradient);
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 1.5rem 7rem;
+  text-align: center;
+}
+
+.landing-hero::before,
+.landing-hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.landing-hero::before { width: 480px; height: 480px; top: -160px; right: -160px; }
+.landing-hero::after { width: 360px; height: 360px; bottom: -140px; left: -100px; background: rgba(255, 255, 255, 0.06); }
+
+.landing-hero-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-hero-eyebrow {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.landing-hero-title {
+  color: #FFFFFF;
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.25rem;
+}
+
+.landing-hero-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto 2.25rem;
+}
+
+.landing-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary,
+.btn-hero-secondary {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--radius-control);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.btn-hero-primary {
+  background: #FFFFFF;
+  color: var(--primary-blue);
+  border: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+.btn-hero-primary:hover { background: #F4F4F5; }
+
+.btn-hero-secondary {
+  background: transparent;
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+}
+.btn-hero-secondary:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.8); }
+
+@media (max-width: 640px) {
+  .landing-hero { padding: 4rem 1.25rem 5rem; }
+  .landing-hero-title { font-size: 2rem; }
+  .landing-header-inner { padding: 0.875rem 1rem; }
+  .landing-header-actions { gap: 0.5rem; }
+  .landing-header-actions .btn-secondary,
+  .landing-header-actions .btn-primary { padding: 0.55rem 0.85rem; font-size: 0.8125rem; }
+}
+
+/* ==========================================================================
    DASHBOARD SHELL — Sidebar fixo (ícone + texto, sem unfold)
    ========================================================================== */
 

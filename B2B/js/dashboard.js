@@ -9,7 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAgenda();
   renderTarefas();
   initTarefaAddButton();
+  initOnboardingModal();
 });
+
+function initOnboardingModal() {
+  if (localStorage.getItem('b2b-onboarding-pending') !== '1') return;
+  localStorage.removeItem('b2b-onboarding-pending');
+
+  const modal = document.getElementById('onboarding-modal');
+  const closeBtn = document.getElementById('onboarding-close-btn');
+  if (!modal || !closeBtn) return;
+
+  modal.classList.add('show');
+  closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
+}
 
 function renderGreeting() {
   const now = new Date();

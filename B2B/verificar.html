@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifique seu e-mail — Portal do Fornecedor Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#183b54">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=75">
+</head>
+<body class="font-sans">
+
+  <div class="signup-shell">
+    <div class="signup-card">
+      <a href="index.html" class="signup-logo">
+        <img src="../assets/logo_blue.png" alt="Love">
+      </a>
+
+      <h1 class="signup-title">Verifique seu e-mail</h1>
+      <p class="signup-subtitle">Enviamos um código de 4 dígitos para <strong id="verify-email">seu e-mail</strong>.</p>
+
+      <div class="verify-code-inputs" id="verify-code-inputs">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="verify-code-box" aria-label="Dígito 1">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="verify-code-box" aria-label="Dígito 2">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="verify-code-box" aria-label="Dígito 3">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="verify-code-box" aria-label="Dígito 4">
+      </div>
+
+      <button type="button" class="btn-primary justify-center w-full py-3" id="verify-confirm-btn" disabled>Confirmar código</button>
+
+      <p class="signup-footer-link">Não recebeu o código? <a href="#" id="verify-resend">Reenviar</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Verificação mock — sem envio real de e-mail. Qualquer código de
+    // 4 dígitos é aceito e segue para o onboarding no painel.
+    const email = sessionStorage.getItem('b2b-signup-email');
+    if (email) document.getElementById('verify-email').textContent = email;
+
+    const boxes = Array.from(document.querySelectorAll('.verify-code-box'));
+    const confirmBtn = document.getElementById('verify-confirm-btn');
+
+    function updateConfirmState() {
+      confirmBtn.disabled = !boxes.every(b => b.value.trim().length === 1);
+    }
+
+    boxes.forEach((box, i) => {
+      box.addEventListener('input', () => {
+        box.value = box.value.replace(/[^0-9]/g, '');
+        if (box.value && boxes[i + 1]) boxes[i + 1].focus();
+        updateConfirmState();
+      });
+      box.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !box.value && boxes[i - 1]) boxes[i - 1].focus();
+      });
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      localStorage.setItem('b2b-onboarding-pending', '1');
+      sessionStorage.removeItem('b2b-signup-email');
+      window.location.href = 'dashboard.html';
+    });
+
+    document.getElementById('verify-resend').addEventListener('click', (e) => {
+      e.preventDefault();
+      boxes.forEach(b => b.value = '');
+      boxes[0].focus();
+      updateConfirmState();
+    });
+
+    boxes[0].focus();
+  </script>
+</body>
+</html>

@@ -271,6 +271,103 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 /* ==========================================================================
+   SIGNUP / VERIFICAÇÃO (cadastro do fornecedor)
+   ========================================================================== */
+
+.signup-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FAFAFA;
+  padding: 2.5rem 1.25rem;
+}
+
+.signup-card { width: 100%; max-width: 420px; text-align: center; }
+
+.signup-logo { display: inline-flex; margin-bottom: 1.5rem; }
+.signup-logo img { height: 32px; width: auto; object-fit: contain; }
+
+.signup-title { font-size: 1.5rem; font-weight: 800; color: #18181B; margin: 0 0 0.4rem; }
+.signup-subtitle { font-size: 0.9375rem; color: #71717A; margin: 0 0 1.75rem; }
+
+.signup-oauth { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.signup-oauth-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #18181B;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.signup-oauth-btn:hover { background: #F4F4F5; border-color: #D4D4D8; }
+.signup-oauth-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.signup-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  color: #A1A1AA;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.signup-divider::before, .signup-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
+
+.signup-email-form { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.signup-legal { font-size: 0.75rem; color: #A1A1AA; line-height: 1.5; margin: 1.5rem 0 0; }
+.signup-legal a { color: #71717A; text-decoration: underline; }
+
+.signup-footer-link { font-size: 0.875rem; color: #71717A; margin-top: 1.75rem; }
+.signup-footer-link a { color: var(--primary-blue); font-weight: 600; text-decoration: none; }
+.signup-footer-link a:hover { text-decoration: underline; }
+
+.verify-code-inputs { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1.75rem; }
+
+.verify-code-box {
+  width: 56px;
+  height: 64px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #18181B;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-control);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.verify-code-box:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(24, 59, 84, 0.15); }
+
+/* ==========================================================================
+   ONBOARDING — modal de boas-vindas pós-cadastro
+   ========================================================================== */
+
+.onboarding-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+.onboarding-tips { display: flex; flex-direction: column; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+
+.onboarding-tips li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: #52525B;
+  line-height: 1.5;
+  padding: 0.75rem 0.875rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-control);
+}
+
+/* ==========================================================================
    DASHBOARD SHELL — Sidebar fixo (ícone + texto, sem unfold)
    ========================================================================== */
 
@@ -1183,6 +1280,7 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
 }
 
 .btn-primary:hover { background: var(--primary-blue-hover); }
+.btn-primary:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
 body[data-theme="dark"] .btn-primary { box-shadow: none; }
 
 .btn-secondary {

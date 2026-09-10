@@ -92,8 +92,8 @@ async function loadShell() {
   if (sidebarMount) sidebarMount.innerHTML = sidebarHtml;
   if (topbarMount) topbarMount.innerHTML = topbarHtml;
 
-  const main = document.querySelector('.b2b-main');
-  if (main && !main.querySelector('.b2b-footer')) {
+  const content = document.querySelector('.b2b-content');
+  if (content && !content.querySelector('.b2b-footer')) {
     const year = new Date().getFullYear();
     const footer = document.createElement('footer');
     footer.className = 'b2b-footer';
@@ -131,7 +131,7 @@ async function loadShell() {
         <span>Feito com amor para momentos inesquecíveis.</span>
       </div>
     `;
-    main.appendChild(footer);
+    content.appendChild(footer);
   }
 }
 

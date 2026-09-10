@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Páginas do Site — Portal do Fornecedor Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#183b54">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=78">
+</head>
+<body class="font-sans" data-page="paginas-site">
+
+  <div class="b2b-shell">
+    <div id="shell-sidebar"></div>
+    <div class="b2b-main">
+      <div id="shell-topbar"></div>
+
+      <main class="b2b-content">
+
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-base font-bold text-zinc-900 mb-1">Páginas do Site</h2>
+            <p class="text-sm text-zinc-500">Configure o endereço e personalize a vitrine que seus clientes veem.</p>
+          </div>
+          <a href="vitrine.html" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+            Ver minha página
+          </a>
+        </div>
+
+        <div class="flex flex-col gap-6 max-w-3xl">
+
+          <div class="dash-card">
+            <div class="dash-card-header-left mb-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18" /></svg>
+              <h2 class="text-base font-bold text-zinc-900">Endereço do seu site</h2>
+            </div>
+            <p class="text-sm text-zinc-500 mb-4">Esse é o link que você compartilha com seus clientes e que aparece nos eventos da Love.</p>
+
+            <label for="site-slug" class="field-label">URL personalizada</label>
+            <div class="site-url-group">
+              <span class="site-url-prefix">love.com.br/f/</span>
+              <input type="text" id="site-slug" value="sophia-eventos">
+            </div>
+
+            <button type="button" class="btn-primary mt-4" id="site-url-save">Salvar endereço</button>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header-left mb-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75 8.69 9.31a2.25 2.25 0 0 1 3.182 0l5.16 5.159m-1.5-1.5 1.41-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3 4.5h18v15H3v-15Z" /></svg>
+              <h2 class="text-base font-bold text-zinc-900">Foto de capa</h2>
+            </div>
+            <p class="text-sm text-zinc-500 mb-4">Aparece no topo da sua página. Recomendado 1600×500px.</p>
+
+            <button type="button" class="site-upload-zone" id="cover-upload-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 8.25 12 3.75m0 0L7.5 8.25M12 3.75v13.5" /></svg>
+              <span>Clique para enviar uma imagem</span>
+            </button>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header-left mb-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
+              <h2 class="text-base font-bold text-zinc-900">Marca e identidade</h2>
+            </div>
+
+            <label class="field-label">Cor de destaque</label>
+            <div class="color-swatch-row mb-5" id="brand-color-swatches">
+              <button type="button" class="color-swatch active" style="background:#183b54;" data-color="#183b54" aria-label="Azul marinho"></button>
+              <button type="button" class="color-swatch" style="background:#B45309;" data-color="#B45309" aria-label="Âmbar"></button>
+              <button type="button" class="color-swatch" style="background:#7E22CE;" data-color="#7E22CE" aria-label="Roxo"></button>
+              <button type="button" class="color-swatch" style="background:#15803D;" data-color="#15803D" aria-label="Verde"></button>
+              <button type="button" class="color-swatch" style="background:#BE123C;" data-color="#BE123C" aria-label="Vinho"></button>
+            </div>
+
+            <label for="site-bio" class="field-label">Sobre a empresa</label>
+            <textarea id="site-bio" class="field-textarea" style="min-height:110px;">Assessoria completa para casamentos e eventos, com foco em decoração e experiências personalizadas para cada cliente.</textarea>
+
+            <label for="site-instagram" class="field-label mt-4">Instagram</label>
+            <input type="text" id="site-instagram" class="field-input" value="@sophiaeventos">
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-header-left mb-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" /></svg>
+              <h2 class="text-base font-bold text-zinc-900">Seções visíveis</h2>
+            </div>
+            <p class="text-sm text-zinc-500 mb-2">Escolha o que aparece na sua página pública.</p>
+
+            <div id="site-sections-list">
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Produtos e serviços</p>
+                  <p class="settings-switch-desc">Catálogo com preços e descrições.</p>
+                </div>
+                <label class="settings-switch">
+                  <input type="checkbox" checked data-section="produtos">
+                  <span class="settings-switch-track"></span>
+                </label>
+              </div>
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Portfólio de eventos</p>
+                  <p class="settings-switch-desc">Galeria de fotos de trabalhos anteriores.</p>
+                </div>
+                <label class="settings-switch">
+                  <input type="checkbox" checked data-section="portfolio">
+                  <span class="settings-switch-track"></span>
+                </label>
+              </div>
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Depoimentos</p>
+                  <p class="settings-switch-desc">Avaliações recebidas de clientes.</p>
+                </div>
+                <label class="settings-switch">
+                  <input type="checkbox" checked data-section="depoimentos">
+                  <span class="settings-switch-track"></span>
+                </label>
+              </div>
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Botão de contato direto</p>
+                  <p class="settings-switch-desc">Permite que clientes te chamem pelo WhatsApp.</p>
+                </div>
+                <label class="settings-switch">
+                  <input type="checkbox" data-section="contato">
+                  <span class="settings-switch-track"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-primary justify-center py-3" id="site-save-all">Salvar personalização</button>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/paginas-site.js"></script>
+</body>
+</html>

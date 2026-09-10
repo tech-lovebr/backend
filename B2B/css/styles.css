@@ -388,6 +388,130 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 /* ==========================================================================
+   PÁGINAS DO SITE — URL personalizada e personalização da vitrine
+   ========================================================================== */
+
+.site-url-group {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+  max-width: 420px;
+}
+
+.site-url-prefix {
+  background: var(--bg-light);
+  color: #71717A;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.625rem 0.875rem;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-right: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.site-url-group input {
+  border: none;
+  flex: 1;
+  min-width: 0;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: #18181B;
+  background: #fff;
+}
+.site-url-group input:focus { outline: none; }
+
+.site-upload-zone {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  border: 1.5px dashed var(--border-light);
+  border-radius: var(--radius-control);
+  background: var(--bg-light);
+  color: #71717A;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.site-upload-zone:hover { border-color: var(--primary-blue); background: #F4F4F5; }
+
+.color-swatch-row { display: flex; align-items: center; gap: 0.75rem; }
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.color-swatch:hover { transform: scale(1.08); }
+.color-swatch.active { border-color: #18181B; }
+.color-swatch.active::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  border: 2px solid #fff;
+}
+
+.settings-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border-card);
+}
+.settings-switch-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.settings-switch-label { font-size: 0.875rem; font-weight: 600; color: #18181B; margin: 0; }
+.settings-switch-desc { font-size: 0.75rem; color: #71717A; margin: 0.15rem 0 0; }
+
+.settings-switch { position: relative; display: inline-block; width: 40px; height: 24px; flex-shrink: 0; }
+.settings-switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+
+.settings-switch-track {
+  position: absolute;
+  inset: 0;
+  background: #D4D4D8;
+  border-radius: 999px;
+  transition: background-color .15s ease;
+}
+.settings-switch-track::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 999px;
+  transition: transform .15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.settings-switch input:checked ~ .settings-switch-track { background: var(--primary-blue); }
+.settings-switch input:checked ~ .settings-switch-track::before { transform: translateX(16px); }
+
+body[data-theme="dark"] .site-url-prefix { background: #333333 !important; border-right-color: #404040 !important; color: #A1A1AA !important; }
+body[data-theme="dark"] .site-url-group { border-color: #404040 !important; }
+body[data-theme="dark"] .site-url-group input { background: #252525 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .site-upload-zone { background: #333333 !important; border-color: #404040 !important; color: #A1A1AA !important; }
+body[data-theme="dark"] .settings-switch-row { border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .settings-switch-label { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important; }
+
+/* ==========================================================================
    DASHBOARD SHELL — Sidebar fixo (ícone + texto, sem unfold)
    ========================================================================== */
 

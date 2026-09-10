@@ -260,9 +260,9 @@ body.sidebar-collapsed .sidebar-toggle-icon.icon-expand { display: block; }
 }
 
 .sidebar-nav-item svg:not(.sidebar-chevron) {
-  width: 27px;
-  height: 27px;
-  stroke-width: 1.5px;
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.6px;
   color: #94A3B8;
   flex-shrink: 0;
 }
@@ -569,7 +569,7 @@ body[data-theme="dark"] .topbar-search-trigger kbd { background: #5A5A5A !import
 }
 
 .topbar-upgrade-btn:hover { color: var(--primary-hover); }
-.topbar-upgrade-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.topbar-upgrade-btn svg { width: 18px; height: 18px; stroke-width: 1.6px; flex-shrink: 0; }
 
 body[data-theme="dark"] .topbar-upgrade-btn { color: #FFFFFF !important; }
 body[data-theme="dark"] .topbar-upgrade-btn:hover { color: rgba(255, 255, 255, 0.75) !important; }

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LOVE B2B — Meu Trabalho (visões de agenda: dia/semana/mês/lista)
+   LOVE B2B — Meu Trabalho (abas Quadro / Agenda)
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {

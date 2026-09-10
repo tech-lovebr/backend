@@ -388,6 +388,108 @@ p { color: #52525B; line-height: 1.6; }
 }
 
 /* ==========================================================================
+   ORÇAMENTOS — tela de apresentação Pro (primeiro acesso) + modal boas-vindas
+   ========================================================================== */
+
+.orcamentos-intro {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  flex-wrap: wrap;
+  padding: 2rem 0.5rem;
+}
+
+.orcamentos-intro-left { flex: 1 1 380px; min-width: 0; }
+.orcamentos-intro-right { flex: 1 1 320px; min-width: 0; display: flex; justify-content: center; }
+
+.orcamentos-intro-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #18181B;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.25rem;
+}
+
+.orcamentos-intro-desc { font-size: 0.9375rem; color: #52525B; line-height: 1.65; margin: 0 0 1rem; max-width: 480px; }
+.orcamentos-intro-desc-small { font-size: 0.9375rem; color: #18181B; font-weight: 600; margin: 0 0 1.75rem; }
+
+.orcamentos-intro-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+.orcamentos-intro-actions .btn-primary,
+.orcamentos-intro-actions .btn-secondary { padding: 0.8rem 1.5rem; font-size: 0.9375rem; }
+.orcamentos-intro-hint { font-size: 0.8125rem; color: #71717A; margin: -0.35rem 0 0; }
+
+.orcamentos-flow-blob {
+  position: relative;
+  width: 340px;
+  max-width: 100%;
+  padding: 3rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.orcamentos-flow-blob::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #EBF4FF;
+  border-radius: 999px;
+  z-index: -1;
+  transform: scale(1.15);
+}
+
+.orcamentos-flow-step {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-control);
+  padding: 0.75rem 1rem;
+  box-shadow: var(--shadow-soft);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #18181B;
+}
+
+.orcamentos-flow-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #EBF4FF;
+  color: var(--primary-blue);
+}
+.orcamentos-flow-icon svg { width: 17px; height: 17px; }
+
+.orcamentos-flow-arrow { color: var(--primary-blue); opacity: 0.5; }
+.orcamentos-flow-arrow svg { width: 16px; height: 16px; }
+
+.orcamentos-pro-list { list-style: none; margin: 0 0 0.875rem; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.orcamentos-pro-list li { font-size: 0.875rem; color: #52525B; line-height: 1.55; }
+.orcamentos-pro-list li strong { color: #18181B; }
+
+@media (max-width: 768px) {
+  .orcamentos-intro { flex-direction: column-reverse; gap: 2rem; padding: 1rem 0.25rem; }
+  .orcamentos-intro-title { font-size: 1.75rem; }
+  .orcamentos-flow-blob { width: 280px; }
+}
+
+body[data-theme="dark"] .orcamentos-intro-title,
+body[data-theme="dark"] .orcamentos-intro-desc-small { color: #FFFFFF !important; }
+body[data-theme="dark"] .orcamentos-intro-desc { color: #A1A1AA !important; }
+body[data-theme="dark"] .orcamentos-flow-step { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .orcamentos-flow-icon { background: #252525 !important; }
+body[data-theme="dark"] .orcamentos-pro-list li { color: #A1A1AA !important; }
+body[data-theme="dark"] .orcamentos-pro-list li strong { color: #FFFFFF !important; }
+
+/* ==========================================================================
    PÁGINAS DO SITE — URL personalizada e personalização da vitrine
    ========================================================================== */
 

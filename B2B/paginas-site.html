@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;500;600;700&family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=Italianno&family=Fondamento&family=Great+Vibes&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Voltaire&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prata&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=82">
+  <link rel="stylesheet" href="css/styles.css?v=199">
 </head>
 <body class="font-sans" data-page="paginas-site">
 
@@ -32,7 +32,7 @@
         <div class="flex items-center justify-between mb-5">
           <div>
             <h2 class="text-base font-bold text-zinc-900 mb-1">Páginas do Site</h2>
-            <p class="text-sm text-zinc-500">Configure o endereço, personalize a vitrine e crie formulários para seus clientes.</p>
+            <p class="text-sm text-zinc-500">Personalize seu site e crie formulários para seus clientes.</p>
           </div>
           <a href="vitrine.html" target="_blank" rel="noopener noreferrer" class="btn-secondary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
@@ -41,117 +41,56 @@
         </div>
 
         <div class="category-tabs-bar" id="site-tabs">
-          <button type="button" class="category-tab active" data-tab="editar">Editar site</button>
+          <button type="button" class="category-tab active" data-tab="editar">Editar meu site</button>
           <button type="button" class="category-tab" data-tab="formularios">Formulários</button>
         </div>
 
         <div class="site-tab-panel" data-tab-panel="editar">
-          <div class="flex flex-col gap-6 max-w-3xl">
+          <div class="builder-narrow-notice">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+            O construtor visual do site precisa de uma tela mais larga. Use um monitor ou aumente a janela do navegador para editar.
+          </div>
 
-            <div class="dash-card">
-              <div class="dash-card-header-left mb-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18" /></svg>
-                <h2 class="text-base font-bold text-zinc-900">Endereço do seu site</h2>
-              </div>
-              <p class="text-sm text-zinc-500 mb-4">Esse é o link que você compartilha com seus clientes e que aparece nos eventos da Love.</p>
-
-              <label for="site-slug" class="field-label">URL personalizada</label>
-              <div class="site-url-group">
-                <span class="site-url-prefix">love.com.br/f/</span>
-                <input type="text" id="site-slug" value="sophia-eventos">
-              </div>
-
-              <button type="button" class="btn-primary mt-4" id="site-url-save">Salvar endereço</button>
-            </div>
-
-            <div class="dash-card">
-              <div class="dash-card-header-left mb-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75 8.69 9.31a2.25 2.25 0 0 1 3.182 0l5.16 5.159m-1.5-1.5 1.41-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3 4.5h18v15H3v-15Z" /></svg>
-                <h2 class="text-base font-bold text-zinc-900">Foto de capa</h2>
-              </div>
-              <p class="text-sm text-zinc-500 mb-4">Aparece no topo da sua página. Recomendado 1600×500px.</p>
-
-              <button type="button" class="site-upload-zone" id="cover-upload-btn">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 8.25 12 3.75m0 0L7.5 8.25M12 3.75v13.5" /></svg>
-                <span>Clique para enviar uma imagem</span>
-              </button>
-            </div>
-
-            <div class="dash-card">
-              <div class="dash-card-header-left mb-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>
-                <h2 class="text-base font-bold text-zinc-900">Marca e identidade</h2>
-              </div>
-
-              <label class="field-label">Cor de destaque</label>
-              <div class="color-swatch-row mb-5" id="brand-color-swatches">
-                <button type="button" class="color-swatch active" style="background:#183b54;" data-color="#183b54" aria-label="Azul marinho"></button>
-                <button type="button" class="color-swatch" style="background:#B45309;" data-color="#B45309" aria-label="Âmbar"></button>
-                <button type="button" class="color-swatch" style="background:#7E22CE;" data-color="#7E22CE" aria-label="Roxo"></button>
-                <button type="button" class="color-swatch" style="background:#15803D;" data-color="#15803D" aria-label="Verde"></button>
-                <button type="button" class="color-swatch" style="background:#BE123C;" data-color="#BE123C" aria-label="Vinho"></button>
-              </div>
-
-              <label for="site-bio" class="field-label">Sobre a empresa</label>
-              <textarea id="site-bio" class="field-textarea" style="min-height:110px;">Assessoria completa para casamentos e eventos, com foco em decoração e experiências personalizadas para cada cliente.</textarea>
-
-              <label for="site-instagram" class="field-label mt-4">Instagram</label>
-              <input type="text" id="site-instagram" class="field-input" value="@sophiaeventos">
-            </div>
-
-            <div class="dash-card">
-              <div class="dash-card-header-left mb-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" /></svg>
-                <h2 class="text-base font-bold text-zinc-900">Seções visíveis</h2>
-              </div>
-              <p class="text-sm text-zinc-500 mb-2">Escolha o que aparece na sua página pública.</p>
-
-              <div id="site-sections-list">
-                <div class="settings-switch-row">
-                  <div>
-                    <p class="settings-switch-label">Produtos e serviços</p>
-                    <p class="settings-switch-desc">Catálogo com preços e descrições.</p>
-                  </div>
-                  <label class="settings-switch">
-                    <input type="checkbox" checked data-section="produtos">
-                    <span class="settings-switch-track"></span>
-                  </label>
+          <div class="builder-wrap" id="site-builder-root">
+              <div class="builder-toolbar">
+                <div class="builder-toolbar-left">
+                  <input type="text" class="builder-page-name" id="builder-page-name" value="Página inicial" aria-label="Nome da página">
                 </div>
-                <div class="settings-switch-row">
-                  <div>
-                    <p class="settings-switch-label">Portfólio de eventos</p>
-                    <p class="settings-switch-desc">Galeria de fotos de trabalhos anteriores.</p>
-                  </div>
-                  <label class="settings-switch">
-                    <input type="checkbox" checked data-section="portfolio">
-                    <span class="settings-switch-track"></span>
-                  </label>
+                <div class="builder-device-toggle" id="builder-device-toggle">
+                  <button type="button" class="builder-device-btn active" data-device="desktop" title="Desktop">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path stroke-linecap="round" d="M8 20h8M12 16.5V20"/></svg>
+                  </button>
+                  <button type="button" class="builder-device-btn" data-device="tablet" title="Tablet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="19" rx="1.8"/><path stroke-linecap="round" d="M12 18.5h.01"/></svg>
+                  </button>
+                  <button type="button" class="builder-device-btn" data-device="mobile" title="Mobile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="2.5" width="8" height="19" rx="1.6"/><path stroke-linecap="round" d="M12 18h.01"/></svg>
+                  </button>
                 </div>
-                <div class="settings-switch-row">
-                  <div>
-                    <p class="settings-switch-label">Depoimentos</p>
-                    <p class="settings-switch-desc">Avaliações recebidas de clientes.</p>
-                  </div>
-                  <label class="settings-switch">
-                    <input type="checkbox" checked data-section="depoimentos">
-                    <span class="settings-switch-track"></span>
-                  </label>
-                </div>
-                <div class="settings-switch-row">
-                  <div>
-                    <p class="settings-switch-label">Botão de contato direto</p>
-                    <p class="settings-switch-desc">Permite que clientes te chamem pelo WhatsApp.</p>
-                  </div>
-                  <label class="settings-switch">
-                    <input type="checkbox" data-section="contato">
-                    <span class="settings-switch-track"></span>
-                  </label>
+                <div class="builder-toolbar-right">
+                  <button type="button" class="builder-tool-btn" id="builder-undo" title="Desfazer" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 4 10m0 0 5-5m-5 5h11a4 4 0 0 1 0 8h-1"/></svg>
+                  </button>
+                  <button type="button" class="builder-tool-btn" id="builder-redo" title="Refazer" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 15 5-5m0 0-5-5m5 5H9a4 4 0 0 0 0 8h1"/></svg>
+                  </button>
+                  <span class="builder-toolbar-divider"></span>
+                  <button type="button" class="btn-secondary builder-toolbar-btn" id="builder-save">Salvar</button>
+                  <button type="button" class="btn-primary builder-toolbar-btn" id="builder-publish">Publicar</button>
                 </div>
               </div>
-            </div>
 
-            <button type="button" class="btn-primary justify-center py-3" id="site-save-all">Salvar personalização</button>
-
+              <div class="builder-body">
+                <aside class="builder-elements-panel" id="builder-elements-panel"></aside>
+                <div class="builder-canvas-viewport" id="builder-canvas-viewport">
+                  <div class="builder-canvas-frame" id="builder-canvas-frame" data-device="desktop">
+                    <div class="builder-canvas-scroll" id="builder-canvas-scroll">
+                      <div class="builder-canvas" id="builder-canvas" data-device="desktop"></div>
+                    </div>
+                    <div class="builder-mobile-menu-root" id="builder-mobile-menu-root"></div>
+                  </div>
+                </div>
+              </div>
           </div>
         </div>
 
@@ -191,9 +130,43 @@
     </div>
   </aside>
 
+  <div class="modal-backdrop" id="logo-adjust-modal">
+    <div class="modal-card logo-adjust-modal-card">
+      <button type="button" class="logo-adjust-modal-close" data-logo-adjust-modal-close aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+      <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar logo</h2>
+      <p class="text-sm text-zinc-500 mb-4">Ajuste o enquadramento da sua logo no cabeçalho.</p>
+      <div class="logo-adjust-modal-frame" data-logo-adjust-modal-frame>
+        <img src="" class="logo-adjust-modal-img" data-logo-adjust-modal-img alt="">
+      </div>
+      <div class="logo-adjust-modal-controls">
+        <span class="logo-adjust-modal-zoom-label">Zoom:</span>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-logo-adjust-modal-zoom-minus>−</button>
+        <input type="range" min="1" max="8" step="0.05" value="1" class="logo-adjust-modal-range" data-logo-adjust-modal-range>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-logo-adjust-modal-zoom-plus>+</button>
+      </div>
+      <button type="button" class="btn-primary justify-center w-full py-3 mt-2" data-logo-adjust-modal-done>Concluir</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="unsaved-changes-modal">
+    <div class="modal-card" style="max-width:420px; text-align:center;">
+      <div class="onboarding-icon" style="display:flex;justify-content:center;color:#18181B;">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3h-2"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v11m-3-3 3 3 3-3"/></svg>
+      </div>
+      <h2 class="text-xl font-bold text-zinc-900 mb-2">Salve sua página antes de sair</h2>
+      <p class="text-sm text-zinc-600 mb-5" style="line-height:1.6;">Você fez alterações que ainda não foram salvas. Se sair agora, elas serão perdidas.</p>
+      <button type="button" class="btn-primary justify-center w-full py-3" id="unsaved-changes-save-btn">Salvar e voltar</button>
+      <button type="button" class="btn-secondary justify-center w-full py-3 mt-2" id="unsaved-changes-discard-btn">Sair sem salvar</button>
+    </div>
+  </div>
+
   <script src="js/data.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/shell.js"></script>
   <script src="js/paginas-site.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="js/site-builder.js?v=225"></script>
 </body>
 </html>

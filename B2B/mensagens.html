@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=72">
+  <link rel="stylesheet" href="css/styles.css?v=169">
 </head>
 <body class="font-sans" data-page="mensagens">
 
@@ -32,10 +32,10 @@
         <div class="chat-shell w-full h-full bg-white flex flex-col md:flex-row overflow-hidden border-t border-zinc-200">
           
           <!-- COLUNA ESQUERDA: LISTA DE CONVERSAS / CONTATOS (W-80 / 340px) -->
-          <div class="w-full md:w-80 lg:w-[340px] md:min-w-[320px] border-r border-zinc-200 flex flex-col h-full flex-shrink-0" style="background-color: #FAFAFA !important;">
+          <div class="b2b-chat-contacts-column w-full md:w-80 lg:w-[340px] md:min-w-[320px] border-r border-zinc-200 flex flex-col h-full flex-shrink-0">
             
             <!-- Header da Lista -->
-            <div class="p-4 border-b border-zinc-200/70 space-y-3 flex-shrink-0" style="background-color: #FAFAFA !important;">
+            <div class="b2b-chat-contacts-header p-4 border-b border-zinc-200/70 space-y-3 flex-shrink-0">
               <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-zinc-900 text-base tracking-tight cursor-default" title="Chat com fornecedores">Mensagens</h3>
               </div>
@@ -50,7 +50,7 @@
             </div>
 
             <!-- Lista de Contatos dos Fornecedores -->
-            <div id="conv-list" class="flex-1 overflow-y-auto divide-y divide-zinc-200/60" style="background-color: #FAFAFA !important;">
+            <div id="conv-list" class="flex-1 overflow-y-auto divide-y divide-zinc-200/60">
               <!-- Contatos injetados dinamicamente via JS -->
             </div>
 

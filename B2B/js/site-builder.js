@@ -22,7 +22,7 @@ const BI = {
   carousel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="5" width="10" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M3 9v6m18-6v6"/></svg>',
   testimonials: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9M7.5 12h6M4.5 4.5h15A1.5 1.5 0 0 1 21 6v10.5a1.5 1.5 0 0 1-1.5 1.5H9l-4 3v-3H4.5A1.5 1.5 0 0 1 3 16.5V6a1.5 1.5 0 0 1 1.5-1.5Z"/></svg>',
   form: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>',
-  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.877 3 6.268 3 6.694v10.986c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>',
+  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>',
   divider: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 12h16"/></svg>',
   spacer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4"/></svg>',
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/><path stroke-linecap="round" d="M9 6h11M9 12h11M9 18h11"/></svg>',
@@ -96,6 +96,12 @@ const VIDEO_ASPECT_RATIO_OPTIONS = [
   { value: '9:16', label: 'Retrato (9:16)' },
   { value: '1:1', label: 'Quadrado (1:1)' },
   { value: '4:5', label: 'Vertical (4:5)' }
+];
+
+const TESTIMONIALS_LAYOUT_OPTIONS = [
+  { value: 'grid', label: 'Grid / Grade de Cards' },
+  { value: 'carrossel', label: 'Carrossel / Slider' },
+  { value: 'marquee', label: 'Marquee / Ticker Infinito' }
 ];
 
 const LAYOUT_PRESETS = [
@@ -191,6 +197,16 @@ let pendingNavigationHref = null;
 
 function uid(prefix) {
   return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+const RESERVED_SLUGS = ['sophia-eventos', 'buffet-real', 'espaco-jardim', 'casa-de-festas', 'eventos-vip', 'admin', 'love'];
+
+function slugify(value) {
+  return (value || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 function defaultSiteSettings() {
@@ -311,13 +327,14 @@ function migrateMenuItems(state) {
   }
 }
 
-function dedupeSectionsByMenuItem(state) {
+function pruneOrphanSections(state) {
   if (!state.sections) return;
-  const seen = new Set();
+  const validKeys = new Set(FIXED_SECTIONS.map(f => f.key));
+  const seenKeys = new Set();
   state.sections = state.sections.filter(sec => {
-    const key = sec.menuItemId || sec.id;
-    if (seen.has(key)) return false;
-    seen.add(key);
+    if (!validKeys.has(sec.fixedKey)) return false;
+    if (seenKeys.has(sec.fixedKey)) return false;
+    seenKeys.add(sec.fixedKey);
     return true;
   });
 }
@@ -325,7 +342,7 @@ function dedupeSectionsByMenuItem(state) {
 function migrateElementDefaults(state) {
   if (!state.sections) return;
   migrateMenuItems(state);
-  dedupeSectionsByMenuItem(state);
+  pruneOrphanSections(state);
   state.sections.forEach(section => {
     (section.columns || []).forEach(column => {
       (column.elements || []).forEach(el => {
@@ -503,7 +520,8 @@ function createElement(type) {
         items: [
           { name: 'Camila Souza', role: 'Casamento em Indaiatuba', text: 'Equipe atenciosa do início ao fim, recomendo muito!', avatar: '' },
           { name: 'Rafael Lima', role: 'Debutante', text: 'Superou todas as expectativas da festa.', avatar: '' }
-        ]
+        ],
+        layoutFormat: 'grid', gridColumns: 3, carouselVisible: 1, textColor: '', boxColor: ''
       });
     case 'formulario':
       return Object.assign(base, { formId: '', title: 'Fale conosco' });
@@ -894,7 +912,7 @@ function renderLeftPanel() {
   });
 
   const body = document.getElementById('builder-panel-tab-body');
-  if (leftTab === 'estilo') { renderEstiloTab(body); wireAccordions(body); wireColorSwatchPopovers(body); }
+  if (leftTab === 'estilo') { renderEstiloTab(body); wireAccordions(body, ['Configurações']); wireColorSwatchPopovers(body); }
   else renderElementosTab(body);
 
   const canvas = document.getElementById('builder-canvas');
@@ -940,11 +958,12 @@ function renderElementEditorPanel(panel, sel) {
 
 let expandedAccordionSections = new Set();
 
-function wireAccordions(container) {
+function wireAccordions(container, skipTitles) {
   const titles = Array.from(container.querySelectorAll(':scope > .inspector-section-title'));
   titles.forEach(title => {
     if (title.classList.contains('inspector-accordion-title')) return;
     const key = title.textContent.trim();
+    if (skipTitles && skipTitles.includes(key)) return;
     title.classList.add('inspector-accordion-title');
     if (!expandedAccordionSections.has(key)) title.classList.add('is-collapsed');
     const chevron = document.createElement('span');
@@ -1029,6 +1048,8 @@ function renderEstiloTab(body) {
   if (!builderState.siteSettings) builderState.siteSettings = defaultSiteSettings();
   if (!builderState.siteSettings.seo) builderState.siteSettings.seo = defaultSeoSettings();
   const seo = builderState.siteSettings.seo;
+  const siteSettings = builderState.siteSettings;
+  const isPro = typeof isProPlan === 'function' && isProPlan();
 
   body.innerHTML = `
     <div class="builder-el-group-title">${BI.style} Estilo geral do site</div>
@@ -1052,15 +1073,24 @@ function renderEstiloTab(body) {
     ${headingRowHtml('menu', gs.headings.menu, 'Menus')}
     ${HEADING_LEVELS.map(n => headingRowHtml(n, gs.headings[n])).join('')}
     <div class="inspector-section-title">Configurações</div>
-    <p class="inspector-hint">Informações usadas pelo Google e ao compartilhar o link do seu site em redes sociais e no WhatsApp.</p>
+    <div class="inspector-field">
+      <span class="inspector-field-label">URL personalizada</span>
+      <div class="url-slug-field">
+        ${isPro ? '' : `<span class="url-slug-prefix">love.com.br/site/</span>`}
+        <input type="text" class="url-slug-input" id="site-slug-input" value="${escapeHtml(siteSettings.slug || '')}" placeholder="sua-empresa" autocomplete="off" spellcheck="false">
+        ${isPro ? `<span class="url-slug-suffix">.love.com.br</span>` : ''}
+        <span class="url-slug-status" id="site-slug-status"></span>
+      </div>
+      <p class="inspector-hint url-slug-error" id="site-slug-error" hidden>Esta URL já está sendo usada.</p>
+    </div>
     <div class="inspector-field">
       <span class="inspector-field-label">Título da Página (Meta Title)</span>
-      <input type="text" class="inspector-input" id="seo-meta-title" value="${escapeHtml(seo.metaTitle || '')}" placeholder="Ex: Edile Incorporadora">
+      <input type="text" class="inspector-input" id="seo-meta-title" value="${escapeHtml(seo.metaTitle || '')}" placeholder="Ex: Premium Eventos">
       <p class="inspector-hint">O que aparece na aba do navegador e no Google.</p>
     </div>
     <div class="inspector-field">
       <span class="inspector-field-label">Descrição (Meta Description)</span>
-      <textarea class="inspector-textarea inspector-textarea-plain" id="seo-meta-description" placeholder="Resumo curto do que o site oferece...">${escapeHtml(seo.metaDescription || '')}</textarea>
+      <textarea class="inspector-textarea inspector-textarea-plain" id="seo-meta-description" placeholder="Escreva uma resumo curto sobre sua empresa">${escapeHtml(seo.metaDescription || '')}</textarea>
       <p class="inspector-hint">Resumo para buscadores e redes sociais.</p>
     </div>
     <div class="inspector-field">
@@ -1144,6 +1174,41 @@ function renderEstiloTab(body) {
       pushHistory();
     });
   });
+
+  const slugInput = body.querySelector('#site-slug-input');
+  if (slugInput) {
+    const slugStatus = body.querySelector('#site-slug-status');
+    const slugError = body.querySelector('#site-slug-error');
+    const savedSlug = siteSettings.slug;
+    let slugCheckTimer = null;
+    const checkSlug = () => {
+      const val = slugInput.value;
+      slugStatus.classList.remove('is-available', 'is-taken');
+      slugStatus.innerHTML = '';
+      slugError.hidden = true;
+      if (!val) return;
+      const taken = RESERVED_SLUGS.includes(val) && val !== savedSlug;
+      if (taken) {
+        slugStatus.classList.add('is-taken');
+        slugStatus.innerHTML = BI.close;
+        slugError.hidden = false;
+      } else {
+        slugStatus.classList.add('is-available');
+        slugStatus.innerHTML = BI.check;
+      }
+    };
+    slugInput.addEventListener('input', () => {
+      const cursorAtEnd = slugInput.selectionStart === slugInput.value.length;
+      const clean = slugify(slugInput.value);
+      slugInput.value = clean;
+      siteSettings.slug = clean;
+      if (cursorAtEnd) slugInput.setSelectionRange(clean.length, clean.length);
+      clearTimeout(slugCheckTimer);
+      slugCheckTimer = setTimeout(checkSlug, 300);
+    });
+    slugInput.addEventListener('blur', () => pushHistory());
+    checkSlug();
+  }
 
   const metaTitleInput = body.querySelector('#seo-meta-title');
   if (metaTitleInput) {
@@ -1535,6 +1600,32 @@ function wireCanvasEvents(canvas) {
 
     const submitPreviewBtn = elBlock.querySelector('[data-form-submit-preview]');
     if (submitPreviewBtn) submitPreviewBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showToast('Prévia: o envio real funciona quando a página for publicada.'); });
+
+    const carouselTrack = elBlock.querySelector('.be-testimonials-track');
+    if (carouselTrack) {
+      elBlock.querySelectorAll('[data-carousel-arrow]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const cardWidth = carouselTrack.querySelector('.be-testimonial-card')?.offsetWidth || carouselTrack.offsetWidth;
+          carouselTrack.scrollBy({ left: btn.dataset.carouselArrow === 'prev' ? -(cardWidth + 16) : (cardWidth + 16), behavior: 'smooth' });
+        });
+      });
+      const dots = elBlock.querySelectorAll('[data-carousel-dot]');
+      dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const cardWidth = carouselTrack.querySelector('.be-testimonial-card')?.offsetWidth || carouselTrack.offsetWidth;
+          carouselTrack.scrollTo({ left: Number(dot.dataset.carouselDot) * (cardWidth + 16), behavior: 'smooth' });
+        });
+      });
+      if (dots.length) {
+        carouselTrack.addEventListener('scroll', () => {
+          const cardWidth = carouselTrack.querySelector('.be-testimonial-card')?.offsetWidth || carouselTrack.offsetWidth;
+          const nearest = Math.round(carouselTrack.scrollLeft / (cardWidth + 16));
+          dots.forEach((dot, i) => dot.classList.toggle('active', i === nearest));
+        });
+      }
+    }
   });
 
   wireEditableFields(canvas, 'edit');
@@ -2039,19 +2130,51 @@ function renderElementContent(el, device, mode) {
         `<img src="${img.src || placeholderImage()}" alt="${escapeHtml(img.alt || '')}">`
       ).join('')}</div>`;
 
-    case 'depoimentos':
-      return `<div class="be-testimonials" style="${style}">${el.items.map((t, i) => `
-        <div class="be-testimonial-card">
-          <p class="be-testimonial-quote" ${edit ? `contenteditable="true" data-editable="items:${i}:text"` : ''}>“${t.text}”</p>
+    case 'depoimentos': {
+      const cardRadius = styleValue(el, 'borderRadius', device);
+      const cardStyle = `${cardRadius !== undefined ? `border-radius:${cardRadius};` : ''}${el.boxColor ? `background-color:${el.boxColor};` : ''}`;
+      const textStyle = el.textColor ? `color:${el.textColor};` : '';
+      const cardHtml = (t, i, editable) => `
+        <div class="be-testimonial-card" style="${cardStyle}">
+          <p class="be-testimonial-quote" style="${textStyle}" ${editable ? `contenteditable="true" data-editable="items:${i}:text"` : ''}>“${t.text}”</p>
           <div class="be-testimonial-person">
             <img class="be-testimonial-avatar" src="${t.avatar || placeholderAvatar()}" alt="">
             <div>
-              <p class="be-testimonial-name">${escapeHtml(t.name)}</p>
+              <p class="be-testimonial-name" style="${textStyle}">${escapeHtml(t.name)}</p>
               <p class="be-testimonial-role">${escapeHtml(t.role || '')}</p>
             </div>
           </div>
         </div>
-      `).join('')}</div>`;
+      `;
+      const format = el.layoutFormat || 'grid';
+
+      if (format === 'carrossel') {
+        const visible = el.carouselVisible || 1;
+        const pages = Math.max(1, Math.ceil(el.items.length / visible));
+        return `<div class="be-testimonials-carousel" style="${style}">
+          <div class="be-testimonials-track" style="--carousel-visible:${visible};">
+            ${el.items.map((t, i) => cardHtml(t, i, edit)).join('')}
+          </div>
+          ${el.items.length > visible ? `
+          <button type="button" class="be-carousel-arrow be-carousel-arrow-prev" data-carousel-arrow="prev" aria-label="Anterior">${BI.chevronDown}</button>
+          <button type="button" class="be-carousel-arrow be-carousel-arrow-next" data-carousel-arrow="next" aria-label="Próximo">${BI.chevronDown}</button>
+          <div class="be-carousel-dots">${Array.from({ length: pages }).map((_, i) => `<button type="button" class="be-carousel-dot${i === 0 ? ' active' : ''}" data-carousel-dot="${i}"></button>`).join('')}</div>
+          ` : ''}
+        </div>`;
+      }
+
+      if (format === 'marquee') {
+        const loopItems = el.items.length ? [...el.items, ...el.items] : el.items;
+        return `<div class="be-testimonials-marquee" style="${style}">
+          <div class="be-testimonials-marquee-track" style="--marquee-duration:${Math.max(12, el.items.length * 6)}s;">
+            ${loopItems.map((t, i) => cardHtml(t, i % el.items.length, false)).join('')}
+          </div>
+        </div>`;
+      }
+
+      const cols = device === 'mobile' ? 1 : (el.gridColumns || 3);
+      return `<div class="be-testimonials" style="grid-template-columns:repeat(${cols}, 1fr);${style}">${el.items.map((t, i) => cardHtml(t, i, edit)).join('')}</div>`;
+    }
 
     case 'formulario': {
       const form = typeof siteForms !== 'undefined' ? siteForms.find(f => f.id === el.formId) : null;
@@ -2168,6 +2291,7 @@ function wireBind(root, el) {
         if (out) out.textContent = val + unit;
       }
       renderCanvasOnly();
+      if (path === 'prop:layoutFormat') renderLeftPanel();
     });
     input.addEventListener('blur', () => pushHistory());
     if (input.type === 'checkbox' || input.tagName === 'SELECT' || input.type === 'range' || input.type === 'color') {
@@ -2979,6 +3103,10 @@ function wireContentTab(el, body) {
     body.querySelectorAll('[data-remove-testimonial]').forEach(btn => {
       btn.addEventListener('click', () => { el.items.splice(Number(btn.dataset.removeTestimonial), 1); pushHistory(); renderCanvasOnly(); renderLeftPanel(); });
     });
+    body.querySelectorAll('[data-testimonial-text]').forEach(textarea => {
+      textarea.addEventListener('input', () => { el.items[Number(textarea.dataset.testimonialText)].text = textarea.value; renderCanvasOnly(); });
+      textarea.addEventListener('blur', () => pushHistory());
+    });
     body.querySelectorAll('[data-testimonial-name]').forEach(input => {
       input.addEventListener('input', () => { el.items[Number(input.dataset.testimonialName)].name = input.value; renderCanvasOnly(); });
       input.addEventListener('blur', () => pushHistory());
@@ -3250,7 +3378,31 @@ function renderLayoutTab(el, flat) {
       <input type="range" min="0" max="60" value="${parseFloat(currentDeviceStyleOrProp(el, 'borderRadius')) || 0}" data-bind="style:borderRadius" data-unit="px">
     </div>
     ` : ''}
-    ${el.type === 'redes' || el.type === 'video' || el.type === 'galeria' ? '' : el.type === 'icone' ? `
+    ${el.type === 'depoimentos' ? `
+    <div class="inspector-field">
+      <span class="${labelClass}">Formato de layout</span>
+      <select class="inspector-select" data-bind="prop:layoutFormat">
+        ${TESTIMONIALS_LAYOUT_OPTIONS.map(o => `<option value="${o.value}" ${(el.layoutFormat || 'grid') === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
+      </select>
+    </div>
+    ${(el.layoutFormat || 'grid') === 'grid' ? `
+    <div class="inspector-field">
+      <span class="${labelClass}">Colunas (desktop)</span>
+      <select class="inspector-select" data-bind="prop:gridColumns" data-cast="number">
+        ${[2, 3, 4].map(n => `<option value="${n}" ${(el.gridColumns || 3) === n ? 'selected' : ''}>${n} colunas</option>`).join('')}
+      </select>
+    </div>
+    ` : ''}
+    ${el.layoutFormat === 'carrossel' ? `
+    <div class="inspector-field">
+      <span class="${labelClass}">Cards visíveis por vez</span>
+      <select class="inspector-select" data-bind="prop:carouselVisible" data-cast="number">
+        ${[1, 2, 3].map(n => `<option value="${n}" ${(el.carouselVisible || 1) === n ? 'selected' : ''}>${n}</option>`).join('')}
+      </select>
+    </div>
+    ` : ''}
+    ` : ''}
+    ${el.type === 'redes' || el.type === 'video' || el.type === 'galeria' || el.type === 'depoimentos' ? '' : el.type === 'icone' ? `
     <div class="inspector-field">
       <span class="${labelClass}">Tamanho do ícone</span>
       <input type="range" min="16" max="120" value="${parseInt(cascadedStyleValue(el, 'fontSize')) || 32}" data-bind="style:fontSize" data-unit="px">
@@ -3454,11 +3606,20 @@ function renderContentTab(el) {
 
     case 'depoimentos':
       return `
+        <div class="inspector-field inspector-field-row">
+          <span class="inspector-field-label">Cor do texto</span>
+          ${colorSwatchPopoverHtml(el.textColor, 'data-bind="prop:textColor"')}
+        </div>
+        <div class="inspector-field inspector-field-row">
+          <span class="inspector-field-label">Cor da caixa</span>
+          ${colorSwatchPopoverHtml(el.boxColor, 'data-bind="prop:boxColor"')}
+        </div>
         <div id="testimonials-editor">
           ${el.items.map((t, i) => `
             <div class="inspector-list-item">
               <button type="button" class="inspector-list-item-remove" data-remove-testimonial="${i}">${BI.trash}</button>
               <span class="inspector-field-label">Depoimento ${i + 1}</span>
+              <textarea class="inspector-textarea inspector-textarea-plain" data-testimonial-text="${i}" placeholder="Texto do depoimento">${escapeHtml(t.text || '')}</textarea>
               <input type="text" class="inspector-input" data-testimonial-name="${i}" value="${escapeHtml(t.name || '')}" placeholder="Nome">
               <input type="text" class="inspector-input" data-testimonial-role="${i}" value="${escapeHtml(t.role || '')}" placeholder="Evento / cargo">
               ${imageUploadZoneHtml(t.avatar, `data-testimonial-avatar="${i}"`)}
@@ -3466,7 +3627,6 @@ function renderContentTab(el) {
           `).join('')}
         </div>
         <button type="button" class="inspector-add-btn" data-add-testimonial>${BI.plus} Adicionar depoimento</button>
-        <p class="inspector-hint">Edite o texto do depoimento clicando nele diretamente no canvas.</p>
       `;
 
     case 'formulario':

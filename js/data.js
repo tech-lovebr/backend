@@ -45,8 +45,8 @@ const LOVE_DATA = {
       eventDetails: {
         date: '2025-10-18',
         time: '16:30',
-        locationName: 'Villa Bisutti - Espaço Jardim',
-        address: 'Av. Cidade Jardim, 1200 - Itaim Bibi, São Paulo - SP',
+        locationName: 'Villa Santanna Eventos',
+        address: 'Av. Castello Branco, 2490',
         referencePoint: 'Em frente ao Parque do Povo, com serviço de Valet cortesia na entrada principal.',
         dresscode: 'Passeio Completo / Traje Social Nobre (Tons Pastéis sugeridos)',
         recommended: 'Chegar com 20 minutos de antecedência para acomodação tranquila; Uso de salto bloco ou confortável para área de gramado; Confirmar presença até 30 dias antes.',
@@ -222,7 +222,7 @@ const LOVE_DATA = {
       guests: [
         {
           id: 'gw-1',
-          name: 'Carlos Eduardo & Família',
+          name: 'Carlos Eduardo',
           email: 'carlos.eduardo@email.com',
           phone: '(11) 98765-4321',
           companions: 3,
@@ -272,7 +272,7 @@ const LOVE_DATA = {
         },
         {
           id: 'gw-3',
-          name: 'Rodrigo & Camila Mendes',
+          name: 'Rodrigo Mendes',
           email: 'rodrigo.mendes@advocacia.com',
           phone: '(21) 98877-6655',
           companions: 2,
@@ -312,7 +312,7 @@ const LOVE_DATA = {
         },
         {
           id: 'gw-5',
-          name: 'Fernanda & Thiago Rossi',
+          name: 'Fernanda Rossi',
           email: 'fernanda.rossi@email.com',
           phone: '(19) 98112-2334',
           companions: 2,
@@ -342,7 +342,7 @@ const LOVE_DATA = {
         },
         {
           id: 'gw-7',
-          name: 'Juliana & Pedro Alcantara',
+          name: 'Juliana Alcantara',
           email: 'juliana.alcantara@email.com',
           phone: '(11) 99881-2233',
           companions: 2,
@@ -357,7 +357,7 @@ const LOVE_DATA = {
         },
         {
           id: 'gw-8',
-          name: 'Renata & Gabriel Toledo',
+          name: 'Renata Toledo',
           email: 'renata.toledo@email.com',
           phone: '(11) 97122-3344',
           companions: 1,
@@ -387,7 +387,7 @@ const LOVE_DATA = {
         },
         {
           id: 'gw-10',
-          name: 'Beatriz Martins & Lucas Prado',
+          name: 'Beatriz Martins',
           email: 'bia.martins@email.com',
           phone: '(21) 99455-6677',
           companions: 1,
@@ -417,7 +417,7 @@ const LOVE_DATA = {
         },
         {
           id: 'gw-12',
-          name: 'Otávio & Denise Guimarães',
+          name: 'Otávio Guimarães',
           email: 'otavio.guimaraes@email.com',
           phone: '(19) 99666-4433',
           companions: 3,

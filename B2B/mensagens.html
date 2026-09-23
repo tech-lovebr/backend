@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=169">
+  <link rel="stylesheet" href="css/styles.css?v=392">
 </head>
 <body class="font-sans" data-page="mensagens">
 
@@ -68,7 +68,7 @@
                 </div>
                 <div class="min-w-0">
                   <h4 id="chat-header-name" class="text-sm font-semibold text-zinc-900 truncate">Mariana & Co. Assessoria</h4>
-                  <p id="chat-header-status" class="text-xs text-zinc-400 truncate">Assessoria & Cerimonial • <span class="text-emerald-600 font-medium">Online agora</span></p>
+                  <p id="chat-header-status" class="text-xs text-zinc-400 truncate"><span class="text-emerald-600 font-medium">Online agora</span></p>
                 </div>
               </div>
             </div>
@@ -82,11 +82,23 @@
             <div class="p-4 bg-white border-t border-zinc-200 flex-shrink-0">
               <form id="chat-form" class="flex items-center gap-3" onsubmit="return false;">
                 <input type="file" id="chat-file-input" class="hidden" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
-                <button type="button" id="chat-attach-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-[#537bae] hover:border-[#537bae]/40 flex items-center justify-center transition-all cursor-pointer flex-shrink-0 shadow-2xs group" title="Adicionar anexo ou foto">
-                  <svg class="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-                  </svg>
-                </button>
+                <div class="chat-attach-wrap" id="chat-attach-wrap">
+                  <button type="button" id="chat-attach-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-[#537bae] hover:border-[#537bae]/40 flex items-center justify-center transition-all cursor-pointer flex-shrink-0 shadow-2xs group" title="Adicionar anexo ou foto">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                  </button>
+                  <div class="kanban-list-dropdown chat-attach-dropdown" id="chat-attach-dropdown">
+                    <button type="button" class="kanban-list-dropdown-item" id="chat-attach-file-option">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6 12L9.75 18l-2.25-2.25M12.75 15v6M8.25 21h7.5A2.25 2.25 0 0 0 18 18.75V7.5l-4.5-4.5H8.25A2.25 2.25 0 0 0 6 5.25v13.5A2.25 2.25 0 0 0 8.25 21Z"/></svg>
+                      Arquivo
+                    </button>
+                    <button type="button" class="kanban-list-dropdown-item" id="chat-attach-form-option">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M9 8.25h2.25M9 21h6a2.25 2.25 0 0 0 2.25-2.25V6.622a2.25 2.25 0 0 0-.659-1.591l-2.622-2.622A2.25 2.25 0 0 0 12.378 1.75H9A2.25 2.25 0 0 0 6.75 4v14.75A2.25 2.25 0 0 0 9 21Z"/></svg>
+                      Formulário
+                    </button>
+                  </div>
+                </div>
                 <input type="text" id="chat-input" placeholder="Escreva uma mensagem para o fornecedor..." class="flex-1 text-xs sm:text-sm bg-white border border-zinc-200 rounded-xl px-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 placeholder:text-zinc-400 shadow-2xs" autocomplete="off">
                 <button type="submit" id="chat-send-btn" class="bg-[#27394f] hover:bg-[#1d2b3c] text-white px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs flex-shrink-0" style="background-color: #27394f !important;" title="Enviar mensagem">
                   <span>Enviar</span>
@@ -101,9 +113,22 @@
     </div>
   </div>
 
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/shell.js"></script>
-  <script src="js/mensagens.js"></script>
+  <!-- Modal: escolher formulário para enviar -->
+  <div class="modal-backdrop" id="chat-form-modal">
+    <div class="modal-card" style="max-width:420px;">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-base font-bold text-zinc-900">Enviar formulário</h3>
+        <button type="button" id="chat-form-modal-close" class="text-zinc-400 hover:text-zinc-700" aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <div id="chat-form-modal-list" class="flex flex-col gap-2"></div>
+    </div>
+  </div>
+
+  <script src="js/data.js?v=9"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=17"></script>
+  <script src="js/mensagens.js?v=3"></script>
 </body>
 </html>

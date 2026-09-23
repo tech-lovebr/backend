@@ -1,16 +1,107 @@
 /* ==========================================================================
-   LOVE B2B — Dashboard (saudação, estatísticas, contratos, agenda, tarefas)
+   LOVE B2B — Dashboard (saudação, visão geral do site, métricas, agenda)
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
   renderGreeting();
-  renderStats();
-  renderContractsTable();
+  renderMetricsOverview();
+  initWalletTabs();
+  initWalletEyeToggle();
   renderAgenda();
-  renderTarefas();
-  initTarefaAddButton();
+  renderNewsList();
   initOnboardingModal();
+  initAdsCarousel();
+  renderAnalyticsCard();
+  initAnalyticsPeriodPopover();
 });
+
+/* -------------------- Carrossel de anúncios -------------------- */
+
+function initAdsCarousel() {
+  const root = document.getElementById('dash-ads-carousel');
+  const dotsWrap = document.getElementById('dash-ads-dots');
+  if (!root || !dotsWrap) return;
+
+  const slides = Array.from(root.querySelectorAll('.dash-ads-slide'));
+  const dots = Array.from(dotsWrap.querySelectorAll('.dash-ads-dot'));
+  let current = 0;
+  let timer = null;
+
+  function goTo(index) {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((slide, i) => slide.classList.toggle('is-active', i === current));
+    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === current));
+  }
+
+  function startAutoplay() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), 20000);
+  }
+
+  const prevBtn = document.getElementById('dash-ads-prev');
+  const nextBtn = document.getElementById('dash-ads-next');
+  if (prevBtn) prevBtn.addEventListener('click', (e) => { e.preventDefault(); goTo(current - 1); startAutoplay(); });
+  if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); goTo(current + 1); startAutoplay(); });
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAutoplay(); }));
+
+  goTo(0);
+  startAutoplay();
+}
+
+/* -------------------- Analytics -------------------- */
+
+function renderAnalyticsCard() {
+  setText('analytics-sessions', padTwoDigits(B2B_DATA.siteMetrics.visits30d));
+
+  const leadsAtivos = B2B_DATA.leads.filter(l => l.status !== 'fechado').length;
+  setText('analytics-leads', padTwoDigits(leadsAtivos));
+
+  const totalLeads = B2B_DATA.leads.length;
+  const closedLeads = B2B_DATA.leads.filter(l => l.status === 'fechado').length;
+  setText('analytics-conversion', totalLeads ? `${Math.round((closedLeads / totalLeads) * 100)}%` : '—');
+
+  const boostBtn = document.getElementById('dash-analytics-boost-btn');
+  if (boostBtn) {
+    boostBtn.addEventListener('click', () => {
+      showToast('Em breve você poderá impulsionar seu perfil e aparecer no topo das buscas.');
+    });
+  }
+
+  const leadsBtn = document.getElementById('dash-analytics-leads-btn');
+  if (leadsBtn) {
+    leadsBtn.addEventListener('click', () => {
+      showToast('Em breve você poderá impulsionar seus anúncios e atrair mais leads.');
+    });
+  }
+}
+
+function initAnalyticsPeriodPopover() {
+  const btn = document.getElementById('dash-analytics-period-btn');
+  const popover = document.getElementById('dash-analytics-period-popover');
+  const label = document.getElementById('dash-analytics-period-label');
+  if (!btn || !popover || !label) return;
+
+  const close = () => { popover.hidden = true; document.removeEventListener('click', onOutsideClick); };
+  const onOutsideClick = (e) => { if (!popover.contains(e.target) && e.target !== btn) close(); };
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (popover.hidden) {
+      popover.hidden = false;
+      document.addEventListener('click', onOutsideClick);
+    } else {
+      close();
+    }
+  });
+
+  popover.querySelectorAll('[data-period]').forEach(option => {
+    option.addEventListener('click', () => {
+      popover.querySelectorAll('[data-period]').forEach(o => o.classList.toggle('is-active', o === option));
+      setText('dash-analytics-period-label', option.dataset.periodLabel);
+      close();
+    });
+  });
+}
 
 function initOnboardingModal() {
   if (localStorage.getItem('b2b-onboarding-pending') !== '1') return;
@@ -29,36 +120,94 @@ function renderGreeting() {
   const now = new Date();
   const dateStr = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
   setText('greeting-date', capitalize(dateStr));
-  setText('greeting-title', `${getBrasiliaGreeting()}, ${B2B_DATA.professional.name}`);
+
+  const titleEl = document.getElementById('greeting-title');
+  if (titleEl) {
+    const verifiedBadge = B2B_DATA.professional.selfieVerified
+      ? ` <span class="verified-badge" title="Conta verificada"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg></span>`
+      : '';
+    titleEl.innerHTML = `Olá, ${escapeHtml(B2B_DATA.professional.company)}${verifiedBadge}`;
+  }
 }
 
-function getBrasiliaGreeting() {
-  const hour = Number(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: 'numeric', hour12: false }).format(new Date()));
-  if (hour >= 5 && hour < 12) return 'Bom dia';
-  if (hour >= 12 && hour < 18) return 'Boa tarde';
-  return 'Boa noite';
+/* -------------------- Métricas rápidas -------------------- */
+
+/* -------------------- Carteira (Saldo / Faturamento / Investimentos) -------------------- */
+
+let walletBalanceVisible = true;
+let walletFinData = {};
+
+function renderMetricsOverview() {
+  const fin = B2B_DATA.financeiro || {};
+  walletFinData = fin;
+  const saldoEl = document.getElementById('wallet-saldo-value');
+  const faturamentoEl = document.getElementById('wallet-faturamento-value');
+  const investimentosEl = document.getElementById('wallet-investimentos-value');
+
+  if (saldoEl) saldoEl.dataset.value = fin.saqueDisponivel || 0;
+  if (faturamentoEl) faturamentoEl.dataset.value = fin.faturamentoEsteMes || 0;
+  if (investimentosEl) investimentosEl.dataset.value = 0;
+
+  renderWalletAmounts();
 }
 
-function renderStats() {
-  const pendentes = B2B_DATA.contracts.filter(c => c.status === 'enviado').length;
-  const ativos = B2B_DATA.contracts.filter(c => c.status === 'assinado').length;
-  setText('stat-leads', B2B_DATA.leads.length);
-  setText('stat-pendentes', pendentes);
-  setText('stat-ativos', ativos);
+function renderWalletAmounts() {
+  ['wallet-saldo-value', 'wallet-faturamento-value', 'wallet-investimentos-value'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = walletBalanceVisible
+      ? formatCurrencySuperscript(Number(el.dataset.value || 0))
+      : 'R$ ****';
+  });
+
+  document.querySelectorAll('.wallet-eye-btn').forEach(btn => {
+    btn.classList.toggle('is-hidden', !walletBalanceVisible);
+  });
+
+  setText('wallet-saldo-pendente', walletBalanceVisible ? formatCurrency(walletFinData.valorEmAberto || 0) : '****');
+  setText('wallet-faturamento-anterior', walletBalanceVisible ? formatCurrency(walletFinData.faturamentoMesPassado || 0) : '****');
+
+  const deltaEl = document.getElementById('wallet-faturamento-delta');
+  if (deltaEl) {
+    if (!walletBalanceVisible) {
+      deltaEl.textContent = '';
+      deltaEl.className = '';
+    } else {
+      const anterior = walletFinData.faturamentoMesPassado || 0;
+      const atual = walletFinData.faturamentoEsteMes || 0;
+      if (anterior > 0) {
+        const pct = ((atual - anterior) / anterior) * 100;
+        const up = pct >= 0;
+        deltaEl.textContent = `(${up ? '+' : ''}${pct.toFixed(1)}%)`;
+        deltaEl.className = `metric-delta ${up ? 'up' : 'down'}`;
+      } else {
+        deltaEl.textContent = '';
+        deltaEl.className = '';
+      }
+    }
+  }
 }
 
-function renderContractsTable() {
-  const tbody = document.getElementById('contracts-table-body');
-  if (!tbody) return;
-  tbody.innerHTML = B2B_DATA.contracts.map(c => `
-    <tr>
-      <td class="font-medium text-zinc-900">${c.client}</td>
-      <td>${c.event}</td>
-      <td>${formatCurrency(c.value)}</td>
-      <td>${c.date}</td>
-      <td><span class="status-badge status-${c.status}">${statusLabel(c.status)}</span></td>
-    </tr>
-  `).join('');
+function initWalletTabs() {
+  const wrap = document.getElementById('wallet-tabs');
+  if (!wrap) return;
+  wrap.querySelectorAll('[data-wallet-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('[data-wallet-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('[data-wallet-panel]').forEach(panel => {
+        panel.hidden = panel.dataset.walletPanel !== btn.dataset.walletTab;
+      });
+    });
+  });
+}
+
+function initWalletEyeToggle() {
+  document.querySelectorAll('.wallet-eye-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      walletBalanceVisible = !walletBalanceVisible;
+      renderWalletAmounts();
+    });
+  });
 }
 
 /* -------------------- Agenda: faixa de dias + lista -------------------- */
@@ -107,63 +256,12 @@ function renderAgenda() {
   }
 }
 
-/* -------------------- Tarefas (tabela) -------------------- */
+/* -------------------- Eventos e notícias -------------------- */
 
-const TAREFA_STATUS_LABEL = { andamento: 'Em andamento', feito: 'Feito', parado: 'Parado' };
-const TAREFA_STATUS_ORDER = ['andamento', 'feito', 'parado'];
-
-function renderTarefas() {
-  const table = document.getElementById('tarefas-table');
-  if (!table) return;
-
-  if (!B2B_DATA.tarefas.length) {
-    table.innerHTML = `<tr><td class="text-sm text-zinc-500 py-4">Parece que está tudo resolvido, você não tem nenhuma tarefa.</td></tr>`;
-    return;
-  }
-
-  table.innerHTML = `
-    <thead>
-      <tr><th>Tarefa</th><th>Responsável</th><th>Status</th><th>Prazo</th></tr>
-    </thead>
-    <tbody>
-      ${B2B_DATA.tarefas.map(t => `
-        <tr data-tarefa-id="${t.id}">
-          <td>
-            <label class="tarefa-row-label">
-              <input type="checkbox" class="tarefas-row-check" data-tarefa-id="${t.id}" ${t.status === 'feito' ? 'checked' : ''}>
-              <span class="${t.status === 'feito' ? 'tarefa-text-cell done' : 'tarefa-text-cell'}">${escapeHtml(t.text)}</span>
-            </label>
-          </td>
-          <td>
-            ${t.responsavel
-              ? `<img src="${t.responsavel}" alt="Responsável" class="member-avatar" style="width:26px;height:26px;">`
-              : `<button type="button" class="responsavel-add-btn" aria-label="Atribuir responsável">+</button>`}
-          </td>
-          <td>
-            <span class="status-badge status-tarefa-${t.status}">${TAREFA_STATUS_LABEL[t.status] || t.status}</span>
-          </td>
-          <td class="prazo-text">${escapeHtml(t.prazo || '')}</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  `;
-
-  table.querySelectorAll('.tarefas-row-check').forEach(input => {
-    input.addEventListener('change', () => {
-      const t = B2B_DATA.tarefas.find(x => x.id === input.dataset.tarefaId);
-      if (t) t.status = input.checked ? 'feito' : 'andamento';
-      renderTarefas();
-    });
-  });
-}
-
-function initTarefaAddButton() {
-  const btn = document.getElementById('tarefa-add-btn');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    const text = prompt('Nova tarefa:');
-    if (!text || !text.trim()) return;
-    B2B_DATA.tarefas.push({ id: 't' + Date.now(), text: text.trim(), status: 'andamento', prazo: '', responsavel: null });
-    renderTarefas();
-  });
+function renderNewsList() {
+  const wrap = document.getElementById('dash-news-list');
+  if (!wrap) return;
+  wrap.innerHTML = B2B_DATA.news.map(item => `
+    <a href="${item.url}" class="dash-news-link">${escapeHtml(item.title)}</a>
+  `).join('');
 }

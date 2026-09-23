@@ -10,9 +10,9 @@
     <span>Upgrade</span>
   </a>
 
-  <div class="flex items-center gap-2 flex-shrink-0 ml-auto">
+  <div class="flex items-center gap-4 flex-shrink-0 ml-auto">
     <a href="mensagens.html" class="topbar-icon-plain" data-page="mensagens" aria-label="Mensagens" title="Mensagens">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1" /></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>
       <span class="topbar-icon-badge" id="nav-msg-badge-header" style="display:none;">0</span>
     </a>
 
@@ -29,7 +29,7 @@
 
     <div class="topbar-icon-btn-wrap">
       <button type="button" id="avatar-trigger" class="topbar-avatar-btn">
-        <span id="topbar-user-avatar" class="b2b-avatar" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.8125rem;"></span>
+        <span id="topbar-user-avatar" class="b2b-avatar" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:#18181B;font-weight:600;font-size:.8125rem;"></span>
       </button>
       <div class="topbar-dropdown profile-dropdown" id="avatar-dropdown" style="right:0;left:auto;">
         <div class="profile-dropdown-header">
@@ -37,24 +37,22 @@
           <div class="min-w-0">
             <p class="profile-dropdown-name" id="profile-dropdown-name">—</p>
             <p class="profile-dropdown-email" id="profile-dropdown-email">—</p>
-            <a href="configuracoes.html" class="profile-dropdown-link">Perfil e Preferências</a>
           </div>
         </div>
 
         <div class="topbar-dropdown-divider"></div>
 
-        <div class="profile-dropdown-account">
-          <p class="profile-dropdown-account-label">Conta</p>
-          <p class="profile-dropdown-account-name" id="profile-dropdown-company">—</p>
-          <p class="profile-dropdown-account-doc" id="profile-dropdown-doc">—</p>
-        </div>
+        <a href="signup.html" class="topbar-dropdown-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+          Adicionar conta
+        </a>
 
         <div class="topbar-dropdown-divider"></div>
 
+        <a href="configuracoes.html" class="topbar-dropdown-item">Configurações</a>
         <a href="guias.html" class="topbar-dropdown-item">Guia de início</a>
         <a href="funcoes.html" class="topbar-dropdown-item">Adicionar colaborador</a>
         <a href="planos.html" class="topbar-dropdown-item">Planos e recursos</a>
-        <a href="configuracoes.html" class="topbar-dropdown-item">Configurações</a>
 
         <div class="topbar-dropdown-divider"></div>
 
@@ -73,7 +71,7 @@
 
         <div class="profile-dropdown-footer">
           <a href="login.html" style="color:#B91C1C;">Sair</a>
-          <a href="#">Política de privacidade</a>
+          <a href="#">Termos e condições</a>
         </div>
       </div>
     </div>

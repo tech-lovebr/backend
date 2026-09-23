@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orçamentos — Portal do Fornecedor Love</title>
+  <title>Vendas — Portal do Fornecedor Love</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#537bae">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=169">
+  <link rel="stylesheet" href="css/styles.css?v=392">
 </head>
 <body class="font-sans" data-page="financeiro">
   <div class="b2b-shell">
@@ -19,57 +19,192 @@
     <div class="b2b-main">
       <div id="shell-topbar"></div>
       <main class="b2b-content">
-
-        <div class="orcamentos-intro" id="orcamentos-intro">
-          <div class="orcamentos-intro-left">
-            <h1 class="orcamentos-intro-title">Envie orçamentos aprimorados em minutos, não horas</h1>
-            <p class="orcamentos-intro-desc">Cada hora gasta criando um orçamento é uma hora a menos fechando negócios. Gere orçamentos profissionais e com a identidade da sua marca em segundos. Reúna automaticamente seus produtos, preços e o contexto do negócio, e compartilhe um único link para que os clientes revisem, assinem e realizem o pagamento.</p>
-            <p class="orcamentos-intro-desc-small">Desbloqueie isso e muito mais com o Orçamentos Pro.</p>
-
-            <div class="orcamentos-intro-actions" id="orcamentos-intro-actions"></div>
-          </div>
-
-          <div class="orcamentos-intro-right">
-            <div class="orcamentos-flow-blob">
-              <div class="orcamentos-flow-step">
-                <span class="orcamentos-flow-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M13.5 3H7.125A1.125 1.125 0 0 0 6 4.125v15.75c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V8.25L13.5 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 3v4.5A1.5 1.5 0 0 0 15 9h4.5" /></svg>
-                </span>
-                Criar orçamento
-              </div>
-              <span class="orcamentos-flow-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0 5.25-5.25M12 19.5l-5.25-5.25" /></svg></span>
-              <div class="orcamentos-flow-step">
-                <span class="orcamentos-flow-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                </span>
-                Negociação e aprovação
-              </div>
-              <span class="orcamentos-flow-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0 5.25-5.25M12 19.5l-5.25-5.25" /></svg></span>
-              <div class="orcamentos-flow-step">
-                <span class="orcamentos-flow-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3l0 -8" /><path stroke-linecap="round" stroke-linejoin="round" d="M3 10l18 0" /><path stroke-linecap="round" stroke-linejoin="round" d="M7 15l.01 0" /><path stroke-linecap="round" stroke-linejoin="round" d="M11 15l2 0" /></svg>
-                </span>
-                Assinatura e pagamento
-              </div>
-              <span class="orcamentos-flow-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0 5.25-5.25M12 19.5l-5.25-5.25" /></svg></span>
-              <div class="orcamentos-flow-step">
-                <span class="orcamentos-flow-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
-                </span>
-                Obtenha insights de receita
-              </div>
-            </div>
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-xl font-bold text-zinc-900 mb-1">Vendas</h2>
+            <p class="text-sm text-zinc-500">Crie propostas comerciais e acompanhe suas notas fiscais.</p>
           </div>
         </div>
 
-        <div id="orcamentos-content" style="display:none;">
-          <div class="empty-state">
-            <div class="empty-state-icon">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M4.5 6h15A2.25 2.25 0 0 1 21.75 8.25v7.5A2.25 2.25 0 0 1 19.5 18h-15a2.25 2.25 0 0 1-2.25-2.25v-7.5A2.25 2.25 0 0 1 4.5 6Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 14.25h4.5" /></svg>
+        <div class="category-tabs-bar" id="sales-view-tabs">
+          <button type="button" class="category-tab active" data-view="orcamentos">Orçamentos</button>
+          <button type="button" class="category-tab" data-view="notas">Notas fiscais</button>
+        </div>
+
+        <div data-view-panel="orcamentos">
+          <div class="dash-card">
+            <div class="flex items-start justify-between">
+              <h2 class="text-xl font-bold text-zinc-900">Proposta</h2>
+              <div class="flex items-center gap-3">
+                <button type="button" class="btn-secondary" id="proposal-cancel-btn">Cancelar</button>
+                <button type="button" class="btn-primary" id="proposal-save-btn">Salvar</button>
+              </div>
             </div>
-            <p class="text-base font-bold text-zinc-900 mb-1.5">Painel financeiro chegando em breve</p>
-            <p class="text-sm text-zinc-500 max-w-md">Faturamento mensal, repasses, pagamentos pendentes e extrato completo atrelado a cada contrato fechado.</p>
-            <a href="dashboard.html" class="btn-secondary mt-6">Voltar ao Dashboard</a>
+            <h3 class="text-sm font-bold text-zinc-900 mt-5 mb-3">Para</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+              <div>
+                <label for="proposal-date" class="field-label">Data</label>
+                <input id="proposal-date" type="date" class="field-input">
+              </div>
+              <div>
+                <label for="proposal-client" class="field-label">Cliente <span style="color:#DC2626;">*</span></label>
+                <input id="proposal-client" type="text" class="field-input" list="proposal-client-options" placeholder="Buscar cliente" autocomplete="off">
+                <datalist id="proposal-client-options"></datalist>
+              </div>
+              <div>
+                <label for="proposal-attn" class="field-label">Aos cuidados de</label>
+                <input id="proposal-attn" type="text" class="field-input">
+              </div>
+              <div>
+                <label for="proposal-store" class="field-label">Loja</label>
+                <select id="proposal-store" class="field-select">
+                  <option>Nenhuma</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="proposal-business-unit" class="field-label">Unidade de Negócio</label>
+                <select id="proposal-business-unit" class="field-select">
+                  <option>Nenhuma unidade de negócio</option>
+                </select>
+              </div>
+              <div>
+                <label for="proposal-price-list" class="field-label">Lista de preço</label>
+                <select id="proposal-price-list" class="field-select">
+                  <option>Nenhuma lista</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="proposal-intro" class="field-label">Introdução</label>
+              <textarea id="proposal-intro" class="field-textarea" style="min-height:110px;"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+              <div>
+                <label for="proposal-number" class="field-label">Número da Proposta</label>
+                <input id="proposal-number" type="text" class="field-input" value="1" disabled style="background:#F4F4F5;">
+              </div>
+              <div>
+                <label for="proposal-seller" class="field-label">Vendedor</label>
+                <input id="proposal-seller" type="text" class="field-input">
+              </div>
+              <div>
+                <label for="proposal-next-contact" class="field-label">Data do Próximo Contato</label>
+                <input id="proposal-next-contact" type="date" class="field-input">
+              </div>
+            </div>
+
+            <hr style="border:none; border-top:1px solid var(--border-light); margin:0 0 1.5rem;">
+
+            <h3 class="text-sm font-bold text-zinc-900 mb-1">Itens da proposta comercial</h3>
+            <p class="text-xs text-zinc-500 mb-3">Produtos e serviços previamente cadastrados no sistema</p>
+
+            <div class="overflow-x-auto -mx-1 mb-2">
+              <table class="leads-table proposal-items-table w-full">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Item</th>
+                    <th>Código</th>
+                    <th>Un</th>
+                    <th>Qtde</th>
+                    <th>Preço lista</th>
+                    <th>Desc %</th>
+                    <th>Preço un</th>
+                    <th>Preço total</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="proposal-items-body"></tbody>
+              </table>
+            </div>
+            <datalist id="proposal-product-options"></datalist>
+            <button type="button" class="proposal-add-item-btn" id="proposal-add-item-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Adicionar outro item
+            </button>
+
+            <h3 class="text-sm font-bold text-zinc-900 mt-6 mb-1">Outros itens ou serviços</h3>
+            <p class="text-xs text-zinc-500 mb-3">Produtos e serviços eventuais ou não cadastrados</p>
+            <div class="event-desc-toolbar" id="proposal-extra-toolbar">
+              <button type="button" data-desc-cmd="bold" title="Negrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4.5h6.5a3.5 3.5 0 0 1 0 7H6zm0 7h7a3.5 3.5 0 0 1 0 7H6z"/></svg></button>
+              <button type="button" data-desc-cmd="italic" title="Itálico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M10 4.5h7M7 19.5h7M13.5 4.5l-3 15"/></svg></button>
+              <button type="button" data-desc-cmd="underline" title="Sublinhado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 4v7a6 6 0 0 0 12 0V4M5 20h14"/></svg></button>
+              <button type="button" data-desc-cmd="justifyLeft" title="Alinhar à esquerda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h14"/></svg></button>
+              <button type="button" data-desc-cmd="justifyCenter" title="Centralizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M7 12h10M5 18h14"/></svg></button>
+            </div>
+            <div id="proposal-extra-items" class="event-desc-editable" contenteditable="true" data-placeholder="Descreva produtos ou serviços que não estão cadastrados no sistema…"></div>
+          </div>
+        </div>
+
+        <div data-view-panel="notas" style="display:none;">
+          <p class="text-sm text-zinc-500 mb-4">Toda venda paga pelo checkout ou por um link de pagamento gera uma nota fiscal automaticamente.</p>
+
+          <div class="notas-fiscais-layout">
+            <div class="notas-fiscais-main">
+              <div class="notas-fiscais-toolbar">
+                <div class="notas-fiscais-search">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                  <input type="text" id="notas-fiscais-search-input" placeholder="Pesquisar por cliente ou nº da nota">
+                </div>
+                <button type="button" class="btn-secondary notas-fiscais-print-btn" id="notas-fiscais-print-btn" title="Imprimir">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659" /></svg>
+                </button>
+              </div>
+
+              <div class="dash-card">
+                <div class="overflow-x-auto -mx-1">
+                  <table class="leads-table w-full">
+                    <thead>
+                      <tr><th>Nº</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="notas-fiscais-body"></tbody>
+                  </table>
+                </div>
+                <div class="empty-state" id="notas-fiscais-empty" style="display:none;">
+                  <div class="empty-state-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M13.5 3H7.125A1.125 1.125 0 0 0 6 4.125v15.75c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V8.25L13.5 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 3v4.5A1.5 1.5 0 0 0 15 9h4.5" /></svg>
+                  </div>
+                  <p class="text-base font-bold text-zinc-900 mb-1.5">Nenhuma nota fiscal emitida ainda.</p>
+                  <p class="text-sm text-zinc-500 max-w-md">Assim que uma venda for paga pelo checkout ou por um link de pagamento, a nota aparece aqui automaticamente.</p>
+                </div>
+              </div>
+            </div>
+
+            <aside class="notas-fiscais-sidebar">
+              <div class="dash-card">
+                <p class="notas-fiscais-sidebar-title">Ações</p>
+                <button type="button" class="notas-fiscais-sidebar-action" data-notas-action="pendentes">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                  Enviar notas pendentes
+                </button>
+                <button type="button" class="notas-fiscais-sidebar-action" data-notas-action="pdf">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-1.519-3.75L12 17.25m0 0-1.481-3.75M12 17.25V9m-3.75 9.75h7.5a2.25 2.25 0 0 0 2.25-2.25V6.621a4.5 4.5 0 0 0-1.318-3.182l-2.121-2.121A4.5 4.5 0 0 0 11.379 0H8.25A2.25 2.25 0 0 0 6 2.25v13.5a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                  Gerar PDF DANFE
+                </button>
+                <button type="button" class="notas-fiscais-sidebar-action" data-notas-action="xml">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                  Exportar XML
+                </button>
+              </div>
+
+              <div class="dash-card">
+                <p class="notas-fiscais-sidebar-title">Informações</p>
+                <div class="notas-fiscais-info-row">
+                  <span>Quantidade de notas</span>
+                  <strong id="notas-fiscais-count">0</strong>
+                </div>
+                <div class="notas-fiscais-info-row">
+                  <span>Valor total</span>
+                  <strong id="notas-fiscais-total">R$ 0</strong>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
 
@@ -77,27 +212,9 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="orcamentos-pro-modal">
-    <div class="modal-card" style="max-width:480px; text-align:center;">
-      <div class="onboarding-icon">🌐</div>
-      <h2 class="text-xl font-bold text-zinc-900 mb-3">Bem-vindo(a) à gestão de orçamentos Pro</h2>
-      <div class="text-left">
-        <p class="text-sm text-zinc-600 mb-3" style="line-height:1.6;">Explore ferramentas poderosas para expandir seus negócios. Durante <strong>5 dias</strong>, você terá acesso a tudo o que está incluído nas Ferramentas gratuitas, além de:</p>
-        <ul class="orcamentos-pro-list">
-          <li><strong>Ferramentas de CPQ</strong>, incluindo orçamentos, preços categorizados, aprovações padrão de orçamentos e muito mais</li>
-          <li><strong>Orientação personalizada</strong> para você aproveitar ao máximo seu período de avaliação</li>
-          <li><strong>Suporte</strong> por chat, telefone ou e-mail</li>
-          <li><strong>Você não será cobrado;</strong> as avaliações são totalmente gratuitas</li>
-        </ul>
-        <p class="text-sm text-zinc-600 mt-3" style="line-height:1.6;">Ao final do período de teste, sua conta retornará ao seu plano atual. Faça um upgrade a qualquer momento, sem compromisso.</p>
-      </div>
-      <button type="button" class="btn-primary justify-center w-full mt-6 py-3" id="orcamentos-pro-modal-close">Começar</button>
-    </div>
-  </div>
-
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/shell.js"></script>
-  <script src="js/financeiro.js"></script>
+  <script src="js/data.js?v=9"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=17"></script>
+  <script src="js/financeiro.js?v=3"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=169">
+  <link rel="stylesheet" href="css/styles.css?v=392">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -32,91 +32,205 @@
 
         <div class="dashboard-greeting">
           <div>
-            <p class="greeting-date" id="greeting-date">—</p>
             <h1 class="greeting-title" id="greeting-title">—</h1>
+            <p class="greeting-date" id="greeting-date">—</p>
           </div>
-          <a href="guias.html" class="greeting-guide-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="m14.5 9.5-2 5-5 2 2-5 5-2Z" /></svg>
-            <span>Guia de início</span>
-          </a>
-        </div>
-
-        <div class="stats-grid">
-          <div class="metric-card stats-box">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stats-bar-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
-            <div>
-              <span class="stats-bar-value" id="stat-leads">—</span>
-              <span class="stats-bar-label">Leads</span>
-            </div>
-          </div>
-
-          <div class="metric-card stats-box">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stats-bar-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M13.5 3H7.125A1.125 1.125 0 0 0 6 4.125v15.75c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V8.25L13.5 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 3v4.5A1.5 1.5 0 0 0 15 9h4.5" /></svg>
-            <div>
-              <span class="stats-bar-value" id="stat-pendentes">—</span>
-              <span class="stats-bar-label">Contratos pendentes</span>
-            </div>
-          </div>
-
-          <div class="metric-card stats-box">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stats-bar-icon"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
-            <div>
-              <span class="stats-bar-value" id="stat-ativos">—</span>
-              <span class="stats-bar-label">Contratos ativos</span>
-            </div>
+          <div class="dashboard-greeting-actions">
+            <a href="configuracoes.html" class="btn-secondary builder-toolbar-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.646.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.333.183-.582.495-.646.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.646-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 0 1-1.37-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.333-.183.582-.495.646-.869l.213-1.281Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+              <span>Configurações</span>
+            </a>
           </div>
         </div>
 
-        <div class="dash-card mb-6">
-          <div class="dash-card-header">
-            <div class="dash-card-header-left">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-              <h2 class="text-base font-bold text-zinc-900">Tarefas</h2>
-            </div>
-          </div>
-          <div class="overflow-x-auto -mx-1">
-            <table class="leads-table tarefas-table w-full" id="tarefas-table"></table>
-          </div>
-          <button type="button" id="tarefa-add-btn" class="tarefas-add-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-            Adicionar tarefa
-          </button>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-[1.38fr_0.73fr] gap-6">
 
-        <div class="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6">
+          <div class="dashboard-side-stack">
+            <div class="dash-card wallet-card">
+              <button type="button" class="wallet-eye-btn wallet-eye-btn-global" id="wallet-eye-btn" aria-label="Mostrar ou ocultar valores">
+                <svg class="wallet-eye-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                <svg class="wallet-eye-icon-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12c1.292 4.338 5.31 7.5 10.066 7.5.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.5a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+              </button>
 
-          <div class="dash-card">
-            <div class="dash-card-header">
-              <div class="dash-card-header-left">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25m10.5-2.25v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                <h2 class="text-base font-bold text-zinc-900">Agenda</h2>
+              <div class="wallet-tabs" id="wallet-tabs">
+                <button type="button" class="wallet-tab active" data-wallet-tab="saldo">Saldo</button>
+                <button type="button" class="wallet-tab" data-wallet-tab="faturamento">Faturamento</button>
+                <button type="button" class="wallet-tab" data-wallet-tab="investimentos">Investimentos</button>
+              </div>
+
+              <div class="wallet-panel" data-wallet-panel="saldo">
+                <div class="wallet-panel-row">
+                  <div class="wallet-balance-wrap">
+                    <p class="wallet-balance" id="wallet-saldo-value">—</p>
+                  </div>
+                  <div class="wallet-actions">
+                    <a href="contratos.html" class="btn-primary wallet-action-btn">Realizar saque</a>
+                    <a href="contratos.html" class="btn-secondary wallet-action-btn">Extrato</a>
+                  </div>
+                </div>
+                <p class="wallet-sub">Saldo pendente: <span id="wallet-saldo-pendente">—</span></p>
+              </div>
+
+              <div class="wallet-panel" data-wallet-panel="faturamento" hidden>
+                <div class="wallet-panel-row">
+                  <div class="wallet-balance-wrap">
+                    <p class="wallet-balance" id="wallet-faturamento-value">—</p>
+                  </div>
+                </div>
+                <p class="wallet-sub">Mês passado: <span id="wallet-faturamento-anterior">—</span> <span id="wallet-faturamento-delta"></span></p>
+              </div>
+
+              <div class="wallet-panel" data-wallet-panel="investimentos" hidden>
+                <div class="wallet-panel-row">
+                  <div class="wallet-balance-wrap">
+                    <p class="wallet-balance" id="wallet-investimentos-value">—</p>
+                  </div>
+                </div>
+                <p class="wallet-sub" aria-hidden="true" style="visibility:hidden;">—</p>
               </div>
             </div>
 
-            <div class="day-strip" id="day-strip"></div>
-            <div id="agenda-list" class="mt-4"></div>
+            <div class="dashboard-quick-actions">
+              <a href="contratos.html?tab=receber" class="btn-secondary dashboard-quick-action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                Criar link de pagamento
+              </a>
+              <a href="financeiro.html" class="btn-secondary dashboard-quick-action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M9 8.25h2.25M9 21h6a2.25 2.25 0 0 0 2.25-2.25V6.622a2.25 2.25 0 0 0-.659-1.591l-2.622-2.622A2.25 2.25 0 0 0 12.378 1.75H9A2.25 2.25 0 0 0 6.75 4v14.75A2.25 2.25 0 0 0 9 21Z" /></svg>
+                Gerar orçamento
+              </a>
+            </div>
+
+            <div class="dashboard-panel-section">
+              <div class="dashboard-panel-header">
+                <h2 class="dashboard-help-title">Sua agenda</h2>
+                <p class="dashboard-help-subtitle">Acompanhe seus próximos compromissos</p>
+              </div>
+              <div class="dash-card">
+                <div class="day-strip" id="day-strip"></div>
+                <div id="agenda-list" class="mt-4"></div>
+              </div>
+            </div>
+
+            <div class="dashboard-help-section">
+              <div class="dashboard-help-header">
+                <h2 class="dashboard-help-title">Precisa de ajuda?</h2>
+                <p class="dashboard-help-subtitle">Escolha o melhor canal para o que precisa</p>
+              </div>
+              <div class="dashboard-help-grid">
+                <div class="dashboard-help-card">
+                  <div class="dashboard-help-card-head">
+                    <div class="dashboard-help-card-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1" /><rect x="2.5" y="13" width="4" height="6" rx="1.5" /><rect x="17.5" y="13" width="4" height="6" rx="1.5" /><path d="M19.5 19v.5a3 3 0 0 1-3 3h-3" /></svg>
+                    </div>
+                    <h3 class="dashboard-help-card-title">Canais de suporte</h3>
+                  </div>
+                  <p class="dashboard-help-card-desc">Suporte sobre a plataforma, pagamento e outros.<br><strong>Disponível todos os dias</strong></p>
+                  <a href="#" onclick="return false;" class="dashboard-help-card-link">Acessar chat</a>
+                </div>
+                <div class="dashboard-help-card">
+                  <div class="dashboard-help-card-head">
+                    <div class="dashboard-help-card-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5" /><circle cx="12" cy="8" r="0.75" fill="currentColor" stroke="none" /></svg>
+                    </div>
+                    <h3 class="dashboard-help-card-title">Dúvidas frequentes</h3>
+                  </div>
+                  <p class="dashboard-help-card-desc">As respostas para as principais dúvidas</p>
+                  <a href="faq.html" class="dashboard-help-card-link">Acessar central de ajuda</a>
+                </div>
+                <div class="dashboard-help-card">
+                  <div class="dashboard-help-card-head">
+                    <div class="dashboard-help-card-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></svg>
+                    </div>
+                    <h3 class="dashboard-help-card-title">Guia de Início</h3>
+                  </div>
+                  <p class="dashboard-help-card-desc">Conteúdos pensados pra te ajudar a crescer na prática</p>
+                  <a href="guias.html" class="dashboard-help-card-link">Acessar tutorial</a>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="dash-card">
-            <div class="dash-card-header">
-              <div class="dash-card-header-left">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" /></svg>
-                <h2 class="text-base font-bold text-zinc-900">Meus contratos</h2>
-                <select class="period-select" id="contracts-period">
-                  <option>Esta semana</option>
-                  <option selected>Este mês</option>
-                  <option>Últimos 3 meses</option>
-                </select>
+          <div class="dashboard-side-stack">
+            <div class="dash-card dash-ads-card">
+              <div class="dash-ads-carousel" id="dash-ads-carousel">
+                <a href="guias.html" class="dash-ads-slide is-active" data-slide="0" aria-label="Conheça tudo o que a Love pode fazer pelo seu negócio">
+                  <img src="../assets/wedding_hero_banner.jpg" alt="" class="dash-ads-slide-img">
+                </a>
+                <a href="funcoes.html" class="dash-ads-slide" data-slide="1" aria-label="Convide colaboradores e ganhe desconto na sua assinatura">
+                  <img src="../assets/birthday_hero_banner.jpg" alt="" class="dash-ads-slide-img">
+                </a>
+                <a href="financeiro.html" class="dash-ads-slide" data-slide="2" aria-label="Notas fiscais emitidas automaticamente em cada venda">
+                  <img src="../assets/wedding_table_dinner.jpg" alt="" class="dash-ads-slide-img">
+                </a>
+
+                <button type="button" class="dash-ads-nav dash-ads-nav-prev" id="dash-ads-prev" aria-label="Anúncio anterior">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <button type="button" class="dash-ads-nav dash-ads-nav-next" id="dash-ads-next" aria-label="Próximo anúncio">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                </button>
               </div>
-              <a href="contratos.html" class="text-sm font-semibold text-[color:var(--primary-blue)] hover:underline">Ver todos</a>
+
+              <div class="dash-ads-dots" id="dash-ads-dots">
+                <button type="button" class="dash-ads-dot is-active" data-dot="0" aria-label="Ver anúncio 1"></button>
+                <button type="button" class="dash-ads-dot" data-dot="1" aria-label="Ver anúncio 2"></button>
+                <button type="button" class="dash-ads-dot" data-dot="2" aria-label="Ver anúncio 3"></button>
+              </div>
             </div>
-            <div class="overflow-x-auto -mx-1">
-              <table class="leads-table w-full">
-                <thead>
-                  <tr><th>Cliente</th><th>Evento</th><th>Valor</th><th>Data</th><th>Status</th></tr>
-                </thead>
-                <tbody id="contracts-table-body"></tbody>
-              </table>
+
+            <div class="dashboard-panel-section">
+              <div class="dash-analytics-header dashboard-panel-header">
+                <div>
+                  <h2 class="dashboard-help-title">Analytics</h2>
+                  <p class="dash-analytics-period-label dashboard-help-subtitle" id="dash-analytics-period-label">Últimos 30 dias</p>
+                </div>
+                <div class="dash-analytics-period-wrap">
+                  <button type="button" class="dash-analytics-period-btn" id="dash-analytics-period-btn" aria-label="Selecionar período" title="Selecionar período">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path stroke-linecap="round" d="M3 9h18M8 3v3M16 3v3"/></svg>
+                  </button>
+                  <div class="dash-analytics-period-popover" id="dash-analytics-period-popover" hidden>
+                    <button type="button" data-period="7" data-period-label="Últimos 7 dias">Últimos 7 dias</button>
+                    <button type="button" data-period="30" data-period-label="Últimos 30 dias">Últimos 30 dias</button>
+                    <button type="button" data-period="personalizado" data-period-label="Personalizado">Personalizado</button>
+                  </div>
+                </div>
+              </div>
+              <div class="dash-card dash-analytics-card">
+                <div class="dash-analytics-row">
+                  <p class="dash-analytics-metric-label">Sessões no site</p>
+                  <p class="dash-analytics-metric-value" id="analytics-sessions">—</p>
+                </div>
+                <button type="button" class="dash-analytics-boost-link" id="dash-analytics-boost-btn">Impulsione seus acessos</button>
+
+                <div class="dash-analytics-row">
+                  <p class="dash-analytics-metric-label">Leads ativos</p>
+                  <p class="dash-analytics-metric-value" id="analytics-leads">—</p>
+                </div>
+                <button type="button" class="dash-analytics-boost-link" id="dash-analytics-leads-btn">Aumente seus leads</button>
+
+                <div class="dash-analytics-row dash-analytics-row-last">
+                  <p class="dash-analytics-metric-label">Taxa de conversão</p>
+                  <p class="dash-analytics-metric-value" id="analytics-conversion">—</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-panel-section">
+              <div class="dashboard-panel-header">
+                <h2 class="dashboard-help-title">Notícias e eventos</h2>
+                <p class="dashboard-help-subtitle">Fique por dentro das novidades e atualizações</p>
+              </div>
+              <div class="dash-card dash-news-card">
+                <div class="dash-news-list" id="dash-news-list"></div>
+
+                <div class="dash-news-footer">
+                  <a href="#" class="dash-news-footer-link">Workshops <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a>
+                  <span class="dash-news-footer-sep">|</span>
+                  <a href="https://blog.love.com.br" target="_blank" rel="noopener noreferrer" class="dash-news-footer-link">Blog <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -131,7 +245,7 @@
       <h2 class="text-xl font-bold text-zinc-900 mb-2">Seja muito bem-vindo(a) à Love CRM</h2>
       <p class="text-sm text-zinc-500 mb-6">Aqui você organiza leads, contratos, sua agenda e vitrine em um só lugar. Alguns pontos de partida:</p>
       <ul class="onboarding-tips">
-        <li><span>💬</span> Acompanhe seus leads e negociações em <strong>Contatos</strong> e <strong>Negócios</strong>.</li>
+        <li><span>💬</span> Acompanhe seus leads e negociações em <strong>Contatos</strong> e <strong>Meus produtos</strong>.</li>
         <li><span>📄</span> Envie e acompanhe contratos em <strong>Pagamentos</strong>.</li>
         <li><span>🗓️</span> Organize sua semana em <strong>Meu Trabalho</strong>.</li>
       </ul>
@@ -139,9 +253,9 @@
     </div>
   </div>
 
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/shell.js"></script>
-  <script src="js/dashboard.js"></script>
+  <script src="js/data.js?v=9"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=17"></script>
+  <script src="js/dashboard.js?v=36"></script>
 </body>
 </html>

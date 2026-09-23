@@ -159,7 +159,6 @@ function renderContactsList(searchQuery = '') {
           <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
           <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
         </div>
-        <span class="inline-block text-[10px] font-medium text-zinc-500 bg-white/70 px-1.5 py-0.5 rounded border border-zinc-200/60 mb-1">${conv.category}</span>
         <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
       </div>
       ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #27394f;"></span>` : ''}
@@ -191,7 +190,7 @@ function renderActiveChat() {
 
   if (nameEl) nameEl.textContent = activeConv.name;
   if (statusEl) {
-    statusEl.innerHTML = `${activeConv.category} • <span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : 'Online recentemente'}</span>`;
+    statusEl.innerHTML = `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : 'Online recentemente'}</span>`;
   }
   if (avatarEl) avatarEl.src = activeConv.avatar;
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';
@@ -213,6 +212,12 @@ function renderActiveChat() {
         attachmentHTML = `
           <div class="mt-2 rounded-xl overflow-hidden max-w-xs border border-white/20 shadow-xs cursor-pointer">
             <img src="${msg.attachment.url}" alt="${msg.attachment.name || 'Foto'}" class="w-full h-auto object-cover max-h-56 hover:scale-102 transition-transform">
+          </div>
+        `;
+      } else if (msg.attachment.type === 'form') {
+        attachmentHTML = `
+          <div class="mt-2 inline-flex items-center px-3 py-2 rounded-xl ${isMe ? 'bg-white/15' : 'bg-zinc-100'} border border-zinc-200/50 text-xs">
+            <p class="font-medium truncate max-w-[220px]">${escapeMsg(msg.attachment.name || 'Formulário')}</p>
           </div>
         `;
       } else {
@@ -325,12 +330,37 @@ function setupChatEvents() {
     });
   }
 
-  if (attachBtn && fileInput) {
+  const attachDropdown = document.getElementById('chat-attach-dropdown');
+  const attachFileOption = document.getElementById('chat-attach-file-option');
+  const attachFormOption = document.getElementById('chat-attach-form-option');
+
+  const closeAttachDropdown = () => attachDropdown && attachDropdown.classList.remove('show');
+
+  if (attachBtn && attachDropdown) {
     attachBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
+      attachDropdown.classList.toggle('show');
+    });
+    attachDropdown.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', closeAttachDropdown);
+  }
+
+  if (attachFileOption && fileInput) {
+    attachFileOption.addEventListener('click', () => {
+      closeAttachDropdown();
       fileInput.click();
     });
+  }
 
+  if (attachFormOption) {
+    attachFormOption.addEventListener('click', () => {
+      closeAttachDropdown();
+      openFormPickerModal(sendMessage);
+    });
+  }
+
+  if (fileInput) {
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -355,6 +385,44 @@ function setupChatEvents() {
       fileInput.value = '';
     });
   }
+}
+
+function openFormPickerModal(onPick) {
+  const modal = document.getElementById('chat-form-modal');
+  const list = document.getElementById('chat-form-modal-list');
+  const closeBtn = document.getElementById('chat-form-modal-close');
+  if (!modal || !list) return;
+
+  const forms = (typeof B2B_DATA !== 'undefined' && B2B_DATA.siteForms) || [];
+
+  list.innerHTML = forms.length
+    ? forms.map(form => `
+      <div class="form-list-item chat-form-pick-item" data-pick-form="${form.id}">
+        <div class="form-list-item-icon form-list-item-icon-edit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M9 8.25h2.25M9 21h6a2.25 2.25 0 0 0 2.25-2.25V6.622a2.25 2.25 0 0 0-.659-1.591l-2.622-2.622A2.25 2.25 0 0 0 12.378 1.75H9A2.25 2.25 0 0 0 6.75 4v14.75A2.25 2.25 0 0 0 9 21Z"/></svg>
+        </div>
+        <div class="form-list-item-info">
+          <p class="form-list-item-title">${escapeMsg(form.title)}</p>
+          <p class="form-list-item-meta">${form.fields.length} ${form.fields.length === 1 ? 'pergunta' : 'perguntas'}</p>
+        </div>
+      </div>
+    `).join('')
+    : `<p class="text-sm text-zinc-500 text-center py-4">Você ainda não criou nenhum formulário.</p>`;
+
+  list.querySelectorAll('[data-pick-form]').forEach(item => {
+    item.addEventListener('click', () => {
+      const form = forms.find(f => f.id === item.dataset.pickForm);
+      if (!form) return;
+      close();
+      onPick('', { type: 'form', name: form.title });
+    });
+  });
+
+  const close = () => modal.classList.remove('show');
+  modal.classList.add('show');
+
+  if (closeBtn) closeBtn.onclick = close;
+  modal.onclick = (e) => { if (e.target === modal) close(); };
 }
 
 function escapeMsg(text) {

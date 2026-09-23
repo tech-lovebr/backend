@@ -9,9 +9,58 @@ if (localStorage.getItem('b2b-sidebar-collapsed') === '1') {
   document.body.classList.add('sidebar-collapsed');
 }
 
-// Plano (mock local — sem backend) salvo pela página de planos.
+// Perfil da empresa (mock local — sem backend) salvo em Editar Perfil.
+const savedProfile = localStorage.getItem('b2b-professional-profile');
+if (savedProfile && typeof B2B_DATA !== 'undefined') {
+  try {
+    const parsedProfile = JSON.parse(savedProfile);
+    delete parsedProfile.plan; // o plano é sempre controlado por b2b-plan, nunca pelo snapshot do perfil
+    Object.assign(B2B_DATA.professional, parsedProfile);
+  } catch (e) { /* ignora estado inválido */ }
+}
+
+// Plano (mock local — sem backend) salvo pela página de planos. Sempre por último, para não ser sobrescrito.
 const savedPlan = localStorage.getItem('b2b-plan');
 if (savedPlan && typeof B2B_DATA !== 'undefined') B2B_DATA.professional.plan = savedPlan;
+
+// O Chrome às vezes aborta a view-transition nativa quando a navegação vem de
+// uma página pré-renderizada (combinação de @view-transition + Speculation Rules).
+// É inofensivo — a página troca normalmente — mas as promises internas da
+// transição (pagereveal) ficam sem handler e aparecem como erro no console.
+// Anexa um catch nelas para não sobrar rejeição não tratada.
+window.addEventListener('pagereveal', (e) => {
+  if (e.viewTransition) {
+    e.viewTransition.ready.catch(() => {});
+    e.viewTransition.finished.catch(() => {});
+    e.viewTransition.updateCallbackDone.catch(() => {});
+  }
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  if (e.reason && e.reason.name === 'AbortError' && /[Tt]ransition was skipped/.test(e.reason.message || '')) {
+    e.preventDefault();
+  }
+});
+
+// Pré-carrega (prerender) as páginas do menu assim que os links aparecerem no DOM,
+// para a transição entre elas ser instantânea e sem engasgo. A regra acompanha o
+// DOM dinamicamente, então funciona mesmo com o sidebar sendo injetado depois.
+initSpeculationRules();
+
+function initSpeculationRules() {
+  if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules'))) return;
+  const script = document.createElement('script');
+  script.type = 'speculationrules';
+  script.textContent = JSON.stringify({
+    prerender: [
+      {
+        where: { selector_matches: '.sidebar-nav-item[href], .mobile-nav-item[href]' },
+        eagerness: 'immediate'
+      }
+    ]
+  });
+  document.head.appendChild(script);
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Captura o total de não lidas antes de qualquer página marcar
@@ -30,33 +79,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCommandPalette();
   initNotifications(unreadSnapshot);
   initThemeToggle();
-  initPageTransitions();
   document.dispatchEvent(new CustomEvent('shell:ready'));
 });
-
-/* -------------------- Transição sutil entre páginas -------------------- */
-
-function initPageTransitions() {
-  document.addEventListener('click', e => {
-    if (e.defaultPrevented || e.button !== 0) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
-    const link = e.target.closest('a[href]');
-    if (!link || (link.target && link.target !== '_self')) return;
-
-    const href = link.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-
-    let url;
-    try { url = new URL(href, location.href); } catch { return; }
-    if (url.origin !== location.origin) return;
-    if (url.pathname === location.pathname && url.search === location.search) return;
-
-    e.preventDefault();
-    document.body.classList.add('page-leaving');
-    setTimeout(() => { window.location.href = url.href; }, 130);
-  });
-}
 
 /* -------------------- Tema (light/dark) -------------------- */
 
@@ -86,8 +110,8 @@ async function loadShell() {
   const sidebarMount = document.getElementById('shell-sidebar');
   const topbarMount = document.getElementById('shell-topbar');
   const [sidebarHtml, topbarHtml] = await Promise.all([
-    fetch('partials/sidebar.html').then(r => r.text()),
-    fetch('partials/topbar.html').then(r => r.text())
+    fetch('partials/sidebar.html', { cache: 'no-store' }).then(r => r.text()),
+    fetch('partials/topbar.html', { cache: 'no-store' }).then(r => r.text())
   ]);
   if (sidebarMount) sidebarMount.innerHTML = sidebarHtml;
   if (topbarMount) topbarMount.innerHTML = topbarHtml;
@@ -107,6 +131,10 @@ async function loadShell() {
             <img src="../assets/Love-white-03.png" alt="Love" class="sidebar-word-dark">
           </div>
           <p class="b2b-footer-desc">O sistema operacional completo para planejar, gerenciar e celebrar os momentos mais especiais da sua vida.</p>
+          <div class="b2b-footer-legal-links">
+            <a href="#" onclick="return false;">Privacidade</a>
+            <a href="#" onclick="return false;">Termos e condições</a>
+          </div>
         </div>
         <div class="b2b-footer-social">
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="b2b-footer-social-btn" title="Instagram">
@@ -127,7 +155,7 @@ async function loadShell() {
         </div>
       </div>
       <div class="b2b-footer-bottom">
-        <p>© ${year} Love Event OS Tecnologia Ltda. Todos os direitos reservados.</p>
+        <p>© ${year} Love Hub Ltda. Todos os direitos reservados.</p>
         <span>Feito com amor para momentos inesquecíveis.</span>
       </div>
     `;
@@ -183,10 +211,8 @@ function initUserCard() {
   if (topbarAvatar) topbarAvatar.textContent = initials(p.name);
 
   setText('profile-dropdown-avatar', initials(p.name));
-  setText('profile-dropdown-name', p.name);
+  setText('profile-dropdown-name', p.company);
   setText('profile-dropdown-email', p.email);
-  setText('profile-dropdown-company', p.company);
-  setText('profile-dropdown-doc', p.document);
   setText('upgrade-current-plan', p.plan);
 }
 
@@ -282,6 +308,33 @@ function initMobileNav() {
 
 /* -------------------- Notificações -------------------- */
 
+function getKanbanDueTomorrowAlerts() {
+  try {
+    const raw = localStorage.getItem('b2b-work-board');
+    if (!raw) return [];
+    const board = JSON.parse(raw);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+
+    const alerts = [];
+    (board.lists || []).forEach(list => {
+      (list.tasks || []).forEach(task => {
+        if (!task.done && task.dueDate === tomorrowStr) {
+          alerts.push({
+            text: `Amanhã é o último dia para finalizar a tarefa "${escapeHtml(task.text)}"`,
+            href: 'agenda.html',
+            tone: 'warning'
+          });
+        }
+      });
+    });
+    return alerts;
+  } catch (e) {
+    return [];
+  }
+}
+
 function initNotifications(unreadSnapshot) {
   const list = document.getElementById('notif-list');
   const dot = document.getElementById('notif-dot');
@@ -291,7 +344,8 @@ function initNotifications(unreadSnapshot) {
   const mobileBadge = document.getElementById('nav-msg-badge-mobile');
   if (!list) return;
 
-  const alerts = typeof B2B_DATA !== 'undefined' ? B2B_DATA.alertas : [];
+  const staticAlerts = typeof B2B_DATA !== 'undefined' ? B2B_DATA.alertas : [];
+  const alerts = [...getKanbanDueTomorrowAlerts(), ...staticAlerts];
 
   if (alerts.length) {
     dot.textContent = alerts.length;

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="site-preview-title">Minha página — Love</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;500;600;700&family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=Italianno&family=Fondamento&family=Great+Vibes&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Voltaire&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prata&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=392">
+  <style>
+    html, body { background: #fff; overflow-x: hidden; max-width: 100%; }
+    .site-preview-empty { padding: 6rem 1.5rem; text-align: center; color: #71717A; font-size: 0.9375rem; }
+  </style>
+</head>
+<body class="font-sans" data-page="site-preview">
+
+  <div id="checkout-payment-banner-root"></div>
+  <div class="builder-canvas" id="builder-canvas" data-device="desktop"></div>
+  <div class="builder-mobile-menu-root" id="builder-mobile-menu-root"></div>
+
+  <script src="js/data.js?v=9"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=17"></script>
+  <script src="js/site-builder.js?v=270"></script>
+  <script>
+    (function () {
+      const canvas = document.getElementById('builder-canvas');
+      const params = new URLSearchParams(location.search);
+      const isCheckout = params.get('page') === 'checkout';
+      const linkId = params.get('link');
+      canvas.dataset.pageKey = isCheckout ? 'checkout' : 'home';
+
+      if (isCheckout && linkId) renderCheckoutPaymentBanner(linkId);
+
+      const raw = localStorage.getItem(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY);
+      if (!raw) {
+        canvas.innerHTML = '<div class="site-preview-empty">Esta página ainda não foi publicada. Volte para "Páginas do Site" e clique em "Publicar".</div>';
+        return;
+      }
+      try {
+        builderState = JSON.parse(raw);
+        if (isCheckout && builderState.templateVersion !== CHECKOUT_TEMPLATE_VERSION) builderState = defaultCheckoutPageState();
+        migrateElementDefaults(builderState);
+      } catch (e) {
+        canvas.innerHTML = '<div class="site-preview-empty">Não foi possível carregar sua página.</div>';
+        return;
+      }
+
+      const seo = builderState.siteSettings && builderState.siteSettings.seo;
+      if (seo && seo.metaTitle) document.title = seo.metaTitle;
+      if (seo && seo.metaDescription) {
+        const metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        metaDesc.content = seo.metaDescription;
+        document.head.appendChild(metaDesc);
+      }
+      if (seo && seo.favicon) {
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.href = seo.favicon;
+        document.head.appendChild(favicon);
+      }
+
+      applyGlobalStyleVars();
+      const visible = builderState.sections.filter(s => !s.hidden);
+      const menuRoot = document.getElementById('builder-mobile-menu-root');
+
+      const currentDeviceBucket = () => (window.innerWidth || document.documentElement.clientWidth) < 768 ? 'mobile' : 'desktop';
+      let renderedDevice = null;
+
+      function renderForDevice(device) {
+        renderedDevice = device;
+        canvas.dataset.device = device;
+        canvas.innerHTML = renderFixedHeaderHtml()
+          + (visible.length ? visible.map(s => renderSectionHtml(s, 'preview', device)).join('') : '<div class="site-preview-empty">Sua página ainda não tem seções visíveis.</div>')
+          + renderFixedFooterHtml();
+
+        if (device === 'mobile') {
+          menuRoot.innerHTML = renderMobileMenuDrawerHtml();
+          wireMobileMenuDrawer(menuRoot);
+        } else {
+          menuRoot.innerHTML = '';
+        }
+        wireFixedHeader(canvas);
+        applyFloatingHeaderOverlap(canvas);
+      }
+
+      renderForDevice(currentDeviceBucket());
+
+      let resizeTimer = null;
+      const handleViewportChange = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          const next = currentDeviceBucket();
+          if (next !== renderedDevice) renderForDevice(next);
+          else applyFloatingHeaderOverlap(canvas);
+        }, 150);
+      };
+      window.addEventListener('resize', handleViewportChange);
+      window.addEventListener('orientationchange', handleViewportChange);
+      if (window.matchMedia) {
+        const mq = window.matchMedia('(max-width: 767px)');
+        const mqListener = () => handleViewportChange();
+        if (mq.addEventListener) mq.addEventListener('change', mqListener);
+        else if (mq.addListener) mq.addListener(mqListener);
+      }
+    })();
+
+    function renderCheckoutPaymentBanner(linkId) {
+      const root = document.getElementById('checkout-payment-banner-root');
+      if (!root) return;
+
+      const loadLinks = () => {
+        try {
+          const raw = localStorage.getItem('b2b-payment-links');
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+      };
+      const saveLinks = (links) => localStorage.setItem('b2b-payment-links', JSON.stringify(links));
+
+      const draw = () => {
+        const links = loadLinks();
+        const link = links.find(l => l.id === linkId);
+        if (!link) { root.innerHTML = ''; return; }
+
+        const isPaid = link.status === 'pago';
+        const installmentsLabel = link.installments > 1
+          ? `${link.installments}x de ${formatCurrency(link.amount / link.installments)} (${link.hasInterest ? 'com juros' : 'sem juros'})`
+          : 'à vista';
+
+        root.innerHTML = `
+          <div class="checkout-payment-banner${isPaid ? ' is-paid' : ''}" style="margin:1.5rem auto 0;">
+            <div>
+              <p class="checkout-payment-banner-amount">${formatCurrency(link.amount)}</p>
+              <p class="checkout-payment-banner-installments">${isPaid ? 'Pagamento confirmado' : installmentsLabel}</p>
+            </div>
+            ${isPaid
+              ? '<span class="status-badge status-ativo">Pago</span>'
+              : '<button type="button" class="btn-primary" id="checkout-pay-now-btn">Pagar agora</button>'}
+          </div>
+        `;
+
+        const payBtn = document.getElementById('checkout-pay-now-btn');
+        if (payBtn) {
+          payBtn.addEventListener('click', () => {
+            const current = loadLinks();
+            const target = current.find(l => l.id === linkId);
+            if (!target) return;
+            target.status = 'pago';
+            target.paidAt = Date.now();
+            saveLinks(current);
+            emitirNotaFiscalParaVenda({ sourceId: target.id, client: 'Consumidor', value: target.amount });
+            draw();
+          });
+        }
+      };
+
+      draw();
+    }
+  </script>
+</body>
+</html>

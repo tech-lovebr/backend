@@ -1,14 +1,14 @@
 # Regras e Diretrizes Visuais da Plataforma Love
 
 ## Cores Oficiais da Marca
-- **Cor Primária**: `#537bae` (Azul Love / `#537bae`)
-  - Variação Hover: `#416799`
-  - Token CSS: `--primary-color: #537bae;` ou `--primary-blue: #537bae;`
+- **Cor Primária**: `#183b54` (Love Primária / `#183b54`)
+  - Variação Hover: `#122c3f`
+  - Token CSS: `--primary-color: #183b54;` ou `--primary-blue: #183b54;`
   - Classes / Destaques: Botões principais, links ativos, badges de destaque, barras de progresso ativas.
 
-- **Cor Secundária**: `#5c7aaa` (Azul Secundário / `#5c7aaa`)
-  - Variação Hover: `#4e6891`
-  - Token CSS: `--secondary-color: #5c7aaa;` ou `--secondary-peach: #5c7aaa;`
+- **Cor Secundária**: `#27394f` (Azul Marinho / `#27394f`)
+  - Variação Hover: `#1d2b3c`
+  - Token CSS: `--secondary-color: #27394f;` ou `--secondary-peach: #27394f;`
   - Aplicações: Acentos secundários, fundos suaves, elementos de apoio e contrastes elegantes.
 
 > **Sempre que o usuário se referir a "cor primária" ou "cor secundária", utilize exatamente essas referências.**

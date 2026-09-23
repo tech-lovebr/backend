@@ -4,7 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   renderTeam();
-  initMemberModal();
+  initMemberDrawer();
 });
 
 function renderTeam() {
@@ -24,61 +24,55 @@ function renderTeam() {
           </div>
         </div>
       </td>
-      <td><span class="role-badge">${m.role}</span></td>
+      <td><span class="text-sm text-zinc-700">${m.role}</span></td>
       <td><span class="modules-summary">${m.modules.length} de ${Object.keys(B2B_DATA.modules).length} áreas</span></td>
-      <td><span class="status-badge status-${m.status}">${statusLabel(m.status)}</span></td>
+      <td><span class="text-sm text-zinc-700">${statusLabel(m.status)}</span></td>
       <td>
         ${m.owner ? '' : `
-          <div class="flex items-center justify-end gap-2">
+          <div class="flex items-center justify-end">
             <button type="button" class="btn-secondary text-xs py-1.5 px-2.5" data-edit-member="${m.id}">Editar</button>
-            <button type="button" class="btn-secondary text-xs py-1.5 px-2.5" data-remove-member="${m.id}" aria-label="Remover acesso">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7m2 0-.6 12.1a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5.5 7" /></svg>
-            </button>
           </div>`}
       </td>
     </tr>
   `).join('');
 
   tbody.querySelectorAll('[data-edit-member]').forEach(btn => {
-    btn.addEventListener('click', () => openMemberModal(btn.dataset.editMember));
-  });
-
-  tbody.querySelectorAll('[data-remove-member]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      B2B_DATA.team = B2B_DATA.team.filter(m => m.id !== btn.dataset.removeMember);
-      renderTeam();
-      showToast('Acesso removido.');
-    });
+    btn.addEventListener('click', () => openMemberDrawer(btn.dataset.editMember));
   });
 }
 
-/* -------------------- Modal: convidar / editar -------------------- */
+/* -------------------- Drawer: novo / editar colaborador -------------------- */
 
-function initMemberModal() {
+function initMemberDrawer() {
   renderPermissionGrid();
 
   const addBtn = document.getElementById('member-add-btn');
-  const modal = document.getElementById('member-modal');
-  const closeBtn = document.getElementById('member-modal-close');
-  const cancelBtn = document.getElementById('member-modal-cancel');
+  const drawer = document.getElementById('member-drawer');
+  const backdrop = document.getElementById('member-drawer-backdrop');
+  const closeBtn = document.getElementById('member-drawer-close');
+  const cancelBtn = document.getElementById('member-drawer-cancel');
   const form = document.getElementById('member-form');
   const roleSelect = document.getElementById('member-role');
 
+  const open = () => { drawer.classList.add('show'); backdrop.classList.add('show'); };
   const close = () => {
-    modal.classList.remove('show');
+    drawer.classList.remove('show');
+    backdrop.classList.remove('show');
     form.reset();
     delete form.dataset.editId;
     applyRoleTemplate(roleSelect.value);
   };
 
   if (addBtn) addBtn.addEventListener('click', () => {
-    document.getElementById('member-modal-title').textContent = 'Convidar pessoa';
+    form.reset();
+    delete form.dataset.editId;
+    document.getElementById('member-drawer-title').textContent = 'Novo colaborador';
     applyRoleTemplate(roleSelect.value);
-    modal.classList.add('show');
+    open();
   });
   if (closeBtn) closeBtn.addEventListener('click', close);
   if (cancelBtn) cancelBtn.addEventListener('click', close);
-  if (modal) modal.addEventListener('click', e => { if (e.target === modal) close(); });
+  if (backdrop) backdrop.addEventListener('click', close);
 
   roleSelect.addEventListener('change', () => applyRoleTemplate(roleSelect.value));
 
@@ -97,7 +91,7 @@ function initMemberModal() {
     if (form.dataset.editId) {
       const member = B2B_DATA.team.find(m => m.id === form.dataset.editId);
       Object.assign(member, { name, email, role, modules });
-      showToast('Permissões atualizadas.');
+      showToast('Colaborador atualizado.');
     } else {
       B2B_DATA.team.push({
         id: 'u' + Date.now(),
@@ -133,10 +127,10 @@ function applyRoleTemplate(roleName) {
   checkboxes.forEach(cb => { cb.checked = moduleSet.has(cb.value); });
 }
 
-function openMemberModal(id) {
+function openMemberDrawer(id) {
   const m = B2B_DATA.team.find(x => x.id === id);
   if (!m) return;
-  document.getElementById('member-modal-title').textContent = 'Editar permissões';
+  document.getElementById('member-drawer-title').textContent = 'Editar colaborador';
   document.getElementById('member-name').value = m.name;
   document.getElementById('member-email').value = m.email;
   document.getElementById('member-role').value = m.role;
@@ -147,5 +141,6 @@ function openMemberModal(id) {
 
   const form = document.getElementById('member-form');
   form.dataset.editId = m.id;
-  document.getElementById('member-modal').classList.add('show');
+  document.getElementById('member-drawer').classList.add('show');
+  document.getElementById('member-drawer-backdrop').classList.add('show');
 }

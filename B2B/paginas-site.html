@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;500;600;700&family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=Italianno&family=Fondamento&family=Great+Vibes&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Voltaire&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prata&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;500;600;700&family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=Italianno&family=Fondamento&family=Great+Vibes&family=Bodoni+Moda:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Voltaire&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prata&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=203">
+  <link rel="stylesheet" href="css/styles.css?v=392">
 </head>
 <body class="font-sans" data-page="paginas-site">
 
@@ -31,10 +31,10 @@
 
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h2 class="text-base font-bold text-zinc-900 mb-1">Páginas do Site</h2>
+            <h2 class="text-xl font-bold text-zinc-900 mb-1">Páginas do Site</h2>
             <p class="text-sm text-zinc-500">Personalize seu site e crie formulários para seus clientes.</p>
           </div>
-          <a href="vitrine.html" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+          <a href="site-preview.html" target="_blank" rel="noopener noreferrer" class="btn-secondary builder-toolbar-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
             Ver minha página
           </a>
@@ -54,7 +54,15 @@
           <div class="builder-wrap" id="site-builder-root">
               <div class="builder-toolbar">
                 <div class="builder-toolbar-left">
-                  <input type="text" class="builder-page-name" id="builder-page-name" value="Página inicial" aria-label="Nome da página">
+                  <div class="builder-page-switcher" id="builder-page-switcher">
+                    <button type="button" class="builder-page-name" id="builder-page-select-btn" aria-haspopup="true" aria-expanded="false">
+                      <span id="builder-page-select-label">Site Principal</span>
+                    </button>
+                    <div class="kanban-list-dropdown builder-page-dropdown" id="builder-page-dropdown">
+                      <button type="button" class="kanban-list-dropdown-item" data-page-option="home">Site Principal</button>
+                      <button type="button" class="kanban-list-dropdown-item" data-page-option="checkout">Meu Checkout</button>
+                    </div>
+                  </div>
                 </div>
                 <div class="builder-device-toggle" id="builder-device-toggle">
                   <button type="button" class="builder-device-btn active" data-device="desktop" title="Desktop">
@@ -95,15 +103,9 @@
         </div>
 
         <div class="site-tab-panel" data-tab-panel="formularios" style="display:none;">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-base font-bold text-zinc-900 mb-1">Seus formulários</h2>
-              <p class="text-sm text-zinc-500">Crie formulários personalizados para coletar informações dos seus clientes.</p>
-            </div>
-            <button type="button" class="btn-primary" id="form-create-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Criar novo
-            </button>
+          <div class="mb-4">
+            <h2 class="text-xl font-bold text-zinc-900 mb-1">Seus formulários</h2>
+            <p class="text-sm text-zinc-500">Crie formulários personalizados para coletar informações dos seus clientes.</p>
           </div>
 
           <div class="forms-list" id="forms-list"></div>
@@ -115,8 +117,12 @@
 
   <div class="drawer-backdrop" id="form-drawer-backdrop"></div>
   <aside class="form-drawer" id="form-drawer" aria-label="Editor de formulário">
-    <div class="form-drawer-header">
-      <input type="text" class="form-drawer-title-input" id="form-title-input" placeholder="Formulário sem título">
+    <div class="form-drawer-header" id="form-drawer-header">
+      <div class="form-drawer-header-main">
+        <input type="text" class="form-drawer-title-input" id="form-title-input" placeholder="Formulário sem título">
+        <textarea class="form-drawer-description-input" id="form-description-input" placeholder="Descrição do formulário (opcional)" rows="1"></textarea>
+      </div>
+      <div class="form-drawer-bg-field" id="form-bg-field"></div>
       <button type="button" class="form-drawer-close" id="form-drawer-close" aria-label="Fechar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
       </button>
@@ -128,6 +134,24 @@
     <div class="form-drawer-footer">
       <button type="button" class="btn-primary justify-center w-full py-3" id="form-save-btn">Salvar formulário</button>
     </div>
+  </aside>
+
+  <div class="drawer-backdrop" id="responses-drawer-backdrop"></div>
+  <aside class="form-drawer" id="responses-drawer" aria-label="Respostas do formulário">
+    <div class="form-drawer-header">
+      <div class="form-drawer-header-main">
+        <button type="button" class="responses-drawer-back" id="responses-drawer-back" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg>
+          Voltar
+        </button>
+        <h2 class="responses-drawer-title" id="responses-drawer-title">Respostas</h2>
+        <p class="responses-drawer-subtitle" id="responses-drawer-subtitle">0 respostas</p>
+      </div>
+      <button type="button" class="form-drawer-close" id="responses-drawer-close" aria-label="Fechar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="form-drawer-body" id="responses-list"></div>
   </aside>
 
   <div class="modal-backdrop" id="logo-adjust-modal">
@@ -162,11 +186,11 @@
     </div>
   </div>
 
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/shell.js"></script>
-  <script src="js/paginas-site.js"></script>
+  <script src="js/data.js?v=9"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=17"></script>
+  <script src="js/paginas-site.js?v=6"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=231"></script>
+  <script src="js/site-builder.js?v=270"></script>
 </body>
 </html>

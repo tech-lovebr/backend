@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configurações — Portal do Fornecedor Love</title>
+  <title>Editar perfil — Portal do Fornecedor Love</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#537bae">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=169">
+  <link rel="stylesheet" href="css/styles.css?v=392">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -19,19 +19,243 @@
     <div class="b2b-main">
       <div id="shell-topbar"></div>
       <main class="b2b-content">
-        <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.11v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.11v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-xl font-bold text-zinc-900 mb-1">Editar perfil</h2>
+            <p class="text-sm text-zinc-500">Gerencie os dados da sua empresa e as preferências da sua conta.</p>
           </div>
-          <p class="text-base font-bold text-zinc-900 mb-1.5">Configurações chegando em breve</p>
-          <p class="text-sm text-zinc-500 max-w-md">Perfil do negócio, gestão de equipe, integrações e preferências de notificação.</p>
-          <a href="dashboard.html" class="btn-secondary mt-6">Voltar ao Dashboard</a>
+          <button type="submit" form="profile-form" class="btn-primary" id="profile-save-top-btn">Salvar alterações</button>
+        </div>
+
+        <div class="category-tabs-bar" id="settings-tabs">
+          <button type="button" class="category-tab active" data-settings-tab="perfil">Perfil</button>
+          <button type="button" class="category-tab" data-settings-tab="preferencias">Preferências</button>
+        </div>
+
+        <div data-settings-panel="perfil">
+          <div class="dash-card">
+            <p class="text-xs text-right mb-5" style="color:#DC2626;">(*) Campos obrigatórios</p>
+            <form id="profile-form" class="flex flex-col gap-4">
+              <div class="profile-form-top">
+                <div class="profile-form-top-image">
+                  <label class="field-label">Imagem da Empresa</label>
+                  <div id="profile-logo-wrap"></div>
+                  <p class="profile-logo-hint">Esta imagem será exibida para os clientes na vitrine Explorar</p>
+                </div>
+
+                <div class="profile-form-top-fields">
+                  <div>
+                    <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
+                    <input id="profile-company" type="text" class="field-input" placeholder="Ex: Sophia Eventos & Decoração">
+                  </div>
+
+                  <div class="grid grid-cols-[1fr_150px] gap-4">
+                    <div>
+                      <label for="profile-name" class="field-label">Nome do responsável <span style="color:#DC2626;">*</span></label>
+                      <input id="profile-name" type="text" class="field-input" placeholder="Ex: Sophia Ramos">
+                    </div>
+                    <div>
+                      <label for="profile-birthdate" class="field-label">Data de nascimento</label>
+                      <div class="date-picker-field">
+                        <input id="profile-birthdate" type="text" class="field-input" placeholder="dd/mm/aaaa" readonly autocomplete="off">
+                        <svg class="date-picker-field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path stroke-linecap="round" d="M3 9h18M8 3v3M16 3v3"/></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label for="profile-phone" class="field-label">Número de celular <span style="color:#DC2626;">*</span></label>
+                      <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
+                    </div>
+                    <div>
+                      <label class="field-label">Tipo de documento</label>
+                      <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
+                        <button type="button" class="plan-billing-option active" data-doc-type="cnpj">
+                          <span class="plan-billing-option-title">CNPJ</span>
+                        </button>
+                        <button type="button" class="plan-billing-option" data-doc-type="cpf">
+                          <span class="plan-billing-option-title">CPF</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
+                    <input id="profile-document" type="text" class="field-input" placeholder="00.000.000/0000-00">
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-[2fr_90px_1fr] gap-4">
+                    <div>
+                      <label for="profile-address" class="field-label">Endereço</label>
+                      <input id="profile-address" type="text" class="field-input" placeholder="Rua, número, bairro">
+                    </div>
+                    <div>
+                      <label for="profile-state" class="field-label">Estado</label>
+                      <select id="profile-state" class="field-select"></select>
+                    </div>
+                    <div>
+                      <label for="profile-city" class="field-label">Cidade</label>
+                      <input id="profile-city" type="text" class="field-input" list="profile-city-options" placeholder="Cidade">
+                      <datalist id="profile-city-options"></datalist>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="profile-description" class="field-label">Descrição da empresa</label>
+                    <textarea id="profile-description" class="field-textarea" style="min-height:110px;" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div data-settings-panel="preferencias" style="display:none;">
+          <div class="dash-card mb-6">
+            <div class="dash-card-header">
+              <div class="dash-card-header-left">
+                <h2 class="text-base font-bold text-zinc-900">Senha</h2>
+              </div>
+            </div>
+            <form id="password-form" class="flex flex-col gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label for="password-current" class="field-label">Senha atual</label>
+                  <input id="password-current" type="password" class="field-input" placeholder="••••••••">
+                </div>
+                <div>
+                  <label for="password-new" class="field-label">Nova senha</label>
+                  <input id="password-new" type="password" class="field-input" placeholder="••••••••">
+                </div>
+                <div>
+                  <label for="password-confirm" class="field-label">Confirmar nova senha</label>
+                  <input id="password-confirm" type="password" class="field-input" placeholder="••••••••">
+                </div>
+              </div>
+              <div>
+                <button type="submit" class="btn-secondary">Atualizar senha</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="dash-card mb-6 accordion-card" data-accordion-card>
+            <div class="dash-card-header accordion-card-header" data-accordion-toggle>
+              <div class="dash-card-header-left">
+                <h2 class="text-base font-bold text-zinc-900">Segurança</h2>
+              </div>
+              <span class="accordion-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" /></svg></span>
+            </div>
+
+            <div class="accordion-card-body" data-accordion-body>
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Autenticação de dois fatores</p>
+                  <p class="settings-switch-desc">Peça um código extra ao entrar na sua conta em um novo dispositivo.</p>
+                </div>
+                <label class="settings-switch">
+                  <input type="checkbox" id="profile-2fa-toggle">
+                  <span class="settings-switch-track"></span>
+                </label>
+              </div>
+
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Verificação de conta</p>
+                  <p class="settings-switch-desc" id="profile-selfie-desc">Confirme sua identidade para aumentar a confiança dos seus clientes.</p>
+                </div>
+                <div>
+                  <input type="file" accept="image/*" id="profile-selfie-input" hidden>
+                  <button type="button" class="btn-secondary profile-security-action-btn" id="profile-selfie-btn">Verificar</button>
+                  <span class="status-badge status-ativo" id="profile-selfie-badge" hidden>Conta verificada</span>
+                </div>
+              </div>
+
+              <div class="settings-switch-row">
+                <div>
+                  <p class="settings-switch-label">Assinatura</p>
+                  <p class="settings-switch-desc" id="profile-plan-desc">Plano atual: Gratuito</p>
+                </div>
+                <button type="button" class="btn-secondary profile-security-action-btn" id="subscription-open-btn">Ver assinatura</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card mb-6 accordion-card" data-accordion-card>
+            <div class="dash-card-header accordion-card-header" data-accordion-toggle>
+              <div class="dash-card-header-left">
+                <h2 class="text-base font-bold text-zinc-900">Dados Bancários</h2>
+              </div>
+              <span class="accordion-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" /></svg></span>
+            </div>
+
+            <div class="accordion-card-body" data-accordion-body>
+              <p class="text-sm text-zinc-500 mb-4">Cadastre a chave Pix que vai receber seus saques.</p>
+              <form id="bank-details-form" class="flex flex-col gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-4">
+                  <div>
+                    <label for="profile-pix-type" class="field-label">Tipo de chave Pix</label>
+                    <select id="profile-pix-type" class="field-select">
+                      <option value="cpf">CPF</option>
+                      <option value="telefone">Telefone</option>
+                      <option value="email">E-mail</option>
+                      <option value="aleatoria">Chave aleatória</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="profile-pix-key" class="field-label" id="profile-pix-key-label">Chave Pix</label>
+                    <input id="profile-pix-key" type="text" class="field-input" placeholder="000.000.000-00">
+                  </div>
+                </div>
+                <div>
+                  <button type="submit" class="btn-secondary">Salvar dados bancários</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </main>
     </div>
   </div>
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/shell.js"></script>
+
+  <!-- Modal ajustar logotipo -->
+  <div class="modal-backdrop" id="profile-logo-adjust-modal">
+    <div class="modal-card logo-adjust-modal-card">
+      <button type="button" class="logo-adjust-modal-close" data-profile-logo-adjust-close aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+      <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar logotipo</h2>
+      <p class="text-sm text-zinc-500 mb-4">Ajuste o enquadramento do logotipo da sua empresa.</p>
+      <div class="profile-logo-adjust-frame" data-profile-logo-adjust-frame>
+        <img src="" class="logo-crop-img" data-profile-logo-adjust-img alt="">
+      </div>
+      <div class="logo-adjust-modal-controls">
+        <span class="logo-adjust-modal-zoom-label">Zoom:</span>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-profile-logo-adjust-zoom-minus>−</button>
+        <input type="range" min="1" max="8" step="0.05" value="1" class="logo-adjust-modal-range" data-profile-logo-adjust-range>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-profile-logo-adjust-zoom-plus>+</button>
+      </div>
+      <button type="button" class="btn-primary justify-center w-full py-3 mt-2" data-profile-logo-adjust-done>Concluir</button>
+    </div>
+  </div>
+
+  <!-- Modal assinatura -->
+  <div class="modal-backdrop" id="subscription-modal">
+    <div class="modal-card" style="max-width:420px;">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-base font-bold text-zinc-900">Assinatura</h3>
+        <button type="button" id="subscription-close-btn" class="text-zinc-400 hover:text-zinc-700" aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <div id="subscription-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="js/data.js?v=9"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=17"></script>
+  <script src="js/configuracoes.js?v=14"></script>
 </body>
 </html>

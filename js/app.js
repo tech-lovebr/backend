@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modals: {
       withdrawPix: document.getElementById('modal-withdraw-pix'),
       addGift: document.getElementById('modal-add-gift'),
-      addGuest: document.getElementById('modal-add-guest'),
       inviteAdvisor: document.getElementById('modal-invite-advisor'),
       searchWedding: document.getElementById('modal-search-wedding'),
       deleteEvent: document.getElementById('modal-delete-event'),
@@ -153,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (m.getAttribute('data-no-backdrop-close') === 'true') return;
         closeModal(m);
       });
-      closeGuestDrawer();
+      closeAddGuestDrawer();
       closeGiftDrawer();
       closeContractedVendorDrawer();
       document.body.style.overflow = '';
@@ -183,8 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
       updateAllCelebrationData();
       renderEventsSwitcher();
       switchRailTab('overview'); // Inicia na Home / Visão Geral
+
+      // Aplica tema salvo ao entrar na plataforma logada
+      const savedTheme = localStorage.getItem('love-theme') || 'light';
+      applyTheme(savedTheme);
     } else {
       document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'first-access-locked');
+      document.body.removeAttribute('data-theme');
+      document.documentElement.removeAttribute('data-theme');
       if (elements.viewDashboard) {
         elements.viewDashboard.classList.add('hidden');
         elements.viewDashboard.style.display = 'none';
@@ -197,6 +202,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // =========================================================================
+  // TEMA: CLARO / ESCURO (TOGGLE NO MENU DE PERFIL)
+  // =========================================================================
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    const logoLight = document.getElementById('header-logo-light');
+    const logoDark = document.getElementById('header-logo-dark');
+    const iconLight = document.getElementById('sidebar-brand-icon-light');
+    const iconDark = document.getElementById('sidebar-brand-icon-dark');
+
+    // Salva a preferência exclusiva da plataforma logada
+    localStorage.setItem('love-theme', theme);
+
+    // O tema Light / Dark aplica-se EXCLUSIVAMENTE à plataforma logada (dashboard-mode)
+    if (document.body.classList.contains('dashboard-mode')) {
+      if (isDark) {
+        document.body.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.body.removeAttribute('data-theme');
+        document.documentElement.removeAttribute('data-theme');
+      }
+    } else {
+      document.body.removeAttribute('data-theme');
+      document.documentElement.removeAttribute('data-theme');
+    }
+
+    // Atualiza estado ativo dos botões do segmented control (Light / Dark)
+    const themeButtons = document.querySelectorAll('.theme-toggle-btn');
+    themeButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.themeOption === theme);
+    });
+
+    const footerLogosLight = document.querySelectorAll('.footer-logo-light');
+    const footerLogosDark = document.querySelectorAll('.footer-logo-dark');
+
+    if (logoLight) logoLight.src = 'assets/love-dark-03.png';
+    if (logoDark) logoDark.src = 'assets/Love-white-03.png';
+
+    if (isDark) {
+      if (logoLight) logoLight.classList.add('hidden');
+      if (logoDark) logoDark.classList.remove('hidden');
+      if (iconLight) iconLight.classList.add('hidden');
+      if (iconDark) iconDark.classList.remove('hidden');
+      footerLogosLight.forEach(img => img.classList.add('hidden'));
+      footerLogosDark.forEach(img => img.classList.remove('hidden'));
+    } else {
+      if (logoLight) logoLight.classList.remove('hidden');
+      if (logoDark) logoDark.classList.add('hidden');
+      if (iconLight) iconLight.classList.hidden = false;
+      if (logoLight) logoLight.style.display = '';
+      if (logoDark) logoDark.classList.add('hidden');
+      if (iconLight) iconLight.classList.remove('hidden');
+      if (iconDark) iconDark.classList.add('hidden');
+      footerLogosLight.forEach(img => img.classList.remove('hidden'));
+      footerLogosDark.forEach(img => img.classList.add('hidden'));
+    }
+  }
+
+  // Carrega tema salvo ou light por padrão
+  const currentSavedTheme = localStorage.getItem('love-theme') || 'light';
+  applyTheme(currentSavedTheme);
+
+  // Registra eventos de clique nos botões de tema (Light e Dark)
+  document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const selectedTheme = btn.dataset.themeOption;
+      applyTheme(selectedTheme);
+      showToast(selectedTheme === 'dark' ? 'Modo Escuro ativado' : 'Modo Claro ativado', selectedTheme === 'dark' ? '🌙' : '☀️');
+    });
+  });
 
   // Configuração das Abas na Double-Sidebar
   const railTabsConfig = {
@@ -212,7 +291,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'home', label: 'Aparência' },
         { id: 'data', label: 'Informações' },
         { id: 'about', label: 'Anfitriões' },
-        { id: 'invite-online', label: 'Convite online' },
         { id: 'invite-print', label: 'Produzir convite' }
       ]
     },
@@ -222,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'my-gifts', label: 'Meus presentes' },
-        { id: 'messages', label: 'Recados recebidos' },
         { id: 'gift-settings', label: 'Configurações' }
       ]
     },
@@ -233,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'all', label: 'Meus convidados' },
         { id: 'tables', label: 'Mapear mesas' },
-        { id: 'whatsapp', label: 'Disparo WhatsApp' }
+        { id: 'rsvp-settings', label: 'Configurações' }
       ]
     },
     wallet: {
@@ -254,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'explore', label: 'Explorar' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Meus contratos' },
-        { id: 'insurance', label: 'Serviços' },
+        { id: 'insurance', label: 'Benefícios' },
         { id: 'favorites', label: 'Favoritos' }
       ]
     }
@@ -391,29 +468,23 @@ document.addEventListener('DOMContentLoaded', () => {
           
           let badgeMarkup = '';
           if (item.id === 'messages' && unreadCount > 0) {
-            badgeMarkup = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-sm ml-auto" style="background-color: #27394f;">${unreadCount}</span>`;
+            badgeMarkup = `<span class="badge-recados-count px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm ml-auto" style="background-color: #c7305b !important; color: #FFFFFF !important;">${unreadCount}</span>`;
           }
 
           btn.innerHTML = `<span>${item.label}</span>${badgeMarkup}`;
 
           btn.addEventListener('click', () => {
+            const runSubItemClick = () => {
             elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
             if (tabKey === 'edit-site') {
               switchEditorSubSection(item.id, item.label);
             } else if (tabKey === 'gifts') {
-              if (item.id === 'messages') {
-                document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
-                const target = document.getElementById('tab-rsvp-messages') || document.getElementById('tab-messages');
-                if (target) target.classList.add('active');
-                renderRecadosMural();
-              } else {
-                document.querySelectorAll('.dashboard-tab-content').forEach(c => {
-                  c.classList.toggle('active', c.id === 'tab-gifts');
-                });
-                switchGiftsSubSection(item.id);
-              }
+              document.querySelectorAll('.dashboard-tab-content').forEach(c => {
+                c.classList.toggle('active', c.id === 'tab-gifts');
+              });
+              switchGiftsSubSection(item.id);
             } else if (tabKey === 'info-event') {
               switchInfoSubSection(item.id, item.label);
             } else if (tabKey === 'rsvp') {
@@ -422,11 +493,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const target = document.getElementById('tab-rsvp-tables');
                 if (target) target.classList.add('active');
                 renderTablesOrganization();
-              } else if (item.id === 'whatsapp') {
-                const target = document.getElementById('tab-rsvp');
+              } else if (item.id === 'rsvp-settings') {
+                const target = document.getElementById('tab-rsvp-settings');
                 if (target) target.classList.add('active');
-                renderGuestsTable('all');
-                showToast('Selecione os convidados na lista para enviar convite via WhatsApp.', '💬');
+                renderRsvpShareSettings();
               } else {
                 const target = document.getElementById('tab-rsvp');
                 if (target) target.classList.add('active');
@@ -444,6 +514,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.innerWidth <= 768) {
               closeMobileDrawer();
             }
+            };
+
+            // Saindo da Aparência (construtor visual): avisa se houver alterações não salvas
+            if (tabKey === 'edit-site' && item.id !== 'home' && state.activeSubSection === 'home' && window.builderConfirmLeaveIfDirty) {
+              window.builderConfirmLeaveIfDirty(runSubItemClick);
+            } else {
+              runSubItemClick();
+            }
           });
 
           elements.drawerSubItemsList.appendChild(btn);
@@ -456,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
       content.classList.toggle('active', content.id === `tab-${tabKey}`);
     });
 
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode');
+    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
 
     // Ativa os modos e sub-seções correspondentes
     if (tabKey === 'edit-site') {
@@ -469,10 +547,15 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('rsvp-mode');
       renderGuestsTable('all');
     } else if (tabKey === 'wallet') {
+      document.body.classList.add('wallet-mode');
       switchWalletSubSection('wallet-digital', 'Carteira Digital');
     } else if (tabKey === 'b2b') {
       document.body.classList.add('b2b-mode');
-      switchB2BView('explore');
+      if (document.body.classList.contains('b2b-chat-mode')) {
+        switchB2BView('messages');
+      } else {
+        switchB2BView('explore');
+      }
     } else if (tabKey === 'info-event') {
       switchInfoSubSection('my-event', 'Meu evento');
     }
@@ -507,7 +590,12 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        switchRailTab(tab);
+        // Saindo da Aparência (construtor visual): avisa se houver alterações não salvas
+        if (state.currentTab === 'edit-site' && state.activeSubSection === 'home' && window.builderConfirmLeaveIfDirty) {
+          window.builderConfirmLeaveIfDirty(() => switchRailTab(tab));
+        } else {
+          switchRailTab(tab);
+        }
       }
     }
   });
@@ -634,14 +722,12 @@ document.addEventListener('DOMContentLoaded', () => {
     state.events.forEach(evt => {
       const isActive = evt.id === state.activeEventId;
       const item = document.createElement('div');
-      item.className = `p-2.5 rounded-[10px] text-xs font-bold cursor-pointer transition-all flex items-center justify-between gap-2 ${
-        isActive 
-          ? 'bg-slate-100/90 text-[#27394f] border border-[#27394f]/25' 
-          : 'hover:bg-slate-50 text-slate-700 border border-transparent'
+      item.className = `event-switcher-item p-2.5 rounded-[10px] text-xs font-normal cursor-pointer transition-all flex items-center justify-between gap-2 ${
+        isActive ? 'is-active' : 'is-inactive'
       }`;
       item.innerHTML = `
-        <span class="block truncate font-bold" style="${isActive ? 'color: #27394f !important;' : ''}">${evt.title}</span>
-        ${isActive ? '<span class="text-[#27394f] text-xs font-bold flex-shrink-0" style="color: #27394f !important;">✓</span>' : ''}
+        <span class="block truncate font-normal">${evt.title}</span>
+        ${isActive ? '<span class="text-xs font-bold flex-shrink-0 checkmark-icon">✓</span>' : ''}
       `;
 
       item.addEventListener('click', () => {
@@ -714,6 +800,18 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // Formata uma data ISO ("2025-10-18") como "18 de Outubro de 2025"
+  function formatEventDateLong(isoDate) {
+    if (!isoDate) return '';
+    const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const parts = String(isoDate).split('-');
+    if (parts.length !== 3) return isoDate;
+    const [year, month, day] = parts;
+    const monthName = months[parseInt(month, 10) - 1];
+    if (!monthName) return isoDate;
+    return `${parseInt(day, 10)} de ${monthName} de ${year}`;
+  }
+
   // ==========================================
   // 4. ATUALIZAÇÃO COMPLETA DOS DADOS DA COMEMORAÇÃO ATIVA
   // ==========================================
@@ -756,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hubDateText = document.getElementById('dash-hub-event-date-text');
     const hubLocText = document.getElementById('dash-hub-event-location-text');
     const hasLocation = activeEvent.location && activeEvent.location.trim() !== '' && activeEvent.location !== 'Adicionar Local';
-    if (hubDateText) hubDateText.textContent = activeEvent.date || '18 de Outubro de 2026';
+    if (hubDateText) hubDateText.textContent = formatEventDateLong(activeEvent.date) || '18 de Outubro de 2025';
     if (hubLocText) hubLocText.textContent = hasLocation ? activeEvent.location : 'Local do evento';
     
     // Atualização dos Convites Enviados
@@ -769,13 +867,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (kpiArrecadado) kpiArrecadado.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (kpiRsvp) kpiRsvp.textContent = `${activeEvent.convidadosConfirmados}`;
-    const kpiRsvpRate = document.getElementById('kpi-rsvp-rate-badge');
-    if (kpiRsvpRate) {
-      const total = activeEvent.convidadosTotal || 210;
-      const confirmed = activeEvent.convidadosConfirmados !== undefined ? activeEvent.convidadosConfirmados : 185;
-      const pct = Math.round((confirmed / total) * 100);
-      kpiRsvpRate.textContent = `${pct}% RSVP`;
-    }
     if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados || 160} adultos • ${activeEvent.criancasConfirmadas || 25} crianças confirmadas`;
     if (kpiGifts) kpiGifts.textContent = `${activeEvent.presentesRecebidos}`;
     if (kpiGiftsSubtext) kpiGiftsSubtext.textContent = `Total de R$ ${activeEvent.totalArrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} arrecadados`;
@@ -805,7 +896,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletTitle = document.getElementById('wallet-header-title');
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
-    if (giftsTitle) giftsTitle.textContent = `Lista de Presentes: ${activeEvent.title}`;
+    if (giftsTitle) giftsTitle.textContent = 'Meus presentes';
     if (rsvpTitle) rsvpTitle.textContent = 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
@@ -841,64 +932,43 @@ document.addEventListener('DOMContentLoaded', () => {
       title: 'Favoritar primeiros fornecedores',
       desc: 'Espaços, buffet, foto e música',
       tab: 'b2b',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 0c.168.082.344.148.528.196m12.444 0c.184-.048.36-.114.528-.196"/></svg>'
+      icon: '<svg class="w-[23px] h-[23px] text-zinc-700" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 0c.168.082.344.148.528.196m12.444 0c.184-.048.36-.114.528-.196"/></svg>'
     },
     {
       id: 'budget',
       title: 'Definir orçamento do evento',
       desc: 'Organize metas e saldo da carteira',
       tab: 'wallet',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8m-3-5h6a1.5 1.5 0 0 0 0-3H9a1.5 1.5 0 0 0 0 3h6a1.5 1.5 0 0 1 0 3H9"/></svg>'
+      icon: '<svg class="w-[23px] h-[23px] text-zinc-700" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8m-3-5h6a1.5 1.5 0 0 0 0-3H9a1.5 1.5 0 0 0 0 3h6a1.5 1.5 0 0 1 0 3H9"/></svg>'
     },
     {
       id: 'savethedate',
       title: 'Escolher Save the Date',
       desc: 'Garanta a data na agenda dos convidados',
       tab: 'edit-site',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="6" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg>'
+      icon: '<svg class="w-[23px] h-[23px] text-zinc-700" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="6" rx="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg>'
     },
     {
       id: 'registry',
       title: 'Criar lista de presentes virtual',
       desc: 'Cadastre presentes em dinheiro ou cotas',
       tab: 'gifts',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>'
+      icon: '<svg class="w-[23px] h-[23px] text-zinc-700" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>'
     },
     {
       id: 'website',
       title: 'Personalizar site do evento',
       desc: 'Adicione fotos, história e contagem',
       tab: 'edit-site',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>'
+      icon: '<svg class="w-[23px] h-[23px] text-zinc-700" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>'
     },
     {
       id: 'guests',
       title: 'Cadastrar primeiros convidados',
       desc: 'Adicione os primeiros contatos para o RSVP',
       tab: 'rsvp',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>'
+      icon: '<svg class="w-[23px] h-[23px] text-zinc-700" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>'
     },
-    {
-      id: 'tables',
-      title: 'Organizar mesas do evento',
-      desc: 'Distribua os convidados nos setores da festa',
-      tab: 'rsvp',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>'
-    },
-    {
-      id: 'pix',
-      title: 'Configurar chave Pix da carteira',
-      desc: 'Receba os presentes em dinheiro na sua conta',
-      tab: 'wallet',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6H2.25m0 0v10.5m0-10.5h19.5m0 0v10.5m0 0a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25m19.5 0H2.25"/></svg>'
-    },
-    {
-      id: 'share',
-      title: 'Compartilhar link com convidados',
-      desc: 'Envie o link do site pelo WhatsApp',
-      tab: 'edit-site',
-      icon: '<svg class="w-4 h-4 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>'
-    }
   ];
 
   function isQuickStartTaskAchieved(taskId, activeEvent) {
@@ -927,12 +997,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return Boolean(activeEvent.sitePersonalizado || activeEvent.isPublished);
       case 'guests':
         return Boolean(activeEvent.guestsImported || activeEvent.convidadosConfirmados > 200);
-      case 'tables':
-        return Boolean(activeEvent.tablesConfigured || (activeEvent.mesas && activeEvent.mesas.length > 0));
-      case 'pix':
-        return Boolean(activeEvent.pixConfigured || activeEvent.chavePix || activeEvent.carteiraChavePix);
-      case 'share':
-        return Boolean(activeEvent.siteShared || localStorage.getItem(`love_site_shared_${activeEvent.id}`) === 'true');
       default:
         return false;
     }
@@ -983,50 +1047,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Regra de revelação progressiva de tarefas:
-    // Começa exibindo as 6 tarefas iniciais.
-    // Conforme as tarefas vão sendo concluídas, novas tarefas vão aparecendo até todas as 9 estarem visíveis!
-    const visibleCount = Math.min(total, Math.max(6, completedCount + 2));
-    const visibleTasks = quickStartTasksData.slice(0, visibleCount);
-
-    listEl.innerHTML = visibleTasks.map((task) => {
+    listEl.innerHTML = quickStartTasksData.map((task) => {
       const isDone = isQuickStartTaskAchieved(task.id, activeEvent);
-      const clickAction = isDone 
-        ? '' 
-        : (task.id === 'budget' 
-            ? 'onclick="navigateToBudget()"' 
-            : (task.id === 'tables' 
-                ? 'onclick="navigateToTables()"' 
-                : (task.id === 'pix' 
-                    ? 'onclick="navigateToPix()"' 
-                    : (task.id === 'share' 
-                        ? 'onclick="openShareModal()"' 
-                        : `onclick="switchRailTab('${task.tab}')"`))));
+      const clickAction = isDone
+        ? ''
+        : (task.id === 'budget'
+            ? 'onclick="navigateToBudget()"'
+            : `onclick="switchRailTab('${task.tab}')"`);
       return `
-        <div class="group p-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${clickAction} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
+        <div class="group py-4 px-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${clickAction} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
           <div class="flex items-center gap-3 min-w-0">
-            <!-- Ícone da Categoria (SEM círculo de check) -->
-            <div class="w-7 h-7 rounded-xl ${isDone ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-700 group-hover:bg-zinc-200/70'} flex items-center justify-center flex-shrink-0 transition-colors">
-              ${isDone ? '<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>' : task.icon}
+            <!-- Ícone da Categoria (sem fundo — mesmo tamanho/traço dos ícones do sidebar) -->
+            <div class="flex items-center justify-center flex-shrink-0">
+              ${isDone ? '<svg class="w-[23px] h-[23px] text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>' : task.icon}
             </div>
 
-            <!-- Título e Descrição (Riscado automaticamente quando alcançado) -->
+            <!-- Título (Riscado automaticamente quando alcançado) -->
             <div class="min-w-0">
               <span class="text-xs sm:text-sm ${isDone ? 'line-through text-zinc-400 font-normal' : 'text-zinc-800 group-hover:text-zinc-950 font-medium'} truncate block transition-all font-sans">
                 ${task.title}
               </span>
-              <span class="text-[10px] ${isDone ? 'text-zinc-400/80 line-through' : 'text-zinc-500'} block truncate font-sans">
-                ${task.desc}
-              </span>
             </div>
           </div>
 
-          <!-- Indicador à Direita: Concluído ou Seta -->
+          <!-- Indicador à Direita: seta (o check já aparece no ícone à esquerda quando concluído) -->
           <div class="flex-shrink-0 pl-2">
-            ${isDone 
-              ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 font-sans">Concluído</span>' 
-              : '<span class="text-zinc-400 group-hover:text-zinc-600 text-xs font-bold pl-1 font-sans">›</span>'
-            }
+            ${isDone ? '' : '<span class="text-zinc-400 group-hover:text-zinc-600 text-xs font-bold pl-1 font-sans">›</span>'}
           </div>
         </div>
       `;
@@ -1289,6 +1335,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPanel = document.getElementById(`editor-form-${subId}`);
     if (targetPanel) targetPanel.classList.remove('hidden');
 
+    // Aba "Aparência" usa o construtor visual (Elementos + Prévia); as demais abas usam o editor clássico
+    const classicWrapper = document.querySelector('#tab-edit-site > .editor-split-wrapper');
+    const builderRoot = document.getElementById('site-builder-root');
+    if (subId === 'home') {
+      if (classicWrapper) classicWrapper.style.setProperty('display', 'none', 'important');
+      if (builderRoot) builderRoot.style.display = '';
+    } else {
+      if (builderRoot) builderRoot.style.setProperty('display', 'none', 'important');
+      if (classicWrapper) classicWrapper.style.setProperty('display', 'flex', 'important');
+    }
+
     // Alterna a prévia ao vivo: no submenu "about" (Anfitriões), exibe como se parece a página de anfitriões (capa no início, 2 campos de título/texto, quem são os anfitriões, SEM botões)
     const mainPreviewContent = document.getElementById('live-preview-main-content');
     const hostsPreviewContent = document.getElementById('live-preview-hosts-content');
@@ -1402,10 +1459,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const subId = drawerItem.getAttribute('data-sub-id');
       const subLabel = drawerItem.querySelector('span') ? drawerItem.querySelector('span').textContent.trim() : '';
       if (drawerItem.closest('#drawer-sub-items-list')) {
-        drawerItem.closest('#drawer-sub-items-list').querySelectorAll('.sub-drawer-item').forEach(b => b.classList.remove('active'));
-        drawerItem.classList.add('active');
-        if (state.currentTab === 'edit-site' || !state.currentTab) {
+        const subDrawerList = drawerItem.closest('#drawer-sub-items-list');
+        const applySubTabSwitch = () => {
+          subDrawerList.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.remove('active'));
+          drawerItem.classList.add('active');
           switchEditorSubSection(subId, subLabel);
+        };
+        if (state.currentTab === 'edit-site' || !state.currentTab) {
+          // Saindo da Aparência (construtor visual): avisa se houver alterações não salvas
+          if (subId !== 'home' && state.activeSubSection === 'home' && window.builderConfirmLeaveIfDirty) {
+            window.builderConfirmLeaveIfDirty(applySubTabSwitch);
+          } else {
+            applySubTabSwitch();
+          }
         }
       }
     }
@@ -1602,13 +1668,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     builderState.music.tracks.forEach((track, idx) => {
       const row = document.createElement('div');
-      row.className = 'music-track-row flex flex-col sm:flex-row items-start gap-2 sm:gap-3 p-3 bg-zinc-50/70 border border-[#EAEAEF] rounded relative';
+      row.className = 'music-track-row flex flex-col sm:flex-row items-start gap-2 sm:gap-3 p-3 bg-zinc-50/70 border border-[#EAEAEA] rounded relative';
 
       const colUrl = document.createElement('div');
       colUrl.className = 'flex-1 w-full flex flex-col justify-start';
       colUrl.innerHTML = `
         <label class="block text-[10px] sm:text-[11px] font-bold uppercase text-zinc-500 tracking-wider font-sans mb-1 leading-4">URL DO VÍDEO</label>
-        <input type="text" class="music-track-url w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 placeholder:text-zinc-400 font-sans" placeholder="Ex: https://www.youtube.com/watch?v=XXXXXX" data-track-index="${idx}">
+        <input type="text" class="music-track-url w-full px-3 py-2 text-xs border border-[#EAEAEA] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 placeholder:text-zinc-400 font-sans" placeholder="Ex: https://www.youtube.com/watch?v=XXXXXX" data-track-index="${idx}">
         <span class="text-[10px] text-zinc-400 block font-sans mt-1 leading-4">Ex: https://www.youtube.com/watch?v=XXXXXX</span>
       `;
       const inputUrl = colUrl.querySelector('input');
@@ -1619,7 +1685,7 @@ document.addEventListener('DOMContentLoaded', () => {
       colPlacement.innerHTML = `
         <label class="block text-[10px] sm:text-[11px] font-bold uppercase text-zinc-500 tracking-wider font-sans mb-1 leading-4">ONDE TOCAR *</label>
         <div class="relative">
-          <select class="music-track-placement w-full px-3 py-2 text-xs border border-[#EAEAEF] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 cursor-pointer appearance-none pr-7 font-sans" data-track-index="${idx}">
+          <select class="music-track-placement w-full px-3 py-2 text-xs border border-[#EAEAEA] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 cursor-pointer appearance-none pr-7 font-sans" data-track-index="${idx}">
             <option value="all">Todas as páginas</option>
             <option value="localizacao">Localização</option>
             <option value="lista_presentes">Lista de presentes</option>
@@ -1800,13 +1866,20 @@ document.addEventListener('DOMContentLoaded', () => {
       'font-playfair': "'Playfair Display', Georgia, serif",
       'font-garamond': "'EB Garamond', Garamond, serif",
       'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+      'font-avermont': "'Avermont House', 'Avermont', 'Playfair Display', Georgia, serif",
+      'font-bride': "'Bride', 'Ephesis', cursive",
+      'font-bludhaven': "'Bludhaven', 'Cinzel', serif",
+      'font-fleur': "'Fleur De Leah', cursive",
+      'font-ephesis': "'Ephesis', cursive",
+      'font-hurricane': "'Hurricane', cursive",
+      'font-cookie': "'Cookie', cursive",
+      'font-italiana': "'Italiana', Georgia, serif",
+      'font-bodoni': "'Bodoni Moda', Georgia, serif",
       'font-cinzel': "'Cinzel', serif",
       'font-lora': "'Lora', Georgia, serif",
       'font-outfit': "'Outfit', sans-serif",
       'font-montserrat': "'Montserrat', sans-serif",
-      'font-inter': "'Inter', sans-serif",
-      'font-arial': "Arial, Helvetica, sans-serif",
-      'font-cursive': "'Great Vibes', cursive"
+      'font-inter': "'Inter', sans-serif"
     };
     if (fontMap[sel.value]) {
       sel.style.setProperty('font-family', fontMap[sel.value], 'important');
@@ -1901,6 +1974,28 @@ document.addEventListener('DOMContentLoaded', () => {
       'COM A BÊNÇÃO DE DEUS,'
     ])];
     renderEditorPrefaces();
+
+    if (activeEvent.slots && Array.isArray(activeEvent.slots) && activeEvent.slots.some(s => s !== null)) {
+      builderState.slots = JSON.parse(JSON.stringify(activeEvent.slots));
+      while (builderState.slots.length < 6) {
+        if (builderState.slots.length === 4) {
+          builderState.slots.push({ type: 'title', content: 'Esperamos por você!', bend: 0 });
+        } else if (builderState.slots.length === 5) {
+          builderState.slots.push({ type: 'text', content: 'Sua presença tornará nosso dia ainda mais especial.', bend: 0 });
+        } else {
+          builderState.slots.push(null);
+        }
+      }
+    } else {
+      builderState.slots = [
+        { type: 'text', content: '"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)', bend: 0 },
+        { type: 'text', content: 'COM A BÊNÇÃO DE DEUS,', bend: 0 },
+        { type: 'title', content: activeEvent.title || 'Beatriz & Lucas', bend: 0 },
+        { type: 'text', content: 'CONVIDAM VOCÊ PARA O SEU CASAMENTO', bend: 0 },
+        { type: 'title', content: 'Esperamos por você!', bend: 0 },
+        { type: 'text', content: 'Sua presença tornará nosso dia ainda mais especial.', bend: 0 }
+      ];
+    }
 
     if (activeEvent.music) {
       builderState.music = JSON.parse(JSON.stringify(activeEvent.music));
@@ -2031,6 +2126,42 @@ document.addEventListener('DOMContentLoaded', () => {
       else btnRadiusVal.textContent = `${bRad}px`;
     }
     updateLiveSitePreview();
+  }
+
+  // Remove popup do circle bender se existir no DOM
+  const existingBenderPopup = document.getElementById('circle-bender-popup');
+  if (existingBenderPopup) existingBenderPopup.remove();
+
+  // ==========================================================================
+  // CONTAGEM REGRESSIVA AO VIVO (Dias, Horas, Minutos e Segundos)
+  // ==========================================================================
+  let countdownTickerInterval = null;
+
+  function startLiveCountdown(targetDate) {
+    if (countdownTickerInterval) clearInterval(countdownTickerInterval);
+
+    function update() {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+
+      const days = distance > 0 ? Math.floor(distance / (1000 * 60 * 60 * 24)) : 0;
+      const hours = distance > 0 ? Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) : 0;
+      const minutes = distance > 0 ? Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) : 0;
+      const seconds = distance > 0 ? Math.floor((distance % (1000 * 60)) / 1000) : 0;
+
+      const daysEl = document.getElementById('countdown-days');
+      const hoursEl = document.getElementById('countdown-hours');
+      const minsEl = document.getElementById('countdown-minutes');
+      const secsEl = document.getElementById('countdown-seconds');
+
+      if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+      if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+      if (minsEl) minsEl.textContent = String(minutes).padStart(2, '0');
+      if (secsEl) secsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    update();
+    countdownTickerInterval = setInterval(update, 1000);
   }
 
   function updateLiveSitePreview() {
@@ -2177,6 +2308,15 @@ document.addEventListener('DOMContentLoaded', () => {
       'font-garamond': "'EB Garamond', Garamond, serif",
       'font-serif': "'EB Garamond', Garamond, serif",
       'font-cormorant': "'Cormorant Garamond', Georgia, serif",
+      'font-avermont': "'Avermont House', 'Avermont', 'Playfair Display', Georgia, serif",
+      'font-bride': "'Bride', 'Ephesis', cursive",
+      'font-bludhaven': "'Bludhaven', 'Cinzel', serif",
+      'font-fleur': "'Fleur De Leah', cursive",
+      'font-ephesis': "'Ephesis', cursive",
+      'font-hurricane': "'Hurricane', cursive",
+      'font-cookie': "'Cookie', cursive",
+      'font-italiana': "'Italiana', Georgia, serif",
+      'font-bodoni': "'Bodoni Moda', Georgia, serif",
       'font-cinzel': "'Cinzel', serif",
       'font-lora': "'Lora', Georgia, serif",
       'font-montserrat': "'Montserrat', sans-serif",
@@ -2186,21 +2326,21 @@ document.addEventListener('DOMContentLoaded', () => {
       'font-inter': "'Inter', sans-serif",
       'font-sans': "'Inter', sans-serif",
       'font-clean': "'Inter', sans-serif",
-      'font-arial': "Arial, Helvetica, sans-serif",
-      'font-cursive': "'Great Vibes', cursive",
-      'font-greatvibes': "'Great Vibes', cursive"
+      'font-cursive': "'Italiana', Georgia, serif",
+      'font-greatvibes': "'Italiana', Georgia, serif",
+      'font-arial': "'EB Garamond', Garamond, serif"
     };
 
-    // 3. EXATAMENTE 4 SLOTS DE TÍTULO E TEXTO (MÁXIMO 4 CAIXINHAS UNIFORMES E REORDENÁVEIS)
+    // 3. SLOTS DE TÍTULO E TEXTO (4 ANTES DA DATA + 2 ANTES DA ÚLTIMA IMAGEM)
     if (!builderState.slots || !Array.isArray(builderState.slots)) {
-      builderState.slots = [null, null, null, null];
+      builderState.slots = [null, null, null, null, null, null];
     }
-    while (builderState.slots.length < 4) builderState.slots.push(null);
-    if (builderState.slots.length > 4) builderState.slots = builderState.slots.slice(0, 4);
+    while (builderState.slots.length < 6) builderState.slots.push(null);
+    if (builderState.slots.length > 6) builderState.slots = builderState.slots.slice(0, 6);
 
     let draggedSlotIndex = null;
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 6; i++) {
       const slotContainer = document.getElementById(`invite-slot-${i}`);
       if (!slotContainer) continue;
 
@@ -2210,24 +2350,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const slotData = builderState.slots[i];
       const isEditingText = slotContainer.querySelector('.editable-live-box') && slotContainer.querySelector('.editable-live-box') === document.activeElement;
 
-      const reorderControls = `
-        <div class="slot-reorder-controls">
-          ${i > 0 ? `<button type="button" class="btn-slot-move btn-slot-up" data-slot="${i}" title="Subir posição"><svg class="w-2.5 h-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg></button>` : ''}
-          ${i < 3 ? `<button type="button" class="btn-slot-move btn-slot-down" data-slot="${i}" title="Descer posição"><svg class="w-2.5 h-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></button>` : ''}
+      const dragHandleHTML = `
+        <div class="slot-drag-handle" data-slot="${i}" title="Arrastar para reordenar" draggable="true">
+          <svg class="w-3.5 h-4 pointer-events-none" viewBox="0 0 16 20" fill="currentColor">
+            <circle cx="5" cy="4" r="1.75"/>
+            <circle cx="11" cy="4" r="1.75"/>
+            <circle cx="5" cy="10" r="1.75"/>
+            <circle cx="11" cy="10" r="1.75"/>
+            <circle cx="5" cy="16" r="1.75"/>
+            <circle cx="11" cy="16" r="1.75"/>
+          </svg>
         </div>
       `;
 
-
       if (!slotData) {
-        // SLOT VAZIO: Exibe a caixinha pontilhada uniforme com o botão circular (+) no centro
+        // SLOT VAZIO: Exibe a caixinha pontilhada uniforme com o botão circular (+) no centro e drag handle à esquerda
         slotContainer.innerHTML = `
-          ${reorderControls}
           <div class="invite-slot-box-empty">
+            ${dragHandleHTML}
             <div class="relative">
               <button type="button" class="btn-slot-add w-7 h-7 rounded-full bg-[#537bae] hover:bg-[#416799] text-white shadow-xs flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer" data-slot="${i}" title="Adicionar Título ou Texto">
                 <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               </button>
-              <div id="dropdown-slot-${i}" class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 w-36 bg-white border border-[#EAEAEF] rounded-lg shadow-xl p-1 z-30 space-y-0.5 animate-fade-in">
+              <div id="dropdown-slot-${i}" class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 w-36 bg-white border border-[#EAEAEA] rounded-lg shadow-xl p-1 z-30 space-y-0.5 animate-fade-in">
                 <button type="button" class="btn-slot-pick w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-blue-50 hover:text-[#537bae] rounded transition-colors text-left cursor-pointer" data-slot="${i}" data-type="title">
                   <span class="w-4 h-4 rounded bg-blue-100/70 text-[#537bae] flex items-center justify-center font-bold text-[10px]">T</span>
                   <span>Título</span>
@@ -2241,59 +2386,96 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
       } else {
-        // SLOT PREENCHIDO COM TÍTULO OU TEXTO (LIMPO E SEM ÍCONES INTERNOS)
+        // SLOT PREENCHIDO COM TÍTULO OU TEXTO (COM ÍCONE DE DRAG À ESQUERDA & BOTÃO LÁPIS/EXCLUIR)
         if (!isEditingText) {
           slotContainer.innerHTML = '';
-          slotContainer.insertAdjacentHTML('beforeend', reorderControls);
 
           const wrapper = document.createElement('div');
-          wrapper.className = 'live-block-wrapper relative group/block text-center';
+          wrapper.className = 'live-block-wrapper relative group/block text-center inline-flex items-center justify-center';
+
+          // Ícone de Drag à Esquerda (6 pontinhos conforme referência)
+          const dragHandle = document.createElement('div');
+          dragHandle.className = 'slot-drag-handle';
+          dragHandle.dataset.slot = i;
+          dragHandle.title = 'Arrastar para reordenar';
+          dragHandle.setAttribute('draggable', 'true');
+          dragHandle.innerHTML = `
+            <svg class="w-3.5 h-4 pointer-events-none" viewBox="0 0 16 20" fill="currentColor">
+              <circle cx="5" cy="4" r="1.75"/>
+              <circle cx="11" cy="4" r="1.75"/>
+              <circle cx="5" cy="10" r="1.75"/>
+              <circle cx="11" cy="10" r="1.75"/>
+              <circle cx="5" cy="16" r="1.75"/>
+              <circle cx="11" cy="16" r="1.75"/>
+            </svg>
+          `;
+          dragHandle.addEventListener('mousedown', () => {
+            slotContainer.draggable = true;
+          });
+          dragHandle.addEventListener('dragstart', (e) => {
+            draggedSlotIndex = i;
+            slotContainer.classList.add('is-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', i);
+          });
+          wrapper.appendChild(dragHandle);
 
           const box = document.createElement('div');
           box.contentEditable = "true";
           box.spellcheck = false;
           box.dataset.slotIndex = i;
 
-          if (slotData.type === 'title') {
+          const isTitle = slotData.type === 'title';
+          const isQuote = slotData.content && (slotData.content.includes('"') || slotData.content.includes('('));
+          const isUppercaseCall = slotData.content && (slotData.content.includes('BÊNÇÃO') || slotData.content.includes('CONVIDAM') || slotData.content.toUpperCase() === slotData.content);
+
+          let trackingClass = '';
+          if (isUppercaseCall) trackingClass = 'uppercase tracking-[0.22em] font-bold text-[10px] sm:text-[11px]';
+          else if (isQuote) trackingClass = 'font-serif text-xs sm:text-sm';
+          else trackingClass = 'text-xs sm:text-sm';
+
+          const slotFontFam = isTitle ? (fontMap[builderState.font || 'font-playfair'] || "'Playfair Display', Georgia, serif") : actualDescFamily;
+          const slotFontSize = isTitle ? titleSize : (isQuote ? Math.round(descSize * 0.9) : (isUppercaseCall ? Math.round(descSize * 0.78) : descSize));
+          const slotFontWeight = isTitle ? (builderState.titleBold ? 'bold' : 'normal') : (builderState.descBold ? 'bold' : (isUppercaseCall ? 'bold' : 'normal'));
+          const slotFontStyle = isTitle ? (builderState.titleItalic ? 'italic' : 'normal') : (builderState.descItalic ? 'italic' : 'normal');
+          const slotColor = isTitle ? (builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B')) : descColor;
+
+          if (isTitle) {
             box.className = `editable-live-box live-block-title leading-tight ${builderState.font || 'font-playfair'}`;
             box.setAttribute('data-placeholder', 'Digite o título...');
-            box.textContent = slotData.content || '';
-            box.style.setProperty('font-family', fontMap[builderState.font || 'font-playfair'] || "'Playfair Display', Georgia, serif", 'important');
-            box.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
-            box.style.setProperty('font-size', `${titleSize}px`, 'important');
-            box.style.setProperty('font-weight', builderState.titleBold ? 'bold' : 'normal', 'important');
-            box.style.setProperty('font-style', builderState.titleItalic ? 'italic' : 'normal', 'important');
+            box.style.setProperty('font-family', slotFontFam, 'important');
+            box.style.setProperty('color', slotColor, 'important');
+            box.style.setProperty('font-size', `${slotFontSize}px`, 'important');
+            box.style.setProperty('font-weight', slotFontWeight, 'important');
+            box.style.setProperty('font-style', slotFontStyle, 'important');
             box.style.setProperty('text-decoration', builderState.titleUnderline ? 'underline' : 'none', 'important');
             box.style.setProperty('text-align', builderState.titleAlign || 'center', 'important');
           } else {
-            // Estilização tipográfica inteligente e elegante para textos
-            const isQuote = slotData.content && (slotData.content.includes('"') || slotData.content.includes('('));
-            const isUppercaseCall = slotData.content && (slotData.content.includes('BÊNÇÃO') || slotData.content.includes('CONVIDAM') || slotData.content.toUpperCase() === slotData.content);
-
-            let trackingClass = '';
-            if (isUppercaseCall) trackingClass = 'uppercase tracking-[0.22em] font-bold text-[10px] sm:text-[11px]';
-            else if (isQuote) trackingClass = 'font-serif text-xs sm:text-sm';
-            else trackingClass = 'text-xs sm:text-sm';
-
             box.className = `editable-live-box live-block-text leading-relaxed ${trackingClass} ${descFont}`;
             if (builderState.descItalic) box.classList.add('italic');
             box.setAttribute('data-placeholder', 'Digite o texto...');
-            box.textContent = slotData.content || '';
-            box.style.setProperty('font-family', actualDescFamily, 'important');
-            box.style.setProperty('color', descColor, 'important');
-            box.style.setProperty('font-size', isQuote ? `${Math.round(descSize * 0.9)}px` : (isUppercaseCall ? `${Math.round(descSize * 0.78)}px` : `${descSize}px`), 'important');
-            box.style.setProperty('font-weight', builderState.descBold ? 'bold' : (isUppercaseCall ? 'bold' : 'normal'), 'important');
-            box.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+            box.style.setProperty('font-family', slotFontFam, 'important');
+            box.style.setProperty('color', slotColor, 'important');
+            box.style.setProperty('font-size', `${slotFontSize}px`, 'important');
+            box.style.setProperty('font-weight', slotFontWeight, 'important');
+            box.style.setProperty('font-style', slotFontStyle, 'important');
             box.style.setProperty('text-decoration', builderState.descUnderline ? 'underline' : 'none', 'important');
             box.style.setProperty('text-align', builderState.descAlign || 'center', 'important');
           }
+
+          box.textContent = slotData.content || '';
 
           if (!slotData.content || !slotData.content.trim()) {
             box.dataset.empty = "true";
           }
 
-          box.addEventListener('focus', () => { slotContainer.draggable = false; });
-          box.addEventListener('blur', () => { slotContainer.draggable = true; });
+          box.addEventListener('focus', () => {
+            slotContainer.draggable = false;
+          });
+
+          box.addEventListener('blur', () => {
+            slotContainer.draggable = true;
+          });
 
           box.addEventListener('input', () => {
             const val = (box.innerText || box.textContent || '').replace(/\u200B/g, '').replace(/[↗✎]/g, '').trim();
@@ -2316,7 +2498,7 @@ document.addEventListener('DOMContentLoaded', () => {
           btnDel.type = 'button';
           btnDel.className = 'btn-delete-text-block';
           btnDel.title = 'Excluir campo e voltar ao botão +';
-          btnDel.innerHTML = `<svg class="w-3 h-3 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+          btnDel.innerHTML = `<svg class="w-2.5 h-2.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
           btnDel.addEventListener('click', (ev) => {
             ev.stopPropagation();
             builderState.slots[i] = null;
@@ -2379,10 +2561,14 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         slotContainer.classList.remove('drag-over');
         if (draggedSlotIndex !== null && draggedSlotIndex !== i) {
-          const moved = builderState.slots.splice(draggedSlotIndex, 1)[0];
-          builderState.slots.splice(i, 0, moved);
-          draggedSlotIndex = null;
-          updateLiveSitePreview();
+          const isTopGroup = (draggedSlotIndex <= 3 && i <= 3);
+          const isBottomGroup = (draggedSlotIndex >= 4 && i >= 4);
+          if (isTopGroup || isBottomGroup) {
+            const moved = builderState.slots.splice(draggedSlotIndex, 1)[0];
+            builderState.slots.splice(i, 0, moved);
+            draggedSlotIndex = null;
+            updateLiveSitePreview();
+          }
         }
       };
     }
@@ -2446,9 +2632,29 @@ document.addEventListener('DOMContentLoaded', () => {
       dateTimeBox.style.setProperty('border-color', descColor + '35', 'important');
     }
 
+    // Inicializa / Atualiza o Timer da Contagem Regressiva ao Vivo (Dias, Horas, Minutos e Segundos)
+    let targetEventDate = new Date(2026, 9, 18, 16, 30, 0);
+    if (rawDate) {
+      const parts = rawDate.split('-').map(Number);
+      if (parts.length === 3) {
+        let [hh, mm] = (rawTime || '16:30').split(':').map(Number);
+        if (isNaN(hh)) hh = 16;
+        if (isNaN(mm)) mm = 30;
+        targetEventDate = new Date(parts[0], parts[1] - 1, parts[2], hh, mm, 0);
+      }
+    }
+    startLiveCountdown(targetEventDate);
+
+    document.querySelectorAll('.countdown-number').forEach(el => {
+      el.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+    });
+    document.querySelectorAll('.countdown-unit-box').forEach(el => {
+      el.style.setProperty('border-color', descColor + '35', 'important');
+    });
+
     // 7. Local & Endereço
-    const venueNameVal = (inputDataLocation && inputDataLocation.value !== undefined && inputDataLocation.value.length > 0) ? inputDataLocation.value : (activeEvent.eventDetails?.locationName || activeEvent.location || 'VILLA BISUTTI - ESPAÇO JARDIM');
-    const venueAddrVal = (inputDataAddress && inputDataAddress.value !== undefined && inputDataAddress.value.length > 0) ? inputDataAddress.value : (activeEvent.eventDetails?.address || 'Av. Cidade Jardim, 1200 - São Paulo, SP');
+    const venueNameVal = (inputDataLocation && inputDataLocation.value !== undefined && inputDataLocation.value.length > 0) ? inputDataLocation.value : (activeEvent.eventDetails?.locationName || activeEvent.location || 'Villa Santanna Eventos');
+    const venueAddrVal = (inputDataAddress && inputDataAddress.value !== undefined && inputDataAddress.value.length > 0) ? inputDataAddress.value : (activeEvent.eventDetails?.address || 'Av. Castello Branco, 2490');
 
     const venueLabel = document.getElementById('live-preview-venue-label');
     if (venueLabel) {
@@ -2495,16 +2701,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const countdownLabel = document.getElementById('live-preview-countdown-label');
     if (countdownLabel) {
-      countdownLabel.style.setProperty('color', descColor, 'important');
-      countdownLabel.style.setProperty('font-family', actualDescFamily, 'important');
-      countdownLabel.style.setProperty('font-size', `${Math.round(descSize * 0.85)}px`, 'important');
-      countdownLabel.style.setProperty('font-style', builderState.descItalic ? 'italic' : 'normal', 'important');
+      countdownLabel.textContent = 'Contagem Regressiva';
+      const actualTitleFamily = fontMap[builderState.font || 'font-playfair'] || "'Playfair Display', Georgia, serif";
+      countdownLabel.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+      countdownLabel.style.setProperty('font-family', actualTitleFamily, 'important');
+      countdownLabel.style.setProperty('font-size', `${Math.max(12, Math.round(titleSize * 0.45))}px`, 'important');
+      countdownLabel.style.setProperty('font-weight', builderState.titleBold ? 'bold' : 'normal', 'important');
+      countdownLabel.style.setProperty('font-style', builderState.titleItalic ? 'italic' : 'normal', 'important');
+      countdownLabel.style.setProperty('text-align', builderState.titleAlign || 'center', 'important');
+      countdownLabel.style.setProperty('text-transform', 'none', 'important');
+      countdownLabel.style.setProperty('margin-bottom', '0.75rem', 'important');
     }
     // 8. Fechamento
     if (previewClosingNames) {
       previewClosingNames.textContent = titleVal || 'Anfitriões';
       previewClosingNames.className = `text-xl italic ${builderState.font || 'font-serif-title'}`;
       previewClosingNames.style.setProperty('color', builderState.titleColor || (isDark ? '#FFFFFF' : '#18181B'), 'important');
+    }
+
+    const buttonsCallout = document.getElementById('live-preview-buttons-callout');
+    if (buttonsCallout) {
+      buttonsCallout.style.setProperty('color', descColor, 'important');
+      buttonsCallout.style.setProperty('font-family', actualDescFamily, 'important');
     }
 
     // 9. Estilo dos Botões do Convite (Ícones: Animado, Moderno, Minimalista & Fonte Clássica)
@@ -2725,6 +2943,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     activeEvent.prefaces = [...(builderState.prefaces || [])];
+    activeEvent.slots = JSON.parse(JSON.stringify(builderState.slots || []));
 
     // Salva Dados detalhados do evento
     if (!activeEvent.eventDetails) activeEvent.eventDetails = {};
@@ -3289,8 +3508,43 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // CONTROLE DOS 4 SLOTS COM BOTÃO (+) E DROPDOWN DE OPÇÕES (MÁXIMO 4 CAIXINHAS)
+  // CONTROLE DOS 6 SLOTS COM BOTÃO (+) E DROPDOWN DE OPÇÕES (TÍTULO/TEXTO)
   // ==========================================
+
+  // Preenche um slot vazio com Título ou Texto e foca para digitação imediata.
+  // Usado tanto pelo dropdown "+" de dentro da prévia quanto pela sidebar de Elementos.
+  function addSlotContent(slotIdx, type) {
+    if (!builderState.slots) {
+      builderState.slots = [null, null, null, null, null, null];
+    }
+    while (builderState.slots.length < 6) builderState.slots.push(null);
+
+    const defaultContent = type === 'title'
+      ? (slotIdx === 2 ? 'Beatriz & Lucas' : (slotIdx === 4 ? 'Esperamos por você!' : (slotIdx === 0 ? 'Casamento' : 'Título')))
+      : (slotIdx === 0 ? '"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)' : (slotIdx === 1 ? 'COM A BÊNÇÃO DE DEUS,' : (slotIdx === 5 ? 'Sua presença tornará nosso dia ainda mais especial.' : 'CONVIDAM VOCÊ PARA O SEU CASAMENTO')));
+
+    builderState.slots[slotIdx] = {
+      type: type,
+      content: defaultContent,
+      bend: 0
+    };
+
+    updateLiveSitePreview();
+
+    setTimeout(() => {
+      const slotEl = document.getElementById(`invite-slot-${slotIdx}`);
+      const box = slotEl ? slotEl.querySelector('.editable-live-box') : null;
+      if (box) {
+        box.focus();
+        const range = document.createRange();
+        range.selectNodeContents(box);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }, 70);
+  }
+
   document.addEventListener('click', (e) => {
     // 1. Clique no botão (+) de um slot
     const addBtn = e.target.closest('.btn-slot-add');
@@ -3315,34 +3569,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const dd = document.getElementById(`dropdown-slot-${slotIdx}`);
       if (dd) dd.classList.add('hidden');
 
-      if (!builderState.slots) {
-        builderState.slots = [null, null, null, null];
-      }
-
-      const defaultContent = type === 'title'
-        ? (slotIdx === 2 ? 'Beatriz & Lucas' : (slotIdx === 0 ? 'Casamento' : 'Título'))
-        : (slotIdx === 0 ? '"Um cordão de três dobras não se rompe com facilidade." (Eclesiastes 4:12)' : (slotIdx === 1 ? 'COM A BÊNÇÃO DE DEUS,' : 'CONVIDAM VOCÊ PARA O SEU CASAMENTO'));
-
-      builderState.slots[slotIdx] = {
-        type: type,
-        content: defaultContent
-      };
-
-      updateLiveSitePreview();
-
-      // Foca automaticamente no campo adicionado para digitação imediata
-      setTimeout(() => {
-        const slotEl = document.getElementById(`invite-slot-${slotIdx}`);
-        const box = slotEl ? slotEl.querySelector('.editable-live-box') : null;
-        if (box) {
-          box.focus();
-          const range = document.createRange();
-          range.selectNodeContents(box);
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(range);
-        }
-      }, 70);
+      addSlotContent(slotIdx, type);
       return;
     }
 
@@ -3351,7 +3578,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (upBtn) {
       e.stopPropagation();
       const idx = parseInt(upBtn.getAttribute('data-slot'), 10);
-      if (idx > 0) {
+      if (idx > 0 && idx !== 4) {
         const temp = builderState.slots[idx];
         builderState.slots[idx] = builderState.slots[idx - 1];
         builderState.slots[idx - 1] = temp;
@@ -3365,7 +3592,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (downBtn) {
       e.stopPropagation();
       const idx = parseInt(downBtn.getAttribute('data-slot'), 10);
-      if (idx < 3) {
+      if (idx < 3 || idx === 4) {
         const temp = builderState.slots[idx];
         builderState.slots[idx] = builderState.slots[idx + 1];
         builderState.slots[idx + 1] = temp;
@@ -4123,8 +4350,8 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else if (target === 'venue') {
       if (mobileEditTitle) mobileEditTitle.textContent = 'Editar Local e Endereço';
-      const inputLocVal = document.getElementById('editor-data-location')?.value || activeEvent.eventDetails?.locationName || activeEvent.location || 'VILLA BISUTTI - ESPAÇO JARDIM';
-      const inputAddrVal = document.getElementById('editor-data-address')?.value || activeEvent.eventDetails?.address || 'Av. Cidade Jardim, 1200 - São Paulo, SP';
+      const inputLocVal = document.getElementById('editor-data-location')?.value || activeEvent.eventDetails?.locationName || activeEvent.location || 'Villa Santanna Eventos';
+      const inputAddrVal = document.getElementById('editor-data-address')?.value || activeEvent.eventDetails?.address || 'Av. Castello Branco, 2490';
       mobileEditContainer.innerHTML = `
         <div class="space-y-3">
           <div>
@@ -4827,12 +5054,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Renderiza os itens de presentes reais no estilo da imagem de referência
     filteredGifts.forEach(gift => {
-      const buyerName = gift.buyerName || (gift.received > 0 ? (activeEvent.receivedGifts?.find(r => r.giftTitle === gift.title || r.id === gift.id)?.guestName || 'Convidado') : null);
+      const receivedRecord = (activeEvent.receivedGifts || []).find(r => r.giftTitle === gift.title || r.id === gift.id) || null;
+      const buyerName = gift.buyerName || (gift.received > 0 ? (receivedRecord?.guestName || 'Convidado') : null);
       const isPurchased = Boolean(buyerName);
 
       const card = document.createElement('div');
       card.className = `group bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
-        isPurchased ? 'opacity-55 hover:opacity-100' : ''
+        isPurchased ? 'opacity-55 hover:opacity-100 cursor-pointer' : ''
       }`;
 
       card.innerHTML = `
@@ -4841,16 +5069,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
           
           ${isPurchased ? `
-            <!-- Ícone de Presente e Nome do Convidado sobre a imagem -->
-            <div class="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex flex-col items-center justify-center pointer-events-none z-10 gap-2 p-3">
-              <div class="w-10 h-10 rounded-full bg-white shadow-sm border border-zinc-200/80 flex items-center justify-center text-[#537bae] shrink-0">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 0 0 0-4.5H3a2.25 2.25 0 0 0 0 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 0 1 0-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 0 0 0-4.5c-1.864 0-3.75 2.25-3.75 4.5"/>
-                </svg>
-              </div>
-              <div class="px-3 py-1 rounded-full bg-white shadow-sm border border-zinc-200/80 text-[#5c7aaa] text-xs font-semibold font-sans max-w-[90%] truncate text-center">
-                ${buyerName}
-              </div>
+            <!-- Nome do Convidado no canto inferior esquerdo, sem fundo, com sombra para legibilidade -->
+            <div class="gift-received-buyer absolute bottom-2 left-3 z-10 text-white text-xs font-bold font-sans max-w-[85%] truncate pointer-events-none" style="text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 1px 6px rgba(0,0,0,0.6);">
+              ${buyerName}
             </div>
           ` : `
             <!-- Botão de Favoritar no topo direito da imagem -->
@@ -4869,12 +5090,8 @@ document.addEventListener('DOMContentLoaded', () => {
               <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight" title="${gift.title}">
                 ${gift.title}
               </h4>
-              ${isPurchased ? `
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-[#537bae] border border-[#EAEAEF] font-sans shrink-0">
-                  Recebido
-                </span>
-              ` : `
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-emerald-700 border border-[#EAEAEF] font-sans shrink-0">
+              ${isPurchased ? '' : `
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-emerald-700 border border-[#EAEAEA] font-sans shrink-0">
                   Ativo
                 </span>
               `}
@@ -4904,8 +5121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           ` : `
             <div class="pt-1 mt-auto">
-              <div class="w-full py-2 px-3 rounded-[var(--radius-control,12px)] bg-zinc-50/90 border border-zinc-200/80 text-center text-xs font-medium text-zinc-400 font-sans cursor-not-allowed select-none flex items-center justify-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+              <div class="gift-received-btn w-full py-2 px-3 rounded-[var(--radius-control,12px)] bg-[#FAFAFA] border border-zinc-200 text-center text-xs font-bold text-zinc-600 font-sans select-none flex items-center justify-center gap-1.5" title="Ver recado">
                 <span>Presente recebido</span>
               </div>
             </div>
@@ -4957,8 +5173,60 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
+      // Abre o recado deixado pelo convidado ao comprar o presente
+      if (isPurchased) {
+        card.addEventListener('click', () => {
+          const buyerNameLower = (buyerName || '').trim().toLowerCase();
+          const buyerGuest = activeEvent.guests.find(g => {
+            const gName = (g.name || '').trim().toLowerCase();
+            return gName && (gName === buyerNameLower || buyerNameLower.startsWith(gName + ' '));
+          });
+          openGiftMessageModal({
+            image: gift.image,
+            title: gift.title,
+            buyerName,
+            message: receivedRecord && receivedRecord.message,
+            date: receivedRecord && receivedRecord.date,
+            amount: (receivedRecord && receivedRecord.amount) || parseFloat(gift.price) || 0,
+            rsvpStatus: buyerGuest && buyerGuest.status
+          });
+        });
+      }
+
       container.appendChild(card);
     });
+  }
+
+  function openGiftMessageModal({ image, title, buyerName, message, date, amount, rsvpStatus }) {
+    const modal = document.getElementById('modal-gift-message');
+    if (!modal) return;
+    const imgEl = document.getElementById('gift-message-modal-image');
+    const titleEl = document.getElementById('gift-message-modal-title');
+    const buyerEl = document.getElementById('gift-message-modal-buyer');
+    const valueEl = document.getElementById('gift-message-modal-value');
+    const dateEl = document.getElementById('gift-message-modal-date');
+    const statusEl = document.getElementById('gift-message-modal-status');
+    const textEl = document.getElementById('gift-message-modal-text');
+
+    if (imgEl) { imgEl.src = image || ''; imgEl.alt = title || ''; }
+    if (titleEl) titleEl.textContent = title || '';
+    if (buyerEl) buyerEl.textContent = `Presente de ${buyerName || 'um convidado'}`;
+    if (valueEl) valueEl.textContent = `R$ ${(amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (dateEl) dateEl.textContent = date || '—';
+
+    const statusMap = {
+      confirmed: { label: 'Confirmado', color: '#10B981' },
+      pending: { label: 'Pendente', color: '#71717A' },
+      declined: { label: 'Recusado', color: '#b04369' }
+    };
+    if (statusEl) {
+      const info = statusMap[rsvpStatus] || { label: '—', color: '#71717A' };
+      statusEl.textContent = info.label;
+      statusEl.style.setProperty('color', info.color, 'important');
+    }
+
+    if (textEl) textEl.textContent = (message && message.trim()) ? message : 'Nenhum recado foi deixado com esse presente.';
+    openModal(modal);
   }
 
   function renderReceivedGifts() {
@@ -4994,8 +5262,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-start gap-3">
           <img src="${item.image}" alt="${item.giftTitle}" class="w-16 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0">
           <div class="flex-1 min-w-0">
-            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">Presente Recebido ● ${item.method}</span>
-            <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate">${item.giftTitle}</h4>
+            <span class="gift-received-tag text-[10px] font-bold text-[#183b54] bg-[#ebf4ff] border border-[#d4e5ff] px-2 py-0.5 rounded-[var(--radius-control,12px)] uppercase tracking-wider inline-block">Presente Recebido ● ${item.method}</span>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate mt-1">${item.giftTitle}</h4>
             <div class="text-sm font-black text-emerald-600 mt-0.5">R$ ${item.amount.toFixed(2).replace('.', ',')}</div>
             <p class="text-[11px] font-bold text-slate-700 mt-1 flex items-center gap-1">
               <span>De: ${item.guestName}</span>
@@ -5163,14 +5431,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerTitle = document.getElementById('gifts-header-title');
     const headerSub = document.getElementById('gifts-header-subtitle');
 
-    if (subId === 'messages') {
-      document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
-      const target = document.getElementById('tab-rsvp-messages') || document.getElementById('tab-messages');
-      if (target) target.classList.add('active');
-      renderRecadosMural();
-      return;
-    }
-
     if (subId === 'gift-settings') {
       if (topSearchBar) topSearchBar.classList.add('hidden');
       if (panelProducts) panelProducts.classList.add('hidden');
@@ -5253,6 +5513,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. LISTA DE CONVIDADOS & RSVP (Layout idêntico ao Casar.com)
   // ==========================================
   let currentRsvpFilter = 'all';
+  let rsvpPageSize = 15;
+  let rsvpCurrentPage = 1;
 
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
     currentRsvpFilter = activeFilter;
@@ -5310,238 +5572,486 @@ document.addEventListener('DOMContentLoaded', () => {
       if (check) check.classList.toggle('hidden', !isSelected);
     });
 
-    // 4. Filtragem por Status e por Busca
+    // 4. Filtragem por Status e por Busca (lista sempre em ordem alfabética)
     const cleanSearch = searchKeyword.toLowerCase().trim();
     const filteredGuests = activeEvent.guests.filter(guest => {
       const matchesFilter = (activeFilter === 'all') || (guest.status === activeFilter);
-      const matchesSearch = !cleanSearch || 
-        guest.name.toLowerCase().includes(cleanSearch) || 
+      const matchesSearch = !cleanSearch ||
+        guest.name.toLowerCase().includes(cleanSearch) ||
         (guest.phone && guest.phone.includes(cleanSearch)) ||
         (guest.table && guest.table.toLowerCase().includes(cleanSearch));
       return matchesFilter && matchesSearch;
-    });
+    }).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }));
+
+    const footerCountEl = document.getElementById('rsvp-footer-count');
+    if (footerCountEl) {
+      footerCountEl.textContent = `(${filteredGuests.length})`;
+    }
 
     if (filteredGuests.length === 0) {
       if (emptyStateEl) emptyStateEl.classList.remove('hidden');
+      renderRsvpPagination(0);
       return;
     } else {
       if (emptyStateEl) emptyStateEl.classList.add('hidden');
     }
 
-    filteredGuests.forEach(guest => {
-      // Status RSVP limpo: sem fundo colorido e sem ícones de check/pendente
-      const statusBadges = {
-        confirmed: '<span class="text-xs sm:text-sm font-medium text-emerald-700 whitespace-nowrap">Confirmado</span>',
-        pending: '<span class="text-xs sm:text-sm font-medium text-amber-700 whitespace-nowrap">Pendente</span>',
-        declined: '<span class="text-xs sm:text-sm font-medium text-rose-600 whitespace-nowrap">Recusado</span>'
-      };
+    // Paginação: só as mesas/convidados da página atual são renderizados,
+    // mas sempre junto com seus acompanhantes (nunca dividimos uma reserva entre páginas).
+    const totalPages = Math.max(1, Math.ceil(filteredGuests.length / rsvpPageSize));
+    if (rsvpCurrentPage > totalPages) rsvpCurrentPage = totalPages;
+    const pageStart = (rsvpCurrentPage - 1) * rsvpPageSize;
+    const pageGuests = filteredGuests.slice(pageStart, pageStart + rsvpPageSize);
+    renderRsvpPagination(filteredGuests.length);
 
-      const giftsCount = guest.giftsBought ? guest.giftsBought.length : 0;
-      // Ícone de presente normal (SVG) sem fundo verde e sem emoji
-      const giftsBadge = giftsCount > 0 
-        ? `<span class="inline-flex items-center gap-1 text-xs font-medium text-zinc-600 ml-2 flex-shrink-0" title="${giftsCount} presente(s) comprado(s)">
-            <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 0h-1.5m1.5 0v11.25m0-11.25a2.25 2.25 0 1 0-2.25-2.25m2.25 2.25a2.25 2.25 0 1 1 2.25-2.25M3.75 12h16.5m-16.5 0a2.25 2.25 0 0 0-2.25 2.25v5.25a2.25 2.25 0 0 0 2.25 2.25h16.5a2.25 2.25 0 0 0 2.25-2.25v-5.25a2.25 2.25 0 0 0-2.25-2.25m-16.5 0V7.5a2.25 2.25 0 0 1 2.25-2.25h12a2.25 2.25 0 0 1 2.25 2.25V12"/></svg>
-            <span>${giftsCount}</span>
-          </span>`
-        : '';
+    // Extrai só o número da mesa (ex: "Mesa 04 (Família)" -> "04")
+    const extractTableNumber = (table) => {
+      if (!table) return '—';
+      const match = table.match(/\d+/);
+      return match ? match[0] : '—';
+    };
 
-      const row = document.createElement('tr');
-      row.className = 'border-b border-zinc-100 hover:bg-zinc-50/70 transition-colors text-xs sm:text-sm cursor-pointer group';
-      row.innerHTML = `
-        <td class="py-3 px-2 sm:px-4">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-700 text-xs font-semibold flex items-center justify-center flex-shrink-0">
-              ${guest.name ? guest.name.substring(0, 1).toUpperCase() : 'C'}
-            </div>
-            <div class="min-w-0 flex-1 truncate">
-              <span class="font-medium text-zinc-900 group-hover:text-[#537bae] transition-colors block truncate">${guest.name}</span>
-              ${guest.table ? `<span class="text-[11px] text-zinc-400 block truncate">Mesa: ${guest.table}</span>` : ''}
-            </div>
-            ${giftsBadge}
-          </div>
-        </td>
-        <td class="py-3 px-2 sm:px-4">
-          <div class="flex items-center">
-            ${statusBadges[guest.status] || guest.status}
-          </div>
-        </td>
-        <td class="py-3 px-2 sm:px-4 text-right">
-          <button type="button" class="btn-open-guest-drawer p-1.5 rounded-md hover:bg-zinc-200/60 text-zinc-400 hover:text-zinc-800 transition-all cursor-pointer inline-flex items-center justify-center" title="Ver detalhes do convidado" data-guest-id="${guest.id}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="1.25"></circle>
-              <circle cx="12" cy="5" r="1.25"></circle>
-              <circle cx="12" cy="19" r="1.25"></circle>
-            </svg>
-          </button>
-        </td>
-      `;
+    // Status RSVP limpo: sem fundo colorido
+    const statusBadges = {
+      confirmed: '<span class="text-xs sm:text-sm font-medium whitespace-nowrap" style="color:#10B981;">Confirmado</span>',
+      pending: '<span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">Pendente</span>',
+      declined: '<span class="text-xs sm:text-sm font-medium whitespace-nowrap" style="color:#b04369;">Recusado</span>'
+    };
 
-      // Clicar em qualquer lugar da linha ou no botão de 3 pontinhos abre o Drawer com todos os detalhes
-      row.addEventListener('click', () => {
-        openGuestDrawer(guest.id);
+    // Um convidado com acompanhantes nunca aparece com nomes concatenados
+    // ("Fulano & Beltrano") numa única linha — cada pessoa ganha sua própria
+    // linha, sempre com um nome único, compartilhando status e mesa da mesma reserva.
+    pageGuests.forEach(guest => {
+      const gifts = guest.giftsBought || [];
+      const giftsTotal = gifts.reduce((acc, g) => acc + (g.amount || 0), 0);
+      const giftLabel = giftsTotal > 0
+        ? `R$ ${giftsTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+        : '—';
+
+      const attendees = [{ name: guest.name, isPrimary: true }];
+      (guest.companionsNames || []).forEach(comp => {
+        const cleanName = (comp || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+        if (cleanName) attendees.push({ name: cleanName, isPrimary: false });
       });
 
-      listEl.appendChild(row);
+      attendees.forEach(attendee => {
+        const row = document.createElement('tr');
+        row.className = 'cursor-pointer group';
+        row.innerHTML = `
+          <td>
+            <span class="font-medium text-zinc-900 group-hover:text-[#537bae] transition-colors block truncate">${attendee.name}</span>
+          </td>
+          <td>
+            <span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">${attendee.isPrimary ? formatGuestTitleLabel(guest) : '—'}</span>
+          </td>
+          <td>
+            <span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">${extractTableNumber(guest.table)}</span>
+          </td>
+          <td>
+            <span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">${attendee.isPrimary ? giftLabel : '—'}</span>
+          </td>
+          <td>
+            <div class="flex items-center">
+              ${statusBadges[guest.status] || guest.status}
+            </div>
+          </td>
+        `;
+
+        row.addEventListener('click', () => {
+          openAddGuestDrawer(guest.id);
+        });
+
+        listEl.appendChild(row);
+      });
+    });
+  }
+
+  // Configurações da Lista de Convidados: cada fornecedor contratado tem um
+  // conjunto próprio de permissões (o que pode ver, e ações extras como
+  // comentar ou contatar convidados) — mestre-detalhe: lista à esquerda,
+  // permissões do fornecedor selecionado à direita.
+  const RSVP_SHARE_PERMISSIONS = [
+    {
+      key: 'viewGuestList',
+      label: 'Lista de convidados',
+      desc: 'Ver nomes, quantidade de acompanhantes e status de confirmação.',
+      child: { key: 'canContactGuests', label: 'Permitir contato com os convidados', desc: 'O fornecedor pode entrar em contato diretamente com os convidados.' }
+    },
+    { key: 'viewTableMapping', label: 'Mapeamento de mesas', desc: 'Ver a distribuição das mesas e assentos.' },
+    { key: 'viewReceivedGifts', label: 'Presentes recebidos', desc: 'Ver os presentes já recebidos pelos noivos.' },
+    { key: 'viewDietaryRestrictions', label: 'Restrições alimentares', desc: 'Ver restrições e preferências alimentares dos convidados.' },
+    {
+      key: 'viewObservations',
+      label: 'Observações',
+      desc: 'Ver os comentários registrados sobre cada convidado.',
+      child: { key: 'canComment', label: 'Permitir comentários', desc: 'O fornecedor pode comentar na lista de convidados.' }
+    }
+  ];
+
+  let rsvpSettingsSelectedVendorId = null;
+
+  function getVendorGuestListPermissions(activeEvent, vendorId) {
+    if (!activeEvent.guestListPermissions) activeEvent.guestListPermissions = {};
+    if (!activeEvent.guestListPermissions[vendorId]) {
+      activeEvent.guestListPermissions[vendorId] = {
+        viewGuestList: false,
+        canContactGuests: false,
+        viewTableMapping: false,
+        viewReceivedGifts: false,
+        viewDietaryRestrictions: false,
+        viewObservations: false,
+        canComment: false
+      };
+    }
+    return activeEvent.guestListPermissions[vendorId];
+  }
+
+  function renderRsvpShareSettings() {
+    const listContainer = document.getElementById('rsvp-share-vendors-list');
+    const panel = document.getElementById('rsvp-share-permissions-panel');
+    if (!listContainer || !panel) return;
+    const vendors = (window.LOVE_DATA && Array.isArray(window.LOVE_DATA.contractedVendors)) ? window.LOVE_DATA.contractedVendors : [];
+
+    listContainer.innerHTML = '';
+
+    if (!vendors.length) {
+      listContainer.innerHTML = `
+        <div class="py-8 px-3 text-center border border-zinc-200/80 rounded-2xl">
+          <p class="text-xs text-zinc-500 font-medium font-sans">Nenhum fornecedor contratado ainda.</p>
+        </div>
+      `;
+      panel.innerHTML = '';
+      return;
+    }
+
+    if (!rsvpSettingsSelectedVendorId || !vendors.some(v => v.id === rsvpSettingsSelectedVendorId)) {
+      rsvpSettingsSelectedVendorId = vendors[0].id;
+    }
+
+    vendors.forEach(v => {
+      const isActive = v.id === rsvpSettingsSelectedVendorId;
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = `w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left transition-colors cursor-pointer ${isActive ? 'bg-zinc-100' : 'hover:bg-zinc-50'}`;
+      row.innerHTML = `
+        <img src="${v.image || ''}" alt="${v.name}" class="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-zinc-100">
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-bold ${isActive ? 'text-zinc-900' : 'text-zinc-700'} truncate font-sans">${v.name}</p>
+          <p class="text-[11px] text-zinc-400 truncate font-sans">${v.category || ''}</p>
+        </div>
+      `;
+      row.addEventListener('click', () => {
+        rsvpSettingsSelectedVendorId = v.id;
+        renderRsvpShareSettings();
+      });
+      listContainer.appendChild(row);
+    });
+
+    renderRsvpVendorPermissionsPanel(vendors.find(v => v.id === rsvpSettingsSelectedVendorId));
+  }
+
+  function renderRsvpVendorPermissionsPanel(vendor) {
+    const panel = document.getElementById('rsvp-share-permissions-panel');
+    if (!panel || !vendor) return;
+    const activeEvent = getActiveEvent();
+    const perms = getVendorGuestListPermissions(activeEvent, vendor.id);
+
+    panel.innerHTML = `
+      <div class="flex items-center gap-3 pb-4 mb-1 border-b border-zinc-100">
+        <img src="${vendor.image || ''}" alt="${vendor.name}" class="w-11 h-11 rounded-xl object-cover border border-zinc-100 flex-shrink-0">
+        <div class="min-w-0">
+          <h3 class="text-base font-bold text-zinc-900 font-sans truncate">${vendor.name}</h3>
+          <p class="text-xs text-zinc-400 font-sans">${vendor.category || ''}</p>
+        </div>
+      </div>
+      <div id="rsvp-permissions-list"></div>
+    `;
+
+    const list = panel.querySelector('#rsvp-permissions-list');
+    RSVP_SHARE_PERMISSIONS.forEach(perm => {
+      const row = document.createElement('div');
+      row.className = 'py-3.5 border-b border-zinc-100 last:border-b-0';
+      row.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-sm font-bold text-zinc-900 font-sans">${perm.label}</p>
+            <p class="text-xs text-zinc-500 mt-0.5">${perm.desc}</p>
+          </div>
+          <label class="settings-switch flex-shrink-0">
+            <input type="checkbox" data-perm-key="${perm.key}" ${perms[perm.key] ? 'checked' : ''}>
+            <span class="settings-switch-track"></span>
+          </label>
+        </div>
+        ${perm.child ? `
+          <div class="flex items-center justify-between gap-3 mt-3 ml-1 pl-3 border-l-2 border-zinc-100 ${perms[perm.key] ? '' : 'opacity-40'}">
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-zinc-700 font-sans">${perm.child.label}</p>
+              <p class="text-[11px] text-zinc-400 mt-0.5">${perm.child.desc}</p>
+            </div>
+            <label class="settings-switch flex-shrink-0" style="transform:scale(0.85);">
+              <input type="checkbox" data-perm-key="${perm.child.key}" ${perms[perm.child.key] ? 'checked' : ''} ${perms[perm.key] ? '' : 'disabled'}>
+              <span class="settings-switch-track"></span>
+            </label>
+          </div>
+        ` : ''}
+      `;
+      list.appendChild(row);
+    });
+
+    list.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const key = input.dataset.permKey;
+        perms[key] = input.checked;
+        const parentDef = RSVP_SHARE_PERMISSIONS.find(p => p.key === key && p.child);
+        if (parentDef && !input.checked) {
+          perms[parentDef.child.key] = false;
+        }
+        renderRsvpVendorPermissionsPanel(vendor);
+      });
+    });
+  }
+
+  function renderRsvpPagination(totalCount) {
+    const label = document.getElementById('rsvp-pagination-label');
+    const prevBtn = document.getElementById('rsvp-page-prev');
+    const nextBtn = document.getElementById('rsvp-page-next');
+    const totalPages = Math.max(1, Math.ceil(totalCount / rsvpPageSize));
+    if (rsvpCurrentPage > totalPages) rsvpCurrentPage = totalPages;
+    if (label) label.textContent = `Página ${rsvpCurrentPage} de ${totalPages}`;
+    if (prevBtn) prevBtn.disabled = rsvpCurrentPage <= 1;
+    if (nextBtn) nextBtn.disabled = rsvpCurrentPage >= totalPages;
+  }
+
+  // ==========================================
+  // 7.1. DRAWER LATERAL: CONVIDADO (compartilhado entre Adicionar e Editar)
+  // ==========================================
+  let activeDrawerGuestId = null;
+  let isNewGuestDraft = false;
+
+  // Observação — histórico de comentários (igual aos comentários de tarefas no quadro B2B)
+  const NO_DIETARY_FILLERS = ['não informado', 'nenhuma', 'nenhuma restrição', 'nenhuma restrição alimentar cadastrada'];
+
+  // Nomes individuais dos anfitriões, extraídos de "Beatriz & Lucas" (ou
+  // "Beatriz & Lucas (Pais do Theo)") -> ["Beatriz", "Lucas"].
+  function getEventHostNames() {
+    const activeEvent = getActiveEvent();
+    const raw = (activeEvent && activeEvent.hostName) ? activeEvent.hostName.split('(')[0].trim() : '';
+    return raw.split('&').map(n => n.trim()).filter(Boolean);
+  }
+
+  // Rótulo da coluna/campo "Título" na lista de convidados: "Pai/Beatriz",
+  // ou só "Pai" quando não há anfitrião associado (ou só um anfitrião no evento).
+  function formatGuestTitleLabel(guest) {
+    if (!guest.relationshipTitle) return '—';
+    if (guest.relationshipHost && getEventHostNames().length > 1) {
+      return `${guest.relationshipTitle}/${guest.relationshipHost}`;
+    }
+    return guest.relationshipTitle;
+  }
+
+  function getGuestCommentAuthorName() {
+    const activeEvent = getActiveEvent();
+    const raw = (activeEvent && activeEvent.hostName) ? activeEvent.hostName.split('(')[0].trim() : '';
+    return raw || 'Você';
+  }
+
+  function initialsFromName(name) {
+    const words = (name || '').replace(/&/g, ' ').split(' ').map(w => w.trim()).filter(Boolean);
+    const chars = words.slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    return chars || '?';
+  }
+
+  function formatCommentDate(date) {
+    try {
+      const d = date instanceof Date ? date : new Date(date);
+      if (isNaN(d.getTime())) return '';
+      const datePart = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      const timePart = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return `${datePart}, ${timePart}`;
+    } catch (e) { return ''; }
+  }
+
+  function getGuestComments(guest) {
+    if (!Array.isArray(guest.observationComments)) {
+      const seed = (guest.dietaryRestrictions || '').trim();
+      guest.observationComments = (seed && !NO_DIETARY_FILLERS.includes(seed.toLowerCase()))
+        ? [{ text: seed, at: guest.confirmedAt || '', author: getGuestCommentAuthorName() }]
+        : [];
+    }
+    return guest.observationComments;
+  }
+
+  function renderGuestComments(guest) {
+    const listEl = document.getElementById('guest-drawer-comments-list');
+    if (!listEl) return;
+    const comments = getGuestComments(guest);
+    if (!comments.length) {
+      listEl.innerHTML = '<p class="guest-comment-empty">Nenhuma observação registrada ainda.</p>';
+      return;
+    }
+    listEl.innerHTML = comments.map((c, i) => {
+      const author = c.author || getGuestCommentAuthorName();
+      return `
+        <div class="guest-comment-item">
+          <span class="guest-comment-avatar">${initialsFromName(author)}</span>
+          <div class="guest-comment-content">
+            <p class="guest-comment-author"><strong>${author.replace(/</g, '&lt;')}</strong></p>
+            <div class="guest-comment-bubble">
+              ${(c.text || '').replace(/</g, '&lt;')}
+              <button type="button" class="guest-comment-delete" data-comment-index="${i}" title="Excluir comentário">×</button>
+            </div>
+            ${c.at ? `<p class="guest-comment-time">${c.at}</p>` : ''}
+          </div>
+        </div>
+      `;
+    }).reverse().join('');
+
+    listEl.querySelectorAll('.guest-comment-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.commentIndex, 10);
+        comments.splice(idx, 1);
+        renderGuestComments(guest);
+      });
+    });
+  }
+
+  function submitGuestComment() {
+    const input = document.getElementById('guest-drawer-comment-input');
+    if (!input || !activeDrawerGuestId) return;
+    const text = input.value.trim();
+    if (!text) return;
+    const activeEvent = getActiveEvent();
+    const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
+    if (!guest) return;
+    getGuestComments(guest).push({ text, at: formatCommentDate(new Date()), author: getGuestCommentAuthorName() });
+    input.value = '';
+    renderGuestComments(guest);
+  }
+
+  const guestCommentSubmitBtn = document.getElementById('guest-drawer-comment-submit');
+  const guestCommentInput = document.getElementById('guest-drawer-comment-input');
+  if (guestCommentSubmitBtn) guestCommentSubmitBtn.addEventListener('click', submitGuestComment);
+  if (guestCommentInput) {
+    guestCommentInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitGuestComment(); }
     });
   }
 
   // ==========================================
-  // 7.1. DRAWER LATERAL: DETALHES DO CONVIDADO
+  // DRAWER LATERAL: CONVIDADO (Adicionar Convidado / editar convidado existente)
   // ==========================================
-  let activeDrawerGuestId = null;
-
-  function openGuestDrawer(guestId) {
-    const activeEvent = getActiveEvent();
-    const guest = activeEvent.guests.find(g => g.id === guestId);
-    if (!guest) return;
-
-    activeDrawerGuestId = guestId;
-
-    const drawer = document.getElementById('drawer-guest-details');
-    const backdrop = document.getElementById('guest-drawer-backdrop');
-    if (!drawer || !backdrop) return;
-
-    // 1. Header do Drawer
-    const nameEl = document.getElementById('guest-drawer-name');
-    const avatarEl = document.getElementById('guest-drawer-avatar');
-    const badgeEl = document.getElementById('guest-drawer-status-badge');
-
-    if (nameEl) nameEl.textContent = guest.name;
-
-    if (avatarEl) {
-      const parts = guest.name.split(' ');
-      const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].substring(0, 2).toUpperCase();
-      avatarEl.textContent = initials;
-    }
-
-    if (badgeEl) {
-      const statusBadges = {
-        confirmed: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">✓ Presença Confirmada</span>',
-        pending: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">⏳ Aguardando Resposta</span>',
-        declined: '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">✕ Presença Recusada</span>'
-      };
-      badgeEl.innerHTML = statusBadges[guest.status] || guest.status;
-    }
-
-    // 2. RSVP & Acompanhantes
-    const timeEl = document.getElementById('guest-drawer-confirmed-time');
-    const summaryEl = document.getElementById('guest-drawer-companions-summary');
-    const companionsListEl = document.getElementById('guest-drawer-companions-list');
-
-    if (timeEl) timeEl.textContent = guest.confirmedAt || (guest.status === 'confirmed' ? 'Confirmado recentemente' : 'Pendente');
-    
-    const totalPeople = (guest.adults || 1) + (guest.children || 0);
-    if (summaryEl) {
-      summaryEl.textContent = `${totalPeople} ${totalPeople === 1 ? 'pessoa' : 'pessoas'} (${guest.adults || 1} adultos${guest.children ? `, ${guest.children} crianças` : ''})`;
-    }
-
-    if (companionsListEl) {
-      companionsListEl.innerHTML = '';
-      if (guest.companionsNames && guest.companionsNames.length > 0) {
-        guest.companionsNames.forEach(comp => {
-          const compItem = document.createElement('div');
-          compItem.className = 'p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-2 text-xs text-slate-700 font-medium';
-          compItem.innerHTML = `<span class="text-slate-400">👤</span><span>${comp}</span>`;
-          companionsListEl.appendChild(compItem);
-        });
-      } else {
-        companionsListEl.innerHTML = `<span class="text-xs text-slate-400 italic">Nenhum acompanhante adicional cadastrado.</span>`;
-      }
-    }
-
-    // 3. Informações de Contato, Mesa & Restrições
-    const phoneEl = document.getElementById('guest-drawer-phone');
-    const emailEl = document.getElementById('guest-drawer-email');
-    const tableEl = document.getElementById('guest-drawer-table');
-    const dietaryEl = document.getElementById('guest-drawer-dietary');
-    const waBtn = document.getElementById('guest-drawer-whatsapp-btn');
-
-    if (phoneEl) phoneEl.textContent = guest.phone || 'Não informado';
-    if (emailEl) emailEl.textContent = guest.email || 'Não informado';
-    if (tableEl) tableEl.textContent = guest.table || 'Pendente de atribuição';
-    if (dietaryEl) dietaryEl.textContent = guest.dietaryRestrictions || 'Nenhuma restrição alimentar cadastrada';
-
-    if (waBtn) {
-      waBtn.onclick = () => {
-        showToast(`Abrindo conversa de WhatsApp com ${guest.name}...`, '💬');
-      };
-    }
-
-    // 4. Presentes Comprados por este Convidado
+  function renderGuestGifts(guest) {
     const totalGiftsEl = document.getElementById('guest-drawer-total-gifts');
     const giftsListEl = document.getElementById('guest-drawer-gifts-list');
     const gifts = guest.giftsBought || [];
 
-    const totalSpent = gifts.reduce((acc, curr) => acc + curr.amount, 0);
+    const totalSpent = gifts.reduce((acc, curr) => acc + (curr.amount || 0), 0);
     if (totalGiftsEl) {
-      totalGiftsEl.textContent = `Total: R$ ${totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-      if (totalSpent > 0) {
-        totalGiftsEl.className = 'text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200';
-      } else {
-        totalGiftsEl.className = 'text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full';
-      }
+      totalGiftsEl.textContent = totalSpent > 0 ? `Total: R$ ${totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '';
     }
 
-    if (giftsListEl) {
-      giftsListEl.innerHTML = '';
-      if (gifts.length === 0) {
-        giftsListEl.innerHTML = `
-          <div class="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-2">
-            <span class="text-2xl block">🎁</span>
-            <p class="text-xs font-bold text-slate-700">Ainda não comprou nenhum presente</p>
-            <p class="text-[11px] text-slate-400">Este convidado ainda não presenteou pela lista online.</p>
-            <button type="button" class="btn-copy-guest-gift-link px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold transition-colors">
-              📋 Copiar Link da Lista de Presentes
-            </button>
+    if (!giftsListEl) return;
+    giftsListEl.innerHTML = '';
+    if (gifts.length === 0) {
+      giftsListEl.innerHTML = `
+        <div class="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-1">
+          <p class="text-xs font-bold text-slate-700">Ainda não comprou nenhum presente</p>
+          <p class="text-[11px] text-slate-400">Este convidado ainda não presenteou pela lista online.</p>
+        </div>
+      `;
+      return;
+    }
+    gifts.forEach(g => {
+      const item = document.createElement('div');
+      item.className = 'p-3.5 rounded-2xl border border-slate-200 bg-white shadow-sm flex items-start gap-3';
+      item.innerHTML = `
+        <img src="${g.image}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 flex-shrink-0" alt="${g.giftTitle}">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
+            <span class="text-[9px] font-bold text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">${g.type === 'real' ? 'Produto Real' : 'Resgate em Dinheiro'}</span>
+            <span class="text-[10px] text-slate-400">${g.date}</span>
           </div>
-        `;
-
-        const copyBtn = giftsListEl.querySelector('.btn-copy-guest-gift-link');
-        if (copyBtn) {
-          copyBtn.onclick = () => {
-            navigator.clipboard?.writeText(activeEvent.publicUrl || 'https://love.com.br/beatriz-e-lucas');
-            showToast('Link da lista copiado para a área de transferência!', '📋');
-          };
-        }
-      } else {
-        gifts.forEach(g => {
-          const item = document.createElement('div');
-          item.className = 'p-3.5 rounded-2xl border border-slate-200 bg-white shadow-sm flex items-start gap-3 hover:shadow-md transition-shadow';
-          item.innerHTML = `
-            <img src="${g.image}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 flex-shrink-0" alt="${g.giftTitle}">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
-                ${g.type === 'real' 
-                  ? '<span class="text-[9px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">📦 Produto Real</span>' 
-                  : '<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">💵 Resgate em Dinheiro</span>'}
-                <span class="text-[10px] text-slate-400">${g.date}</span>
-              </div>
-              <h5 class="text-xs font-bold text-slate-900 truncate">${g.giftTitle}</h5>
-              <div class="text-xs font-black text-emerald-600 mt-0.5">R$ ${g.amount.toFixed(2).replace('.', ',')} (${g.method})</div>
-              ${g.message ? `<div class="mt-1.5 p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-600 italic">"${g.message}"</div>` : ''}
-            </div>
-          `;
-          giftsListEl.appendChild(item);
-        });
-      }
-    }
-
-    // Exibe o drawer
-    if (backdrop) {
-      backdrop.classList.remove('hidden');
-      backdrop.style.setProperty('display', 'block', 'important');
-      backdrop.classList.add('open');
-    }
-    if (drawer) {
-      drawer.classList.remove('hidden');
-      drawer.style.setProperty('display', 'flex', 'important');
-      drawer.classList.add('open');
-    }
+          <h5 class="text-xs font-bold text-slate-900 truncate">${g.giftTitle}</h5>
+          <div class="text-xs font-black text-zinc-700 mt-0.5">R$ ${g.amount.toFixed(2).replace('.', ',')} (${g.method})</div>
+          ${g.message ? `<div class="mt-1.5 p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-600 italic">"${g.message}"</div>` : ''}
+        </div>
+      `;
+      giftsListEl.appendChild(item);
+    });
   }
 
-  function closeGuestDrawer() {
-    const drawer = document.getElementById('drawer-guest-details');
-    const backdrop = document.getElementById('guest-drawer-backdrop');
+  // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
+  function openAddGuestDrawer(guestId = null) {
+    const drawer = document.getElementById('drawer-add-guest');
+    const backdrop = document.getElementById('add-guest-drawer-backdrop');
+    if (!drawer || !backdrop) return;
+
+    const activeEvent = getActiveEvent();
+    const form = document.getElementById('form-add-guest');
+    const titleEl = document.getElementById('add-guest-drawer-title');
+    const companionsList = document.getElementById('guest-companions-list');
+    if (form) form.reset();
+    if (companionsList) companionsList.innerHTML = '';
+
+    let guest;
+    if (guestId) {
+      guest = activeEvent.guests.find(g => g.id === guestId);
+      if (!guest) return;
+      isNewGuestDraft = false;
+    } else {
+      guest = {
+        id: `g-${Date.now()}`,
+        name: '',
+        companions: 0,
+        companionsNames: [],
+        phone: '',
+        table: 'Mesa a Definir',
+        status: 'pending',
+        giftsBought: [],
+        observationComments: [],
+        relationshipTitle: '',
+        relationshipHost: ''
+      };
+      activeEvent.guests.unshift(guest);
+      isNewGuestDraft = true;
+    }
+
+    activeDrawerGuestId = guest.id;
+    if (titleEl) titleEl.textContent = guestId ? 'Editar Convidado' : 'Adicionar Convidado';
+    const saveBtn = document.getElementById('btn-save-guest');
+    if (saveBtn) saveBtn.textContent = guestId ? 'Salvar Alterações' : 'Salvar Convidado';
+    document.getElementById('guest-name-input').value = guest.name || '';
+    document.getElementById('guest-phone-input').value = guest.phone || '';
+
+    const titleHostSelect = document.getElementById('guest-title-host-input');
+    if (titleHostSelect) {
+      const hostNames = getEventHostNames();
+      titleHostSelect.innerHTML = '<option value="">—</option>' +
+        hostNames.map(name => `<option value="${name}">${name}</option>`).join('');
+      titleHostSelect.value = guest.relationshipHost || '';
+    }
+    const titleSelect = document.getElementById('guest-title-input');
+    if (titleSelect) titleSelect.value = guest.relationshipTitle || '';
+
+    (guest.companionsNames || []).forEach(name => addCompanionRow(name));
+
+    const removeBtn = document.getElementById('btn-remove-guest');
+    if (removeBtn) removeBtn.hidden = !guestId;
+
+    renderGuestComments(guest);
+    renderGuestGifts(guest);
+
+    backdrop.classList.remove('hidden');
+    backdrop.style.setProperty('display', 'block', 'important');
+    backdrop.classList.add('open');
+    drawer.classList.remove('hidden');
+    drawer.style.setProperty('display', 'flex', 'important');
+    drawer.classList.add('open');
+  }
+
+  function closeAddGuestDrawer() {
+    const drawer = document.getElementById('drawer-add-guest');
+    const backdrop = document.getElementById('add-guest-drawer-backdrop');
     if (drawer) {
       drawer.classList.remove('open');
       drawer.style.setProperty('display', 'none', 'important');
@@ -5552,50 +6062,93 @@ document.addEventListener('DOMContentLoaded', () => {
       backdrop.style.setProperty('display', 'none', 'important');
       backdrop.classList.add('hidden');
     }
+
+    // Rascunho de convidado novo abandonado sem nome — descarta em vez de deixar um convidado vazio na lista.
+    if (isNewGuestDraft) {
+      const activeEvent = getActiveEvent();
+      const idx = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
+      if (idx !== -1 && !activeEvent.guests[idx].name.trim()) {
+        activeEvent.guests.splice(idx, 1);
+      }
+    }
+    isNewGuestDraft = false;
     activeDrawerGuestId = null;
   }
 
-  // Listener fechar drawer
-  const btnCloseGuestDrawer = document.getElementById('btn-close-guest-drawer');
-  const guestDrawerBackdrop = document.getElementById('guest-drawer-backdrop');
-  if (btnCloseGuestDrawer) btnCloseGuestDrawer.addEventListener('click', closeGuestDrawer);
-  if (guestDrawerBackdrop) guestDrawerBackdrop.addEventListener('click', closeGuestDrawer);
+  const btnHostAddGuest = document.getElementById('btn-host-add-guest');
+  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => openAddGuestDrawer());
+  const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');
+  const addGuestDrawerBackdrop = document.getElementById('add-guest-drawer-backdrop');
+  if (btnCloseAddGuestDrawer) btnCloseAddGuestDrawer.addEventListener('click', closeAddGuestDrawer);
+  if (addGuestDrawerBackdrop) addGuestDrawerBackdrop.addEventListener('click', closeAddGuestDrawer);
 
-  // Listeners para alterar status de RSVP diretamente do drawer
-  document.querySelectorAll('.btn-change-rsvp-status').forEach(btn => {
-    btn.addEventListener('click', () => {
+  const btnRemoveGuest = document.getElementById('btn-remove-guest');
+  if (btnRemoveGuest) {
+    btnRemoveGuest.addEventListener('click', () => {
       if (!activeDrawerGuestId) return;
       const activeEvent = getActiveEvent();
-      const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
-      if (!guest) return;
-
-      const newStatus = btn.getAttribute('data-new-status');
-      guest.status = newStatus;
-      if (newStatus === 'confirmed') {
-        guest.confirmedAt = 'Confirmado agora via painel';
-      } else if (newStatus === 'declined') {
-        guest.confirmedAt = 'Recusado via painel';
-      } else {
-        guest.confirmedAt = 'Aguardando resposta';
-      }
-
-      // Recalcula KPIs
-      activeEvent.convidadosConfirmados = activeEvent.guests.filter(g => g.status === 'confirmed').length;
-      activeEvent.convidadosRecusados = activeEvent.guests.filter(g => g.status === 'declined').length;
-      activeEvent.convidadosPendentes = activeEvent.guests.filter(g => g.status === 'pending').length;
-
-      renderGuestsTable(currentRsvpFilter);
-      openGuestDrawer(activeDrawerGuestId);
+      const idx = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
+      if (idx === -1) return;
+      const name = activeEvent.guests[idx].name;
+      activeEvent.guests.splice(idx, 1);
+      isNewGuestDraft = false;
+      closeAddGuestDrawer();
+      renderGuestsTable();
       updateAllCelebrationData();
-      showToast(`Status de ${guest.name} alterado com sucesso!`, '🎟️');
+      showToast(`Convidado ${name} removido da lista.`, '🗑️');
     });
-  });
+  }
+
+  // "+ Adicionar acompanhante" — insere uma nova linha de nome de acompanhante
+  function addCompanionRow(value = '') {
+    const list = document.getElementById('guest-companions-list');
+    if (!list) return;
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2 guest-companion-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Nome do acompanhante" class="field-input guest-companion-name-input" value="${value.replace(/"/g, '&quot;')}">
+      <button type="button" class="btn-remove-companion-row w-9 h-9 rounded-xl border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Remover acompanhante">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    `;
+    row.querySelector('.btn-remove-companion-row').addEventListener('click', () => row.remove());
+    list.appendChild(row);
+    if (!value) row.querySelector('input').focus();
+  }
+  const btnAddCompanionRow = document.getElementById('btn-add-companion-row');
+  if (btnAddCompanionRow) btnAddCompanionRow.addEventListener('click', () => addCompanionRow());
 
   // Listener para Busca de Convidado em Tempo Real
   const inputRsvpSearch = document.getElementById('rsvp-search-input');
   if (inputRsvpSearch) {
     inputRsvpSearch.addEventListener('input', (e) => {
+      rsvpCurrentPage = 1;
       renderGuestsTable(currentRsvpFilter, e.target.value);
+    });
+  }
+
+  // Paginação: tamanho de página + navegação
+  const rsvpPageSizeSelect = document.getElementById('rsvp-page-size-select');
+  if (rsvpPageSizeSelect) {
+    rsvpPageSizeSelect.addEventListener('change', () => {
+      rsvpPageSize = parseInt(rsvpPageSizeSelect.value) || 15;
+      rsvpCurrentPage = 1;
+      renderGuestsTable(currentRsvpFilter, inputRsvpSearch ? inputRsvpSearch.value : '');
+    });
+  }
+  const rsvpPagePrevBtn = document.getElementById('rsvp-page-prev');
+  const rsvpPageNextBtn = document.getElementById('rsvp-page-next');
+  if (rsvpPagePrevBtn) {
+    rsvpPagePrevBtn.addEventListener('click', () => {
+      if (rsvpCurrentPage <= 1) return;
+      rsvpCurrentPage -= 1;
+      renderGuestsTable(currentRsvpFilter, inputRsvpSearch ? inputRsvpSearch.value : '');
+    });
+  }
+  if (rsvpPageNextBtn) {
+    rsvpPageNextBtn.addEventListener('click', () => {
+      rsvpCurrentPage += 1;
+      renderGuestsTable(currentRsvpFilter, inputRsvpSearch ? inputRsvpSearch.value : '');
     });
   }
 
@@ -5625,6 +6178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       const filter = btn.getAttribute('data-filter') || 'all';
       const searchVal = inputRsvpSearch ? inputRsvpSearch.value : '';
+      rsvpCurrentPage = 1;
       renderGuestsTable(filter, searchVal);
       if (rsvpStatusMenu) rsvpStatusMenu.classList.add('hidden');
       if (rsvpStatusChevron) rsvpStatusChevron.style.transform = 'rotate(0deg)';
@@ -5656,73 +6210,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   };
-
-  // ==========================================
-  // 7.1. RECADOS RECEBIDOS DOS CONVIDADOS
-  // ==========================================
-  function renderRecadosMural() {
-    const container = document.getElementById('recados-mural-grid');
-    if (!container) return;
-
-    container.innerHTML = '';
-    const activeEvent = getActiveEvent();
-    const messages = activeEvent.messages || [];
-
-    if (messages.length === 0) {
-      container.innerHTML = `
-        <div class="col-span-2 py-12 text-center bg-white rounded-3xl border border-slate-200 p-8 space-y-2">
-          <span class="text-4xl">💌</span>
-          <h4 class="text-sm font-bold text-slate-800">Ainda não há recados registrados</h4>
-          <p class="text-xs text-slate-400">Assim que seus convidados confirmarem presença no site, as mensagens aparecerão aqui.</p>
-        </div>
-      `;
-      return;
-    }
-
-    messages.forEach(msg => {
-      const card = document.createElement('div');
-      card.className = 'bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm flex flex-col justify-between gap-4 hover:shadow-md transition-shadow relative overflow-hidden';
-      card.innerHTML = `
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 font-black text-sm">
-                ${msg.author.charAt(0)}
-              </div>
-              <div>
-                <h4 class="font-bold text-slate-900 text-sm leading-tight">${msg.author}</h4>
-                <span class="text-[11px] text-slate-400 font-medium">${msg.date}</span>
-              </div>
-            </div>
-            <span class="text-xs font-bold text-rose-500 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-100 flex items-center gap-1">
-              ❤️ Presença Confirmada
-            </span>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-rose-50/40 border border-rose-100/60 text-xs sm:text-sm text-slate-700 leading-relaxed italic relative">
-            <span class="text-rose-300 font-serif text-2xl absolute top-1 left-2">“</span>
-            <p class="pl-4">${msg.text}</p>
-          </div>
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-          <span class="text-slate-400 text-[11px]">Enviado via RSVP Online</span>
-          <button class="btn-agradecer-whatsapp text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center gap-1">
-            <span>💬 Agradecer via WhatsApp</span>
-          </button>
-        </div>
-      `;
-
-      const btnAg = card.querySelector('.btn-agradecer-whatsapp');
-      if (btnAg) {
-        btnAg.addEventListener('click', () => {
-          showToast(`Mensagem de agradecimento criada para ${msg.author}!`, '💬');
-        });
-      }
-
-      container.appendChild(card);
-    });
-  }
 
   // ==========================================
   // 7.2. ORGANIZAR MESAS DOS CONVIDADOS
@@ -6111,8 +6598,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Gaveta Adicionar Mesa
-    const btnOpenAdd = document.getElementById('btn-open-add-table-modal');
+    // Gaveta Adicionar Mesa (legado — o botão "Adicionar Mesa" agora cria a mesa
+    // direto na planta, ver initFloorPlan/addFloorPlanTableViaButton)
     const btnCloseAdd = document.getElementById('btn-close-add-table-drawer');
     const drawerAdd = document.getElementById('drawer-add-table');
     const backdropAdd = document.getElementById('table-drawer-backdrop');
@@ -6145,7 +6632,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    if (btnOpenAdd) btnOpenAdd.addEventListener('click', openAddDrawer);
     if (btnCloseAdd) btnCloseAdd.addEventListener('click', closeAddDrawer);
     if (backdropAdd) backdropAdd.addEventListener('click', closeAddDrawer);
 
@@ -6183,30 +6669,645 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backdropAssign) backdropAssign.addEventListener('click', closeAssignGuestDrawer);
   }
 
-  // Adicionar Convidado à comemoração ativa
+  // ==========================================
+  // PLANTA DO SALÃO (Mapear mesas → painel "Lista de convidados" + espaço livre de drag-and-drop)
+  // Mesmo padrão do construtor "Editar meu site": painel fixo à esquerda com a Mesa
+  // arrastável e os cards de convidados; arraste "Mesa" para a planta e depois
+  // arraste um convidado da lista até a mesa para acomodá-lo num assento.
+  // ==========================================
+  const FLOORPLAN_ELEMENT_TYPES = [
+    { type: 'mesa', label: 'Mesa', icon: '🪑' }
+  ];
+  const FLOORPLAN_TYPE_META = {};
+  FLOORPLAN_ELEMENT_TYPES.forEach(t => { FLOORPLAN_TYPE_META[t.type] = t; });
+  const FLOORPLAN_MAX_SEATS = 24;
+
+  let floorplanActiveTableId = null;
+
+  function getFloorPlanElements() {
+    const activeEvent = getActiveEvent();
+    const eventId = (activeEvent && activeEvent.id) || 'default';
+    const key = `love_floorplan_${eventId}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          // Limpa elementos de formatos antigos/desconhecidos (ex.: mesas de uma
+          // versão anterior sem "type" válido, que apareciam na planta com ícone "?").
+          const cleaned = parsed.filter(el => el && FLOORPLAN_TYPE_META[el.type]);
+          if (cleaned.length !== parsed.length) localStorage.setItem(key, JSON.stringify(cleaned));
+          return cleaned;
+        }
+      } catch (e) {}
+    }
+    return [];
+  }
+
+  function saveFloorPlanElements(elements) {
+    const activeEvent = getActiveEvent();
+    const eventId = (activeEvent && activeEvent.id) || 'default';
+    localStorage.setItem(`love_floorplan_${eventId}`, JSON.stringify(elements));
+  }
+
+  // Mantém o array de nomes por assento do mesmo tamanho de "seats"
+  // (preenche com vazio ao aumentar, corta ao diminuir).
+  function resizeSeatNames(t) {
+    const seats = parseInt(t.seats) || 1;
+    if (!Array.isArray(t.seatNames)) t.seatNames = [];
+    while (t.seatNames.length < seats) t.seatNames.push('');
+    if (t.seatNames.length > seats) t.seatNames = t.seatNames.slice(0, seats);
+  }
+
+  // Move (ou troca) um assento de lugar: arrastar e soltar sobre outro assento
+  // da MESMA mesa reordena os dois convidados ao redor dela; soltar sobre um
+  // assento de OUTRA mesa muda a mesa em que o convidado está sentado (se o
+  // assento de destino já tiver alguém, os dois convidados trocam de mesa).
+  function swapFloorPlanSeats(sourceTableId, sourceIdx, targetTableId, targetIdx) {
+    const elements = getFloorPlanElements();
+    const sourceTable = elements.find(item => item.id === sourceTableId);
+    const targetTable = elements.find(item => item.id === (targetTableId || sourceTableId));
+    if (!sourceTable || !targetTable) return;
+    resizeSeatNames(sourceTable);
+    resizeSeatNames(targetTable);
+
+    if (sourceTable === targetTable) {
+      const tmp = sourceTable.seatNames[sourceIdx];
+      sourceTable.seatNames[sourceIdx] = sourceTable.seatNames[targetIdx];
+      sourceTable.seatNames[targetIdx] = tmp;
+    } else {
+      const movingGuest = sourceTable.seatNames[sourceIdx];
+      const displacedGuest = targetTable.seatNames[targetIdx];
+      targetTable.seatNames[targetIdx] = movingGuest;
+      sourceTable.seatNames[sourceIdx] = displacedGuest;
+    }
+
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+    renderFloorPlanGuestCards();
+    if (floorplanActiveTableId === sourceTable.id) renderFloorPlanSeatAssignments(sourceTable);
+    if (floorplanActiveTableId === targetTable.id) renderFloorPlanSeatAssignments(targetTable);
+  }
+
+  // Um assento fica verde quando o nome digitado bate (case-insensitive)
+  // com um convidado da lista cujo RSVP está confirmado.
+  function isFloorPlanSeatConfirmed(name) {
+    if (!name || !name.trim()) return false;
+    const activeEvent = getActiveEvent();
+    const guests = (activeEvent && activeEvent.guests) || [];
+    const match = guests.find(g => g.name && g.name.trim().toLowerCase() === name.trim().toLowerCase());
+    return !!(match && match.status === 'confirmed');
+  }
+
+  // Renderiza os cards arrastáveis de convidados no painel fixo da esquerda.
+  let floorplanGuestStatusFilter = 'all';
+
+  // Em qual mesa (se houver) o convidado está sentado — usado pra mostrar "Mesa N"
+  // ao lado do nome no painel "Lista de convidados".
+  function findFloorPlanTableNumberForGuest(guestName, elements) {
+    if (!guestName || !guestName.trim()) return null;
+    const els = elements || getFloorPlanElements();
+    const norm = guestName.trim().toLowerCase();
+    const table = els.find(t => t.type === 'mesa' && Array.isArray(t.seatNames) &&
+      t.seatNames.some(n => n && n.trim().toLowerCase() === norm));
+    return table ? table.number : null;
+  }
+
+  function renderFloorPlanGuestCards() {
+    const container = document.getElementById('floorplan-guest-cards');
+    if (!container) return;
+    const activeEvent = getActiveEvent();
+    let guests = (activeEvent && activeEvent.guests) || [];
+    if (floorplanGuestStatusFilter !== 'all') {
+      guests = guests.filter(g => g.status === floorplanGuestStatusFilter);
+    }
+    guests = guests.slice().sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }));
+    const elements = getFloorPlanElements();
+    container.innerHTML = '';
+
+    if (!guests.length) {
+      const empty = document.createElement('p');
+      empty.className = 'floorplan-field-hint';
+      empty.style.margin = '0';
+      empty.textContent = 'Nenhum convidado encontrado.';
+      container.appendChild(empty);
+      return;
+    }
+
+    guests.forEach(g => {
+      const tableNumber = findFloorPlanTableNumberForGuest(g.name, elements);
+      const isSeated = tableNumber !== null;
+
+      const card = document.createElement('div');
+      card.className = `floorplan-guest-card${isSeated ? ' is-seated' : ''}`;
+      card.draggable = !isSeated;
+      card.dataset.guestName = g.name || '';
+
+      if (g.status === 'confirmed') {
+        card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-check-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>');
+      } else {
+        const dot = document.createElement('span');
+        dot.className = 'floorplan-guest-card-dot';
+        card.appendChild(dot);
+      }
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'floorplan-guest-card-name';
+      nameEl.textContent = g.name || '';
+      card.appendChild(nameEl);
+
+      if (isSeated) {
+        const tableEl = document.createElement('span');
+        tableEl.className = 'floorplan-guest-card-table';
+        tableEl.textContent = `Mesa ${tableNumber}`;
+        card.appendChild(tableEl);
+      }
+
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({ kind: 'guest', name: card.dataset.guestName }));
+        e.dataTransfer.effectAllowed = 'copy';
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  function renderFloorPlanCanvas() {
+    const canvas = document.getElementById('floorplan-canvas');
+    const emptyHint = document.getElementById('floorplan-empty-hint');
+    if (!canvas) return;
+    const elements = getFloorPlanElements();
+
+    canvas.querySelectorAll('.floorplan-el').forEach(el => el.remove());
+    if (emptyHint) emptyHint.style.display = elements.length ? 'none' : 'flex';
+
+    elements.forEach(elData => {
+      const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
+      const el = document.createElement('div');
+      const isMesa = elData.type === 'mesa';
+      el.className = `floorplan-el${isMesa ? ' is-mesa' : ''}`;
+      el.style.left = `${elData.x || 0}px`;
+      el.style.top = `${elData.y || 0}px`;
+      el.dataset.elId = elData.id;
+
+      if (isMesa) {
+        const core = document.createElement('div');
+        core.className = 'floorplan-mesa-core';
+
+        const numberEl = document.createElement('span');
+        numberEl.className = 'floorplan-table-number';
+        numberEl.textContent = `Mesa ${elData.number}`;
+        core.appendChild(numberEl);
+
+        if (elData.name) {
+          const nameEl = document.createElement('span');
+          nameEl.className = 'floorplan-table-core-name';
+          nameEl.textContent = elData.name;
+          nameEl.title = elData.name;
+          core.appendChild(nameEl);
+        }
+        el.appendChild(core);
+
+        const seats = parseInt(elData.seats) || 1;
+        const seatNames = Array.isArray(elData.seatNames) ? elData.seatNames : [];
+        const containerSize = 172;
+        const ringRadius = 63;
+        for (let i = 0; i < seats; i++) {
+          const angle = (2 * Math.PI * i / seats) - Math.PI / 2;
+          const seatX = containerSize / 2 + ringRadius * Math.cos(angle);
+          const seatY = containerSize / 2 + ringRadius * Math.sin(angle);
+          const guestName = (seatNames[i] || '').trim();
+          const confirmed = isFloorPlanSeatConfirmed(guestName);
+          const seatDot = document.createElement('div');
+          let seatState = 'is-empty';
+          if (guestName) seatState = confirmed ? 'is-confirmed' : 'is-assigned';
+          seatDot.className = `floorplan-seat-dot ${seatState}`;
+          seatDot.style.left = `${seatX}px`;
+          seatDot.style.top = `${seatY}px`;
+          if (guestName) {
+            seatDot.title = guestName;
+            seatDot.textContent = initialsFromName(guestName);
+            seatDot.draggable = true;
+            seatDot.addEventListener('dragstart', (e) => {
+              e.stopPropagation();
+              e.dataTransfer.setData('application/x-floorplan-seat', JSON.stringify({ tableId: elData.id, seatIndex: i }));
+              e.dataTransfer.effectAllowed = 'move';
+            });
+          }
+          // Reordenar assentos: arrastar um assento sobre outro troca os convidados
+          // de lugar (ou move para um assento vazio), aproximando quem o usuário quiser.
+          seatDot.addEventListener('dragover', (e) => {
+            if (!e.dataTransfer.types.includes('application/x-floorplan-seat')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            seatDot.classList.add('is-dragover');
+          });
+          seatDot.addEventListener('dragleave', () => seatDot.classList.remove('is-dragover'));
+          seatDot.addEventListener('drop', (e) => {
+            if (!e.dataTransfer.types.includes('application/x-floorplan-seat')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            seatDot.classList.remove('is-dragover');
+            let payload;
+            try { payload = JSON.parse(e.dataTransfer.getData('application/x-floorplan-seat')); } catch (err) { return; }
+            if (!payload) return;
+            if (payload.tableId === elData.id && payload.seatIndex === i) return;
+            swapFloorPlanSeats(payload.tableId, payload.seatIndex, elData.id, i);
+          });
+          // Clicar num assento sem arrastar ainda abre o modal da mesa
+          // (o mousedown da mesa é ignorado quando começa num assento).
+          seatDot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openFloorplanTableModal(elData.id);
+          });
+          el.appendChild(seatDot);
+        }
+      } else {
+        const iconEl = document.createElement('span');
+        iconEl.className = 'floorplan-el-emoji';
+        iconEl.textContent = meta.icon;
+        el.appendChild(iconEl);
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'floorplan-el-label';
+        labelEl.textContent = meta.label;
+        el.appendChild(labelEl);
+      }
+
+      wireFloorPlanElementDrag(el, elData);
+      canvas.appendChild(el);
+    });
+  }
+
+  // Arrastar um elemento já posicionado para reorganizar; um clique sem
+  // arrastar (deslocamento mínimo) seleciona o elemento e abre o inspector na sidebar.
+  function wireFloorPlanElementDrag(el, elData) {
+    el.addEventListener('mousedown', (e) => {
+      // Clique começando num assento: é o reordenamento (drag nativo) do assento,
+      // não o reposicionamento da mesa inteira — deixa o evento seguir para ele.
+      if (e.target.closest('.floorplan-seat-dot')) return;
+      e.preventDefault();
+      const canvas = document.getElementById('floorplan-canvas');
+      if (!canvas) return;
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const origLeft = parseFloat(el.style.left) || 0;
+      const origTop = parseFloat(el.style.top) || 0;
+      let moved = false;
+
+      const onMouseMove = (moveEvt) => {
+        const dx = moveEvt.clientX - startX;
+        const dy = moveEvt.clientY - startY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+        const rect = canvas.getBoundingClientRect();
+        const w = el.offsetWidth, h = el.offsetHeight;
+        const newLeft = Math.max(0, Math.min(origLeft + dx, rect.width - w));
+        const newTop = Math.max(0, Math.min(origTop + dy, rect.height - h));
+        el.style.left = `${newLeft}px`;
+        el.style.top = `${newTop}px`;
+      };
+
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        if (moved) {
+          const elements = getFloorPlanElements();
+          const t = elements.find(x => x.id === elData.id);
+          if (t) {
+            t.x = parseFloat(el.style.left) || 0;
+            t.y = parseFloat(el.style.top) || 0;
+            saveFloorPlanElements(elements);
+          }
+        } else {
+          openFloorplanTableModal(elData.id);
+        }
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
+
+  // Cria uma nova mesa direto na planta (posições em cascata para não empilhar
+  // uma exatamente sobre a outra) — usado pelo botão "Adicionar Mesa".
+  function addFloorPlanTableViaButton() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const shapeSize = 152;
+    const elements = getFloorPlanElements();
+    const mesaCount = elements.filter(item => item.type === 'mesa').length;
+
+    const step = 28;
+    const cascade = elements.length % 8;
+    const maxX = Math.max(16, rect.width - shapeSize - 16);
+    const maxY = Math.max(16, rect.height - shapeSize - 16);
+    const x = Math.min(16 + cascade * step, maxX);
+    const y = Math.min(16 + cascade * step, maxY);
+
+    elements.push({
+      id: `fp-${Date.now()}`,
+      type: 'mesa',
+      number: mesaCount + 1,
+      name: '',
+      seats: 1,
+      seatNames: [''],
+      x, y
+    });
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+  }
+
+  function wireFloorPlanCanvasDrop() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    canvas.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      canvas.classList.add('is-dragover');
+    });
+    canvas.addEventListener('dragleave', () => canvas.classList.remove('is-dragover'));
+    canvas.addEventListener('drop', (e) => {
+      e.preventDefault();
+      canvas.classList.remove('is-dragover');
+      let payload;
+      try { payload = JSON.parse(e.dataTransfer.getData('text/plain')); } catch (err) { return; }
+      if (!payload) return;
+
+      if (payload.kind === 'guest') {
+        assignGuestToTableAtPoint(payload.name, e.clientX, e.clientY);
+        return;
+      }
+      if (!payload.type || !FLOORPLAN_TYPE_META[payload.type]) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const isMesa = payload.type === 'mesa';
+      const shapeSize = isMesa ? 172 : 84;
+      const shapeHeightOffset = isMesa ? 86 : 32;
+      let x = e.clientX - rect.left - shapeSize / 2;
+      let y = e.clientY - rect.top - shapeHeightOffset;
+      x = Math.max(4, Math.min(x, rect.width - shapeSize - 4));
+      y = Math.max(4, Math.min(y, rect.height - shapeSize - 4));
+
+      const elements = getFloorPlanElements();
+      const newEl = { id: `fp-${Date.now()}`, type: payload.type, x, y };
+      if (isMesa) {
+        const mesaCount = elements.filter(item => item.type === 'mesa').length;
+        newEl.number = mesaCount + 1;
+        newEl.seats = 1;
+        newEl.name = '';
+        newEl.seatNames = [''];
+      }
+      elements.push(newEl);
+      saveFloorPlanElements(elements);
+      renderFloorPlanCanvas();
+    });
+  }
+
+  // Solta um convidado sobre uma mesa posicionada: acomoda no primeiro assento
+  // vazio, ou cria mais um lugar se a mesa já estiver cheia.
+  function assignGuestToTableAtPoint(guestName, clientX, clientY) {
+    const hit = document.elementFromPoint(clientX, clientY);
+    const targetTableEl = hit && hit.closest('.floorplan-el.is-mesa');
+    if (!targetTableEl) return;
+    const tableId = targetTableEl.dataset.elId;
+    const elements = getFloorPlanElements();
+    const t = elements.find(item => item.id === tableId);
+    if (!t) return;
+
+    // Cada convidado só pode ocupar um assento por vez em toda a planta —
+    // evita duplicar a mesma pessoa em vários lugares (na mesma mesa ou em outra).
+    if (findFloorPlanTableNumberForGuest(guestName, elements) !== null) {
+      showToast(`${guestName} já está sentado(a) em uma mesa.`, '⚠️');
+      return;
+    }
+
+    resizeSeatNames(t);
+    let idx = t.seatNames.findIndex(n => !n || !n.trim());
+    if (idx === -1) {
+      if ((parseInt(t.seats) || 1) >= FLOORPLAN_MAX_SEATS) return;
+      t.seats = (parseInt(t.seats) || 1) + 1;
+      resizeSeatNames(t);
+      idx = t.seatNames.length - 1;
+    }
+    t.seatNames[idx] = guestName;
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+    renderFloorPlanGuestCards();
+    if (floorplanActiveTableId === tableId) {
+      renderFloorPlanSeatAssignments(t);
+      const seatsValueEl = document.getElementById('floorplan-seats-value');
+      if (seatsValueEl) seatsValueEl.textContent = t.seats;
+    }
+  }
+
+  function openFloorplanTableModal(tableId) {
+    const elements = getFloorPlanElements();
+    const t = elements.find(item => item.id === tableId);
+    if (!t) return;
+    floorplanActiveTableId = tableId;
+    resizeSeatNames(t);
+
+    const titleEl = document.getElementById('floorplan-table-modal-title');
+    if (titleEl) titleEl.textContent = `Mesa ${t.number}`;
+    const nameInput = document.getElementById('floorplan-el-name-input');
+    if (nameInput) nameInput.value = t.name || '';
+    const seatsValueEl = document.getElementById('floorplan-seats-value');
+    if (seatsValueEl) seatsValueEl.textContent = parseInt(t.seats) || 1;
+    renderFloorPlanSeatAssignments(t);
+
+    openModal(document.getElementById('modal-floorplan-table'));
+  }
+
+  function renderFloorPlanSeatAssignments(t) {
+    const container = document.getElementById('floorplan-seat-assignments');
+    if (!container) return;
+    container.innerHTML = '';
+    const assigned = t.seatNames.map((name, i) => ({ name, i })).filter(s => s.name && s.name.trim());
+
+    if (!assigned.length) {
+      const empty = document.createElement('p');
+      empty.className = 'floorplan-field-hint';
+      empty.style.margin = '0';
+      empty.textContent = 'Nenhum convidado acomodado ainda.';
+      container.appendChild(empty);
+      return;
+    }
+
+    assigned.forEach(({ name, i }) => {
+      const row = document.createElement('div');
+      row.className = 'floorplan-seat-assignment-row';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'floorplan-seat-assignment-name';
+      nameEl.textContent = name;
+      row.appendChild(nameEl);
+
+      const rightWrap = document.createElement('div');
+      rightWrap.className = 'floorplan-seat-assignment-right';
+
+      if (isFloorPlanSeatConfirmed(name)) {
+        const label = document.createElement('span');
+        label.className = 'floorplan-seat-confirmed-label';
+        label.textContent = 'Confirmado';
+        rightWrap.appendChild(label);
+      }
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'floorplan-seat-assignment-remove';
+      removeBtn.textContent = '×';
+      removeBtn.title = 'Remover convidado desta mesa';
+      removeBtn.addEventListener('click', () => {
+        const els = getFloorPlanElements();
+        const tbl = els.find(item => item.id === floorplanActiveTableId);
+        if (!tbl) return;
+        tbl.seatNames[i] = '';
+        saveFloorPlanElements(els);
+        renderFloorPlanCanvas();
+        renderFloorPlanGuestCards();
+        renderFloorPlanSeatAssignments(tbl);
+      });
+      rightWrap.appendChild(removeBtn);
+
+      row.appendChild(rightWrap);
+      container.appendChild(row);
+    });
+  }
+
+  function initFloorPlanTableModal() {
+    const nameInput = document.getElementById('floorplan-el-name-input');
+    if (nameInput) {
+      nameInput.addEventListener('input', () => {
+        const els = getFloorPlanElements();
+        const t = els.find(item => item.id === floorplanActiveTableId);
+        if (!t) return;
+        t.name = nameInput.value.trim();
+        saveFloorPlanElements(els);
+        renderFloorPlanCanvas();
+      });
+    }
+
+    const seatsValueEl = document.getElementById('floorplan-seats-value');
+    const seatsUpBtn = document.getElementById('floorplan-seats-up');
+    const seatsDownBtn = document.getElementById('floorplan-seats-down');
+    if (seatsUpBtn) {
+      seatsUpBtn.addEventListener('click', () => {
+        const els = getFloorPlanElements();
+        const t = els.find(item => item.id === floorplanActiveTableId);
+        if (!t) return;
+        t.seats = Math.min(FLOORPLAN_MAX_SEATS, (parseInt(t.seats) || 1) + 1);
+        resizeSeatNames(t);
+        saveFloorPlanElements(els);
+        if (seatsValueEl) seatsValueEl.textContent = t.seats;
+        renderFloorPlanCanvas();
+        renderFloorPlanGuestCards();
+        renderFloorPlanSeatAssignments(t);
+      });
+    }
+    if (seatsDownBtn) {
+      seatsDownBtn.addEventListener('click', () => {
+        const els = getFloorPlanElements();
+        const t = els.find(item => item.id === floorplanActiveTableId);
+        if (!t) return;
+        t.seats = Math.max(1, (parseInt(t.seats) || 1) - 1);
+        resizeSeatNames(t);
+        saveFloorPlanElements(els);
+        if (seatsValueEl) seatsValueEl.textContent = t.seats;
+        renderFloorPlanCanvas();
+        renderFloorPlanGuestCards();
+        renderFloorPlanSeatAssignments(t);
+      });
+    }
+
+    const removeBtn = document.getElementById('btn-floorplan-remove');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => {
+        const els = getFloorPlanElements().filter(item => item.id !== floorplanActiveTableId);
+        saveFloorPlanElements(els);
+        renderFloorPlanCanvas();
+        renderFloorPlanGuestCards();
+        closeModal(document.getElementById('modal-floorplan-table'));
+      });
+    }
+  }
+
+  function initFloorPlanFilterDropdown() {
+    const switcher = document.getElementById('floorplan-filter-switcher');
+    const btn = document.getElementById('floorplan-filter-btn');
+    const dropdown = document.getElementById('floorplan-filter-dropdown');
+    if (!switcher || !btn || !dropdown) return;
+
+    const closeDropdown = () => {
+      dropdown.classList.remove('show');
+      btn.setAttribute('aria-expanded', 'false');
+    };
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.classList.toggle('show');
+      btn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+    dropdown.querySelectorAll('[data-status-option]').forEach(item => {
+      item.addEventListener('click', () => {
+        dropdown.querySelectorAll('[data-status-option]').forEach(opt => opt.classList.remove('active'));
+        item.classList.add('active');
+        floorplanGuestStatusFilter = item.dataset.statusOption;
+        closeDropdown();
+        renderFloorPlanGuestCards();
+      });
+    });
+
+    document.addEventListener('click', closeDropdown);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdown(); });
+  }
+
+  function initFloorPlan() {
+    wireFloorPlanCanvasDrop();
+    renderFloorPlanGuestCards();
+    renderFloorPlanCanvas();
+    initFloorPlanTableModal();
+    initFloorPlanFilterDropdown();
+
+    const btnAddTable = document.getElementById('btn-open-add-table-modal');
+    if (btnAddTable) btnAddTable.addEventListener('click', addFloorPlanTableViaButton);
+  }
+
+  // Salvar Convidado (drawer compartilhado: cria um novo ou atualiza o que está sendo editado)
   const formAddGuest = document.getElementById('form-add-guest');
   if (formAddGuest) {
     formAddGuest.addEventListener('submit', (e) => {
       e.preventDefault();
       const activeEvent = getActiveEvent();
-      const name = document.getElementById('guest-name-input').value;
-      const companions = parseInt(document.getElementById('guest-companions-input').value) || 0;
+      const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
+      if (!guest) return;
+
+      const name = document.getElementById('guest-name-input').value.trim();
+      if (!name) return;
       const phone = document.getElementById('guest-phone-input').value || '(11) 99999-9999';
+      const companionsNames = Array.from(document.querySelectorAll('.guest-companion-name-input'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
 
-      activeEvent.guests.unshift({
-        id: `g-${Date.now()}`,
-        name: name,
-        companions: companions,
-        phone: phone,
-        table: 'Mesa a Definir',
-        status: 'pending'
-      });
+      const wasNew = isNewGuestDraft;
+      guest.name = name;
+      guest.phone = phone;
+      guest.companionsNames = companionsNames;
+      guest.companions = companionsNames.length;
+      guest.relationshipTitle = document.getElementById('guest-title-input').value || '';
+      guest.relationshipHost = document.getElementById('guest-title-host-input').value || '';
 
-      activeEvent.totalConvidados += (1 + companions);
-      closeModal(elements.modals.addGuest);
+      if (wasNew) {
+        activeEvent.totalConvidados = (activeEvent.totalConvidados || 0) + (1 + companionsNames.length);
+      }
+
+      isNewGuestDraft = false;
+      closeAddGuestDrawer();
       renderGuestsTable();
       updateAllCelebrationData();
-      showToast(`Convidado ${name} adicionado à lista de ${activeEvent.title}!`, '👤');
+      showToast(wasNew ? `Convidado ${name} adicionado à lista de ${activeEvent.title}!` : `Convidado ${name} atualizado!`, '👤');
     });
   }
 
@@ -6215,6 +7316,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. FINANCEIRO: CARTEIRA DIGITAL, ORÇAMENTO & EXTRATO
   // ==========================================
   function switchWalletSubSection(subId, subLabel) {
+    document.body.classList.add('wallet-mode');
     const title = document.getElementById('wallet-header-title');
     const desc = document.getElementById('wallet-header-desc');
     const headerActions = document.getElementById('wallet-header-actions');
@@ -6227,8 +7329,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (subId === 'wallet-digital') {
         title.textContent = 'Carteira Digital';
         if (desc) {
-          desc.textContent = '';
-          desc.classList.add('hidden');
+          desc.textContent = 'O saldo disponível é o valor já recebido em presentes, pronto para saque via PIX.';
+          desc.classList.remove('hidden');
         }
       } else if (subId === 'wallet-budget') {
         title.textContent = 'Orçamento';
@@ -6331,6 +7433,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  document.querySelectorAll('.btn-trigger-withdraw-pix').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const activeEvent = getActiveEvent();
+      const maxAmountEl = document.getElementById('pix-modal-max-amount');
+      const amountInput = document.getElementById('pix-withdraw-amount');
+      if (activeEvent && activeEvent.wallet) {
+        if (maxAmountEl) maxAmountEl.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toFixed(2).replace('.', ',')}`;
+        if (amountInput) amountInput.max = activeEvent.wallet.saldoDisponivel;
+      }
+      openModal(elements.modals.withdrawPix);
+    });
+  });
+
   // ==========================================
   // 8.5 MÓDULO DE ORÇAMENTO & ONBOARDING POPUP
   // ==========================================
@@ -6368,6 +7483,57 @@ document.addEventListener('DOMContentLoaded', () => {
     switchEditorSubSection('invite-print', 'Produzir convite');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Carrossel promocional do dashboard ("High quality, not high cost") —
+  // troque/adicione itens neste array para o carrossel ganhar mais slides.
+  const dashboardPromoSlides = [
+    { src: 'assets/banner_high_quality.jpg', alt: 'High quality, not high cost - Designs that will wow your guests without blowing your budget.' }
+  ];
+
+  function initDashboardPromoCarousel() {
+    const track = document.getElementById('dashboard-promo-track');
+    const dotsWrap = document.getElementById('dashboard-promo-dots');
+    if (!track) return;
+
+    track.innerHTML = dashboardPromoSlides.map((s, i) => `
+      <div class="dashboard-promo-slide${i === 0 ? ' active' : ''}" onclick="navigateToStationery()" title="Ver modelos de convites e papelaria">
+        <img src="${s.src}" alt="${s.alt}">
+      </div>
+    `).join('');
+
+    if (dashboardPromoSlides.length <= 1) {
+      if (dotsWrap) dotsWrap.innerHTML = '';
+      return;
+    }
+
+    if (dotsWrap) {
+      dotsWrap.innerHTML = dashboardPromoSlides.map((_, i) =>
+        `<button type="button" class="dashboard-promo-dot${i === 0 ? ' active' : ''}" data-slide-index="${i}" aria-label="Slide ${i + 1}"></button>`
+      ).join('');
+    }
+
+    let current = 0;
+    const getSlides = () => track.querySelectorAll('.dashboard-promo-slide');
+    const getDots = () => dotsWrap ? dotsWrap.querySelectorAll('.dashboard-promo-dot') : [];
+
+    function goToSlide(index) {
+      getSlides().forEach((el, i) => el.classList.toggle('active', i === index));
+      getDots().forEach((el, i) => el.classList.toggle('active', i === index));
+      current = index;
+    }
+
+    let timer = setInterval(() => goToSlide((current + 1) % dashboardPromoSlides.length), 4500);
+
+    getDots().forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearInterval(timer);
+        goToSlide(parseInt(dot.dataset.slideIndex));
+        timer = setInterval(() => goToSlide((current + 1) % dashboardPromoSlides.length), 4500);
+      });
+    });
+  }
+  initDashboardPromoCarousel();
 
   window.navigateToPix = function() {
     switchRailTab('wallet');
@@ -7447,10 +8613,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 12. B2B MARKETPLACE & ENCONTRAR FORNECEDORES (SPLIT SCREEN LISTA & MAPA/DETALHES)
   // ==========================================
-  let currentB2BCategory = 'all';
+  let currentB2BCategory = 'advisors';
   let currentB2BSort = 'recommended';
   let activeB2BItemId = 'venue-villa-bisutti';
   let b2bSearchQuery = '';
+  let currentB2BView = 'explore';
 
   let b2bMarketplaceInitialized = false;
   function initB2BMarketplace() {
@@ -7486,8 +8653,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const b2bSearch = document.getElementById('b2b-search-input');
     if (b2bSearch) {
       b2bSearch.addEventListener('input', (e) => {
-        b2bSearchQuery = e.target.value.toLowerCase().trim();
-        renderB2BExplore();
+        if (currentB2BView === 'messages') {
+          renderB2BChatContacts(e.target.value);
+        } else if (currentB2BView !== 'contracted') {
+          b2bSearchQuery = e.target.value.toLowerCase().trim();
+          renderB2BExplore();
+        }
       });
     }
 
@@ -7652,95 +8823,97 @@ document.addEventListener('DOMContentLoaded', () => {
         tagBg = 'bg-emerald-50 text-emerald-700';
       }
 
-      let displayPrice = 'R$ 12.000';
-      if (item.priceNum) {
-        displayPrice = `R$ ${item.priceNum.toLocaleString('pt-BR')}`;
-      } else if (item.price && typeof item.price === 'string') {
-        displayPrice = item.price.startsWith('R$') ? item.price : `R$ ${item.price}`;
-      } else if (item.startingPrice && typeof item.startingPrice === 'string') {
-        displayPrice = item.startingPrice.startsWith('R$') ? item.startingPrice : `R$ ${item.startingPrice}`;
-      } else if (typeof item.price === 'number') {
-        displayPrice = `R$ ${item.price.toLocaleString('pt-BR')}`;
-      }
-
-      let categoryLabel = item.category || item.subcategory || (item.type === 'advisor' ? 'Assessoria' : item.type === 'photo' ? 'Fotografia' : item.type === 'buffet' ? 'Gastronomia' : 'Locais & Espaços');
+      const recommendPct = Math.round(((item.rating || 4.9) / 5) * 100);
+      const avatarSrc = item.avatar || item.image;
+      const matchedConversation = (b2bConversationsData || []).find(c => c.id === item.chatId);
+      const isOnline = !!(matchedConversation && matchedConversation.online);
+      const ringRadius = 9;
+      const ringCircumference = 2 * Math.PI * ringRadius;
+      const ringOffset = ringCircumference * (1 - recommendPct / 100);
 
       const card = document.createElement('div');
       card.id = `card-${item.id}`;
-      card.className = 'b2b-item-card group bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md cursor-pointer';
+      card.className = 'b2b-item-card group bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row gap-6 items-stretch w-full cursor-pointer';
 
       card.innerHTML = `
-        <!-- Topo do Card: Imagem de Vitrine com Fundo Suave e Botão de Favoritar -->
-        <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden border-b border-zinc-100">
+        <!-- Imagem prévia da empresa -->
+        <div class="btn-open-supplier-gallery relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 cursor-pointer">
           <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-          <button type="button" class="btn-toggle-card-fav absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors shadow-2xs cursor-pointer border border-zinc-200/80 z-10" title="Favoritar">
-            <svg class="w-3.5 h-3.5 ${item.isFavorite ? 'fill-rose-500 text-rose-500' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-            </svg>
-          </button>
         </div>
 
-        <!-- Corpo do Card: Título com Badge de Status, Subtítulo, Valor e Botões -->
-        <div class="p-4 sm:p-5 flex flex-col justify-between flex-1 space-y-3.5 text-left">
+        <div class="flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <div class="flex items-start justify-between gap-2">
-              <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
-                ${item.name}
-              </h4>
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-emerald-700 border border-[#EAEAEF] font-sans shrink-0">
-                Ativo
-              </span>
+            <div class="flex items-start justify-between gap-3 flex-wrap">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="relative shrink-0">
+                  <img src="${avatarSrc}" alt="" class="w-11 h-11 rounded-full object-cover border border-zinc-200">
+                  <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isOnline ? 'bg-emerald-500' : 'bg-zinc-300'}" title="${isOnline ? 'Online' : 'Offline'}"></span>
+                </div>
+                <div class="min-w-0">
+                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
+                    ${item.name}
+                  </h4>
+                  <p class="text-sm text-zinc-400 font-medium font-sans">${item.location || item.neighborhood || ''}</p>
+                </div>
+              </div>
+
+              <button type="button" class="btn-toggle-card-fav w-9 h-9 rounded-full border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Favoritar">
+                <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+                </svg>
+              </button>
             </div>
-            <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">
-              ${categoryLabel}
-            </p>
+
+            <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.description || item.about || ''}</p>
           </div>
 
-          <div>
-            <p class="text-base sm:text-lg font-bold text-zinc-900 font-sans">
-              ${displayPrice}
-            </p>
-          </div>
+          <div class="flex flex-wrap items-center justify-between gap-4 pt-3.5 mt-3.5 border-t border-zinc-100">
+            <div class="flex items-center gap-2.5 text-sm">
+              <div class="relative w-10 h-10 shrink-0">
+                <svg class="w-10 h-10 -rotate-90" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#E4E4E7" stroke-width="2.5"></circle>
+                  <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#ebf4ff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
+                </svg>
+                <svg class="w-5 h-5 absolute inset-0 m-auto text-[#ebf4ff]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
+              </div>
+              <span class="font-semibold text-zinc-700">${recommendPct}% de recomendação</span>
+            </div>
 
-          <!-- Linha de Ações: Botão Editar + Botão Excluir Lixeira -->
-          <div class="flex items-center gap-2 pt-1 mt-auto">
-            <button type="button" class="btn-supplier-details flex-1 py-2 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-all font-sans cursor-pointer text-center">
-              Editar
-            </button>
-            <button type="button" class="btn-delete-supplier p-2 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 transition-all cursor-pointer shrink-0 flex items-center justify-center" title="Excluir item">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
-              </svg>
-            </button>
+            <div class="flex items-center gap-2.5">
+              <button type="button" class="btn-message-supplier btn-secondary">
+                <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                <span>Mensagem</span>
+              </button>
+              <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
+                Contratar
+              </button>
+            </div>
           </div>
         </div>
       `;
 
+      card.querySelector('.btn-open-supplier-gallery')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openSupplierGalleryModal(item);
+      });
+
       card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
         e.stopPropagation();
+        const sourceKey = { venue: 'venues', decor: 'venues', advisor: 'advisors', photo: 'photo', buffet: 'buffet' }[item.type];
+        const source = sourceKey && (window.LOVE_DATA[sourceKey] || []).find(x => x.id === item.id);
+        if (source) source.isFavorite = !source.isFavorite;
         item.isFavorite = !item.isFavorite;
         renderB2BExplore();
       });
 
-      card.querySelector('.btn-supplier-details')?.addEventListener('click', (e) => {
+      card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        openB2BMobileModal(item, item.type || 'venue');
+        switchB2BView('messages', item.chatId || 'mariana-assessoria');
       });
 
-      card.querySelector('.btn-delete-supplier')?.addEventListener('click', (e) => {
+      card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        // Remove item from data array
-        if (item.type === 'venue' && window.LOVE_DATA.venues) {
-          window.LOVE_DATA.venues = window.LOVE_DATA.venues.filter(v => v.id !== item.id);
-        } else if (item.type === 'advisor' && window.LOVE_DATA.advisors) {
-          window.LOVE_DATA.advisors = window.LOVE_DATA.advisors.filter(a => a.id !== item.id);
-        } else if (item.type === 'photo' && window.LOVE_DATA.photo) {
-          window.LOVE_DATA.photo = window.LOVE_DATA.photo.filter(p => p.id !== item.id);
-        } else if (item.type === 'buffet' && window.LOVE_DATA.buffet) {
-          window.LOVE_DATA.buffet = window.LOVE_DATA.buffet.filter(b => b.id !== item.id);
-        }
-        renderB2BExplore();
-        showToast(`Item "${item.name}" excluído do catálogo.`, '🗑️');
+        openB2BMobileModal(item, item.type || 'venue');
       });
 
       card.addEventListener('click', () => {
@@ -7926,6 +9099,90 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
+
+  // ==========================================
+  // 12.4 GALERIA/PORTFÓLIO DO FORNECEDOR (Explorar → clique na imagem)
+  // ==========================================
+  let supplierGalleryPhotos = [];
+  let supplierGalleryIndex = 0;
+  let supplierGalleryItem = null;
+
+  function renderSupplierGalleryImage() {
+    const img = document.getElementById('supplier-gallery-image');
+    const dotsWrap = document.getElementById('supplier-gallery-dots');
+    const prevBtn = document.getElementById('btn-supplier-gallery-prev');
+    const nextBtn = document.getElementById('btn-supplier-gallery-next');
+    if (!img) return;
+
+    img.src = supplierGalleryPhotos[supplierGalleryIndex] || '';
+
+    const multiple = supplierGalleryPhotos.length > 1;
+    if (prevBtn) prevBtn.classList.toggle('hidden', !multiple);
+    if (nextBtn) nextBtn.classList.toggle('hidden', !multiple);
+
+    if (dotsWrap) {
+      dotsWrap.innerHTML = multiple
+        ? supplierGalleryPhotos.map((_, i) => `<span class="w-1.5 h-1.5 rounded-full ${i === supplierGalleryIndex ? 'bg-white' : 'bg-white/50'}"></span>`).join('')
+        : '';
+    }
+  }
+
+  function openSupplierGalleryModal(item) {
+    const modal = document.getElementById('modal-supplier-gallery');
+    if (!modal) return;
+
+    supplierGalleryPhotos = (item.portfolioPhotos && item.portfolioPhotos.length) ? item.portfolioPhotos : [item.image];
+    supplierGalleryIndex = 0;
+    supplierGalleryItem = item;
+
+    const titleEl = document.getElementById('supplier-gallery-title');
+    if (titleEl) titleEl.textContent = item.name;
+
+    const roleWrap = document.getElementById('supplier-gallery-role-wrap');
+    const roleEl = document.getElementById('supplier-gallery-role');
+    if (item.role) {
+      if (roleEl) roleEl.textContent = item.role;
+      if (roleWrap) roleWrap.classList.remove('hidden');
+    } else if (roleWrap) {
+      roleWrap.classList.add('hidden');
+    }
+
+    const descEl = document.getElementById('supplier-gallery-description');
+    if (descEl) descEl.textContent = item.about || item.description || '';
+
+    const skillsWrap = document.getElementById('supplier-gallery-skills-wrap');
+    const skillsEl = document.getElementById('supplier-gallery-skills');
+    const skills = item.specialties || item.features || [];
+    if (skillsEl) {
+      skillsEl.innerHTML = skills.map(s => `<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium">${s}</span>`).join('');
+    }
+    if (skillsWrap) skillsWrap.classList.toggle('hidden', skills.length === 0);
+
+    renderSupplierGalleryImage();
+    openModal(modal);
+  }
+
+  document.getElementById('btn-supplier-gallery-prev')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    supplierGalleryIndex = (supplierGalleryIndex - 1 + supplierGalleryPhotos.length) % supplierGalleryPhotos.length;
+    renderSupplierGalleryImage();
+  });
+
+  document.getElementById('btn-supplier-gallery-next')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    supplierGalleryIndex = (supplierGalleryIndex + 1) % supplierGalleryPhotos.length;
+    renderSupplierGalleryImage();
+  });
+
+  document.getElementById('btn-supplier-gallery-site')?.addEventListener('click', () => {
+    showToast('Este fornecedor ainda não cadastrou um site.', '🔗');
+  });
+
+  document.getElementById('btn-supplier-gallery-hire')?.addEventListener('click', () => {
+    if (!supplierGalleryItem) return;
+    closeModal(document.getElementById('modal-supplier-gallery'));
+    openB2BMobileModal(supplierGalleryItem, supplierGalleryItem.type || 'venue');
+  });
 
   function openB2BMobileModal(item, type) {
     const modal = document.getElementById('drawer-b2b-mobile-modal');
@@ -8177,11 +9434,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function switchB2BView(viewId, targetVendorId) {
+    const tabB2B = document.getElementById('tab-b2b');
+    if (tabB2B && !tabB2B.classList.contains('active')) {
+      document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
+      tabB2B.classList.add('active');
+    }
+    document.querySelectorAll('.rail-icon-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.railTab === 'b2b');
+    });
+
     const exploreView = document.getElementById('b2b-explore-view');
     const messagesView = document.getElementById('b2b-messages-view');
     const contractedView = document.getElementById('b2b-contracted-view');
     const insuranceView = document.getElementById('b2b-insurance-view');
+    const searchBar = document.getElementById('b2b-top-search-bar');
+    const toolbarTitle = document.getElementById('b2b-toolbar-title');
+    const searchInput = document.getElementById('b2b-search-input');
+    const sortContainer = document.getElementById('b2b-sort-container');
     const b2bNavTabs = document.querySelectorAll('.tab-b2b-nav');
+
+    currentB2BView = viewId;
+    if (sortContainer) sortContainer.classList.toggle('hidden', viewId === 'messages' || viewId === 'contracted');
+    if (searchInput) searchInput.value = '';
+    b2bSearchQuery = '';
 
     b2bNavTabs.forEach(t => {
       const v = t.getAttribute('data-b2b-view');
@@ -8202,7 +9477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'explore': 'Explorar',
         'messages': 'Mensagens',
         'contracted': 'Meus contratos',
-        'insurance': 'Serviços',
+        'insurance': 'Benefícios',
         'favorites': 'Favoritos'
       };
       const targetLabel = b2bItemMap[viewId] || 'Explorar';
@@ -8215,6 +9490,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (viewId === 'messages') {
       document.body.classList.add('b2b-chat-mode');
+      if (searchBar) searchBar.classList.remove('hidden');
+      if (toolbarTitle) toolbarTitle.textContent = 'Mensagens';
+      if (searchInput) searchInput.placeholder = 'Buscar nas conversas...';
       if (exploreView) exploreView.classList.add('hidden');
       if (contractedView) contractedView.classList.add('hidden');
       if (insuranceView) insuranceView.classList.add('hidden');
@@ -8225,35 +9503,36 @@ document.addEventListener('DOMContentLoaded', () => {
       renderB2BChat();
     } else {
       document.body.classList.remove('b2b-chat-mode');
+      if (searchBar) searchBar.classList.remove('hidden');
+      if (messagesView) messagesView.classList.add('hidden');
       if (viewId === 'contracted') {
         if (exploreView) exploreView.classList.add('hidden');
-        if (messagesView) messagesView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
+        if (toolbarTitle) toolbarTitle.textContent = 'Meus Contratos';
+        if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
         renderB2BContracted();
       } else if (viewId === 'insurance') {
         if (exploreView) exploreView.classList.add('hidden');
-        if (messagesView) messagesView.classList.add('hidden');
         if (contractedView) contractedView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.remove('hidden');
+        if (searchBar) searchBar.classList.add('hidden');
       } else {
-        if (messagesView) messagesView.classList.add('hidden');
         if (contractedView) contractedView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (exploreView) exploreView.classList.remove('hidden');
+        if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
+        const categoryTabs = document.getElementById('b2b-category-tabs');
         if (viewId === 'favorites') {
+          if (toolbarTitle) toolbarTitle.textContent = 'Fornecedores Favoritos';
+          if (categoryTabs) categoryTabs.style.setProperty('display', 'none', 'important');
           currentB2BCategory = 'favorites';
-          const favPill = document.querySelector('.b2b-category-pill[data-category="favorites"]');
-          if (favPill) {
-            document.querySelectorAll('.b2b-category-pill').forEach(p => {
-              p.classList.remove('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
-              p.classList.add('border-transparent', 'text-zinc-500', 'font-medium');
-            });
-            favPill.classList.remove('border-transparent', 'text-zinc-500', 'font-medium');
-            favPill.classList.add('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
+        } else {
+          if (toolbarTitle) toolbarTitle.textContent = 'Catálogo de produtos e serviços';
+          if (categoryTabs) categoryTabs.style.removeProperty('display');
+          if (viewId === 'explore' && currentB2BCategory === 'favorites') {
+            currentB2BCategory = 'all';
           }
-        } else if (viewId === 'explore' && currentB2BCategory === 'favorites') {
-          currentB2BCategory = 'all';
         }
         renderB2BExplore();
       }
@@ -8504,8 +9783,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderB2BChat() {
+    if (!b2bConversationsData || !b2bConversationsData.length) {
+      b2bConversationsData = JSON.parse(JSON.stringify(DEFAULT_B2B_CONVERSATIONS));
+    }
     renderB2BChatContacts();
     renderB2BChatMessages();
+    initB2BChatHandlers();
   }
 
   function renderB2BChatContacts(filterQuery = '') {
@@ -8541,7 +9824,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
             <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
           </div>
-          <span class="inline-block text-[10px] font-medium text-zinc-500 bg-white/70 px-1.5 py-0.5 rounded border border-zinc-200/60 mb-1">${conv.category}</span>
           <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
         </div>
         ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #27394f;"></span>` : ''}
@@ -8569,7 +9851,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeB2BConversationId = activeConv.id;
 
     if (nameEl) nameEl.textContent = activeConv.name;
-    if (statusEl) statusEl.textContent = `${activeConv.category} • ${activeConv.online ? 'Online agora' : 'Online recentemente'}`;
+    if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : 'Online recentemente';
     if (avatarEl) avatarEl.src = activeConv.avatar;
 
     container.innerHTML = `
@@ -8607,8 +9889,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMe) {
         row.innerHTML = `
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-            <div class="chat-bubble-user-glass text-white p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left" style="color: #FFFFFF !important;">
-              ${msg.text ? `<p class="whitespace-pre-wrap break-words text-white" style="color: #FFFFFF !important;">${msg.text}</p>` : ''}
+            <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
+              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${msg.text}</p>` : ''}
               ${attachmentHTML}
             </div>
             <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
@@ -8642,16 +9924,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function initB2BChatHandlers() {
     const chatForm = document.getElementById('b2b-chat-form');
     const chatInput = document.getElementById('b2b-chat-input');
-    const chatSearch = document.getElementById('b2b-chat-search-input');
     const chatAttachBtn = document.getElementById('b2b-chat-attach-btn');
     const chatFileInput = document.getElementById('b2b-chat-file-input');
-
-    if (chatSearch && !chatSearch.dataset.bound) {
-      chatSearch.dataset.bound = "true";
-      chatSearch.addEventListener('input', (e) => {
-        renderB2BChatContacts(e.target.value);
-      });
-    }
 
     if (chatAttachBtn && chatFileInput && !chatAttachBtn.dataset.bound) {
       chatAttachBtn.dataset.bound = "true";
@@ -8985,18 +10259,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnOpenVenueModal && modalAddVenue) {
     btnOpenVenueModal.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Ao abrir o popup de local a partir da home, o fundo abre na sub-seção 'Informações'
-      switchRailTab('edit-site');
-      switchEditorSubSection('data', 'Informações');
-      
-      // Atualiza o destaque ativo no sub-drawer
-      if (elements.drawerSubItemsList) {
-        elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach((b) => {
-          const isInfo = b.textContent.includes('Informações');
-          b.classList.toggle('active', isInfo);
-        });
-      }
-
+      // Abre o popup de local direto na home, sem sair do dashboard
       const activeEv = getActiveEvent();
       if (inputVenue) {
         inputVenue.value = (activeEv.location && activeEv.location !== 'Adicionar Local') ? activeEv.location : '';
@@ -9271,6 +10534,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Mesmos links de Privacidade/Termos do rodapé público, agora também no rodapé do dashboard
+  const btnDashboardFooterPrivacy = document.getElementById('btn-dashboard-footer-privacy');
+  const btnDashboardFooterTerms = document.getElementById('btn-dashboard-footer-terms');
+  if (btnDashboardFooterPrivacy) {
+    btnDashboardFooterPrivacy.addEventListener('click', () => {
+      showToast('Política de Privacidade: Seus dados estão protegidos sob a LGPD com criptografia bancária.', '🔒');
+    });
+  }
+  if (btnDashboardFooterTerms) {
+    btnDashboardFooterTerms.addEventListener('click', () => {
+      showToast('Termos de Uso da plataforma Love.', '📄');
+    });
+  }
+
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
     if (!el.closest('.modal-container-custom')) {
@@ -9293,6 +10570,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBudgetSetupModal();
   initAddBudgetExpenseModal();
   initTablesOrganization();
+  initFloorPlan();
 
   // Inicializa módulo B2B e sistema de chat messenger
   initB2BMarketplace();

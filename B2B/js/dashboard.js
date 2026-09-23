@@ -14,7 +14,129 @@ document.addEventListener('DOMContentLoaded', async () => {
   initAdsCarousel();
   renderAnalyticsCard();
   initAnalyticsPeriodPopover();
+  initDashboardPaymentLinkModal();
 });
+
+/* -------------------- Pop-up: criar link de pagamento (direto no dashboard) -------------------- */
+
+const DASH_PAYMENT_LINK_SUBMIT_BTN_HTML = '<button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar link de pagamento</button>';
+
+function buildDashPaymentLinkUrl(id) {
+  return new URL(`site-preview.html?page=checkout&link=${id}`, location.href).toString();
+}
+
+function dashCopyTextToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => dashFallbackCopyText(text));
+  } else {
+    dashFallbackCopyText(text);
+  }
+}
+
+function dashFallbackCopyText(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.select();
+  try { document.execCommand('copy'); } catch (e) { /* ignora */ }
+  document.body.removeChild(el);
+}
+
+function initDashboardPaymentLinkModal() {
+  const modal = document.getElementById('payment-link-modal');
+  const openBtn = document.getElementById('dashboard-create-payment-link-btn');
+  const closeBtn = document.getElementById('payment-link-modal-close');
+  const form = document.getElementById('payment-link-form');
+  const fieldsWrap = document.getElementById('payment-link-fields');
+  const actionRow = document.getElementById('payment-link-action-row');
+  const amountInput = document.getElementById('payment-link-amount');
+  const installmentsSelect = document.getElementById('payment-link-installments');
+  const feeToggle = document.getElementById('payment-link-fee-toggle');
+  if (!modal || !form) return;
+
+  installmentsSelect.innerHTML = Array.from({ length: 12 }, (_, i) => i + 1)
+    .map(n => `<option value="${n}">${n}x${n === 1 ? ' (à vista)' : ''}</option>`)
+    .join('');
+
+  wireCurrencyMaskInput(amountInput);
+
+  let passFeeToClient = false;
+
+  feeToggle.querySelectorAll('[data-pass-fee]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      feeToggle.querySelectorAll('[data-pass-fee]').forEach(b => b.classList.toggle('active', b === btn));
+      passFeeToClient = btn.dataset.passFee === 'sim';
+    });
+  });
+
+  const resetModal = () => {
+    form.reset();
+    fieldsWrap.style.display = '';
+    actionRow.innerHTML = DASH_PAYMENT_LINK_SUBMIT_BTN_HTML;
+    feeToggle.querySelectorAll('[data-pass-fee]').forEach(b => b.classList.toggle('active', b.dataset.passFee === 'nao'));
+    passFeeToClient = false;
+    installmentsSelect.value = '1';
+    form.querySelectorAll('[data-payment-method]').forEach(cb => { cb.checked = true; });
+  };
+
+  const open = () => { resetModal(); modal.classList.add('show'); };
+  const close = () => modal.classList.remove('show');
+
+  if (openBtn) openBtn.addEventListener('click', open);
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const amount = currencyMaskValue(amountInput);
+    if (amount <= 0) return;
+
+    const paymentMethods = {
+      boleto: form.querySelector('[data-payment-method="boleto"]').checked,
+      pix: form.querySelector('[data-payment-method="pix"]').checked,
+      cartao: form.querySelector('[data-payment-method="cartao"]').checked
+    };
+    const installments = Number(installmentsSelect.value) || 1;
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
+    const { data: created, error } = await supabaseClient
+      .from('payment_links')
+      .insert({
+        fornecedor_id: session.user.id,
+        amount,
+        installments,
+        pass_fee_to_client: passFeeToClient,
+        payment_methods: paymentMethods,
+        status: 'pendente'
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      showToast('Não foi possível criar o link de pagamento.', true);
+      return;
+    }
+
+    const url = buildDashPaymentLinkUrl(created.id);
+    fieldsWrap.style.display = 'none';
+    actionRow.innerHTML = `
+      <div class="payment-link-result-box">
+        <span class="payment-link-result-url">${escapeHtml(url)}</span>
+        <button type="button" class="payment-link-result-send" id="payment-link-result-send" title="Copiar link" aria-label="Copiar link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+        </button>
+      </div>
+    `;
+    document.getElementById('payment-link-result-send').addEventListener('click', () => {
+      dashCopyTextToClipboard(url);
+      showToast('Link copiado!');
+    });
+  });
+}
 
 /* -------------------- Carrossel de anúncios -------------------- */
 

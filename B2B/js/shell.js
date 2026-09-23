@@ -480,7 +480,7 @@ function renderCommandResults(query) {
 
   const items = [
     ...commandPaletteData.leads.map(l => ({ label: l.name, meta: l.event_name || '', href: 'crm.html', group: 'Clientes' })),
-    ...commandPaletteData.contracts.map(c => ({ label: c.client_name, meta: `Contrato · ${(c.evento && c.evento.nome) || ''}`, href: 'contratos.html', group: 'Contratos' })),
+    ...commandPaletteData.contracts.map(c => ({ label: c.client_name, meta: `Contrato · ${(c.evento && c.evento.nome) || ''}`, href: 'pagamentos.html', group: 'Contratos' })),
     ...commandPaletteData.products.map(p => ({ label: p.name, meta: p.category || '', href: 'produtos.html', group: 'Produtos' }))
   ];
 

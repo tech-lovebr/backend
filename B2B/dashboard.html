@@ -64,8 +64,8 @@
                     <p class="wallet-balance" id="wallet-saldo-value">—</p>
                   </div>
                   <div class="wallet-actions">
-                    <a href="contratos.html" class="btn-primary wallet-action-btn">Realizar saque</a>
-                    <a href="contratos.html" class="btn-secondary wallet-action-btn">Extrato</a>
+                    <a href="pagamentos.html" class="btn-primary wallet-action-btn">Realizar saque</a>
+                    <a href="pagamentos.html" class="btn-secondary wallet-action-btn">Extrato</a>
                   </div>
                 </div>
                 <p class="wallet-sub">Saldo pendente: <span id="wallet-saldo-pendente">—</span></p>
@@ -91,11 +91,11 @@
             </div>
 
             <div class="dashboard-quick-actions">
-              <a href="contratos.html?tab=receber" class="btn-secondary dashboard-quick-action-btn">
+              <button type="button" id="dashboard-create-payment-link-btn" class="btn-secondary dashboard-quick-action-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 Criar link de pagamento
-              </a>
-              <a href="financeiro.html" class="btn-secondary dashboard-quick-action-btn">
+              </button>
+              <a href="vendas.html" class="btn-secondary dashboard-quick-action-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M9 8.25h2.25M9 21h6a2.25 2.25 0 0 0 2.25-2.25V6.622a2.25 2.25 0 0 0-.659-1.591l-2.622-2.622A2.25 2.25 0 0 0 12.378 1.75H9A2.25 2.25 0 0 0 6.75 4v14.75A2.25 2.25 0 0 0 9 21Z" /></svg>
                 Gerar orçamento
               </a>
@@ -161,7 +161,7 @@
                 <a href="funcoes.html" class="dash-ads-slide" data-slide="1" aria-label="Convide colaboradores e ganhe desconto na sua assinatura">
                   <img src="../assets/birthday_hero_banner.jpg" alt="" class="dash-ads-slide-img">
                 </a>
-                <a href="financeiro.html" class="dash-ads-slide" data-slide="2" aria-label="Notas fiscais emitidas automaticamente em cada venda">
+                <a href="vendas.html" class="dash-ads-slide" data-slide="2" aria-label="Notas fiscais emitidas automaticamente em cada venda">
                   <img src="../assets/wedding_table_dinner.jpg" alt="" class="dash-ads-slide-img">
                 </a>
 
@@ -253,11 +253,88 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="payment-link-modal">
+    <div class="modal-card" style="max-width:460px;">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-base font-bold text-zinc-900">Link de Pagamento</h3>
+        <button type="button" id="payment-link-modal-close" class="text-zinc-400 hover:text-zinc-700" aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <form id="payment-link-form" class="flex flex-col gap-4">
+        <div id="payment-link-fields" class="flex flex-col gap-4">
+          <div>
+            <label for="payment-link-amount" class="field-label">Valor a cobrar (R$)</label>
+            <input id="payment-link-amount" type="text" inputmode="numeric" class="field-input" placeholder="0,00" required>
+          </div>
+          <div>
+            <p class="field-label mb-2">Opções de pagamento</p>
+            <div class="payment-method-row">
+              <div class="payment-method-row-left">
+                <span class="payment-method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 5v14M8 5v14M11 5v14M15 5v14M18 5v14M21 5v14"/></svg></span>
+                <p class="settings-switch-label">Boleto</p>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" data-payment-method="boleto" checked>
+                <span class="settings-switch-track"></span>
+              </label>
+            </div>
+            <div class="payment-method-row">
+              <div class="payment-method-row-left">
+                <span class="payment-method-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 4 4-4 4-4-4 4-4Zm0 12 4 4-4 4-4-4 4-4Zm-8-6 4 4-4 4-4-4 4-4Zm16 0 4 4-4 4-4-4 4-4Z"/></svg></span>
+                <div>
+                  <p class="settings-switch-label">PIX</p>
+                  <p class="settings-switch-desc">Ao selecionar o Pix, você concorda com o <a href="#" onclick="return false;" style="color:var(--primary-blue); text-decoration:underline;">Termo de Consentimento</a>.</p>
+                </div>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" data-payment-method="pix" checked>
+                <span class="settings-switch-track"></span>
+              </label>
+            </div>
+            <div class="payment-method-row payment-method-row-last">
+              <div class="payment-method-row-left">
+                <span class="payment-method-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.2"/><path stroke-linecap="round" d="M2.5 9.5h19"/></svg></span>
+                <p class="settings-switch-label">Cartão</p>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" data-payment-method="cartao" checked>
+                <span class="settings-switch-track"></span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <p class="field-label mb-2">Repassar a taxa para seu cliente?</p>
+            <div class="plan-billing-toggle" id="payment-link-fee-toggle" style="margin-bottom:0;">
+              <button type="button" class="plan-billing-option active" data-pass-fee="nao">
+                <span class="plan-billing-option-title">Não repassar</span>
+              </button>
+              <button type="button" class="plan-billing-option" data-pass-fee="sim">
+                <span class="plan-billing-option-title">Repassar a taxa</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label for="payment-link-installments" class="field-label">Parcelas</label>
+            <select id="payment-link-installments" class="field-select"></select>
+          </div>
+        </div>
+
+        <div id="payment-link-action-row">
+          <button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar link de pagamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="js/data.js?v=10"></script>
   <script src="js/utils.js?v=9"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=22"></script>
-  <script src="js/dashboard.js?v=38"></script>
+  <script src="js/dashboard.js?v=39"></script>
 </body>
 </html>

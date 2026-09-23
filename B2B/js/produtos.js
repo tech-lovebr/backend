@@ -28,13 +28,41 @@ let currentGalleryImages = [];
 let currentOpenDays = {};
 let currentDishes = [];
 let currentFloorPlan = null;
+let bProducts = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
+  await loadProducts();
   renderCategoryTabs();
   renderProducts();
   initProductDrawer();
   initCompleteProfileModal();
 });
+
+async function loadProducts() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { bProducts = []; return; }
+
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .eq('fornecedor_id', session.user.id)
+    .order('created_at', { ascending: false });
+
+  bProducts = error || !data ? [] : data.map(p => ({
+    id: p.id,
+    name: p.name,
+    category: p.category,
+    price: p.price,
+    description: p.description,
+    active: p.active,
+    coverImage: p.cover_image_url,
+    gallery: p.gallery || [],
+    venue: (p.extra && p.extra.venue) || null,
+    equipmentType: (p.extra && p.extra.equipmentType) || null,
+    dishes: (p.extra && p.extra.dishes) || []
+  }));
+}
 
 /* -------------------- Modal: finalize seu cadastro -------------------- */
 
@@ -54,7 +82,7 @@ function openCompleteProfileModal() {
 function renderCategoryTabs() {
   const wrap = document.getElementById('category-tabs');
   if (!wrap) return;
-  const categories = ['Todos', ...new Set(B2B_DATA.products.map(p => p.category))];
+  const categories = ['Todos', ...new Set(bProducts.map(p => p.category))];
   wrap.innerHTML = categories.map(cat => `
     <button type="button" class="category-tab ${cat === activeCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
   `).join('');
@@ -85,8 +113,8 @@ function renderProducts() {
   if (!grid) return;
 
   const items = activeCategory === 'Todos'
-    ? B2B_DATA.products
-    : B2B_DATA.products.filter(p => p.category === activeCategory);
+    ? bProducts
+    : bProducts.filter(p => p.category === activeCategory);
 
   if (!items.length) {
     grid.innerHTML = `
@@ -128,8 +156,10 @@ function renderProducts() {
   });
 
   grid.querySelectorAll('[data-remove-product]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      B2B_DATA.products = B2B_DATA.products.filter(x => x.id !== btn.dataset.removeProduct);
+    btn.addEventListener('click', async () => {
+      const { error } = await supabaseClient.from('products').delete().eq('id', btn.dataset.removeProduct);
+      if (error) { showToast('Não foi possível remover o item.', true); return; }
+      await loadProducts();
       renderCategoryTabs();
       renderProducts();
       showToast('Item removido da vitrine.');
@@ -416,7 +446,7 @@ function initProductDrawer() {
   });
 
   if (form) {
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       const name = document.getElementById('product-name').value.trim();
       const category = document.getElementById('product-category').value;
@@ -469,21 +499,36 @@ function initProductDrawer() {
         payload.dishes = currentDishes.map(d => ({ id: d.id, name: d.name, price: d.price, quantity: d.quantity }));
       }
 
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return;
+
+      const row = {
+        name, category, price, description, active,
+        cover_image_url: payload.coverImage,
+        gallery: payload.gallery,
+        extra: { venue: payload.venue, equipmentType: payload.equipmentType, dishes: payload.dishes }
+      };
+
       if (form.dataset.editId) {
-        const item = B2B_DATA.products.find(p => p.id === form.dataset.editId);
-        Object.assign(item, payload);
+        const { error } = await supabaseClient.from('products').update(row).eq('id', form.dataset.editId);
+        if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
         showToast('Produto atualizado.');
         if (isVenue && payload.venue.floorPlan && payload.venue.floorPlan.shape.length) {
-          sendFloorPlanToDatabase(item.id, payload.venue.floorPlan);
+          sendFloorPlanToDatabase(form.dataset.editId, payload.venue.floorPlan);
         }
       } else {
-        const newId = 'p' + Date.now();
-        B2B_DATA.products.unshift(Object.assign({ id: newId }, payload));
+        const { data: created, error } = await supabaseClient
+          .from('products')
+          .insert({ fornecedor_id: session.user.id, ...row })
+          .select('id')
+          .single();
+        if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
         showToast('Produto adicionado à vitrine.');
         if (isVenue && payload.venue.floorPlan && payload.venue.floorPlan.shape.length) {
-          sendFloorPlanToDatabase(newId, payload.venue.floorPlan);
+          sendFloorPlanToDatabase(created.id, payload.venue.floorPlan);
         }
       }
+      await loadProducts();
       renderCategoryTabs();
       renderProducts();
       close();
@@ -492,7 +537,7 @@ function initProductDrawer() {
 }
 
 function openProductDrawer(id) {
-  const p = B2B_DATA.products.find(x => x.id === id);
+  const p = bProducts.find(x => x.id === id);
   if (!p) return;
   document.getElementById('product-drawer-title').textContent = 'Editar produto ou serviço';
   document.getElementById('product-name').value = p.name;

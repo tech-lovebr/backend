@@ -8402,73 +8402,71 @@ document.addEventListener('DOMContentLoaded', () => {
   // 10.1 Login com Email e Senha (Conta Existente)
   const formLoginEmail = document.getElementById('form-login-email');
   if (formLoginEmail) {
-    formLoginEmail.addEventListener('submit', (e) => {
+    formLoginEmail.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const email = document.getElementById('login-email-input').value.trim();
+      const password = document.getElementById('login-password-input').value;
+      const submitBtn = document.getElementById('btn-do-email-login');
+
+      submitBtn.disabled = true;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      submitBtn.disabled = false;
+
+      if (error) {
+        showToast('E-mail ou senha incorretos.', '⚠️');
+        return;
+      }
+
       setSidebarLocked(false);
       closeModal(elements.modalFakeLogin);
-      switchView('dashboard');
+      window.location.reload();
     });
   }
 
-  // 10.2 Login com Google (Conta Existente)
-  const btnGoogleLogin = document.getElementById('btn-google-login');
-  if (btnGoogleLogin) {
-    btnGoogleLogin.addEventListener('click', () => {
-      setSidebarLocked(false);
-      closeModal(elements.modalFakeLogin);
-      switchView('dashboard');
-    });
-  }
+  // 10.2 / 10.2b / 10.3 / 10.3b — Login e Cadastro social (Google/Apple):
+  // login social real não está configurado ainda (precisa habilitar os
+  // provedores no painel do Supabase Auth). Por ora, orienta a usar e-mail/senha.
+  ['btn-google-login', 'btn-apple-login', 'btn-google-register', 'btn-apple-register'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        showToast('Login social ainda não disponível. Use e-mail e senha.', 'ℹ️');
+      });
+    }
+  });
 
-  // 10.2b Login com Apple (Conta Existente)
-  const btnAppleLogin = document.getElementById('btn-apple-login');
-  if (btnAppleLogin) {
-    btnAppleLogin.addEventListener('click', () => {
-      setSidebarLocked(false);
-      closeModal(elements.modalFakeLogin);
-      switchView('dashboard');
-    });
-  }
-
-  // 10.3 Cadastro com Google (Primeiro Acesso)
-  const btnGoogleRegister = document.getElementById('btn-google-register');
-  if (btnGoogleRegister) {
-    btnGoogleRegister.addEventListener('click', () => {
-      closeModal(elements.modals.register);
-      startFirstAccessFlow();
-      triggerConfetti();
-    });
-  }
-
-  // 10.3b Cadastro com Apple (Primeiro Acesso)
-  const btnAppleRegister = document.getElementById('btn-apple-register');
-  if (btnAppleRegister) {
-    btnAppleRegister.addEventListener('click', () => {
-      closeModal(elements.modals.register);
-      startFirstAccessFlow();
-      triggerConfetti();
-    });
-  }
-
-  // 10.4 Formulário Criar Conta Grátis (Nome e E-mail, sem senha)
+  // 10.4 Formulário Criar Conta Grátis (Nome, E-mail e Senha)
   const formRegisterUser = document.getElementById('form-register-user');
   if (formRegisterUser) {
-    formRegisterUser.addEventListener('submit', (e) => {
+    formRegisterUser.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const nameInput = document.getElementById('register-name-input');
-      const emailInput = document.getElementById('register-email-input');
-      const emailVal = emailInput && emailInput.value.trim() ? emailInput.value.trim() : 'beatriz@exemplo.com';
-      const targetEmailEl = document.getElementById('verify-code-email-target');
-      if (targetEmailEl) targetEmailEl.textContent = emailVal;
+      const name = document.getElementById('register-name-input').value.trim();
+      const email = document.getElementById('register-email-input').value.trim();
+      const password = document.getElementById('register-password-input').value;
+      const submitBtn = document.getElementById('btn-register-submit');
+
+      submitBtn.disabled = true;
+      const { error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { role: 'cliente', couple_name: name } }
+      });
+      submitBtn.disabled = false;
+
+      if (error) {
+        showToast(
+          error.message.includes('already registered') ? 'Esse e-mail já tem uma conta. Tente entrar.' : 'Não foi possível criar sua conta.',
+          '⚠️'
+        );
+        return;
+      }
+
+      const dropdownUsername = document.getElementById('account-dropdown-username');
+      if (dropdownUsername) dropdownUsername.textContent = name;
 
       closeModal(elements.modals.register);
-      openModal(elements.modals.verifyCode);
-
-      // Foco no primeiro dígito
-      const firstOtp = document.querySelector('.otp-code-input[data-idx="0"]');
-      if (firstOtp) setTimeout(() => firstOtp.focus(), 150);
-
-      showToast(`Código de 4 dígitos enviado para ${emailVal}`, '📩');
+      startFirstAccessFlow();
+      triggerConfetti();
     });
   }
 
@@ -8599,7 +8597,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (elements.dashHeader.btnLogout) {
-    elements.dashHeader.btnLogout.addEventListener('click', () => {
+    elements.dashHeader.btnLogout.addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
       switchView('public');
       showToast('Você saiu do painel de anfitrião.', '👋');
     });
@@ -9266,117 +9265,81 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 12. B2B FORNECEDORES & MESSENGER CHAT
   // ==========================================
-  let activeB2BConversationId = 'mariana-assessoria';
-
-  const DEFAULT_B2B_CONVERSATIONS = [
-    {
-      id: 'mariana-assessoria',
-      name: 'Mariana & Co. Assessoria',
-      category: 'Assessoria & Cerimonial',
-      avatar: 'assets/theme_garden.jpg',
-      online: true,
-      lastMessage: 'Acabei de anexar nossa apresentação com os valores e fotos dos últimos casamentos.',
-      time: '14:20',
-      unread: 1,
-      messages: [
-        { sender: 'them', text: 'Olá Beatriz & Lucas! Tudo bem? Recebemos a solicitação de vocês para a data do casamento em 2026.', time: '14:10' },
-        { sender: 'me', text: 'Olá Mariana! Que ótimo! Adoramos o portfólio de vocês. Poderia nos enviar a proposta detalhada com assessoria completa?', time: '14:15' },
-        { sender: 'them', text: 'Com certeza! Acabei de anexar nossa apresentação com os valores e fotos dos últimos casamentos. Fico à disposição para agendarmos uma reunião ou degustação!', time: '14:20' }
-      ]
-    },
-    {
-      id: 'villa-bisutti',
-      name: 'Villa Bisutti Casa do Ator',
-      category: 'Espaço & Gastronomia',
-      avatar: 'assets/theme_blacktie.jpg',
-      online: true,
-      lastMessage: 'A data de 28/08/2026 está pré-reservada para vocês. Gostariam de agendar uma visita guiada?',
-      time: '11:05',
-      unread: 0,
-      messages: [
-        { sender: 'them', text: 'Olá Beatriz & Lucas! Sejam muito bem-vindos ao Villa Bisutti.', time: '10:45' },
-        { sender: 'me', text: 'Bom dia! Gostaríamos de saber sobre a capacidade máxima e o formato do buffet para 250 convidados.', time: '11:00' },
-        { sender: 'them', text: 'A Casa do Ator comporta confortavelmente até 320 convidados sentados! A data de 28/08/2026 está pré-reservada para vocês. Gostariam de agendar uma visita guiada?', time: '11:05' }
-      ]
-    },
-    {
-      id: 'palacio-tangara',
-      name: 'Palácio Tangará Hotel',
-      category: 'Espaço de Luxo & Hotel',
-      avatar: 'assets/theme_garden.jpg',
-      online: false,
-      lastMessage: 'Será um prazer recebê-los para o tour no jardim Burle Marx nesta sexta-feira.',
-      time: 'Ontem',
-      unread: 0,
-      messages: [
-        { sender: 'me', text: 'Boa tarde! Qual é o procedimento para reservar o salão nobre e a suíte nupcial?', time: 'Ontem 16:30' },
-        { sender: 'them', text: 'Olá! Será um prazer recebê-los para o tour no jardim Burle Marx nesta sexta-feira. Podemos preparar um welcome drink para o casal.', time: 'Ontem 17:15' }
-      ]
-    },
-    {
-      id: 'felipe-ramos-foto',
-      name: 'Felipe Ramos Fotografia',
-      category: 'Foto & Vídeo Cinema',
-      avatar: 'assets/wedding_hero_banner.jpg',
-      online: true,
-      lastMessage: 'Enviei o link da nossa galeria completa de casamentos na praia e campo.',
-      time: 'Ontem',
-      unread: 0,
-      messages: [
-        { sender: 'them', text: 'Olá noivos! Que honra poder registrar a história de vocês.', time: 'Ontem 13:00' },
-        { sender: 'them', text: 'Enviei o link da nossa galeria completa de casamentos na praia e campo. Trabalhamos com cobertura de drone e fotos analógicas também!', time: 'Ontem 13:02' }
-      ]
-    },
-    {
-      id: 'espaco-wood',
-      name: 'Espaço Wood Garden',
-      category: 'Espaço Rústico Chic',
-      avatar: 'assets/theme_coastal.jpg',
-      online: false,
-      lastMessage: 'Temos opções de cardápio vegetariano e tradicional inclusas na contratação.',
-      time: '26 Ago',
-      unread: 0,
-      messages: [
-        { sender: 'them', text: 'Olá! Segue em anexo as opções de plantas baixas e cenários para a cerimônia no gazebo.', time: '26 Ago' },
-        { sender: 'them', text: 'Temos opções de cardápio vegetariano e tradicional inclusas na contratação.', time: '26 Ago' }
-      ]
-    },
-    {
-      id: 'juliana-toledo',
-      name: 'Juliana Toledo Cerimonial',
-      category: 'Assessoria & Cerimonial',
-      avatar: 'assets/theme_garden.jpg',
-      online: false,
-      lastMessage: 'Combinado! Nos falamos na quinta-feira para o alinhamento do cronograma.',
-      time: '22 Ago',
-      unread: 0,
-      messages: [
-        { sender: 'me', text: 'Oi Juliana! Recebemos sua mensagem e já aprovamos os fornecedores de doces.', time: '22 Ago' },
-        { sender: 'them', text: 'Combinado! Nos falamos na quinta-feira para o alinhamento do cronograma.', time: '22 Ago' }
-      ]
-    }
-  ];
-
+  let activeB2BConversationId = null;
   let b2bConversationsData = [];
-  try {
-    const savedConvs = localStorage.getItem('love_b2b_chat_conversations');
-    if (savedConvs) {
-      b2bConversationsData = JSON.parse(savedConvs);
-    }
-  } catch (err) {
-    console.error('Erro ao ler conversas salvas', err);
-  }
-  if (!b2bConversationsData || !b2bConversationsData.length) {
-    b2bConversationsData = JSON.parse(JSON.stringify(DEFAULT_B2B_CONVERSATIONS));
+  let b2bMessagesRealtimeChannel = null;
+
+  function formatB2BChatTime(iso) {
+    const d = new Date(iso);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+    const isYesterday = d.toDateString() === yesterday.toDateString();
+    const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    if (isToday) return hhmm;
+    if (isYesterday) return `Ontem ${hhmm}`;
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   }
 
-  function saveB2BConversations() {
-    try {
-      localStorage.setItem('love_b2b_chat_conversations', JSON.stringify(b2bConversationsData));
-      window.dispatchEvent(new CustomEvent('love:chat-updated', { detail: { conversations: b2bConversationsData } }));
-    } catch (err) {
-      console.error('Erro ao persistir conversas do chat', err);
+  async function loadB2BConversationsData() {
+    if (!window.loveClienteSession) { b2bConversationsData = []; return; }
+
+    const { data: rows, error } = await supabaseClient
+      .from('conversations')
+      .select('id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type)')
+      .eq('cliente_id', window.loveClienteSession.user.id)
+      .order('last_message_at', { ascending: false });
+
+    if (error || !rows) { b2bConversationsData = []; return; }
+
+    b2bConversationsData = rows.map(row => {
+      const msgs = (row.messages || []).slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      const last = msgs[msgs.length - 1];
+      return {
+        id: row.id,
+        name: (row.fornecedor && row.fornecedor.company_name) || 'Fornecedor',
+        category: '',
+        avatar: (row.fornecedor && row.fornecedor.avatar_url) || 'assets/theme_garden.jpg',
+        online: false,
+        unread: 0,
+        lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
+        time: last ? formatB2BChatTime(last.created_at) : '',
+        messages: msgs.map(m => ({
+          sender: m.sender_role === 'cliente' ? 'me' : 'them',
+          text: m.text,
+          time: formatB2BChatTime(m.created_at),
+          attachment: m.attachment_url ? { type: m.attachment_type || 'doc', url: m.attachment_url, name: 'Anexo' } : null
+        }))
+      };
+    });
+  }
+
+  // Cria (ou reaproveita) a conversa com um fornecedor real e a torna a ativa.
+  async function openConversationWithFornecedor(fornecedorId) {
+    if (!window.loveClienteSession) return;
+    const clienteId = window.loveClienteSession.user.id;
+
+    const { data: existing } = await supabaseClient
+      .from('conversations')
+      .select('id')
+      .eq('fornecedor_id', fornecedorId)
+      .eq('cliente_id', clienteId)
+      .maybeSingle();
+
+    let convId = existing && existing.id;
+    if (!convId) {
+      const { data: created, error } = await supabaseClient
+        .from('conversations')
+        .insert({ fornecedor_id: fornecedorId, cliente_id: clienteId })
+        .select('id')
+        .single();
+      if (error) { showToast('Não foi possível iniciar a conversa.', '⚠️'); return; }
+      convId = created.id;
     }
+
+    await loadB2BConversationsData();
+    activeB2BConversationId = convId;
+    renderB2BChat();
   }
 
   // Hub global de chat Love - Conecta esta tela com a futura tela dos assessores
@@ -9386,52 +9349,40 @@ document.addEventListener('DOMContentLoaded', () => {
     getActiveConversationId: () => activeB2BConversationId,
     setActiveConversationId: (id) => {
       activeB2BConversationId = id;
-      const c = b2bConversationsData.find(conv => conv.id === id);
-      if (c) c.unread = 0;
-      saveB2BConversations();
       renderB2BChat();
     },
-    sendMessage: (convId, text, sender = 'me', attachment = null) => {
-      const conv = b2bConversationsData.find(c => c.id === convId) || b2bConversationsData[0];
-      if (!conv) return null;
+    openConversationWithFornecedor,
+    sendMessage: async (convId, text, sender, attachment = null) => {
+      if (!window.loveClienteSession || !convId) return null;
 
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      const msgObj = {
-        sender: sender, // 'me' (noivos) ou 'them' (assessor)
-        text: text || '',
-        time: timeStr,
-        attachment: attachment || null
-      };
+      const { error } = await supabaseClient.from('messages').insert({
+        conversation_id: convId,
+        sender_id: window.loveClienteSession.user.id,
+        sender_role: 'cliente',
+        text: text || null,
+        attachment_url: attachment ? attachment.url : null,
+        attachment_type: attachment ? attachment.type : null
+      });
+      if (error) { console.error('Erro ao enviar mensagem:', error); return null; }
 
-      conv.messages.push(msgObj);
-      conv.lastMessage = text || (attachment ? (attachment.type === 'image' ? '📷 Foto enviada' : `📎 ${attachment.name}`) : '');
-      conv.time = timeStr;
-
-      // Reordena conversa para o topo da lista
-      const idx = b2bConversationsData.indexOf(conv);
-      if (idx > 0) {
-        b2bConversationsData.splice(idx, 1);
-        b2bConversationsData.unshift(conv);
-      }
-
-      saveB2BConversations();
+      await supabaseClient.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', convId);
+      await loadB2BConversationsData();
       renderB2BChat();
-      return msgObj;
+      return true;
     }
   };
 
-  // Sincronização em tempo real entre diferentes abas ou portais (Noivos <-> Assessor)
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'love_b2b_chat_conversations' && e.newValue) {
-      try {
-        b2bConversationsData = JSON.parse(e.newValue);
+  function subscribeToB2BChatRealtime() {
+    if (!window.loveClienteSession) return;
+    if (b2bMessagesRealtimeChannel) supabaseClient.removeChannel(b2bMessagesRealtimeChannel);
+    b2bMessagesRealtimeChannel = supabaseClient
+      .channel('love-b2b-mensagens')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
+        await loadB2BConversationsData();
         renderB2BChat();
-      } catch (err) {
-        console.error('Erro ao sincronizar chat entre abas', err);
-      }
-    }
-  });
+      })
+      .subscribe();
+  }
 
   function switchB2BView(viewId, targetVendorId) {
     const tabB2B = document.getElementById('tab-b2b');
@@ -9782,9 +9733,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderB2BChat() {
-    if (!b2bConversationsData || !b2bConversationsData.length) {
-      b2bConversationsData = JSON.parse(JSON.stringify(DEFAULT_B2B_CONVERSATIONS));
+  async function renderB2BChat() {
+    await loadB2BConversationsData();
+    if (!b2bConversationsData.some(c => c.id === activeB2BConversationId)) {
+      activeB2BConversationId = b2bConversationsData[0] ? b2bConversationsData[0].id : null;
     }
     renderB2BChatContacts();
     renderB2BChatMessages();
@@ -9796,7 +9748,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!list) return;
 
     list.innerHTML = '';
-    const filtered = b2bConversationsData.filter(c => 
+
+    if (!b2bConversationsData.length) {
+      list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Clique em "+ Nova conversa" para falar com um fornecedor.</div>';
+      return;
+    }
+
+    const filtered = b2bConversationsData.filter(c =>
       c.name.toLowerCase().includes(filterQuery.toLowerCase()) || 
       c.category.toLowerCase().includes(filterQuery.toLowerCase()) ||
       c.lastMessage.toLowerCase().includes(filterQuery.toLowerCase())
@@ -9847,11 +9805,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return;
 
     const activeConv = b2bConversationsData.find(c => c.id === activeB2BConversationId) || b2bConversationsData[0];
-    if (!activeConv) return;
+    if (!activeConv) {
+      container.innerHTML = '<div class="flex items-center justify-center h-full text-sm text-zinc-400">Nenhuma conversa selecionada.</div>';
+      if (nameEl) nameEl.textContent = '';
+      if (statusEl) statusEl.textContent = '';
+      return;
+    }
     activeB2BConversationId = activeConv.id;
 
     if (nameEl) nameEl.textContent = activeConv.name;
-    if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : 'Online recentemente';
+    if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : '';
     if (avatarEl) avatarEl.src = activeConv.avatar;
 
     container.innerHTML = `
@@ -9926,6 +9889,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('b2b-chat-input');
     const chatAttachBtn = document.getElementById('b2b-chat-attach-btn');
     const chatFileInput = document.getElementById('b2b-chat-file-input');
+    const newConvBtn = document.getElementById('b2b-new-conversation-btn');
+    const newConvPicker = document.getElementById('b2b-new-conversation-picker');
 
     if (chatAttachBtn && chatFileInput && !chatAttachBtn.dataset.bound) {
       chatAttachBtn.dataset.bound = "true";
@@ -9944,7 +9909,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = (evt) => {
-            window.LoveChatService.sendMessage(convId, '', 'me', {
+            window.LoveChatService.sendMessage(convId, '', undefined, {
               type: 'image',
               name: file.name,
               url: evt.target.result
@@ -9953,10 +9918,9 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           reader.readAsDataURL(file);
         } else {
-          window.LoveChatService.sendMessage(convId, `Documento compartilhado: ${file.name}`, 'me', {
+          window.LoveChatService.sendMessage(convId, `Documento compartilhado: ${file.name}`, undefined, {
             type: 'file',
-            name: file.name,
-            size: (file.size / 1024).toFixed(1) + ' KB'
+            name: file.name
           });
           showToast(`Arquivo "${file.name}" compartilhado!`, '📎');
         }
@@ -9976,22 +9940,51 @@ document.addEventListener('DOMContentLoaded', () => {
         const convId = activeB2BConversationId || (b2bConversationsData[0] && b2bConversationsData[0].id);
         if (!convId) return;
 
-        // 1. Envia mensagem do casal
-        window.LoveChatService.sendMessage(convId, text, 'me');
+        window.LoveChatService.sendMessage(convId, text);
         chatInput.value = '';
+      });
+    }
 
-        // 2. Resposta automatizada realista do assessor/fornecedor (caso não esteja com assessor conectado)
-        setTimeout(() => {
-          const replies = [
-            'Perfeito! Recebemos sua mensagem e entraremos em contato com todos os detalhes.',
-            'Excelente! Já estamos preparando o orçamento atualizado para vocês.',
-            'Maravilha! Fico à total disposição para agendarmos uma apresentação.',
-            'Combinado! Em instantes enviaremos a proposta formatada em PDF.',
-            'Anotado! Já incluímos no cronograma de alinhamento.'
-          ];
-          const randomReply = replies[Math.floor(Math.random() * replies.length)];
-          window.LoveChatService.sendMessage(convId, randomReply, 'them');
-        }, 1200);
+    if (newConvBtn && newConvPicker && !newConvBtn.dataset.bound) {
+      newConvBtn.dataset.bound = "true";
+
+      newConvBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const willShow = newConvPicker.classList.contains('hidden');
+        if (!willShow) { newConvPicker.classList.add('hidden'); return; }
+
+        newConvPicker.innerHTML = '<div class="p-4 text-center text-xs text-zinc-400">Carregando fornecedores...</div>';
+        newConvPicker.classList.remove('hidden');
+
+        const { data: fornecedores, error } = await supabaseClient
+          .from('fornecedores')
+          .select('id, company_name, avatar_url')
+          .order('company_name');
+
+        if (error || !fornecedores || !fornecedores.length) {
+          newConvPicker.innerHTML = '<div class="p-4 text-center text-xs text-zinc-400">Nenhum fornecedor cadastrado ainda.</div>';
+          return;
+        }
+
+        newConvPicker.innerHTML = fornecedores.map(f => `
+          <button type="button" data-fornecedor-id="${f.id}" class="w-full flex items-center gap-2.5 p-3 hover:bg-zinc-50 text-left border-b border-zinc-100 last:border-0">
+            <img src="${f.avatar_url || 'assets/theme_garden.jpg'}" class="w-8 h-8 rounded-full object-cover border border-zinc-200" alt="">
+            <span class="text-xs font-medium text-zinc-800 truncate">${f.company_name}</span>
+          </button>
+        `).join('');
+
+        newConvPicker.querySelectorAll('[data-fornecedor-id]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            newConvPicker.classList.add('hidden');
+            await window.LoveChatService.openConversationWithFornecedor(btn.dataset.fornecedorId);
+          });
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!newConvPicker.contains(e.target) && e.target !== newConvBtn) {
+          newConvPicker.classList.add('hidden');
+        }
       });
     }
   }
@@ -10414,9 +10407,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (btnAccountLogout) {
-    btnAccountLogout.addEventListener('click', () => {
+    btnAccountLogout.addEventListener('click', async () => {
       dropdownUserAccount?.classList.add('hidden');
-      localStorage.removeItem('love_authenticated_user');
+      await supabaseClient.auth.signOut();
       showToast('Você saiu da sua conta. Até logo!', '👋');
       setTimeout(() => {
         switchView('public');
@@ -10575,6 +10568,31 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa módulo B2B e sistema de chat messenger
   initB2BMarketplace();
 
-  // Início padrão na página pública
+  // Início padrão na página pública — troca para o dashboard automaticamente
+  // se já existir uma sessão Supabase válida (usuário já logado).
   switchView('public');
+  initClienteSession();
+
+  async function initClienteSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
+    window.loveClienteSession = session;
+
+    const { data: cliente } = await supabaseClient
+      .from('clientes')
+      .select('id, couple_name, email, avatar_url')
+      .eq('id', session.user.id)
+      .maybeSingle();
+
+    if (cliente) {
+      window.loveClienteProfile = cliente;
+      const dropdownUsername = document.getElementById('account-dropdown-username');
+      if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
+    }
+
+    subscribeToB2BChatRealtime();
+
+    switchView('dashboard');
+  }
 });

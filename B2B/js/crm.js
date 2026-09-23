@@ -1,14 +1,17 @@
 /* ==========================================================================
-   LOVE B2B — Contatos (lista de leads e oportunidades)
+   LOVE B2B — Contatos (lista de leads e oportunidades, dados reais via Supabase)
    ========================================================================== */
 
 const LEAD_STATUS_ORDER = ['novo', 'conversa', 'proposta', 'fechado'];
 
 let activeLeadStatus = 'todos';
 let leadSearchQuery = '';
+let crmLeads = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
   initGmailSyncBanner();
+  await loadLeads();
   renderLeadStatusTabs();
   renderLeadsTable();
   initLeadDrawer();
@@ -18,6 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLeadsTable();
   });
 });
+
+async function loadLeads() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { crmLeads = []; return; }
+
+  const { data, error } = await supabaseClient
+    .from('leads')
+    .select('*')
+    .eq('fornecedor_id', session.user.id)
+    .order('created_at', { ascending: false });
+
+  crmLeads = error || !data ? [] : data;
+}
 
 /* -------------------- Banner de sincronização do Gmail -------------------- */
 
@@ -49,7 +65,7 @@ function renderLeadStatusTabs() {
   const wrap = document.getElementById('lead-status-tabs');
   if (!wrap) return;
 
-  const statuses = ['todos', ...LEAD_STATUS_ORDER.filter(s => B2B_DATA.leads.some(l => l.status === s))];
+  const statuses = ['todos', ...LEAD_STATUS_ORDER.filter(s => crmLeads.some(l => l.status === s))];
   wrap.innerHTML = statuses.map(s => `
     <button type="button" class="category-tab ${s === activeLeadStatus ? 'active' : ''}" data-lead-status="${s}">${s === 'todos' ? 'Todos os contatos' : statusLabel(s)}</button>
   `).join('');
@@ -70,12 +86,12 @@ function renderLeadsTable() {
   if (!tbody) return;
 
   let items = activeLeadStatus === 'todos'
-    ? B2B_DATA.leads
-    : B2B_DATA.leads.filter(l => l.status === activeLeadStatus);
+    ? crmLeads
+    : crmLeads.filter(l => l.status === activeLeadStatus);
 
   if (leadSearchQuery) {
     const q = leadSearchQuery.toLowerCase();
-    items = items.filter(l => l.name.toLowerCase().includes(q) || l.event.toLowerCase().includes(q));
+    items = items.filter(l => l.name.toLowerCase().includes(q) || (l.event_name || '').toLowerCase().includes(q));
   }
 
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'contato' : 'contatos'}`);
@@ -88,9 +104,9 @@ function renderLeadsTable() {
   tbody.innerHTML = items.map(lead => `
     <tr data-open-lead="${lead.id}" style="cursor:pointer;">
       <td class="font-medium text-zinc-900">${escapeHtml(lead.name)}</td>
-      <td>${escapeHtml(lead.event)}</td>
-      <td>${escapeHtml(lead.date)}</td>
-      <td>${formatCurrency(lead.value)}</td>
+      <td>${escapeHtml(lead.event_name || '')}</td>
+      <td>${escapeHtml(lead.event_date || '')}</td>
+      <td>${formatCurrency(lead.value || 0)}</td>
       <td><span class="text-sm text-zinc-700">${statusLabel(lead.status)}</span></td>
     </tr>
   `).join('');
@@ -131,38 +147,50 @@ function initLeadDrawer() {
   cancelBtn?.addEventListener('click', close);
   backdrop?.addEventListener('click', close);
 
-  deleteBtn?.addEventListener('click', () => {
+  deleteBtn?.addEventListener('click', async () => {
     const id = form.dataset.editId;
     if (!id) return;
-    B2B_DATA.leads = B2B_DATA.leads.filter(l => l.id !== id);
+    const { error } = await supabaseClient.from('leads').delete().eq('id', id);
+    if (error) { showToast('Não foi possível remover o contato.', true); return; }
+    await loadLeads();
     close();
     renderLeadStatusTabs();
     renderLeadsTable();
     showToast('Contato removido.');
   });
 
-  form?.addEventListener('submit', (e) => {
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('lead-name').value.trim();
-    const event = document.getElementById('lead-event').value.trim();
-    const date = document.getElementById('lead-date').value.trim();
+    const event_name = document.getElementById('lead-event').value.trim();
+    const event_date = document.getElementById('lead-date').value.trim();
     const value = Number(document.getElementById('lead-value').value) || 0;
     const status = document.getElementById('lead-status').value;
 
-    if (!name || !event) {
+    if (!name || !event_name) {
       showToast('Preencha nome e evento do contato.', true);
       return;
     }
 
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
     if (form.dataset.editId) {
-      const lead = B2B_DATA.leads.find(l => l.id === form.dataset.editId);
-      if (lead) Object.assign(lead, { name, event, date, value, status });
+      const { error } = await supabaseClient
+        .from('leads')
+        .update({ name, event_name, event_date, value, status })
+        .eq('id', form.dataset.editId);
+      if (error) { showToast('Não foi possível atualizar o contato.', true); return; }
       showToast('Contato atualizado.');
     } else {
-      B2B_DATA.leads.push({ id: 'l' + Date.now(), name, event, date, value, status });
+      const { error } = await supabaseClient
+        .from('leads')
+        .insert({ fornecedor_id: session.user.id, name, event_name, event_date, value, status });
+      if (error) { showToast('Não foi possível adicionar o contato.', true); return; }
       showToast('Contato adicionado.');
     }
 
+    await loadLeads();
     close();
     renderLeadStatusTabs();
     renderLeadsTable();
@@ -170,14 +198,14 @@ function initLeadDrawer() {
 }
 
 function openLeadDrawer(id) {
-  const lead = B2B_DATA.leads.find(l => l.id === id);
+  const lead = crmLeads.find(l => l.id === id);
   if (!lead) return;
 
   document.getElementById('lead-drawer-title').textContent = 'Editar contato';
   document.getElementById('lead-name').value = lead.name;
-  document.getElementById('lead-event').value = lead.event;
-  document.getElementById('lead-date').value = lead.date;
-  document.getElementById('lead-value').value = lead.value;
+  document.getElementById('lead-event').value = lead.event_name || '';
+  document.getElementById('lead-date').value = lead.event_date || '';
+  document.getElementById('lead-value').value = lead.value || 0;
   document.getElementById('lead-status').value = lead.status;
 
   const form = document.getElementById('lead-form');

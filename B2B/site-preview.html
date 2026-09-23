@@ -28,9 +28,11 @@
   <div class="builder-canvas" id="builder-canvas" data-device="desktop"></div>
   <div class="builder-mobile-menu-root" id="builder-mobile-menu-root"></div>
 
-  <script src="js/data.js?v=9"></script>
-  <script src="js/utils.js?v=8"></script>
-  <script src="js/shell.js?v=17"></script>
+  <script src="js/data.js?v=10"></script>
+  <script src="js/utils.js?v=9"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/supabase-init.js?v=1"></script>
+  <script src="js/shell.js?v=22"></script>
   <script src="js/site-builder.js?v=270"></script>
   <script>
     (function () {
@@ -120,22 +122,18 @@
       const root = document.getElementById('checkout-payment-banner-root');
       if (!root) return;
 
-      const loadLinks = () => {
-        try {
-          const raw = localStorage.getItem('b2b-payment-links');
-          return raw ? JSON.parse(raw) : [];
-        } catch (e) { return []; }
+      const loadLink = async () => {
+        const { data } = await supabaseClient.from('payment_links').select('*').eq('id', linkId).maybeSingle();
+        return data;
       };
-      const saveLinks = (links) => localStorage.setItem('b2b-payment-links', JSON.stringify(links));
 
-      const draw = () => {
-        const links = loadLinks();
-        const link = links.find(l => l.id === linkId);
+      const draw = async () => {
+        const link = await loadLink();
         if (!link) { root.innerHTML = ''; return; }
 
         const isPaid = link.status === 'pago';
         const installmentsLabel = link.installments > 1
-          ? `${link.installments}x de ${formatCurrency(link.amount / link.installments)} (${link.hasInterest ? 'com juros' : 'sem juros'})`
+          ? `${link.installments}x de ${formatCurrency(link.amount / link.installments)}`
           : 'à vista';
 
         root.innerHTML = `
@@ -152,14 +150,30 @@
 
         const payBtn = document.getElementById('checkout-pay-now-btn');
         if (payBtn) {
-          payBtn.addEventListener('click', () => {
-            const current = loadLinks();
-            const target = current.find(l => l.id === linkId);
-            if (!target) return;
-            target.status = 'pago';
-            target.paidAt = Date.now();
-            saveLinks(current);
-            emitirNotaFiscalParaVenda({ sourceId: target.id, client: 'Consumidor', value: target.amount });
+          payBtn.addEventListener('click', async () => {
+            payBtn.disabled = true;
+            const paidAt = new Date().toISOString();
+            const { error } = await supabaseClient
+              .from('payment_links')
+              .update({ status: 'pago', paid_at: paidAt })
+              .eq('id', link.id);
+            if (error) { payBtn.disabled = false; return; }
+
+            await supabaseClient.from('notas_fiscais').insert({
+              fornecedor_id: link.fornecedor_id,
+              source_payment_link_id: link.id,
+              client: 'Consumidor',
+              value: link.amount,
+              number: 'NF-' + Date.now().toString(36).toUpperCase()
+            });
+            await supabaseClient.from('wallet_transactions').insert({
+              fornecedor_id: link.fornecedor_id,
+              type: 'credit',
+              amount: link.amount,
+              description: 'Pagamento recebido via link',
+              payment_link_id: link.id
+            });
+
             draw();
           });
         }

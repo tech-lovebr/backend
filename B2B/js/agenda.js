@@ -15,13 +15,15 @@ let openListMenu = null; // { listId, mode: 'menu' | 'color' }
 let activeTaskId = null;
 let editingTaskTitle = false;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
   initWorkViewTabs();
-  initKanbanBoard();
+  await initKanbanBoard();
   initTaskDrawer();
   initShareBoardModal();
-  initAgendaCalendar();
-  initContratosTab();
+  await loadAgendaLeads();
+  await initAgendaCalendar();
+  await initContratosTab();
 });
 
 /* -------------------- Utilitários de atividade -------------------- */
@@ -98,22 +100,90 @@ function defaultKanbanBoard() {
   };
 }
 
-function loadKanbanBoard() {
-  try {
-    const raw = localStorage.getItem(KANBAN_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) { /* ignora estado corrompido */ }
-  return defaultKanbanBoard();
+async function loadKanbanBoard() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return defaultKanbanBoard();
+
+  const { data: lists, error } = await supabaseClient
+    .from('agenda_lists')
+    .select('id, title, color, position, agenda_tasks(id, text, done, due_date, position, agenda_task_activity(type, user_name, extra, created_at))')
+    .eq('fornecedor_id', session.user.id)
+    .order('position', { ascending: true });
+
+  if (error || !lists || !lists.length) return defaultKanbanBoard();
+
+  return {
+    lists: lists.map(l => ({
+      id: l.id,
+      title: l.title,
+      color: l.color || null,
+      tasks: (l.agenda_tasks || [])
+        .slice()
+        .sort((a, b) => a.position - b.position)
+        .map(t => ({
+          id: t.id,
+          text: t.text,
+          done: t.done,
+          dueDate: t.due_date || '',
+          activity: (t.agenda_task_activity || [])
+            .slice()
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+            .map(a => Object.assign({ type: a.type, user: a.user_name, at: a.created_at }, a.extra || {}))
+        }))
+    }))
+  };
 }
 
-function saveKanbanBoard() {
-  localStorage.setItem(KANBAN_STORAGE_KEY, JSON.stringify(kanbanBoard));
+// Persistência simples: sempre que o quadro muda, apaga e recria as listas/
+// tarefas/atividade do fornecedor a partir do estado em memória. O quadro é
+// pequeno (poucas listas/tarefas por fornecedor), então isso é rápido e evita
+// ter que mapear cada uma das ~15 mutações espalhadas pelo arquivo pra uma
+// operação SQL incremental específica.
+async function saveKanbanBoard() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const fornecedorId = session.user.id;
+
+  const { data: oldLists } = await supabaseClient.from('agenda_lists').select('id').eq('fornecedor_id', fornecedorId);
+  if (oldLists && oldLists.length) {
+    await supabaseClient.from('agenda_lists').delete().in('id', oldLists.map(l => l.id));
+  }
+
+  for (let i = 0; i < kanbanBoard.lists.length; i++) {
+    const list = kanbanBoard.lists[i];
+    const { data: newList } = await supabaseClient
+      .from('agenda_lists')
+      .insert({ fornecedor_id: fornecedorId, title: list.title, color: list.color || null, position: i })
+      .select('id')
+      .single();
+    if (!newList) continue;
+
+    for (let j = 0; j < list.tasks.length; j++) {
+      const task = list.tasks[j];
+      const { data: newTask } = await supabaseClient
+        .from('agenda_tasks')
+        .insert({ fornecedor_id: fornecedorId, list_id: newList.id, position: j, text: task.text, done: task.done, due_date: task.dueDate || null })
+        .select('id')
+        .single();
+      if (!newTask) continue;
+
+      const activity = task.activity || [];
+      if (activity.length) {
+        await supabaseClient.from('agenda_task_activity').insert(
+          activity.map(a => {
+            const { type, user, at, ...extra } = a;
+            return { fornecedor_id: fornecedorId, task_id: newTask.id, type, user_name: user, extra, created_at: at || new Date().toISOString() };
+          })
+        );
+      }
+    }
+  }
 }
 
-function initKanbanBoard() {
+async function initKanbanBoard() {
   const board = document.getElementById('kanban-board');
   if (!board) return;
-  kanbanBoard = loadKanbanBoard();
+  kanbanBoard = await loadKanbanBoard();
   renderKanbanBoard();
 
   document.addEventListener('click', () => {
@@ -823,17 +893,33 @@ let selectedAgendaDate = new Date();
 let editingEventId = null;
 let currentEventGuests = [];
 
-function loadAgendaEvents() {
-  try {
-    const raw = localStorage.getItem(AGENDA_EVENTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
+async function loadAgendaEvents() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return [];
 
-function saveAgendaEvents() {
-  localStorage.setItem(AGENDA_EVENTS_KEY, JSON.stringify(agendaEvents));
+  const { data, error } = await supabaseClient
+    .from('agenda_events')
+    .select('*')
+    .eq('fornecedor_id', session.user.id)
+    .order('date', { ascending: true });
+
+  if (error || !data) return [];
+
+  return data.map(e => ({
+    id: e.id,
+    date: e.date,
+    title: e.title,
+    type: e.type,
+    typeCustom: e.type_custom || '',
+    startTime: (e.start_time || '').slice(0, 5),
+    endTime: (e.end_time || '').slice(0, 5),
+    link: e.link || '',
+    local: e.local || '',
+    description: e.description || '',
+    guests: e.guests || [],
+    createdBy: e.created_by,
+    createdAt: e.created_at
+  }));
 }
 
 function formatDateKey(date) {
@@ -866,11 +952,20 @@ function getRecentAgendaActivity(limit) {
     .slice(0, limit);
 }
 
+let bAgendaLeads = [];
+
+async function loadAgendaLeads() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { bAgendaLeads = []; return; }
+  const { data, error } = await supabaseClient.from('leads').select('name, birthday').eq('fornecedor_id', session.user.id);
+  bAgendaLeads = error || !data ? [] : data;
+}
+
 function getUpcomingLeadBirthdays(days) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const results = [];
-  (B2B_DATA.leads || []).forEach(lead => {
+  bAgendaLeads.forEach(lead => {
     if (!lead.birthday) return;
     const [mm, dd] = lead.birthday.split('-').map(Number);
     let next = new Date(today.getFullYear(), mm - 1, dd);
@@ -920,9 +1015,9 @@ function renderAgendaNotifications() {
   });
 }
 
-function initAgendaCalendar() {
+async function initAgendaCalendar() {
   if (!document.getElementById('mini-cal-grid')) return;
-  agendaEvents = loadAgendaEvents();
+  agendaEvents = await loadAgendaEvents();
 
   document.getElementById('mini-cal-prev').addEventListener('click', () => {
     calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1);
@@ -1169,7 +1264,7 @@ function closeEventDrawer() {
   document.getElementById('event-drawer-backdrop').classList.remove('show');
 }
 
-function submitEventForm(e) {
+async function submitEventForm(e) {
   e.preventDefault();
   const title = document.getElementById('event-title').value.trim();
   const type = document.getElementById('event-type').value;
@@ -1190,22 +1285,28 @@ function submitEventForm(e) {
     return;
   }
 
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
   if (editingEventId) {
-    const ev = agendaEvents.find(x => x.id === editingEventId);
-    if (ev) Object.assign(ev, { title, type, typeCustom, startTime, endTime, link, local, description, guests });
+    const { error } = await supabaseClient
+      .from('agenda_events')
+      .update({ title, type, type_custom: typeCustom, start_time: startTime, end_time: endTime, link, local, description, guests })
+      .eq('id', editingEventId);
+    if (error) { showToast('Não foi possível atualizar o evento.', true); return; }
     showToast('Evento atualizado.');
   } else {
-    agendaEvents.push({
-      id: 'ev' + Date.now(),
+    const { error } = await supabaseClient.from('agenda_events').insert({
+      fornecedor_id: session.user.id,
       date: formatDateKey(selectedAgendaDate),
-      title, type, typeCustom, startTime, endTime, link, local, description, guests,
-      createdBy: currentUserName(),
-      createdAt: new Date().toISOString()
+      title, type, type_custom: typeCustom, start_time: startTime, end_time: endTime, link, local, description, guests,
+      created_by: currentUserName()
     });
+    if (error) { showToast('Não foi possível adicionar o evento.', true); return; }
     showToast('Evento adicionado à agenda.');
   }
 
-  saveAgendaEvents();
+  agendaEvents = await loadAgendaEvents();
   closeEventDrawer();
   renderMiniCalendar();
   renderAgendaTimeline();
@@ -1214,10 +1315,11 @@ function submitEventForm(e) {
   if (guests.length) openEventGuestNotifyModal(guests);
 }
 
-function deleteCurrentEvent() {
+async function deleteCurrentEvent() {
   if (!editingEventId) return;
-  agendaEvents = agendaEvents.filter(e => e.id !== editingEventId);
-  saveAgendaEvents();
+  const { error } = await supabaseClient.from('agenda_events').delete().eq('id', editingEventId);
+  if (error) { showToast('Não foi possível remover o evento.', true); return; }
+  agendaEvents = await loadAgendaEvents();
   closeEventDrawer();
   renderMiniCalendar();
   renderAgendaTimeline();
@@ -1262,8 +1364,42 @@ function formatEventoCountdown(iso) {
   return 'Evento realizado';
 }
 
+let bContratosAbertos = [];
+
+async function loadContratosAbertos() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { bContratosAbertos = []; return; }
+
+  const { data, error } = await supabaseClient
+    .from('contracts')
+    .select('*, contract_guests(*)')
+    .eq('fornecedor_id', session.user.id)
+    .order('created_at', { ascending: false });
+
+  bContratosAbertos = error || !data ? [] : data.map(c => ({
+    id: c.id,
+    client: c.client_name,
+    phone: c.client_phone,
+    categoria: c.categoria,
+    valorTotal: c.valor_total,
+    valorPago: c.valor_pago,
+    parcelasPagas: c.parcelas_pagas,
+    parcelasTotal: c.parcelas_total,
+    status: c.status,
+    evento: c.evento || {},
+    convidados: (c.contract_guests || []).map(g => ({
+      id: g.id,
+      nome: g.nome,
+      status: g.status,
+      mesa: g.mesa,
+      whatsapp: g.whatsapp,
+      comentarios: g.comentarios || []
+    }))
+  }));
+}
+
 function findContrato(id) {
-  return (B2B_DATA.contratosAbertos || []).find(c => c.id === id);
+  return bContratosAbertos.find(c => c.id === id);
 }
 
 let contratosStatusFilter = 'todos';
@@ -1272,7 +1408,7 @@ let contratosStatusFilterOpen = false;
 function renderContratosClientes() {
   const body = document.getElementById('contratos-clientes-body');
   if (!body) return;
-  let rows = (B2B_DATA.contratosAbertos || []).filter(c => !!c.evento);
+  let rows = (bContratosAbertos || []).filter(c => !!c.evento);
   if (contratosStatusFilter !== 'todos') rows = rows.filter(c => c.status === contratosStatusFilter);
   rows = rows.slice().sort((a, b) => (a.status === 'quitado' ? 1 : 0) - (b.status === 'quitado' ? 1 : 0));
 
@@ -1363,7 +1499,7 @@ function currentVendorName() {
 }
 
 function findConvidadoGlobal(guestId) {
-  for (const c of (B2B_DATA.contratosAbertos || [])) {
+  for (const c of (bContratosAbertos || [])) {
     const guest = (c.convidados || []).find(g => g.id === guestId);
     if (guest) return { contrato: c, guest };
   }
@@ -1460,7 +1596,7 @@ function renderConvidadoActivityEntry(entry) {
   `;
 }
 
-function submitConvidadoComment() {
+async function submitConvidadoComment() {
   const input = document.getElementById('convidado-comment-input');
   if (!input) return;
   const text = input.value.trim();
@@ -1470,14 +1606,16 @@ function submitConvidadoComment() {
   if (!found.guest.comentarios) found.guest.comentarios = [];
   found.guest.comentarios.push({ id: 'com-' + Date.now(), user: currentVendorName(), text, at: new Date().toISOString() });
   input.value = '';
+  await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
   renderConvidadoDrawer();
 }
 
-function deleteConvidadoComment(commentId) {
+async function deleteConvidadoComment(commentId) {
   if (!commentId) return;
   const found = findConvidadoGlobal(activeConvidadoId);
   if (!found) return;
   found.guest.comentarios = (found.guest.comentarios || []).filter(entry => entry.id !== commentId);
+  await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
   renderConvidadoDrawer();
 }
 
@@ -1522,7 +1660,8 @@ function openContratoDrawer() {
   document.getElementById('contrato-drawer-backdrop').classList.add('show');
 }
 
-function initContratosTab() {
+async function initContratosTab() {
+  await loadContratosAbertos();
   renderContratosClientes();
   renderContratoEventoPanel();
 

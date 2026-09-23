@@ -2,9 +2,10 @@
    LOVE B2B — Dashboard (saudação, visão geral do site, métricas, agenda)
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
   renderGreeting();
-  renderMetricsOverview();
+  await renderMetricsOverview();
   initWalletTabs();
   initWalletEyeToggle();
   renderAgenda();
@@ -50,14 +51,20 @@ function initAdsCarousel() {
 
 /* -------------------- Analytics -------------------- */
 
-function renderAnalyticsCard() {
+async function renderAnalyticsCard() {
   setText('analytics-sessions', padTwoDigits(B2B_DATA.siteMetrics.visits30d));
 
-  const leadsAtivos = B2B_DATA.leads.filter(l => l.status !== 'fechado').length;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  const { data: leads } = session
+    ? await supabaseClient.from('leads').select('status').eq('fornecedor_id', session.user.id)
+    : { data: [] };
+  const allLeads = leads || [];
+
+  const leadsAtivos = allLeads.filter(l => l.status !== 'fechado').length;
   setText('analytics-leads', padTwoDigits(leadsAtivos));
 
-  const totalLeads = B2B_DATA.leads.length;
-  const closedLeads = B2B_DATA.leads.filter(l => l.status === 'fechado').length;
+  const totalLeads = allLeads.length;
+  const closedLeads = allLeads.filter(l => l.status === 'fechado').length;
   setText('analytics-conversion', totalLeads ? `${Math.round((closedLeads / totalLeads) * 100)}%` : '—');
 
   const boostBtn = document.getElementById('dash-analytics-boost-btn');
@@ -137,9 +144,41 @@ function renderGreeting() {
 let walletBalanceVisible = true;
 let walletFinData = {};
 
-function renderMetricsOverview() {
-  const fin = B2B_DATA.financeiro || {};
+async function renderMetricsOverview() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  let transactions = [];
+  let pendingLinksTotal = 0;
+
+  if (session) {
+    const [txRes, linksRes] = await Promise.all([
+      supabaseClient.from('wallet_transactions').select('type, amount, created_at').eq('fornecedor_id', session.user.id),
+      supabaseClient.from('payment_links').select('amount, status').eq('fornecedor_id', session.user.id).eq('status', 'pendente')
+    ]);
+    transactions = txRes.data || [];
+    pendingLinksTotal = (linksRes.data || []).reduce((sum, l) => sum + Number(l.amount), 0);
+  }
+
+  const saqueDisponivel = transactions.reduce((sum, t) => sum + (t.type === 'credit' ? Number(t.amount) : -Number(t.amount)), 0);
+
+  const faturamentoPorMes = (monthsAgo) => {
+    const now = new Date();
+    const targetMonth = now.getMonth() - monthsAgo;
+    const targetYear = now.getFullYear() + Math.floor(targetMonth / 12);
+    const normalizedMonth = ((targetMonth % 12) + 12) % 12;
+    return transactions
+      .filter(t => t.type === 'credit')
+      .filter(t => { const d = new Date(t.created_at); return d.getMonth() === normalizedMonth && d.getFullYear() === targetYear; })
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+  };
+
+  const fin = {
+    saqueDisponivel,
+    faturamentoEsteMes: faturamentoPorMes(0),
+    faturamentoMesPassado: faturamentoPorMes(1),
+    valorEmAberto: pendingLinksTotal
+  };
   walletFinData = fin;
+
   const saldoEl = document.getElementById('wallet-saldo-value');
   const faturamentoEl = document.getElementById('wallet-faturamento-value');
   const investimentosEl = document.getElementById('wallet-investimentos-value');
@@ -214,19 +253,38 @@ function initWalletEyeToggle() {
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-function renderAgenda() {
+function dashDateKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+async function renderAgenda() {
   const stripEl = document.getElementById('day-strip');
   const listEl = document.getElementById('agenda-list');
   if (!stripEl) return;
 
   const today = new Date();
-  const eventDays = new Set(B2B_DATA.proximosEventos.map(e => e.day));
+  const rangeEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 6);
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  let events = [];
+  if (session) {
+    const { data } = await supabaseClient
+      .from('agenda_events')
+      .select('*')
+      .eq('fornecedor_id', session.user.id)
+      .gte('date', dashDateKey(today))
+      .lte('date', dashDateKey(rangeEnd))
+      .order('date', { ascending: true });
+    events = data || [];
+  }
+
+  const eventDays = new Set(events.map(e => e.date));
 
   let strip = '';
   for (let i = 0; i < 7; i++) {
     const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
     const isToday = i === 0;
-    const hasEvent = d.getMonth() === today.getMonth() && eventDays.has(d.getDate());
+    const hasEvent = eventDays.has(dashDateKey(d));
     const classes = ['day-strip-cell'];
     if (isToday) classes.push('today');
     strip += `
@@ -240,20 +298,26 @@ function renderAgenda() {
   stripEl.innerHTML = strip;
 
   if (listEl) {
-    const sorted = [...B2B_DATA.proximosEventos].sort((a, b) => a.day - b.day);
-    const accentByStatus = { confirmado: 'var(--primary-blue)', 'visita técnica': '#B45309', reunião: '#7E22CE' };
-    listEl.innerHTML = sorted.map(ev => `
-      <a href="agenda.html" class="agenda-item" style="border-left-color:${accentByStatus[ev.status] || 'var(--primary-blue)'};">
+    if (!events.length) {
+      listEl.innerHTML = '<p class="text-sm text-zinc-500">Nenhum compromisso nos próximos dias.</p>';
+      return;
+    }
+    listEl.innerHTML = events.map(ev => `
+      <a href="agenda.html" class="agenda-item" style="border-left-color:var(--primary-blue);">
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-zinc-900 truncate">${ev.client} · ${ev.event}</p>
-          <p class="text-xs text-zinc-500 truncate mt-0.5">Dia ${ev.day} · ${ev.local}</p>
+          <p class="text-sm font-semibold text-zinc-900 truncate">${escapeHtml(ev.title)}</p>
+          <p class="text-xs text-zinc-500 truncate mt-0.5">${formatShortDate(ev.date)}${ev.local ? ' · ' + escapeHtml(ev.local) : ''}</p>
         </div>
         <div class="b2b-avatar" style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.6875rem;flex-shrink:0;">
-          ${initials(ev.client)}
+          ${initials(ev.title)}
         </div>
       </a>
     `).join('');
   }
+}
+
+function formatShortDate(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
 /* -------------------- Eventos e notícias -------------------- */

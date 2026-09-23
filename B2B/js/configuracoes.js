@@ -8,7 +8,8 @@ const PROFILE_LOGO_CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="cu
 const PROFILE_LOGO_ASPECT_RATIO = 8 / 5;
 const PROFILE_STORAGE_KEY = 'b2b-professional-profile';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
   initSettingsTabs();
   initProfileForm();
   initPasswordForm();

@@ -1,128 +1,86 @@
 /* ==========================================================================
-   LOVE B2B — Mensagens (Chat com Fornecedores / Clientes)
-   Layout e funcionalidades idênticos ao padrão do App Love
+   LOVE B2B — Mensagens (Chat real com clientes, via Supabase)
    ========================================================================== */
 
-const DEFAULT_B2B_MESSAGES_CONVERSATIONS = [
-  {
-    id: 'mariana-assessoria',
-    name: 'Mariana & Co. Assessoria',
-    category: 'Assessoria & Cerimonial',
-    avatar: '../assets/theme_garden.jpg',
-    online: true,
-    lastMessage: 'Acabei de anexar nossa apresentação ...',
-    time: '14:20',
-    unread: 1,
-    messages: [
-      { sender: 'them', text: 'Olá Beatriz & Lucas! Tudo bem? Recebemos a solicitação de vocês para a data do casamento em 2026.', time: '14:10' },
-      { sender: 'me', text: 'Olá Mariana! Que ótimo! Adoramos o portfólio de vocês. Poderia nos enviar a proposta detalhada com assessoria completa?', time: '14:15' },
-      { sender: 'them', text: 'Com certeza! Acabei de anexar nossa apresentação com os valores e fotos dos últimos casamentos. Fico à disposição para agendarmos uma reunião ou degustação!', time: '14:20' }
-    ]
-  },
-  {
-    id: 'villa-bisutti',
-    name: 'Villa Bisutti Casa do Ator',
-    category: 'Espaço & Gastronomia',
-    avatar: '../assets/theme_blacktie.jpg',
-    online: true,
-    lastMessage: 'A data de 28/08/2026 está pré-reservada ...',
-    time: '11:05',
-    unread: 0,
-    messages: [
-      { sender: 'them', text: 'Olá Beatriz & Lucas! Sejam muito bem-vindos ao Villa Bisutti.', time: '10:45' },
-      { sender: 'me', text: 'Bom dia! Gostaríamos de saber sobre a capacidade máxima e o formato do buffet para 250 convidados.', time: '11:00' },
-      { sender: 'them', text: 'A Casa do Ator comporta confortavelmente até 320 convidados sentados! A data de 28/08/2026 está pré-reservada para vocês. Gostariam de agendar uma visita guiada?', time: '11:05' }
-    ]
-  },
-  {
-    id: 'palacio-tangara',
-    name: 'Palácio Tangará Hotel',
-    category: 'Espaço de Luxo & Hotel',
-    avatar: '../assets/theme_garden.jpg',
-    online: false,
-    lastMessage: 'Será um prazer recebê-los para o tour no j...',
-    time: 'Ontem',
-    unread: 0,
-    messages: [
-      { sender: 'me', text: 'Boa tarde! Qual é o procedimento para reservar o salão nobre e a suíte nupcial?', time: 'Ontem 16:30' },
-      { sender: 'them', text: 'Olá! Será um prazer recebê-los para o tour no jardim Burle Marx nesta sexta-feira. Podemos preparar um welcome drink para o casal.', time: 'Ontem 17:15' }
-    ]
-  },
-  {
-    id: 'felipe-ramos-foto',
-    name: 'Felipe Ramos Fotografia',
-    category: 'Foto & Vídeo Cinema',
-    avatar: '../assets/wedding_hero_banner.jpg',
-    online: true,
-    lastMessage: 'Enviei o link da nossa galeria completa de ...',
-    time: 'Ontem',
-    unread: 0,
-    messages: [
-      { sender: 'them', text: 'Olá noivos! Que honra poder registrar a história de vocês.', time: 'Ontem 13:00' },
-      { sender: 'them', text: 'Enviei o link da nossa galeria completa de casamentos na praia e campo. Trabalhamos com cobertura de drone e fotos analógicas também!', time: 'Ontem 13:02' }
-    ]
-  },
-  {
-    id: 'espaco-wood',
-    name: 'Espaço Wood Garden',
-    category: 'Espaço Rústico Chic',
-    avatar: '../assets/theme_coastal.jpg',
-    online: false,
-    lastMessage: 'Temos opções de cardápio vegetariano e t...',
-    time: '26 Ago',
-    unread: 0,
-    messages: [
-      { sender: 'them', text: 'Olá! Segue em anexo as opções de plantas baixas e cenários para a cerimônia no gazebo.', time: '26 Ago' },
-      { sender: 'them', text: 'Temos opções de cardápio vegetariano e tradicional inclusas na contratação.', time: '26 Ago' }
-    ]
-  },
-  {
-    id: 'juliana-toledo',
-    name: 'Juliana Toledo Cerimonial',
-    category: 'Assessoria & Cerimonial',
-    avatar: '../assets/theme_garden.jpg',
-    online: false,
-    lastMessage: 'Combinado! Nos falamos na quinta-feira p...',
-    time: '22 Ago',
-    unread: 0,
-    messages: [
-      { sender: 'me', text: 'Oi Juliana! Recebemos sua mensagem e já aprovamos os fornecedores de doces.', time: '22 Ago' },
-      { sender: 'them', text: 'Combinado! Nos falamos na quinta-feira para o alinhamento do cronograma.', time: '22 Ago' }
-    ]
-  }
-];
-
 let b2bConversations = [];
-let activeConvId = 'mariana-assessoria';
+let activeConvId = null;
+let b2bMessagesChannel = null;
 
 document.addEventListener('DOMContentLoaded', initB2BMensagens);
 
-function initB2BMensagens() {
-  // Carregar conversas do storage ou usar padrão
-  try {
-    const saved = localStorage.getItem('love_b2b_standalone_conversations');
-    if (saved) {
-      b2bConversations = JSON.parse(saved);
-    }
-  } catch (e) {
-    b2bConversations = [];
-  }
+async function initB2BMensagens() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return; // shell.js já redireciona pro login nesse caso
 
-  if (!b2bConversations || !b2bConversations.length) {
-    b2bConversations = JSON.parse(JSON.stringify(DEFAULT_B2B_MESSAGES_CONVERSATIONS));
-  }
-
-  activeConvId = b2bConversations[0] ? b2bConversations[0].id : 'mariana-assessoria';
+  await loadB2BConversations();
+  if (b2bConversations.length) activeConvId = b2bConversations[0].id;
 
   renderContactsList();
   renderActiveChat();
   setupChatEvents();
+  subscribeToB2BMessages();
 }
 
-function saveConversations() {
-  try {
-    localStorage.setItem('love_b2b_standalone_conversations', JSON.stringify(b2bConversations));
-  } catch (e) {}
+async function loadB2BConversations() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const { data: rows, error } = await supabaseClient
+    .from('conversations')
+    .select('id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type)')
+    .eq('fornecedor_id', session.user.id)
+    .order('last_message_at', { ascending: false });
+
+  if (error || !rows) { b2bConversations = []; return; }
+
+  b2bConversations = rows.map(row => {
+    const msgs = (row.messages || []).slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    const last = msgs[msgs.length - 1];
+    return {
+      id: row.id,
+      name: (row.cliente && row.cliente.couple_name) || 'Cliente',
+      category: '',
+      avatar: (row.cliente && row.cliente.avatar_url) || '../assets/wedding_hero_banner.jpg',
+      online: false,
+      lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
+      time: last ? formatB2BMsgTime(last.created_at) : '',
+      unread: 0,
+      messages: msgs.map(m => ({
+        sender: m.sender_role === 'fornecedor' ? 'me' : 'them',
+        text: m.text,
+        time: formatB2BMsgTime(m.created_at),
+        attachment: m.attachment_url ? { type: m.attachment_type || 'doc', url: m.attachment_url, name: 'Anexo' } : null
+      }))
+    };
+  });
+}
+
+function formatB2BMsgTime(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  const isYesterday = d.toDateString() === yesterday.toDateString();
+  const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  if (isToday) return hhmm;
+  if (isYesterday) return `Ontem ${hhmm}`;
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+}
+
+function subscribeToB2BMessages() {
+  if (b2bMessagesChannel) supabaseClient.removeChannel(b2bMessagesChannel);
+  b2bMessagesChannel = supabaseClient
+    .channel('b2b-mensagens')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
+      const searchInput = document.getElementById('chat-search-input');
+      await loadB2BConversations();
+      if (!b2bConversations.some(c => c.id === activeConvId) && b2bConversations.length) {
+        activeConvId = b2bConversations[0].id;
+      }
+      renderContactsList(searchInput ? searchInput.value : '');
+      renderActiveChat();
+    })
+    .subscribe();
 }
 
 function renderContactsList(searchQuery = '') {
@@ -130,8 +88,14 @@ function renderContactsList(searchQuery = '') {
   if (!listEl) return;
 
   listEl.innerHTML = '';
+
+  if (!b2bConversations.length) {
+    listEl.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Quando um cliente falar com você, ela aparece aqui.</div>';
+    return;
+  }
+
   const q = searchQuery.toLowerCase().trim();
-  const filtered = b2bConversations.filter(c => 
+  const filtered = b2bConversations.filter(c =>
     c.name.toLowerCase().includes(q) ||
     c.category.toLowerCase().includes(q) ||
     c.lastMessage.toLowerCase().includes(q)
@@ -161,13 +125,10 @@ function renderContactsList(searchQuery = '') {
         </div>
         <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
       </div>
-      ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #27394f;"></span>` : ''}
     `;
 
     item.addEventListener('click', () => {
       activeConvId = conv.id;
-      conv.unread = 0;
-      saveConversations();
       renderContactsList(document.getElementById('chat-search-input') ? document.getElementById('chat-search-input').value : '');
       renderActiveChat();
     });
@@ -184,13 +145,17 @@ function renderActiveChat() {
   const onlineDotEl = document.getElementById('chat-header-online-dot');
   if (!container) return;
 
-  const activeConv = b2bConversations.find(c => c.id === activeConvId) || b2bConversations[0];
-  if (!activeConv) return;
-  activeConvId = activeConv.id;
+  const activeConv = b2bConversations.find(c => c.id === activeConvId);
+  if (!activeConv) {
+    container.innerHTML = '<div class="flex items-center justify-center h-full text-sm text-zinc-400">Nenhuma conversa selecionada.</div>';
+    if (nameEl) nameEl.textContent = '';
+    if (statusEl) statusEl.innerHTML = '';
+    return;
+  }
 
   if (nameEl) nameEl.textContent = activeConv.name;
   if (statusEl) {
-    statusEl.innerHTML = `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : 'Online recentemente'}</span>`;
+    statusEl.innerHTML = `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
   }
   if (avatarEl) avatarEl.src = activeConv.avatar;
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';
@@ -202,7 +167,7 @@ function renderActiveChat() {
   `;
 
   activeConv.messages.forEach(msg => {
-    const isMe = msg.sender === 'me' || msg.from === 'me';
+    const isMe = msg.sender === 'me';
     const row = document.createElement('div');
     row.className = `flex items-end gap-2.5 ${isMe ? 'justify-end' : 'justify-start'} animate-fade-in`;
 
@@ -226,7 +191,6 @@ function renderActiveChat() {
             <span class="text-base">📄</span>
             <div class="min-w-0">
               <p class="font-medium truncate max-w-[170px]">${msg.attachment.name || 'Arquivo'}</p>
-              ${msg.attachment.size ? `<span class="text-[10px] opacity-75">${msg.attachment.size}</span>` : ''}
             </div>
           </div>
         `;
@@ -242,11 +206,7 @@ function renderActiveChat() {
           </div>
           <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
             <span>${msg.time || 'Agora'}</span>
-            <span class="chat-read-check font-bold">✓✓</span>
           </div>
-        </div>
-        <div class="w-7 h-7 rounded-full bg-zinc-800 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-2xs">
-          BL
         </div>
       `;
     } else {
@@ -281,32 +241,27 @@ function setupChatEvents() {
   const attachBtn = document.getElementById('chat-attach-btn');
   const fileInput = document.getElementById('chat-file-input');
 
-  function sendMessage(text, attachment = null) {
+  async function sendMessage(text, attachment = null) {
     if (!text && !attachment) return;
-    const conv = b2bConversations.find(c => c.id === activeConvId);
-    if (!conv) return;
+    if (!activeConvId) return;
 
-    const now = new Date();
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
 
-    conv.messages.push({
-      sender: 'me',
-      text: text || '',
-      time: timeStr,
-      attachment: attachment
+    const { error } = await supabaseClient.from('messages').insert({
+      conversation_id: activeConvId,
+      sender_id: session.user.id,
+      sender_role: 'fornecedor',
+      text: text || null,
+      attachment_url: attachment ? attachment.url : null,
+      attachment_type: attachment ? attachment.type : null
     });
 
-    conv.lastMessage = text || (attachment ? `[${attachment.name || 'Arquivo'}]` : '');
-    conv.time = timeStr;
+    if (error) { console.error('Erro ao enviar mensagem:', error); return; }
 
-    // Move a conversa ativa para o topo da lista
-    const idx = b2bConversations.indexOf(conv);
-    if (idx > 0) {
-      b2bConversations.splice(idx, 1);
-      b2bConversations.unshift(conv);
-    }
+    await supabaseClient.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', activeConvId);
 
-    saveConversations();
+    await loadB2BConversations();
     renderContactsList(searchInput ? searchInput.value : '');
     renderActiveChat();
 
@@ -378,8 +333,7 @@ function setupChatEvents() {
       } else {
         sendMessage('', {
           type: 'doc',
-          name: file.name,
-          size: `${Math.round(file.size / 1024)} KB`
+          name: file.name
         });
       }
       fileInput.value = '';

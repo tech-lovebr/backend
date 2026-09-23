@@ -24,6 +24,8 @@
   </script>
 
   <link rel="stylesheet" href="css/styles.css?v=392">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/supabase-init.js"></script>
 </head>
 <body class="font-sans">
 
@@ -84,23 +86,34 @@
 
         <p class="text-sm text-zinc-500 mt-8 text-center">
           Ainda não é parceiro Love?
-          <a href="#" class="font-semibold text-[color:var(--primary-blue)] hover:underline">Solicite seu cadastro</a>
+          <a href="signup.html" class="font-semibold text-[color:var(--primary-blue)] hover:underline">Solicite seu cadastro</a>
         </p>
       </div>
     </div>
   </div>
 
   <script>
-    // Acesso mock — sem backend de autenticação ainda. Login apenas valida
-    // preenchimento dos campos e encaminha ao dashboard do painel B2B.
-    document.getElementById('login-form').addEventListener('submit', (e) => {
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
       const errorEl = document.getElementById('login-error');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+
+      errorEl.classList.add('hidden');
 
       if (!email || !password) {
         errorEl.textContent = 'Preencha e-mail e senha para continuar.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      submitBtn.disabled = false;
+
+      if (error) {
+        errorEl.textContent = 'E-mail ou senha incorretos.';
         errorEl.classList.remove('hidden');
         return;
       }

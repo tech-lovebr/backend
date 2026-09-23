@@ -1,10 +1,14 @@
 /* ==========================================================================
-   LOVE B2B — Pagamentos (Financeiro + Receber)
+   LOVE B2B — Pagamentos (Financeiro + Receber), dados reais via Supabase
    ========================================================================== */
 
-const PAYMENT_LINKS_STORAGE_KEY = 'b2b-payment-links';
+let bPaymentLinks = [];
+let bContracts = [];
+let bWalletTransactions = [];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
+  await loadContratosData();
   initPaymentsViewTabs();
   renderFinanceStats();
   renderContratosAbertos();
@@ -12,6 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
   initPaymentLinkModal();
   initWithdrawalModal();
 });
+
+async function loadContratosData() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const [linksRes, contractsRes, txRes] = await Promise.all([
+    supabaseClient.from('payment_links').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
+    supabaseClient.from('contracts').select('*, contract_guests(*)').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
+    supabaseClient.from('wallet_transactions').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false })
+  ]);
+
+  bPaymentLinks = linksRes.data || [];
+  bContracts = contractsRes.data || [];
+  bWalletTransactions = txRes.data || [];
+}
 
 /* -------------------- Abas: Financeiro / Receber -------------------- */
 
@@ -34,31 +53,41 @@ function initPaymentsViewTabs() {
   if (requestedBtn) requestedBtn.click();
 }
 
-/* -------------------- Links de pagamento (armazenamento) -------------------- */
+/* -------------------- Carteira: cálculos a partir das transações reais -------------------- */
 
-function loadPaymentLinks() {
-  try {
-    const raw = localStorage.getItem(PAYMENT_LINKS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
+function computeSaldoDisponivel() {
+  return bWalletTransactions.reduce((sum, t) => sum + (t.type === 'credit' ? Number(t.amount) : -Number(t.amount)), 0);
 }
 
-function savePaymentLinks(links) {
-  localStorage.setItem(PAYMENT_LINKS_STORAGE_KEY, JSON.stringify(links));
+function computeSaldoAReceber() {
+  return bPaymentLinks.filter(l => l.status === 'pago').reduce((sum, l) => sum + Number(l.amount), 0);
 }
 
-function computeSaldoAReceber(links) {
-  return links.filter(l => l.status === 'pago').reduce((sum, l) => sum + l.amount, 0);
+function computeValorEmAberto() {
+  return bPaymentLinks.filter(l => l.status === 'pendente').reduce((sum, l) => sum + Number(l.amount), 0);
+}
+
+function computeFaturamentoDoMes(monthsAgo) {
+  const now = new Date();
+  const targetMonth = now.getMonth() - monthsAgo;
+  const targetYear = now.getFullYear() + Math.floor(targetMonth / 12);
+  const normalizedMonth = ((targetMonth % 12) + 12) % 12;
+
+  return bWalletTransactions
+    .filter(t => t.type === 'credit')
+    .filter(t => {
+      const d = new Date(t.created_at);
+      return d.getMonth() === normalizedMonth && d.getFullYear() === targetYear;
+    })
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 }
 
 function buildPaymentLinkUrl(id) {
   return new URL(`site-preview.html?page=checkout&link=${id}`, location.href).toString();
 }
 
-function formatLinkDate(timestamp) {
-  return new Date(timestamp).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+function formatLinkDate(iso) {
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
 /* -------------------- Aba Financeiro -------------------- */
@@ -66,14 +95,17 @@ function formatLinkDate(timestamp) {
 function renderFinanceStats() {
   const grid = document.getElementById('finance-stat-grid');
   if (!grid) return;
-  const fin = B2B_DATA.financeiro || {};
-  const links = loadPaymentLinks();
-  const saldoAReceber = computeSaldoAReceber(links);
+
+  const saqueDisponivel = computeSaldoDisponivel();
+  const saldoAReceber = computeSaldoAReceber();
+  const faturamentoEsteMes = computeFaturamentoDoMes(0);
+  const faturamentoMesPassado = computeFaturamentoDoMes(1);
+  const valorEmAberto = computeValorEmAberto();
 
   grid.innerHTML = `
     <div class="dash-card finance-stat-card">
       <p class="finance-stat-label">Saque disponível</p>
-      <p class="finance-stat-value">${formatCurrency(fin.saqueDisponivel || 0)}</p>
+      <p class="finance-stat-value">${formatCurrency(saqueDisponivel)}</p>
       <button type="button" class="btn-secondary finance-stat-action-btn" id="request-withdrawal-btn"><img src="../assets/pix-icone.png" alt="" class="pix-inline-icon">Sacar Pix</button>
     </div>
     <div class="dash-card finance-stat-card">
@@ -82,12 +114,12 @@ function renderFinanceStats() {
     </div>
     <div class="dash-card finance-stat-card">
       <p class="finance-stat-label">Faturamento este mês</p>
-      <p class="finance-stat-value">${formatCurrency(fin.faturamentoEsteMes || 0)}</p>
-      <p class="finance-stat-sub">Mês passado: ${formatCurrency(fin.faturamentoMesPassado || 0)}</p>
+      <p class="finance-stat-value">${formatCurrency(faturamentoEsteMes)}</p>
+      <p class="finance-stat-sub">Mês passado: ${formatCurrency(faturamentoMesPassado)}</p>
     </div>
     <div class="dash-card finance-stat-card">
       <p class="finance-stat-label">Valor em aberto</p>
-      <p class="finance-stat-value">${formatCurrency(fin.valorEmAberto || 0)}</p>
+      <p class="finance-stat-value">${formatCurrency(valorEmAberto)}</p>
     </div>
   `;
 
@@ -130,11 +162,10 @@ function renderWithdrawalConfirmStep() {
 
 function renderWithdrawalAmountStep() {
   if (!withdrawalKeyInfo) return;
-  const fin = B2B_DATA.financeiro || {};
   setText('withdrawal-amount-avatar', initials(withdrawalKeyInfo.name || '—'));
   setText('withdrawal-amount-name', withdrawalKeyInfo.name || '—');
   setText('withdrawal-amount-key', `Chave Pix: ${withdrawalKeyInfo.key || '—'}`);
-  setText('withdrawal-saldo-value', formatCurrency(fin.saqueDisponivel || 0));
+  setText('withdrawal-saldo-value', formatCurrency(computeSaldoDisponivel()));
   const amountInput = document.getElementById('withdrawal-amount');
   if (amountInput) amountInput.value = '';
 }
@@ -229,12 +260,17 @@ function initWithdrawalModal() {
     goToWithdrawalStep('key');
   });
 
-  document.getElementById('withdrawal-confirm-continue-btn').addEventListener('click', () => {
+  document.getElementById('withdrawal-confirm-continue-btn').addEventListener('click', async () => {
     if (!withdrawalKeyInfo) return;
     const p = B2B_DATA.professional;
     p.pixKeyType = 'aleatoria';
     p.pixKey = withdrawalKeyInfo.key;
-    localStorage.setItem('b2b-professional-profile', JSON.stringify(p));
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      await supabaseClient.from('fornecedores').update({ pix_key: p.pixKey, pix_key_type: p.pixKeyType }).eq('id', session.user.id);
+    }
+
     renderWithdrawalAmountStep();
     goToWithdrawalStep('amount');
   });
@@ -247,19 +283,36 @@ function initWithdrawalModal() {
     showToast('Em breve você poderá adicionar uma mensagem ao Pix.');
   });
 
-  document.getElementById('withdrawal-amount-submit-btn').addEventListener('click', () => {
+  document.getElementById('withdrawal-amount-submit-btn').addEventListener('click', async () => {
     const amount = currencyMaskValue(amountInput);
-    const fin = B2B_DATA.financeiro || {};
+    const saldoDisponivel = computeSaldoDisponivel();
 
     if (!amount || amount <= 0) {
       showToast('Informe a quantia que deseja sacar.', true);
       return;
     }
-    if (amount > (fin.saqueDisponivel || 0)) {
+    if (amount > saldoDisponivel) {
       showToast('A quantia é maior que o saldo disponível para saque.', true);
       return;
     }
 
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
+    const { error } = await supabaseClient.from('wallet_transactions').insert({
+      fornecedor_id: session.user.id,
+      type: 'debit',
+      amount,
+      description: 'Saque via Pix'
+    });
+
+    if (error) {
+      showToast('Não foi possível processar o saque.', true);
+      return;
+    }
+
+    await loadContratosData();
+    renderFinanceStats();
     close();
     showToast('Solicitação de saque enviada. O valor cai na sua conta em até 1 dia útil.');
   });
@@ -278,21 +331,21 @@ const CONTRATO_STATUS_INFO = {
 function renderContratosAbertos() {
   const body = document.getElementById('finance-contratos-body');
   if (!body) return;
-  const rows = B2B_DATA.contratosAbertos || [];
+  const rows = bContracts || [];
   body.innerHTML = rows.length
     ? rows.map(row => {
       const info = CONTRATO_STATUS_INFO[row.status] || CONTRATO_STATUS_INFO.em_dia;
-      const pct = row.valorTotal ? Math.min(100, Math.round((row.valorPago / row.valorTotal) * 100)) : 0;
+      const pct = row.valor_total ? Math.min(100, Math.round((row.valor_pago / row.valor_total) * 100)) : 0;
       return `
       <tr>
-        <td>${escapeHtml(row.client)}</td>
-        <td>${formatCurrency(row.valorTotal)}</td>
+        <td>${escapeHtml(row.client_name)}</td>
+        <td>${formatCurrency(row.valor_total)}</td>
         <td>
-          ${formatCurrency(row.valorPago)} de ${formatCurrency(row.valorTotal)}
+          ${formatCurrency(row.valor_pago)} de ${formatCurrency(row.valor_total)}
           <div class="payment-progress"><div class="payment-progress-fill" style="width:${pct}%"></div></div>
         </td>
-        <td>${row.parcelasPagas}/${row.parcelasTotal}</td>
-        <td>${row.proximaParcela ? formatShortDate(row.proximaParcela) : '—'}</td>
+        <td>${row.parcelas_pagas}/${row.parcelas_total}</td>
+        <td>${row.proxima_parcela ? formatShortDate(row.proxima_parcela) : '—'}</td>
         <td><span class="status-text ${info.color}">${info.label}</span></td>
       </tr>
     `;
@@ -306,7 +359,7 @@ function renderPaymentLinksList() {
   const body = document.getElementById('payment-links-body');
   const empty = document.getElementById('payment-links-empty');
   if (!body) return;
-  const links = loadPaymentLinks().slice().sort((a, b) => b.createdAt - a.createdAt);
+  const links = bPaymentLinks.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   if (!links.length) {
     body.innerHTML = '';
@@ -317,7 +370,7 @@ function renderPaymentLinksList() {
 
   body.innerHTML = links.map(link => `
     <tr>
-      <td>${formatLinkDate(link.createdAt)}</td>
+      <td>${formatLinkDate(link.created_at)}</td>
       <td>${formatCurrency(link.amount)}</td>
       <td>${link.installments}x${link.installments === 1 ? ' (à vista)' : ''}</td>
       <td><span class="status-badge status-badge-plain ${link.status === 'pago' ? 'status-ativo' : 'status-enviado'}">${link.status === 'pago' ? 'Pago' : 'Aguardando pagamento'}</span></td>
@@ -405,7 +458,7 @@ function initPaymentLinkModal() {
   if (closeBtn) closeBtn.addEventListener('click', close);
   modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const amount = currencyMaskValue(amountInput);
     if (amount <= 0) return;
@@ -417,22 +470,31 @@ function initPaymentLinkModal() {
     };
     const installments = Number(installmentsSelect.value) || 1;
 
-    const links = loadPaymentLinks();
-    const id = 'pl' + Date.now().toString(36);
-    links.push({
-      id,
-      amount,
-      installments,
-      passFeeToClient,
-      paymentMethods,
-      status: 'pendente',
-      createdAt: Date.now(),
-      paidAt: null
-    });
-    savePaymentLinks(links);
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
+    const { data: created, error } = await supabaseClient
+      .from('payment_links')
+      .insert({
+        fornecedor_id: session.user.id,
+        amount,
+        installments,
+        pass_fee_to_client: passFeeToClient,
+        payment_methods: paymentMethods,
+        status: 'pendente'
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      showToast('Não foi possível criar o link de pagamento.', true);
+      return;
+    }
+
+    await loadContratosData();
     renderPaymentLinksList();
 
-    const url = buildPaymentLinkUrl(id);
+    const url = buildPaymentLinkUrl(created.id);
     fieldsWrap.style.display = 'none';
     actionRow.innerHTML = `
       <div class="payment-link-result-box">

@@ -251,40 +251,6 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-/* -------------------- Notas fiscais (emissão automática em vendas) -------------------- */
-
-const NOTAS_FISCAIS_STORAGE_KEY = 'b2b-notas-fiscais';
-
-function loadNotasFiscais() {
-  try {
-    const raw = localStorage.getItem(NOTAS_FISCAIS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveNotasFiscais(notas) {
-  localStorage.setItem(NOTAS_FISCAIS_STORAGE_KEY, JSON.stringify(notas));
-}
-
-// Emite uma nota fiscal para uma venda paga via checkout/link de pagamento.
-// Idempotente: não duplica se já existir uma nota para o mesmo sourceId.
-function emitirNotaFiscalParaVenda({ sourceId, client, value }) {
-  const notas = loadNotasFiscais();
-  if (notas.some(n => n.sourceId === sourceId)) return;
-  notas.unshift({
-    id: 'nf' + Date.now(),
-    number: notas.length + 1,
-    client: client || 'Consumidor',
-    value: value || 0,
-    date: new Date().toISOString().slice(0, 10),
-    status: 'emitida',
-    sourceId
-  });
-  saveNotasFiscais(notas);
-}
-
 const PIX_KEY_TYPES = {
   cpf: { label: 'CPF', placeholder: '000.000.000-00' },
   telefone: { label: 'Telefone', placeholder: '(00) 00000-0000' },

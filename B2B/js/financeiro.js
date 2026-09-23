@@ -2,12 +2,44 @@
    LOVE B2B — Vendas (Propostas comerciais + Notas fiscais)
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
+let bNotasFiscais = [];
+let bFinLeads = [];
+let bFinProducts = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.b2bAuthReady;
+  await Promise.all([loadNotasFiscais(), loadFinLeadsAndProducts()]);
   initSalesViewTabs();
   initProposalForm();
   renderNotasFiscais();
   initNotasFiscaisActions();
 });
+
+async function loadNotasFiscais() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { bNotasFiscais = []; return; }
+
+  const { data, error } = await supabaseClient
+    .from('notas_fiscais')
+    .select('*')
+    .eq('fornecedor_id', session.user.id)
+    .order('created_at', { ascending: false });
+
+  bNotasFiscais = error || !data ? [] : data;
+}
+
+async function loadFinLeadsAndProducts() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { bFinLeads = []; bFinProducts = []; return; }
+
+  const [leadsRes, productsRes] = await Promise.all([
+    supabaseClient.from('leads').select('id, name').eq('fornecedor_id', session.user.id),
+    supabaseClient.from('products').select('id, name, price').eq('fornecedor_id', session.user.id)
+  ]);
+
+  bFinLeads = leadsRes.data || [];
+  bFinProducts = productsRes.data || [];
+}
 
 /* -------------------- Abas: Orçamentos / Notas fiscais -------------------- */
 
@@ -29,7 +61,7 @@ function initSalesViewTabs() {
 /* -------------------- Notas fiscais -------------------- */
 
 function formatNotaFiscalDate(iso) {
-  return new Date(iso + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
 function renderNotasFiscais() {
@@ -37,9 +69,9 @@ function renderNotasFiscais() {
   if (!body) return;
 
   const search = (document.getElementById('notas-fiscais-search-input').value || '').trim().toLowerCase();
-  const all = loadNotasFiscais();
+  const all = bNotasFiscais;
   const rows = search
-    ? all.filter(n => n.client.toLowerCase().includes(search) || String(n.number).includes(search))
+    ? all.filter(n => (n.client || '').toLowerCase().includes(search) || String(n.number).includes(search))
     : all;
 
   const empty = document.getElementById('notas-fiscais-empty');
@@ -55,7 +87,7 @@ function renderNotasFiscais() {
       <tr>
         <td>#${n.number}</td>
         <td>${escapeHtml(n.client)}</td>
-        <td>${formatNotaFiscalDate(n.date)}</td>
+        <td>${formatNotaFiscalDate(n.created_at)}</td>
         <td>${formatCurrency(n.value)}</td>
         <td><span class="status-badge status-ativo">Emitida</span></td>
       </tr>
@@ -87,12 +119,12 @@ let proposalItemCounter = 0;
 function initProposalForm() {
   const clientOptions = document.getElementById('proposal-client-options');
   if (clientOptions) {
-    clientOptions.innerHTML = (B2B_DATA.leads || []).map(l => `<option value="${escapeHtml(l.name)}"></option>`).join('');
+    clientOptions.innerHTML = bFinLeads.map(l => `<option value="${escapeHtml(l.name)}"></option>`).join('');
   }
 
   const productOptions = document.getElementById('proposal-product-options');
   if (productOptions) {
-    productOptions.innerHTML = (B2B_DATA.products || []).map(p => `<option value="${escapeHtml(p.name)}"></option>`).join('');
+    productOptions.innerHTML = bFinProducts.map(p => `<option value="${escapeHtml(p.name)}"></option>`).join('');
   }
 
   const dateInput = document.getElementById('proposal-date');
@@ -182,7 +214,7 @@ function wireProposalItemRow(row) {
   };
 
   nameInput.addEventListener('input', () => {
-    const product = (B2B_DATA.products || []).find(p => p.name === nameInput.value);
+    const product = bFinProducts.find(p => p.name === nameInput.value);
     if (product) {
       listPriceInput.value = formatCurrency(product.price);
       unitPriceInput.value = product.price;

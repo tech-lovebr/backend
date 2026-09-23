@@ -3,6 +3,10 @@
    Injeta os partials em toda página e resolve navegação/topbar.
    ========================================================================== */
 
+// site-preview.html é a página pública do site publicado pelo fornecedor
+// (quem acessa é o cliente final, não precisa estar logado no B2B).
+const PUBLIC_PAGES = ['site-preview'];
+
 // Aplica o tema e o estado do sidebar salvos o quanto antes, para evitar flash.
 document.body.dataset.theme = localStorage.getItem('b2b-theme') || 'light';
 if (localStorage.getItem('b2b-sidebar-collapsed') === '1') {
@@ -62,12 +66,19 @@ function initSpeculationRules() {
   document.head.appendChild(script);
 }
 
+// Dispara a checagem de sessão/perfil já na carga do script (não espera o
+// DOMContentLoaded), para que outras páginas possam aguardar
+// `window.b2bAuthReady` antes de ler B2B_DATA.professional e evitar mostrar
+// dados do perfil mockado por uma fração de segundo antes do overlay real.
+window.b2bAuthReady = initAuthGuard();
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // Captura o total de não lidas antes de qualquer página marcar
-  // conversas como lidas (evita corrida com mensagens.js).
-  const unreadSnapshot = typeof B2B_DATA !== 'undefined'
-    ? B2B_DATA.conversations.reduce((sum, c) => sum + (c.unread || 0), 0)
-    : 0;
+  const authed = await window.b2bAuthReady;
+  if (!authed) return;
+
+  // O chat real ainda não rastreia mensagens não lidas (ver mensagens.js),
+  // então por enquanto o badge de notificação de chat fica sempre zerado.
+  const unreadSnapshot = 0;
 
   await loadShell();
   initSidebarState();
@@ -79,8 +90,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCommandPalette();
   initNotifications(unreadSnapshot);
   initThemeToggle();
+  initLogout();
   document.dispatchEvent(new CustomEvent('shell:ready'));
 });
+
+/* -------------------- Autenticação (Supabase) -------------------- */
+
+async function initAuthGuard() {
+  if (PUBLIC_PAGES.includes(document.body.dataset.page)) return true;
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  window.b2bSession = session;
+
+  const { data: fornecedor } = await supabaseClient
+    .from('fornecedores')
+    .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type')
+    .eq('id', session.user.id)
+    .maybeSingle();
+
+  if (fornecedor && typeof B2B_DATA !== 'undefined') {
+    B2B_DATA.professional.id = fornecedor.id;
+    B2B_DATA.professional.company = fornecedor.company_name || B2B_DATA.professional.company;
+    B2B_DATA.professional.name = fornecedor.company_name || B2B_DATA.professional.name;
+    B2B_DATA.professional.email = fornecedor.email || B2B_DATA.professional.email;
+    if (fornecedor.avatar_url) B2B_DATA.professional.avatar = fornecedor.avatar_url;
+    if (!localStorage.getItem('b2b-plan') && fornecedor.plan) B2B_DATA.professional.plan = fornecedor.plan;
+    B2B_DATA.professional.pixKey = fornecedor.pix_key || null;
+    B2B_DATA.professional.pixKeyType = fornecedor.pix_key_type || null;
+  }
+
+  return true;
+}
+
+function initLogout() {
+  document.querySelectorAll('[data-logout]').forEach(link => {
+    link.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await supabaseClient.auth.signOut();
+      window.location.href = 'login.html';
+    });
+  });
+}
 
 /* -------------------- Tema (light/dark) -------------------- */
 
@@ -308,34 +363,31 @@ function initMobileNav() {
 
 /* -------------------- Notificações -------------------- */
 
-function getKanbanDueTomorrowAlerts() {
-  try {
-    const raw = localStorage.getItem('b2b-work-board');
-    if (!raw) return [];
-    const board = JSON.parse(raw);
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+async function getKanbanDueTomorrowAlerts() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return [];
 
-    const alerts = [];
-    (board.lists || []).forEach(list => {
-      (list.tasks || []).forEach(task => {
-        if (!task.done && task.dueDate === tomorrowStr) {
-          alerts.push({
-            text: `Amanhã é o último dia para finalizar a tarefa "${escapeHtml(task.text)}"`,
-            href: 'agenda.html',
-            tone: 'warning'
-          });
-        }
-      });
-    });
-    return alerts;
-  } catch (e) {
-    return [];
-  }
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+
+  const { data, error } = await supabaseClient
+    .from('agenda_tasks')
+    .select('text, done, due_date')
+    .eq('fornecedor_id', session.user.id)
+    .eq('due_date', tomorrowStr)
+    .eq('done', false);
+
+  if (error || !data) return [];
+
+  return data.map(task => ({
+    text: `Amanhã é o último dia para finalizar a tarefa "${escapeHtml(task.text)}"`,
+    href: 'agenda.html',
+    tone: 'warning'
+  }));
 }
 
-function initNotifications(unreadSnapshot) {
+async function initNotifications(unreadSnapshot) {
   const list = document.getElementById('notif-list');
   const dot = document.getElementById('notif-dot');
   const navBadge = document.getElementById('nav-msg-badge');
@@ -345,7 +397,7 @@ function initNotifications(unreadSnapshot) {
   if (!list) return;
 
   const staticAlerts = typeof B2B_DATA !== 'undefined' ? B2B_DATA.alertas : [];
-  const alerts = [...getKanbanDueTomorrowAlerts(), ...staticAlerts];
+  const alerts = [...(await getKanbanDueTomorrowAlerts()), ...staticAlerts];
 
   if (alerts.length) {
     dot.textContent = alerts.length;
@@ -370,10 +422,31 @@ function initNotifications(unreadSnapshot) {
 
 /* -------------------- Command palette (busca global) -------------------- */
 
+let commandPaletteData = { leads: [], products: [], contracts: [] };
+
+async function loadCommandPaletteData() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const [leadsRes, productsRes, contractsRes] = await Promise.all([
+    supabaseClient.from('leads').select('id, name, event_name').eq('fornecedor_id', session.user.id),
+    supabaseClient.from('products').select('id, name, category').eq('fornecedor_id', session.user.id),
+    supabaseClient.from('contracts').select('id, client_name, evento').eq('fornecedor_id', session.user.id)
+  ]);
+
+  commandPaletteData = {
+    leads: leadsRes.data || [],
+    products: productsRes.data || [],
+    contracts: contractsRes.data || []
+  };
+}
+
 function initCommandPalette() {
   const palette = document.getElementById('command-palette');
   const input = document.getElementById('command-input');
   if (!palette || !input) return;
+
+  loadCommandPaletteData();
 
   document.addEventListener('keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -402,13 +475,13 @@ function closeCommandPalette() {
 
 function renderCommandResults(query) {
   const results = document.getElementById('command-results');
-  if (!results || typeof B2B_DATA === 'undefined') return;
+  if (!results) return;
   const q = query.trim().toLowerCase();
 
   const items = [
-    ...B2B_DATA.leads.map(l => ({ label: l.name, meta: l.event, href: 'crm.html', group: 'Clientes' })),
-    ...B2B_DATA.contracts.map(c => ({ label: c.client, meta: `Contrato · ${c.event}`, href: 'contratos.html', group: 'Contratos' })),
-    ...B2B_DATA.products.map(p => ({ label: p.name, meta: p.category, href: 'produtos.html', group: 'Produtos' }))
+    ...commandPaletteData.leads.map(l => ({ label: l.name, meta: l.event_name || '', href: 'crm.html', group: 'Clientes' })),
+    ...commandPaletteData.contracts.map(c => ({ label: c.client_name, meta: `Contrato · ${(c.evento && c.evento.nome) || ''}`, href: 'contratos.html', group: 'Contratos' })),
+    ...commandPaletteData.products.map(p => ({ label: p.name, meta: p.category || '', href: 'produtos.html', group: 'Produtos' }))
   ];
 
   const filtered = q ? items.filter(i => i.label.toLowerCase().includes(q) || i.meta.toLowerCase().includes(q)) : items.slice(0, 6);

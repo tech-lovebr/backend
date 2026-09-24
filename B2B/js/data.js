@@ -27,7 +27,12 @@ const B2B_DATA = {
     twoFactorEnabled: false,
     selfieVerified: false,
     pixKeyType: null,
-    pixKey: null
+    pixKey: null,
+    serviceRadiusKm: 50,
+    deliveryTime: '',
+    depositPercent: null,
+    depositDeadlineDays: null,
+    cancellationPolicy: ''
   },
 
   siteMetrics: {

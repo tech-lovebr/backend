@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=404">
+  <link rel="stylesheet" href="css/styles.css?v=408">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -27,6 +27,7 @@
 
         <div class="category-tabs-bar" id="settings-tabs">
           <button type="button" class="category-tab active" data-settings-tab="perfil">Perfil</button>
+          <button type="button" class="category-tab" data-settings-tab="empresa">Minha Empresa</button>
           <button type="button" class="category-tab" data-settings-tab="preferencias">Preferências</button>
         </div>
 
@@ -36,12 +37,16 @@
             <form id="profile-form" class="flex flex-col gap-4">
               <div class="profile-form-top">
                 <div class="profile-form-top-image">
-                  <label class="field-label">Imagem de perfil</label>
-                  <div id="profile-avatar-wrap"></div>
+                  <div class="profile-form-top-avatar">
+                    <label class="field-label">Imagem de perfil</label>
+                    <div id="profile-avatar-wrap"></div>
+                  </div>
 
-                  <label class="field-label" style="display:block; margin-top:1.25rem;">Imagem de Capa</label>
-                  <div id="profile-logo-wrap"></div>
-                  <p class="profile-logo-hint">Esta imagem será exibida para os clientes na vitrine Explorar</p>
+                  <div class="profile-form-top-cover">
+                    <label class="field-label">Imagem de Capa</label>
+                    <div id="profile-logo-wrap"></div>
+                    <p class="profile-logo-hint">Esta imagem será exibida para os clientes na vitrine Explorar</p>
+                  </div>
                 </div>
 
                 <div class="profile-form-top-fields">
@@ -108,6 +113,52 @@
                     <textarea id="profile-description" class="field-textarea" style="min-height:110px;" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
                   </div>
                 </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div data-settings-panel="empresa" style="display:none;">
+          <div class="dash-card">
+            <form id="company-form" class="flex flex-col gap-5">
+              <div>
+                <label for="company-service-radius" class="field-label">Raio de atendimento</label>
+                <p class="text-xs text-zinc-500 mb-2">Essa informação não aparece na vitrine para o cliente — é usada apenas pelo algoritmo da plataforma para te mostrar eventos próximos.</p>
+                <div class="b2b-range-row">
+                  <input type="range" id="company-service-radius" class="b2b-range-slider" min="0" max="250" step="5" value="50">
+                  <span class="b2b-range-value" id="company-service-radius-value">50 km</span>
+                </div>
+              </div>
+
+              <div>
+                <label for="company-delivery-time" class="field-label">Prazo médio de entrega</label>
+                <input id="company-delivery-time" type="text" class="field-input" placeholder="Ex: 15 dias antes do evento">
+              </div>
+
+              <div class="form-section-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path stroke-linecap="round" d="M2.5 10h19"/></svg>
+                <span>Forma e condições de pagamento</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="company-deposit-percent" class="field-label">Sinal mínimo para reserva de data (%)</label>
+                  <input id="company-deposit-percent" type="number" min="0" max="100" step="5" class="field-input" placeholder="Ex: 30">
+                </div>
+                <div>
+                  <label for="company-deposit-deadline" class="field-label">Restante pago até (dias antes do evento)</label>
+                  <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15">
+                </div>
+              </div>
+
+              <div>
+                <label for="company-cancellation-policy" class="field-label">Política de cancelamento e remarcação</label>
+                <p class="text-xs text-zinc-500 mb-2">Regra para devolução do sinal em caso de alteração da data do evento.</p>
+                <textarea id="company-cancellation-policy" class="field-textarea" style="min-height:100px;" placeholder="Ex: Em caso de remarcação com aviso de até 60 dias, o sinal é mantido para a nova data. Cancelamentos têm direito a 50% de devolução."></textarea>
+              </div>
+
+              <div>
+                <button type="submit" class="btn-secondary">Salvar informações da empresa</button>
               </div>
             </form>
           </div>
@@ -276,11 +327,11 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=10"></script>
+  <script src="js/data.js?v=12"></script>
   <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=24"></script>
-  <script src="js/configuracoes.js?v=18"></script>
+  <script src="js/configuracoes.js?v=20"></script>
 </body>
 </html>

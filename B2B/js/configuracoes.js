@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   initSettingsTabs();
   initProfileForm();
+  initCompanyForm();
   initPasswordForm();
   initSecurityRows();
   initSubscriptionModal();
@@ -99,6 +100,37 @@ function initProfileForm() {
   });
 }
 
+/* -------------------- Minha Empresa -------------------- */
+
+function initCompanyForm() {
+  const form = document.getElementById('company-form');
+  if (!form) return;
+  const p = B2B_DATA.professional;
+
+  const radiusInput = document.getElementById('company-service-radius');
+  const radiusValue = document.getElementById('company-service-radius-value');
+  const updateRadiusLabel = () => { radiusValue.textContent = `${radiusInput.value} km`; };
+  radiusInput.value = p.serviceRadiusKm ?? 50;
+  updateRadiusLabel();
+  radiusInput.addEventListener('input', updateRadiusLabel);
+
+  document.getElementById('company-delivery-time').value = p.deliveryTime || '';
+  document.getElementById('company-deposit-percent').value = p.depositPercent ?? '';
+  document.getElementById('company-deposit-deadline').value = p.depositDeadlineDays ?? '';
+  document.getElementById('company-cancellation-policy').value = p.cancellationPolicy || '';
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    p.serviceRadiusKm = Number(radiusInput.value);
+    p.deliveryTime = document.getElementById('company-delivery-time').value.trim();
+    p.depositPercent = Number(document.getElementById('company-deposit-percent').value) || null;
+    p.depositDeadlineDays = Number(document.getElementById('company-deposit-deadline').value) || null;
+    p.cancellationPolicy = document.getElementById('company-cancellation-policy').value.trim();
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    showToast('Informações da empresa atualizadas.');
+  });
+}
+
 function setProfileDocType(type) {
   const toggle = document.getElementById('profile-doc-type-toggle');
   toggle.querySelectorAll('[data-doc-type]').forEach(btn => btn.classList.toggle('active', btn.dataset.docType === type));
@@ -140,7 +172,7 @@ function renderProfileAvatarPicker() {
   if (!wrap) return;
   const cropStyle = `--avatar-scale:${p.profilePhotoScale || 1};--avatar-x:${p.profilePhotoOffsetX || 0}%;--avatar-y:${p.profilePhotoOffsetY || 0}%;`;
   wrap.innerHTML = `
-    <div class="header-logo-picker-wrap" style="max-width:220px;">
+    <div class="header-logo-picker-wrap">
       <label class="profile-avatar-picker ${photo ? 'has-image' : ''}">
         ${photo
           ? `<img src="${photo}" class="avatar-crop-img" alt="" style="${cropStyle}">
@@ -291,7 +323,7 @@ function renderProfileLogoPicker() {
   if (!wrap) return;
   const cropStyle = `--logo-scale:${p.logoScale || 1};--logo-x:${p.logoOffsetX || 0}%;--logo-y:${p.logoOffsetY || 0}%;`;
   wrap.innerHTML = `
-    <div class="header-logo-picker-wrap" style="max-width:220px;">
+    <div class="header-logo-picker-wrap">
       <label class="profile-logo-picker ${logo ? 'has-image' : ''}">
         ${logo
           ? `<img src="${logo}" class="logo-crop-img" alt="" style="${cropStyle}">

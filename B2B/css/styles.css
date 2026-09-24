@@ -2941,44 +2941,6 @@ body[data-theme="dark"] .metric-ring { background: conic-gradient(var(--ring-col
   flex-shrink: 0;
 }
 
-/* Banner de sincronização de e-mail (Gmail) */
-
-.gmail-sync-banner {
-  position: relative;
-  background: #fff;
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-card);
-  padding: 1.25rem 3rem 1.25rem 1.5rem;
-  margin-bottom: 1.5rem;
-  transition: opacity .2s ease;
-}
-
-.gmail-sync-banner-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  color: #A1A1AA;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color .15s ease, color .15s ease;
-}
-.gmail-sync-banner-close:hover { background: #F4F4F5; color: #18181B; }
-.gmail-sync-banner-close svg { width: 15px; height: 15px; }
-
-.gmail-sync-banner-title { font-size: 0.9375rem; font-weight: 700; color: #18181B; margin: 0 0 0.4rem; }
-.gmail-sync-banner-desc { font-size: 0.8125rem; color: #71717A; line-height: 1.55; margin: 0 0 1rem; max-width: 620px; }
-.gmail-sync-banner-btn svg { flex-shrink: 0; }
-
-body[data-theme="dark"] .gmail-sync-banner { background: #333333 !important; border-color: #404040 !important; }
-body[data-theme="dark"] .gmail-sync-banner-title { color: #FFFFFF !important; }
-body[data-theme="dark"] .gmail-sync-banner-close:hover { background: #404040 !important; color: #FFFFFF !important; }
 
 /* Empty state (páginas em construção) */
 

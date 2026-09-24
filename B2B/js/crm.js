@@ -12,7 +12,6 @@ let leadMatchedClienteId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
-  initGmailSyncBanner();
   await Promise.all([loadLeads(), loadCrmProducts()]);
   renderLeadStatusTabs();
   renderLeadsTable();
@@ -129,30 +128,6 @@ async function resolveLeadClienteId(email) {
 
   const { data } = await supabaseClient.from('clientes').select('id').ilike('email', email).maybeSingle();
   return data ? data.id : null;
-}
-
-/* -------------------- Banner de sincronização do Gmail -------------------- */
-
-function initGmailSyncBanner() {
-  const GMAIL_SYNC_KEY = 'b2b-gmail-connected';
-  const banner = document.getElementById('gmail-sync-banner');
-  if (!banner) return;
-
-  if (localStorage.getItem(GMAIL_SYNC_KEY) === '1') {
-    banner.remove();
-    return;
-  }
-
-  document.getElementById('gmail-sync-banner-close')?.addEventListener('click', () => {
-    banner.remove();
-  });
-
-  document.getElementById('gmail-sync-connect-btn')?.addEventListener('click', () => {
-    localStorage.setItem(GMAIL_SYNC_KEY, '1');
-    showToast('Gmail conectado! Sincronizando seus contatos e conversas.');
-    banner.style.opacity = '0';
-    setTimeout(() => banner.remove(), 200);
-  });
 }
 
 /* -------------------- Abas por status -------------------- */

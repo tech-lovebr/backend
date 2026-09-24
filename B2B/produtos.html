@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=400">
+  <link rel="stylesheet" href="css/styles.css?v=401">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -67,18 +67,8 @@
 
         <div>
           <label for="product-category" class="field-label">Categoria</label>
-          <select id="product-category" class="field-select">
-            <option value="">Selecione</option>
-            <option>Assessoria</option>
-            <option>Cerimonial</option>
-            <option>Decoração</option>
-            <option>Buffet</option>
-            <option>Fotografia</option>
-            <option>Música & DJ</option>
-            <option>Convites & Papelaria</option>
-            <option>Locação de Espaço</option>
-            <option>Locação de Equipamentos</option>
-          </select>
+          <input id="product-category" type="text" class="field-input" list="product-category-options" placeholder="Ex: Casamento, Aniversário..." autocomplete="off">
+          <datalist id="product-category-options"></datalist>
         </div>
 
         <div class="form-section-header">
@@ -241,6 +231,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=24"></script>
-  <script src="js/produtos.js?v=7"></script>
+  <script src="js/produtos.js?v=8"></script>
 </body>
 </html>

@@ -8,6 +8,14 @@ const PRODUCT_VENUE_CATEGORY = 'Locação de Espaço';
 const PRODUCT_EQUIPMENT_CATEGORY = 'Locação de Equipamentos';
 const PRODUCT_FOOD_CATEGORY = 'Buffet';
 
+// Sugestões iniciais pro autocomplete de categoria — o fornecedor pode
+// digitar qualquer categoria própria (ex: um fotógrafo separando por
+// "Casamento", "Aniversário"), não é uma lista fechada.
+const PRODUCT_CATEGORY_SUGGESTIONS = [
+  'Assessoria', 'Cerimonial', 'Decoração', 'Buffet', 'Fotografia',
+  'Música & DJ', 'Convites & Papelaria', 'Locação de Espaço', 'Locação de Equipamentos'
+];
+
 const PRODUCT_WEEKDAYS = [
   { key: 'seg', label: 'Seg' },
   { key: 'ter', label: 'Ter' },
@@ -35,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadProducts();
   renderCategoryTabs();
   renderProducts();
+  populateProductCategoryOptions();
   initProductDrawer();
   initCompleteProfileModal();
 });
@@ -77,6 +86,14 @@ function initCompleteProfileModal() {
 function openCompleteProfileModal() {
   const modal = document.getElementById('complete-profile-modal');
   if (modal) modal.classList.add('show');
+}
+
+function populateProductCategoryOptions() {
+  const datalist = document.getElementById('product-category-options');
+  if (!datalist) return;
+  const existing = [...new Set(bProducts.map(p => p.category).filter(Boolean))];
+  const all = [...new Set([...existing, ...PRODUCT_CATEGORY_SUGGESTIONS])];
+  datalist.innerHTML = all.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
 }
 
 function renderCategoryTabs() {
@@ -433,7 +450,7 @@ function initProductDrawer() {
   if (cancelBtn) cancelBtn.addEventListener('click', close);
   if (backdrop) backdrop.addEventListener('click', close);
 
-  document.getElementById('product-category').addEventListener('change', updateCategoryFieldsVisibility);
+  document.getElementById('product-category').addEventListener('input', updateCategoryFieldsVisibility);
 
   document.getElementById('product-gallery-add-btn').addEventListener('click', () => {
     currentGalleryImages.push('');
@@ -531,6 +548,7 @@ function initProductDrawer() {
       await loadProducts();
       renderCategoryTabs();
       renderProducts();
+      populateProductCategoryOptions();
       close();
     });
   }

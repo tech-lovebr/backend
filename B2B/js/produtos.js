@@ -6,7 +6,7 @@ let activeCategory = 'Todos';
 
 const PRODUCT_VENUE_CATEGORY = 'Locação de espaço';
 const PRODUCT_EQUIPMENT_CATEGORY = 'Aluguel de equipamentos';
-const PRODUCT_FOOD_CATEGORY = 'Alimentação';
+const PRODUCT_FOOD_CATEGORY = 'Buffet';
 
 const PRODUCT_WEEKDAYS = [
   { key: 'seg', label: 'Seg' },

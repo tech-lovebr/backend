@@ -2093,6 +2093,13 @@ body[data-page="mensagens"] .b2b-content {
   overflow: hidden;
 }
 
+/* O rodapé padrão assume o padding genérico de 2rem do .b2b-content pra
+   calcular suas margens negativas — na página de Mensagens o padding é 0
+   (interface de chat em tela cheia, sem scroll), então o rodapé saía
+   desalinhado. Como a tela de chat não tem espaço/sentido pra um rodapé
+   de marketing, ele simplesmente não aparece aqui. */
+body[data-page="mensagens"] .b2b-footer { display: none; }
+
 body[data-page="mensagens"] .chat-shell {
   height: 100%;
   flex: 1;

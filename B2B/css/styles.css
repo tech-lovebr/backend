@@ -4825,7 +4825,7 @@ body[data-theme="dark"] .profile-logo-hint { color: #71717A !important; }
 .profile-avatar-picker {
   position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
-  width: 110px; aspect-ratio: 1;
+  width: 100%; aspect-ratio: 8 / 5;
   border: 1.5px dashed var(--border-light); border-radius: 14px;
   background: #FAFAFA;
   cursor: pointer; overflow: hidden;
@@ -4836,7 +4836,6 @@ body[data-theme="dark"] .profile-logo-hint { color: #71717A !important; }
   border-style: solid; border-color: var(--border-light);
   background: repeating-conic-gradient(#F4F4F5 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
 }
-.profile-avatar-picker .image-upload-zone-text { font-size: 0.625rem; padding: 0 0.4rem; }
 
 .profile-avatar-adjust-frame {
   width: 100%; aspect-ratio: 1;
@@ -4846,17 +4845,31 @@ body[data-theme="dark"] .profile-logo-hint { color: #71717A !important; }
   cursor: grab;
   touch-action: none;
   position: relative;
-  max-width: 280px; margin: 0 auto;
 }
 .profile-avatar-adjust-frame.is-dragging { cursor: grabbing; }
 
-/* Foto de perfil: quadrada com cantos arredondados, substitui as iniciais
-   onde quer que o avatar do fornecedor apareça (topbar, chat). */
-.b2b-avatar.has-photo, .profile-dropdown-avatar.has-photo {
-  border-radius: 10px; background: transparent; overflow: hidden;
+/* Foto de perfil no cabeçalho: quadrada com cantos arredondados sempre
+   (nunca a bolinha com iniciais) — mostra a foto, ou um ícone genérico de
+   perfil quando não há foto definida. */
+#topbar-user-avatar, #profile-dropdown-avatar {
+  border-radius: 10px !important;
+  background: #F4F4F5;
+  overflow: hidden;
 }
+#topbar-user-avatar svg, #profile-dropdown-avatar svg { width: 58%; height: 58%; color: #A1A1AA; }
+body[data-theme="dark"] #topbar-user-avatar,
+body[data-theme="dark"] #profile-dropdown-avatar { background: #333333 !important; }
 .avatar-photo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
-.chat-my-avatar-img { width: 28px; height: 28px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border-light); }
+.b2b-avatar-square {
+  border-radius: 8px;
+  overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #F4F4F5;
+  flex-shrink: 0;
+}
+.b2b-avatar-square img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.b2b-avatar-square svg { width: 58%; height: 58%; color: #A1A1AA; }
+body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 
 .logo-adjust-modal-card { max-width: 480px; position: relative; }
 .logo-adjust-modal-close {

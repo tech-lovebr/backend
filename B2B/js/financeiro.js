@@ -134,6 +134,13 @@ function initNotasFiscaisActions() {
 let proposalItemCounter = 0;
 let proposalSelectedLeadId = null;
 let proposalSelectedClienteId = null;
+let proposalDatePicker = null;
+let proposalNextContactPicker = null;
+
+function todayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 async function initProposalForm() {
   const productOptions = document.getElementById('proposal-product-options');
@@ -142,7 +149,10 @@ async function initProposalForm() {
   }
 
   const dateInput = document.getElementById('proposal-date');
-  if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
+  if (dateInput) proposalDatePicker = initDatePicker(dateInput, todayIso());
+
+  const nextContactInput = document.getElementById('proposal-next-contact');
+  if (nextContactInput) proposalNextContactPicker = initDatePicker(nextContactInput, '');
 
   addProposalItemRow();
 
@@ -401,7 +411,8 @@ async function resetProposalForm() {
   proposalSelectedLeadId = null;
   proposalSelectedClienteId = null;
   document.getElementById('proposal-intro').value = '';
-  document.getElementById('proposal-next-contact').value = '';
+  if (proposalDatePicker) proposalDatePicker.setValue(todayIso());
+  if (proposalNextContactPicker) proposalNextContactPicker.setValue('');
   document.getElementById('proposal-extra-items').innerHTML = '';
   document.getElementById('proposal-items-body').innerHTML = '';
   addProposalItemRow();

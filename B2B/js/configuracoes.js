@@ -140,7 +140,7 @@ function renderProfileAvatarPicker() {
   if (!wrap) return;
   const cropStyle = `--avatar-scale:${p.profilePhotoScale || 1};--avatar-x:${p.profilePhotoOffsetX || 0}%;--avatar-y:${p.profilePhotoOffsetY || 0}%;`;
   wrap.innerHTML = `
-    <div class="header-logo-picker-wrap" style="width:110px;">
+    <div class="header-logo-picker-wrap" style="max-width:220px;">
       <label class="profile-avatar-picker ${photo ? 'has-image' : ''}">
         ${photo
           ? `<img src="${photo}" class="avatar-crop-img" alt="" style="${cropStyle}">

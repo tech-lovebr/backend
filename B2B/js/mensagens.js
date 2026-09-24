@@ -40,7 +40,7 @@ async function loadB2BConversations() {
       id: row.id,
       name: (row.cliente && row.cliente.couple_name) || 'Cliente',
       category: '',
-      avatar: (row.cliente && row.cliente.avatar_url) || '../assets/wedding_hero_banner.jpg',
+      avatar: (row.cliente && row.cliente.avatar_url) || null,
       online: false,
       lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
       time: last ? formatB2BMsgTime(last.created_at) : '',
@@ -83,6 +83,14 @@ function subscribeToB2BMessages() {
     .subscribe();
 }
 
+// Mesmo ícone de perfil padrão usado no cabeçalho (B2B_PROFILE_ICON, definido
+// em shell.js) — quadrado com cantos arredondados, nunca foto/placeholder
+// genérico quando o cliente ainda não tem avatar cadastrado.
+function b2bAvatarHtml(url) {
+  if (url) return `<img src="${url}" alt="">`;
+  return typeof B2B_PROFILE_ICON !== 'undefined' ? B2B_PROFILE_ICON : '';
+}
+
 function renderContactsList(searchQuery = '') {
   const listEl = document.getElementById('conv-list');
   if (!listEl) return;
@@ -115,7 +123,7 @@ function renderContactsList(searchQuery = '') {
 
     item.innerHTML = `
       <div class="relative flex-shrink-0">
-        <img src="${conv.avatar}" alt="${conv.name}" class="w-10 h-10 rounded-full object-cover border border-zinc-200">
+        <span class="w-10 h-10 b2b-avatar-square border border-zinc-200">${b2bAvatarHtml(conv.avatar)}</span>
         ${conv.online ? '<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>' : ''}
       </div>
       <div class="flex-1 min-w-0">
@@ -150,6 +158,7 @@ function renderActiveChat() {
     container.innerHTML = '<div class="flex items-center justify-center h-full text-sm text-zinc-400">Nenhuma conversa selecionada.</div>';
     if (nameEl) nameEl.textContent = '';
     if (statusEl) statusEl.innerHTML = '';
+    if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(null);
     return;
   }
 
@@ -157,7 +166,7 @@ function renderActiveChat() {
   if (statusEl) {
     statusEl.innerHTML = `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
   }
-  if (avatarEl) avatarEl.src = activeConv.avatar;
+  if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(activeConv.avatar);
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';
 
   container.innerHTML = `
@@ -209,11 +218,11 @@ function renderActiveChat() {
             <span>${msg.time || 'Agora'}</span>
           </div>
         </div>
-        ${myPhoto ? `<img src="${myPhoto}" alt="" class="chat-my-avatar-img mb-4">` : ''}
+        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(myPhoto)}</span>
       `;
     } else {
       row.innerHTML = `
-        <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-full object-cover flex-shrink-0 border border-zinc-200 mb-4">
+        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar)}</span>
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
           <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}

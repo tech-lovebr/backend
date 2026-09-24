@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=392">
+  <link rel="stylesheet" href="css/styles.css?v=396">
 </head>
 <body class="font-sans" data-page="financeiro">
   <div class="b2b-shell">
@@ -40,40 +40,41 @@
                 <button type="button" class="btn-primary" id="proposal-save-btn">Salvar</button>
               </div>
             </div>
-            <h3 class="text-sm font-bold text-zinc-900 mt-5 mb-3">Para</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-5 mb-4">
               <div>
                 <label for="proposal-date" class="field-label">Data</label>
                 <input id="proposal-date" type="date" class="field-input">
               </div>
-              <div>
+              <div class="relative">
                 <label for="proposal-client" class="field-label">Cliente <span style="color:#DC2626;">*</span></label>
-                <input id="proposal-client" type="text" class="field-input" list="proposal-client-options" placeholder="Buscar cliente" autocomplete="off">
-                <datalist id="proposal-client-options"></datalist>
+                <input id="proposal-client" type="text" class="field-input" placeholder="Nome ou e-mail do cliente" autocomplete="off">
+                <div class="proposal-client-dropdown" id="proposal-client-dropdown" hidden></div>
+              </div>
+              <div id="proposal-seller-field-wrap">
+                <label for="proposal-seller-field" class="field-label">Vendedor</label>
+                <input id="proposal-seller-field" type="text" class="field-input" disabled>
               </div>
               <div>
-                <label for="proposal-attn" class="field-label">Aos cuidados de</label>
-                <input id="proposal-attn" type="text" class="field-input">
-              </div>
-              <div>
-                <label for="proposal-store" class="field-label">Loja</label>
-                <select id="proposal-store" class="field-select">
-                  <option>Nenhuma</option>
-                </select>
+                <label for="proposal-company-display" class="field-label">Empresa</label>
+                <input id="proposal-company-display" type="text" class="field-input" disabled style="background:#F4F4F5;">
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div>
-                <label for="proposal-business-unit" class="field-label">Unidade de Negócio</label>
-                <select id="proposal-business-unit" class="field-select">
-                  <option>Nenhuma unidade de negócio</option>
+                <label for="proposal-cnpj-display" class="field-label">CNPJ</label>
+                <input id="proposal-cnpj-display" type="text" class="field-input" disabled style="background:#F4F4F5;">
+              </div>
+              <div>
+                <label for="proposal-category" class="field-label">Categoria</label>
+                <select id="proposal-category" class="field-select">
+                  <option value="">Todos</option>
                 </select>
               </div>
               <div>
-                <label for="proposal-price-list" class="field-label">Lista de preço</label>
-                <select id="proposal-price-list" class="field-select">
-                  <option>Nenhuma lista</option>
+                <label for="proposal-product-picker" class="field-label">Produto/Serviço</label>
+                <select id="proposal-product-picker" class="field-select">
+                  <option value="">Selecione um produto/serviço</option>
                 </select>
               </div>
             </div>
@@ -83,14 +84,10 @@
               <textarea id="proposal-intro" class="field-textarea" style="min-height:110px;"></textarea>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div>
                 <label for="proposal-number" class="field-label">Número da Proposta</label>
                 <input id="proposal-number" type="text" class="field-input" value="1" disabled style="background:#F4F4F5;">
-              </div>
-              <div>
-                <label for="proposal-seller" class="field-label">Vendedor</label>
-                <input id="proposal-seller" type="text" class="field-input">
               </div>
               <div>
                 <label for="proposal-next-contact" class="field-label">Data do Próximo Contato</label>
@@ -213,10 +210,10 @@
   </div>
 
   <script src="js/data.js?v=10"></script>
-  <script src="js/utils.js?v=9"></script>
+  <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
-  <script src="js/shell.js?v=22"></script>
-  <script src="js/financeiro.js?v=4"></script>
+  <script src="js/shell.js?v=23"></script>
+  <script src="js/financeiro.js?v=6"></script>
 </body>
 </html>

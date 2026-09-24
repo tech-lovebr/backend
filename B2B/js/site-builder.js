@@ -439,8 +439,8 @@ function buildCheckoutMainSection() {
       productRow,
       createElement('separador'),
       withDesktopStyle(Object.assign(createElement('texto'), { content: 'Impostos (8,00%): R$ 2,40' }), { textAlign: 'left', fontSize: '13px', color: '#52525B' }),
-      withDesktopStyle(Object.assign(createElement('texto'), { content: 'TOTAL: R$ 32,39' }), { textAlign: 'left', fontWeight: '700', fontSize: '18px', marginTop: '6px' }),
-      withDesktopStyle(Object.assign(createElement('botao'), { content: 'Finalizar pedido', href: '#' }), {
+      withDesktopStyle(Object.assign(createElement('texto'), { content: 'TOTAL: R$ 32,39', checkoutRole: 'total' }), { textAlign: 'left', fontWeight: '700', fontSize: '18px', marginTop: '6px' }),
+      withDesktopStyle(Object.assign(createElement('botao'), { content: 'Finalizar pedido', href: '#', checkoutRole: 'submit' }), {
         backgroundColor: '#F5A623', color: '#ffffff', width: '100%', marginTop: '20px',
         paddingTop: '14px', paddingBottom: '14px', fontSize: '16px', fontWeight: '700'
       }),
@@ -478,7 +478,7 @@ function buildCheckoutSections() {
 /* Sempre que o template fixo do checkout (buildCheckoutSections) for alterado no código,
    incremente esta versão. Rascunhos salvos com uma versão antiga são descartados
    automaticamente e substituídos pelo template atual — sem precisar de ação do usuário. */
-const CHECKOUT_TEMPLATE_VERSION = 6;
+const CHECKOUT_TEMPLATE_VERSION = 7;
 
 function defaultCheckoutPageState() {
   const header = defaultHeaderState();
@@ -606,13 +606,27 @@ function persistBuilderState(silent) {
   if (!silent) showToast('Alterações salvas!');
 }
 
-function publishBuilderState() {
+async function publishBuilderState() {
   const snapshot = JSON.stringify(builderState);
   const isCheckout = currentPageKey === 'checkout';
   localStorage.setItem(isCheckout ? CHECKOUT_STORAGE_KEY : BUILDER_STORAGE_KEY, snapshot);
   localStorage.setItem(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY, snapshot);
   localStorage.setItem(isCheckout ? CHECKOUT_PUBLISHED_KEY : BUILDER_PUBLISHED_KEY, '1');
   hasUnsavedChanges = false;
+
+  // O checkout precisa ficar visível pra qualquer cliente que abra um link de
+  // pagamento (sem login, de outro navegador) — por isso, além do localStorage
+  // (cache local do editor), publica também no Supabase.
+  if (isCheckout) {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      await supabaseClient.from('checkout_pages').upsert({
+        fornecedor_id: session.user.id,
+        state: builderState,
+        updated_at: new Date().toISOString()
+      });
+    }
+  }
 }
 
 /* -------------------- Alerta de alterações não salvas -------------------- */
@@ -4052,8 +4066,8 @@ function initSiteBuilder() {
   document.getElementById('builder-undo').addEventListener('click', undo);
   document.getElementById('builder-redo').addEventListener('click', redo);
   document.getElementById('builder-save').addEventListener('click', () => persistBuilderState(false));
-  document.getElementById('builder-publish').addEventListener('click', () => {
-    publishBuilderState();
+  document.getElementById('builder-publish').addEventListener('click', async () => {
+    await publishBuilderState();
     showToast('Site publicado com sucesso!');
   });
   wireUnsavedChangesGuard();

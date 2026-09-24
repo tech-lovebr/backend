@@ -6,6 +6,7 @@ const PROFILE_LOGO_PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="cur
 const PROFILE_LOGO_IMAGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>';
 const PROFILE_LOGO_CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
 const PROFILE_LOGO_ASPECT_RATIO = 8 / 5;
+const PROFILE_AVATAR_ASPECT_RATIO = 1;
 const PROFILE_STORAGE_KEY = 'b2b-professional-profile';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -57,10 +58,13 @@ function initProfileForm() {
   document.getElementById('profile-phone').value = p.phone || '';
   document.getElementById('profile-address').value = p.address || '';
   document.getElementById('profile-description').value = p.description || '';
+  document.getElementById('profile-document').value = p.documentNumber || '';
 
   wirePhoneMaskInput(document.getElementById('profile-phone'));
+  wireDocumentMaskInput(document.getElementById('profile-document'), () => B2B_DATA.professional.documentType || 'cnpj');
 
   setProfileDocType(p.documentType || 'cnpj');
+  renderProfileAvatarPicker();
   renderProfileLogoPicker();
   initStateCityFields(p);
 
@@ -109,6 +113,7 @@ function setProfileDocType(type) {
     input.placeholder = '00.000.000/0000-00';
   }
   B2B_DATA.professional.documentType = type;
+  input.value = formatDocumentValue(input.value, type);
 }
 
 function initStateCityFields(p) {
@@ -126,6 +131,157 @@ function initStateCityFields(p) {
   };
   refreshCityOptions();
   stateSelect.addEventListener('change', refreshCityOptions);
+}
+
+function renderProfileAvatarPicker() {
+  const p = B2B_DATA.professional;
+  const photo = p.profilePhoto || null;
+  const wrap = document.getElementById('profile-avatar-wrap');
+  if (!wrap) return;
+  const cropStyle = `--avatar-scale:${p.profilePhotoScale || 1};--avatar-x:${p.profilePhotoOffsetX || 0}%;--avatar-y:${p.profilePhotoOffsetY || 0}%;`;
+  wrap.innerHTML = `
+    <div class="header-logo-picker-wrap" style="width:110px;">
+      <label class="profile-avatar-picker ${photo ? 'has-image' : ''}">
+        ${photo
+          ? `<img src="${photo}" class="avatar-crop-img" alt="" style="${cropStyle}">
+             <div class="header-logo-picker-overlay">${PROFILE_LOGO_IMAGE_ICON}<span>Alterar foto</span></div>`
+          : `<span class="image-upload-zone-plus">${PROFILE_LOGO_PLUS_ICON}</span><span class="image-upload-zone-text">Adicione uma foto</span>`}
+        <input type="file" accept="image/*" class="image-upload-zone-input" id="profile-avatar-input">
+      </label>
+      ${photo ? `<button type="button" class="header-logo-picker-remove" id="profile-avatar-remove" title="Remover foto">${PROFILE_LOGO_CLOSE_ICON}</button>` : ''}
+    </div>
+  `;
+
+  const input = document.getElementById('profile-avatar-input');
+  const applyFile = (file) => readFileAsDataUrl(file, (dataUrl) => {
+    const img = new Image();
+    img.onload = () => {
+      let scale = 1, offsetX = 0, offsetY = 0;
+      const bbox = detectImageContentBBox(img);
+      if (bbox) {
+        const auto = computeAutoFillCrop(bbox, PROFILE_AVATAR_ASPECT_RATIO);
+        if (auto) { scale = auto.scale; offsetX = auto.offsetX; offsetY = auto.offsetY; }
+      }
+      p.profilePhoto = dataUrl;
+      p.profilePhotoScale = scale;
+      p.profilePhotoOffsetX = offsetX;
+      p.profilePhotoOffsetY = offsetY;
+      renderProfileAvatarPicker();
+      openProfileAvatarAdjustModal();
+      if (typeof initUserCard === 'function') initUserCard();
+    };
+    img.src = dataUrl;
+  });
+  if (input) {
+    input.addEventListener('change', () => { if (input.files[0]) applyFile(input.files[0]); });
+    wireImageDropZone(input.closest('.profile-avatar-picker'), applyFile);
+  }
+  const removeBtn = document.getElementById('profile-avatar-remove');
+  if (removeBtn) removeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    p.profilePhoto = null;
+    p.profilePhotoScale = 1;
+    p.profilePhotoOffsetX = 0;
+    p.profilePhotoOffsetY = 0;
+    renderProfileAvatarPicker();
+    if (typeof initUserCard === 'function') initUserCard();
+  });
+}
+
+/* -------------------- Modal: ajustar foto de perfil -------------------- */
+
+function openProfileAvatarAdjustModal() {
+  const modal = document.getElementById('profile-avatar-adjust-modal');
+  if (!modal) return;
+  wireProfileAvatarAdjustModalOnce();
+  const img = modal.querySelector('[data-profile-avatar-adjust-img]');
+  img.src = B2B_DATA.professional.profilePhoto;
+  updateProfileAvatarAdjustTransform();
+  modal.classList.add('show');
+}
+
+function closeProfileAvatarAdjustModal() {
+  const modal = document.getElementById('profile-avatar-adjust-modal');
+  if (modal) modal.classList.remove('show');
+  renderProfileAvatarPicker();
+  if (typeof initUserCard === 'function') initUserCard();
+}
+
+function updateProfileAvatarAdjustTransform() {
+  const modal = document.getElementById('profile-avatar-adjust-modal');
+  if (!modal) return;
+  const p = B2B_DATA.professional;
+  const img = modal.querySelector('[data-profile-avatar-adjust-img]');
+  if (img) img.style.transform = `scale(${p.profilePhotoScale || 1}) translate(${p.profilePhotoOffsetX || 0}%, ${p.profilePhotoOffsetY || 0}%)`;
+  const rangeInput = modal.querySelector('[data-profile-avatar-adjust-range]');
+  if (rangeInput) rangeInput.value = p.profilePhotoScale || 1;
+}
+
+function wireProfileAvatarAdjustModalOnce() {
+  const modal = document.getElementById('profile-avatar-adjust-modal');
+  if (!modal || modal.dataset.wired) return;
+  modal.dataset.wired = '1';
+
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeProfileAvatarAdjustModal(); });
+  const closeBtn = modal.querySelector('[data-profile-avatar-adjust-close]');
+  if (closeBtn) closeBtn.addEventListener('click', closeProfileAvatarAdjustModal);
+  const doneBtn = modal.querySelector('[data-profile-avatar-adjust-done]');
+  if (doneBtn) doneBtn.addEventListener('click', closeProfileAvatarAdjustModal);
+
+  const rangeInput = modal.querySelector('[data-profile-avatar-adjust-range]');
+  if (rangeInput) {
+    rangeInput.addEventListener('input', () => {
+      B2B_DATA.professional.profilePhotoScale = parseFloat(rangeInput.value);
+      updateProfileAvatarAdjustTransform();
+    });
+  }
+
+  const zoomMinus = modal.querySelector('[data-profile-avatar-adjust-zoom-minus]');
+  if (zoomMinus) {
+    zoomMinus.addEventListener('click', () => {
+      const p = B2B_DATA.professional;
+      p.profilePhotoScale = Math.max(1, +(((p.profilePhotoScale || 1) - 0.05).toFixed(2)));
+      updateProfileAvatarAdjustTransform();
+    });
+  }
+  const zoomPlus = modal.querySelector('[data-profile-avatar-adjust-zoom-plus]');
+  if (zoomPlus) {
+    zoomPlus.addEventListener('click', () => {
+      const p = B2B_DATA.professional;
+      p.profilePhotoScale = Math.min(8, +(((p.profilePhotoScale || 1) + 0.05).toFixed(2)));
+      updateProfileAvatarAdjustTransform();
+    });
+  }
+
+  const frame = modal.querySelector('[data-profile-avatar-adjust-frame]');
+  if (frame) {
+    let dragging = false;
+    let dragStartX = 0, dragStartY = 0, startX = 0, startY = 0;
+    frame.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const p = B2B_DATA.professional;
+      startX = p.profilePhotoOffsetX || 0;
+      startY = p.profilePhotoOffsetY || 0;
+      frame.setPointerCapture(e.pointerId);
+      frame.classList.add('is-dragging');
+    });
+    frame.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const rect = frame.getBoundingClientRect();
+      const dxPct = ((e.clientX - dragStartX) / rect.width) * 100;
+      const dyPct = ((e.clientY - dragStartY) / rect.height) * 100;
+      const p = B2B_DATA.professional;
+      p.profilePhotoOffsetX = Math.max(-50, Math.min(50, startX + dxPct));
+      p.profilePhotoOffsetY = Math.max(-50, Math.min(50, startY + dyPct));
+      updateProfileAvatarAdjustTransform();
+    });
+    const endDrag = () => { dragging = false; frame.classList.remove('is-dragging'); };
+    frame.addEventListener('pointerup', endDrag);
+    frame.addEventListener('pointercancel', endDrag);
+  }
 }
 
 function renderProfileLogoPicker() {
@@ -336,6 +492,12 @@ function updatePixKeyFieldForType(type) {
   const info = PIX_KEY_TYPES[type] || PIX_KEY_TYPES.cpf;
   label.textContent = `Chave Pix (${info.label})`;
   input.placeholder = info.placeholder;
+
+  if (type === 'cpf' || type === 'cnpj') {
+    input.value = formatDocumentValue(input.value, type);
+  } else if (type === 'telefone') {
+    input.value = formatPhoneDigits(input.value.replace(/\D/g, '').slice(0, 11));
+  }
 }
 
 function initBankDetailsForm() {
@@ -347,6 +509,7 @@ function initBankDetailsForm() {
   typeSelect.value = p.pixKeyType || 'cpf';
   keyInput.value = p.pixKey || '';
   updatePixKeyFieldForType(typeSelect.value);
+  wirePixKeyMaskInput(keyInput, () => typeSelect.value);
 
   typeSelect.addEventListener('change', () => updatePixKeyFieldForType(typeSelect.value));
 

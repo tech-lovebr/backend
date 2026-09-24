@@ -198,6 +198,7 @@ function renderActiveChat() {
     }
 
     if (isMe) {
+      const myPhoto = typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.profilePhoto;
       row.innerHTML = `
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
           <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
@@ -208,6 +209,7 @@ function renderActiveChat() {
             <span>${msg.time || 'Agora'}</span>
           </div>
         </div>
+        ${myPhoto ? `<img src="${myPhoto}" alt="" class="chat-my-avatar-img mb-4">` : ''}
       `;
     } else {
       row.innerHTML = `
@@ -288,8 +290,22 @@ function setupChatEvents() {
   const attachDropdown = document.getElementById('chat-attach-dropdown');
   const attachFileOption = document.getElementById('chat-attach-file-option');
   const attachFormOption = document.getElementById('chat-attach-form-option');
+  const attachMenuView = document.getElementById('chat-attach-menu-view');
+  const attachFormView = document.getElementById('chat-attach-form-view');
+  const attachFormBack = document.getElementById('chat-attach-form-back');
 
-  const closeAttachDropdown = () => attachDropdown && attachDropdown.classList.remove('show');
+  const showAttachMenuView = () => {
+    if (attachMenuView) attachMenuView.hidden = false;
+    if (attachFormView) attachFormView.hidden = true;
+  };
+
+  const closeAttachDropdown = () => {
+    if (!attachDropdown) return;
+    attachDropdown.classList.remove('show');
+    // Sempre volta pro menu principal (Arquivo/Formulário) da próxima vez
+    // que o "+" for aberto, em vez de continuar na lista de formulários.
+    showAttachMenuView();
+  };
 
   if (attachBtn && attachDropdown) {
     attachBtn.addEventListener('click', (e) => {
@@ -310,9 +326,16 @@ function setupChatEvents() {
 
   if (attachFormOption) {
     attachFormOption.addEventListener('click', () => {
-      closeAttachDropdown();
-      openFormPickerModal(sendMessage);
+      // Em vez de abrir um popup separado, troca pra lista de formulários
+      // dentro da mesma caixa que já mostrava Arquivo/Formulário.
+      renderAttachFormList(sendMessage);
+      if (attachMenuView) attachMenuView.hidden = true;
+      if (attachFormView) attachFormView.hidden = false;
     });
+  }
+
+  if (attachFormBack) {
+    attachFormBack.addEventListener('click', showAttachMenuView);
   }
 
   if (fileInput) {
@@ -341,42 +364,31 @@ function setupChatEvents() {
   }
 }
 
-function openFormPickerModal(onPick) {
-  const modal = document.getElementById('chat-form-modal');
-  const list = document.getElementById('chat-form-modal-list');
-  const closeBtn = document.getElementById('chat-form-modal-close');
-  if (!modal || !list) return;
+function renderAttachFormList(onPick) {
+  const list = document.getElementById('chat-attach-form-list');
+  if (!list) return;
 
   const forms = (typeof B2B_DATA !== 'undefined' && B2B_DATA.siteForms) || [];
 
   list.innerHTML = forms.length
     ? forms.map(form => `
-      <div class="form-list-item chat-form-pick-item" data-pick-form="${form.id}">
-        <div class="form-list-item-icon form-list-item-icon-edit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3.75h6M9 8.25h2.25M9 21h6a2.25 2.25 0 0 0 2.25-2.25V6.622a2.25 2.25 0 0 0-.659-1.591l-2.622-2.622A2.25 2.25 0 0 0 12.378 1.75H9A2.25 2.25 0 0 0 6.75 4v14.75A2.25 2.25 0 0 0 9 21Z"/></svg>
-        </div>
-        <div class="form-list-item-info">
-          <p class="form-list-item-title">${escapeMsg(form.title)}</p>
-          <p class="form-list-item-meta">${form.fields.length} ${form.fields.length === 1 ? 'pergunta' : 'perguntas'}</p>
-        </div>
+      <div class="chat-attach-form-item" data-pick-form="${form.id}">
+        <p class="chat-attach-form-item-title">${escapeMsg(form.title)}</p>
+        <p class="chat-attach-form-item-meta">${form.fields.length} ${form.fields.length === 1 ? 'pergunta' : 'perguntas'}</p>
       </div>
     `).join('')
-    : `<p class="text-sm text-zinc-500 text-center py-4">Você ainda não criou nenhum formulário.</p>`;
+    : `<p class="chat-attach-form-empty">Você ainda não criou nenhum formulário.</p>`;
 
   list.querySelectorAll('[data-pick-form]').forEach(item => {
     item.addEventListener('click', () => {
       const form = forms.find(f => f.id === item.dataset.pickForm);
       if (!form) return;
-      close();
+      document.getElementById('chat-attach-dropdown')?.classList.remove('show');
+      document.getElementById('chat-attach-menu-view').hidden = false;
+      document.getElementById('chat-attach-form-view').hidden = true;
       onPick('', { type: 'form', name: form.title });
     });
   });
-
-  const close = () => modal.classList.remove('show');
-  modal.classList.add('show');
-
-  if (closeBtn) closeBtn.onclick = close;
-  modal.onclick = (e) => { if (e.target === modal) close(); };
 }
 
 function escapeMsg(text) {

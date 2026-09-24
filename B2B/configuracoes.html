@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=392">
+  <link rel="stylesheet" href="css/styles.css?v=396">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -38,7 +38,11 @@
             <form id="profile-form" class="flex flex-col gap-4">
               <div class="profile-form-top">
                 <div class="profile-form-top-image">
-                  <label class="field-label">Imagem da Empresa</label>
+                  <label class="field-label">Imagem de perfil</label>
+                  <div id="profile-avatar-wrap"></div>
+                  <p class="profile-logo-hint">Substitui suas iniciais e também aparece no chat</p>
+
+                  <label class="field-label" style="display:block; margin-top:1.25rem;">Imagem de Capa</label>
                   <div id="profile-logo-wrap"></div>
                   <p class="profile-logo-hint">Esta imagem será exibida para os clientes na vitrine Explorar</p>
                 </div>
@@ -83,7 +87,7 @@
 
                   <div>
                     <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
-                    <input id="profile-document" type="text" class="field-input" placeholder="00.000.000/0000-00">
+                    <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
                   </div>
 
                   <div class="grid grid-cols-1 sm:grid-cols-[2fr_90px_1fr] gap-4">
@@ -198,6 +202,7 @@
                     <label for="profile-pix-type" class="field-label">Tipo de chave Pix</label>
                     <select id="profile-pix-type" class="field-select">
                       <option value="cpf">CPF</option>
+                      <option value="cnpj">CNPJ</option>
                       <option value="telefone">Telefone</option>
                       <option value="email">E-mail</option>
                       <option value="aleatoria">Chave aleatória</option>
@@ -216,6 +221,27 @@
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Modal ajustar foto de perfil -->
+  <div class="modal-backdrop" id="profile-avatar-adjust-modal">
+    <div class="modal-card logo-adjust-modal-card">
+      <button type="button" class="logo-adjust-modal-close" data-profile-avatar-adjust-close aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+      <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar foto de perfil</h2>
+      <p class="text-sm text-zinc-500 mb-4">Ajuste o enquadramento da sua foto de perfil.</p>
+      <div class="profile-avatar-adjust-frame" data-profile-avatar-adjust-frame>
+        <img src="" class="avatar-crop-img" data-profile-avatar-adjust-img alt="">
+      </div>
+      <div class="logo-adjust-modal-controls">
+        <span class="logo-adjust-modal-zoom-label">Zoom:</span>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-profile-avatar-adjust-zoom-minus>−</button>
+        <input type="range" min="1" max="8" step="0.05" value="1" class="logo-adjust-modal-range" data-profile-avatar-adjust-range>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-profile-avatar-adjust-zoom-plus>+</button>
+      </div>
+      <button type="button" class="btn-primary justify-center w-full py-3 mt-2" data-profile-avatar-adjust-done>Concluir</button>
     </div>
   </div>
 
@@ -254,10 +280,10 @@
   </div>
 
   <script src="js/data.js?v=10"></script>
-  <script src="js/utils.js?v=9"></script>
+  <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
-  <script src="js/shell.js?v=22"></script>
-  <script src="js/configuracoes.js?v=15"></script>
+  <script src="js/shell.js?v=23"></script>
+  <script src="js/configuracoes.js?v=17"></script>
 </body>
 </html>

@@ -260,12 +260,18 @@ function setSidebarCollapsed(collapsed) {
   if (btn) { btn.title = label; btn.setAttribute('aria-label', label); }
 }
 
+function renderAvatarInto(el, name, photo) {
+  if (!el) return;
+  el.classList.toggle('has-photo', !!photo);
+  el.innerHTML = photo ? `<img src="${photo}" class="avatar-photo-img" alt="">` : '';
+  if (!photo) el.textContent = initials(name);
+}
+
 function initUserCard() {
   const p = B2B_DATA.professional;
-  const topbarAvatar = document.getElementById('topbar-user-avatar');
-  if (topbarAvatar) topbarAvatar.textContent = initials(p.name);
+  renderAvatarInto(document.getElementById('topbar-user-avatar'), p.name, p.profilePhoto);
+  renderAvatarInto(document.getElementById('profile-dropdown-avatar'), p.name, p.profilePhoto);
 
-  setText('profile-dropdown-avatar', initials(p.name));
   setText('profile-dropdown-name', p.company);
   setText('profile-dropdown-email', p.email);
   setText('upgrade-current-plan', p.plan);

@@ -15,7 +15,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderAnalyticsCard();
   initAnalyticsPeriodPopover();
   initDashboardPaymentLinkModal();
+  initFirstProductModal();
 });
+
+/* -------------------- Pop-up: cadastre seu primeiro produto/serviço -------------------- */
+
+async function initFirstProductModal() {
+  const modal = document.getElementById('first-product-modal');
+  if (!modal) return;
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const { count } = await supabaseClient
+    .from('products')
+    .select('id', { count: 'exact', head: true })
+    .eq('fornecedor_id', session.user.id);
+
+  if (count) return;
+
+  modal.classList.add('show');
+  document.getElementById('first-product-voltar-btn')?.addEventListener('click', () => {
+    modal.classList.remove('show');
+  });
+}
 
 /* -------------------- Pop-up: criar link de pagamento (direto no dashboard) -------------------- */
 

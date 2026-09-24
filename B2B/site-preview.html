@@ -16,7 +16,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=392">
+  <link rel="stylesheet" href="css/styles.css?v=396">
   <style>
     html, body { background: #fff; overflow-x: hidden; max-width: 100%; }
     .site-preview-empty { padding: 6rem 1.5rem; text-align: center; color: #71717A; font-size: 0.9375rem; }
@@ -29,28 +29,56 @@
   <div class="builder-mobile-menu-root" id="builder-mobile-menu-root"></div>
 
   <script src="js/data.js?v=10"></script>
-  <script src="js/utils.js?v=9"></script>
+  <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
-  <script src="js/shell.js?v=22"></script>
-  <script src="js/site-builder.js?v=270"></script>
+  <script src="js/shell.js?v=23"></script>
+  <script src="js/site-builder.js?v=272"></script>
   <script>
-    (function () {
+    (async function () {
       const canvas = document.getElementById('builder-canvas');
       const params = new URLSearchParams(location.search);
       const isCheckout = params.get('page') === 'checkout';
       const linkId = params.get('link');
       canvas.dataset.pageKey = isCheckout ? 'checkout' : 'home';
 
-      if (isCheckout && linkId) renderCheckoutPaymentBanner(linkId);
+      let paymentLink = null;
+      if (isCheckout && linkId) {
+        renderCheckoutPaymentBanner(linkId);
+        const { data } = await supabaseClient.from('payment_links').select('*').eq('id', linkId).maybeSingle();
+        paymentLink = data;
+      }
 
-      const raw = localStorage.getItem(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY);
-      if (!raw) {
+      // O checkout precisa ser visível pra qualquer cliente que abra um link
+      // de pagamento (sem login, de outro navegador) — por isso busca o
+      // template publicado no Supabase antes de cair pro localStorage local.
+      let loadedState = null;
+      if (isCheckout) {
+        let fornecedorId = paymentLink ? paymentLink.fornecedor_id : null;
+        if (!fornecedorId) {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session) fornecedorId = session.user.id;
+        }
+        if (fornecedorId) {
+          const { data: page } = await supabaseClient.from('checkout_pages').select('state').eq('fornecedor_id', fornecedorId).maybeSingle();
+          if (page && page.state) loadedState = page.state;
+        }
+      }
+
+      if (!loadedState) {
+        const raw = localStorage.getItem(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY);
+        if (raw) {
+          try { loadedState = JSON.parse(raw); } catch (e) { loadedState = null; }
+        }
+      }
+
+      if (!loadedState) {
         canvas.innerHTML = '<div class="site-preview-empty">Esta página ainda não foi publicada. Volte para "Páginas do Site" e clique em "Publicar".</div>';
         return;
       }
+
       try {
-        builderState = JSON.parse(raw);
+        builderState = loadedState;
         if (isCheckout && builderState.templateVersion !== CHECKOUT_TEMPLATE_VERSION) builderState = defaultCheckoutPageState();
         migrateElementDefaults(builderState);
       } catch (e) {
@@ -71,6 +99,16 @@
         favicon.rel = 'icon';
         favicon.href = seo.favicon;
         document.head.appendChild(favicon);
+      }
+
+      // Injeta o valor real do link de pagamento no template do checkout: o
+      // fornecedor desenha o layout, mas o TOTAL exibido é o do link aberto.
+      let submitElementId = null;
+      if (isCheckout && paymentLink) {
+        Object.values(allElementsById()).forEach(el => {
+          if (el.checkoutRole === 'total') el.content = `TOTAL: ${formatCurrency(paymentLink.amount)}`;
+          if (el.checkoutRole === 'submit') submitElementId = el.id;
+        });
       }
 
       applyGlobalStyleVars();
@@ -95,6 +133,17 @@
         }
         wireFixedHeader(canvas);
         applyFloatingHeaderOverlap(canvas);
+
+        if (submitElementId && paymentLink) {
+          const submitBlock = canvas.querySelector(`[data-element-id="${submitElementId}"]`);
+          const submitBtn = submitBlock && submitBlock.querySelector('a, button');
+          if (submitBtn) {
+            submitBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              payPaymentLink(paymentLink, submitBtn);
+            });
+          }
+        }
       }
 
       renderForDevice(currentDeviceBucket());
@@ -117,6 +166,50 @@
         else if (mq.addListener) mq.addListener(mqListener);
       }
     })();
+
+    async function payPaymentLink(link, triggerBtn) {
+      if (link.status === 'pago') return;
+      if (triggerBtn) triggerBtn.style.pointerEvents = 'none';
+
+      const paidAt = new Date().toISOString();
+      const { error } = await supabaseClient
+        .from('payment_links')
+        .update({ status: 'pago', paid_at: paidAt })
+        .eq('id', link.id);
+      if (error) { if (triggerBtn) triggerBtn.style.pointerEvents = ''; return; }
+
+      link.status = 'pago';
+      link.paid_at = paidAt;
+
+      // Se esse link veio de um orçamento (Vendas), o pagamento fecha o
+      // ciclo: o orçamento vira "pago" e o contato no CRM vira "Fechado".
+      // Isso mexe em dados do fornecedor (leads), então roda no servidor
+      // (service role) em vez de direto do navegador de quem está pagando.
+      if (link.orcamento_id) {
+        fetch('/api/confirmar-orcamento', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentLinkId: link.id })
+        }).catch(() => {});
+      }
+
+      await supabaseClient.from('notas_fiscais').insert({
+        fornecedor_id: link.fornecedor_id,
+        source_payment_link_id: link.id,
+        client: 'Consumidor',
+        value: link.amount,
+        number: 'NF-' + Date.now().toString(36).toUpperCase()
+      });
+      await supabaseClient.from('wallet_transactions').insert({
+        fornecedor_id: link.fornecedor_id,
+        type: 'credit',
+        amount: link.amount,
+        description: 'Pagamento recebido via link',
+        payment_link_id: link.id
+      });
+
+      renderCheckoutPaymentBanner(link.id);
+    }
 
     function renderCheckoutPaymentBanner(linkId) {
       const root = document.getElementById('checkout-payment-banner-root');
@@ -152,29 +245,7 @@
         if (payBtn) {
           payBtn.addEventListener('click', async () => {
             payBtn.disabled = true;
-            const paidAt = new Date().toISOString();
-            const { error } = await supabaseClient
-              .from('payment_links')
-              .update({ status: 'pago', paid_at: paidAt })
-              .eq('id', link.id);
-            if (error) { payBtn.disabled = false; return; }
-
-            await supabaseClient.from('notas_fiscais').insert({
-              fornecedor_id: link.fornecedor_id,
-              source_payment_link_id: link.id,
-              client: 'Consumidor',
-              value: link.amount,
-              number: 'NF-' + Date.now().toString(36).toUpperCase()
-            });
-            await supabaseClient.from('wallet_transactions').insert({
-              fornecedor_id: link.fornecedor_id,
-              type: 'credit',
-              amount: link.amount,
-              description: 'Pagamento recebido via link',
-              payment_link_id: link.id
-            });
-
-            draw();
+            await payPaymentLink(link, null);
           });
         }
       };

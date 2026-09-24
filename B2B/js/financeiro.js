@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   await Promise.all([loadNotasFiscais(), loadFinLeadsAndProducts()]);
   initSalesViewTabs();
-  initProposalForm();
+  await initProposalForm();
   renderNotasFiscais();
   initNotasFiscaisActions();
 });
@@ -34,11 +34,28 @@ async function loadFinLeadsAndProducts() {
 
   const [leadsRes, productsRes] = await Promise.all([
     supabaseClient.from('leads').select('id, name').eq('fornecedor_id', session.user.id),
-    supabaseClient.from('products').select('id, name, price').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('products').select('id, name, price, category').eq('fornecedor_id', session.user.id)
   ]);
 
   bFinLeads = leadsRes.data || [];
   bFinProducts = productsRes.data || [];
+}
+
+async function countOrcamentos() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return 0;
+  const { count } = await supabaseClient
+    .from('orcamentos')
+    .select('id', { count: 'exact', head: true })
+    .eq('fornecedor_id', session.user.id);
+  return count || 0;
+}
+
+async function refreshProposalNumber() {
+  const input = document.getElementById('proposal-number');
+  if (!input) return;
+  const count = await countOrcamentos();
+  input.value = String(count + 1);
 }
 
 /* -------------------- Abas: Orçamentos / Notas fiscais -------------------- */
@@ -115,13 +132,10 @@ function initNotasFiscaisActions() {
 /* -------------------- Proposta comercial -------------------- */
 
 let proposalItemCounter = 0;
+let proposalSelectedLeadId = null;
+let proposalSelectedClienteId = null;
 
-function initProposalForm() {
-  const clientOptions = document.getElementById('proposal-client-options');
-  if (clientOptions) {
-    clientOptions.innerHTML = bFinLeads.map(l => `<option value="${escapeHtml(l.name)}"></option>`).join('');
-  }
-
+async function initProposalForm() {
   const productOptions = document.getElementById('proposal-product-options');
   if (productOptions) {
     productOptions.innerHTML = bFinProducts.map(p => `<option value="${escapeHtml(p.name)}"></option>`).join('');
@@ -139,28 +153,259 @@ function initProposalForm() {
   if (cancelBtn) cancelBtn.addEventListener('click', () => resetProposalForm());
 
   const saveBtn = document.getElementById('proposal-save-btn');
-  if (saveBtn) saveBtn.addEventListener('click', () => {
-    const client = document.getElementById('proposal-client').value.trim();
-    if (!client) {
-      showToast('Preencha o campo Cliente.', true);
-      document.getElementById('proposal-client').focus();
-      return;
-    }
-    showToast('Proposta salva!');
-  });
+  if (saveBtn) saveBtn.addEventListener('click', () => saveProposal());
 
   initProposalExtraToolbar();
+  initProposalClientAutocomplete();
+  renderProposalSellerField();
+  renderProposalCompanyAndCnpj();
+  populateProposalCategoryPicker();
+  populateProposalProductPicker();
+  await refreshProposalNumber();
 }
 
-function resetProposalForm() {
+/* -------------------- Vendedor / Empresa / CNPJ (derivados do perfil) -------------------- */
+
+function renderProposalSellerField() {
+  const wrap = document.getElementById('proposal-seller-field-wrap');
+  if (!wrap) return;
+  const team = (typeof B2B_DATA !== 'undefined' && B2B_DATA.team) || [];
+
+  if (team.length <= 1) {
+    wrap.innerHTML = `
+      <label for="proposal-seller-field" class="field-label">Vendedor</label>
+      <input id="proposal-seller-field" type="text" class="field-input" value="${escapeHtml(team[0]?.name || '')}" disabled style="background:#F4F4F5;">
+    `;
+  } else {
+    wrap.innerHTML = `
+      <label for="proposal-seller-field" class="field-label">Vendedor</label>
+      <select id="proposal-seller-field" class="field-select">
+        ${team.map(m => `<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('')}
+      </select>
+    `;
+  }
+}
+
+function renderProposalCompanyAndCnpj() {
+  const p = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
+  const companyInput = document.getElementById('proposal-company-display');
+  const cnpjInput = document.getElementById('proposal-cnpj-display');
+  if (companyInput) companyInput.value = p.company || '';
+  if (cnpjInput) cnpjInput.value = p.documentNumber || '';
+}
+
+/* -------------------- Categoria / Produto de interesse (atalho pra itens) -------------------- */
+
+function populateProposalCategoryPicker() {
+  const select = document.getElementById('proposal-category');
+  if (!select) return;
+  const categories = [...new Set(bFinProducts.map(p => p.category).filter(Boolean))];
+  select.innerHTML = '<option value="">Todos</option>' + categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  select.addEventListener('change', () => populateProposalProductPicker());
+}
+
+function populateProposalProductPicker() {
+  const select = document.getElementById('proposal-product-picker');
+  const categorySelect = document.getElementById('proposal-category');
+  if (!select) return;
+  const category = categorySelect ? categorySelect.value : '';
+  const filtered = category ? bFinProducts.filter(p => p.category === category) : bFinProducts;
+
+  select.innerHTML = '<option value="">Selecione um produto/serviço</option>'
+    + filtered.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+
+  select.onchange = () => {
+    const product = bFinProducts.find(p => p.id === select.value);
+    if (!product) return;
+    const row = addProposalItemRow();
+    const nameInput = row.querySelector('[data-item-name]');
+    nameInput.value = product.name;
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    select.value = '';
+  };
+}
+
+/* -------------------- Cliente: busca ao vivo em Contatos + clientes da plataforma -------------------- */
+
+function initProposalClientAutocomplete() {
+  const input = document.getElementById('proposal-client');
+  const dropdown = document.getElementById('proposal-client-dropdown');
+  if (!input || !dropdown) return;
+
+  let searchTimer = null;
+
+  const closeDropdown = () => { dropdown.hidden = true; };
+
+  input.addEventListener('input', () => {
+    proposalSelectedLeadId = null;
+    proposalSelectedClienteId = null;
+    const q = input.value.trim();
+    clearTimeout(searchTimer);
+    if (!q) { closeDropdown(); return; }
+    searchTimer = setTimeout(() => searchProposalClients(q), 250);
+  });
+
+  input.addEventListener('focus', () => {
+    if (input.value.trim()) searchProposalClients(input.value.trim());
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target !== input && !dropdown.contains(e.target)) closeDropdown();
+  });
+}
+
+async function searchProposalClients(q) {
+  const dropdown = document.getElementById('proposal-client-dropdown');
+  if (!dropdown) return;
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const [leadsRes, clientesRes] = await Promise.all([
+    supabaseClient.from('leads').select('id, name, email').eq('fornecedor_id', session.user.id).ilike('name', `%${q}%`).limit(6),
+    supabaseClient.from('clientes').select('id, couple_name, email').or(`couple_name.ilike.%${q}%,email.ilike.%${q}%`).limit(6)
+  ]);
+
+  const leadEmails = new Set((leadsRes.data || []).map(l => (l.email || '').toLowerCase()).filter(Boolean));
+  const results = [
+    ...(leadsRes.data || []).map(l => ({ kind: 'lead', id: l.id, name: l.name, meta: l.email || 'Contato do CRM' })),
+    ...(clientesRes.data || [])
+      .filter(c => !leadEmails.has((c.email || '').toLowerCase()))
+      .map(c => ({ kind: 'cliente', id: c.id, name: c.couple_name || c.email, meta: `${c.email} · Cliente da plataforma` }))
+  ];
+
+  dropdown.innerHTML = results.length
+    ? results.map((r, i) => `
+      <div class="proposal-client-dropdown-item" data-result-index="${i}">
+        <p class="proposal-client-dropdown-item-name">${escapeHtml(r.name)}</p>
+        <p class="proposal-client-dropdown-item-meta">${escapeHtml(r.meta)}</p>
+      </div>
+    `).join('')
+    : `<div class="proposal-client-dropdown-add" id="proposal-client-add-btn">+ Adicionar contato</div>`;
+
+  dropdown.querySelectorAll('[data-result-index]').forEach(item => {
+    item.addEventListener('click', () => {
+      const r = results[Number(item.dataset.resultIndex)];
+      document.getElementById('proposal-client').value = r.name;
+      proposalSelectedLeadId = r.kind === 'lead' ? r.id : null;
+      proposalSelectedClienteId = r.kind === 'cliente' ? r.id : null;
+      dropdown.hidden = true;
+    });
+  });
+
+  document.getElementById('proposal-client-add-btn')?.addEventListener('click', () => {
+    window.open('crm.html', '_blank');
+    dropdown.hidden = true;
+  });
+
+  dropdown.hidden = false;
+}
+
+async function saveProposal() {
+  const clientInput = document.getElementById('proposal-client');
+  const client = clientInput.value.trim();
+  if (!client) {
+    showToast('Preencha o campo Cliente.', true);
+    clientInput.focus();
+    return;
+  }
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const itens = [];
+  let valor_total = 0;
+  document.querySelectorAll('#proposal-items-body tr').forEach(row => {
+    const name = row.querySelector('[data-item-name]')?.value.trim();
+    if (!name) return;
+    const qty = Number(row.querySelector('[data-item-qty]')?.value) || 0;
+    const unitPrice = Number(row.querySelector('[data-item-unit-price]')?.value) || 0;
+    const discount = Number(row.querySelector('[data-item-discount]')?.value) || 0;
+    const total = qty * unitPrice * (1 - discount / 100);
+    valor_total += total;
+    itens.push({ name, qty, unitPrice, discount, total });
+  });
+
+  // Vincula a proposta a um contato real do CRM — direto (contato já
+  // escolhido na busca), criando um contato novo (cliente da plataforma
+  // escolhido que ainda não tinha lead), ou por nome exato como último
+  // recurso — é isso que faz o status do lead avançar sozinho e permite
+  // gerar o link de pagamento do orçamento.
+  let leadId = proposalSelectedLeadId;
+
+  if (!leadId && proposalSelectedClienteId) {
+    const { data: clienteRow } = await supabaseClient.from('clientes').select('email').eq('id', proposalSelectedClienteId).maybeSingle();
+    const { data: newLead } = await supabaseClient
+      .from('leads')
+      .insert({ fornecedor_id: session.user.id, name: client, email: clienteRow?.email || null, cliente_id: proposalSelectedClienteId })
+      .select('id')
+      .single();
+    leadId = newLead ? newLead.id : null;
+  }
+
+  if (!leadId) {
+    const fallbackLead = bFinLeads.find(l => l.name.trim().toLowerCase() === client.toLowerCase());
+    leadId = fallbackLead ? fallbackLead.id : null;
+  }
+
+  const { data: orcamento, error } = await supabaseClient
+    .from('orcamentos')
+    .insert({
+      fornecedor_id: session.user.id,
+      lead_id: leadId,
+      cliente_nome: client,
+      valor_total,
+      itens
+    })
+    .select('id')
+    .single();
+
+  if (error) { showToast('Não foi possível salvar a proposta.', true); return; }
+
+  if (leadId) {
+    await supabaseClient.from('leads').update({ status: 'proposta' }).eq('id', leadId).in('status', ['novo', 'conversa']);
+  }
+
+  if (valor_total > 0) {
+    const { data: link } = await supabaseClient
+      .from('payment_links')
+      .insert({
+        fornecedor_id: session.user.id,
+        orcamento_id: orcamento.id,
+        amount: valor_total,
+        installments: 1,
+        pass_fee_to_client: false,
+        payment_methods: { boleto: true, pix: true, cartao: true },
+        status: 'pendente'
+      })
+      .select('id')
+      .single();
+
+    if (link) {
+      const url = new URL(`site-preview.html?page=checkout&link=${link.id}`, location.href).toString();
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).catch(() => {});
+      showToast('Proposta salva! Link de pagamento copiado para a área de transferência.');
+    } else {
+      showToast('Proposta salva!');
+    }
+  } else {
+    showToast('Proposta salva!');
+  }
+
+  await loadFinLeadsAndProducts();
+  await resetProposalForm();
+}
+
+async function resetProposalForm() {
   document.getElementById('proposal-client').value = '';
-  document.getElementById('proposal-attn').value = '';
+  proposalSelectedLeadId = null;
+  proposalSelectedClienteId = null;
   document.getElementById('proposal-intro').value = '';
-  document.getElementById('proposal-seller').value = '';
   document.getElementById('proposal-next-contact').value = '';
   document.getElementById('proposal-extra-items').innerHTML = '';
   document.getElementById('proposal-items-body').innerHTML = '';
   addProposalItemRow();
+  await refreshProposalNumber();
 }
 
 function addProposalItemRow() {
@@ -194,6 +439,7 @@ function addProposalItemRow() {
   `;
   body.appendChild(row);
   wireProposalItemRow(row);
+  return row;
 }
 
 function wireProposalItemRow(row) {

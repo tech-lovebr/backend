@@ -38,15 +38,81 @@ function currencyMaskValue(input) {
   return digits ? parseInt(digits, 10) / 100 : 0;
 }
 
+function formatPhoneDigits(digits) {
+  let formatted = '';
+  if (digits.length > 0) formatted += '(' + digits.slice(0, 2);
+  if (digits.length >= 2) formatted += ')';
+  if (digits.length > 2) formatted += ' ' + digits.slice(2, 7);
+  if (digits.length > 7) formatted += '-' + digits.slice(7, 11);
+  return formatted;
+}
+
 function wirePhoneMaskInput(input) {
+  let prevDigits = '';
+  input.addEventListener('input', (e) => {
+    let digits = input.value.replace(/\D/g, '').slice(0, 11);
+    // Apagar só um caractere de formatação (parênteses/traço) não muda a
+    // contagem de dígitos — sem isso a máscara volta sozinha e trava o
+    // apagar (o DDD nunca sai). Se foi um backspace/delete e a contagem
+    // não mudou, remove o último dígito de verdade também.
+    const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;
+    if (isDeleting && digits.length === prevDigits.length && digits.length > 0) {
+      digits = digits.slice(0, -1);
+    }
+    prevDigits = digits;
+    input.value = formatPhoneDigits(digits);
+  });
+}
+
+function formatCPF(digits) {
+  let out = digits.slice(0, 3);
+  if (digits.length > 3) out += '.' + digits.slice(3, 6);
+  if (digits.length > 6) out += '.' + digits.slice(6, 9);
+  if (digits.length > 9) out += '-' + digits.slice(9, 11);
+  return out;
+}
+
+function formatCNPJ(digits) {
+  let out = digits.slice(0, 2);
+  if (digits.length > 2) out += '.' + digits.slice(2, 5);
+  if (digits.length > 5) out += '.' + digits.slice(5, 8);
+  if (digits.length > 8) out += '/' + digits.slice(8, 12);
+  if (digits.length > 12) out += '-' + digits.slice(12, 14);
+  return out;
+}
+
+function formatDocumentValue(value, type) {
+  const maxDigits = type === 'cnpj' ? 14 : 11;
+  const digits = (value || '').replace(/\D/g, '').slice(0, maxDigits);
+  return type === 'cnpj' ? formatCNPJ(digits) : formatCPF(digits);
+}
+
+function wireDocumentMaskInput(input, getType) {
   input.addEventListener('input', () => {
-    const digits = input.value.replace(/\D/g, '').slice(0, 11);
-    let formatted = '';
-    if (digits.length > 0) formatted += '(' + digits.slice(0, 2);
-    if (digits.length >= 2) formatted += ') ';
-    if (digits.length > 2) formatted += digits.slice(2, 7);
-    if (digits.length > 7) formatted += '-' + digits.slice(7, 11);
-    input.value = formatted;
+    input.value = formatDocumentValue(input.value, getType ? getType() : 'cnpj');
+  });
+}
+
+// Máscara da caixa de chave Pix: muda de comportamento conforme o tipo de
+// chave selecionado (CPF/CNPJ usam a mesma máscara de documento, telefone
+// usa a máscara de celular, e-mail/aleatória ficam em texto livre).
+function wirePixKeyMaskInput(input, getType) {
+  let prevPhoneDigits = '';
+  input.addEventListener('input', (e) => {
+    const type = getType();
+    if (type === 'telefone') {
+      let digits = input.value.replace(/\D/g, '').slice(0, 11);
+      const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;
+      if (isDeleting && digits.length === prevPhoneDigits.length && digits.length > 0) {
+        digits = digits.slice(0, -1);
+      }
+      prevPhoneDigits = digits;
+      input.value = formatPhoneDigits(digits);
+    } else if (type === 'cpf' || type === 'cnpj') {
+      input.value = formatDocumentValue(input.value, type);
+    } else {
+      prevPhoneDigits = '';
+    }
   });
 }
 
@@ -253,6 +319,7 @@ function escapeHtml(str) {
 
 const PIX_KEY_TYPES = {
   cpf: { label: 'CPF', placeholder: '000.000.000-00' },
+  cnpj: { label: 'CNPJ', placeholder: '00.000.000/0000-00' },
   telefone: { label: 'Telefone', placeholder: '(00) 00000-0000' },
   email: { label: 'E-mail', placeholder: 'seuemail@exemplo.com' },
   aleatoria: { label: 'Chave aleatória', placeholder: 'Chave gerada pelo seu banco' }

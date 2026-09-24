@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=392">
+  <link rel="stylesheet" href="css/styles.css?v=396">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -253,6 +253,18 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="first-product-modal">
+    <div class="modal-card" style="max-width:420px; text-align:center;">
+      <div class="onboarding-icon">🛍️</div>
+      <h2 class="text-xl font-bold text-zinc-900 mb-2">Cadastre seu primeiro produto/serviço</h2>
+      <p class="text-sm text-zinc-500 mb-6">Milhares de anfitriões estão buscando um serviço igual ao seu. Conecte-se ainda hoje e comece a faturar.</p>
+      <div class="flex flex-col gap-3">
+        <a href="produtos.html" class="btn-primary justify-center w-full py-3" id="first-product-cadastrar-btn">Cadastrar</a>
+        <button type="button" class="btn-secondary justify-center w-full py-3" id="first-product-voltar-btn">Voltar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="payment-link-modal">
     <div class="modal-card" style="max-width:460px;">
       <div class="flex items-center justify-between mb-5">
@@ -331,10 +343,10 @@
   </div>
 
   <script src="js/data.js?v=10"></script>
-  <script src="js/utils.js?v=9"></script>
+  <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
-  <script src="js/shell.js?v=22"></script>
-  <script src="js/dashboard.js?v=39"></script>
+  <script src="js/shell.js?v=23"></script>
+  <script src="js/dashboard.js?v=40"></script>
 </body>
 </html>

@@ -4,17 +4,9 @@
 
 let activeCategory = 'Todos';
 
-const PRODUCT_VENUE_CATEGORY = 'Locação de Espaço';
-const PRODUCT_EQUIPMENT_CATEGORY = 'Locação de Equipamentos';
-const PRODUCT_FOOD_CATEGORY = 'Buffet';
-
-// Sugestões iniciais pro autocomplete de categoria — o fornecedor pode
-// digitar qualquer categoria própria (ex: um fotógrafo separando por
-// "Casamento", "Aniversário"), não é uma lista fechada.
-const PRODUCT_CATEGORY_SUGGESTIONS = [
-  'Assessoria', 'Cerimonial', 'Decoração', 'Buffet', 'Fotografia',
-  'Música & DJ', 'Convites & Papelaria', 'Locação de Espaço', 'Locação de Equipamentos'
-];
+const PRODUCT_VENUE_CATEGORY = 'Locação de espaço';
+const PRODUCT_EQUIPMENT_CATEGORY = 'Aluguel de equipamentos';
+const PRODUCT_FOOD_CATEGORY = 'Alimentação';
 
 const PRODUCT_WEEKDAYS = [
   { key: 'seg', label: 'Seg' },
@@ -88,12 +80,21 @@ function openCompleteProfileModal() {
   if (modal) modal.classList.add('show');
 }
 
+// Garante que produtos com uma categoria antiga/customizada (de antes desta
+// lista fixa) continuem aparecendo selecionados corretamente ao editar.
 function populateProductCategoryOptions() {
-  const datalist = document.getElementById('product-category-options');
-  if (!datalist) return;
-  const existing = [...new Set(bProducts.map(p => p.category).filter(Boolean))];
-  const all = [...new Set([...existing, ...PRODUCT_CATEGORY_SUGGESTIONS])];
-  datalist.innerHTML = all.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+  const select = document.getElementById('product-category');
+  if (!select) return;
+  select.querySelectorAll('[data-extra-category]').forEach(o => o.remove());
+  const known = new Set(Array.from(select.options).map(o => o.value).filter(Boolean));
+  const extra = [...new Set(bProducts.map(p => p.category).filter(Boolean))].filter(c => !known.has(c));
+  extra.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    opt.dataset.extraCategory = '1';
+    select.appendChild(opt);
+  });
 }
 
 function renderCategoryTabs() {
@@ -450,7 +451,7 @@ function initProductDrawer() {
   if (cancelBtn) cancelBtn.addEventListener('click', close);
   if (backdrop) backdrop.addEventListener('click', close);
 
-  document.getElementById('product-category').addEventListener('input', updateCategoryFieldsVisibility);
+  document.getElementById('product-category').addEventListener('change', updateCategoryFieldsVisibility);
 
   document.getElementById('product-gallery-add-btn').addEventListener('click', () => {
     currentGalleryImages.push('');
@@ -468,7 +469,7 @@ function initProductDrawer() {
       const name = document.getElementById('product-name').value.trim();
       const category = document.getElementById('product-category').value;
       const description = document.getElementById('product-description').value.trim();
-      const active = document.getElementById('product-active').checked;
+      const active = true;
 
       const isVenue = category === PRODUCT_VENUE_CATEGORY;
       const isEquipment = category === PRODUCT_EQUIPMENT_CATEGORY;
@@ -562,7 +563,6 @@ function openProductDrawer(id) {
   document.getElementById('product-category').value = p.category;
   document.getElementById('product-price').value = p.price || '';
   document.getElementById('product-description').value = p.description || '';
-  document.getElementById('product-active').checked = p.active;
 
   currentCoverImage = p.coverImage || null;
   currentGalleryImages = (p.gallery || []).slice();

@@ -62,13 +62,26 @@
       <form id="product-form" class="flex flex-col gap-4">
         <div>
           <label for="product-name" class="field-label">Nome do produto/serviço</label>
-          <input id="product-name" type="text" class="field-input" placeholder="Ex: Decoração Jardim Encantado">
+          <input id="product-name" type="text" class="field-input" placeholder="Insira o nome do produto/serviço">
         </div>
 
         <div>
           <label for="product-category" class="field-label">Categoria</label>
-          <input id="product-category" type="text" class="field-input" list="product-category-options" placeholder="Ex: Casamento, Aniversário..." autocomplete="off">
-          <datalist id="product-category-options"></datalist>
+          <select id="product-category" class="field-select">
+            <option value="">Selecione</option>
+            <option>Alimentação</option>
+            <option>Aluguel de equipamentos</option>
+            <option>Serviços de bar</option>
+            <option>Decoração</option>
+            <option>Aluguel de roupas</option>
+            <option>Fotografia e mídia</option>
+            <option>Serviço musical</option>
+            <option>Assessoria</option>
+            <option>Gestão de evento</option>
+            <option>Locação de espaço</option>
+            <option>Convites e papelaria</option>
+            <option>Doces e bolos</option>
+          </select>
         </div>
 
         <div class="form-section-header">
@@ -202,11 +215,6 @@
           <textarea id="product-description" class="field-textarea" style="min-height:100px;" placeholder="Detalhe o que está incluso neste produto ou serviço…"></textarea>
         </div>
 
-        <label class="flex items-center gap-2 text-sm text-zinc-600 select-none">
-          <input id="product-active" type="checkbox" checked class="rounded border-zinc-300 text-[color:var(--primary-blue)] focus:ring-[color:var(--primary-blue)]">
-          Exibir na vitrine dos eventos
-        </label>
-
         <div class="flex items-center gap-3 pt-2">
           <button type="submit" class="btn-primary">Salvar item</button>
           <button type="button" id="product-drawer-cancel" class="btn-secondary">Cancelar</button>
@@ -231,6 +239,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=24"></script>
-  <script src="js/produtos.js?v=8"></script>
+  <script src="js/produtos.js?v=10"></script>
 </body>
 </html>

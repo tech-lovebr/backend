@@ -32,6 +32,14 @@
   --radius-control: 12px;
   --shadow-soft: 0 2px 8px rgba(16,24,40,0.08);
   --shadow-nav-active: 0 6px 14px rgba(210, 141, 92,0.28);
+
+  /* Margens do conteúdo principal: encolhem de forma gradual conforme a
+     tela estreita (em vez de pular de um valor fixo grande direto pro
+     valor de mobile), pra as caixas nunca ficarem desproporcionais. */
+  --b2b-content-pad-x: clamp(1.25rem, 4vw, 2rem);
+  --b2b-content-pad-y: clamp(1.25rem, 4vw, 2rem);
+  --b2b-dashboard-pad-x: clamp(1.25rem, 8vw, 5.5rem);
+  --b2b-dashboard-pad-y: clamp(1.25rem, 3vw, 2.5rem);
 }
 
 /* Transição suave nativa do navegador entre páginas (troca de menu) */
@@ -1632,7 +1640,7 @@ body[data-theme="dark"] .guias-sidebar h1 { color: #ebf4ff !important; }
 body[data-theme="dark"] .b2b-topbar { background: #252525 !important; border-bottom-color: #404040 !important; }
 
 .b2b-content {
-  padding: 2rem;
+  padding: var(--b2b-content-pad-y) var(--b2b-content-pad-x);
   flex: 1;
   overflow-y: auto;
   background-color: var(--bg-dashboard);
@@ -1641,18 +1649,18 @@ body[data-theme="dark"] .b2b-topbar { background: #252525 !important; border-bot
 }
 
 body[data-page="dashboard"] .b2b-content {
-  padding: 2.5rem 5.5rem;
+  padding: var(--b2b-dashboard-pad-y) var(--b2b-dashboard-pad-x);
 }
 
 body[data-page="dashboard"] .b2b-footer {
-  margin: auto -5.5rem -2.5rem;
-  padding: 1.75rem 5.5rem 1.25rem;
+  margin: auto calc(-1 * var(--b2b-dashboard-pad-x)) calc(-1 * var(--b2b-dashboard-pad-y));
+  padding: 1.75rem var(--b2b-dashboard-pad-x) 1.25rem;
 }
 
 .b2b-footer {
   flex-shrink: 0;
-  margin: auto -2rem -2rem;
-  padding: 1.75rem 2rem 1.25rem;
+  margin: auto calc(-1 * var(--b2b-content-pad-x)) calc(-1 * var(--b2b-content-pad-y));
+  padding: 1.75rem var(--b2b-content-pad-x) 1.25rem;
   background: #F3F3F3;
   border-top: 1px solid var(--border-light);
 }
@@ -3312,8 +3320,8 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
   .b2b-sidebar { display: none; }
   .b2b-main { margin-left: 0; background-color: var(--bg-dashboard); }
   body[data-theme="dark"] .b2b-main { background-color: #252525 !important; }
-  .b2b-content { padding: 1.25rem 1rem 6rem; }
-  body[data-page="dashboard"] .b2b-content { padding: 1.25rem 1rem 6rem; }
+  .b2b-content { padding-bottom: 6rem; }
+  body[data-page="dashboard"] .b2b-content { padding-bottom: 6rem; }
   .b2b-footer { display: none; }
 
   .b2b-topbar { padding: 0 1rem; gap: 0.5rem; }

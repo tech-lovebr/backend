@@ -3719,8 +3719,6 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 
 /* -------------------- Toolbar -------------------- */
 
-.builder-header-controls { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-
 .builder-toolbar {
   display: flex;
   align-items: center;
@@ -3797,29 +3795,10 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 
 .builder-body { display: flex; min-height: 0; height: 640px; }
 
-.builder-sidebar-col {
+.builder-elements-panel {
   width: 312px;
   flex-shrink: 0;
   border-right: 1px solid var(--border-card);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.builder-page-switcher-box { padding: 0.65rem 0.65rem 0; flex-shrink: 0; }
-.builder-page-switcher-box .builder-page-switcher { display: block; }
-.builder-page-switcher-box .builder-page-name {
-  width: 100%;
-  max-width: none;
-  border: 1px solid var(--border-card);
-  border-radius: 10px;
-  background-color: #fff;
-}
-.builder-page-switcher-box .builder-page-name:hover { background-color: #F4F4F5; }
-
-.builder-elements-panel {
-  width: 100%;
-  flex: 1;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -5010,10 +4989,7 @@ body[data-theme="dark"] .builder-device-btn.active { background: #4b4b4b !import
 body[data-theme="dark"] .builder-tool-btn { color: #A1A1AA !important; }
 body[data-theme="dark"] .builder-tool-btn:hover:not(:disabled) { background: #333333 !important; }
 body[data-theme="dark"] .builder-toolbar-divider { background: #404040 !important; }
-body[data-theme="dark"] .builder-sidebar-col { border-right-color: #404040 !important; }
-body[data-theme="dark"] .builder-elements-panel { background: #1c1c1c !important; }
-body[data-theme="dark"] .builder-page-switcher-box .builder-page-name { background-color: #1c1c1c !important; border-color: #404040 !important; color: #FFFFFF !important; }
-body[data-theme="dark"] .builder-page-switcher-box .builder-page-name:hover { background-color: #252525 !important; }
+body[data-theme="dark"] .builder-elements-panel { background: #1c1c1c !important; border-right-color: #404040 !important; }
 body[data-theme="dark"] .builder-panel-tabs { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .builder-panel-tab:hover { color: #D4D4D8 !important; }
 body[data-theme="dark"] .builder-panel-tab.active { color: #18181B !important; background: #ebf4ff !important; }

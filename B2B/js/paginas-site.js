@@ -42,8 +42,6 @@ function initSiteTabs() {
       document.querySelectorAll('[data-tab-panel]').forEach(panel => {
         panel.style.display = panel.dataset.tabPanel === btn.dataset.tab ? '' : 'none';
       });
-      const headerControls = document.getElementById('builder-header-controls');
-      if (headerControls) headerControls.style.display = btn.dataset.tab === 'editar' ? '' : 'none';
     });
   });
 }

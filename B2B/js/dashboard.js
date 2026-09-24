@@ -284,7 +284,7 @@ function renderGreeting() {
 
 /* -------------------- Métricas rápidas -------------------- */
 
-/* -------------------- Carteira (Saldo / Faturamento / Investimentos) -------------------- */
+/* -------------------- Carteira (Saldo / Faturamento) -------------------- */
 
 let walletBalanceVisible = true;
 let walletFinData = {};
@@ -326,17 +326,15 @@ async function renderMetricsOverview() {
 
   const saldoEl = document.getElementById('wallet-saldo-value');
   const faturamentoEl = document.getElementById('wallet-faturamento-value');
-  const investimentosEl = document.getElementById('wallet-investimentos-value');
 
   if (saldoEl) saldoEl.dataset.value = fin.saqueDisponivel || 0;
   if (faturamentoEl) faturamentoEl.dataset.value = fin.faturamentoEsteMes || 0;
-  if (investimentosEl) investimentosEl.dataset.value = 0;
 
   renderWalletAmounts();
 }
 
 function renderWalletAmounts() {
-  ['wallet-saldo-value', 'wallet-faturamento-value', 'wallet-investimentos-value'].forEach(id => {
+  ['wallet-saldo-value', 'wallet-faturamento-value'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.innerHTML = walletBalanceVisible

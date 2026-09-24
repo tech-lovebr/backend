@@ -1665,6 +1665,20 @@ body[data-page="dashboard"] .b2b-footer {
   border-top: 1px solid var(--border-light);
 }
 
+/* Barra de cabeçalho de página (título + ação principal) — mesmo padrão
+   visual da plataforma logada (ex: "Meus convidados"): uma faixa cinza
+   colada nas bordas, com o título e o botão de ação na mesma linha. */
+.b2b-header-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  flex-wrap: wrap;
+  margin: calc(-1 * var(--b2b-content-pad-y)) calc(-1 * var(--b2b-content-pad-x)) 1.25rem;
+  padding: 0.9rem var(--b2b-content-pad-x);
+  background: #FAFAFA;
+  border-bottom: 1px solid var(--border-card);
+}
+.b2b-header-bar h2 { margin: 0; }
+body[data-theme="dark"] .b2b-header-bar { background: #252525 !important; border-bottom-color: #404040 !important; }
+
 body[data-theme="dark"] .b2b-footer {
   background: #333333 !important;
   border-top-color: #404040 !important;
@@ -2589,9 +2603,9 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
 
 /* Cartão de carteira / saldo (Dashboard) */
 
-.wallet-card { position: relative; background-color: #FBFBFB; }
+.wallet-card { position: relative; background-color: #FFFFFF; }
 
-.wallet-tabs { display: flex; gap: 1.5rem; border-bottom: 1px solid var(--border-light); margin-bottom: 1.5rem; }
+.wallet-tabs { display: flex; gap: 3rem; border-bottom: 1px solid var(--border-light); margin-bottom: 1.5rem; }
 .wallet-tab {
   border: none; background: transparent; padding: 0 0 0.75rem; margin-bottom: -1px;
   font-size: 0.875rem; font-weight: 600; color: #A1A1AA; cursor: pointer;

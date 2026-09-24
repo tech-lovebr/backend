@@ -18,7 +18,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=402">
+  <link rel="stylesheet" href="css/styles.css?v=404">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -55,7 +55,6 @@
               <div class="wallet-tabs" id="wallet-tabs">
                 <button type="button" class="wallet-tab active" data-wallet-tab="saldo">Saldo</button>
                 <button type="button" class="wallet-tab" data-wallet-tab="faturamento">Faturamento</button>
-                <button type="button" class="wallet-tab" data-wallet-tab="investimentos">Investimentos</button>
               </div>
 
               <div class="wallet-panel" data-wallet-panel="saldo">
@@ -80,14 +79,6 @@
                 <p class="wallet-sub">Mês passado: <span id="wallet-faturamento-anterior">—</span> <span id="wallet-faturamento-delta"></span></p>
               </div>
 
-              <div class="wallet-panel" data-wallet-panel="investimentos" hidden>
-                <div class="wallet-panel-row">
-                  <div class="wallet-balance-wrap">
-                    <p class="wallet-balance" id="wallet-investimentos-value">—</p>
-                  </div>
-                </div>
-                <p class="wallet-sub" aria-hidden="true" style="visibility:hidden;">—</p>
-              </div>
             </div>
 
             <div class="dashboard-quick-actions">
@@ -347,6 +338,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=24"></script>
-  <script src="js/dashboard.js?v=40"></script>
+  <script src="js/dashboard.js?v=41"></script>
 </body>
 </html>

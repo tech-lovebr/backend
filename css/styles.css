@@ -6134,6 +6134,15 @@ body[data-theme="dark"] #live-preview-buttons-callout {
   color: #d4d4d8 !important;
 }
 
+/* Coração de favoritar (Explorar > página do fornecedor): no mobile usa a cor
+   da marca em vez do rosa/vermelho das bolinhas de mensagem/notificação. */
+@media (max-width: 767px) {
+  #b2b-vendor-detail-fav-icon.fill-\[\#c7305b\] {
+    fill: #537bae !important;
+    color: #537bae !important;
+  }
+}
+
 
 
 

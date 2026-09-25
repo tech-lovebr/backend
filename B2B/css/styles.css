@@ -4820,8 +4820,8 @@ body[data-theme="dark"] .floorplan-status { color: #A1A1AA !important; }
 
 .profile-form-top { display: flex; flex-direction: column; gap: 1.5rem; }
 .profile-form-top-image { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
-.profile-form-top-avatar { flex-shrink: 0; width: 180px; }
-.profile-form-top-cover { flex: 1; min-width: 260px; }
+.profile-form-top-avatar { flex-shrink: 0; width: 130px; }
+.profile-form-top-cover { flex-shrink: 0; width: 208px; }
 .profile-logo-hint { font-size: 0.75rem; color: #A1A1AA; margin-top: 0.5rem; }
 body[data-theme="dark"] .profile-logo-hint { color: #71717A !important; }
 .profile-form-top-fields { display: flex; flex-direction: column; gap: 1rem; }
@@ -5790,4 +5790,14 @@ body[data-theme="dark"] .payment-link-result-url { color: #D4D4D8 !important; }
 .checkout-payment-banner-installments { font-size: 0.8125rem; color: #71717A; margin-top: 0.15rem; }
 .checkout-payment-banner.is-paid { background: #F0FDF4; border-color: #BBF7D0; }
 .checkout-payment-banner.is-paid .checkout-payment-banner-amount { color: #15803D; }
+
+/* Campos com <input> real do template de checkout (CEP, Rua, Cidade) */
+.co-field-wrap { position: relative; }
+.co-field-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #71717A; pointer-events: none; }
+.co-field-wrap input {
+  width: 100%; box-sizing: border-box; border: 1px solid #E4E4E7; border-radius: 8px;
+  padding: 13px 14px 13px 40px; font-size: inherit; color: inherit; font-family: inherit;
+  background: #ffffff;
+}
+.co-field-wrap input:focus { outline: none; border-color: var(--bx-primary); }
 

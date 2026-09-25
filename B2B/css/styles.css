@@ -1624,7 +1624,7 @@ body[data-theme="dark"] .guias-sidebar h1 { color: #ebf4ff !important; }
 
 .b2b-topbar {
   height: var(--topbar-height);
-  background: #F8F8F8;
+  background: #FFFFFF;
   border-bottom: 1px solid #E4E4E4;
   box-shadow: 0 2px 6px rgba(16, 24, 40, 0.04);
   display: flex;

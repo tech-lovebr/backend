@@ -539,7 +539,7 @@ function buildCheckoutSections(bgColor) {
 /* Sempre que o template fixo do checkout (buildCheckoutSections) for alterado no código,
    incremente esta versão. Rascunhos salvos com uma versão antiga são descartados
    automaticamente e substituídos pelo template atual — sem precisar de ação do usuário. */
-const CHECKOUT_TEMPLATE_VERSION = 10;
+const CHECKOUT_TEMPLATE_VERSION = 11;
 
 /* O cabeçalho do checkout começa como uma cópia do cabeçalho já configurado
    no Site Principal (logo, cores, estilo) — assim o fornecedor não precisa

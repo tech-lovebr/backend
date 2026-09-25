@@ -4176,6 +4176,13 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
   padding: 28px;
   box-shadow: 0 1px 3px rgba(16,24,40,0.08);
 }
+/* A regra genérica #site-builder-root .builder-column:hover deixa o fundo
+   meio transparente pra indicar "hover" — mas aqui a caixa precisa continuar
+   branca sempre, então sobrescreve com a mesma especificidade (ID). */
+#site-builder-root .builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row > .builder-column:hover {
+  background: #ffffff;
+  border-color: transparent;
+}
 @media (max-width: 768px) {
   .builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row > .builder-column { padding: 20px; }
 }

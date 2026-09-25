@@ -18,6 +18,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   initFirstProductModal();
 });
 
+document.addEventListener('shell:ready', initMobileGreetingHeader);
+
+/* -------------------- Mobile: avatar + mensagens/notificações na saudação --------------------
+   No mobile, o cabeçalho (busca, upgrade) some e o avatar/mensagens/notificações
+   passam a viver ao lado de "Olá, [empresa]" em vez do topbar. Move os nós reais
+   do DOM (em vez de duplicá-los) para preservar os listeners e dropdowns já ligados
+   pelo shell.js. */
+function initMobileGreetingHeader() {
+  const avatarSlot = document.getElementById('dashboard-greeting-avatar-slot');
+  const iconsSlot = document.getElementById('dashboard-greeting-icons-slot');
+  const iconGroup = document.getElementById('topbar-icon-group');
+  if (!avatarSlot || !iconsSlot || !iconGroup) return;
+
+  const avatarWrap = document.getElementById('avatar-trigger')?.closest('.topbar-icon-btn-wrap');
+  const notifWrap = document.getElementById('notif-trigger')?.closest('.topbar-icon-btn-wrap');
+  const msgLink = iconGroup.querySelector('a[href="mensagens.html"]');
+  if (!avatarWrap || !notifWrap || !msgLink) return;
+
+  const mq = window.matchMedia('(max-width: 768px)');
+  const apply = () => {
+    if (mq.matches) {
+      avatarSlot.appendChild(avatarWrap);
+      iconsSlot.appendChild(msgLink);
+      iconsSlot.appendChild(notifWrap);
+    } else {
+      iconGroup.appendChild(msgLink);
+      iconGroup.appendChild(notifWrap);
+      iconGroup.appendChild(avatarWrap);
+    }
+  };
+  apply();
+  mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply);
+}
+
 /* -------------------- Pop-up: cadastre seu primeiro produto/serviço -------------------- */
 
 async function initFirstProductModal() {

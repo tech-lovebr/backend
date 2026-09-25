@@ -1284,7 +1284,7 @@ body[data-theme="dark"] .b2b-avatar { background: #FFFFFF; }
 
 .b2b-sidebar {
   width: var(--sidebar-width);
-  background-color: #F3F3F3;
+  background-color: #FFFFFF;
   border: none;
   border-right: 1px solid #E4E4E4;
   box-shadow: 2px 0 6px rgba(16, 24, 40, 0.04);
@@ -1493,7 +1493,7 @@ body.sidebar-collapsed[data-theme="dark"] .sidebar-nav-item:hover::after {
   border-top: 1px solid var(--border-card);
 }
 
-body.sidebar-collapsed .b2b-sidebar { background-color: #F3F3F3; }
+body.sidebar-collapsed .b2b-sidebar { background-color: #FFFFFF; }
 body.sidebar-collapsed .upgrade-card { padding: 0.75rem 0.4rem; background: transparent !important; border-color: transparent !important; }
 body.sidebar-collapsed .sidebar-nav-item { justify-content: center; padding: 0.6rem; }
 body.sidebar-collapsed .sidebar-nav-item span,

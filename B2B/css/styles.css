@@ -4191,6 +4191,10 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 .builder-block-toolbar button svg { width: 12px; height: 12px; }
 .builder-block-toolbar button:hover { background: rgba(255,255,255,0.18); color: #fff; }
 .builder-block-toolbar button.el-drag-handle { cursor: grab; }
+.el-lock-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; color: #EBF4FF; }
+.el-lock-icon svg { width: 12px; height: 12px; }
+.builder-element-locked { cursor: default; }
+.builder-element-locked:hover { outline: 1px dashed rgba(24,24,27,0.25); outline-offset: 2px; }
 
 .be-text-format-toolbar {
   position: fixed;
@@ -4295,7 +4299,7 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 .be-link { outline: none; cursor: default; color: var(--bx-primary); font-weight: 600; text-decoration: underline; }
 .be-icon { display: inline-flex; color: var(--bx-primary); }
 .be-icon svg { width: 100%; height: 100%; }
-.be-image { display: block; max-width: 100%; }
+.be-image { display: inline-block; max-width: 100%; vertical-align: middle; }
 .be-video-embed { position: relative; width: 100%; padding-top: 56.25%; background: #18181B; border-radius: 8px; overflow: hidden; }
 .be-video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .be-video-empty {

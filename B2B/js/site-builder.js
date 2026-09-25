@@ -397,20 +397,73 @@ function buildCheckoutPaymentAccordion() {
   return withDesktopStyle(el, { marginTop: '10px' });
 }
 
+/* CEP -> Rua/Cidade preenchidos automaticamente via ViaCEP (API pública, sem
+   necessidade de backend próprio). Ver wireCheckoutAddressLookup(). */
+function buildCheckoutAddressLookup() {
+  const el = Object.assign(createElement('html'), {
+    content: `<style>
+  .co-address { display:flex; flex-direction:column; gap:10px; }
+  .co-address .co-row { display:flex; gap:10px; }
+  .co-address .co-row .co-field-wrap { flex:1; }
+  .co-address .co-field-wrap { position:relative; }
+  .co-address .co-field-wrap svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#71717A; pointer-events:none; }
+  .co-address .co-field-wrap input { width:100%; box-sizing:border-box; border:1px solid #E4E4E7; border-radius:8px; padding:13px 14px 13px 40px; font-size:15px; color:#3F3F46; background:#ffffff; font-family:inherit; }
+  .co-address .co-field-wrap input:focus { outline:none; border-color:var(--bx-primary); }
+</style>
+<div class="co-address">
+  <div class="co-field-wrap">${CHECKOUT_ICONS.globe}<input type="text" inputmode="numeric" placeholder="CEP *" maxlength="9" data-checkout-cep></div>
+  <div class="co-row">
+    <div class="co-field-wrap">${CHECKOUT_ICONS.globe}<input type="text" placeholder="Rua *" data-checkout-street></div>
+    <div class="co-field-wrap">${CHECKOUT_ICONS.globe}<input type="text" placeholder="Cidade *" data-checkout-city></div>
+  </div>
+</div>`
+  });
+  return withDesktopStyle(el, { marginTop: '10px' });
+}
+
+function wireCheckoutAddressLookup(canvas) {
+  canvas.querySelectorAll('[data-checkout-cep]').forEach(input => {
+    if (input.dataset.wired) return;
+    input.dataset.wired = '1';
+    input.addEventListener('input', () => {
+      const digits = input.value.replace(/\D/g, '').slice(0, 8);
+      input.value = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+      if (digits.length === 8) lookupCheckoutCep(digits, input);
+    });
+  });
+}
+
+async function lookupCheckoutCep(cep, input) {
+  const wrap = input.closest('.co-address');
+  if (!wrap) return;
+  const streetInput = wrap.querySelector('[data-checkout-street]');
+  const cityInput = wrap.querySelector('[data-checkout-city]');
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const data = await res.json();
+    if (data.erro) return;
+    if (streetInput && data.logradouro) streetInput.value = data.logradouro;
+    if (cityInput && data.localidade) cityInput.value = data.localidade;
+  } catch (e) { /* sem internet ou API fora do ar — cliente preenche manualmente */ }
+}
+
 function buildCheckoutMainSection() {
   const nameRow = createColumnsElement([50, 50]);
-  nameRow.columns[0].elements.push(checkoutField('user', 'Nome*'));
-  nameRow.columns[1].elements.push(checkoutField('user', 'Sobrenome*'));
+  nameRow.columns[0].elements.push(checkoutField('user', 'Nome *'));
+  nameRow.columns[1].elements.push(checkoutField('user', 'Sobrenome *'));
+
+  const contactRow = createColumnsElement([50, 50]);
+  contactRow.columns[0].elements.push(checkoutField('mail', 'E-mail *'));
+  contactRow.columns[1].elements.push(checkoutField('phone', 'Telefone *'));
 
   const col1 = {
     id: uid('col'), width: 55,
     elements: [
       withDesktopStyle(Object.assign(createElement('titulo'), { content: 'Informações de cobrança', level: 4 }), { textAlign: 'left' }),
-      withDesktopStyle(Object.assign(createElement('texto'), { content: '☐ Compra empresarial' }), { textAlign: 'left', fontSize: '13px', color: '#52525B', marginTop: '4px' }),
-      checkoutField('mail', 'E-mail *'),
       nameRow,
-      checkoutField('globe', 'Brasil'),
-      checkoutField('globe', 'São Paulo'),
+      contactRow,
+      buildCheckoutAddressLookup(),
+      checkoutField('user', 'CPF ou CNPJ *'),
       withDesktopStyle(Object.assign(createElement('titulo'), { content: 'Forma de pagamento', level: 4 }), { textAlign: 'left', marginTop: '28px' }),
       buildCheckoutPaymentAccordion()
     ]
@@ -418,12 +471,12 @@ function buildCheckoutMainSection() {
 
   const productRow = createColumnsElement([30, 70]);
   productRow.columns[0].elements.push(
-    withDesktopStyle(Object.assign(createElement('imagem'), { alt: 'Produto' }), {})
+    withDesktopStyle(Object.assign(createElement('imagem'), { alt: 'Produto', checkoutLocked: true }), {})
   );
   productRow.columns[1].elements.push(
-    withDesktopStyle(Object.assign(createElement('texto'), { content: 'Produto exemplo' }), { textAlign: 'left', fontWeight: '700', color: '#18181B' }),
-    withDesktopStyle(Object.assign(createElement('texto'), { content: 'Renovação automática' }), { textAlign: 'left', fontSize: '13px', color: 'var(--bx-primary)', fontWeight: '600' }),
-    withDesktopStyle(Object.assign(createElement('texto'), { content: 'R$ 32,39 /mês' }), { textAlign: 'left', fontSize: '13px', color: '#71717A', marginTop: '4px' })
+    withDesktopStyle(Object.assign(createElement('texto'), { content: 'Produto exemplo', checkoutLocked: true }), { textAlign: 'left', fontWeight: '700', color: '#18181B' }),
+    withDesktopStyle(Object.assign(createElement('texto'), { content: 'Renovação automática', checkoutLocked: true }), { textAlign: 'left', fontSize: '13px', color: 'var(--bx-primary)', fontWeight: '600' }),
+    withDesktopStyle(Object.assign(createElement('texto'), { content: 'R$ 32,39 /mês', checkoutLocked: true }), { textAlign: 'left', fontSize: '13px', color: '#71717A', marginTop: '4px' })
   );
 
   const badgesRow = createColumnsElement([25, 25, 25, 25]);
@@ -435,11 +488,11 @@ function buildCheckoutMainSection() {
   const col2 = {
     id: uid('col'), width: 45,
     elements: [
-      withDesktopStyle(Object.assign(createElement('titulo'), { content: 'Você está comprando', level: 4 }), { textAlign: 'left' }),
+      withDesktopStyle(Object.assign(createElement('titulo'), { content: 'Você está contratando', level: 4 }), { textAlign: 'left' }),
       productRow,
       createElement('separador'),
-      withDesktopStyle(Object.assign(createElement('texto'), { content: 'Impostos (8,00%): R$ 2,40' }), { textAlign: 'left', fontSize: '13px', color: '#52525B' }),
-      withDesktopStyle(Object.assign(createElement('texto'), { content: 'TOTAL: R$ 32,39', checkoutRole: 'total' }), { textAlign: 'left', fontWeight: '700', fontSize: '18px', marginTop: '6px' }),
+      withDesktopStyle(Object.assign(createElement('texto'), { content: 'Impostos (8,00%): R$ 2,40', checkoutLocked: true }), { textAlign: 'left', fontSize: '13px', color: '#52525B' }),
+      withDesktopStyle(Object.assign(createElement('texto'), { content: 'TOTAL: R$ 32,39', checkoutRole: 'total', checkoutLocked: true }), { textAlign: 'left', fontWeight: '700', fontSize: '18px', marginTop: '6px' }),
       withDesktopStyle(Object.assign(createElement('botao'), { content: 'Finalizar pedido', href: '#', checkoutRole: 'submit' }), {
         backgroundColor: '#F5A623', color: '#ffffff', width: '100%', marginTop: '20px',
         paddingTop: '14px', paddingBottom: '14px', fontSize: '16px', fontWeight: '700'
@@ -478,7 +531,7 @@ function buildCheckoutSections() {
 /* Sempre que o template fixo do checkout (buildCheckoutSections) for alterado no código,
    incremente esta versão. Rascunhos salvos com uma versão antiga são descartados
    automaticamente e substituídos pelo template atual — sem precisar de ação do usuário. */
-const CHECKOUT_TEMPLATE_VERSION = 7;
+const CHECKOUT_TEMPLATE_VERSION = 8;
 
 function defaultCheckoutPageState() {
   const header = defaultHeaderState();
@@ -1596,6 +1649,7 @@ function renderCanvas() {
   wireFixedHeader(canvas);
   wireMobileMenuDrawer(menuRoot);
   wireCanvasEvents(canvas);
+  wireCheckoutAddressLookup(canvas);
   initSortables(canvas);
   applySelectionClasses();
   applyFloatingHeaderOverlap(canvas);
@@ -1860,13 +1914,13 @@ function wireCanvasEvents(canvas) {
       e.stopPropagation();
       selectElement(elBlock.dataset.elementId, 'element');
     });
-    elBlock.querySelector('[data-duplicate-element]').addEventListener('click', (e) => {
+    elBlock.querySelector('[data-duplicate-element]')?.addEventListener('click', (e) => {
       e.stopPropagation();
       const clone = duplicateElementById(elBlock.dataset.elementId);
       pushHistory(); renderCanvas();
       if (clone) selectElement(clone.id, 'element');
     });
-    elBlock.querySelector('[data-delete-element]').addEventListener('click', (e) => {
+    elBlock.querySelector('[data-delete-element]')?.addEventListener('click', (e) => {
       e.stopPropagation();
       removeElementById(elBlock.dataset.elementId);
       if (selectedId === elBlock.dataset.elementId) selectedId = null;
@@ -2068,6 +2122,13 @@ function applyEditablePath(el, path, value) {
 /* -------------------- Seleção -------------------- */
 
 function selectElement(id, kind) {
+  if (kind === 'element') {
+    const loc = findElementLocation(id);
+    if (loc && loc.element.checkoutLocked) {
+      showToast('Este conteúdo vem do produto contratado e é preenchido automaticamente — não pode ser personalizado.');
+      return;
+    }
+  }
   if (selectedId !== id) inspectorActiveTab = 'content';
   selectedId = id;
   applySelectionClasses();
@@ -2539,17 +2600,20 @@ function renderElementBlockHtml(el, mode, device) {
   }
 
   const meta = ELEMENT_META[el.type] || { label: el.type };
+  const isLocked = !!el.checkoutLocked;
   const wrapperStyle = [
     isHiddenOnDevice(el, device) ? 'opacity:.35;' : '',
     align ? `text-align:${align};` : ''
   ].filter(Boolean).join('');
   return `
-    <div class="builder-element" data-element-id="${el.id}"${wrapperStyle ? ` style="${wrapperStyle}"` : ''}>
+    <div class="builder-element${isLocked ? ' builder-element-locked' : ''}" data-element-id="${el.id}"${wrapperStyle ? ` style="${wrapperStyle}"` : ''}${isLocked ? ' title="Este conteúdo vem do produto contratado e é preenchido automaticamente — não pode ser personalizado."' : ''}>
       <div class="builder-block-toolbar">
         <span class="builder-block-toolbar-tag">${meta.label}</span>
-        <button type="button" class="el-drag-handle" title="Mover" data-drag-element>${BI.move}</button>
+        ${isLocked
+          ? `<span class="el-lock-icon">${BI.lock}</span>`
+          : `<button type="button" class="el-drag-handle" title="Mover" data-drag-element>${BI.move}</button>
         <button type="button" data-duplicate-element title="Duplicar">${BI.duplicate}</button>
-        <button type="button" data-delete-element title="Excluir">${BI.trash}</button>
+        <button type="button" data-delete-element title="Excluir">${BI.trash}</button>`}
       </div>
       ${renderElementContent(el, device, 'edit')}
     </div>
@@ -3741,6 +3805,11 @@ function renderLayoutTab(el, flat) {
       <input type="range" min="0" max="100" value="${parseInt(cascadedStyleValue(el, 'width')) || 100}" data-bind="style:width" data-unit="%">
     </div>
     `}
+    ${el.type === 'imagem' ? segRow('Alinhamento', 'style:textAlign', [
+      { value: 'left', title: 'Esquerda', html: BI.alignLeft },
+      { value: 'center', title: 'Centro', html: BI.alignCenter },
+      { value: 'right', title: 'Direita', html: BI.alignRight }
+    ], cascadedStyleValue(el, 'textAlign') || 'center') : ''}
     ${flat ? `
     <div class="inspector-field">
       <span class="${labelClass}">Altura <span data-range-out="style:lineHeight">${cascadedStyleValue(el, 'lineHeight') || '1.4'}</span></span>

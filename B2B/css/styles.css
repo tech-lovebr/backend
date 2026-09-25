@@ -2479,13 +2479,26 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
 }
 
 .greeting-title {
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: #18181B;
   letter-spacing: -0.01em;
 }
 
 .verified-badge { display: inline-flex; vertical-align: middle; margin-left: 0.3rem; color: var(--primary-blue); }
+
+.dashboard-personalize-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #18181B;
+  text-decoration: none;
+  border: none;
+  background: none;
+  transition: color .15s ease;
+}
+.dashboard-personalize-link:hover { color: var(--primary-blue); }
+body[data-theme="dark"] .dashboard-personalize-link { color: #FFFFFF !important; }
+body[data-theme="dark"] .dashboard-personalize-link:hover { color: var(--primary-blue) !important; }
 
 .dash-card {
   background: #fff;

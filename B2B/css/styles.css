@@ -3914,7 +3914,9 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 #site-builder-root .builder-fixed-header:hover,
 .builder-fixed-header.is-selected { outline: 2px dashed #D4D4D8; outline-offset: -2px; }
 .builder-fixed-header[data-style="flutuante"] {
-  margin: 16px 16px 0 16px;
+  width: calc(100% - 32px);
+  max-width: 1200px;
+  margin: 16px auto 0;
   border-radius: var(--bx-radius, 16px);
   border-bottom: none;
   box-shadow: 0 12px 28px rgba(16,24,40,0.18);

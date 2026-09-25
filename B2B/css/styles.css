@@ -2488,6 +2488,9 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
 .verified-badge { display: inline-flex; vertical-align: middle; margin-left: 0.3rem; color: var(--primary-blue); }
 
 .dashboard-personalize-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.875rem;
   font-weight: 600;
   color: #18181B;
@@ -2497,6 +2500,13 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
   transition: color .15s ease;
 }
 .dashboard-personalize-link:hover { color: var(--primary-blue); }
+.dashboard-personalize-link-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform .15s ease, color .15s ease;
+}
+.dashboard-personalize-link:hover .dashboard-personalize-link-icon { transform: translateX(2px); }
 body[data-theme="dark"] .dashboard-personalize-link { color: #FFFFFF !important; }
 body[data-theme="dark"] .dashboard-personalize-link:hover { color: var(--primary-blue) !important; }
 

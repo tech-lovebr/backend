@@ -1284,7 +1284,7 @@ body[data-theme="dark"] .b2b-avatar { background: #FFFFFF; }
 
 .b2b-sidebar {
   width: var(--sidebar-width);
-  background-color: #FFFFFF;
+  background-color: #F3F3F3;
   border: none;
   border-right: 1px solid #E4E4E4;
   box-shadow: 2px 0 6px rgba(16, 24, 40, 0.04);

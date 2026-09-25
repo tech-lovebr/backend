@@ -4147,6 +4147,25 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 .builder-canvas[data-page-key="checkout"][data-device="mobile"] .builder-columns-row { flex-direction: column; }
 .builder-canvas[data-page-key="checkout"][data-device="mobile"] .builder-column { flex: 0 0 100% !important; max-width: 100% !important; }
 .builder-canvas[data-page-key="checkout"] .builder-section { min-height: 0; }
+
+/* Informações de cobrança / Você está contratando ficam dentro de uma caixa
+   branca sobre o fundo colorido da seção — igual ao site principal. */
+.builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row {
+  gap: 24px;
+}
+.builder-canvas[data-page-key="checkout"][data-device="desktop"] [data-fixed-key="checkout"] > .builder-columns-row,
+.builder-canvas[data-page-key="checkout"][data-device="tablet"] [data-fixed-key="checkout"] > .builder-columns-row {
+  align-items: flex-start;
+}
+.builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row > .builder-column {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 1px 3px rgba(16,24,40,0.08);
+}
+@media (max-width: 768px) {
+  .builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row > .builder-column { padding: 20px; }
+}
 @media (max-width: 768px) {
   .builder-section { min-height: 100dvh; }
   .builder-section > .builder-columns-row { max-width: 100%; padding: 0 16px; }
@@ -5791,13 +5810,13 @@ body[data-theme="dark"] .payment-link-result-url { color: #D4D4D8 !important; }
 .checkout-payment-banner.is-paid { background: #F0FDF4; border-color: #BBF7D0; }
 .checkout-payment-banner.is-paid .checkout-payment-banner-amount { color: #15803D; }
 
-/* Campos com <input> real do template de checkout (CEP, Rua, Cidade) */
-.co-field-wrap { position: relative; }
-.co-field-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #71717A; pointer-events: none; }
+/* Campos com <input> real do template de checkout (CEP, Rua, Cidade). A caixa
+   (fundo, borda, padding, fonte) já vem do wrapper .be-custom-html — igual ao
+   dos campos de texto (checkoutBoxEl) — pra ficarem com o mesmo tamanho. */
+.co-field-wrap { display: flex; align-items: center; gap: 9px; }
+.co-field-wrap svg { width: 18px; height: 18px; flex-shrink: 0; color: #71717A; }
 .co-field-wrap input {
-  width: 100%; box-sizing: border-box; border: 1px solid #E4E4E7; border-radius: 8px;
-  padding: 13px 14px 13px 40px; font-size: inherit; color: inherit; font-family: inherit;
-  background: #ffffff;
+  flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+  font: inherit; color: inherit; padding: 0;
 }
-.co-field-wrap input:focus { outline: none; border-color: var(--bx-primary); }
 

@@ -327,12 +327,18 @@ const CHECKOUT_ICONS = {
   applePay: '<img src="../assets/apple-pay-icone.png" alt="Apple Pay" style="width:100%;height:100%;object-fit:contain;">'
 };
 
+/* Estilo compartilhado por TODOS os campos do checkout (Nome, E-mail, CEP,
+   Rua...) — precisa ser idêntico entre checkoutBoxEl (texto) e
+   checkoutInputField (input real) pra não ficarem desalinhados/desproporcionais
+   entre si. */
+const CHECKOUT_FIELD_BOX_STYLE = {
+  textAlign: 'left', color: '#3F3F46', fontSize: '30px',
+  backgroundColor: '#ffffff', paddingTop: '13px', paddingBottom: '13px', paddingLeft: '14px', paddingRight: '14px',
+  borderRadius: '8px', boxShadow: 'inset 0 0 0 1px #E4E4E7', marginTop: '10px'
+};
+
 function checkoutBoxEl(text, extraStyle) {
-  return withDesktopStyle(Object.assign(createElement('texto'), { content: text, checkoutFieldLocked: true }), Object.assign({
-    textAlign: 'left', color: '#3F3F46', fontSize: '30px',
-    backgroundColor: '#ffffff', paddingTop: '13px', paddingBottom: '13px', paddingLeft: '14px', paddingRight: '14px',
-    borderRadius: '8px', boxShadow: 'inset 0 0 0 1px #E4E4E7', marginTop: '10px'
-  }, extraStyle || {}));
+  return withDesktopStyle(Object.assign(createElement('texto'), { content: text, checkoutFieldLocked: true }), Object.assign({}, CHECKOUT_FIELD_BOX_STYLE, extraStyle || {}));
 }
 
 function checkoutField(iconKey, label, extraStyle) {
@@ -408,7 +414,7 @@ function checkoutInputField(iconKey, placeholder, dataAttr) {
     checkoutFieldLocked: true,
     content: `<div class="co-field-wrap">${icon}<input type="text" placeholder="${escapeHtml(placeholder)}" ${dataAttr}></div>`
   });
-  return withDesktopStyle(el, { textAlign: 'left', color: '#3F3F46', fontSize: '15px', marginTop: '10px' });
+  return withDesktopStyle(el, CHECKOUT_FIELD_BOX_STYLE);
 }
 
 /* CEP -> Rua/Cidade preenchidos automaticamente via ViaCEP (API pública, sem
@@ -2330,7 +2336,7 @@ function renderSectionHtml(section, mode, device) {
         ${section.columns.map((col, i) => renderColumnHtml(col, section, i, mode, device)).join('')}
       </div>`;
   return `
-    <section class="builder-section" id="${section.id}" data-section-id="${section.id}" data-bg-carousel-count="${bgImages.length > 1 ? bgImages.length : ''}" style="${section.bg ? `background-color:${section.bg};` : ''}${section.marginTop ? `margin-top:${section.marginTop}px;` : ''}${section.marginBottom ? `margin-bottom:${section.marginBottom}px;` : ''}">
+    <section class="builder-section" id="${section.id}" data-section-id="${section.id}" data-fixed-key="${section.fixedKey || ''}" data-bg-carousel-count="${bgImages.length > 1 ? bgImages.length : ''}" style="${section.bg ? `background-color:${section.bg};` : ''}${section.marginTop ? `margin-top:${section.marginTop}px;` : ''}${section.marginBottom ? `margin-bottom:${section.marginBottom}px;` : ''}">
       ${bgImageDiv}
       ${overlayDiv}
       ${toolbar}

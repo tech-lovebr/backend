@@ -155,14 +155,15 @@ const FONT_OPTIONS = [
   { value: "'Voltaire', sans-serif", label: 'Voltaire' },
   { value: "'Cormorant Garamond', serif", label: 'Cormorant Garamond' },
   { value: "'Prata', serif", label: 'Prata' },
-  { value: "'Fraunces', serif", label: 'Fraunces' }
+  { value: "'Fraunces', serif", label: 'Fraunces' },
+  { value: "'Yrsa', serif", label: 'Yrsa' }
 ];
 
 const HEADING_LEVELS = [1, 2, 3, 4, 5];
 
 function defaultHeadingStyles() {
   const out = { menu: { fontFamily: '', bold: true, italic: false, underline: false } };
-  HEADING_LEVELS.forEach(n => { out[n] = { fontFamily: '', bold: true, italic: false, underline: false }; });
+  HEADING_LEVELS.forEach(n => { out[n] = { fontFamily: "'Yrsa', serif", bold: true, italic: false, underline: false }; });
   return out;
 }
 

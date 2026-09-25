@@ -327,7 +327,7 @@ const CHECKOUT_ICONS = {
 };
 
 function checkoutBoxEl(text, extraStyle) {
-  return withDesktopStyle(Object.assign(createElement('texto'), { content: text }), Object.assign({
+  return withDesktopStyle(Object.assign(createElement('texto'), { content: text, checkoutFieldLocked: true }), Object.assign({
     textAlign: 'left', color: '#3F3F46', fontSize: '30px',
     backgroundColor: '#ffffff', paddingTop: '13px', paddingBottom: '13px', paddingLeft: '14px', paddingRight: '14px',
     borderRadius: '8px', boxShadow: 'inset 0 0 0 1px #E4E4E7', marginTop: '10px'
@@ -355,6 +355,7 @@ function checkoutBadgeCol(label) {
    Em mobile as colunas empilham (ver CSS [data-page-key="checkout"][data-device="mobile"]). */
 function buildCheckoutPaymentAccordion() {
   const el = Object.assign(createElement('html'), {
+    checkoutLocked: true,
     content: `<style>
   .co-acc { display:flex; flex-direction:column; gap:10px; }
   .co-acc details { border:1px solid #E4E4E7; border-radius:8px; background:#ffffff; overflow:hidden; transition:border-color .15s ease; }
@@ -397,28 +398,29 @@ function buildCheckoutPaymentAccordion() {
   return withDesktopStyle(el, { marginTop: '10px' });
 }
 
+/* Campo de checkout com um <input> real (CEP, Rua, Cidade) — em vez do texto
+   decorativo de checkoutField(). É marcado checkoutFieldLocked pra só expor
+   fonte/cor no inspector (ver renderCheckoutFieldInspector). */
+function checkoutInputField(iconKey, placeholder, dataAttr) {
+  const icon = CHECKOUT_ICONS[iconKey] || '';
+  const el = Object.assign(createElement('html'), {
+    checkoutFieldLocked: true,
+    content: `<div class="co-field-wrap">${icon}<input type="text" placeholder="${escapeHtml(placeholder)}" ${dataAttr}></div>`
+  });
+  return withDesktopStyle(el, { textAlign: 'left', color: '#3F3F46', fontSize: '15px', marginTop: '10px' });
+}
+
 /* CEP -> Rua/Cidade preenchidos automaticamente via ViaCEP (API pública, sem
    necessidade de backend próprio). Ver wireCheckoutAddressLookup(). */
-function buildCheckoutAddressLookup() {
-  const el = Object.assign(createElement('html'), {
-    content: `<style>
-  .co-address { display:flex; flex-direction:column; gap:10px; }
-  .co-address .co-row { display:flex; gap:10px; }
-  .co-address .co-row .co-field-wrap { flex:1; }
-  .co-address .co-field-wrap { position:relative; }
-  .co-address .co-field-wrap svg { position:absolute; left:14px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#71717A; pointer-events:none; }
-  .co-address .co-field-wrap input { width:100%; box-sizing:border-box; border:1px solid #E4E4E7; border-radius:8px; padding:13px 14px 13px 40px; font-size:15px; color:#3F3F46; background:#ffffff; font-family:inherit; }
-  .co-address .co-field-wrap input:focus { outline:none; border-color:var(--bx-primary); }
-</style>
-<div class="co-address">
-  <div class="co-field-wrap">${CHECKOUT_ICONS.globe}<input type="text" inputmode="numeric" placeholder="CEP *" maxlength="9" data-checkout-cep></div>
-  <div class="co-row">
-    <div class="co-field-wrap">${CHECKOUT_ICONS.globe}<input type="text" placeholder="Rua *" data-checkout-street></div>
-    <div class="co-field-wrap">${CHECKOUT_ICONS.globe}<input type="text" placeholder="Cidade *" data-checkout-city></div>
-  </div>
-</div>`
-  });
-  return withDesktopStyle(el, { marginTop: '10px' });
+function buildCheckoutCepField() {
+  return checkoutInputField('globe', 'CEP *', 'inputmode="numeric" maxlength="9" data-checkout-cep');
+}
+
+function buildCheckoutAddressRow() {
+  const row = createColumnsElement([50, 50]);
+  row.columns[0].elements.push(checkoutInputField('globe', 'Rua *', 'data-checkout-street'));
+  row.columns[1].elements.push(checkoutInputField('globe', 'Cidade *', 'data-checkout-city'));
+  return row;
 }
 
 function wireCheckoutAddressLookup(canvas) {
@@ -428,16 +430,14 @@ function wireCheckoutAddressLookup(canvas) {
     input.addEventListener('input', () => {
       const digits = input.value.replace(/\D/g, '').slice(0, 8);
       input.value = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
-      if (digits.length === 8) lookupCheckoutCep(digits, input);
+      if (digits.length === 8) lookupCheckoutCep(digits, canvas);
     });
   });
 }
 
-async function lookupCheckoutCep(cep, input) {
-  const wrap = input.closest('.co-address');
-  if (!wrap) return;
-  const streetInput = wrap.querySelector('[data-checkout-street]');
-  const cityInput = wrap.querySelector('[data-checkout-city]');
+async function lookupCheckoutCep(cep, canvas) {
+  const streetInput = canvas.querySelector('[data-checkout-street]');
+  const cityInput = canvas.querySelector('[data-checkout-city]');
   try {
     const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
     const data = await res.json();
@@ -447,7 +447,7 @@ async function lookupCheckoutCep(cep, input) {
   } catch (e) { /* sem internet ou API fora do ar — cliente preenche manualmente */ }
 }
 
-function buildCheckoutMainSection() {
+function buildCheckoutMainSection(bgColor) {
   const nameRow = createColumnsElement([50, 50]);
   nameRow.columns[0].elements.push(checkoutField('user', 'Nome *'));
   nameRow.columns[1].elements.push(checkoutField('user', 'Sobrenome *'));
@@ -462,7 +462,8 @@ function buildCheckoutMainSection() {
       withDesktopStyle(Object.assign(createElement('titulo'), { content: 'Informações de cobrança', level: 4 }), { textAlign: 'left' }),
       nameRow,
       contactRow,
-      buildCheckoutAddressLookup(),
+      buildCheckoutCepField(),
+      buildCheckoutAddressRow(),
       checkoutField('user', 'CPF ou CNPJ *'),
       withDesktopStyle(Object.assign(createElement('titulo'), { content: 'Forma de pagamento', level: 4 }), { textAlign: 'left', marginTop: '28px' }),
       buildCheckoutPaymentAccordion()
@@ -502,7 +503,7 @@ function buildCheckoutMainSection() {
   };
 
   return {
-    id: uid('sec'), fixedKey: 'checkout', hidden: false, menuItemId: null,
+    id: uid('sec'), fixedKey: 'checkout', hidden: false, menuItemId: null, bg: bgColor || '#ffffff',
     columns: [col1, col2]
   };
 }
@@ -524,17 +525,26 @@ function buildCheckoutFooterSection() {
   };
 }
 
-function buildCheckoutSections() {
-  return [buildCheckoutMainSection(), buildCheckoutFooterSection()];
+function buildCheckoutSections(bgColor) {
+  return [buildCheckoutMainSection(bgColor), buildCheckoutFooterSection()];
 }
 
 /* Sempre que o template fixo do checkout (buildCheckoutSections) for alterado no código,
    incremente esta versão. Rascunhos salvos com uma versão antiga são descartados
    automaticamente e substituídos pelo template atual — sem precisar de ação do usuário. */
-const CHECKOUT_TEMPLATE_VERSION = 8;
+const CHECKOUT_TEMPLATE_VERSION = 10;
 
+/* O cabeçalho do checkout começa como uma cópia do cabeçalho já configurado
+   no Site Principal (logo, cores, estilo) — assim o fornecedor não precisa
+   configurar tudo de novo. Sem menu, já que o checkout não tem navegação. */
 function defaultCheckoutPageState() {
-  const header = defaultHeaderState();
+  let header;
+  try {
+    const homeState = loadBuilderState();
+    header = homeState && homeState.header ? JSON.parse(JSON.stringify(homeState.header)) : defaultHeaderState();
+  } catch (e) {
+    header = defaultHeaderState();
+  }
   header.menuItems = [];
   return {
     name: 'Meu Checkout',
@@ -542,7 +552,7 @@ function defaultCheckoutPageState() {
     globalStyle: { primaryColor: '#183b54', radius: 10, sectionSpacing: 40, headings: defaultHeadingStyles() },
     siteSettings: defaultSiteSettings(),
     header,
-    sections: buildCheckoutSections()
+    sections: buildCheckoutSections(header.bgColor)
   };
 }
 
@@ -1240,7 +1250,8 @@ function renderLeftPanel() {
 
 function renderElementEditorPanel(panel, sel) {
   const titleMap = { section: 'Seção', column: 'Coluna', header: 'Cabeçalho', element: (ELEMENT_META[sel.obj.type] || {}).label || 'Elemento' };
-  const showTabs = sel.kind === 'element';
+  const isCheckoutField = sel.kind === 'element' && sel.obj.checkoutFieldLocked;
+  const showTabs = sel.kind === 'element' && !isCheckoutField;
   const isTextLike = sel.kind === 'element' && (sel.obj.type === 'titulo' || sel.obj.type === 'texto');
   const layoutTabLabel = isTextLike ? 'Aparência' : 'Layout';
 
@@ -1269,6 +1280,7 @@ function renderElementEditorPanel(panel, sel) {
   if (sel.kind === 'section') { body.innerHTML = renderSectionInspector(sel.obj); wireSectionInspector(sel.obj, body); }
   else if (sel.kind === 'column') { body.innerHTML = renderColumnInspector(sel.obj); wireColumnInspector(sel.obj, body); }
   else if (sel.kind === 'header') { body.innerHTML = renderHeaderInspector(sel.obj); wireHeaderInspector(sel.obj, body); }
+  else if (isCheckoutField) { body.innerHTML = renderCheckoutFieldInspector(sel.obj); wireBind(body, sel.obj); }
   else { renderElementInspector(sel.obj, body); }
   const skipAccordions = sel.kind === 'header' || sel.kind === 'element';
   if (!skipAccordions) wireAccordions(body);
@@ -2124,10 +2136,7 @@ function applyEditablePath(el, path, value) {
 function selectElement(id, kind) {
   if (kind === 'element') {
     const loc = findElementLocation(id);
-    if (loc && loc.element.checkoutLocked) {
-      showToast('Este conteúdo vem do produto contratado e é preenchido automaticamente — não pode ser personalizado.');
-      return;
-    }
+    if (loc && loc.element.checkoutLocked) return;
   }
   if (selectedId !== id) inspectorActiveTab = 'content';
   selectedId = id;
@@ -2601,20 +2610,21 @@ function renderElementBlockHtml(el, mode, device) {
 
   const meta = ELEMENT_META[el.type] || { label: el.type };
   const isLocked = !!el.checkoutLocked;
+  const isFieldLocked = !!el.checkoutFieldLocked;
   const wrapperStyle = [
     isHiddenOnDevice(el, device) ? 'opacity:.35;' : '',
     align ? `text-align:${align};` : ''
   ].filter(Boolean).join('');
   return `
-    <div class="builder-element${isLocked ? ' builder-element-locked' : ''}" data-element-id="${el.id}"${wrapperStyle ? ` style="${wrapperStyle}"` : ''}${isLocked ? ' title="Este conteúdo vem do produto contratado e é preenchido automaticamente — não pode ser personalizado."' : ''}>
+    <div class="builder-element${isLocked ? ' builder-element-locked' : ''}" data-element-id="${el.id}"${wrapperStyle ? ` style="${wrapperStyle}"` : ''}>
+      ${isLocked ? '' : `
       <div class="builder-block-toolbar">
         <span class="builder-block-toolbar-tag">${meta.label}</span>
-        ${isLocked
-          ? `<span class="el-lock-icon">${BI.lock}</span>`
-          : `<button type="button" class="el-drag-handle" title="Mover" data-drag-element>${BI.move}</button>
+        <button type="button" class="el-drag-handle" title="Mover" data-drag-element>${BI.move}</button>
         <button type="button" data-duplicate-element title="Duplicar">${BI.duplicate}</button>
-        <button type="button" data-delete-element title="Excluir">${BI.trash}</button>`}
+        ${isFieldLocked ? '' : `<button type="button" data-delete-element title="Excluir">${BI.trash}</button>`}
       </div>
+      `}
       ${renderElementContent(el, device, 'edit')}
     </div>
   `;
@@ -3520,6 +3530,21 @@ function wireContentTab(el, body) {
   }
 }
 
+/* Campos fixos do checkout (Nome, E-mail, CEP...): só permite trocar fonte
+   e cor do texto — tamanho, texto, estilo, alinhamento, visibilidade por
+   dispositivo e exclusão ficam de fora porque fazem parte do template fixo. */
+function renderCheckoutFieldInspector(el) {
+  return `
+    <div class="inspector-field">
+      <span class="inspector-field-label">Fonte</span>
+      <select class="inspector-select" data-bind="style:fontFamily">
+        ${FONT_OPTIONS.map(f => `<option value="${escapeHtml(f.value)}" ${(cascadedStyleValue(el, 'fontFamily') || '') === f.value ? 'selected' : ''}>${escapeHtml(f.label)}</option>`).join('')}
+      </select>
+    </div>
+    ${colorFieldHtml(el, 'Cor do texto')}
+  `;
+}
+
 function renderElementInspector(el, body) {
   const isTextLike = el.type === 'titulo' || el.type === 'texto';
   if (inspectorActiveTab === 'layout') {
@@ -3528,9 +3553,10 @@ function renderElementInspector(el, body) {
     wireMarginSync(body, el);
     wireTypographyToggles(body, el);
   } else {
+    const skipAdvanced = el.checkoutRole === 'submit';
     body.innerHTML = isTextLike
-      ? colorFieldHtml(el, el.type === 'titulo' ? 'Cor do título' : 'Cor do texto') + renderContentTab(el) + renderStyleTab(el, true, true) + renderAdvancedTab(el)
-      : renderContentTab(el) + renderAdvancedTab(el);
+      ? colorFieldHtml(el, el.type === 'titulo' ? 'Cor do título' : 'Cor do texto') + renderContentTab(el) + renderStyleTab(el, true, true) + (skipAdvanced ? '' : renderAdvancedTab(el))
+      : renderContentTab(el) + (skipAdvanced ? '' : renderAdvancedTab(el));
     wireContentTab(el, body);
     if (isTextLike) wireTypographyToggles(body, el);
   }
@@ -3865,7 +3891,7 @@ function renderContentTab(el) {
           ${colorSwatchPopoverHtml(currentDeviceStyleOrProp(el, 'backgroundColor') || builderState.globalStyle.primaryColor || '#183b54', 'data-bind="style:backgroundColor"')}
         </div>
         ${fieldRow('Texto do botão', `<input type="text" class="inspector-input" data-bind="prop:content" value="${escapeHtml(el.content || '')}">`)}
-        ${fieldRow('Link (URL)', `<input type="text" class="inspector-input" data-bind="prop:href" value="${escapeHtml(el.href || '')}" placeholder="https://">`)}
+        ${el.checkoutRole === 'submit' ? '' : fieldRow('Link (URL)', `<input type="text" class="inspector-input" data-bind="prop:href" value="${escapeHtml(el.href || '')}" placeholder="https://">`)}
       `;
 
     case 'link':

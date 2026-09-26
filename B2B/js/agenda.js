@@ -64,16 +64,23 @@ function initWorkViewTabs() {
   const wrap = document.getElementById('work-view-tabs');
   if (!wrap) return;
 
-  wrap.querySelectorAll('[data-view]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      wrap.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('[data-view-panel]').forEach(panel => {
-        panel.style.display = panel.dataset.viewPanel === btn.dataset.view ? '' : 'none';
-      });
-      const shareLabel = document.getElementById('share-board-btn-label');
-      if (shareLabel) shareLabel.textContent = btn.dataset.view === 'agenda' ? 'Compartilhar agenda' : 'Compartilhar tarefas';
+  const activate = (btn) => {
+    wrap.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('[data-view-panel]').forEach(panel => {
+      panel.style.display = panel.dataset.viewPanel === btn.dataset.view ? '' : 'none';
     });
+    const shareLabel = document.getElementById('share-board-btn-label');
+    if (shareLabel) shareLabel.textContent = btn.dataset.view === 'agenda' ? 'Compartilhar agenda' : 'Compartilhar tarefas';
+  };
+
+  wrap.querySelectorAll('[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => activate(btn));
   });
+
+  // Permite abrir direto numa aba específica via link (ex: dashboard > Tarefas).
+  const requestedView = new URLSearchParams(location.search).get('view');
+  const requestedBtn = requestedView && wrap.querySelector(`[data-view="${requestedView}"]`);
+  if (requestedBtn) activate(requestedBtn);
 }
 
 /* -------------------- Quadro Kanban -------------------- */

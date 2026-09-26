@@ -2560,9 +2560,48 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
   border-bottom: 1px solid var(--border-card);
 }
 
-.dashboard-quick-actions { display: flex; gap: 0.75rem; }
-.dashboard-quick-action-btn { flex: 1; justify-content: center; }
-.dashboard-quick-action-btn:hover { background: #F3F3F3; }
+.dashboard-quick-actions { display: flex; justify-content: space-between; gap: 0.5rem; }
+
+.dashboard-quick-action-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dashboard-quick-action-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  color: #18181B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background .15s ease;
+}
+
+.dashboard-quick-action-circle:hover .dashboard-quick-action-icon { background: #E4E4E7; }
+
+.dashboard-quick-action-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #3F3F46;
+  text-align: center;
+  line-height: 1.2;
+}
+
+body[data-theme="dark"] .dashboard-quick-action-icon { background: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .dashboard-quick-action-circle:hover .dashboard-quick-action-icon { background: #4A4A4A !important; }
+body[data-theme="dark"] .dashboard-quick-action-label { color: #FFFFFF !important; }
 
 .dash-card-header-left {
   display: flex;

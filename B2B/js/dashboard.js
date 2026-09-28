@@ -48,10 +48,14 @@ function initMobileGreetingHeader() {
       iconGroup.appendChild(avatarWrap);
     }
     fitGreetingTitleToOneLine();
+    sizeMobileAvatarToGreetingText();
   };
   apply();
   mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply);
-  window.addEventListener('resize', fitGreetingTitleToOneLine);
+  window.addEventListener('resize', () => {
+    fitGreetingTitleToOneLine();
+    sizeMobileAvatarToGreetingText();
+  });
 }
 
 /* No mobile, "Olá, [empresa]" precisa caber numa linha só ao lado do avatar e
@@ -84,6 +88,27 @@ function fitGreetingTitleToOneLine() {
     fontPx = Math.max(minFontPx, Math.floor((availablePx / textWidthAtMax) * maxFontPx * 0.97));
   }
   titleEl.style.fontSize = fontPx + 'px';
+}
+
+/* No mobile, a caixinha do avatar acompanha a altura das duas linhas da
+   saudação (nome + data) — mede depois que fitGreetingTitleToOneLine()
+   já ajustou o font-size, e vira um quadrado (largura = altura). */
+function sizeMobileAvatarToGreetingText() {
+  const avatarSlot = document.getElementById('dashboard-greeting-avatar-slot');
+  const textEl = document.querySelector('.dashboard-greeting-text');
+  if (!avatarSlot || !textEl) return;
+
+  if (window.innerWidth > 768) {
+    avatarSlot.style.width = '';
+    avatarSlot.style.height = '';
+    return;
+  }
+
+  const size = textEl.getBoundingClientRect().height;
+  if (size > 0) {
+    avatarSlot.style.width = size + 'px';
+    avatarSlot.style.height = size + 'px';
+  }
 }
 
 /* -------------------- Pop-up: cadastre seu primeiro produto/serviço -------------------- */
@@ -348,6 +373,7 @@ function renderGreeting() {
       : '';
     titleEl.innerHTML = `Olá, ${escapeHtml(B2B_DATA.professional.company)}${verifiedBadge}`;
     fitGreetingTitleToOneLine();
+    sizeMobileAvatarToGreetingText();
   }
 }
 

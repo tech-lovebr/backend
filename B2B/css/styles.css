@@ -2522,7 +2522,7 @@ body[data-theme="dark"] .dashboard-personalize-link:hover { color: var(--primary
 
 .dashboard-panel-section { display: flex; flex-direction: column; }
 .dashboard-panel-header { border-left: 3px solid #183B54; padding-left: 0.85rem; margin-bottom: 1.25rem; }
-.dashboard-panel-section .dash-card { background-color: #FBFBFB; }
+.dashboard-panel-section .dash-card { background-color: #FBFBFB; box-shadow: none; }
 
 .dashboard-help-section { margin-top: 1.5rem; }
 .dashboard-help-header { border-left: 3px solid #183B54; padding-left: 0.85rem; margin-bottom: 1.25rem; }
@@ -2531,7 +2531,7 @@ body[data-theme="dark"] .dashboard-personalize-link:hover { color: var(--primary
 
 .dashboard-help-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
 
-.dashboard-help-card { background: #FBFBFB; border: 1px solid #E4E4E4; border-radius: var(--radius-card); padding: 1.25rem; display: flex; flex-direction: column; height: 100%; box-shadow: var(--shadow-soft); }
+.dashboard-help-card { background: #FBFBFB; border: 1px solid #E4E4E4; border-radius: var(--radius-card); padding: 1.25rem; display: flex; flex-direction: column; height: 100%; box-shadow: none; }
 .dashboard-help-card-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; }
 .dashboard-help-card-icon { color: #52525B; display: flex; flex-shrink: 0; }
 .dashboard-help-card-title { font-size: 0.9375rem; font-weight: 700; color: #18181B; }
@@ -2610,7 +2610,8 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
 
 /* -------------------- Eventos e notícias (Dashboard) -------------------- */
 
-.dash-news-card { display: flex; flex-direction: column; }
+.dash-news-card { display: flex; flex-direction: column; box-shadow: none; }
+.dash-analytics-card { box-shadow: none; }
 .dash-news-list { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1rem; }
 .dash-news-link { font-size: 0.8125rem; font-weight: 400; color: var(--primary-blue); text-decoration: none; line-height: 1.4; }
 .dash-news-link:hover { text-decoration: underline; }
@@ -2631,7 +2632,7 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
 
 /* Cartão de carteira / saldo (Dashboard) */
 
-.wallet-card { position: relative; background-color: #FFFFFF; }
+.wallet-card { position: relative; background-color: #FFFFFF; box-shadow: none; }
 
 .wallet-tabs { display: flex; gap: 3rem; border-bottom: 1px solid var(--border-light); margin-bottom: 1.5rem; }
 .wallet-tab {
@@ -2649,19 +2650,11 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
 .wallet-balance sup { font-size: 1rem; font-weight: 700; }
 
 .wallet-withdraw-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
   flex-shrink: 0;
-  border-radius: 999px;
-  background: var(--primary-blue);
-  color: #FFFFFF;
-  transition: opacity .15s ease;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.8125rem;
+  white-space: nowrap;
 }
-.wallet-withdraw-btn:hover { opacity: 0.85; }
-.wallet-withdraw-btn svg { width: 16px; height: 16px; }
 .wallet-eye-btn { border: none; background: transparent; color: var(--primary-blue); cursor: pointer; padding: 0.3rem; margin-top: 0.25rem; flex-shrink: 0; border-radius: 999px; transition: background-color 0.15s ease; display: inline-flex; }
 .wallet-eye-btn:hover { background-color: #FFFFFF; }
 .wallet-eye-btn-global { position: absolute; top: 1.5rem; right: 1.5rem; margin-top: 0; }

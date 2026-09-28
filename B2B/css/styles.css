@@ -2562,7 +2562,7 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
 
 .dashboard-quick-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 
-.dashboard-quick-action-btn { flex: 0 0 auto; }
+.dashboard-quick-action-btn { flex: 1; justify-content: center; }
 
 .dash-card-header-left {
   display: flex;
@@ -3401,6 +3401,8 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
   }
 
   .dashboard-quick-action-desktop-only { display: none; }
+
+  .dashboard-quick-action-btn { flex: 0 0 auto; justify-content: flex-start; }
 
   .topbar-search-trigger {
     width: auto;

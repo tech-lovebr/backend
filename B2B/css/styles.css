@@ -1841,6 +1841,7 @@ body[data-theme="dark"] .topbar-upgrade-btn:hover { color: rgba(255, 255, 255, 0
 }
 
 .topbar-icon-plain svg { stroke-width: 2px; }
+.topbar-services-mobile-link { display: none; }
 .topbar-icon-plain:hover { background: rgba(0, 0, 0, 0.06); }
 body[data-theme="dark"] .topbar-icon-plain { color: #FFFFFF; }
 body[data-theme="dark"] .topbar-icon-plain:hover { background: rgba(255, 255, 255, 0.12); }
@@ -3380,6 +3381,8 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
 
   .b2b-topbar { padding: 0 1rem; gap: 0.5rem; }
 
+  .topbar-services-mobile-link { display: flex; }
+
   /* Dashboard: o cabeçalho some — avatar/mensagens/notificações são
      realocados (via JS) para dentro da saudação "Olá, [empresa]". */
   body[data-page="dashboard"] .b2b-topbar { display: none; }
@@ -3415,9 +3418,19 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
   body[data-page="dashboard"] .dashboard-greeting-mobile-icons:not(:empty) {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.15rem;
     flex-shrink: 0;
     margin-left: auto;
+  }
+
+  body[data-page="dashboard"] .dashboard-greeting-mobile-icons .topbar-icon-plain {
+    width: 32px;
+    height: 32px;
+  }
+
+  body[data-page="dashboard"] .dashboard-greeting-mobile-icons .topbar-icon-plain svg {
+    width: 19px;
+    height: 19px;
   }
 
   body[data-page="dashboard"] .dashboard-greeting-text {

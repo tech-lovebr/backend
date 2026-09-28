@@ -104,7 +104,7 @@ function sizeMobileAvatarToGreetingText() {
     return;
   }
 
-  const size = textEl.getBoundingClientRect().height;
+  const size = Math.min(textEl.getBoundingClientRect().height, 44);
   if (size > 0) {
     avatarSlot.style.width = size + 'px';
     avatarSlot.style.height = size + 'px';

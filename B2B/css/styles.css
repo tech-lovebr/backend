@@ -2642,10 +2642,25 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
 .wallet-tab:hover:not(.active) { color: #52525B; }
 
 .wallet-panel-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.wallet-balance-wrap { display: flex; align-items: flex-start; gap: 0.5rem; }
+.wallet-balance-wrap { display: flex; align-items: center; gap: 0.5rem; }
 .wallet-balance { font-size: 1.75rem; font-weight: 700; color: #18181B; text-decoration: none; display: inline-block; transition: opacity .15s ease; }
 .wallet-balance:hover { opacity: 0.72; }
 .wallet-balance sup { font-size: 1rem; font-weight: 700; }
+
+.wallet-withdraw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--primary-blue);
+  color: #FFFFFF;
+  transition: opacity .15s ease;
+}
+.wallet-withdraw-btn:hover { opacity: 0.85; }
+.wallet-withdraw-btn svg { width: 16px; height: 16px; }
 .wallet-eye-btn { border: none; background: transparent; color: var(--primary-blue); cursor: pointer; padding: 0.3rem; margin-top: 0.25rem; flex-shrink: 0; border-radius: 999px; transition: background-color 0.15s ease; display: inline-flex; }
 .wallet-eye-btn:hover { background-color: #FFFFFF; }
 .wallet-eye-btn-global { position: absolute; top: 1.5rem; right: 1.5rem; margin-top: 0; }
@@ -3377,8 +3392,8 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
   }
 
   body[data-page="dashboard"] .dashboard-greeting-mobile-avatar .topbar-icon-btn-wrap,

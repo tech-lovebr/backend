@@ -54,10 +54,12 @@ function initMobileGreetingHeader() {
   window.addEventListener('resize', fitGreetingTitleToOneLine);
 }
 
-/* No mobile, "Olá, [empresa]" precisa caber numa linha só ao lado do avatar
-   e dos ícones — como o nome da empresa é livre (qualquer tamanho), reduz o
-   font-size em passos até caber, em vez de um valor fixo que só funciona
-   para nomes curtos. */
+/* No mobile, "Olá, [empresa]" precisa caber numa linha só ao lado do avatar e
+   dos ícones, no maior tamanho possível — como o nome da empresa é livre
+   (qualquer tamanho), calcula o font-size ideal via canvas (mede o texto
+   sem depender de reflow do DOM, que em loop de tentativa-e-erro fica com
+   scrollWidth desatualizado) em vez de um valor fixo pequeno demais para
+   nomes curtos ou grande demais para nomes longos. */
 function fitGreetingTitleToOneLine() {
   const titleEl = document.getElementById('greeting-title');
   if (!titleEl) return;
@@ -65,12 +67,23 @@ function fitGreetingTitleToOneLine() {
   titleEl.style.fontSize = '';
   if (window.innerWidth > 768) return;
 
+  const availablePx = titleEl.clientWidth;
+  if (!availablePx) return;
+
+  const maxFontPx = parseFloat(getComputedStyle(titleEl).fontSize);
   const minFontPx = 11;
-  let fontPx = parseFloat(getComputedStyle(titleEl).fontSize);
-  while (titleEl.scrollWidth > titleEl.clientWidth - 2 && fontPx > minFontPx) {
-    fontPx -= 0.5;
-    titleEl.style.fontSize = fontPx + 'px';
+  const cs = getComputedStyle(titleEl);
+
+  if (!fitGreetingTitleToOneLine._canvas) fitGreetingTitleToOneLine._canvas = document.createElement('canvas');
+  const ctx = fitGreetingTitleToOneLine._canvas.getContext('2d');
+  ctx.font = `${cs.fontWeight} ${maxFontPx}px ${cs.fontFamily}`;
+  const textWidthAtMax = ctx.measureText(titleEl.textContent).width;
+
+  let fontPx = maxFontPx;
+  if (textWidthAtMax > availablePx) {
+    fontPx = Math.max(minFontPx, Math.floor((availablePx / textWidthAtMax) * maxFontPx * 0.97));
   }
+  titleEl.style.fontSize = fontPx + 'px';
 }
 
 /* -------------------- Pop-up: cadastre seu primeiro produto/serviço -------------------- */

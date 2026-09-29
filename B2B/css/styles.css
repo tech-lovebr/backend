@@ -1350,6 +1350,10 @@ body.sidebar-collapsed .sidebar-brand-word { display: none; }
 .sidebar-brand-link .sidebar-icon-light, .sidebar-brand-link .sidebar-word-light { display: none !important; }
 .sidebar-brand-link .sidebar-icon-dark, .sidebar-brand-link .sidebar-word-dark { display: block !important; }
 
+/* Recolhido: só o ícone — a palavra "Love" some, em qualquer variante/tema. */
+body.sidebar-collapsed .sidebar-brand-link .sidebar-word-dark,
+body.sidebar-collapsed .sidebar-brand-link .sidebar-word-light { display: none !important; }
+
 .sidebar-toggle-icon.icon-expand { display: none; }
 body.sidebar-collapsed .sidebar-toggle-icon.icon-collapse { display: none; }
 body.sidebar-collapsed .sidebar-toggle-icon.icon-expand { display: block; }
@@ -1536,6 +1540,16 @@ body.sidebar-collapsed .upgrade-card-icon {
 body.sidebar-collapsed[data-theme="dark"] .upgrade-card-icon {
   color: #FFFFFF !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Presente (convidar e ganhar): sem círculo em volta, em qualquer estado. */
+body.sidebar-collapsed .upgrade-card-icon--gift {
+  border: none !important;
+  color: #EBF4FF !important;
+}
+
+body.sidebar-collapsed[data-theme="dark"] .upgrade-card-icon--gift {
+  border: none !important;
 }
 
 .upgrade-card {

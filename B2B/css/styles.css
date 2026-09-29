@@ -2604,7 +2604,7 @@ body[data-theme="dark"] .dashboard-help-card-icon { color: #A1A1AA !important; }
   min-width: 0;
   justify-content: center;
   background: #EBF4FF;
-  border-color: transparent;
+  border: none;
   color: #181D24;
 }
 .dashboard-quick-action-btn:hover { background: #DCEBFF; }

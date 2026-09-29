@@ -33,19 +33,16 @@ function initMobileGreetingHeader() {
 
   const avatarWrap = document.getElementById('avatar-trigger')?.closest('.topbar-icon-btn-wrap');
   const notifWrap = document.getElementById('notif-trigger')?.closest('.topbar-icon-btn-wrap');
-  const msgLink = iconGroup.querySelector('a[href="mensagens.html"]');
   const servicesLink = iconGroup.querySelector('a[href="produtos.html"]');
-  if (!avatarWrap || !notifWrap || !msgLink || !servicesLink) return;
+  if (!avatarWrap || !notifWrap || !servicesLink) return;
 
   const mq = window.matchMedia('(max-width: 768px)');
   const apply = () => {
     if (mq.matches) {
       avatarSlot.appendChild(avatarWrap);
-      iconsSlot.appendChild(msgLink);
       iconsSlot.appendChild(servicesLink);
       iconsSlot.appendChild(notifWrap);
     } else {
-      iconGroup.appendChild(msgLink);
       iconGroup.appendChild(servicesLink);
       iconGroup.appendChild(notifWrap);
       iconGroup.appendChild(avatarWrap);

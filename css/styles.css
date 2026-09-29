@@ -2546,6 +2546,10 @@ body:not([data-theme="dark"]).editor-split-mode #editor-form-column {
 .builder-panel-tab:hover { color: #3F3F46; }
 .builder-panel-tab.active { color: #18181B; background: #e0e4e6; }
 
+/* Aba "Lista de convidados" em Mapear Mesas — fundo azul clarinho */
+body:not([data-theme="dark"]) #floorplan-guests-panel .builder-panel-tab.active { background: #EBF4FF; }
+body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { background: #181D24; color: #FFFFFF; }
+
 .builder-panel-tab-body { padding: 0.9rem 0.25rem 0.9rem 0.75rem; overflow-y: auto; flex: 1; min-height: 0; }
 .builder-panel-tab-body-estilo { display: flex; flex-direction: column; gap: 1.4rem; }
 

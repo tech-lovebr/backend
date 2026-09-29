@@ -2768,9 +2768,11 @@ body[data-theme="dark"] .wallet-sub { color: #A1A1AA !important; }
 
 .dash-ads-slide-caption {
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 0.75rem 1rem 0.65rem;
+  left: 0.75rem; right: 0.75rem; bottom: 0.75rem;
+  padding: 0.65rem 0.85rem 0.6rem;
   background: rgba(255, 255, 255, 0.88);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
 }
 
 .dash-ads-slide-title {

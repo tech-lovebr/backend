@@ -3174,6 +3174,7 @@ body[data-theme="dark"] .faq-item p { color: rgba(255, 255, 255, 0.75); }
 }
 
 .guias-icon-badge--lg { width: 56px; height: 56px; font-size: 1.75rem; }
+.guias-flat-card { box-shadow: none; }
 
 .guide-checklist-item {
   display: flex;

@@ -3106,6 +3106,7 @@ body[data-theme="dark"] .guide-checklist-dot { border-color: rgba(255, 255, 255,
 body[data-theme="dark"] .faq-item { border-bottom-color: rgba(255, 255, 255, 0.14); }
 body[data-theme="dark"] .faq-item summary { color: #FFFFFF; }
 body[data-theme="dark"] .faq-item summary::after { color: rgba(255, 255, 255, 0.5); }
+body[data-theme="dark"] .guias-faq-card .faq-item summary::after { border-color: rgba(255, 255, 255, 0.5); }
 body[data-theme="dark"] .faq-item p { color: rgba(255, 255, 255, 0.75); }
 
 /* ==========================================================================
@@ -3174,7 +3175,19 @@ body[data-theme="dark"] .faq-item p { color: rgba(255, 255, 255, 0.75); }
 }
 
 .guias-icon-badge--lg { width: 56px; height: 56px; font-size: 1.75rem; }
-.guias-flat-card { box-shadow: none; }
+.guias-flat-card { box-shadow: none; border: none; }
+
+.guias-faq-card .faq-item summary::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #A1A1AA;
+  border-bottom: 1.5px solid #A1A1AA;
+  transform: rotate(45deg);
+  margin-top: -4px;
+}
+
+.guias-faq-card .faq-item[open] summary::after { transform: rotate(225deg); margin-top: 2px; }
 
 .guide-checklist-item {
   display: flex;

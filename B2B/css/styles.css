@@ -1309,22 +1309,21 @@ body.sidebar-collapsed .b2b-main { margin-left: var(--sidebar-collapsed-width); 
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: #FFFFFF;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background: #181D24;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #71717A;
+  color: #C4C4CC;
   cursor: pointer;
   z-index: 65;
   padding: 0;
   transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.sidebar-edge-toggle:hover { background: #F4F4F5; color: #18181B; }
+.sidebar-edge-toggle:hover { background: #22272F; color: #FFFFFF; }
 .sidebar-edge-toggle svg { width: 13px; height: 13px; transition: transform 0.25s ease; }
-body.sidebar-collapsed .sidebar-edge-toggle svg { transform: rotate(180deg); }
 
 .sidebar-brand-top {
   width: 100%;
@@ -1572,7 +1571,7 @@ body[data-theme="light"] .upgrade-card { background: rgba(255, 255, 255, 0.06); 
   flex-shrink: 0;
 }
 
-.upgrade-card-icon--gift { background: transparent; color: #C7305B; width: auto; height: auto; }
+.upgrade-card-icon--gift { background: transparent; color: #EBF4FF; width: auto; height: auto; }
 .upgrade-card-icon svg { width: 22px; height: 22px; }
 .upgrade-card-icon--gift svg { width: 32px; height: 32px; }
 

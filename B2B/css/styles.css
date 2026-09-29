@@ -2766,6 +2766,36 @@ body[data-theme="dark"] .wallet-sub { color: #A1A1AA !important; }
 .dash-ads-slide.is-active { opacity: 1; visibility: visible; }
 .dash-ads-slide-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+.dash-ads-slide-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 0.75rem 1rem 0.65rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.dash-ads-slide-title {
+  margin: 0 0 0.15rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #333333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-ads-slide-subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #333333;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .dash-ads-nav {
   position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
   width: 28px; height: 28px; border-radius: 50%;

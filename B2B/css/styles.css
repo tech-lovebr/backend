@@ -1305,19 +1305,19 @@ body.sidebar-collapsed .b2b-main { margin-left: var(--sidebar-collapsed-width); 
   width: 30px;
   height: 30px;
   border-radius: var(--radius-control);
-  background: #181D24;
-  border: 1px solid transparent;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E4;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #EBF4FF;
+  color: #71717A;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.topbar-collapse-toggle:hover { background: #0F1216; color: #EBF4FF; }
+.topbar-collapse-toggle:hover { background: #F4F4F5; color: #18181B; }
 .topbar-collapse-toggle svg { width: 14px; height: 14px; }
 
 .sidebar-brand-top {
@@ -1705,6 +1705,7 @@ body[data-page="dashboard"] .b2b-footer {
 .b2b-header-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   flex-wrap: wrap;
+  min-height: 4rem;
   margin: calc(-1 * var(--b2b-content-pad-y)) calc(-1 * var(--b2b-content-pad-x)) 1.25rem;
   padding: 0.9rem var(--b2b-content-pad-x);
   background: #FAFAFA;
@@ -2006,7 +2007,8 @@ body[data-theme="dark"] .topbar-dropdown-item:hover { background: rgba(255, 255,
 
 body[data-theme="dark"] .profile-dropdown-avatar { background: #000000; }
 
-.profile-dropdown-name { font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0; }
+.profile-dropdown-name { display: block; font-size: 0.875rem; font-weight: 700; color: #18181B; margin: 0; text-decoration: none; }
+.profile-dropdown-name:hover { text-decoration: underline; }
 .profile-dropdown-email { font-size: 0.75rem; color: #71717A; margin: 0.125rem 0 0; word-break: break-all; }
 
 body[data-theme="dark"] .profile-dropdown-name { color: #FFFFFF !important; }
@@ -2247,6 +2249,23 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
 }
 
 .field-textarea { resize: vertical; min-height: 220px; font-family: inherit; }
+
+.field-input.field-locked {
+  background: #F4F4F5;
+  color: #71717A;
+  cursor: not-allowed;
+}
+
+.field-lock-icon {
+  display: inline-flex;
+  vertical-align: middle;
+  color: #A1A1AA;
+}
+
+.plan-billing-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
 
 .date-picker-field { position: relative; }
 .date-picker-field input { padding-right: 2.25rem; cursor: pointer; }

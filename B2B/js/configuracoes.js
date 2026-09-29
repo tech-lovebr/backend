@@ -68,6 +68,7 @@ function initProfileForm() {
   renderProfileAvatarPicker();
   renderProfileLogoPicker();
   initStateCityFields(p);
+  lockConfiguredFields(p);
 
   document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
     btn.addEventListener('click', () => setProfileDocType(btn.dataset.docType));
@@ -96,8 +97,34 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    lockConfiguredFields(p);
     showToast('Perfil atualizado.');
   });
+}
+
+// Nome da empresa e documento (CNPJ/CPF) travam para edição assim que
+// configurados pela primeira vez — evita que o fornecedor mude a
+// identidade da conta depois que ela já está em uso na plataforma.
+function lockConfiguredFields(p) {
+  const companyInput = document.getElementById('profile-company');
+  const documentInput = document.getElementById('profile-document');
+  const companyLock = document.getElementById('profile-company-lock');
+  const documentLock = document.getElementById('profile-document-lock');
+
+  if (p.company) {
+    companyInput.readOnly = true;
+    companyInput.classList.add('field-locked');
+    companyLock.hidden = false;
+  }
+
+  if (p.documentNumber) {
+    documentInput.readOnly = true;
+    documentInput.classList.add('field-locked');
+    documentLock.hidden = false;
+    document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
+      btn.disabled = true;
+    });
+  }
 }
 
 /* -------------------- Minha Empresa -------------------- */

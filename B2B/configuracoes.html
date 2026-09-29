@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editar perfil — Portal do Fornecedor Love</title>
+  <title>Configurações — Portal do Fornecedor Love</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#537bae">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=450">
+  <link rel="stylesheet" href="css/styles.css?v=451">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -20,7 +20,7 @@
       <div id="shell-topbar"></div>
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900">Editar perfil</h2>
+          <h2 class="text-xl font-bold text-zinc-900">Configurações</h2>
           <button type="submit" form="profile-form" class="btn-primary builder-toolbar-btn" id="profile-save-top-btn">Salvar alterações</button>
         </div>
         <p class="text-sm text-zinc-500 mb-5">Gerencie os dados da sua empresa e as preferências da sua conta.</p>
@@ -51,13 +51,13 @@
 
                 <div class="profile-form-top-fields">
                   <div>
-                    <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
+                    <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span> <span class="field-lock-icon" id="profile-company-lock" hidden title="Não pode ser alterado depois de configurado"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4.5" y="10.5" width="15" height="9" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span></label>
                     <input id="profile-company" type="text" class="field-input" placeholder="Ex: Sophia Eventos & Decoração">
                   </div>
 
                   <div class="grid grid-cols-[1fr_150px] gap-4">
                     <div>
-                      <label for="profile-name" class="field-label">Nome do responsável <span style="color:#DC2626;">*</span></label>
+                      <label for="profile-name" class="field-label">Nome do usuário <span style="color:#DC2626;">*</span></label>
                       <input id="profile-name" type="text" class="field-input" placeholder="Ex: Sophia Ramos">
                     </div>
                     <div>
@@ -88,7 +88,7 @@
                   </div>
 
                   <div>
-                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
+                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span> <span class="field-lock-icon" id="profile-document-lock" hidden title="Não pode ser alterado depois de configurado"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4.5" y="10.5" width="15" height="9" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span></label>
                     <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
                   </div>
 
@@ -186,7 +186,7 @@
                   <input id="password-confirm" type="password" class="field-input" placeholder="••••••••">
                 </div>
               </div>
-              <div>
+              <div class="flex justify-end">
                 <button type="submit" class="btn-secondary">Atualizar senha</button>
               </div>
             </form>
@@ -261,7 +261,7 @@
                     <input id="profile-pix-key" type="text" class="field-input" placeholder="000.000.000-00">
                   </div>
                 </div>
-                <div>
+                <div class="flex justify-end">
                   <button type="submit" class="btn-secondary">Salvar dados bancários</button>
                 </div>
               </form>

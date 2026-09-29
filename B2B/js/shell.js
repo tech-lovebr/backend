@@ -116,7 +116,6 @@ async function initAuthGuard() {
   if (fornecedor && typeof B2B_DATA !== 'undefined') {
     B2B_DATA.professional.id = fornecedor.id;
     B2B_DATA.professional.company = fornecedor.company_name || B2B_DATA.professional.company;
-    B2B_DATA.professional.name = fornecedor.company_name || B2B_DATA.professional.name;
     B2B_DATA.professional.email = fornecedor.email || B2B_DATA.professional.email;
     if (fornecedor.avatar_url) B2B_DATA.professional.avatar = fornecedor.avatar_url;
     if (!localStorage.getItem('b2b-plan') && fornecedor.plan) B2B_DATA.professional.plan = fornecedor.plan;

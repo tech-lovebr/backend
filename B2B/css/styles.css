@@ -2770,7 +2770,7 @@ body[data-theme="dark"] .wallet-sub { color: #A1A1AA !important; }
   position: absolute;
   left: 0; right: 0; bottom: 0;
   padding: 0.75rem 1rem 0.65rem;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.88);
 }
 
 .dash-ads-slide-title {
@@ -2778,6 +2778,7 @@ body[data-theme="dark"] .wallet-sub { color: #A1A1AA !important; }
   font-size: 0.9375rem;
   font-weight: 700;
   color: #333333;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2788,6 +2789,7 @@ body[data-theme="dark"] .wallet-sub { color: #A1A1AA !important; }
   font-size: 0.75rem;
   font-weight: 500;
   color: #333333;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;

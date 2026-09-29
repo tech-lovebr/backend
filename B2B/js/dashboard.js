@@ -266,6 +266,23 @@ function initAdsCarousel() {
   let current = 0;
   let timer = null;
 
+  // Título/subtítulo do carrossel são opcionais (virão do admin futuramente) —
+  // um slide sem nenhum dos dois mostra só a imagem, sem a faixa de legenda.
+  slides.forEach(slide => {
+    const caption = slide.querySelector('.dash-ads-slide-caption');
+    if (!caption) return;
+    const titleEl = caption.querySelector('.dash-ads-slide-title');
+    const subtitleEl = caption.querySelector('.dash-ads-slide-subtitle');
+    const hasTitle = !!titleEl?.textContent.trim();
+    const hasSubtitle = !!subtitleEl?.textContent.trim();
+    if (!hasTitle && !hasSubtitle) {
+      caption.remove();
+      return;
+    }
+    if (!hasTitle) titleEl?.remove();
+    if (!hasSubtitle) subtitleEl?.remove();
+  });
+
   function goTo(index) {
     current = (index + slides.length) % slides.length;
     slides.forEach((slide, i) => slide.classList.toggle('is-active', i === current));

@@ -2152,6 +2152,14 @@ body[data-page="mensagens"] .b2b-content {
   overflow: hidden;
 }
 
+/* Cabeçalho de título padrão (igual às outras páginas), mas sem o respiro
+   lateral do .b2b-content genérico — aqui o padding do conteúdo é 0. */
+body[data-page="mensagens"] .b2b-header-bar {
+  margin: 0;
+  padding: 0.9rem 1.5rem;
+  flex-shrink: 0;
+}
+
 /* O rodapé padrão assume o padding genérico de 2rem do .b2b-content pra
    calcular suas margens negativas — na página de Mensagens o padding é 0
    (interface de chat em tela cheia, sem scroll), então o rodapé saía

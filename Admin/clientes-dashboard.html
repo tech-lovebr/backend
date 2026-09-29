@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard dos clientes — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="clientes-dashboard" data-plataforma="cliente" data-title="Dashboard dos clientes">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <nav class="conteudo-tabs" id="conteudo-tabs"></nav>
+
+        <section class="card" style="margin-bottom:1rem">
+          <div class="card-head" style="justify-content:space-between">
+            <div>
+              <h2 id="secao-titulo">—</h2>
+              <p id="secao-descricao"></p>
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-adicionar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Adicionar
+            </button>
+          </div>
+        </section>
+
+        <div id="conteudo-lista"></div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="js/conteudo.js"></script>
+</body>
+</html>

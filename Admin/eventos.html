@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="eventos" data-title="Eventos">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="kpi-grid" id="kpi-grid"></section>
+
+        <section class="card" style="margin-top:1rem">
+          <div class="card-head" style="justify-content:space-between">
+            <div class="toolbar" style="flex:1">
+              <input type="search" class="search-input" id="busca" placeholder="Buscar por título, anfitrião ou link...">
+              <select class="field-select" id="filtro-tipo" style="width:auto">
+                <option value="">Todas as categorias</option>
+                <option value="wedding">Casamento</option>
+                <option value="baby">Chá de bebê</option>
+                <option value="birthday">Aniversário</option>
+                <option value="corporate">Corporativo</option>
+                <option value="other">Outro</option>
+              </select>
+            </div>
+            <span class="cell-muted" id="contador"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr>
+                <th>Evento</th><th>Categoria</th><th>Cliente</th><th>Data</th>
+                <th>Convidados</th><th>Confirmados</th><th>Presentes</th><th>Arrecadado</th><th>Status</th>
+              </tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/eventos.js"></script>
+</body>
+</html>

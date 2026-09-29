@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fornecedores — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="fornecedores" data-title="Fornecedores">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="kpi-grid" id="kpi-grid"></section>
+
+        <!-- Movidos para o cabeçalho da página assim que o shell monta. -->
+        <div id="page-controls" hidden>
+          <input type="search" class="search-input" id="busca" placeholder="Buscar empresa ou CNPJ...">
+
+          <div class="filtro-wrap">
+            <button type="button" class="btn btn-ghost" id="btn-filtros" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
+              <span>Filtrar por</span>
+              <span class="filtro-badge" id="filtro-badge" hidden></span>
+            </button>
+
+            <div class="filtro-menu" id="filtro-menu" hidden>
+              <label class="field">
+                <span class="field-label">Plano</span>
+                <select class="field-select" id="filtro-plano"><option value="">Todos os planos</option></select>
+              </label>
+              <label class="field" style="margin-bottom:0">
+                <span class="field-label">Categoria</span>
+                <select class="field-select" id="filtro-categoria"><option value="">Todas as categorias</option></select>
+              </label>
+              <button type="button" class="filtro-limpar" id="limpar-filtros">Limpar filtros</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap table-bleed">
+          <table class="data">
+            <thead><tr>
+              <th>Empresa</th><th>CNPJ</th><th>Categoria</th><th>Plano</th><th>Faturamento</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/fornecedores.js"></script>
+</body>
+</html>

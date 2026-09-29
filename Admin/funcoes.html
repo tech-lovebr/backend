@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funções — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="funcoes" data-title="Funções">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="card" style="max-width:900px">
+          <div class="card-head" style="justify-content:space-between">
+            <div>
+              <h2>Administradores</h2>
+              <p>Quem tem acesso ao painel e com qual permissão</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Nome</th><th>E-mail</th><th>Função</th><th>Status</th><th>Desde</th></tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" style="max-width:900px;margin-top:1rem">
+          <div class="card-body">
+            <h3 style="font-size:.9375rem;font-weight:600;margin-bottom:.5rem">Como incluir um novo administrador</h3>
+            <p class="cell-muted" style="font-size:.8125rem;line-height:1.7;margin:0">
+              1. No Supabase, em <strong>Authentication → Users → Add user</strong>, crie o usuário com e-mail e senha
+              (marque <em>Auto Confirm User</em>).<br>
+              2. Copie o UUID gerado e rode no SQL Editor:
+            </p>
+            <pre style="background:var(--bg-muted);border-radius:var(--radius-card);padding:.875rem 1rem;font-size:.8125rem;overflow-x:auto;margin:.75rem 0 0"><code>insert into admins (id, name, email, role)
+values (&#39;UUID-AQUI&#39;, &#39;Nome&#39;, &#39;email@love.com.br&#39;, &#39;admin&#39;);</code></pre>
+            <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:.75rem 0 0">
+              A senha é definida por você no Supabase — o painel nunca a armazena nem a manipula.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/funcoes.js"></script>
+</body>
+</html>

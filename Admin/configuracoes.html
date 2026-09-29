@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="configuracoes" data-title="Configurações">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem;max-width:900px">
+
+          <div class="card">
+            <div class="card-head"><div><h2>Seus dados</h2><p>Como você aparece no painel</p></div></div>
+            <div class="card-body">
+              <form id="form-perfil">
+                <label class="field">
+                  <span class="field-label">Nome</span>
+                  <input class="field-input" name="name" type="text">
+                </label>
+                <label class="field">
+                  <span class="field-label">E-mail</span>
+                  <input class="field-input" name="email" type="email" disabled>
+                </label>
+                <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:0 0 1rem">
+                  O e-mail e a senha são gerenciados no Supabase, em Authentication → Users.
+                  O painel não guarda nem altera senha.
+                </p>
+                <button type="button" class="btn btn-primary" id="btn-salvar-perfil">Salvar</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><div><h2>Empresa</h2><p>Dados da razão social</p></div></div>
+            <div class="card-body">
+              <div class="stat-row" style="grid-template-columns:1fr">
+                <div class="stat-box">
+                  <p class="label">Razão social</p>
+                  <p class="value" style="font-size:.9375rem">Love Hub Ltda.</p>
+                </div>
+                <div class="stat-box">
+                  <p class="label">CNPJ</p>
+                  <p class="value" style="font-size:.9375rem">53.884.960/0001-65</p>
+                </div>
+                <div class="stat-box">
+                  <p class="label">Domínio do painel</p>
+                  <p class="value" style="font-size:.9375rem">admin.love.com.br</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/configuracoes.js"></script>
+</body>
+</html>

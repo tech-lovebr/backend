@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visão geral — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="dashboard" data-title="Visão geral">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="kpi-grid" id="kpi-grid"></section>
+
+        <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem;margin-top:1rem">
+          <div class="card">
+            <div class="card-head"><div><h2>Últimas contas criadas</h2><p>Fornecedores e clientes recém-cadastrados</p></div></div>
+            <div class="table-wrap">
+              <table class="data"><thead><tr><th>Conta</th><th>Tipo</th><th>E-mail</th><th>Criada em</th></tr></thead>
+              <tbody id="tbody-contas"></tbody></table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="justify-content:space-between">
+              <div><h2>Chamados recentes</h2><p>Canal de atendimento</p></div>
+              <a href="atendimento.html" class="btn btn-ghost btn-sm">Ver todos</a>
+            </div>
+            <div class="table-wrap">
+              <table class="data"><thead><tr><th>Protocolo</th><th>Assunto</th><th>Origem</th><th>Status</th></tr></thead>
+              <tbody id="tbody-tickets"></tbody></table>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:1rem">
+          <div class="card-head"><div><h2>Eventos por categoria</h2><p>Distribuição das comemorações criadas na plataforma</p></div></div>
+          <div class="card-body" id="categorias-eventos"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

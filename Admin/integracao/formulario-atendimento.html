@@ -1,0 +1,109 @@
+<!--
+  LOVE — Formulário do canal de atendimento (trecho para copiar e colar)
+
+  Este arquivo NÃO faz parte do painel admin: é o pedaço que alimenta a caixa
+  de entrada de Atendimento. Cole onde quiser abrir um chamado:
+
+    • site público (index.html na raiz)  → origem: 'site'
+    • plataforma logada dos noivos       → origem: 'cliente'
+    • B2B dos fornecedores               → origem: 'fornecedor'
+
+  Requisitos na página que receber o trecho:
+    1. o SDK do Supabase carregado (já existe no B2B e na plataforma);
+    2. a constante `supabaseClient` disponível (js/supabase-init.js).
+
+  A policy "tickets_public_insert" (migration 004) permite que qualquer
+  visitante abra um chamado, inclusive sem login. Ler o chamado de volta,
+  porém, só o próprio autor logado e o administrador conseguem.
+-->
+
+<form id="form-atendimento" class="form-atendimento">
+  <label>
+    <span>Nome</span>
+    <input name="nome" type="text" required>
+  </label>
+
+  <label>
+    <span>E-mail</span>
+    <input name="email" type="email" required>
+  </label>
+
+  <label>
+    <span>Telefone (opcional)</span>
+    <input name="telefone" type="tel">
+  </label>
+
+  <label>
+    <span>Assunto</span>
+    <input name="assunto" type="text" required>
+  </label>
+
+  <label>
+    <span>Categoria</span>
+    <select name="categoria">
+      <option value="Dúvida">Dúvida</option>
+      <option value="Financeiro">Financeiro</option>
+      <option value="Problema técnico">Problema técnico</option>
+      <option value="Outro">Outro</option>
+    </select>
+  </label>
+
+  <label>
+    <span>Mensagem</span>
+    <textarea name="mensagem" rows="5" required></textarea>
+  </label>
+
+  <button type="submit">Enviar mensagem</button>
+  <p id="atendimento-retorno" hidden></p>
+</form>
+
+<script>
+  (function () {
+    // Troque para 'cliente' ou 'fornecedor' conforme a página que receber o trecho.
+    const ORIGEM = 'site';
+
+    const form = document.getElementById('form-atendimento');
+    const retorno = document.getElementById('atendimento-retorno');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const botao = form.querySelector('button[type="submit"]');
+      const dados = Object.fromEntries(new FormData(form).entries());
+
+      botao.disabled = true;
+      retorno.hidden = true;
+
+      // Se houver alguém logado, o chamado fica vinculado à conta — é o que
+      // permite a pessoa acompanhar a resposta depois dentro da plataforma.
+      const { data: { session } } = await supabaseClient.auth.getSession();
+
+      // Sem .select() de propósito: o RETURNING do Postgres exige permissão de
+      // leitura, e quem não está logado não pode ler chamados (nem os seus).
+      // Por isso a mensagem inicial vai no próprio ticket, em `mensagem`.
+      const { error } = await supabaseClient
+        .from('tickets')
+        .insert({
+          origem: ORIGEM,
+          user_id: session ? session.user.id : null,
+          nome: dados.nome,
+          email: dados.email,
+          telefone: dados.telefone || null,
+          assunto: dados.assunto,
+          categoria: dados.categoria,
+          mensagem: dados.mensagem
+        });
+
+      botao.disabled = false;
+      retorno.hidden = false;
+
+      if (error) {
+        retorno.textContent = 'Não foi possível enviar sua mensagem. Tente novamente em instantes.';
+        return;
+      }
+
+      form.reset();
+      retorno.textContent = 'Mensagem enviada! Nossa equipe responde no e-mail informado.';
+    });
+  })();
+</script>

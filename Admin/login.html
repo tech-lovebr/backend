@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo — Love</title>
+  <meta name="description" content="Acesso restrito à administração da plataforma Love.">
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+</head>
+<body>
+
+  <div class="login-shell">
+
+    <!-- Coluna visual -->
+    <div class="login-visual" style="width:42%;display:none;flex-direction:column;justify-content:space-between;padding:3rem;color:#fff" id="login-visual">
+      <div style="display:flex;align-items:center;gap:.625rem">
+        <img src="assets/logo-white.png" alt="Love" style="height:30px;width:auto;object-fit:contain">
+        <span style="font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border-left:1px solid rgba(255,255,255,.3);padding-left:.625rem">Administração</span>
+      </div>
+
+      <div style="max-width:24rem">
+        <p style="font-size:1.5rem;font-weight:600;line-height:1.35;margin:0 0 1rem">Controle total da plataforma Love em um só painel.</p>
+        <p style="font-size:.875rem;color:rgba(255,255,255,.78);line-height:1.6;margin:0">Fornecedores, clientes, eventos, financeiro e atendimento — tudo o que acontece no site, no B2B e na plataforma dos noivos.</p>
+      </div>
+
+      <p style="font-size:.75rem;color:rgba(255,255,255,.65);margin:0">© 2026 Love. Acesso restrito e monitorado.</p>
+    </div>
+
+    <!-- Coluna de formulário -->
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:1.5rem;background:#fff">
+      <div class="login-card">
+
+        <img src="assets/logo_blue.png" alt="Love" style="height:50px;width:auto;object-fit:contain;margin-bottom:2.25rem">
+
+        <h1 style="font-size:1.5rem;font-weight:700;margin-bottom:.25rem">Painel administrativo</h1>
+        <p style="font-size:.875rem;color:var(--text-muted);margin:0 0 1.75rem">Acesso restrito à equipe Love.</p>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label class="field-label" for="login-email">E-mail</label>
+            <input class="field-input" id="login-email" type="email" placeholder="voce@love.com.br" autocomplete="username" required>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="login-password">Senha</label>
+            <input class="field-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;padding:.75rem;margin-top:.5rem" id="login-submit">
+            Entrar no painel
+          </button>
+
+          <p id="login-error" style="display:none;font-size:.8125rem;color:var(--danger);background:var(--danger-bg);padding:.625rem .75rem;border-radius:var(--radius-control);margin:.875rem 0 0;line-height:1.5"></p>
+        </form>
+
+        <p id="nota-demo" style="display:none;font-size:.75rem;color:var(--primary-color);background:var(--info-bg);padding:.75rem .875rem;border-radius:var(--radius-control);margin:1.25rem 0 0;line-height:1.6">
+          <strong>Modo demonstração.</strong> Os dados são fictícios e ficam só neste navegador.
+          Entre com qualquer e-mail e senha para ver o painel.
+        </p>
+
+        <p id="nota-producao" style="font-size:.75rem;color:var(--text-soft);margin:2rem 0 0;line-height:1.6">
+          Esta área não possui cadastro público. Novos administradores são criados
+          diretamente no Supabase pela equipe responsável.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Coluna visual só em telas largas (CSS inline + JS para evitar flash).
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      document.getElementById('login-visual').style.display = 'flex';
+    }
+
+    const form = document.getElementById('login-form');
+    const errorEl = document.getElementById('login-error');
+    const submitBtn = document.getElementById('login-submit');
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+
+    // Mensagem de quem logou com uma conta que não é de administrador.
+    if (new URLSearchParams(location.search).get('erro') === 'sem-acesso') {
+      showError('Esta conta não tem permissão de administrador. Fale com a equipe Love para liberar o acesso.');
+    }
+
+    if (MODO_DEMO_ATIVO) {
+      document.getElementById('nota-demo').style.display = 'block';
+      document.getElementById('nota-producao').style.display = 'none';
+      document.getElementById('login-email').value = 'admin@love.com.br';
+      document.getElementById('login-password').value = 'demo';
+    }
+
+    // Já logado e com permissão? Vai direto para o dashboard.
+    if (!MODO_DEMO_ATIVO) supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return;
+      const { data } = await supabaseClient.from('admins')
+        .select('id, active').eq('id', session.user.id).maybeSingle();
+      if (data && data.active) window.location.replace('dashboard.html');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!email || !password) {
+        showError('Preencha e-mail e senha para continuar.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Entrando...';
+
+      const { data: signIn, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Entrar no painel';
+        showError('E-mail ou senha incorretos.');
+        return;
+      }
+
+      // Autenticou — mas só entra quem está na tabela `admins` e está ativo.
+      const { data: admin } = await supabaseClient.from('admins')
+        .select('id, active').eq('id', signIn.user.id).maybeSingle();
+
+      if (!admin || !admin.active) {
+        await supabaseClient.auth.signOut();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Entrar no painel';
+        showError('Esta conta não tem permissão de administrador.');
+        return;
+      }
+
+      window.location.replace('dashboard.html');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo — Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+</head>
+<body>
+  <script>
+    // Porta de entrada de admin.love.com.br: manda para o painel se já houver
+    // sessão de administrador, senão para o login.
+    supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session) return window.location.replace('login.html');
+      const { data } = await supabaseClient.from('admins')
+        .select('id, active').eq('id', session.user.id).maybeSingle();
+      window.location.replace(data && data.active ? 'dashboard.html' : 'login.html');
+    });
+  </script>
+</body>
+</html>

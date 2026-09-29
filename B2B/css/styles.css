@@ -1301,29 +1301,24 @@ body[data-theme="dark"] .b2b-avatar { background: #FFFFFF; }
 body.sidebar-collapsed .b2b-sidebar { width: var(--sidebar-collapsed-width); }
 body.sidebar-collapsed .b2b-main { margin-left: var(--sidebar-collapsed-width); }
 
-.sidebar-edge-toggle {
-  position: absolute;
-  top: 50%;
-  right: -13px;
-  transform: translateY(-50%);
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  background: #181D24;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+.topbar-collapse-toggle {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-control);
+  background: #FFFFFF;
+  border: 1px solid #E4E4E4;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #C4C4CC;
+  color: #71717A;
   cursor: pointer;
-  z-index: 65;
   padding: 0;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.sidebar-edge-toggle:hover { background: #22272F; color: #FFFFFF; }
-.sidebar-edge-toggle svg { width: 13px; height: 13px; transition: transform 0.25s ease; }
+.topbar-collapse-toggle:hover { background: #F4F4F5; color: #18181B; }
+.topbar-collapse-toggle svg { width: 14px; height: 14px; }
 
 .sidebar-brand-top {
   width: 100%;
@@ -1632,8 +1627,8 @@ body[data-theme="dark"] .upgrade-card-plan strong { color: rgba(255, 255, 255, 0
 
 body[data-theme="dark"] .b2b-sidebar { background-color: #333333 !important; border-right-color: #404040 !important; }
 body[data-theme="dark"] .sidebar-brand-top { border-bottom-color: #404040 !important; }
-body[data-theme="dark"] .sidebar-edge-toggle { background: #333333 !important; border-color: #4b4b4b !important; color: #ffffff !important; }
-body[data-theme="dark"] .sidebar-edge-toggle:hover { background: #4b4b4b !important; color: #ffffff !important; }
+body[data-theme="dark"] .topbar-collapse-toggle { background: #4E4E4E !important; border-color: transparent !important; color: #ffffff !important; }
+body[data-theme="dark"] .topbar-collapse-toggle:hover { background: #5A5A5A !important; }
 body[data-theme="dark"] .sidebar-nav-item,
 body[data-theme="dark"] .sidebar-nav-item svg,
 body[data-theme="dark"] .sidebar-nav-item svg * { color: #ffffff !important; stroke: #ffffff !important; }
@@ -1809,17 +1804,24 @@ body[data-theme="dark"] .b2b-main { background-color: #333333 !important; }
 
 /* -------------------- Barra de busca / botão upgrade / ícones topbar -------------------- */
 
+.topbar-account-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
 .topbar-account-name {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #18181B;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #52525B;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 220px;
-  flex-shrink: 0;
+  max-width: 180px;
 }
-body[data-theme="dark"] .topbar-account-name { color: #FFFFFF !important; }
+body[data-theme="dark"] .topbar-account-name { color: rgba(255, 255, 255, 0.75) !important; }
 
 .topbar-search-trigger {
   display: flex;
@@ -3454,7 +3456,7 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
   .b2b-footer { display: none; }
 
   .b2b-topbar { padding: 0 1rem; gap: 0.5rem; }
-  .topbar-account-name { display: none; }
+  .topbar-account-wrap { display: none; }
 
   .topbar-services-mobile-link { display: flex; }
   .topbar-messages-mobile-hide { display: none; }

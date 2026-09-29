@@ -273,6 +273,7 @@ function initUserCard() {
   renderAvatarInto(document.getElementById('profile-dropdown-avatar'), p.profilePhoto);
 
   setText('profile-dropdown-name', p.company);
+  setText('topbar-account-name', p.company);
   setText('profile-dropdown-email', p.email);
   setText('upgrade-current-plan', p.plan);
 }

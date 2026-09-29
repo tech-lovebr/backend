@@ -1305,19 +1305,19 @@ body.sidebar-collapsed .b2b-main { margin-left: var(--sidebar-collapsed-width); 
   width: 30px;
   height: 30px;
   border-radius: var(--radius-control);
-  background: #FFFFFF;
-  border: 1px solid #E4E4E4;
+  background: #181D24;
+  border: 1px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #71717A;
+  color: #EBF4FF;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.topbar-collapse-toggle:hover { background: #F4F4F5; color: #18181B; }
+.topbar-collapse-toggle:hover { background: #0F1216; color: #EBF4FF; }
 .topbar-collapse-toggle svg { width: 14px; height: 14px; }
 
 .sidebar-brand-top {
@@ -1859,8 +1859,6 @@ body[data-theme="dark"] .topbar-search-trigger kbd { background: #5A5A5A !import
 .topbar-upgrade-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-left: 0.75rem;
   color: var(--primary-color);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -1870,7 +1868,6 @@ body[data-theme="dark"] .topbar-search-trigger kbd { background: #5A5A5A !import
 }
 
 .topbar-upgrade-btn:hover { color: var(--primary-hover); }
-.topbar-upgrade-btn svg { width: 18px; height: 18px; stroke-width: 1.6px; flex-shrink: 0; }
 
 body[data-theme="dark"] .topbar-upgrade-btn { color: #FFFFFF !important; }
 body[data-theme="dark"] .topbar-upgrade-btn:hover { color: rgba(255, 255, 255, 0.75) !important; }
@@ -3545,9 +3542,6 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
 
   .topbar-search-trigger span,
   .topbar-search-trigger kbd { display: none; }
-
-  .topbar-upgrade-btn span { display: none; }
-  .topbar-upgrade-btn { margin-left: 0; }
 
   .mobile-bottom-nav {
     display: flex;

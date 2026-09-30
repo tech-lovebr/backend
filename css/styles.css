@@ -3387,6 +3387,13 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   color: #18181B; background: #fff;
 }
 .color-alpha-hex:focus { outline: none; border-color: var(--primary-blue); }
+.color-alpha-copy-btn {
+  width: 34px; height: 34px; flex-shrink: 0; border: 1px solid var(--border-light); border-radius: 7px;
+  background: #fff; color: #71717A; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background-color .15s ease, color .15s ease;
+}
+.color-alpha-copy-btn svg { width: 16px; height: 16px; }
+.color-alpha-copy-btn:hover { background: #F4F4F5; color: #18181B; }
 .color-alpha-range-row { display: flex; flex-direction: column; gap: 0.35rem; }
 .color-alpha-range-label { font-size: 0.75rem; color: #71717A; }
 .color-alpha-range { width: 100%; }

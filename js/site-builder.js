@@ -2054,6 +2054,7 @@ function colorSwatchPopoverHtml(value, attrs) {
         <div class="color-alpha-top-row">
           <input type="color" class="color-alpha-native" ${attrs || ''} value="${v}">
           <input type="text" class="color-alpha-hex" value="${isEmpty ? '' : escapeHtml(v.toUpperCase())}" maxlength="7" spellcheck="false" placeholder="#000000">
+          <button type="button" class="color-alpha-copy-btn" data-color-swatch-copy title="Copiar cor">${BI.duplicate}</button>
         </div>
       </div>
     </div>
@@ -2091,9 +2092,21 @@ function wireColorSwatchPopovers(root) {
     const popover = field.querySelector('[data-color-swatch-popover]');
     const nativeColor = field.querySelector('.color-alpha-native');
     const hexInput = field.querySelector('.color-alpha-hex');
+    const copyBtn = field.querySelector('[data-color-swatch-copy]');
     if (!toggle || !popover || !nativeColor || !hexInput) return;
 
     wireColorPopoverToggle(field, toggle, popover);
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const val = hexInput.value.trim() || nativeColor.value;
+        if (!val) return;
+        navigator.clipboard?.writeText(val).then(() => {
+          showToast('Cor copiada!');
+        }).catch(() => {});
+      });
+    }
 
     nativeColor.addEventListener('input', () => {
       hexInput.value = nativeColor.value.toUpperCase();

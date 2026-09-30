@@ -1836,7 +1836,6 @@ body[data-theme="dark"] .topbar-account-name { color: rgba(255, 255, 255, 0.75) 
   font-size: 0.8125rem;
   cursor: pointer;
   width: 340px;
-  box-shadow: var(--shadow-soft);
   transition: border-color .15s ease, background-color .15s ease;
 }
 

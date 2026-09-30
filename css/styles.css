@@ -3908,19 +3908,6 @@ body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important;
 @media (max-width: 768px) { .builder-section { min-height: 0; } }
 .builder-fixed-header, .builder-mobile-menu-root { display: none !important; }
 
-/* Seção de capa (primeira seção de conteúdo): sempre ocupa a tela cheia com a
-   imagem de fundo, mesmo com o ajuste de "página única" acima que faz as
-   demais seções abraçarem a altura do conteúdo. */
-.builder-section.is-first-content-section {
-  min-height: 100vh;
-  padding: 0;
-  justify-content: center;
-}
-.builder-canvas[data-device="mobile"] .builder-section.is-first-content-section { min-height: 100dvh; }
-@media (max-width: 768px) {
-  .builder-section.is-first-content-section { min-height: 100dvh; }
-}
-
 .builder-canvas-end-dropzone {
   display: flex;
   flex-direction: column;

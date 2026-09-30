@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-status').addEventListener('change', render);
   document.getElementById('filtro-origem').addEventListener('change', render);
+
+  moverControlesParaHeader();
+  aplicarBuscaDaUrl(document.getElementById('busca'));
 });
 
 function renderKpis() {
@@ -56,8 +59,6 @@ function render() {
   const tbody = document.getElementById('tbody');
   const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
-  document.getElementById('contador').textContent =
-    `${formatNumber(lista.length)} de ${formatNumber(TICKETS.length)}`;
 
   if (!lista.length) {
     renderEmpty(tbody, 7, 'Nenhum chamado encontrado',

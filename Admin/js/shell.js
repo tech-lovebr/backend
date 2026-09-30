@@ -15,14 +15,14 @@ const NAV_SECTIONS = [
     items: [
       {
         // Grupos não navegam: clicar apenas abre e fecha os filhos.
-        grupo: 'fornecedores', text: 'Fornecedores', icon: 'store',
+        grupo: 'fornecedores', text: 'B2B', icon: 'store',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Contas' },
           { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Dashboard' }
         ]
       },
       {
-        grupo: 'clientes', text: 'Clientes', icon: 'users',
+        grupo: 'clientes', text: 'Anfitriões', icon: 'users',
         children: [
           { page: 'clientes', href: 'clientes.html', text: 'Contas' },
           { page: 'clientes-dashboard', href: 'clientes-dashboard.html', text: 'Dashboard' }
@@ -37,6 +37,13 @@ const NAV_SECTIONS = [
       { page: 'financeiro', href: 'financeiro.html', text: 'Financeiro', icon: 'wallet' },
       { page: 'atendimento', href: 'atendimento.html', text: 'Atendimento', icon: 'chat', badge: 'tickets-abertos' }
     ]
+  },
+  {
+    label: 'Vendas',
+    items: [
+      { page: 'servicos', href: 'servicos.html', text: 'Serviços', icon: 'shield' },
+      { page: 'viagens', href: 'viagens.html', text: 'Love Viagens', icon: 'plane' }
+    ]
   }
 ];
 
@@ -48,6 +55,8 @@ const ICONS = {
   calendar: '<path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M16 3l0 4" /><path d="M8 3l0 4" /><path d="M4 11l16 0" /><path d="M8 15h2v2h-2z" />',
   wallet: '<path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" />',
   menu: '<path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" />',
+  shield: '<path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" />',
+  plane: '<path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" />',
   chat: '<path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" />',
 };
 
@@ -181,10 +190,25 @@ function renderHeaderBar() {
   const content = document.querySelector('.admin-content');
   if (!content || content.querySelector('.admin-header-bar')) return;
 
+  // Uma página pode apontar para o site que ela administra (data-title-link);
+  // o ícone abre em outra aba, com rel de segurança.
+  const link = document.body.dataset.titleLink;
+  const atalho = link ? `
+    <a class="header-bar-link" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer"
+       title="Abrir ${escapeHtml(link.replace(/^https?:\/\//, ''))}" aria-label="Abrir site em nova aba">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />
+        <path d="M11 13l9 -9" /><path d="M15 4h5v5" />
+      </svg>
+    </a>` : '';
+
   const barra = document.createElement('div');
   barra.className = 'admin-header-bar';
   barra.innerHTML = `
-    <h1>${escapeHtml(document.body.dataset.title || 'Painel')}</h1>
+    <div class="header-bar-titulo">
+      <h1>${escapeHtml(document.body.dataset.title || 'Painel')}</h1>
+      ${atalho}
+    </div>
     <div class="admin-header-actions" id="header-actions"></div>`;
   content.prepend(barra);
 }
@@ -205,7 +229,6 @@ function renderTopbar(admin) {
     </button>
     <div class="admin-user">
       <button type="button" class="admin-user-chip" id="btn-user-menu" aria-haspopup="true" aria-expanded="false">
-        <span class="avatar">${escapeHtml(initials(admin.name || admin.email))}</span>
         <span class="name">${escapeHtml(admin.name || 'Administrador')}</span>
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>

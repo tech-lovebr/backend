@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=24">
+  <link rel="stylesheet" href="css/admin.css?v=33">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -34,15 +34,17 @@
           <input type="search" class="search-input" id="busca" placeholder="Buscar nome ou e-mail...">
         </div>
 
-        <div class="table-wrap table-bleed">
+        <section class="card table-card">
+          <div class="table-wrap">
           <table class="data">
             <thead><tr>
               <th>Conta</th><th>E-mail</th><th>Telefone</th><th>Eventos</th>
               <th>Convidados</th><th>Presentes</th><th>Saldo em conta</th><th>Criada em</th>
             </tr></thead>
             <tbody id="tbody"></tbody>
-          </table>
-        </div>
+            </table>
+          </div>
+        </section>
       </main>
     </div>
   </div>

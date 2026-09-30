@@ -119,21 +119,59 @@ function demoSeed() {
     { id: id('cwt', 5), cliente_id: id('cli', 4), evento_id: id('evt', 5), type: 'credit', amount: 1620, description: 'Presentes recebidos', created_at: diasAtras(3) }
   ];
 
-  const wallet_transactions = [
-    { id: id('wt', 1), fornecedor_id: id('forn', 1), type: 'credit', amount: 42800, description: 'Contrato Beatriz & Lucas', created_at: diasAtras(40) },
-    { id: id('wt', 2), fornecedor_id: id('forn', 1), type: 'debit', amount: 12000, description: 'Saque via Pix', created_at: diasAtras(22) },
-    { id: id('wt', 3), fornecedor_id: id('forn', 2), type: 'credit', amount: 18300, description: 'Contrato Marina & Téo', created_at: diasAtras(28) },
-    { id: id('wt', 4), fornecedor_id: id('forn', 4), type: 'credit', amount: 31500, description: 'Pacote fotografia', created_at: diasAtras(11) },
-    { id: id('wt', 5), fornecedor_id: id('forn', 4), type: 'debit', amount: 8000, description: 'Saque via Pix', created_at: diasAtras(4) },
-    { id: id('wt', 6), fornecedor_id: id('forn', 3), type: 'credit', amount: 6200, description: 'Decoração floral', created_at: diasAtras(6) }
+  // Espalhado por seis meses, para o gráfico de evolução ter série de verdade.
+  const wallet_transactions = [];
+  const creditosPorMes = [
+    { dias: 165, valores: [[1, 8400], [2, 5200]] },
+    { dias: 135, valores: [[1, 11200], [3, 4100], [2, 6300]] },
+    { dias: 105, valores: [[1, 14600], [4, 9800], [2, 3900]] },
+    { dias: 75, valores: [[1, 17300], [4, 12400], [3, 5200]] },
+    { dias: 45, valores: [[1, 21500], [4, 15900], [2, 8600], [3, 4300]] },
+    { dias: 15, valores: [[1, 26800], [4, 19300], [2, 11400], [3, 6200]] }
   ];
 
-  const contracts = [
-    { id: id('ctr', 1), fornecedor_id: id('forn', 1), client_name: 'Beatriz & Lucas', categoria: 'Decoração', valor_total: 32000, valor_pago: 18000, parcelas_pagas: 3, parcelas_total: 6, status: 'em_dia', created_at: diasAtras(90) },
-    { id: id('ctr', 2), fornecedor_id: id('forn', 1), client_name: 'Marina & Téo', categoria: 'Assessoria', valor_total: 9000, valor_pago: 2000, parcelas_pagas: 1, parcelas_total: 5, status: 'atrasado', created_at: diasAtras(45) },
-    { id: id('ctr', 3), fornecedor_id: id('forn', 2), client_name: 'Marina & Téo', categoria: 'Buffet', valor_total: 14500, valor_pago: 14500, parcelas_pagas: 4, parcelas_total: 4, status: 'quitado', created_at: diasAtras(70) },
-    { id: id('ctr', 4), fornecedor_id: id('forn', 4), client_name: 'Helena & Rafa', categoria: 'Fotografia', valor_total: 12800, valor_pago: 6400, parcelas_pagas: 2, parcelas_total: 4, status: 'em_dia', created_at: diasAtras(20) }
-  ];
+  let wt = 0;
+  creditosPorMes.forEach(mes => {
+    mes.valores.forEach(([forn, valor]) => {
+      wt += 1;
+      wallet_transactions.push({
+        id: id('wt', wt), fornecedor_id: id('forn', forn),
+        type: 'credit', amount: valor, description: 'Recebimento de contrato',
+        created_at: diasAtras(mes.dias)
+      });
+    });
+  });
+
+  [[1, 12000, 22], [4, 8000, 4]].forEach(([forn, valor, dias]) => {
+    wt += 1;
+    wallet_transactions.push({
+      id: id('wt', wt), fornecedor_id: id('forn', forn),
+      type: 'debit', amount: valor, description: 'Saque via Pix', created_at: diasAtras(dias)
+    });
+  });
+
+  const contracts = [];
+  [
+    [1, 'Beatriz & Lucas', 'Decoração', 32000, 18000, 'em_dia', 160],
+    [2, 'Ana & Pedro', 'Buffet', 11500, 11500, 'quitado', 150],
+    [1, 'Helena & Rafa', 'Decoração', 18400, 9200, 'em_dia', 128],
+    [3, 'Camila Duarte', 'Floricultura', 6800, 6800, 'quitado', 120],
+    [4, 'Marina & Téo', 'Fotografia', 21000, 12600, 'em_dia', 98],
+    [1, 'Marina & Téo', 'Assessoria', 9000, 2000, 'atrasado', 88],
+    [2, 'Marina & Téo', 'Buffet', 14500, 14500, 'quitado', 70],
+    [4, 'Helena & Rafa', 'Fotografia', 12800, 6400, 'em_dia', 52],
+    [1, 'Camila Duarte', 'Decoração', 15600, 7800, 'em_dia', 38],
+    [3, 'Beatriz & Lucas', 'Floricultura', 7400, 3700, 'em_dia', 24],
+    [4, 'Ana & Pedro', 'Fotografia', 16200, 4000, 'atrasado', 12],
+    [1, 'Ana & Pedro', 'Decoração', 13800, 0, 'em_dia', 5]
+  ].forEach(([forn, cliente, categoria, total, pago, status, dias], i) => {
+    contracts.push({
+      id: id('ctr', i + 1), fornecedor_id: id('forn', forn),
+      client_name: cliente, categoria, valor_total: total, valor_pago: pago,
+      parcelas_pagas: pago ? 2 : 0, parcelas_total: 4,
+      status, created_at: diasAtras(dias)
+    });
+  });
 
   const payment_links = [
     { id: id('pl', 1), fornecedor_id: id('forn', 1), amount: 8400, installments: 3, status: 'pago', created_at: diasAtras(35), paid_at: diasAtras(34) },
@@ -197,29 +235,29 @@ function demoSeed() {
 
   // Fornecedor — guias (os mesmos de B2B/guias.html) e suas perguntas
   const guias = [
-    ['Guia de mensagens', 'Como conversar com os casais pelo chat', '💬', [
+    ['Guia de mensagens', null, null, [
       ['Como as mensagens chegam até mim?', 'Toda conversa nasce de um lead ou de um contato feito pelo cliente na sua vitrine. As mensagens chegam em tempo real, sem precisar recarregar a página.'],
       ['Posso enviar anexos?', 'Sim. São aceitos imagens, PDF e contratos em arquivos de até 10 MB.'],
       ['Existe um prazo ideal de resposta?', 'Responder em até 2 horas aumenta consideravelmente a chance de fechar o contrato.']
     ]],
-    ['Guia de CRM', 'Leads, funil e propostas', '📇', [
+    ['Guia de CRM', null, null, [
       ['O que é um lead?', 'É todo contato interessado nos seus serviços, venha da vitrine, do chat ou cadastrado por você na mão.'],
       ['Como o status do lead muda?', 'O status acompanha o funil: novo, em conversa, proposta enviada e fechado.']
     ]],
-    ['Guia de contratos', 'Emissão, parcelas e convidados', '📄', [
+    ['Guia de contratos', null, null, [
       ['Como gerar um contrato?', 'A partir de um lead fechado, o contrato já nasce com os dados do cliente preenchidos.'],
       ['Posso parcelar o pagamento?', 'Sim, defina o número de parcelas e o painel acompanha o que já foi pago e o que está em aberto.']
     ]],
-    ['Guia de produtos e serviços', 'Monte seu catálogo', '📦', [
+    ['Guia de produtos e serviços', null, null, [
       ['Qual a diferença entre produto e serviço?', 'Na prática nenhuma para o sistema: ambos viram itens da sua vitrine, com foto, descrição e preço.']
     ]],
-    ['Guia de vitrine', 'Sua página pública', '🏪', [
+    ['Guia de vitrine', null, null, [
       ['Quem vê a minha vitrine?', 'Qualquer pessoa com o link, mesmo sem conta na Love. Ela também aparece na busca de fornecedores.']
     ]],
-    ['Guia de agenda', 'Tarefas, quadro e calendário', '📅', [
+    ['Guia de agenda', null, null, [
       ['Qual a diferença entre tarefa e evento?', 'Tarefa vive no quadro e tem responsável; evento aparece no calendário com data e hora.']
     ]],
-    ['Guia financeiro', 'Carteira, saques e notas fiscais', '💳', [
+    ['Guia financeiro', null, null, [
       ['Quando o dinheiro fica disponível?', 'Assim que o cliente paga o link, o valor entra na sua carteira e pode ser sacado via Pix.']
     ]]
   ];
@@ -253,7 +291,24 @@ function demoSeed() {
   const servicoRsvp = bloco({ plataforma: 'cliente', secao: 'servico', titulo: 'Confirmação de presença', subtitulo: 'RSVP online', descricao: 'Seus convidados confirmam pelo site e você acompanha em tempo real.', posicao: 1, ativo: true });
   bloco({ plataforma: 'cliente', secao: 'beneficio', titulo: 'Controle de mesas', descricao: 'Organize quem senta onde direto no painel.', icone: '🪑', posicao: 1, ativo: true, parent_id: servicoRsvp });
 
+  const servicos_beneficios = [
+    { id: id('svc', 1), nome: 'Seguro saúde para o casal', categoria: 'Saúde', parceiro: 'Porto Seguro', descricao: 'Cobertura hospitalar e ambulatorial para os dois, com carência reduzida.', preco: 289.9, preco_de: 349.9, periodicidade: 'mensal', destaque: true, posicao: 1, ativo: true, created_at: diasAtras(90) },
+    { id: id('svc', 2), nome: 'Seguro do evento', categoria: 'Seguro', parceiro: 'Allianz', descricao: 'Protege contra cancelamento, danos ao local e responsabilidade civil.', preco: 1490, periodicidade: 'unico', destaque: true, posicao: 2, ativo: true, created_at: diasAtras(84) },
+    { id: id('svc', 3), nome: 'Assistência odontológica', categoria: 'Saúde', parceiro: 'OdontoPrev', descricao: 'Limpeza e clareamento antes do grande dia.', preco: 79.9, periodicidade: 'mensal', posicao: 3, ativo: true, created_at: diasAtras(60) },
+    { id: id('svc', 4), nome: 'Seguro de alianças e joias', categoria: 'Seguro', parceiro: 'Porto Seguro', descricao: 'Cobre perda, roubo e danos às alianças.', preco: 240, periodicidade: 'anual', posicao: 4, ativo: true, created_at: diasAtras(45) },
+    { id: id('svc', 5), nome: 'Consultoria financeira do casal', categoria: 'Financeiro', parceiro: 'Love Finanças', descricao: 'Três sessões para planejar o orçamento do casamento.', preco: 690, preco_de: 890, periodicidade: 'unico', posicao: 5, ativo: false, created_at: diasAtras(20) }
+  ];
+
+  const viagens_pacotes = [
+    { id: id('vgm', 1), titulo: 'Maldivas — 7 noites all inclusive', destino: 'Maldivas', tipo: 'lua_de_mel', descricao: 'Bangalô sobre a água, jantar privativo na praia e passeio de mergulho.', preco: 28900, preco_de: 33900, parcelas: 12, duracao_noites: 7, data_inicio: '2027-04-12', data_fim: '2027-04-19', vagas: 20, vagas_vendidas: 14, inclui: ['Aéreo ida e volta', 'Bangalô sobre a água', 'All inclusive', 'Transfer de hidroavião'], destaque: true, posicao: 1, ativo: true, created_at: diasAtras(120) },
+    { id: id('vgm', 2), titulo: 'Toscana a dois — 5 noites', destino: 'Itália', tipo: 'lua_de_mel', descricao: 'Vinícolas, cozinha típica e hotel boutique em Siena.', preco: 19400, parcelas: 10, duracao_noites: 5, data_inicio: '2027-06-03', data_fim: '2027-06-08', vagas: 16, vagas_vendidas: 16, inclui: ['Aéreo ida e volta', 'Café da manhã', 'Tour de vinícolas', 'Carro alugado'], posicao: 2, ativo: true, created_at: diasAtras(95) },
+    { id: id('vgm', 3), titulo: 'Casamento em Trancoso', destino: 'Bahia', tipo: 'destination_wedding', descricao: 'Pacote para o casal e convidados, com cerimônia no Quadrado.', preco: 46800, parcelas: 12, duracao_noites: 4, vagas: 8, vagas_vendidas: 3, inclui: ['Hospedagem 4 noites', 'Cerimônia e recepção', 'Assessoria local'], destaque: true, posicao: 3, ativo: true, created_at: diasAtras(70) },
+    { id: id('vgm', 4), titulo: 'Fernando de Noronha — 4 noites', destino: 'Pernambuco', tipo: 'experiencia', descricao: 'Mergulho, trilhas e pousada charmosa.', preco: 12600, preco_de: 14900, parcelas: 8, duracao_noites: 4, vagas: 24, vagas_vendidas: 9, inclui: ['Aéreo ida e volta', 'Pousada', 'Taxa ambiental', 'Passeio de barco'], posicao: 4, ativo: true, created_at: diasAtras(40) },
+    { id: id('vgm', 5), titulo: 'Patagônia — inverno', destino: 'Argentina', tipo: 'experiencia', descricao: 'Em preparação para a temporada.', preco: 21500, parcelas: 10, duracao_noites: 6, vagas: 12, vagas_vendidas: 0, inclui: ['Aéreo ida e volta', 'Hotel', 'Excursão ao glaciar'], posicao: 5, ativo: false, created_at: diasAtras(10) }
+  ];
+
   return {
+    servicos_beneficios, viagens_pacotes,
     admins: [
       { id: 'admin-demo', name: 'Victor Maranhão', email: 'admin@love.com.br', role: 'superadmin', active: true, created_at: diasAtras(300) },
       { id: 'admin-2', name: 'Juliana Prado', email: 'juliana@love.com.br', role: 'admin', active: true, created_at: diasAtras(120) },

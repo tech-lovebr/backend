@@ -24,7 +24,7 @@ const SECOES = {
     label: 'Guias de início',
     descricao: 'Um guia por assunto. Cada guia abre com as perguntas e respostas escritas aqui.',
     vazio: 'Nenhum guia criado ainda. Crie um guia por assunto — mensagens, CRM, contratos, produtos e serviços, vitrine, agenda, financeiro.',
-    campos: ['titulo', 'subtitulo', 'icone', 'descricao']
+    campos: ['titulo', 'descricao']
   },
   faq: {
     label: 'Pergunta',
@@ -46,8 +46,8 @@ const SECOES = {
 
 const GRUPOS = [
   { key: 'informacoes', label: 'Informações', secao: 'banner', botao: null },
-  { key: 'guias', label: 'Guias de início', secao: 'guia', botao: 'Novo guia' },
-  { key: 'servicos', label: 'Serviços', secao: 'servico', botao: 'Novo serviço' }
+  { key: 'guias', label: 'Guias de início', secao: 'guia', botao: 'Adicionar guia' },
+  { key: 'servicos', label: 'Serviços', secao: 'servico', botao: 'Adicionar serviço' }
 ];
 
 const ROTULOS = {
@@ -63,11 +63,12 @@ const ROTULOS = {
 /** Rótulos que mudam de sentido dependendo da seção. */
 const ROTULOS_POR_SECAO = {
   banner: { descricao: 'Texto do banner', link_url: 'Link do banner' },
-  guia: { descricao: 'Introdução (opcional)', subtitulo: 'Resumo (aparece com o guia fechado)' },
+  guia: { descricao: 'Introdução (opcional)' },
   faq: { titulo: 'Pergunta', descricao: 'Resposta' }
 };
 
 let ITENS = [];
+let BOTAO_ADICIONAR = null;
 let GRUPO_ATUAL = GRUPOS[0].key;
 let GUIA_ABERTO = null;
 
@@ -75,9 +76,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   renderTabs();
-  document.getElementById('btn-adicionar').addEventListener('click', () => {
+
+  BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
     abrirFormulario({ secao: grupoAtual().secao });
+  }, {
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
   });
+
   await carregar();
 });
 
@@ -138,16 +143,14 @@ function itensDa(secao) {
 
 function render() {
   const grupo = grupoAtual();
-  const secao = SECOES[grupo.secao];
 
-  document.getElementById('secao-titulo').textContent = secao.label;
-  document.getElementById('secao-descricao').textContent = secao.descricao;
 
   // O carrossel tem os próprios espaços de "adicionar", então o botão do
   // cabeçalho só faz sentido nas outras abas.
-  const botao = document.getElementById('btn-adicionar');
-  botao.hidden = !grupo.botao;
-  if (grupo.botao) botao.lastChild.textContent = ` ${grupo.botao}`;
+  if (BOTAO_ADICIONAR) {
+    BOTAO_ADICIONAR.hidden = !grupo.botao;
+    if (grupo.botao) BOTAO_ADICIONAR.querySelector('span').textContent = grupo.botao;
+  }
 
   if (grupo.key === 'informacoes') return renderBanners();
   if (grupo.key === 'guias') return renderGuias();
@@ -237,18 +240,35 @@ function renderGuias() {
       .sort((a, b) => a.posicao - b.posicao);
 
     return `
-      <article class="faq-item ${g.ativo ? '' : 'is-inativo'} ${aberto ? 'is-open' : ''}">
-        <button type="button" class="faq-head" data-toggle="${g.id}" aria-expanded="${aberto}">
-          ${g.icone ? `<span class="faq-icone">${escapeHtml(g.icone)}</span>` : ''}
-          <span style="flex:1;min-width:0">
-            <span class="faq-titulo">${escapeHtml(g.titulo)}</span>
-            <span class="faq-resumo">${escapeHtml(g.subtitulo || `${perguntas.length} pergunta(s)`)}</span>
+      <article class="faq-item ${g.ativo ? '' : 'is-inativo'} ${aberto ? 'is-open' : ''}"
+               draggable="true" data-id="${g.id}">
+        <div class="faq-head">
+          <span class="faq-arrasta" title="Arraste para reordenar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="9" cy="6" r=".6"/><circle cx="15" cy="6" r=".6"/>
+              <circle cx="9" cy="12" r=".6"/><circle cx="15" cy="12" r=".6"/>
+              <circle cx="9" cy="18" r=".6"/><circle cx="15" cy="18" r=".6"/>
+            </svg>
           </span>
+
+          <button type="button" class="faq-titulo-btn" data-toggle="${g.id}" aria-expanded="${aberto}">
+            <span class="faq-titulo">${escapeHtml(g.titulo)}</span>
+          </button>
+
           ${g.ativo ? '' : badge('rascunho', 'badge-warning')}
-          <svg class="faq-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
-          </svg>
-        </button>
+
+          <button type="button" class="faq-acao" data-renomear="${g.id}" title="Renomear guia" aria-label="Renomear guia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" />
+            </svg>
+          </button>
+
+          <button type="button" class="faq-acao" data-toggle="${g.id}" aria-label="Abrir guia">
+            <svg class="faq-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+            </svg>
+          </button>
+        </div>
 
         ${aberto ? `
           <div class="faq-corpo">
@@ -278,7 +298,137 @@ function renderGuias() {
     });
   });
 
+  lista.querySelectorAll('[data-renomear]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renomearNoLugar(btn.dataset.renomear);
+    });
+  });
+
+  ligarArrastar(lista);
   ligarBotoes(lista);
+}
+
+/* ------------------------------------------------- Renomear no próprio item */
+
+/** Troca o título por um campo de texto, sem abrir painel. */
+function renomearNoLugar(id) {
+  const guia = ITENS.find(i => i.id === id);
+  const artigo = document.querySelector(`.faq-item[data-id="${id}"]`);
+  if (!guia || !artigo || artigo.querySelector('.faq-titulo-input')) return;
+
+  const botao = artigo.querySelector('.faq-titulo-btn');
+  const campo = document.createElement('input');
+  campo.type = 'text';
+  campo.className = 'faq-titulo-input';
+  campo.value = guia.titulo;
+
+  botao.replaceWith(campo);
+  campo.focus();
+  campo.select();
+
+  let encerrado = false;
+
+  const encerrar = async (salvando) => {
+    if (encerrado) return;
+    encerrado = true;
+
+    const novo = campo.value.trim();
+
+    if (!salvando || !novo || novo === guia.titulo) {
+      renderGuias();
+      if (salvando && !novo) toast('O nome do guia não pode ficar vazio.');
+      return;
+    }
+
+    const { error } = await supabaseClient.from('conteudo_plataforma')
+      .update({ titulo: novo }).eq('id', id);
+
+    if (error) {
+      toast(`Não foi possível renomear: ${error.message}`);
+      renderGuias();
+      return;
+    }
+
+    guia.titulo = novo;
+    renderGuias();
+    toast('Guia renomeado.');
+  };
+
+  campo.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); encerrar(true); }
+    if (e.key === 'Escape') { e.preventDefault(); encerrar(false); }
+  });
+  campo.addEventListener('blur', () => encerrar(true));
+}
+
+/* ------------------------------------------------------ Reordenar por arraste */
+
+let ARRASTANDO = null;
+
+function ligarArrastar(lista) {
+  lista.querySelectorAll('.faq-item[draggable]').forEach(item => {
+    item.addEventListener('dragstart', (e) => {
+      ARRASTANDO = item;
+      item.classList.add('is-dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      // Necessário no Firefox para o arraste iniciar.
+      e.dataTransfer.setData('text/plain', item.dataset.id);
+    });
+
+    item.addEventListener('dragend', () => {
+      item.classList.remove('is-dragging');
+      lista.querySelectorAll('.is-drop-alvo').forEach(el => el.classList.remove('is-drop-alvo'));
+      ARRASTANDO = null;
+    });
+
+    item.addEventListener('dragover', (e) => {
+      if (!ARRASTANDO || ARRASTANDO === item) return;
+      e.preventDefault();
+      item.classList.add('is-drop-alvo');
+    });
+
+    item.addEventListener('dragleave', () => item.classList.remove('is-drop-alvo'));
+
+    item.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      item.classList.remove('is-drop-alvo');
+      if (!ARRASTANDO || ARRASTANDO === item) return;
+      await reordenar(ARRASTANDO.dataset.id, item.dataset.id);
+    });
+  });
+}
+
+/** Move o guia arrastado para a posição do guia sobre o qual foi solto. */
+async function reordenar(idArrastado, idAlvo) {
+  const guias = itensDa('guia');
+  const de = guias.findIndex(g => g.id === idArrastado);
+  const para = guias.findIndex(g => g.id === idAlvo);
+  if (de < 0 || para < 0) return;
+
+  const [movido] = guias.splice(de, 1);
+  guias.splice(para, 0, movido);
+
+  // Renumera todos em sequência — evita empates e buracos na ordem.
+  const mudancas = guias
+    .map((g, i) => ({ g, posicao: i + 1 }))
+    .filter(({ g, posicao }) => g.posicao !== posicao);
+
+  mudancas.forEach(({ g, posicao }) => { g.posicao = posicao; });
+  renderGuias();
+
+  const erros = await Promise.all(mudancas.map(({ g }) =>
+    supabaseClient.from('conteudo_plataforma').update({ posicao: g.posicao }).eq('id', g.id)
+  ));
+
+  const falhou = erros.find(r => r && r.error);
+  if (falhou) {
+    toast(`Não foi possível salvar a ordem: ${falhou.error.message}`);
+    await carregar();
+    return;
+  }
+
+  toast('Ordem atualizada.');
 }
 
 function linhaPergunta(q) {

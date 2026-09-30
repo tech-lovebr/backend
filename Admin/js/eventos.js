@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-tipo').addEventListener('change', render);
+
+  moverControlesParaHeader();
+  aplicarBuscaDaUrl(document.getElementById('busca'));
 });
 
 function montarMetricas(convidados, presentes) {
@@ -108,8 +111,6 @@ function render() {
   const tbody = document.getElementById('tbody');
   const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
-  document.getElementById('contador').textContent =
-    `${formatNumber(lista.length)} de ${formatNumber(EVENTOS.length)}`;
 
   if (!lista.length) {
     renderEmpty(tbody, 9, 'Nenhum evento encontrado',

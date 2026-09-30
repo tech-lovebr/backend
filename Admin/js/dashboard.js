@@ -1,168 +1,355 @@
 /* ==========================================================================
-   LOVE ADMIN — Dashboard (visão geral das duas plataformas)
+   LOVE ADMIN — Dashboard
+
+   Paleta dos gráficos: slots 1 e 2 da paleta categórica validada
+   (azul #2a78d6 / laranja #eb6834). Conferida com o validador da skill
+   dataviz sobre fundo branco — passa em todos os gates, inclusive CVD.
    ========================================================================== */
+
+const SERIE_VOLUME = '#2a78d6';
+const SERIE_FATURAMENTO = '#eb6834';
+
+// Ordem fixa da paleta categórica — nunca reciclada entre categorias.
+const CORES_CATEGORIA = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4'];
+
+const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+let DADOS = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   renderKpiSkeleton();
 
-  const [
-    fornecedores, clientes, eventos, convidados,
-    presentes, carteiraFornecedor, carteiraCliente, tickets
-  ] = await Promise.all([
-    safeSelect('fornecedores', 'id, company_name, email, plan, created_at'),
-    safeSelect('clientes', 'id, couple_name, email, created_at'),
-    safeSelect('eventos', 'id, tipo, titulo, status'),
-    safeSelect('convidados', 'id, status'),
-    safeSelect('presentes', 'id, valor, status'),
-    safeSelect('wallet_transactions', 'id, type, amount'),
-    safeSelect('cliente_wallet_transactions', 'id, type, amount'),
-    safeSelect('tickets', 'id, protocolo, assunto, origem, status, created_at')
+  const [fornecedores, clientes, eventos, carteira, contratos] = await Promise.all([
+    safeSelect('fornecedores', 'id, company_name, email, category, plan'),
+    safeSelect('clientes', 'id, couple_name'),
+    safeSelect('eventos', 'id, tipo'),
+    safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
+    safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at')
   ]);
 
-  renderKpis({
+  DADOS = {
     fornecedores: fornecedores.data,
     clientes: clientes.data,
     eventos: eventos.data,
-    convidados: convidados.data,
-    presentes: presentes.data,
-    carteiraFornecedor: carteiraFornecedor.data,
-    carteiraCliente: carteiraCliente.data,
-    tickets: tickets.data
-  });
+    carteira: carteira.data,
+    contratos: contratos.data
+  };
 
-  renderContasRecentes(fornecedores.data, clientes.data);
-  renderTicketsRecentes(tickets.data, tickets.error);
-  renderCategorias(eventos.data, eventos.error);
+  renderKpis();
+  renderEvolucao();
+  renderTopFornecedores();
+  renderCategorias();
+
+  // O gráfico de linha é desenhado em pixels; redesenha quando a largura muda.
+  window.addEventListener('resize', debounce(renderEvolucao, 150));
 });
 
+function debounce(fn, ms) {
+  let t;
+  return () => { clearTimeout(t); t = setTimeout(fn, ms); };
+}
+
+/* ------------------------------------------------------------------ KPIs */
+
 function renderKpiSkeleton() {
-  document.getElementById('kpi-grid').innerHTML = Array.from({ length: 8 }, () =>
-    `<div class="kpi"><div class="kpi-icon"></div><div class="skeleton" style="width:60%"></div><div class="skeleton" style="width:40%;height:24px;margin-top:.5rem"></div></div>`
+  document.getElementById('kpi-grid').innerHTML = Array.from({ length: 4 }, () =>
+    `<div class="kpi"><div class="skeleton" style="width:55%"></div><div class="skeleton" style="width:70%;height:26px;margin-top:.625rem"></div></div>`
   ).join('');
 }
 
-function kpiCard({ label, value, sub, iconPath }) {
-  return `
+function renderKpis() {
+  const volume = DADOS.carteira
+    .filter(t => t.type === 'credit')
+    .reduce((s, t) => s + (Number(t.amount) || 0), 0);
+
+  const faturamento = DADOS.contratos.reduce((s, c) => s + (Number(c.valor_total) || 0), 0);
+
+  const tile = (label, value, sub) => `
     <div class="kpi">
-      <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${iconPath}</svg></div>
       <p class="kpi-label">${escapeHtml(label)}</p>
       <p class="kpi-value">${escapeHtml(value)}</p>
       <p class="kpi-sub">${escapeHtml(sub)}</p>
     </div>`;
-}
-
-const KPI_ICONS = {
-  store: '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5h-3V21M4.5 10.5V21h15V10.5M3.75 9.75 5.25 4.5h13.5l1.5 5.25"/>',
-  users: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z"/>',
-  calendar: '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75Z"/>',
-  gift: '<path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12M8.25 21V7.5m7.5 13.5V7.5m-12 0h16.5v3.75H3.75V7.5Z"/>',
-  wallet: '<path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6"/>',
-  chat: '<path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>',
-  check: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>'
-};
-
-function renderKpis(d) {
-  const confirmados = d.convidados.filter(g => g.status === 'confirmado').length;
-  const presentesRecebidos = d.presentes.filter(p => p.status === 'recebido');
-  const arrecadado = presentesRecebidos.reduce((s, p) => s + (Number(p.valor) || 0), 0);
-  const volumeB2B = d.carteiraFornecedor
-    .filter(t => t.type === 'credit')
-    .reduce((s, t) => s + (Number(t.amount) || 0), 0);
-  const saldoClientes = walletBalance(d.carteiraCliente);
-  const abertos = d.tickets.filter(t => t.status === 'aberto' || t.status === 'em_andamento').length;
 
   document.getElementById('kpi-grid').innerHTML = [
-    kpiCard({ label: 'Fornecedores', value: formatNumber(d.fornecedores.length), sub: 'Contas B2B criadas', iconPath: KPI_ICONS.store }),
-    kpiCard({ label: 'Clientes', value: formatNumber(d.clientes.length), sub: 'Contas na plataforma', iconPath: KPI_ICONS.users }),
-    kpiCard({ label: 'Eventos criados', value: formatNumber(d.eventos.length), sub: `${d.eventos.filter(e => e.status === 'ativo').length} ativos`, iconPath: KPI_ICONS.calendar }),
-    kpiCard({ label: 'Convidados', value: formatNumber(d.convidados.length), sub: `${formatNumber(confirmados)} confirmados`, iconPath: KPI_ICONS.check }),
-    kpiCard({ label: 'Presentes recebidos', value: formatNumber(presentesRecebidos.length), sub: `${formatCurrency(arrecadado)} arrecadados`, iconPath: KPI_ICONS.gift }),
-    kpiCard({ label: 'Volume B2B', value: formatCurrency(volumeB2B), sub: 'Entradas na carteira dos fornecedores', iconPath: KPI_ICONS.wallet }),
-    kpiCard({ label: 'Saldo dos clientes', value: formatCurrency(saldoClientes), sub: 'Disponível para saque', iconPath: KPI_ICONS.wallet }),
-    kpiCard({ label: 'Chamados abertos', value: formatNumber(abertos), sub: `${d.tickets.length} no total`, iconPath: KPI_ICONS.chat })
+    tile('Volume B2B', formatCurrency(volume), 'Entradas na carteira dos fornecedores'),
+    tile('Faturamento bruto', formatCurrency(faturamento), 'Valor total dos contratos'),
+    tile('Fornecedores', formatNumber(DADOS.fornecedores.length), 'Contas B2B criadas'),
+    tile('Anfitriões', formatNumber(DADOS.clientes.length), 'Contas na plataforma')
   ].join('');
 }
 
-function renderContasRecentes(fornecedores, clientes) {
-  const tbody = document.getElementById('tbody-contas');
+/* ------------------------------------------- Evolução (duas linhas, um eixo) */
 
-  const linhas = [
-    ...fornecedores.map(f => ({ nome: f.company_name, tipo: 'Fornecedor', email: f.email, created_at: f.created_at })),
-    ...clientes.map(c => ({ nome: c.couple_name, tipo: 'Cliente', email: c.email, created_at: c.created_at }))
-  ]
-    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-    .slice(0, 8);
+/** Agrupa valores por mês nos últimos `qtd` meses. */
+function porMes(linhas, qtd, valorDe) {
+  const hoje = new Date();
+  const baldes = [];
 
-  if (!linhas.length) {
-    renderEmpty(tbody, 4, 'Nenhuma conta ainda', 'Assim que alguém se cadastrar no site ou no B2B, aparece aqui.');
-    return;
+  for (let i = qtd - 1; i >= 0; i--) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+    baldes.push({ chave: `${d.getFullYear()}-${d.getMonth()}`, rotulo: MESES_CURTOS[d.getMonth()], valor: 0 });
   }
 
-  tbody.innerHTML = linhas.map(l => `
-    <tr class="no-hover">
-      <td class="cell-strong">${dash(l.nome)}</td>
-      <td>${badge(l.tipo, l.tipo === 'Fornecedor' ? 'badge-info' : 'badge-success')}</td>
-      <td class="cell-muted">${dash(l.email)}</td>
-      <td class="cell-muted">${escapeHtml(formatRelative(l.created_at))}</td>
-    </tr>`).join('');
+  const indice = new Map(baldes.map((b, i) => [b.chave, i]));
+
+  linhas.forEach(linha => {
+    const d = new Date(linha.created_at);
+    if (Number.isNaN(d.getTime())) return;
+    const pos = indice.get(`${d.getFullYear()}-${d.getMonth()}`);
+    if (pos !== undefined) baldes[pos].valor += valorDe(linha);
+  });
+
+  return baldes;
 }
 
-function renderTicketsRecentes(tickets, error) {
-  const tbody = document.getElementById('tbody-tickets');
+function renderEvolucao() {
+  const host = document.getElementById('grafico-evolucao');
+  if (!host || !DADOS) return;
 
-  if (error) return renderError(tbody, 4, error);
+  const MESES = 6;
+  const volume = porMes(
+    DADOS.carteira.filter(t => t.type === 'credit'), MESES,
+    t => Number(t.amount) || 0
+  );
+  const faturamento = porMes(DADOS.contratos, MESES, c => Number(c.valor_total) || 0);
 
-  if (!tickets.length) {
-    renderEmpty(tbody, 4, 'Nenhum chamado', 'O canal de atendimento ainda não recebeu mensagens.');
+  const series = [
+    { nome: 'Volume B2B', cor: SERIE_VOLUME, pontos: volume },
+    { nome: 'Faturamento bruto', cor: SERIE_FATURAMENTO, pontos: faturamento }
+  ];
+
+  renderLegenda(series);
+  renderTabelaEvolucao(series);
+
+  const maximo = Math.max(...series.flatMap(s => s.pontos.map(p => p.valor)), 1);
+  if (maximo <= 1) {
+    host.innerHTML = `<div class="empty-state"><strong>Sem movimentação ainda</strong>
+      <p>O gráfico aparece assim que houver entradas na carteira ou contratos fechados.</p></div>`;
     return;
   }
 
-  tbody.innerHTML = tickets
-    .slice()
-    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-    .slice(0, 8)
-    .map(t => `
-      <tr class="no-hover">
-        <td class="cell-strong">${dash(t.protocolo)}</td>
-        <td>${dash(t.assunto)}</td>
-        <td class="cell-muted">${escapeHtml(ORIGEM_LABELS[t.origem] || t.origem || '—')}</td>
-        <td>${badge(TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status])}</td>
-      </tr>`).join('');
+  // Escala em passos redondos, para os rótulos do eixo caírem em números
+  // limpos (0 / 20k / 40k…) em vez de frações do máximo.
+  const passo = passoRedondo(maximo / 4);
+  const topo = passo * 4;
+
+  const largura = Math.max(host.clientWidth || 640, 320);
+  const altura = 260;
+  const margem = { topo: 16, direita: 16, baixo: 28, esquerda: 64 };
+  const areaL = largura - margem.esquerda - margem.direita;
+  const areaA = altura - margem.topo - margem.baixo;
+
+  const x = (i) => margem.esquerda + (areaL * i) / (MESES - 1);
+  const y = (v) => margem.topo + areaA - (areaA * v) / topo;
+
+  const ticks = [0, passo, passo * 2, passo * 3, topo];
+
+  const grade = ticks.map(t => `
+    <line class="viz-grid" x1="${margem.esquerda}" y1="${y(t)}" x2="${largura - margem.direita}" y2="${y(t)}" />
+    <text class="viz-axis" x="${margem.esquerda - 10}" y="${y(t) + 4}" text-anchor="end">${abreviar(t)}</text>`).join('');
+
+  const rotulosX = volume.map((p, i) =>
+    `<text class="viz-axis" x="${x(i)}" y="${altura - 8}" text-anchor="middle">${p.rotulo}</text>`).join('');
+
+  const linhas = series.map(s => {
+    const d = s.pontos.map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(p.valor)}`).join(' ');
+    const ultimo = s.pontos.length - 1;
+    return `
+      <path d="${d}" fill="none" stroke="${s.cor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+      <circle cx="${x(ultimo)}" cy="${y(s.pontos[ultimo].valor)}" r="5" fill="${s.cor}" stroke="#fff" stroke-width="2" />`;
+  }).join('');
+
+  // Faixas invisíveis para o ponteiro: alvo bem maior que o traço.
+  const alvos = volume.map((_, i) => {
+    const meia = areaL / (MESES - 1) / 2;
+    return `<rect class="viz-hit" data-i="${i}" x="${x(i) - meia}" y="${margem.topo}" width="${meia * 2}" height="${areaA}" fill="transparent" />`;
+  }).join('');
+
+  host.innerHTML = `
+    <svg width="${largura}" height="${altura}" role="img" aria-label="Volume B2B e faturamento bruto por mês">
+      ${grade}${rotulosX}
+      <line class="viz-cursor" id="viz-cursor" y1="${margem.topo}" y2="${margem.topo + areaA}" x1="0" x2="0" style="display:none" />
+      ${linhas}${alvos}
+    </svg>
+    <div class="viz-tooltip" id="viz-tooltip" hidden></div>`;
+
+  ligarHoverEvolucao(host, { series, x, y, margem, altura });
 }
 
-function renderCategorias(eventos, error) {
-  const host = document.getElementById('categorias-eventos');
+function ligarHoverEvolucao(host, { series, x, y, margem, altura }) {
+  const cursor = host.querySelector('#viz-cursor');
+  const balao = host.querySelector('#viz-tooltip');
 
-  if (error) {
-    host.innerHTML = `<div class="empty-state"><strong>Tabela ainda não existe no banco</strong><p>Rode supabase/migrations/004_admin.sql no SQL Editor do Supabase para criar as tabelas de eventos.</p></div>`;
+  host.querySelectorAll('.viz-hit').forEach(alvo => {
+    alvo.addEventListener('mouseenter', () => {
+      const i = Number(alvo.dataset.i);
+      cursor.setAttribute('x1', x(i));
+      cursor.setAttribute('x2', x(i));
+      cursor.style.display = '';
+
+      balao.innerHTML = `
+        <p class="mes">${series[0].pontos[i].rotulo}</p>
+        ${series.map(s => `
+          <p class="linha">
+            <span class="chave" style="background:${s.cor}"></span>
+            <span class="nome">${escapeHtml(s.nome)}</span>
+            <span class="valor">${formatCurrency(s.pontos[i].valor)}</span>
+          </p>`).join('')}`;
+
+      balao.hidden = false;
+      const alturaBalao = balao.offsetHeight;
+      balao.style.left = `${x(i)}px`;
+      balao.style.top = `${Math.max(margem.topo, y(series[0].pontos[i].valor) - alturaBalao - 12)}px`;
+    });
+  });
+
+  host.addEventListener('mouseleave', () => {
+    cursor.style.display = 'none';
+    balao.hidden = true;
+  });
+}
+
+function renderLegenda(series) {
+  document.getElementById('legenda-evolucao').innerHTML = series.map(s => `
+    <span class="viz-legend-item">
+      <span class="chave" style="background:${s.cor}"></span>${escapeHtml(s.nome)}
+    </span>`).join('');
+}
+
+/** Tabela com os mesmos números — exigida quando o gráfico é o único caminho. */
+function renderTabelaEvolucao(series) {
+  const meses = series[0].pontos;
+  document.getElementById('tabela-evolucao').innerHTML = `
+    <table class="data">
+      <thead><tr><th>Mês</th>${series.map(s => `<th>${escapeHtml(s.nome)}</th>`).join('')}</tr></thead>
+      <tbody>
+        ${meses.map((m, i) => `
+          <tr class="no-hover">
+            <td class="cell-strong">${m.rotulo}</td>
+            ${series.map(s => `<td>${formatCurrency(s.pontos[i].valor)}</td>`).join('')}
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+/** Menor passo "bonito" (1, 2, 2,5 ou 5 vezes uma potência de 10) que cobre o valor. */
+function passoRedondo(valor) {
+  const ordem = Math.pow(10, Math.floor(Math.log10(valor)));
+  const normalizado = valor / ordem;
+  const escolhido = [1, 2, 2.5, 5, 10].find(c => normalizado <= c);
+  return escolhido * ordem;
+}
+
+function abreviar(valor) {
+  if (valor >= 1000) {
+    const k = valor / 1000;
+    return `${Number.isInteger(k) ? k : k.toFixed(1).replace('.', ',')}k`;
+  }
+  return String(Math.round(valor));
+}
+
+/* -------------------------------------------------- Top fornecedores */
+
+function renderTopFornecedores() {
+  const host = document.getElementById('top-fornecedores');
+
+  const porFornecedor = new Map();
+  DADOS.contratos.forEach(c => {
+    if (c.status === 'quitado') return;
+    const atual = porFornecedor.get(c.fornecedor_id) || { ativos: 0, valor: 0 };
+    atual.ativos += 1;
+    atual.valor += Number(c.valor_total) || 0;
+    porFornecedor.set(c.fornecedor_id, atual);
+  });
+
+  const lista = DADOS.fornecedores
+    .map(f => ({ f, m: porFornecedor.get(f.id) || { ativos: 0, valor: 0 } }))
+    .filter(x => x.m.ativos > 0)
+    .sort((a, b) => b.m.ativos - a.m.ativos || b.m.valor - a.m.valor)
+    .slice(0, 6);
+
+  if (!lista.length) {
+    host.innerHTML = `<div class="empty-state"><strong>Nenhum contrato ativo</strong>
+      <p>Os fornecedores aparecem aqui conforme fecham contratos.</p></div>`;
     return;
   }
 
-  if (!eventos.length) {
-    host.innerHTML = `<div class="empty-state"><strong>Nenhum evento criado</strong><p>As comemorações aparecem aqui assim que os clientes começarem a criá-las na plataforma.</p></div>`;
+  host.innerHTML = `<ul class="rank">${lista.map(({ f, m }, i) => `
+    <li class="rank-item">
+      <span class="rank-pos">${i + 1}</span>
+      <span class="rank-avatar">${escapeHtml(initials(f.company_name))}</span>
+      <span class="rank-info">
+        <span class="nome">${escapeHtml(f.company_name || '—')}</span>
+        <span class="sub">${escapeHtml(f.email || f.category || '')}</span>
+      </span>
+      <span class="rank-valor">
+        <span class="numero">${formatNumber(m.ativos)}</span>
+        <span class="sub">${formatCurrency(m.valor)}</span>
+      </span>
+    </li>`).join('')}</ul>`;
+}
+
+/* ------------------------------------------------ Eventos por categoria */
+
+function renderCategorias() {
+  const host = document.getElementById('grafico-categorias');
+  const total = DADOS.eventos.length;
+
+  if (!total) {
+    host.innerHTML = `<div class="empty-state"><strong>Nenhum evento criado</strong>
+      <p>As comemorações aparecem aqui assim que os clientes começarem a criá-las.</p></div>`;
     return;
   }
 
-  const porTipo = groupBy(eventos, 'tipo');
-  const total = eventos.length;
+  const fatias = [...groupBy(DADOS.eventos, 'tipo').entries()]
+    .map(([tipo, lista]) => ({
+      rotulo: EVENT_TYPE_LABELS[tipo] || tipo,
+      qtd: lista.length,
+      pct: (lista.length / total) * 100
+    }))
+    .sort((a, b) => b.qtd - a.qtd)
+    .map((fatia, i) => ({ ...fatia, cor: CORES_CATEGORIA[i % CORES_CATEGORIA.length] }));
 
-  host.innerHTML = `<div style="display:flex;flex-direction:column;gap:.875rem">${
-    [...porTipo.entries()]
-      .sort((a, b) => b[1].length - a[1].length)
-      .map(([tipo, lista]) => {
-        const pct = Math.round((lista.length / total) * 100);
-        return `
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:.8125rem;margin-bottom:.375rem">
-              <span style="font-weight:600">${escapeHtml(EVENT_TYPE_LABELS[tipo] || tipo)}</span>
-              <span class="cell-muted">${formatNumber(lista.length)} · ${pct}%</span>
-            </div>
-            <div style="height:8px;background:var(--bg-muted);border-radius:999px;overflow:hidden">
-              <div style="height:100%;width:${pct}%;background:var(--primary-color);border-radius:999px"></div>
-            </div>
-          </div>`;
-      }).join('')
-  }</div>`;
+  const tamanho = 180;
+  const raio = 74;
+  const espessura = 26;
+  const centro = tamanho / 2;
+  const circunferencia = 2 * Math.PI * raio;
+
+  // Cada arco recua 2px para o fundo aparecer entre as fatias.
+  let acumulado = 0;
+  const arcos = fatias.map(f => {
+    const comprimento = (f.pct / 100) * circunferencia;
+    const traco = Math.max(comprimento - 2, 0.5);
+    const arco = `
+      <circle cx="${centro}" cy="${centro}" r="${raio}" fill="none"
+              stroke="${f.cor}" stroke-width="${espessura}"
+              stroke-dasharray="${traco} ${circunferencia - traco}"
+              stroke-dashoffset="${-acumulado}"
+              transform="rotate(-90 ${centro} ${centro})"
+              data-rotulo="${escapeHtml(f.rotulo)}" class="viz-fatia" />`;
+    acumulado += comprimento;
+    return arco;
+  }).join('');
+
+  host.innerHTML = `
+    <div class="donut-wrap">
+      <svg width="${tamanho}" height="${tamanho}" role="img" aria-label="Eventos por categoria">
+        ${arcos}
+        <text class="donut-total" x="${centro}" y="${centro - 2}" text-anchor="middle">${formatNumber(total)}</text>
+        <text class="donut-legenda" x="${centro}" y="${centro + 16}" text-anchor="middle">eventos</text>
+      </svg>
+
+      <ul class="donut-lista">
+        ${fatias.map(f => `
+          <li>
+            <span class="chave" style="background:${f.cor}"></span>
+            <span class="nome">${escapeHtml(f.rotulo)}</span>
+            <span class="valor">${formatNumber(f.qtd)} · ${Math.round(f.pct)}%</span>
+          </li>`).join('')}
+      </ul>
+    </div>`;
 }

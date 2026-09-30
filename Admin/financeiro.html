@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=24">
+  <link rel="stylesheet" href="css/admin.css?v=33">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -30,8 +30,7 @@
 
         <section class="kpi-grid" id="kpi-grid"></section>
 
-        <section class="card" style="margin-top:1rem">
-          <div class="card-head"><div><h2>Faturamento por fornecedor</h2><p>Entradas na carteira, contratos e links de pagamento</p></div></div>
+        <section class="card bloco">
           <div class="table-wrap">
             <table class="data">
               <thead><tr><th>Fornecedor</th><th>Plano</th><th>Entradas</th><th>Saídas</th><th>Saldo</th><th>Contratos</th><th>Valor em contratos</th></tr></thead>
@@ -40,9 +39,8 @@
           </div>
         </section>
 
-        <section class="card" style="margin-top:1rem">
-          <div class="card-head" style="justify-content:space-between">
-            <div><h2>Links de pagamento</h2><p>Cobranças geradas pelos fornecedores</p></div>
+        <section class="card bloco">
+          <div class="card-head" style="justify-content:flex-end">
             <select class="field-select" id="filtro-status-link" style="width:auto">
               <option value="">Todos</option>
               <option value="pago">Pagos</option>

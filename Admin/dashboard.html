@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=24">
+  <link rel="stylesheet" href="css/admin.css?v=33">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -30,30 +30,43 @@
 
         <section class="kpi-grid" id="kpi-grid"></section>
 
-        <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem;margin-top:1rem">
-          <div class="card">
-            <div class="card-head"><div><h2>Últimas contas criadas</h2><p>Fornecedores e clientes recém-cadastrados</p></div></div>
-            <div class="table-wrap">
-              <table class="data"><thead><tr><th>Conta</th><th>Tipo</th><th>E-mail</th><th>Criada em</th></tr></thead>
-              <tbody id="tbody-contas"></tbody></table>
+        <section class="card bloco viz-root">
+          <div class="viz-head">
+            <div>
+              <h2>Evolução financeira</h2>
+              <p>Volume transacionado e faturamento dos fornecedores, por mês</p>
             </div>
+            <div class="viz-legend" id="legenda-evolucao"></div>
           </div>
-
-          <div class="card">
-            <div class="card-head" style="justify-content:space-between">
-              <div><h2>Chamados recentes</h2><p>Canal de atendimento</p></div>
-              <a href="atendimento.html" class="btn btn-ghost btn-sm">Ver todos</a>
-            </div>
-            <div class="table-wrap">
-              <table class="data"><thead><tr><th>Protocolo</th><th>Assunto</th><th>Origem</th><th>Status</th></tr></thead>
-              <tbody id="tbody-tickets"></tbody></table>
-            </div>
-          </div>
+          <div class="viz-body" id="grafico-evolucao"></div>
+          <details class="viz-tabela">
+            <summary>Ver os números</summary>
+            <div class="table-wrap" id="tabela-evolucao"></div>
+          </details>
         </section>
 
-        <section class="card" style="margin-top:1rem">
-          <div class="card-head"><div><h2>Eventos por categoria</h2><p>Distribuição das comemorações criadas na plataforma</p></div></div>
-          <div class="card-body" id="categorias-eventos"></div>
+        <section class="bloco" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem">
+
+          <div class="card viz-root">
+            <div class="viz-head">
+              <div>
+                <h2>Top fornecedores</h2>
+                <p>Por contratos ativos</p>
+              </div>
+            </div>
+            <div class="viz-body" id="top-fornecedores"></div>
+          </div>
+
+          <div class="card viz-root">
+            <div class="viz-head">
+              <div>
+                <h2>Eventos por categoria</h2>
+                <p>Participação de cada categoria no total</p>
+              </div>
+            </div>
+            <div class="viz-body" id="grafico-categorias"></div>
+          </div>
+
         </section>
       </main>
     </div>

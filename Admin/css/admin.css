@@ -38,6 +38,8 @@
   --sidebar-w: 248px;
   --topbar-h: 76px;
   --gutter: clamp(1.25rem, 4vw, 2rem);
+  /* Respiro padrão entre dois blocos empilhados no conteúdo. */
+  --bloco-gap: 1.25rem;
 }
 
 * { box-sizing: border-box; }
@@ -258,6 +260,23 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   border-bottom: 1px solid var(--topbar-border);
 }
 
+.header-bar-titulo { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+
+/* Atalho para o site que a página administra. */
+.header-bar-link {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-control);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: background .15s ease, color .15s ease;
+}
+
+.header-bar-link:hover { background: var(--bg-muted); color: var(--primary-color); }
+.header-bar-link svg { width: 16px; height: 16px; }
+
 /* Mesmo corpo do h2 das páginas do B2B (text-xl / font-bold / zinc-900). */
 .admin-header-bar h1 {
   margin: 0;
@@ -443,30 +462,32 @@ table.data {
   white-space: nowrap;
 }
 
+/* Copiado da .guests-table (css/styles.css) da plataforma dos noivos:
+   cabeçalho sem preenchimento, só o texto sobre a linha divisória. */
 table.data th {
   text-align: left;
   font-size: .6875rem;
-  font-weight: 600;
-  letter-spacing: .05em;
+  font-weight: 700;
+  letter-spacing: .04em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  /* Mesmo fundo da barra do título da página. */
-  background: var(--header-bar-bg);
-  padding: .625rem 1.25rem;
+  color: #333333;
+  background: transparent;
+  padding: 0 1rem .75rem;
   border-bottom: 1px solid var(--border);
 }
 
 table.data td {
-  padding: .875rem 1.25rem;
-  border-bottom: 1px solid var(--border);
+  padding: .875rem 1rem;
+  font-size: .875rem;
+  border-top: 1px solid #F2F3F6;
   vertical-align: middle;
 }
 
-table.data tbody tr:last-child td { border-bottom: 0; }
+table.data tbody tr:first-child td { border-top: none; }
 table.data tbody tr { cursor: pointer; transition: background .12s ease; }
-table.data tbody tr:hover { background: var(--bg-muted); }
+table.data tbody tr:hover td { background: #FAFAFA; }
 table.data tbody tr.no-hover { cursor: default; }
-table.data tbody tr.no-hover:hover { background: transparent; }
+table.data tbody tr.no-hover:hover td { background: transparent; }
 
 .cell-strong { font-weight: 600; }
 .cell-muted { color: var(--text-muted); font-size: .8125rem; }
@@ -1004,41 +1025,77 @@ table.data tbody tr.no-hover:hover { background: transparent; }
 .faq-item.is-open { border-color: var(--primary-color); }
 
 .faq-head {
-  width: 100%;
   display: flex;
   align-items: center;
-  gap: .875rem;
-  padding: 1rem 1.25rem;
+  gap: .5rem;
+  padding: .75rem 1rem .75rem .5rem;
+}
+
+.faq-titulo-btn {
+  flex: 1;
+  min-width: 0;
   background: none;
   border: 0;
+  padding: .25rem 0;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 .faq-titulo { display: block; font-size: .9375rem; font-weight: 600; color: var(--text); }
-.faq-resumo { display: block; font-size: .8125rem; color: var(--text-muted); margin-top: .125rem; }
 
-.faq-icone {
-  width: 32px; height: 32px;
-  flex-shrink: 0;
-  display: grid; place-items: center;
-  background: var(--info-bg);
-  color: var(--primary-color);
-  border-radius: var(--radius-control);
+/* Campo que substitui o título durante o rename. */
+.faq-titulo-input {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
   font-size: .9375rem;
+  font-weight: 600;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-control);
+  padding: .3125rem .5rem;
+  outline: none;
 }
 
-.faq-seta {
-  width: 18px; height: 18px;
-  flex-shrink: 0;
+/* Pegador de arraste e botões de ação do cabeçalho do guia. */
+.faq-arrasta {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 28px;
   color: var(--text-soft);
-  transition: transform .2s ease;
+  cursor: grab;
+  flex-shrink: 0;
 }
+
+.faq-arrasta svg { width: 16px; height: 16px; }
+.faq-item.is-dragging { opacity: .5; }
+.faq-item.is-drop-alvo { border-color: var(--primary-color); box-shadow: inset 0 2px 0 var(--primary-color); }
+
+.faq-acao {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+
+.faq-acao:hover { background: var(--bg-muted); color: var(--text); }
+.faq-acao svg { width: 16px; height: 16px; }
+
+.faq-seta { transition: transform .2s ease; }
 
 .faq-item.is-open .faq-seta { transform: rotate(180deg); }
 
-.faq-corpo { padding: 0 1.25rem 1.25rem; }
+.faq-corpo { padding: 0 1rem 1.25rem 2.25rem; }
 
 /* Texto de introdução do guia, antes das perguntas. */
 .faq-intro {
@@ -1213,19 +1270,16 @@ table.data tbody tr.no-hover:hover { background: transparent; }
 .busca-item .titulo { display: block; font-size: .875rem; font-weight: 600; color: var(--text); }
 .busca-item .sub { display: block; font-size: .75rem; color: var(--text-muted); margin-top: .0625rem; }
 
-/* Lista sem cartão: sangra até as bordas do conteúdo, como na referência.
-   A margem superior dá o respiro entre os cartões de indicador e a lista. */
-.table-bleed {
-  margin: 1.75rem calc(-1 * var(--gutter)) 0;
-  width: auto;
-  border-top: 1px solid var(--border);
-}
+/* Cartão da lista. Sem sombra, como todos os outros cartões do painel —
+   a margem superior é a mesma usada entre quaisquer dois blocos. */
+.table-card { margin-top: var(--bloco-gap); }
 
-.table-bleed table.data th:first-child,
-.table-bleed table.data td:first-child { padding-left: var(--gutter); }
+/* O respiro vem da própria tabela, não do cartão: assim vale igual com ou
+   sem cabeçalho acima dela. */
+.card > .table-wrap { padding: 1.5rem; }
 
-.table-bleed table.data th:last-child,
-.table-bleed table.data td:last-child { padding-right: var(--gutter); }
+/* Logo abaixo de um cabeçalho, o respiro de cima já foi dado por ele. */
+.card > .card-head + .table-wrap { padding-top: 1.25rem; }
 
 /* ------------------------------------------- Ações do cabeçalho da página */
 
@@ -1281,3 +1335,188 @@ table.data tbody tr.no-hover:hover { background: transparent; }
 }
 
 .filtro-limpar:hover { background: #e8eaef; color: var(--text); }
+
+/* Respiro padrão entre blocos empilhados — o mesmo em todas as páginas. */
+.bloco { margin-top: var(--bloco-gap); }
+
+/* ============================================================ Gráficos ==
+   Marcas seguem as specs da skill dataviz: linha 2px, marcador >=8px com
+   anel de 2px na cor do fundo, grade fina e recuada, texto sempre em tom
+   de texto (nunca na cor da série).
+   ====================================================================== */
+
+.viz-root { padding: 1.25rem 1.5rem 1.5rem; }
+
+.viz-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.viz-head h2 { font-size: .9375rem; font-weight: 600; }
+.viz-head p { font-size: .8125rem; color: var(--text-muted); margin: .125rem 0 0; }
+
+.viz-body { position: relative; }
+.viz-body svg { display: block; overflow: visible; }
+
+.viz-grid { stroke: #EDEFF2; stroke-width: 1; }
+.viz-axis { font-size: 11px; fill: var(--text-soft); font-family: inherit; }
+.viz-cursor { stroke: #D5D9E0; stroke-width: 1; }
+
+.viz-legend { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+.viz-legend-item,
+.viz-tooltip .linha,
+.donut-lista li {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .8125rem;
+  color: var(--text-muted);
+}
+
+.viz-legend-item .chave,
+.viz-tooltip .chave,
+.donut-lista .chave {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Balão de leitura do gráfico de linha */
+
+.viz-tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 20px rgba(16, 24, 40, .12);
+  padding: .625rem .75rem;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.viz-tooltip .mes {
+  font-size: .6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-soft);
+  margin: 0 0 .375rem;
+}
+
+.viz-tooltip .linha { margin: 0 0 .1875rem; }
+.viz-tooltip .linha:last-child { margin-bottom: 0; }
+.viz-tooltip .nome { margin-right: .75rem; }
+.viz-tooltip .valor { margin-left: auto; font-weight: 700; color: var(--text); }
+
+.viz-hit { cursor: crosshair; }
+
+/* Tabela com os mesmos números do gráfico */
+
+.viz-tabela { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: .875rem; }
+
+.viz-tabela summary {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.viz-tabela summary:hover { color: var(--text); }
+.viz-tabela .table-wrap { padding: .875rem 0 0; }
+
+/* ------------------------------------------------------------- Rosca */
+
+.donut-wrap { display: flex; align-items: center; gap: 1.75rem; flex-wrap: wrap; }
+
+.donut-total { font-size: 26px; font-weight: 700; fill: var(--text); font-family: inherit; }
+.donut-legenda { font-size: 11px; fill: var(--text-soft); font-family: inherit; }
+
+.donut-lista { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 150px; }
+.donut-lista li { margin-bottom: .625rem; }
+.donut-lista li:last-child { margin-bottom: 0; }
+.donut-lista .nome { color: var(--text); font-weight: 500; }
+.donut-lista .valor { margin-left: auto; color: var(--text-muted); white-space: nowrap; }
+
+/* ---------------------------------------------------- Ranking de contas */
+
+.rank { list-style: none; margin: 0; padding: 0; }
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .625rem 0;
+  border-top: 1px solid #F2F3F6;
+}
+
+.rank-item:first-child { border-top: 0; }
+
+.rank-pos {
+  width: 18px;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.rank-avatar {
+  width: 34px; height: 34px;
+  border-radius: var(--radius-control);
+  background: var(--info-bg);
+  color: var(--primary-color);
+  display: grid; place-items: center;
+  font-size: .75rem; font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rank-info { flex: 1; min-width: 0; }
+.rank-info .nome { display: block; font-size: .875rem; font-weight: 600; }
+
+.rank-info .sub,
+.rank-valor .sub {
+  display: block;
+  font-size: .75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-valor { text-align: right; flex-shrink: 0; }
+.rank-valor .numero { font-size: .9375rem; font-weight: 700; }
+
+/* --------------------------------- Passo a passo dentro de um painel */
+
+.passos { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+
+.passos li {
+  display: flex;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.passo-num {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--info-bg);
+  color: var(--primary-color);
+  font-size: .6875rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.passo-titulo { font-size: .875rem; font-weight: 600; margin: .125rem 0 .1875rem; }
+.passo-texto { font-size: .8125rem; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+/* Etiqueta ao lado do nome numa célula de tabela. */
+table.data .badge { margin-left: .375rem; vertical-align: middle; }

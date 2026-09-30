@@ -297,45 +297,64 @@ select.field-input {
   border: none;
   border-right: 1px solid var(--border-card);
   border-radius: 0;
-  background: #fff;
+  background: #FFFFFF;
   min-height: 480px;
   max-height: 640px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
 }
+body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 .floorplan-el-item-icon { font-size: 1.05rem; line-height: 1; flex-shrink: 0; }
 
 /* Painel: lista de convidados arrastáveis */
-.floorplan-guest-cards { display: flex; flex-direction: column; gap: 0.4rem; }
+.floorplan-guest-cards { display: flex; flex-direction: column; }
 .floorplan-guest-card {
   display: flex;
   align-items: center;
   gap: 0.55rem;
   padding: 0.55rem 0.65rem;
-  border: 1px solid var(--border-card);
-  border-radius: 10px;
-  background: #fff;
+  border: none;
+  border-top: 1px solid var(--border-light);
+  border-radius: 0;
+  background: transparent;
   font-size: 0.75rem;
   font-weight: 600;
   color: #3F3F46;
   cursor: grab;
   user-select: none;
 }
-.floorplan-guest-card:hover { border-color: #333333; }
+.floorplan-guest-cards > .floorplan-guest-card:first-child { border-top: none; }
+.floorplan-guest-card:hover { background: #FAFAFA; }
 .floorplan-guest-card:active { cursor: grabbing; }
-.floorplan-guest-card-dot { width: 8px; height: 8px; border-radius: 50%; background: #D4D4D8; flex-shrink: 0; }
-.floorplan-guest-card-check-badge {
+.floorplan-guest-card-check-badge,
+.floorplan-guest-card-x-badge,
+.floorplan-guest-card-pending-badge {
   width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  background: #ebf4ff; color: var(--primary-blue);
+  background: #FFFFFF;
 }
-.floorplan-guest-card-check-badge svg { width: 12px; height: 12px; }
+.floorplan-guest-card-check-badge { color: #333333; }
+.floorplan-guest-card-x-badge { color: #c7305b; }
+.floorplan-guest-card-pending-badge { color: #71717A; }
+.floorplan-guest-card-check-badge svg,
+.floorplan-guest-card-x-badge svg,
+.floorplan-guest-card-pending-badge svg { width: 12px; height: 12px; }
 .floorplan-guest-card-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .floorplan-guest-card-table { flex-shrink: 0; font-size: 0.625rem; font-weight: 700; color: #A1A1AA; }
 
 /* Convidado já sentado em alguma mesa — mesmo tom da aba "Lista de convidados" */
-.floorplan-guest-card.is-seated { background: #e0e4e6; cursor: default; }
+.floorplan-guest-card.is-seated { background: #EBF4FF; cursor: default; }
+
+/* Convidado que recusou o convite — mesma cor dos assentos vazios, fixa
+   independente de estar ou não alocado numa mesa (só muda se voltar a
+   pendente ou confirmado). */
+.floorplan-guest-card.is-declined,
+.floorplan-guest-card.is-declined.is-seated {
+  background: #FEF2F2;
+  border-color: #FECACA;
+  color: #F87171;
+}
 
 /* Modal: editar mesa (nome, lugares, convidados acomodados) */
 .floorplan-field { margin-bottom: 1rem; }
@@ -361,18 +380,20 @@ select.field-input {
   cursor: pointer;
 }
 .floorplan-stepper-btn:hover { background: #F4F4F5; border-color: #333333; color: #18181B; }
-.floorplan-remove-btn {
-  width: 100%;
+.floorplan-remove-btn,
+.floorplan-clear-btn {
+  flex: 1;
   padding: 0.5rem;
-  border: 1px solid var(--border-card);
+  border: 1px solid transparent;
   border-radius: 10px;
-  background: #FAFAFA;
-  color: #71717A;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
 }
-.floorplan-remove-btn:hover { background: #F4F4F5; border-color: #D4D4D8; }
+.floorplan-remove-btn { background: #FAFAFA; color: #71717A; }
+.floorplan-remove-btn:hover { background: #F4F4F5; }
+.floorplan-clear-btn { background: #EBF4FF; color: #000000; }
+.floorplan-clear-btn:hover { background: #DCEAFB; }
 
 .floorplan-canvas {
   position: relative;
@@ -427,8 +448,8 @@ select.field-input {
 
 /* Mesa: caixa maior (para caber o anel de assentos) com um círculo central */
 .floorplan-el.is-mesa {
-  width: 172px;
-  height: 172px;
+  width: 220px;
+  height: 220px;
   min-height: 0;
   background: transparent;
   border: none;
@@ -442,7 +463,7 @@ select.field-input {
   transform: translate(-50%, -50%);
   width: 84px;
   height: 84px;
-  border-radius: 50%;
+  border-radius: var(--radius-control, 12px);
   background: #fff;
   border: 1.5px solid #333333;
   display: flex;
@@ -458,24 +479,30 @@ select.field-input {
 
 .floorplan-seat-dot {
   position: absolute;
-  width: 26px;
-  height: 26px;
+  min-width: 22px;
+  max-width: 60px;
+  height: 22px;
+  padding: 0 0.4rem;
   transform: translate(-50%, -50%);
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FEF2F2;
-  border: 1.5px solid #FECACA;
-  color: #F87171;
-  font-size: 0.75rem;
+  background: #F4F4F5;
+  border: 1.5px solid #D4D4D8;
+  color: #71717A;
+  font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
-.floorplan-seat-dot.is-assigned { border-color: #D4D4D8; background: #F4F4F5; color: #52525B; }
-.floorplan-seat-dot.is-confirmed { border-color: #A1A1AA; background: #fff; color: #3F3F46; }
+.floorplan-seat-dot.is-assigned { border-color: #E4E4E7; background: #FFFFFF; color: #3F3F46; }
+.floorplan-seat-dot.is-confirmed { border-color: #EAEAEA; background: #EBF4FF; color: #3F3F46; }
+.floorplan-seat-dot.is-declined { background: #FEF2F2; border-color: #FECACA; color: #F87171; }
 .floorplan-seat-dot[draggable="true"] { cursor: grab; }
 .floorplan-seat-dot[draggable="true"]:active { cursor: grabbing; }
 .floorplan-seat-dot.is-dragover { border-color: #537bae; box-shadow: 0 0 0 2px rgba(83, 123, 174, 0.25); }
@@ -497,6 +524,8 @@ select.field-input {
 .floorplan-seat-assignment-name { display: flex; align-items: center; gap: 0.4rem; min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .floorplan-seat-assignment-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
 .floorplan-seat-confirmed-label { font-size: 0.6875rem; font-weight: 600; color: #71717A; white-space: nowrap; }
+.floorplan-seat-confirmed-label.is-declined { color: #F87171; }
+.floorplan-seat-assignment-row.is-declined { background: #FEF2F2; border-color: #FECACA; }
 .floorplan-seat-assignment-remove {
   border: none;
   background: none;
@@ -853,6 +882,12 @@ textarea,
 #live-preview-closing-names.font-garamond,
 #live-preview-closing-names.font-serif {
   font-family: 'EB Garamond', Garamond, Georgia, serif !important;
+}
+
+.font-yrsa,
+#live-preview-title.font-yrsa,
+#live-preview-closing-names.font-yrsa {
+  font-family: 'Yrsa', Georgia, serif !important;
 }
 
 .font-cormorant,
@@ -1680,6 +1715,7 @@ textarea,
 }
 
 #editor-select-title-font option[value="font-playfair"] { font-family: 'Playfair Display', Georgia, serif !important; }
+#editor-select-title-font option[value="font-yrsa"] { font-family: 'Yrsa', Georgia, serif !important; }
 #editor-select-title-font option[value="font-garamond"] { font-family: 'EB Garamond', Georgia, serif !important; }
 #editor-select-title-font option[value="font-cormorant"] { font-family: 'Cormorant Garamond', Georgia, serif !important; }
 #editor-select-title-font option[value="font-avermont"] { font-family: 'Avermont House', 'Avermont', 'Playfair Display', Georgia, serif !important; }
@@ -1870,7 +1906,7 @@ label,
 
 /* Botões padrão da área logada — mesmo padrão do B2B (ícone sempre à esquerda do texto, cor #333333) */
 .btn-primary {
-  background: #333333;
+  background: #181D24;
   color: #fff;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
@@ -1883,13 +1919,13 @@ label,
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 10px rgba(51, 51, 51, 0.22);
+  box-shadow: 0 4px 10px rgba(24, 29, 36, 0.22);
   text-decoration: none;
 }
-.btn-primary:hover { background: #262626; }
+.btn-primary:hover { background: #0F1216; }
 .btn-primary:disabled { opacity: 0.5; cursor: default; box-shadow: none; }
-body[data-theme="dark"] .btn-primary { background: #000000; box-shadow: none; }
-body[data-theme="dark"] .btn-primary:hover { background: #1A1A1A; }
+body[data-theme="dark"] .btn-primary { background: #181D24; box-shadow: none; }
+body[data-theme="dark"] .btn-primary:hover { background: #0F1216; }
 
 .btn-secondary {
   background: #fff;
@@ -1932,15 +1968,14 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
 .metric-card,
 .dashboard-card,
 .ticket-card,
-.b2b-item-card,
-.dashboard-tab-content .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
-.dashboard-main-area .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
+.dashboard-tab-content .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card),
+.dashboard-main-area .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card),
 #tab-overview .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
 #tab-rsvp .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
 #tab-gifts .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
 #tab-wallet .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
 #tab-edit-site .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
-#tab-b2b .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item),
+#tab-b2b .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card),
 .bg-white.rounded-3xl,
 .bg-white.rounded-2xl,
 .bg-white.rounded-xl,
@@ -1956,10 +1991,17 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
 .card-luxury:hover,
 .metric-card:hover,
 .dashboard-card:hover,
-.b2b-item-card:hover,
-.dashboard-tab-content .bg-white.group:hover,
-.dashboard-main-area .bg-white.group:hover {
+.dashboard-tab-content .bg-white.group:hover:not(.b2b-item-card),
+.dashboard-main-area .bg-white.group:hover:not(.b2b-item-card) {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Explorar / Meus Contratos / Favoritos: lista plana, sem caixa por item —
+   apenas a linha (divide-y) entre um fornecedor e outro. */
+.b2b-item-card,
+#b2b-contracted-list-container > div {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Badges de Data e Local do Topo */
@@ -2426,6 +2468,8 @@ body:not([data-theme="dark"]).editor-split-mode #editor-form-column {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
+  min-height: 68px;
+  box-sizing: border-box;
   border-bottom: 1px solid var(--border-card);
   background: #FAFAFA;
   flex-wrap: wrap;
@@ -2544,11 +2588,11 @@ body:not([data-theme="dark"]).editor-split-mode #editor-form-column {
   transition: background-color .15s ease, color .15s ease;
 }
 .builder-panel-tab:hover { color: #3F3F46; }
-.builder-panel-tab.active { color: #18181B; background: #e0e4e6; }
+.builder-panel-tab.active { color: #18181B; background: #EBF4FF; }
 
 /* Aba "Lista de convidados" em Mapear Mesas — fundo azul clarinho */
 body:not([data-theme="dark"]) #floorplan-guests-panel .builder-panel-tab.active { background: #EBF4FF; }
-body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { background: #181D24; color: #FFFFFF; }
+body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { background: #181D24 !important; color: #FFFFFF !important; }
 
 .builder-panel-tab-body { padding: 0.9rem 0.25rem 0.9rem 0.75rem; overflow-y: auto; flex: 1; min-height: 0; }
 .builder-panel-tab-body-estilo { display: flex; flex-direction: column; gap: 1.4rem; }
@@ -2576,14 +2620,14 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
   padding: 0.95rem 0.3rem;
   border: 1px solid var(--border-card);
   border-radius: 10px;
-  background: #fff;
+  background: #FFFFFF;
   cursor: grab;
   text-align: center;
   transition: border-color .15s ease, background-color .15s ease, transform .1s ease;
 }
 .builder-el-item svg { width: 17px; height: 17px; color: #52525B; }
 .builder-el-item span { font-size: 0.6875rem; font-weight: 600; color: #3F3F46; line-height: 1.15; }
-.builder-el-item:hover { border-color: var(--primary-blue); background: #F8FAFC; transform: translateY(-1px); }
+.builder-el-item:hover { border-color: var(--primary-blue); background: #DCEAFB; transform: translateY(-1px); }
 .builder-el-item:active { cursor: grabbing; }
 .builder-el-item.sortable-chosen { opacity: 0.4; }
 
@@ -2623,8 +2667,23 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
   width: 100%;
   background: #fff;
   min-height: 100%;
-  box-shadow: 0 0 0 1px var(--border-card);
+  box-shadow: none;
 }
+
+/* Caixas de Dress Code / Informações Gerais na prévia da aba "Informações":
+   sempre brancas, independente da cor de fundo do convite. */
+.classic-preview-info-boxes { padding: 1.5rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.classic-preview-info-box { background: #fff; border-radius: 14px; padding: 1rem 1.125rem; box-shadow: 0 1px 3px rgba(16,24,40,0.08); }
+.classic-preview-info-box h4 { font-size: 0.8125rem; font-weight: 700; color: #18181B; margin: 0 0 0.35rem; }
+.classic-preview-info-box p { font-size: 0.75rem; color: #52525B; line-height: 1.5; margin: 0; white-space: pre-line; }
+
+.classic-preview-hosts-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.classic-preview-host-card { display: flex; align-items: center; gap: 0.625rem; padding: 0.625rem; border-radius: 12px; background: #FAFAFA; border: 1px solid #F0F0F1; }
+.classic-preview-host-avatar { width: 2rem; height: 2rem; border-radius: 9999px; color: #fff; font-size: 0.6875rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.classic-preview-host-info { min-width: 0; flex: 1; }
+.classic-preview-host-info p { font-size: 0.75rem; font-weight: 700; color: #18181B; margin: 0; white-space: normal; }
+.classic-preview-host-info span { display: inline-block; font-size: 0.625rem; font-weight: 600; color: #52525B; background: #F0F0F1; padding: 0.125rem 0.5rem; border-radius: 6px; margin-top: 0.2rem; }
+.classic-preview-host-info span.is-creator { color: #537bae; background: #EBF4FF; }
 
 .builder-fixed-header {
   --header-bg: #FAFAFA;
@@ -2786,6 +2845,9 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
   padding: var(--bx-section-spacing, 32px) 24px;
 }
 .builder-giftsblock-inner { max-width: 1080px; margin: 0 auto; }
+.builder-giftsblock-header { text-align: center; margin: 0 0 2rem; }
+.builder-giftsblock-header h2.be-heading { margin: 0 0 0.5rem; font-size: 1.75rem; }
+.builder-giftsblock-subtitle { margin: 0 auto; max-width: 560px; font-size: 0.9375rem; line-height: 1.5; }
 .builder-giftsblock-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -3019,12 +3081,73 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
   z-index: 12;
   box-shadow: 0 3px 10px rgba(0,0,0,0.18);
 }
-.builder-section:hover:not(:has(:is(.builder-column, .builder-element):hover)) > .builder-block-toolbar,
+.builder-section:hover:not(:has(:is(.builder-elements-list:not(.is-empty), .builder-element):hover)) > .builder-block-toolbar,
 .builder-section.is-selected > .builder-block-toolbar,
-.builder-column:hover:not(:has(:is(.builder-column, .builder-element):hover)) > .builder-block-toolbar,
+.builder-column:hover:not(:has(:is(.builder-elements-list:not(.is-empty), .builder-element):hover)) > .builder-block-toolbar,
 .builder-column.is-selected > .builder-block-toolbar,
 .builder-element:hover:not(:has(:is(.builder-column, .builder-element):hover)) > .builder-block-toolbar,
 .builder-element.is-selected > .builder-block-toolbar { display: flex; }
+/* Primeira seção (capa): não tem nada acima dela no canvas, então a barrinha
+   de ferramentas (mover/excluir) não pode nascer negativa senão fica cortada
+   pelo overflow:hidden do frame do canvas. */
+.builder-section.is-first-content-section > .builder-block-toolbar { top: 10px; }
+
+.builder-first-section-cover-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+.builder-first-section-cover-btn:hover { background: rgba(0,0,0,0.7); }
+.builder-first-section-cover-btn svg { width: 15px; height: 15px; }
+.builder-section.is-first-content-section.has-cover-image .builder-first-section-cover-btn { opacity: 0; }
+.builder-section.is-first-content-section.has-cover-image:hover .builder-first-section-cover-btn { opacity: 1; }
+
+/* A primeira seção fica no topo absoluto do canvas (que tem overflow:hidden) —
+   a barra flutuante que sobe -13px ficaria cortada ali, então nela a barra
+   desce para dentro da própria seção, totalmente visível. */
+.builder-section.is-first-content-section > .builder-block-toolbar {
+  top: 10px;
+}
+
+/* Botão de Adicionar/Alterar imagem da primeira seção (a capa do convite) */
+.builder-first-section-cover-btn {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 6;
+  backdrop-filter: blur(3px);
+  transition: opacity .15s ease, background-color .15s ease;
+}
+.builder-first-section-cover-btn:hover { background: rgba(0,0,0,0.7); }
+.builder-first-section-cover-btn svg { width: 15px; height: 15px; }
+.builder-section.is-first-content-section.has-cover-image .builder-first-section-cover-btn { opacity: 0; }
+.builder-section.is-first-content-section.has-cover-image:hover .builder-first-section-cover-btn { opacity: 1; }
 
 .builder-block-toolbar-tag {
   font-size: 0.625rem; font-weight: 700; color: #fff; padding: 0 0.4rem; text-transform: uppercase; letter-spacing: .03em;
@@ -3101,6 +3224,16 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 .builder-elements-list.is-empty.is-empty-first-section {
   border: none;
   border-radius: 0;
+}
+/* Primeira seção já com imagem de fundo definida: não é realmente "vazia" —
+   sem placeholder, sem borda, sem padding/min-height reservado, para a
+   imagem de fundo aparecer limpa, sem nada sobreposto. */
+.builder-elements-list.is-empty.is-empty-has-bg {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+  background: transparent;
 }
 
 .builder-element {
@@ -3656,7 +3789,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
 /* -------------------- Dark mode -------------------- */
 
 body[data-theme="dark"] .builder-wrap { background: #252525 !important; border-color: #404040 !important; }
-body[data-theme="dark"] .builder-toolbar { background: #1c1c1c !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .builder-toolbar { background: #181D24 !important; border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .builder-page-name { color: #FFFFFF !important; }
 body[data-theme="dark"] .builder-page-name:hover { background: #333333 !important; }
 body[data-theme="dark"] .builder-page-name:focus { background: #252525 !important; border-color: #404040 !important; }
@@ -3742,6 +3875,10 @@ body[data-theme="dark"] .builder-narrow-notice { background: #3f2d0a !important;
 #builder-elements-panel .settings-switch input:checked ~ .settings-switch-track { background: #ebf4ff; }
 body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important; }
 
+/* Toggle "Exibir nomes" no popup de mesa: branco quando off, azul clarinho quando on */
+#floorplan-show-names-switch .settings-switch-track { background: #FFFFFF; border: 1px solid #E4E4E7; }
+#floorplan-show-names-switch input:checked ~ .settings-switch-track { background: #EBF4FF; border-color: #EBF4FF; }
+
 /* -------------------- Ajustes Love: convite de página única (sem header/menu fixo) -------------------- */
 .builder-wrap {
   /* Acentos do construtor (botões, seleção, abas) na mesma cor usada no B2B: #333333 */
@@ -3765,6 +3902,19 @@ body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important;
 .builder-canvas[data-device="mobile"] .builder-section { min-height: 0; }
 @media (max-width: 768px) { .builder-section { min-height: 0; } }
 .builder-fixed-header, .builder-mobile-menu-root { display: none !important; }
+
+/* Seção de capa (primeira seção de conteúdo): sempre ocupa a tela cheia com a
+   imagem de fundo, mesmo com o ajuste de "página única" acima que faz as
+   demais seções abraçarem a altura do conteúdo. */
+.builder-section.is-first-content-section {
+  min-height: 100vh;
+  padding: 0;
+  justify-content: center;
+}
+.builder-canvas[data-device="mobile"] .builder-section.is-first-content-section { min-height: 100dvh; }
+@media (max-width: 768px) {
+  .builder-section.is-first-content-section { min-height: 100dvh; }
+}
 
 .builder-canvas-end-dropzone {
   display: flex;
@@ -4586,9 +4736,7 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
 
 /* Item de Aba (Link ou Botão) — mesmo padrão do B2B (Meus Produtos: .category-tab) */
 .love-tab-item,
-.b2b-category-pill,
-button.love-tab-item,
-button.b2b-category-pill {
+button.love-tab-item {
   position: relative !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -4619,14 +4767,12 @@ button.b2b-category-pill {
   margin-bottom: 0 !important;
 }
 
-.love-tab-item:hover,
-.b2b-category-pill:hover {
+.love-tab-item:hover {
   color: #3F3F46 !important; /* mesmo tom do B2B no hover */
   border-bottom-color: transparent !important;
 }
 
 /* Vence o reset global de botões (border-radius:12px) para a linha ficar reta, sem curva nas pontas */
-#b2b-category-tabs button.b2b-category-pill.b2b-category-pill.b2b-category-pill,
 #tables-sectors-nav button.love-tab-item.love-tab-item.love-tab-item,
 #rsvp-status-tabs button.love-tab-item.love-tab-item.love-tab-item {
   border-radius: 0 !important;
@@ -4634,9 +4780,7 @@ button.b2b-category-pill {
 
 /* Aba Ativa - mesma cor primária da plataforma (#333333, igual ao B2B logado) */
 .love-tab-item.active,
-.b2b-category-pill.active,
-button.love-tab-item.active,
-button.b2b-category-pill.active {
+button.love-tab-item.active {
   color: #333333 !important;
   font-weight: 600 !important;
   border-bottom: 2px solid #333333 !important;
@@ -4645,9 +4789,7 @@ button.b2b-category-pill.active {
 }
 
 .love-tab-item::after,
-.b2b-category-pill::after,
-button.love-tab-item::after,
-button.b2b-category-pill::after {
+button.love-tab-item::after {
   display: none !important;
 }
 
@@ -4699,16 +4841,16 @@ button.b2b-category-pill::after {
   background-color: #1d2b3c !important;
 }
 
-/* Botão Enviar Mensagem no Chat - mesma cor primária da plataforma (#333333) */
+/* Botão Enviar Mensagem no Chat - mesma cor do sidebar */
 #b2b-chat-send-btn,
 #chat-send-btn {
-  background-color: #333333 !important;
+  background-color: #181D24 !important;
   color: #FFFFFF !important;
 }
 
 #b2b-chat-send-btn:hover,
 #chat-send-btn:hover {
-  background-color: #222222 !important;
+  background-color: #0F1216 !important;
 }
 
 /* Tabela de Orçamento, Extrato e Grade de Presentes Full-Bleed (Preenchimento total 100% da tela sem margens laterais) */
@@ -4854,16 +4996,16 @@ body.wallet-mode .budget-table-full-bleed {
    SEÇÃO MAIS RECURSOS: BOTÕES NA MESMA COR DO SIDEBAR (#F3F3F3) SEM BORDA
    ========================================================================== */
 .mais-recursos-btn {
-  background-color: #F3F3F3 !important;
-  background: #F3F3F3 !important;
+  background-color: #EBF4FF !important;
+  background: #EBF4FF !important;
   border: none !important;
   border-color: transparent !important;
   color: #333333 !important;
 }
 
 .mais-recursos-btn:hover {
-  background-color: #E5E5E5 !important;
-  background: #E5E5E5 !important;
+  background-color: #DCEAFB !important;
+  background: #DCEAFB !important;
   border: none !important;
 }
 
@@ -4960,25 +5102,77 @@ body:not([data-theme="dark"]) #tab-b2b {
   background-color: #FFFFFF !important;
 }
 
-/* Sidebar de ícones + topo (logo) em #f3f3f3 no Light Mode */
-body:not([data-theme="dark"]) .sidebar-icon-rail,
-body:not([data-theme="dark"]) .sidebar-brand-top {
-  background-color: #F3F3F3 !important;
-  background: #F3F3F3 !important;
-}
-
-/* Sub-drawer (submenu de páginas) em #f3f3f3 no Light Mode */
+/* Sub-drawer (submenu de páginas) em #fafafa no Light Mode */
 body:not([data-theme="dark"]) .sidebar-sub-drawer,
 body:not([data-theme="dark"]) #sidebar-sub-drawer {
-  background-color: #F3F3F3 !important;
-  background: #F3F3F3 !important;
+  background-color: #FAFAFA !important;
+  background: #FAFAFA !important;
 }
 
-/* Header em #f3f3f3 no Light Mode */
+/* Rail de ícones escuro (#181D24) no Light Mode Desktop — não afeta a barra mobile. */
+@media (min-width: 769px) {
+  body:not([data-theme="dark"]) .sidebar-icon-rail,
+  body:not([data-theme="dark"]) .sidebar-brand-top {
+    background-color: #181D24 !important;
+    background: #181D24 !important;
+    border-color: #181D24 !important;
+  }
+
+  /* Linha entre o logo e os ícones de menu, idêntica ao B2B (.sidebar-brand-top) */
+  body:not([data-theme="dark"]) .sidebar-brand-top {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Logo branco no rail escuro (o colorido fica ilegível em fundo escuro) */
+  body:not([data-theme="dark"]) #sidebar-brand-icon-light {
+    display: none !important;
+  }
+  body:not([data-theme="dark"]) #sidebar-brand-icon-dark {
+    display: inline-block !important;
+  }
+
+  body:not([data-theme="dark"]) .rail-icon-btn,
+  body:not([data-theme="dark"]) .rail-icon-btn svg {
+    color: #C4C4CC !important;
+    stroke: #C4C4CC !important;
+  }
+
+  body:not([data-theme="dark"]) .rail-icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
+  }
+
+  body:not([data-theme="dark"]) .rail-icon-btn:hover svg,
+  body:not([data-theme="dark"]) .rail-icon-btn:hover svg * {
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+  }
+
+  body:not([data-theme="dark"]) .rail-icon-btn.active {
+    background-color: #EBF4FF !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+  }
+
+  body:not([data-theme="dark"]) .rail-icon-btn.active svg,
+  body:not([data-theme="dark"]) .rail-icon-btn.active svg * {
+    color: #181D24 !important;
+    stroke: #181D24 !important;
+  }
+
+  body:not([data-theme="dark"]) .sub-drawer-item.active {
+    background-color: #EBF4FF !important;
+    color: #333333 !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Header em #ffffff no Light Mode */
 body:not([data-theme="dark"]) .dashboard-top-navbar {
   background-color: #F3F3F3 !important;
   background: #F3F3F3 !important;
-  border-bottom: 1px solid #EAEAEA !important;
+  border-bottom: 1px solid #E4E4E4 !important;
   box-shadow: 0 2px 6px rgba(16, 24, 40, 0.04) !important;
 }
 
@@ -5056,31 +5250,31 @@ body[data-theme="dark"] #tab-edit-site,
 body[data-theme="dark"] .editor-split-wrapper,
 body[data-theme="dark"] #editor-form-column,
 body[data-theme="dark"] #tab-b2b {
-  background-color: #252525 !important;
+  background-color: #1C2125 !important;
   color: #ffffff !important;
 }
 
-/* 1. Sidebar Rail, Sub-Drawer & Top Navbar (#333333) */
+/* 1. Sidebar Rail, Sub-Drawer & Top Navbar — header segue a mesma cor do sidebar */
 body[data-theme="dark"] .dashboard-top-navbar {
-  background-color: #333333 !important;
-  background: #333333 !important;
+  background-color: #181D24 !important;
+  background: #181D24 !important;
   border-bottom: 1px solid #404040 !important;
   box-shadow: none !important;
 }
 
 body[data-theme="dark"] .sidebar-icon-rail {
-  background-color: #333333 !important;
+  background-color: #181D24 !important;
   border-right: 1px solid #404040 !important;
 }
 
 body[data-theme="dark"] .sidebar-brand-top {
-  background-color: #333333 !important;
+  background-color: #181D24 !important;
   border-bottom: 1px solid #404040 !important;
 }
 
 body[data-theme="dark"] .sidebar-sub-drawer,
 body[data-theme="dark"] #sidebar-sub-drawer {
-  background-color: #333333 !important;
+  background-color: #1C2125 !important;
   border-right: 1px solid #404040 !important;
   color: #ffffff !important;
 }
@@ -5124,10 +5318,17 @@ body[data-theme="dark"] .sidebar-icon-rail button:hover {
 
 body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn.active,
 body[data-theme="dark"] .rail-icon-btn.active {
-  background-color: #4b4b4b !important;
+  background-color: #EBF4FF !important;
   border: 1px solid #595959 !important;
-  color: #ffffff !important;
+  color: #181D24 !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn.active svg,
+body[data-theme="dark"] .rail-icon-btn.active svg,
+body[data-theme="dark"] .rail-icon-btn.active svg * {
+  color: #181D24 !important;
+  stroke: #181D24 !important;
 }
 
 body[data-theme="dark"] .sub-drawer-item {
@@ -5140,7 +5341,7 @@ body[data-theme="dark"] .sub-drawer-item:hover {
 }
 
 body[data-theme="dark"] .sub-drawer-item.active {
-  background-color: #4b4b4b !important;
+  background-color: #1C2125 !important;
   color: #ffffff !important;
   border: 1px solid #595959 !important;
 }
@@ -5289,6 +5490,19 @@ body[data-theme="dark"] #drawer-contracted-vendor-details {
   border-color: #404040 !important;
   color: #ffffff !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Explorar / Meus Contratos / Favoritos no dark mode: mantém o fundo escuro
+   herdado da regra acima, mas sem a sombra de "caixa" — lista plana, só com
+   a linha (divide-y) entre um fornecedor e outro. */
+body[data-theme="dark"] .b2b-item-card,
+body[data-theme="dark"] #b2b-contracted-list-container > div {
+  box-shadow: none !important;
+  border-color: #404040 !important;
+}
+body[data-theme="dark"] #b2b-cards-list-container.divide-zinc-200\/80 > *,
+body[data-theme="dark"] #b2b-contracted-list-container.divide-zinc-200\/80 > * {
+  border-color: #404040 !important;
 }
 
 /* Todos os Textos em #ffffff */
@@ -5613,10 +5827,6 @@ body[data-theme="dark"] #editor-form-invite-print {
 }
 
 /* Header de Sub-seção no Dark Mode */
-body[data-theme="dark"] #editor-form-column .border-b.border-zinc-100 {
-  border-color: #404040 !important;
-}
-
 body[data-theme="dark"] #editor-active-sub-title {
   color: #ffffff !important;
 }
@@ -5731,8 +5941,8 @@ body[data-theme="dark"] #editor-form-column .music-track-placement {
    Fundo: #252525 | Caixas: #333333 | Bordas: #404040
    ========================================================================== */
 body[data-theme="dark"] #tab-overview {
-  background-color: #252525 !important;
-  background: #252525 !important;
+  background-color: #1C2125 !important;
+  background: #1C2125 !important;
 }
 
 body[data-theme="dark"] #tab-overview .bg-white:not(button):not(input):not(select):not(textarea):not(.mais-recursos-btn):not(.gift-received-icon):not(.gift-received-buyer):not(.gift-received-badge):not(.gift-received-btn):not(.gift-received-tag),
@@ -6020,8 +6230,6 @@ body[data-theme="dark"] #b2b-chat-contacts-list {
    ========================================================================== */
 body[data-theme="dark"] .love-tab-item.active,
 body[data-theme="dark"] button.love-tab-item.active,
-body[data-theme="dark"] .b2b-category-pill.active,
-body[data-theme="dark"] button.b2b-category-pill.active,
 body[data-theme="dark"] .editor-sub-tab-btn.active,
 body[data-theme="dark"] button.editor-sub-tab-btn.active,
 body[data-theme="dark"] .tab-invite-filter.active,
@@ -6042,7 +6250,6 @@ body[data-theme="dark"] [class*="border-b-2"].active {
 }
 
 body[data-theme="dark"] .love-tab-item.active *,
-body[data-theme="dark"] .b2b-category-pill.active *,
 body[data-theme="dark"] .editor-sub-tab-btn.active *,
 body[data-theme="dark"] .tab-invite-filter.active *,
 body[data-theme="dark"] .category-tab.active *,

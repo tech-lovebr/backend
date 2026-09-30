@@ -32,7 +32,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20260929_colorcopyicon">
+  <link rel="stylesheet" href="css/styles.css?v=20260930_coversize2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -806,7 +806,17 @@
              PAGE 1: CRIADOR DE SITE & APARÊNCIA (Ícone 2 - Pincel 🎨)
              ================================================================= -->
         <section id="tab-edit-site" class="dashboard-tab-content space-y-0 w-full">
-          
+
+          <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes / Meus Convidados) -->
+          <div class="builder-toolbar" id="classic-editor-toolbar" style="display:none !important;">
+            <h2 id="editor-active-sub-title" class="floorplan-page-name" style="margin:0;">Aparência</h2>
+            <div id="editor-header-save-container" class="flex-shrink-0">
+              <button type="button" id="btn-save-header-edit" class="btn-primary builder-toolbar-btn">
+                <span>Salvar alterações</span>
+              </button>
+            </div>
+          </div>
+
           <div class="editor-split-wrapper w-full flex-row min-h-[calc(100vh-var(--navbar-height-desktop))] items-stretch" style="display:none !important;">
             
             <!-- COLUNA ESQUERDA: LIVE PREVIEW FULL-SPACE PREENCHENDO A ÁREA ESQUERDA SEM GAPS (100% FLUSH) -->
@@ -814,7 +824,12 @@
               
               <!-- Container / Canvas Mockup do Convite Completo em Tela Cheia -->
               <div id="live-preview-container" class="w-full flex-1 rounded-none border-0 shadow-none overflow-y-auto flex flex-col relative no-scrollbar transition-colors duration-300" style="background-color: #FBFBFA;">
-                
+
+                <!-- Prévia real do convite (mesmo motor do Convite Digital), usada nas
+                     abas Informações / Anfitriões / Convite online / Produzir convite —
+                     para sempre refletir exatamente o que foi criado em Aparência. -->
+                <div id="classic-builder-preview" class="builder-canvas hidden w-full flex-1 overflow-y-auto"></div>
+
                 <!-- 1. Foto Principal do Casal no Topo (Editável na Prévia como as outras imagens) -->
                 <div class="relative w-full flex-shrink-0" id="cover-image-section-wrapper">
                   <!-- Estado 1: Imagem de Capa Ativa (com botão Alterar e botão ✕ para excluir) -->
@@ -1053,19 +1068,6 @@
 
             <!-- COLUNA DIREITA: PAINEL DE PERSONALIZAÇÃO COM FUNDO BRANCO PURO (TÍTULO, ENDEREÇO, FUNDO, FOTO, ETC.) -->
             <div id="editor-form-column" class="flex-1 bg-white p-6 sm:p-8 lg:p-10 pb-24 sm:pb-32 min-w-0 overflow-y-auto space-y-6">
-              
-              <!-- Header de Título da Sub-Seção Ativa + Botão Salvar Alterações (Aparência, Informações, Anfitriões, Convite) -->
-              <div class="pb-4 border-b border-zinc-100 flex items-center justify-between gap-4">
-                <h2 id="editor-active-sub-title" class="text-xl font-bold text-zinc-900 font-sans">Aparência</h2>
-                
-                <!-- Botão Salvar no Canto Direito ao Lado do Título (Aparência, Informações, etc.) -->
-                <div id="editor-header-save-container" class="flex-shrink-0">
-                  <button type="button" id="btn-save-header-edit" class="btn-save-appearance bg-[#333333] hover:bg-[#222222] text-white border-0 py-2.5 px-5 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 rounded-lg transition-all shadow-xs cursor-pointer font-sans" style="background-color: #333333 !important;">
-                    <span>Salvar alterações</span>
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
 
                             <!-- Sub-seção 1: Aparência (100% Estética & Design - Fiel e Idêntica à Referência) -->
               <div id="editor-form-home" class="editor-sub-panel space-y-0 pb-16 sm:pb-24">
@@ -1745,11 +1747,8 @@
             <h2 id="gifts-header-title" class="floorplan-page-name" style="margin:0;">Meus presentes</h2>
 
             <div id="gifts-top-search-bar" class="flex items-center gap-2.5 flex-shrink-0">
-              <div class="relative w-52 sm:w-64">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-                <input type="text" id="gifts-search-input" placeholder="Buscar um presente..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
+              <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium flex-shrink-0">
+                Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
               </div>
 
               <!-- Botão Adicionar Presente Aleatório (Ícone de Random) -->
@@ -1774,16 +1773,6 @@
           <!-- Conteúdo Principal de Meus Presentes -->
           <div class="px-6 sm:px-8 py-6 space-y-5 w-full max-w-none">
 
-            <!-- Subtítulo da Seção -->
-            <p id="gifts-header-subtitle" class="text-sm text-zinc-500 font-sans -mt-2">Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.</p>
-
-            <!-- Barra Superior de Estatísticas: Valor Total -->
-            <div id="gifts-summary-stats" class="flex items-center justify-end border-b border-zinc-200/80 pb-2 text-xs sm:text-sm text-zinc-500 font-sans font-medium">
-              <div>
-                Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
-              </div>
-            </div>
-
             <!-- 3. Grid de Presentes: Até 4 presentes por linha, caixas no estilo da imagem anexada -->
             <div id="gifts-panel-products" class="pt-2 w-full">
               <div id="host-gifts-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -1793,7 +1782,7 @@
           </div>
 
           <!-- SUB-PAINEL 2: CONFIGURAÇÕES DA LISTA DE PRESENTES (Estilo Livre / Fundo Branco) -->
-          <div id="gifts-panel-settings" class="hidden px-6 sm:px-8 py-6 space-y-8 max-w-4xl">
+          <div id="gifts-panel-settings" class="hidden px-6 sm:px-8 pt-4 pb-6 space-y-8 max-w-4xl">
             
             <!-- 1. QUEM PAGA A TAXA DOS PRESENTES -->
             <div class="space-y-4 pb-8 border-b border-zinc-200/80">
@@ -1805,11 +1794,11 @@
               <div class="space-y-3" id="gift-fee-options-container">
                 
                 <!-- Opção 1: Repassar a taxa para os convidados (Recomendado) -->
-                <div class="gift-fee-card active p-5 sm:p-6 rounded-2xl border-2 border-[#537bae] bg-blue-50/20 cursor-pointer relative transition-all flex items-start gap-4 hover:border-[#537bae]" data-fee-choice="guest">
-                  
+                <div class="gift-fee-card active p-5 sm:p-6 rounded-2xl border-2 border-[#181D24] bg-[#181D24]/5 cursor-pointer relative transition-all flex items-start gap-4 hover:border-[#181D24]" data-fee-choice="guest">
+
                   <!-- Custom Radio Indicator -->
-                  <div class="fee-radio-indicator w-5 h-5 rounded-full border-2 border-[#537bae] flex items-center justify-center flex-shrink-0 mt-0.5 bg-white">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#537bae]"></span>
+                  <div class="fee-radio-indicator w-5 h-5 rounded-full border-2 border-[#181D24] flex items-center justify-center flex-shrink-0 mt-0.5 bg-white">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#181D24]"></span>
                   </div>
 
                   <div class="flex-1 min-w-0 pr-24">
@@ -1818,7 +1807,7 @@
                   </div>
 
                   <!-- Badge Recomendado no Canto Superior Direito -->
-                  <span class="absolute top-5 right-5 bg-[#537bae] text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-xs">
+                  <span class="absolute top-5 right-5 bg-[#181D24] text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-xs">
                     recomendado
                   </span>
                 </div>
@@ -1865,8 +1854,8 @@
                   <span class="text-[10px] text-[#537bae] block pt-1 font-bold">Taxa absorvida: 2,4%</span>
                 </div>
 
-                <div class="installment-card active p-4 rounded-xl border-2 border-[#537bae] bg-blue-50/30 cursor-pointer transition-all text-center space-y-1 relative" data-installments="6">
-                  <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#537bae] text-white text-[9px] font-black px-2 py-0.5 rounded-full">POPULAR</span>
+                <div class="installment-card active p-4 rounded-xl border-2 border-[#181D24] bg-[#181D24]/5 cursor-pointer transition-all text-center space-y-1 relative" data-installments="6">
+                  <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#181D24] text-white text-[9px] font-black px-2 py-0.5 rounded-full">POPULAR</span>
                   <span class="text-sm font-extrabold text-zinc-900 block">Até 6x</span>
                   <span class="text-[11px] text-[#537bae] font-semibold block">Sem juros no cartão</span>
                   <span class="text-[10px] text-[#537bae] block pt-1 font-bold">Taxa absorvida: 4,8%</span>
@@ -1954,9 +1943,6 @@
 
           <!-- Conteúdo Principal de Meus Convidados -->
           <div class="px-8 py-6 space-y-5 w-full">
-
-          <!-- Subtítulo da Seção -->
-          <p id="rsvp-header-subtitle" class="text-sm text-zinc-500 font-sans -mt-2">Acompanhe as confirmações de presença (RSVP) e gerencie seus convidados em tempo real.</p>
 
           <!-- Abas de Status (padrão B2B: category-tabs-bar) -->
           <div class="love-tabs-nav" id="rsvp-status-tabs">
@@ -2121,7 +2107,7 @@
                   <div id="wallet-balance-disponivel" class="text-3xl sm:text-4xl font-black text-zinc-900 mt-1 font-sans">R$ 14.850,00</div>
                   <p class="text-[11px] text-zinc-500 pt-1 font-sans">Transferência PIX instantânea sem limite de saques</p>
                 </div>
-                <button class="bg-[#183b54] hover:bg-[#122c3f] text-white w-full py-2.5 px-4 font-semibold text-xs rounded-xl btn-trigger-withdraw-pix shadow-2xs flex items-center justify-center gap-2 transition-colors cursor-pointer" style="background-color: #183b54 !important;">
+                <button class="bg-[#181D24] hover:bg-[#0F1216] text-white w-full py-2.5 px-4 font-semibold text-xs rounded-xl btn-trigger-withdraw-pix shadow-2xs flex items-center justify-center gap-2 transition-colors cursor-pointer" style="background-color: #181D24 !important;">
                   <span>Solicitar Saque</span>
                 </button>
               </div>
@@ -2896,44 +2882,56 @@
           
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes / Meus Convidados) -->
           <div id="b2b-top-search-bar" class="builder-toolbar">
-            <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Catálogo de produtos e serviços</h2>
+            <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Explorar</h2>
             <div class="flex items-center gap-2.5 flex-shrink-0">
-              <div class="relative w-52 sm:w-64">
+              <div class="relative w-52 sm:w-64" id="b2b-search-container">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <input type="text" id="b2b-search-input" placeholder="Buscar fornecedores" class="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
-              </div>
+                <input type="text" id="b2b-search-input" placeholder="Buscar por nome ou categoria" autocomplete="off" class="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
 
-              <!-- Botão Ordenar com Dropdown Customizado -->
-              <div class="relative flex-shrink-0" id="b2b-sort-container">
-                <button type="button" id="btn-b2b-sort-dropdown" class="btn-secondary">
-                  <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/>
-                  </svg>
-                  <span>Ordenar: <strong id="b2b-sort-label" class="font-semibold">Recomendados</strong></span>
-                  <svg class="transition-transform duration-200" id="b2b-sort-chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div id="b2b-sort-menu" class="hidden absolute right-0 top-full mt-1.5 w-48 bg-white rounded-xl border border-zinc-200/90 shadow-lg py-1.5 z-30 animate-fade-in">
-                  <button type="button" class="b2b-sort-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer active" data-sort="recommended">
-                    <span>Recomendados</span>
-                    <span class="sort-check text-[#537bae]">✓</span>
+                <!-- Dropdown de Categorias (aparece ao clicar na busca) -->
+                <div id="b2b-category-menu" class="hidden absolute left-0 top-full mt-1.5 w-64 bg-white rounded-xl border border-zinc-200/90 shadow-lg py-1.5 z-30 animate-fade-in">
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer active" data-category="all">
+                    <span>Todos os fornecedores</span>
+                    <span class="category-check text-[#537bae]">✓</span>
                   </button>
-                  <button type="button" class="b2b-sort-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-sort="rating">
-                    <span>Avaliações</span>
-                    <span class="sort-check text-[#537bae] hidden">✓</span>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="advisors">
+                    <span>Assessoria</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
                   </button>
-                  <button type="button" class="b2b-sort-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-sort="price-desc">
-                    <span>Maior valor</span>
-                    <span class="sort-check text-[#537bae] hidden">✓</span>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="cerimonial">
+                    <span>Cerimonial</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
                   </button>
-                  <button type="button" class="b2b-sort-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-sort="price-asc">
-                    <span>Menor valor</span>
-                    <span class="sort-check text-[#537bae] hidden">✓</span>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="decor">
+                    <span>Decoração</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
+                  </button>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="photo">
+                    <span>Fotografia</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
+                  </button>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="venues">
+                    <span>Locais & Espaços</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
+                  </button>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="buffet">
+                    <span>Buffet & Gastronomia</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
+                  </button>
+                  <button type="button" class="b2b-category-option w-full text-left px-3.5 py-2 text-xs text-zinc-700 hover:bg-blue-50 hover:text-[#537bae] font-medium flex items-center justify-between transition-colors cursor-pointer" data-category="favorites">
+                    <span>Favoritos</span>
+                    <span class="category-check text-[#537bae] hidden">✓</span>
                   </button>
                 </div>
+              </div>
+
+              <div class="relative w-36 sm:w-44 flex-shrink-0">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400 text-xs font-semibold">
+                  Em
+                </div>
+                <input type="text" id="b2b-location-input" placeholder="Local" autocomplete="off" class="w-full pl-8 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
               </div>
             </div>
           </div>
@@ -2941,35 +2939,8 @@
           <!-- SUB-VIEW 1: EXPLORAR CATÁLOGO DE FORNECEDORES -->
           <div id="b2b-explore-view" class="px-6 sm:px-8 py-6 space-y-5 w-full max-w-none">
 
-            <p id="b2b-explore-header-subtitle" class="text-sm text-zinc-500 font-sans -mt-2">Gerencie o que aparece na sua vitrine dentro dos eventos.</p>
-
-            <!-- Barra Superior de Abas Sublinhadas -->
-            <div class="love-tabs-nav" id="b2b-category-tabs">
-                <button type="button" class="b2b-category-pill active" data-category="advisors">
-                  Assessoria
-                </button>
-                <button type="button" class="b2b-category-pill" data-category="cerimonial">
-                  Cerimonial
-                </button>
-                <button type="button" class="b2b-category-pill" data-category="decor">
-                  Decoração
-                </button>
-                <button type="button" class="b2b-category-pill" data-category="photo">
-                  Fotografia
-                </button>
-                <button type="button" class="b2b-category-pill" data-category="venues">
-                  Locais & Espaços
-                </button>
-                <button type="button" class="b2b-category-pill" data-category="buffet">
-                  Buffet & Gastronomia
-                </button>
-                <button type="button" class="b2b-category-pill" data-category="favorites">
-                  Favoritos
-                </button>
-            </div>
-
             <!-- Lista de fornecedores -->
-            <div class="w-full flex flex-col gap-4" id="b2b-cards-list-container">
+            <div class="w-full flex flex-col divide-y divide-zinc-200/80" id="b2b-cards-list-container">
               <!-- Injetado dinamicamente via JS -->
             </div>
           </div>
@@ -2984,7 +2955,7 @@
               <div class="b2b-chat-contacts-column w-full md:w-80 lg:w-[340px] md:min-w-[320px] border-r border-zinc-200 flex flex-col h-full min-h-0 flex-shrink-0">
 
                 <div class="p-3 border-b border-zinc-200 flex-shrink-0 relative">
-                  <button type="button" id="b2b-new-conversation-btn" class="w-full py-2 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer">
+                  <button type="button" id="b2b-new-conversation-btn" class="w-full py-2 rounded-xl bg-[#181D24] hover:bg-[#0F1216] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer">
                     + Nova conversa
                   </button>
                   <div id="b2b-new-conversation-picker" class="hidden absolute left-3 right-3 top-[52px] z-10 bg-white border border-zinc-200 rounded-xl shadow-lg max-h-64 overflow-y-auto"></div>
@@ -3004,7 +2975,7 @@
                 <div class="px-6 py-3.5 bg-white border-b border-zinc-200 flex items-center justify-between flex-shrink-0 h-[64px]">
                   <div class="flex items-center gap-3.5 min-w-0">
                     <div class="relative flex-shrink-0">
-                      <img id="b2b-chat-active-avatar" src="assets/theme_garden.jpg" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-zinc-200">
+                      <img id="b2b-chat-active-avatar" src="assets/theme_garden.jpg" alt="Avatar" class="w-10 h-10 rounded-xl object-cover border border-zinc-200">
                       <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
                     </div>
                     <div class="min-w-0">
@@ -3048,7 +3019,7 @@
             <p id="b2b-contracted-header-subtitle" class="text-sm text-zinc-500 font-sans -mt-2">Acompanhe todos os seus contratos fechados, responsáveis diretos e cronograma financeiro.</p>
 
             <!-- Lista de Fornecedores Contratados (Full Width Cards) -->
-            <div id="b2b-contracted-list-container" class="space-y-3 w-full">
+            <div id="b2b-contracted-list-container" class="w-full flex flex-col divide-y divide-zinc-200/80">
               <!-- Injetado dinamicamente via JS -->
             </div>
 
@@ -4592,9 +4563,18 @@
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1">Convidados nesta mesa</label>
           <div id="floorplan-seat-assignments" class="floorplan-seat-assignments"></div>
-          <p class="floorplan-field-hint">Arraste um convidado da lista até a mesa para acomodá-lo.</p>
         </div>
-        <button type="button" id="btn-floorplan-remove" class="floorplan-remove-btn">Remover mesa</button>
+        <div class="flex items-center justify-between gap-3 pt-1">
+          <p class="text-xs font-bold text-slate-700">Exibir nomes</p>
+          <label class="settings-switch flex-shrink-0" id="floorplan-show-names-switch">
+            <input type="checkbox" id="floorplan-show-names-toggle" checked>
+            <span class="settings-switch-track"></span>
+          </label>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button type="button" id="btn-floorplan-remove" class="floorplan-remove-btn">Excluir</button>
+          <button type="button" id="btn-floorplan-clear" class="floorplan-clear-btn">Limpar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -5025,8 +5005,8 @@
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/data.js?v=20260917_guestnames"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20260923_realchat"></script>
+  <script src="js/app.js?v=20260925_giftsettings2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20260929_colorcopyicon"></script>
+  <script src="js/site-builder.js?v=20260930_coversize2"></script>
 </body>
 </html>

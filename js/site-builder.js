@@ -867,7 +867,7 @@ function renderQuickNavSectionHtml(section, mode) {
   if (mode !== 'edit' && !visibleButtons.length) return '';
 
   const iconStyle = section.iconStyle || 'animado';
-  const sectionBg = resolveAdjacentSectionBg(section);
+  const sectionBg = section.bg || resolveAdjacentSectionBg(section);
   const buttonBg = section.buttonBgColor || '#F4F4F5';
   const textColor = section.textColor || '#18181B';
   const iconColor = section.iconColor || textColor;
@@ -928,6 +928,10 @@ function renderFixedFooterHtml() {
 function renderSectionHtml(section, mode, device) {
   mode = mode || 'edit';
   device = device || currentDevice;
+  // A primeira seção "de conteúdo" (ignorando blocos fixos como botões/presentes)
+  // é a capa do convite: mostra um botão dedicado de Adicionar/Alterar imagem de
+  // fundo, sem depender de arrastar um elemento pra dentro da coluna.
+  const isFirstContentSection = mode === 'edit' && builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) === section;
   const bgImages = section.bgImage ? [section.bgImage, ...(section.bgImages || [])].filter(Boolean).slice(0, 3) : [];
   const bgFitStyle = bgImageFitStyle(section.bgFit);
   const bgImageDiv = bgImages.length
@@ -952,13 +956,19 @@ function renderSectionHtml(section, mode, device) {
         <span class="builder-block-toolbar-tag">Seção</span>
         <button type="button" data-delete-section title="Excluir seção">${BI.trash}</button>
       </div>` : '';
+  const coverImageBtn = isFirstContentSection ? `
+      <button type="button" class="builder-first-section-cover-btn" data-first-section-cover-btn title="${section.bgImage ? 'Alterar imagem' : 'Adicionar imagem'}">
+        ${BI.image}
+        <span>${section.bgImage ? 'Alterar imagem' : 'Adicionar imagem'}</span>
+      </button>` : '';
   return `
-    <section class="builder-section" id="${section.id}" data-section-id="${section.id}" style="${section.bg ? `background-color:${section.bg};` : ''}">
+    <section class="builder-section${isFirstContentSection ? ' is-first-content-section' : ''}${isFirstContentSection && section.bgImage ? ' has-cover-image' : ''}" id="${section.id}" data-section-id="${section.id}" style="${section.bg ? `background-color:${section.bg};` : ''}">
       ${bgImageDiv}
       ${overlayDiv}
       ${fadeTopDiv}
       ${fadeBottomDiv}
       ${toolbar}
+      ${coverImageBtn}
       ${columnsRowHtml}
     </section>
   `;
@@ -968,12 +978,16 @@ function renderColumnHtml(column, owner, index, mode, device) {
   mode = mode || 'edit';
   device = device || currentDevice;
   const visibleElements = column.elements.filter(el => mode === 'edit' || !isHiddenOnDevice(el, device));
-  const emptyPlaceholder = `${BI.layers}<span>Arraste um elemento aqui para começar.</span>`;
-  // A primeira seção da página nunca mostra a borda tracejada do estado vazio —
-  // ela costuma ser a capa/topo do convite e não deve ficar "emoldurada".
-  const isFirstSection = builderState.sections[0] === owner;
+  // A primeira seção "de conteúdo" já tem seu próprio botão de Adicionar/Alterar
+  // imagem (renderizado na seção) — a coluna vazia não mostra nada sobreposto
+  // (nem texto, nem ícone), só reserva o mesmo espaço de uma seção vazia normal.
+  const firstContentSection = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const isFirstSection = firstContentSection === owner;
+  const emptyPlaceholder = isFirstSection
+    ? ''
+    : `${BI.layers}<span>Arraste um elemento aqui para começar.</span>`;
   const emptyClass = mode === 'edit' && !column.elements.length
-    ? `is-empty is-empty-section${isFirstSection ? ' is-empty-first-section' : ''}`
+    ? `is-empty is-empty-section${isFirstSection ? ' is-empty-first-section is-empty-has-bg' : ''}`
     : '';
   return `
     <div class="builder-column" data-column-id="${column.id}" style="flex: 0 0 ${column.width}%; max-width:${column.width}%;">
@@ -1012,7 +1026,46 @@ function wireCanvasEvents(canvas) {
     col.addEventListener('click', (e) => {
       if (e.target.closest('.builder-element')) return;
       e.stopPropagation();
+      // Coluna sem nenhum elemento: não há nada útil pra mostrar no inspetor
+      // de coluna — abre direto os ajustes da seção (cor, imagem de fundo etc).
+      const isEmptyColumn = col.querySelector('.builder-elements-list')?.classList.contains('is-empty');
+      if (isEmptyColumn) {
+        const sectionId = col.closest('.builder-section')?.dataset.sectionId;
+        if (sectionId) { selectElement(sectionId, 'section'); return; }
+      }
       selectElement(col.dataset.columnId, 'column');
+    });
+  });
+
+  canvas.querySelectorAll('[data-first-section-cover-btn]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sectionId = btn.closest('.builder-section')?.dataset.sectionId;
+      const section = builderState.sections.find(s => s.id === sectionId);
+      if (!section) return;
+      let fileInput = document.getElementById('builder-first-section-cover-file-input');
+      if (!fileInput) {
+        fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.id = 'builder-first-section-cover-file-input';
+        fileInput.className = 'hidden';
+        document.body.appendChild(fileInput);
+      }
+      fileInput.onchange = (ev) => {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev2) => {
+          section.bgImage = ev2.target.result;
+          pushHistory();
+          renderCanvas();
+          renderLeftPanel();
+        };
+        reader.readAsDataURL(file);
+        fileInput.value = '';
+      };
+      fileInput.click();
     });
   });
 
@@ -1456,7 +1509,7 @@ function renderElementBlockHtml(el, mode, device) {
   const align = styleValue(el, 'textAlign', device);
 
   if (mode === 'preview') {
-    return `<div class="builder-element" data-element-id="${el.id}"${align ? ` style="text-align:${align};"` : ''}>${renderElementContent(el, device, 'preview')}</div>`;
+    return `<div class="builder-element" data-element-id="${el.id}" data-element-type="${el.type}"${align ? ` style="text-align:${align};"` : ''}>${renderElementContent(el, device, 'preview')}</div>`;
   }
 
   const meta = ELEMENT_META[el.type] || { label: el.type };
@@ -1726,10 +1779,6 @@ function applySectionBg(section) {
 function renderColumnInspector(column) {
   return `
     <p class="inspector-hint">Esta coluna organiza os elementos do convite. Arraste para reordenar direto no canvas.</p>
-    <div class="inspector-field">
-      <span class="inspector-field-label">Elementos nesta coluna</span>
-      <p class="inspector-hint">${column.elements.length} elemento(s)</p>
-    </div>
   `;
 }
 
@@ -1739,7 +1788,16 @@ function wireColumnInspector() { /* somente leitura por enquanto */ }
 
 function renderQuickNavInspector(qn) {
   return `
-    <p class="inspector-hint">Esta barra de botões aparece no início do conteúdo, em todos os sites, como uma seção fixa (não pode ser removida ou arrastada). A cor de fundo sempre acompanha a seção logo acima. Você pode editar as cores dos botões, o formato dos ícones, os nomes, a ordem e ativar ou desativar cada botão.</p>
+    <p class="inspector-hint">Esta barra de botões aparece no início do conteúdo, em todos os sites, como uma seção fixa (não pode ser removida ou arrastada). Por padrão a cor de fundo acompanha a seção logo acima, mas você pode definir uma cor própria abaixo. Você também pode editar as cores dos botões, o formato dos ícones, os nomes, a ordem e ativar ou desativar cada botão.</p>
+
+    <div class="inspector-section-title">Fundo da seção</div>
+    <div class="inspector-field inspector-field-row">
+      <span class="inspector-field-label-plain">Cor de fundo</span>
+      <div class="overlay-color-controls">
+        ${colorSwatchPopoverHtml(qn.bg || '', 'data-quicknav-color="bg"')}
+        ${qn.bg ? `<button type="button" class="overlay-color-remove" data-quicknav-bg-remove title="Usar cor da seção acima">${BI.close}</button>` : ''}
+      </div>
+    </div>
 
     <div class="inspector-section-title">Cores dos botões</div>
     <div class="inspector-field inspector-field-row">
@@ -1793,6 +1851,16 @@ function wireQuickNavInspector(qn, body) {
     colorInput.addEventListener('input', () => { qn[key] = colorInput.value; renderCanvas(); });
     colorInput.addEventListener('change', () => pushHistory());
   });
+
+  const bgRemoveBtn = body.querySelector('[data-quicknav-bg-remove]');
+  if (bgRemoveBtn) {
+    bgRemoveBtn.addEventListener('click', () => {
+      delete qn.bg;
+      pushHistory();
+      renderCanvas();
+      renderLeftPanel();
+    });
+  }
 
   const iconStyleSelect = body.querySelector('[data-quicknav-icon-style]');
   if (iconStyleSelect) {
@@ -2533,3 +2601,182 @@ function initPublicPreview() {
 }
 
 document.addEventListener('DOMContentLoaded', initPublicPreview);
+
+/* ==========================================================================
+   Prévia real nas abas clássicas (Informações, Anfitriões, Convite online,
+   Produzir convite) — mesmo motor de renderização do Convite Digital, para
+   sempre refletir exatamente o que foi criado em Aparência.
+   ========================================================================== */
+
+function renderClassicBuilderPreview() {
+  const container = document.getElementById('classic-builder-preview');
+  if (!container || !builderState) return;
+
+  const gs = builderState.globalStyle || {};
+  container.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
+  container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
+  container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
+
+  const visible = (builderState.sections || []).filter(s => !s.hidden);
+  container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
+
+  startCountdownTicker(container);
+}
+
+// Permite trocar a imagem do topo (primeira seção) diretamente pela prévia,
+// tanto em Informações quanto em Anfitriões — clique/hover mostra "Alterar
+// imagem", igual ao padrão já usado na foto de capa de Aparência.
+function wireClassicPreviewCoverEdit(container, rerenderFn) {
+  const firstSection = container.querySelector(':scope > section');
+  if (!firstSection) return;
+  firstSection.classList.add('group');
+
+  let fileInput = document.getElementById('classic-preview-cover-file-input');
+  if (!fileInput) {
+    fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.id = 'classic-preview-cover-file-input';
+    fileInput.className = 'hidden';
+    document.body.appendChild(fileInput);
+  }
+
+  const overlay = document.createElement('button');
+  overlay.type = 'button';
+  overlay.title = 'Alterar imagem do topo';
+  overlay.className = 'absolute inset-0 m-auto w-fit h-fit px-3.5 py-1.5 rounded-full bg-black/45 hover:bg-black/70 text-white backdrop-blur-md text-xs font-semibold border border-white/40 shadow-lg transition-all flex items-center gap-1.5 cursor-pointer z-20 hover:scale-105 active:scale-95 opacity-0 group-hover:opacity-100';
+  overlay.innerHTML = `
+    <svg class="w-3.5 h-3.5 text-white pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+    </svg>
+    <span>Alterar imagem</span>
+  `;
+  overlay.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInput.click();
+  });
+  firstSection.appendChild(overlay);
+
+  fileInput.onchange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const target = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+      if (target) {
+        target.bgImage = ev.target.result;
+        pushHistory();
+        renderCanvas();
+        persistBuilderState(false);
+        rerenderFn();
+      }
+    };
+    reader.readAsDataURL(file);
+    fileInput.value = '';
+  };
+}
+
+// Prévia da aba "Anfitriões": mesmo convite real, mas sem os elementos de
+// Título/Texto (a "capa" do convite) — no lugar deles entra apenas uma caixa
+// branca com a lista de anfitriões com acesso à conta (mesmos dados de
+// #hosts-team-list, preenchidos ali mesmo em Anfitriões).
+function renderAnfitrioesPreview() {
+  const container = document.getElementById('classic-builder-preview');
+  if (!container || !builderState) return;
+
+  const gs = builderState.globalStyle || {};
+  container.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
+  container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
+  container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
+
+  const visible = (builderState.sections || []).filter(s => !s.hidden);
+  container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
+
+  // Remove os elementos de Título/Texto (a marcação de tipo só existe em modo preview).
+  container.querySelectorAll('[data-element-type="titulo"], [data-element-type="texto"]').forEach(node => node.remove());
+
+  // Monta a caixa com a lista de anfitriões a partir do que está em "Anfitriões com Acesso à Conta".
+  const hostsTeamItems = document.querySelectorAll('#hosts-team-list > div');
+  const hostsCardsHtml = Array.from(hostsTeamItems || []).map(item => {
+    const nameEl = item.querySelector('p.font-bold');
+    const avatarEl = item.querySelector('.rounded-full');
+    const badgeEl = item.querySelector('span');
+    const nameText = nameEl ? (nameEl.childNodes[0]?.textContent?.trim() || nameEl.textContent?.trim()) : 'Anfitrião';
+    const initials = avatarEl ? avatarEl.textContent.trim() : nameText.substring(0, 2).toUpperCase();
+    const roleText = badgeEl ? badgeEl.textContent.trim() : 'Anfitrião';
+    const isCreator = roleText.includes('Criador');
+    return `
+      <div class="classic-preview-host-card">
+        <div class="classic-preview-host-avatar" style="background:${isCreator ? '#537bae' : '#27272A'};">${escapeHtml(initials)}</div>
+        <div class="classic-preview-host-info">
+          <p>${escapeHtml(nameText)}</p>
+          <span class="${isCreator ? 'is-creator' : ''}">${escapeHtml(roleText)}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const boxesHtml = `
+    <div class="classic-preview-info-boxes">
+      <div class="classic-preview-info-box">
+        <h4>Anfitriões</h4>
+        <div class="classic-preview-hosts-list">${hostsCardsHtml}</div>
+      </div>
+    </div>
+  `;
+  const firstSection = container.querySelector(':scope > section');
+  if (firstSection) {
+    firstSection.insertAdjacentHTML('afterend', boxesHtml);
+  } else {
+    container.insertAdjacentHTML('afterbegin', boxesHtml);
+  }
+
+  wireClassicPreviewCoverEdit(container, renderAnfitrioesPreview);
+  startCountdownTicker(container);
+}
+
+// Prévia da aba "Informações": mesmo convite real, mas sem os elementos de
+// Título/Texto (a "capa" do convite) — no lugar deles entram Dress Code e
+// Informações Gerais (preenchidos ali mesmo em Informações), sempre em
+// caixas brancas, para não depender da cor de fundo escolhida em Aparência.
+function renderInformacoesPreview() {
+  const container = document.getElementById('classic-builder-preview');
+  if (!container || !builderState) return;
+
+  const gs = builderState.globalStyle || {};
+  container.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
+  container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
+  container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
+
+  const visible = (builderState.sections || []).filter(s => !s.hidden);
+  container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
+
+  // Remove os elementos de Título/Texto (a marcação de tipo só existe em modo preview).
+  container.querySelectorAll('[data-element-type="titulo"], [data-element-type="texto"]').forEach(node => node.remove());
+
+  // Monta as caixas de Dress Code / Informações Gerais com o que está preenchido em Informações.
+  const activeEvent = getActiveEventForBuilder();
+  const details = (activeEvent && activeEvent.eventDetails) || {};
+  const dresscode = (document.getElementById('editor-data-dresscode')?.value || details.dresscode || '').trim();
+  const generalInfo = (document.getElementById('editor-data-general-info')?.value || details.generalInfo || '').trim();
+
+  if (dresscode || generalInfo) {
+    const boxesHtml = `
+      <div class="classic-preview-info-boxes">
+        ${dresscode ? `<div class="classic-preview-info-box"><h4>Dress Code</h4><p>${escapeHtml(dresscode)}</p></div>` : ''}
+        ${generalInfo ? `<div class="classic-preview-info-box"><h4>Informações Gerais</h4><p>${escapeHtml(generalInfo)}</p></div>` : ''}
+      </div>
+    `;
+    const firstSection = container.querySelector(':scope > section');
+    if (firstSection) {
+      firstSection.insertAdjacentHTML('afterend', boxesHtml);
+    } else {
+      container.insertAdjacentHTML('afterbegin', boxesHtml);
+    }
+  }
+
+  wireClassicPreviewCoverEdit(container, renderInformacoesPreview);
+  startCountdownTicker(container);
+}

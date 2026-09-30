@@ -2558,8 +2558,9 @@ body:not([data-theme="dark"]).editor-split-mode #editor-form-column {
 .builder-toolbar-btn.active:hover { background: var(--primary-blue-hover); }
 
 /* Salvar/Publicar do Convite Digital: mesmo tamanho do botão "Adicionar presente"
-   (padding e fonte do .btn-primary/.btn-secondary padrão, maiores que o toolbar-btn comum). */
-#builder-save, #builder-publish {
+   (padding e fonte do .btn-primary/.btn-secondary padrão, maiores que o toolbar-btn comum).
+   #btn-save-header-edit (Informações/Anfitriões) usa o mesmo tamanho e cor. */
+#builder-save, #builder-publish, #btn-save-header-edit {
   padding: 0.65rem 1.25rem !important;
   font-size: 0.875rem !important;
 }
@@ -4679,7 +4680,6 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
    ========================================================================== */
 #btn-save-edit-site,
 .btn-save-appearance,
-#btn-save-header-edit,
 #btn-save-mobile-edit,
 #btn-host-add-gift,
 .btn-host-add-gift {
@@ -4689,7 +4689,6 @@ input[type="range"].love-modern-slider::-moz-range-thumb:active {
 
 #btn-save-edit-site:hover,
 .btn-save-appearance:hover,
-#btn-save-header-edit:hover,
 #btn-save-mobile-edit:hover,
 #btn-host-add-gift:hover,
 .btn-host-add-gift:hover {
@@ -5199,7 +5198,6 @@ body:not([data-theme="dark"]) .dashboard-top-navbar .header-icon-btn svg {
 /* Botões Salvar Alterações e Adicionar Presente em #333333 no Light Mode */
 body:not([data-theme="dark"]) #btn-save-edit-site,
 body:not([data-theme="dark"]) .btn-save-appearance,
-body:not([data-theme="dark"]) #btn-save-header-edit,
 body:not([data-theme="dark"]) #btn-save-mobile-edit,
 body:not([data-theme="dark"]) #btn-host-add-gift,
 body:not([data-theme="dark"]) .btn-host-add-gift {
@@ -5209,7 +5207,6 @@ body:not([data-theme="dark"]) .btn-host-add-gift {
 
 body:not([data-theme="dark"]) #btn-save-edit-site:hover,
 body:not([data-theme="dark"]) .btn-save-appearance:hover,
-body:not([data-theme="dark"]) #btn-save-header-edit:hover,
 body:not([data-theme="dark"]) #btn-save-mobile-edit:hover,
 body:not([data-theme="dark"]) #btn-host-add-gift:hover,
 body:not([data-theme="dark"]) .btn-host-add-gift:hover {

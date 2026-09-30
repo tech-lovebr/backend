@@ -511,6 +511,11 @@ function updateHistoryButtons() {
   const redoBtn = document.getElementById('builder-redo');
   if (undoBtn) undoBtn.disabled = historyIndex <= 0;
   if (redoBtn) redoBtn.disabled = historyIndex >= historyStack.length - 1;
+  // Mesmo histórico, botões de desfazer/refazer no cabeçalho de Informações/Anfitriões.
+  const classicUndoBtn = document.getElementById('classic-editor-undo');
+  const classicRedoBtn = document.getElementById('classic-editor-redo');
+  if (classicUndoBtn) classicUndoBtn.disabled = historyIndex <= 0;
+  if (classicRedoBtn) classicRedoBtn.disabled = historyIndex >= historyStack.length - 1;
 }
 
 /* -------------------- Fábrica de elementos -------------------- */
@@ -2487,6 +2492,10 @@ function initSiteBuilder() {
   if (undoBtn) undoBtn.addEventListener('click', undo);
   const redoBtn = document.getElementById('builder-redo');
   if (redoBtn) redoBtn.addEventListener('click', redo);
+  const classicUndoBtn = document.getElementById('classic-editor-undo');
+  if (classicUndoBtn) classicUndoBtn.addEventListener('click', undo);
+  const classicRedoBtn = document.getElementById('classic-editor-redo');
+  if (classicRedoBtn) classicRedoBtn.addEventListener('click', redo);
   const saveBtn = document.getElementById('builder-save');
   if (saveBtn) saveBtn.addEventListener('click', () => persistBuilderState(false));
   const publishBtn = document.getElementById('builder-publish');
@@ -2630,6 +2639,7 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
   const firstSection = container.querySelector(':scope > section');
   if (!firstSection) return;
   firstSection.classList.add('group');
+  const targetSection = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
 
   let fileInput = document.getElementById('classic-preview-cover-file-input');
   if (!fileInput) {
@@ -2659,12 +2669,31 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
   });
   firstSection.appendChild(overlay);
 
+  // Permite remover a imagem do topo, deixando essa seção sem foto de fundo.
+  if (targetSection && targetSection.bgImage) {
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.title = 'Remover imagem do topo';
+    removeBtn.className = 'absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 hover:bg-red-600 text-white flex items-center justify-center backdrop-blur-md shadow-md transition-all z-20 cursor-pointer hover:scale-110 active:scale-95 opacity-0 group-hover:opacity-100';
+    removeBtn.innerHTML = `<svg class="w-3.5 h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+    removeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      targetSection.bgImage = '';
+      pushHistory();
+      renderCanvas();
+      persistBuilderState(false);
+      rerenderFn();
+    });
+    firstSection.appendChild(removeBtn);
+  }
+
   fileInput.onchange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const target = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+      const target = targetSection;
       if (target) {
         target.bgImage = ev.target.result;
         pushHistory();

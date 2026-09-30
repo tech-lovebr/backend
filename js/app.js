@@ -1338,12 +1338,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Aba "Aparência" usa o construtor visual (Elementos + Prévia); as demais abas usam o editor clássico
     const classicWrapper = document.querySelector('#tab-edit-site > .editor-split-wrapper');
     const builderRoot = document.getElementById('site-builder-root');
+    const classicToolbar = document.getElementById('classic-editor-toolbar');
     if (subId === 'home') {
       if (classicWrapper) classicWrapper.style.setProperty('display', 'none', 'important');
       if (builderRoot) builderRoot.style.display = '';
+      if (classicToolbar) classicToolbar.style.setProperty('display', 'none', 'important');
     } else {
       if (builderRoot) builderRoot.style.setProperty('display', 'none', 'important');
       if (classicWrapper) classicWrapper.style.setProperty('display', 'flex', 'important');
+      if (classicToolbar) classicToolbar.style.setProperty('display', 'flex', 'important');
+    }
+
+    // Em "Informações" e "Anfitriões", a prévia usa o mesmo motor de renderização
+    // do Convite Digital (reflete o conteúdo real criado em Aparência: imagem,
+    // cores, textos), no lugar da antiga prévia estática de exemplo.
+    const classicBuilderPreview = document.getElementById('classic-builder-preview');
+    const coverImageWrapper = document.getElementById('cover-image-section-wrapper');
+    const livePreviewBody = document.getElementById('live-preview-body');
+    if (subId === 'data' || subId === 'about') {
+      if (coverImageWrapper) coverImageWrapper.classList.add('hidden');
+      if (livePreviewBody) livePreviewBody.classList.add('hidden');
+      if (classicBuilderPreview) classicBuilderPreview.classList.remove('hidden');
+      if (subId === 'data' && typeof renderInformacoesPreview === 'function') {
+        renderInformacoesPreview();
+      } else if (subId === 'about' && typeof renderAnfitrioesPreview === 'function') {
+        renderAnfitrioesPreview();
+      }
+    } else {
+      if (coverImageWrapper) coverImageWrapper.classList.remove('hidden');
+      if (livePreviewBody) livePreviewBody.classList.remove('hidden');
+      if (classicBuilderPreview) classicBuilderPreview.classList.add('hidden');
     }
 
     // Alterna a prévia ao vivo: no submenu "about" (Anfitriões), exibe como se parece a página de anfitriões (capa no início, 2 campos de título/texto, quem são os anfitriões, SEM botões)

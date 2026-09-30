@@ -810,10 +810,18 @@
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes / Meus Convidados) -->
           <div class="builder-toolbar" id="classic-editor-toolbar" style="display:none !important;">
             <h2 id="editor-active-sub-title" class="floorplan-page-name" style="margin:0;">Aparência</h2>
-            <div id="editor-header-save-container" class="flex-shrink-0">
-              <button type="button" id="btn-save-header-edit" class="btn-primary builder-toolbar-btn">
-                <span>Salvar alterações</span>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <button type="button" class="builder-tool-btn" id="classic-editor-undo" title="Desfazer" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 4 10m0 0 5-5m-5 5h11a4 4 0 0 1 0 8h-1"/></svg>
               </button>
+              <button type="button" class="builder-tool-btn" id="classic-editor-redo" title="Refazer" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 15 5-5m0 0-5-5m5 5H9a4 4 0 0 0 0 8h1"/></svg>
+              </button>
+              <div id="editor-header-save-container" class="flex-shrink-0">
+                <button type="button" id="btn-save-header-edit" class="btn-primary builder-toolbar-btn">
+                  <span>Salvar alterações</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -5005,8 +5013,8 @@
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/data.js?v=20260917_guestnames"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20260930_seat2lines"></script>
+  <script src="js/app.js?v=20260930_infopreview"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20260930_coversize2"></script>
+  <script src="js/site-builder.js?v=20260930_infopreview"></script>
 </body>
 </html>

@@ -6759,6 +6759,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return !!(match && match.status === 'confirmed');
   }
 
+  // Convidado recusado mantém a cor de recusado no assento/card independente
+  // da mesa em que estiver — só muda se ele voltar a pendente ou confirmado.
+  function isFloorPlanSeatDeclined(name) {
+    if (!name || !name.trim()) return false;
+    const activeEvent = getActiveEvent();
+    const guests = (activeEvent && activeEvent.guests) || [];
+    const match = guests.find(g => g.name && g.name.trim().toLowerCase() === name.trim().toLowerCase());
+    return !!(match && match.status === 'declined');
+  }
+
   // Renderiza os cards arrastáveis de convidados no painel fixo da esquerda.
   let floorplanGuestStatusFilter = 'all';
 
@@ -6799,16 +6809,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const isSeated = tableNumber !== null;
 
       const card = document.createElement('div');
-      card.className = `floorplan-guest-card${isSeated ? ' is-seated' : ''}`;
+      const isDeclined = g.status === 'declined';
+      card.className = `floorplan-guest-card${isSeated ? ' is-seated' : ''}${isDeclined ? ' is-declined' : ''}`;
       card.draggable = !isSeated;
       card.dataset.guestName = g.name || '';
 
       if (g.status === 'confirmed') {
         card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-check-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>');
+      } else if (isDeclined) {
+        card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-x-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6 6 18"/></svg></span>');
       } else {
-        const dot = document.createElement('span');
-        dot.className = 'floorplan-guest-card-dot';
-        card.appendChild(dot);
+        card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-pending-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M5 12h14"/></svg></span>');
       }
 
       const nameEl = document.createElement('span');
@@ -6870,23 +6881,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const seats = parseInt(elData.seats) || 1;
         const seatNames = Array.isArray(elData.seatNames) ? elData.seatNames : [];
-        const containerSize = 172;
-        const ringRadius = 63;
+        // Precisa bater com o tamanho real de .floorplan-el.is-mesa (220x220) —
+        // se não bater, os assentos ficam desalinhados em volta da mesa.
+        const containerSize = 220;
+        const ringRadius = 80;
+        const showNames = elData.showNames !== false;
         for (let i = 0; i < seats; i++) {
           const angle = (2 * Math.PI * i / seats) - Math.PI / 2;
           const seatX = containerSize / 2 + ringRadius * Math.cos(angle);
           const seatY = containerSize / 2 + ringRadius * Math.sin(angle);
           const guestName = (seatNames[i] || '').trim();
           const confirmed = isFloorPlanSeatConfirmed(guestName);
+          const declined = isFloorPlanSeatDeclined(guestName);
           const seatDot = document.createElement('div');
           let seatState = 'is-empty';
-          if (guestName) seatState = confirmed ? 'is-confirmed' : 'is-assigned';
+          if (guestName) seatState = declined ? 'is-declined' : (confirmed ? 'is-confirmed' : 'is-assigned');
           seatDot.className = `floorplan-seat-dot ${seatState}`;
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
           if (guestName) {
             seatDot.title = guestName;
-            seatDot.textContent = initialsFromName(guestName);
+            if (showNames) seatDot.textContent = guestName;
             seatDot.draggable = true;
             seatDot.addEventListener('dragstart', (e) => {
               e.stopPropagation();
@@ -7041,8 +7056,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const rect = canvas.getBoundingClientRect();
       const isMesa = payload.type === 'mesa';
-      const shapeSize = isMesa ? 172 : 84;
-      const shapeHeightOffset = isMesa ? 86 : 32;
+      const shapeSize = isMesa ? 220 : 84;
+      const shapeHeightOffset = isMesa ? 110 : 32;
       let x = e.clientX - rect.left - shapeSize / 2;
       let y = e.clientY - rect.top - shapeHeightOffset;
       x = Math.max(4, Math.min(x, rect.width - shapeSize - 4));
@@ -7113,6 +7128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nameInput) nameInput.value = t.name || '';
     const seatsValueEl = document.getElementById('floorplan-seats-value');
     if (seatsValueEl) seatsValueEl.textContent = parseInt(t.seats) || 1;
+    const showNamesToggle = document.getElementById('floorplan-show-names-toggle');
+    if (showNamesToggle) showNamesToggle.checked = t.showNames !== false;
     renderFloorPlanSeatAssignments(t);
 
     openModal(document.getElementById('modal-floorplan-table'));
@@ -7135,7 +7152,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     assigned.forEach(({ name, i }) => {
       const row = document.createElement('div');
-      row.className = 'floorplan-seat-assignment-row';
+      const declined = isFloorPlanSeatDeclined(name);
+      row.className = `floorplan-seat-assignment-row${declined ? ' is-declined' : ''}`;
 
       const nameEl = document.createElement('span');
       nameEl.className = 'floorplan-seat-assignment-name';
@@ -7145,7 +7163,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const rightWrap = document.createElement('div');
       rightWrap.className = 'floorplan-seat-assignment-right';
 
-      if (isFloorPlanSeatConfirmed(name)) {
+      if (declined) {
+        const label = document.createElement('span');
+        label.className = 'floorplan-seat-confirmed-label is-declined';
+        label.textContent = 'Recusado';
+        rightWrap.appendChild(label);
+      } else if (isFloorPlanSeatConfirmed(name)) {
         const label = document.createElement('span');
         label.className = 'floorplan-seat-confirmed-label';
         label.textContent = 'Confirmado';
@@ -7227,6 +7250,32 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFloorPlanCanvas();
         renderFloorPlanGuestCards();
         closeModal(document.getElementById('modal-floorplan-table'));
+      });
+    }
+
+    const clearBtn = document.getElementById('btn-floorplan-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        const els = getFloorPlanElements();
+        const t = els.find(item => item.id === floorplanActiveTableId);
+        if (!t) return;
+        t.seatNames = t.seatNames.map(() => '');
+        saveFloorPlanElements(els);
+        renderFloorPlanCanvas();
+        renderFloorPlanGuestCards();
+        renderFloorPlanSeatAssignments(t);
+      });
+    }
+
+    const showNamesToggle = document.getElementById('floorplan-show-names-toggle');
+    if (showNamesToggle) {
+      showNamesToggle.addEventListener('change', () => {
+        const els = getFloorPlanElements();
+        const t = els.find(item => item.id === floorplanActiveTableId);
+        if (!t) return;
+        t.showNames = showNamesToggle.checked;
+        saveFloorPlanElements(els);
+        renderFloorPlanCanvas();
       });
     }
   }
@@ -7328,10 +7377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (title) {
       if (subId === 'wallet-digital') {
         title.textContent = 'Carteira Digital';
-        if (desc) {
-          desc.textContent = 'O saldo disponível é o valor já recebido em presentes, pronto para saque via PIX.';
-          desc.classList.remove('hidden');
-        }
+        if (desc) desc.classList.add('hidden');
       } else if (subId === 'wallet-budget') {
         title.textContent = 'Orçamento';
         if (desc) {

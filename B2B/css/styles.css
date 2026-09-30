@@ -1301,10 +1301,14 @@ body[data-theme="dark"] .b2b-avatar { background: #FFFFFF; }
 body.sidebar-collapsed .b2b-sidebar { width: var(--sidebar-collapsed-width); }
 body.sidebar-collapsed .b2b-main { margin-left: var(--sidebar-collapsed-width); }
 
-.topbar-collapse-toggle {
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-control);
+.sidebar-edge-toggle {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 56px;
+  border-radius: 999px;
   background: #FFFFFF;
   border: 1px solid #E4E4E4;
   display: flex;
@@ -1313,12 +1317,13 @@ body.sidebar-collapsed .b2b-main { margin-left: var(--sidebar-collapsed-width); 
   color: #71717A;
   cursor: pointer;
   padding: 0;
-  flex-shrink: 0;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  z-index: 61;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.08);
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.topbar-collapse-toggle:hover { background: #F4F4F5; color: #18181B; }
-.topbar-collapse-toggle svg { width: 14px; height: 14px; }
+.sidebar-edge-toggle:hover { background: #F4F4F5; color: #18181B; box-shadow: 0 2px 8px rgba(16, 24, 40, 0.14); }
+.sidebar-edge-toggle svg { width: 14px; height: 14px; }
 
 .sidebar-brand-top {
   width: 100%;
@@ -1627,8 +1632,8 @@ body[data-theme="dark"] .upgrade-card-plan strong { color: rgba(255, 255, 255, 0
 
 body[data-theme="dark"] .b2b-sidebar { background-color: #333333 !important; border-right-color: #404040 !important; }
 body[data-theme="dark"] .sidebar-brand-top { border-bottom-color: #404040 !important; }
-body[data-theme="dark"] .topbar-collapse-toggle { background: #4E4E4E !important; border-color: transparent !important; color: #ffffff !important; }
-body[data-theme="dark"] .topbar-collapse-toggle:hover { background: #5A5A5A !important; }
+body[data-theme="dark"] .sidebar-edge-toggle { background: #4E4E4E !important; border-color: transparent !important; color: #ffffff !important; }
+body[data-theme="dark"] .sidebar-edge-toggle:hover { background: #5A5A5A !important; }
 body[data-theme="dark"] .sidebar-nav-item,
 body[data-theme="dark"] .sidebar-nav-item svg,
 body[data-theme="dark"] .sidebar-nav-item svg * { color: #ffffff !important; stroke: #ffffff !important; }

@@ -480,25 +480,30 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 .floorplan-seat-dot {
   position: absolute;
   min-width: 22px;
-  max-width: 110px;
-  height: 22px;
-  padding: 0 0.4rem;
+  max-width: 82px;
+  min-height: 22px;
+  padding: 0.2rem 0.4rem;
   transform: translate(-50%, -50%);
   border-radius: 4px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.05rem;
   background: #F4F4F5;
   border: 1.5px solid #D4D4D8;
   color: #71717A;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  line-height: 1;
-  white-space: nowrap;
+  line-height: 1.15;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.floorplan-seat-dot-line {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
 }
 .floorplan-seat-dot.is-assigned { border-color: #E4E4E7; background: #FFFFFF; color: #3F3F46; }
 .floorplan-seat-dot.is-confirmed { border-color: #EAEAEA; background: #EBF4FF; color: #3F3F46; }

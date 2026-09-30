@@ -6901,7 +6901,21 @@ document.addEventListener('DOMContentLoaded', () => {
           seatDot.style.top = `${seatY}px`;
           if (guestName) {
             seatDot.title = guestName;
-            if (showNames) seatDot.textContent = guestName;
+            if (showNames) {
+              // Nome e sobrenome em duas linhas, pra economizar espaço no assento.
+              const nameParts = guestName.trim().split(/\s+/);
+              const firstLine = document.createElement('span');
+              firstLine.className = 'floorplan-seat-dot-line';
+              firstLine.textContent = nameParts[0] || '';
+              seatDot.appendChild(firstLine);
+              const lastName = nameParts.slice(1).join(' ');
+              if (lastName) {
+                const secondLine = document.createElement('span');
+                secondLine.className = 'floorplan-seat-dot-line';
+                secondLine.textContent = lastName;
+                seatDot.appendChild(secondLine);
+              }
+            }
             seatDot.draggable = true;
             seatDot.addEventListener('dragstart', (e) => {
               e.stopPropagation();

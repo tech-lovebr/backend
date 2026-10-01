@@ -1614,6 +1614,9 @@ body[data-theme="light"] .upgrade-card { background: rgba(255, 255, 255, 0.06); 
 
 .upgrade-card-btn { width: 100%; justify-content: center; }
 
+.upgrade-card-face--free .upgrade-card-btn { background: #EBF4FF; color: #333333; }
+.upgrade-card-face--free .upgrade-card-btn:hover { background: #DCEAFB; }
+
 .upgrade-card-plan {
   font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.5);
@@ -1634,6 +1637,8 @@ body[data-theme="dark"] .b2b-sidebar { background-color: #333333 !important; bor
 body[data-theme="dark"] .sidebar-brand-top { border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .sidebar-edge-toggle { background: #333333 !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #C4C4CC !important; }
 body[data-theme="dark"] .sidebar-edge-toggle:hover { background: #3D3D3D !important; color: #ffffff !important; }
+body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn { background: #EBF4FF !important; color: #333333 !important; }
+body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn:hover { background: #DCEAFB !important; }
 body[data-theme="dark"] .sidebar-nav-item,
 body[data-theme="dark"] .sidebar-nav-item svg,
 body[data-theme="dark"] .sidebar-nav-item svg * { color: #ffffff !important; stroke: #ffffff !important; }

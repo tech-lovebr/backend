@@ -323,8 +323,8 @@ const CHECKOUT_ICONS = {
   lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2"/><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"/></svg>',
   bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z"/></svg>',
   phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 19h3"/></svg>',
-  pix: '<img src="../assets/pix-icone.png" alt="Pix" style="width:100%;height:100%;object-fit:contain;">',
-  applePay: '<img src="../assets/apple-pay-icone.png" alt="Apple Pay" style="width:100%;height:100%;object-fit:contain;">'
+  pix: '<img src="assets/pix-icone.png" alt="Pix" style="width:100%;height:100%;object-fit:contain;">',
+  applePay: '<img src="assets/apple-pay-icone.png" alt="Apple Pay" style="width:100%;height:100%;object-fit:contain;">'
 };
 
 /* Estilo compartilhado por TODOS os campos do checkout (Nome, E-mail, CEP,
@@ -1780,7 +1780,7 @@ function renderFixedFooterHtml() {
       <div class="builder-fixed-footer-inner">
         <div class="builder-fixed-footer-logo">
           <span class="builder-fixed-footer-madewith">Feito com</span>
-          <img src="../assets/logo-white.png" alt="Love" class="builder-fixed-footer-word">
+          <img src="assets/logo-white.png" alt="Love" class="builder-fixed-footer-word">
         </div>
         <div class="builder-fixed-footer-text">
           <span>Desenvolvido com amor para momentos inesquecíveis.</span>

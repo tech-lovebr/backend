@@ -179,10 +179,10 @@ async function loadShell() {
       <div class="b2b-footer-top">
         <div>
           <div class="b2b-footer-logo">
-            <img src="../assets/iconelove2.png?v=5" alt="" class="sidebar-icon-light">
-            <img src="../assets/icon-white1.png?v=5" alt="" class="sidebar-icon-dark">
-            <img src="../assets/Love-dark-03.png" alt="Love" class="sidebar-word-light">
-            <img src="../assets/Love-white-03.png" alt="Love" class="sidebar-word-dark">
+            <img src="assets/iconelove2.png?v=5" alt="" class="sidebar-icon-light">
+            <img src="assets/icon-white1.png?v=5" alt="" class="sidebar-icon-dark">
+            <img src="assets/Love-dark-03.png" alt="Love" class="sidebar-word-light">
+            <img src="assets/Love-white-03.png" alt="Love" class="sidebar-word-dark">
           </div>
           <p class="b2b-footer-desc">O sistema operacional completo para planejar, gerenciar e celebrar os momentos mais especiais da sua vida.</p>
           <div class="b2b-footer-legal-links">

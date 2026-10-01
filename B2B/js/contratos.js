@@ -106,7 +106,7 @@ function renderFinanceStats() {
     <div class="dash-card finance-stat-card">
       <p class="finance-stat-label">Saque disponível</p>
       <p class="finance-stat-value">${formatCurrency(saqueDisponivel)}</p>
-      <button type="button" class="btn-secondary finance-stat-action-btn" id="request-withdrawal-btn"><img src="../assets/pix-icone.png" alt="" class="pix-inline-icon">Sacar Pix</button>
+      <button type="button" class="btn-secondary finance-stat-action-btn" id="request-withdrawal-btn"><img src="assets/pix-icone.png" alt="" class="pix-inline-icon">Sacar Pix</button>
     </div>
     <div class="dash-card finance-stat-card">
       <p class="finance-stat-label">Saldo a receber</p>

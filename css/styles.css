@@ -3098,36 +3098,6 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
    pelo overflow:hidden do frame do canvas. */
 .builder-section.is-first-content-section > .builder-block-toolbar { top: 10px; }
 
-.builder-first-section-cover-btn {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  border: none;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s, opacity 0.15s;
-}
-.builder-first-section-cover-btn:hover { background: rgba(0,0,0,0.7); }
-.builder-first-section-cover-btn svg { width: 15px; height: 15px; }
-.builder-section.is-first-content-section.has-cover-image .builder-first-section-cover-btn { opacity: 0; }
-.builder-section.is-first-content-section.has-cover-image:hover .builder-first-section-cover-btn { opacity: 1; }
-
-/* A primeira seção fica no topo absoluto do canvas (que tem overflow:hidden) —
-   a barra flutuante que sobe -13px ficaria cortada ali, então nela a barra
-   desce para dentro da própria seção, totalmente visível. */
-.builder-section.is-first-content-section > .builder-block-toolbar {
-  top: 10px;
-}
-
 /* Botão de Adicionar/Alterar imagem da primeira seção (a capa do convite) */
 .builder-first-section-cover-btn {
   position: absolute;
@@ -3238,7 +3208,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
   border: none;
   border-radius: 0;
   padding: 0;
-  min-height: 0;
+  min-height: 300px;
   background: transparent;
 }
 

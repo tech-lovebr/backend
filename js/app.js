@@ -8390,7 +8390,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 9.6 Submissão do Formulário (Continuar Ajustes)
   if (formCreatePage) {
-    formCreatePage.addEventListener('submit', (e) => {
+    formCreatePage.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = (pageNewName && pageNewName.value.trim()) || 'Meu Evento';
       const startDate = document.getElementById('page-new-event-date') ? document.getElementById('page-new-event-date').value : '2026-08-28';
@@ -8399,8 +8399,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const locName = (locationInput && locationInput.value.trim()) || 'São Paulo - SP';
       const desc = document.getElementById('page-new-event-description') ? document.getElementById('page-new-event-description').value.trim() : '';
 
+      if (!window.loveClienteSession) {
+        showToast('Sua sessão expirou — recarregue a página e entre novamente.', '⚠️');
+        return;
+      }
+      const clienteId = window.loveClienteSession.user.id;
+
       const newEvt = {
-        id: `evt-${Date.now()}`,
         type: selectedNewType,
         title: name,
         hostName: name,
@@ -8413,10 +8418,6 @@ document.addEventListener('DOMContentLoaded', () => {
         coverImage: createdCoverImageSrc || getDefaultCoverForEventType(selectedNewType, name),
         theme: themeSelect ? themeSelect.options[themeSelect.selectedIndex].text : 'Minimalista',
         colorAccent: '#537bae',
-        totalArrecadado: 0.00,
-        convidadosConfirmados: 0,
-        totalConvidados: 50,
-        presentesRecebidos: 0,
         siteSections: {
           heroHeadline: selectedNewType === 'birthday' ? 'CONVIDA VOCÊ PARA COMEMORAR O SEU ANIVERSÁRIO' : `Bem-vindo ao ${name}!`,
           heroSubtitle: desc || 'Estamos muito felizes em celebrar este momento com você.',
@@ -8430,11 +8431,25 @@ document.addEventListener('DOMContentLoaded', () => {
           totalSacado: 0.00,
           chavePix: 'anfitriao@love.com',
           transactions: []
-        },
-        giftList: [],
-        guests: [],
-        messages: []
+        }
       };
+
+      const { data: createdEvento, error } = await supabaseClient
+        .from('eventos').insert(mapEventToEventoRow(newEvt, clienteId)).select('id').single();
+      if (error || !createdEvento) {
+        console.error('Erro ao criar evento:', error);
+        showToast('Não foi possível criar o evento. Tente novamente.', '⚠️');
+        return;
+      }
+
+      newEvt.id = createdEvento.id;
+      newEvt.giftList = [];
+      newEvt.guests = [];
+      newEvt.messages = [];
+      newEvt.convidadosConfirmados = 0;
+      newEvt.totalConvidados = 0;
+      newEvt.presentesRecebidos = 0;
+      newEvt.totalArrecadado = 0;
 
       setSidebarLocked(false);
       state.hasEventCreated = true;
@@ -8443,8 +8458,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Convite Digital já nasce com o template (cor + imagem de capa) do tipo
       // de evento escolhido — ponto de partida editável em Aparência.
-      if (typeof applyEventTypeBuilderTemplate === 'function') {
-        applyEventTypeBuilderTemplate(selectedNewType);
+      if (typeof seedConviteDigitalForEvent === 'function') {
+        await seedConviteDigitalForEvent(newEvt.id, selectedNewType);
+      }
+      if (typeof window.reloadBuilderStateForActiveEvent === 'function') {
+        window.reloadBuilderStateForActiveEvent();
       }
 
       updateAllCelebrationData();
@@ -10658,6 +10676,153 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa módulo B2B e sistema de chat messenger
   initB2BMarketplace();
 
+  // ==========================================
+  // Dados reais por evento (Supabase) — substitui o mock de js/data.js assim
+  // que o anfitrião loga. Cada evento vem com seus próprios convidados e
+  // presentes, reais no banco, em vez de uma única lista compartilhada.
+  // ==========================================
+
+  const GUEST_STATUS_DB_TO_APP = { pendente: 'pending', confirmado: 'confirmed', recusado: 'declined' };
+  const GUEST_STATUS_APP_TO_DB = { pending: 'pendente', confirmed: 'confirmado', declined: 'recusado' };
+
+  function mapConvidadoRowToGuest(row) {
+    return {
+      id: row.id,
+      name: row.nome,
+      email: row.email,
+      phone: row.telefone,
+      status: GUEST_STATUS_DB_TO_APP[row.status] || 'pending',
+      table: row.mesa,
+      ...(row.extra || {})
+    };
+  }
+
+  function mapGuestToConvidadoRow(guest, eventoId, clienteId) {
+    const { id, name, email, phone, status, table, ...rest } = guest;
+    return {
+      evento_id: eventoId,
+      cliente_id: clienteId,
+      nome: name || '',
+      email: email || null,
+      telefone: phone || null,
+      tipo: 'adulto',
+      status: GUEST_STATUS_APP_TO_DB[status] || 'pendente',
+      mesa: table || null,
+      extra: rest
+    };
+  }
+
+  function mapPresenteRowToGift(row) {
+    return {
+      id: row.id,
+      title: row.nome,
+      category: row.categoria,
+      price: Number(row.valor) || 0,
+      image: row.imagem_url,
+      buyerName: row.comprador_nome,
+      ...(row.extra || {})
+    };
+  }
+
+  function mapGiftToPresenteRow(gift, eventoId, clienteId) {
+    const { id, title, category, price, image, buyerName, status, received, ...rest } = gift;
+    return {
+      evento_id: eventoId,
+      cliente_id: clienteId,
+      nome: title || '',
+      categoria: category || null,
+      valor: price || 0,
+      imagem_url: image || null,
+      status: (received > 0) ? 'recebido' : 'disponivel',
+      comprador_nome: buyerName || null,
+      extra: { ...rest, status, received }
+    };
+  }
+
+  function mapEventoRowToEvent(row) {
+    const guests = (row.convidados || []).map(mapConvidadoRowToGuest);
+    const giftList = (row.presentes || []).map(mapPresenteRowToGift);
+    const confirmed = guests.filter(g => g.status === 'confirmed');
+    const declined = guests.filter(g => g.status === 'declined');
+    const pending = guests.filter(g => g.status === 'pending');
+    return {
+      id: row.id,
+      type: row.tipo,
+      title: row.titulo,
+      hostName: row.host_name,
+      date: row.data_evento,
+      slug: row.slug,
+      theme: row.theme,
+      coverImage: row.cover_image_url,
+      status: row.status,
+      ...(row.extra || {}),
+      convidadosConfirmados: confirmed.length,
+      convidadosRecusados: declined.length,
+      convidadosPendentes: pending.length,
+      totalConvidados: guests.length,
+      adultosConfirmados: confirmed.reduce((s, g) => s + (g.adults || 0), 0),
+      criancasConfirmadas: confirmed.reduce((s, g) => s + (g.children || 0), 0),
+      presentesRecebidos: giftList.filter(g => (g.received || 0) > 0).length,
+      totalArrecadado: giftList.reduce((s, g) => s + (g.received || 0), 0),
+      guests,
+      giftList
+    };
+  }
+
+  function mapEventToEventoRow(evt, clienteId) {
+    const { id, type, title, hostName, date, slug, theme, coverImage, status, guests, giftList, ...rest } = evt;
+    return {
+      cliente_id: clienteId,
+      tipo: type || 'wedding',
+      titulo: title || 'Meu Evento',
+      host_name: hostName || null,
+      data_evento: date || null,
+      slug: slug || null,
+      theme: theme || null,
+      cover_image_url: coverImage || null,
+      status: 'ativo',
+      extra: rest
+    };
+  }
+
+  // Busca todos os eventos do cliente logado, cada um já com seus convidados
+  // e presentes reais (join numa única consulta).
+  async function loadEventsFromSupabase(clienteId) {
+    const { data: rows, error } = await supabaseClient
+      .from('eventos')
+      .select('*, convidados(*), presentes(*)')
+      .eq('cliente_id', clienteId)
+      .order('created_at', { ascending: true });
+    if (error) { console.error('Erro ao carregar eventos:', error); return []; }
+    return (rows || []).map(mapEventoRowToEvent);
+  }
+
+  // Conta nova, sem nenhum evento ainda: semeia os 2 eventos de demonstração
+  // (os mesmos que já existiam em js/data.js) como linhas reais no Supabase,
+  // pra continuar tendo uma demonstração completa pra mostrar.
+  async function seedDemoEventsIfEmpty(clienteId) {
+    for (const evt of window.LOVE_DATA.events) {
+      const eventoRow = mapEventToEventoRow(evt, clienteId);
+      const { data: createdEvento, error: eventoError } = await supabaseClient
+        .from('eventos').insert(eventoRow).select('id').single();
+      if (eventoError || !createdEvento) { console.error('Erro ao semear evento demo:', eventoError); continue; }
+
+      const guestRows = (evt.guests || []).map(g => mapGuestToConvidadoRow(g, createdEvento.id, clienteId));
+      if (guestRows.length) await supabaseClient.from('convidados').insert(guestRows);
+
+      const giftRows = (evt.giftList || []).map(g => mapGiftToPresenteRow(g, createdEvento.id, clienteId));
+      if (giftRows.length) await supabaseClient.from('presentes').insert(giftRows);
+
+      if (typeof seedConviteDigitalForEvent === 'function') {
+        await seedConviteDigitalForEvent(createdEvento.id, evt.type);
+      }
+    }
+  }
+
+  // Expõe o evento ativo pra outros scripts (site-builder.js) sem depender
+  // de window.LOVE_DATA.currentEventId, que nunca é atualizado.
+  window.getLoveActiveEventId = () => state.activeEventId;
+
   // Início padrão na página pública — troca para o dashboard automaticamente
   // se já existir uma sessão Supabase válida (usuário já logado).
   switchView('public');
@@ -10679,6 +10844,17 @@ document.addEventListener('DOMContentLoaded', () => {
       window.loveClienteProfile = cliente;
       const dropdownUsername = document.getElementById('account-dropdown-username');
       if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
+    }
+
+    let events = await loadEventsFromSupabase(session.user.id);
+    if (!events.length) {
+      await seedDemoEventsIfEmpty(session.user.id);
+      events = await loadEventsFromSupabase(session.user.id);
+    }
+    if (events.length) {
+      state.events = events;
+      state.activeEventId = events[0].id;
+      state.hasEventCreated = true;
     }
 
     subscribeToB2BChatRealtime();

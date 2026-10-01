@@ -372,16 +372,27 @@ function loadPageState(pageKey) {
   return loadBuilderState();
 }
 
+// Cada evento tem seu próprio Convite Digital/Presentes/Dress code — a chave
+// de localStorage (cache local instantâneo) é isolada por evento ativo; a
+// fonte de verdade de verdade é a tabela `convite_digital_pages` no Supabase
+// (ver syncBuilderStateFromSupabase/persistBuilderStateRemote mais abaixo).
+function activeEventStorageSuffix() {
+  const eventId = (typeof window.getLoveActiveEventId === 'function') ? window.getLoveActiveEventId() : null;
+  return eventId ? `:${eventId}` : '';
+}
+
 function pageStorageKey(pageKey) {
-  if (pageKey === 'presentes') return PRESENTES_STORAGE_KEY;
-  if (pageKey === 'dresscode') return DRESSCODE_STORAGE_KEY;
-  return BUILDER_STORAGE_KEY;
+  const suffix = activeEventStorageSuffix();
+  if (pageKey === 'presentes') return PRESENTES_STORAGE_KEY + suffix;
+  if (pageKey === 'dresscode') return DRESSCODE_STORAGE_KEY + suffix;
+  return BUILDER_STORAGE_KEY + suffix;
 }
 
 function pagePublishedKeys(pageKey) {
-  if (pageKey === 'presentes') return { flag: PRESENTES_PUBLISHED_KEY, state: PRESENTES_PUBLISHED_STATE_KEY };
-  if (pageKey === 'dresscode') return { flag: DRESSCODE_PUBLISHED_KEY, state: DRESSCODE_PUBLISHED_STATE_KEY };
-  return { flag: BUILDER_PUBLISHED_KEY, state: BUILDER_PUBLISHED_STATE_KEY };
+  const suffix = activeEventStorageSuffix();
+  if (pageKey === 'presentes') return { flag: PRESENTES_PUBLISHED_KEY + suffix, state: PRESENTES_PUBLISHED_STATE_KEY + suffix };
+  if (pageKey === 'dresscode') return { flag: DRESSCODE_PUBLISHED_KEY + suffix, state: DRESSCODE_PUBLISHED_STATE_KEY + suffix };
+  return { flag: BUILDER_PUBLISHED_KEY + suffix, state: BUILDER_PUBLISHED_STATE_KEY + suffix };
 }
 
 function migrateElementDefaults(state) {
@@ -409,8 +420,81 @@ function applyGlobalStyleVars() {
 function persistBuilderState(silent) {
   localStorage.setItem(pageStorageKey(currentPageKey), JSON.stringify(builderState));
   hasUnsavedChanges = false;
+  persistBuilderStateRemote(currentPageKey, builderState);
   if (!silent) showToast('Alterações salvas!');
 }
+
+// Grava o estado atual na tabela `convite_digital_pages` (Supabase), por
+// evento ativo — localStorage continua sendo o cache instantâneo que a tela
+// lê; isso aqui garante que o dado sobrevive entre dispositivos/sessões.
+async function persistBuilderStateRemote(pageKey, state) {
+  const eventId = (typeof window.getLoveActiveEventId === 'function') ? window.getLoveActiveEventId() : null;
+  if (!eventId || typeof supabaseClient === 'undefined') return;
+  const { error } = await supabaseClient
+    .from('convite_digital_pages')
+    .upsert({ evento_id: eventId, page_key: pageKey, state, updated_at: new Date().toISOString() }, { onConflict: 'evento_id,page_key' });
+  if (error) console.error('Erro ao salvar Convite Digital no Supabase:', error);
+}
+
+// Cria a primeira linha do Convite Digital de um evento recém-criado
+// (chamado por app.js, tanto na criação manual quanto ao semear os eventos
+// de demonstração) — já com o template de cor/imagem do tipo escolhido.
+async function seedConviteDigitalForEvent(eventoId, typeKey) {
+  if (typeof supabaseClient === 'undefined') return;
+  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
+  const state = defaultPageState();
+  state.globalStyle.primaryColor = tmpl.primaryColor;
+  const firstSection = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  if (firstSection) firstSection.bgImage = tmpl.coverImage;
+  const { error } = await supabaseClient
+    .from('convite_digital_pages')
+    .upsert({ evento_id: eventoId, page_key: 'convite', state }, { onConflict: 'evento_id,page_key' });
+  if (error) console.error('Erro ao criar Convite Digital inicial:', error);
+}
+window.seedConviteDigitalForEvent = seedConviteDigitalForEvent;
+
+// Busca o Convite Digital do evento ativo no Supabase. Se já existir lá,
+// isso é a fonte de verdade (sobrescreve o cache local); se ainda não
+// existir (ex.: evento criado antes desta integração), publica o estado
+// local atual pra lá, pra passar a existir dali em diante.
+async function syncBuilderStateFromSupabase(pageKey) {
+  const eventId = (typeof window.getLoveActiveEventId === 'function') ? window.getLoveActiveEventId() : null;
+  if (!eventId || typeof supabaseClient === 'undefined') return;
+  const { data: row, error } = await supabaseClient
+    .from('convite_digital_pages')
+    .select('state')
+    .eq('evento_id', eventId)
+    .eq('page_key', pageKey)
+    .maybeSingle();
+  if (error) { console.error('Erro ao buscar Convite Digital:', error); return; }
+
+  if (row && row.state && Object.keys(row.state).length) {
+    localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(row.state));
+    if (pageKey === currentPageKey) {
+      builderState = row.state;
+      migrateQuickNavSection(builderState);
+      migrateElementDefaults(builderState);
+      historyStack = [snapshotState()];
+      historyIndex = 0;
+      selectedId = null;
+      if (document.getElementById('builder-canvas')) {
+        renderLeftPanel();
+        renderCanvas();
+        applyGlobalStyleVars();
+      }
+    }
+  } else {
+    persistBuilderStateRemote(pageKey, loadPageState(pageKey));
+  }
+}
+
+// Chamado por app.js assim que o anfitrião troca de evento no dropdown —
+// recarrega o Convite Digital do evento recém-selecionado.
+window.reloadBuilderStateForActiveEvent = function () {
+  currentPageKey = 'convite';
+  builderState = loadPageState('convite');
+  syncBuilderStateFromSupabase('convite');
+};
 
 /* -------------------- Dropdown de páginas do site -------------------- */
 
@@ -428,6 +512,7 @@ function switchBuilderPage(pageKey) {
   applyGlobalStyleVars();
   updateHistoryButtons();
   updatePageSwitcherUI();
+  syncBuilderStateFromSupabase(pageKey);
 }
 
 function updatePageSwitcherUI() {
@@ -2512,6 +2597,7 @@ function initSiteBuilder() {
   builderState = loadPageState(currentPageKey);
   historyStack = [snapshotState()];
   historyIndex = 0;
+  syncBuilderStateFromSupabase(currentPageKey);
 
   initPageSwitcher();
 

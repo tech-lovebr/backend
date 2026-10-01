@@ -1938,21 +1938,21 @@ document.addEventListener('DOMContentLoaded', () => {
   function getDefaultCoverForEventType(typeKey = '', typeLabel = '') {
     const t = `${typeKey || ''} ${typeLabel || ''}`.toLowerCase();
     if (t.includes('birthday') || t.includes('anivers') || t.includes('niver')) {
-      return 'assets/birthday_hero_banner.jpg';
+      return 'assets/criar-aniversario.jpg';
     }
     if (t.includes('baby') || t.includes('bebe') || t.includes('bebê')) {
-      return 'assets/advisor_sophia.jpg';
+      return 'assets/criar-cha-de-bebe.jpg';
     }
     if (t.includes('bridal') || t.includes('panela')) {
-      return 'assets/bouquet_roses.jpg';
+      return 'assets/criar-cha-de-panela.jpg';
     }
     if (t.includes('reveal') || t.includes('revelacao') || t.includes('revelação')) {
-      return 'assets/orchid_luxury.jpg';
+      return 'assets/criar-revelacao.jpg';
     }
     if (t.includes('anniversary') || t.includes('bodas')) {
-      return 'assets/wedding_sunset_couple.jpg';
+      return 'assets/criar-bodas.jpg';
     }
-    return 'assets/wedding_hero_banner.jpg';
+    return 'assets/criar-casamento.jpg';
   }
 
   function renderEditorForm() {

@@ -247,12 +247,12 @@ function defaultPageState() {
 // depois em Aparência. Imagens são placeholders dos assets já existentes;
 // trocar por `tmpl.coverImage` quando as imagens definitivas chegarem.
 const EVENT_TYPE_BUILDER_TEMPLATES = {
-  wedding: { primaryColor: '#537bae', coverImage: 'assets/wedding_hero_banner.jpg' },
-  birthday: { primaryColor: '#D97706', coverImage: 'assets/birthday_hero_banner.jpg' },
-  baby_shower: { primaryColor: '#8EC5D6', coverImage: 'assets/advisor_sophia.jpg' },
-  bridal_shower: { primaryColor: '#D98B9E', coverImage: 'assets/bouquet_roses.jpg' },
-  gender_reveal: { primaryColor: '#B48FC9', coverImage: 'assets/orchid_luxury.jpg' },
-  anniversary: { primaryColor: '#A98B5D', coverImage: 'assets/wedding_sunset_couple.jpg' }
+  wedding: { primaryColor: '#537bae', coverImage: 'assets/criar-casamento.jpg' },
+  birthday: { primaryColor: '#D97706', coverImage: 'assets/criar-aniversario.jpg' },
+  baby_shower: { primaryColor: '#8EC5D6', coverImage: 'assets/criar-cha-de-bebe.jpg' },
+  bridal_shower: { primaryColor: '#D98B9E', coverImage: 'assets/criar-cha-de-panela.jpg' },
+  gender_reveal: { primaryColor: '#B48FC9', coverImage: 'assets/criar-revelacao.jpg' },
+  anniversary: { primaryColor: '#A98B5D', coverImage: 'assets/criar-bodas.jpg' }
 };
 
 // Aplica o template de cor + imagem de capa do Convite Digital de acordo com o

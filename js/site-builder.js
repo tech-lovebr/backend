@@ -2678,6 +2678,9 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
   const firstSection = container.querySelector(':scope > section');
   if (!firstSection) return;
   firstSection.classList.add('group');
+  // Nessa prévia (modo "preview") a seção não ganha as classes de capa do modo
+  // de edição — garante aqui a mesma altura mínima da primeira seção em Aparência.
+  firstSection.style.minHeight = '348px';
   const targetSection = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
 
   let fileInput = document.getElementById('classic-preview-cover-file-input');

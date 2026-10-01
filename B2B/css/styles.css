@@ -1633,10 +1633,10 @@ body[data-theme="dark"] .upgrade-card-desc { color: rgba(255, 255, 255, 0.65); }
 body[data-theme="dark"] .upgrade-card-plan { color: rgba(255, 255, 255, 0.5); }
 body[data-theme="dark"] .upgrade-card-plan strong { color: rgba(255, 255, 255, 0.8); }
 
-body[data-theme="dark"] .b2b-sidebar { background-color: #333333 !important; border-right-color: #404040 !important; }
+body[data-theme="dark"] .b2b-sidebar { background-color: #181D24 !important; border-right-color: #404040 !important; }
 body[data-theme="dark"] .sidebar-brand-top { border-bottom-color: #404040 !important; }
-body[data-theme="dark"] .sidebar-edge-toggle { background: #333333 !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #C4C4CC !important; }
-body[data-theme="dark"] .sidebar-edge-toggle:hover { background: #3D3D3D !important; color: #ffffff !important; }
+body[data-theme="dark"] .sidebar-edge-toggle { background: #181D24 !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #C4C4CC !important; }
+body[data-theme="dark"] .sidebar-edge-toggle:hover { background: #262D36 !important; color: #ffffff !important; }
 body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn { background: #EBF4FF !important; color: #333333 !important; }
 body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn:hover { background: #DCEAFB !important; }
 body[data-theme="dark"] .sidebar-nav-item,
@@ -3224,7 +3224,7 @@ body[data-theme="dark"] .guide-link {
 }
 
 body[data-theme="dark"] .dash-card {
-  background-color: #333333 !important;
+  background-color: #181D24 !important;
   border-color: #404040 !important;
   color: #ffffff !important;
 }

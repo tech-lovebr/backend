@@ -1681,7 +1681,7 @@ body[data-theme="dark"] .guias-sidebar h1 { color: #ebf4ff !important; }
   flex-shrink: 0;
 }
 
-body[data-theme="dark"] .b2b-topbar { background: #252525 !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .b2b-topbar { background: #181D24 !important; border-bottom-color: #404040 !important; }
 
 .b2b-content {
   padding: var(--b2b-content-pad-y) var(--b2b-content-pad-x);
@@ -1722,10 +1722,10 @@ body[data-page="dashboard"] .b2b-footer {
   border-bottom: 1px solid var(--border-card);
 }
 .b2b-header-bar h2 { margin: 0; }
-body[data-theme="dark"] .b2b-header-bar { background: #252525 !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .b2b-header-bar { background: #181D24 !important; border-bottom-color: #404040 !important; }
 
 body[data-theme="dark"] .b2b-footer {
-  background: #333333 !important;
+  background: #181D24 !important;
   border-top-color: #404040 !important;
 }
 
@@ -1807,8 +1807,8 @@ body[data-theme="dark"] .b2b-footer-social-btn:hover { background: var(--primary
 body[data-theme="dark"] .b2b-footer-bottom { border-top-color: #404040 !important; color: #A1A1AA !important; }
 
 body[data-theme="dark"] .b2b-shell,
-body[data-theme="dark"] .b2b-content { background-color: #252525 !important; }
-body[data-theme="dark"] .b2b-main { background-color: #333333 !important; }
+body[data-theme="dark"] .b2b-content { background-color: #1C2125 !important; }
+body[data-theme="dark"] .b2b-main { background-color: #1C2125 !important; }
 
 .b2b-view { display: none; }
 .b2b-view.active { display: block; }
@@ -3525,7 +3525,7 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
 @media (max-width: 768px) {
   .b2b-sidebar { display: none; }
   .b2b-main { margin-left: 0; background-color: var(--bg-dashboard); }
-  body[data-theme="dark"] .b2b-main { background-color: #252525 !important; }
+  body[data-theme="dark"] .b2b-main { background-color: #1C2125 !important; }
   .b2b-content { padding-bottom: 6rem; }
   body[data-page="dashboard"] .b2b-content { padding-bottom: 6rem; }
   .b2b-footer { display: none; }

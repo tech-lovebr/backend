@@ -1,0 +1,9 @@
+{
+  "name": "love-empresas",
+  "version": "1.0.0",
+  "description": "Love - Portal B2B (empresas.love.com.br)",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.116.0"
+  }
+}

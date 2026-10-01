@@ -10769,11 +10769,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // js/data.js (mock antigo) usa 'baby' pro chá de bebê — o banco só aceita
+  // os 6 tipos reais usados na tela de criar evento (wedding, birthday,
+  // baby_shower, bridal_shower, gender_reveal, anniversary).
+  const LEGACY_EVENT_TYPE_MAP = { baby: 'baby_shower', corporate: 'wedding', other: 'wedding' };
+  const VALID_EVENT_TYPES = ['wedding', 'birthday', 'baby_shower', 'bridal_shower', 'gender_reveal', 'anniversary'];
+  function normalizeEventTypeForDb(type) {
+    const mapped = LEGACY_EVENT_TYPE_MAP[type] || type;
+    return VALID_EVENT_TYPES.includes(mapped) ? mapped : 'wedding';
+  }
+
   function mapEventToEventoRow(evt, clienteId) {
     const { id, type, title, hostName, date, slug, theme, coverImage, status, guests, giftList, ...rest } = evt;
     return {
       cliente_id: clienteId,
-      tipo: type || 'wedding',
+      tipo: normalizeEventTypeForDb(type),
       titulo: title || 'Meu Evento',
       host_name: hostName || null,
       data_evento: date || null,

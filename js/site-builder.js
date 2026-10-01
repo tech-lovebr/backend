@@ -381,6 +381,15 @@ function activeEventStorageSuffix() {
   return eventId ? `:${eventId}` : '';
 }
 
+// Enquanto os eventos do Supabase ainda não carregaram (ou em qualquer estado
+// antigo com ids de mock tipo "evt-wedding-1"), o evento ativo não é um uuid
+// de verdade — nesse caso não faz sentido consultar o Supabase por ele ainda.
+function getActiveEventUuid() {
+  const eventId = (typeof window.getLoveActiveEventId === 'function') ? window.getLoveActiveEventId() : null;
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return (eventId && uuidRe.test(eventId)) ? eventId : null;
+}
+
 function pageStorageKey(pageKey) {
   const suffix = activeEventStorageSuffix();
   if (pageKey === 'presentes') return PRESENTES_STORAGE_KEY + suffix;
@@ -428,7 +437,7 @@ function persistBuilderState(silent) {
 // evento ativo — localStorage continua sendo o cache instantâneo que a tela
 // lê; isso aqui garante que o dado sobrevive entre dispositivos/sessões.
 async function persistBuilderStateRemote(pageKey, state) {
-  const eventId = (typeof window.getLoveActiveEventId === 'function') ? window.getLoveActiveEventId() : null;
+  const eventId = getActiveEventUuid();
   if (!eventId || typeof supabaseClient === 'undefined') return;
   const { error } = await supabaseClient
     .from('convite_digital_pages')
@@ -458,7 +467,7 @@ window.seedConviteDigitalForEvent = seedConviteDigitalForEvent;
 // existir (ex.: evento criado antes desta integração), publica o estado
 // local atual pra lá, pra passar a existir dali em diante.
 async function syncBuilderStateFromSupabase(pageKey) {
-  const eventId = (typeof window.getLoveActiveEventId === 'function') ? window.getLoveActiveEventId() : null;
+  const eventId = getActiveEventUuid();
   if (!eventId || typeof supabaseClient === 'undefined') return;
   const { data: row, error } = await supabaseClient
     .from('convite_digital_pages')

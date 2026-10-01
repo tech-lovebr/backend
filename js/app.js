@@ -8441,6 +8441,12 @@ document.addEventListener('DOMContentLoaded', () => {
       state.events.unshift(newEvt);
       state.activeEventId = newEvt.id;
 
+      // Convite Digital já nasce com o template (cor + imagem de capa) do tipo
+      // de evento escolhido — ponto de partida editável em Aparência.
+      if (typeof applyEventTypeBuilderTemplate === 'function') {
+        applyEventTypeBuilderTemplate(selectedNewType);
+      }
+
       updateAllCelebrationData();
       renderEventsSwitcher();
       switchRailTab('edit-site');

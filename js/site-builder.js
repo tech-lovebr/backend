@@ -242,6 +242,45 @@ function defaultPageState() {
   };
 }
 
+// Template inicial do Convite Digital por tipo de evento (cor de destaque +
+// imagem de capa) — ponto de partida ao criar um evento, totalmente editável
+// depois em Aparência. Imagens são placeholders dos assets já existentes;
+// trocar por `tmpl.coverImage` quando as imagens definitivas chegarem.
+const EVENT_TYPE_BUILDER_TEMPLATES = {
+  wedding: { primaryColor: '#537bae', coverImage: 'assets/wedding_hero_banner.jpg' },
+  birthday: { primaryColor: '#D97706', coverImage: 'assets/birthday_hero_banner.jpg' },
+  baby_shower: { primaryColor: '#8EC5D6', coverImage: 'assets/advisor_sophia.jpg' },
+  bridal_shower: { primaryColor: '#D98B9E', coverImage: 'assets/bouquet_roses.jpg' },
+  gender_reveal: { primaryColor: '#B48FC9', coverImage: 'assets/orchid_luxury.jpg' },
+  anniversary: { primaryColor: '#A98B5D', coverImage: 'assets/wedding_sunset_couple.jpg' }
+};
+
+// Aplica o template de cor + imagem de capa do Convite Digital de acordo com o
+// tipo de evento escolhido na criação. Chamada a partir de app.js logo que o
+// evento é criado — sobrescreve o estado salvo (única instância do construtor,
+// compartilhada entre eventos neste mockup) e, se o construtor já estiver
+// carregado na página, atualiza a tela na hora.
+function applyEventTypeBuilderTemplate(typeKey) {
+  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
+  const state = defaultPageState();
+  state.globalStyle.primaryColor = tmpl.primaryColor;
+  const firstSection = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  if (firstSection) firstSection.bgImage = tmpl.coverImage;
+  localStorage.setItem(BUILDER_STORAGE_KEY, JSON.stringify(state));
+
+  if (currentPageKey === 'convite') {
+    builderState = state;
+    historyStack = [snapshotState()];
+    historyIndex = 0;
+    selectedId = null;
+    if (document.getElementById('builder-canvas')) {
+      applyGlobalStyleVars();
+      renderCanvas();
+      renderLeftPanel();
+    }
+  }
+}
+
 function loadBuilderState() {
   try {
     const raw = localStorage.getItem(BUILDER_STORAGE_KEY);

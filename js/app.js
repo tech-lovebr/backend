@@ -736,6 +736,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.setAttribute('data-event-theme', evt.type);
         updateAllCelebrationData();
         renderEventsSwitcher();
+        // Convite Digital é por evento — recarrega o do evento recém-ativado.
+        if (typeof window.reloadBuilderStateForActiveEvent === 'function') {
+          window.reloadBuilderStateForActiveEvent();
+        }
         showToast(`Evento ativo alterado para "${evt.title}"!`, '🎉');
       });
 
@@ -10812,7 +10816,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // pra continuar tendo uma demonstração completa pra mostrar.
   async function seedDemoEventsIfEmpty(clienteId) {
     for (const evt of window.LOVE_DATA.events) {
-      const eventoRow = mapEventToEventoRow(evt, clienteId);
+      // `eventos.slug` é único em toda a plataforma — os slugs fixos do mock
+      // (ex: "beatriz-e-lucas") colidiriam entre contas diferentes.
+      const evtWithUniqueSlug = { ...evt, slug: `${evt.slug}-${clienteId.slice(0, 8)}` };
+      const eventoRow = mapEventToEventoRow(evtWithUniqueSlug, clienteId);
       const { data: createdEvento, error: eventoError } = await supabaseClient
         .from('eventos').insert(eventoRow).select('id').single();
       if (eventoError || !createdEvento) { console.error('Erro ao semear evento demo:', eventoError); continue; }
@@ -10824,7 +10831,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (giftRows.length) await supabaseClient.from('presentes').insert(giftRows);
 
       if (typeof seedConviteDigitalForEvent === 'function') {
-        await seedConviteDigitalForEvent(createdEvento.id, evt.type);
+        await seedConviteDigitalForEvent(createdEvento.id, normalizeEventTypeForDb(evt.type));
       }
     }
   }
@@ -10865,6 +10872,12 @@ document.addEventListener('DOMContentLoaded', () => {
       state.events = events;
       state.activeEventId = events[0].id;
       state.hasEventCreated = true;
+      // Garante que o Convite Digital do evento ativo (o primeiro da lista)
+      // sincronize com o Supabase assim que a sessão carrega — sem isso, só
+      // sincronizava ao trocar/criar evento, nunca no login inicial.
+      if (typeof window.reloadBuilderStateForActiveEvent === 'function') {
+        window.reloadBuilderStateForActiveEvent();
+      }
     }
 
     subscribeToB2BChatRealtime();

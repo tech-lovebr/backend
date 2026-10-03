@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const elements = {
     viewPublic: document.getElementById('view-public-site'),
     viewDashboard: document.getElementById('view-event-os-dashboard'),
-    modalFakeLogin: document.getElementById('modal-fake-login'),
+    viewLogin: document.getElementById('view-login'),
     
     // Header do Dashboard
     dashHeader: {
@@ -171,6 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.viewPublic.classList.add('hidden');
         elements.viewPublic.style.display = 'none';
       }
+      if (elements.viewLogin) {
+        elements.viewLogin.classList.add('hidden');
+        elements.viewLogin.style.display = 'none';
+      }
       if (elements.viewDashboard) {
         elements.viewDashboard.classList.remove('hidden');
         elements.viewDashboard.style.display = 'flex';
@@ -194,9 +198,24 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.viewDashboard.classList.add('hidden');
         elements.viewDashboard.style.display = 'none';
       }
-      if (elements.viewPublic) {
-        elements.viewPublic.classList.remove('hidden');
-        elements.viewPublic.style.display = 'flex';
+      if (viewName === 'login') {
+        if (elements.viewPublic) {
+          elements.viewPublic.classList.add('hidden');
+          elements.viewPublic.style.display = 'none';
+        }
+        if (elements.viewLogin) {
+          elements.viewLogin.classList.remove('hidden');
+          elements.viewLogin.style.display = 'flex';
+        }
+      } else {
+        if (elements.viewLogin) {
+          elements.viewLogin.classList.add('hidden');
+          elements.viewLogin.style.display = 'none';
+        }
+        if (elements.viewPublic) {
+          elements.viewPublic.classList.remove('hidden');
+          elements.viewPublic.style.display = 'flex';
+        }
       }
     }
 
@@ -8480,10 +8499,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 10. AUTENTICAÇÃO (LOGIN & CRIAR CONTA GRÁTIS COM CÓDIGO)
   // ==========================================
-  // Abrir Modal de Login (Entrar)
+  // Ir para a página de Login (Entrar) — era um popup, agora é página própria
   document.querySelectorAll('.btn-trigger-login').forEach(btn => {
     btn.addEventListener('click', () => {
-      openModal(elements.modalFakeLogin);
+      switchView('login');
     });
   });
 
@@ -8498,7 +8517,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLoginToRegister = document.getElementById('btn-login-to-register');
   if (btnLoginToRegister) {
     btnLoginToRegister.addEventListener('click', () => {
-      closeModal(elements.modalFakeLogin);
       openModal(elements.modals.register);
     });
   }
@@ -8507,7 +8525,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnRegisterToLogin) {
     btnRegisterToLogin.addEventListener('click', () => {
       closeModal(elements.modals.register);
-      openModal(elements.modalFakeLogin);
+      switchView('login');
+    });
+  }
+
+  // Botão "← Voltar" da página de Login, de volta pro site público
+  const btnLoginBackToPublic = document.getElementById('btn-login-back-to-public');
+  if (btnLoginBackToPublic) {
+    btnLoginBackToPublic.addEventListener('click', () => {
+      switchView('public');
     });
   }
 
@@ -8530,7 +8556,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       setSidebarLocked(false);
-      closeModal(elements.modalFakeLogin);
       window.location.reload();
     });
   }

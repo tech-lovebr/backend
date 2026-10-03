@@ -226,12 +226,12 @@ function demoSeed() {
   const bloco = (dados) => { cc += 1; conteudo.push({ id: id('cont', cc), extra: {}, created_at: diasAtras(30), updated_at: diasAtras(30), parent_id: null, ...dados }); return id('cont', cc); };
 
   // Fornecedor — carrossel.
-  // Estas imagens vêm da pasta assets da Love (um nível acima) só para o
-  // carrossel não ficar vazio na demonstração local. Em produção o admin
-  // informa a URL de cada banner, e o painel nunca depende desses arquivos.
-  bloco({ plataforma: 'fornecedor', secao: 'banner', titulo: 'Sua vitrine pronta em minutos', descricao: 'Monte seu site de fornecedor sem precisar de designer.', link_url: 'https://love.com.br/b2b/paginas-site', imagem_url: '../assets/theme_garden.jpg', posicao: 1, ativo: true });
-  bloco({ plataforma: 'fornecedor', secao: 'banner', titulo: 'Receba em até 12x', descricao: 'Gere links de pagamento direto do painel e receba à vista.', link_url: 'https://love.com.br/b2b/financeiro', imagem_url: '../assets/banner_high_quality.jpg', posicao: 2, ativo: true });
-  bloco({ plataforma: 'fornecedor', secao: 'banner', titulo: 'Conheça o plano Premium', descricao: 'Mais destaque na busca e zero taxa por contrato.', link_url: 'https://love.com.br/b2b/planos', imagem_url: '../assets/theme_blacktie.jpg', posicao: 3, ativo: false });
+  // Estas imagens ficam em Admin/assets/ só para o carrossel não ficar vazio
+  // na demonstração local. Em produção o admin informa a URL de cada banner,
+  // e o painel nunca depende desses arquivos.
+  bloco({ plataforma: 'fornecedor', secao: 'banner', titulo: 'Sua vitrine pronta em minutos', descricao: 'Monte seu site de fornecedor sem precisar de designer.', link_url: 'https://love.com.br/b2b/paginas-site', imagem_url: 'assets/theme_garden.jpg', posicao: 1, ativo: true });
+  bloco({ plataforma: 'fornecedor', secao: 'banner', titulo: 'Receba em até 12x', descricao: 'Gere links de pagamento direto do painel e receba à vista.', link_url: 'https://love.com.br/b2b/financeiro', imagem_url: 'assets/banner_high_quality.jpg', posicao: 2, ativo: true });
+  bloco({ plataforma: 'fornecedor', secao: 'banner', titulo: 'Conheça o plano Premium', descricao: 'Mais destaque na busca e zero taxa por contrato.', link_url: 'https://love.com.br/b2b/planos', imagem_url: 'assets/theme_blacktie.jpg', posicao: 3, ativo: false });
 
   // Fornecedor — guias (os mesmos de B2B/guias.html) e suas perguntas
   const guias = [
@@ -270,7 +270,7 @@ function demoSeed() {
   });
 
   // Fornecedor — serviços e benefícios
-  const servicoLink = bloco({ plataforma: 'fornecedor', secao: 'servico', titulo: 'Link de pagamento', subtitulo: 'Receba em até 12x', descricao: 'Gere cobranças para seus clientes direto do painel.', imagem_url: '../assets/banner_high_quality.jpg', posicao: 1, ativo: true });
+  const servicoLink = bloco({ plataforma: 'fornecedor', secao: 'servico', titulo: 'Link de pagamento', subtitulo: 'Receba em até 12x', descricao: 'Gere cobranças para seus clientes direto do painel.', imagem_url: 'assets/banner_high_quality.jpg', posicao: 1, ativo: true });
   bloco({ plataforma: 'fornecedor', secao: 'beneficio', titulo: 'Parcelamento em 12x', descricao: 'Seu cliente parcela, você recebe à vista.', icone: '💠', posicao: 1, ativo: true, parent_id: servicoLink });
   bloco({ plataforma: 'fornecedor', secao: 'beneficio', titulo: 'Antecipação de recebíveis', descricao: 'Receba antes do prazo pagando uma taxa menor.', icone: '⚡', posicao: 2, ativo: false, parent_id: servicoLink });
 
@@ -278,8 +278,8 @@ function demoSeed() {
   bloco({ plataforma: 'fornecedor', secao: 'beneficio', titulo: 'Domínio próprio', descricao: 'Use seu endereço no lugar do link da Love.', icone: '🌐', posicao: 1, ativo: true, parent_id: servicoVitrine });
 
   // Cliente — carrossel, guias e serviços
-  bloco({ plataforma: 'cliente', secao: 'banner', titulo: 'Seu casamento começa aqui', descricao: 'Crie seu site e sua lista de presentes em minutos.', link_url: 'https://love.com.br/criar', imagem_url: '../assets/wedding_hero_banner.jpg', posicao: 1, ativo: true });
-  bloco({ plataforma: 'cliente', secao: 'banner', titulo: 'Presentes em PIX, na hora', descricao: 'O valor cai na sua conta assim que o convidado paga.', imagem_url: '../assets/hero_gift.jpg', posicao: 2, ativo: true });
+  bloco({ plataforma: 'cliente', secao: 'banner', titulo: 'Seu casamento começa aqui', descricao: 'Crie seu site e sua lista de presentes em minutos.', link_url: 'https://love.com.br/criar', imagem_url: 'assets/wedding_hero_banner.jpg', posicao: 1, ativo: true });
+  bloco({ plataforma: 'cliente', secao: 'banner', titulo: 'Presentes em PIX, na hora', descricao: 'O valor cai na sua conta assim que o convidado paga.', imagem_url: 'assets/hero_gift.jpg', posicao: 2, ativo: true });
 
   const guiaLista = bloco({ plataforma: 'cliente', secao: 'guia', titulo: 'Guia da lista de presentes', subtitulo: 'Como montar e receber via PIX', icone: '🎁', posicao: 1, ativo: true });
   bloco({ plataforma: 'cliente', secao: 'faq', titulo: 'Posso escolher valores livres?', descricao: 'Sim. Além de produtos, você pode criar cotas de qualquer valor — lua de mel, jantar, o que quiser.', posicao: 1, ativo: true, parent_id: guiaLista });

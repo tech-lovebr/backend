@@ -8506,10 +8506,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Abrir Modal de Cadastro (Criar grátis)
+  // "Criar grátis" vai para a página /cadastro (onboarding em etapas), não mais um popup
   document.querySelectorAll('.btn-trigger-register').forEach(btn => {
     btn.addEventListener('click', () => {
-      openModal(elements.modals.register);
+      window.location.href = 'cadastro.html';
     });
   });
 
@@ -8517,7 +8517,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLoginToRegister = document.getElementById('btn-login-to-register');
   if (btnLoginToRegister) {
     btnLoginToRegister.addEventListener('click', () => {
-      openModal(elements.modals.register);
+      window.location.href = 'cadastro.html';
     });
   }
 
@@ -10888,8 +10888,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
     }
 
+    // Veio da página /cadastro, que já perguntou o tipo de evento no onboarding
+    // — pula os eventos de demonstração e leva direto pro formulário de criar
+    // o primeiro evento de verdade, com o tipo já escolhido.
+    const pendingType = localStorage.getItem('love-pending-event-type');
+    const pendingTypeLabel = localStorage.getItem('love-pending-event-type-label');
+
     let events = await loadEventsFromSupabase(session.user.id);
-    if (!events.length) {
+    if (!events.length && !pendingType) {
       await seedDemoEventsIfEmpty(session.user.id);
       events = await loadEventsFromSupabase(session.user.id);
     }
@@ -10908,5 +10914,11 @@ document.addEventListener('DOMContentLoaded', () => {
     subscribeToB2BChatRealtime();
 
     switchView('dashboard');
+
+    if (pendingType && typeof proceedToEventForm === 'function') {
+      localStorage.removeItem('love-pending-event-type');
+      localStorage.removeItem('love-pending-event-type-label');
+      proceedToEventForm(pendingType, pendingTypeLabel || 'Novo Evento');
+    }
   }
 });

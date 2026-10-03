@@ -10670,6 +10670,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Mesmos links, agora também no rodapé da página de Login
+  const btnLoginFooterPrivacy = document.getElementById('btn-login-footer-privacy');
+  const btnLoginFooterTerms = document.getElementById('btn-login-footer-terms');
+  if (btnLoginFooterPrivacy) {
+    btnLoginFooterPrivacy.addEventListener('click', () => {
+      showToast('Política de Privacidade: Seus dados estão protegidos sob a LGPD com criptografia bancária.', '🔒');
+    });
+  }
+  if (btnLoginFooterTerms) {
+    btnLoginFooterTerms.addEventListener('click', () => {
+      showToast('Termos de Uso da plataforma Love.', '📄');
+    });
+  }
+
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
     if (!el.closest('.modal-container-custom')) {

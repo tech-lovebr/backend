@@ -8529,14 +8529,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Botão "← Voltar" da página de Login, de volta pro site público
-  const btnLoginBackToPublic = document.getElementById('btn-login-back-to-public');
-  if (btnLoginBackToPublic) {
-    btnLoginBackToPublic.addEventListener('click', () => {
-      switchView('public');
-    });
-  }
-
   // 10.1 Login com Email e Senha (Conta Existente)
   const formLoginEmail = document.getElementById('form-login-email');
   if (formLoginEmail) {

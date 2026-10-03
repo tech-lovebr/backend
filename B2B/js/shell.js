@@ -107,11 +107,29 @@ async function initAuthGuard() {
 
   window.b2bSession = session;
 
-  const { data: fornecedor } = await supabaseClient
+  let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
     .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type')
     .eq('id', session.user.id)
     .maybeSingle();
+
+  // Login social (Google): o trigger handle_new_user() não recebe o "role"
+  // nesse fluxo (só vem via options.data no cadastro por e-mail/senha), então
+  // a linha em `fornecedores` ainda não existe no primeiro acesso — cria aqui.
+  if (!fornecedor) {
+    const meta = session.user.user_metadata || {};
+    const { data: created } = await supabaseClient
+      .from('fornecedores')
+      .insert({
+        id: session.user.id,
+        company_name: meta.full_name || meta.name || session.user.email.split('@')[0],
+        email: session.user.email,
+        avatar_url: meta.avatar_url || meta.picture || null
+      })
+      .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type')
+      .maybeSingle();
+    fornecedor = created;
+  }
 
   if (fornecedor && typeof B2B_DATA !== 'undefined') {
     B2B_DATA.professional.id = fornecedor.id;

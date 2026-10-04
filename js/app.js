@@ -10925,6 +10925,20 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('love-pending-event-type');
       localStorage.removeItem('love-pending-event-type-label');
       proceedToEventForm(pendingType, pendingTypeLabel || 'Novo Evento');
+
+      // Nome e data do evento já coletados no onboarding de /cadastro.html
+      const pendingName = localStorage.getItem('love-pending-event-name');
+      const pendingDate = localStorage.getItem('love-pending-event-date');
+      localStorage.removeItem('love-pending-event-name');
+      localStorage.removeItem('love-pending-event-date');
+      if (pendingName) {
+        const nameInput = document.getElementById('page-new-event-name');
+        if (nameInput) nameInput.value = pendingName;
+      }
+      if (pendingDate) {
+        const dateInput = document.getElementById('page-new-event-date');
+        if (dateInput) dateInput.value = pendingDate;
+      }
     }
   }
 });

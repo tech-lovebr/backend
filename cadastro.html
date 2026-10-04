@@ -12,9 +12,9 @@
     .onboard-step { display: none; }
     .onboard-step.is-active { display: block; }
     .type-card.is-selected { border-color: #537bae; background: #EBF4FF; }
-    .step-circle { width: 28px; height: 28px; border-radius: 999px; border: 1.5px solid #D4D4D8; color: #A1A1AA; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+    .step-circle { width: 28px; height: 28px; border-radius: 999px; border: 1.5px solid #D4D4D8; color: #A1A1AA; font-size: 0.75rem; font-weight: 400; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
     .step-circle.is-done, .step-circle.is-active { background: #18181B; border-color: #18181B; color: #fff; }
-    .step-label { font-size: 0.75rem; font-weight: 600; color: #A1A1AA; white-space: nowrap; }
+    .step-label { font-size: 0.75rem; font-weight: 400; color: #A1A1AA; white-space: nowrap; }
     .step-label.is-done, .step-label.is-active { color: #18181B; }
     .step-line { height: 1.5px; background: #E4E4E7; flex: 1; margin: 0 0.5rem; }
     .step-line.is-done { background: #18181B; }
@@ -50,47 +50,47 @@
 
         <!-- Etapa 1: tipo de evento -->
         <div class="onboard-step is-active" data-step="1">
-          <h1 class="text-3xl sm:text-4xl font-extrabold text-zinc-900 leading-tight mb-2">Vamos organizar seu grande dia?</h1>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Vamos organizar seu grande dia?</h1>
           <p class="text-zinc-500 text-sm mb-7">Vamos iniciar o planejamento do seu grande dia.</p>
-          <p class="text-sm font-bold text-zinc-800 mb-4">Nos conte melhor, qual tipo de evento você está planejando celebrar?</p>
+          <p class="text-sm font-normal text-zinc-800 mb-4">Nos conte melhor, qual tipo de evento você está planejando celebrar?</p>
 
           <div class="space-y-2.5" id="onboard-type-list">
-            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-semibold text-zinc-800 transition-all flex items-center gap-3" data-type="wedding" data-label="Casamento"><span>💍</span><span>Casamento</span></button>
-            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-semibold text-zinc-800 transition-all flex items-center gap-3" data-type="birthday" data-label="Aniversário"><span>🎂</span><span>Aniversário</span></button>
-            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-semibold text-zinc-800 transition-all flex items-center gap-3" data-type="anniversary" data-label="Bodas"><span>🥂</span><span>Bodas</span></button>
-            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-semibold text-zinc-800 transition-all flex items-center gap-3" data-type="baby_shower" data-label="Chá de Bebê"><span>🍼</span><span>Chá de Bebê</span></button>
-            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-semibold text-zinc-800 transition-all flex items-center gap-3" data-type="birthday" data-label="Festa de 15 Anos"><span>🎉</span><span>Festa de 15 Anos</span></button>
+            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="wedding" data-label="Casamento"><span>💍</span><span>Casamento</span></button>
+            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="birthday" data-label="Aniversário"><span>🎂</span><span>Aniversário</span></button>
+            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="anniversary" data-label="Bodas"><span>🥂</span><span>Bodas</span></button>
+            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="baby_shower" data-label="Chá de Bebê"><span>🍼</span><span>Chá de Bebê</span></button>
+            <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="birthday" data-label="Festa de 15 Anos"><span>🎉</span><span>Festa de 15 Anos</span></button>
           </div>
 
           <div class="flex justify-end mt-8">
-            <button type="button" id="btn-onboard-next-1" disabled class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-zinc-900 text-white text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-opacity">Próximo</button>
+            <button type="button" id="btn-onboard-next-1" disabled class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-zinc-900 text-white text-sm font-normal disabled:opacity-30 disabled:cursor-not-allowed transition-opacity">Próximo</button>
           </div>
         </div>
 
         <!-- Etapa 2: dados pessoais e do evento -->
         <div class="onboard-step" data-step="2">
-          <button type="button" class="btn-onboard-back text-xs font-bold text-zinc-500 hover:text-zinc-800 mb-6 transition-colors">← Voltar</button>
+          <button type="button" class="btn-onboard-back text-xs font-normal text-zinc-500 hover:text-zinc-800 mb-6 transition-colors">← Voltar</button>
 
-          <h1 class="text-3xl sm:text-4xl font-extrabold text-zinc-900 leading-tight mb-2">Conte um pouco sobre você.</h1>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Conte um pouco sobre você.</h1>
           <p class="text-zinc-500 text-sm mb-7">Isso nos ajuda a personalizar sua experiência.</p>
 
           <div class="space-y-3.5">
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-bold text-zinc-700 mb-1">Nome</label>
+                <label class="block text-xs font-normal text-zinc-700 mb-1">Nome</label>
                 <input type="text" id="onboard-firstname-input" required placeholder="Seu nome" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
               </div>
               <div>
-                <label class="block text-xs font-bold text-zinc-700 mb-1">Sobrenome</label>
+                <label class="block text-xs font-normal text-zinc-700 mb-1">Sobrenome</label>
                 <input type="text" id="onboard-lastname-input" required placeholder="Seu sobrenome" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold text-zinc-700 mb-1">Seu aniversário</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1">Seu aniversário</label>
               <input type="date" id="onboard-birthday-input" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
             <div>
-              <label class="block text-xs font-bold text-zinc-700 mb-1">Data do evento</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1">Data do evento</label>
               <input type="date" id="onboard-eventdate-input" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed">
               <label class="flex items-center gap-2 mt-2 cursor-pointer">
                 <input type="checkbox" id="onboard-eventdate-unknown" class="w-4 h-4 rounded border-zinc-300 text-[#537bae] focus:ring-[#537bae]">
@@ -100,30 +100,30 @@
           </div>
 
           <div class="flex justify-end mt-8">
-            <button type="button" id="btn-onboard-next-2" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-zinc-900 text-white text-sm font-bold transition-opacity">Próximo</button>
+            <button type="button" id="btn-onboard-next-2" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-zinc-900 text-white text-sm font-normal transition-opacity">Próximo</button>
           </div>
         </div>
 
         <!-- Etapa 3: e-mail e senha -->
         <div class="onboard-step" data-step="3">
-          <button type="button" class="btn-onboard-back text-xs font-bold text-zinc-500 hover:text-zinc-800 mb-6 transition-colors">← Voltar</button>
+          <button type="button" class="btn-onboard-back text-xs font-normal text-zinc-500 hover:text-zinc-800 mb-6 transition-colors">← Voltar</button>
 
-          <h1 class="text-3xl sm:text-4xl font-extrabold text-zinc-900 leading-tight mb-2">Finalize seu cadastro.</h1>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Finalize seu cadastro.</h1>
           <p class="text-zinc-500 text-sm mb-7">Só falta criar seu acesso à plataforma.</p>
 
           <form id="form-onboard-register" class="space-y-3.5">
             <div>
-              <label class="block text-xs font-bold text-zinc-700 mb-1">E-mail</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1">E-mail</label>
               <input type="email" id="onboard-email-input" required placeholder="seu.email@exemplo.com" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
             <div>
-              <label class="block text-xs font-bold text-zinc-700 mb-1">Senha</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1">Senha</label>
               <input type="password" id="onboard-password-input" required minlength="6" placeholder="Crie uma senha" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
-            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md transition-all mt-2">Criar conta</button>
+            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2">Criar conta</button>
           </form>
 
-          <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="index.html" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
+          <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="index.html" class="text-[#537bae] font-normal hover:underline">Entrar</a></p>
         </div>
 
       </div>
@@ -136,7 +136,7 @@
       <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
         <div></div>
         <div>
-          <h2 class="text-white text-4xl font-extrabold leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
+          <h2 class="text-white text-4xl font-normal leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
           <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
         </div>
       </div>

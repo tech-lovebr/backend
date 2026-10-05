@@ -238,6 +238,19 @@
     // Limita o aniversário a datas até hoje (sem nascimento no futuro)
     document.getElementById('onboard-birthday-input').max = new Date().toISOString().slice(0, 10);
 
+    // Ano só pode começar com 19 ou 20 (ex: não aceita "3" como primeiro
+    // dígito) — min/max do input não impede digitar fora da faixa, então
+    // limpa o campo se o ano digitado não começar com 19/20.
+    function restrictYearPrefix(input) {
+      input.addEventListener('input', () => {
+        if (input.value && !/^(19|20)\d{2}-\d{2}-\d{2}$/.test(input.value)) {
+          input.value = '';
+        }
+      });
+    }
+    restrictYearPrefix(document.getElementById('onboard-birthday-input'));
+    restrictYearPrefix(document.getElementById('onboard-eventdate-input'));
+
     const eventDateInput = document.getElementById('onboard-eventdate-input');
     document.getElementById('onboard-eventdate-unknown').addEventListener('change', (e) => {
       eventDateInput.disabled = e.target.checked;

@@ -3,15 +3,16 @@
    Substitui o Supabase por dados fictícios guardados no navegador, para
    ajustar interface e navegação sem depender do banco.
 
-   Para desligar (e voltar a usar o Supabase de verdade):
-     • troque MODO_DEMO para false abaixo, ou
-     • abra qualquer página com ?demo=0 na URL.
+   Desligado: o painel usa o Supabase de verdade.
+     • Para revisar interface com dados fictícios, abra qualquer página com
+       ?demo=1 na URL — vale para a aba inteira até fechá-la.
+     • ?demo=0 volta aos dados reais.
 
    As alterações feitas no modo demo ficam só no seu navegador
    (localStorage) — não tocam no banco e não saem daqui.
    ========================================================================== */
 
-const MODO_DEMO = true;
+const MODO_DEMO = false;
 
 const DEMO_STORAGE_KEY = 'love-admin-demo-db';
 
@@ -448,9 +449,15 @@ window.LOVE_DEMO = {
   /** Modo demo ligado? A URL (?demo=0 ou ?demo=1) vence a constante. */
   ativo() {
     const parametro = new URLSearchParams(location.search).get('demo');
+
+    // ?demo=1 e ?demo=0 valem para a aba inteira, não só para a página aberta.
     if (parametro === '0') { sessionStorage.setItem('love-admin-demo', 'off'); return false; }
-    if (parametro === '1') { sessionStorage.removeItem('love-admin-demo'); return true; }
-    if (sessionStorage.getItem('love-admin-demo') === 'off') return false;
+    if (parametro === '1') { sessionStorage.setItem('love-admin-demo', 'on'); return true; }
+
+    const guardado = sessionStorage.getItem('love-admin-demo');
+    if (guardado === 'off') return false;
+    if (guardado === 'on') return true;
+
     return MODO_DEMO;
   },
 

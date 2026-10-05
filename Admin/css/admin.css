@@ -743,14 +743,135 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 /* ----------------------------------------------------------------- Login */
 
-.login-shell { display: flex; min-height: 100vh; }
-
-.login-visual {
-  background: linear-gradient(150deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  position: relative;
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #fff;
+  padding: clamp(3rem, 12vh, 7rem) 1.5rem 4rem;
 }
 
-.login-card { width: 100%; max-width: 380px; }
+/* Paisagem só no rodapé da tela, dessaturada e desaparecendo para o branco —
+   fundo de ambiente, nunca concorrendo com o formulário. */
+.login-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: url('../assets/login-fundo.jpg') center bottom / cover no-repeat;
+  filter: grayscale(1) contrast(.85) brightness(1.08);
+  opacity: .34;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 46%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 46%, #000 100%);
+  pointer-events: none;
+}
+
+.login-conteudo {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+}
+
+.login-logo { height: 46px; width: auto; object-fit: contain; }
+
+.login-intro {
+  font-size: .8125rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 1.5rem 0 0;
+}
+
+.login-divisor {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0 2.5rem;
+}
+
+/* Campo sem caixa: rótulo discreto sobre uma linha que acende ao focar. */
+.login-campo {
+  display: block;
+  text-align: left;
+  margin-bottom: 1.75rem;
+}
+
+.login-campo span {
+  display: block;
+  font-size: .75rem;
+  color: var(--text-soft);
+  margin-bottom: .375rem;
+}
+
+.login-campo input {
+  width: 100%;
+  font-family: inherit;
+  font-size: .9375rem;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  padding: .25rem 0 .5rem;
+  outline: none;
+  transition: border-color .15s ease;
+}
+
+.login-campo input:focus { border-bottom-color: var(--primary-color); }
+.login-campo:focus-within span { color: var(--primary-color); }
+
+.login-botao {
+  width: 100%;
+  margin-top: .75rem;
+  padding: .9375rem;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: var(--primary-color);
+  color: #fff;
+  font-family: inherit;
+  font-size: .8125rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.login-botao:hover:not(:disabled) { background: var(--primary-hover); }
+.login-botao:disabled { opacity: .6; cursor: default; }
+
+.login-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-size: .8125rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.login-link:hover { color: var(--primary-color); }
+
+.login-erro {
+  font-size: .8125rem;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-radius: var(--radius-control);
+  padding: .625rem .75rem;
+  margin: 1rem 0 0;
+  line-height: 1.5;
+}
+
+.login-nota {
+  font-size: .75rem;
+  line-height: 1.6;
+  color: var(--text-soft);
+  margin: 2.5rem 0 0;
+}
+
+#nota-demo {
+  color: var(--primary-color);
+  background: var(--info-bg);
+  border-radius: var(--radius-control);
+  padding: .75rem .875rem;
+}
 
 /* -------------------------------------------------------------- Responsivo */
 

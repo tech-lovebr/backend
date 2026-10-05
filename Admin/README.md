@@ -4,10 +4,11 @@ Painel de gestão da plataforma Love. É **independente** do B2B e da plataforma
 logada dos noivos: pasta própria, CSS próprio, login próprio. O que ele
 compartilha com o resto é apenas o banco (o mesmo projeto Supabase).
 
-## Modo demonstração (ligado agora)
+## Modo demonstração (desligado)
 
-O painel está rodando com **dados fictícios**, sem depender do Supabase — é o
-modo para ajustar interface e navegação antes de ligar o banco.
+O painel usa o **Supabase de verdade**. Para revisar interface com dados
+fictícios, abra qualquer página com `?demo=1` na URL — vale para a aba inteira
+até fechá-la; `?demo=0` volta aos dados reais.
 
 - Entra com qualquer e-mail e senha na tela de login.
 - Todas as telas vêm preenchidas: 5 fornecedores, 4 clientes, 5 eventos, 474
@@ -17,17 +18,6 @@ modo para ajustar interface e navegação antes de ligar o banco.
   e nunca chegam ao Supabase.
 - A topbar mostra o selo **Modo demonstração**, com o botão *Reiniciar dados*
   para voltar tudo ao estado original.
-
-### Como desligar
-
-Qualquer uma das duas formas:
-
-- abra uma página com `?demo=0` na URL (vale até fechar a aba); ou
-- troque `MODO_DEMO` para `false` no topo de [js/mock.js](js/mock.js) — é assim
-  que se liga o Supabase de verdade, para valer.
-
-Com o modo demo desligado, valem as regras normais: sessão no Supabase, linha
-ativa na tabela `admins` e as migrations rodadas.
 
 ## Stack
 

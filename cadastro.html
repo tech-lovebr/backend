@@ -242,7 +242,9 @@
     // dígito) — min/max do input não impede digitar fora da faixa, então
     // limpa o campo se o ano digitado não começar com 19/20.
     function restrictYearPrefix(input) {
-      input.addEventListener('input', () => {
+      // No "blur" (ao sair do campo), não a cada tecla — senão apaga dia/mês
+      // já digitados enquanto o ano ainda está sendo completado.
+      input.addEventListener('blur', () => {
         if (input.value && !/^(19|20)\d{2}-\d{2}-\d{2}$/.test(input.value)) {
           input.value = '';
         }

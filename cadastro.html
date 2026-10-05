@@ -104,12 +104,12 @@
             </div>
             <div>
               <label class="block text-xs font-normal text-zinc-700 mb-1">Seu aniversário</label>
-              <input type="date" id="onboard-birthday-input" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+              <input type="date" id="onboard-birthday-input" min="1900-01-01" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
             <div>
               <label class="block text-xs font-normal text-zinc-700 mb-1">Data do evento</label>
               <div class="flex items-center gap-3">
-                <input type="date" id="onboard-eventdate-input" class="flex-1 text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                <input type="date" id="onboard-eventdate-input" min="1900-01-01" max="2099-12-31" class="flex-1 text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed">
                 <label class="flex items-center gap-2 cursor-pointer flex-shrink-0">
                   <input type="checkbox" id="onboard-eventdate-unknown" class="w-4 h-4 rounded border-zinc-300 text-[#537bae] focus:ring-[#537bae]">
                   <span class="text-xs text-zinc-500 whitespace-nowrap">Ainda não sei</span>
@@ -234,6 +234,9 @@
         goToStep(current - 1);
       });
     });
+
+    // Limita o aniversário a datas até hoje (sem nascimento no futuro)
+    document.getElementById('onboard-birthday-input').max = new Date().toISOString().slice(0, 10);
 
     const eventDateInput = document.getElementById('onboard-eventdate-input');
     document.getElementById('onboard-eventdate-unknown').addEventListener('change', (e) => {

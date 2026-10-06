@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderAgenda();
   renderNewsList();
   initOnboardingModal();
-  initAdsCarousel();
+  await initAdsCarousel();
   renderAnalyticsCard();
   initAnalyticsPeriodPopover();
   initDashboardPaymentLinkModal();
@@ -258,13 +258,72 @@ function initDashboardPaymentLinkModal() {
 
 /* -------------------- Carrossel de anúncios -------------------- */
 
-function initAdsCarousel() {
+/* Os slides vivem em conteudo_plataforma e são editados no Admin
+   (Informações → Banner da home). O HTML traz o carrossel antigo escrito à
+   mão apenas como rede de segurança: se o banco responder, ele manda —
+   inclusive respondendo "nenhum banner", que esconde o card. Só um erro de
+   rede mantém o que está no HTML. */
+async function carregarAdsDoAdmin(root, dotsWrap) {
+  let banners;
+  try {
+    const { data, error } = await supabaseClient
+      .from('conteudo_plataforma')
+      .select('titulo, descricao, imagem_url, link_url, posicao')
+      .eq('plataforma', 'fornecedor')
+      .eq('secao', 'banner')
+      .eq('ativo', true)
+      .order('posicao', { ascending: true });
+    if (error) throw error;
+    banners = data || [];
+  } catch (err) {
+    console.warn('Banner do carrossel: mantendo o conteúdo do HTML.', err);
+    return;
+  }
+
+  if (!banners.length) {
+    root.closest('.dash-ads-card')?.remove();
+    root.innerHTML = '';
+    dotsWrap.innerHTML = '';
+    return;
+  }
+
+  const navs = Array.from(root.querySelectorAll('.dash-ads-nav'));
+
+  root.innerHTML = banners.map((b, i) => {
+    const legenda = (b.titulo || b.descricao)
+      ? `<div class="dash-ads-slide-caption">
+           ${b.titulo ? `<p class="dash-ads-slide-title">${escapeHtml(b.titulo)}</p>` : ''}
+           ${b.descricao ? `<p class="dash-ads-slide-subtitle">${escapeHtml(b.descricao)}</p>` : ''}
+         </div>`
+      : '';
+    const rotulo = b.titulo || b.descricao || `Anúncio ${i + 1}`;
+    const atributos = `class="dash-ads-slide${i === 0 ? ' is-active' : ''}" data-slide="${i}" aria-label="${escapeHtml(rotulo)}"`;
+    const miolo = `<img src="${escapeHtml(b.imagem_url || '')}" alt="" class="dash-ads-slide-img">${legenda}`;
+    return b.link_url
+      ? `<a href="${escapeHtml(b.link_url)}" ${atributos}>${miolo}</a>`
+      : `<div ${atributos}>${miolo}</div>`;
+  }).join('');
+
+  navs.forEach(nav => root.appendChild(nav));
+
+  dotsWrap.innerHTML = banners.length > 1
+    ? banners.map((_, i) =>
+        `<button type="button" class="dash-ads-dot${i === 0 ? ' is-active' : ''}" data-dot="${i}" aria-label="Ver anúncio ${i + 1}"></button>`
+      ).join('')
+    : '';
+  navs.forEach(nav => { nav.hidden = banners.length <= 1; });
+}
+
+async function initAdsCarousel() {
   const root = document.getElementById('dash-ads-carousel');
   const dotsWrap = document.getElementById('dash-ads-dots');
   if (!root || !dotsWrap) return;
 
+  await carregarAdsDoAdmin(root, dotsWrap);
+
   const slides = Array.from(root.querySelectorAll('.dash-ads-slide'));
   const dots = Array.from(dotsWrap.querySelectorAll('.dash-ads-dot'));
+  if (!slides.length) return;
   let current = 0;
   let timer = null;
 

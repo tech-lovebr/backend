@@ -8519,7 +8519,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // "Criar grátis" vai para a página /cadastro (onboarding em etapas), não mais um popup
   document.querySelectorAll('.btn-trigger-register').forEach(btn => {
     btn.addEventListener('click', () => {
-      window.location.href = 'cadastro.html';
+      window.location.href = '/cadastro';
     });
   });
 
@@ -8527,7 +8527,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLoginToRegister = document.getElementById('btn-login-to-register');
   if (btnLoginToRegister) {
     btnLoginToRegister.addEventListener('click', () => {
-      window.location.href = 'cadastro.html';
+      window.location.href = '/cadastro';
     });
   }
 
@@ -8612,7 +8612,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       submitBtn.disabled = true;
       await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/resetar-senha.html`,
+        redirectTo: `${window.location.origin}/resetar-senha`,
       });
       submitBtn.disabled = false;
 
@@ -10994,7 +10994,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('love-pending-event-type-label');
       proceedToEventForm(pendingType, pendingTypeLabel || 'Novo Evento');
 
-      // Nome e data do evento já coletados no onboarding de /cadastro.html
+      // Nome e data do evento já coletados no onboarding de /cadastro
       const pendingName = localStorage.getItem('love-pending-event-name');
       const pendingDate = localStorage.getItem('love-pending-event-date');
       localStorage.removeItem('love-pending-event-name');

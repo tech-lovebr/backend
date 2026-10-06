@@ -27,7 +27,7 @@
 
     <!-- Coluna esquerda: formulário em etapas -->
     <div class="w-full lg:w-1/2 flex flex-col items-center px-6 sm:px-14 py-10 relative">
-      <a href="index.html" class="absolute top-6 left-6 sm:top-8 sm:left-10 w-9 h-9 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors">✕</a>
+      <a href="/" class="absolute top-6 left-6 sm:top-8 sm:left-10 w-9 h-9 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors">✕</a>
 
       <!-- Indicador de etapas -->
       <div class="flex items-center mt-4 max-w-md w-full" id="onboard-steps">
@@ -81,7 +81,7 @@
             <button type="button" id="btn-onboard-next-1" disabled class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed transition-opacity">Próximo</button>
           </div>
 
-          <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="index.html" class="text-[#537bae] hover:underline">Entre por aqui</a></p>
+          <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="/" class="text-[#537bae] hover:underline">Entre por aqui</a></p>
         </div>
 
         <!-- Etapa 2: dados pessoais e do evento -->
@@ -167,7 +167,7 @@
           </div>
 
 
-          <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="index.html" class="text-[#537bae] font-normal hover:underline">Entrar</a></p>
+          <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="/" class="text-[#537bae] font-normal hover:underline">Entrar</a></p>
         </div>
 
       </div>
@@ -302,7 +302,7 @@
       }
       if (fullName) localStorage.setItem('love-pending-event-name', fullName);
       if (eventDate) localStorage.setItem('love-pending-event-date', eventDate);
-      window.location.href = 'index.html';
+      window.location.href = '/';
     });
   </script>
 

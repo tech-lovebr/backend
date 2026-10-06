@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 8090;
+const PORT = process.env.PORT || 8090;
 const PUBLIC_DIR = __dirname;
 
 const MIME_TYPES = {
@@ -46,21 +46,7 @@ const server = http.createServer((req, res) => {
     return res.end('403 Forbidden');
   }
 
-  fs.stat(safePath, (err, stats) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-        return res.end('404 Arquivo não encontrado');
-      }
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      return res.end('500 Erro Interno');
-    }
-
-    let filePath = safePath;
-    if (stats.isDirectory()) {
-      filePath = path.join(safePath, 'index.html');
-    }
-
+  function serveFile(filePath) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
@@ -84,6 +70,36 @@ const server = http.createServer((req, res) => {
       }
       res.end('500 Erro de leitura');
     });
+  }
+
+  fs.stat(safePath, (err, stats) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        // URL sem extensão (ex: /cadastro) — tenta servir o .html correspondente,
+        // espelhando os rewrites de produção (vercel.json) para URLs limpas.
+        if (!path.extname(safePath)) {
+          const htmlPath = `${safePath}.html`;
+          return fs.stat(htmlPath, (err2, stats2) => {
+            if (!err2 && stats2.isFile()) {
+              return serveFile(htmlPath);
+            }
+            res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+            return res.end('404 Arquivo não encontrado');
+          });
+        }
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        return res.end('404 Arquivo não encontrado');
+      }
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      return res.end('500 Erro Interno');
+    }
+
+    let filePath = safePath;
+    if (stats.isDirectory()) {
+      filePath = path.join(safePath, 'index.html');
+    }
+
+    serveFile(filePath);
   });
 });
 

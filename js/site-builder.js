@@ -8,7 +8,7 @@
 const BUILDER_STORAGE_KEY = 'love-site-builder-page';
 const BUILDER_PUBLISHED_KEY = 'love-site-builder-published';
 const BUILDER_PUBLISHED_STATE_KEY = 'love-site-builder-published-state';
-const PREVIEW_PAGE_URL = 'convite-preview.html';
+const PREVIEW_PAGE_URL = '/convite-preview';
 
 // Páginas/templates adicionais do site (mesmo padrão do dropdown "Páginas do site"
 // do B2B — site principal + meu checkout): cada uma tem seu próprio estado salvo.
@@ -2711,7 +2711,7 @@ function initSiteBuilder() {
 
 document.addEventListener('DOMContentLoaded', initSiteBuilder);
 
-/* -------------------- Página pública de pré-visualização (convite-preview.html) -------------------- */
+/* -------------------- Página pública de pré-visualização (/convite-preview) -------------------- */
 
 function initPublicPreview() {
   const root = document.getElementById('public-preview-root');

@@ -60,14 +60,14 @@
   }
 }
 
-/* TEMA CLARO — cor primária cinza-escuro (era azul), escopado para não
-   afetar o login (que não tem data-theme e mantém o hero azul original) */
+/* TEMA CLARO — cor primária = mesma cor do sidebar (#181D24), escopado para
+   não afetar o login (que não tem data-theme e mantém o hero azul original) */
 body[data-theme="light"] {
-  --primary-color: #333333;
-  --primary-blue: #333333;
-  --primary-hover: #262626;
-  --primary-blue-hover: #262626;
-  --primary-gradient: linear-gradient(135deg, #333333 0%, #262626 100%);
+  --primary-color: #181D24;
+  --primary-blue: #181D24;
+  --primary-hover: #262D36;
+  --primary-blue-hover: #262D36;
+  --primary-gradient: linear-gradient(135deg, #181D24 0%, #262D36 100%);
 }
 
 /* TEMA ESCURO */
@@ -78,10 +78,11 @@ body[data-theme="dark"] {
   --border-light: rgba(255, 255, 255, 0.12);
   --border-card: rgba(255, 255, 255, 0.10);
   --text-dark: #FFFFFF;
-  --primary-color: #000000;
-  --primary-blue: #000000;
-  --primary-hover: #1A1A1A;
-  --primary-blue-hover: #1A1A1A;
+  --primary-color: #181D24;
+  --primary-blue: #181D24;
+  --primary-hover: #262D36;
+  --primary-blue-hover: #262D36;
+  --primary-gradient: linear-gradient(135deg, #181D24 0%, #262D36 100%);
 }
 
 /* TEMA ESCURO — textos que usam --primary-blue como cor de texto (sem fundo

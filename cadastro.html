@@ -297,7 +297,14 @@
       const { error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { role: 'cliente', couple_name: fullName, birthday: birthday || null } }
+        options: { data: {
+          role: 'cliente',
+          couple_name: fullName,
+          birthday: birthday || null,
+          intended_event_type: onboardType || null,
+          intended_event_type_label: onboardTypeLabel || null,
+          intended_event_date: eventDate || null
+        } }
       });
 
       if (error) {

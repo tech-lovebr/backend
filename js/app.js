@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
       inviteAdvisor: document.getElementById('modal-invite-advisor'),
       searchWedding: document.getElementById('modal-search-wedding'),
       deleteEvent: document.getElementById('modal-delete-event'),
-      userProfile: document.getElementById('modal-user-profile'),
       userSettings: document.getElementById('modal-user-settings'),
       userFaq: document.getElementById('modal-user-faq'),
       templatePicker: document.getElementById('modal-template-picker'),
@@ -10392,6 +10391,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnProfileData) {
     btnProfileData.addEventListener('click', () => {
       dropdownUserAccount?.classList.add('hidden');
+      const nameInput = document.getElementById('settings-user-name');
+      const emailInput = document.getElementById('settings-user-email');
+      if (nameInput) nameInput.value = window.loveClienteProfile?.couple_name || '';
+      if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
+      ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
       openModal(elements.modals.userSettings);
     });
   }
@@ -10614,24 +10621,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Formulário de Perfil de Usuário
-  const formUserProfile = document.getElementById('form-user-profile');
-  if (formUserProfile) {
-    formUserProfile.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('profile-user-name')?.value || 'Anfitrião';
-      const dropdownUsername = document.getElementById('account-dropdown-username');
-      if (dropdownUsername) dropdownUsername.textContent = name;
-      closeModal(elements.modals.userProfile);
-      showToast('Dados de usuário atualizados com sucesso!', '👤');
-    });
-  }
-
-  // Formulário de Configurações
+  // Formulário de Configurações da Conta (Perfil + Segurança)
   const formUserSettings = document.getElementById('form-user-settings');
   if (formUserSettings) {
-    formUserSettings.addEventListener('submit', (e) => {
+    formUserSettings.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const session = window.loveClienteSession;
+      if (!session) return;
+
+      const saveBtn = document.getElementById('btn-save-user-settings');
+      const name = document.getElementById('settings-user-name').value.trim();
+      const currentPassword = document.getElementById('settings-password-current').value;
+      const newPassword = document.getElementById('settings-password-new').value;
+      const confirmPassword = document.getElementById('settings-password-confirm').value;
+
+      if (!name) {
+        showToast('O nome não pode ficar vazio.', '⚠️');
+        return;
+      }
+
+      const wantsPasswordChange = currentPassword || newPassword || confirmPassword;
+      if (wantsPasswordChange) {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          showToast('Preencha os 3 campos de senha para trocá-la.', '⚠️');
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showToast('A confirmação não coincide com a nova senha.', '⚠️');
+          return;
+        }
+        if (newPassword.length < 6) {
+          showToast('A nova senha precisa ter pelo menos 6 caracteres.', '⚠️');
+          return;
+        }
+      }
+
+      saveBtn.disabled = true;
+
+      if (wantsPasswordChange) {
+        const { error: authError } = await supabaseClient.auth.signInWithPassword({
+          email: session.user.email,
+          password: currentPassword
+        });
+        if (authError) {
+          saveBtn.disabled = false;
+          showToast('Senha atual incorreta.', '⚠️');
+          return;
+        }
+
+        const { error: updateError } = await supabaseClient.auth.updateUser({ password: newPassword });
+        if (updateError) {
+          saveBtn.disabled = false;
+          showToast('Não foi possível trocar sua senha. Tente novamente.', '⚠️');
+          return;
+        }
+      }
+
+      const { error: profileError } = await supabaseClient
+        .from('clientes')
+        .update({ couple_name: name })
+        .eq('id', session.user.id);
+
+      saveBtn.disabled = false;
+
+      if (profileError) {
+        showToast('Não foi possível salvar seu nome. Tente novamente.', '⚠️');
+        return;
+      }
+
+      if (window.loveClienteProfile) window.loveClienteProfile.couple_name = name;
+      const dropdownUsername = document.getElementById('account-dropdown-username');
+      if (dropdownUsername) dropdownUsername.textContent = name;
+
+      ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+
       closeModal(elements.modals.userSettings);
       showToast('Configurações da conta salvas com sucesso!', '⚙️');
     });

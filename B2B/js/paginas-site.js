@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LOVE B2B — Páginas do Site (URL, personalização da vitrine e formulários)
+   LOVE B2B — Editor de Site (URL, personalização da vitrine e formulários)
    Somente front-end. Sem integração com backend ainda.
    ========================================================================== */
 

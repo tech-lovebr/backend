@@ -15,7 +15,7 @@ const { createClient } = require("@supabase/supabase-js");
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 

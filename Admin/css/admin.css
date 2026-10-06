@@ -746,108 +746,133 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 .login-page {
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  background: #fff;
-  padding: clamp(3rem, 12vh, 7rem) 1.5rem 4rem;
+  padding: 5.5rem 1.5rem 3rem;
+  background: #E9EFF8;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Paisagem só no rodapé da tela, dessaturada e desaparecendo para o branco —
-   fundo de ambiente, nunca concorrendo com o formulário. */
-.login-fundo {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background: url('../assets/login-fundo.jpg') center bottom / cover no-repeat;
-  filter: grayscale(1) contrast(.85) brightness(1.08);
-  opacity: .34;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 46%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 46%, #000 100%);
+.login-marca {
+  position: absolute;
+  top: 1.75rem;
+  left: 2rem;
+  z-index: 2;
+}
+
+.login-marca img { height: 30px; width: auto; object-fit: contain; display: block; }
+
+/* Traço decorativo no rodapé, no tom da marca e bem recuado. */
+.login-arte {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Altura pela proporção do desenho (1440x320): com `slice` o traço era
+     recortado e as formas apareciam gigantes. */
+  width: 100%;
+  height: auto;
+  color: var(--primary-color);
+  opacity: .18;
   pointer-events: none;
 }
 
-.login-conteudo {
+.login-cartao {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
+  background: #fff;
+  border-radius: var(--radius-card);
+  box-shadow: 0 18px 44px rgba(16, 24, 40, .1);
+  padding: 2.5rem 2.25rem;
   text-align: center;
 }
 
-.login-logo { height: 46px; width: auto; object-fit: contain; }
+.login-cartao h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
 
-.login-intro {
+.login-sub {
   font-size: .8125rem;
-  line-height: 1.7;
+  line-height: 1.65;
   color: var(--text-muted);
-  margin: 1.5rem 0 0;
+  margin: .5rem 0 1.75rem;
 }
 
-.login-divisor {
-  border: 0;
-  border-top: 1px solid var(--border);
-  margin: 2rem 0 2.5rem;
-}
-
-/* Campo sem caixa: rótulo discreto sobre uma linha que acende ao focar. */
+/* Campo em caixa, com fundo levemente recuado — como na referência. */
 .login-campo {
-  display: block;
-  text-align: left;
-  margin-bottom: 1.75rem;
-}
-
-.login-campo span {
-  display: block;
-  font-size: .75rem;
-  color: var(--text-soft);
-  margin-bottom: .375rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: .875rem;
 }
 
 .login-campo input {
   width: 100%;
   font-family: inherit;
-  font-size: .9375rem;
+  font-size: .875rem;
   color: var(--text);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--border);
-  padding: .25rem 0 .5rem;
+  background: #F7F8FA;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  padding: .8125rem 1rem;
   outline: none;
-  transition: border-color .15s ease;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
 }
 
-.login-campo input:focus { border-bottom-color: var(--primary-color); }
-.login-campo:focus-within span { color: var(--primary-color); }
+.login-campo input::placeholder { color: var(--text-soft); }
+
+.login-campo input:focus {
+  background: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(24, 59, 84, .1);
+}
+
+/* O botão fica dentro do campo; o texto recua para não passar por baixo dele. */
+.login-campo:has(.login-ver-senha) input { padding-right: 5rem; }
+
+.login-ver-senha {
+  position: absolute;
+  right: .75rem;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: .8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: .25rem;
+}
+
+.login-ver-senha:hover { color: var(--primary-color); }
+
+.login-esqueci {
+  display: block;
+  text-align: right;
+  font-size: .8125rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin: .125rem 0 1.5rem;
+}
+
+.login-esqueci:hover { text-decoration: underline; }
 
 .login-botao {
   width: 100%;
-  margin-top: .75rem;
-  padding: .9375rem;
+  padding: .8125rem;
   border: 0;
   border-radius: var(--radius-control);
   background: var(--primary-color);
   color: #fff;
   font-family: inherit;
-  font-size: .8125rem;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-size: .875rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background .15s ease;
 }
 
 .login-botao:hover:not(:disabled) { background: var(--primary-hover); }
 .login-botao:disabled { opacity: .6; cursor: default; }
-
-.login-link {
-  display: inline-block;
-  margin-top: 1.5rem;
-  font-size: .8125rem;
-  color: var(--text-muted);
-  text-decoration: none;
-}
-
-.login-link:hover { color: var(--primary-color); }
 
 .login-erro {
   font-size: .8125rem;
@@ -862,8 +887,8 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 .login-nota {
   font-size: .75rem;
   line-height: 1.6;
-  color: var(--text-soft);
-  margin: 2.5rem 0 0;
+  color: var(--text-muted);
+  margin: 1.5rem 0 0;
 }
 
 #nota-demo {
@@ -871,6 +896,12 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   background: var(--info-bg);
   border-radius: var(--radius-control);
   padding: .75rem .875rem;
+}
+
+@media (max-width: 640px) {
+  .login-page { padding: 5rem 1.25rem 2.5rem; align-items: flex-start; }
+  .login-cartao { padding: 2rem 1.5rem; }
+  .login-marca { left: 1.25rem; }
 }
 
 /* -------------------------------------------------------------- Responsivo */

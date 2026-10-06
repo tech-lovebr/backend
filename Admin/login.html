@@ -12,42 +12,68 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=36">
+  <link rel="stylesheet" href="css/admin.css?v=43">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
 </head>
 <body class="login-page">
 
-  <div class="login-fundo" aria-hidden="true"></div>
+  <a class="login-marca" href="https://love.com.br" target="_blank" rel="noopener noreferrer">
+    <img src="assets/logo_blue.png" alt="Love">
+  </a>
 
-  <main class="login-conteudo">
-    <img src="assets/logo_blue.png" alt="Love" class="login-logo">
+  <!-- Traço de fundo: formas soltas de painel, sem concorrer com o cartão. -->
+  <svg class="login-arte" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="90" y="120" width="190" height="130" rx="8" />
+      <path d="M120 215h26v-45h-26zM162 215h26v-72h-26zM204 215h26v-28h-26z" />
 
-    <p class="login-intro">
-      Para entrar no painel administrativo, informe seu e-mail e sua senha
-      corretamente.
-    </p>
+      <rect x="330" y="168" width="150" height="90" rx="8" />
+      <path d="M352 232l24-26 20 16 32-38" />
+      <circle cx="428" cy="184" r="5" />
 
-    <hr class="login-divisor">
+      <circle cx="560" cy="196" r="34" />
+      <path d="M560 196v-22M560 196l16 12" />
+
+      <rect x="650" y="150" width="170" height="108" rx="8" />
+      <path d="M672 178h78M672 198h126M672 218h54" />
+
+      <path d="M900 250c0-30 22-54 50-54s50 24 50 54" />
+      <path d="M925 250h100" />
+      <circle cx="950" cy="166" r="18" />
+
+      <rect x="1080" y="176" width="130" height="82" rx="8" />
+      <path d="M1100 222l20-18 16 12 24-26" />
+
+      <circle cx="1300" cy="208" r="26" />
+      <path d="M1319 227l20 20" />
+
+      <path d="M40 258h1360" opacity=".5" />
+      <path d="M300 258v-16M620 258v-28M1050 258v-20" opacity=".5" />
+    </g>
+  </svg>
+
+  <main class="login-cartao">
+    <h1>Painel administrativo</h1>
+    <p class="login-sub">Olá! Informe seus dados de acesso para entrar no painel.</p>
 
     <form id="login-form" novalidate>
-      <label class="login-campo">
-        <span>E-mail</span>
-        <input id="login-email" type="email" autocomplete="username" required>
-      </label>
+      <div class="login-campo">
+        <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" required>
+      </div>
 
-      <label class="login-campo">
-        <span>Senha</span>
-        <input id="login-password" type="password" autocomplete="current-password" required>
-      </label>
+      <div class="login-campo">
+        <input id="login-password" type="password" placeholder="Senha" autocomplete="current-password" required>
+        <button type="button" class="login-ver-senha" id="btn-ver-senha">Mostrar</button>
+      </div>
+
+      <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
 
       <button type="submit" class="login-botao" id="login-submit">Entrar</button>
 
       <p id="login-error" class="login-erro" style="display:none"></p>
     </form>
-
-    <a href="#" class="login-link" id="login-esqueci">Esqueceu sua senha?</a>
 
     <p id="nota-demo" class="login-nota" style="display:none">
       <strong>Modo demonstração.</strong> Os dados são fictícios e ficam só neste
@@ -60,6 +86,16 @@
   </main>
 
   <script>
+    const verSenha = document.getElementById('btn-ver-senha');
+    const campoSenha = document.getElementById('login-password');
+
+    verSenha.addEventListener('click', () => {
+      const oculta = campoSenha.type === 'password';
+      campoSenha.type = oculta ? 'text' : 'password';
+      verSenha.textContent = oculta ? 'Ocultar' : 'Mostrar';
+      campoSenha.focus();
+    });
+
     const form = document.getElementById('login-form');
     const errorEl = document.getElementById('login-error');
     const submitBtn = document.getElementById('login-submit');
@@ -84,9 +120,20 @@
     // Já logado e com permissão? Vai direto para o dashboard.
     if (!MODO_DEMO_ATIVO) supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return;
+
       const { data } = await supabaseClient.from('admins')
         .select('id, active').eq('id', session.user.id).maybeSingle();
-      if (data && data.active) window.location.replace('dashboard.html');
+
+      if (data && data.active) {
+        window.location.replace('dashboard.html');
+        return;
+      }
+
+      // Sessão de alguém que não é administrador — em desenvolvimento o painel
+      // divide a origem (localhost) com a plataforma dos noivos, então a sessão
+      // de um casal logado chega até aqui. Encerra para não ficar pendurada
+      // tentando renovar um token que não serve a esta área.
+      await supabaseClient.auth.signOut();
     });
 
     form.addEventListener('submit', async (e) => {

@@ -23,11 +23,11 @@
 </head>
 <body class="bg-white">
 
-  <div class="min-h-screen w-full flex flex-row-reverse">
+  <div class="min-h-screen w-full flex">
 
-    <!-- Coluna direita: formulário em etapas -->
+    <!-- Coluna esquerda: formulário em etapas -->
     <div class="w-full lg:w-1/2 flex flex-col px-6 sm:px-14 py-10 relative">
-      <a href="index.html" class="absolute top-6 right-6 sm:top-8 sm:right-10 w-9 h-9 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors">✕</a>
+      <a href="index.html" class="absolute top-6 left-6 sm:top-8 sm:left-10 w-9 h-9 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors">✕</a>
 
       <!-- Indicador de etapas -->
       <div class="flex items-center mt-4 max-w-md" id="onboard-steps">
@@ -130,6 +130,24 @@
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Finalize seu cadastro.</h1>
           <p class="text-zinc-500 text-sm mb-7">Só falta criar seu acesso à plataforma.</p>
 
+          <form id="form-onboard-register" class="space-y-3.5 mt-5">
+            <div>
+              <label class="block text-xs font-normal text-zinc-700 mb-1">E-mail</label>
+              <input type="email" id="onboard-email-input" required placeholder="seu.email@exemplo.com" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+            </div>
+            <div>
+              <label class="block text-xs font-normal text-zinc-700 mb-1">Senha</label>
+              <input type="password" id="onboard-password-input" required minlength="6" placeholder="Crie uma senha" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+            </div>
+            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2">Criar conta</button>
+          </form>
+
+          <div class="flex items-center gap-3 my-2">
+            <div class="h-px bg-zinc-200 flex-1"></div>
+            <span class="text-[11px] text-zinc-400 uppercase">ou continue com</span>
+            <div class="h-px bg-zinc-200 flex-1"></div>
+          </div>
+
           <div class="space-y-2.5 mb-5">
             <button type="button" id="btn-onboard-google" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-sm font-normal flex items-center justify-center gap-3 transition-all">
               <svg class="w-5 h-5" viewBox="0 0 24 24">
@@ -148,23 +166,6 @@
             </button>
           </div>
 
-          <div class="flex items-center gap-3 my-2">
-            <div class="h-px bg-zinc-200 flex-1"></div>
-            <span class="text-[11px] text-zinc-400 uppercase">ou crie com e-mail</span>
-            <div class="h-px bg-zinc-200 flex-1"></div>
-          </div>
-
-          <form id="form-onboard-register" class="space-y-3.5 mt-5">
-            <div>
-              <label class="block text-xs font-normal text-zinc-700 mb-1">E-mail</label>
-              <input type="email" id="onboard-email-input" required placeholder="seu.email@exemplo.com" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
-            </div>
-            <div>
-              <label class="block text-xs font-normal text-zinc-700 mb-1">Senha</label>
-              <input type="password" id="onboard-password-input" required minlength="6" placeholder="Crie uma senha" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
-            </div>
-            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2">Criar conta</button>
-          </form>
 
           <p class="text-xs text-zinc-500 text-center mt-5">Já tem uma conta? <a href="index.html" class="text-[#537bae] font-normal hover:underline">Entrar</a></p>
         </div>
@@ -172,9 +173,9 @@
       </div>
     </div>
 
-    <!-- Coluna esquerda: imagem -->
-    <div class="hidden lg:flex w-1/2 bg-white p-4">
-      <div class="relative w-full h-full rounded-3xl overflow-hidden">
+    <!-- Coluna direita: imagem, sangrando até as bordas -->
+    <div class="hidden lg:flex w-1/2 bg-white">
+      <div class="relative w-full h-full overflow-hidden">
         <img src="assets/wedding_hero_banner.jpg" alt="" class="absolute inset-0 w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
         <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">

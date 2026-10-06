@@ -1686,3 +1686,47 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 /* Etiqueta ao lado do nome numa célula de tabela. */
 table.data .badge { margin-left: .375rem; vertical-align: middle; }
+
+/* --------------------------------------- Lista de dados em painel lateral
+   Rótulo à esquerda, valor à direita — em vez de caixas lado a lado. */
+
+.lista-dados {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.dados-linha {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.dados-linha:first-child { border-top: 0; }
+
+.dados-linha .rotulo {
+  font-size: .8125rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.dados-linha .valor {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+  word-break: break-word;
+}
+
+.dados-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  border-radius: 6px;
+  padding: .125rem .375rem;
+}

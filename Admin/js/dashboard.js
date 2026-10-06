@@ -353,3 +353,194 @@ function renderCategorias() {
       </ul>
     </div>`;
 }
+
+/* ===================================================== Todas as contas ==
+   Lê auth.users pela admin_listar_contas() (SECURITY DEFINER), já que a
+   tabela de autenticação não é exposta pela API. Mostra de onde cada conta
+   veio e permite classificar as que chegaram sem origem.
+   ====================================================================== */
+
+const ORIGENS = {
+  b2b: { rotulo: 'B2B', badge: 'badge-info', plataforma: 'Portal do fornecedor' },
+  anfitriao: { rotulo: 'Anfitrião', badge: 'badge-success', plataforma: 'Plataforma principal' },
+  sem_origem: { rotulo: 'Sem origem', badge: 'badge-danger', plataforma: 'Não identificada' }
+};
+
+const PROVEDORES = {
+  email: 'E-mail e senha (padrão)',
+  google: 'Google',
+  apple: 'Apple',
+  desconhecido: 'Não informado'
+};
+
+let CONTAS = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!(await window.adminReady)) return;
+  await carregarContas();
+});
+
+async function carregarContas() {
+  const tbody = document.getElementById('tbody-contas');
+  if (!tbody) return;
+
+  renderLoading(tbody, 7);
+
+  const { data, error } = await supabaseClient.rpc('admin_listar_contas');
+
+  if (error) {
+    const faltaFuncao = /admin_listar_contas|does not exist|schema cache/i.test(error.message || '');
+    renderEmpty(tbody, 7,
+      faltaFuncao ? 'Função ainda não existe no banco' : 'Não foi possível carregar',
+      faltaFuncao
+        ? 'Rode supabase/migrations/015_contas_origem.sql no SQL Editor do Supabase.'
+        : error.message);
+    return;
+  }
+
+  CONTAS = data || [];
+  renderContas();
+
+  document.getElementById('busca-contas').addEventListener('input', renderContas);
+  document.getElementById('filtro-origem').addEventListener('change', renderContas);
+}
+
+function filtrarContas() {
+  const termo = document.getElementById('busca-contas').value.trim().toLowerCase();
+  const origem = document.getElementById('filtro-origem').value;
+
+  return CONTAS.filter(c => {
+    if (origem && c.origem !== origem) return false;
+    if (!termo) return true;
+    return [c.email, c.nome].some(v => String(v || '').toLowerCase().includes(termo));
+  });
+}
+
+function renderContas() {
+  const tbody = document.getElementById('tbody-contas');
+  const lista = filtrarContas();
+
+  if (!lista.length) {
+    renderEmpty(tbody, 7, 'Nenhuma conta encontrada',
+      CONTAS.length ? 'Ajuste a busca ou o filtro de origem.' : 'Nenhuma conta foi criada ainda.');
+    return;
+  }
+
+  // As sem origem vêm primeiro: são as que exigem ação.
+  const ordenada = [...lista].sort((a, b) => {
+    if ((a.origem === 'sem_origem') !== (b.origem === 'sem_origem')) {
+      return a.origem === 'sem_origem' ? -1 : 1;
+    }
+    return new Date(b.criado_em || 0) - new Date(a.criado_em || 0);
+  });
+
+  tbody.innerHTML = ordenada.map(c => `
+    <tr data-id="${c.id}">
+      <td class="cell-strong">${dash(c.nome)}</td>
+      <td class="cell-muted">${dash(c.email)}</td>
+      <td>${badge(ORIGENS[c.origem].rotulo, ORIGENS[c.origem].badge)}</td>
+      <td class="cell-muted">${escapeHtml(PROVEDORES[c.provedor] || c.provedor)}</td>
+      <td>${c.email_confirmado ? badge('sim', 'badge-success') : badge('não', 'badge-warning')}</td>
+      <td class="cell-muted">${escapeHtml(c.ultimo_acesso ? formatRelative(c.ultimo_acesso) : 'nunca')}</td>
+      <td class="cell-muted">${escapeHtml(formatDate(c.criado_em))}</td>
+    </tr>`).join('');
+
+  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
+    tr.addEventListener('click', () => abrirConta(CONTAS.find(c => c.id === tr.dataset.id)));
+  });
+}
+
+/** Data e hora completas — para saber o momento exato do cadastro. */
+function dataHoraCompleta(valor) {
+  if (!valor) return null;
+  const dt = new Date(valor);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+
+function abrirConta(c) {
+  if (!c) return;
+
+  const semOrigem = c.origem === 'sem_origem';
+
+  const linha = (rotulo, valor) => `
+    <div class="dados-linha">
+      <span class="rotulo">${escapeHtml(rotulo)}</span>
+      <span class="valor">${valor}</span>
+    </div>`;
+
+  Drawer.open({
+    title: c.nome || c.email || 'Conta',
+    subtitle: c.email || '',
+    body: `
+      <div class="lista-dados">
+        ${linha('Origem', `${ORIGENS[c.origem].plataforma}, ${ORIGENS[c.origem].rotulo}`)}
+        ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
+        ${linha('E-mail confirmado', c.email_confirmado ? 'Sim' : 'Não')}
+        ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
+        ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
+        ${linha('ID único', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
+      </div>
+
+      ${semOrigem ? `
+        <p class="drawer-section-title">Classificar</p>
+        <p class="cell-muted" style="font-size:.8125rem;line-height:1.7;margin:0 0 1rem">
+          Esta conta chegou sem identificação de plataforma — é o que acontece no
+          login social, que não envia o papel junto. Escolha onde ela entra:
+          a conta passa a aparecer na lista correspondente.
+        </p>
+
+        <label class="field">
+          <span class="field-label">Nome</span>
+          <input class="field-input" id="nome-conta" type="text" value="${escapeHtml(c.nome || '')}"
+                 placeholder="${escapeHtml(c.email || '')}">
+        </label>
+
+        <div style="display:flex;gap:.625rem">
+          <button type="button" class="btn btn-ghost" style="flex:1" data-destino="b2b">É um fornecedor (B2B)</button>
+          <button type="button" class="btn btn-ghost" style="flex:1" data-destino="anfitriao">É um anfitrião</button>
+        </div>` : ''}`,
+    footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
+  });
+
+  document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
+
+  document.querySelectorAll('[data-destino]').forEach(btn => {
+    btn.addEventListener('click', () => classificarConta(c, btn.dataset.destino));
+  });
+}
+
+async function classificarConta(conta, destino) {
+  const nome = (document.getElementById('nome-conta')?.value || '').trim();
+
+  if (!nome) {
+    toast('Informe o nome antes de classificar.');
+    return;
+  }
+
+  Drawer.setFooterBusy(true);
+
+  const alvo = destino === 'b2b'
+    ? { tabela: 'fornecedores', linha: { id: conta.id, company_name: nome, email: conta.email } }
+    : { tabela: 'clientes', linha: { id: conta.id, couple_name: nome, email: conta.email } };
+
+  const { error } = await supabaseClient.from(alvo.tabela).insert(alvo.linha);
+
+  if (!error) {
+    await supabaseClient.from('contas_sem_origem').delete().eq('id', conta.id);
+  }
+
+  Drawer.setFooterBusy(false);
+
+  if (error) {
+    toast(`Não foi possível classificar: ${error.message}`);
+    return;
+  }
+
+  Drawer.close();
+  toast(destino === 'b2b' ? 'Conta movida para B2B.' : 'Conta movida para Anfitriões.');
+  window.location.reload();
+}

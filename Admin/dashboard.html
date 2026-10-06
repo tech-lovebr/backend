@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=47">
+  <link rel="stylesheet" href="css/admin.css?v=48">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -77,6 +77,33 @@
             <div class="viz-body" id="grafico-categorias"></div>
           </div>
 
+        </section>
+
+        <section class="card bloco viz-root">
+          <div class="viz-head">
+            <div>
+              <h2>Todas as contas</h2>
+              <p>Tudo que existe no Supabase, com a origem de cada conta</p>
+            </div>
+            <div class="toolbar">
+              <input type="search" class="search-input" id="busca-contas" placeholder="Buscar e-mail ou nome...">
+              <select class="field-select" id="filtro-origem" style="width:auto">
+                <option value="">Todas as origens</option>
+                <option value="b2b">B2B</option>
+                <option value="anfitriao">Anfitriões</option>
+                <option value="sem_origem">Sem origem</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr>
+                <th>Conta</th><th>E-mail</th><th>Origem</th><th>Entrou por</th>
+                <th>Confirmado</th><th>Último acesso</th><th>Criada em</th>
+              </tr></thead>
+              <tbody id="tbody-contas"></tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>

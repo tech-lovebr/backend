@@ -97,7 +97,14 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   flex-direction: column;
   gap: .2rem;
   padding: .75rem;
+
+  /* A rolagem continua existindo para telas baixas, mas sem a barra à vista:
+     ela cortava a borda do sidebar e não tem o que indicar num menu curto. */
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* Edge antigo */
 }
+
+.admin-nav::-webkit-scrollbar { width: 0; height: 0; }
 
 .admin-nav-label {
   font-size: .6875rem;

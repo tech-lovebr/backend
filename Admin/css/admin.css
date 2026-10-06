@@ -1757,3 +1757,27 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   margin: .25rem 0 0;
   line-height: 1.5;
 }
+
+/* ----------------------------------------------- Paginação de tabela */
+
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: .875rem 1.5rem 0;
+  border-top: 1px solid var(--border);
+  margin-top: .25rem;
+}
+
+.paginacao-contagem { font-size: .8125rem; color: var(--text-muted); }
+.paginacao-botoes { display: flex; align-items: center; gap: .625rem; }
+
+.paginacao-atual {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 4.5rem;
+  text-align: center;
+}

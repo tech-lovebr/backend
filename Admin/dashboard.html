@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=49">
+  <link rel="stylesheet" href="css/admin.css?v=50">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -43,39 +43,18 @@
 
         <section class="kpi-grid" id="kpi-grid"></section>
 
-        <section class="card bloco viz-root">
-          <div class="viz-head">
-            <div>
-              <h2>Evolução financeira</h2>
-              <p>Volume transacionado e faturamento dos fornecedores, por mês</p>
-            </div>
-            <div class="viz-legend" id="legenda-evolucao"></div>
-          </div>
-          <div class="viz-body" id="grafico-evolucao"></div>
-          <details class="viz-tabela">
-            <summary>Ver os números</summary>
-            <div class="table-wrap" id="tabela-evolucao"></div>
-          </details>
-        </section>
-
         <section class="bloco" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem">
 
           <div class="card viz-root">
             <div class="viz-head">
-              <div>
-                <h2>Top fornecedores</h2>
-                <p>Por contratos ativos</p>
-              </div>
+              <div><h2>Ranking B2B</h2></div>
             </div>
             <div class="viz-body" id="top-fornecedores"></div>
           </div>
 
           <div class="card viz-root">
             <div class="viz-head">
-              <div>
-                <h2>Eventos por categoria</h2>
-                <p>Participação de cada categoria no total</p>
-              </div>
+              <div><h2>Eventos por categoria</h2></div>
             </div>
             <div class="viz-body" id="grafico-categorias"></div>
           </div>
@@ -84,10 +63,7 @@
 
         <section class="card bloco viz-root">
           <div class="viz-head">
-            <div>
-              <h2>Todas as contas</h2>
-              <p>Tudo que existe no Supabase, com a origem de cada conta</p>
-            </div>
+            <div><h2>Últimos cadastros</h2></div>
             <div class="toolbar">
               <input type="search" class="search-input" id="busca-contas" placeholder="Buscar e-mail ou nome...">
               <select class="field-select" id="filtro-origem" style="width:auto">
@@ -107,6 +83,7 @@
               <tbody id="tbody-contas"></tbody>
             </table>
           </div>
+          <nav class="paginacao" id="paginacao-contas" hidden></nav>
         </section>
       </main>
     </div>

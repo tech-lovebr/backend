@@ -17,14 +17,14 @@ const NAV_SECTIONS = [
         // Grupos não navegam: clicar apenas abre e fecha os filhos.
         grupo: 'fornecedores', text: 'B2B', icon: 'store',
         children: [
-          { page: 'fornecedores', href: 'fornecedores.html', text: 'Contas' },
+          { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
           { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Dashboard' }
         ]
       },
       {
         grupo: 'clientes', text: 'Anfitriões', icon: 'users',
         children: [
-          { page: 'clientes', href: 'clientes.html', text: 'Contas' },
+          { page: 'clientes', href: 'clientes.html', text: 'Cadastros' },
           { page: 'clientes-dashboard', href: 'clientes-dashboard.html', text: 'Dashboard' }
         ]
       }

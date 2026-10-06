@@ -5309,7 +5309,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-start gap-3">
           <img src="${item.image}" alt="${item.giftTitle}" class="w-16 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0">
           <div class="flex-1 min-w-0">
-            <span class="gift-received-tag text-[10px] font-bold text-[#183b54] bg-[linear-gradient(0deg,#eaf5f7,#eae9f7)] border border-[#d4e5ff] px-2 py-0.5 rounded-[var(--radius-control,12px)] uppercase tracking-wider inline-block">Presente Recebido ● ${item.method}</span>
+            <span class="gift-received-tag text-[10px] font-bold text-[#183b54] bg-[linear-gradient(90deg,#eaf5f7,#eae9f7)] border border-[#d4e5ff] px-2 py-0.5 rounded-[var(--radius-control,12px)] uppercase tracking-wider inline-block">Presente Recebido ● ${item.method}</span>
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate mt-1">${item.giftTitle}</h4>
             <div class="text-sm font-black text-emerald-600 mt-0.5">R$ ${item.amount.toFixed(2).replace('.', ',')}</div>
             <p class="text-[11px] font-bold text-slate-700 mt-1 flex items-center gap-1">
@@ -9908,7 +9908,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');
       item.className = `p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
-        isActive ? 'bg-[linear-gradient(0deg,#eaf5f7,#eae9f7)] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
+        isActive ? 'bg-[linear-gradient(90deg,#eaf5f7,#eae9f7)] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
       }`;
 
       item.innerHTML = `

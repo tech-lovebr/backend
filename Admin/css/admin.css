@@ -160,7 +160,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 }
 
 .admin-nav-item.is-active .admin-nav-icon-box {
-  background: linear-gradient(0deg, #eaf5f7, #eae9f7);
+  background: linear-gradient(90deg, #eaf5f7, #eae9f7);
   border: 1px solid transparent;
   box-shadow: none;
 }

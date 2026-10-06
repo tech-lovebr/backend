@@ -8,7 +8,7 @@
 // (api/enviar-email.js), em vez do mailer padrão do Supabase.
 //
 // Variáveis de ambiente necessárias (já configuradas no projeto):
-//   NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+//   SUPABASE_URL, SUPABASE_SECRET_KEY
 //   AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, EMAIL_FROM
 
 const { createClient } = require("@supabase/supabase-js");
@@ -16,7 +16,7 @@ const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 const sesClient = new SESClient({

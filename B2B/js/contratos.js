@@ -91,6 +91,14 @@ function formatLinkDate(iso) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
+// `vencimento` é uma coluna `date` (sem horário) — formatar com `new Date()`
+// direto interpretaria como UTC e, em fusos atrás de UTC, mostraria um dia
+// a menos. Monta a data local a partir dos componentes para evitar isso.
+function formatDateOnly(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
 /* -------------------- Aba Financeiro -------------------- */
 
 function renderFinanceStats() {
@@ -433,6 +441,7 @@ function openChargeDrawer(linkId) {
 
   document.getElementById('charge-drawer-valor').textContent = formatCurrency(link.amount);
   document.getElementById('charge-drawer-criado').textContent = formatLinkDate(link.created_at);
+  document.getElementById('charge-drawer-vencimento').textContent = link.vencimento ? formatDateOnly(link.vencimento) : '—';
   document.getElementById('charge-drawer-parcelas').textContent = `${link.installments}x${link.installments === 1 ? ' (à vista)' : ''}`;
 
   const methods = link.payment_methods || {};
@@ -467,7 +476,7 @@ function fallbackCopyText(text) {
 
 /* -------------------- Modal: gerar link de pagamento -------------------- */
 
-const PAYMENT_LINK_SUBMIT_BTN_HTML = '<button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar link de pagamento</button>';
+const PAYMENT_LINK_SUBMIT_BTN_HTML = '<button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar Link de Cobrança</button>';
 
 function initPaymentLinkModal() {
   const modal = document.getElementById('payment-link-modal');
@@ -524,6 +533,7 @@ function initPaymentLinkModal() {
       cartao: form.querySelector('[data-payment-method="cartao"]').checked
     };
     const installments = Number(installmentsSelect.value) || 1;
+    const vencimento = document.getElementById('payment-link-vencimento').value || null;
 
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return;
@@ -536,7 +546,8 @@ function initPaymentLinkModal() {
         installments,
         pass_fee_to_client: passFeeToClient,
         payment_methods: paymentMethods,
-        status: 'pendente'
+        status: 'pendente',
+        vencimento
       })
       .select('id')
       .single();

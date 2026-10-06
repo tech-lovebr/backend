@@ -8503,7 +8503,17 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.btn-trigger-login').forEach(btn => {
     btn.addEventListener('click', () => {
       switchView('login');
+      history.pushState({ loveView: 'login' }, '', '#login');
     });
+  });
+
+  // Botão "voltar" do navegador: se a página de login estiver aberta, volta
+  // pro site público em vez de sair da plataforma.
+  window.addEventListener('popstate', () => {
+    const viewLogin = document.getElementById('view-login');
+    if (viewLogin && !viewLogin.classList.contains('hidden')) {
+      switchView('public');
+    }
   });
 
   // "Criar grátis" vai para a página /cadastro (onboarding em etapas), não mais um popup

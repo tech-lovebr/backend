@@ -173,44 +173,6 @@ body[data-theme="dark"] .chat-form-pick-item:hover { background: #333333 !import
 ::-webkit-scrollbar-thumb:hover { background: #A1A1AA; }
 
 /* ==========================================================================
-   LOGIN
-   ========================================================================== */
-
-.login-shell {
-  min-height: 100vh;
-  display: flex;
-}
-
-.login-visual {
-  background: var(--primary-gradient);
-  position: relative;
-  overflow: hidden;
-}
-
-.login-visual::before,
-.login-visual::after {
-  content: '';
-  position: absolute;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.login-visual::before {
-  width: 420px;
-  height: 420px;
-  top: -120px;
-  right: -140px;
-}
-
-.login-visual::after {
-  width: 300px;
-  height: 300px;
-  bottom: -100px;
-  left: -80px;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* ==========================================================================
    LANDING (institucional do Portal do Fornecedor, antes do login)
    ========================================================================== */
 

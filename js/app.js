@@ -8541,6 +8541,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 10.1 Login com Email e Senha (Conta Existente)
   const formLoginEmail = document.getElementById('form-login-email');
+  let loginFailedAttempts = 0;
   if (formLoginEmail) {
     formLoginEmail.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -8553,12 +8554,69 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.disabled = false;
 
       if (error) {
+        loginFailedAttempts++;
+        if (loginFailedAttempts >= 3) {
+          showToast('Muitas tentativas. Vamos te ajudar a recuperar a senha.', '⚠️');
+          showLoginForgotPanel(email);
+          loginFailedAttempts = 0;
+          return;
+        }
         showToast('E-mail ou senha incorretos.', '⚠️');
         return;
       }
 
+      loginFailedAttempts = 0;
       setSidebarLocked(false);
       window.location.reload();
+    });
+  }
+
+  // 10.1b Esqueci a senha — painel inline (mesmo espaço do login)
+  function showLoginForgotPanel(prefillEmail) {
+    const panelSignin = document.getElementById('login-panel-signin');
+    const panelForgot = document.getElementById('login-panel-forgot');
+    if (!panelSignin || !panelForgot) return;
+    panelSignin.classList.add('hidden');
+    panelForgot.classList.remove('hidden');
+    const forgotEmailInput = document.getElementById('login-forgot-email-input');
+    if (forgotEmailInput && prefillEmail) forgotEmailInput.value = prefillEmail;
+  }
+
+  function showLoginSigninPanel() {
+    const panelSignin = document.getElementById('login-panel-signin');
+    const panelForgot = document.getElementById('login-panel-forgot');
+    if (!panelSignin || !panelForgot) return;
+    panelForgot.classList.add('hidden');
+    panelSignin.classList.remove('hidden');
+  }
+
+  const btnLoginForgotPassword = document.getElementById('btn-login-forgot-password');
+  if (btnLoginForgotPassword) {
+    btnLoginForgotPassword.addEventListener('click', () => {
+      const currentEmail = document.getElementById('login-email-input').value.trim();
+      showLoginForgotPanel(currentEmail);
+    });
+  }
+
+  const btnForgotToLogin = document.getElementById('btn-forgot-to-login');
+  if (btnForgotToLogin) {
+    btnForgotToLogin.addEventListener('click', showLoginSigninPanel);
+  }
+
+  const formLoginForgot = document.getElementById('form-login-forgot');
+  if (formLoginForgot) {
+    formLoginForgot.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-forgot-email-input').value.trim();
+      const submitBtn = document.getElementById('btn-do-forgot-password');
+
+      submitBtn.disabled = true;
+      await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/resetar-senha.html`,
+      });
+      submitBtn.disabled = false;
+
+      showToast('Se esse e-mail estiver cadastrado, você vai receber um link de recuperação.', '✉️');
     });
   }
 

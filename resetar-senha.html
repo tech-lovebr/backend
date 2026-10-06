@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redefinir senha — Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-init.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+  </style>
+</head>
+<body class="bg-white">
+
+  <div class="min-h-screen w-full flex items-center justify-center p-6">
+    <div class="w-full max-w-md">
+      <img src="assets/logo.png?v=2" alt="Love" class="h-9 w-auto mb-6 object-contain">
+
+      <div id="reset-panel-form">
+        <h3 class="text-2xl font-extrabold text-slate-900">Crie uma nova senha</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">Escolha uma senha nova para acessar sua conta.</p>
+
+        <form id="reset-form" class="space-y-3.5 text-left">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Nova senha</label>
+            <input type="password" id="reset-password" required minlength="6" autocomplete="new-password" placeholder="Nova senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Confirme a nova senha</label>
+            <input type="password" id="reset-password-confirm" required minlength="6" autocomplete="new-password" placeholder="Confirme a nova senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+          </div>
+          <p id="reset-error" class="text-xs text-red-600 hidden"></p>
+          <button type="submit" id="reset-btn" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
+            Salvar nova senha
+          </button>
+        </form>
+      </div>
+
+      <div id="reset-panel-invalid" class="hidden">
+        <h3 class="text-2xl font-extrabold text-slate-900">Link inválido ou expirado</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2">Esse link de redefinição não é mais válido. <a href="index.html#login" class="font-semibold text-[#537bae] hover:underline">Solicite um novo</a> na tela de login.</p>
+      </div>
+
+      <div id="reset-panel-success" class="hidden">
+        <h3 class="text-2xl font-extrabold text-slate-900">Senha atualizada!</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">Sua senha foi redefinida com sucesso.</p>
+        <a href="index.html" class="inline-block w-full text-center py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer">
+          Acessar minha conta
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (async function () {
+      // O link do e-mail traz o token no hash/query da URL; o cliente Supabase
+      // detecta sozinho (detectSessionInUrl, ligado por padrão) e abre uma
+      // sessão de recuperação — só então dá pra trocar a senha.
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        document.getElementById('reset-panel-form').classList.add('hidden');
+        document.getElementById('reset-panel-invalid').classList.remove('hidden');
+      }
+    })();
+
+    document.getElementById('reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('reset-password').value;
+      const confirm = document.getElementById('reset-password-confirm').value;
+      const errorEl = document.getElementById('reset-error');
+      const btn = document.getElementById('reset-btn');
+
+      errorEl.classList.add('hidden');
+
+      if (password !== confirm) {
+        errorEl.textContent = 'As senhas não coincidem.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      const { error } = await supabaseClient.auth.updateUser({ password });
+      btn.disabled = false;
+
+      if (error) {
+        errorEl.textContent = 'Não foi possível salvar a nova senha. Tente novamente.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('reset-panel-form').classList.add('hidden');
+      document.getElementById('reset-panel-success').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

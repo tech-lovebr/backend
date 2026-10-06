@@ -30,6 +30,32 @@
     .step-label.is-done, .step-label.is-active { color: #18181B; }
     .step-line { height: 1.5px; background: #E4E4E7; flex: 1; margin: 0 0.5rem; }
     .step-line.is-done { background: #A1A1AA; }
+
+    .password-strength-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 20;
+      background: #fff;
+      border: 1px solid #E4E4E7;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px -8px rgba(0,0,0,0.15);
+      padding: 0.875rem 1rem;
+    }
+    .password-strength-panel.is-visible { display: block; }
+    .password-strength-bar-track { height: 4px; border-radius: 999px; background: #E4E4E7; overflow: hidden; margin-bottom: 0.5rem; }
+    .password-strength-bar-fill { height: 100%; width: 0%; border-radius: 999px; background: #D4D4D8; transition: width .2s ease, background-color .2s ease; }
+    .password-strength-bar-fill.is-weak { background: #DC2626; }
+    .password-strength-bar-fill.is-medium { background: #D97706; }
+    .password-strength-bar-fill.is-strong { background: #16A34A; }
+    .password-strength-label { font-size: 0.75rem; font-weight: 500; color: #71717A; margin-bottom: 0.625rem; }
+    .password-strength-checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.375rem; }
+    .password-strength-checklist li { font-size: 0.75rem; color: #A1A1AA; display: flex; align-items: center; gap: 0.5rem; transition: color .15s ease; }
+    .password-strength-checklist li.is-met { color: #18181B; }
+    .password-strength-check { font-size: 0.8rem; line-height: 1; color: #D4D4D8; transition: color .15s ease; }
+    .password-strength-checklist li.is-met .password-strength-check { color: #16A34A; }
   </style>
 </head>
 <body class="bg-white">
@@ -141,14 +167,27 @@
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Finalize seu cadastro.</h1>
           <p class="text-zinc-500 text-sm mb-7">Só falta criar seu acesso à plataforma.</p>
 
-          <form id="form-onboard-register" class="space-y-3.5 mt-5">
+          <form id="form-onboard-register" class="space-y-3.5 mt-5" autocomplete="off">
             <div>
               <label class="block text-xs font-normal text-zinc-700 mb-1">E-mail</label>
-              <input type="email" id="onboard-email-input" required placeholder="seu.email@exemplo.com" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+              <input type="email" id="onboard-email-input" required autocomplete="off" placeholder="seu.email@exemplo.com" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
-            <div>
+            <div class="relative">
               <label class="block text-xs font-normal text-zinc-700 mb-1">Senha</label>
-              <input type="password" id="onboard-password-input" required minlength="6" placeholder="Crie uma senha" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+              <input type="password" id="onboard-password-input" required minlength="6" autocomplete="new-password" placeholder="Crie uma senha" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+
+              <div id="password-strength-panel" class="password-strength-panel">
+                <div class="password-strength-bar-track">
+                  <div id="password-strength-bar-fill" class="password-strength-bar-fill"></div>
+                </div>
+                <p id="password-strength-label" class="password-strength-label"></p>
+                <ul class="password-strength-checklist">
+                  <li data-rule="length"><span class="password-strength-check">○</span> Pelo menos 8 caracteres</li>
+                  <li data-rule="upper"><span class="password-strength-check">○</span> Uma letra maiúscula</li>
+                  <li data-rule="lower"><span class="password-strength-check">○</span> Uma letra minúscula</li>
+                  <li data-rule="number"><span class="password-strength-check">○</span> Um número</li>
+                </ul>
+              </div>
             </div>
             <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2">Criar conta</button>
           </form>
@@ -270,6 +309,57 @@
       eventDateInput.disabled = e.target.checked;
       if (e.target.checked) eventDateInput.value = '';
     });
+
+    // Força da senha: calculada 100% no front-end (sem serviço externo nem
+    // chamada ao Supabase) — só decide o visual do medidor/checklist abaixo
+    // do campo. O Supabase continua sendo quem valida de verdade no signUp
+    // (tamanho mínimo configurado no painel de Auth do projeto).
+    const passwordInput = document.getElementById('onboard-password-input');
+    const passwordPanel = document.getElementById('password-strength-panel');
+    const passwordBarFill = document.getElementById('password-strength-bar-fill');
+    const passwordLabel = document.getElementById('password-strength-label');
+
+    function evaluatePasswordRules(value) {
+      return {
+        length: value.length >= 8,
+        upper: /[A-Z]/.test(value),
+        lower: /[a-z]/.test(value),
+        number: /[0-9]/.test(value)
+      };
+    }
+
+    function updatePasswordStrength() {
+      const value = passwordInput.value;
+      const rules = evaluatePasswordRules(value);
+      const metCount = Object.values(rules).filter(Boolean).length;
+
+      passwordPanel.querySelectorAll('[data-rule]').forEach(li => {
+        li.classList.toggle('is-met', rules[li.dataset.rule]);
+      });
+
+      passwordBarFill.classList.remove('is-weak', 'is-medium', 'is-strong');
+      if (!value) {
+        passwordBarFill.style.width = '0%';
+        passwordLabel.textContent = '';
+      } else if (metCount <= 1) {
+        passwordBarFill.style.width = '25%';
+        passwordBarFill.classList.add('is-weak');
+        passwordLabel.textContent = 'Senha fraca';
+      } else if (metCount <= 3) {
+        passwordBarFill.style.width = '65%';
+        passwordBarFill.classList.add('is-medium');
+        passwordLabel.textContent = 'Senha média';
+      } else {
+        passwordBarFill.style.width = '100%';
+        passwordBarFill.classList.add('is-strong');
+        passwordLabel.textContent = 'Senha forte';
+      }
+    }
+
+    passwordInput.addEventListener('input', updatePasswordStrength);
+    passwordInput.addEventListener('focus', () => passwordPanel.classList.add('is-visible'));
+    passwordInput.addEventListener('blur', () => passwordPanel.classList.remove('is-visible'));
+    updatePasswordStrength();
 
     // Cadastro social ainda não está configurado no Supabase Auth (precisa
     // habilitar os provedores no painel) — por ora orienta a usar e-mail/senha,

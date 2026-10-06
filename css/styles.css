@@ -344,7 +344,7 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 .floorplan-guest-card-table { flex-shrink: 0; font-size: 0.625rem; font-weight: 700; color: #A1A1AA; }
 
 /* Convidado já sentado em alguma mesa — mesmo tom da aba "Lista de convidados" */
-.floorplan-guest-card.is-seated { background: #E0F4F8; cursor: default; }
+.floorplan-guest-card.is-seated { background: #EBF4FF; cursor: default; }
 
 /* Convidado que recusou o convite — mesma cor dos assentos vazios, fixa
    independente de estar ou não alocado numa mesa (só muda se voltar a
@@ -392,7 +392,7 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 }
 .floorplan-remove-btn { background: #FAFAFA; color: #71717A; }
 .floorplan-remove-btn:hover { background: #F4F4F5; }
-.floorplan-clear-btn { background: #E0F4F8; color: #000000; }
+.floorplan-clear-btn { background: #EBF4FF; color: #000000; }
 .floorplan-clear-btn:hover { background: #DCEAFB; }
 
 .floorplan-canvas {
@@ -506,7 +506,7 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
   white-space: nowrap;
 }
 .floorplan-seat-dot.is-assigned { border-color: #E4E4E7; background: #FFFFFF; color: #3F3F46; }
-.floorplan-seat-dot.is-confirmed { border-color: #EAEAEA; background: #E0F4F8; color: #3F3F46; }
+.floorplan-seat-dot.is-confirmed { border-color: #EAEAEA; background: #EBF4FF; color: #3F3F46; }
 .floorplan-seat-dot.is-declined { background: #FEF2F2; border-color: #FECACA; color: #F87171; }
 .floorplan-seat-dot[draggable="true"] { cursor: grab; }
 .floorplan-seat-dot[draggable="true"]:active { cursor: grabbing; }
@@ -1116,12 +1116,12 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
   stroke-width: 2.15px !important;
 }
 
-/* Bolinhas de Notificações, Chat/Mensagens e Recados na Cor #e0f4f8 com Texto #333333 */
+/* Bolinhas de Notificações, Chat/Mensagens e Recados na Cor #ebf4ff com Texto #333333 */
 .badge-header-chat,
 .badge-header-notifications,
 .badge-recados-count {
-  background-color: #e0f4f8 !important;
-  background: #e0f4f8 !important;
+  background-color: #ebf4ff !important;
+  background: #ebf4ff !important;
   color: #333333 !important;
   font-size: 10px !important;
   font-weight: 700 !important;
@@ -2594,10 +2594,10 @@ body:not([data-theme="dark"]).editor-split-mode #editor-form-column {
   transition: background-color .15s ease, color .15s ease;
 }
 .builder-panel-tab:hover { color: #3F3F46; }
-.builder-panel-tab.active { color: #18181B; background: #E0F4F8; }
+.builder-panel-tab.active { color: #18181B; background: #EBF4FF; }
 
 /* Aba "Lista de convidados" em Mapear Mesas — fundo azul clarinho */
-body:not([data-theme="dark"]) #floorplan-guests-panel .builder-panel-tab.active { background: #E0F4F8; }
+body:not([data-theme="dark"]) #floorplan-guests-panel .builder-panel-tab.active { background: #EBF4FF; }
 body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { background: #181D24 !important; color: #FFFFFF !important; }
 
 .builder-panel-tab-body { padding: 0.9rem 0.25rem 0.9rem 0.75rem; overflow-y: auto; flex: 1; min-height: 0; }
@@ -2689,7 +2689,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 .classic-preview-host-info { min-width: 0; flex: 1; }
 .classic-preview-host-info p { font-size: 0.75rem; font-weight: 700; color: #18181B; margin: 0; white-space: normal; }
 .classic-preview-host-info span { display: inline-block; font-size: 0.625rem; font-weight: 600; color: #52525B; background: #F0F0F1; padding: 0.125rem 0.5rem; border-radius: 6px; margin-top: 0.2rem; }
-.classic-preview-host-info span.is-creator { color: #537bae; background: #E0F4F8; }
+.classic-preview-host-info span.is-creator { color: #537bae; background: #EBF4FF; }
 
 .builder-fixed-header {
   --header-bg: #FAFAFA;
@@ -3130,7 +3130,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 }
 .builder-block-toolbar button {
   width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
-  color: #E0F4F8; background: transparent; border: none; border-radius: 4px; cursor: pointer;
+  color: #EBF4FF; background: transparent; border: none; border-radius: 4px; cursor: pointer;
 }
 .builder-block-toolbar button svg { width: 12px; height: 12px; }
 .builder-block-toolbar button:hover { background: rgba(255,255,255,0.18); color: #fff; }
@@ -3151,7 +3151,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 .be-text-format-toolbar[hidden] { display: none; }
 .be-text-format-toolbar button {
   width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  color: #E0F4F8; background: transparent; border: none; border-radius: 5px; cursor: pointer;
+  color: #EBF4FF; background: transparent; border: none; border-radius: 5px; cursor: pointer;
 }
 .be-text-format-toolbar button svg { width: 14px; height: 14px; }
 .be-text-format-toolbar button:hover { background: rgba(255,255,255,0.18); color: #fff; }
@@ -3220,7 +3220,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 #site-builder-root .builder-element:hover [contenteditable="true"] { cursor: text; }
 #site-builder-root .builder-element:active { cursor: grabbing; }
 .builder-element.is-selected { border-color: #D4D4D8; }
-.builder-element.sortable-ghost { opacity: 0.35; background: #E0F4F8; }
+.builder-element.sortable-ghost { opacity: 0.35; background: #EBF4FF; }
 .builder-element.sortable-drag { opacity: 0.9; }
 
 
@@ -3385,7 +3385,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   transition: background-color .15s ease, color .15s ease;
 }
 .inspector-tab:hover { color: #3F3F46; }
-.inspector-tab.active { color: #18181B; background: #e0f4f8; }
+.inspector-tab.active { color: #18181B; background: #ebf4ff; }
 
 .inspector-body { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; scrollbar-gutter: stable; flex: 1; min-height: 0; }
 .inspector-empty { padding: 2rem 1.25rem; text-align: center; color: #A1A1AA; font-size: 0.8125rem; }
@@ -3548,7 +3548,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
 }
 .menu-order-row .el-drag-handle svg { width: 15px; height: 15px; }
 .menu-order-row .el-drag-handle:active { cursor: grabbing; }
-.menu-order-row.sortable-ghost { opacity: 0.4; background: #E0F4F8; }
+.menu-order-row.sortable-ghost { opacity: 0.4; background: #EBF4FF; }
 .menu-order-row-delete {
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   width: 22px; height: 22px;
@@ -3588,7 +3588,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   height: 16px;
   margin-top: -6px;
   border-radius: 50%;
-  background: #e0f4f8;
+  background: #ebf4ff;
   border: 1px solid #C7D9F0;
   box-shadow: 0 1px 2px rgba(16,24,40,0.15);
   cursor: pointer;
@@ -3602,7 +3602,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #e0f4f8;
+  background: #ebf4ff;
   border: 1px solid #C7D9F0;
   box-shadow: 0 1px 2px rgba(16,24,40,0.15);
   cursor: pointer;
@@ -3753,7 +3753,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   border: 1px dashed var(--border-light); border-radius: 8px; padding: 0.5rem; color: var(--primary-blue);
   font-size: 0.75rem; font-weight: 700; background: #F8FAFC; cursor: pointer;
 }
-.inspector-add-btn:hover { background: #E0F4F8; }
+.inspector-add-btn:hover { background: #EBF4FF; }
 .inspector-add-btn svg { width: 13px; height: 13px; }
 .inspector-toggle-row { display: flex; align-items: center; justify-content: space-between; }
 .inspector-toggle-row .inspector-field-label { margin: 0; }
@@ -3786,16 +3786,16 @@ body[data-theme="dark"] .builder-panel-tab.active { color: #FFFFFF !important; b
 body[data-theme="dark"] .builder-el-item { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .builder-el-item span { color: #D4D4D8 !important; }
 body[data-theme="dark"] .builder-el-item svg { color: #A1A1AA !important; }
-body[data-theme="dark"] .builder-el-item:hover { border-color: #e0f4f8 !important; background: #333333 !important; }
+body[data-theme="dark"] .builder-el-item:hover { border-color: #ebf4ff !important; background: #333333 !important; }
 body[data-theme="dark"] .builder-canvas-viewport { background: #1c1c1c !important; }
 body[data-theme="dark"] .builder-canvas { background: #252525 !important; box-shadow: 0 0 0 1px #404040 !important; }
 body[data-theme="dark"] .builder-fixed-header { border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .inspector-header { background: #1c1c1c !important; border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .inspector-tabs { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .inspector-tab:hover { color: #D4D4D8 !important; }
-body[data-theme="dark"] .inspector-tab.active { color: #18181B !important; background: #e0f4f8 !important; }
+body[data-theme="dark"] .inspector-tab.active { color: #18181B !important; background: #ebf4ff !important; }
 body[data-theme="dark"] .builder-breadcrumb-back { color: #D4D4D8 !important; }
-body[data-theme="dark"] .builder-breadcrumb-back:hover { color: #e0f4f8 !important; }
+body[data-theme="dark"] .builder-breadcrumb-back:hover { color: #ebf4ff !important; }
 body[data-theme="dark"] .inspector-input, body[data-theme="dark"] .inspector-select, body[data-theme="dark"] .inspector-textarea { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] .url-slug-field { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .url-slug-input { color: #FFFFFF !important; }
@@ -3806,10 +3806,10 @@ body[data-theme="dark"] .inspector-list-item { background: #252525 !important; b
 body[data-theme="dark"] .menu-order-row { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .menu-order-row .el-drag-handle { color: #71717A !important; }
 body[data-theme="dark"] .image-upload-zone { background: #1c1c1c !important; border-color: #404040 !important; }
-body[data-theme="dark"] .image-upload-zone:hover, body[data-theme="dark"] .image-upload-zone.is-dragover { border-color: #e0f4f8 !important; background: #252525 !important; }
-body[data-theme="dark"] .image-upload-zone-plus { background: #333333 !important; border-color: #404040 !important; color: #e0f4f8 !important; }
+body[data-theme="dark"] .image-upload-zone:hover, body[data-theme="dark"] .image-upload-zone.is-dragover { border-color: #ebf4ff !important; background: #252525 !important; }
+body[data-theme="dark"] .image-upload-zone-plus { background: #333333 !important; border-color: #404040 !important; color: #ebf4ff !important; }
 body[data-theme="dark"] .header-logo-picker { border-color: #404040 !important; background: #1c1c1c !important; }
-body[data-theme="dark"] .header-logo-picker:hover { border-color: #e0f4f8 !important; background: #252525 !important; }
+body[data-theme="dark"] .header-logo-picker:hover { border-color: #ebf4ff !important; background: #252525 !important; }
 body[data-theme="dark"] .logo-adjust-modal-frame { border-color: #404040 !important; }
 body[data-theme="dark"] .logo-adjust-modal-zoom-label { color: #D4D4D8 !important; }
 body[data-theme="dark"] .logo-adjust-modal-close { background: #333333 !important; color: #D4D4D8 !important; }
@@ -3817,7 +3817,7 @@ body[data-theme="dark"] .inspector-add-btn { background: #252525 !important; bor
 body[data-theme="dark"] .inspector-section-title, body[data-theme="dark"] .inspector-field-label { color: #D4D4D8 !important; }
 body[data-theme="dark"] .inspector-accordion-chevron { color: #71717A !important; }
 body[data-theme="dark"] .margin-sync-toggle:hover { background: #333333 !important; color: #D4D4D8 !important; }
-body[data-theme="dark"] .margin-sync-toggle.active { background: #e0f4f8 !important; color: #122c3f !important; }
+body[data-theme="dark"] .margin-sync-toggle.active { background: #ebf4ff !important; color: #122c3f !important; }
 body[data-theme="dark"] .be-heading, body[data-theme="dark"] .be-text { color: #FFFFFF !important; }
 body[data-theme="dark"] .builder-narrow-notice { background: #3f2d0a !important; border-color: #6b4e0f !important; color: #FDE68A !important; }
 
@@ -3848,12 +3848,12 @@ body[data-theme="dark"] .builder-narrow-notice { background: #3f2d0a !important;
 }
 .settings-switch input:checked ~ .settings-switch-track { background: var(--primary-blue); }
 .settings-switch input:checked ~ .settings-switch-track::before { transform: translateX(16px); }
-#builder-elements-panel .settings-switch input:checked ~ .settings-switch-track { background: #e0f4f8; }
+#builder-elements-panel .settings-switch input:checked ~ .settings-switch-track { background: #ebf4ff; }
 body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important; }
 
 /* Toggle "Exibir nomes" no popup de mesa: branco quando off, azul clarinho quando on */
 #floorplan-show-names-switch .settings-switch-track { background: #FFFFFF; border: 1px solid #E4E4E7; }
-#floorplan-show-names-switch input:checked ~ .settings-switch-track { background: #E0F4F8; border-color: #E0F4F8; }
+#floorplan-show-names-switch input:checked ~ .settings-switch-track { background: #EBF4FF; border-color: #EBF4FF; }
 
 /* -------------------- Ajustes Love: convite de página única (sem header/menu fixo) -------------------- */
 .builder-wrap {
@@ -4890,10 +4890,10 @@ body.wallet-mode .budget-table-full-bleed {
   background-color: #222222 !important;
 }
 
-/* Balão de mensagem enviado pelo usuário da direita (Fundo #e0f4f8 + Texto na cor primária #333333) */
+/* Balão de mensagem enviado pelo usuário da direita (Fundo #ebf4ff + Texto na cor primária #333333) */
 .chat-bubble-user-glass {
-  background: #e0f4f8 !important;
-  background-color: #e0f4f8 !important;
+  background: #ebf4ff !important;
+  background-color: #ebf4ff !important;
   border: 1px solid #d4e5ff !important;
   box-shadow: 0 1px 3px rgba(24, 59, 84, 0.08) !important;
   color: #333333 !important;
@@ -4957,8 +4957,8 @@ body.wallet-mode .budget-table-full-bleed {
    SEÇÃO MAIS RECURSOS: BOTÕES NA MESMA COR DO SIDEBAR (#F3F3F3) SEM BORDA
    ========================================================================== */
 .mais-recursos-btn {
-  background-color: #E0F4F8 !important;
-  background: #E0F4F8 !important;
+  background-color: #EBF4FF !important;
+  background: #EBF4FF !important;
   border: none !important;
   border-color: transparent !important;
   color: #333333 !important;
@@ -5110,7 +5110,7 @@ body:not([data-theme="dark"]) #sidebar-sub-drawer {
   }
 
   body:not([data-theme="dark"]) .rail-icon-btn.active {
-    background-color: #E0F4F8 !important;
+    background-color: #EBF4FF !important;
     border: 1px solid transparent !important;
     box-shadow: none !important;
   }
@@ -5122,7 +5122,7 @@ body:not([data-theme="dark"]) #sidebar-sub-drawer {
   }
 
   body:not([data-theme="dark"]) .sub-drawer-item.active {
-    background-color: #E0F4F8 !important;
+    background-color: #EBF4FF !important;
     color: #333333 !important;
     border: 1px solid transparent !important;
     box-shadow: none !important;
@@ -5238,7 +5238,7 @@ body[data-theme="dark"] #sidebar-sub-drawer {
   color: #ffffff !important;
 }
 
-/* Títulos dos Sidebars e Sub-drawers no Dark Mode (#e0f4f8) */
+/* Títulos dos Sidebars e Sub-drawers no Dark Mode (#ebf4ff) */
 body[data-theme="dark"] #drawer-section-title,
 body[data-theme="dark"] .sidebar-sub-drawer h3,
 body[data-theme="dark"] #sidebar-sub-drawer h3,
@@ -5249,7 +5249,7 @@ body[data-theme="dark"] .table-drawer h2,
 body[data-theme="dark"] .guest-details-drawer h2,
 body[data-theme="dark"] .contracted-vendor-drawer h2,
 body[data-theme="dark"] .guias-sidebar h1 {
-  color: #e0f4f8 !important;
+  color: #ebf4ff !important;
 }
 
 /* 2. Ícones e Textos do Sidebar no Dark Mode (#ffffff) */
@@ -5277,7 +5277,7 @@ body[data-theme="dark"] .sidebar-icon-rail button:hover {
 
 body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn.active,
 body[data-theme="dark"] .rail-icon-btn.active {
-  background-color: #E0F4F8 !important;
+  background-color: #EBF4FF !important;
   border: 1px solid #595959 !important;
   color: #181D24 !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
@@ -5398,7 +5398,7 @@ body[data-theme="dark"] #events-switcher-items span {
 }
 
 body[data-theme="dark"] #btn-dropdown-create-new-event {
-  color: #e0f4f8 !important;
+  color: #ebf4ff !important;
 }
 
 body[data-theme="dark"] #btn-dropdown-create-new-event:hover {
@@ -5407,7 +5407,7 @@ body[data-theme="dark"] #btn-dropdown-create-new-event:hover {
 
 body[data-theme="dark"] #btn-dropdown-create-new-event span:first-child {
   background-color: rgba(235, 244, 255, 0.15) !important;
-  color: #e0f4f8 !important;
+  color: #ebf4ff !important;
 }
 
 #header-logo-light {
@@ -5655,7 +5655,7 @@ body[data-theme="dark"] tbody tr:hover {
   background-color: #404040 !important;
 }
 
-/* Dropdown Perfil no Dark Mode (#333333 com Ícones #e0f4f8) */
+/* Dropdown Perfil no Dark Mode (#333333 com Ícones #ebf4ff) */
 body[data-theme="dark"] #dash-share-dropdown-menu,
 body[data-theme="dark"] #dropdown-user-account,
 body[data-theme="dark"] .dropdown-menu-custom {
@@ -5682,11 +5682,11 @@ body[data-theme="dark"] #dropdown-user-account .border-t {
   border-color: #404040 !important;
 }
 
-/* Ícones do Dropdown Meu Perfil no Dark Mode (#e0f4f8) */
+/* Ícones do Dropdown Meu Perfil no Dark Mode (#ebf4ff) */
 body[data-theme="dark"] #dropdown-user-account svg,
 body[data-theme="dark"] #dropdown-user-account svg * {
-  color: #e0f4f8 !important;
-  stroke: #e0f4f8 !important;
+  color: #ebf4ff !important;
+  stroke: #ebf4ff !important;
 }
 
 /* Dark Mode do Theme Toggle */
@@ -5730,12 +5730,12 @@ body[data-theme="dark"] #btn-user-account-menu:hover {
   box-shadow: none !important;
 }
 
-/* Bolinhas de Notificações, Chat e Recados no Dark Mode (#e0f4f8 com texto #333333) */
+/* Bolinhas de Notificações, Chat e Recados no Dark Mode (#ebf4ff com texto #333333) */
 body[data-theme="dark"] .badge-header-chat,
 body[data-theme="dark"] .badge-header-notifications,
 body[data-theme="dark"] .badge-recados-count {
-  background-color: #e0f4f8 !important;
-  background: #e0f4f8 !important;
+  background-color: #ebf4ff !important;
+  background: #ebf4ff !important;
   color: #333333 !important;
 }
 
@@ -5748,11 +5748,11 @@ body[data-theme="dark"] .gift-received-btn {
   border-color: #EAEAEA !important;
 }
 
-/* Presentes Recebidos (relatório separado, #e0f4f8 mantido) */
+/* Presentes Recebidos (relatório separado, #ebf4ff mantido) */
 .gift-received-tag,
 body[data-theme="dark"] .gift-received-tag {
-  background-color: #e0f4f8 !important;
-  background: #e0f4f8 !important;
+  background-color: #ebf4ff !important;
+  background: #ebf4ff !important;
   color: #333333 !important;
   border-color: #d4e5ff !important;
 }
@@ -6044,7 +6044,7 @@ body[data-theme="dark"] #b2b-chat-contacts-list > div:hover {
   background-color: #333333 !important;
 }
 
-body[data-theme="dark"] #b2b-chat-contacts-list > div.bg-\[\#E0F4F8\] {
+body[data-theme="dark"] #b2b-chat-contacts-list > div.bg-\[\#EBF4FF\] {
   background-color: #333333 !important;
   border-left-color: #537bae !important;
 }
@@ -6109,14 +6109,14 @@ body[data-theme="dark"] #b2b-chat-attach-btn {
   color: #ffffff !important;
 }
 
-/* Balão de mensagem do usuário à direita no Dark Mode (Texto em #e0f4f8) */
+/* Balão de mensagem do usuário à direita no Dark Mode (Texto em #ebf4ff) */
 body[data-theme="dark"] #b2b-messages-view .chat-bubble-user-glass,
 body[data-theme="dark"] .chat-bubble-user-glass {
   background: #252525 !important;
   background-color: #252525 !important;
   border: 1px solid #404040 !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
-  color: #e0f4f8 !important;
+  color: #ebf4ff !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -6129,7 +6129,7 @@ body[data-theme="dark"] .chat-bubble-user-glass,
 body[data-theme="dark"] .chat-bubble-user-glass p,
 body[data-theme="dark"] .chat-bubble-user-glass span,
 body[data-theme="dark"] .chat-bubble-user-glass div {
-  color: #e0f4f8 !important;
+  color: #ebf4ff !important;
   text-shadow: none !important;
 }
 
@@ -6185,7 +6185,7 @@ body[data-theme="dark"] #b2b-chat-contacts-list {
 }
 
 /* ==========================================================================
-   TEMA ESCURO: MENUS ATIVOS & ABAS DE SUBMENU (#e0f4f8 no texto e barra embaixo)
+   TEMA ESCURO: MENUS ATIVOS & ABAS DE SUBMENU (#ebf4ff no texto e barra embaixo)
    ========================================================================== */
 body[data-theme="dark"] .love-tab-item.active,
 body[data-theme="dark"] button.love-tab-item.active,
@@ -6203,9 +6203,9 @@ body[data-theme="dark"] .active[class*="border-b"],
 body[data-theme="dark"] [class*="border-b"].active,
 body[data-theme="dark"] .active[class*="border-b-2"],
 body[data-theme="dark"] [class*="border-b-2"].active {
-  color: #e0f4f8 !important;
-  border-bottom-color: #e0f4f8 !important;
-  border-color: #e0f4f8 !important;
+  color: #ebf4ff !important;
+  border-bottom-color: #ebf4ff !important;
+  border-color: #ebf4ff !important;
 }
 
 body[data-theme="dark"] .love-tab-item.active *,
@@ -6216,16 +6216,16 @@ body[data-theme="dark"] .active[class*="border-b"] *,
 body[data-theme="dark"] [class*="border-b"].active *,
 body[data-theme="dark"] .active[class*="border-b-2"] *,
 body[data-theme="dark"] [class*="border-b-2"].active * {
-  color: #e0f4f8 !important;
+  color: #ebf4ff !important;
 }
 
-/* Carteira Digital: Botão Solicitar Saque (#e0f4f8 com texto em preto no Dark Mode) */
+/* Carteira Digital: Botão Solicitar Saque (#ebf4ff com texto em preto no Dark Mode) */
 body[data-theme="dark"] .btn-trigger-withdraw-pix,
 body[data-theme="dark"] button.btn-trigger-withdraw-pix {
-  background-color: #e0f4f8 !important;
-  background: #e0f4f8 !important;
+  background-color: #ebf4ff !important;
+  background: #ebf4ff !important;
   color: #000000 !important;
-  border-color: #e0f4f8 !important;
+  border-color: #ebf4ff !important;
 }
 
 body[data-theme="dark"] .btn-trigger-withdraw-pix:hover,

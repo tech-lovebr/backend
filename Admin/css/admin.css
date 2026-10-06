@@ -160,7 +160,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 }
 
 .admin-nav-item.is-active .admin-nav-icon-box {
-  background: #E0F4F8;
+  background: #EBF4FF;
   border: 1px solid transparent;
   box-shadow: none;
 }
@@ -390,16 +390,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 
 .admin-sidebar-footer p { margin: 0; white-space: nowrap; }
 
-/* Azul claro da marca — o mesmo #E0F4F8 da caixa do ícone ativo. */
+/* Azul claro da marca — o mesmo #EBF4FF da caixa do ícone ativo. */
 .admin-sidebar-footer .razao-social {
   font-size: .8125rem;
   font-weight: 600;
-  color: #E0F4F8;
+  color: #EBF4FF;
 }
 
 .admin-sidebar-footer .cnpj {
   font-size: .75rem;
-  color: #E0F4F8;
+  color: #EBF4FF;
   margin-top: .1875rem;
 }
 

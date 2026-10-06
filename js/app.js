@@ -5309,7 +5309,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-start gap-3">
           <img src="${item.image}" alt="${item.giftTitle}" class="w-16 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0">
           <div class="flex-1 min-w-0">
-            <span class="gift-received-tag text-[10px] font-bold text-[#183b54] bg-[#e0f4f8] border border-[#d4e5ff] px-2 py-0.5 rounded-[var(--radius-control,12px)] uppercase tracking-wider inline-block">Presente Recebido ● ${item.method}</span>
+            <span class="gift-received-tag text-[10px] font-bold text-[#183b54] bg-[#ebf4ff] border border-[#d4e5ff] px-2 py-0.5 rounded-[var(--radius-control,12px)] uppercase tracking-wider inline-block">Presente Recebido ● ${item.method}</span>
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm truncate mt-1">${item.giftTitle}</h4>
             <div class="text-sm font-black text-emerald-600 mt-0.5">R$ ${item.amount.toFixed(2).replace('.', ',')}</div>
             <p class="text-[11px] font-bold text-slate-700 mt-1 flex items-center gap-1">
@@ -9010,9 +9010,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="relative w-10 h-10 shrink-0">
                 <svg class="w-10 h-10 -rotate-90" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#E4E4E7" stroke-width="2.5"></circle>
-                  <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#e0f4f8" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
+                  <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#ebf4ff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
                 </svg>
-                <svg class="w-5 h-5 absolute inset-0 m-auto text-[#e0f4f8]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
+                <svg class="w-5 h-5 absolute inset-0 m-auto text-[#ebf4ff]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
               </div>
               <span class="font-semibold text-zinc-700">${recommendPct}% de recomendação</span>
             </div>
@@ -9908,7 +9908,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');
       item.className = `p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
-        isActive ? 'bg-[#E0F4F8] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
+        isActive ? 'bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
       }`;
 
       item.innerHTML = `

@@ -33,15 +33,10 @@
 
     .password-strength-panel {
       display: none;
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      z-index: 20;
-      background: #fff;
+      margin-top: 0.5rem;
+      background: #FAFAFA;
       border: 1px solid #E4E4E7;
       border-radius: 12px;
-      box-shadow: 0 10px 24px -8px rgba(0,0,0,0.15);
       padding: 0.875rem 1rem;
     }
     .password-strength-panel.is-visible { display: block; }
@@ -384,18 +379,21 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Criando...';
 
-      const { error } = await supabaseClient.auth.signUp({
+      const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: {
-          role: 'cliente',
-          couple_name: fullName,
-          birthday: birthday || null,
-          intended_event_type: onboardType || null,
-          intended_event_type_label: onboardTypeLabel || null,
-          intended_event_date: eventDate || null,
-          ...dadosDoDispositivo()
-        } }
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            role: 'cliente',
+            couple_name: fullName,
+            birthday: birthday || null,
+            intended_event_type: onboardType || null,
+            intended_event_type_label: onboardTypeLabel || null,
+            intended_event_date: eventDate || null,
+            ...dadosDoDispositivo()
+          }
+        }
       });
 
       if (error) {
@@ -411,6 +409,22 @@
       }
       if (fullName) localStorage.setItem('love-pending-event-name', fullName);
       if (eventDate) localStorage.setItem('love-pending-event-date', eventDate);
+
+      // Se a confirmação de e-mail estiver habilitada no projeto Supabase
+      // (Authentication > Confirm email), signUp() não devolve sessão —
+      // a conta só fica utilizável depois que a pessoa clicar no link do
+      // e-mail. Hoje essa opção está desligada (sessão sempre vem preenchida
+      // e o fluxo segue direto pro painel), mas isso deixa pronto pro dia
+      // em que for ligada, sem precisar tocar neste arquivo de novo.
+      if (!data.session) {
+        document.querySelector('.onboard-step.is-active').innerHTML = `
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Confirme seu e-mail</h1>
+          <p class="text-zinc-500 text-sm mb-2">Enviamos um link de confirmação para <strong>${email}</strong>.</p>
+          <p class="text-zinc-500 text-sm">Clique no link para ativar sua conta e poder entrar na plataforma.</p>
+        `;
+        return;
+      }
+
       window.location.href = '/';
     });
   </script>

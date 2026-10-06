@@ -1730,3 +1730,30 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   border-radius: 6px;
   padding: .125rem .375rem;
 }
+
+/* Evento listado dentro do painel lateral de uma conta. */
+
+.evento-conta {
+  background: var(--bg-muted);
+  border-radius: var(--radius-card);
+  padding: .75rem .875rem;
+  margin-bottom: .5rem;
+}
+
+.evento-conta:last-child { margin-bottom: 0; }
+
+.evento-conta-topo {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.evento-conta-topo .nome { font-size: .875rem; font-weight: 600; }
+
+.evento-conta-sub {
+  font-size: .75rem;
+  color: var(--text-muted);
+  margin: .25rem 0 0;
+  line-height: 1.5;
+}

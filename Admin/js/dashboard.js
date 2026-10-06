@@ -21,12 +21,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderKpiSkeleton();
 
-  const [fornecedores, clientes, eventos, carteira, contratos] = await Promise.all([
-    safeSelect('fornecedores', 'id, company_name, email, category, plan'),
-    safeSelect('clientes', 'id, couple_name'),
-    safeSelect('eventos', 'id, tipo'),
+  const [fornecedores, clientes, eventos, carteira, contratos, convidados, presentes] = await Promise.all([
+    safeSelect('fornecedores', '*'),
+    safeSelect('clientes', '*'),
+    safeSelect('eventos', '*'),
     safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
-    safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at')
+    safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at'),
+    safeSelect('convidados', 'evento_id, cliente_id, status'),
+    safeSelect('presentes', 'evento_id, cliente_id, valor, status')
   ]);
 
   DADOS = {
@@ -34,7 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     clientes: clientes.data,
     eventos: eventos.data,
     carteira: carteira.data,
-    contratos: contratos.data
+    contratos: contratos.data,
+    convidados: convidados.data,
+    presentes: presentes.data
   };
 
   renderKpis();
@@ -485,6 +489,8 @@ function abrirConta(c) {
         ${linha('ID único', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
       </div>
 
+      ${detalheDaConta(c)}
+
       ${semOrigem ? `
         <p class="drawer-section-title">Classificar</p>
         <p class="cell-muted" style="font-size:.8125rem;line-height:1.7;margin:0 0 1rem">
@@ -511,6 +517,114 @@ function abrirConta(c) {
   document.querySelectorAll('[data-destino]').forEach(btn => {
     btn.addEventListener('click', () => classificarConta(c, btn.dataset.destino));
   });
+}
+
+/** Linha de "rótulo: valor" só quando há valor. */
+function linhaOpcional(rotulo, valor) {
+  const texto = String(valor ?? '').trim();
+  if (!texto) return '';
+  return `
+    <div class="dados-linha">
+      <span class="rotulo">${escapeHtml(rotulo)}</span>
+      <span class="valor">${escapeHtml(texto)}</span>
+    </div>`;
+}
+
+/**
+ * O que a conta tem além dos dados de autenticação: o cadastro que a pessoa
+ * preenche em configurações e, no caso do anfitrião, os eventos que criou.
+ */
+function detalheDaConta(c) {
+  if (c.origem === 'b2b') return detalheFornecedor(c.id);
+  if (c.origem === 'anfitriao') return detalheAnfitriao(c.id);
+  return '';
+}
+
+function detalheFornecedor(id) {
+  const f = (DADOS.fornecedores || []).find(x => x.id === id);
+  if (!f) return '';
+
+  const contratos = (DADOS.contratos || []).filter(x => x.fornecedor_id === id);
+  const ativos = contratos.filter(x => x.status !== 'quitado');
+  const entradas = (DADOS.carteira || [])
+    .filter(x => x.fornecedor_id === id && x.type === 'credit')
+    .reduce((t, x) => t + (Number(x.amount) || 0), 0);
+
+  const cadastro = [
+    linhaOpcional('Razão social', f.razao_social),
+    linhaOpcional('CNPJ', f.cnpj),
+    linhaOpcional('Responsável', f.contact_name),
+    linhaOpcional('Telefone', f.phone),
+    linhaOpcional('Endereço', f.address),
+    linhaOpcional('Cidade', [f.city, f.state].filter(Boolean).join(' / ')),
+    linhaOpcional('Categoria', f.category),
+    linhaOpcional('Plano', f.plan),
+    linhaOpcional('Chave Pix', f.pix_key)
+  ].join('');
+
+  return `
+    <p class="drawer-section-title">Cadastro do fornecedor</p>
+    ${cadastro
+      ? `<div class="lista-dados">${cadastro}</div>`
+      : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nada preenchido em configurações ainda.</p>`}
+
+    <p class="drawer-section-title">Operação</p>
+    <div class="lista-dados">
+      ${linhaOpcional('Contratos', `${formatNumber(ativos.length)} ativos de ${formatNumber(contratos.length)}`)}
+      ${linhaOpcional('Entradas na carteira', formatCurrency(entradas))}
+    </div>`;
+}
+
+function detalheAnfitriao(id) {
+  const cliente = (DADOS.clientes || []).find(x => x.id === id);
+  const eventos = (DADOS.eventos || []).filter(x => x.cliente_id === id);
+
+  const cadastro = cliente ? [
+    linhaOpcional('Telefone', cliente.phone),
+    linhaOpcional('CPF', cliente.cpf),
+    linhaOpcional('Cidade', cliente.city),
+    linhaOpcional('Status da conta', cliente.status)
+  ].join('') : '';
+
+  const tipos = [...new Set(eventos.map(e => EVENT_TYPE_LABELS[e.tipo] || e.tipo))];
+
+  const listaEventos = eventos.length
+    ? eventos
+        .slice()
+        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+        .map(e => {
+          const convidados = (DADOS.convidados || []).filter(g => g.evento_id === e.id);
+          const confirmados = convidados.filter(g => g.status === 'confirmado').length;
+          const presentes = (DADOS.presentes || []).filter(p => p.evento_id === e.id && p.status === 'recebido');
+          const arrecadado = presentes.reduce((t, p) => t + (Number(p.valor) || 0), 0);
+
+          return `
+            <div class="evento-conta">
+              <div class="evento-conta-topo">
+                <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
+                ${badge(EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—', e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}
+              </div>
+              <p class="evento-conta-sub">
+                ${escapeHtml(formatDate(e.data_evento))}
+                · ${formatNumber(convidados.length)} convidados (${formatNumber(confirmados)} confirmados)
+                · ${formatNumber(presentes.length)} presentes
+                ${arrecadado ? `· ${formatCurrency(arrecadado)}` : ''}
+              </p>
+            </div>`;
+        }).join('')
+    : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta conta ainda não criou nenhum evento.</p>`;
+
+  return `
+    <p class="drawer-section-title">Cadastro do anfitrião</p>
+    ${cadastro
+      ? `<div class="lista-dados">${cadastro}</div>`
+      : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nada preenchido em configurações ainda.</p>`}
+
+    <p class="drawer-section-title">
+      Eventos${eventos.length ? ` (${formatNumber(eventos.length)})` : ''}
+    </p>
+    ${tipos.length ? `<p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Tipos: ${escapeHtml(tipos.join(', '))}</p>` : ''}
+    ${listaEventos}`;
 }
 
 async function classificarConta(conta, destino) {

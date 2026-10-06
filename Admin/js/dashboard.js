@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     presentes: presentes.data
   };
 
+  ContaDrawer.semear({ dados: DADOS });
+
   renderKpis();
   renderTopFornecedores();
   renderCategorias();
@@ -179,19 +181,6 @@ function renderCategorias() {
    veio e permite classificar as que chegaram sem origem.
    ====================================================================== */
 
-const ORIGENS = {
-  b2b: { rotulo: 'B2B', badge: 'badge-info', plataforma: 'Portal do fornecedor' },
-  anfitriao: { rotulo: 'Anfitrião', badge: 'badge-success', plataforma: 'Plataforma principal' },
-  sem_origem: { rotulo: 'Sem origem', badge: 'badge-danger', plataforma: 'Não identificada' }
-};
-
-const PROVEDORES = {
-  email: 'E-mail e senha (padrão)',
-  google: 'Google',
-  apple: 'Apple',
-  desconhecido: 'Não informado'
-};
-
 let CONTAS = [];
 
 /** Quantas contas por página na tabela de últimos cadastros. */
@@ -222,6 +211,7 @@ async function carregarContas() {
   }
 
   CONTAS = data || [];
+  ContaDrawer.semear({ contas: CONTAS });
   renderContas();
 
   const voltarAoInicio = () => { PAGINA_CONTAS = 1; renderContas(); };
@@ -280,7 +270,7 @@ function renderContas() {
     </tr>`).join('');
 
   tbody.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => abrirConta(CONTAS.find(c => c.id === tr.dataset.id)));
+    tr.addEventListener('click', () => ContaDrawer.abrir(CONTAS.find(c => c.id === tr.dataset.id)));
   });
 }
 
@@ -315,209 +305,4 @@ function renderPaginacaoContas(total, totalPaginas, inicio, nestaPagina) {
       renderContas();
     });
   });
-}
-
-/** Data e hora completas — para saber o momento exato do cadastro. */
-function dataHoraCompleta(valor) {
-  if (!valor) return null;
-  const dt = new Date(valor);
-  if (Number.isNaN(dt.getTime())) return null;
-  return dt.toLocaleString('pt-BR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
-  });
-}
-
-function abrirConta(c) {
-  if (!c) return;
-
-  const semOrigem = c.origem === 'sem_origem';
-
-  const linha = (rotulo, valor) => `
-    <div class="dados-linha">
-      <span class="rotulo">${escapeHtml(rotulo)}</span>
-      <span class="valor">${valor}</span>
-    </div>`;
-
-  Drawer.open({
-    title: c.nome || c.email || 'Conta',
-    subtitle: c.email || '',
-    body: `
-      <div class="lista-dados">
-        ${linha('Origem', `${ORIGENS[c.origem].plataforma}, ${ORIGENS[c.origem].rotulo}`)}
-        ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
-        ${linha('E-mail confirmado', c.email_confirmado ? 'Sim' : 'Não')}
-        ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
-        ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
-        ${linha('ID único', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
-      </div>
-
-      ${detalheDaConta(c)}
-
-      ${semOrigem ? `
-        <p class="drawer-section-title">Classificar</p>
-        <p class="cell-muted" style="font-size:.8125rem;line-height:1.7;margin:0 0 1rem">
-          Esta conta chegou sem identificação de plataforma — é o que acontece no
-          login social, que não envia o papel junto. Escolha onde ela entra:
-          a conta passa a aparecer na lista correspondente.
-        </p>
-
-        <label class="field">
-          <span class="field-label">Nome</span>
-          <input class="field-input" id="nome-conta" type="text" value="${escapeHtml(c.nome || '')}"
-                 placeholder="${escapeHtml(c.email || '')}">
-        </label>
-
-        <div style="display:flex;gap:.625rem">
-          <button type="button" class="btn btn-ghost" style="flex:1" data-destino="b2b">É um fornecedor (B2B)</button>
-          <button type="button" class="btn btn-ghost" style="flex:1" data-destino="anfitriao">É um anfitrião</button>
-        </div>` : ''}`,
-    footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
-  });
-
-  document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
-
-  document.querySelectorAll('[data-destino]').forEach(btn => {
-    btn.addEventListener('click', () => classificarConta(c, btn.dataset.destino));
-  });
-}
-
-/** Linha de "rótulo: valor" só quando há valor. */
-function linhaOpcional(rotulo, valor) {
-  const texto = String(valor ?? '').trim();
-  if (!texto) return '';
-  return `
-    <div class="dados-linha">
-      <span class="rotulo">${escapeHtml(rotulo)}</span>
-      <span class="valor">${escapeHtml(texto)}</span>
-    </div>`;
-}
-
-/**
- * O que a conta tem além dos dados de autenticação: o cadastro que a pessoa
- * preenche em configurações e, no caso do anfitrião, os eventos que criou.
- */
-function detalheDaConta(c) {
-  if (c.origem === 'b2b') return detalheFornecedor(c.id);
-  if (c.origem === 'anfitriao') return detalheAnfitriao(c.id);
-  return '';
-}
-
-function detalheFornecedor(id) {
-  const f = (DADOS.fornecedores || []).find(x => x.id === id);
-  if (!f) return '';
-
-  const contratos = (DADOS.contratos || []).filter(x => x.fornecedor_id === id);
-  const ativos = contratos.filter(x => x.status !== 'quitado');
-  const entradas = (DADOS.carteira || [])
-    .filter(x => x.fornecedor_id === id && x.type === 'credit')
-    .reduce((t, x) => t + (Number(x.amount) || 0), 0);
-
-  const cadastro = [
-    linhaOpcional('Razão social', f.razao_social),
-    linhaOpcional('CNPJ', f.cnpj),
-    linhaOpcional('Responsável', f.contact_name),
-    linhaOpcional('Telefone', f.phone),
-    linhaOpcional('Endereço', f.address),
-    linhaOpcional('Cidade', [f.city, f.state].filter(Boolean).join(' / ')),
-    linhaOpcional('Categoria', f.category),
-    linhaOpcional('Plano', f.plan),
-    linhaOpcional('Chave Pix', f.pix_key)
-  ].join('');
-
-  return `
-    <p class="drawer-section-title">Cadastro do fornecedor</p>
-    ${cadastro
-      ? `<div class="lista-dados">${cadastro}</div>`
-      : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nada preenchido em configurações ainda.</p>`}
-
-    <p class="drawer-section-title">Operação</p>
-    <div class="lista-dados">
-      ${linhaOpcional('Contratos', `${formatNumber(ativos.length)} ativos de ${formatNumber(contratos.length)}`)}
-      ${linhaOpcional('Entradas na carteira', formatCurrency(entradas))}
-    </div>`;
-}
-
-function detalheAnfitriao(id) {
-  const cliente = (DADOS.clientes || []).find(x => x.id === id);
-  const eventos = (DADOS.eventos || []).filter(x => x.cliente_id === id);
-
-  const cadastro = cliente ? [
-    linhaOpcional('Telefone', cliente.phone),
-    linhaOpcional('CPF', cliente.cpf),
-    linhaOpcional('Cidade', cliente.city),
-    linhaOpcional('Status da conta', cliente.status)
-  ].join('') : '';
-
-  const tipos = [...new Set(eventos.map(e => EVENT_TYPE_LABELS[e.tipo] || e.tipo))];
-
-  const listaEventos = eventos.length
-    ? eventos
-        .slice()
-        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-        .map(e => {
-          const convidados = (DADOS.convidados || []).filter(g => g.evento_id === e.id);
-          const confirmados = convidados.filter(g => g.status === 'confirmado').length;
-          const presentes = (DADOS.presentes || []).filter(p => p.evento_id === e.id && p.status === 'recebido');
-          const arrecadado = presentes.reduce((t, p) => t + (Number(p.valor) || 0), 0);
-
-          return `
-            <div class="evento-conta">
-              <div class="evento-conta-topo">
-                <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
-                ${badge(EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—', e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}
-              </div>
-              <p class="evento-conta-sub">
-                ${escapeHtml(formatDate(e.data_evento))}
-                · ${formatNumber(convidados.length)} convidados (${formatNumber(confirmados)} confirmados)
-                · ${formatNumber(presentes.length)} presentes
-                ${arrecadado ? `· ${formatCurrency(arrecadado)}` : ''}
-              </p>
-            </div>`;
-        }).join('')
-    : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta conta ainda não criou nenhum evento.</p>`;
-
-  return `
-    <p class="drawer-section-title">Cadastro do anfitrião</p>
-    ${cadastro
-      ? `<div class="lista-dados">${cadastro}</div>`
-      : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nada preenchido em configurações ainda.</p>`}
-
-    <p class="drawer-section-title">
-      Eventos${eventos.length ? ` (${formatNumber(eventos.length)})` : ''}
-    </p>
-    ${tipos.length ? `<p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Tipos: ${escapeHtml(tipos.join(', '))}</p>` : ''}
-    ${listaEventos}`;
-}
-
-async function classificarConta(conta, destino) {
-  const nome = (document.getElementById('nome-conta')?.value || '').trim();
-
-  if (!nome) {
-    toast('Informe o nome antes de classificar.');
-    return;
-  }
-
-  Drawer.setFooterBusy(true);
-
-  const alvo = destino === 'b2b'
-    ? { tabela: 'fornecedores', linha: { id: conta.id, company_name: nome, email: conta.email } }
-    : { tabela: 'clientes', linha: { id: conta.id, couple_name: nome, email: conta.email } };
-
-  const { error } = await supabaseClient.from(alvo.tabela).insert(alvo.linha);
-
-  if (!error) {
-    await supabaseClient.from('contas_sem_origem').delete().eq('id', conta.id);
-  }
-
-  Drawer.setFooterBusy(false);
-
-  if (error) {
-    toast(`Não foi possível classificar: ${error.message}`);
-    return;
-  }
-
-  Drawer.close();
-  toast(destino === 'b2b' ? 'Conta movida para B2B.' : 'Conta movida para Anfitriões.');
-  window.location.reload();
 }

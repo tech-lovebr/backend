@@ -243,14 +243,9 @@ const ContaDrawer = (() => {
     aviso.className = 'drawer-acoes-conta';
     aviso.innerHTML = `
       <p class="drawer-acoes-titulo">${acao} ${escapeHtml(c.nome || c.email || 'esta conta')}?</p>
-      <p class="drawer-acoes-texto">
-        ${bloqueada
-          ? 'Desbloquear devolve o acesso: a pessoa volta a entrar na plataforma e a conta fica ativa de novo.'
-          : 'Bloquear impede a pessoa de entrar, mas não apaga nada — a conta continua na base com os eventos, contratos e movimentos dela, e dá para desbloquear depois.'}
-      </p>
       <p class="drawer-acoes-texto drawer-acoes-texto--perigo">
-        Excluir é definitivo: some a conta e tudo que ela criou — eventos, convidados,
-        presentes, contratos, movimentos da carteira, leads e conversas. Não dá para desfazer.
+        Atenção: Excluir é definitivo, a conta é excluída, assim como tudo que ela
+        criou. Esta ação não pode ser desfeita.
       </p>
       <div class="drawer-acoes-botoes">
         <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-acao">Cancelar</button>

@@ -794,13 +794,11 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   margin-bottom: .75rem;
 }
 
-.login-cartao h1 { font-size: 1.5rem; font-weight: 800; color: #18181B; }
-
-.login-sub {
-  font-size: .8125rem;
-  line-height: 1.6;
-  color: var(--text-muted);
-  margin: .375rem 0 1.5rem;
+.login-cartao h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #18181B;
+  margin-bottom: 1.5rem;
 }
 
 /* Rótulo acima do campo, alinhado à esquerda. */

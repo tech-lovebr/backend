@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=45">
+  <link rel="stylesheet" href="css/admin.css?v=46">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -50,28 +50,28 @@
     </g>
   </svg>
 
-  <a class="login-marca" href="https://love.com.br" target="_blank" rel="noopener noreferrer">
-    <img src="assets/logo-preto.png" alt="Love">
-  </a>
-
   <main class="login-area">
     <div class="login-cartao">
+      <img class="login-logo" src="assets/logo-preto.png" alt="Love">
       <h1>Painel Administrativo</h1>
       <p class="login-sub">Faça o login para acesso o painel</p>
 
       <form id="login-form" novalidate>
+        <label class="login-rotulo" for="login-email">E-mail</label>
         <div class="login-campo">
-          <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" required>
+          <input id="login-email" type="email" placeholder="seu.email@exemplo.com" autocomplete="username" required>
         </div>
 
+        <div class="login-rotulo-linha">
+          <label class="login-rotulo" for="login-password">Senha</label>
+          <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
+        </div>
         <div class="login-campo">
-          <input id="login-password" type="password" placeholder="Senha" autocomplete="current-password" required>
+          <input id="login-password" type="password" placeholder="Sua senha secreta" autocomplete="current-password" required>
           <button type="button" class="login-ver-senha" id="btn-ver-senha">Mostrar</button>
         </div>
 
         <button type="submit" class="login-botao" id="login-submit">Entrar</button>
-
-        <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
 
         <p id="login-error" class="login-erro" style="display:none"></p>
       </form>

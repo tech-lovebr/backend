@@ -741,45 +741,28 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
-/* ----------------------------------------------------------------- Login */
+/* ----------------------------------------------------------------- Login
+   Medidas tiradas do login de love.com.br, para as duas telas serem a mesma
+   coisa: cartão de 448px com respiro de 32px, campo de raio 12px e o azul
+   #537BAE do botão. O fundo claro com o traço é só do admin.
+   ----------------------------------------------------------------------- */
 
 .login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6.5rem 1.5rem 3rem;
+  padding: 3rem 1.5rem;
   background: #E9EFF8;
   position: relative;
   overflow: hidden;
 }
 
-/* Logotipo centralizado acima do cartão. */
-.login-area {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 400px;
-}
-
-/* Logotipo no canto da página, fora do cartão. */
-.login-marca {
-  position: absolute;
-  top: 1.75rem;
-  left: 2rem;
-  z-index: 2;
-}
-
-.login-marca img { height: 40px; width: auto; object-fit: contain; display: block; }
-
-/* Traço decorativo no rodapé, no tom da marca e bem recuado. */
 .login-arte {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  /* Altura pela proporção do desenho (1440x320): com `slice` o traço era
-     recortado e as formas apareciam gigantes. */
   width: 100%;
   height: auto;
   color: var(--primary-color);
@@ -787,53 +770,93 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   pointer-events: none;
 }
 
+.login-area {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 448px;
+}
+
 .login-cartao {
   width: 100%;
   background: #fff;
   border-radius: var(--radius-card);
-  box-shadow: 0 18px 44px rgba(16, 24, 40, .1);
-  padding: 2.5rem 2.25rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .035), 0 1px 2px rgba(0, 0, 0, .02);
+  padding: 2rem;
   text-align: center;
 }
 
-.login-cartao h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+.login-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  margin-bottom: .75rem;
+}
+
+.login-cartao h1 { font-size: 1.5rem; font-weight: 800; color: #18181B; }
 
 .login-sub {
   font-size: .8125rem;
-  line-height: 1.65;
+  line-height: 1.6;
   color: var(--text-muted);
-  margin: .5rem 0 1.75rem;
+  margin: .375rem 0 1.5rem;
 }
 
-/* Campo em caixa, com fundo levemente recuado — como na referência. */
+/* Rótulo acima do campo, alinhado à esquerda. */
+.login-rotulo {
+  display: block;
+  text-align: left;
+  font-size: .8125rem;
+  font-weight: 500;
+  color: #52525B;
+  margin-bottom: .375rem;
+}
+
+/* Linha do rótulo da senha: o link de recuperação fica na mesma altura. */
+.login-rotulo-linha {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.login-rotulo-linha .login-rotulo { margin-bottom: .375rem; }
+
+.login-esqueci {
+  font-size: .6875rem;
+  font-weight: 600;
+  color: #18181B;
+  text-decoration: none;
+}
+
+.login-esqueci:hover { text-decoration: underline; }
+
 .login-campo {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: .875rem;
+  margin-bottom: 1rem;
 }
-
-.login-campo:last-of-type { margin-bottom: 1.5rem; }
 
 .login-campo input {
   width: 100%;
   font-family: inherit;
   font-size: .875rem;
-  color: var(--text);
-  background: #F7F8FA;
-  border: 1px solid var(--border);
+  color: #18181B;
+  background: #fff;
+  border: 1px solid #EAEAEA;
   border-radius: var(--radius-control);
-  padding: .8125rem 1rem;
+  padding: .625rem .875rem;
   outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
 
 .login-campo input::placeholder { color: var(--text-soft); }
 
 .login-campo input:focus {
-  background: #fff;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(24, 59, 84, .1);
+  border-color: #537BAE;
+  box-shadow: 0 0 0 3px rgba(83, 123, 174, .14);
 }
 
 /* O botão fica dentro do campo; o texto recua para não passar por baixo dele. */
@@ -845,41 +868,31 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   border: 0;
   background: none;
   font-family: inherit;
-  font-size: .8125rem;
-  font-weight: 500;
+  font-size: .75rem;
+  font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
   padding: .25rem;
 }
 
-.login-ver-senha:hover { color: var(--primary-color); }
-
-.login-esqueci {
-  display: block;
-  text-align: center;
-  font-size: .8125rem;
-  color: var(--primary-color);
-  text-decoration: none;
-  margin: 1.125rem 0 0;
-}
-
-.login-esqueci:hover { text-decoration: underline; }
+.login-ver-senha:hover { color: #537BAE; }
 
 .login-botao {
   width: 100%;
-  padding: .8125rem;
+  margin-top: .5rem;
+  padding: .875rem;
   border: 0;
   border-radius: var(--radius-control);
-  background: var(--primary-color);
+  background: #537BAE;
   color: #fff;
   font-family: inherit;
   font-size: .875rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background .15s ease;
 }
 
-.login-botao:hover:not(:disabled) { background: var(--primary-hover); }
+.login-botao:hover:not(:disabled) { background: #456A99; }
 .login-botao:disabled { opacity: .6; cursor: default; }
 
 .login-erro {
@@ -895,22 +908,16 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 .login-nota {
   font-size: .75rem;
   line-height: 1.6;
-  color: var(--text-muted);
-  margin: 1.5rem 0 0;
-}
-
-#nota-demo {
   color: var(--primary-color);
   background: var(--info-bg);
   border-radius: var(--radius-control);
   padding: .75rem .875rem;
+  margin: 1.25rem 0 0;
 }
 
 @media (max-width: 640px) {
-  .login-page { padding: 6rem 1.25rem 2.5rem; align-items: flex-start; }
-  .login-cartao { padding: 2rem 1.5rem; }
-  .login-marca { top: 1.5rem; left: 1.25rem; }
-  .login-marca img { height: 34px; }
+  .login-page { padding: 2rem 1.25rem; align-items: flex-start; }
+  .login-cartao { padding: 1.75rem 1.25rem; }
 }
 
 /* -------------------------------------------------------------- Responsivo */

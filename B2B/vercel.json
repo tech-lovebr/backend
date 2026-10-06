@@ -4,9 +4,187 @@
   "installCommand": null,
   "outputDirectory": ".",
   "redirects": [
-    { "source": "/login.html", "destination": "/login", "permanent": true }
+    {
+      "source": "/agenda.html",
+      "destination": "/agenda",
+      "permanent": true
+    },
+    {
+      "source": "/configuracoes.html",
+      "destination": "/configuracoes",
+      "permanent": true
+    },
+    {
+      "source": "/crm.html",
+      "destination": "/crm",
+      "permanent": true
+    },
+    {
+      "source": "/dashboard.html",
+      "destination": "/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/esqueci-senha.html",
+      "destination": "/esqueci-senha",
+      "permanent": true
+    },
+    {
+      "source": "/faq.html",
+      "destination": "/faq",
+      "permanent": true
+    },
+    {
+      "source": "/funcoes.html",
+      "destination": "/funcoes",
+      "permanent": true
+    },
+    {
+      "source": "/guias.html",
+      "destination": "/guias",
+      "permanent": true
+    },
+    {
+      "source": "/login.html",
+      "destination": "/login",
+      "permanent": true
+    },
+    {
+      "source": "/mensagens.html",
+      "destination": "/mensagens",
+      "permanent": true
+    },
+    {
+      "source": "/pagamentos.html",
+      "destination": "/pagamentos",
+      "permanent": true
+    },
+    {
+      "source": "/paginas-site.html",
+      "destination": "/paginas-site",
+      "permanent": true
+    },
+    {
+      "source": "/planos.html",
+      "destination": "/planos",
+      "permanent": true
+    },
+    {
+      "source": "/produtos.html",
+      "destination": "/produtos",
+      "permanent": true
+    },
+    {
+      "source": "/resetar-senha.html",
+      "destination": "/resetar-senha",
+      "permanent": true
+    },
+    {
+      "source": "/signup.html",
+      "destination": "/signup",
+      "permanent": true
+    },
+    {
+      "source": "/site-preview.html",
+      "destination": "/site-preview",
+      "permanent": true
+    },
+    {
+      "source": "/vendas.html",
+      "destination": "/vendas",
+      "permanent": true
+    },
+    {
+      "source": "/verificar.html",
+      "destination": "/verificar",
+      "permanent": true
+    },
+    {
+      "source": "/vitrine.html",
+      "destination": "/vitrine",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/login", "destination": "/login.html" }
+    {
+      "source": "/agenda",
+      "destination": "/agenda.html"
+    },
+    {
+      "source": "/configuracoes",
+      "destination": "/configuracoes.html"
+    },
+    {
+      "source": "/crm",
+      "destination": "/crm.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/esqueci-senha",
+      "destination": "/esqueci-senha.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/faq.html"
+    },
+    {
+      "source": "/funcoes",
+      "destination": "/funcoes.html"
+    },
+    {
+      "source": "/guias",
+      "destination": "/guias.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/mensagens",
+      "destination": "/mensagens.html"
+    },
+    {
+      "source": "/pagamentos",
+      "destination": "/pagamentos.html"
+    },
+    {
+      "source": "/paginas-site",
+      "destination": "/paginas-site.html"
+    },
+    {
+      "source": "/planos",
+      "destination": "/planos.html"
+    },
+    {
+      "source": "/produtos",
+      "destination": "/produtos.html"
+    },
+    {
+      "source": "/resetar-senha",
+      "destination": "/resetar-senha.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/signup.html"
+    },
+    {
+      "source": "/site-preview",
+      "destination": "/site-preview.html"
+    },
+    {
+      "source": "/vendas",
+      "destination": "/vendas.html"
+    },
+    {
+      "source": "/verificar",
+      "destination": "/verificar.html"
+    },
+    {
+      "source": "/vitrine",
+      "destination": "/vitrine.html"
+    }
   ]
 }

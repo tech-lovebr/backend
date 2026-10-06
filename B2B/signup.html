@@ -22,36 +22,59 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js"></script>
 </head>
-<body class="font-sans">
+<body class="font-sans bg-white">
 
-  <div class="signup-shell">
-    <div class="signup-card">
-      <a href="index.html" class="signup-logo">
-        <img src="assets/logo.png" alt="Love">
-      </a>
+  <div class="min-h-screen w-full flex">
 
-      <h1 class="signup-title">Crie sua conta</h1>
-      <p class="signup-subtitle">100% gratuito. Sem necessidade de cartão de crédito.</p>
-
-      <button type="button" id="google-signup-btn" class="signup-oauth-btn">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.07-1.47-.23-2.12H12v3.85h6.62c-.13 1.1-.86 2.76-2.47 3.88l-.02.15 3.59 2.78.25.02c2.28-2.1 3.55-5.19 3.55-8.56Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.94-2.9l-3.78-2.93c-1.01.7-2.37 1.19-4.16 1.19-3.18 0-5.88-2.1-6.84-5H1.27v3.02C3.25 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.16 14.36A7.4 7.4 0 0 1 4.75 12c0-.82.14-1.62.4-2.36V6.62H1.27A11.97 11.97 0 0 0 0 12c0 1.93.46 3.76 1.27 5.38l3.89-3.02Z"/><path fill="#EA4335" d="M12 4.75c2.25 0 3.77.97 4.64 1.78l3.39-3.31C17.94 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.62l3.89 3.02c.96-2.9 3.66-5 6.84-5Z"/></svg>
-        Continuar com Google
-      </button>
-
-      <div class="signup-divider">ou</div>
-
-      <form id="signup-email-form" class="signup-email-form">
-        <input type="text" id="signup-company" class="field-input" placeholder="Nome da sua empresa" required autocomplete="organization">
-        <input type="email" id="signup-email" class="field-input" placeholder="nome@empresa.com" required autocomplete="email">
-        <input type="password" id="signup-password" class="field-input" placeholder="Crie uma senha" required autocomplete="new-password" minlength="6">
-        <button type="submit" class="btn-primary justify-center w-full py-3" id="signup-email-btn">Criar conta</button>
-        <p id="signup-error" class="text-xs text-red-600 hidden"></p>
-      </form>
-
-      <p class="signup-legal">Ao continuar, você reconhece a <a href="#">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
-
-      <p class="signup-footer-link">Tem uma conta? <a href="login.html">Entrar</a></p>
+    <!-- Esquerda: imagem (mesmo padrão de love.com.br/cadastro) -->
+    <div class="hidden lg:flex w-1/2 bg-white p-4">
+      <div class="relative w-full h-full rounded-3xl overflow-hidden">
+        <img src="assets/wedding_hero_banner.jpg" alt="" class="absolute inset-0 w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
+        <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
+          <div></div>
+          <div>
+            <h2 class="text-white text-4xl font-normal leading-tight mb-10">Junte-se aos fornecedores parceiros da Love.</h2>
+            <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Direita: caixa de cadastro -->
+    <div class="w-full lg:w-1/2 bg-white p-4 flex">
+      <div class="w-full h-full rounded-3xl border border-zinc-200 shadow-sm flex items-center justify-center p-6 sm:p-10">
+        <div class="w-full max-w-sm">
+
+          <a href="index.html" class="signup-logo">
+            <img src="assets/logo.png" alt="Love">
+          </a>
+
+          <h1 class="signup-title">Crie sua conta</h1>
+          <p class="signup-subtitle">100% gratuito. Sem necessidade de cartão de crédito.</p>
+
+          <button type="button" id="google-signup-btn" class="signup-oauth-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.07-1.47-.23-2.12H12v3.85h6.62c-.13 1.1-.86 2.76-2.47 3.88l-.02.15 3.59 2.78.25.02c2.28-2.1 3.55-5.19 3.55-8.56Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.94-2.9l-3.78-2.93c-1.01.7-2.37 1.19-4.16 1.19-3.18 0-5.88-2.1-6.84-5H1.27v3.02C3.25 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.16 14.36A7.4 7.4 0 0 1 4.75 12c0-.82.14-1.62.4-2.36V6.62H1.27A11.97 11.97 0 0 0 0 12c0 1.93.46 3.76 1.27 5.38l3.89-3.02Z"/><path fill="#EA4335" d="M12 4.75c2.25 0 3.77.97 4.64 1.78l3.39-3.31C17.94 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.62l3.89 3.02c.96-2.9 3.66-5 6.84-5Z"/></svg>
+            Continuar com Google
+          </button>
+
+          <div class="signup-divider">ou</div>
+
+          <form id="signup-email-form" class="signup-email-form">
+            <input type="text" id="signup-company" class="field-input" placeholder="Nome da sua empresa" required autocomplete="organization">
+            <input type="email" id="signup-email" class="field-input" placeholder="nome@empresa.com" required autocomplete="email">
+            <input type="password" id="signup-password" class="field-input" placeholder="Crie uma senha" required autocomplete="new-password" minlength="6">
+            <button type="submit" class="btn-primary justify-center w-full py-3" id="signup-email-btn">Criar conta</button>
+            <p id="signup-error" class="text-xs text-red-600 hidden"></p>
+          </form>
+
+          <p class="signup-legal">Ao continuar, você reconhece a <a href="#">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
+
+          <p class="signup-footer-link">Tem uma conta? <a href="login.html">Entrar</a></p>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>

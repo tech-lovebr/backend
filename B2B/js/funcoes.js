@@ -14,14 +14,9 @@ function renderTeam() {
   tbody.innerHTML = B2B_DATA.team.map(m => `
     <tr>
       <td>
-        <div class="member-row">
-          ${m.avatar
-            ? `<img src="${m.avatar}" alt="${m.name}" class="member-avatar">`
-            : `<div class="member-avatar b2b-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.75rem;">${initials(m.name)}</div>`}
-          <div class="min-w-0">
-            <p class="text-sm font-semibold text-zinc-900 truncate">${m.name} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</p>
-            <p class="text-xs text-zinc-500 truncate">${m.email}</p>
-          </div>
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-zinc-900 truncate">${m.name} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</p>
+          <p class="text-xs text-zinc-500 truncate">${m.email}</p>
         </div>
       </td>
       <td><span class="text-sm text-zinc-700">${m.role}</span></td>

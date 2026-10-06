@@ -2302,7 +2302,8 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
 #lead-add-btn.btn-secondary,
 #product-add-btn.btn-secondary,
 #share-board-btn.btn-secondary,
-#agenda-add-event-btn.btn-secondary {
+#agenda-add-event-btn.btn-secondary,
+#member-add-btn.btn-secondary {
   background: #EBF4FF;
   color: #333333;
   border-color: transparent;
@@ -2310,7 +2311,8 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
 #lead-add-btn.btn-secondary:hover,
 #product-add-btn.btn-secondary:hover,
 #share-board-btn.btn-secondary:hover,
-#agenda-add-event-btn.btn-secondary:hover {
+#agenda-add-event-btn.btn-secondary:hover,
+#member-add-btn.btn-secondary:hover {
   background: #DCEAFB;
 }
 

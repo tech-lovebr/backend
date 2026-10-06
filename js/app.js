@@ -8691,7 +8691,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { role: 'cliente', couple_name: name } }
+        options: { data: { role: 'cliente', couple_name: name, ...dadosDoDispositivo() } }
       });
       submitBtn.disabled = false;
 

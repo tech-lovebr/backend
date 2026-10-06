@@ -263,7 +263,7 @@
       const { error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { role: 'fornecedor', company_name: company } }
+        options: { data: { role: 'fornecedor', company_name: company, ...dadosDoDispositivo() } }
       });
 
       submitBtn.disabled = false;

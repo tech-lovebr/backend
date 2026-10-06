@@ -46,6 +46,52 @@ function linhaOpcional(rotulo, valor) {
     </div>`;
 }
 
+/* --------------------------------------------------- Dispositivo e navegador
+
+   auth.users não guarda nada disso. Vem de duas fontes, nessa ordem:
+
+   1. o metadado gravado no momento do cadastro — exato, mas só existe para
+      quem se cadastrou depois de a captura entrar no ar;
+   2. o user_agent da sessão mais recente — aproximado: é o último aparelho
+      usado, não necessariamente o do cadastro, e some quando a sessão expira.
+
+   Quando o dado é da segunda fonte, o drawer diz isso em vez de fingir
+   precisão que não tem. */
+
+const APARELHOS = { mobile: 'Celular', tablet: 'Tablet', desktop: 'Computador' };
+
+function aparelhoDoUserAgent(ua) {
+  if (/ipad|tablet/i.test(ua)) return 'tablet';
+  if (/mobile|android|iphone|ipod/i.test(ua)) return 'mobile';
+  return 'desktop';
+}
+
+function navegadorDoUserAgent(ua) {
+  if (/edg\//i.test(ua)) return 'Edge';
+  if (/opr\/|opera/i.test(ua)) return 'Opera';
+  if (/samsungbrowser/i.test(ua)) return 'Samsung Internet';
+  if (/firefox|fxios/i.test(ua)) return 'Firefox';
+  if (/chrome|crios/i.test(ua)) return 'Chrome';   // CriOS = Chrome no iPhone
+  if (/safari/i.test(ua)) return 'Safari';
+  return null;
+}
+
+function acessoDaConta(c) {
+  const juntar = (aparelho, navegador) =>
+    [APARELHOS[aparelho] || aparelho, navegador].filter(Boolean).join(' · ');
+
+  if (c.dispositivo || c.navegador) {
+    return { texto: juntar(c.dispositivo, c.navegador), exato: true };
+  }
+
+  if (!c.user_agent) return null;
+
+  return {
+    texto: juntar(aparelhoDoUserAgent(c.user_agent), navegadorDoUserAgent(c.user_agent)),
+    exato: false
+  };
+}
+
 const ContaDrawer = (() => {
   let CONTAS = null;
   let DADOS = null;
@@ -125,6 +171,7 @@ const ContaDrawer = (() => {
   function desenhar(c) {
     const semOrigem = c.origem === 'sem_origem';
     const origem = ORIGENS[c.origem] || ORIGENS.sem_origem;
+    const acesso = acessoDaConta(c);
 
     const linha = (rotulo, valor) => `
       <div class="dados-linha">
@@ -141,6 +188,7 @@ const ContaDrawer = (() => {
           ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
           ${linha('E-mail confirmado', c.email_confirmado ? 'Sim' : 'Não')}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
+          ${acesso ? linha(acesso.exato ? 'Cadastrou-se em' : 'Último aparelho', escapeHtml(acesso.texto)) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
           ${linha('ID único', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
         </div>
@@ -165,14 +213,71 @@ const ContaDrawer = (() => {
             <button type="button" class="btn btn-ghost" style="flex:1" data-destino="b2b">É um fornecedor (B2B)</button>
             <button type="button" class="btn btn-ghost" style="flex:1" data-destino="anfitriao">É um anfitrião</button>
           </div>` : ''}`,
-      footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
+      footer: `
+        <button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>
+        <button type="button" class="btn btn-danger" id="btn-excluir">Excluir usuário</button>`
     });
 
     document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
+    document.getElementById('btn-excluir').addEventListener('click', () => pedirConfirmacao(c));
 
     document.querySelectorAll('[data-destino]').forEach(btn => {
       btn.addEventListener('click', () => classificar(c, btn.dataset.destino));
     });
+  }
+
+  /* A exclusão não tem desfazer e leva junto tudo que a conta criou, então
+     o aviso aparece dentro do drawer, dizendo o que some — em vez de um
+     confirm() do navegador, que não cabe essa explicação. */
+  function pedirConfirmacao(c) {
+    const corpo = document.querySelector('.drawer-body') || document.getElementById('drawer-body');
+
+    const aviso = document.createElement('div');
+    aviso.className = 'drawer-exclusao';
+    aviso.innerHTML = `
+      <p class="drawer-exclusao-titulo">Excluir ${escapeHtml(c.nome || c.email || 'esta conta')}?</p>
+      <p class="drawer-exclusao-texto">
+        Some a conta e tudo que ela criou: eventos, convidados, presentes,
+        contratos, movimentos da carteira, leads e conversas. Não dá para desfazer.
+      </p>
+      <div class="drawer-exclusao-acoes">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-exclusao">Cancelar</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-confirmar-exclusao">Excluir mesmo assim</button>
+      </div>`;
+
+    if (corpo) {
+      corpo.appendChild(aviso);
+      aviso.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    document.getElementById('btn-excluir').disabled = true;
+
+    document.getElementById('btn-cancelar-exclusao').addEventListener('click', () => {
+      aviso.remove();
+      document.getElementById('btn-excluir').disabled = false;
+    });
+
+    document.getElementById('btn-confirmar-exclusao').addEventListener('click', () => excluir(c));
+  }
+
+  async function excluir(c) {
+    Drawer.setFooterBusy(true);
+
+    const { error } = await supabaseClient.rpc('admin_excluir_conta', { p_id: c.id });
+
+    Drawer.setFooterBusy(false);
+
+    if (error) {
+      const faltaFuncao = /admin_excluir_conta|does not exist|schema cache/i.test(error.message || '');
+      toast(faltaFuncao
+        ? 'Rode supabase/migrations/017_excluir_conta_e_dispositivo.sql no Supabase.'
+        : `Não foi possível excluir: ${error.message}`);
+      return;
+    }
+
+    Drawer.close();
+    toast('Conta excluída.');
+    window.location.reload();
   }
 
   /**

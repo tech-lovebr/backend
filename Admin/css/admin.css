@@ -748,7 +748,7 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5.5rem 1.5rem 3rem;
+  padding: 6.5rem 1.5rem 3rem;
   background: #E9EFF8;
   position: relative;
   overflow: hidden;
@@ -762,8 +762,15 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   max-width: 400px;
 }
 
-.login-marca { display: block; text-align: center; margin-bottom: 1.5rem; }
-.login-marca img { height: 34px; width: auto; object-fit: contain; display: inline-block; }
+/* Logotipo no canto da página, fora do cartão. */
+.login-marca {
+  position: absolute;
+  top: 1.75rem;
+  left: 2rem;
+  z-index: 2;
+}
+
+.login-marca img { height: 40px; width: auto; object-fit: contain; display: block; }
 
 /* Traço decorativo no rodapé, no tom da marca e bem recuado. */
 .login-arte {
@@ -900,8 +907,10 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 }
 
 @media (max-width: 640px) {
-  .login-page { padding: 3.5rem 1.25rem 2.5rem; align-items: flex-start; }
+  .login-page { padding: 6rem 1.25rem 2.5rem; align-items: flex-start; }
   .login-cartao { padding: 2rem 1.5rem; }
+  .login-marca { top: 1.5rem; left: 1.25rem; }
+  .login-marca img { height: 34px; }
 }
 
 /* -------------------------------------------------------------- Responsivo */

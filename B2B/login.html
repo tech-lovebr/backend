@@ -27,15 +27,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js"></script>
 </head>
-<body class="font-sans" data-auth-view="login">
+<body class="font-sans bg-white" data-auth-view="login">
 
-  <div class="min-h-screen w-full flex items-center justify-center p-4" style="background:#EBF4FF;">
-    <div class="w-full max-w-lg bg-white rounded-3xl shadow-[0_8px_30px_rgba(16,24,40,0.10)] p-6 sm:p-8">
+  <div class="min-h-screen w-full flex">
+
+    <!-- Esquerda: formulário -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
+      <div class="w-full max-w-md">
 
         <!-- VIEW: LOGIN -->
         <div id="auth-view-login">
-          <div class="text-center mb-6">
-            <img src="assets/logo.png" alt="Love" class="h-10 w-auto mx-auto mb-3 object-contain">
+          <div class="mb-6">
+            <img src="assets/logo.png" alt="Love" class="h-9 w-auto mb-6 object-contain">
             <h3 class="text-2xl font-extrabold text-slate-900">Acesse sua conta</h3>
           </div>
 
@@ -86,14 +89,14 @@
             <p id="login-info" class="text-xs text-zinc-500 hidden"></p>
           </form>
 
-          <p class="text-[11px] text-slate-400 text-center mt-4 leading-relaxed">
+          <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">
             Ao continuar, você concorda com os
             <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Termos de Uso</a>
             e a
             <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Política de Privacidade</a>.
           </p>
 
-          <div class="pt-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1">
+          <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
             <span class="text-xs text-slate-500">Não tem uma conta?</span>
             <a href="signup.html" id="go-to-signup" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer">
               Criar uma conta
@@ -103,8 +106,8 @@
 
         <!-- VIEW: CADASTRO -->
         <div id="auth-view-signup" class="hidden">
-          <div class="text-center mb-6">
-            <img src="assets/logo.png" alt="Love" class="h-10 w-auto mx-auto mb-3 object-contain">
+          <div class="mb-6">
+            <img src="assets/logo.png" alt="Love" class="h-9 w-auto mb-6 object-contain">
             <h3 class="text-2xl font-extrabold text-slate-900">Crie sua conta</h3>
             <p class="text-xs text-slate-500 mt-1">100% gratuito. Sem necessidade de cartão de crédito.</p>
           </div>
@@ -146,9 +149,9 @@
             <p id="signup-error" class="text-xs text-red-600 hidden"></p>
           </form>
 
-          <p class="text-[11px] text-slate-400 text-center mt-4 leading-relaxed">Ao continuar, você reconhece a <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
+          <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">Ao continuar, você reconhece a <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
 
-          <div class="pt-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1">
+          <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
             <span class="text-xs text-slate-500">Tem uma conta?</span>
             <a href="login.html" id="go-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer">
               Entrar
@@ -156,7 +159,22 @@
           </div>
         </div>
 
+      </div>
     </div>
+
+    <!-- Direita: imagem -->
+    <div class="hidden lg:flex w-1/2 relative overflow-hidden">
+      <img src="assets/wedding_hero_banner.jpg" alt="" class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
+      <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
+        <div></div>
+        <div>
+          <h2 class="text-white text-4xl font-normal leading-tight mb-10">Gerencie seus leads, contratos e vitrine de serviços em um só lugar.</h2>
+          <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>

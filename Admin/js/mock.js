@@ -310,7 +310,13 @@ function demoSeed() {
     { id: id('vgm', 5), titulo: 'Patagônia — inverno', destino: 'Argentina', tipo: 'experiencia', descricao: 'Em preparação para a temporada.', preco: 21500, parcelas: 10, duracao_noites: 6, vagas: 12, vagas_vendidas: 0, inclui: ['Aéreo ida e volta', 'Hotel', 'Excursão ao glaciar'], posicao: 5, ativo: false, created_at: diasAtras(10) }
   ];
 
+  const contas_sem_origem = [
+    { id: 'auth-sem-1', email: 'novo.parceiro@gmail.com', nome: 'Novo Parceiro', provedor: 'google', email_confirmado: true, created_at: diasAtras(2) },
+    { id: 'auth-sem-2', email: 'casal.teste@icloud.com', nome: null, provedor: 'apple', email_confirmado: false, created_at: diasAtras(0) }
+  ];
+
   return {
+    contas_sem_origem,
     servicos_beneficios, viagens_pacotes,
     admins: [
       { id: 'admin-demo', name: 'Victor Maranhão', email: 'admin@love.com.br', role: 'superadmin', active: true, created_at: diasAtras(300) },
@@ -437,6 +443,34 @@ function criarClienteDemo() {
 
   return {
     from: builder,
+
+    /** Só o admin_listar_contas() é usado hoje; monta a visão a partir do seed. */
+    rpc(nome) {
+      if (nome !== 'admin_listar_contas') {
+        return Promise.resolve({ data: null, error: { message: `rpc ${nome} sem versão de demonstração` } });
+      }
+
+      const contas = [
+        ...(db.fornecedores || []).map(f => ({
+          id: f.id, email: f.email, nome: f.company_name, origem: 'b2b',
+          provedor: 'email', papel_metadado: 'fornecedor',
+          criado_em: f.created_at, ultimo_acesso: f.created_at, email_confirmado: true
+        })),
+        ...(db.clientes || []).map(c => ({
+          id: c.id, email: c.email, nome: c.couple_name, origem: 'anfitriao',
+          provedor: 'email', papel_metadado: 'cliente',
+          criado_em: c.created_at, ultimo_acesso: c.created_at, email_confirmado: true
+        })),
+        ...(db.contas_sem_origem || []).map(o => ({
+          id: o.id, email: o.email, nome: o.nome || null, origem: 'sem_origem',
+          provedor: o.provedor, papel_metadado: null,
+          criado_em: o.created_at, ultimo_acesso: null, email_confirmado: o.email_confirmado ?? false
+        }))
+      ];
+
+      return Promise.resolve({ data: contas, error: null });
+    },
+
     auth: {
       getSession: () => Promise.resolve({ data: { session: { user: { id: 'admin-demo', email: 'admin@love.com.br' } } }, error: null }),
       signInWithPassword: () => Promise.resolve({ data: { user: { id: 'admin-demo' } }, error: null }),

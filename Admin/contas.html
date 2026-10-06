@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todas as contas — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=47">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="contas" data-title="Todas as contas">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="kpi-grid" id="kpi-grid"></section>
+
+        <div id="page-controls" hidden>
+          <input type="search" class="search-input" id="busca" placeholder="Buscar e-mail ou nome...">
+          <select class="field-select" id="filtro-origem">
+            <option value="">Todas as origens</option>
+            <option value="b2b">B2B</option>
+            <option value="anfitriao">Anfitriões</option>
+            <option value="sem_origem">Sem origem</option>
+          </select>
+        </div>
+
+        <section class="card table-card">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr>
+                <th>Conta</th><th>E-mail</th><th>Origem</th><th>Entrou por</th>
+                <th>Confirmado</th><th>Último acesso</th><th>Criada em</th>
+              </tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/contas.js"></script>
+</body>
+</html>

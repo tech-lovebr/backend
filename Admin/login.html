@@ -12,16 +12,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=43">
+  <link rel="stylesheet" href="css/admin.css?v=44">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
 </head>
 <body class="login-page">
-
-  <a class="login-marca" href="https://love.com.br" target="_blank" rel="noopener noreferrer">
-    <img src="assets/logo_blue.png" alt="Love">
-  </a>
 
   <!-- Traço de fundo: formas soltas de painel, sem concorrer com o cartão. -->
   <svg class="login-arte" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
@@ -54,35 +50,37 @@
     </g>
   </svg>
 
-  <main class="login-cartao">
-    <h1>Painel administrativo</h1>
-    <p class="login-sub">Olá! Informe seus dados de acesso para entrar no painel.</p>
+  <main class="login-area">
+    <a class="login-marca" href="https://love.com.br" target="_blank" rel="noopener noreferrer">
+      <img src="assets/logo_blue.png" alt="Love">
+    </a>
 
-    <form id="login-form" novalidate>
-      <div class="login-campo">
-        <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" required>
-      </div>
+    <div class="login-cartao">
+      <h1>Admin Login</h1>
+      <p class="login-sub">Olá! Informe seus dados de acesso para entrar no painel.</p>
 
-      <div class="login-campo">
-        <input id="login-password" type="password" placeholder="Senha" autocomplete="current-password" required>
-        <button type="button" class="login-ver-senha" id="btn-ver-senha">Mostrar</button>
-      </div>
+      <form id="login-form" novalidate>
+        <div class="login-campo">
+          <input id="login-email" type="email" placeholder="E-mail" autocomplete="username" required>
+        </div>
 
-      <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
+        <div class="login-campo">
+          <input id="login-password" type="password" placeholder="Senha" autocomplete="current-password" required>
+          <button type="button" class="login-ver-senha" id="btn-ver-senha">Mostrar</button>
+        </div>
 
-      <button type="submit" class="login-botao" id="login-submit">Entrar</button>
+        <button type="submit" class="login-botao" id="login-submit">Entrar</button>
 
-      <p id="login-error" class="login-erro" style="display:none"></p>
-    </form>
+        <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
 
-    <p id="nota-demo" class="login-nota" style="display:none">
-      <strong>Modo demonstração.</strong> Os dados são fictícios e ficam só neste
-      navegador. Entre com qualquer e-mail e senha.
-    </p>
+        <p id="login-error" class="login-erro" style="display:none"></p>
+      </form>
 
-    <p id="nota-producao" class="login-nota">
-      Área restrita. Novos administradores são cadastrados pela equipe Love.
-    </p>
+      <p id="nota-demo" class="login-nota" style="display:none">
+        <strong>Modo demonstração.</strong> Os dados são fictícios e ficam só neste
+        navegador. Entre com qualquer e-mail e senha.
+      </p>
+    </div>
   </main>
 
   <script>
@@ -112,7 +110,6 @@
 
     if (MODO_DEMO_ATIVO) {
       document.getElementById('nota-demo').style.display = 'block';
-      document.getElementById('nota-producao').style.display = 'none';
       document.getElementById('login-email').value = 'admin@love.com.br';
       document.getElementById('login-password').value = 'demo';
     }

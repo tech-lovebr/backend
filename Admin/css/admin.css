@@ -754,14 +754,16 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   overflow: hidden;
 }
 
-.login-marca {
-  position: absolute;
-  top: 1.75rem;
-  left: 2rem;
-  z-index: 2;
+/* Logotipo centralizado acima do cartão. */
+.login-area {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
 }
 
-.login-marca img { height: 30px; width: auto; object-fit: contain; display: block; }
+.login-marca { display: block; text-align: center; margin-bottom: 1.5rem; }
+.login-marca img { height: 34px; width: auto; object-fit: contain; display: inline-block; }
 
 /* Traço decorativo no rodapé, no tom da marca e bem recuado. */
 .login-arte {
@@ -779,10 +781,7 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 }
 
 .login-cartao {
-  position: relative;
-  z-index: 1;
   width: 100%;
-  max-width: 400px;
   background: #fff;
   border-radius: var(--radius-card);
   box-shadow: 0 18px 44px rgba(16, 24, 40, .1);
@@ -806,6 +805,8 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   align-items: center;
   margin-bottom: .875rem;
 }
+
+.login-campo:last-of-type { margin-bottom: 1.5rem; }
 
 .login-campo input {
   width: 100%;
@@ -848,11 +849,11 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 .login-esqueci {
   display: block;
-  text-align: right;
+  text-align: center;
   font-size: .8125rem;
   color: var(--primary-color);
   text-decoration: none;
-  margin: .125rem 0 1.5rem;
+  margin: 1.125rem 0 0;
 }
 
 .login-esqueci:hover { text-decoration: underline; }
@@ -899,9 +900,8 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 }
 
 @media (max-width: 640px) {
-  .login-page { padding: 5rem 1.25rem 2.5rem; align-items: flex-start; }
+  .login-page { padding: 3.5rem 1.25rem 2.5rem; align-items: flex-start; }
   .login-cartao { padding: 2rem 1.5rem; }
-  .login-marca { left: 1.25rem; }
 }
 
 /* -------------------------------------------------------------- Responsivo */

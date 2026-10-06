@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crie sua conta — Portal do Fornecedor Love</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#183b54">
+  <meta name="theme-color" content="#537bae">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,11 +22,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js"></script>
 </head>
-<body class="font-sans bg-white">
+<body class="font-sans bg-white" data-auth-view="signup">
 
   <div class="min-h-screen w-full flex">
 
-    <!-- Esquerda: imagem (mesmo padrão de love.com.br/cadastro) -->
+    <!-- Esquerda: imagem -->
     <div class="hidden lg:flex w-1/2 bg-white p-4">
       <div class="relative w-full h-full rounded-3xl overflow-hidden">
         <img src="assets/wedding_hero_banner.jpg" alt="" class="absolute inset-0 w-full h-full object-cover">
@@ -34,54 +34,212 @@
         <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
           <div></div>
           <div>
-            <h2 class="text-white text-4xl font-normal leading-tight mb-10">Junte-se aos fornecedores parceiros da Love.</h2>
+            <h2 class="text-white text-4xl font-normal leading-tight mb-10">Gerencie seus leads, contratos e vitrine de serviços em um só lugar.</h2>
             <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Direita: caixa de cadastro -->
-    <div class="w-full lg:w-1/2 bg-white p-4 flex">
-      <div class="w-full h-full rounded-3xl border border-zinc-200 shadow-sm flex items-center justify-center p-6 sm:p-10">
-        <div class="w-full max-w-sm">
+    <!-- Direita: caixa compacta (login ou cadastro) -->
+    <div class="w-full lg:w-1/2 bg-white p-4 flex items-center justify-center">
+      <div class="w-full max-w-sm rounded-3xl border border-zinc-200 shadow-sm p-6 sm:p-8">
 
-          <a href="index.html" class="signup-logo">
-            <img src="assets/logo.png" alt="Love">
-          </a>
+        <!-- VIEW: LOGIN -->
+        <div id="auth-view-login" class="hidden">
+          <div class="text-center mb-6">
+            <img src="assets/logo.png" alt="Love" class="h-10 w-auto mx-auto mb-3 object-contain">
+            <h3 class="text-2xl font-extrabold text-slate-900">Acesse sua conta</h3>
+          </div>
 
-          <h1 class="signup-title">Crie sua conta</h1>
-          <p class="signup-subtitle">100% gratuito. Sem necessidade de cartão de crédito.</p>
+          <div class="space-y-2.5">
+            <button type="button" id="google-login-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
+              <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span>Continuar com o Google</span>
+            </button>
 
-          <button type="button" id="google-signup-btn" class="signup-oauth-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.85-.07-1.47-.23-2.12H12v3.85h6.62c-.13 1.1-.86 2.76-2.47 3.88l-.02.15 3.59 2.78.25.02c2.28-2.1 3.55-5.19 3.55-8.56Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.94-2.9l-3.78-2.93c-1.01.7-2.37 1.19-4.16 1.19-3.18 0-5.88-2.1-6.84-5H1.27v3.02C3.25 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.16 14.36A7.4 7.4 0 0 1 4.75 12c0-.82.14-1.62.4-2.36V6.62H1.27A11.97 11.97 0 0 0 0 12c0 1.93.46 3.76 1.27 5.38l3.89-3.02Z"/><path fill="#EA4335" d="M12 4.75c2.25 0 3.77.97 4.64 1.78l3.39-3.31C17.94 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.62l3.89 3.02c.96-2.9 3.66-5 6.84-5Z"/></svg>
-            Continuar com Google
+            <button type="button" id="apple-login-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
+              <svg class="w-4 h-4 fill-zinc-900" viewBox="0 0 170 170">
+                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.66-7.83-11.87-14.28-5.77-8.91-10.35-18.9-13.74-29.96-3.4-11.06-5.1-21.73-5.1-32.01 0-14.65 3.63-26.68 10.89-36.09 7.26-9.41 16.5-14.23 27.72-14.47 4.58 0 9.87 1.25 15.86 3.76 6 2.5 9.8 3.82 11.41 3.94 1.34-.12 5.37-1.48 12.08-4.08 6.71-2.6 12.19-3.8 16.45-3.6 12.67.63 22.56 5.33 29.68 14.09-11.14 6.78-16.58 16.2-16.32 28.27.24 9.4 3.82 17.15 10.74 23.27 6.92 6.12 15.22 9.53 24.9 10.23-2.12 6.64-4.87 13.43-8.24 20.37zM119.22 31.84c0-7.39 2.66-14.35 7.98-20.89C132.52 4.41 139.19.78 147.21 0c.12 1.03.18 1.94.18 2.74 0 7.39-2.78 14.46-8.33 21.21-5.56 6.75-12.38 10.51-20.47 11.28-.48-1.14-.72-2.27-.72-3.39z"/>
+              </svg>
+              <span>Continuar com a Apple</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3 my-4">
+            <div class="h-px bg-slate-200 flex-1"></div>
+            <span class="text-[11px] text-slate-400 uppercase font-semibold">ou entre com e-mail</span>
+            <div class="h-px bg-slate-200 flex-1"></div>
+          </div>
+
+          <form id="login-form" class="space-y-3.5 text-left">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
+              <input type="email" id="login-email" required placeholder="seu.email@exemplo.com" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-bold text-slate-700">Senha</label>
+                <a href="esqueci-senha.html" class="text-[11px] font-semibold text-zinc-900 hover:text-black hover:underline transition-colors">Esqueceu a senha?</a>
+              </div>
+              <input type="password" id="login-password" required placeholder="Sua senha secreta" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
+              <span>Continuar</span>
+            </button>
+
+            <p id="login-error" class="text-xs text-red-600 hidden"></p>
+            <p id="login-info" class="text-xs text-zinc-500 hidden"></p>
+          </form>
+
+          <p class="text-[11px] text-slate-400 text-center mt-4 leading-relaxed">
+            Ao continuar, você concorda com os
+            <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Termos de Uso</a>
+            e a
+            <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Política de Privacidade</a>.
+          </p>
+
+          <div class="pt-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1">
+            <span class="text-xs text-slate-500">Não tem uma conta?</span>
+            <a href="signup.html" id="go-to-signup" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer">
+              Criar uma conta
+            </a>
+          </div>
+        </div>
+
+        <!-- VIEW: CADASTRO -->
+        <div id="auth-view-signup">
+          <div class="text-center mb-6">
+            <img src="assets/logo.png" alt="Love" class="h-10 w-auto mx-auto mb-3 object-contain">
+            <h3 class="text-2xl font-extrabold text-slate-900">Crie sua conta</h3>
+            <p class="text-xs text-slate-500 mt-1">100% gratuito. Sem necessidade de cartão de crédito.</p>
+          </div>
+
+          <button type="button" id="google-signup-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Continuar com o Google</span>
           </button>
 
-          <div class="signup-divider">ou</div>
+          <div class="flex items-center gap-3 my-4">
+            <div class="h-px bg-slate-200 flex-1"></div>
+            <span class="text-[11px] text-slate-400 uppercase font-semibold">ou</span>
+            <div class="h-px bg-slate-200 flex-1"></div>
+          </div>
 
-          <form id="signup-email-form" class="signup-email-form">
-            <input type="text" id="signup-company" class="field-input" placeholder="Nome da sua empresa" required autocomplete="organization">
-            <input type="email" id="signup-email" class="field-input" placeholder="nome@empresa.com" required autocomplete="email">
-            <input type="password" id="signup-password" class="field-input" placeholder="Crie uma senha" required autocomplete="new-password" minlength="6">
-            <button type="submit" class="btn-primary justify-center w-full py-3" id="signup-email-btn">Criar conta</button>
+          <form id="signup-email-form" class="space-y-3.5 text-left">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Nome da empresa</label>
+              <input type="text" id="signup-company" required autocomplete="organization" placeholder="Nome da sua empresa" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
+              <input type="email" id="signup-email" required autocomplete="email" placeholder="nome@empresa.com" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
+              <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" placeholder="Crie uma senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+            </div>
+
+            <button type="submit" id="signup-email-btn" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
+              <span>Criar conta</span>
+            </button>
+
             <p id="signup-error" class="text-xs text-red-600 hidden"></p>
           </form>
 
-          <p class="signup-legal">Ao continuar, você reconhece a <a href="#">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
+          <p class="text-[11px] text-slate-400 text-center mt-4 leading-relaxed">Ao continuar, você reconhece a <a href="#" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
 
-          <p class="signup-footer-link">Tem uma conta? <a href="login.html">Entrar</a></p>
+          <div class="pt-4 text-center text-xs text-slate-500 flex items-center justify-center gap-1">
+            <span class="text-xs text-slate-500">Tem uma conta?</span>
+            <a href="login.html" id="go-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer">
+              Entrar
+            </a>
+          </div>
         </div>
+
       </div>
     </div>
 
   </div>
 
   <script>
+    function showAuthView(view) {
+      document.body.dataset.authView = view;
+      document.getElementById('auth-view-login').classList.toggle('hidden', view !== 'login');
+      document.getElementById('auth-view-signup').classList.toggle('hidden', view !== 'signup');
+    }
+
+    document.getElementById('go-to-signup').addEventListener('click', (e) => {
+      e.preventDefault();
+      showAuthView('signup');
+      history.replaceState(null, '', 'signup.html');
+    });
+
+    document.getElementById('go-to-login').addEventListener('click', (e) => {
+      e.preventDefault();
+      showAuthView('login');
+      history.replaceState(null, '', 'login.html');
+    });
+
+    showAuthView(document.body.dataset.authView);
+
+    document.getElementById('google-login-btn').addEventListener('click', async () => {
+      await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html') }
+      });
+    });
+
+    document.getElementById('apple-login-btn').addEventListener('click', () => {
+      const infoEl = document.getElementById('login-info');
+      infoEl.textContent = 'Login com Apple ainda não disponível. Use e-mail e senha ou Google.';
+      infoEl.classList.remove('hidden');
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+
+      errorEl.classList.add('hidden');
+
+      if (!email || !password) {
+        errorEl.textContent = 'Preencha e-mail e senha para continuar.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      submitBtn.disabled = false;
+
+      if (error) {
+        errorEl.textContent = 'E-mail ou senha incorretos.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      window.location.href = 'dashboard.html';
+    });
+
     document.getElementById('google-signup-btn').addEventListener('click', async () => {
       await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + window.location.pathname.replace('signup.html', 'dashboard.html') }
+        options: { redirectTo: window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html') }
       });
     });
 

@@ -6046,6 +6046,27 @@ body[data-theme="dark"] .payment-link-empty { color: #A1A1AA !important; }
 
 body[data-theme="dark"] .payment-link-row-paid { color: #4ADE80 !important; }
 
+.payment-link-row { cursor: pointer; }
+.payment-link-row:hover { background: #FAFAFA; }
+body[data-theme="dark"] .payment-link-row:hover { background: #2E2E2E !important; }
+
+.charge-drawer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+.charge-drawer-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.charge-drawer-field-full { grid-column: 1 / -1; }
+.charge-drawer-label { font-size: 0.75rem; font-weight: 600; color: #71717A; }
+.charge-drawer-value { font-size: 0.875rem; font-weight: 600; color: #18181B; }
+body[data-theme="dark"] .charge-drawer-label { color: #A1A1AA !important; }
+body[data-theme="dark"] .charge-drawer-value { color: #FFFFFF !important; }
+
+.charge-drawer-link-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  background: #FAFAFA; border: 1px solid var(--border-light); border-radius: 10px;
+  padding: 0.65rem 0.85rem; margin-top: 0.3rem;
+}
+.charge-drawer-link-url { font-size: 0.8125rem; color: #71717A; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body[data-theme="dark"] .charge-drawer-link-row { background: #333333 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .charge-drawer-link-url { color: #A1A1AA !important; }
+
 .payment-method-row {
   display: flex;
   align-items: flex-start;

@@ -66,13 +66,13 @@
           <div class="dash-card mb-6">
             <div class="dash-card-header">
               <div class="dash-card-header-left">
-                <h2 class="text-base font-bold text-zinc-900">Links gerados</h2>
+                <h2 class="text-base font-bold text-zinc-900">Links de cobranças</h2>
               </div>
             </div>
             <div class="overflow-x-auto -mx-1">
               <table class="leads-table w-full">
                 <thead>
-                  <tr><th>Data</th><th>Valor</th><th>Parcelas</th><th>Status</th><th>Link</th></tr>
+                  <tr><th>Criado em</th><th>Valor</th><th>Parcelas</th><th>Situação</th><th>Link</th></tr>
                 </thead>
                 <tbody id="payment-links-body"></tbody>
               </table>
@@ -275,11 +275,62 @@
     </div>
   </div>
 
+  <!-- Drawer: dados completos de uma cobrança -->
+  <div class="drawer-backdrop" id="charge-drawer-backdrop"></div>
+  <aside class="form-drawer" id="charge-drawer" aria-label="Dados da cobrança">
+    <div class="form-drawer-header">
+      <div class="form-drawer-header-main">
+        <p class="task-drawer-list-label">Links de cobranças</p>
+        <h2 class="task-drawer-title">Dados da cobrança</h2>
+      </div>
+      <button type="button" class="form-drawer-close" id="charge-drawer-close" aria-label="Fechar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <div class="form-drawer-body">
+      <div class="charge-drawer-grid">
+        <div class="charge-drawer-field">
+          <span class="charge-drawer-label">Situação</span>
+          <span class="charge-drawer-value" id="charge-drawer-situacao"></span>
+        </div>
+        <div class="charge-drawer-field">
+          <span class="charge-drawer-label">Valor</span>
+          <span class="charge-drawer-value" id="charge-drawer-valor"></span>
+        </div>
+        <div class="charge-drawer-field">
+          <span class="charge-drawer-label">Criado em</span>
+          <span class="charge-drawer-value" id="charge-drawer-criado"></span>
+        </div>
+        <div class="charge-drawer-field">
+          <span class="charge-drawer-label">Parcelas</span>
+          <span class="charge-drawer-value" id="charge-drawer-parcelas"></span>
+        </div>
+        <div class="charge-drawer-field">
+          <span class="charge-drawer-label">Forma de pagamento</span>
+          <span class="charge-drawer-value" id="charge-drawer-formas"></span>
+        </div>
+        <div class="charge-drawer-field">
+          <span class="charge-drawer-label">Taxa repassada ao cliente</span>
+          <span class="charge-drawer-value" id="charge-drawer-taxa"></span>
+        </div>
+      </div>
+
+      <div class="charge-drawer-field charge-drawer-field-full">
+        <span class="charge-drawer-label">Link de pagamento</span>
+        <div class="charge-drawer-link-row">
+          <span class="charge-drawer-link-url" id="charge-drawer-link"></span>
+          <button type="button" class="payment-link-row-copy" id="charge-drawer-copy">Copiar link</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
   <script src="js/data.js?v=12"></script>
   <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=25"></script>
-  <script src="js/contratos.js?v=23"></script>
+  <script src="js/contratos.js?v=24"></script>
 </body>
 </html>

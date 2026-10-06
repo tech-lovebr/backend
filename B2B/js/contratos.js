@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderPaymentLinksList();
   initPaymentLinkModal();
   initWithdrawalModal();
+  initChargeDrawer();
 });
 
 async function loadContratosData() {
@@ -369,7 +370,7 @@ function renderPaymentLinksList() {
   if (empty) empty.style.display = 'none';
 
   body.innerHTML = links.map(link => `
-    <tr>
+    <tr class="payment-link-row" data-link-row="${link.id}">
       <td>${formatLinkDate(link.created_at)}</td>
       <td>${formatCurrency(link.amount)}</td>
       <td>${link.installments}x${link.installments === 1 ? ' (à vista)' : ''}</td>
@@ -383,12 +384,66 @@ function renderPaymentLinksList() {
   `).join('');
 
   body.querySelectorAll('[data-copy-link]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const url = buildPaymentLinkUrl(btn.dataset.copyLink);
       copyTextToClipboard(url);
       showToast('Link copiado!');
     });
   });
+
+  body.querySelectorAll('[data-link-row]').forEach(row => {
+    row.addEventListener('click', () => openChargeDrawer(row.dataset.linkRow));
+  });
+}
+
+/* -------------------- Drawer: Dados da cobrança -------------------- */
+
+const PAYMENT_METHOD_LABELS = { boleto: 'Boleto', pix: 'Pix', cartao: 'Cartão' };
+
+function initChargeDrawer() {
+  const backdrop = document.getElementById('charge-drawer-backdrop');
+  const drawer = document.getElementById('charge-drawer');
+  const closeBtn = document.getElementById('charge-drawer-close');
+  if (!drawer) return;
+
+  const close = () => { drawer.classList.remove('show'); backdrop.classList.remove('show'); };
+  closeBtn.addEventListener('click', close);
+  backdrop.addEventListener('click', close);
+
+  document.getElementById('charge-drawer-copy').addEventListener('click', () => {
+    const link = bPaymentLinks.find(l => l.id === drawer.dataset.linkId);
+    if (!link) return;
+    copyTextToClipboard(buildPaymentLinkUrl(link.id));
+    showToast('Link copiado!');
+  });
+}
+
+function openChargeDrawer(linkId) {
+  const link = bPaymentLinks.find(l => l.id === linkId);
+  if (!link) return;
+
+  const drawer = document.getElementById('charge-drawer');
+  const backdrop = document.getElementById('charge-drawer-backdrop');
+  drawer.dataset.linkId = linkId;
+
+  const situacaoEl = document.getElementById('charge-drawer-situacao');
+  situacaoEl.textContent = link.status === 'pago' ? 'Pago' : 'Aguardando pagamento';
+  situacaoEl.className = `charge-drawer-value status-text ${link.status === 'pago' ? 'status-ativo' : 'status-pendente'}`;
+
+  document.getElementById('charge-drawer-valor').textContent = formatCurrency(link.amount);
+  document.getElementById('charge-drawer-criado').textContent = formatLinkDate(link.created_at);
+  document.getElementById('charge-drawer-parcelas').textContent = `${link.installments}x${link.installments === 1 ? ' (à vista)' : ''}`;
+
+  const methods = link.payment_methods || {};
+  const formas = Object.keys(methods).filter(k => methods[k]).map(k => PAYMENT_METHOD_LABELS[k] || k);
+  document.getElementById('charge-drawer-formas').textContent = formas.length ? formas.join(', ') : '—';
+
+  document.getElementById('charge-drawer-taxa').textContent = link.pass_fee_to_client ? 'Sim' : 'Não';
+  document.getElementById('charge-drawer-link').textContent = buildPaymentLinkUrl(link.id);
+
+  drawer.classList.add('show');
+  backdrop.classList.add('show');
 }
 
 function copyTextToClipboard(text) {

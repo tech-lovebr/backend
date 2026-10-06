@@ -135,7 +135,7 @@ async function initFirstProductModal() {
 
 /* -------------------- Pop-up: criar link de pagamento (direto no dashboard) -------------------- */
 
-const DASH_PAYMENT_LINK_SUBMIT_BTN_HTML = '<button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar link de pagamento</button>';
+const DASH_PAYMENT_LINK_SUBMIT_BTN_HTML = '<button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar Link de Cobrança</button>';
 
 function buildDashPaymentLinkUrl(id) {
   return new URL(`site-preview.html?page=checkout&link=${id}`, location.href).toString();
@@ -215,6 +215,7 @@ function initDashboardPaymentLinkModal() {
       cartao: form.querySelector('[data-payment-method="cartao"]').checked
     };
     const installments = Number(installmentsSelect.value) || 1;
+    const vencimento = document.getElementById('payment-link-vencimento').value || null;
 
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return;
@@ -227,6 +228,7 @@ function initDashboardPaymentLinkModal() {
         installments,
         pass_fee_to_client: passFeeToClient,
         payment_methods: paymentMethods,
+        vencimento,
         status: 'pendente'
       })
       .select('id')

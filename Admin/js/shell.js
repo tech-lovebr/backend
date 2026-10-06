@@ -18,6 +18,7 @@ const NAV_SECTIONS = [
         grupo: 'fornecedores', text: 'B2B', icon: 'store',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
+          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' },
           { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Dashboard' }
         ]
       },

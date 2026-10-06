@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Afiliados — Love Admin</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-love.png">
+  <link rel="apple-touch-icon" href="assets/fav-love.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=50">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="afiliados" data-title="Afiliados">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="card">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M18 18.72a9.1 9.1 0 0 0 3.74-.78 3 3 0 0 0-4.68-3.66M18 18.72V14.5a6 6 0 0 0-.27-1.78M18 18.72a9.1 9.1 0 0 1-3.74-.78M6.98 12.72A3 3 0 0 0 2.3 16.38a9.1 9.1 0 0 0 3.74.78m.94-4.44A6 6 0 0 0 6 14.5v4.22m.94-6a3 3 0 1 0-1.88 0M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 0a6 6 0 0 1 6 6v.28a12.1 12.1 0 0 1-12 0V18a6 6 0 0 1 6-6Z"/>
+            </svg>
+            <strong>Programa de afiliados ainda não configurado</strong>
+            <p>
+              Aqui vão ficar os fornecedores que indicam outros fornecedores: quem indicou
+              quem, quantas indicações viraram conta paga e quanto cada um tem a receber.
+              Falta definir como a comissão é calculada para a tela sair do papel.
+            </p>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+</body>
+</html>

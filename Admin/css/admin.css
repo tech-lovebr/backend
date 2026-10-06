@@ -1782,43 +1782,57 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   text-align: center;
 }
 
-/* Confirmação de exclusão dentro do drawer — o aviso precisa dizer o que some,
-   e isso não cabe num confirm() do navegador. */
-.drawer-exclusao {
+/* Botão neutro — a ação reversível (bloquear) não pode usar a cor de perigo,
+   que fica reservada para o que não tem volta. */
+.btn-neutro {
+  background: #F4F4F5;
+  color: #3F3F46;
+  border-color: #E4E4E7;
+}
+.btn-neutro:hover:not(:disabled) { background: #E9E9EC; }
+
+/* Caixa de ações da conta no drawer: cancelar, bloquear e excluir lado a lado.
+   O fundo é neutro porque a ação principal é reversível; só o Excluir carrega
+   a cor de perigo. */
+.drawer-acoes-conta {
   margin-top: 1.5rem;
   padding: 1rem;
-  border: 1px solid #f3bbb4;
+  border: 1px solid var(--border);
   border-radius: var(--radius-card);
-  background: var(--danger-bg);
+  background: var(--bg-muted);
 }
 
-.drawer-exclusao-titulo {
+.drawer-acoes-titulo {
   margin: 0;
   font-size: .875rem;
   font-weight: 700;
-  color: var(--danger);
+  color: #333333;
 }
 
-.drawer-exclusao-texto {
-  margin: .375rem 0 0;
+.drawer-acoes-texto {
+  margin: .5rem 0 0;
   font-size: .8125rem;
   line-height: 1.6;
-  color: #7a2018;
+  color: var(--text-muted);
 }
 
-.drawer-exclusao-acoes {
+.drawer-acoes-texto--perigo { color: var(--danger); }
+
+.drawer-acoes-botoes {
   display: flex;
   justify-content: flex-end;
   gap: .5rem;
   margin-top: .875rem;
 }
 
-/* Dentro do aviso o botão de perigo não pode ser vermelho-claro sobre
-   vermelho-claro — vira sólido para a ação destrutiva ficar legível. */
-.drawer-exclusao .btn-danger {
+/* Sobre o fundo claro da caixa, o vermelho-claro do botão sumiria — a ação
+   destrutiva vira sólida para ficar legível e distinta das outras duas. */
+.drawer-acoes-botoes .btn-danger {
   background: var(--danger);
   color: #fff;
   border-color: var(--danger);
 }
-.drawer-exclusao .btn-danger:hover:not(:disabled) { background: #951d13; }
-.drawer-exclusao .btn-ghost { background: #fff; }
+.drawer-acoes-botoes .btn-danger:hover:not(:disabled) { background: #951d13; }
+
+/* O status bloqueado precisa saltar na lista de dados do drawer. */
+.valor-bloqueado { color: var(--danger); font-weight: 600; }

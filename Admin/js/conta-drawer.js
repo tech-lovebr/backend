@@ -190,6 +190,9 @@ const ContaDrawer = (() => {
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso ? linha(acesso.exato ? 'Cadastrou-se em' : 'Último aparelho', escapeHtml(acesso.texto)) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
+          ${linha('Situação', c.bloqueado
+            ? '<span class="valor-bloqueado">Bloqueada</span>'
+            : 'Ativa')}
           ${linha('ID único', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
         </div>
 
@@ -215,49 +218,84 @@ const ContaDrawer = (() => {
           </div>` : ''}`,
       footer: `
         <button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>
-        <button type="button" class="btn btn-danger" id="btn-excluir">Excluir usuário</button>`
+        <button type="button" class="btn btn-neutro" id="btn-bloquear">
+          ${c.bloqueado ? 'Desbloquear usuário' : 'Bloquear usuário'}
+        </button>`
     });
 
     document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
-    document.getElementById('btn-excluir').addEventListener('click', () => pedirConfirmacao(c));
+    document.getElementById('btn-bloquear').addEventListener('click', () => pedirConfirmacao(c));
 
     document.querySelectorAll('[data-destino]').forEach(btn => {
       btn.addEventListener('click', () => classificar(c, btn.dataset.destino));
     });
   }
 
-  /* A exclusão não tem desfazer e leva junto tudo que a conta criou, então
-     o aviso aparece dentro do drawer, dizendo o que some — em vez de um
-     confirm() do navegador, que não cabe essa explicação. */
+  /* Bloquear e excluir são coisas diferentes e a caixa precisa deixar isso
+     explícito, porque uma é reversível e a outra não. As três saídas ficam
+     lado a lado: cancelar, bloquear (ou desbloquear) e excluir. */
   function pedirConfirmacao(c) {
-    const corpo = document.querySelector('.drawer-body') || document.getElementById('drawer-body');
+    const corpo = document.getElementById('drawer-body');
+    const bloqueada = !!c.bloqueado;
+    const acao = bloqueada ? 'Desbloquear' : 'Bloquear';
 
     const aviso = document.createElement('div');
-    aviso.className = 'drawer-exclusao';
+    aviso.className = 'drawer-acoes-conta';
     aviso.innerHTML = `
-      <p class="drawer-exclusao-titulo">Excluir ${escapeHtml(c.nome || c.email || 'esta conta')}?</p>
-      <p class="drawer-exclusao-texto">
-        Some a conta e tudo que ela criou: eventos, convidados, presentes,
-        contratos, movimentos da carteira, leads e conversas. Não dá para desfazer.
+      <p class="drawer-acoes-titulo">${acao} ${escapeHtml(c.nome || c.email || 'esta conta')}?</p>
+      <p class="drawer-acoes-texto">
+        ${bloqueada
+          ? 'Desbloquear devolve o acesso: a pessoa volta a entrar na plataforma e a conta fica ativa de novo.'
+          : 'Bloquear impede a pessoa de entrar, mas não apaga nada — a conta continua na base com os eventos, contratos e movimentos dela, e dá para desbloquear depois.'}
       </p>
-      <div class="drawer-exclusao-acoes">
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-exclusao">Cancelar</button>
-        <button type="button" class="btn btn-danger btn-sm" id="btn-confirmar-exclusao">Excluir mesmo assim</button>
+      <p class="drawer-acoes-texto drawer-acoes-texto--perigo">
+        Excluir é definitivo: some a conta e tudo que ela criou — eventos, convidados,
+        presentes, contratos, movimentos da carteira, leads e conversas. Não dá para desfazer.
+      </p>
+      <div class="drawer-acoes-botoes">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-acao">Cancelar</button>
+        <button type="button" class="btn btn-neutro btn-sm" id="btn-confirmar-bloqueio">${acao}</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-confirmar-exclusao">Excluir</button>
       </div>`;
 
-    if (corpo) {
-      corpo.appendChild(aviso);
-      aviso.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }
+    corpo.appendChild(aviso);
+    aviso.scrollIntoView({ behavior: 'smooth', block: 'end' });
 
-    document.getElementById('btn-excluir').disabled = true;
+    const botaoRodape = document.getElementById('btn-bloquear');
+    botaoRodape.disabled = true;
 
-    document.getElementById('btn-cancelar-exclusao').addEventListener('click', () => {
+    document.getElementById('btn-cancelar-acao').addEventListener('click', () => {
       aviso.remove();
-      document.getElementById('btn-excluir').disabled = false;
+      botaoRodape.disabled = false;
     });
 
-    document.getElementById('btn-confirmar-exclusao').addEventListener('click', () => excluir(c));
+    document.getElementById('btn-confirmar-bloqueio')
+      .addEventListener('click', () => bloquear(c, !bloqueada));
+
+    document.getElementById('btn-confirmar-exclusao')
+      .addEventListener('click', () => excluir(c));
+  }
+
+  async function bloquear(c, bloquear) {
+    Drawer.setFooterBusy(true);
+
+    const { error } = await supabaseClient.rpc('admin_bloquear_conta', {
+      p_id: c.id,
+      p_bloquear: bloquear
+    });
+
+    Drawer.setFooterBusy(false);
+
+    if (error) {
+      toast(faltaMigration(error, 'admin_bloquear_conta')
+        ? 'Rode supabase/migrations/018_bloquear_conta.sql no Supabase.'
+        : `Não foi possível ${bloquear ? 'bloquear' : 'desbloquear'}: ${error.message}`);
+      return;
+    }
+
+    Drawer.close();
+    toast(bloquear ? 'Conta bloqueada.' : 'Conta desbloqueada.');
+    window.location.reload();
   }
 
   async function excluir(c) {
@@ -268,8 +306,7 @@ const ContaDrawer = (() => {
     Drawer.setFooterBusy(false);
 
     if (error) {
-      const faltaFuncao = /admin_excluir_conta|does not exist|schema cache/i.test(error.message || '');
-      toast(faltaFuncao
+      toast(faltaMigration(error, 'admin_excluir_conta')
         ? 'Rode supabase/migrations/017_excluir_conta_e_dispositivo.sql no Supabase.'
         : `Não foi possível excluir: ${error.message}`);
       return;
@@ -278,6 +315,11 @@ const ContaDrawer = (() => {
     Drawer.close();
     toast('Conta excluída.');
     window.location.reload();
+  }
+
+  /** Distingue "a função ainda não existe no banco" de um erro de verdade. */
+  function faltaMigration(error, nome) {
+    return new RegExp(`${nome}|does not exist|schema cache`, 'i').test(error.message || '');
   }
 
   /**

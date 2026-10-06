@@ -2,5 +2,11 @@
   "framework": null,
   "buildCommand": null,
   "installCommand": null,
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "redirects": [
+    { "source": "/login.html", "destination": "/login", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/login", "destination": "/login.html" }
+  ]
 }

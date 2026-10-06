@@ -12,6 +12,7 @@
   "rewrites": [
     { "source": "/cadastro", "destination": "/cadastro.html" },
     { "source": "/resetar-senha", "destination": "/resetar-senha.html" },
-    { "source": "/convite-preview", "destination": "/convite-preview.html" }
+    { "source": "/convite-preview", "destination": "/convite-preview.html" },
+    { "source": "/login", "destination": "/" }
   ]
 }

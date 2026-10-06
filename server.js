@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
-  if (pathname === '/') {
+  if (pathname === '/' || pathname === '/login') {
     pathname = '/index.html';
   }
 

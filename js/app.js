@@ -7590,22 +7590,68 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Carrossel promocional do dashboard ("High quality, not high cost") —
-  // troque/adicione itens neste array para o carrossel ganhar mais slides.
-  const dashboardPromoSlides = [
+  // Carrossel promocional do dashboard. Os slides vivem em
+  // conteudo_plataforma e são editados no Admin (Informações → Banner da
+  // home); o array abaixo é só a rede de segurança para quando o banco não
+  // responder — editar ou excluir lá reflete aqui.
+  const dashboardPromoFallback = [
     { src: 'assets/banner_high_quality.jpg', alt: 'High quality, not high cost - Designs that will wow your guests without blowing your budget.' }
   ];
+  let dashboardPromoSlides = dashboardPromoFallback;
 
-  function initDashboardPromoCarousel() {
+  async function carregarPromoDoAdmin() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('conteudo_plataforma')
+        .select('titulo, descricao, imagem_url, link_url, posicao')
+        .eq('plataforma', 'cliente')
+        .eq('secao', 'banner')
+        .eq('ativo', true)
+        .order('posicao', { ascending: true });
+      if (error) throw error;
+      // Zero banners é uma resposta válida: o admin excluiu tudo e o card sai do ar.
+      return (data || []).map(b => ({
+        src: b.imagem_url || '',
+        alt: b.titulo || b.descricao || '',
+        titulo: b.titulo || '',
+        descricao: b.descricao || '',
+        href: b.link_url || ''
+      }));
+    } catch (err) {
+      console.warn('Banner do dashboard: mantendo a imagem padrão.', err);
+      return null;
+    }
+  }
+
+  async function initDashboardPromoCarousel() {
     const track = document.getElementById('dashboard-promo-track');
     const dotsWrap = document.getElementById('dashboard-promo-dots');
     if (!track) return;
 
+    const doAdmin = await carregarPromoDoAdmin();
+    if (doAdmin) dashboardPromoSlides = doAdmin;
+
+    if (!dashboardPromoSlides.length) {
+      document.getElementById('dashboard-promo-carousel')?.remove();
+      return;
+    }
+
     track.innerHTML = dashboardPromoSlides.map((s, i) => `
-      <div class="dashboard-promo-slide${i === 0 ? ' active' : ''}" onclick="navigateToStationery()" title="Ver modelos de convites e papelaria">
+      <div class="dashboard-promo-slide${i === 0 ? ' active' : ''}" data-promo-href="${encodeURI(s.href || '')}" title="${s.titulo || 'Ver modelos de convites e papelaria'}">
         <img src="${s.src}" alt="${s.alt}">
       </div>
     `).join('');
+
+    // Sem link cadastrado o slide continua levando para a papelaria, como antes.
+    // Link externo abre em nova aba; link interno navega na mesma.
+    track.querySelectorAll('.dashboard-promo-slide').forEach(slide => {
+      slide.addEventListener('click', () => {
+        const href = slide.dataset.promoHref;
+        if (!href) return navigateToStationery();
+        if (/^https?:\/\//i.test(href)) window.open(href, '_blank', 'noopener');
+        else window.location.href = href;
+      });
+    });
 
     if (dashboardPromoSlides.length <= 1) {
       if (dotsWrap) dotsWrap.innerHTML = '';
@@ -8502,7 +8548,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.btn-trigger-login').forEach(btn => {
     btn.addEventListener('click', () => {
       switchView('login');
-      history.pushState({ loveView: 'login' }, '', '#login');
+      history.pushState({ loveView: 'login' }, '', '/login');
     });
   });
 
@@ -11005,8 +11051,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.getLoveActiveEventId = () => state.activeEventId;
 
   // Início padrão na página pública — troca para o dashboard automaticamente
-  // se já existir uma sessão Supabase válida (usuário já logado).
-  switchView('public');
+  // se já existir uma sessão Supabase válida (usuário já logado). Quem acessa
+  // /login direto (URL limpa, sem hash) já abre na tela de login.
+  switchView((window.location.pathname === '/login' || window.location.hash === '#login') ? 'login' : 'public');
   initClienteSession();
 
   async function initClienteSession() {

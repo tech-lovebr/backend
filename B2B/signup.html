@@ -182,8 +182,14 @@
   <script>
     function showAuthView(view) {
       document.body.dataset.authView = view;
-      document.getElementById('auth-view-login').classList.toggle('hidden', view !== 'login');
-      document.getElementById('auth-view-signup').classList.toggle('hidden', view !== 'signup');
+      const loginView = document.getElementById('auth-view-login');
+      const signupView = document.getElementById('auth-view-signup');
+      loginView.classList.toggle('hidden', view !== 'login');
+      signupView.classList.toggle('hidden', view !== 'signup');
+      // Desabilita os campos da view escondida: dois formulários com senha
+      // no mesmo documento confundem o "salvar senha" do navegador.
+      loginView.querySelectorAll('input').forEach(el => { el.disabled = view !== 'login'; });
+      signupView.querySelectorAll('input').forEach(el => { el.disabled = view !== 'signup'; });
     }
 
     document.getElementById('go-to-signup').addEventListener('click', (e) => {

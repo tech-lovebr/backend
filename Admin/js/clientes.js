@@ -56,8 +56,11 @@ function exportar() {
     { titulo: 'Conta', valor: c => c.couple_name },
     { titulo: 'E-mail', valor: c => c.email },
     { titulo: 'Telefone', valor: c => c.phone },
+    { titulo: 'Data de nascimento', valor: c => formatDate(c.birthday) },
     { titulo: 'CPF', valor: c => c.cpf },
     { titulo: 'Cidade', valor: c => c.city },
+    { titulo: 'Evento indicado no cadastro', valor: c => c.intended_event_type_label },
+    { titulo: 'Data de evento indicada no cadastro', valor: c => formatDate(c.intended_event_date) },
     { titulo: 'Eventos', valor: c => metricas(c.id).eventos },
     { titulo: 'Convidados', valor: c => metricas(c.id).convidados },
     { titulo: 'Confirmados', valor: c => metricas(c.id).confirmados },
@@ -203,6 +206,13 @@ function abrirDetalhe(id) {
         </div>`).join('')}</div>`
     : `<p class="cell-muted" style="font-size:.8125rem">Este cliente ainda não criou nenhum evento.</p>`;
 
+  const intencaoCadastro = (c.intended_event_type_label || c.intended_event_date)
+    ? `<p class="cell-muted" style="font-size:.8125rem;margin-top:.5rem">
+        Indicou no cadastro: ${escapeHtml(c.intended_event_type_label || '—')}
+        ${c.intended_event_date ? ` · data pretendida ${escapeHtml(formatDate(c.intended_event_date))}` : ''}
+      </p>`
+    : '';
+
   Drawer.open({
     title: c.couple_name || 'Cliente',
     subtitle: c.email || '',
@@ -224,19 +234,21 @@ function abrirDetalhe(id) {
         ${campo('email', 'E-mail', c.email, 'email')}
         <div class="field-row">
           ${campo('phone', 'Telefone', c.phone)}
-          ${campo('cpf', 'CPF', c.cpf)}
+          ${campo('birthday', 'Data de nascimento', c.birthday, 'date')}
         </div>
         <div class="field-row">
+          ${campo('cpf', 'CPF', c.cpf)}
           ${campo('city', 'Cidade', c.city)}
-          <label class="field">
-            <span class="field-label">Status</span>
-            <select class="field-select" name="status">
-              <option value="ativo" ${(c.status || 'ativo') === 'ativo' ? 'selected' : ''}>Ativo</option>
-              <option value="suspenso" ${c.status === 'suspenso' ? 'selected' : ''}>Suspenso</option>
-            </select>
-          </label>
         </div>
+        <label class="field">
+          <span class="field-label">Status</span>
+          <select class="field-select" name="status">
+            <option value="ativo" ${(c.status || 'ativo') === 'ativo' ? 'selected' : ''}>Ativo</option>
+            <option value="suspenso" ${c.status === 'suspenso' ? 'selected' : ''}>Suspenso</option>
+          </select>
+        </label>
       </form>
+      ${intencaoCadastro}
 
       <p class="drawer-section-title">Eventos do cliente</p>
       ${listaEventos}

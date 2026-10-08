@@ -110,17 +110,21 @@ function lockConfiguredFields(p) {
   const documentInput = document.getElementById('profile-document');
   const companyLock = document.getElementById('profile-company-lock');
   const documentLock = document.getElementById('profile-document-lock');
+  const companyRequestChange = document.getElementById('profile-company-request-change');
+  const documentRequestChange = document.getElementById('profile-document-request-change');
 
   if (p.company) {
     companyInput.readOnly = true;
     companyInput.classList.add('field-locked');
     companyLock.hidden = false;
+    companyRequestChange.hidden = false;
   }
 
   if (p.documentNumber) {
     documentInput.readOnly = true;
     documentInput.classList.add('field-locked');
     documentLock.hidden = false;
+    documentRequestChange.hidden = false;
     document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
       btn.disabled = true;
     });

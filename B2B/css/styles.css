@@ -2234,6 +2234,15 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
   color: #A1A1AA;
 }
 
+.field-request-change-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.field-request-change-link:hover { text-decoration: underline; }
+
 .plan-billing-option:disabled {
   cursor: not-allowed;
   opacity: 0.6;

@@ -33,13 +33,22 @@
 --   cancellationPolicy: 'flexivel' | 'moderada' | 'rigorosa',
 --
 --   -- campos legados, mantidos sem alteração de formato (ver js/produtos.js):
---   venue: {..., cleaningFee} | null, -- "Locação de espaço" mantém o modelo de
---                                  -- preço por dia (semana/sábado/domingo/
---                                  -- feriado) em vez do motor novo — decisão
---                                  -- confirmada com o usuário, evita perder
---                                  -- uma diferenciação que já funcionava.
---                                  -- Taxa de limpeza/caução vive aqui (não em
---                                  -- pricing.fixed): é específica de venue.
+--   venue: {                      -- "Locação de espaço" mantém o modelo de
+--     street, number, complement, -- preço por dia (semana/sábado/domingo/
+--     city, state,                -- feriado) em vez do motor novo — decisão
+--     commonAreas: string[],      -- confirmada com o usuário, evita perder
+--     cleaningFee, ...            -- uma diferenciação que já funcionava.
+--   } | null,                     -- Taxa de limpeza/caução vive aqui (não em
+--                                 -- pricing.fixed): é específica de venue.
+--                                 -- Estado/cidade usam a base do IBGE
+--                                 -- (js/data-br-localidades.js). Endereço era
+--                                 -- um campo "address" único; produtos salvos
+--                                 -- antes dessa mudança têm esse texto velho
+--                                 -- migrado pro campo "street" ao abrir pra
+--                                 -- editar (sem reescrever o banco sozinho).
+--                                 -- "floorPlan" (planta do espaço) foi removido
+--                                 -- da função — produtos antigos podem ainda
+--                                 -- ter esse campo salvo, mas a UI não lê mais.
 --   equipmentType: string | null,
 --   dishes: [...] | null
 -- }

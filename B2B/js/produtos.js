@@ -17,6 +17,30 @@ const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos', 'Buffet e 
 const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra', 'Staff e Mão de Obra'];
 const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual', 'Mídia e Audiovisual'];
 
+// Nomes antigos de categoria (de antes de uma renomeação) mapeados pro nome
+// atual — normaliza só em memória, ao carregar os produtos, pra um produto
+// salvo com o nome velho (ex: "Bar e Coquetelaria") não virar uma aba/opção
+// extra duplicada da categoria atual. Não reescreve nada no banco; se a
+// pessoa abrir esse produto e salvar de novo, aí sim ele grava o nome novo.
+const CATEGORY_LEGACY_ALIASES = {
+  'Bar e Coquetelaria': 'Bar e Bebidas',
+  'Bebidas': 'Bar e Bebidas',
+  'Bar': 'Bar e Bebidas',
+  'Trajes': 'Trajes, Beleza e Estilo',
+  'Gastronomia & Alimentos': 'Buffet e Gastronomia',
+  'Buffet': 'Buffet e Gastronomia',
+  'Locação de espaço': 'Espaços para Locação',
+  'Espaços & Locações': 'Espaços para Locação',
+  'Espaço de Locação': 'Espaços para Locação',
+  'Staff & Mão de Obra': 'Staff e Mão de Obra',
+  'Foto, Vídeo & Audiovisual': 'Mídia e Audiovisual',
+  'Mídia': 'Mídia e Audiovisual'
+};
+
+function normalizeCategory(category) {
+  return CATEGORY_LEGACY_ALIASES[category] || category;
+}
+
 const SUBCATEGORY_MAP = {
   'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
   'Bar e Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Bebidas Não Alcoólicas', 'Bar Infantil'],
@@ -28,6 +52,12 @@ const SUBCATEGORY_MAP = {
   'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator', 'Celebrante'],
   'Trajes, Beleza e Estilo': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa', 'Moda Infantil', 'Dia da Noiva', 'Maquiagem', 'Camarim']
 };
+
+const VENUE_COMMON_AREA_OPTIONS = [
+  'Piscina', 'Salão de festas', 'Jardim', 'Churrasqueira', 'Estacionamento',
+  'Cozinha equipada', 'Vestiário', 'Lareira', 'Varanda/Deck', 'Área kids',
+  'Quadra esportiva', 'Espaço gourmet', 'Lounge', 'Banheiros extras', 'Rooftop', 'Elevador'
+];
 
 const PRODUCT_TITLE_PLACEHOLDERS = {
   'Buffet e Gastronomia': 'Ex: Buffet Completo para Casamento (até 150 convidados)',
@@ -74,7 +104,7 @@ let currentCoverImage = null;
 let currentGalleryImages = [];
 let currentOpenDays = {};
 let currentDishes = [];
-let currentFloorPlan = null;
+let currentVenueCommonAreas = [];
 let bProducts = [];
 
 let currentStep = 1;
@@ -112,7 +142,7 @@ async function loadProducts() {
   bProducts = error || !data ? [] : data.map(p => ({
     id: p.id,
     name: p.name,
-    category: p.category,
+    category: normalizeCategory(p.category),
     price: p.price,
     description: p.description,
     active: p.active,
@@ -329,79 +359,51 @@ function renderGalleryImages() {
   });
 }
 
-/* -------------------- Planta do espaço (local) -------------------- */
+/* -------------------- Detalhes do local (Espaços para Locação) -------------------- */
 
-function renderFloorPlanPicker() {
-  const wrap = document.getElementById('product-floorplan-wrap');
+function renderVenueCommonAreas() {
+  const wrap = document.getElementById('product-venue-common-areas-row');
   if (!wrap) return;
 
-  const hasImage = !!currentFloorPlan;
-  const processing = hasImage && currentFloorPlan.processing;
-  const shape = hasImage ? (currentFloorPlan.shape || []) : [];
-  const shapeReady = !processing && shape.length > 0;
+  wrap.innerHTML = VENUE_COMMON_AREA_OPTIONS.map(area => `
+    <button type="button" class="weekday-toggle-chip ${currentVenueCommonAreas.includes(area) ? 'active' : ''}" data-common-area="${escapeHtml(area)}">${escapeHtml(area)}</button>
+  `).join('');
 
-  const polylines = shape.map(chain => `<polyline points="${chain.map(pt => `${(pt.x * 100).toFixed(2)},${(pt.y * 100).toFixed(2)}`).join(' ')}" />`).join('');
-
-  let statusText = '';
-  if (processing) statusText = 'Identificando o contorno da planta…';
-  else if (shapeReady) statusText = 'Contorno identificado automaticamente a partir da planta.';
-  else if (hasImage) statusText = 'Não foi possível identificar linhas nessa imagem.';
-
-  wrap.innerHTML = `
-    <div class="floorplan-upload-row">
-      <div class="header-logo-picker-wrap">
-        <label class="image-upload-zone floorplan-upload-zone ${hasImage ? 'has-image' : ''}">
-          ${hasImage
-            ? `<img src="${currentFloorPlan.image}" class="image-upload-zone-preview" alt="">
-               <div class="header-logo-picker-overlay">${PI_IMAGE}<span>Alterar planta</span></div>`
-            : `<span class="image-upload-zone-plus">${PI_PLUS}</span><span class="image-upload-zone-text">Adicione ou arraste a planta do espaço</span>`}
-          <input type="file" accept="image/*" class="image-upload-zone-input" id="product-floorplan-input">
-        </label>
-        ${hasImage ? `<button type="button" class="header-logo-picker-remove" id="product-floorplan-remove" title="Remover planta">${PI_CLOSE}</button>` : ''}
-      </div>
-      <div class="floorplan-outline-preview">
-        ${processing
-          ? `<span class="floorplan-outline-loading">Analisando…</span>`
-          : shapeReady
-            ? `<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">${polylines}</svg>`
-            : `<span class="floorplan-outline-empty">${hasImage ? 'Nenhum contorno identificado' : 'O contorno aparece aqui'}</span>`}
-      </div>
-    </div>
-    ${statusText ? `<p class="floorplan-status">${statusText}</p>` : ''}
-  `;
-
-  const input = document.getElementById('product-floorplan-input');
-  if (input) {
-    input.addEventListener('change', () => { if (input.files[0]) applyFloorPlanFile(input.files[0]); });
-    wireImageDropZone(input.closest('.image-upload-zone'), applyFloorPlanFile);
-  }
-  const removeBtn = document.getElementById('product-floorplan-remove');
-  if (removeBtn) removeBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); currentFloorPlan = null; renderFloorPlanPicker(); });
-}
-
-function applyFloorPlanFile(file) {
-  readFileAsDataUrl(file, (dataUrl) => {
-    currentFloorPlan = { image: dataUrl, shape: [], processing: true };
-    renderFloorPlanPicker();
-
-    const img = new Image();
-    img.onload = () => {
-      setTimeout(() => {
-        const shape = extractFloorPlanOutline(img);
-        currentFloorPlan = { image: dataUrl, shape, processing: false };
-        renderFloorPlanPicker();
-      }, 0);
-    };
-    img.src = dataUrl;
+  wrap.querySelectorAll('[data-common-area]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const area = btn.dataset.commonArea;
+      const idx = currentVenueCommonAreas.indexOf(area);
+      if (idx > -1) currentVenueCommonAreas.splice(idx, 1);
+      else currentVenueCommonAreas.push(area);
+      renderVenueCommonAreas();
+    });
   });
 }
 
-function sendFloorPlanToDatabase(productId, floorPlan) {
-  // TODO: integrar com o backend quando o endpoint estiver disponível.
-  // Endpoint esperado: POST /api/produtos/:id/planta  { image, shape }
-  // "shape" é uma lista de contornos; cada contorno é uma lista de pontos {x,y}
-  // normalizados (0 a 1) em relação ao tamanho da imagem da planta.
-  console.log('[planta] pronto para enviar ao banco de dados:', productId, floorPlan);
+// Estado -> Cidade em cascata, usando a base completa do IBGE (js/data-br-localidades.js):
+// escolher o estado popula o datalist da cidade (que também aceita digitar pra filtrar).
+function populateVenueStateOptions() {
+  const select = document.getElementById('product-venue-state');
+  if (!select || typeof BR_ESTADOS === 'undefined') return;
+  if (select.options.length > 1) return;
+  BR_ESTADOS.forEach(({ uf, nome }) => {
+    const opt = document.createElement('option');
+    opt.value = uf;
+    opt.textContent = `${uf} — ${nome}`;
+    select.appendChild(opt);
+  });
+}
+
+function populateVenueCityOptions(uf) {
+  const cityInput = document.getElementById('product-venue-city');
+  const datalist = document.getElementById('product-venue-city-options');
+  if (!cityInput || !datalist) return;
+
+  const cidades = (typeof BR_CIDADES_POR_UF !== 'undefined' && BR_CIDADES_POR_UF[uf]) || [];
+  datalist.innerHTML = cidades.map(c => `<option value="${escapeHtml(c)}">`).join('');
+  cityInput.disabled = !uf;
+  cityInput.placeholder = uf ? 'Selecione ou digite a cidade' : 'Selecione o estado primeiro';
+  if (!uf) cityInput.value = '';
 }
 
 /* -------------------- Dias de funcionamento (local) -------------------- */
@@ -759,12 +761,17 @@ function initProductDrawer() {
     if (el) wireCurrencyMaskInput(el);
   });
 
+  populateVenueStateOptions();
+  document.getElementById('product-venue-state').addEventListener('change', (e) => {
+    populateVenueCityOptions(e.target.value);
+  });
+
   const resetDrawerState = () => {
     currentCoverImage = null;
     currentGalleryImages = [];
     currentOpenDays = defaultOpenDays();
     currentDishes = [];
-    currentFloorPlan = null;
+    currentVenueCommonAreas = [];
     currentSubcategory = null;
     currentCategoryExpanded = null;
     currentPricingType = null;
@@ -776,7 +783,9 @@ function initProductDrawer() {
     renderGalleryImages();
     renderWeekdayChips();
     renderDishes();
-    renderFloorPlanPicker();
+    renderVenueCommonAreas();
+    document.getElementById('product-venue-state').value = '';
+    populateVenueCityOptions('');
     closeCategoryPanel();
     updateCategoryTriggerLabel();
     renderScopeList('included');
@@ -922,17 +931,18 @@ function initProductDrawer() {
       }
 
       const venue = isVenue ? {
-        address: document.getElementById('product-venue-address').value.trim(),
+        street: document.getElementById('product-venue-street').value.trim(),
+        number: document.getElementById('product-venue-number').value.trim(),
+        complement: document.getElementById('product-venue-complement').value.trim(),
         city: document.getElementById('product-venue-city').value.trim(),
         state: document.getElementById('product-venue-state').value.trim(),
         size: document.getElementById('product-venue-size').value.trim(),
-        commonAreas: document.getElementById('product-venue-common-areas').value.trim(),
+        commonAreas: currentVenueCommonAreas.slice(),
         capacitySeated: Number(document.getElementById('product-venue-capacity-seated').value) || 0,
         capacityStanding: Number(document.getElementById('product-venue-capacity-standing').value) || 0,
         hasGenerator: document.getElementById('product-venue-has-generator').checked,
         isPcdAccessible: document.getElementById('product-venue-is-pcd-accessible').checked,
         noiseRestriction: document.getElementById('product-venue-noise-restriction').value.trim(),
-        floorPlan: currentFloorPlan ? { image: currentFloorPlan.image, shape: currentFloorPlan.shape || [] } : null,
         days: { ...currentOpenDays },
         hoursOpen: document.getElementById('product-venue-hours-open').value,
         hoursClose: document.getElementById('product-venue-hours-close').value,
@@ -1013,20 +1023,10 @@ function initProductDrawer() {
         const { error } = await supabaseClient.from('products').update(row).eq('id', form.dataset.editId);
         if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
         showToast('Produto atualizado.');
-        if (isVenue && venue.floorPlan && venue.floorPlan.shape.length) {
-          sendFloorPlanToDatabase(form.dataset.editId, venue.floorPlan);
-        }
       } else {
-        const { data: created, error } = await supabaseClient
-          .from('products')
-          .insert({ fornecedor_id: session.user.id, ...row })
-          .select('id')
-          .single();
+        const { error } = await supabaseClient.from('products').insert({ fornecedor_id: session.user.id, ...row });
         if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
         showToast('Produto adicionado à vitrine.');
-        if (isVenue && venue.floorPlan && venue.floorPlan.shape.length) {
-          sendFloorPlanToDatabase(created.id, venue.floorPlan);
-        }
       }
       await loadProducts();
       renderCategoryTabs();
@@ -1049,7 +1049,7 @@ function openProductDrawer(id) {
   currentGalleryImages = (p.gallery || []).slice();
   currentOpenDays = (p.venue && p.venue.days) ? { ...p.venue.days } : defaultOpenDays();
   currentDishes = (p.dishes || []).map(d => ({ ...d }));
-  currentFloorPlan = (p.venue && p.venue.floorPlan) ? { image: p.venue.floorPlan.image, shape: p.venue.floorPlan.shape || [], processing: false } : null;
+  currentVenueCommonAreas = Array.isArray(p.venue && p.venue.commonAreas) ? p.venue.commonAreas.slice() : [];
   currentSubcategory = p.subcategory || null;
   currentCategoryExpanded = (currentSubcategory && SUBCATEGORY_MAP[p.category]) ? p.category : null;
   currentPricingType = (p.pricing && p.pricing.type) || null;
@@ -1057,11 +1057,14 @@ function openProductDrawer(id) {
   currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));
   currentScopeExcluded = ((p.scope && p.scope.excluded) || []).map((text, i) => ({ id: 'se' + i, text }));
 
-  document.getElementById('product-venue-address').value = (p.venue && p.venue.address) || '';
+  document.getElementById('product-venue-street').value = (p.venue && (p.venue.street !== undefined ? p.venue.street : p.venue.address)) || '';
+  document.getElementById('product-venue-number').value = (p.venue && p.venue.number) || '';
+  document.getElementById('product-venue-complement').value = (p.venue && p.venue.complement) || '';
+  const venueState = (p.venue && p.venue.state) || '';
+  document.getElementById('product-venue-state').value = venueState;
+  populateVenueCityOptions(venueState);
   document.getElementById('product-venue-city').value = (p.venue && p.venue.city) || '';
-  document.getElementById('product-venue-state').value = (p.venue && p.venue.state) || '';
   document.getElementById('product-venue-size').value = (p.venue && p.venue.size) || '';
-  document.getElementById('product-venue-common-areas').value = (p.venue && p.venue.commonAreas) || '';
   document.getElementById('product-venue-capacity-seated').value = (p.venue && p.venue.capacitySeated) || '';
   document.getElementById('product-venue-capacity-standing').value = (p.venue && p.venue.capacityStanding) || '';
   document.getElementById('product-venue-has-generator').checked = !!(p.venue && p.venue.hasGenerator);
@@ -1116,7 +1119,7 @@ function openProductDrawer(id) {
   renderGalleryImages();
   renderWeekdayChips();
   renderDishes();
-  renderFloorPlanPicker();
+  renderVenueCommonAreas();
   closeCategoryPanel();
   updateCategoryTriggerLabel();
   document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[p.category] || DEFAULT_TITLE_PLACEHOLDER;

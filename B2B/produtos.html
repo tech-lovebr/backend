@@ -275,31 +275,44 @@
             </div>
 
             <div class="flex flex-col gap-4 mt-3">
-              <div>
-                <label for="product-venue-address" class="field-label">Endereço</label>
-                <input id="product-venue-address" type="text" class="field-input" placeholder="Rua, número, bairro">
+              <div class="grid grid-cols-[2fr_1fr_1.3fr] gap-3">
+                <div>
+                  <label for="product-venue-street" class="field-label">Rua</label>
+                  <input id="product-venue-street" type="text" class="field-input" placeholder="Ex: Rua das Flores">
+                </div>
+                <div>
+                  <label for="product-venue-number" class="field-label">Número</label>
+                  <input id="product-venue-number" type="text" class="field-input" placeholder="Ex: 123">
+                </div>
+                <div>
+                  <label for="product-venue-complement" class="field-label">Complemento (opcional)</label>
+                  <input id="product-venue-complement" type="text" class="field-input" placeholder="Ex: Bloco B">
+                </div>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="product-venue-city" class="field-label">Cidade</label>
-                  <input id="product-venue-city" type="text" class="field-input" placeholder="Ex: Indaiatuba">
-                </div>
                 <div>
                   <label for="product-venue-state" class="field-label">Estado</label>
-                  <input id="product-venue-state" type="text" class="field-input" placeholder="Ex: SP">
+                  <select id="product-venue-state" class="field-select">
+                    <option value="">Selecione</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="product-venue-city" class="field-label">Cidade</label>
+                  <input id="product-venue-city" type="text" class="field-input" list="product-venue-city-options" placeholder="Selecione o estado primeiro" disabled autocomplete="off">
+                  <datalist id="product-venue-city-options"></datalist>
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="product-venue-size" class="field-label">Metragem (m²)</label>
-                  <input id="product-venue-size" type="number" min="0" step="1" class="field-input" placeholder="Ex: 500">
-                </div>
-                <div>
-                  <label for="product-venue-common-areas" class="field-label">Áreas comuns</label>
-                  <input id="product-venue-common-areas" type="text" class="field-input" placeholder="Ex: Piscina, salão, jardim">
-                </div>
+              <div>
+                <label for="product-venue-size" class="field-label">Metragem (m²)</label>
+                <input id="product-venue-size" type="number" min="0" step="1" class="field-input" placeholder="Ex: 500">
+              </div>
+
+              <div>
+                <label class="field-label">Áreas comuns</label>
+                <p class="field-hint">Clique pra adicionar as que o espaço tem.</p>
+                <div id="product-venue-common-areas-row" class="weekday-toggle-row"></div>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
@@ -321,12 +334,6 @@
               <div>
                 <label for="product-venue-noise-restriction" class="field-label">Restrição de ruído/horário</label>
                 <input id="product-venue-noise-restriction" type="text" class="field-input" placeholder="Ex: Som até 22h">
-              </div>
-
-              <div>
-                <label class="field-label">Planta do espaço</label>
-                <p class="field-hint">Envie a planta baixa do local. O sistema identifica automaticamente o contorno das linhas do desenho.</p>
-                <div id="product-floorplan-wrap"></div>
               </div>
 
               <div>
@@ -523,6 +530,7 @@
 
   <script src="js/data.js?v=10"></script>
   <script src="js/utils.js?v=10"></script>
+  <script src="js/data-br-localidades.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=27"></script>

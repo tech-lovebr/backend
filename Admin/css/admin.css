@@ -2142,17 +2142,14 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   display: block;
 }
 
-/* Barra que aparece ao marcar linhas. Fica acima da tabela, onde a seleção
-   acontece, em vez de flutuar no rodapé longe do que foi marcado. */
+/* Linha de ações da seleção. Sem caixa: ela aparece e some conforme você
+   marca, e uma moldura piscando acima da tabela chamaria mais atenção que
+   a própria seleção. */
 .barra-selecao {
   display: flex;
   align-items: center;
   gap: .875rem;
-  padding: .625rem .875rem;
   margin-bottom: .75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--info-bg);
 }
 
 .barra-selecao[hidden] { display: none; }
@@ -2161,10 +2158,10 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   flex: 1;
   font-size: .8125rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-muted);
 }
 
-tr.is-selecionada { background: var(--info-bg); }
+tr.is-selecionada { background: #f4f4f5; }
 
 /* Categoria do evento na lista: texto, não etiqueta. Cores por categoria
    sugeriam uma hierarquia que não existe entre casamento e aniversário. */

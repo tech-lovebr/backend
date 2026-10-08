@@ -6,11 +6,14 @@
 let FORNECEDORES = [];
 let METRICAS = new Map();
 
+/** Contas marcadas na tabela, para as ações em massa. */
+let SELECIONADAS = new Set();
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 5);
+  renderLoading(tbody, 7);
 
   const [fornecedores, carteira, conversas, leads, produtos, contratos, links] = await Promise.all([
     safeSelect('fornecedores', '*'),
@@ -22,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     safeSelect('payment_links', 'fornecedor_id, amount, status')
   ]);
 
-  if (fornecedores.error) return renderError(tbody, 5, fornecedores.error);
+  if (fornecedores.error) return renderError(tbody, 7, fornecedores.error);
 
   FORNECEDORES = fornecedores.data;
   METRICAS = montarMetricas({
@@ -36,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderKpis();
   montarOpcoesDeFiltro();
+  ligarSelecao();
   render();
 
   document.getElementById('busca').addEventListener('input', render);
@@ -246,25 +250,132 @@ function render() {
 
 
   if (!lista.length) {
-    renderEmpty(tbody, 5, 'Nenhum fornecedor encontrado',
+    renderBarraDeSelecao();
+    renderEmpty(tbody, 7, 'Nenhum fornecedor encontrado',
       FORNECEDORES.length ? 'Ajuste a busca ou os filtros acima.' : 'Nenhuma conta B2B foi criada ainda.');
     return;
   }
 
   // A lista mostra só o essencial — e-mail, telefone, endereço, status e as
   // demais métricas ficam no painel de detalhe, ao clicar na linha.
-  tbody.innerHTML = lista.map(f => `
-    <tr data-id="${f.id}">
+  tbody.innerHTML = lista.map(f => {
+    const m = metricas(f.id);
+    const marcada = SELECIONADAS.has(f.id);
+    return `
+    <tr data-id="${f.id}" class="${marcada ? 'is-selecionada' : ''}">
+      <td class="col-selecao">
+        <input type="checkbox" data-selecionar="${f.id}" ${marcada ? 'checked' : ''}
+               aria-label="Selecionar ${escapeHtml(f.company_name || f.email || '')}">
+      </td>
       <td class="cell-strong">${dash(f.company_name)}</td>
       <td class="cell-muted">${dash(f.cnpj)}</td>
       <td>${dash(f.category)}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
-      <td class="cell-strong">${formatCurrency(metricas(f.id).entradas)}</td>
-    </tr>`).join('');
+      <td>${formatNumber(m.contratosAtivos)} <span class="cell-muted">de ${formatNumber(m.contratos)}</span></td>
+      <td class="col-numero ${f.score ? 'cell-strong' : 'cell-muted'}">${f.score ? formatNumber(f.score) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // A caixa de seleção não abre o drawer: são intenções diferentes na mesma linha.
+  tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
+    caixa.addEventListener('click', e => e.stopPropagation());
+    caixa.addEventListener('change', () => {
+      if (caixa.checked) SELECIONADAS.add(caixa.dataset.selecionar);
+      else SELECIONADAS.delete(caixa.dataset.selecionar);
+      caixa.closest('tr').classList.toggle('is-selecionada', caixa.checked);
+      renderBarraDeSelecao();
+    });
+  });
 
   tbody.querySelectorAll('tr[data-id]').forEach(tr => {
     tr.addEventListener('click', () => abrirDetalhe(tr.dataset.id));
   });
+
+  renderBarraDeSelecao();
+}
+
+/* ------------------------------------------------------ Seleção em massa */
+
+function ligarSelecao() {
+  document.getElementById('selecionar-todos').addEventListener('change', (e) => {
+    const visiveis = filtrar().map(f => f.id);
+    // Marca o que está na tela, não a base inteira: o que o admin vê é o que ele pega.
+    if (e.target.checked) visiveis.forEach(id => SELECIONADAS.add(id));
+    else visiveis.forEach(id => SELECIONADAS.delete(id));
+    render();
+  });
+
+  document.getElementById('btn-limpar-selecao').addEventListener('click', () => {
+    SELECIONADAS.clear();
+    render();
+  });
+
+  document.getElementById('btn-bloquear-selecao').addEventListener('click', perguntarAcaoEmMassa);
+}
+
+function renderBarraDeSelecao() {
+  const barra = document.getElementById('barra-selecao');
+  const total = SELECIONADAS.size;
+
+  barra.hidden = total === 0;
+  document.getElementById('selecao-contagem').textContent =
+    `${formatNumber(total)} ${total === 1 ? 'conta selecionada' : 'contas selecionadas'}`;
+
+  const visiveis = filtrar().map(f => f.id);
+  const todos = document.getElementById('selecionar-todos');
+  todos.checked = visiveis.length > 0 && visiveis.every(id => SELECIONADAS.has(id));
+  todos.indeterminate = !todos.checked && visiveis.some(id => SELECIONADAS.has(id));
+}
+
+function perguntarAcaoEmMassa() {
+  const ids = [...SELECIONADAS];
+  const quantas = `${formatNumber(ids.length)} ${ids.length === 1 ? 'conta' : 'contas'}`;
+
+  Modal.abrir({
+    titulo: `Deseja bloquear ou excluir ${quantas}?`,
+    texto: 'Bloquear impede o acesso e pode ser desfeito a qualquer momento. '
+         + 'Excluir apaga as contas e tudo que elas criaram — produtos, contratos, '
+         + 'leads, conversas e movimentos da carteira. Excluir não tem desfazer.',
+    acoes: [
+      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() },
+      { rotulo: 'Bloquear', classe: 'btn-neutro', aoClicar: () => executarEmMassa(ids, 'bloquear') },
+      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => executarEmMassa(ids, 'excluir') }
+    ]
+  });
+}
+
+/**
+ * Chama a função do banco uma vez por conta. O banco recusa sozinho o que não
+ * pode (administrador, a própria conta), então o resultado vem separado em
+ * feitas e recusadas, em vez de parar tudo no primeiro erro.
+ */
+async function executarEmMassa(ids, acao) {
+  Modal.ocupado(true);
+
+  const chamadas = ids.map(id => acao === 'bloquear'
+    ? supabaseClient.rpc('admin_bloquear_conta', { p_id: id, p_bloquear: true })
+    : supabaseClient.rpc('admin_excluir_conta', { p_id: id }));
+
+  const respostas = await Promise.all(chamadas);
+  const falhas = respostas.filter(r => r.error);
+
+  Modal.ocupado(false);
+  Modal.fechar();
+
+  const feitas = ids.length - falhas.length;
+  const verbo = acao === 'bloquear' ? 'bloqueada' : 'excluída';
+
+  if (!feitas) {
+    toast(`Nenhuma conta foi ${verbo}: ${falhas[0].error.message}`);
+    return;
+  }
+
+  toast(falhas.length
+    ? `${formatNumber(feitas)} ${feitas === 1 ? `conta ${verbo}` : `contas ${verbo}s`}; ${formatNumber(falhas.length)} recusada${falhas.length === 1 ? '' : 's'}.`
+    : `${formatNumber(feitas)} ${feitas === 1 ? `conta ${verbo}` : `contas ${verbo}s`}.`);
+
+  SELECIONADAS.clear();
+  window.location.reload();
 }
 
 /* ---------------------------------------------------------------- Drawer

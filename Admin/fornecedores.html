@@ -68,11 +68,19 @@
           </div>
         </div>
 
+        <div class="barra-selecao" id="barra-selecao" hidden>
+          <span class="barra-selecao-contagem" id="selecao-contagem"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-limpar-selecao">Limpar seleção</button>
+          <button type="button" class="btn btn-neutro btn-sm" id="btn-bloquear-selecao">Bloquear</button>
+        </div>
+
         <section class="card table-card">
           <div class="table-wrap">
           <table class="data">
             <thead><tr>
-              <th>Empresa</th><th>CNPJ</th><th>Categoria</th><th>Plano</th><th>Faturamento</th>
+              <th class="col-selecao"><input type="checkbox" id="selecionar-todos" aria-label="Selecionar todos"></th>
+              <th>Empresa</th><th>CNPJ</th><th>Categoria</th><th>Plano</th>
+              <th>Contratos</th><th class="col-numero">Score</th>
             </tr></thead>
             <tbody id="tbody"></tbody>
             </table>

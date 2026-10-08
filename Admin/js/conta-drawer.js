@@ -236,7 +236,10 @@ const ContaDrawer = (() => {
     const fornecedor = c.origem === 'b2b'
       ? (DADOS.fornecedores || []).find(x => x.id === c.id)
       : null;
-    if (fornecedor) ligarBonificacao(c, fornecedor);
+    if (fornecedor) {
+      ligarBonificacao(c, fornecedor);
+      ligarScore(c, fornecedor);
+    }
 
     document.querySelectorAll('[data-produto]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -367,6 +370,7 @@ const ContaDrawer = (() => {
       linhaOpcional('Endereço', f.address),
       linhaOpcional('Cidade', [f.city, f.state].filter(Boolean).join(' / ')),
       linhaOpcional('Categoria', f.category),
+      linhaDoScore(f),
       blocoDoPlano(f),
       linhaOpcional('Chave Pix', f.pix_key)
     ].join('');
@@ -501,6 +505,67 @@ const ContaDrawer = (() => {
     });
 
     document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
+  }
+
+  /* ---------------------------------------------------------- Score
+
+     Nota interna de 1 a 10 dada pela equipe. Vive só no Admin — o
+     fornecedor não a vê. Edita no próprio valor, como o plano. */
+
+  function linhaDoScore(f) {
+    const nota = f.score ? formatNumber(f.score) : 'sem nota';
+    return `
+      <div class="dados-linha">
+        <span class="rotulo">Score</span>
+        <span class="valor">
+          <button type="button" class="valor-acionavel" id="link-score">${escapeHtml(nota)}</button>
+          <select class="field-select bonificacao-select" id="campo-score" hidden aria-label="Nota de 1 a 10">
+            <option value="">sem nota</option>
+            ${Array.from({ length: 10 }, (_, i) => i + 1)
+              .map(n => `<option value="${n}" ${f.score === n ? 'selected' : ''}>${n}</option>`).join('')}
+          </select>
+        </span>
+      </div>`;
+  }
+
+  function ligarScore(conta, f) {
+    const gatilho = document.getElementById('link-score');
+    const campo = document.getElementById('campo-score');
+    if (!gatilho || !campo) return;
+
+    gatilho.addEventListener('click', () => {
+      gatilho.hidden = true;
+      campo.hidden = false;
+      campo.focus();
+    });
+
+    // Salva ao escolher: é um só valor, confirmar em dois passos seria ruído.
+    campo.addEventListener('change', () => salvarScore(conta, f, campo.value));
+  }
+
+  async function salvarScore(conta, f, valor) {
+    const nota = valor === '' ? null : Number(valor);
+    const campo = document.getElementById('campo-score');
+    campo.disabled = true;
+
+    const { error } = await supabaseClient
+      .from('fornecedores')
+      .update({ score: nota })
+      .eq('id', conta.id);
+
+    campo.disabled = false;
+
+    if (error) {
+      const faltaColuna = /score|does not exist|schema cache/i.test(error.message || '');
+      toast(faltaColuna
+        ? 'Rode supabase/migrations/026_score_fornecedor.sql no Supabase.'
+        : `Não foi possível salvar a nota: ${error.message}`);
+      return;
+    }
+
+    f.score = nota;
+    toast(nota ? `Score ${nota} salvo.` : 'Score removido.');
+    desenhar(conta);
   }
 
   /* ------------------------------------------------- Plano do fornecedor

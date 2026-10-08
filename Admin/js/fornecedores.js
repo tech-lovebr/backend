@@ -334,12 +334,13 @@ function perguntarAcaoEmMassa() {
   Modal.abrir({
     titulo: `Deseja bloquear ou excluir ${quantas}?`,
     texto: 'Bloquear impede o acesso e pode ser desfeito a qualquer momento. '
-         + 'Excluir apaga as contas e tudo que elas criaram — produtos, contratos, '
-         + 'leads, conversas e movimentos da carteira. Excluir não tem desfazer.',
+         + 'Excluir apaga as contas e tudo que elas criaram.',
+    // Ordem deliberada: o destrutivo longe do canto onde a mão descansa, e
+    // Cancelar à direita, que é para onde o clique de recuo vai.
     acoes: [
-      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() },
+      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => executarEmMassa(ids, 'excluir') },
       { rotulo: 'Bloquear', classe: 'btn-neutro', aoClicar: () => executarEmMassa(ids, 'bloquear') },
-      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => executarEmMassa(ids, 'excluir') }
+      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
     ]
   });
 }

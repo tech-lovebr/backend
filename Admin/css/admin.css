@@ -2122,13 +2122,18 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   color: var(--text-muted);
 }
 
+/* Colunas iguais ocupando a largura do diálogo: com três saídas, botões de
+   larguras diferentes dariam peso visual a uma delas sem querer. O
+   grid-auto-columns mantém isso certo para qualquer quantidade de botões. */
 .modal-acoes {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: .5rem;
   margin-top: 1.25rem;
 }
+
+.modal-acoes .btn { justify-content: center; }
 
 /* ------------------------------------------- Seleção em massa na tabela */
 

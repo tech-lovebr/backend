@@ -190,9 +190,7 @@ const ContaDrawer = (() => {
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso ? linha(acesso.exato ? 'Cadastrou-se em' : 'Último aparelho', escapeHtml(acesso.texto)) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
-          ${linha('Sessões', c.sessoes == null
-            ? '—'
-            : `${formatNumber(c.sessoes)} ${c.sessoes === 1 ? 'entrada' : 'entradas'}`)}
+          ${linha('Sessões', c.sessoes == null ? '—' : formatNumber(c.sessoes))}
           ${linha('Situação', c.bloqueado
             ? '<span class="valor-bloqueado">Bloqueada</span>'
             : 'Ativa')}
@@ -439,8 +437,8 @@ const ContaDrawer = (() => {
 
     const caixa = (rotulo, valor) => `
       <div class="stat-box">
-        <p class="label">${escapeHtml(rotulo)}</p>
-        <p class="value">${formatNumber(valor)}</p>
+        <span class="label">${escapeHtml(rotulo)}</span>
+        <span class="value">${formatNumber(valor)}</span>
       </div>`;
 
     Drawer.open({
@@ -453,7 +451,7 @@ const ContaDrawer = (() => {
           ${dado('Convidados', formatNumber(convidados.length))}
         </div>
 
-        <div class="stat-row stat-row--convidados">
+        <div class="stat-row stat-row--convidados stat-row--compacto">
           ${caixa('Confirmados', porStatus('confirmado'))}
           ${caixa('Pendentes', porStatus('pendente'))}
           ${caixa('Recusados', porStatus('recusado'))}

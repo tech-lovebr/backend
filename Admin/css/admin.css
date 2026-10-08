@@ -1793,10 +1793,37 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 }
 
 /* As três caixas de convidados ficam lado a lado mesmo em tela estreita —
-   confirmados, pendentes e recusados só fazem sentido comparados entre si. */
+   confirmados, pendentes e recusados só fazem sentido comparados entre si.
+   A versão compacta nasce da altura de uma .dados-linha: a faixa fica na
+   mesma escala da lista logo acima, em vez de virar um bloco de destaque. */
 .stat-row--convidados {
   grid-template-columns: repeat(3, 1fr);
-  margin: .75rem 0 1rem;
+  margin: .5rem 0 1rem;
+}
+
+/* Rótulo e número na mesma linha, com o padding e o corpo de texto de uma
+   .dados-linha: a altura casa com a lista acima por construção. */
+.stat-row--compacto { gap: .5rem; }
+
+.stat-row--compacto .stat-box {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .375rem;
+  padding: .75rem;
+}
+
+.stat-row--compacto .label {
+  font-size: .8125rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.stat-row--compacto .value {
+  font-size: .8125rem;
+  font-weight: 600;
+  margin-top: 0;
 }
 
 .link-convite { color: var(--primary-color); text-decoration: none; font-weight: 500; }

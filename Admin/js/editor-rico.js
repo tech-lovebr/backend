@@ -65,17 +65,35 @@ const EditorRico = (() => {
 
     /* execCommand age sobre a seleção; clicar num botão da barra tira o foco
        do texto e levaria a seleção junto. Guardar o intervalo antes permite
-       devolvê-lo na hora de aplicar o comando. */
+       devolvê-lo na hora de aplicar o comando.
+
+       A escuta é no selectionchange do documento, não no mouseup do corpo:
+       quem arrasta para selecionar e solta o mouse fora do editor — o que
+       acontece o tempo todo perto das bordas — nunca dispararia o mouseup
+       aqui, e o comando acabaria aplicado à seleção anterior, ou a nada. */
     let selecao = null;
+
+    const dentro = no => no && corpo.contains(no.nodeType === 1 ? no : no.parentNode);
 
     const guardar = () => {
       const sel = window.getSelection();
-      if (sel.rangeCount && corpo.contains(sel.anchorNode)) selecao = sel.getRangeAt(0);
+      if (sel.rangeCount && dentro(sel.anchorNode) && dentro(sel.focusNode)) {
+        selecao = sel.getRangeAt(0);
+      }
     };
 
+    document.addEventListener('selectionchange', guardar);
+
     const devolver = () => {
-      if (!selecao) return corpo.focus();
       const sel = window.getSelection();
+
+      // Se a seleção viva já está no editor, ela é a verdade — restaurar por
+      // cima dela só traria de volta um intervalo mais antigo.
+      if (sel.rangeCount && dentro(sel.anchorNode)) return;
+
+      // Intervalo guardado de um conteúdo que já foi substituído não serve.
+      if (!selecao || !dentro(selecao.commonAncestorContainer)) return corpo.focus();
+
       sel.removeAllRanges();
       sel.addRange(selecao);
     };
@@ -95,8 +113,6 @@ const EditorRico = (() => {
       aoMudar?.();
     }
 
-    corpo.addEventListener('keyup', guardar);
-    corpo.addEventListener('mouseup', guardar);
     corpo.addEventListener('input', contar);
 
     // Colar entra como texto puro: HTML vindo do Word ou de outro site traria

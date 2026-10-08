@@ -5295,6 +5295,35 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 .pricing-type-card-title { font-size: 0.8125rem; font-weight: 700; color: #18181B; }
 .pricing-type-card-desc { font-size: 0.75rem; color: #71717A; margin-top: 0.15rem; }
 
+.category-tree { border: 1px solid var(--border-card); border-radius: 10px; overflow: hidden; max-height: 280px; overflow-y: auto; }
+.category-tree-row {
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem;
+  cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: #3F3F46;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color .15s ease, color .15s ease;
+}
+.category-tree-row:hover { background: #FAFAFA; }
+.category-tree-row.active { background: #EBF4FF; color: #18181B; }
+.category-tree-chevron { width: 14px; height: 14px; flex-shrink: 0; transition: transform .15s ease; }
+.category-tree-row.is-open .category-tree-chevron { transform: rotate(90deg); }
+.category-tree-subrow {
+  display: flex; align-items: center; padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  cursor: pointer; font-size: 0.8125rem; color: #71717A;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color .15s ease, color .15s ease;
+}
+.category-tree-subrow:hover { background: #FAFAFA; color: #3F3F46; }
+.category-tree-subrow.active { background: #EBF4FF; color: var(--primary-blue); font-weight: 600; }
+.category-tree-empty { padding: 1rem 0.75rem; font-size: 0.8125rem; color: #A1A1AA; text-align: center; }
+
+body[data-theme="dark"] .category-tree { border-color: #404040 !important; }
+body[data-theme="dark"] .category-tree-row { color: #D4D4D8 !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .category-tree-row:hover { background: #333333 !important; }
+body[data-theme="dark"] .category-tree-row.active { background: #4b4b4b !important; color: #fff !important; }
+body[data-theme="dark"] .category-tree-subrow { color: #A1A1AA !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .category-tree-subrow:hover { background: #333333 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .category-tree-subrow.active { background: #4b4b4b !important; color: #fff !important; }
+
 body[data-theme="dark"] .product-wizard-step-circle { border-color: #404040 !important; }
 body[data-theme="dark"] .product-wizard-step-line { background: #404040 !important; }
 body[data-theme="dark"] .pricing-type-card { background: #333333 !important; border-color: #404040 !important; }

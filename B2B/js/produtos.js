@@ -479,27 +479,66 @@ function updateCategoryFieldsVisibility() {
   // em vez do motor de precificação novo (decisão confirmada com o usuário).
   setPanelHidden('pricing-venue-section', !isVenue);
   setPanelHidden('pricing-standard-section', isVenue);
-
-  const subcategoryField = document.getElementById('product-subcategory-field');
-  const hasSubcategories = !!(SUBCATEGORY_MAP[category] && SUBCATEGORY_MAP[category].length);
-  subcategoryField.hidden = !hasSubcategories;
 }
 
-/* -------------------- Etapa 1: subcategoria -------------------- */
+/* -------------------- Etapa 1: árvore de categoria + subcategoria -------------------- */
 
-function renderSubcategoryChips() {
-  const wrap = document.getElementById('product-subcategory-row');
-  if (!wrap) return;
-  const category = document.getElementById('product-category').value;
-  const options = SUBCATEGORY_MAP[category] || [];
-  wrap.innerHTML = options.map(opt => `
-    <button type="button" class="weekday-toggle-chip ${currentSubcategory === opt ? 'active' : ''}" data-subcategory="${escapeHtml(opt)}">${escapeHtml(opt)}</button>
-  `).join('');
+// Lista de categorias com busca + acordeão (categoria principal expande e
+// mostra as subcategorias dela, como no exemplo visual que o usuário
+// mandou). O <select id="product-category"> continua existindo (só
+// escondido) pra toda a lógica de categoria que já existe (travas de
+// campo por categoria, opção "extra" pra produto antigo, etc.) não
+// precisar mudar — este componente só escreve nele.
+function renderCategoryTree(filterText) {
+  const wrap = document.getElementById('product-category-tree');
+  const select = document.getElementById('product-category');
+  if (!wrap || !select) return;
 
-  wrap.querySelectorAll('[data-subcategory]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentSubcategory = currentSubcategory === btn.dataset.subcategory ? null : btn.dataset.subcategory;
-      renderSubcategoryChips();
+  const term = (filterText || '').trim().toLowerCase();
+  const selectedCategory = select.value;
+  const categories = Array.from(select.options).map(o => o.value).filter(Boolean);
+
+  const rows = categories.map(cat => {
+    const subs = SUBCATEGORY_MAP[cat] || [];
+    const catMatches = !term || cat.toLowerCase().includes(term);
+    const matchingSubs = term ? subs.filter(s => s.toLowerCase().includes(term)) : subs;
+    if (term && !catMatches && !matchingSubs.length) return '';
+
+    const subsToShow = term ? matchingSubs : subs;
+    const isOpen = subs.length > 0 && (term ? subsToShow.length > 0 : selectedCategory === cat);
+
+    return `
+      <div>
+        <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''} ${isOpen ? 'is-open' : ''}" data-category-row="${escapeHtml(cat)}">
+          ${subs.length ? '<svg class="category-tree-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>' : '<span style="width:14px;flex-shrink:0;"></span>'}
+          <span>${escapeHtml(cat)}</span>
+        </div>
+        ${isOpen ? subsToShow.map(s => `
+          <div class="category-tree-subrow ${currentSubcategory === s ? 'active' : ''}" data-subcategory-row="${escapeHtml(s)}">${escapeHtml(s)}</div>
+        `).join('') : ''}
+      </div>
+    `;
+  }).join('');
+
+  wrap.innerHTML = rows || '<div class="category-tree-empty">Nenhuma categoria encontrada.</div>';
+
+  wrap.querySelectorAll('[data-category-row]').forEach(row => {
+    row.addEventListener('click', () => {
+      const cat = row.dataset.categoryRow;
+      if (select.value !== cat) {
+        select.value = cat;
+        currentSubcategory = null;
+        select.dispatchEvent(new Event('change'));
+      }
+      renderCategoryTree(document.getElementById('product-category-search').value);
+    });
+  });
+
+  wrap.querySelectorAll('[data-subcategory-row]').forEach(row => {
+    row.addEventListener('click', () => {
+      const sub = row.dataset.subcategoryRow;
+      currentSubcategory = currentSubcategory === sub ? null : sub;
+      renderCategoryTree(document.getElementById('product-category-search').value);
     });
   });
 }
@@ -648,7 +687,8 @@ function initProductDrawer() {
     renderWeekdayChips();
     renderDishes();
     renderFloorPlanPicker();
-    renderSubcategoryChips();
+    document.getElementById('product-category-search').value = '';
+    renderCategoryTree();
     renderScopeList('included');
     renderScopeList('excluded');
     renderPricingTypeFields();
@@ -682,8 +722,12 @@ function initProductDrawer() {
 
   document.getElementById('product-category').addEventListener('change', () => {
     currentSubcategory = null;
-    renderSubcategoryChips();
+    renderCategoryTree(document.getElementById('product-category-search').value);
     updateCategoryFieldsVisibility();
+  });
+
+  document.getElementById('product-category-search').addEventListener('input', (e) => {
+    renderCategoryTree(e.target.value);
   });
 
   document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(btn => {
@@ -973,7 +1017,8 @@ function openProductDrawer(id) {
   renderWeekdayChips();
   renderDishes();
   renderFloorPlanPicker();
-  renderSubcategoryChips();
+  document.getElementById('product-category-search').value = '';
+  renderCategoryTree();
   renderScopeList('included');
   renderScopeList('excluded');
   renderPricingTypeFields();

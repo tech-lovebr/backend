@@ -2149,7 +2149,9 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   display: flex;
   align-items: center;
   gap: .875rem;
-  margin-bottom: .75rem;
+  /* Entra no mesmo ritmo dos outros blocos da página. Embaixo não precisa de
+     margem: a .table-card já traz a dela. */
+  margin: var(--bloco-gap) 0 0;
 }
 
 .barra-selecao[hidden] { display: none; }

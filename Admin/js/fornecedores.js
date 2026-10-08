@@ -9,6 +9,14 @@ let METRICAS = new Map();
 /** Contas marcadas na tabela, para as ações em massa. */
 let SELECIONADAS = new Set();
 
+let ORDEM_CADASTRO = null;
+
+/** "H1", "H2"… na ordem de entrada. Ver sequenciaDeCadastro() em utils.js. */
+function numeroDoCadastro(id) {
+  if (!ORDEM_CADASTRO) ORDEM_CADASTRO = sequenciaDeCadastro(FORNECEDORES, 'H');
+  return ORDEM_CADASTRO.get(id) || '—';
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
@@ -267,9 +275,9 @@ function render() {
         <input type="checkbox" data-selecionar="${f.id}" ${marcada ? 'checked' : ''}
                aria-label="Selecionar ${escapeHtml(f.company_name || f.email || '')}">
       </td>
+      <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(f.id))}</td>
       <td class="cell-strong">${dash(f.company_name)}</td>
       <td class="cell-muted">${dash(f.cnpj)}</td>
-      <td>${dash(f.category)}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
       <td>${formatNumber(m.contratosAtivos)} <span class="cell-muted">de ${formatNumber(m.contratos)}</span></td>
       <td class="col-numero ${f.score ? 'cell-strong' : 'cell-muted'}">${f.score ? formatNumber(f.score) : '—'}</td>

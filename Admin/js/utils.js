@@ -318,6 +318,23 @@ function addHeaderAction(texto, aoClicar, { icone } = {}) {
   return botao;
 }
 
+/**
+ * Numera cadastros pela ordem de entrada: A1, A2… para anfitriões, H1, H2…
+ * para o Hub. O prefixo evita que "4" signifique duas contas diferentes
+ * quando as duas plataformas aparecem na mesma lista.
+ *
+ * É posicional, não persistente: excluir um cadastro faz os posteriores
+ * subirem. O identificador estável continua sendo o UID.
+ */
+function sequenciaDeCadastro(linhas, prefixo) {
+  return new Map(
+    (linhas || [])
+      .slice()
+      .sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0))
+      .map((linha, i) => [linha.id, `${prefixo}${i + 1}`])
+  );
+}
+
 /* ------------------------------------------------------------- Modal
 
    Diálogo curto e centrado, para decisões que não cabem num drawer: uma

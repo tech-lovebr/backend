@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   ContaDrawer.semear({ dados: DADOS });
 
+  // Se a tabela de contas chegou antes, redesenha agora que dá para numerar.
+  if (CONTAS.length) renderContas();
+
   renderKpis();
   renderTopFornecedores();
   renderCategorias();
@@ -199,13 +202,13 @@ async function carregarContas() {
   const tbody = document.getElementById('tbody-contas');
   if (!tbody) return;
 
-  renderLoading(tbody, 4);
+  renderLoading(tbody, 5);
 
   const { data, error } = await supabaseClient.rpc('admin_listar_contas');
 
   if (error) {
     const faltaFuncao = /admin_listar_contas|does not exist|schema cache/i.test(error.message || '');
-    renderEmpty(tbody, 4,
+    renderEmpty(tbody, 5,
       faltaFuncao ? 'Função ainda não existe no banco' : 'Não foi possível carregar',
       faltaFuncao
         ? 'Rode supabase/migrations/015_contas_origem.sql no SQL Editor do Supabase.'
@@ -240,7 +243,7 @@ function renderContas() {
 
   if (!lista.length) {
     paginacao.hidden = true;
-    renderEmpty(tbody, 4, 'Nenhuma conta encontrada',
+    renderEmpty(tbody, 5, 'Nenhuma conta encontrada',
       CONTAS.length ? 'Ajuste a busca ou o filtro de origem.' : 'Nenhuma conta foi criada ainda.');
     return;
   }
@@ -263,6 +266,7 @@ function renderContas() {
 
   tbody.innerHTML = pagina.map(c => `
     <tr data-id="${c.id}">
+      <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c))}</td>
       <td class="cell-strong">${dash(c.email)}</td>
       <td>${canalDaConta(c)}</td>
       <td class="cell-muted">${escapeHtml(formatDate(c.criado_em))}</td>
@@ -279,6 +283,23 @@ function renderContas() {
  * texto; só "Sem origem" fica em destaque, porque é o único que pede ação —
  * colorir os três igualaria o rotineiro ao que precisa ser resolvido.
  */
+/* A numeração é por plataforma: o anfitrião nº 4 e o fornecedor nº 4 são
+   contas distintas, e nesta lista elas aparecem lado a lado. O prefixo é o
+   que impede "4" de significar duas coisas na mesma coluna. */
+let ORDEM_CADASTRO = null;
+
+function numeroDoCadastro(c) {
+  // A tabela e os dados gerais carregam em paralelo: só memoiza depois que
+  // DADOS existe, senão o mapa nasceria vazio e ficaria assim.
+  if (!ORDEM_CADASTRO && DADOS) {
+    ORDEM_CADASTRO = new Map([
+      ...sequenciaDeCadastro(DADOS.clientes, 'A'),
+      ...sequenciaDeCadastro(DADOS.fornecedores, 'H')
+    ]);
+  }
+  return ORDEM_CADASTRO?.get(c.id) || '—';
+}
+
 function canalDaConta(c) {
   const origem = ORIGENS[c.origem] || ORIGENS.sem_origem;
   return c.origem === 'sem_origem'

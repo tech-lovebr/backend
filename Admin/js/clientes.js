@@ -225,28 +225,10 @@ function filtrar() {
 
 let ORDEM_CADASTRO = null;
 
-/**
- * Número do cadastro: a ordem de entrada na plataforma, 1 para o mais antigo.
- * Vem da lista inteira, não da filtrada — buscar ou reordenar não renumera
- * ninguém, que é o que diferencia um identificador de uma posição na tela.
- */
+/** "A1", "A2"… na ordem de entrada. Ver sequenciaDeCadastro() em utils.js. */
 function numeroDoCadastro(id) {
-  if (!ORDEM_CADASTRO) {
-    ORDEM_CADASTRO = new Map(
-      CLIENTES
-        .slice()
-        .sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0))
-        .map((c, i) => [c.id, i + 1])
-    );
-  }
-  return ORDEM_CADASTRO.get(id) || 0;
-}
-
-
-/** "agora", "há 12 min", "há 3d" — e a data quando passa de um mês. */
-function ultimoAcessoDe(id) {
-  const quando = ULTIMO_ACESSO.get(id);
-  return quando ? formatRelative(quando) : 'nunca';
+  if (!ORDEM_CADASTRO) ORDEM_CADASTRO = sequenciaDeCadastro(CLIENTES, 'A');
+  return ORDEM_CADASTRO.get(id) || '—';
 }
 
 function render() {
@@ -271,7 +253,7 @@ function render() {
           <input type="checkbox" data-selecionar="${c.id}" ${marcada ? 'checked' : ''}
                  aria-label="Selecionar ${escapeHtml(c.couple_name || c.email || '')}">
         </td>
-        <td class="col-numero cell-muted">${formatNumber(numeroDoCadastro(c.id))}</td>
+        <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c.id))}</td>
         <td class="cell-strong">${dash(c.couple_name)}</td>
         <td class="cell-muted">${dash(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>

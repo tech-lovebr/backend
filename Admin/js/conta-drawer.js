@@ -384,7 +384,9 @@ const ContaDrawer = (() => {
      o plano aparece com procedência e, quando tem prazo, com o vencimento.
      --------------------------------------------------------------------- */
 
-  const BONIFICACAO_MAXIMA = 6;
+  // A cortesia é dada em blocos de 30 dias, até 90.
+  const BONIFICACAO_PASSOS = [30, 60, 90];
+  const BONIFICACAO_MAXIMA = 90;
 
   function planoVencido(f) {
     return !!f.plan_expira_em && new Date(f.plan_expira_em) < new Date();
@@ -408,8 +410,7 @@ const ContaDrawer = (() => {
   function blocoDoPlano(f) {
     const vigente = planoVigente(f);
     const origem = origemDoPlano(f);
-    const podeBonificar = vigente === 'Gratuito'
-      && (BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0)) > 0;
+    const podeBonificar = vigente === 'Gratuito' && diasDisponiveis(f).length > 0;
 
     // No gratuito o próprio valor é o gatilho da cortesia: um botão separado
     // ocupava espaço para uma ação que nasce de olhar justamente esta linha.
@@ -432,10 +433,15 @@ const ContaDrawer = (() => {
     ].join('');
   }
 
+  /** Blocos que ainda cabem no teto de 90 dias desta conta. */
+  function diasDisponiveis(f) {
+    const concedidos = f.plan_bonificado_dias || 0;
+    return BONIFICACAO_PASSOS.filter(d => concedidos + d <= BONIFICACAO_MAXIMA);
+  }
+
   function acoesDoPlano(f) {
-    const vigente = planoVigente(f);
-    const restantes = BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0);
-    if (vigente !== 'Gratuito' || restantes <= 0) return '';
+    const opcoes = diasDisponiveis(f);
+    if (planoVigente(f) !== 'Gratuito' || !opcoes.length) return '';
 
     return `
       <div class="bonificacao-caixa" id="caixa-bonificacao" hidden>
@@ -446,10 +452,10 @@ const ContaDrawer = (() => {
           </button>
         </div>
         <div class="bonificacao-stepper">
-          <button type="button" class="btn btn-ghost btn-sm" data-passo="-1" aria-label="Menos um mês">−</button>
-          <span class="bonificacao-valor" id="bonificacao-meses">1</span>
-          <button type="button" class="btn btn-ghost btn-sm" data-passo="1" aria-label="Mais um mês">+</button>
-          <button type="button" class="btn btn-primary btn-sm" id="btn-confirmar-bonificacao">Conceder</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-passo="-1" aria-label="Menos 30 dias">−</button>
+          <span class="bonificacao-valor" id="bonificacao-dias">${opcoes[0]} dias</span>
+          <button type="button" class="btn btn-ghost btn-sm" data-passo="1" aria-label="Mais 30 dias">+</button>
+          <button type="button" class="btn btn-ghost" id="btn-confirmar-bonificacao">Bonificar</button>
         </div>
       </div>`;
   }
@@ -459,12 +465,16 @@ const ContaDrawer = (() => {
     const caixa = document.getElementById('caixa-bonificacao');
     if (!gatilho || !caixa) return;
 
-    const valor = document.getElementById('bonificacao-meses');
-    const restantes = BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0);
+    const valor = document.getElementById('bonificacao-dias');
+    const opcoes = diasDisponiveis(f);
+    let indice = 0;
+
+    const mostrar = () => { valor.textContent = `${opcoes[indice]} dias`; };
 
     const fechar = () => {
       caixa.hidden = true;
-      valor.textContent = '1';
+      indice = 0;
+      mostrar();
     };
 
     gatilho.addEventListener('click', () => { caixa.hidden = false; });
@@ -472,29 +482,29 @@ const ContaDrawer = (() => {
 
     caixa.querySelectorAll('[data-passo]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const atual = Number(valor.textContent);
-        valor.textContent = String(Math.min(restantes, Math.max(1, atual + Number(btn.dataset.passo))));
+        indice = Math.min(opcoes.length - 1, Math.max(0, indice + Number(btn.dataset.passo)));
+        mostrar();
       });
     });
 
     document.getElementById('btn-confirmar-bonificacao')
-      .addEventListener('click', () => bonificar(conta, Number(valor.textContent)));
+      .addEventListener('click', () => bonificar(conta, opcoes[indice]));
   }
 
-  async function bonificar(conta, meses) {
+  async function bonificar(conta, dias) {
     const botao = document.getElementById('btn-confirmar-bonificacao');
     botao.disabled = true;
 
     const { data, error } = await supabaseClient.rpc('admin_bonificar_plano', {
       p_id: conta.id,
-      p_meses: meses
+      p_dias: dias
     });
 
     if (error) {
       botao.disabled = false;
       const faltaFuncao = /admin_bonificar_plano|does not exist|schema cache/i.test(error.message || '');
       toast(faltaFuncao
-        ? 'Rode supabase/migrations/023_plano_bonificado.sql no Supabase.'
+        ? 'Rode supabase/migrations/024_bonificacao_em_dias.sql no Supabase.'
         : error.message);
       return;
     }
@@ -505,10 +515,10 @@ const ContaDrawer = (() => {
       f.plan = 'Pro';
       f.plan_origem = 'bonificacao_admin';
       f.plan_expira_em = data;
-      f.plan_bonificado_meses = (f.plan_bonificado_meses || 0) + meses;
+      f.plan_bonificado_dias = (f.plan_bonificado_dias || 0) + dias;
     }
 
-    toast(`Pro liberado por ${meses} ${meses === 1 ? 'mês' : 'meses'}.`);
+    toast(`Pro liberado por ${dias} dias.`);
     desenhar(conta);
   }
 

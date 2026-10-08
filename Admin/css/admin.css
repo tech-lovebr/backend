@@ -1953,9 +1953,9 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .bonificacao-caixa {
   margin-top: .875rem;
   padding: .875rem;
-  border: 1px solid var(--border);
+  border: 1px solid #d8e3ef;
   border-radius: var(--radius-card);
-  background: var(--bg-muted);
+  background: var(--info-bg);
 }
 
 .bonificacao-caixa[hidden] { display: none; }
@@ -1982,12 +1982,13 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   padding: .25rem;
   border: 0;
   background: none;
-  color: var(--text-soft);
+  /* Sobre o azul claro, o cinza-claro padrão cai para 2,2:1 e o X some. */
+  color: var(--text-muted);
   cursor: pointer;
   border-radius: 4px;
 }
 
-.bonificacao-fechar:hover { color: var(--text); background: rgba(0, 0, 0, .05); }
+.bonificacao-fechar:hover { color: var(--text); background: rgba(24, 59, 84, .08); }
 .bonificacao-fechar svg { width: 14px; height: 14px; }
 
 /* Valor de uma linha de dados que também é uma ação. Parece o texto ao redor
@@ -2014,8 +2015,13 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   gap: .5rem;
 }
 
+/* A borda padrão do btn-ghost (#CCD5E0) encosta em 1,3:1 contra o azul da
+   caixa e o botão deixa de parecer botão. Aqui ela escurece até 3:1. */
+.bonificacao-caixa .btn-ghost { border-color: #6f87a6; }
+.bonificacao-caixa .btn-ghost:hover:not(:disabled) { background: #f4f8fc; }
+
 .bonificacao-valor {
-  min-width: 2.25rem;
+  min-width: 4.5rem;
   text-align: center;
   font-size: .9375rem;
   font-weight: 700;

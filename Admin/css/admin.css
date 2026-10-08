@@ -52,6 +52,17 @@
 
 * { box-sizing: border-box; }
 
+/* A página não rola na horizontal. Sem isto, qualquer coisa que passe da
+   largura — uma tabela larga, um painel fixo fora da tela — permite
+   arrastar a página de lado, e aí o topbar (sticky só na vertical) desliza
+   por cima da coluna da marca, que é fixa.
+
+   `clip` e não `hidden`: hidden transformaria o html num contêiner de
+   rolagem e quebraria o position:sticky do próprio topbar. */
+html {
+  overflow-x: clip;
+}
+
 /* O atributo hidden precisa vencer o display dos componentes (botões usam
    inline-flex, que sobrescreveria o display:none padrão do hidden). */
 [hidden] { display: none !important; }

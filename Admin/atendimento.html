@@ -41,6 +41,13 @@
       <header class="admin-topbar" id="admin-topbar"></header>
       <main class="admin-content">
 
+        <nav class="conteudo-tabs" id="abas-origem" aria-label="Filtrar por origem">
+          <button type="button" class="conteudo-tab is-active" data-origem="">Todos</button>
+          <button type="button" class="conteudo-tab" data-origem="cliente">Anfitriões</button>
+          <button type="button" class="conteudo-tab" data-origem="fornecedor">B2B</button>
+          <button type="button" class="conteudo-tab" data-origem="site">Site público</button>
+        </nav>
+
         <section class="kpi-grid" id="kpi-grid"></section>
 
         <div id="page-controls" hidden>
@@ -52,18 +59,12 @@
             <option value="resolvido">Resolvido</option>
             <option value="fechado">Fechado</option>
           </select>
-          <select class="field-select" id="filtro-origem">
-            <option value="">Todas as origens</option>
-            <option value="site">Site público</option>
-            <option value="cliente">Plataforma (cliente)</option>
-            <option value="fornecedor">B2B (fornecedor)</option>
-          </select>
         </div>
 
         <section class="card table-card">
           <div class="table-wrap">
             <table class="data">
-              <thead><tr><th>Protocolo</th><th>Solicitante</th><th>Assunto</th><th>Origem</th><th>Prioridade</th><th>Status</th><th>Aberto em</th></tr></thead>
+              <thead><tr><th>Protocolo</th><th>Solicitante</th><th>Assunto</th><th>Status</th><th>Aberto em</th></tr></thead>
               <tbody id="tbody"></tbody>
             </table>
           </div>

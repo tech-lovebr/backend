@@ -12,6 +12,7 @@ const PROFILE_STORAGE_KEY = 'b2b-professional-profile';
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   initSettingsTabs();
+  await carregarLiberacoes();
   initProfileForm();
   initCompanyForm();
   initPasswordForm();
@@ -98,6 +99,10 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+
+    // Liberação concedida pelo Admin vale uma edição: gastou, trava de novo.
+    consumirLiberacoes(['company', 'documento']).then(() => lockConfiguredFields(p));
+
     lockConfiguredFields(p);
     showToast('Perfil atualizado.');
   });
@@ -106,6 +111,47 @@ function initProfileForm() {
 // Nome da empresa e documento (CNPJ/CPF) travam para edição assim que
 // configurados pela primeira vez — evita que o fornecedor mude a
 // identidade da conta depois que ela já está em uso na plataforma.
+/* Liberações concedidas pelo Admin (tabela campos_liberados). Enquanto houver
+   uma liberação não usada para o campo, ele não trava — é assim que a decisão
+   tomada no Admin atravessa para cá. A liberação vale uma edição: ao salvar,
+   marcamos como usada e o campo trava de novo. */
+let LIBERACOES = [];
+
+async function carregarLiberacoes() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+
+  const { data, error } = await supabaseClient
+    .from('campos_liberados')
+    .select('id, campo')
+    .eq('fornecedor_id', session.user.id)
+    .is('usado_em', null);
+
+  if (error) {
+    console.warn('Não foi possível ler as liberações de cadastro.', error);
+    return;
+  }
+
+  LIBERACOES = data || [];
+}
+
+function liberado(campo) {
+  return LIBERACOES.some(l => l.campo === campo);
+}
+
+/** Consome as liberações usadas: o campo volta a travar na próxima visita. */
+async function consumirLiberacoes(campos) {
+  const usar = LIBERACOES.filter(l => campos.includes(l.campo));
+  if (!usar.length) return;
+
+  await supabaseClient
+    .from('campos_liberados')
+    .update({ usado_em: new Date().toISOString() })
+    .in('id', usar.map(l => l.id));
+
+  LIBERACOES = LIBERACOES.filter(l => !campos.includes(l.campo));
+}
+
 function lockConfiguredFields(p) {
   const companyInput = document.getElementById('profile-company');
   const documentInput = document.getElementById('profile-document');
@@ -114,14 +160,14 @@ function lockConfiguredFields(p) {
   const companyRequestChange = document.getElementById('profile-company-request-change');
   const documentRequestChange = document.getElementById('profile-document-request-change');
 
-  if (p.company) {
+  if (p.company && !liberado('company')) {
     companyInput.readOnly = true;
     companyInput.classList.add('field-locked');
     companyLock.hidden = false;
     companyRequestChange.hidden = false;
   }
 
-  if (p.documentNumber) {
+  if (p.documentNumber && !liberado('documento')) {
     documentInput.readOnly = true;
     documentInput.classList.add('field-locked');
     documentLock.hidden = false;
@@ -159,7 +205,13 @@ function initRequestChangeLinks() {
         telefone: p.phone || null,
         assunto: 'Alteração de dado',
         categoria: 'Dados cadastrais',
-        mensagem: `Solicitação de alteração do campo "${campoNome}" (valor atual: ${valor()}).`
+        mensagem: `Solicitação de alteração do campo "${campoNome}" (valor atual: ${valor()}).`,
+        // O Admin age a partir daqui, em vez de interpretar a frase acima.
+        extra: {
+          campo: el.id.includes('document') ? 'documento' : 'company',
+          campo_label: campoNome,
+          valor_atual: String(valor() ?? '')
+        }
       });
 
       if (error) return;

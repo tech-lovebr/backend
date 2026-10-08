@@ -31,6 +31,8 @@
   --danger: #b42318;
   --danger-bg: #fdecea;
   --info-bg: #eaf0f6;
+  /* O azul clarinho da marca — o mesmo da caixa do ícone ativo no menu. */
+  --azul-claro: #EBF4FF;
 
   /* Branco, como o topbar e o conteúdo: a separação fica por conta das
      bordas, não de blocos de cor. */
@@ -169,7 +171,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   flex-shrink: 0;
 }
 
-.admin-nav-item:hover { background: var(--info-bg); color: var(--text); }
+.admin-nav-item:hover { background: var(--azul-claro); color: var(--text); }
 .admin-nav-item:hover svg:not(.sidebar-chevron) { color: var(--text); }
 
 .admin-nav-item.is-active {
@@ -220,8 +222,8 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: background .15s ease, color .15s ease;
 }
 
-.admin-nav-subitem:hover { background: var(--info-bg); color: var(--text); }
-.admin-nav-subitem.is-active { background: var(--info-bg); color: var(--text); }
+.admin-nav-subitem:hover { background: var(--azul-claro); color: var(--text); }
+.admin-nav-subitem.is-active { background: var(--azul-claro); color: var(--text); }
 
 .admin-nav-badge {
   background: #BF612E;

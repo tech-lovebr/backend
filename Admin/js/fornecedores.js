@@ -338,9 +338,25 @@ function perguntarAcaoEmMassa() {
     // Ordem deliberada: o destrutivo longe do canto onde a mão descansa, e
     // Cancelar à direita, que é para onde o clique de recuo vai.
     acoes: [
-      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => executarEmMassa(ids, 'excluir') },
+      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => confirmarExclusao(ids) },
       { rotulo: 'Bloquear', classe: 'btn-neutro', aoClicar: () => executarEmMassa(ids, 'bloquear') },
       { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
+    ]
+  });
+}
+
+/* Excluir pede um segundo sim. O primeiro clique é uma escolha entre três
+   saídas; este é o único que não tem volta, e um passo a mais é barato
+   perto de apagar contas por engano. */
+function confirmarExclusao(ids) {
+  const quantas = `${formatNumber(ids.length)} ${ids.length === 1 ? 'conta' : 'contas'}`;
+
+  Modal.abrir({
+    titulo: 'Tem certeza?',
+    texto: `${quantas} e tudo que ${ids.length === 1 ? 'ela criou' : 'elas criaram'} serão apagados: produtos, contratos, leads e conversas. Esta ação não pode ser desfeita.`,
+    acoes: [
+      { rotulo: 'Sim', classe: 'btn-danger', aoClicar: () => executarEmMassa(ids, 'excluir') },
+      { rotulo: 'Não', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
     ]
   });
 }

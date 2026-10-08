@@ -181,8 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const activeEvent = getActiveEvent();
       if (activeEvent) {
         document.body.setAttribute('data-event-theme', activeEvent.type);
+        updateAllCelebrationData();
+      } else if (elements.dashHeader.eventTitle) {
+        // Conta sem evento ainda — não deixa o texto estático do HTML
+        // ("Casamento Beatriz & Lucas", de mockup) aparecer no cabeçalho.
+        elements.dashHeader.eventTitle.textContent = 'Nenhum evento';
+        if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = '';
       }
-      updateAllCelebrationData();
       renderEventsSwitcher();
       switchRailTab('overview'); // Inicia na Home / Visão Geral
 
@@ -11152,6 +11157,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof window.reloadBuilderStateForActiveEvent === 'function') {
         window.reloadBuilderStateForActiveEvent();
       }
+    } else {
+      // `state.events` nasce preenchido com os 2 eventos de demonstração
+      // (window.LOVE_DATA, usados só de mockup visual) — sem isso aqui, uma
+      // conta nova sem eventos reais no Supabase continuava mostrando
+      // "Casamento Beatriz & Lucas" e "Chá de Bebê do Theo" no dashboard.
+      state.events = [];
+      state.activeEventId = null;
+      state.hasEventCreated = false;
     }
 
     subscribeToB2BChatRealtime();

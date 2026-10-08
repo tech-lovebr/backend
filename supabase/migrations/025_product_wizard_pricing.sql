@@ -1,0 +1,51 @@
+-- Wizard de 4 etapas do drawer de produto/serviço (B2B) — Fase 1.
+-- Migration só de documentação: não adiciona colunas, o novo formato vive
+-- dentro do jsonb `products.extra` (que já não tem schema fixo no banco,
+-- mesmo padrão já usado por extra.venue/equipmentType/dishes antes disso).
+--
+-- Novo formato de `extra` a partir desta versão:
+--
+-- extra: {
+--   offerType: 'servico' | 'produto' | 'pacote',
+--   subcategory: string | null,
+--
+--   pricing: {
+--     type: 'POR_PESSOA' | 'POR_HORA' | 'VALOR_FIXO' | 'SOB_CONSULTA',
+--     perPerson: { pricePerPerson, minPeople, maxPeople } | null,
+--     perHour:   { pricePerHour, minHours, extraHourPrice } | null,
+--     fixed:     { price, durationIncluded, cleaningFee } | null,
+--     onRequest: { startingPrice } | null
+--   },
+--
+--   scope: { included: string[], excluded: string[] },
+--
+--   attributes: {
+--     venue:       { capacity, areaM2, hasGenerator, isPcdAccessible, hasNoiseRestriction } | null,
+--     food:        { menuAttachmentUrl, dietaryRestrictions: string[], tastingPolicy } | null,
+--     staff:       { uniformDescription, mealRequired, arrivalTimeBeforeEvent } | null,
+--     audiovisual: { crewCount, deliveryDays } | null
+--   },
+--
+--   videoUrl: string | null,
+--
+--   logistics: { serviceAreaType: 'city_only'|'radius_km', serviceRadiusKm, extraKmFee, setupMinutes, teardownMinutes },
+--
+--   cancellationPolicy: 'flexivel' | 'moderada' | 'rigorosa',
+--
+--   -- campos legados, mantidos sem alteração de formato (ver js/produtos.js):
+--   venue: {...} | null,          -- "Locação de espaço" mantém o modelo de
+--                                  -- preço por dia (semana/sábado/domingo/
+--                                  -- feriado) em vez do motor novo — decisão
+--                                  -- confirmada com o usuário, evita perder
+--                                  -- uma diferenciação que já funcionava.
+--   equipmentType: string | null,
+--   dishes: [...] | null
+-- }
+--
+-- A coluna `price` continua existindo e sendo preenchida (derivada da
+-- unidade de cobrança escolhida a cada salvamento), pra continuar
+-- funcionando nos cards da vitrine e no autocomplete de proposta do
+-- financeiro.js sem precisar de nenhuma mudança lá.
+
+comment on column products.price_max is
+  'Intencionalmente não usada — nenhuma tela lê ou escreve este campo. Ver js/produtos.js (motor de precificação do wizard) para o modelo de preço atual.';

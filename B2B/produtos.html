@@ -63,6 +63,27 @@
       <div class="form-drawer-header-main">
         <p class="task-drawer-list-label">Catálogo</p>
         <h2 class="task-drawer-title" id="product-drawer-title">Adicionar produto ou serviço</h2>
+        <div class="product-wizard-steps" id="product-wizard-steps">
+          <div class="flex items-center gap-1.5" data-step-indicator="1">
+            <div class="product-wizard-step-circle">1</div>
+            <span class="product-wizard-step-label">Identificação</span>
+          </div>
+          <div class="product-wizard-step-line"></div>
+          <div class="flex items-center gap-1.5" data-step-indicator="2">
+            <div class="product-wizard-step-circle">2</div>
+            <span class="product-wizard-step-label">Preço</span>
+          </div>
+          <div class="product-wizard-step-line"></div>
+          <div class="flex items-center gap-1.5" data-step-indicator="3">
+            <div class="product-wizard-step-circle">3</div>
+            <span class="product-wizard-step-label">Escopo</span>
+          </div>
+          <div class="product-wizard-step-line"></div>
+          <div class="flex items-center gap-1.5" data-step-indicator="4">
+            <div class="product-wizard-step-circle">4</div>
+            <span class="product-wizard-step-label">Mídia</span>
+          </div>
+        </div>
       </div>
       <button type="button" class="form-drawer-close" id="product-drawer-close" aria-label="Fechar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
@@ -71,166 +92,418 @@
 
     <div class="form-drawer-body">
       <form id="product-form" class="flex flex-col gap-4">
-        <div>
-          <label for="product-name" class="field-label">Nome do produto/serviço</label>
-          <input id="product-name" type="text" class="field-input" placeholder="Insira o nome do produto/serviço">
-        </div>
 
-        <div>
-          <label for="product-category" class="field-label">Categoria</label>
-          <select id="product-category" class="field-select">
-            <option value="">Selecione</option>
-            <option>Aluguel de equipamentos</option>
-            <option>Aluguel de roupas</option>
-            <option>Assessoria</option>
-            <option>Buffet</option>
-            <option>Convites e papelaria</option>
-            <option>Decoração</option>
-            <option>Doces e bolos</option>
-            <option>Fotografia e mídia</option>
-            <option>Gestão de evento</option>
-            <option>Locação de espaço</option>
-            <option>Serviço musical</option>
-            <option>Serviços de bar</option>
-          </select>
-        </div>
-
-        <div class="form-section-header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>
-          <span>Imagens</span>
-        </div>
-
-        <div>
-          <label class="field-label">Imagem de capa</label>
-          <p class="field-hint">É a primeira imagem que aparece na vitrine.</p>
-          <div id="product-cover-wrap"></div>
-        </div>
-
-        <div>
-          <label class="field-label">Mais imagens (opcional)</label>
-          <div id="product-gallery-list" class="flex flex-col gap-2"></div>
-          <button type="button" id="product-gallery-add-btn" class="inspector-add-btn mt-2">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-            Adicionar imagem
-          </button>
-        </div>
-
-        <div id="product-price-field">
-          <label for="product-price" class="field-label">Média de custo (R$)</label>
-          <input id="product-price" type="number" min="0" step="50" class="field-input" placeholder="0,00">
-        </div>
-
-        <div id="product-venue-fields" hidden>
-          <div class="form-section-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            <span>Detalhes do local</span>
+        <!-- ETAPA 1: Identificação & Taxonomia -->
+        <div class="product-wizard-panel" data-step="1">
+          <div>
+            <label class="field-label mb-1">Tipo de oferta</label>
+            <div class="plan-billing-toggle" id="product-offer-type-toggle" style="margin-bottom:0;">
+              <button type="button" class="plan-billing-option active" data-offer-type="servico">
+                <span class="plan-billing-option-title">Serviço</span>
+              </button>
+              <button type="button" class="plan-billing-option" data-offer-type="produto">
+                <span class="plan-billing-option-title">Produto/Item</span>
+              </button>
+              <button type="button" class="plan-billing-option" data-offer-type="pacote">
+                <span class="plan-billing-option-title">Pacote/Combo</span>
+              </button>
+            </div>
           </div>
 
-          <div class="flex flex-col gap-4 mt-3">
-            <div>
-              <label for="product-venue-address" class="field-label">Endereço</label>
-              <input id="product-venue-address" type="text" class="field-input" placeholder="Rua, número, bairro">
+          <div>
+            <label for="product-name" class="field-label">Nome comercial</label>
+            <input id="product-name" type="text" class="field-input" placeholder="Ex: Bar de Drinks Clássicos &amp; Gin Tropical">
+          </div>
+
+          <div>
+            <label for="product-category" class="field-label">Categoria principal</label>
+            <select id="product-category" class="field-select">
+              <option value="">Selecione</option>
+              <option>Gastronomia &amp; Alimentos</option>
+              <option>Bar &amp; Coquetelaria</option>
+              <option>Espaços &amp; Locações</option>
+              <option>Staff &amp; Mão de Obra</option>
+              <option>Foto, Vídeo &amp; Audiovisual</option>
+              <option>Música, DJ &amp; Entretenimento</option>
+              <option>Decoração &amp; Cenografia</option>
+              <option>Assessoria &amp; Cerimonial</option>
+            </select>
+          </div>
+
+          <div id="product-subcategory-field" hidden>
+            <label class="field-label">Especialidade</label>
+            <div id="product-subcategory-row" class="weekday-toggle-row"></div>
+          </div>
+        </div>
+
+        <!-- ETAPA 2: Motor de Precificação -->
+        <div class="product-wizard-panel" data-step="2">
+
+          <div id="pricing-standard-section">
+            <label class="field-label mb-1">Unidade de cobrança</label>
+            <div class="pricing-type-grid" id="pricing-type-grid">
+              <button type="button" class="pricing-type-card" data-pricing-type="POR_PESSOA">
+                <p class="pricing-type-card-title">Por pessoa</p>
+                <p class="pricing-type-card-desc">Por convidado/cabeça</p>
+              </button>
+              <button type="button" class="pricing-type-card" data-pricing-type="POR_HORA">
+                <p class="pricing-type-card-title">Por hora</p>
+                <p class="pricing-type-card-desc">Por hora trabalhada</p>
+              </button>
+              <button type="button" class="pricing-type-card" data-pricing-type="VALOR_FIXO">
+                <p class="pricing-type-card-title">Valor fixo</p>
+                <p class="pricing-type-card-desc">Pacote fechado/diária</p>
+              </button>
+              <button type="button" class="pricing-type-card" data-pricing-type="SOB_CONSULTA">
+                <p class="pricing-type-card-title">Sob consulta</p>
+                <p class="pricing-type-card-desc">A partir de / orçamento</p>
+              </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div id="pricing-per-person-fields" class="flex flex-col gap-4 mt-4" hidden>
               <div>
-                <label for="product-venue-city" class="field-label">Cidade</label>
-                <input id="product-venue-city" type="text" class="field-input" placeholder="Ex: Indaiatuba">
+                <label for="pricing-per-person-price" class="field-label">Preço por pessoa (R$)</label>
+                <input id="pricing-per-person-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
-              <div>
-                <label for="product-venue-state" class="field-label">Estado</label>
-                <input id="product-venue-state" type="text" class="field-input" placeholder="Ex: SP">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label for="product-venue-size" class="field-label">Metragem (m²)</label>
-                <input id="product-venue-size" type="number" min="0" step="1" class="field-input" placeholder="Ex: 500">
-              </div>
-              <div>
-                <label for="product-venue-common-areas" class="field-label">Áreas comuns</label>
-                <input id="product-venue-common-areas" type="text" class="field-input" placeholder="Ex: Piscina, salão, jardim">
-              </div>
-            </div>
-
-            <div>
-              <label class="field-label">Planta do espaço</label>
-              <p class="field-hint">Envie a planta baixa do local. O sistema identifica automaticamente o contorno das linhas do desenho.</p>
-              <div id="product-floorplan-wrap"></div>
-            </div>
-
-            <div>
-              <label class="field-label">Dias de funcionamento</label>
-              <div id="product-weekday-row" class="weekday-toggle-row"></div>
-            </div>
-
-            <div>
-              <label class="field-label">Horário de funcionamento</label>
-              <div class="product-time-row">
-                <input id="product-venue-hours-open" type="time" class="field-input">
-                <span>até</span>
-                <input id="product-venue-hours-close" type="time" class="field-input">
-              </div>
-            </div>
-
-            <div>
-              <label class="field-label mb-1">Valor por dia (R$)</label>
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label for="product-venue-price-weekday" class="field-label">Dia de semana</label>
-                  <input id="product-venue-price-weekday" type="number" min="0" step="50" class="field-input" placeholder="0,00">
+                  <label for="pricing-per-person-min" class="field-label">Mínimo de convidados</label>
+                  <input id="pricing-per-person-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 50">
                 </div>
                 <div>
-                  <label for="product-venue-price-saturday" class="field-label">Sábado</label>
-                  <input id="product-venue-price-saturday" type="number" min="0" step="50" class="field-input" placeholder="0,00">
+                  <label for="pricing-per-person-max" class="field-label">Máximo suportado</label>
+                  <input id="pricing-per-person-max" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
+                </div>
+              </div>
+            </div>
+
+            <div id="pricing-per-hour-fields" class="flex flex-col gap-4 mt-4" hidden>
+              <div>
+                <label for="pricing-per-hour-price" class="field-label">Valor da hora (R$)</label>
+                <input id="pricing-per-hour-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="pricing-per-hour-min" class="field-label">Mínimo de horas</label>
+                  <input id="pricing-per-hour-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 4">
                 </div>
                 <div>
-                  <label for="product-venue-price-sunday" class="field-label">Domingo</label>
-                  <input id="product-venue-price-sunday" type="number" min="0" step="50" class="field-input" placeholder="0,00">
+                  <label for="pricing-per-hour-extra" class="field-label">Hora adicional (R$)</label>
+                  <input id="pricing-per-hour-extra" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                </div>
+              </div>
+            </div>
+
+            <div id="pricing-fixed-fields" class="flex flex-col gap-4 mt-4" hidden>
+              <div>
+                <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária (R$)</label>
+                <input id="pricing-fixed-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="pricing-fixed-duration" class="field-label">Duração inclusa</label>
+                  <input id="pricing-fixed-duration" type="text" class="field-input" placeholder="Ex: até 6 horas de evento">
                 </div>
                 <div>
-                  <label for="product-venue-price-holiday" class="field-label">Feriado</label>
-                  <input id="product-venue-price-holiday" type="number" min="0" step="50" class="field-input" placeholder="0,00">
+                  <label for="pricing-fixed-cleaning-fee" class="field-label">Taxa de limpeza/caução (opcional)</label>
+                  <input id="pricing-fixed-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
                 </div>
+              </div>
+            </div>
+
+            <div id="pricing-on-request-fields" class="flex flex-col gap-4 mt-4" hidden>
+              <div>
+                <label for="pricing-on-request-price" class="field-label">Preço base inicial ("A partir de")</label>
+                <input id="pricing-on-request-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              </div>
+            </div>
+          </div>
+
+          <div id="pricing-venue-section" hidden>
+            <label class="field-label mb-1">Valor por dia (R$)</label>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="product-venue-price-weekday" class="field-label">Dia de semana</label>
+                <input id="product-venue-price-weekday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              </div>
+              <div>
+                <label for="product-venue-price-saturday" class="field-label">Sábado</label>
+                <input id="product-venue-price-saturday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              </div>
+              <div>
+                <label for="product-venue-price-sunday" class="field-label">Domingo</label>
+                <input id="product-venue-price-sunday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              </div>
+              <div>
+                <label for="product-venue-price-holiday" class="field-label">Feriado</label>
+                <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
             </div>
           </div>
         </div>
 
-        <div id="product-equipment-fields" hidden>
-          <div class="form-section-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.658.643 48.39 48.39 0 0 1-4.163-.3.75.75 0 0 0-.826.826 48.39 48.39 0 0 1 .3 4.163.64.64 0 0 1-.643.658v0c-.355 0-.676-.186-.959-.401a1.875 1.875 0 1 0 0 3.5c.283-.215.604-.401.959-.401v0a.64.64 0 0 1 .643.658 48.39 48.39 0 0 1-.3 4.163.75.75 0 0 0 .826.826 48.39 48.39 0 0 1 4.163-.3.64.64 0 0 1 .658.643v0c0 .355-.186.676-.401.959a1.875 1.875 0 1 0 3.5 0c-.215-.283-.401-.604-.401-.959v0a.64.64 0 0 1 .658-.643 48.39 48.39 0 0 1 4.163.3.75.75 0 0 0 .826-.826 48.39 48.39 0 0 1-.3-4.163.64.64 0 0 1 .643-.658v0c.355 0 .676.186.959.401a1.875 1.875 0 1 0 0-3.5c-.283.215-.604.401-.959.401v0a.64.64 0 0 1-.643-.658 48.39 48.39 0 0 1 .3-4.163.75.75 0 0 0-.826-.826 48.39 48.39 0 0 1-4.163.3.64.64 0 0 1-.658-.643v0Z" /></svg>
-            <span>Detalhes do equipamento</span>
-          </div>
-          <div class="mt-3">
-            <label for="product-equipment-type" class="field-label">Tipo do equipamento</label>
-            <textarea id="product-equipment-type" class="field-textarea" style="min-height:90px;" placeholder="Insira os detalhes do tipo de equipamento que a sua empresa aluga."></textarea>
-          </div>
-        </div>
+        <!-- ETAPA 3: Escopo do Serviço & Atributos -->
+        <div class="product-wizard-panel" data-step="3">
 
-        <div id="product-dishes-fields" hidden>
           <div class="form-section-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v3.75M6 6.75h4.5v3.75a2.25 2.25 0 0 1-2.25 2.25v0a2.25 2.25 0 0 1-2.25-2.25V6.75Zm2.25 6v11.25M15.75 3v6a3 3 0 0 0 3 3v0a3 3 0 0 0 3-3V3M18.75 12v9.75" /></svg>
-            <span>Cardápio</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            <span>O que está incluso</span>
           </div>
-          <div id="product-dishes-list" class="flex flex-col gap-2 mt-3"></div>
-          <button type="button" id="product-dish-add-btn" class="inspector-add-btn mt-2">
+          <div id="product-scope-included-list" class="flex flex-col gap-2 mt-2"></div>
+          <button type="button" id="product-scope-included-add-btn" class="inspector-add-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-            Adicionar prato
+            Adicionar item incluso
           </button>
+
+          <div class="form-section-header mt-2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75 14.25 14.25M14.25 9.75l-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+            <span>O que não está incluso</span>
+          </div>
+          <div id="product-scope-excluded-list" class="flex flex-col gap-2 mt-2"></div>
+          <button type="button" id="product-scope-excluded-add-btn" class="inspector-add-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+            Adicionar item não incluso
+          </button>
+
+          <div id="product-venue-fields" hidden>
+            <div class="form-section-header mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              <span>Detalhes do local</span>
+            </div>
+
+            <div class="flex flex-col gap-4 mt-3">
+              <div>
+                <label for="product-venue-address" class="field-label">Endereço</label>
+                <input id="product-venue-address" type="text" class="field-input" placeholder="Rua, número, bairro">
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="product-venue-city" class="field-label">Cidade</label>
+                  <input id="product-venue-city" type="text" class="field-input" placeholder="Ex: Indaiatuba">
+                </div>
+                <div>
+                  <label for="product-venue-state" class="field-label">Estado</label>
+                  <input id="product-venue-state" type="text" class="field-input" placeholder="Ex: SP">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="product-venue-size" class="field-label">Metragem (m²)</label>
+                  <input id="product-venue-size" type="number" min="0" step="1" class="field-input" placeholder="Ex: 500">
+                </div>
+                <div>
+                  <label for="product-venue-common-areas" class="field-label">Áreas comuns</label>
+                  <input id="product-venue-common-areas" type="text" class="field-input" placeholder="Ex: Piscina, salão, jardim">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="product-venue-capacity-seated" class="field-label">Capacidade sentados</label>
+                  <input id="product-venue-capacity-seated" type="number" min="0" step="1" class="field-input" placeholder="Ex: 150">
+                </div>
+                <div>
+                  <label for="product-venue-capacity-standing" class="field-label">Capacidade em pé</label>
+                  <input id="product-venue-capacity-standing" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
+                </div>
+              </div>
+
+              <div class="flex items-center gap-5">
+                <label class="checkbox-row"><input type="checkbox" id="product-venue-has-generator"> Possui gerador</label>
+                <label class="checkbox-row"><input type="checkbox" id="product-venue-is-pcd-accessible"> Acessível PCD</label>
+              </div>
+
+              <div>
+                <label for="product-venue-noise-restriction" class="field-label">Restrição de ruído/horário</label>
+                <input id="product-venue-noise-restriction" type="text" class="field-input" placeholder="Ex: Som até 22h">
+              </div>
+
+              <div>
+                <label class="field-label">Planta do espaço</label>
+                <p class="field-hint">Envie a planta baixa do local. O sistema identifica automaticamente o contorno das linhas do desenho.</p>
+                <div id="product-floorplan-wrap"></div>
+              </div>
+
+              <div>
+                <label class="field-label">Dias de funcionamento</label>
+                <div id="product-weekday-row" class="weekday-toggle-row"></div>
+              </div>
+
+              <div>
+                <label class="field-label">Horário de funcionamento</label>
+                <div class="product-time-row">
+                  <input id="product-venue-hours-open" type="time" class="field-input">
+                  <span>até</span>
+                  <input id="product-venue-hours-close" type="time" class="field-input">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="product-food-fields" hidden>
+            <div class="form-section-header mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v3.75M6 6.75h4.5v3.75a2.25 2.25 0 0 1-2.25 2.25v0a2.25 2.25 0 0 1-2.25-2.25V6.75Zm2.25 6v11.25M15.75 3v6a3 3 0 0 0 3 3v0a3 3 0 0 0 3-3V3M18.75 12v9.75" /></svg>
+              <span>Cardápio</span>
+            </div>
+            <div class="flex flex-col gap-4 mt-3">
+              <div>
+                <label for="product-food-dietary" class="field-label">Restrições atendidas</label>
+                <input id="product-food-dietary" type="text" class="field-input" placeholder="Ex: Vegano, sem glúten, sem lactose">
+              </div>
+              <div>
+                <label for="product-food-tasting-policy" class="field-label">Política de degustação</label>
+                <input id="product-food-tasting-policy" type="text" class="field-input" placeholder="Ex: Degustação gratuita para até 4 pessoas">
+              </div>
+            </div>
+            <div id="product-dishes-list" class="flex flex-col gap-2 mt-3"></div>
+            <button type="button" id="product-dish-add-btn" class="inspector-add-btn mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Adicionar prato
+            </button>
+          </div>
+
+          <div id="product-staff-fields" hidden>
+            <div class="form-section-header mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+              <span>Detalhes da equipe</span>
+            </div>
+            <div class="flex flex-col gap-4 mt-3">
+              <div>
+                <label for="product-staff-uniform" class="field-label">Traje fornecido</label>
+                <input id="product-staff-uniform" type="text" class="field-input" placeholder="Ex: Uniforme preto e branco">
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="product-staff-arrival" class="field-label">Chegada com antecedência de</label>
+                  <input id="product-staff-arrival" type="text" class="field-input" placeholder="Ex: 1 hora">
+                </div>
+                <div class="flex items-end pb-2.5">
+                  <label class="checkbox-row"><input type="checkbox" id="product-staff-meal-required"> Exige refeição no local</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="product-audiovisual-fields" hidden>
+            <div class="form-section-header mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a2.25 2.25 0 0 0-2.25-2.25H3.75A2.25 2.25 0 0 0 1.5 6v12a2.25 2.25 0 0 0 2.25 2.25h9.75A2.25 2.25 0 0 0 15.75 18v-4.5l4.72 4.72c.63.63 1.28.181 1.28-.659V6.44c0-.84-.65-1.29-1.28-.659L15.75 10.5Z" /></svg>
+              <span>Detalhes de audiovisual</span>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-3">
+              <div>
+                <label for="product-av-crew-count" class="field-label">Profissionais inclusos</label>
+                <input id="product-av-crew-count" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
+              </div>
+              <div>
+                <label for="product-av-delivery-days" class="field-label">Prazo de entrega (dias)</label>
+                <input id="product-av-delivery-days" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
+              </div>
+            </div>
+          </div>
+
+          <div id="product-equipment-fields" hidden>
+            <div class="form-section-header mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.658.643 48.39 48.39 0 0 1-4.163-.3.75.75 0 0 0-.826.826 48.39 48.39 0 0 1 .3 4.163.64.64 0 0 1-.643.658v0c-.355 0-.676-.186-.959-.401a1.875 1.875 0 1 0 0 3.5c.283-.215.604-.401.959-.401v0a.64.64 0 0 1 .643.658 48.39 48.39 0 0 1-.3 4.163.75.75 0 0 0 .826.826 48.39 48.39 0 0 1 4.163-.3.64.64 0 0 1 .658.643v0c0 .355-.186.676-.401.959a1.875 1.875 0 1 0 3.5 0c-.215-.283-.401-.604-.401-.959v0a.64.64 0 0 1 .658-.643 48.39 48.39 0 0 1 4.163.3.75.75 0 0 0 .826-.826 48.39 48.39 0 0 1-.3-4.163.64.64 0 0 1 .643-.658v0c.355 0 .676.186.959.401a1.875 1.875 0 1 0 0-3.5c-.283.215-.604.401-.959.401v0a.64.64 0 0 1-.643-.658 48.39 48.39 0 0 1 .3-4.163.75.75 0 0 0-.826-.826 48.39 48.39 0 0 1-4.163.3.64.64 0 0 1-.658-.643v0Z" /></svg>
+              <span>Detalhes do equipamento</span>
+            </div>
+            <div class="mt-3">
+              <label for="product-equipment-type" class="field-label">Tipo do equipamento</label>
+              <textarea id="product-equipment-type" class="field-textarea" style="min-height:90px;" placeholder="Insira os detalhes do tipo de equipamento que a sua empresa aluga."></textarea>
+            </div>
+          </div>
+
+          <div>
+            <label for="product-description" class="field-label">Descrição</label>
+            <textarea id="product-description" class="field-textarea" style="min-height:100px;" placeholder="Detalhe o que está incluso neste produto ou serviço…"></textarea>
+          </div>
         </div>
 
-        <div>
-          <label for="product-description" class="field-label">Descrição</label>
-          <textarea id="product-description" class="field-textarea" style="min-height:100px;" placeholder="Detalhe o que está incluso neste produto ou serviço…"></textarea>
+        <!-- ETAPA 4: Mídia, Logística & Regras -->
+        <div class="product-wizard-panel" data-step="4">
+
+          <div class="form-section-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>
+            <span>Imagens</span>
+          </div>
+
+          <div>
+            <label class="field-label">Imagem de capa</label>
+            <p class="field-hint">É a primeira imagem que aparece na vitrine.</p>
+            <div id="product-cover-wrap"></div>
+          </div>
+
+          <div>
+            <label class="field-label">Mais imagens (opcional)</label>
+            <div id="product-gallery-list" class="flex flex-col gap-2"></div>
+            <button type="button" id="product-gallery-add-btn" class="inspector-add-btn mt-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              Adicionar imagem
+            </button>
+          </div>
+
+          <div>
+            <label for="product-video-url" class="field-label">Vídeo (YouTube/Vimeo, opcional)</label>
+            <input id="product-video-url" type="url" class="field-input" placeholder="https://youtube.com/...">
+          </div>
+
+          <div class="form-section-header mt-2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+            <span>Logística</span>
+          </div>
+
+          <div>
+            <div class="plan-billing-toggle" id="product-service-area-toggle" style="margin-bottom:0;">
+              <button type="button" class="plan-billing-option active" data-service-area="city_only">
+                <span class="plan-billing-option-title">Só cidade sede</span>
+              </button>
+              <button type="button" class="plan-billing-option" data-service-area="radius_km">
+                <span class="plan-billing-option-title">Raio sem taxa extra</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="product-service-radius-fields" class="grid grid-cols-2 gap-4" hidden>
+            <div>
+              <label for="product-service-radius-km" class="field-label">Raio sem taxa extra (km)</label>
+              <input id="product-service-radius-km" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
+            </div>
+            <div>
+              <label for="product-service-extra-km-fee" class="field-label">Valor por km adicional (R$)</label>
+              <input id="product-service-extra-km-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="product-setup-minutes" class="field-label">Tempo de montagem (min)</label>
+              <input id="product-setup-minutes" type="number" min="0" step="5" class="field-input" placeholder="Ex: 60">
+            </div>
+            <div>
+              <label for="product-teardown-minutes" class="field-label">Tempo de desmontagem (min)</label>
+              <input id="product-teardown-minutes" type="number" min="0" step="5" class="field-input" placeholder="Ex: 60">
+            </div>
+          </div>
+
+          <div>
+            <label for="product-cancellation-policy" class="field-label" title="Flexível: reembolso integral até 7 dias antes. Moderada: reembolso parcial até 15 dias antes. Rigorosa: sinal não reembolsável.">Política de cancelamento</label>
+            <select id="product-cancellation-policy" class="field-select">
+              <option value="flexivel">Flexível</option>
+              <option value="moderada">Moderada</option>
+              <option value="rigorosa">Rigorosa</option>
+            </select>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3 pt-2">
-          <button type="submit" class="btn-primary">Salvar item</button>
-          <button type="button" id="product-drawer-cancel" class="btn-secondary">Cancelar</button>
-        </div>
       </form>
+    </div>
+
+    <div class="form-drawer-footer product-wizard-footer">
+      <button type="button" id="product-drawer-cancel" class="btn-secondary">Cancelar</button>
+      <button type="button" id="product-wizard-back-btn" class="btn-secondary" hidden>Voltar</button>
+      <button type="button" id="product-wizard-next-btn" class="btn-primary">Avançar</button>
+      <button type="submit" form="product-form" id="product-wizard-submit-btn" class="btn-primary" hidden>Salvar item</button>
     </div>
   </aside>
 

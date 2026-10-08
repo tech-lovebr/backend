@@ -4,9 +4,26 @@
 
 let activeCategory = 'Todos';
 
-const PRODUCT_VENUE_CATEGORY = 'Locação de espaço';
-const PRODUCT_EQUIPMENT_CATEGORY = 'Aluguel de equipamentos';
-const PRODUCT_FOOD_CATEGORY = 'Buffet';
+// Arrays (não mais string única) pra categorias antigas e novas continuarem
+// abrindo os mesmos blocos condicionais — ver DECISÃO em "categorias" no
+// plano: produtos antigos não são reescritos, só passam a conviver com a
+// lista nova de 8 categorias.
+const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações'];
+const PRODUCT_EQUIPMENT_CATEGORIES = ['Aluguel de equipamentos'];
+const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos'];
+const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra'];
+const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual'];
+
+const SUBCATEGORY_MAP = {
+  'Gastronomia & Alimentos': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco'],
+  'Bar & Coquetelaria': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá'],
+  'Espaços & Locações': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela'],
+  'Staff & Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista'],
+  'Foto, Vídeo & Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos'],
+  'Música, DJ & Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis'],
+  'Decoração & Cenografia': ['Florais', 'Cenografia', 'Iluminação', 'Mobiliário'],
+  'Assessoria & Cerimonial': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator']
+};
 
 const PRODUCT_WEEKDAYS = [
   { key: 'seg', label: 'Seg' },
@@ -23,12 +40,32 @@ const PI_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const PI_IMAGE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>';
 const PI_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
 
+// O atributo `hidden` sozinho não basta aqui: elementos com classe
+// flex/grid do Tailwind (ex: "flex flex-col gap-4") continuam visíveis
+// mesmo com hidden=true, porque o display do Tailwind vence o [hidden]
+// nativo do navegador. Define os dois (atributo, pra semântica/acessibilidade,
+// e o display inline, que sempre vence) pra esconder de verdade.
+function setPanelHidden(id, hide) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.hidden = hide;
+  el.style.display = hide ? 'none' : '';
+}
+
 let currentCoverImage = null;
 let currentGalleryImages = [];
 let currentOpenDays = {};
 let currentDishes = [];
 let currentFloorPlan = null;
 let bProducts = [];
+
+let currentStep = 1;
+let currentOfferType = 'servico';
+let currentSubcategory = null;
+let currentPricingType = null;
+let currentServiceAreaType = 'city_only';
+let currentScopeIncluded = [];
+let currentScopeExcluded = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
@@ -65,7 +102,15 @@ async function loadProducts() {
     gallery: p.gallery || [],
     venue: (p.extra && p.extra.venue) || null,
     equipmentType: (p.extra && p.extra.equipmentType) || null,
-    dishes: (p.extra && p.extra.dishes) || []
+    dishes: (p.extra && p.extra.dishes) || [],
+    offerType: (p.extra && p.extra.offerType) || 'servico',
+    subcategory: (p.extra && p.extra.subcategory) || null,
+    pricing: (p.extra && p.extra.pricing) || null,
+    scope: (p.extra && p.extra.scope) || { included: [], excluded: [] },
+    attributes: (p.extra && p.extra.attributes) || {},
+    videoUrl: (p.extra && p.extra.videoUrl) || null,
+    logistics: (p.extra && p.extra.logistics) || null,
+    cancellationPolicy: (p.extra && p.extra.cancellationPolicy) || 'flexivel'
   }));
 }
 
@@ -119,14 +164,27 @@ function renderCategoryTabs() {
 }
 
 function productPriceLabel(p) {
-  if (p.category === PRODUCT_VENUE_CATEGORY && p.venue) {
+  const { isVenue, isFood } = categoryGroups(p.category);
+
+  if (isVenue && p.venue) {
     const prices = [p.venue.priceWeekday, p.venue.priceSaturday, p.venue.priceSunday, p.venue.priceHoliday].filter(v => v > 0);
     return prices.length ? `A partir de ${formatCurrency(Math.min(...prices))}` : 'Consulte os valores';
   }
-  if (p.category === PRODUCT_FOOD_CATEGORY && p.dishes && p.dishes.length) {
+  if (isFood && p.dishes && p.dishes.length) {
     const prices = p.dishes.map(d => d.price).filter(v => v > 0);
-    return prices.length ? `A partir de ${formatCurrency(Math.min(...prices))}` : 'Consulte os valores';
+    if (prices.length) return `A partir de ${formatCurrency(Math.min(...prices))}`;
   }
+
+  const pricing = p.pricing;
+  if (pricing) {
+    if (pricing.type === 'SOB_CONSULTA') {
+      const starting = pricing.onRequest && pricing.onRequest.startingPrice;
+      return starting > 0 ? `A partir de ${formatCurrency(starting)}` : 'Sob consulta';
+    }
+    if (pricing.type === 'POR_PESSOA' && pricing.perPerson) return `${formatCurrency(pricing.perPerson.pricePerPerson)} / pessoa`;
+    if (pricing.type === 'POR_HORA' && pricing.perHour) return `${formatCurrency(pricing.perHour.pricePerHour)} / hora`;
+  }
+
   return formatCurrency(p.price);
 }
 
@@ -396,16 +454,150 @@ function renderDishes() {
 
 /* -------------------- Campos por categoria -------------------- */
 
+function categoryGroups(category) {
+  return {
+    isVenue: PRODUCT_VENUE_CATEGORIES.includes(category),
+    isEquipment: PRODUCT_EQUIPMENT_CATEGORIES.includes(category),
+    isFood: PRODUCT_FOOD_CATEGORIES.includes(category),
+    isStaff: PRODUCT_STAFF_CATEGORIES.includes(category),
+    isAV: PRODUCT_AV_CATEGORIES.includes(category)
+  };
+}
+
 function updateCategoryFieldsVisibility() {
   const category = document.getElementById('product-category').value;
-  const isVenue = category === PRODUCT_VENUE_CATEGORY;
-  const isEquipment = category === PRODUCT_EQUIPMENT_CATEGORY;
-  const isFood = category === PRODUCT_FOOD_CATEGORY;
+  const { isVenue, isEquipment, isFood, isStaff, isAV } = categoryGroups(category);
 
-  document.getElementById('product-venue-fields').hidden = !isVenue;
-  document.getElementById('product-equipment-fields').hidden = !isEquipment;
-  document.getElementById('product-dishes-fields').hidden = !isFood;
-  document.getElementById('product-price-field').hidden = isVenue || isFood;
+  // Etapa 3: bloco de atributos específico por categoria.
+  setPanelHidden('product-venue-fields', !isVenue);
+  setPanelHidden('product-food-fields', !isFood);
+  setPanelHidden('product-staff-fields', !isStaff);
+  setPanelHidden('product-audiovisual-fields', !isAV);
+  setPanelHidden('product-equipment-fields', !isEquipment);
+
+  // Etapa 2: Locação de espaço mantém a grade de preço por dia já existente
+  // em vez do motor de precificação novo (decisão confirmada com o usuário).
+  setPanelHidden('pricing-venue-section', !isVenue);
+  setPanelHidden('pricing-standard-section', isVenue);
+
+  const subcategoryField = document.getElementById('product-subcategory-field');
+  const hasSubcategories = !!(SUBCATEGORY_MAP[category] && SUBCATEGORY_MAP[category].length);
+  subcategoryField.hidden = !hasSubcategories;
+}
+
+/* -------------------- Etapa 1: subcategoria -------------------- */
+
+function renderSubcategoryChips() {
+  const wrap = document.getElementById('product-subcategory-row');
+  if (!wrap) return;
+  const category = document.getElementById('product-category').value;
+  const options = SUBCATEGORY_MAP[category] || [];
+  wrap.innerHTML = options.map(opt => `
+    <button type="button" class="weekday-toggle-chip ${currentSubcategory === opt ? 'active' : ''}" data-subcategory="${escapeHtml(opt)}">${escapeHtml(opt)}</button>
+  `).join('');
+
+  wrap.querySelectorAll('[data-subcategory]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSubcategory = currentSubcategory === btn.dataset.subcategory ? null : btn.dataset.subcategory;
+      renderSubcategoryChips();
+    });
+  });
+}
+
+/* -------------------- Etapa 2: motor de precificação -------------------- */
+
+function renderPricingTypeFields() {
+  document.querySelectorAll('#pricing-type-grid [data-pricing-type]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.pricingType === currentPricingType);
+  });
+  setPanelHidden('pricing-per-person-fields', currentPricingType !== 'POR_PESSOA');
+  setPanelHidden('pricing-per-hour-fields', currentPricingType !== 'POR_HORA');
+  setPanelHidden('pricing-fixed-fields', currentPricingType !== 'VALOR_FIXO');
+  setPanelHidden('pricing-on-request-fields', currentPricingType !== 'SOB_CONSULTA');
+}
+
+/* -------------------- Etapa 3: escopo (incluso / não incluso) -------------------- */
+
+function scopeState(kind) {
+  return kind === 'included' ? currentScopeIncluded : currentScopeExcluded;
+}
+
+function renderScopeList(kind) {
+  const wrap = document.getElementById(`product-scope-${kind}-list`);
+  if (!wrap) return;
+  wrap.innerHTML = scopeState(kind).map(item => `
+    <div class="inspector-list-item">
+      <button type="button" class="inspector-list-item-remove" data-remove-scope="${item.id}" data-scope-kind="${kind}">${PI_TRASH}</button>
+      <input type="text" class="field-input" data-scope-text="${item.id}" data-scope-kind="${kind}" value="${escapeHtml(item.text || '')}" placeholder="Ex: Gelo e insumos">
+    </div>
+  `).join('');
+
+  wrap.querySelectorAll('[data-remove-scope]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const arr = scopeState(btn.dataset.scopeKind);
+      const idx = arr.findIndex(x => x.id === btn.dataset.removeScope);
+      if (idx > -1) arr.splice(idx, 1);
+      renderScopeList(btn.dataset.scopeKind);
+    });
+  });
+  wrap.querySelectorAll('[data-scope-text]').forEach(input => {
+    input.addEventListener('input', () => {
+      const item = scopeState(input.dataset.scopeKind).find(x => x.id === input.dataset.scopeText);
+      if (item) item.text = input.value;
+    });
+  });
+}
+
+/* -------------------- Navegação do wizard -------------------- */
+
+function goToStep(n) {
+  currentStep = n;
+
+  document.querySelectorAll('.product-wizard-panel').forEach(panel => {
+    panel.classList.toggle('is-active', Number(panel.dataset.step) === n);
+  });
+
+  document.querySelectorAll('#product-wizard-steps [data-step-indicator]').forEach(el => {
+    const stepNum = Number(el.dataset.stepIndicator);
+    const circle = el.querySelector('.product-wizard-step-circle');
+    const label = el.querySelector('.product-wizard-step-label');
+    circle.classList.toggle('is-active', stepNum === n);
+    circle.classList.toggle('is-done', stepNum < n);
+    circle.textContent = stepNum < n ? '✓' : stepNum;
+    label.classList.toggle('is-active', stepNum === n);
+    label.classList.toggle('is-done', stepNum < n);
+  });
+  document.querySelectorAll('.product-wizard-step-line').forEach((line, i) => {
+    line.classList.toggle('is-done', n > i + 1);
+  });
+
+  setPanelHidden('product-wizard-back-btn', n === 1);
+  setPanelHidden('product-wizard-next-btn', n === 4);
+  setPanelHidden('product-wizard-submit-btn', n !== 4);
+}
+
+function validateStep1() {
+  const name = document.getElementById('product-name').value.trim();
+  const category = document.getElementById('product-category').value;
+  if (!name || !category) {
+    showToast('Preencha nome e categoria para continuar.', true);
+    return false;
+  }
+  return true;
+}
+
+function validateStep2() {
+  const category = document.getElementById('product-category').value;
+  if (categoryGroups(category).isVenue) return true;
+  if (!currentPricingType) {
+    showToast('Selecione a unidade de cobrança.', true);
+    return false;
+  }
+  return true;
+}
+
+function validateStep3() {
+  return true;
 }
 
 /* -------------------- Drawer: novo / editar produto -------------------- */
@@ -426,18 +618,51 @@ function initProductDrawer() {
     delete form.dataset.editId;
   };
 
+  // Campos de moeda do motor de precificação (texto mascarado, como já é
+  // usado em pagamentos.html/configuracoes.html — não o type="number" cru
+  // que o campo único de preço antigo usava).
+  ['pricing-per-person-price', 'pricing-per-hour-price', 'pricing-per-hour-extra',
+   'pricing-fixed-price', 'pricing-fixed-cleaning-fee', 'pricing-on-request-price',
+   'product-venue-price-weekday', 'product-venue-price-saturday', 'product-venue-price-sunday', 'product-venue-price-holiday',
+   'product-service-extra-km-fee'
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) wireCurrencyMaskInput(el);
+  });
+
   const resetDrawerState = () => {
     currentCoverImage = null;
     currentGalleryImages = [];
     currentOpenDays = defaultOpenDays();
     currentDishes = [];
     currentFloorPlan = null;
+    currentOfferType = 'servico';
+    currentSubcategory = null;
+    currentPricingType = null;
+    currentServiceAreaType = 'city_only';
+    currentScopeIncluded = [];
+    currentScopeExcluded = [];
+
     renderCoverImagePicker();
     renderGalleryImages();
     renderWeekdayChips();
     renderDishes();
     renderFloorPlanPicker();
+    renderSubcategoryChips();
+    renderScopeList('included');
+    renderScopeList('excluded');
+    renderPricingTypeFields();
     updateCategoryFieldsVisibility();
+
+    document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(b => b.classList.toggle('active', b.dataset.offerType === currentOfferType));
+    document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b.dataset.serviceArea === currentServiceAreaType));
+    setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
+    document.getElementById('product-cancellation-policy').value = 'flexivel';
+    document.getElementById('product-video-url').value = '';
+    document.getElementById('product-setup-minutes').value = '';
+    document.getElementById('product-teardown-minutes').value = '';
+
+    goToStep(1);
   };
 
   if (addBtn) addBtn.addEventListener('click', () => {
@@ -455,7 +680,52 @@ function initProductDrawer() {
   if (cancelBtn) cancelBtn.addEventListener('click', close);
   if (backdrop) backdrop.addEventListener('click', close);
 
-  document.getElementById('product-category').addEventListener('change', updateCategoryFieldsVisibility);
+  document.getElementById('product-category').addEventListener('change', () => {
+    currentSubcategory = null;
+    renderSubcategoryChips();
+    updateCategoryFieldsVisibility();
+  });
+
+  document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentOfferType = btn.dataset.offerType;
+      document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(b => b.classList.toggle('active', b === btn));
+    });
+  });
+
+  document.getElementById('pricing-type-grid').querySelectorAll('[data-pricing-type]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPricingType = btn.dataset.pricingType;
+      renderPricingTypeFields();
+    });
+  });
+
+  document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentServiceAreaType = btn.dataset.serviceArea;
+      document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b === btn));
+      setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
+    });
+  });
+
+  document.getElementById('product-scope-included-add-btn').addEventListener('click', () => {
+    currentScopeIncluded.push({ id: 'si' + Date.now() + '-' + Math.round(Math.random() * 999), text: '' });
+    renderScopeList('included');
+  });
+  document.getElementById('product-scope-excluded-add-btn').addEventListener('click', () => {
+    currentScopeExcluded.push({ id: 'se' + Date.now() + '-' + Math.round(Math.random() * 999), text: '' });
+    renderScopeList('excluded');
+  });
+
+  document.getElementById('product-wizard-back-btn').addEventListener('click', () => {
+    if (currentStep > 1) goToStep(currentStep - 1);
+  });
+  document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
+    const validators = { 1: validateStep1, 2: validateStep2, 3: validateStep3 };
+    const validate = validators[currentStep];
+    if (validate && !validate()) return;
+    if (currentStep < 4) goToStep(currentStep + 1);
+  });
 
   document.getElementById('product-gallery-add-btn').addEventListener('click', () => {
     currentGalleryImages.push('');
@@ -475,68 +745,132 @@ function initProductDrawer() {
       const description = document.getElementById('product-description').value.trim();
       const active = true;
 
-      const isVenue = category === PRODUCT_VENUE_CATEGORY;
-      const isEquipment = category === PRODUCT_EQUIPMENT_CATEGORY;
-      const isFood = category === PRODUCT_FOOD_CATEGORY;
+      if (!validateStep1()) { goToStep(1); return; }
+      if (!validateStep2()) { goToStep(2); return; }
 
-      const price = (isVenue || isFood) ? 0 : Number(document.getElementById('product-price').value);
+      const { isVenue, isEquipment, isFood, isStaff, isAV } = categoryGroups(category);
 
-      if (!name || !category || (!isVenue && !isFood && !price)) {
-        showToast('Preencha nome, categoria e preço do item.', true);
-        return;
-      }
-
-      const payload = {
-        name, category, price, description, active,
-        coverImage: currentCoverImage || null,
-        gallery: currentGalleryImages.filter(Boolean),
-        venue: null,
-        equipmentType: null,
-        dishes: []
+      const pricing = {
+        type: currentPricingType,
+        perPerson: null, perHour: null, fixed: null, onRequest: null
       };
-
-      if (isVenue) {
-        payload.venue = {
-          address: document.getElementById('product-venue-address').value.trim(),
-          city: document.getElementById('product-venue-city').value.trim(),
-          state: document.getElementById('product-venue-state').value.trim(),
-          size: document.getElementById('product-venue-size').value.trim(),
-          commonAreas: document.getElementById('product-venue-common-areas').value.trim(),
-          floorPlan: currentFloorPlan ? { image: currentFloorPlan.image, shape: currentFloorPlan.shape || [] } : null,
-          days: { ...currentOpenDays },
-          hoursOpen: document.getElementById('product-venue-hours-open').value,
-          hoursClose: document.getElementById('product-venue-hours-close').value,
-          priceWeekday: Number(document.getElementById('product-venue-price-weekday').value) || 0,
-          priceSaturday: Number(document.getElementById('product-venue-price-saturday').value) || 0,
-          priceSunday: Number(document.getElementById('product-venue-price-sunday').value) || 0,
-          priceHoliday: Number(document.getElementById('product-venue-price-holiday').value) || 0
+      if (currentPricingType === 'POR_PESSOA') {
+        pricing.perPerson = {
+          pricePerPerson: currencyMaskValue(document.getElementById('pricing-per-person-price')),
+          minPeople: Number(document.getElementById('pricing-per-person-min').value) || 0,
+          maxPeople: Number(document.getElementById('pricing-per-person-max').value) || 0
+        };
+      } else if (currentPricingType === 'POR_HORA') {
+        pricing.perHour = {
+          pricePerHour: currencyMaskValue(document.getElementById('pricing-per-hour-price')),
+          minHours: Number(document.getElementById('pricing-per-hour-min').value) || 0,
+          extraHourPrice: currencyMaskValue(document.getElementById('pricing-per-hour-extra'))
+        };
+      } else if (currentPricingType === 'VALOR_FIXO') {
+        pricing.fixed = {
+          price: currencyMaskValue(document.getElementById('pricing-fixed-price')),
+          durationIncluded: document.getElementById('pricing-fixed-duration').value.trim(),
+          cleaningFee: currencyMaskValue(document.getElementById('pricing-fixed-cleaning-fee'))
+        };
+      } else if (currentPricingType === 'SOB_CONSULTA') {
+        pricing.onRequest = {
+          startingPrice: currencyMaskValue(document.getElementById('pricing-on-request-price'))
         };
       }
 
-      if (isEquipment) {
-        payload.equipmentType = document.getElementById('product-equipment-type').value.trim();
-      }
+      const venue = isVenue ? {
+        address: document.getElementById('product-venue-address').value.trim(),
+        city: document.getElementById('product-venue-city').value.trim(),
+        state: document.getElementById('product-venue-state').value.trim(),
+        size: document.getElementById('product-venue-size').value.trim(),
+        commonAreas: document.getElementById('product-venue-common-areas').value.trim(),
+        capacitySeated: Number(document.getElementById('product-venue-capacity-seated').value) || 0,
+        capacityStanding: Number(document.getElementById('product-venue-capacity-standing').value) || 0,
+        hasGenerator: document.getElementById('product-venue-has-generator').checked,
+        isPcdAccessible: document.getElementById('product-venue-is-pcd-accessible').checked,
+        noiseRestriction: document.getElementById('product-venue-noise-restriction').value.trim(),
+        floorPlan: currentFloorPlan ? { image: currentFloorPlan.image, shape: currentFloorPlan.shape || [] } : null,
+        days: { ...currentOpenDays },
+        hoursOpen: document.getElementById('product-venue-hours-open').value,
+        hoursClose: document.getElementById('product-venue-hours-close').value,
+        priceWeekday: currencyMaskValue(document.getElementById('product-venue-price-weekday')),
+        priceSaturday: currencyMaskValue(document.getElementById('product-venue-price-saturday')),
+        priceSunday: currencyMaskValue(document.getElementById('product-venue-price-sunday')),
+        priceHoliday: currencyMaskValue(document.getElementById('product-venue-price-holiday'))
+      } : null;
 
-      if (isFood) {
-        payload.dishes = currentDishes.map(d => ({ id: d.id, name: d.name, price: d.price, quantity: d.quantity }));
-      }
+      const equipmentType = isEquipment ? document.getElementById('product-equipment-type').value.trim() : null;
+      const dishes = isFood ? currentDishes.map(d => ({ id: d.id, name: d.name, price: d.price, quantity: d.quantity })) : [];
 
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) return;
+      const attributes = {
+        venue: isVenue ? { capacity: venue.capacitySeated || venue.capacityStanding, areaM2: Number(venue.size) || null, hasGenerator: venue.hasGenerator, isPcdAccessible: venue.isPcdAccessible, hasNoiseRestriction: !!venue.noiseRestriction } : null,
+        food: isFood ? {
+          menuAttachmentUrl: null,
+          dietaryRestrictions: document.getElementById('product-food-dietary').value.trim().split(',').map(s => s.trim()).filter(Boolean),
+          tastingPolicy: document.getElementById('product-food-tasting-policy').value.trim()
+        } : null,
+        staff: isStaff ? {
+          uniformDescription: document.getElementById('product-staff-uniform').value.trim(),
+          mealRequired: document.getElementById('product-staff-meal-required').checked,
+          arrivalTimeBeforeEvent: document.getElementById('product-staff-arrival').value.trim()
+        } : null,
+        audiovisual: isAV ? {
+          crewCount: Number(document.getElementById('product-av-crew-count').value) || 0,
+          deliveryDays: Number(document.getElementById('product-av-delivery-days').value) || 0
+        } : null
+      };
+
+      const logistics = {
+        serviceAreaType: currentServiceAreaType,
+        serviceRadiusKm: currentServiceAreaType === 'radius_km' ? (Number(document.getElementById('product-service-radius-km').value) || 0) : null,
+        extraKmFee: currentServiceAreaType === 'radius_km' ? currencyMaskValue(document.getElementById('product-service-extra-km-fee')) : null,
+        setupMinutes: Number(document.getElementById('product-setup-minutes').value) || 0,
+        teardownMinutes: Number(document.getElementById('product-teardown-minutes').value) || 0
+      };
+
+      // Preço de exibição/ordenação (coluna `price`, legada): derivado da
+      // unidade de cobrança escolhida, pra continuar funcionando nos cards
+      // e no autocomplete de proposta do financeiro.js sem precisar mudar
+      // nada lá.
+      let price = 0;
+      if (isVenue) {
+        const dayPrices = [venue.priceWeekday, venue.priceSaturday, venue.priceSunday, venue.priceHoliday].filter(v => v > 0);
+        price = dayPrices.length ? Math.min(...dayPrices) : 0;
+      } else if (currentPricingType === 'VALOR_FIXO') price = pricing.fixed.price;
+      else if (currentPricingType === 'POR_PESSOA') price = pricing.perPerson.pricePerPerson;
+      else if (currentPricingType === 'POR_HORA') price = pricing.perHour.pricePerHour;
 
       const row = {
         name, category, price, description, active,
-        cover_image_url: payload.coverImage,
-        gallery: payload.gallery,
-        extra: { venue: payload.venue, equipmentType: payload.equipmentType, dishes: payload.dishes }
+        cover_image_url: currentCoverImage || null,
+        gallery: currentGalleryImages.filter(Boolean),
+        extra: {
+          offerType: currentOfferType,
+          subcategory: currentSubcategory,
+          pricing,
+          scope: {
+            included: currentScopeIncluded.map(i => i.text).filter(Boolean),
+            excluded: currentScopeExcluded.map(i => i.text).filter(Boolean)
+          },
+          attributes,
+          videoUrl: document.getElementById('product-video-url').value.trim() || null,
+          logistics,
+          cancellationPolicy: document.getElementById('product-cancellation-policy').value,
+          venue,
+          equipmentType,
+          dishes
+        }
       };
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return;
 
       if (form.dataset.editId) {
         const { error } = await supabaseClient.from('products').update(row).eq('id', form.dataset.editId);
         if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
         showToast('Produto atualizado.');
-        if (isVenue && payload.venue.floorPlan && payload.venue.floorPlan.shape.length) {
-          sendFloorPlanToDatabase(form.dataset.editId, payload.venue.floorPlan);
+        if (isVenue && venue.floorPlan && venue.floorPlan.shape.length) {
+          sendFloorPlanToDatabase(form.dataset.editId, venue.floorPlan);
         }
       } else {
         const { data: created, error } = await supabaseClient
@@ -546,8 +880,8 @@ function initProductDrawer() {
           .single();
         if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
         showToast('Produto adicionado à vitrine.');
-        if (isVenue && payload.venue.floorPlan && payload.venue.floorPlan.shape.length) {
-          sendFloorPlanToDatabase(created.id, payload.venue.floorPlan);
+        if (isVenue && venue.floorPlan && venue.floorPlan.shape.length) {
+          sendFloorPlanToDatabase(created.id, venue.floorPlan);
         }
       }
       await loadProducts();
@@ -565,7 +899,6 @@ function openProductDrawer(id) {
   document.getElementById('product-drawer-title').textContent = 'Editar produto ou serviço';
   document.getElementById('product-name').value = p.name;
   document.getElementById('product-category').value = p.category;
-  document.getElementById('product-price').value = p.price || '';
   document.getElementById('product-description').value = p.description || '';
 
   currentCoverImage = p.coverImage || null;
@@ -573,29 +906,82 @@ function openProductDrawer(id) {
   currentOpenDays = (p.venue && p.venue.days) ? { ...p.venue.days } : defaultOpenDays();
   currentDishes = (p.dishes || []).map(d => ({ ...d }));
   currentFloorPlan = (p.venue && p.venue.floorPlan) ? { image: p.venue.floorPlan.image, shape: p.venue.floorPlan.shape || [], processing: false } : null;
+  currentOfferType = p.offerType || 'servico';
+  currentSubcategory = p.subcategory || null;
+  currentPricingType = (p.pricing && p.pricing.type) || null;
+  currentServiceAreaType = (p.logistics && p.logistics.serviceAreaType) || 'city_only';
+  currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));
+  currentScopeExcluded = ((p.scope && p.scope.excluded) || []).map((text, i) => ({ id: 'se' + i, text }));
 
   document.getElementById('product-venue-address').value = (p.venue && p.venue.address) || '';
   document.getElementById('product-venue-city').value = (p.venue && p.venue.city) || '';
   document.getElementById('product-venue-state').value = (p.venue && p.venue.state) || '';
   document.getElementById('product-venue-size').value = (p.venue && p.venue.size) || '';
   document.getElementById('product-venue-common-areas').value = (p.venue && p.venue.commonAreas) || '';
+  document.getElementById('product-venue-capacity-seated').value = (p.venue && p.venue.capacitySeated) || '';
+  document.getElementById('product-venue-capacity-standing').value = (p.venue && p.venue.capacityStanding) || '';
+  document.getElementById('product-venue-has-generator').checked = !!(p.venue && p.venue.hasGenerator);
+  document.getElementById('product-venue-is-pcd-accessible').checked = !!(p.venue && p.venue.isPcdAccessible);
+  document.getElementById('product-venue-noise-restriction').value = (p.venue && p.venue.noiseRestriction) || '';
   document.getElementById('product-venue-hours-open').value = (p.venue && p.venue.hoursOpen) || '';
   document.getElementById('product-venue-hours-close').value = (p.venue && p.venue.hoursClose) || '';
-  document.getElementById('product-venue-price-weekday').value = (p.venue && p.venue.priceWeekday) || '';
-  document.getElementById('product-venue-price-saturday').value = (p.venue && p.venue.priceSaturday) || '';
-  document.getElementById('product-venue-price-sunday').value = (p.venue && p.venue.priceSunday) || '';
-  document.getElementById('product-venue-price-holiday').value = (p.venue && p.venue.priceHoliday) || '';
+  document.getElementById('product-venue-price-weekday').value = (p.venue && p.venue.priceWeekday) ? String(p.venue.priceWeekday.toFixed(2)).replace('.', ',') : '';
+  document.getElementById('product-venue-price-saturday').value = (p.venue && p.venue.priceSaturday) ? String(p.venue.priceSaturday.toFixed(2)).replace('.', ',') : '';
+  document.getElementById('product-venue-price-sunday').value = (p.venue && p.venue.priceSunday) ? String(p.venue.priceSunday.toFixed(2)).replace('.', ',') : '';
+  document.getElementById('product-venue-price-holiday').value = (p.venue && p.venue.priceHoliday) ? String(p.venue.priceHoliday.toFixed(2)).replace('.', ',') : '';
   document.getElementById('product-equipment-type').value = p.equipmentType || '';
+
+  const food = p.attributes && p.attributes.food;
+  document.getElementById('product-food-dietary').value = (food && food.dietaryRestrictions || []).join(', ');
+  document.getElementById('product-food-tasting-policy').value = (food && food.tastingPolicy) || '';
+
+  const staff = p.attributes && p.attributes.staff;
+  document.getElementById('product-staff-uniform').value = (staff && staff.uniformDescription) || '';
+  document.getElementById('product-staff-meal-required').checked = !!(staff && staff.mealRequired);
+  document.getElementById('product-staff-arrival').value = (staff && staff.arrivalTimeBeforeEvent) || '';
+
+  const av = p.attributes && p.attributes.audiovisual;
+  document.getElementById('product-av-crew-count').value = (av && av.crewCount) || '';
+  document.getElementById('product-av-delivery-days').value = (av && av.deliveryDays) || '';
+
+  const pricing = p.pricing;
+  const money = v => v ? String(Number(v).toFixed(2)).replace('.', ',') : '';
+  document.getElementById('pricing-per-person-price').value = money(pricing && pricing.perPerson && pricing.perPerson.pricePerPerson);
+  document.getElementById('pricing-per-person-min').value = (pricing && pricing.perPerson && pricing.perPerson.minPeople) || '';
+  document.getElementById('pricing-per-person-max').value = (pricing && pricing.perPerson && pricing.perPerson.maxPeople) || '';
+  document.getElementById('pricing-per-hour-price').value = money(pricing && pricing.perHour && pricing.perHour.pricePerHour);
+  document.getElementById('pricing-per-hour-min').value = (pricing && pricing.perHour && pricing.perHour.minHours) || '';
+  document.getElementById('pricing-per-hour-extra').value = money(pricing && pricing.perHour && pricing.perHour.extraHourPrice);
+  document.getElementById('pricing-fixed-price').value = money(pricing && pricing.fixed && pricing.fixed.price);
+  document.getElementById('pricing-fixed-duration').value = (pricing && pricing.fixed && pricing.fixed.durationIncluded) || '';
+  document.getElementById('pricing-fixed-cleaning-fee').value = money(pricing && pricing.fixed && pricing.fixed.cleaningFee);
+  document.getElementById('pricing-on-request-price').value = money(pricing && pricing.onRequest && pricing.onRequest.startingPrice);
+
+  document.getElementById('product-video-url').value = p.videoUrl || '';
+  document.getElementById('product-setup-minutes').value = (p.logistics && p.logistics.setupMinutes) || '';
+  document.getElementById('product-teardown-minutes').value = (p.logistics && p.logistics.teardownMinutes) || '';
+  document.getElementById('product-service-radius-km').value = (p.logistics && p.logistics.serviceRadiusKm) || '';
+  document.getElementById('product-service-extra-km-fee').value = money(p.logistics && p.logistics.extraKmFee);
+  document.getElementById('product-cancellation-policy').value = p.cancellationPolicy || 'flexivel';
+
+  document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(b => b.classList.toggle('active', b.dataset.offerType === currentOfferType));
+  document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b.dataset.serviceArea === currentServiceAreaType));
+  setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
 
   renderCoverImagePicker();
   renderGalleryImages();
   renderWeekdayChips();
   renderDishes();
   renderFloorPlanPicker();
+  renderSubcategoryChips();
+  renderScopeList('included');
+  renderScopeList('excluded');
+  renderPricingTypeFields();
   updateCategoryFieldsVisibility();
 
   const form = document.getElementById('product-form');
   form.dataset.editId = p.id;
+  goToStep(1);
   document.getElementById('product-drawer').classList.add('show');
   document.getElementById('product-drawer-backdrop').classList.add('show');
 }

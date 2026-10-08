@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo Love</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-admin.png">
+  <link rel="apple-touch-icon" href="assets/fav-admin.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=50">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="cms" data-title="Artigos">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <nav class="conteudo-tabs" id="abas-status" aria-label="Filtrar por situação">
+          <button type="button" class="conteudo-tab is-active" data-status="">
+            Tudo<span class="aba-contagem" data-contagem="todos"></span>
+          </button>
+          <button type="button" class="conteudo-tab" data-status="publicado">
+            Publicados<span class="aba-contagem" data-contagem="publicado"></span>
+          </button>
+          <button type="button" class="conteudo-tab" data-status="rascunho">
+            Rascunhos<span class="aba-contagem" data-contagem="rascunho"></span>
+          </button>
+          <button type="button" class="conteudo-tab" data-status="lixo">
+            Lixo<span class="aba-contagem" data-contagem="lixo"></span>
+          </button>
+        </nav>
+
+        <div id="page-controls" hidden>
+          <input type="search" class="search-input" id="busca" placeholder="Buscar título...">
+          <select class="field-select" id="filtro-categoria" style="width:auto">
+            <option value="">Todas as categorias</option>
+          </select>
+        </div>
+
+        <div class="barra-selecao" id="barra-selecao" hidden>
+          <span class="barra-selecao-contagem" id="selecao-contagem"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-limpar-selecao">Limpar seleção</button>
+          <button type="button" class="btn btn-neutro btn-sm" id="btn-acao-massa">Ações em massa</button>
+        </div>
+
+        <p class="contagem-chamados" id="contagem-artigos"></p>
+
+        <section class="card table-card">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr>
+                <th class="col-selecao"><input type="checkbox" id="selecionar-todos" aria-label="Selecionar todos"></th>
+                <th>Título</th><th>Categorias</th><th>Data</th>
+              </tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/cms.js"></script>
+</body>
+</html>

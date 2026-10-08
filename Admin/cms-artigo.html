@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo Love</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-admin.png">
+  <link rel="apple-touch-icon" href="assets/fav-admin.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=50">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/shell.js"></script>
+</head>
+<body data-page="cms" data-title="Artigo">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <div class="editor-grid">
+          <div class="editor-coluna">
+            <input type="text" class="editor-titulo" id="artigo-titulo"
+                   placeholder="Digite o título aqui" autocomplete="off">
+
+            <section class="card editor-card">
+              <div class="editor-barra" id="editor-barra">
+                <button type="button" class="editor-btn" data-comando="bold" title="Negrito" aria-label="Negrito"><b>B</b></button>
+                <button type="button" class="editor-btn" data-comando="italic" title="Itálico" aria-label="Itálico"><i>I</i></button>
+                <button type="button" class="editor-btn" data-comando="underline" title="Sublinhado" aria-label="Sublinhado"><u>U</u></button>
+
+                <span class="editor-separador"></span>
+
+                <select class="editor-select" id="editor-bloco" aria-label="Estilo do parágrafo">
+                  <option value="p">Parágrafo</option>
+                  <option value="h2">Título 2</option>
+                  <option value="h3">Título 3</option>
+                  <option value="blockquote">Citação</option>
+                </select>
+
+                <span class="editor-separador"></span>
+
+                <button type="button" class="editor-btn" data-comando="insertUnorderedList" title="Lista" aria-label="Lista">&bull;&mdash;</button>
+                <button type="button" class="editor-btn" data-comando="insertOrderedList" title="Lista numerada" aria-label="Lista numerada">1&mdash;</button>
+
+                <span class="editor-separador"></span>
+
+                <label class="editor-cor" title="Cor do texto">
+                  <span>A</span>
+                  <input type="color" id="editor-cor" value="#101828" aria-label="Cor do texto">
+                </label>
+
+                <button type="button" class="editor-btn" id="btn-link" title="Inserir link" aria-label="Inserir link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6 -6" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464" /><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /></svg>
+                </button>
+                <button type="button" class="editor-btn" data-comando="unlink" title="Remover link" aria-label="Remover link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 22v-2" /><path d="M9 15l3 -3" /><path d="M22 17h-2" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072" /><path d="M3 3l18 18" /><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /></svg>
+                </button>
+              </div>
+
+              <div class="editor-corpo" id="artigo-conteudo" contenteditable="true"
+                   role="textbox" aria-multiline="true" aria-label="Corpo do artigo"></div>
+
+              <p class="editor-rodape"><span id="editor-palavras">0 palavras</span></p>
+            </section>
+          </div>
+
+          <aside class="editor-lateral">
+            <section class="card editor-bloco">
+              <p class="editor-bloco-titulo">Publicar</p>
+
+              <div class="lista-dados">
+                <div class="dados-linha">
+                  <span class="rotulo">Situação</span>
+                  <span class="valor" id="artigo-situacao">Rascunho</span>
+                </div>
+                <div class="dados-linha">
+                  <span class="rotulo">Publicado em</span>
+                  <span class="valor" id="artigo-publicado-em">—</span>
+                </div>
+              </div>
+
+              <div class="editor-acoes">
+                <button type="button" class="btn btn-ghost" id="btn-rascunho">Salvar rascunho</button>
+                <button type="button" class="btn btn-primary" id="btn-publicar">Publicar</button>
+              </div>
+
+              <button type="button" class="editor-lixeira" id="btn-lixeira" hidden>Mover para a lixeira</button>
+            </section>
+
+            <section class="card editor-bloco">
+              <p class="editor-bloco-titulo">Imagem de capa</p>
+              <div class="capa-previa" id="capa-previa"><span>Nenhuma imagem</span></div>
+              <input type="file" id="capa-arquivo" accept="image/*" hidden>
+              <div class="editor-acoes">
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-capa">Escolher imagem</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-remover-capa" hidden>Remover</button>
+              </div>
+            </section>
+
+            <section class="card editor-bloco">
+              <p class="editor-bloco-titulo">Categorias</p>
+              <div class="categorias-lista" id="categorias-lista"></div>
+              <div class="categoria-nova">
+                <input type="text" class="field-input" id="categoria-nome" placeholder="Nova categoria">
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-categoria">Adicionar</button>
+              </div>
+            </section>
+
+            <section class="card editor-bloco">
+              <p class="editor-bloco-titulo">Resumo</p>
+              <textarea class="field-textarea" id="artigo-resumo"
+                        placeholder="Texto curto que aparece na listagem do blog."></textarea>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/cms-artigo.js"></script>
+</body>
+</html>

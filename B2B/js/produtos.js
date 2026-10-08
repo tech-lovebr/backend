@@ -15,14 +15,14 @@ const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações
 const PRODUCT_EQUIPMENT_CATEGORIES = ['Aluguel de equipamentos'];
 const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos', 'Buffet e Gastronomia'];
 const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra'];
-const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual'];
+const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual', 'Mídia e Audiovisual'];
 
 const SUBCATEGORY_MAP = {
   'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã'],
   'Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira'],
-  'Espaço de Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela'],
-  'Staff & Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista'],
-  'Foto, Vídeo & Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos'],
+  'Espaço de Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
+  'Staff & Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Celebrante'],
+  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
   'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa'],
   'Decoração': ['Florais', 'Iluminação', 'Mobiliário'],
   'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator'],

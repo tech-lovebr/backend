@@ -41,38 +41,25 @@
       <header class="admin-topbar" id="admin-topbar"></header>
       <main class="admin-content">
 
-        <nav class="conteudo-tabs" id="abas-documento" aria-label="Documento">
-          <button type="button" class="conteudo-tab is-active" data-doc="termos">Termos de uso</button>
-          <button type="button" class="conteudo-tab" data-doc="privacidade">Política de privacidade</button>
-        </nav>
-
-        <div class="editor-grid">
-          <div class="editor-coluna">
-            <section class="card editor-card" id="editor-host"></section>
-          </div>
-
-          <aside class="editor-lateral">
-            <section class="card editor-bloco">
-              <p class="editor-bloco-titulo">Publicação</p>
-
-              <div class="lista-dados">
-                <div class="dados-linha">
-                  <span class="rotulo">Última edição</span>
-                  <span class="valor" id="doc-atualizado">—</span>
-                </div>
-              </div>
-
-              <div class="editor-acoes">
-                <button type="button" class="btn btn-primary" id="btn-salvar">Salvar</button>
-              </div>
-            </section>
-
-            <section class="card editor-bloco">
-              <p class="editor-bloco-titulo">Histórico de atualizações</p>
-              <div id="doc-historico"></div>
-            </section>
-          </aside>
+        <div class="legal-barra">
+          <nav class="conteudo-tabs" id="abas-documento" aria-label="Documento">
+            <button type="button" class="conteudo-tab is-active" data-doc="termos">Termos de uso</button>
+            <button type="button" class="conteudo-tab" data-doc="privacidade">Política de privacidade</button>
+          </nav>
+          <button type="button" class="btn btn-primary" id="btn-salvar">Salvar</button>
         </div>
+
+        <p class="legal-ultima-edicao">
+          Última edição: <strong id="doc-atualizado">—</strong>
+        </p>
+
+        <section class="card editor-card" id="editor-host"></section>
+
+        <section class="card editor-bloco legal-historico">
+          <p class="editor-bloco-titulo">Histórico de atualizações</p>
+          <div id="doc-historico"></div>
+        </section>
+
       </main>
     </div>
   </div>

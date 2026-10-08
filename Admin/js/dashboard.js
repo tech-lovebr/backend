@@ -15,14 +15,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderKpiSkeleton();
 
-  const [fornecedores, clientes, eventos, carteira, contratos, convidados, presentes] = await Promise.all([
+  const [fornecedores, clientes, eventos, carteira, contratos, convidados, presentes, produtos] = await Promise.all([
     safeSelect('fornecedores', '*'),
     safeSelect('clientes', '*'),
     safeSelect('eventos', '*'),
     safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
     safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at'),
     safeSelect('convidados', 'evento_id, cliente_id, status'),
-    safeSelect('presentes', 'evento_id, cliente_id, valor, status')
+    safeSelect('presentes', 'evento_id, cliente_id, valor, status'),
+    // Só o drawer usa: é ele quem lista os produtos do fornecedor.
+    safeSelect('products', '*')
   ]);
 
   DADOS = {
@@ -32,7 +34,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     carteira: carteira.data,
     contratos: contratos.data,
     convidados: convidados.data,
-    presentes: presentes.data
+    presentes: presentes.data,
+    produtos: produtos.data
   };
 
   ContaDrawer.semear({ dados: DADOS });

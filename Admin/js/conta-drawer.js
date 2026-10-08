@@ -108,7 +108,7 @@ const ContaDrawer = (() => {
     if (carregando) return carregando;
 
     carregando = (async () => {
-      const [contas, fornecedores, clientes, eventos, carteira, contratos, convidados, presentes] =
+      const [contas, fornecedores, clientes, eventos, carteira, contratos, convidados, presentes, produtos] =
         await Promise.all([
           CONTAS ? { data: CONTAS } : supabaseClient.rpc('admin_listar_contas'),
           safeSelect('fornecedores', '*'),
@@ -117,7 +117,8 @@ const ContaDrawer = (() => {
           safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
           safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at'),
           safeSelect('convidados', 'evento_id, cliente_id, status'),
-          safeSelect('presentes', 'evento_id, cliente_id, valor, status')
+          safeSelect('presentes', 'evento_id, cliente_id, valor, status'),
+          safeSelect('products', '*')
         ]);
 
       CONTAS = contas.data || [];
@@ -128,7 +129,8 @@ const ContaDrawer = (() => {
         carteira: carteira.data,
         contratos: contratos.data,
         convidados: convidados.data,
-        presentes: presentes.data
+        presentes: presentes.data,
+        produtos: produtos.data
       };
     })();
 
@@ -235,6 +237,13 @@ const ContaDrawer = (() => {
       ? (DADOS.fornecedores || []).find(x => x.id === c.id)
       : null;
     if (fornecedor) ligarBonificacao(c, fornecedor);
+
+    document.querySelectorAll('[data-produto]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const produto = (DADOS.produtos || []).find(p => p.id === btn.dataset.produto);
+        if (produto) abrirProduto(produto, c);
+      });
+    });
 
     document.querySelectorAll('[data-evento]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -374,7 +383,124 @@ const ContaDrawer = (() => {
       <div class="lista-dados">
         ${linhaOpcional('Contratos', `${formatNumber(ativos.length)} ativos de ${formatNumber(contratos.length)}`)}
         ${linhaOpcional('Entradas na carteira', formatCurrency(entradas))}
+      </div>
+
+      ${blocoDeProdutos(id)}`;
+  }
+
+  /* ----------------------------------------------- Produtos e serviços
+
+     A vitrine do fornecedor pode ter dezenas de itens e não é o assunto
+     principal do drawer. Fica recolhida atrás da contagem: quem quer ver
+     abre, quem não quer não paga o espaço. --------------------------- */
+
+  function produtosDe(id) {
+    return (DADOS.produtos || []).filter(p => p.fornecedor_id === id);
+  }
+
+  function blocoDeProdutos(id) {
+    const produtos = produtosDe(id);
+    if (!produtos.length) return '';
+
+    const lista = produtos
+      .slice()
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+      .map(p => `
+        <button type="button" class="evento-conta" data-produto="${escapeHtml(p.id)}">
+          <span class="nome">${escapeHtml(p.name || 'Sem nome')}</span>
+          ${p.active === false ? badge('inativo', 'badge-warning') : ''}
+          <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/>
+          </svg>
+        </button>`).join('');
+
+    return `
+      <details class="lista-recolhivel">
+        <summary class="lista-recolhivel-topo">
+          <span class="rotulo">Produtos</span>
+          <span class="valor">${formatNumber(produtos.length)}</span>
+          <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+          </svg>
+        </summary>
+        <div class="lista-recolhivel-corpo">${lista}</div>
+      </details>`;
+  }
+
+  const TIPOS_DE_OFERTA = { servico: 'Serviço', produto: 'Produto', pacote: 'Pacote' };
+
+  const TIPOS_DE_PRECO = {
+    POR_PESSOA: 'Por pessoa',
+    POR_HORA: 'Por hora',
+    VALOR_FIXO: 'Valor fixo',
+    SOB_CONSULTA: 'Sob consulta'
+  };
+
+  /** O preço mostrado acompanha o modelo escolhido no wizard do B2B. */
+  function precoDoProduto(p) {
+    const base = Number(p.price) || 0;
+    const teto = Number(p.price_max) || 0;
+    if (teto > base) return `${formatCurrency(base)} a ${formatCurrency(teto)}`;
+    if (!base) return 'sob consulta';
+    return formatCurrency(base);
+  }
+
+  function abrirProduto(produto, conta) {
+    const extra = produto.extra || {};
+    const precificacao = extra.pricing || {};
+    const escopo = extra.scope || {};
+
+    const dado = (rotulo, valor) => `
+      <div class="dados-linha">
+        <span class="rotulo">${escapeHtml(rotulo)}</span>
+        <span class="valor">${valor}</span>
       </div>`;
+
+    const listaDeTextos = (titulo, itens) => {
+      const limpos = (itens || []).filter(Boolean);
+      if (!limpos.length) return '';
+      return `
+        <p class="drawer-section-title">${escapeHtml(titulo)}</p>
+        <ul class="lista-simples">${limpos.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
+    };
+
+    Drawer.open({
+      title: produto.name || 'Sem nome',
+      subtitle: [TIPOS_DE_OFERTA[extra.offerType] || extra.offerType, produto.category]
+        .filter(Boolean).join(' · '),
+      back: () => desenhar(conta),
+      body: `
+        ${produto.cover_image_url
+          ? `<img class="produto-capa" src="${escapeHtml(produto.cover_image_url)}" alt="">`
+          : ''}
+
+        <div class="lista-dados">
+          ${dado('Situação', produto.active === false
+            ? '<span class="valor-bloqueado">Inativo</span>'
+            : 'Ativo')}
+          ${dado('Categoria', escapeHtml(produto.category || '—'))}
+          ${extra.subcategory ? dado('Subcategoria', escapeHtml(extra.subcategory)) : ''}
+          ${dado('Preço', escapeHtml(precoDoProduto(produto)))}
+          ${precificacao.type
+            ? dado('Modelo de preço', escapeHtml(TIPOS_DE_PRECO[precificacao.type] || precificacao.type))
+            : ''}
+          ${dado('Cadastrado em', escapeHtml(dataHoraCompleta(produto.created_at) || '—'))}
+          ${Array.isArray(produto.gallery) && produto.gallery.length
+            ? dado('Imagens na galeria', formatNumber(produto.gallery.length))
+            : ''}
+        </div>
+
+        ${produto.description
+          ? `<p class="drawer-section-title">Descrição</p>
+             <p class="texto-corrido">${escapeHtml(produto.description)}</p>`
+          : ''}
+
+        ${listaDeTextos('O que está incluso', escopo.included)}
+        ${listaDeTextos('O que não está incluso', escopo.excluded)}`,
+      footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
+    });
+
+    document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
   }
 
   /* ------------------------------------------------- Plano do fornecedor

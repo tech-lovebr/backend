@@ -66,6 +66,7 @@ let currentPricingType = null;
 let currentServiceAreaType = 'city_only';
 let currentScopeIncluded = [];
 let currentScopeExcluded = [];
+let currentCategoryExpanded = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
@@ -215,6 +216,12 @@ function renderProducts() {
           : `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5 12 2.25 3 7.5m18 0-9 5.25M21 7.5v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>`}
       </div>
       <div class="p-4 flex flex-col gap-2 flex-1">
+        ${!p.coverImage ? `
+          <div class="product-card-warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+            <span>Atenção: adicione uma imagem de capa para aumentar a conversão de vendas.</span>
+          </div>
+        ` : ''}
         <div class="flex items-start justify-between gap-2">
           <p class="text-sm font-semibold text-zinc-900 leading-snug">${p.name}</p>
           <span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>
@@ -505,7 +512,7 @@ function renderCategoryTree(filterText) {
     if (term && !catMatches && !matchingSubs.length) return '';
 
     const subsToShow = term ? matchingSubs : subs;
-    const isOpen = subs.length > 0 && (term ? subsToShow.length > 0 : selectedCategory === cat);
+    const isOpen = subs.length > 0 && (term ? subsToShow.length > 0 : currentCategoryExpanded === cat);
 
     return `
       <div>
@@ -522,13 +529,21 @@ function renderCategoryTree(filterText) {
 
   wrap.innerHTML = rows || '<div class="category-tree-empty">Nenhuma categoria encontrada.</div>';
 
+  // Clicar numa categoria nova seleciona e abre o acordeão dela; clicar de
+  // novo na categoria já selecionada só fecha/abre o acordeão (sem perder
+  // a seleção).
   wrap.querySelectorAll('[data-category-row]').forEach(row => {
     row.addEventListener('click', () => {
       const cat = row.dataset.categoryRow;
+      const subs = SUBCATEGORY_MAP[cat] || [];
+
       if (select.value !== cat) {
         select.value = cat;
         currentSubcategory = null;
+        currentCategoryExpanded = subs.length ? cat : null;
         select.dispatchEvent(new Event('change'));
+      } else if (subs.length) {
+        currentCategoryExpanded = currentCategoryExpanded === cat ? null : cat;
       }
       renderCategoryTree(document.getElementById('product-category-search').value);
     });
@@ -677,6 +692,7 @@ function initProductDrawer() {
     currentFloorPlan = null;
     currentOfferType = 'servico';
     currentSubcategory = null;
+    currentCategoryExpanded = null;
     currentPricingType = null;
     currentServiceAreaType = 'city_only';
     currentScopeIncluded = [];
@@ -952,6 +968,7 @@ function openProductDrawer(id) {
   currentFloorPlan = (p.venue && p.venue.floorPlan) ? { image: p.venue.floorPlan.image, shape: p.venue.floorPlan.shape || [], processing: false } : null;
   currentOfferType = p.offerType || 'servico';
   currentSubcategory = p.subcategory || null;
+  currentCategoryExpanded = p.category || null;
   currentPricingType = (p.pricing && p.pricing.type) || null;
   currentServiceAreaType = (p.logistics && p.logistics.serviceAreaType) || 'city_only';
   currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));

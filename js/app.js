@@ -8672,19 +8672,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
-        submitBtn.disabled = false;
         if (/banned/i.test(error.message || '')) {
+          submitBtn.disabled = false;
           showLoginError('Este usuário está bloqueado.');
           loginFailedAttempts = 0;
           return;
         }
+
+        // O Supabase devolve o mesmo erro genérico tanto pra "esse e-mail não
+        // existe" quanto pra "a senha está errada" (de propósito, pra não dar
+        // pista a quem está tentando adivinhar). Checagem separada só pra
+        // decidir qual aviso mostrar — pedido explícito do cliente, sabendo
+        // que isso deixa qualquer um descobrir quais e-mails têm conta aqui.
+        const { data: emailCadastrado, error: checkError } = await supabaseClient.rpc('verificar_email_anfitriao', { p_email: email });
+        submitBtn.disabled = false;
+
+        if (!checkError && !emailCadastrado) {
+          showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
+          loginFailedAttempts = 0;
+          return;
+        }
+
         loginFailedAttempts++;
         if (loginFailedAttempts >= 3) {
           showLoginForgotPanel(email);
           loginFailedAttempts = 0;
           return;
         }
-        showLoginError('Usuário ou senha inválidos.');
+        showLoginError(`Usuário ou senha inválidos. (${loginFailedAttempts}/3)`);
         return;
       }
 

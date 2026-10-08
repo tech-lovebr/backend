@@ -12,6 +12,13 @@ let EDITOR = null;
 let VERSOES = [];
 let BOTAO_SALVAR = null;
 
+/* O que o editor mostrava quando o documento acabou de carregar. A
+   comparação é contra isto, e não contra o HTML gravado: o editor
+   normaliza e limpa o conteúdo ao abrir, então o texto do banco e o da
+   tela nunca são idênticos byte a byte — comparar com o banco acusaria
+   alteração em todo documento, sem ninguém ter digitado nada. */
+let BASE = '';
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
@@ -60,8 +67,7 @@ function ligarAbas() {
 }
 
 function sujo() {
-  const doc = DOCUMENTOS.get(ATUAL);
-  return EDITOR.html() !== (doc?.conteudo || '');
+  return EDITOR.html() !== BASE;
 }
 
 function mostrar(slug) {
@@ -69,6 +75,7 @@ function mostrar(slug) {
   const doc = DOCUMENTOS.get(slug) || {};
 
   EDITOR.definir(doc.conteudo || '');
+  BASE = EDITOR.html();
   document.getElementById('doc-atualizado').textContent =
     doc.updated_at ? formatDateTime(doc.updated_at) : '—';
   renderHistorico();
@@ -127,6 +134,7 @@ async function salvar() {
   }
 
   DOCUMENTOS.set(ATUAL, data);
+  BASE = EDITOR.html();
   document.getElementById('doc-atualizado').textContent = formatDateTime(data.updated_at);
 
   // O histórico é escrito por trigger no banco; relê para a lista já mostrar

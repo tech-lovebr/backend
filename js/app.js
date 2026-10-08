@@ -879,7 +879,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (hubTitle) {
       const rawName = activeEvent.hostName || activeEvent.title || 'Beatriz';
-      const firstName = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê|Bodas)\s+/i, '');
+      // Remove o tipo e, se tiver, o "de" que vem logo depois — "Casamento de
+      // Victor" precisa virar "Victor", não "de Victor".
+      const firstName = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê|Bodas)\s+(de\s+)?/i, '');
       hubTitle.innerHTML = `Olá, <span id="dash-hub-user-first-name">${firstName}</span>!`;
     }
     const hubCoupleName = document.getElementById('dash-hub-couple-name');
@@ -888,25 +890,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const kpiGuestsAdded = document.getElementById('kpi-guests-added-count');
     if (kpiGuestsAdded) {
-      kpiGuestsAdded.textContent = `${activeEvent.convidadosConfirmados || 2}`;
+      kpiGuestsAdded.textContent = `${activeEvent.convidadosConfirmados ?? 0}`;
     }
     const hubDateText = document.getElementById('dash-hub-event-date-text');
     const hubLocText = document.getElementById('dash-hub-event-location-text');
     const hasLocation = activeEvent.location && activeEvent.location.trim() !== '' && activeEvent.location !== 'Adicionar Local';
     if (hubDateText) hubDateText.textContent = formatEventDateLong(activeEvent.date) || '18 de Outubro de 2025';
     if (hubLocText) hubLocText.textContent = hasLocation ? activeEvent.location : 'Local do evento';
-    
-    // Atualização dos Convites Enviados
-    if (kpiInvites) {
-      const invitesCount = activeEvent.convitesEnviados !== undefined 
-        ? activeEvent.convitesEnviados 
-        : (activeEvent.convidadosConfirmados > 0 ? (activeEvent.convidadosTotal || 210) : 210);
-      kpiInvites.textContent = `${invitesCount}`;
-    }
+
+    // Atualização dos Convites Enviados — total de convidados da lista
+    // (nunca um número de mentira: um evento novo de verdade tem zero).
+    if (kpiInvites) kpiInvites.textContent = `${activeEvent.totalConvidados ?? 0}`;
 
     if (kpiArrecadado) kpiArrecadado.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (kpiRsvp) kpiRsvp.textContent = `${activeEvent.convidadosConfirmados}`;
-    if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados || 160} adultos • ${activeEvent.criancasConfirmadas || 25} crianças confirmadas`;
+    if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados ?? 0} adultos • ${activeEvent.criancasConfirmadas ?? 0} crianças confirmadas`;
     if (kpiGifts) kpiGifts.textContent = `${activeEvent.presentesRecebidos}`;
     if (kpiGiftsSubtext) kpiGiftsSubtext.textContent = `Total de R$ ${activeEvent.totalArrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} arrecadados`;
     
@@ -11252,6 +11250,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const endDateInput = document.getElementById('page-new-event-end-date');
         if (endDateInput) endDateInput.value = pendingDate;
       }
+    } else if (!events.length) {
+      // Sem evento e sem vir do /cadastro agora — é quem saiu e voltou antes
+      // de terminar de criar o primeiro evento. switchView('dashboard') tenta
+      // abrir a Visão Geral, mas switchRailTab já bloqueia isso (hasEventCreated
+      // é false) e sem mais nada aqui a tela ficava parada no HTML estático
+      // da Visão Geral (ex: "Olá, Beatriz!" e estatísticas de mentira). Força
+      // a tela de criar o primeiro evento em vez disso, toda vez.
+      if (typeof openCreateEventPage === 'function') openCreateEventPage(true, false);
     }
   }
 });

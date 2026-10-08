@@ -61,6 +61,9 @@ const EditorRico = (() => {
       <p class="editor-rodape"><span data-palavras>0 palavras</span></p>`;
 
     const corpo = host.querySelector('.editor-corpo');
+
+    // Sem isto o Enter cria <div>, que o seletor de bloco não reconhece.
+    try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch {}
     const contador = host.querySelector('[data-palavras]');
 
     /* execCommand age sobre a seleção; clicar num botão da barra tira o foco
@@ -82,7 +85,10 @@ const EditorRico = (() => {
       }
     };
 
-    document.addEventListener('selectionchange', guardar);
+    document.addEventListener('selectionchange', () => {
+      guardar();
+      sincronizarBloco();
+    });
 
     const devolver = () => {
       const sel = window.getSelection();
@@ -128,10 +134,35 @@ const EditorRico = (() => {
       btn.addEventListener('click', () => aplicar(btn.dataset.comando));
     });
 
-    host.querySelector('[data-bloco]').addEventListener('change', (e) => {
+    const seletorDeBloco = host.querySelector('[data-bloco]');
+
+    seletorDeBloco.addEventListener('change', (e) => {
       aplicar('formatBlock', `<${e.target.value}>`);
-      e.target.selectedIndex = 0;
+      sincronizarBloco();
     });
+
+    /* O select mostra o bloco onde o cursor está. Antes ele voltava para
+       "Parágrafo" depois de cada uso, então nunca dizia o que o trecho era
+       — e dois títulos iguais pareciam diferentes só porque o campo mentia. */
+    function blocoAtual() {
+      const sel = window.getSelection();
+      if (!sel.rangeCount) return null;
+
+      let no = sel.anchorNode;
+      if (no && no.nodeType === 3) no = no.parentNode;
+
+      while (no && no !== corpo) {
+        const tag = no.tagName?.toLowerCase();
+        if (['p', 'h2', 'h3', 'blockquote'].includes(tag)) return tag;
+        no = no.parentNode;
+      }
+      return null;
+    }
+
+    function sincronizarBloco() {
+      if (!dentro(window.getSelection().anchorNode)) return;
+      seletorDeBloco.value = blocoAtual() || 'p';
+    }
 
     host.querySelector('[data-cor]').addEventListener('input', (e) => {
       aplicar('foreColor', e.target.value);
@@ -144,10 +175,36 @@ const EditorRico = (() => {
       if (url) aplicar('createLink', url);
     });
 
+    /* Texto solto na raiz do contenteditable faz o formatBlock agir sobre o
+       editor inteiro em vez do parágrafo — é a origem do "cliquei em Título 3
+       e o resultado foi diferente a cada vez". Envolver em <p> na entrada
+       deixa todo bloco com o mesmo ponto de partida. */
+    function normalizar(html) {
+      const caixa = document.createElement('div');
+      caixa.innerHTML = html || '';
+
+      const blocos = ['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'UL', 'OL', 'DIV', 'PRE'];
+      let solto = null;
+
+      [...caixa.childNodes].forEach(no => {
+        const ehBloco = no.nodeType === 1 && blocos.includes(no.tagName);
+        if (ehBloco) { solto = null; return; }
+        if (no.nodeType === 3 && !no.textContent.trim()) return;
+
+        if (!solto) {
+          solto = document.createElement('p');
+          caixa.insertBefore(solto, no);
+        }
+        solto.appendChild(no);
+      });
+
+      return caixa.innerHTML;
+    }
+
     return {
       html: () => corpo.innerHTML,
       texto: () => corpo.innerText,
-      definir: (html) => { corpo.innerHTML = html || ''; contar(); },
+      definir: (html) => { corpo.innerHTML = normalizar(html); contar(); sincronizarBloco(); },
       focar: () => corpo.focus()
     };
   }

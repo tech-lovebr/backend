@@ -11657,10 +11657,14 @@ document.addEventListener('DOMContentLoaded', () => {
         window.reloadBuilderStateForActiveEvent();
       }
       // initFloorPlan() já rodou de forma síncrona, antes da sessão carregar
-      // — com os convidados de demonstração (window.LOVE_DATA) ainda em
-      // state.events. Sem reler aqui, "Mapear mesas" ficava travado para
-      // sempre com aquela lista fake, mesmo depois dos dados reais chegarem.
+      // — com o id do evento de demonstração (window.LOVE_DATA) ainda em
+      // state.events. getFloorPlanElements() lê a planta salva pela chave
+      // love_floorplan_<id do evento>, então com o id errado a planta real
+      // nunca aparecia (dava a impressão de ter perdido as mesas já criadas)
+      // até trocar de evento ou recarregar de novo. Sem reler aqui, o mesmo
+      // valia pra lista de convidados fake que ficava travada na tela.
       renderFloorPlanGuestCards();
+      renderFloorPlanCanvas();
     } else {
       // `state.events` nasce preenchido com os 2 eventos de demonstração
       // (window.LOVE_DATA, usados só de mockup visual) — sem isso aqui, uma

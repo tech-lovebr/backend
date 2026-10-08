@@ -6,24 +6,31 @@ let CLIENTES = [];
 let EVENTOS = [];
 let METRICAS = new Map();
 
+/* O último acesso mora em auth.users, que o PostgREST não expõe — vem pela
+   admin_listar_contas(), a mesma função que alimenta Últimos cadastros. */
+let ULTIMO_ACESSO = new Map();
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 8);
+  renderLoading(tbody, 6);
 
-  const [clientes, eventos, convidados, presentes, carteira, conversas] = await Promise.all([
+  const [clientes, eventos, convidados, presentes, carteira, conversas, contas] = await Promise.all([
     safeSelect('clientes', '*'),
     safeSelect('eventos', 'id, cliente_id, titulo, tipo, data_evento, status, slug'),
     safeSelect('convidados', 'cliente_id, status'),
     safeSelect('presentes', 'cliente_id, valor, status'),
     safeSelect('cliente_wallet_transactions', 'cliente_id, type, amount'),
-    safeSelect('conversations', 'cliente_id')
+    safeSelect('conversations', 'cliente_id'),
+    supabaseClient.rpc('admin_listar_contas')
   ]);
 
-  if (clientes.error) return renderError(tbody, 8, clientes.error);
+  if (clientes.error) return renderError(tbody, 6, clientes.error);
 
   CLIENTES = clientes.data;
+  // Sem a função no banco a coluna fica vazia, em vez de derrubar a página.
+  ULTIMO_ACESSO = new Map((contas.data || []).map(c => [c.id, c.ultimo_acesso]));
   EVENTOS = eventos.data;
   METRICAS = montarMetricas({
     eventos: eventos.data,
@@ -68,7 +75,8 @@ function exportar() {
     { titulo: 'Arrecadado', valor: c => metricas(c.id).arrecadado.toFixed(2).replace('.', ',') },
     { titulo: 'Saldo em conta', valor: c => (metricas(c.id).creditos - metricas(c.id).debitos).toFixed(2).replace('.', ',') },
     { titulo: 'Status', valor: c => (c.status || 'ativo') },
-    { titulo: 'Criada em', valor: c => formatDate(c.created_at) }
+    { titulo: 'Criada em', valor: c => formatDate(c.created_at) },
+    { titulo: 'Último acesso', valor: c => formatDate(ULTIMO_ACESSO.get(c.id)) }
   ], lista);
 }
 
@@ -170,6 +178,12 @@ function numeroDoCadastro(id) {
 }
 
 
+/** "agora", "há 12 min", "há 3d" — e a data quando passa de um mês. */
+function ultimoAcessoDe(id) {
+  const quando = ULTIMO_ACESSO.get(id);
+  return quando ? formatRelative(quando) : 'nunca';
+}
+
 function render() {
   const tbody = document.getElementById('tbody');
   const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
@@ -190,7 +204,7 @@ function render() {
         <td class="cell-muted">${dash(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
         <td class="cell-strong">${formatCurrency(m.creditos - m.debitos)}</td>
-        <td class="cell-muted">${escapeHtml(formatDate(c.created_at))}</td>
+        <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>
       </tr>`;
   }).join('');
 

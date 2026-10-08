@@ -2014,10 +2014,15 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   gap: .5rem;
 }
 
-.bonificacao-valor {
-  min-width: 4.5rem;
-  text-align: center;
-  font-size: .9375rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+/* Largura pelo conteúdo: três opções de dois dígitos não justificam um
+   campo que atravessa a caixa. */
+.bonificacao-select {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.bonificacao-unidade {
+  font-size: .8125rem;
+  color: var(--text-muted);
+  margin-right: .25rem;
 }

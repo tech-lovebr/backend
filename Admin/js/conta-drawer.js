@@ -453,10 +453,11 @@ const ContaDrawer = (() => {
         </div>
 
         <div class="bonificacao-stepper" id="bonificacao-escolha">
-          <button type="button" class="btn btn-ghost btn-sm" data-passo="-1" aria-label="Menos 30 dias">−</button>
-          <span class="bonificacao-valor" id="bonificacao-dias">${opcoes[0]} dias</span>
-          <button type="button" class="btn btn-ghost btn-sm" data-passo="1" aria-label="Mais 30 dias">+</button>
-          <button type="button" class="btn btn-ghost" id="btn-confirmar-bonificacao">Bonificar</button>
+          <select class="field-select bonificacao-select" id="bonificacao-dias" aria-label="Dias de cortesia">
+            ${opcoes.map(d => `<option value="${d}">${d}</option>`).join('')}
+          </select>
+          <span class="bonificacao-unidade">dias</span>
+          <button type="button" class="btn btn-primary" id="btn-confirmar-bonificacao">Bonificar</button>
         </div>
 
         <div class="bonificacao-stepper" id="bonificacao-confirma" hidden>
@@ -474,11 +475,9 @@ const ContaDrawer = (() => {
     const titulo = document.getElementById('bonificacao-titulo');
     const escolha = document.getElementById('bonificacao-escolha');
     const confirma = document.getElementById('bonificacao-confirma');
-    const valor = document.getElementById('bonificacao-dias');
-    const opcoes = diasDisponiveis(f);
-    let indice = 0;
+    const select = document.getElementById('bonificacao-dias');
 
-    const mostrar = () => { valor.textContent = `${opcoes[indice]} dias`; };
+    const dias = () => Number(select.value);
 
     /* A confirmação ocupa o lugar do seletor, em vez de abrir outra caixa:
        a pergunta nasce exatamente de onde a escolha foi feita. */
@@ -489,33 +488,25 @@ const ContaDrawer = (() => {
     };
 
     const verConfirmacao = () => {
-      titulo.textContent = `Tem certeza? Pro por ${opcoes[indice]} dias.`;
+      titulo.textContent = `Tem certeza? Pro por ${dias()} dias.`;
       escolha.hidden = true;
       confirma.hidden = false;
     };
 
     const fechar = () => {
       caixa.hidden = true;
-      indice = 0;
-      mostrar();
+      select.selectedIndex = 0;
       verEscolha();
     };
 
     gatilho.addEventListener('click', () => { caixa.hidden = false; });
     document.getElementById('btn-fechar-bonificacao').addEventListener('click', fechar);
 
-    caixa.querySelectorAll('[data-passo]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        indice = Math.min(opcoes.length - 1, Math.max(0, indice + Number(btn.dataset.passo)));
-        mostrar();
-      });
-    });
-
     document.getElementById('btn-confirmar-bonificacao').addEventListener('click', verConfirmacao);
     // "Não" volta ao seletor, não fecha: quem hesitou costuma querer outro prazo.
     document.getElementById('btn-nao-bonificar').addEventListener('click', verEscolha);
     document.getElementById('btn-sim-bonificar')
-      .addEventListener('click', () => bonificar(conta, opcoes[indice]));
+      .addEventListener('click', () => bonificar(conta, dias()));
   }
 
   async function bonificar(conta, dias) {

@@ -8,21 +8,26 @@ let activeCategory = 'Todos';
 // abrindo os mesmos blocos condicionais — ver DECISÃO em "categorias" no
 // plano: produtos antigos não são reescritos, só passam a conviver com a
 // lista nova de 8 categorias.
-const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações'];
+// Inclui os nomes antigos (pré-wizard e a primeira leva de 8 categorias)
+// junto dos novos, pra produto já cadastrado continuar abrindo os mesmos
+// blocos condicionais mesmo depois da categoria ter sido renomeada.
+const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações', 'Espaço de Locação'];
 const PRODUCT_EQUIPMENT_CATEGORIES = ['Aluguel de equipamentos'];
-const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos'];
+const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos', 'Buffet e Gastronomia'];
 const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra'];
 const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual'];
 
 const SUBCATEGORY_MAP = {
-  'Gastronomia & Alimentos': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco'],
-  'Bar & Coquetelaria': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá'],
-  'Espaços & Locações': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela'],
-  'Staff & Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista'],
+  'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã'],
+  'Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira'],
+  'Espaço de Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela'],
+  'Staff & Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista'],
   'Foto, Vídeo & Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos'],
-  'Música, DJ & Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis'],
-  'Decoração & Cenografia': ['Florais', 'Cenografia', 'Iluminação', 'Mobiliário'],
-  'Assessoria & Cerimonial': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator']
+  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa'],
+  'Decoração': ['Florais', 'Iluminação', 'Mobiliário'],
+  'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator'],
+  'Trajes': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa'],
+  'Mídia': ['Fotógrafo', 'Filmagem', 'Edição de Vídeo']
 };
 
 const PRODUCT_WEEKDAYS = [

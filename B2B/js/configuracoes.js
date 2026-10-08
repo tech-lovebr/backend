@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSubscriptionModal();
   initBankDetailsForm();
   initAccordionCards();
+  initRequestChangeLinks();
 });
 
 /* -------------------- Acordeão (Segurança / Dados bancários) -------------------- */
@@ -129,6 +130,46 @@ function lockConfiguredFields(p) {
       btn.disabled = true;
     });
   }
+}
+
+// Abre um chamado em Atendimento (Admin) pedindo a alteração do nome da
+// empresa ou do CNPJ/CPF — esses campos travam depois de preenchidos, então
+// a mudança só acontece via suporte.
+function initRequestChangeLinks() {
+  const links = [
+    { el: document.getElementById('profile-company-request-change'), campo: 'Nome da empresa', valor: () => B2B_DATA.professional.company },
+    { el: document.getElementById('profile-document-request-change'), campo: () => B2B_DATA.professional.documentType === 'cpf' ? 'CPF' : 'CNPJ', valor: () => B2B_DATA.professional.documentNumber }
+  ];
+
+  links.forEach(({ el, campo, valor }) => {
+    if (!el) return;
+    el.addEventListener('click', async (e) => {
+      e.preventDefault();
+      if (el.dataset.sent) return;
+
+      const p = B2B_DATA.professional;
+      const campoNome = typeof campo === 'function' ? campo() : campo;
+      const session = window.b2bSession;
+
+      const { error } = await supabaseClient.from('tickets').insert({
+        origem: 'fornecedor',
+        user_id: session ? session.user.id : null,
+        nome: p.name || p.company || '',
+        email: p.email || (session ? session.user.email : ''),
+        telefone: p.phone || null,
+        assunto: 'Alteração de dado',
+        categoria: 'Dados cadastrais',
+        mensagem: `Solicitação de alteração do campo "${campoNome}" (valor atual: ${valor()}).`
+      });
+
+      if (error) return;
+
+      el.dataset.sent = 'true';
+      el.textContent = 'Solicitação enviada';
+      el.removeAttribute('href');
+      el.style.cursor = 'default';
+    });
+  });
 }
 
 /* -------------------- Minha Empresa -------------------- */

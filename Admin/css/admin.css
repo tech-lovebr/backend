@@ -318,42 +318,43 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 
 .admin-user { position: relative; margin-left: auto; }
 
+/* Só o avatar, sem fundo nem nome — mesmo padrão do B2B e da plataforma
+   principal. O nome migrou para dentro do menu, que é onde ele é lido. */
 .admin-user-chip {
   display: flex;
   align-items: center;
-  gap: .625rem;
-  padding: .375rem .625rem .375rem .375rem;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: var(--bg-muted);
+  padding: 0;
+  border: 0;
+  background: none;
   font-family: inherit;
   cursor: pointer;
-  transition: background .15s ease, border-color .15s ease;
 }
 
-.admin-user-chip:hover { background: #e8eaef; }
-
-/* Quadrado de cantos arredondados, fundo branco e iniciais na cor do menu. */
 .admin-user-chip .avatar {
-  width: 30px; height: 30px;
-  border-radius: var(--radius-control);
-  background: #FFFFFF;
-  border: 1px solid #E4E4E4;
-  /* Tinta escura fixa: seguia --sidebar-bg, que agora é claro. */
-  color: var(--text);
-  display: grid; place-items: center;
-  font-size: .75rem; font-weight: 700;
-}
-
-.admin-user-chip .name { font-size: .8125rem; font-weight: 600; color: var(--text); }
-
-.admin-user-chip .chevron {
-  width: 14px; height: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #F4F4F5;
   color: var(--text-muted);
-  transition: transform .18s ease;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: background .15s ease, color .15s ease;
 }
 
-.admin-user-chip[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+.admin-user-chip:hover .avatar,
+.admin-user-chip[aria-expanded="true"] .avatar { background: var(--azul-claro); color: var(--text); }
+
+.admin-user-chip .avatar svg { width: 19px; height: 19px; }
+.admin-user-chip .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.admin-user-menu-nome {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text);
+  padding: .625rem .625rem 0;
+  margin: 0;
+}
 
 .admin-user-menu {
   position: absolute;

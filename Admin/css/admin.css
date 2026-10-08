@@ -1923,3 +1923,12 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   color: var(--text-muted);
   margin: 0 0 .75rem;
 }
+
+/* Chamados aguardando resposta na aba. Fica em peso menor que o nome: é
+   informação de apoio, não o rótulo. */
+.aba-contagem {
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+.conteudo-tab.is-active .aba-contagem { color: inherit; }

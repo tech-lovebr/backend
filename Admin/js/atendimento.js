@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   TICKETS = data;
   render();
+  renderContagemAbas();
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-status').addEventListener('change', render);
@@ -29,6 +30,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 /* A origem virou aba em vez de select: são três destinos fixos e o admin
    alterna entre eles o tempo todo — um clique vale mais que abrir uma lista. */
 let ORIGEM_ATUAL = 'cliente';
+
+/* Quantos chamados aguardam resposta em cada aba. Conta só os abertos — é o
+   mesmo recorte do filtro padrão, então o número da aba e o da tabela
+   concordam em vez de se contradizerem na mesma tela. Aba sem nenhum fica
+   sem parênteses: zero entre parênteses é ruído. */
+function renderContagemAbas() {
+  document.querySelectorAll('#abas-origem [data-contagem]').forEach(span => {
+    const abertos = TICKETS.filter(t => t.origem === span.dataset.contagem && t.status === 'aberto').length;
+    span.textContent = abertos ? ` (${formatNumber(abertos)})` : '';
+  });
+}
 
 function ligarAbasDeOrigem() {
   document.querySelectorAll('#abas-origem [data-origem]').forEach(btn => {
@@ -317,6 +329,7 @@ async function concluir(t, mensagem) {
 
   t.status = 'resolvido';
   render();
+  renderContagemAbas();
   Drawer.close();
 }
 
@@ -354,6 +367,7 @@ async function responder(id) {
       .eq('id', id);
     ticket.status = 'em_andamento';
     render();
+    renderContagemAbas();
   }
 
   toast('Resposta enviada.');
@@ -378,6 +392,7 @@ async function atualizar(id) {
 
   Object.assign(TICKETS.find(t => t.id === id), { status, prioridade });
   render();
+  renderContagemAbas();
   Drawer.close();
   toast('Chamado atualizado.');
 }

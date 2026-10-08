@@ -446,16 +446,22 @@ const ContaDrawer = (() => {
     return `
       <div class="bonificacao-caixa" id="caixa-bonificacao" hidden>
         <div class="bonificacao-topo">
-          <p class="bonificacao-titulo">Deseja dar um upgrade cortesia?</p>
+          <p class="bonificacao-titulo" id="bonificacao-titulo">Deseja dar um upgrade cortesia?</p>
           <button type="button" class="bonificacao-fechar" id="btn-fechar-bonificacao" aria-label="Fechar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
           </button>
         </div>
-        <div class="bonificacao-stepper">
+
+        <div class="bonificacao-stepper" id="bonificacao-escolha">
           <button type="button" class="btn btn-ghost btn-sm" data-passo="-1" aria-label="Menos 30 dias">−</button>
           <span class="bonificacao-valor" id="bonificacao-dias">${opcoes[0]} dias</span>
           <button type="button" class="btn btn-ghost btn-sm" data-passo="1" aria-label="Mais 30 dias">+</button>
           <button type="button" class="btn btn-ghost" id="btn-confirmar-bonificacao">Bonificar</button>
+        </div>
+
+        <div class="bonificacao-stepper" id="bonificacao-confirma" hidden>
+          <button type="button" class="btn btn-ghost" id="btn-nao-bonificar">Não</button>
+          <button type="button" class="btn btn-primary" id="btn-sim-bonificar">Sim</button>
         </div>
       </div>`;
   }
@@ -465,16 +471,34 @@ const ContaDrawer = (() => {
     const caixa = document.getElementById('caixa-bonificacao');
     if (!gatilho || !caixa) return;
 
+    const titulo = document.getElementById('bonificacao-titulo');
+    const escolha = document.getElementById('bonificacao-escolha');
+    const confirma = document.getElementById('bonificacao-confirma');
     const valor = document.getElementById('bonificacao-dias');
     const opcoes = diasDisponiveis(f);
     let indice = 0;
 
     const mostrar = () => { valor.textContent = `${opcoes[indice]} dias`; };
 
+    /* A confirmação ocupa o lugar do seletor, em vez de abrir outra caixa:
+       a pergunta nasce exatamente de onde a escolha foi feita. */
+    const verEscolha = () => {
+      titulo.textContent = 'Deseja dar um upgrade cortesia?';
+      escolha.hidden = false;
+      confirma.hidden = true;
+    };
+
+    const verConfirmacao = () => {
+      titulo.textContent = `Tem certeza? Pro por ${opcoes[indice]} dias.`;
+      escolha.hidden = true;
+      confirma.hidden = false;
+    };
+
     const fechar = () => {
       caixa.hidden = true;
       indice = 0;
       mostrar();
+      verEscolha();
     };
 
     gatilho.addEventListener('click', () => { caixa.hidden = false; });
@@ -487,12 +511,15 @@ const ContaDrawer = (() => {
       });
     });
 
-    document.getElementById('btn-confirmar-bonificacao')
+    document.getElementById('btn-confirmar-bonificacao').addEventListener('click', verConfirmacao);
+    // "Não" volta ao seletor, não fecha: quem hesitou costuma querer outro prazo.
+    document.getElementById('btn-nao-bonificar').addEventListener('click', verEscolha);
+    document.getElementById('btn-sim-bonificar')
       .addEventListener('click', () => bonificar(conta, opcoes[indice]));
   }
 
   async function bonificar(conta, dias) {
-    const botao = document.getElementById('btn-confirmar-bonificacao');
+    const botao = document.getElementById('btn-sim-bonificar');
     botao.disabled = true;
 
     const { data, error } = await supabaseClient.rpc('admin_bonificar_plano', {

@@ -231,6 +231,12 @@ function numeroDoCadastro(id) {
   return ORDEM_CADASTRO.get(id) || '—';
 }
 
+/** "agora", "há 12 min", "há 3d" — e a data quando passa de um mês. */
+function ultimoAcessoDe(id) {
+  const quando = ULTIMO_ACESSO.get(id);
+  return quando ? formatRelative(quando) : 'nunca';
+}
+
 function render() {
   atualizarBadgeDeFiltros();
   const tbody = document.getElementById('tbody');

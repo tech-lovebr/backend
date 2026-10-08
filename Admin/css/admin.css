@@ -14,7 +14,7 @@
 
   /* Mesmos fundos do B2B: conteúdo branco, cabeçalho #F3F3F3. */
   --bg-app: #FFFFFF;
-  --topbar-bg: #F3F3F3;
+  --topbar-bg: #FFFFFF;
   --header-bar-bg: #FAFAFA;
   --topbar-border: #E4E4E4;
   --bg-surface: #ffffff;
@@ -32,8 +32,9 @@
   --danger-bg: #fdecea;
   --info-bg: #eaf0f6;
 
-  /* Mesmo cinza do topbar: o menu e o cabeçalho formam uma moldura só. */
-  --sidebar-bg: #F3F3F3;
+  /* Branco, como o topbar e o conteúdo: a separação fica por conta das
+     bordas, não de blocos de cor. */
+  --sidebar-bg: #FFFFFF;
   /* 4,9:1 sobre esse cinza — --text-muted ficaria em 4,48, logo abaixo do
      mínimo para texto de 14px. */
   --sidebar-item: #5f6a7d;
@@ -168,7 +169,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   flex-shrink: 0;
 }
 
-.admin-nav-item:hover { background: rgba(16, 24, 40, .05); color: var(--text); }
+.admin-nav-item:hover { background: var(--info-bg); color: var(--text); }
 .admin-nav-item:hover svg:not(.sidebar-chevron) { color: var(--text); }
 
 .admin-nav-item.is-active {
@@ -219,8 +220,8 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: background .15s ease, color .15s ease;
 }
 
-.admin-nav-subitem:hover { background: rgba(16, 24, 40, .05); color: var(--text); }
-.admin-nav-subitem.is-active { background: rgba(16, 24, 40, .08); color: var(--text); }
+.admin-nav-subitem:hover { background: var(--info-bg); color: var(--text); }
+.admin-nav-subitem.is-active { background: var(--info-bg); color: var(--text); }
 
 .admin-nav-badge {
   background: #BF612E;
@@ -1361,7 +1362,7 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   display: flex;
   align-items: center;
   gap: .5rem;
-  background: #FFFFFF;
+  background: #F4F4F5;
   border: 1px solid #E4E4E4;
   border-radius: var(--radius-card);
   padding: .5rem .875rem;
@@ -1373,7 +1374,7 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   transition: border-color .15s ease, background-color .15s ease;
 }
 
-.topbar-search-trigger:hover { background: #F4F4F5; }
+.topbar-search-trigger:hover { background: #ECECEE; }
 .topbar-search-trigger span {
   flex: 1;
   text-align: left;

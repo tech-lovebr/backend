@@ -224,10 +224,10 @@ function renderHeaderBar() {
   content.prepend(barra);
 }
 
-/* Mesmo ícone de perfil do B2B (B2B_PROFILE_ICON) e da plataforma
-   principal. O Admin não guarda foto do administrador, então é sempre ele —
-   e é exatamente o que o B2B mostra para quem não subiu foto. */
-const ICONE_PERFIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+/* Mesmo ícone e mesma espessura de traço do botão "Minha conta" da
+   plataforma principal (index.html). O Admin não guarda foto do
+   administrador, então é sempre ele. */
+const ICONE_PERFIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
 
 function renderTopbar(admin) {
   const host = document.getElementById('admin-topbar');

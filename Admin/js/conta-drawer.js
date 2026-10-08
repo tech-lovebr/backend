@@ -232,6 +232,13 @@ const ContaDrawer = (() => {
     document.querySelectorAll('[data-destino]').forEach(btn => {
       btn.addEventListener('click', () => classificar(c, btn.dataset.destino));
     });
+
+    document.querySelectorAll('[data-evento]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const evento = (DADOS.eventos || []).find(e => e.id === btn.dataset.evento);
+        if (evento) abrirEvento(evento, c);
+      });
+    });
   }
 
   /* Bloquear e excluir são coisas diferentes e a caixa precisa deixar isso
@@ -400,14 +407,29 @@ const ContaDrawer = (() => {
   }
 
   function linhaDeEvento(e) {
-    const convidados = (DADOS.convidados || []).filter(g => g.evento_id === e.id);
-    const confirmados = convidados.filter(g => g.status === 'confirmado').length;
-    const presentes = (DADOS.presentes || []).filter(p => p.evento_id === e.id);
-    const recebidos = presentes.filter(p => p.status === 'recebido');
-    const arrecadado = recebidos.reduce((t, p) => t + (Number(p.valor) || 0), 0);
-
     const categoria = EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—';
-    const convite = e.slug ? `https://love.com.br/${e.slug}` : null;
+    return `
+      <button type="button" class="evento-conta" data-evento="${escapeHtml(e.id)}">
+        <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
+        ${badge(categoria, e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}
+        <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/>
+        </svg>
+      </button>`;
+  }
+
+  /* O evento ocupa o drawer inteiro em vez de abrir um acordeão: são muitos
+     números para caber embaixo de uma linha de lista. A seta de voltar no
+     cabeçalho redesenha a conta, sem fechar e reabrir o drawer. */
+  function abrirEvento(evento, conta) {
+    const convidados = (DADOS.convidados || []).filter(g => g.evento_id === evento.id);
+    const presentes = (DADOS.presentes || []).filter(p => p.evento_id === evento.id);
+    const recebidos = presentes.filter(p => p.status === 'recebido');
+
+    const porStatus = st => convidados.filter(g => g.status === st).length;
+    const somar = lista => lista.reduce((t, p) => t + (Number(p.valor) || 0), 0);
+
+    const convite = evento.slug ? `https://love.com.br/${evento.slug}` : null;
 
     const dado = (rotulo, valor) => `
       <div class="dados-linha">
@@ -415,28 +437,52 @@ const ContaDrawer = (() => {
         <span class="valor">${valor}</span>
       </div>`;
 
-    return `
-      <details class="evento-conta">
-        <summary class="evento-conta-topo">
-          <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
-          ${badge(categoria, e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}
-          <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
-          </svg>
-        </summary>
+    const caixa = (rotulo, valor) => `
+      <div class="stat-box">
+        <p class="label">${escapeHtml(rotulo)}</p>
+        <p class="value">${formatNumber(valor)}</p>
+      </div>`;
 
-        <div class="lista-dados evento-conta-detalhe">
-          ${dado('Data do evento', escapeHtml(formatDate(e.data_evento) || '—'))}
+    Drawer.open({
+      title: evento.titulo || 'Sem título',
+      subtitle: EVENT_TYPE_LABELS[evento.tipo] || evento.tipo || '',
+      back: () => desenhar(conta),
+      body: `
+        <div class="lista-dados">
+          ${dado('Data do evento', escapeHtml(formatDate(evento.data_evento) || '—'))}
           ${dado('Convidados', formatNumber(convidados.length))}
-          ${dado('Confirmados', formatNumber(confirmados))}
-          ${dado('Presentes na lista', formatNumber(presentes.length))}
-          ${dado('Presentes recebidos', formatNumber(recebidos.length))}
-          ${dado('Valor recebido', formatCurrency(arrecadado))}
-          ${dado('Página do convite', convite
-            ? `<a href="${escapeHtml(convite)}" target="_blank" rel="noopener" class="link-convite">love.com.br/${escapeHtml(e.slug)}</a>`
-            : '<span class="cell-muted">sem endereço definido</span>')}
         </div>
-      </details>`;
+
+        <div class="stat-row stat-row--convidados">
+          ${caixa('Confirmados', porStatus('confirmado'))}
+          ${caixa('Pendentes', porStatus('pendente'))}
+          ${caixa('Recusados', porStatus('recusado'))}
+        </div>
+
+        <div class="lista-dados">
+          ${dado('Presentes na lista', formatNumber(presentes.length))}
+          ${dado('Valor da lista de presentes', formatCurrency(somar(presentes)))}
+          ${dado('Presentes recebidos', formatNumber(recebidos.length))}
+          ${dado('Valor recebido', formatCurrency(somar(recebidos)))}
+          ${dado('Status do evento', statusDoEvento(evento))}
+          ${dado('Página do convite', convite
+            ? `<a href="${escapeHtml(convite)}" target="_blank" rel="noopener" class="link-convite">love.com.br/${escapeHtml(evento.slug)}</a>`
+            : '<span class="cell-muted">sem endereço definido</span>')}
+        </div>`,
+      footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
+    });
+
+    document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
+  }
+
+  const STATUS_EVENTO = { rascunho: 'Rascunho', ativo: 'Ativo', encerrado: 'Encerrado' };
+
+  function statusDoEvento(evento) {
+    if (evento.deleted_at) {
+      const quando = dataHoraCompleta(evento.deleted_at);
+      return `<span class="valor-bloqueado">Excluído${quando ? ` em ${escapeHtml(quando)}` : ''}</span>`;
+    }
+    return escapeHtml(STATUS_EVENTO[evento.status] || evento.status || '—');
   }
 
   async function classificar(conta, destino) {

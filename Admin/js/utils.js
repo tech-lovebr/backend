@@ -144,6 +144,9 @@ const Drawer = {
     panel.id = 'drawer-panel';
     panel.innerHTML = `
       <header class="drawer-head">
+        <button type="button" class="drawer-back" id="drawer-back" aria-label="Voltar" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
         <div style="flex:1;min-width:0">
           <h2 id="drawer-title">Detalhes</h2>
           <p id="drawer-subtitle"></p>
@@ -161,8 +164,14 @@ const Drawer = {
     this._built = true;
   },
 
-  open({ title, subtitle, body, footer }) {
+  /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
+  open({ title, subtitle, body, footer, back }) {
     this._build();
+
+    const btnBack = document.getElementById('drawer-back');
+    btnBack.hidden = !back;
+    btnBack.onclick = back || null;
+
     document.getElementById('drawer-title').textContent = title || 'Detalhes';
     document.getElementById('drawer-subtitle').textContent = subtitle || '';
     document.getElementById('drawer-body').innerHTML = body || '';

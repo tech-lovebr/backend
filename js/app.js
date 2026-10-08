@@ -10307,9 +10307,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Confirmar Exclusão do Evento
   const btnConfirmDelete = document.getElementById('btn-confirm-delete-event');
   if (btnConfirmDelete) {
-    btnConfirmDelete.addEventListener('click', () => {
+    btnConfirmDelete.addEventListener('click', async () => {
       const deletedId = state.activeEventId;
       const deletedEvent = getActiveEvent();
+
+      // Marca no banco em vez de só sumir da tela: sem isto o evento voltava
+      // no próximo login e o Admin seguia mostrando como ativo para sempre.
+      // Marcar, e não apagar, preserva convidados, presentes e o histórico
+      // financeiro — que o cascade levaria junto.
+      if (ehUuid(deletedId)) {
+        const { error } = await supabaseClient
+          .from('eventos')
+          .update({ deleted_at: new Date().toISOString() })
+          .eq('id', deletedId);
+        if (error) {
+          console.error('Erro ao excluir evento:', error);
+          showToast('Não foi possível excluir o evento. Tente de novo.', '⚠️');
+          return;
+        }
+      }
 
       // Remove da lista
       state.events = state.events.filter(e => e.id !== deletedId);
@@ -10993,6 +11009,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return VALID_EVENT_TYPES.includes(mapped) ? mapped : 'wedding';
   }
 
+  /** Evento criado só no navegador ainda não tem id do banco. */
+  function ehUuid(valor) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(valor || ''));
+  }
+
   function mapEventToEventoRow(evt, clienteId) {
     const { id, type, title, hostName, date, slug, theme, coverImage, status, guests, giftList, ...rest } = evt;
     return {
@@ -11016,6 +11037,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .from('eventos')
       .select('*, convidados(*), presentes(*)')
       .eq('cliente_id', clienteId)
+      .is('deleted_at', null)
       .order('created_at', { ascending: true });
     if (error) { console.error('Erro ao carregar eventos:', error); return []; }
     return (rows || []).map(mapEventoRowToEvent);

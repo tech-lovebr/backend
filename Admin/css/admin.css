@@ -655,6 +655,28 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   gap: 1rem;
 }
 
+/* Voltar: quadradinho de borda arredondada, só a seta. Fica antes do título
+   porque é dali que se sai da tela do evento de volta para a da conta. */
+.drawer-back {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.drawer-back:hover { background: var(--bg-muted); border-color: #ccd5e0; }
+.drawer-back svg { width: 15px; height: 15px; }
+.drawer-back[hidden] { display: none; }
+
 .drawer-head h2 { font-size: 1.0625rem; font-weight: 600; }
 .drawer-head p { font-size: .8125rem; color: var(--text-muted); margin: .1875rem 0 0; }
 .drawer-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
@@ -1740,42 +1762,41 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 /* Evento listado dentro do painel lateral de uma conta. */
 
+/* Linha de evento: é um botão que abre a tela do evento no mesmo drawer. */
 .evento-conta {
-  background: var(--bg-muted);
-  border-radius: var(--radius-card);
-  padding: .75rem .875rem;
-  margin-bottom: .5rem;
-}
-
-.evento-conta:last-child { margin-bottom: 0; }
-
-.evento-conta-topo {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: .5rem;
-  flex-wrap: wrap;
+  text-align: left;
+  background: var(--bg-muted);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  padding: .75rem .875rem;
+  margin-bottom: .5rem;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: background .15s ease, border-color .15s ease;
 }
 
-.evento-conta-topo .nome { font-size: .875rem; font-weight: 600; flex: 1; min-width: 0; }
+.evento-conta:last-child { margin-bottom: 0; }
+.evento-conta:hover { background: #e9edf3; border-color: var(--border); }
 
-/* A linha do evento é um <summary>: clicar abre os detalhes no mesmo drawer,
-   sem trocar de tela. O marcador nativo sai no lugar da seta própria. */
-.evento-conta-topo { cursor: pointer; list-style: none; flex-wrap: nowrap; }
-.evento-conta-topo::-webkit-details-marker { display: none; }
+.evento-conta .nome { font-size: .875rem; font-weight: 600; flex: 1; min-width: 0; }
 
 .evento-conta-seta {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
   color: var(--text-soft);
-  transition: transform .15s ease;
 }
 
-.evento-conta[open] .evento-conta-seta { transform: rotate(180deg); }
-
-.evento-conta-detalhe {
-  margin-top: .75rem;
-  background: var(--bg-surface);
+/* As três caixas de convidados ficam lado a lado mesmo em tela estreita —
+   confirmados, pendentes e recusados só fazem sentido comparados entre si. */
+.stat-row--convidados {
+  grid-template-columns: repeat(3, 1fr);
+  margin: .75rem 0 1rem;
 }
 
 .link-convite { color: var(--primary-color); text-decoration: none; font-weight: 500; }

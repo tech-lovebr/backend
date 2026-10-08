@@ -16,9 +16,10 @@
   /* Mesmo tom da barra de título: o conteúdo é o plano de fundo e os cards
      ficam por cima dele, em branco. */
   --bg-app: #FAFAFA;
-  --topbar-bg: #FFFFFF;
+  /* Faixa superior inteira — marca, busca e perfil — em grafite. */
+  --topbar-bg: #181D25;
   --header-bar-bg: #FAFAFA;
-  --topbar-border: #E4E4E4;
+  --topbar-border: #181D25;
   --bg-surface: #ffffff;
   --bg-muted: #f1f3f6;
   --border: #e4e7ec;
@@ -84,13 +85,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: transform .22s ease;
 }
 
+/* A marca é a ponta esquerda da faixa superior, não o topo do menu: por
+   isso acompanha o grafite do topbar e não o branco do sidebar. */
 .admin-sidebar-brand {
   height: var(--topbar-h);
   display: flex;
   align-items: center;
   gap: .5rem;
   padding: 0 1.25rem;
-  border-bottom: 1px solid var(--sidebar-borda);
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--topbar-bg);
 }
 
 .admin-sidebar-brand img { height: 32px; width: auto; object-fit: contain; }
@@ -100,7 +104,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 .marca-admin {
   font-size: 1.0625rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #C4C4CC;
   letter-spacing: -.01em;
 }
 
@@ -251,7 +255,6 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   height: var(--topbar-h);
   background: var(--topbar-bg);
   border-bottom: 1px solid var(--topbar-border);
-  box-shadow: 0 2px 6px rgba(16, 24, 40, .04);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -318,6 +321,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
    proposital: sem ela, o `display: inline-flex` de .btn venceria. */
 .admin-topbar .btn-sidebar-toggle { display: none; }
 
+/* Sobre o grafite, o botão claro padrão vira um bloco branco pesado. */
+.admin-topbar .btn-sidebar-toggle {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .16);
+  color: #C4C4CC;
+  flex-shrink: 0;
+}
+
+.admin-topbar .btn-sidebar-toggle:hover { background: rgba(255, 255, 255, .14); color: #fff; }
+
 .admin-user { position: relative; margin-left: auto; }
 
 /* Só o avatar, sem fundo nem nome — mesmo padrão do B2B e da plataforma
@@ -336,8 +349,8 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  background: #F4F4F5;
-  color: var(--text-muted);
+  background: rgba(255, 255, 255, .1);
+  color: #C4C4CC;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -345,7 +358,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 }
 
 .admin-user-chip:hover .avatar,
-.admin-user-chip[aria-expanded="true"] .avatar { background: var(--azul-claro); color: var(--text); }
+.admin-user-chip[aria-expanded="true"] .avatar { background: rgba(255, 255, 255, .2); color: #fff; }
 
 .admin-user-chip .avatar svg { width: 19px; height: 19px; }
 .admin-user-chip .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -1367,19 +1380,25 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   display: flex;
   align-items: center;
   gap: .5rem;
-  background: #F4F4F5;
-  border: 1px solid #E4E4E4;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .16);
   border-radius: var(--radius-card);
   padding: .5rem .875rem;
-  color: #71717A;
+  /* 5,5:1 sobre o grafite; o #71717A de antes caía para 3,5. */
+  color: #8b94a3;
   font-family: inherit;
   font-size: .8125rem;
   cursor: pointer;
   width: 340px;
+  /* Em tela estreita os 340px fixos estouravam a faixa e o campo saía
+     cortado na direita. */
+  max-width: 100%;
+  min-width: 0;
+  flex-shrink: 1;
   transition: border-color .15s ease, background-color .15s ease;
 }
 
-.topbar-search-trigger:hover { background: #ECECEE; }
+.topbar-search-trigger:hover { background: rgba(255, 255, 255, .14); }
 .topbar-search-trigger span {
   flex: 1;
   text-align: left;
@@ -1392,11 +1411,11 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 .topbar-search-trigger kbd {
   font-size: .6875rem;
   font-family: inherit;
-  background: #fff;
-  border: 1px solid #F2F3F6;
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, .14);
   border-radius: 5px;
   padding: .05rem .35rem;
-  color: #A1A1AA;
+  color: #C4C4CC;
 }
 
 /* Paleta de resultados */

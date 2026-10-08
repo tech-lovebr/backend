@@ -2951,7 +2951,7 @@
                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Descrição</span>
                   </label>
-                  <textarea id="page-new-event-description" rows="2" placeholder="Conte um pouco sobre este momento especial..." class="w-full text-xs p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 leading-relaxed"></textarea>
+                  <textarea id="page-new-event-description" rows="2" maxlength="150" placeholder="Conte um pouco sobre este momento especial..." class="w-full text-xs p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 leading-relaxed resize-none"></textarea>
                 </div>
 
                 <!-- Link Personalizado Editável -->
@@ -2963,6 +2963,7 @@
                     </span>
                     <input type="text" id="page-new-event-slug" required placeholder="minha-festa" class="w-full text-xs sm:text-sm py-2.5 px-3 bg-transparent border-0 focus:outline-none focus:ring-0 font-bold text-zinc-900 placeholder:text-zinc-300">
                   </div>
+                  <p id="page-new-event-slug-status" class="text-xs font-semibold hidden"></p>
                 </div>
 
                 <!-- Botão Final: Continuar Ajustes -->

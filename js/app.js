@@ -8471,6 +8471,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Avisa embaixo do campo se o link já está em uso por outro evento
+  // (checagem real no banco — ver verificar_slug_disponivel, migration 026).
+  const pageNewSlugStatus = document.getElementById('page-new-event-slug-status');
+  let slugCheckTimer = null;
+  function checarDisponibilidadeSlug() {
+    if (!pageNewSlug || !pageNewSlugStatus) return;
+    const valor = slugify(pageNewSlug.value);
+    clearTimeout(slugCheckTimer);
+    if (!valor) {
+      pageNewSlugStatus.classList.add('hidden');
+      return;
+    }
+    slugCheckTimer = setTimeout(async () => {
+      const { data: disponivel, error } = await supabaseClient.rpc('verificar_slug_disponivel', { p_slug: valor });
+      if (error) {
+        pageNewSlugStatus.classList.add('hidden');
+        return;
+      }
+      pageNewSlugStatus.classList.remove('hidden', 'text-red-600', 'text-[#27394f]');
+      if (disponivel) {
+        pageNewSlugStatus.textContent = 'Link personalizado disponível';
+        pageNewSlugStatus.classList.add('text-[#27394f]');
+      } else {
+        pageNewSlugStatus.textContent = 'Link personalizado já em uso';
+        pageNewSlugStatus.classList.add('text-red-600');
+      }
+    }, 400);
+  }
+  // O listener acima só sincroniza o nome → slug (não dispara o evento
+  // 'input' do slug, já que é uma troca programática do .value) — este
+  // segundo listener, no mesmo campo de nome, roda depois e só cuida de
+  // checar a disponibilidade do valor que acabou de ser preenchido.
+  if (pageNewName) pageNewName.addEventListener('input', checarDisponibilidadeSlug);
+  if (pageNewSlug) pageNewSlug.addEventListener('input', checarDisponibilidadeSlug);
+
   // Mesma regra de limpeza usada no listener acima, reaproveitável pra
   // sugerir um slug a partir do nome da pessoa (não do título do evento).
   function slugify(texto) {
@@ -11264,7 +11299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // título do evento), já checando disponibilidade no banco.
         const slugInput = document.getElementById('page-new-event-slug');
         if (slugInput) {
-          sugerirSlugDisponivel(pendingName).then(slug => { slugInput.value = slug; });
+          sugerirSlugDisponivel(pendingName).then(slug => { slugInput.value = slug; checarDisponibilidadeSlug(); });
         }
       }
       if (pendingDate) {

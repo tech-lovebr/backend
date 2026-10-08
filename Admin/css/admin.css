@@ -496,8 +496,16 @@ table.data {
   width: 100%;
   border-collapse: collapse;
   font-size: .875rem;
-  white-space: nowrap;
+  /* Sem nowrap: era ele que esticava a tabela além do card e obrigava a
+     arrastar de lado para ler as últimas colunas. Agora o texto quebra e a
+     tabela cabe. */
+  white-space: normal;
 }
+
+/* O que não pode quebrar: número, caixa de seleção e etiqueta. */
+table.data .col-numero,
+table.data .col-selecao,
+table.data .badge { white-space: nowrap; }
 
 /* Copiado da .guests-table (css/styles.css) da plataforma dos noivos:
    cabeçalho sem preenchimento, só o texto sobre a linha divisória. */
@@ -626,9 +634,18 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 .field-textarea { resize: vertical; min-height: 84px; line-height: 1.55; }
 
-/* A seta nativa do select cola na borda direita; este respiro a afasta
-   sem mexer no texto da opção. */
-.field-select { padding-right: 1.75rem; }
+/* O padding não move a seta nativa — ela é desenhada pelo navegador colada
+   na borda. A única forma de posicioná-la é desligar a aparência nativa e
+   desenhar a própria, que é o que esta regra faz. */
+.field-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  background-size: 15px 15px;
+}
 
 .field-input:focus,
 .field-select:focus,

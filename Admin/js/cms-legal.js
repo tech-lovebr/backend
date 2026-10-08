@@ -10,6 +10,7 @@ let DOCUMENTOS = new Map();
 let ATUAL = 'termos';
 let EDITOR = null;
 let VERSOES = [];
+let BOTAO_SALVAR = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
@@ -36,9 +37,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   ligarAbas();
-  mostrar('termos');
 
-  document.getElementById('btn-salvar').addEventListener('click', salvar);
+  /* O cabeçalho da página mostra o nome do documento aberto, então é dele
+     que o Salvar faz parte — e não da linha das abas, que é só o seletor. */
+  BOTAO_SALVAR = addHeaderAction('Salvar', salvar, {
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" /><path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M14 4l0 4l-6 0l0 -4" /></svg>'
+  });
+  BOTAO_SALVAR.className = 'btn btn-primary';
+
+  mostrar('termos');
 });
 
 function ligarAbas() {
@@ -99,7 +106,7 @@ function renderHistorico() {
 }
 
 async function salvar() {
-  const botao = document.getElementById('btn-salvar');
+  const botao = BOTAO_SALVAR;
   botao.disabled = true;
 
   const linha = {

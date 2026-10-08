@@ -2536,22 +2536,6 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
    largura inteira. As ações sobem para a linha das abas e o histórico
    desce para baixo do editor. */
 
-.legal-barra {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-/* A linha das abas já traz a divisória; aqui ela atravessa a barra toda. */
-.legal-barra .conteudo-tabs { border-bottom: 0; margin-bottom: 0; }
-
-.legal-barra {
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1rem;
-}
-
 .legal-ultima-edicao {
   margin: 0 0 .75rem;
   font-size: .8125rem;

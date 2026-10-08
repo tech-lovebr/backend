@@ -18,27 +18,27 @@ const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra', 'Staff e Mão de Obra'
 const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual', 'Mídia e Audiovisual'];
 
 const SUBCATEGORY_MAP = {
-  'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã'],
-  'Bar': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira'],
+  'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
+  'Bar e Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Bebidas Não Alcoólicas', 'Bar Infantil'],
   'Espaços para Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
-  'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Celebrante'],
+  'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Montadores', 'Carregadores'],
   'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
-  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa'],
-  'Decoração': ['Florais', 'Iluminação', 'Mobiliário'],
-  'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator'],
-  'Trajes': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa']
+  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa', 'Recreação Infantil', 'Orquestra', 'Personagens Vivos', 'Mágicos', 'Efeitos Especiais'],
+  'Decoração': ['Florais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Esculturas em Balões', 'Lembrancinhas', 'Papelaria'],
+  'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator', 'Celebrante'],
+  'Trajes, Beleza e Estilo': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa', 'Moda Infantil', 'Dia da Noiva', 'Maquiagem', 'Camarim']
 };
 
 const PRODUCT_TITLE_PLACEHOLDERS = {
   'Buffet e Gastronomia': 'Ex: Buffet Completo para Casamento (até 150 convidados)',
-  'Bar': 'Ex: Bar de Coquetéis Clássicos e Gin Bar (até 150 convidados)',
+  'Bar e Bebidas': 'Ex: Bar de Coquetéis Clássicos e Gin Bar (até 150 convidados)',
   'Espaços para Locação': 'Ex: Salão de Festas com Área Externa e Piscina',
   'Staff e Mão de Obra': 'Ex: Diária de Barman Especializado com Kit de Coquetelaria',
   'Mídia e Audiovisual': 'Ex: Cobertura Fotográfica e Vídeo Completo do Evento',
   'Música e Entretenimento': 'Ex: DJ Set Completo com Som e Iluminação',
   'Decoração': 'Ex: Decoração Completa com Backdrop Floral e Lounge',
   'Assessoria e Cerimonialista': 'Ex: Assessoria Completa do Dia do Evento',
-  'Trajes': 'Ex: Aluguel de Vestido de Noiva com Provas Inclusas',
+  'Trajes, Beleza e Estilo': 'Ex: Aluguel de Vestido de Noiva com Provas Inclusas',
   'Aluguel de Carros': 'Ex: Locação de Carro Clássico para Cerimônia'
 };
 const DEFAULT_TITLE_PLACEHOLDER = 'Selecione uma categoria para ver um exemplo';

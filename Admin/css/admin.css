@@ -2418,3 +2418,40 @@ tr.is-selecionada { background: #f4f4f5; }
 @media (max-width: 1024px) {
   .editor-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ------------------------------------------- Tabelas sem moldura
+
+   A caixa em volta da tabela custava ~2,5rem de largura útil e não
+   acrescentava informação: a tabela já se delimita pelas próprias linhas.
+   Sem ela, a primeira e a última coluna encostam na margem do conteúdo e
+   ficam na mesma vertical dos cards acima.
+
+   O :has() alcança qualquer card que contenha uma tabela — table-card,
+   bloco com cabeçalho, viz-root. Onde não houver suporte, a caixa
+   permanece: degrada para o visual anterior, não para um quebrado. */
+
+.card:has(table.data) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+/* O card deixa de ter borda, então o preenchimento interno também sai —
+   senão o cabeçalho do bloco ficaria recuado em relação à tabela. */
+.card:has(table.data).viz-root { padding-left: 0; padding-right: 0; }
+
+.card:has(table.data) > .card-head,
+.card:has(table.data) > .viz-head {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* O .table-wrap tinha 1.5rem de preenchimento para descolar a tabela da
+   borda do card. Sem card, não há de que descolar. */
+.card:has(table.data) > .table-wrap { padding-left: 0; padding-right: 0; }
+
+.card:has(table.data) table.data th:first-child,
+.card:has(table.data) table.data td:first-child { padding-left: 0; }
+
+.card:has(table.data) table.data th:last-child,
+.card:has(table.data) table.data td:last-child { padding-right: 0; }

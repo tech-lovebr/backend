@@ -190,6 +190,9 @@ const ContaDrawer = (() => {
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso ? linha(acesso.exato ? 'Cadastrou-se em' : 'Último aparelho', escapeHtml(acesso.texto)) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
+          ${linha('Sessões', c.sessoes == null
+            ? '—'
+            : `${formatNumber(c.sessoes)} ${c.sessoes === 1 ? 'entrada' : 'entradas'}`)}
           ${linha('Situação', c.bloqueado
             ? '<span class="valor-bloqueado">Bloqueada</span>'
             : 'Ativa')}
@@ -373,32 +376,15 @@ const ContaDrawer = (() => {
       linhaOpcional('Status da conta', cliente.status)
     ].join('') : '';
 
-    const tipos = [...new Set(eventos.map(e => EVENT_TYPE_LABELS[e.tipo] || e.tipo))];
-
+    /* A linha mostra só nome e categoria; o resto abre ao clicar, no mesmo
+       drawer. Antes tudo ficava exposto de uma vez e a lista virava um muro
+       de números para quem tem vários eventos. */
     const listaEventos = eventos.length
       ? eventos
           .slice()
           .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-          .map(e => {
-            const convidados = (DADOS.convidados || []).filter(g => g.evento_id === e.id);
-            const confirmados = convidados.filter(g => g.status === 'confirmado').length;
-            const presentes = (DADOS.presentes || []).filter(p => p.evento_id === e.id && p.status === 'recebido');
-            const arrecadado = presentes.reduce((t, p) => t + (Number(p.valor) || 0), 0);
-
-            return `
-              <div class="evento-conta">
-                <div class="evento-conta-topo">
-                  <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
-                  ${badge(EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—', e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}
-                </div>
-                <p class="evento-conta-sub">
-                  ${escapeHtml(formatDate(e.data_evento))}
-                  · ${formatNumber(convidados.length)} convidados (${formatNumber(confirmados)} confirmados)
-                  · ${formatNumber(presentes.length)} presentes
-                  ${arrecadado ? `· ${formatCurrency(arrecadado)}` : ''}
-                </p>
-              </div>`;
-          }).join('')
+          .map(e => linhaDeEvento(e))
+          .join('')
       : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta conta ainda não criou nenhum evento.</p>`;
 
     return `
@@ -410,8 +396,47 @@ const ContaDrawer = (() => {
       <p class="drawer-section-title">
         Eventos${eventos.length ? ` (${formatNumber(eventos.length)})` : ''}
       </p>
-      ${tipos.length ? `<p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Tipos: ${escapeHtml(tipos.join(', '))}</p>` : ''}
       ${listaEventos}`;
+  }
+
+  function linhaDeEvento(e) {
+    const convidados = (DADOS.convidados || []).filter(g => g.evento_id === e.id);
+    const confirmados = convidados.filter(g => g.status === 'confirmado').length;
+    const presentes = (DADOS.presentes || []).filter(p => p.evento_id === e.id);
+    const recebidos = presentes.filter(p => p.status === 'recebido');
+    const arrecadado = recebidos.reduce((t, p) => t + (Number(p.valor) || 0), 0);
+
+    const categoria = EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—';
+    const convite = e.slug ? `https://love.com.br/${e.slug}` : null;
+
+    const dado = (rotulo, valor) => `
+      <div class="dados-linha">
+        <span class="rotulo">${escapeHtml(rotulo)}</span>
+        <span class="valor">${valor}</span>
+      </div>`;
+
+    return `
+      <details class="evento-conta">
+        <summary class="evento-conta-topo">
+          <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
+          ${badge(categoria, e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}
+          <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+          </svg>
+        </summary>
+
+        <div class="lista-dados evento-conta-detalhe">
+          ${dado('Data do evento', escapeHtml(formatDate(e.data_evento) || '—'))}
+          ${dado('Convidados', formatNumber(convidados.length))}
+          ${dado('Confirmados', formatNumber(confirmados))}
+          ${dado('Presentes na lista', formatNumber(presentes.length))}
+          ${dado('Presentes recebidos', formatNumber(recebidos.length))}
+          ${dado('Valor recebido', formatCurrency(arrecadado))}
+          ${dado('Página do convite', convite
+            ? `<a href="${escapeHtml(convite)}" target="_blank" rel="noopener" class="link-convite">love.com.br/${escapeHtml(e.slug)}</a>`
+            : '<span class="cell-muted">sem endereço definido</span>')}
+        </div>
+      </details>`;
   }
 
   async function classificar(conta, destino) {

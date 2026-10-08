@@ -11021,31 +11021,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return (rows || []).map(mapEventoRowToEvent);
   }
 
-  // Conta nova, sem nenhum evento ainda: semeia os 2 eventos de demonstração
-  // (os mesmos que já existiam em js/data.js) como linhas reais no Supabase,
-  // pra continuar tendo uma demonstração completa pra mostrar.
-  async function seedDemoEventsIfEmpty(clienteId) {
-    for (const evt of window.LOVE_DATA.events) {
-      // `eventos.slug` é único em toda a plataforma — os slugs fixos do mock
-      // (ex: "beatriz-e-lucas") colidiriam entre contas diferentes.
-      const evtWithUniqueSlug = { ...evt, slug: `${evt.slug}-${clienteId.slice(0, 8)}` };
-      const eventoRow = mapEventToEventoRow(evtWithUniqueSlug, clienteId);
-      const { data: createdEvento, error: eventoError } = await supabaseClient
-        .from('eventos').insert(eventoRow).select('id').single();
-      if (eventoError || !createdEvento) { console.error('Erro ao semear evento demo:', eventoError); continue; }
-
-      const guestRows = (evt.guests || []).map(g => mapGuestToConvidadoRow(g, createdEvento.id, clienteId));
-      if (guestRows.length) await supabaseClient.from('convidados').insert(guestRows);
-
-      const giftRows = (evt.giftList || []).map(g => mapGiftToPresenteRow(g, createdEvento.id, clienteId));
-      if (giftRows.length) await supabaseClient.from('presentes').insert(giftRows);
-
-      if (typeof seedConviteDigitalForEvent === 'function') {
-        await seedConviteDigitalForEvent(createdEvento.id, normalizeEventTypeForDb(evt.type));
-      }
-    }
-  }
-
   // Expõe o evento ativo pra outros scripts (site-builder.js) sem depender
   // de window.LOVE_DATA.currentEventId, que nunca é atualizado.
   window.getLoveActiveEventId = () => state.activeEventId;
@@ -11080,11 +11055,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const pendingType = localStorage.getItem('love-pending-event-type');
     const pendingTypeLabel = localStorage.getItem('love-pending-event-type-label');
 
-    let events = await loadEventsFromSupabase(session.user.id);
-    if (!events.length && !pendingType) {
-      await seedDemoEventsIfEmpty(session.user.id);
-      events = await loadEventsFromSupabase(session.user.id);
-    }
+    const events = await loadEventsFromSupabase(session.user.id);
+
+    // Conta nova nasce vazia. Antes daqui saíam dois eventos de demonstração
+    // gravados como linhas reais no banco — o que fazia o Admin mostrar
+    // "2 eventos" para quem nunca criou nenhum. Sem evento, a pessoa cai no
+    // onboarding de "Crie seu primeiro evento", que já existe.
+    if (!events.length && !pendingType) setSidebarLocked(true);
+
     if (events.length) {
       state.events = events;
       state.activeEventId = events[0].id;

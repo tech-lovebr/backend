@@ -1756,14 +1756,30 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   flex-wrap: wrap;
 }
 
-.evento-conta-topo .nome { font-size: .875rem; font-weight: 600; }
+.evento-conta-topo .nome { font-size: .875rem; font-weight: 600; flex: 1; min-width: 0; }
 
-.evento-conta-sub {
-  font-size: .75rem;
-  color: var(--text-muted);
-  margin: .25rem 0 0;
-  line-height: 1.5;
+/* A linha do evento é um <summary>: clicar abre os detalhes no mesmo drawer,
+   sem trocar de tela. O marcador nativo sai no lugar da seta própria. */
+.evento-conta-topo { cursor: pointer; list-style: none; flex-wrap: nowrap; }
+.evento-conta-topo::-webkit-details-marker { display: none; }
+
+.evento-conta-seta {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--text-soft);
+  transition: transform .15s ease;
 }
+
+.evento-conta[open] .evento-conta-seta { transform: rotate(180deg); }
+
+.evento-conta-detalhe {
+  margin-top: .75rem;
+  background: var(--bg-surface);
+}
+
+.link-convite { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+.link-convite:hover { text-decoration: underline; }
 
 /* ----------------------------------------------- Paginação de tabela */
 

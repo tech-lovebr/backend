@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   populateProductCategoryOptions();
   initProductDrawer();
   initCompleteProfileModal();
+
+  if (new URLSearchParams(location.search).get('add') === '1') {
+    document.getElementById('product-add-btn')?.click();
+  }
 });
 
 async function loadProducts() {

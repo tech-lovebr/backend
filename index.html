@@ -2861,19 +2861,22 @@
               <!-- COLUNA ESQUERDA: FOTO DE CAPA + TEMA -->
               <div class="lg:col-span-5 space-y-4">
                 
-                <!-- Card Foto de Capa com Botão de Câmera -->
-                <div class="relative w-full aspect-square rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-900 shadow-xs group">
-                  <img id="page-new-event-cover-img" src="assets/wedding_hero_banner.jpg" alt="Capa do Evento" class="w-full h-full object-cover">
-                  
-                  <!-- Overlay Gradiente sutil -->
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none"></div>
+                <!-- Moldura pontilhada ao redor da foto de capa -->
+                <div class="w-full aspect-square rounded-2xl border-2 border-dashed border-zinc-300 p-3">
+                  <!-- Card Foto de Capa com Botão de Câmera -->
+                  <div class="relative w-full h-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-900 shadow-xs group">
+                    <img id="page-new-event-cover-img" src="assets/wedding_hero_banner.jpg" alt="Capa do Evento" class="w-full h-full object-cover">
 
-                  <!-- Botãozinho de Trocar Foto no canto inferior direito -->
-                  <button type="button" id="btn-create-event-change-cover" onclick="document.getElementById('page-new-event-cover-input').click()" class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/80 hover:bg-black text-white flex items-center justify-center shadow-lg backdrop-blur-md transition-all hover:scale-105" title="Mudar imagem de capa">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                  </button>
+                    <!-- Overlay Gradiente sutil -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none"></div>
 
-                  <input type="file" id="page-new-event-cover-input" accept="image/*" class="hidden">
+                    <!-- Botãozinho de Trocar Foto no canto inferior direito -->
+                    <button type="button" id="btn-create-event-change-cover" onclick="document.getElementById('page-new-event-cover-input').click()" class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/80 hover:bg-black text-white flex items-center justify-center shadow-lg backdrop-blur-md transition-all hover:scale-105" title="Mudar imagem de capa">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </button>
+
+                    <input type="file" id="page-new-event-cover-input" accept="image/*" class="hidden">
+                  </div>
                 </div>
 
               </div>

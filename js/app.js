@@ -4948,6 +4948,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (drawerTitle) drawerTitle.textContent = 'Adicionar Presente';
     if (drawerSub) drawerSub.textContent = 'Cadastre um novo presente fictício para sua lista de presentes.';
     if (btnSubmitText) btnSubmitText.textContent = 'Adicionar Presente';
+    resetGiftCrowdfundingFields();
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
@@ -4992,6 +4993,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (drawerTitle) drawerTitle.textContent = 'Editar Presente';
     if (drawerSub) drawerSub.textContent = 'Modifique os detalhes ou o valor deste presente.';
     if (btnSubmitText) btnSubmitText.textContent = 'Salvar Alterações';
+    populateGiftCrowdfundingFields(gift);
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
@@ -5474,6 +5476,57 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // ---- Presente Coletivo / Cotas (Crowdfunding) ----
+    const giftCrowdfundingToggle = document.getElementById('gift-crowdfunding-toggle');
+    const giftCrowdfundingFields = document.getElementById('gift-crowdfunding-fields');
+    const giftQuotaCountInput = document.getElementById('gift-quota-count-input');
+    const giftQuotaValueInput = document.getElementById('gift-quota-value-input');
+
+    if (giftCrowdfundingToggle) {
+      giftCrowdfundingToggle.addEventListener('change', () => setGiftCrowdfundingOpen(giftCrowdfundingToggle.checked));
+    }
+    const giftPriceInputEl = document.getElementById('gift-price-input');
+    if (giftPriceInputEl) {
+      giftPriceInputEl.addEventListener('input', () => {
+        if (giftCrowdfundingToggle?.checked) updateGiftQuotaCalc('count');
+      });
+    }
+    if (giftQuotaCountInput) {
+      giftQuotaCountInput.addEventListener('input', () => updateGiftQuotaCalc('count'));
+    }
+    if (giftQuotaValueInput) {
+      giftQuotaValueInput.addEventListener('input', () => updateGiftQuotaCalc('value'));
+    }
+    const giftQuotaDecrement = document.getElementById('gift-quota-decrement');
+    if (giftQuotaDecrement) {
+      giftQuotaDecrement.addEventListener('click', () => {
+        giftQuotaCountInput.value = Math.max(2, (parseInt(giftQuotaCountInput.value, 10) || 2) - 1);
+        updateGiftQuotaCalc('count');
+      });
+    }
+    const giftQuotaIncrement = document.getElementById('gift-quota-increment');
+    if (giftQuotaIncrement) {
+      giftQuotaIncrement.addEventListener('click', () => {
+        giftQuotaCountInput.value = Math.min(999, (parseInt(giftQuotaCountInput.value, 10) || 2) + 1);
+        updateGiftQuotaCalc('count');
+      });
+    }
+    document.querySelectorAll('#gift-quota-preset-group .gift-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const n = parseInt(chip.getAttribute('data-quota-preset'), 10);
+        if (giftQuotaCountInput && n) {
+          giftQuotaCountInput.value = n;
+          updateGiftQuotaCalc('count');
+        }
+      });
+    });
+    document.querySelectorAll('#gift-category-tag-group .gift-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const tag = chip.getAttribute('data-category');
+        setGiftCategoryTag(chip.classList.contains('active') ? '' : tag);
+      });
+    });
+
     formAddGift.addEventListener('submit', (e) => {
       e.preventDefault();
       const activeEvent = getActiveEvent();
@@ -5484,6 +5537,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const description = document.getElementById('gift-description-input')?.value?.trim() || '';
       const image = giftUrlInput?.value || giftPreviewImg?.src || selectedGiftImage;
 
+      // Presente Coletivo / Cotas — ver interface GiftItemPayload
+      const isCrowdfunding = !!document.getElementById('gift-crowdfunding-toggle')?.checked;
+      let crowdfundingConfig = null;
+      if (isCrowdfunding) {
+        const totalQuotas = Math.max(2, parseInt(document.getElementById('gift-quota-count-input')?.value, 10) || 5);
+        crowdfundingConfig = {
+          totalQuotas,
+          quotaValue: totalQuotas > 0 ? price / totalQuotas : 0,
+          allowCustomQuotas: !!document.getElementById('gift-quota-allow-custom-input')?.checked
+        };
+      }
+      const categoryTag = document.getElementById('gift-category-tag-input')?.value || null;
+
       if (editingGiftId) {
         const giftItem = activeEvent.giftList.find(g => g.id === editingGiftId);
         if (giftItem) {
@@ -5491,12 +5557,16 @@ document.addEventListener('DOMContentLoaded', () => {
           giftItem.description = description;
           giftItem.price = price;
           giftItem.image = image;
+          giftItem.isCrowdfunding = isCrowdfunding;
+          giftItem.crowdfundingConfig = crowdfundingConfig;
+          giftItem.categoryTag = categoryTag;
         }
         editingGiftId = null;
         formAddGift.reset();
         selectedGiftImage = 'assets/card_lecreuset.jpg';
         if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
         if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+        resetGiftCrowdfundingFields();
         closeGiftDrawer();
         renderHostGifts();
         updateAllCelebrationData();
@@ -5515,7 +5585,10 @@ document.addEventListener('DOMContentLoaded', () => {
         received: 0,
         status: 'Disponível para Presentear',
         image: image,
-        contributorsCount: 0
+        contributorsCount: 0,
+        isCrowdfunding: isCrowdfunding,
+        crowdfundingConfig: crowdfundingConfig,
+        categoryTag: categoryTag
       });
 
       activeEvent.presentesRecebidos = (activeEvent.presentesRecebidos || 0) + 1;
@@ -5523,7 +5596,8 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedGiftImage = 'assets/card_lecreuset.jpg';
       if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
       if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
-      
+      resetGiftCrowdfundingFields();
+
       closeGiftDrawer();
       closeGiftModal();
       renderHostGifts();
@@ -5531,6 +5605,99 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(`Presente "${title}" adicionado à lista!`, '🎁');
       triggerConfetti();
     });
+  }
+
+  // Formata número como moeda BRL (sem o prefixo "R$")
+  function formatGiftCurrency(n) {
+    return (Number(n) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // Recalcula cota <-> valor total em tempo real (bidirecional).
+  // source 'count': quantidade de cotas mudou, recalcula o valor de cada cota.
+  // source 'value': valor da cota mudou, recalcula quantas cotas cabem no total.
+  function updateGiftQuotaCalc(source) {
+    const priceInput = document.getElementById('gift-price-input');
+    const quotaCountInput = document.getElementById('gift-quota-count-input');
+    const quotaValueInput = document.getElementById('gift-quota-value-input');
+    const summaryText = document.getElementById('gift-quota-summary-text');
+    const previewQtyLabel = document.getElementById('gift-quota-preview-qty-label');
+    const previewBtnPartial = document.getElementById('gift-quota-preview-btn-partial');
+    const previewBtnFull = document.getElementById('gift-quota-preview-btn-full');
+    if (!priceInput || !quotaCountInput || !quotaValueInput) return;
+
+    const total = parseFloat(priceInput.value) || 0;
+    let count = Math.max(2, parseInt(quotaCountInput.value, 10) || 2);
+
+    if (source === 'value') {
+      const typedQuotaValue = parseFloat(quotaValueInput.value) || 0;
+      if (typedQuotaValue > 0 && total > 0) {
+        count = Math.max(2, Math.round(total / typedQuotaValue));
+      }
+    }
+
+    quotaCountInput.value = count;
+    const quotaValue = count > 0 ? total / count : 0;
+    quotaValueInput.value = quotaValue > 0 ? quotaValue.toFixed(2) : '';
+
+    if (summaryText) {
+      summaryText.innerHTML = `Cada cota custará <strong class="text-zinc-900">R$ ${formatGiftCurrency(quotaValue)}</strong> (${count} cotas no total)`;
+    }
+    if (previewQtyLabel) previewQtyLabel.textContent = `1 cota (R$ ${formatGiftCurrency(quotaValue)})`;
+    if (previewBtnPartial) previewBtnPartial.textContent = `Presentear R$ ${formatGiftCurrency(quotaValue)}`;
+    if (previewBtnFull) previewBtnFull.textContent = `Comprar as ${count} cotas (R$ ${formatGiftCurrency(total)})`;
+
+    document.querySelectorAll('#gift-quota-preset-group .gift-chip').forEach(chip => {
+      chip.classList.toggle('active', parseInt(chip.getAttribute('data-quota-preset'), 10) === count);
+    });
+  }
+
+  // Abre/fecha com animação a seção de campos de cotas, ligada ao switch
+  function setGiftCrowdfundingOpen(open) {
+    const fields = document.getElementById('gift-crowdfunding-fields');
+    const toggle = document.getElementById('gift-crowdfunding-toggle');
+    if (fields) fields.classList.toggle('open', open);
+    if (toggle) toggle.checked = open;
+    if (open) updateGiftQuotaCalc('count');
+  }
+
+  // Seleciona (ou limpa, se clicar de novo) a tag de categoria do presente
+  function setGiftCategoryTag(tag) {
+    const input = document.getElementById('gift-category-tag-input');
+    if (input) input.value = tag || '';
+    document.querySelectorAll('#gift-category-tag-group .gift-chip').forEach(chip => {
+      chip.classList.toggle('active', !!tag && chip.getAttribute('data-category') === tag);
+    });
+  }
+
+  // Volta o bloco de cotas/categoria ao estado inicial (drawer de criação)
+  function resetGiftCrowdfundingFields() {
+    setGiftCrowdfundingOpen(false);
+    const quotaCountInput = document.getElementById('gift-quota-count-input');
+    const quotaValueInput = document.getElementById('gift-quota-value-input');
+    const allowCustomInput = document.getElementById('gift-quota-allow-custom-input');
+    if (quotaCountInput) quotaCountInput.value = 5;
+    if (quotaValueInput) quotaValueInput.value = '';
+    if (allowCustomInput) allowCustomInput.checked = true;
+    document.querySelectorAll('#gift-quota-preset-group .gift-chip').forEach(c => c.classList.remove('active'));
+    setGiftCategoryTag('');
+  }
+
+  // Repopula o bloco de cotas/categoria ao abrir o drawer em modo edição
+  function populateGiftCrowdfundingFields(gift) {
+    const isCf = !!(gift && gift.isCrowdfunding);
+    setGiftCrowdfundingOpen(isCf);
+    const cfg = (gift && gift.crowdfundingConfig) || {};
+    const quotaCountInput = document.getElementById('gift-quota-count-input');
+    const quotaValueInput = document.getElementById('gift-quota-value-input');
+    const allowCustomInput = document.getElementById('gift-quota-allow-custom-input');
+    if (quotaCountInput) quotaCountInput.value = cfg.totalQuotas || 5;
+    if (allowCustomInput) allowCustomInput.checked = cfg.allowCustomQuotas !== false;
+    if (isCf) {
+      updateGiftQuotaCalc('count');
+    } else if (quotaValueInput) {
+      quotaValueInput.value = '';
+    }
+    setGiftCategoryTag((gift && gift.categoryTag) || '');
   }
 
   // Alternar sub-seção da Lista de Presentes (Meus presentes vs Configurações)

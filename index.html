@@ -3854,13 +3854,103 @@
           <textarea id="gift-description-input" rows="3" placeholder="Escreva uma breve mensagem ou detalhe sobre este presente..." class="w-full text-xs sm:text-sm p-3.5 rounded-[12px] border border-zinc-200 bg-white focus:bg-white focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 focus:outline-none text-zinc-900 font-normal transition-all font-sans resize-none"></textarea>
         </div>
 
-        <!-- 4. Valor (R$) -->
+        <!-- 4. Valor Total do Presente -->
         <div class="space-y-1.5">
-          <label for="gift-price-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor</label>
+          <label for="gift-price-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor total do presente</label>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm font-bold text-zinc-400 font-sans">R$</span>
             <input type="number" id="gift-price-input" step="0.01" min="1" required placeholder="250,00" class="w-full text-xs sm:text-sm pl-10 pr-4 py-3.5 rounded-[12px] border border-zinc-200 bg-white focus:bg-white focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 focus:outline-none text-zinc-900 font-bold transition-all font-sans">
           </div>
+        </div>
+
+        <!-- 4.1 Presente Coletivo / Dividir em Cotas (Crowdfunding) -->
+        <div class="rounded-[14px] border border-zinc-200 bg-zinc-50 p-4 space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-2.5">
+              <div class="w-8 h-8 rounded-[10px] bg-white border border-zinc-200 flex items-center justify-center flex-shrink-0 text-zinc-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs sm:text-sm font-bold text-zinc-900 font-sans">Permitir vaquinha / cotas para este presente</p>
+                <p class="text-[11px] sm:text-xs text-zinc-500 font-sans mt-0.5 leading-snug">Ideal para presentes de maior valor. Vários convidados podem contribuir com cotas menores, ou um convidado pode pagar o valor integral.</p>
+              </div>
+            </div>
+            <label class="settings-switch flex-shrink-0" id="gift-crowdfunding-switch">
+              <input type="checkbox" id="gift-crowdfunding-toggle">
+              <span class="settings-switch-track"></span>
+            </label>
+          </div>
+
+          <!-- Campos condicionais (exibidos quando o switch está ativo) -->
+          <div id="gift-crowdfunding-fields">
+            <div class="border-t border-zinc-200/80 pt-4 space-y-4">
+
+              <!-- Quantidade de cotas -->
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Quantidade de cotas</label>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <button type="button" id="gift-quota-decrement" class="w-9 h-9 rounded-[10px] border border-zinc-200 bg-white hover:bg-zinc-100 flex items-center justify-center text-zinc-600 font-bold transition-colors cursor-pointer flex-shrink-0">−</button>
+                  <input type="number" id="gift-quota-count-input" min="2" max="999" step="1" value="5" class="w-16 text-center text-sm font-bold p-2.5 rounded-[10px] border border-zinc-200 bg-white focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 focus:outline-none text-zinc-900 font-sans flex-shrink-0">
+                  <button type="button" id="gift-quota-increment" class="w-9 h-9 rounded-[10px] border border-zinc-200 bg-white hover:bg-zinc-100 flex items-center justify-center text-zinc-600 font-bold transition-colors cursor-pointer flex-shrink-0">+</button>
+
+                  <div class="flex items-center gap-1.5 flex-wrap" id="gift-quota-preset-group">
+                    <button type="button" class="gift-chip" data-quota-preset="2">2x</button>
+                    <button type="button" class="gift-chip" data-quota-preset="4">4x</button>
+                    <button type="button" class="gift-chip" data-quota-preset="6">6x</button>
+                    <button type="button" class="gift-chip" data-quota-preset="10">10x</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Valor da cota (cálculo bidirecional) -->
+              <div class="space-y-1.5">
+                <label for="gift-quota-value-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor de cada cota</label>
+                <div class="relative">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm font-bold text-zinc-400 font-sans">R$</span>
+                  <input type="number" id="gift-quota-value-input" step="0.01" min="0.01" placeholder="0,00" class="w-full text-xs sm:text-sm pl-10 pr-4 py-3 rounded-[12px] border border-zinc-200 bg-white focus:bg-white focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 focus:outline-none text-zinc-900 font-bold transition-all font-sans">
+                </div>
+                <p id="gift-quota-summary-text" class="text-xs text-zinc-500 font-sans">Cada cota custará <strong class="text-zinc-900">R$ 0,00</strong> (0 cotas no total)</p>
+              </div>
+
+              <!-- Permitir que o convidado escolha a quantidade de cotas -->
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="gift-quota-allow-custom-input" checked class="w-4 h-4 rounded border-zinc-300 text-[#537bae] focus:ring-[#537bae]/30 cursor-pointer">
+                <span class="text-xs text-zinc-600 font-sans">Permitir que o convidado escolha quantas cotas presentear de uma vez</span>
+              </label>
+
+              <!-- Visualizador: Visão do Convidado -->
+              <div class="space-y-1.5">
+                <p class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-sans">Pré-visualização &mdash; visão do convidado</p>
+                <div class="rounded-[12px] border border-dashed border-zinc-300 bg-white p-3.5 space-y-3">
+                  <p class="text-[11px] text-zinc-400 font-sans">Escolha quantas cotas deseja presentear:</p>
+                  <div class="flex items-center justify-center gap-3">
+                    <span class="w-7 h-7 rounded-full border border-zinc-200 text-zinc-400 flex items-center justify-center text-xs font-bold flex-shrink-0">−</span>
+                    <span id="gift-quota-preview-qty-label" class="text-xs font-bold text-zinc-700 font-sans whitespace-nowrap">1 cota (R$ 0,00)</span>
+                    <span class="w-7 h-7 rounded-full border border-zinc-200 text-zinc-400 flex items-center justify-center text-xs font-bold flex-shrink-0">+</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span id="gift-quota-preview-btn-partial" class="flex-1 text-center text-[11px] font-bold text-white bg-zinc-900 rounded-full py-2 px-2 font-sans">Presentear R$ 0,00</span>
+                    <span id="gift-quota-preview-btn-full" class="flex-1 text-center text-[11px] font-bold text-[#537bae] border border-[#537bae]/30 bg-[#537bae]/5 rounded-full py-2 px-2 font-sans">Comprar as 0 cotas (R$ 0,00)</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.2 Categoria do presente (opcional) -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Categoria <span class="text-zinc-400 font-normal lowercase">(opcional)</span></label>
+          <div class="flex items-center gap-1.5 flex-wrap" id="gift-category-tag-group">
+            <button type="button" class="gift-chip" data-category="honeymoon">Lua de Mel / Viagem</button>
+            <button type="button" class="gift-chip" data-category="home">Casa Nova &amp; Eletros</button>
+            <button type="button" class="gift-chip" data-category="experience">Experiência Romântica</button>
+            <button type="button" class="gift-chip" data-category="other">Outro</button>
+          </div>
+          <input type="hidden" id="gift-category-tag-input" value="">
         </div>
 
         <!-- 5. Botão Submeter -->

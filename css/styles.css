@@ -3855,6 +3855,32 @@ body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important;
 #floorplan-show-names-switch .settings-switch-track { background: #FFFFFF; border: 1px solid #E4E4E7; }
 #floorplan-show-names-switch input:checked ~ .settings-switch-track { background: #EBF4FF; border-color: #EBF4FF; }
 
+/* -------------------- Presente Coletivo / Cotas (Drawer Adicionar Presente) -------------------- */
+/* Expande/recolhe os campos de cotas com animação suave ao ligar o switch */
+#gift-crowdfunding-fields {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .35s ease, opacity .25s ease;
+}
+#gift-crowdfunding-fields.open { max-height: 900px; opacity: 1; }
+
+.gift-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #E4E4E7;
+  background: #fff;
+  color: #52525B;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-sans, inherit);
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.gift-chip:hover { border-color: #D4D4D8; background: #FAFAFA; }
+.gift-chip.active { border-color: var(--primary-blue); background: rgba(83, 123, 174, 0.1); color: var(--primary-blue); }
+
 /* -------------------- Ajustes Love: convite de página única (sem header/menu fixo) -------------------- */
 .builder-wrap {
   /* Acentos do construtor (botões, seleção, abas) na mesma cor usada no B2B: #333333 */

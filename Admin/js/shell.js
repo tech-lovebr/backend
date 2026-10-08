@@ -155,6 +155,7 @@ function renderSidebar() {
   host.innerHTML = `
     <div class="admin-sidebar-brand">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
+      <span class="marca-admin">Admin</span>
     </div>
     <nav class="admin-nav">${sections}</nav>
     <footer class="admin-sidebar-footer">

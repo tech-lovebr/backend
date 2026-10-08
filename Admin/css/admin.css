@@ -83,12 +83,21 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   height: var(--topbar-h);
   display: flex;
   align-items: center;
-  gap: .625rem;
+  gap: .5rem;
   padding: 0 1.25rem;
   border-bottom: 1px solid var(--sidebar-borda);
 }
 
-.admin-sidebar-brand img { height: 26px; width: auto; object-fit: contain; }
+.admin-sidebar-brand img { height: 32px; width: auto; object-fit: contain; }
+
+/* "Admin" ao lado da marca: diz de qual produto é esta tela, sem competir
+   com o logotipo — por isso o peso médio e o tom de apoio, não o preto. */
+.marca-admin {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: -.01em;
+}
 
 /* Métricas copiadas de B2B/css/styles.css (.sidebar-nav e .sidebar-nav-item),
    para o menu do Admin ficar idêntico ao do Portal do Fornecedor. */

@@ -1960,12 +1960,53 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 .bonificacao-caixa[hidden] { display: none; }
 
+.bonificacao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .625rem;
+}
+
 .bonificacao-titulo {
-  margin: 0 0 .625rem;
+  margin: 0;
   font-size: .8125rem;
   font-weight: 600;
   color: var(--text);
 }
+
+/* Abrir a caixa não pode obrigar a conceder: o X devolve o estado anterior. */
+.bonificacao-fechar {
+  flex-shrink: 0;
+  display: inline-flex;
+  padding: .25rem;
+  border: 0;
+  background: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.bonificacao-fechar:hover { color: var(--text); background: rgba(0, 0, 0, .05); }
+.bonificacao-fechar svg { width: 14px; height: 14px; }
+
+/* Valor de uma linha de dados que também é uma ação. Parece o texto ao redor
+   e só se revela como clicável no hover — o peso visual de um botão aqui
+   competiria com o dado. */
+.valor-acionavel {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+.valor-acionavel:hover { text-decoration-style: solid; }
 
 .bonificacao-stepper {
   display: flex;

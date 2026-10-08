@@ -408,9 +408,20 @@ const ContaDrawer = (() => {
   function blocoDoPlano(f) {
     const vigente = planoVigente(f);
     const origem = origemDoPlano(f);
+    const podeBonificar = vigente === 'Gratuito'
+      && (BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0)) > 0;
+
+    // No gratuito o próprio valor é o gatilho da cortesia: um botão separado
+    // ocupava espaço para uma ação que nasce de olhar justamente esta linha.
+    const valorDoPlano = podeBonificar
+      ? '<button type="button" class="valor-acionavel" id="link-plano">Gratuito</button>'
+      : (vigente === 'Pro' ? 'Pro' : 'Gratuito');
 
     return [
-      linhaOpcional('Plano', vigente === 'Pro' ? 'Pro' : 'Gratuito'),
+      `<div class="dados-linha">
+         <span class="rotulo">Plano</span>
+         <span class="valor">${valorDoPlano}</span>
+       </div>`,
       vigente === 'Pro' && origem ? linhaOpcional('Origem do plano', origem) : '',
       vigente === 'Pro' && f.plan_expira_em
         ? linhaOpcional('Vence em', dataHoraCompleta(f.plan_expira_em))
@@ -422,57 +433,47 @@ const ContaDrawer = (() => {
   }
 
   function acoesDoPlano(f) {
-    if (planoVigente(f) === 'Pro' && f.plan_origem === 'cartao') return '';
-
-    const concedidos = f.plan_bonificado_meses || 0;
-    const restantes = BONIFICACAO_MAXIMA - concedidos;
-
-    if (restantes <= 0) {
-      return `<p class="cell-muted" style="font-size:.75rem;margin:.75rem 0 0">
-        Esta conta já recebeu os ${BONIFICACAO_MAXIMA} meses de bonificação possíveis.
-      </p>`;
-    }
+    const vigente = planoVigente(f);
+    const restantes = BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0);
+    if (vigente !== 'Gratuito' || restantes <= 0) return '';
 
     return `
-      <button type="button" class="btn btn-neutro" id="btn-bonificar" style="margin-top:.875rem">
-        Bonificar plano
-      </button>
-
       <div class="bonificacao-caixa" id="caixa-bonificacao" hidden>
-        <p class="bonificacao-titulo">Meses de Pro de cortesia</p>
+        <div class="bonificacao-topo">
+          <p class="bonificacao-titulo">Deseja dar um upgrade cortesia?</p>
+          <button type="button" class="bonificacao-fechar" id="btn-fechar-bonificacao" aria-label="Fechar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
         <div class="bonificacao-stepper">
           <button type="button" class="btn btn-ghost btn-sm" data-passo="-1" aria-label="Menos um mês">−</button>
           <span class="bonificacao-valor" id="bonificacao-meses">1</span>
           <button type="button" class="btn btn-ghost btn-sm" data-passo="1" aria-label="Mais um mês">+</button>
           <button type="button" class="btn btn-primary btn-sm" id="btn-confirmar-bonificacao">Conceder</button>
         </div>
-        <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:.625rem 0 0">
-          ${concedidos
-            ? `Esta conta já recebeu ${concedidos} ${concedidos === 1 ? 'mês' : 'meses'}; restam ${restantes}.`
-            : `Até ${BONIFICACAO_MAXIMA} meses por conta.`}
-          A cortesia não pode ser retirada depois de concedida.
-        </p>
       </div>`;
   }
 
   function ligarBonificacao(conta, f) {
-    const botao = document.getElementById('btn-bonificar');
-    if (!botao) return;
-
+    const gatilho = document.getElementById('link-plano');
     const caixa = document.getElementById('caixa-bonificacao');
+    if (!gatilho || !caixa) return;
+
     const valor = document.getElementById('bonificacao-meses');
     const restantes = BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0);
 
-    botao.addEventListener('click', () => {
-      caixa.hidden = false;
-      botao.hidden = true;
-    });
+    const fechar = () => {
+      caixa.hidden = true;
+      valor.textContent = '1';
+    };
+
+    gatilho.addEventListener('click', () => { caixa.hidden = false; });
+    document.getElementById('btn-fechar-bonificacao').addEventListener('click', fechar);
 
     caixa.querySelectorAll('[data-passo]').forEach(btn => {
       btn.addEventListener('click', () => {
         const atual = Number(valor.textContent);
-        const novo = Math.min(restantes, Math.max(1, atual + Number(btn.dataset.passo)));
-        valor.textContent = String(novo);
+        valor.textContent = String(Math.min(restantes, Math.max(1, atual + Number(btn.dataset.passo))));
       });
     });
 

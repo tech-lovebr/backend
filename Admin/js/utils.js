@@ -310,8 +310,11 @@ function addHeaderAction(texto, aoClicar, { icone } = {}) {
   botao.type = 'button';
   botao.className = 'btn btn-ghost';
   // Seta para cima, saindo da bandeja: exportar. A de baixo seria importar.
+  // `icone: null` pede um botão só de texto; omitir usa o padrão.
+  const padrao = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>';
+
   botao.innerHTML = `
-    ${icone || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg>'}
+    ${icone === null ? '' : (icone || padrao)}
     <span>${escapeHtml(texto)}</span>`;
   botao.addEventListener('click', aoClicar);
   host.appendChild(botao);

@@ -194,7 +194,7 @@ const ContaDrawer = (() => {
           ${linha('Situação', c.bloqueado
             ? '<span class="valor-bloqueado">Bloqueada</span>'
             : 'Ativa')}
-          ${linha('ID único', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
+          ${linha('UID', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
         </div>
 
         ${detalheDaConta(c)}

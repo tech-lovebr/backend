@@ -1907,3 +1907,11 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 /* O status bloqueado precisa saltar na lista de dados do drawer. */
 .valor-bloqueado { color: var(--danger); font-weight: 600; }
+
+/* Número do cadastro: coluna estreita, só o suficiente para três dígitos. */
+.col-numero {
+  width: 1%;
+  white-space: nowrap;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}

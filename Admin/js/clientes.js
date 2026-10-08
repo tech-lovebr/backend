@@ -150,13 +150,33 @@ function filtrar() {
   );
 }
 
+let ORDEM_CADASTRO = null;
+
+/**
+ * Número do cadastro: a ordem de entrada na plataforma, 1 para o mais antigo.
+ * Vem da lista inteira, não da filtrada — buscar ou reordenar não renumera
+ * ninguém, que é o que diferencia um identificador de uma posição na tela.
+ */
+function numeroDoCadastro(id) {
+  if (!ORDEM_CADASTRO) {
+    ORDEM_CADASTRO = new Map(
+      CLIENTES
+        .slice()
+        .sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0))
+        .map((c, i) => [c.id, i + 1])
+    );
+  }
+  return ORDEM_CADASTRO.get(id) || 0;
+}
+
+
 function render() {
   const tbody = document.getElementById('tbody');
   const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
 
   if (!lista.length) {
-    renderEmpty(tbody, 8, 'Nenhum cliente encontrado',
+    renderEmpty(tbody, 6, 'Nenhum cliente encontrado',
       CLIENTES.length ? 'Ajuste a busca acima.' : 'Nenhuma conta de cliente foi criada ainda.');
     return;
   }
@@ -165,12 +185,10 @@ function render() {
     const m = metricas(c.id);
     return `
       <tr data-id="${c.id}">
+        <td class="col-numero cell-muted">${formatNumber(numeroDoCadastro(c.id))}</td>
         <td class="cell-strong">${dash(c.couple_name)}</td>
         <td class="cell-muted">${dash(c.email)}</td>
-        <td class="cell-muted">${dash(c.phone)}</td>
         <td>${formatNumber(m.eventos)}</td>
-        <td>${formatNumber(m.convidados)} <span class="cell-muted">(${formatNumber(m.confirmados)} conf.)</span></td>
-        <td>${formatNumber(m.presentesRecebidos)}</td>
         <td class="cell-strong">${formatCurrency(m.creditos - m.debitos)}</td>
         <td class="cell-muted">${escapeHtml(formatDate(c.created_at))}</td>
       </tr>`;

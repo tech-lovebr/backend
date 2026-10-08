@@ -12,7 +12,7 @@
    ========================================================================== */
 
 const ORIGENS = {
-  b2b: { rotulo: 'B2B', badge: 'badge-info', plataforma: 'Portal do fornecedor' },
+  b2b: { rotulo: 'Hub - B2B', badge: 'badge-info', plataforma: 'Portal do fornecedor' },
   anfitriao: { rotulo: 'Anfitrião', badge: 'badge-success', plataforma: 'Plataforma principal' },
   sem_origem: { rotulo: 'Sem origem', badge: 'badge-danger', plataforma: 'Não identificada' }
 };

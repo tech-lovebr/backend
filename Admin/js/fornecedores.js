@@ -11,9 +11,9 @@ let SELECIONADAS = new Set();
 
 let ORDEM_CADASTRO = null;
 
-/** "H1", "H2"… na ordem de entrada. Ver sequenciaDeCadastro() em utils.js. */
+/** Ordem de entrada na plataforma. Ver sequenciaDeCadastro() em utils.js. */
 function numeroDoCadastro(id) {
-  if (!ORDEM_CADASTRO) ORDEM_CADASTRO = sequenciaDeCadastro(FORNECEDORES, 'H');
+  if (!ORDEM_CADASTRO) ORDEM_CADASTRO = sequenciaDeCadastro(FORNECEDORES);
   return ORDEM_CADASTRO.get(id) || '—';
 }
 

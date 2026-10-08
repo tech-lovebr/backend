@@ -99,6 +99,7 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    salvarPerfilNoBanco(p);
 
     // Liberação concedida pelo Admin vale uma edição: gastou, trava de novo.
     consumirLiberacoes(['company', 'documento']).then(() => lockConfiguredFields(p));
@@ -106,6 +107,33 @@ function initProfileForm() {
     lockConfiguredFields(p);
     showToast('Perfil atualizado.');
   });
+}
+
+/* O perfil também vai para o banco, não só para o localStorage. Sem isto,
+   CNPJ, telefone e endereço existiam apenas no navegador de quem preencheu:
+   sumiam ao trocar de máquina e nunca chegavam ao Admin, que mostrava "—"
+   mesmo com os campos preenchidos aqui. */
+async function salvarPerfilNoBanco(p) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+
+  const { error } = await supabaseClient
+    .from('fornecedores')
+    .update({
+      company_name: p.company || null,
+      contact_name: p.name || null,
+      document_type: p.documentType || 'cnpj',
+      cnpj: p.documentNumber || null,
+      phone: p.phone || null,
+      address: p.address || null,
+      city: p.city || null,
+      state: p.state || null,
+      description: p.description || null
+    })
+    .eq('id', session.user.id);
+
+  // Falhar aqui não pode travar o fluxo: o perfil local já foi salvo.
+  if (error) console.error('Não foi possível sincronizar o perfil com o banco.', error);
 }
 
 // Nome da empresa e documento (CNPJ/CPF) travam para edição assim que

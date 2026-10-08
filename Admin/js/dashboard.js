@@ -284,8 +284,8 @@ function renderContas() {
  * colorir os três igualaria o rotineiro ao que precisa ser resolvido.
  */
 /* A numeração é por plataforma: o anfitrião nº 4 e o fornecedor nº 4 são
-   contas distintas, e nesta lista elas aparecem lado a lado. O prefixo é o
-   que impede "4" de significar duas coisas na mesma coluna. */
+   contas distintas. Nesta lista as duas aparecem lado a lado, e quem desfaz
+   a ambiguidade é a coluna Canal, logo ao lado. */
 let ORDEM_CADASTRO = null;
 
 function numeroDoCadastro(c) {
@@ -293,8 +293,8 @@ function numeroDoCadastro(c) {
   // DADOS existe, senão o mapa nasceria vazio e ficaria assim.
   if (!ORDEM_CADASTRO && DADOS) {
     ORDEM_CADASTRO = new Map([
-      ...sequenciaDeCadastro(DADOS.clientes, 'A'),
-      ...sequenciaDeCadastro(DADOS.fornecedores, 'H')
+      ...sequenciaDeCadastro(DADOS.clientes),
+      ...sequenciaDeCadastro(DADOS.fornecedores)
     ]);
   }
   return ORDEM_CADASTRO?.get(c.id) || '—';

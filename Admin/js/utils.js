@@ -319,19 +319,19 @@ function addHeaderAction(texto, aoClicar, { icone } = {}) {
 }
 
 /**
- * Numera cadastros pela ordem de entrada: A1, A2… para anfitriões, H1, H2…
- * para o Hub. O prefixo evita que "4" signifique duas contas diferentes
- * quando as duas plataformas aparecem na mesma lista.
+ * Numera cadastros pela ordem de entrada: 1 para o mais antigo. É por
+ * plataforma — no dashboard, onde as duas aparecem juntas, quem desfaz a
+ * ambiguidade é a coluna Canal ao lado.
  *
  * É posicional, não persistente: excluir um cadastro faz os posteriores
  * subirem. O identificador estável continua sendo o UID.
  */
-function sequenciaDeCadastro(linhas, prefixo) {
+function sequenciaDeCadastro(linhas) {
   return new Map(
     (linhas || [])
       .slice()
       .sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0))
-      .map((linha, i) => [linha.id, `${prefixo}${i + 1}`])
+      .map((linha, i) => [linha.id, String(i + 1)])
   );
 }
 

@@ -225,9 +225,9 @@ function filtrar() {
 
 let ORDEM_CADASTRO = null;
 
-/** "A1", "A2"… na ordem de entrada. Ver sequenciaDeCadastro() em utils.js. */
+/** Ordem de entrada na plataforma. Ver sequenciaDeCadastro() em utils.js. */
 function numeroDoCadastro(id) {
-  if (!ORDEM_CADASTRO) ORDEM_CADASTRO = sequenciaDeCadastro(CLIENTES, 'A');
+  if (!ORDEM_CADASTRO) ORDEM_CADASTRO = sequenciaDeCadastro(CLIENTES);
   return ORDEM_CADASTRO.get(id) || '—';
 }
 

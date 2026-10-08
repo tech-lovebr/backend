@@ -109,7 +109,7 @@ async function initAuthGuard() {
 
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
-    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status')
+    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description')
     .eq('id', session.user.id)
     .maybeSingle();
 
@@ -142,7 +142,7 @@ async function initAuthGuard() {
         email: session.user.email,
         avatar_url: meta.avatar_url || meta.picture || null
       })
-      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status')
+      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description')
       .maybeSingle();
     fornecedor = created;
   }
@@ -172,6 +172,24 @@ async function initAuthGuard() {
     }
     B2B_DATA.professional.pixKey = fornecedor.pix_key || null;
     B2B_DATA.professional.pixKeyType = fornecedor.pix_key_type || null;
+
+    /* O cadastro vem do banco, não do localStorage: é o que faz o perfil
+       sobreviver à troca de navegador. O `||` preserva o que estiver local
+       quando a coluna ainda estiver vazia — conta antiga, nunca sincronizada. */
+    const doBanco = {
+      name: fornecedor.contact_name,
+      documentType: fornecedor.document_type,
+      documentNumber: fornecedor.cnpj,
+      phone: fornecedor.phone,
+      address: fornecedor.address,
+      city: fornecedor.city,
+      state: fornecedor.state,
+      description: fornecedor.description
+    };
+
+    Object.entries(doBanco).forEach(([chave, valor]) => {
+      if (valor) B2B_DATA.professional[chave] = valor;
+    });
   }
 
   return true;

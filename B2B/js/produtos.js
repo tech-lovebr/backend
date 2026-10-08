@@ -11,24 +11,37 @@ let activeCategory = 'Todos';
 // Inclui os nomes antigos (pré-wizard e a primeira leva de 8 categorias)
 // junto dos novos, pra produto já cadastrado continuar abrindo os mesmos
 // blocos condicionais mesmo depois da categoria ter sido renomeada.
-const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações', 'Espaço de Locação'];
+const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações', 'Espaço de Locação', 'Espaços para Locação'];
 const PRODUCT_EQUIPMENT_CATEGORIES = ['Aluguel de equipamentos'];
 const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos', 'Buffet e Gastronomia'];
-const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra'];
+const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra', 'Staff e Mão de Obra'];
 const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual', 'Mídia e Audiovisual'];
 
 const SUBCATEGORY_MAP = {
   'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã'],
-  'Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira'],
-  'Espaço de Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
-  'Staff & Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Celebrante'],
+  'Bar': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira'],
+  'Espaços para Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
+  'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Celebrante'],
   'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
   'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa'],
   'Decoração': ['Florais', 'Iluminação', 'Mobiliário'],
   'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator'],
-  'Trajes': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa'],
-  'Mídia': ['Fotógrafo', 'Filmagem', 'Edição de Vídeo']
+  'Trajes': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa']
 };
+
+const PRODUCT_TITLE_PLACEHOLDERS = {
+  'Buffet e Gastronomia': 'Ex: Buffet Completo para Casamento (até 150 convidados)',
+  'Bar': 'Ex: Bar de Coquetéis Clássicos e Gin Bar (até 150 convidados)',
+  'Espaços para Locação': 'Ex: Salão de Festas com Área Externa e Piscina',
+  'Staff e Mão de Obra': 'Ex: Diária de Barman Especializado com Kit de Coquetelaria',
+  'Mídia e Audiovisual': 'Ex: Cobertura Fotográfica e Vídeo Completo do Evento',
+  'Música e Entretenimento': 'Ex: DJ Set Completo com Som e Iluminação',
+  'Decoração': 'Ex: Decoração Completa com Backdrop Floral e Lounge',
+  'Assessoria e Cerimonialista': 'Ex: Assessoria Completa do Dia do Evento',
+  'Trajes': 'Ex: Aluguel de Vestido de Noiva com Provas Inclusas',
+  'Aluguel de Carros': 'Ex: Locação de Carro Clássico para Cerimônia'
+};
+const DEFAULT_TITLE_PLACEHOLDER = 'Selecione uma categoria para ver um exemplo';
 
 const PRODUCT_WEEKDAYS = [
   { key: 'seg', label: 'Seg' },
@@ -65,13 +78,11 @@ let currentFloorPlan = null;
 let bProducts = [];
 
 let currentStep = 1;
-let currentOfferType = 'servico';
 let currentSubcategory = null;
 let currentPricingType = null;
 let currentServiceAreaType = 'city_only';
 let currentScopeIncluded = [];
 let currentScopeExcluded = [];
-let currentCategoryExpanded = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
@@ -494,14 +505,46 @@ function updateCategoryFieldsVisibility() {
   setPanelHidden('pricing-standard-section', isVenue);
 }
 
-/* -------------------- Etapa 1: árvore de categoria + subcategoria -------------------- */
+/* -------------------- Etapa 1: seletor de categoria + chips de subcategoria -------------------- */
 
-// Lista de categorias com busca + acordeão (categoria principal expande e
-// mostra as subcategorias dela, como no exemplo visual que o usuário
-// mandou). O <select id="product-category"> continua existindo (só
-// escondido) pra toda a lógica de categoria que já existe (travas de
-// campo por categoria, opção "extra" pra produto antigo, etc.) não
-// precisar mudar — este componente só escreve nele.
+// Seletor fechado por padrão ("Selecione a categoria principal..."); clicar
+// abre um painel com busca + lista simples (sem acordeão — subcategoria
+// agora é uma linha de chips separada, logo abaixo do seletor). O
+// <select id="product-category"> continua existindo (só escondido) pra
+// toda a lógica de categoria que já existe (travas de campo por categoria,
+// opção "extra" pra produto antigo, etc.) não precisar mudar — este
+// componente só escreve nele.
+function isCategoryPanelOpen() {
+  const panel = document.getElementById('product-category-panel');
+  return panel && !panel.hidden;
+}
+
+function openCategoryPanel() {
+  const wrap = document.getElementById('product-category-select');
+  const panel = document.getElementById('product-category-panel');
+  if (!wrap || !panel) return;
+  panel.hidden = false;
+  wrap.classList.add('is-open');
+  document.getElementById('product-category-search').value = '';
+  renderCategoryTree('');
+  document.getElementById('product-category-search').focus();
+}
+
+function closeCategoryPanel() {
+  const wrap = document.getElementById('product-category-select');
+  const panel = document.getElementById('product-category-panel');
+  if (!wrap || !panel) return;
+  panel.hidden = true;
+  wrap.classList.remove('is-open');
+}
+
+function updateCategoryTriggerLabel() {
+  const select = document.getElementById('product-category');
+  const label = document.getElementById('product-category-trigger-label');
+  if (!select || !label) return;
+  label.textContent = select.value || 'Selecione a categoria principal...';
+}
+
 function renderCategoryTree(filterText) {
   const wrap = document.getElementById('product-category-tree');
   const select = document.getElementById('product-category');
@@ -510,56 +553,46 @@ function renderCategoryTree(filterText) {
   const term = (filterText || '').trim().toLowerCase();
   const selectedCategory = select.value;
   const categories = Array.from(select.options).map(o => o.value).filter(Boolean);
+  const filtered = term ? categories.filter(c => c.toLowerCase().includes(term)) : categories;
 
-  const rows = categories.map(cat => {
-    const subs = SUBCATEGORY_MAP[cat] || [];
-    const catMatches = !term || cat.toLowerCase().includes(term);
-    const matchingSubs = term ? subs.filter(s => s.toLowerCase().includes(term)) : subs;
-    if (term && !catMatches && !matchingSubs.length) return '';
-
-    const subsToShow = term ? matchingSubs : subs;
-    const isOpen = subs.length > 0 && (term ? subsToShow.length > 0 : currentCategoryExpanded === cat);
-
-    return `
-      <div>
-        <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''} ${isOpen ? 'is-open' : ''}" data-category-row="${escapeHtml(cat)}">
-          ${subs.length ? '<svg class="category-tree-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"/></svg>' : '<span style="width:14px;flex-shrink:0;"></span>'}
+  wrap.innerHTML = filtered.length
+    ? filtered.map(cat => `
+        <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''}" data-category-row="${escapeHtml(cat)}">
           <span>${escapeHtml(cat)}</span>
         </div>
-        ${isOpen ? subsToShow.map(s => `
-          <div class="category-tree-subrow ${currentSubcategory === s ? 'active' : ''}" data-subcategory-row="${escapeHtml(s)}">${escapeHtml(s)}</div>
-        `).join('') : ''}
-      </div>
-    `;
-  }).join('');
+      `).join('')
+    : '<div class="category-tree-empty">Nenhuma categoria encontrada.</div>';
 
-  wrap.innerHTML = rows || '<div class="category-tree-empty">Nenhuma categoria encontrada.</div>';
-
-  // Clicar numa categoria nova seleciona e abre o acordeão dela; clicar de
-  // novo na categoria já selecionada só fecha/abre o acordeão (sem perder
-  // a seleção).
   wrap.querySelectorAll('[data-category-row]').forEach(row => {
     row.addEventListener('click', () => {
       const cat = row.dataset.categoryRow;
-      const subs = SUBCATEGORY_MAP[cat] || [];
-
       if (select.value !== cat) {
         select.value = cat;
         currentSubcategory = null;
-        currentCategoryExpanded = subs.length ? cat : null;
         select.dispatchEvent(new Event('change'));
-      } else if (subs.length) {
-        currentCategoryExpanded = currentCategoryExpanded === cat ? null : cat;
       }
-      renderCategoryTree(document.getElementById('product-category-search').value);
+      closeCategoryPanel();
     });
   });
+}
 
-  wrap.querySelectorAll('[data-subcategory-row]').forEach(row => {
-    row.addEventListener('click', () => {
-      const sub = row.dataset.subcategoryRow;
-      currentSubcategory = currentSubcategory === sub ? null : sub;
-      renderCategoryTree(document.getElementById('product-category-search').value);
+function renderSubcategoryChips() {
+  const wrap = document.getElementById('product-subcategory-row');
+  if (!wrap) return;
+  const category = document.getElementById('product-category').value;
+  const options = SUBCATEGORY_MAP[category] || [];
+
+  wrap.hidden = !options.length;
+  if (!options.length) { wrap.innerHTML = ''; return; }
+
+  wrap.innerHTML = options.map(opt => `
+    <button type="button" class="weekday-toggle-chip ${currentSubcategory === opt ? 'active' : ''}" data-subcategory="${escapeHtml(opt)}">${escapeHtml(opt)}</button>
+  `).join('');
+
+  wrap.querySelectorAll('[data-subcategory]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSubcategory = currentSubcategory === btn.dataset.subcategory ? null : btn.dataset.subcategory;
+      renderSubcategoryChips();
     });
   });
 }
@@ -634,6 +667,21 @@ function goToStep(n) {
   setPanelHidden('product-wizard-back-btn', n === 1);
   setPanelHidden('product-wizard-next-btn', n === 4);
   setPanelHidden('product-wizard-submit-btn', n !== 4);
+  updateWizardNextButtonState();
+}
+
+// Etapa 1: o botão Avançar só libera quando categoria e título estão
+// preenchidos (em vez de deixar clicar e mostrar um toast de erro).
+function updateWizardNextButtonState() {
+  const nextBtn = document.getElementById('product-wizard-next-btn');
+  if (!nextBtn) return;
+  if (currentStep === 1) {
+    const name = document.getElementById('product-name').value.trim();
+    const category = document.getElementById('product-category').value;
+    nextBtn.disabled = !(name && category);
+  } else {
+    nextBtn.disabled = false;
+  }
 }
 
 function validateStep1() {
@@ -696,9 +744,7 @@ function initProductDrawer() {
     currentOpenDays = defaultOpenDays();
     currentDishes = [];
     currentFloorPlan = null;
-    currentOfferType = 'servico';
     currentSubcategory = null;
-    currentCategoryExpanded = null;
     currentPricingType = null;
     currentServiceAreaType = 'city_only';
     currentScopeIncluded = [];
@@ -709,14 +755,15 @@ function initProductDrawer() {
     renderWeekdayChips();
     renderDishes();
     renderFloorPlanPicker();
-    document.getElementById('product-category-search').value = '';
-    renderCategoryTree();
+    closeCategoryPanel();
+    updateCategoryTriggerLabel();
+    renderSubcategoryChips();
     renderScopeList('included');
     renderScopeList('excluded');
     renderPricingTypeFields();
     updateCategoryFieldsVisibility();
+    document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
 
-    document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(b => b.classList.toggle('active', b.dataset.offerType === currentOfferType));
     document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b.dataset.serviceArea === currentServiceAreaType));
     setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
     document.getElementById('product-cancellation-policy').value = 'flexivel';
@@ -743,21 +790,31 @@ function initProductDrawer() {
   if (backdrop) backdrop.addEventListener('click', close);
 
   document.getElementById('product-category').addEventListener('change', () => {
-    currentSubcategory = null;
-    renderCategoryTree(document.getElementById('product-category-search').value);
+    const category = document.getElementById('product-category').value;
+    updateCategoryTriggerLabel();
+    renderSubcategoryChips();
     updateCategoryFieldsVisibility();
+    document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[category] || DEFAULT_TITLE_PLACEHOLDER;
+    updateWizardNextButtonState();
   });
 
   document.getElementById('product-category-search').addEventListener('input', (e) => {
     renderCategoryTree(e.target.value);
   });
 
-  document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentOfferType = btn.dataset.offerType;
-      document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(b => b.classList.toggle('active', b === btn));
-    });
+  document.getElementById('product-category-trigger').addEventListener('click', () => {
+    if (isCategoryPanelOpen()) closeCategoryPanel();
+    else openCategoryPanel();
   });
+
+  // Clica fora do seletor de categoria (em qualquer lugar do drawer) fecha
+  // o painel, igual um combobox normal.
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('product-category-select');
+    if (wrap && isCategoryPanelOpen() && !wrap.contains(e.target)) closeCategoryPanel();
+  });
+
+  document.getElementById('product-name').addEventListener('input', updateWizardNextButtonState);
 
   document.getElementById('pricing-type-grid').querySelectorAll('[data-pricing-type]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -911,7 +968,7 @@ function initProductDrawer() {
         cover_image_url: currentCoverImage || null,
         gallery: currentGalleryImages.filter(Boolean),
         extra: {
-          offerType: currentOfferType,
+          offerType: 'servico',
           subcategory: currentSubcategory,
           pricing,
           scope: {
@@ -972,9 +1029,7 @@ function openProductDrawer(id) {
   currentOpenDays = (p.venue && p.venue.days) ? { ...p.venue.days } : defaultOpenDays();
   currentDishes = (p.dishes || []).map(d => ({ ...d }));
   currentFloorPlan = (p.venue && p.venue.floorPlan) ? { image: p.venue.floorPlan.image, shape: p.venue.floorPlan.shape || [], processing: false } : null;
-  currentOfferType = p.offerType || 'servico';
   currentSubcategory = p.subcategory || null;
-  currentCategoryExpanded = p.category || null;
   currentPricingType = (p.pricing && p.pricing.type) || null;
   currentServiceAreaType = (p.logistics && p.logistics.serviceAreaType) || 'city_only';
   currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));
@@ -1031,7 +1086,6 @@ function openProductDrawer(id) {
   document.getElementById('product-service-extra-km-fee').value = money(p.logistics && p.logistics.extraKmFee);
   document.getElementById('product-cancellation-policy').value = p.cancellationPolicy || 'flexivel';
 
-  document.getElementById('product-offer-type-toggle').querySelectorAll('[data-offer-type]').forEach(b => b.classList.toggle('active', b.dataset.offerType === currentOfferType));
   document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b.dataset.serviceArea === currentServiceAreaType));
   setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
 
@@ -1040,8 +1094,10 @@ function openProductDrawer(id) {
   renderWeekdayChips();
   renderDishes();
   renderFloorPlanPicker();
-  document.getElementById('product-category-search').value = '';
-  renderCategoryTree();
+  closeCategoryPanel();
+  updateCategoryTriggerLabel();
+  renderSubcategoryChips();
+  document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[p.category] || DEFAULT_TITLE_PLACEHOLDER;
   renderScopeList('included');
   renderScopeList('excluded');
   renderPricingTypeFields();

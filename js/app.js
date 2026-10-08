@@ -11214,9 +11214,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnFooterHelp = document.getElementById('btn-footer-help-center');
   const btnFooterContact = document.getElementById('btn-footer-contact');
   const btnFooterWhatsapp = document.getElementById('btn-footer-whatsapp');
-  const btnFooterPrivacy = document.getElementById('btn-footer-privacy');
-  const btnFooterTerms = document.getElementById('btn-footer-terms');
-
   if (btnFooterCreate) {
     btnFooterCreate.addEventListener('click', () => {
       openModal(elements.modals.createEvent || elements.modals.login);
@@ -11259,39 +11256,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnFooterWhatsapp) btnFooterWhatsapp.addEventListener('click', handleContact);
   }
 
-  if (btnFooterPrivacy) {
-    btnFooterPrivacy.addEventListener('click', () => {
-      showToast('Política de Privacidade: Seus dados estão protegidos sob a LGPD com criptografia bancária.', '🔒');
-    });
-  }
-
-  // Mesmos links de Privacidade/Termos do rodapé público, agora também no rodapé do dashboard
-  const btnDashboardFooterPrivacy = document.getElementById('btn-dashboard-footer-privacy');
-  const btnDashboardFooterTerms = document.getElementById('btn-dashboard-footer-terms');
-  if (btnDashboardFooterPrivacy) {
-    btnDashboardFooterPrivacy.addEventListener('click', () => {
-      showToast('Política de Privacidade: Seus dados estão protegidos sob a LGPD com criptografia bancária.', '🔒');
-    });
-  }
-  if (btnDashboardFooterTerms) {
-    btnDashboardFooterTerms.addEventListener('click', () => {
-      showToast('Termos de Uso da plataforma Love.', '📄');
-    });
-  }
-
-  // Mesmos links, agora também no rodapé da página de Login
-  const btnLoginFooterPrivacy = document.getElementById('btn-login-footer-privacy');
-  const btnLoginFooterTerms = document.getElementById('btn-login-footer-terms');
-  if (btnLoginFooterPrivacy) {
-    btnLoginFooterPrivacy.addEventListener('click', () => {
-      showToast('Política de Privacidade: Seus dados estão protegidos sob a LGPD com criptografia bancária.', '🔒');
-    });
-  }
-  if (btnLoginFooterTerms) {
-    btnLoginFooterTerms.addEventListener('click', () => {
-      showToast('Termos de Uso da plataforma Love.', '📄');
-    });
-  }
+  // Política de Privacidade & Termos de Uso agora são páginas reais
+  // (/politica-de-privacidade, /termos, lidas de documentos_legais) — os
+  // botões do rodapé público, do dashboard e do login viraram <a href>
+  // de verdade, então não precisam mais de handler de JS aqui.
 
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {

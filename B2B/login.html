@@ -235,7 +235,7 @@
 
       if (error) {
         submitBtn.disabled = false;
-        errorEl.textContent = /banned/i.test(error.message || '') ? 'Este usuário está bloqueado.' : 'E-mail ou senha incorretos.';
+        errorEl.textContent = /banned/i.test(error.message || '') ? 'Este usuário está bloqueado.' : 'Usuário ou senha inválidos.';
         errorEl.classList.remove('hidden');
         return;
       }

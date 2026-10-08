@@ -586,9 +586,9 @@ function renderScopeList(kind) {
   const wrap = document.getElementById(`product-scope-${kind}-list`);
   if (!wrap) return;
   wrap.innerHTML = scopeState(kind).map(item => `
-    <div class="inspector-list-item">
-      <button type="button" class="inspector-list-item-remove" data-remove-scope="${item.id}" data-scope-kind="${kind}">${PI_TRASH}</button>
+    <div class="field-with-inline-icon">
       <input type="text" class="field-input" data-scope-text="${item.id}" data-scope-kind="${kind}" value="${escapeHtml(item.text || '')}" placeholder="Ex: Gelo e insumos">
+      <button type="button" class="field-inline-remove-btn" data-remove-scope="${item.id}" data-scope-kind="${kind}">${PI_TRASH}</button>
     </div>
   `).join('');
 

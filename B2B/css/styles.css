@@ -2237,6 +2237,16 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
 .field-with-inline-link { position: relative; }
 .field-with-inline-link .field-input { padding-right: 7.5rem; }
 
+.field-with-inline-icon { position: relative; }
+.field-with-inline-icon .field-input { padding-right: 2.5rem; }
+.field-inline-remove-btn {
+  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  color: #A1A1AA; background: none; border: none; cursor: pointer; border-radius: 5px;
+}
+.field-inline-remove-btn svg { width: 14px; height: 14px; }
+.field-inline-remove-btn:hover { background: #FEE2E2; color: #B91C1C; }
+
 .field-request-change-link {
   position: absolute;
   right: 0.9rem;

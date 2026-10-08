@@ -953,11 +953,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Renderiza dados isolados
     renderEditorForm();
+    renderHostsTeam();
     renderHostGifts();
     renderGuestsTable();
     renderHomeConfirmedGuests();
     renderWalletTransactions();
     renderQuickStartChecklist();
+  }
+
+  // "Anfitriões com Acesso à Conta" — só o dono real da conta (nome e e-mail
+  // de verdade). Antes vinham dois nomes de mockup ("Beatriz Silveira" e
+  // "Lucas Mendonça") sempre fixos, mesmo numa conta nova sem nada a ver com
+  // esses nomes.
+  function renderHostsTeam() {
+    const hostsList = document.getElementById('hosts-team-list');
+    if (!hostsList) return;
+    const nome = (window.loveClienteProfile && window.loveClienteProfile.couple_name) || 'Anfitrião';
+    const email = (window.loveClienteProfile && window.loveClienteProfile.email) || '';
+    const iniciais = nome.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase() || 'AN';
+
+    hostsList.innerHTML = `
+      <div class="p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-[#537bae] text-white font-bold text-xs flex items-center justify-center">${iniciais}</div>
+          <div>
+            <p class="text-xs font-bold text-zinc-900">${nome} <span class="text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 ml-1">Criador(a)</span></p>
+            <p class="text-[11px] text-zinc-500">${email}</p>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   // ==========================================
@@ -2063,10 +2088,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     renderMusicTracks();
 
+    // Nome do evento, exibido na sub-seção "Informações" antes do endereço do site
+    const inputDataEventName = document.getElementById('editor-data-event-name');
+    if (inputDataEventName) inputDataEventName.value = activeEvent.title || '';
+
     // Renderiza dados detalhados na sub-seção "Informações"
     if (activeEvent.eventDetails) {
       const inputDataDate = document.getElementById('editor-data-date');
       const inputDataTime = document.getElementById('editor-data-time');
+      const inputDataEndDate = document.getElementById('editor-data-end-date');
+      const inputDataEndTime = document.getElementById('editor-data-end-time');
       const inputDataLocation = document.getElementById('editor-data-location');
       const inputDataAddress = document.getElementById('editor-data-address');
       const inputDataReference = document.getElementById('editor-data-reference');
@@ -2077,6 +2108,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (inputDataDate) inputDataDate.value = activeEvent.eventDetails.date || activeEvent.date || '';
       if (inputDataTime) inputDataTime.value = activeEvent.eventDetails.time || '16:30';
+      // Fim: usa o que já foi salvo, ou cai no mesmo dia do início — nunca uma data aleatória.
+      if (inputDataEndDate) inputDataEndDate.value = activeEvent.eventDetails.endDate || activeEvent.eventDetails.date || activeEvent.date || '';
+      if (inputDataEndTime) inputDataEndTime.value = activeEvent.eventDetails.endTime || '23:30';
       if (inputDataLocation) inputDataLocation.value = activeEvent.eventDetails.locationName || activeEvent.location || '';
       if (inputDataAddress) inputDataAddress.value = activeEvent.eventDetails.address || '';
       if (inputDataReference) inputDataReference.value = activeEvent.eventDetails.referencePoint || '';
@@ -3006,10 +3040,19 @@ document.addEventListener('DOMContentLoaded', () => {
     activeEvent.prefaces = [...(builderState.prefaces || [])];
     activeEvent.slots = JSON.parse(JSON.stringify(builderState.slots || []));
 
+    // Nome do evento (campo da sub-seção "Informações")
+    const inputDataEventName = document.getElementById('editor-data-event-name');
+    if (inputDataEventName && inputDataEventName.value) {
+      activeEvent.title = inputDataEventName.value;
+      if (inputTitle) inputTitle.value = inputDataEventName.value;
+    }
+
     // Salva Dados detalhados do evento
     if (!activeEvent.eventDetails) activeEvent.eventDetails = {};
     const inputDataDate = document.getElementById('editor-data-date');
     const inputDataTime = document.getElementById('editor-data-time');
+    const inputDataEndDate = document.getElementById('editor-data-end-date');
+    const inputDataEndTime = document.getElementById('editor-data-end-time');
     const inputDataLocation = document.getElementById('editor-data-location');
     const inputDataAddress = document.getElementById('editor-data-address');
     const inputDataReference = document.getElementById('editor-data-reference');
@@ -3023,6 +3066,8 @@ document.addEventListener('DOMContentLoaded', () => {
       activeEvent.date = inputDataDate.value;
     }
     if (inputDataTime && inputDataTime.value) activeEvent.eventDetails.time = inputDataTime.value;
+    if (inputDataEndDate && inputDataEndDate.value) activeEvent.eventDetails.endDate = inputDataEndDate.value;
+    if (inputDataEndTime && inputDataEndTime.value) activeEvent.eventDetails.endTime = inputDataEndTime.value;
     if (inputDataLocation && inputLocation.value) {
       activeEvent.eventDetails.locationName = inputDataLocation.value;
       activeEvent.location = inputDataLocation.value;
@@ -3057,7 +3102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Live Listeners para inputs de texto e dados em tempo real
-  ['editor-event-title', 'editor-hero-headline', 'editor-data-date', 'editor-data-time', 'editor-data-location', 'editor-data-address', 'editor-data-reference', 'editor-data-dresscode'].forEach(id => {
+  ['editor-event-title', 'editor-data-event-name', 'editor-hero-headline', 'editor-data-date', 'editor-data-time', 'editor-data-end-date', 'editor-data-end-time', 'editor-data-location', 'editor-data-address', 'editor-data-reference', 'editor-data-dresscode'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', updateLiveSitePreview);
@@ -8410,52 +8455,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 9.4 Autocomplete de Locais Parceiros Admin
-  const locationInput = document.getElementById('page-new-event-location-name');
-  const partnerDropdown = document.getElementById('dropdown-partner-venues');
-  const inputNumber = document.getElementById('page-new-event-number');
-  const inputComplement = document.getElementById('page-new-event-complement');
+  // 9.4 Autocomplete de Locais Parceiros Admin — reaproveitado também na
+  // sub-seção "Informações" (editor-data-location), por isso em função.
+  function wirePartnerVenueAutocomplete(input, dropdown, opts = {}) {
+    const { addressInput, numberInput, complementInput } = opts;
+    if (!input || !dropdown) return;
 
-  if (locationInput && partnerDropdown) {
-    locationInput.addEventListener('focus', () => {
-      partnerDropdown.classList.remove('hidden');
+    input.addEventListener('focus', () => {
+      dropdown.classList.remove('hidden');
     });
 
-    locationInput.addEventListener('input', (e) => {
+    input.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase().trim();
-      const options = partnerDropdown.querySelectorAll('.venue-option');
+      const options = dropdown.querySelectorAll('.venue-option');
       let hasMatch = false;
       options.forEach(opt => {
-        const text = opt.textContent.toLowerCase();
-        const matches = text.includes(term);
+        const matches = opt.textContent.toLowerCase().includes(term);
         opt.style.display = matches ? 'flex' : 'none';
         if (matches) hasMatch = true;
       });
-      partnerDropdown.classList.toggle('hidden', !hasMatch && term.length > 0);
+      dropdown.classList.toggle('hidden', !hasMatch && term.length > 0);
     });
 
-    partnerDropdown.querySelectorAll('.venue-option').forEach(opt => {
+    dropdown.querySelectorAll('.venue-option').forEach(opt => {
       opt.addEventListener('click', () => {
         const venue = opt.getAttribute('data-venue');
         const addr = opt.getAttribute('data-addr');
         const num = opt.getAttribute('data-num');
         const comp = opt.getAttribute('data-comp');
 
-        if (locationInput) locationInput.value = venue || addr;
-        if (inputNumber) inputNumber.value = num || '';
-        if (inputComplement) inputComplement.value = comp || '';
+        input.value = venue || addr;
+        if (addressInput) addressInput.value = addr || '';
+        if (numberInput) numberInput.value = num || '';
+        if (complementInput) complementInput.value = comp || '';
 
-        partnerDropdown.classList.add('hidden');
+        dropdown.classList.add('hidden');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
         showToast(`Espaço parceiro selecionado: ${venue}`, '📍');
       });
     });
 
     document.addEventListener('click', (e) => {
-      if (!locationInput.contains(e.target) && !partnerDropdown.contains(e.target)) {
-        partnerDropdown.classList.add('hidden');
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
       }
     });
   }
+
+  const locationInput = document.getElementById('page-new-event-location-name');
+  const partnerDropdown = document.getElementById('dropdown-partner-venues');
+  wirePartnerVenueAutocomplete(locationInput, partnerDropdown, {
+    numberInput: document.getElementById('page-new-event-number'),
+    complementInput: document.getElementById('page-new-event-complement')
+  });
+
+  // Mesmo autocomplete na sub-seção "Informações" (Personalizar evento) —
+  // aqui o endereço é um campo único, sem número/complemento separados.
+  wirePartnerVenueAutocomplete(
+    document.getElementById('editor-data-location'),
+    document.getElementById('editor-data-location-dropdown'),
+    { addressInput: document.getElementById('editor-data-address') }
+  );
 
   // 9.5 Sincronização do Nome com o Slug
   const pageNewName = document.getElementById('page-new-event-name');
@@ -8551,6 +8611,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = (pageNewName && pageNewName.value.trim()) || 'Meu Evento';
       const startDate = document.getElementById('page-new-event-date') ? document.getElementById('page-new-event-date').value : '2026-08-28';
       const startTime = document.getElementById('page-new-event-start-time') ? document.getElementById('page-new-event-start-time').value : '16:30';
+      const endDate = document.getElementById('page-new-event-end-date') ? document.getElementById('page-new-event-end-date').value : startDate;
+      const endTime = document.getElementById('page-new-event-end-time') ? document.getElementById('page-new-event-end-time').value : '23:30';
       const slug = (pageNewSlug && pageNewSlug.value.trim()) || 'meu-evento';
       const locName = (locationInput && locationInput.value.trim()) || 'São Paulo - SP';
       const desc = document.getElementById('page-new-event-description') ? document.getElementById('page-new-event-description').value.trim() : '';
@@ -8573,6 +8635,16 @@ document.addEventListener('DOMContentLoaded', () => {
         coverImage: createdCoverImageSrc || getDefaultCoverForEventType(selectedNewType, name),
         theme: themeSelect ? themeSelect.options[themeSelect.selectedIndex].text : 'Minimalista',
         colorAccent: '#537bae',
+        // Pré-preenche "Informações" com o que já foi digitado aqui na
+        // criação — sem isso, a página de Informações nascia sempre em
+        // branco (data/horário/local vazios) até a pessoa digitar tudo de novo.
+        eventDetails: {
+          date: startDate,
+          time: startTime,
+          endDate: endDate,
+          endTime: endTime,
+          locationName: locName
+        },
         siteSections: {
           heroHeadline: selectedNewType === 'birthday' ? 'CONVIDA VOCÊ PARA COMEMORAR O SEU ANIVERSÁRIO' : `Bem-vindo ao ${name}!`,
           heroSubtitle: desc || 'Estamos muito felizes em celebrar este momento com você.',

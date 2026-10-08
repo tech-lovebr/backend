@@ -318,6 +318,73 @@ function addHeaderAction(texto, aoClicar, { icone } = {}) {
   return botao;
 }
 
+/* ------------------------------------------------------------- Modal
+
+   Diálogo curto e centrado, para decisões que não cabem num drawer: uma
+   pergunta e até três saídas. O Drawer é para examinar um registro; isto
+   é para confirmar uma ação sobre vários.
+   -------------------------------------------------------------------- */
+
+const Modal = {
+  _built: false,
+
+  _build() {
+    if (this._built) return;
+
+    const fundo = document.createElement('div');
+    fundo.className = 'modal-fundo';
+    fundo.id = 'modal-fundo';
+    fundo.innerHTML = `
+      <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <h2 class="modal-titulo" id="modal-titulo"></h2>
+        <p class="modal-texto" id="modal-texto"></p>
+        <div class="modal-acoes" id="modal-acoes"></div>
+      </div>`;
+
+    // Clicar fora fecha; clicar dentro, não.
+    fundo.addEventListener('click', () => Modal.fechar());
+    fundo.querySelector('.modal-caixa').addEventListener('click', e => e.stopPropagation());
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') Modal.fechar(); });
+
+    document.body.appendChild(fundo);
+    this._built = true;
+  },
+
+  /** `acoes`: [{ rotulo, classe, aoClicar }] — a última fica à direita. */
+  abrir({ titulo, texto, acoes = [] }) {
+    this._build();
+
+    document.getElementById('modal-titulo').textContent = titulo || '';
+    document.getElementById('modal-texto').textContent = texto || '';
+
+    const host = document.getElementById('modal-acoes');
+    host.innerHTML = '';
+
+    acoes.forEach(acao => {
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = `btn ${acao.classe || 'btn-ghost'}`;
+      botao.textContent = acao.rotulo;
+      botao.addEventListener('click', () => acao.aoClicar?.(botao));
+      host.appendChild(botao);
+    });
+
+    document.getElementById('modal-fundo').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  },
+
+  ocupado(estado) {
+    document.querySelectorAll('#modal-acoes .btn').forEach(b => { b.disabled = estado; });
+  },
+
+  fechar() {
+    const fundo = document.getElementById('modal-fundo');
+    if (!fundo) return;
+    fundo.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+};
+
 /* ------------------------------------------------------- Busca global */
 
 /**

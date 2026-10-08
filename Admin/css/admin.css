@@ -2083,3 +2083,93 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   line-height: 1.8;
   color: var(--text);
 }
+
+/* ------------------------------------------------------------- Modal */
+
+.modal-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(16, 24, 40, .45);
+}
+
+.modal-fundo.is-open { display: flex; }
+
+.modal-caixa {
+  width: 100%;
+  max-width: 26rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-card);
+  background: var(--bg-surface);
+  box-shadow: 0 16px 40px rgba(16, 24, 40, .18);
+}
+
+.modal-titulo {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-texto {
+  margin: .5rem 0 0;
+  font-size: .8125rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.modal-acoes {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1.25rem;
+}
+
+/* ------------------------------------------- Seleção em massa na tabela */
+
+.col-selecao { width: 1%; white-space: nowrap; }
+
+.col-selecao input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  display: block;
+}
+
+/* Barra que aparece ao marcar linhas. Fica acima da tabela, onde a seleção
+   acontece, em vez de flutuar no rodapé longe do que foi marcado. */
+.barra-selecao {
+  display: flex;
+  align-items: center;
+  gap: .875rem;
+  padding: .625rem .875rem;
+  margin-bottom: .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--info-bg);
+}
+
+.barra-selecao[hidden] { display: none; }
+
+.barra-selecao-contagem {
+  flex: 1;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+tr.is-selecionada { background: var(--info-bg); }
+
+/* Categoria do evento na lista: texto, não etiqueta. Cores por categoria
+   sugeriam uma hierarquia que não existe entre casamento e aniversário. */
+.evento-conta-categoria {
+  font-size: .75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}

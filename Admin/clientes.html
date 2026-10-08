@@ -45,14 +45,37 @@
 
         <div id="page-controls" hidden>
           <input type="search" class="search-input" id="busca" placeholder="Buscar nome ou e-mail...">
+
+          <div class="filtro-wrap">
+            <button type="button" class="btn btn-ghost" id="btn-filtros" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
+              <span>Filtrar por</span>
+              <span class="filtro-badge" id="filtro-badge" hidden></span>
+            </button>
+
+            <div class="filtro-menu" id="filtro-menu" hidden>
+              <label class="field" style="margin-bottom:0">
+                <span class="field-label">Categoria do evento</span>
+                <select class="field-select" id="filtro-categoria"><option value="">Todas as categorias</option></select>
+              </label>
+              <button type="button" class="filtro-limpar" id="limpar-filtros">Limpar filtros</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="barra-selecao" id="barra-selecao" hidden>
+          <span class="barra-selecao-contagem" id="selecao-contagem"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-limpar-selecao">Limpar seleção</button>
+          <button type="button" class="btn btn-neutro btn-sm" id="btn-bloquear-selecao">Bloquear</button>
         </div>
 
         <section class="card table-card">
           <div class="table-wrap">
           <table class="data">
             <thead><tr>
+              <th class="col-selecao"><input type="checkbox" id="selecionar-todos" aria-label="Selecionar todos"></th>
               <th class="col-numero">ID</th><th>Conta</th><th>E-mail</th>
-              <th>Eventos</th><th>Saldo em conta</th><th>Último acesso</th>
+              <th>Eventos</th><th>Último acesso</th>
             </tr></thead>
             <tbody id="tbody"></tbody>
             </table>

@@ -10,6 +10,9 @@ let METRICAS = new Map();
    admin_listar_contas(), a mesma função que alimenta Últimos cadastros. */
 let ULTIMO_ACESSO = new Map();
 
+/** Contas marcadas na tabela, para as ações em massa. */
+let SELECIONADAS = new Set();
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
@@ -44,6 +47,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   render();
 
   document.getElementById('busca').addEventListener('input', render);
+  document.getElementById('filtro-categoria').addEventListener('change', render);
+
+  montarOpcoesDeCategoria();
+  ligarMenuDeFiltros();
+  ligarSelecao();
 
   addHeaderAction('Exportar', exportar);
   moverControlesParaHeader();
@@ -149,13 +157,70 @@ function renderKpis() {
   ].join('');
 }
 
+/* O anfitrião não tem categoria — quem tem é o evento dele. Filtrar por
+   "Casamento" é pedir quem criou pelo menos um casamento, que é a pergunta
+   que o admin realmente faz. */
+function categoriasDe(clienteId) {
+  return new Set(EVENTOS.filter(e => e.cliente_id === clienteId).map(e => e.tipo));
+}
+
+function montarOpcoesDeCategoria() {
+  const tipos = [...new Set(EVENTOS.map(e => e.tipo).filter(Boolean))]
+    .sort((a, b) => (EVENT_TYPE_LABELS[a] || a).localeCompare(EVENT_TYPE_LABELS[b] || b));
+
+  const select = document.getElementById('filtro-categoria');
+  tipos.forEach(t => {
+    const opcao = document.createElement('option');
+    opcao.value = t;
+    opcao.textContent = EVENT_TYPE_LABELS[t] || t;
+    select.appendChild(opcao);
+  });
+}
+
+function ligarMenuDeFiltros() {
+  const botao = document.getElementById('btn-filtros');
+  const menu = document.getElementById('filtro-menu');
+
+  const fechar = () => {
+    menu.hidden = true;
+    botao.setAttribute('aria-expanded', 'false');
+  };
+
+  botao.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    botao.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+
+  menu.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+
+  document.getElementById('limpar-filtros').addEventListener('click', () => {
+    document.getElementById('filtro-categoria').value = '';
+    render();
+    fechar();
+  });
+}
+
+function atualizarBadgeDeFiltros() {
+  const badge = document.getElementById('filtro-badge');
+  if (!badge) return;
+  const ativos = document.getElementById('filtro-categoria').value ? 1 : 0;
+  badge.textContent = ativos;
+  badge.hidden = ativos === 0;
+}
+
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
-  if (!termo) return CLIENTES.slice();
-  return CLIENTES.filter(c =>
-    [c.couple_name, c.email, c.phone, c.cpf, c.city]
-      .some(v => String(v || '').toLowerCase().includes(termo))
-  );
+  const categoria = document.getElementById('filtro-categoria').value;
+
+  return CLIENTES.filter(c => {
+    if (categoria && !categoriasDe(c.id).has(categoria)) return false;
+    if (!termo) return true;
+    return [c.couple_name, c.email, c.phone, c.cpf, c.city]
+      .some(v => String(v || '').toLowerCase().includes(termo));
+  });
 }
 
 let ORDEM_CADASTRO = null;
@@ -185,11 +250,13 @@ function ultimoAcessoDe(id) {
 }
 
 function render() {
+  atualizarBadgeDeFiltros();
   const tbody = document.getElementById('tbody');
   const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
 
   if (!lista.length) {
+    renderBarraDeSelecao();
     renderEmpty(tbody, 6, 'Nenhum cliente encontrado',
       CLIENTES.length ? 'Ajuste a busca acima.' : 'Nenhuma conta de cliente foi criada ainda.');
     return;
@@ -197,20 +264,121 @@ function render() {
 
   tbody.innerHTML = lista.map(c => {
     const m = metricas(c.id);
+    const marcada = SELECIONADAS.has(c.id);
     return `
-      <tr data-id="${c.id}">
+      <tr data-id="${c.id}" class="${marcada ? 'is-selecionada' : ''}">
+        <td class="col-selecao">
+          <input type="checkbox" data-selecionar="${c.id}" ${marcada ? 'checked' : ''}
+                 aria-label="Selecionar ${escapeHtml(c.couple_name || c.email || '')}">
+        </td>
         <td class="col-numero cell-muted">${formatNumber(numeroDoCadastro(c.id))}</td>
         <td class="cell-strong">${dash(c.couple_name)}</td>
         <td class="cell-muted">${dash(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
-        <td class="cell-strong">${formatCurrency(m.creditos - m.debitos)}</td>
         <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>
       </tr>`;
   }).join('');
 
+  // A caixa de seleção não abre o drawer: são intenções diferentes na mesma linha.
+  tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
+    caixa.addEventListener('click', e => e.stopPropagation());
+    caixa.addEventListener('change', () => {
+      if (caixa.checked) SELECIONADAS.add(caixa.dataset.selecionar);
+      else SELECIONADAS.delete(caixa.dataset.selecionar);
+      caixa.closest('tr').classList.toggle('is-selecionada', caixa.checked);
+      renderBarraDeSelecao();
+    });
+  });
+
   tbody.querySelectorAll('tr[data-id]').forEach(tr => {
     tr.addEventListener('click', () => abrirDetalhe(tr.dataset.id));
   });
+
+  renderBarraDeSelecao();
+}
+
+/* ------------------------------------------------------ Seleção em massa */
+
+function ligarSelecao() {
+  document.getElementById('selecionar-todos').addEventListener('change', (e) => {
+    const visiveis = filtrar().map(c => c.id);
+    // Marca o que está na tela, não a base inteira: o que o admin vê é o que ele pega.
+    if (e.target.checked) visiveis.forEach(id => SELECIONADAS.add(id));
+    else visiveis.forEach(id => SELECIONADAS.delete(id));
+    render();
+  });
+
+  document.getElementById('btn-limpar-selecao').addEventListener('click', () => {
+    SELECIONADAS.clear();
+    render();
+  });
+
+  document.getElementById('btn-bloquear-selecao').addEventListener('click', perguntarAcaoEmMassa);
+}
+
+function renderBarraDeSelecao() {
+  const barra = document.getElementById('barra-selecao');
+  const total = SELECIONADAS.size;
+
+  barra.hidden = total === 0;
+  document.getElementById('selecao-contagem').textContent =
+    `${formatNumber(total)} ${total === 1 ? 'conta selecionada' : 'contas selecionadas'}`;
+
+  const visiveis = filtrar().map(c => c.id);
+  const todos = document.getElementById('selecionar-todos');
+  todos.checked = visiveis.length > 0 && visiveis.every(id => SELECIONADAS.has(id));
+  todos.indeterminate = !todos.checked && visiveis.some(id => SELECIONADAS.has(id));
+}
+
+function perguntarAcaoEmMassa() {
+  const ids = [...SELECIONADAS];
+  const quantas = `${formatNumber(ids.length)} ${ids.length === 1 ? 'conta' : 'contas'}`;
+
+  Modal.abrir({
+    titulo: `Deseja bloquear ou excluir ${quantas}?`,
+    texto: 'Bloquear impede o acesso e pode ser desfeito a qualquer momento. '
+         + 'Excluir apaga as contas e tudo que elas criaram — eventos, convidados, '
+         + 'presentes e movimentos da carteira. Excluir não tem desfazer.',
+    acoes: [
+      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() },
+      { rotulo: 'Bloquear', classe: 'btn-neutro', aoClicar: () => executarEmMassa(ids, 'bloquear') },
+      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => executarEmMassa(ids, 'excluir') }
+    ]
+  });
+}
+
+/**
+ * Chama a função do banco uma vez por conta. O banco recusa sozinho o que não
+ * pode (administrador, a própria conta), então o resultado vem separado em
+ * feitas e recusadas, em vez de parar tudo no primeiro erro.
+ */
+async function executarEmMassa(ids, acao) {
+  Modal.ocupado(true);
+
+  const chamadas = ids.map(id => acao === 'bloquear'
+    ? supabaseClient.rpc('admin_bloquear_conta', { p_id: id, p_bloquear: true })
+    : supabaseClient.rpc('admin_excluir_conta', { p_id: id }));
+
+  const respostas = await Promise.all(chamadas);
+  const falhas = respostas.filter(r => r.error);
+
+  Modal.ocupado(false);
+  Modal.fechar();
+
+  const feitas = ids.length - falhas.length;
+  const verbo = acao === 'bloquear' ? 'bloqueada' : 'excluída';
+
+  if (!feitas) {
+    toast(`Nenhuma conta foi ${verbo}: ${falhas[0].error.message}`);
+    return;
+  }
+
+  toast(falhas.length
+    ? `${formatNumber(feitas)} ${feitas === 1 ? `conta ${verbo}` : `contas ${verbo}s`}; ${formatNumber(falhas.length)} recusada${falhas.length === 1 ? '' : 's'}.`
+    : `${formatNumber(feitas)} ${feitas === 1 ? `conta ${verbo}` : `contas ${verbo}s`}.`);
+
+  SELECIONADAS.clear();
+  window.location.reload();
 }
 
 /* ---------------------------------------------------------------- Drawer

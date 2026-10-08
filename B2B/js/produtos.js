@@ -213,12 +213,9 @@ function renderProducts() {
       <div class="product-thumb"${p.coverImage ? ' style="padding:0;"' : ''}>
         ${p.coverImage
           ? `<img src="${p.coverImage}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;">`
-          : `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5 12 2.25 3 7.5m18 0-9 5.25M21 7.5v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>`}
+          : `<button type="button" class="product-thumb-add-image-btn" data-add-image="${p.id}">Adicione uma imagem</button>`}
       </div>
       <div class="p-4 flex flex-col gap-2 flex-1">
-        ${!p.coverImage ? `
-          <div class="product-card-warning">Atenção: adicione uma imagem de capa para aumentar a conversão de vendas.</div>
-        ` : ''}
         <div class="flex items-start justify-between gap-2">
           <p class="text-sm font-semibold text-zinc-900 leading-snug">${p.name}</p>
           <span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>
@@ -237,6 +234,13 @@ function renderProducts() {
 
   grid.querySelectorAll('[data-edit-product]').forEach(btn => {
     btn.addEventListener('click', () => openProductDrawer(btn.dataset.editProduct));
+  });
+
+  grid.querySelectorAll('[data-add-image]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openProductDrawer(btn.dataset.addImage);
+      goToStep(4);
+    });
   });
 
   grid.querySelectorAll('[data-remove-product]').forEach(btn => {

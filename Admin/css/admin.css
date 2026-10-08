@@ -626,6 +626,10 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 .field-textarea { resize: vertical; min-height: 84px; line-height: 1.55; }
 
+/* A seta nativa do select cola na borda direita; este respiro a afasta
+   sem mexer no texto da opção. */
+.field-select { padding-right: 1.75rem; }
+
 .field-input:focus,
 .field-select:focus,
 .field-textarea:focus {
@@ -1884,10 +1888,20 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  padding: .875rem 1.5rem 0;
+  /* Embaixo precisa do mesmo respiro de cima: antes a linha de paginação
+     encostava na borda do card. */
+  padding: .875rem 1.25rem;
   border-top: 1px solid var(--border);
-  margin-top: .25rem;
 }
+
+/* Setas no lugar de "Anterior" e "Próxima": o par de ícones diz a mesma
+   coisa e não cresce em tela estreita. */
+.paginacao-seta {
+  padding: .375rem;
+  line-height: 0;
+}
+
+.paginacao-seta svg { width: 15px; height: 15px; }
 
 .paginacao-contagem { font-size: .8125rem; color: var(--text-muted); }
 .paginacao-botoes { display: flex; align-items: center; gap: .625rem; }

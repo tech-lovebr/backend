@@ -325,11 +325,15 @@ function renderPaginacaoContas(total, totalPaginas, inicio, nestaPagina) {
       ${formatNumber(inicio + 1)}–${formatNumber(inicio + nestaPagina)} de ${formatNumber(total)}
     </span>
     <div class="paginacao-botoes">
-      <button type="button" class="btn btn-ghost btn-sm" data-pagina="${PAGINA_CONTAS - 1}"
-              ${PAGINA_CONTAS === 1 ? 'disabled' : ''}>Anterior</button>
+      <button type="button" class="btn btn-ghost btn-sm paginacao-seta" data-pagina="${PAGINA_CONTAS - 1}"
+              ${PAGINA_CONTAS === 1 ? 'disabled' : ''} aria-label="Página anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6l6 6" /></svg>
+      </button>
       <span class="paginacao-atual">${PAGINA_CONTAS} de ${totalPaginas}</span>
-      <button type="button" class="btn btn-ghost btn-sm" data-pagina="${PAGINA_CONTAS + 1}"
-              ${PAGINA_CONTAS === totalPaginas ? 'disabled' : ''}>Próxima</button>
+      <button type="button" class="btn btn-ghost btn-sm paginacao-seta" data-pagina="${PAGINA_CONTAS + 1}"
+              ${PAGINA_CONTAS === totalPaginas ? 'disabled' : ''} aria-label="Próxima página">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6l-6 6" /></svg>
+      </button>
     </div>`;
 
   host.querySelectorAll('[data-pagina]').forEach(btn => {

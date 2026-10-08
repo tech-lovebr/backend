@@ -79,6 +79,7 @@ let bProducts = [];
 
 let currentStep = 1;
 let currentSubcategory = null;
+let currentCategoryExpanded = null;
 let currentPricingType = null;
 let currentServiceAreaType = 'city_only';
 let currentScopeIncluded = [];
@@ -522,10 +523,12 @@ function isCategoryPanelOpen() {
 function openCategoryPanel() {
   const wrap = document.getElementById('product-category-select');
   const panel = document.getElementById('product-category-panel');
-  if (!wrap || !panel) return;
+  const select = document.getElementById('product-category');
+  if (!wrap || !panel || !select) return;
   panel.hidden = false;
   wrap.classList.add('is-open');
   document.getElementById('product-category-search').value = '';
+  if (select.value && SUBCATEGORY_MAP[select.value]) currentCategoryExpanded = select.value;
   renderCategoryTree('');
   document.getElementById('product-category-search').focus();
 }
@@ -542,9 +545,14 @@ function updateCategoryTriggerLabel() {
   const select = document.getElementById('product-category');
   const label = document.getElementById('product-category-trigger-label');
   if (!select || !label) return;
-  label.textContent = select.value || 'Selecione a categoria principal...';
+  if (!select.value) { label.textContent = 'Selecione a categoria principal...'; return; }
+  label.textContent = currentSubcategory ? `${select.value} · ${currentSubcategory}` : select.value;
 }
 
+// Acordeão dentro do painel: clicar numa categoria com subcategorias expande
+// as subcategorias logo abaixo dela (sem fechar o painel); categoria sem
+// subcategoria seleciona e já fecha. Clicar numa subcategoria finaliza a
+// escolha e fecha o painel.
 function renderCategoryTree(filterText) {
   const wrap = document.getElementById('product-category-tree');
   const select = document.getElementById('product-category');
@@ -556,43 +564,56 @@ function renderCategoryTree(filterText) {
   const filtered = term ? categories.filter(c => c.toLowerCase().includes(term)) : categories;
 
   wrap.innerHTML = filtered.length
-    ? filtered.map(cat => `
-        <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''}" data-category-row="${escapeHtml(cat)}">
-          <span>${escapeHtml(cat)}</span>
-        </div>
-      `).join('')
+    ? filtered.map(cat => {
+        const subs = SUBCATEGORY_MAP[cat] || [];
+        const isExpanded = currentCategoryExpanded === cat;
+        const rowHtml = `
+          <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''} ${isExpanded ? 'is-open' : ''}" data-category-row="${escapeHtml(cat)}">
+            <span>${escapeHtml(cat)}</span>
+            ${subs.length ? `<svg class="category-tree-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>` : ''}
+          </div>`;
+        const subHtml = (subs.length && isExpanded)
+          ? subs.map(sub => `
+              <div class="category-tree-subrow ${currentSubcategory === sub ? 'active' : ''}" data-subcategory-row="${escapeHtml(sub)}">${escapeHtml(sub)}</div>
+            `).join('')
+          : '';
+        return rowHtml + subHtml;
+      }).join('')
     : '<div class="category-tree-empty">Nenhuma categoria encontrada.</div>';
 
   wrap.querySelectorAll('[data-category-row]').forEach(row => {
-    row.addEventListener('click', () => {
+    row.addEventListener('click', (e) => {
+      // Precisa parar a propagação: o re-render abaixo troca o innerHTML do
+      // painel e desanexa esta linha do DOM antes do clique "borbulhar" até o
+      // listener de documento que fecha o painel ao clicar fora — sem isso,
+      // `wrap.contains(e.target)` vê um nó já desanexado e acha que foi clique
+      // fora, fechando o acordeão assim que ele deveria abrir.
+      e.stopPropagation();
       const cat = row.dataset.categoryRow;
+      const subs = SUBCATEGORY_MAP[cat] || [];
       if (select.value !== cat) {
         select.value = cat;
         currentSubcategory = null;
+        currentCategoryExpanded = subs.length ? cat : null;
         select.dispatchEvent(new Event('change'));
+        if (!subs.length) { closeCategoryPanel(); return; }
+      } else if (subs.length) {
+        currentCategoryExpanded = currentCategoryExpanded === cat ? null : cat;
+      } else {
+        closeCategoryPanel();
+        return;
       }
-      closeCategoryPanel();
+      renderCategoryTree(document.getElementById('product-category-search').value);
     });
   });
-}
 
-function renderSubcategoryChips() {
-  const wrap = document.getElementById('product-subcategory-row');
-  if (!wrap) return;
-  const category = document.getElementById('product-category').value;
-  const options = SUBCATEGORY_MAP[category] || [];
-
-  wrap.hidden = !options.length;
-  if (!options.length) { wrap.innerHTML = ''; return; }
-
-  wrap.innerHTML = options.map(opt => `
-    <button type="button" class="weekday-toggle-chip ${currentSubcategory === opt ? 'active' : ''}" data-subcategory="${escapeHtml(opt)}">${escapeHtml(opt)}</button>
-  `).join('');
-
-  wrap.querySelectorAll('[data-subcategory]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentSubcategory = currentSubcategory === btn.dataset.subcategory ? null : btn.dataset.subcategory;
-      renderSubcategoryChips();
+  wrap.querySelectorAll('[data-subcategory-row]').forEach(row => {
+    row.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sub = row.dataset.subcategoryRow;
+      currentSubcategory = currentSubcategory === sub ? null : sub;
+      updateCategoryTriggerLabel();
+      closeCategoryPanel();
     });
   });
 }
@@ -745,6 +766,7 @@ function initProductDrawer() {
     currentDishes = [];
     currentFloorPlan = null;
     currentSubcategory = null;
+    currentCategoryExpanded = null;
     currentPricingType = null;
     currentServiceAreaType = 'city_only';
     currentScopeIncluded = [];
@@ -757,7 +779,6 @@ function initProductDrawer() {
     renderFloorPlanPicker();
     closeCategoryPanel();
     updateCategoryTriggerLabel();
-    renderSubcategoryChips();
     renderScopeList('included');
     renderScopeList('excluded');
     renderPricingTypeFields();
@@ -792,7 +813,6 @@ function initProductDrawer() {
   document.getElementById('product-category').addEventListener('change', () => {
     const category = document.getElementById('product-category').value;
     updateCategoryTriggerLabel();
-    renderSubcategoryChips();
     updateCategoryFieldsVisibility();
     document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[category] || DEFAULT_TITLE_PLACEHOLDER;
     updateWizardNextButtonState();
@@ -1030,6 +1050,7 @@ function openProductDrawer(id) {
   currentDishes = (p.dishes || []).map(d => ({ ...d }));
   currentFloorPlan = (p.venue && p.venue.floorPlan) ? { image: p.venue.floorPlan.image, shape: p.venue.floorPlan.shape || [], processing: false } : null;
   currentSubcategory = p.subcategory || null;
+  currentCategoryExpanded = (currentSubcategory && SUBCATEGORY_MAP[p.category]) ? p.category : null;
   currentPricingType = (p.pricing && p.pricing.type) || null;
   currentServiceAreaType = (p.logistics && p.logistics.serviceAreaType) || 'city_only';
   currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));
@@ -1096,7 +1117,6 @@ function openProductDrawer(id) {
   renderFloorPlanPicker();
   closeCategoryPanel();
   updateCategoryTriggerLabel();
-  renderSubcategoryChips();
   document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[p.category] || DEFAULT_TITLE_PLACEHOLDER;
   renderScopeList('included');
   renderScopeList('excluded');

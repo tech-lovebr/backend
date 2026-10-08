@@ -842,13 +842,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 4. ATUALIZAÇÃO COMPLETA DOS DADOS DA COMEMORAÇÃO ATIVA
   // ==========================================
+  // Calcula sempre a partir da data real do evento — nunca um número
+  // guardado (que fica desatualizado a cada dia que passa).
+  function calcularDiasRestantes(dataEvento) {
+    if (!dataEvento) return null;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const data = new Date(`${String(dataEvento).slice(0, 10)}T00:00:00`);
+    if (isNaN(data.getTime())) return null;
+    return Math.round((data - hoje) / 86400000);
+  }
+
   function updateAllCelebrationData() {
     const activeEvent = getActiveEvent();
 
     // 1. Header Superior
     if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = activeEvent.title;
     if (elements.dashHeader.countdownBadge) {
-      elements.dashHeader.countdownBadge.textContent = `Faltam ${activeEvent.daysLeft} dias`;
+      const dias = calcularDiasRestantes(activeEvent.date);
+      elements.dashHeader.countdownBadge.textContent = dias === null ? '' : dias < 0 ? 'Evento realizado' : `Faltam ${dias} dias`;
     }
     if (elements.dashHeader.slugBadge) elements.dashHeader.slugBadge.textContent = `love.com.br/${activeEvent.slug}`;
     if (elements.dashHeader.shareUrlInput) {
@@ -8461,6 +8473,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Mesma regra de limpeza usada no listener acima, reaproveitável pra
+  // sugerir um slug a partir do nome da pessoa (não do título do evento).
+  function slugify(texto) {
+    return (texto || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  // Testa o slug no banco (não dá pra só checar "existe uma linha minha com
+  // esse slug" — a RLS só deixa o anfitrião ver os próprios eventos, então a
+  // disponibilidade de verdade vem de uma function que ignora a RLS pra essa
+  // única pergunta booleana). Se a function ainda não existir (migration 026
+  // não rodada), assume disponível em vez de travar o fluxo.
+  async function sugerirSlugDisponivel(base) {
+    const raiz = slugify(base) || 'meu-evento';
+    for (let tentativa = 0; tentativa < 50; tentativa++) {
+      const candidato = tentativa === 0 ? raiz : `${raiz}${tentativa}`;
+      const { data: disponivel, error } = await supabaseClient.rpc('verificar_slug_disponivel', { p_slug: candidato });
+      if (error) return raiz;
+      if (disponivel) return candidato;
+    }
+    return `${raiz}${Date.now()}`;
+  }
+
+  // 9.5b Fim do evento sempre no mesmo dia do início (a hora de fim continua
+  // livre pra pessoa ajustar) — em vez da data fixa que vinha travada no HTML.
+  const pageNewStartDate = document.getElementById('page-new-event-date');
+  const pageNewEndDate = document.getElementById('page-new-event-end-date');
+  if (pageNewStartDate && pageNewEndDate) {
+    pageNewStartDate.addEventListener('change', () => {
+      pageNewEndDate.value = pageNewStartDate.value;
+    });
+  }
+
   // 9.6 Submissão do Formulário (Continuar Ajustes)
   if (formCreatePage) {
     formCreatePage.addEventListener('submit', async (e) => {
@@ -8485,7 +8535,6 @@ document.addEventListener('DOMContentLoaded', () => {
         date: startDate,
         time: startTime,
         location: locName,
-        daysLeft: 90,
         slug: slug,
         publicUrl: `https://love.com.br/${slug}`,
         coverImage: createdCoverImageSrc || getDefaultCoverForEventType(selectedNewType, name),
@@ -10385,7 +10434,6 @@ document.addEventListener('DOMContentLoaded', () => {
           type: 'wedding',
           hostName: 'Anfitrião',
           date: '2026-12-31',
-          daysLeft: 300,
           slug: 'minha-nova-celebracao',
           publicUrl: 'https://love.com.br/minha-nova-celebracao',
           coverImage: 'assets/wedding_hero_banner.jpg',
@@ -11181,13 +11229,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const pendingDate = localStorage.getItem('love-pending-event-date');
       localStorage.removeItem('love-pending-event-name');
       localStorage.removeItem('love-pending-event-date');
+
+      const firstName = (pendingName || '').trim().split(/\s+/)[0] || '';
+
       if (pendingName) {
         const nameInput = document.getElementById('page-new-event-name');
-        if (nameInput) nameInput.value = pendingName;
+        // "Aniversário de Victor" em vez do nome completo da pessoa
+        // ("Victor Maranhão") — mais parecido com um nome de evento de verdade.
+        if (nameInput) nameInput.value = (pendingTypeLabel && firstName) ? `${pendingTypeLabel} de ${firstName}` : pendingName;
+
+        // Link personalizado sugerido a partir do nome da pessoa (não do
+        // título do evento), já checando disponibilidade no banco.
+        const slugInput = document.getElementById('page-new-event-slug');
+        if (slugInput) {
+          sugerirSlugDisponivel(pendingName).then(slug => { slugInput.value = slug; });
+        }
       }
       if (pendingDate) {
         const dateInput = document.getElementById('page-new-event-date');
         if (dateInput) dateInput.value = pendingDate;
+        // Fim no mesmo dia do início, em vez da data fixa do HTML.
+        const endDateInput = document.getElementById('page-new-event-end-date');
+        if (endDateInput) endDateInput.value = pendingDate;
       }
     }
   }

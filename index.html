@@ -1266,6 +1266,11 @@
                   <p id="editor-url-helper-text" class="text-[11px] text-zinc-500 font-medium">
                     Seu site ficará acessível em: love.com.br/beatriz-e-lucas
                   </p>
+
+                  <button type="button" id="editor-data-copy-link" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#537bae] hover:text-[#416799] transition-colors cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <span>Copiar link</span>
+                  </button>
                 </div>
 
                 <!-- 2. DATA E HORÁRIO -->
@@ -1303,7 +1308,7 @@
                   <div class="space-y-3">
                     <div class="relative">
                       <label class="block text-xs font-bold text-slate-700 mb-1.5">Nome do Espaço / Local</label>
-                      <input type="text" id="editor-data-location" autocomplete="off" placeholder="Buscar espaço (ex: Villa Bisutti) ou digite o nome" class="w-full text-sm p-3.5 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 font-bold">
+                      <input type="text" id="editor-data-location" autocomplete="off" placeholder="Buscar espaço" class="w-full text-sm p-3.5 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 font-bold">
 
                       <!-- Dropdown de Sugestões de Espaços Salvos -->
                       <div id="editor-data-location-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1">
@@ -1330,12 +1335,12 @@
 
                     <div>
                       <label class="block text-xs font-bold text-slate-700 mb-1.5">Endereço Completo</label>
-                      <input type="text" id="editor-data-address" placeholder="Ex: Av. Cidade Jardim, 1200 - Itaim Bibi, São Paulo - SP" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                      <input type="text" id="editor-data-address" placeholder="Endereço, número e complemento" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
                     </div>
 
                     <div>
                       <label class="block text-xs font-bold text-slate-700 mb-1.5">Ponto de referência</label>
-                      <textarea id="editor-data-reference" rows="2" placeholder="Ex: Em frente ao Parque do Povo, com serviço de Valet cortesia na entrada principal." class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 leading-relaxed"></textarea>
+                      <textarea id="editor-data-reference" rows="2" placeholder="Ponto de referência" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 leading-relaxed"></textarea>
                     </div>
                   </div>
                 </div>
@@ -1381,7 +1386,7 @@
                   <!-- Formulário de Envio de Convite -->
                   <form id="form-invite-host" class="space-y-3">
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                      <input type="email" id="input-host-invite-email" required placeholder="Digite o e-mail (ex: lucas.mendonca@email.com)" class="flex-1 text-xs sm:text-sm p-2.5 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
+                      <input type="email" id="input-host-invite-email" required placeholder="Digite o e-mail" class="flex-1 text-xs sm:text-sm p-2.5 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
                       <button type="submit" id="btn-submit-host-invite" class="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-900 hover:text-[#537bae] transition-colors cursor-pointer self-start sm:self-center group py-2 flex-shrink-0" title="Enviar convite">
                         <span>Enviar convite</span>
                         <svg class="w-4 h-4 text-zinc-900 group-hover:text-[#537bae] group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1396,7 +1401,7 @@
                     <p class="text-xs font-semibold text-zinc-800">Regras de Gestão Compartilhada</p>
                     <ul class="space-y-1 text-xs text-zinc-500 leading-relaxed list-disc list-inside">
                       <li>Ao aprovar o convite, o novo anfitrião vê o <strong>evento todo</strong> e tem acesso a todas as abas, listas e configurações que o criador tem.</li>
-                      <li>O resgate de presentes e <strong>saque PIX pode ser realizado pela conta de quaisquer dos anfitriões</strong> cadastrados.</li>
+                      <li>O resgate dos presentes (<strong>saque PIX</strong>) só pode ser feito pela <strong>conta principal, criadora do evento</strong> — os demais anfitriões não têm acesso ao saque.</li>
                     </ul>
                   </div>
 

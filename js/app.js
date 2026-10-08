@@ -3215,6 +3215,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Botão "Copiar link" em Informações → Endereço do site
+  const btnEditorDataCopyLink = document.getElementById('editor-data-copy-link');
+  if (btnEditorDataCopyLink) {
+    btnEditorDataCopyLink.addEventListener('click', () => {
+      const activeEv = getActiveEvent();
+      const slugAtual = (inputEditorSlug && inputEditorSlug.value) || activeEv.slug || '';
+      const url = activeEv.publicUrl || `https://love.com.br/${slugAtual}`;
+      const linkTextSpan = btnEditorDataCopyLink.querySelector('span');
+      const restoreLabel = () => {
+        if (linkTextSpan) linkTextSpan.textContent = 'Copiar link';
+        btnEditorDataCopyLink.classList.remove('text-emerald-600');
+        btnEditorDataCopyLink.classList.add('text-[#537bae]');
+      };
+      const marcarCopiado = () => {
+        if (linkTextSpan) linkTextSpan.textContent = 'Copiado! ✓';
+        btnEditorDataCopyLink.classList.remove('text-[#537bae]');
+        btnEditorDataCopyLink.classList.add('text-emerald-600');
+        setTimeout(restoreLabel, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(marcarCopiado).catch(() => {
+          const temp = document.createElement('input');
+          temp.value = url;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          temp.remove();
+          marcarCopiado();
+        });
+      } else {
+        const temp = document.createElement('input');
+        temp.value = url;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        temp.remove();
+        marcarCopiado();
+      }
+    });
+  }
+
   // ==========================================
   // CONTROLES DE DESIGN & ESTÉTICA (Aparência Fiel à Referência)
   // ==========================================
@@ -11615,6 +11656,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof window.reloadBuilderStateForActiveEvent === 'function') {
         window.reloadBuilderStateForActiveEvent();
       }
+      // initFloorPlan() já rodou de forma síncrona, antes da sessão carregar
+      // — com os convidados de demonstração (window.LOVE_DATA) ainda em
+      // state.events. Sem reler aqui, "Mapear mesas" ficava travado para
+      // sempre com aquela lista fake, mesmo depois dos dados reais chegarem.
+      renderFloorPlanGuestCards();
     } else {
       // `state.events` nasce preenchido com os 2 eventos de demonstração
       // (window.LOVE_DATA, usados só de mockup visual) — sem isso aqui, uma

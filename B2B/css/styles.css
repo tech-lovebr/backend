@@ -2234,14 +2234,21 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
   color: #A1A1AA;
 }
 
+.field-with-inline-link { position: relative; }
+.field-with-inline-link .field-input { padding-right: 7.5rem; }
+
 .field-request-change-link {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--primary-blue);
+  color: #D4D4D8;
   text-decoration: none;
   white-space: nowrap;
 }
-.field-request-change-link:hover { text-decoration: underline; }
+.field-request-change-link:hover { color: #A1A1AA; }
 
 .plan-billing-option:disabled {
   cursor: not-allowed;

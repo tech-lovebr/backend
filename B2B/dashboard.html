@@ -276,13 +276,17 @@
   </div>
 
   <div class="modal-backdrop" id="first-product-modal">
-    <div class="modal-card" style="max-width:420px; text-align:center;">
-      <div class="onboarding-icon">🛍️</div>
-      <h2 class="text-xl font-bold text-zinc-900 mb-2">Cadastre seu primeiro produto/serviço</h2>
+    <div class="modal-card" style="max-width:420px; text-align:center; position:relative;">
+      <button type="button" id="first-product-close-btn" class="text-zinc-400 hover:text-zinc-700" aria-label="Fechar" style="position:absolute; top:1.25rem; right:1.25rem;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+      </button>
+      <div class="onboarding-icon" style="display:flex;justify-content:center;color:#18181B;">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5 12 2.25 3 7.5m18 0-9 5.25M21 7.5v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+      </div>
+      <h2 class="text-xl font-bold text-zinc-900 mb-2">Adicione seus serviços</h2>
       <p class="text-sm text-zinc-500 mb-6">Milhares de anfitriões estão buscando um serviço igual ao seu. Conecte-se ainda hoje e comece a faturar.</p>
       <div class="flex flex-col gap-3">
         <a href="produtos.html" class="btn-primary justify-center w-full py-3" id="first-product-cadastrar-btn">Cadastrar</a>
-        <button type="button" class="btn-secondary justify-center w-full py-3" id="first-product-voltar-btn">Voltar</button>
       </div>
     </div>
   </div>

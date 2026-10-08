@@ -128,9 +128,9 @@ async function initFirstProductModal() {
   if (count) return;
 
   modal.classList.add('show');
-  document.getElementById('first-product-voltar-btn')?.addEventListener('click', () => {
-    modal.classList.remove('show');
-  });
+  const close = () => modal.classList.remove('show');
+  document.getElementById('first-product-close-btn')?.addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 }
 
 /* -------------------- Pop-up: criar link de pagamento (direto no dashboard) -------------------- */

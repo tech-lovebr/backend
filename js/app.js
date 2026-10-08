@@ -8367,8 +8367,27 @@ document.addEventListener('DOMContentLoaded', () => {
     openCreateEventPage(false, true);
 
     const inputName = document.getElementById('page-new-event-name');
+    const inputSlug = document.getElementById('page-new-event-slug');
     if (inputName) {
-      if (!inputName.value) {
+      // Sempre recalcula o nome a partir do tipo escolhido agora — antes só
+      // preenchia quando o campo estava vazio, então o valor de uma escolha
+      // anterior (ex: "Aniversário de Victor") ficava preso ao trocar de tipo
+      // num evento seguinte (campo nunca mais fica vazio depois da 1ª vez).
+      const firstName = (window.loveClienteProfile?.couple_name || '').trim().split(/\s+/)[0] || '';
+      if (typeLabel && typeLabel !== 'Novo Evento' && firstName) {
+        inputName.value = `${typeLabel} de ${firstName}`;
+        // Dispara a sincronização nome → slug (o listener de 'input' não
+        // roda numa troca programática do .value).
+        inputName.dispatchEvent(new Event('input', { bubbles: true }));
+        // Sugestão de link já checada no banco — se o slug "óbvio" estiver em
+        // uso, sugere um disponível na hora (ex: com número no final).
+        if (inputSlug) {
+          sugerirSlugDisponivel(inputName.value).then(slug => {
+            inputSlug.value = slug;
+            checarDisponibilidadeSlug();
+          });
+        }
+      } else if (!inputName.value) {
         if (selectedNewType === 'birthday') {
           inputName.placeholder = 'Ex: Aniversário de Lucas';
         } else {

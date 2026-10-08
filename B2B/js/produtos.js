@@ -751,9 +751,9 @@ function initProductDrawer() {
   // usado em pagamentos.html/configuracoes.html — não o type="number" cru
   // que o campo único de preço antigo usava).
   ['pricing-per-person-price', 'pricing-per-hour-price', 'pricing-per-hour-extra',
-   'pricing-fixed-price', 'pricing-fixed-cleaning-fee', 'pricing-on-request-price',
+   'pricing-fixed-price', 'pricing-on-request-price',
    'product-venue-price-weekday', 'product-venue-price-saturday', 'product-venue-price-sunday', 'product-venue-price-holiday',
-   'product-service-extra-km-fee'
+   'product-venue-cleaning-fee', 'product-service-extra-km-fee'
   ].forEach(id => {
     const el = document.getElementById(id);
     if (el) wireCurrencyMaskInput(el);
@@ -912,8 +912,8 @@ function initProductDrawer() {
       } else if (currentPricingType === 'VALOR_FIXO') {
         pricing.fixed = {
           price: currencyMaskValue(document.getElementById('pricing-fixed-price')),
-          durationIncluded: document.getElementById('pricing-fixed-duration').value.trim(),
-          cleaningFee: currencyMaskValue(document.getElementById('pricing-fixed-cleaning-fee'))
+          durationValue: Number(document.getElementById('pricing-fixed-duration-value').value) || 0,
+          durationUnit: document.getElementById('pricing-fixed-duration-unit').value || 'horas'
         };
       } else if (currentPricingType === 'SOB_CONSULTA') {
         pricing.onRequest = {
@@ -939,7 +939,8 @@ function initProductDrawer() {
         priceWeekday: currencyMaskValue(document.getElementById('product-venue-price-weekday')),
         priceSaturday: currencyMaskValue(document.getElementById('product-venue-price-saturday')),
         priceSunday: currencyMaskValue(document.getElementById('product-venue-price-sunday')),
-        priceHoliday: currencyMaskValue(document.getElementById('product-venue-price-holiday'))
+        priceHoliday: currencyMaskValue(document.getElementById('product-venue-price-holiday')),
+        cleaningFee: currencyMaskValue(document.getElementById('product-venue-cleaning-fee'))
       } : null;
 
       const equipmentType = isEquipment ? document.getElementById('product-equipment-type').value.trim() : null;
@@ -1072,6 +1073,7 @@ function openProductDrawer(id) {
   document.getElementById('product-venue-price-saturday').value = (p.venue && p.venue.priceSaturday) ? String(p.venue.priceSaturday.toFixed(2)).replace('.', ',') : '';
   document.getElementById('product-venue-price-sunday').value = (p.venue && p.venue.priceSunday) ? String(p.venue.priceSunday.toFixed(2)).replace('.', ',') : '';
   document.getElementById('product-venue-price-holiday').value = (p.venue && p.venue.priceHoliday) ? String(p.venue.priceHoliday.toFixed(2)).replace('.', ',') : '';
+  document.getElementById('product-venue-cleaning-fee').value = (p.venue && p.venue.cleaningFee) ? String(p.venue.cleaningFee.toFixed(2)).replace('.', ',') : '';
   document.getElementById('product-equipment-type').value = p.equipmentType || '';
 
   const food = p.attributes && p.attributes.food;
@@ -1096,8 +1098,8 @@ function openProductDrawer(id) {
   document.getElementById('pricing-per-hour-min').value = (pricing && pricing.perHour && pricing.perHour.minHours) || '';
   document.getElementById('pricing-per-hour-extra').value = money(pricing && pricing.perHour && pricing.perHour.extraHourPrice);
   document.getElementById('pricing-fixed-price').value = money(pricing && pricing.fixed && pricing.fixed.price);
-  document.getElementById('pricing-fixed-duration').value = (pricing && pricing.fixed && pricing.fixed.durationIncluded) || '';
-  document.getElementById('pricing-fixed-cleaning-fee').value = money(pricing && pricing.fixed && pricing.fixed.cleaningFee);
+  document.getElementById('pricing-fixed-duration-value').value = (pricing && pricing.fixed && pricing.fixed.durationValue) || '';
+  document.getElementById('pricing-fixed-duration-unit').value = (pricing && pricing.fixed && pricing.fixed.durationUnit) || 'horas';
   document.getElementById('pricing-on-request-price').value = money(pricing && pricing.onRequest && pricing.onRequest.startingPrice);
 
   document.getElementById('product-video-url').value = p.videoUrl || '';

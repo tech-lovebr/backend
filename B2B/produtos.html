@@ -197,14 +197,15 @@
                 <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária (R$)</label>
                 <input id="pricing-fixed-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="pricing-fixed-duration" class="field-label">Duração inclusa</label>
-                  <input id="pricing-fixed-duration" type="text" class="field-input" placeholder="Ex: até 6 horas de evento">
-                </div>
-                <div>
-                  <label for="pricing-fixed-cleaning-fee" class="field-label">Taxa de limpeza/caução (opcional)</label>
-                  <input id="pricing-fixed-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+              <div>
+                <label for="pricing-fixed-duration-value" class="field-label">Duração inclusa</label>
+                <div class="flex gap-2">
+                  <input id="pricing-fixed-duration-value" type="number" min="0" step="1" class="field-input" placeholder="Ex: 6" style="flex:1;">
+                  <select id="pricing-fixed-duration-unit" class="field-select" style="flex:1;">
+                    <option value="horas" selected>Horas</option>
+                    <option value="minutos">Minutos</option>
+                    <option value="dias">Dias</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -236,6 +237,10 @@
                 <label for="product-venue-price-holiday" class="field-label">Feriado</label>
                 <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
+            </div>
+            <div class="mt-4">
+              <label for="product-venue-cleaning-fee" class="field-label">Taxa de limpeza/caução (opcional)</label>
+              <input id="product-venue-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
             </div>
           </div>
         </div>

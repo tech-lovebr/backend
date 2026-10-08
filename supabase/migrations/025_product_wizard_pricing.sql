@@ -13,7 +13,7 @@
 --     type: 'POR_PESSOA' | 'POR_HORA' | 'VALOR_FIXO' | 'SOB_CONSULTA',
 --     perPerson: { pricePerPerson, minPeople, maxPeople } | null,
 --     perHour:   { pricePerHour, minHours, extraHourPrice } | null,
---     fixed:     { price, durationIncluded, cleaningFee } | null,
+--     fixed:     { price, durationValue, durationUnit: 'horas'|'minutos'|'dias' } | null,
 --     onRequest: { startingPrice } | null
 --   },
 --
@@ -33,11 +33,13 @@
 --   cancellationPolicy: 'flexivel' | 'moderada' | 'rigorosa',
 --
 --   -- campos legados, mantidos sem alteração de formato (ver js/produtos.js):
---   venue: {...} | null,          -- "Locação de espaço" mantém o modelo de
+--   venue: {..., cleaningFee} | null, -- "Locação de espaço" mantém o modelo de
 --                                  -- preço por dia (semana/sábado/domingo/
 --                                  -- feriado) em vez do motor novo — decisão
 --                                  -- confirmada com o usuário, evita perder
 --                                  -- uma diferenciação que já funcionava.
+--                                  -- Taxa de limpeza/caução vive aqui (não em
+--                                  -- pricing.fixed): é específica de venue.
 --   equipmentType: string | null,
 --   dishes: [...] | null
 -- }

@@ -8595,10 +8595,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const submitBtn = document.getElementById('btn-do-email-login');
 
       submitBtn.disabled = true;
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      submitBtn.disabled = false;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
+        submitBtn.disabled = false;
+        if (/banned/i.test(error.message || '')) {
+          showToast('Este usuário está bloqueado.', '⛔');
+          loginFailedAttempts = 0;
+          return;
+        }
         loginFailedAttempts++;
         if (loginFailedAttempts >= 3) {
           showToast('Muitas tentativas. Vamos te ajudar a recuperar a senha.', '⚠️');
@@ -8607,6 +8612,30 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         showToast('E-mail ou senha incorretos.', '⚠️');
+        return;
+      }
+
+      // Senha certa, mas essa plataforma é só pra quem tem cadastro de
+      // anfitrião — login/B2B/Admin compartilham o mesmo Supabase Auth.
+      const { data: cliente } = await supabaseClient
+        .from('clientes')
+        .select('id, status')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      submitBtn.disabled = false;
+
+      if (!cliente) {
+        await supabaseClient.auth.signOut();
+        showToast('Esse e-mail não está cadastrado como anfitrião nesta plataforma.', '⚠️');
+        loginFailedAttempts = 0;
+        return;
+      }
+
+      if (cliente.status === 'bloqueado') {
+        await supabaseClient.auth.signOut();
+        showToast('Este usuário está bloqueado.', '⛔');
+        loginFailedAttempts = 0;
         return;
       }
 
@@ -11057,19 +11086,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return;
 
-    window.loveClienteSession = session;
-
     const { data: cliente } = await supabaseClient
       .from('clientes')
-      .select('id, couple_name, email, avatar_url')
+      .select('id, couple_name, email, avatar_url, status')
       .eq('id', session.user.id)
       .maybeSingle();
 
-    if (cliente) {
-      window.loveClienteProfile = cliente;
-      const dropdownUsername = document.getElementById('account-dropdown-username');
-      if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
+    // Essa plataforma é só pra quem tem cadastro de anfitrião. Login/B2B/Admin
+    // compartilham o mesmo Supabase Auth — sem essa checagem, uma conta de
+    // fornecedor (B2B) ou uma conta excluída aqui (mas com sessão ainda válida
+    // no navegador) continuaria entrando normalmente.
+    if (!cliente) {
+      await supabaseClient.auth.signOut();
+      showToast('Essa conta não está cadastrada como anfitrião nesta plataforma.', '⚠️');
+      switchView('public');
+      return;
     }
+
+    if (cliente.status === 'bloqueado') {
+      await supabaseClient.auth.signOut();
+      showToast('Este usuário está bloqueado.', '⛔');
+      switchView('public');
+      return;
+    }
+
+    window.loveClienteSession = session;
+    window.loveClienteProfile = cliente;
+    const dropdownUsername = document.getElementById('account-dropdown-username');
+    if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
 
     // Veio da página /cadastro, que já perguntou o tipo de evento no onboarding
     // — pula os eventos de demonstração e leva direto pro formulário de criar

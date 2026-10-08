@@ -231,11 +231,28 @@
       }
 
       submitBtn.disabled = true;
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      submitBtn.disabled = false;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
-        errorEl.textContent = 'E-mail ou senha incorretos.';
+        submitBtn.disabled = false;
+        errorEl.textContent = /banned/i.test(error.message || '') ? 'Este usuário está bloqueado.' : 'E-mail ou senha incorretos.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // Esse login é só pra quem tem cadastro de fornecedor — uma conta só de
+      // anfitrião (plataforma principal) não entra aqui.
+      const { data: cliente } = await supabaseClient
+        .from('clientes')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      submitBtn.disabled = false;
+
+      if (cliente) {
+        await supabaseClient.auth.signOut();
+        errorEl.textContent = 'Esse e-mail não está cadastrado como fornecedor.';
         errorEl.classList.remove('hidden');
         return;
       }

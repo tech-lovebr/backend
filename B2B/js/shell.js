@@ -109,14 +109,30 @@ async function initAuthGuard() {
 
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
-    .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type')
+    .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type, status')
     .eq('id', session.user.id)
     .maybeSingle();
 
-  // Login social (Google): o trigger handle_new_user() não recebe o "role"
-  // nesse fluxo (só vem via options.data no cadastro por e-mail/senha), então
-  // a linha em `fornecedores` ainda não existe no primeiro acesso — cria aqui.
   if (!fornecedor) {
+    // Login/B2B/Admin compartilham o mesmo Supabase Auth. Antes de criar uma
+    // linha de fornecedor, confirma que essa conta não é de um anfitrião da
+    // plataforma principal (love.com.br) — senão qualquer anfitrião que
+    // abrisse o B2B virava fornecedor automaticamente.
+    const { data: cliente } = await supabaseClient
+      .from('clientes')
+      .select('id')
+      .eq('id', session.user.id)
+      .maybeSingle();
+
+    if (cliente) {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'login.html';
+      return false;
+    }
+
+    // Login social (Google): o trigger handle_new_user() não recebe o "role"
+    // nesse fluxo (só vem via options.data no cadastro por e-mail/senha), então
+    // a linha em `fornecedores` ainda não existe no primeiro acesso — cria aqui.
     const meta = session.user.user_metadata || {};
     const { data: created } = await supabaseClient
       .from('fornecedores')
@@ -126,9 +142,15 @@ async function initAuthGuard() {
         email: session.user.email,
         avatar_url: meta.avatar_url || meta.picture || null
       })
-      .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type')
+      .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type, status')
       .maybeSingle();
     fornecedor = created;
+  }
+
+  if (fornecedor && fornecedor.status === 'bloqueado') {
+    await supabaseClient.auth.signOut();
+    window.location.href = 'login.html';
+    return false;
   }
 
   if (fornecedor && typeof B2B_DATA !== 'undefined') {

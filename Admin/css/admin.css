@@ -1915,3 +1915,11 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   text-align: left;
   font-variant-numeric: tabular-nums;
 }
+
+/* Quantos chamados a tabela abaixo está mostrando, com o nome do filtro. */
+.contagem-chamados {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0 0 .75rem;
+}

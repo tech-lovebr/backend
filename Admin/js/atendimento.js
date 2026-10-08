@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (error) return renderError(tbody, 5, error);
 
   TICKETS = data;
-  renderKpis();
   render();
 
   document.getElementById('busca').addEventListener('input', render);
@@ -29,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* A origem virou aba em vez de select: são três destinos fixos e o admin
    alterna entre eles o tempo todo — um clique vale mais que abrir uma lista. */
-let ORIGEM_ATUAL = '';
+let ORIGEM_ATUAL = 'cliente';
 
 function ligarAbasDeOrigem() {
   document.querySelectorAll('#abas-origem [data-origem]').forEach(btn => {
@@ -40,20 +39,6 @@ function ligarAbasDeOrigem() {
       render();
     });
   });
-}
-
-function renderKpis() {
-  const conta = (status) => TICKETS.filter(t => t.status === status).length;
-
-  const tile = (label, value, sub) => `
-    <div class="kpi"><p class="kpi-label">${label}</p><p class="kpi-value">${value}</p><p class="kpi-sub">${sub}</p></div>`;
-
-  document.getElementById('kpi-grid').innerHTML = [
-    tile('Abertos', formatNumber(conta('aberto')), 'Aguardando primeira resposta'),
-    tile('Em andamento', formatNumber(conta('em_andamento')), 'Já respondidos'),
-    tile('Resolvidos', formatNumber(conta('resolvido')), 'Concluídos'),
-    tile('Total', formatNumber(TICKETS.length), 'Todos os chamados recebidos')
-  ].join('');
 }
 
 function filtrar() {
@@ -75,12 +60,15 @@ function render() {
 
 
   if (!lista.length) {
+    renderContagem(0);
     renderEmpty(tbody, 5, 'Nenhum chamado encontrado',
       TICKETS.length
         ? 'Ajuste a busca ou os filtros acima.'
         : 'O canal de atendimento ainda não recebeu mensagens. Ele recebe tanto do site público quanto da plataforma e do B2B.');
     return;
   }
+
+  renderContagem(lista.length);
 
   tbody.innerHTML = lista.map(t => `
     <tr data-id="${t.id}">
@@ -97,6 +85,23 @@ function render() {
   tbody.querySelectorAll('tr[data-id]').forEach(tr => {
     tr.addEventListener('click', () => abrirChamado(tr.dataset.id));
   });
+}
+
+/* "2 chamados abertos" diz mais que um número solto: a contagem muda de
+   nome junto com o filtro, então o que está na tela nunca fica ambíguo. */
+const CONTAGEM_POR_STATUS = {
+  aberto:       ['chamado aberto', 'chamados abertos'],
+  em_andamento: ['chamado em andamento', 'chamados em andamento'],
+  resolvido:    ['chamado resolvido', 'chamados resolvidos'],
+  fechado:      ['chamado fechado', 'chamados fechados'],
+  '':           ['chamado', 'chamados']
+};
+
+function renderContagem(total) {
+  const status = document.getElementById('filtro-status').value;
+  const [singular, plural] = CONTAGEM_POR_STATUS[status] || CONTAGEM_POR_STATUS[''];
+  document.getElementById('contagem-chamados').textContent =
+    `${formatNumber(total)} ${total === 1 ? singular : plural}`;
 }
 
 async function abrirChamado(id) {
@@ -198,8 +203,11 @@ async function abrirChamado(id) {
 const CAMPOS_LIBERAVEIS = { company: 'Nome da empresa', documento: 'CNPJ / CPF' };
 
 function ehPedidoDeAlteracao(t) {
+  // Os chamados abertos antes da troca de rótulo estão no singular; aceitar as
+  // duas formas evita que eles percam o botão de liberar.
+  const assunto = (t.assunto || '').trim().toLowerCase();
   return t.origem === 'fornecedor'
-    && (t.assunto || '').trim().toLowerCase() === 'alteração de dado';
+    && (assunto === 'alteração de dados' || assunto === 'alteração de dado');
 }
 
 /**
@@ -308,7 +316,6 @@ async function concluir(t, mensagem) {
     .eq('id', t.id);
 
   t.status = 'resolvido';
-  renderKpis();
   render();
   Drawer.close();
 }
@@ -346,7 +353,6 @@ async function responder(id) {
       .update({ status: 'em_andamento', updated_at: new Date().toISOString() })
       .eq('id', id);
     ticket.status = 'em_andamento';
-    renderKpis();
     render();
   }
 
@@ -371,7 +377,6 @@ async function atualizar(id) {
   }
 
   Object.assign(TICKETS.find(t => t.id === id), { status, prioridade });
-  renderKpis();
   render();
   Drawer.close();
   toast('Chamado atualizado.');

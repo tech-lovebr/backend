@@ -42,24 +42,22 @@
       <main class="admin-content">
 
         <nav class="conteudo-tabs" id="abas-origem" aria-label="Filtrar por origem">
-          <button type="button" class="conteudo-tab is-active" data-origem="">Todos</button>
-          <button type="button" class="conteudo-tab" data-origem="cliente">Anfitriões</button>
+          <button type="button" class="conteudo-tab is-active" data-origem="cliente">Anfitriões</button>
           <button type="button" class="conteudo-tab" data-origem="fornecedor">B2B</button>
-          <button type="button" class="conteudo-tab" data-origem="site">Site público</button>
         </nav>
-
-        <section class="kpi-grid" id="kpi-grid"></section>
 
         <div id="page-controls" hidden>
           <input type="search" class="search-input" id="busca" placeholder="Buscar protocolo ou nome...">
           <select class="field-select" id="filtro-status">
-            <option value="">Todos os status</option>
-            <option value="aberto">Aberto</option>
+            <option value="aberto" selected>Aberto</option>
             <option value="em_andamento">Em andamento</option>
             <option value="resolvido">Resolvido</option>
             <option value="fechado">Fechado</option>
+            <option value="">Todos os status</option>
           </select>
         </div>
+
+        <p class="contagem-chamados" id="contagem-chamados"></p>
 
         <section class="card table-card">
           <div class="table-wrap">

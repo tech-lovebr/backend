@@ -203,7 +203,7 @@ function initRequestChangeLinks() {
         nome: p.name || p.company || '',
         email: p.email || (session ? session.user.email : ''),
         telefone: p.phone || null,
-        assunto: 'Alteração de dado',
+        assunto: 'Alteração de dados',
         categoria: 'Dados cadastrais',
         mensagem: `Solicitação de alteração do campo "${campoNome}" (valor atual: ${valor()}).`,
         // O Admin age a partir daqui, em vez de interpretar a frase acima.

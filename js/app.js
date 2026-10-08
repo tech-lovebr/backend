@@ -8593,7 +8593,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // o erro de login precisa aparecer no próprio formulário.
   function showLoginError(message) {
     if (!loginErrorMessage) return;
-    loginErrorMessage.textContent = message;
+    loginErrorMessage.innerHTML = message;
     loginErrorMessage.classList.remove('hidden');
   }
   function hideLoginError() {
@@ -8640,7 +8640,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!cliente) {
         await supabaseClient.auth.signOut();
-        showLoginError('Esse e-mail não está cadastrado como anfitrião nesta plataforma.');
+        showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
         loginFailedAttempts = 0;
         return;
       }

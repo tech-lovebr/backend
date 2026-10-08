@@ -138,8 +138,26 @@ const EditorRico = (() => {
 
     seletorDeBloco.addEventListener('change', (e) => {
       aplicar('formatBlock', `<${e.target.value}>`);
+      limparDimensoes();
       sincronizarBloco();
     });
+
+    /* Tamanho, peso e família vêm da folha de estilo — nunca do HTML. Um
+       font-size embutido, herdado de um colar antigo ou de um comando do
+       navegador, vence a regra do h2/h3 e faz dois títulos do mesmo nível
+       aparecerem de tamanhos diferentes. */
+    function limparDimensoes() {
+      corpo.querySelectorAll('[style]').forEach(el => {
+        el.style.fontSize = '';
+        el.style.fontWeight = '';
+        el.style.fontFamily = '';
+        el.style.lineHeight = '';
+        if (!el.getAttribute('style')) el.removeAttribute('style');
+      });
+
+      // <font size> é o que o execCommand antigo deixa para trás.
+      corpo.querySelectorAll('font[size]').forEach(f => f.removeAttribute('size'));
+    }
 
     /* O select mostra o bloco onde o cursor está. Antes ele voltava para
        "Parágrafo" depois de cada uso, então nunca dizia o que o trecho era
@@ -204,7 +222,7 @@ const EditorRico = (() => {
     return {
       html: () => corpo.innerHTML,
       texto: () => corpo.innerText,
-      definir: (html) => { corpo.innerHTML = normalizar(html); contar(); sincronizarBloco(); },
+      definir: (html) => { corpo.innerHTML = normalizar(html); limparDimensoes(); contar(); sincronizarBloco(); },
       focar: () => corpo.focus()
     };
   }

@@ -109,7 +109,7 @@ async function initAuthGuard() {
 
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
-    .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type, status')
+    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status')
     .eq('id', session.user.id)
     .maybeSingle();
 
@@ -142,7 +142,7 @@ async function initAuthGuard() {
         email: session.user.email,
         avatar_url: meta.avatar_url || meta.picture || null
       })
-      .select('id, company_name, email, avatar_url, plan, pix_key, pix_key_type, status')
+      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status')
       .maybeSingle();
     fornecedor = created;
   }
@@ -158,7 +158,18 @@ async function initAuthGuard() {
     B2B_DATA.professional.company = fornecedor.company_name || B2B_DATA.professional.company;
     B2B_DATA.professional.email = fornecedor.email || B2B_DATA.professional.email;
     if (fornecedor.avatar_url) B2B_DATA.professional.avatar = fornecedor.avatar_url;
-    if (!localStorage.getItem('b2b-plan') && fornecedor.plan) B2B_DATA.professional.plan = fornecedor.plan;
+    // Bonificação concedida no Admin vence o localStorage: sem isto, quem já
+    // tivesse mexido na página de planos nunca receberia a cortesia — nem a
+    // perderia quando vencesse.
+    const bonificado = fornecedor.plan_origem === 'bonificacao_admin';
+    const vencido = fornecedor.plan_expira_em && new Date(fornecedor.plan_expira_em) < new Date();
+
+    if (bonificado) {
+      B2B_DATA.professional.plan = vencido ? 'Gratuito' : (fornecedor.plan || 'Gratuito');
+      localStorage.setItem('b2b-plan', B2B_DATA.professional.plan);
+    } else if (!localStorage.getItem('b2b-plan') && fornecedor.plan) {
+      B2B_DATA.professional.plan = fornecedor.plan;
+    }
     B2B_DATA.professional.pixKey = fornecedor.pix_key || null;
     B2B_DATA.professional.pixKeyType = fornecedor.pix_key_type || null;
   }

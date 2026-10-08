@@ -1932,3 +1932,51 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 }
 
 .conteudo-tab.is-active .aba-contagem { color: inherit; }
+
+/* Selo de e-mail verificado, ao lado do e-mail no topo do drawer. */
+.selo-verificado {
+  display: inline-block;
+  margin-left: .5rem;
+  padding: .0625rem .375rem;
+  border-radius: 4px;
+  background: var(--success-bg, #e7f6ec);
+  color: var(--success, #1b7f4b);
+  font-size: .625rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+/* Concessão de meses de Pro. Fica recolhida até o admin pedir: é uma ação
+   rara e irreversível, não merece ocupar a tela o tempo todo. */
+.bonificacao-caixa {
+  margin-top: .875rem;
+  padding: .875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--bg-muted);
+}
+
+.bonificacao-caixa[hidden] { display: none; }
+
+.bonificacao-titulo {
+  margin: 0 0 .625rem;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bonificacao-stepper {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.bonificacao-valor {
+  min-width: 2.25rem;
+  text-align: center;
+  font-size: .9375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

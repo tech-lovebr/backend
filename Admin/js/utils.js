@@ -165,7 +165,7 @@ const Drawer = {
   },
 
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, body, footer, back }) {
+  open({ title, subtitle, subtitleHtml, body, footer, back }) {
     this._build();
 
     const btnBack = document.getElementById('drawer-back');
@@ -173,7 +173,10 @@ const Drawer = {
     btnBack.onclick = back || null;
 
     document.getElementById('drawer-title').textContent = title || 'Detalhes';
-    document.getElementById('drawer-subtitle').textContent = subtitle || '';
+    const sub = document.getElementById('drawer-subtitle');
+    // textContent por padrão; só quem passa subtitleHtml assume o escape.
+    if (subtitleHtml) sub.innerHTML = subtitleHtml;
+    else sub.textContent = subtitle || '';
     document.getElementById('drawer-body').innerHTML = body || '';
     document.getElementById('drawer-foot').innerHTML = footer || '';
     document.getElementById('drawer-backdrop').classList.add('is-open');

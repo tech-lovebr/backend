@@ -12,7 +12,7 @@
    ========================================================================== */
 
 const ORIGENS = {
-  b2b: { rotulo: 'Hub - B2B', badge: 'badge-info', plataforma: 'Portal do fornecedor' },
+  b2b: { rotulo: 'HUB/B2B', badge: 'badge-info', plataforma: 'HUB/B2B' },
   anfitriao: { rotulo: 'Anfitrião', badge: 'badge-success', plataforma: 'Plataforma principal' },
   sem_origem: { rotulo: 'Sem origem', badge: 'badge-danger', plataforma: 'Não identificada' }
 };
@@ -181,12 +181,12 @@ const ContaDrawer = (() => {
 
     Drawer.open({
       title: c.nome || c.email || 'Conta',
-      subtitle: c.email || '',
+      subtitleHtml: `${escapeHtml(c.email || '')}${c.email_confirmado
+        ? '<span class="selo-verificado">Verificado</span>' : ''}`,
       body: `
         <div class="lista-dados">
-          ${linha('Origem', `${origem.plataforma}, ${origem.rotulo}`)}
+          ${linha('Canal', escapeHtml(origem.rotulo))}
           ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
-          ${linha('E-mail confirmado', c.email_confirmado ? 'Sim' : 'Não')}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso ? linha(acesso.exato ? 'Cadastrou-se em' : 'Último aparelho', escapeHtml(acesso.texto)) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
@@ -230,6 +230,11 @@ const ContaDrawer = (() => {
     document.querySelectorAll('[data-destino]').forEach(btn => {
       btn.addEventListener('click', () => classificar(c, btn.dataset.destino));
     });
+
+    const fornecedor = c.origem === 'b2b'
+      ? (DADOS.fornecedores || []).find(x => x.id === c.id)
+      : null;
+    if (fornecedor) ligarBonificacao(c, fornecedor);
 
     document.querySelectorAll('[data-evento]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -353,7 +358,7 @@ const ContaDrawer = (() => {
       linhaOpcional('Endereço', f.address),
       linhaOpcional('Cidade', [f.city, f.state].filter(Boolean).join(' / ')),
       linhaOpcional('Categoria', f.category),
-      linhaOpcional('Plano', f.plan),
+      blocoDoPlano(f),
       linhaOpcional('Chave Pix', f.pix_key)
     ].join('');
 
@@ -363,11 +368,147 @@ const ContaDrawer = (() => {
         ? `<div class="lista-dados">${cadastro}</div>`
         : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nada preenchido em configurações ainda.</p>`}
 
+      ${acoesDoPlano(f)}
+
       <p class="drawer-section-title">Operação</p>
       <div class="lista-dados">
         ${linhaOpcional('Contratos', `${formatNumber(ativos.length)} ativos de ${formatNumber(contratos.length)}`)}
         ${linhaOpcional('Entradas na carteira', formatCurrency(entradas))}
       </div>`;
+  }
+
+  /* ------------------------------------------------- Plano do fornecedor
+
+     O Pro pode chegar por dois caminhos e eles não valem a mesma coisa:
+     assinatura paga se renova sozinha; cortesia do Admin tem prazo. Por isso
+     o plano aparece com procedência e, quando tem prazo, com o vencimento.
+     --------------------------------------------------------------------- */
+
+  const BONIFICACAO_MAXIMA = 6;
+
+  function planoVencido(f) {
+    return !!f.plan_expira_em && new Date(f.plan_expira_em) < new Date();
+  }
+
+  /** Pro de cortesia que já passou da validade vale como gratuito. */
+  function planoVigente(f) {
+    if ((f.plan || 'Gratuito') !== 'Pro') return 'Gratuito';
+    return planoVencido(f) ? 'Gratuito' : 'Pro';
+  }
+
+  function origemDoPlano(f) {
+    if (f.plan_origem === 'bonificacao_admin') return 'Bonificação admin';
+    if (f.plan_origem === 'cartao') {
+      const final = f.plan_cartao_final ? `•••• ${f.plan_cartao_final}` : 'cartão cadastrado';
+      return [f.plan_cartao_bandeira, final].filter(Boolean).join(' ');
+    }
+    return null;
+  }
+
+  function blocoDoPlano(f) {
+    const vigente = planoVigente(f);
+    const origem = origemDoPlano(f);
+
+    return [
+      linhaOpcional('Plano', vigente === 'Pro' ? 'Pro' : 'Gratuito'),
+      vigente === 'Pro' && origem ? linhaOpcional('Origem do plano', origem) : '',
+      vigente === 'Pro' && f.plan_expira_em
+        ? linhaOpcional('Vence em', dataHoraCompleta(f.plan_expira_em))
+        : '',
+      vigente === 'Gratuito' && planoVencido(f)
+        ? linhaOpcional('Bonificação anterior', `venceu em ${dataHoraCompleta(f.plan_expira_em)}`)
+        : ''
+    ].join('');
+  }
+
+  function acoesDoPlano(f) {
+    if (planoVigente(f) === 'Pro' && f.plan_origem === 'cartao') return '';
+
+    const concedidos = f.plan_bonificado_meses || 0;
+    const restantes = BONIFICACAO_MAXIMA - concedidos;
+
+    if (restantes <= 0) {
+      return `<p class="cell-muted" style="font-size:.75rem;margin:.75rem 0 0">
+        Esta conta já recebeu os ${BONIFICACAO_MAXIMA} meses de bonificação possíveis.
+      </p>`;
+    }
+
+    return `
+      <button type="button" class="btn btn-neutro" id="btn-bonificar" style="margin-top:.875rem">
+        Bonificar plano
+      </button>
+
+      <div class="bonificacao-caixa" id="caixa-bonificacao" hidden>
+        <p class="bonificacao-titulo">Meses de Pro de cortesia</p>
+        <div class="bonificacao-stepper">
+          <button type="button" class="btn btn-ghost btn-sm" data-passo="-1" aria-label="Menos um mês">−</button>
+          <span class="bonificacao-valor" id="bonificacao-meses">1</span>
+          <button type="button" class="btn btn-ghost btn-sm" data-passo="1" aria-label="Mais um mês">+</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-confirmar-bonificacao">Conceder</button>
+        </div>
+        <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:.625rem 0 0">
+          ${concedidos
+            ? `Esta conta já recebeu ${concedidos} ${concedidos === 1 ? 'mês' : 'meses'}; restam ${restantes}.`
+            : `Até ${BONIFICACAO_MAXIMA} meses por conta.`}
+          A cortesia não pode ser retirada depois de concedida.
+        </p>
+      </div>`;
+  }
+
+  function ligarBonificacao(conta, f) {
+    const botao = document.getElementById('btn-bonificar');
+    if (!botao) return;
+
+    const caixa = document.getElementById('caixa-bonificacao');
+    const valor = document.getElementById('bonificacao-meses');
+    const restantes = BONIFICACAO_MAXIMA - (f.plan_bonificado_meses || 0);
+
+    botao.addEventListener('click', () => {
+      caixa.hidden = false;
+      botao.hidden = true;
+    });
+
+    caixa.querySelectorAll('[data-passo]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const atual = Number(valor.textContent);
+        const novo = Math.min(restantes, Math.max(1, atual + Number(btn.dataset.passo)));
+        valor.textContent = String(novo);
+      });
+    });
+
+    document.getElementById('btn-confirmar-bonificacao')
+      .addEventListener('click', () => bonificar(conta, Number(valor.textContent)));
+  }
+
+  async function bonificar(conta, meses) {
+    const botao = document.getElementById('btn-confirmar-bonificacao');
+    botao.disabled = true;
+
+    const { data, error } = await supabaseClient.rpc('admin_bonificar_plano', {
+      p_id: conta.id,
+      p_meses: meses
+    });
+
+    if (error) {
+      botao.disabled = false;
+      const faltaFuncao = /admin_bonificar_plano|does not exist|schema cache/i.test(error.message || '');
+      toast(faltaFuncao
+        ? 'Rode supabase/migrations/023_plano_bonificado.sql no Supabase.'
+        : error.message);
+      return;
+    }
+
+    // Atualiza o cache local para o drawer já redesenhar com o plano novo.
+    const f = (DADOS.fornecedores || []).find(x => x.id === conta.id);
+    if (f) {
+      f.plan = 'Pro';
+      f.plan_origem = 'bonificacao_admin';
+      f.plan_expira_em = data;
+      f.plan_bonificado_meses = (f.plan_bonificado_meses || 0) + meses;
+    }
+
+    toast(`Pro liberado por ${meses} ${meses === 1 ? 'mês' : 'meses'}.`);
+    desenhar(conta);
   }
 
   function detalheAnfitriao(id) {

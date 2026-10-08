@@ -15,7 +15,7 @@ const NAV_SECTIONS = [
     items: [
       {
         // Grupos não navegam: clicar apenas abre e fecha os filhos.
-        grupo: 'fornecedores', text: 'B2B', icon: 'store',
+        grupo: 'fornecedores', text: 'HUB/B2B', icon: 'store',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
           { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' },

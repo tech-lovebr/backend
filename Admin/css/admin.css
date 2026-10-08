@@ -2308,7 +2308,7 @@ tr.is-selecionada { background: #f4f4f5; }
 }
 
 .editor-corpo:empty::before {
-  content: 'Escreva o artigo aqui.';
+  content: attr(data-placeholder);
   color: var(--text-soft);
 }
 

@@ -1,13 +1,8 @@
 /* ==========================================================================
    LOVE ADMIN — CMS: escrever e editar um artigo
 
-   O corpo é um contenteditable com document.execCommand. A API é
-   formalmente obsoleta, mas funciona em todos os navegadores atuais e é a
-   única forma de ter negrito, cor e link sem trazer um editor inteiro para
-   um projeto que não tem build.
-
-   O que o editor produz é HTML, e é HTML que vai para o banco — sem
-   conversão no meio, o que o autor vê ao escrever é o que o leitor recebe.
+   O corpo usa o EditorRico (js/editor-rico.js), o mesmo dos documentos
+   legais.
    ========================================================================== */
 
 const PARAMS = new URLSearchParams(window.location.search);
@@ -17,11 +12,7 @@ let ARTIGO = null;
 let CATEGORIAS = [];
 let SELECIONADAS = new Set();
 let CAPA_URL = null;
-
-/* execCommand age sobre a seleção; clicar num botão da barra tira o foco do
-   texto e levaria a seleção junto. Guardar o intervalo antes permite
-   devolvê-lo na hora de aplicar o comando. */
-let SELECAO = null;
+let EDITOR = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
@@ -42,9 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  ligarEditor();
   preencher();
   renderCategorias();
-  ligarEditor();
   ligarCapa();
   ligarAcoes();
 
@@ -56,10 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 /* --------------------------------------------------------- Preenchimento */
 
 function preencher() {
-  if (!ARTIGO) return contarPalavras();
+  if (!ARTIGO) return;
 
   document.getElementById('artigo-titulo').value = ARTIGO.titulo || '';
-  document.getElementById('artigo-conteudo').innerHTML = ARTIGO.conteudo || '';
   document.getElementById('artigo-resumo').value = ARTIGO.resumo || '';
 
   CAPA_URL = ARTIGO.imagem_destaque_url || null;
@@ -76,72 +66,15 @@ function preencher() {
   }
 
   document.getElementById('btn-lixeira').hidden = ARTIGO.status === 'lixo';
-  contarPalavras();
 }
 
 /* -------------------------------------------------------------- Editor */
 
 function ligarEditor() {
-  const corpo = document.getElementById('artigo-conteudo');
-
-  const guardarSelecao = () => {
-    const sel = window.getSelection();
-    if (sel.rangeCount && corpo.contains(sel.anchorNode)) SELECAO = sel.getRangeAt(0);
-  };
-
-  const devolverSelecao = () => {
-    if (!SELECAO) return corpo.focus();
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(SELECAO);
-  };
-
-  corpo.addEventListener('keyup', guardarSelecao);
-  corpo.addEventListener('mouseup', guardarSelecao);
-  corpo.addEventListener('input', contarPalavras);
-
-  // Colar texto puro: HTML vindo do Word ou de outro site traria estilos
-  // que não são os do blog e que depois ninguém consegue limpar.
-  corpo.addEventListener('paste', (e) => {
-    e.preventDefault();
-    const texto = (e.clipboardData || window.clipboardData).getData('text/plain');
-    document.execCommand('insertText', false, texto);
+  EDITOR = EditorRico.montar(document.getElementById('editor-host'), {
+    placeholder: 'Escreva o artigo aqui.'
   });
-
-  const aplicar = (comando, valor) => {
-    devolverSelecao();
-    document.execCommand(comando, false, valor ?? null);
-    guardarSelecao();
-    corpo.focus();
-  };
-
-  document.querySelectorAll('[data-comando]').forEach(btn => {
-    btn.addEventListener('mousedown', e => e.preventDefault());
-    btn.addEventListener('click', () => aplicar(btn.dataset.comando));
-  });
-
-  document.getElementById('editor-bloco').addEventListener('change', (e) => {
-    aplicar('formatBlock', `<${e.target.value}>`);
-    e.target.selectedIndex = 0;
-  });
-
-  document.getElementById('editor-cor').addEventListener('input', (e) => {
-    aplicar('foreColor', e.target.value);
-  });
-
-  document.getElementById('btn-link').addEventListener('mousedown', e => e.preventDefault());
-  document.getElementById('btn-link').addEventListener('click', () => {
-    const url = window.prompt('Endereço do link (comece com https://)');
-    if (!url) return;
-    aplicar('createLink', url);
-  });
-}
-
-function contarPalavras() {
-  const texto = document.getElementById('artigo-conteudo').innerText.trim();
-  const total = texto ? texto.split(/\s+/).length : 0;
-  document.getElementById('editor-palavras').textContent =
-    `${formatNumber(total)} ${total === 1 ? 'palavra' : 'palavras'}`;
+  EDITOR.definir(ARTIGO?.conteudo || '');
 }
 
 /* --------------------------------------------------------------- Capa */
@@ -281,7 +214,7 @@ async function salvar(status) {
 
   const linha = {
     titulo,
-    conteudo: document.getElementById('artigo-conteudo').innerHTML,
+    conteudo: EDITOR.html(),
     resumo: document.getElementById('artigo-resumo').value.trim() || null,
     imagem_destaque_url: CAPA_URL,
     status

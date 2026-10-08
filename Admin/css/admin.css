@@ -2295,9 +2295,17 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .editor-titulo:focus { border-color: var(--primary-color); }
 .editor-titulo::placeholder { color: var(--text-soft); font-weight: 400; }
 
-.editor-card { padding: 0; overflow: hidden; }
+/* Sem overflow:hidden — ele tornaria o card um contêiner de rolagem e o
+   position:sticky da barra passaria a se resolver contra ele, que não
+   rola. O arredondamento de cada ponta fica com quem está nela. */
+.editor-card { padding: 0; }
 
+/* A barra acompanha a rolagem e para logo abaixo do topbar: num documento
+   longo, formatar um trecho no meio não deve exigir subir até o topo. */
 .editor-barra {
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 20;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -2305,6 +2313,7 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   padding: .5rem .625rem;
   border-bottom: 1px solid var(--border);
   background: var(--bg-muted);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 
 .editor-btn {
@@ -2400,6 +2409,7 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   padding: .625rem 1.25rem;
   border-top: 1px solid var(--border);
   background: var(--bg-muted);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
   font-size: .75rem;
   color: var(--text-muted);
 }

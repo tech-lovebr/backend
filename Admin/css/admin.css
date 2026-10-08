@@ -2448,3 +2448,20 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   .editor-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
+
+/* Título e controles de um bloco, fora do card — mesmo arranjo que o
+   cabeçalho da página tem para as listas das outras telas. */
+.bloco-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: var(--bloco-gap);
+}
+
+.bloco-cabecalho h2 { font-size: .9375rem; font-weight: 600; color: var(--text); }
+.bloco-cabecalho .toolbar { display: flex; align-items: center; gap: .625rem; flex-wrap: wrap; }
+
+/* O card logo abaixo já traz a própria margem. */
+.bloco-cabecalho + .table-card { margin-top: .75rem; }

@@ -220,10 +220,98 @@ document.addEventListener('DOMContentLoaded', () => {
           elements.viewPublic.classList.remove('hidden');
           elements.viewPublic.style.display = 'flex';
         }
+        // Volta pro conteúdo de marketing por padrão — quem quiser reabrir a
+        // página legal chama openLegalDocPage() depois do switchView('public').
+        const landingSections = document.getElementById('public-landing-sections');
+        const legalPage = document.getElementById('legal-doc-page');
+        if (landingSections) landingSections.classList.remove('hidden');
+        if (legalPage) legalPage.classList.add('hidden');
       }
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // =========================================================================
+  // PÁGINA LEGAL (Termos de Uso / Política de Privacidade)
+  //
+  // Abre dentro do shell que já está na tela — header/rail do dashboard ou
+  // header da home continuam visíveis, só o conteúdo do meio troca — em vez
+  // de mandar a pessoa pra um documento isolado. Texto lido de
+  // documentos_legais, a mesma tabela que o Admin escreve em CMS → Legal.
+  // =========================================================================
+  async function openLegalDocPage(slug, opts = {}) {
+    const isDashboard = state.currentView === 'dashboard';
+
+    if (isDashboard) {
+      state.currentTab = 'legal-doc';
+      elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
+      if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
+      if (elements.mainArea) elements.mainArea.classList.add('full-width');
+      document.querySelectorAll('.dashboard-tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === 'tab-legal-doc');
+      });
+    } else {
+      if (state.currentView !== 'public') switchView('public');
+      const landingSections = document.getElementById('public-landing-sections');
+      const legalPage = document.getElementById('legal-doc-page');
+      if (landingSections) landingSections.classList.add('hidden');
+      if (legalPage) legalPage.classList.remove('hidden');
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const suffix = isDashboard ? '-dash' : '';
+    const loadingEl = document.getElementById(`legal-doc-loading${suffix}`);
+    const titleEl = document.getElementById(`legal-doc-title${suffix}`);
+    const dateEl = document.getElementById(`legal-doc-date${suffix}`);
+    const bodyEl = document.getElementById(`legal-doc-body${suffix}`);
+
+    const tituloProvisorio = slug === 'termos' ? 'Termos de Uso' : 'Política de Privacidade';
+    if (loadingEl) loadingEl.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = tituloProvisorio;
+    if (dateEl) dateEl.textContent = '';
+    if (bodyEl) bodyEl.innerHTML = '';
+    document.title = `${tituloProvisorio} — Love`;
+
+    const path = slug === 'termos' ? '/termos' : '/politica-de-privacidade';
+    if (opts.pushUrl !== false && window.location.pathname !== path) {
+      history.pushState({ legalDoc: slug }, '', path);
+    }
+
+    const { data, error } = await supabaseClient
+      .from('documentos_legais')
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (loadingEl) loadingEl.classList.add('hidden');
+
+    if (error || !data) {
+      if (bodyEl) bodyEl.innerHTML = '<p class="text-zinc-500">Não foi possível carregar este documento no momento. Tente novamente em instantes.</p>';
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = data.titulo || tituloProvisorio;
+    document.title = `${data.titulo || tituloProvisorio} — Love`;
+
+    const dataReferencia = data.vigente_desde || data.updated_at;
+    if (dateEl && dataReferencia) {
+      dateEl.textContent = `Última atualização: ${formatarDataLegal(dataReferencia)}`;
+    }
+    if (bodyEl) {
+      bodyEl.innerHTML = (data.conteudo && data.conteudo.trim())
+        ? data.conteudo
+        : '<p class="text-zinc-500">Este documento ainda não foi publicado.</p>';
+    }
+  }
+
+  function formatarDataLegal(valor) {
+    const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+    const texto = String(valor);
+    const d = new Date(texto.length <= 10 ? `${texto}T00:00:00` : texto);
+    if (isNaN(d.getTime())) return '';
+    return `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
   }
 
   // =========================================================================
@@ -11256,10 +11344,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnFooterWhatsapp) btnFooterWhatsapp.addEventListener('click', handleContact);
   }
 
-  // Política de Privacidade & Termos de Uso agora são páginas reais
-  // (/politica-de-privacidade, /termos, lidas de documentos_legais) — os
-  // botões do rodapé público, do dashboard e do login viraram <a href>
-  // de verdade, então não precisam mais de handler de JS aqui.
+  // Política de Privacidade & Termos de Uso: os <a href="/termos"> e
+  // <a href="/politica-de-privacidade"> do rodapé (público, dashboard,
+  // login) continuam links de verdade (clique do meio/botão direito
+  // funcionam normalmente) — um clique normal é interceptado pra abrir sem
+  // sair da SPA, mantendo o header/rail atual (ver openLegalDocPage).
+  document.querySelectorAll('a[href="/termos"], a[href="/politica-de-privacidade"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openLegalDocPage(link.getAttribute('href') === '/termos' ? 'termos' : 'privacidade');
+    });
+  });
+
+  // Fecha a página legal (se estiver aberta) ao voltar pelo histórico do navegador
+  window.addEventListener('popstate', () => {
+    const path = window.location.pathname;
+    if (path === '/termos') { openLegalDocPage('termos', { pushUrl: false }); return; }
+    if (path === '/politica-de-privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
+    const legalPage = document.getElementById('legal-doc-page');
+    if (legalPage && !legalPage.classList.contains('hidden')) {
+      switchView(state.currentView === 'dashboard' ? 'dashboard' : 'public');
+    }
+  });
 
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
@@ -11272,6 +11380,11 @@ document.addEventListener('DOMContentLoaded', () => {
           if (state.currentView === 'dashboard') {
             switchRailTab('overview');
           } else {
+            const legalPage = document.getElementById('legal-doc-page');
+            if (legalPage && !legalPage.classList.contains('hidden')) {
+              switchView('public');
+              history.pushState({}, '', '/');
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
         });
@@ -11432,8 +11545,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Início padrão na página pública — troca para o dashboard automaticamente
   // se já existir uma sessão Supabase válida (usuário já logado). Quem acessa
   // /login direto (URL limpa, sem hash) já abre na tela de login.
+  // Quem acessa /termos ou /politica-de-privacidade direto (link externo,
+  // favorito) abre o documento assim que a sessão terminar de resolver —
+  // só então dá pra saber se mostra dentro do dashboard ou da home pública.
+  const initialLegalSlug =
+    window.location.pathname === '/termos' ? 'termos' :
+    window.location.pathname === '/politica-de-privacidade' ? 'privacidade' :
+    null;
+
   switchView((window.location.pathname === '/login' || window.location.hash === '#login') ? 'login' : 'public');
-  initClienteSession();
+  initClienteSession().then(() => {
+    if (initialLegalSlug) openLegalDocPage(initialLegalSlug, { pushUrl: false });
+  });
 
   async function initClienteSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();

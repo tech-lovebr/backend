@@ -98,6 +98,11 @@
       </div>
     </header>
 
+    <!-- Conteúdo de marketing da home — escondido como bloco único quando uma
+         página legal (Termos/Privacidade) está sendo exibida no lugar dele,
+         mantendo o mesmo header/footer da home (ver openLegalDocPage). -->
+    <div id="public-landing-sections">
+
     <!-- =======================================================================
          O PRIMEIRO SCROLL (HERO CENTRALIZADO COM HEADLINE FORTE & GALERIA PASTEL)
          ======================================================================= -->
@@ -356,6 +361,22 @@
       </div>
     </section>
 
+    </div><!-- /#public-landing-sections -->
+
+    <!-- =======================================================================
+         PÁGINA LEGAL (Termos de Uso / Política de Privacidade) — mesmo
+         header/footer da home, texto lido de documentos_legais (ver
+         openLegalDocPage em app.js). Fica escondida até ser aberta.
+         ======================================================================= -->
+    <section id="legal-doc-page" class="hidden w-full px-6 py-12 sm:py-16">
+      <div class="max-w-[760px] mx-auto">
+        <div id="legal-doc-loading" class="text-sm text-zinc-400 hidden">Carregando...</div>
+        <h1 id="legal-doc-title" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
+        <p id="legal-doc-date" class="text-sm text-zinc-400 mt-2 mb-10"></p>
+        <div id="legal-doc-body" class="legal-doc-body"></div>
+      </div>
+    </section>
+
     <!-- Rodapé Completo (#333333) -->
     <footer id="public-landing-footer" class="site-platform-footer text-xs pt-14 pb-10 mt-auto border-t">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -373,10 +394,10 @@
 
             <!-- Política de Privacidade & Termos de Uso -->
             <div class="flex items-center gap-4">
-              <a href="/politica-de-privacidade" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
+              <a href="/politica-de-privacidade" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
                 Política de Privacidade
               </a>
-              <a href="/termos" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
+              <a href="/termos" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
                 Termos de Uso
               </a>
             </div>
@@ -543,9 +564,9 @@
 
           <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">
             Ao continuar, você concorda com os
-            <a href="/termos" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Termos de Uso</a>
+            <a href="/termos" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Termos de Uso</a>
             e a
-            <a href="/politica-de-privacidade" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Política de Privacidade</a>.
+            <a href="/politica-de-privacidade" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Política de Privacidade</a>.
           </p>
 
           <div class="pt-4 text-sm text-slate-500 flex items-center gap-1">
@@ -2998,6 +3019,20 @@
         </section>
 
         <!-- =================================================================
+             PÁGINA LEGAL (Termos de Uso / Política de Privacidade) dentro do
+             painel logado — mesmo header/rail do dashboard, texto lido de
+             documentos_legais (ver openLegalDocPage em app.js).
+             ================================================================= -->
+        <section id="tab-legal-doc" class="dashboard-tab-content w-full px-6 sm:px-8 py-10">
+          <div class="max-w-[760px] mx-auto">
+            <div id="legal-doc-loading-dash" class="text-sm text-zinc-400 hidden">Carregando...</div>
+            <h1 id="legal-doc-title-dash" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
+            <p id="legal-doc-date-dash" class="text-sm text-zinc-400 mt-2 mb-10"></p>
+            <div id="legal-doc-body-dash" class="legal-doc-body"></div>
+          </div>
+        </section>
+
+        <!-- =================================================================
              PAGE 7: MARKETPLACE B2B & ENCONTRAR FORNECEDORES (Zola Inspired Layout)
              ================================================================= -->
         <section id="tab-b2b" class="dashboard-tab-content space-y-0 w-full">
@@ -3421,10 +3456,10 @@
                 O sistema operacional completo para planejar, gerenciar e celebrar os momentos mais especiais da sua vida.
               </p>
               <div class="flex items-center gap-4">
-                <a href="/politica-de-privacidade" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
+                <a href="/politica-de-privacidade" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
                   Política de Privacidade
                 </a>
-                <a href="/termos" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
+                <a href="/termos" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
                   Termos de Uso
                 </a>
               </div>

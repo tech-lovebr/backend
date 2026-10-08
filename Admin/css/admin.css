@@ -1725,27 +1725,24 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   overflow: hidden;
 }
 
-/* Duas colunas de verdade, não flex: assim a faixa do rótulo preenche a
-   altura inteira da linha, inclusive quando o valor quebra em duas. */
 .dados-linha {
-  display: grid;
-  grid-template-columns: minmax(8rem, 40%) 1fr;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem 1rem;
   border-top: 1px solid var(--border);
 }
 
 .dados-linha:first-child { border-top: 0; }
 
 .dados-linha .rotulo {
-  padding: .75rem 1rem;
-  background: var(--info-bg);
   font-size: .8125rem;
-  /* --text-muted dá 4,3:1 sobre esse azul, abaixo do mínimo para texto
-     pequeno. Este tom chega a 4,8:1. */
-  color: #5f6a7d;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .dados-linha .valor {
-  padding: .75rem 1rem;
   font-size: .8125rem;
   font-weight: 600;
   color: var(--text);

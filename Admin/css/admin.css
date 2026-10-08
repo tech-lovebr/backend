@@ -84,16 +84,16 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: transform .22s ease;
 }
 
-/* A marca é a ponta esquerda da faixa superior: acompanha o topbar, não o
-   branco do sidebar, senão a faixa apareceria partida em dois tons. */
+/* A marca fica branca, como a coluna do menu abaixo dela: é a coluna do
+   sidebar que ela encabeça, não a faixa de busca à direita. */
 .admin-sidebar-brand {
   height: var(--topbar-h);
   display: flex;
   align-items: center;
   gap: .5rem;
   padding: 0 1.25rem;
-  background: var(--topbar-bg);
-  border-bottom: 1px solid var(--topbar-border);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--sidebar-borda);
 }
 
 .admin-sidebar-brand img { height: 32px; width: auto; object-fit: contain; }

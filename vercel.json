@@ -13,6 +13,8 @@
     { "source": "/cadastro", "destination": "/cadastro.html" },
     { "source": "/resetar-senha", "destination": "/resetar-senha.html" },
     { "source": "/convite-preview", "destination": "/convite-preview.html" },
-    { "source": "/login", "destination": "/" }
+    { "source": "/login", "destination": "/" },
+    { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
+    { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" }
   ]
 }

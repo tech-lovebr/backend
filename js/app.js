@@ -8586,10 +8586,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 10.1 Login com Email e Senha (Conta Existente)
   const formLoginEmail = document.getElementById('form-login-email');
+  const loginErrorMessage = document.getElementById('login-error-message');
   let loginFailedAttempts = 0;
+
+  // As notificações flutuantes (showToast) estão desativadas na plataforma —
+  // o erro de login precisa aparecer no próprio formulário.
+  function showLoginError(message) {
+    if (!loginErrorMessage) return;
+    loginErrorMessage.textContent = message;
+    loginErrorMessage.classList.remove('hidden');
+  }
+  function hideLoginError() {
+    if (loginErrorMessage) loginErrorMessage.classList.add('hidden');
+  }
+
   if (formLoginEmail) {
     formLoginEmail.addEventListener('submit', async (e) => {
       e.preventDefault();
+      hideLoginError();
       const email = document.getElementById('login-email-input').value.trim();
       const password = document.getElementById('login-password-input').value;
       const submitBtn = document.getElementById('btn-do-email-login');
@@ -8600,18 +8614,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (error) {
         submitBtn.disabled = false;
         if (/banned/i.test(error.message || '')) {
-          showToast('Este usuário está bloqueado.', '⛔');
+          showLoginError('Este usuário está bloqueado.');
           loginFailedAttempts = 0;
           return;
         }
         loginFailedAttempts++;
         if (loginFailedAttempts >= 3) {
-          showToast('Muitas tentativas. Vamos te ajudar a recuperar a senha.', '⚠️');
           showLoginForgotPanel(email);
           loginFailedAttempts = 0;
           return;
         }
-        showToast('E-mail ou senha incorretos.', '⚠️');
+        showLoginError('Usuário ou senha inválidos.');
         return;
       }
 
@@ -8627,14 +8640,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!cliente) {
         await supabaseClient.auth.signOut();
-        showToast('Esse e-mail não está cadastrado como anfitrião nesta plataforma.', '⚠️');
+        showLoginError('Esse e-mail não está cadastrado como anfitrião nesta plataforma.');
         loginFailedAttempts = 0;
         return;
       }
 
       if (cliente.status === 'bloqueado') {
         await supabaseClient.auth.signOut();
-        showToast('Este usuário está bloqueado.', '⛔');
+        showLoginError('Este usuário está bloqueado.');
         loginFailedAttempts = 0;
         return;
       }

@@ -1417,7 +1417,7 @@ function renderEstiloTab(body) {
         ${isPro ? '' : `
         <span class="info-tooltip-wrap">
           <button type="button" class="info-tooltip-trigger" tabindex="0" aria-label="Mais informações">${BI.info}</button>
-          <span class="info-tooltip-bubble">Para ter um subdomínio personalizado, <a href="planos.html" class="info-tooltip-link">faça o upgrade para o plano Pro</a>.</span>
+          <span class="info-tooltip-bubble">Para ter um subdomínio personalizado, <a href="planos" class="info-tooltip-link">faça o upgrade para o plano Pro</a>.</span>
         </span>
         `}
       </span>

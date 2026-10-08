@@ -84,7 +84,7 @@ function computeFaturamentoDoMes(monthsAgo) {
 }
 
 function buildPaymentLinkUrl(id) {
-  return new URL(`site-preview.html?page=checkout&link=${id}`, location.href).toString();
+  return new URL(`site-preview?page=checkout&link=${id}`, location.href).toString();
 }
 
 function formatLinkDate(iso) {

@@ -33,7 +33,7 @@ function initMobileGreetingHeader() {
 
   const avatarWrap = document.getElementById('avatar-trigger')?.closest('.topbar-icon-btn-wrap');
   const notifWrap = document.getElementById('notif-trigger')?.closest('.topbar-icon-btn-wrap');
-  const servicesLink = iconGroup.querySelector('a[href="produtos.html"]');
+  const servicesLink = iconGroup.querySelector('a[href="produtos"]');
   if (!avatarWrap || !notifWrap || !servicesLink) return;
 
   const mq = window.matchMedia('(max-width: 768px)');
@@ -138,7 +138,7 @@ async function initFirstProductModal() {
 const DASH_PAYMENT_LINK_SUBMIT_BTN_HTML = '<button type="submit" class="btn-primary justify-center w-full py-3 mt-2" id="payment-link-submit-btn">Criar Link de Cobrança</button>';
 
 function buildDashPaymentLinkUrl(id) {
-  return new URL(`site-preview.html?page=checkout&link=${id}`, location.href).toString();
+  return new URL(`site-preview?page=checkout&link=${id}`, location.href).toString();
 }
 
 function dashCopyTextToClipboard(text) {
@@ -619,7 +619,7 @@ async function renderAgenda() {
       return;
     }
     listEl.innerHTML = events.map(ev => `
-      <a href="agenda.html" class="agenda-item" style="border-left-color:var(--primary-blue);">
+      <a href="agenda" class="agenda-item" style="border-left-color:var(--primary-blue);">
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-zinc-900 truncate">${escapeHtml(ev.title)}</p>
           <p class="text-xs text-zinc-500 truncate mt-0.5">${formatShortDate(ev.date)}${ev.local ? ' · ' + escapeHtml(ev.local) : ''}</p>

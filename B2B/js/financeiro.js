@@ -392,7 +392,7 @@ async function saveProposal() {
       .single();
 
     if (link) {
-      const url = new URL(`site-preview.html?page=checkout&link=${link.id}`, location.href).toString();
+      const url = new URL(`site-preview?page=checkout&link=${link.id}`, location.href).toString();
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).catch(() => {});
       showToast('Proposta salva! Link de pagamento copiado para a área de transferência.');
     } else {

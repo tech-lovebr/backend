@@ -750,7 +750,7 @@ function renderSubscriptionModal() {
   if (!pro) {
     body.innerHTML = `
       <p class="text-sm text-zinc-600 mb-5">Você está no plano gratuito. Faça upgrade para liberar relatórios financeiros completos, CRM avançado e colaboradores ilimitados.</p>
-      <a href="planos.html" class="btn-primary w-full justify-center">Fazer upgrade</a>
+      <a href="planos" class="btn-primary w-full justify-center">Fazer upgrade</a>
     `;
     return;
   }

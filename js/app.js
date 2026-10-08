@@ -8562,6 +8562,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Só agora o primeiro evento existe de verdade — o que foi escolhido
+      // no /cadastro (tipo, nome, data) não precisa mais ficar guardado pra
+      // reaparecer a cada login.
+      localStorage.removeItem('love-pending-event-type');
+      localStorage.removeItem('love-pending-event-type-label');
+      localStorage.removeItem('love-pending-event-name');
+      localStorage.removeItem('love-pending-event-date');
+
       newEvt.id = createdEvento.id;
       newEvt.giftList = [];
       newEvt.guests = [];
@@ -11218,15 +11226,16 @@ document.addEventListener('DOMContentLoaded', () => {
     switchView('dashboard');
 
     if (pendingType && typeof proceedToEventForm === 'function') {
-      localStorage.removeItem('love-pending-event-type');
-      localStorage.removeItem('love-pending-event-type-label');
+      // Só apaga esses dados do localStorage quando o evento for criado de
+      // verdade (no submit do formulário) — enquanto isso não acontecer,
+      // deslogar e logar de novo precisa continuar voltando pra esta mesma
+      // tela pré-preenchida, em vez de "esquecer" o que a pessoa já tinha
+      // escolhido no /cadastro e mandar pra tela genérica de boas-vindas.
       proceedToEventForm(pendingType, pendingTypeLabel || 'Novo Evento');
 
       // Nome e data do evento já coletados no onboarding de /cadastro
       const pendingName = localStorage.getItem('love-pending-event-name');
       const pendingDate = localStorage.getItem('love-pending-event-date');
-      localStorage.removeItem('love-pending-event-name');
-      localStorage.removeItem('love-pending-event-date');
 
       const firstName = (pendingName || '').trim().split(/\s+/)[0] || '';
 

@@ -2615,14 +2615,10 @@ body[data-theme="dark"] .dashboard-personalize-link:hover { color: var(--primary
   background: #fff;
   border: 1px solid var(--border-card);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-soft);
+  box-shadow: none;
   padding: 1.5rem;
   min-width: 0;
 }
-
-/* Caixas que envolvem tabelas (Contatos, Catálogo, Gestão, Financeiro,
-   Proposta) ficam só com borda, sem sombra. */
-.dash-card-table { box-shadow: none; }
 
 .dashboard-panel-section { display: flex; flex-direction: column; }
 .dashboard-panel-header { border-left: 3px solid #183B54; padding-left: 0.85rem; margin-bottom: 1.25rem; }

@@ -160,7 +160,7 @@ function renderSidebar() {
     <nav class="admin-nav">${sections}</nav>
     <footer class="admin-sidebar-footer">
       <p class="razao-social">Love Hub Ltda.</p>
-      <p class="cnpj">53.884.960/0001-65</p>
+      <p class="cnpj">69.386.397/0001-06</p>
     </footer>`;
 
 

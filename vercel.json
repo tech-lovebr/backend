@@ -16,6 +16,11 @@
     { "source": "/login", "destination": "/" },
     { "source": "/termos", "destination": "/" },
     { "source": "/politica-de-privacidade", "destination": "/" },
+    { "source": "/personalizar", "destination": "/" },
+    { "source": "/presentes", "destination": "/" },
+    { "source": "/convidados", "destination": "/" },
+    { "source": "/carteira", "destination": "/" },
+    { "source": "/fornecedores", "destination": "/" },
     { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
     { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" }
   ]

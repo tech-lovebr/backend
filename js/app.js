@@ -505,6 +505,20 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Crie seu primeiro evento para começar!', '✨');
   }
 
+  // URL limpa de cada aba principal do painel — sem isso, trocar de aba
+  // enquanto a URL estava em /termos ou /politica-de-privacidade deixava a
+  // pessoa presa naquela URL em qualquer lugar que fosse depois (a troca de
+  // aba nunca tocava a URL, então o que estava lá só ficava obsoleto).
+  const RAIL_TAB_ROUTES = {
+    overview: '/',
+    'edit-site': '/personalizar',
+    gifts: '/presentes',
+    rsvp: '/convidados',
+    wallet: '/carteira',
+    b2b: '/fornecedores'
+  };
+  const RAIL_ROUTE_TO_TAB = Object.fromEntries(Object.entries(RAIL_TAB_ROUTES).map(([k, v]) => [v, k]));
+
   function switchRailTab(tabKey) {
     // Se o usuário ainda não criou seu primeiro evento, bloqueia o acesso aos outros menus
     if (!state.hasEventCreated) {
@@ -513,6 +527,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     state.currentTab = tabKey;
+
+    const tabPath = RAIL_TAB_ROUTES[tabKey];
+    if (tabPath && window.location.pathname !== tabPath) {
+      history.pushState({ railTab: tabKey }, '', tabPath);
+    }
+    // Sem isso, o título da aba do navegador ficava preso em "Política de
+    // Privacidade" (ou Termos) depois de sair da página legal pra qualquer
+    // outro lugar do painel.
+    if (document.title !== 'Love - Event OS & Lista de Presentes') {
+      document.title = 'Love - Event OS & Lista de Presentes';
+    }
 
     // Reseta todos os modos especiais do body primeiro
     document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode');
@@ -11399,11 +11424,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Fecha a página legal (se estiver aberta) ao voltar pelo histórico do navegador
+  // Botão voltar/avançar do navegador: reabre a página legal, troca de aba
+  // do painel, ou (se nenhuma rota reconhecida) só sai da página legal.
   window.addEventListener('popstate', () => {
     const path = window.location.pathname;
     if (path === '/termos') { openLegalDocPage('termos', { pushUrl: false }); return; }
     if (path === '/politica-de-privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
+
+    const railTab = RAIL_ROUTE_TO_TAB[path];
+    if (state.currentView === 'dashboard' && railTab) {
+      switchRailTab(railTab);
+      return;
+    }
+
     const legalPage = document.getElementById('legal-doc-page');
     if (legalPage && !legalPage.classList.contains('hidden')) {
       switchView(state.currentView === 'dashboard' ? 'dashboard' : 'public');
@@ -11594,9 +11627,15 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.pathname === '/politica-de-privacidade' ? 'privacidade' :
     null;
 
+  // Quem acessa /presentes, /convidados etc. direto (link externo, favorito,
+  // F5) já abre naquela aba do painel — mas só depois de confirmar que há
+  // sessão: sem conta logada essas rotas não significam nada.
+  const initialRailTab = RAIL_ROUTE_TO_TAB[window.location.pathname] || null;
+
   switchView((window.location.pathname === '/login' || window.location.hash === '#login') ? 'login' : 'public');
   initClienteSession().then(() => {
     if (initialLegalSlug) openLegalDocPage(initialLegalSlug, { pushUrl: false });
+    else if (initialRailTab && initialRailTab !== 'overview' && state.currentView === 'dashboard') switchRailTab(initialRailTab);
   });
 
   async function initClienteSession() {

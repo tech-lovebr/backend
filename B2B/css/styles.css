@@ -4102,9 +4102,6 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
 .builder-panel-tab-body { padding: 0.9rem 0.25rem 0.9rem 0.75rem; overflow-y: auto; flex: 1; min-height: 0; }
 .builder-panel-tab-body-estilo { display: flex; flex-direction: column; gap: 1.4rem; }
 
-.builder-estilo-section { display: flex; flex-direction: column; gap: 1.15rem; }
-.builder-estilo-section .inspector-hint { margin-bottom: 0.15rem; }
-
 .builder-el-group-title {
   display: flex;
   align-items: center;

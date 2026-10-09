@@ -1228,7 +1228,7 @@ function renderLeftPanel() {
   panel.innerHTML = `
     <div class="builder-panel-tabs">
       <button type="button" class="builder-panel-tab ${leftTab === 'elementos' ? 'active' : ''}" data-panel-tab="elementos">Elementos</button>
-      <button type="button" class="builder-panel-tab ${leftTab === 'estilo' ? 'active' : ''}" data-panel-tab="estilo">Estilo</button>
+      <button type="button" class="builder-panel-tab ${leftTab === 'estilo' ? 'active' : ''}" data-panel-tab="estilo">URL</button>
     </div>
     <div class="builder-panel-tab-body${leftTab === 'estilo' ? ' builder-panel-tab-body-estilo' : ''}" id="builder-panel-tab-body"></div>
   `;
@@ -1356,33 +1356,7 @@ function renderElementosTab(body) {
   `).join('');
 }
 
-function fontSelectHtml(dataAttr, level, value) {
-  return `
-    <select class="inspector-select" style="flex:1;" data-${dataAttr}="${level}">
-      ${FONT_OPTIONS.map(f => `<option value="${escapeHtml(f.value)}" ${value === f.value ? 'selected' : ''}>${escapeHtml(f.label)}</option>`).join('')}
-    </select>
-  `;
-}
-
-function headingRowHtml(level, cfg, label) {
-  return `
-    <div class="inspector-field">
-      <span class="inspector-field-label">${label || 'H' + level}</span>
-      <div class="inspector-row" style="align-items:center;">
-        ${fontSelectHtml('heading-font', level, cfg.fontFamily || '')}
-        <div class="inspector-segmented" style="flex-shrink:0;">
-          <button type="button" data-heading-toggle="${level}:bold" class="${cfg.bold ? 'active' : ''}" title="Negrito">${BI.bold}</button>
-          <button type="button" data-heading-toggle="${level}:italic" class="${cfg.italic ? 'active' : ''}" title="Itálico">${BI.italic}</button>
-          <button type="button" data-heading-toggle="${level}:underline" class="${cfg.underline ? 'active' : ''}" title="Sublinhado">${BI.underline}</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
 function renderEstiloTab(body) {
-  const gs = builderState.globalStyle || { primaryColor: '#183b54', radius: 10, sectionSpacing: 40 };
-  if (!gs.headings) gs.headings = defaultHeadingStyles();
   if (!builderState.siteSettings) builderState.siteSettings = defaultSiteSettings();
   if (!builderState.siteSettings.seo) builderState.siteSettings.seo = defaultSeoSettings();
   const seo = builderState.siteSettings.seo;
@@ -1390,27 +1364,7 @@ function renderEstiloTab(body) {
   const isPro = typeof isProPlan === 'function' && isProPlan();
 
   body.innerHTML = `
-    <div class="builder-el-group-title">${BI.style} Estilo geral do site</div>
-    <div class="builder-estilo-section">
-      <p class="inspector-hint">Estas configurações definem a aparência padrão de toda a página, os elementos que não têm uma cor ou raio próprios seguem estes valores automaticamente. Nada aqui é arrastável: são ajustes gerais do site.</p>
-      <div class="inspector-field inspector-field-row">
-        <span class="inspector-field-label">Cor principal</span>
-        ${colorSwatchPopoverHtml(gs.primaryColor, 'id="gs-primary"')}
-      </div>
-      <div class="inspector-field">
-        <span class="inspector-field-label">Arredondamento de bordas <span id="gs-radius-out">${gs.radius}px</span></span>
-        <input type="range" min="0" max="32" id="gs-radius" value="${gs.radius}">
-      </div>
-      <div class="inspector-field">
-        <span class="inspector-field-label">Espaçamento de seções <span id="gs-spacing-out">${gs.sectionSpacing}px</span></span>
-        <input type="range" min="0" max="120" id="gs-spacing" value="${gs.sectionSpacing}">
-      </div>
-    </div>
-    <div class="inspector-section-title">Tipografia</div>
-    <p class="inspector-hint">Defina a fonte e o estilo padrão de cada nível de título. Ao escolher o nível (H1 a H5) em um título, ele usa automaticamente essas configurações.</p>
-    ${headingRowHtml('menu', gs.headings.menu, 'Menus')}
-    ${HEADING_LEVELS.map(n => headingRowHtml(n, gs.headings[n])).join('')}
-    <div class="inspector-section-title">Configurações</div>
+    <div class="builder-el-group-title">${BI.style} URL e identificação do site</div>
     <div class="inspector-field">
       <span class="inspector-field-label">
         URL personalizada
@@ -1477,49 +1431,6 @@ function renderEstiloTab(body) {
       <p class="inspector-hint">Cole aqui o Google Tag Manager, o Meta Pixel de anúncios ou outros scripts de rastreamento.</p>
     </div>
   `;
-
-  const primaryColor = body.querySelector('#gs-primary');
-  const radius = body.querySelector('#gs-radius');
-  const spacing = body.querySelector('#gs-spacing');
-
-  primaryColor.addEventListener('input', () => {
-    builderState.globalStyle.primaryColor = primaryColor.value;
-    applyGlobalStyleVars();
-  });
-  primaryColor.addEventListener('change', () => pushHistory());
-
-  radius.addEventListener('input', () => {
-    builderState.globalStyle.radius = Number(radius.value);
-    body.querySelector('#gs-radius-out').textContent = radius.value + 'px';
-    applyGlobalStyleVars();
-  });
-  radius.addEventListener('change', () => pushHistory());
-
-  spacing.addEventListener('input', () => {
-    builderState.globalStyle.sectionSpacing = Number(spacing.value);
-    body.querySelector('#gs-spacing-out').textContent = spacing.value + 'px';
-    applyGlobalStyleVars();
-  });
-  spacing.addEventListener('change', () => pushHistory());
-
-  body.querySelectorAll('[data-heading-font]').forEach(sel => {
-    sel.addEventListener('change', () => {
-      gs.headings[sel.dataset.headingFont].fontFamily = sel.value;
-      applyGlobalStyleVars();
-      pushHistory();
-    });
-  });
-
-  body.querySelectorAll('[data-heading-toggle]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const [level, kind] = btn.dataset.headingToggle.split(':');
-      const cfg = gs.headings[level];
-      cfg[kind] = !cfg[kind];
-      btn.classList.toggle('active', cfg[kind]);
-      applyGlobalStyleVars();
-      pushHistory();
-    });
-  });
 
   const slugInput = body.querySelector('#site-slug-input');
   if (slugInput) {

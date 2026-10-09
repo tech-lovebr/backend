@@ -3,16 +3,17 @@
 // por fornecedor — o domínio coringa (*.love.com.br) já está configurado no
 // projeto, então qualquer subdomínio cai aqui primeiro.
 //
-// Extensão .mjs (não .js) para poder usar import/export sem precisar
-// adicionar "type": "module" no package.json — isso quebraria os arquivos
-// CommonJS que já existem em api/*.js.
-import { rewrite, next } from '@vercel/functions';
+// CommonJS (não import/export) de propósito: o pacote @vercel/functions é
+// compatível com require() e isso evita precisar de "type":"module" no
+// package.json, que quebraria os arquivos CommonJS que já existem em
+// api/*.js.
+const { rewrite, next } = require('@vercel/functions');
 
-export const config = { matcher: '/:path*' };
+const config = { matcher: '/:path*' };
 
 const SUFFIX = '.love.com.br';
 
-export default function middleware(request) {
+function middleware(request) {
   const url = new URL(request.url);
 
   if (!url.hostname.endsWith(SUFFIX)) return next();
@@ -29,3 +30,6 @@ export default function middleware(request) {
   url.searchParams.set('site', subdomain);
   return rewrite(url);
 }
+
+module.exports = middleware;
+module.exports.config = config;

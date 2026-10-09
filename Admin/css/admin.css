@@ -2538,36 +2538,47 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 .campo-obrigatorio { color: var(--danger); }
 
-.imagens-perfil {
-  display: flex;
-  gap: 1.25rem;
-  margin-bottom: 1rem;
-}
-
-.imagem-campo {
+/* Mesma caixa de Configurações do Hub: quadrada, tracejada, com o + e o
+   texto no meio. O próprio <label> é a área clicável. */
+.foto-perfil {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .5rem;
-}
-
-.imagem-previa {
-  width: 84px;
-  height: 84px;
-  display: grid;
-  place-items: center;
-  border: 1px dashed #ccd5e0;
-  border-radius: var(--radius-card);
-  background: var(--bg-muted);
+  justify-content: center;
+  gap: .25rem;
+  width: 160px;
+  aspect-ratio: 1;
+  border: 1.5px dashed #d9dde3;
+  border-radius: 14px;
+  background: #FAFAFA;
+  cursor: pointer;
   overflow: hidden;
-  font-size: .6875rem;
-  color: var(--text-muted);
+  transition: border-color .15s ease, background-color .15s ease;
 }
 
-/* Foto de pessoa é redonda; logotipo não — a forma já diz qual é qual. */
-.imagem-previa--redonda { border-radius: 999px; }
+.foto-perfil:hover { border-color: var(--primary-color); background: #F4F8FC; }
+.foto-perfil.is-enviando { opacity: .6; pointer-events: none; }
 
-.imagem-previa img { width: 100%; height: 100%; object-fit: cover; }
+.foto-perfil-mais { font-size: 1.5rem; font-weight: 300; color: var(--text-muted); line-height: 1; }
+.foto-perfil-texto { font-size: .8125rem; color: var(--text-muted); }
+.foto-perfil-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Com foto, o texto vira a legenda de trocar, sobre a imagem. */
+.foto-perfil.tem-foto { border-style: solid; border-color: var(--border); }
+.foto-perfil.tem-foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.foto-perfil.tem-foto .foto-perfil-texto {
+  position: relative;
+  padding: .25rem .5rem;
+  border-radius: 6px;
+  background: rgba(16, 24, 40, .65);
+  color: #fff;
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+
+.foto-perfil.tem-foto:hover .foto-perfil-texto { opacity: 1; }
 
 .doc-tipo {
   display: inline-flex;

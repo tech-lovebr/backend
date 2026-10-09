@@ -10,12 +10,10 @@ const NovoFornecedor = (() => {
   const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 
   let AVATAR_URL = null;
-  let LOGO_URL = null;
   let TIPO_DOC = 'cnpj';
 
   function abrir() {
     AVATAR_URL = null;
-    LOGO_URL = null;
     TIPO_DOC = 'cnpj';
 
     const campo = (id, rotulo, { tipo = 'text', placeholder = '', obrigatorio = false } = {}) => `
@@ -28,19 +26,12 @@ const NovoFornecedor = (() => {
       title: 'Cadastrar fornecedor',
       subtitle: 'A pessoa recebe um e-mail para definir a senha',
       body: `
-        <p class="drawer-section-title">Imagens</p>
-        <div class="imagens-perfil">
-          <div class="imagem-campo">
-            <div class="imagem-previa imagem-previa--redonda" id="previa-avatar"><span>Foto</span></div>
-            <input type="file" id="arquivo-avatar" accept="image/*" hidden>
-            <button type="button" class="btn btn-ghost btn-sm" data-escolher="avatar">Foto do responsável</button>
-          </div>
-          <div class="imagem-campo">
-            <div class="imagem-previa" id="previa-logo"><span>Logo</span></div>
-            <input type="file" id="arquivo-logo" accept="image/*" hidden>
-            <button type="button" class="btn btn-ghost btn-sm" data-escolher="logo">Logotipo</button>
-          </div>
-        </div>
+        <p class="drawer-section-title">Imagem de perfil</p>
+        <label class="foto-perfil" id="previa-avatar">
+          <span class="foto-perfil-mais">+</span>
+          <span class="foto-perfil-texto">Adicione uma foto</span>
+          <input type="file" id="arquivo-avatar" accept="image/*" class="foto-perfil-input">
+        </label>
 
         <p class="drawer-section-title">Identificação</p>
         ${campo('novo-empresa', 'Nome da empresa', { placeholder: 'Ex: Sophia Eventos & Decoração', obrigatorio: true })}
@@ -82,18 +73,7 @@ const NovoFornecedor = (() => {
           <textarea class="field-textarea" id="novo-descricao"
                     placeholder="Conte um pouco sobre o trabalho da empresa…"></textarea>
         </label>
-
-        <p class="drawer-section-title">Categoria e plano</p>
-        <div class="field-row">
-          ${campo('novo-categoria', 'Categoria', { placeholder: 'Ex: Decoração' })}
-          <label class="field">
-            <span class="field-label">Plano</span>
-            <select class="field-select" id="novo-plano">
-              ${['Gratuito', 'Essencial', 'Profissional', 'Premium']
-                .map(p => `<option value="${p}">${p}</option>`).join('')}
-            </select>
-          </label>
-        </div>`,
+`,
       footer: `
         <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
         <button type="button" class="btn btn-primary" id="btn-criar">Cadastrar</button>`
@@ -120,15 +100,12 @@ const NovoFornecedor = (() => {
       });
     });
 
-    document.querySelectorAll('[data-escolher]').forEach(btn => {
-      const qual = btn.dataset.escolher;
-      btn.addEventListener('click', () => document.getElementById(`arquivo-${qual}`).click());
-      document.getElementById(`arquivo-${qual}`)
-        .addEventListener('change', e => enviarImagem(e.target, qual, btn));
-    });
+    // O <label> já abre o seletor de arquivo; só o envio precisa de código.
+    document.getElementById('arquivo-avatar')
+      .addEventListener('change', e => enviarImagem(e.target));
   }
 
-  async function enviarImagem(input, qual, botao) {
+  async function enviarImagem(input) {
     const file = input.files[0];
     if (!file) return;
 
@@ -138,20 +115,18 @@ const NovoFornecedor = (() => {
       return;
     }
 
-    const rotuloOriginal = botao.textContent;
-    botao.disabled = true;
-    botao.textContent = 'Enviando...';
+    const caixa = document.getElementById('previa-avatar');
+    caixa.classList.add('is-enviando');
 
     const extensao = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const caminho = `${qual}/${Date.now()}-${Math.round(performance.now())}.${extensao}`;
+    const caminho = `avatar/${Date.now()}-${Math.round(performance.now())}.${extensao}`;
 
     const { error } = await supabaseClient.storage.from('fornecedores').upload(caminho, file, {
       cacheControl: '31536000',
       contentType: file.type || 'image/jpeg'
     });
 
-    botao.disabled = false;
-    botao.textContent = rotuloOriginal;
+    caixa.classList.remove('is-enviando');
     input.value = '';
 
     if (error) {
@@ -161,11 +136,11 @@ const NovoFornecedor = (() => {
       return;
     }
 
-    const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
-    if (qual === 'avatar') AVATAR_URL = url; else LOGO_URL = url;
-
-    const previa = document.getElementById(`previa-${qual}`);
-    previa.innerHTML = `<img src="${escapeHtml(url)}" alt="">`;
+    AVATAR_URL = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+    caixa.classList.add('tem-foto');
+    caixa.querySelector('.foto-perfil-mais').remove();
+    caixa.querySelector('.foto-perfil-texto').textContent = 'Trocar foto';
+    caixa.insertAdjacentHTML('afterbegin', `<img src="${escapeHtml(AVATAR_URL)}" alt="">`);
   }
 
   const valor = id => document.getElementById(id).value.trim();
@@ -233,10 +208,7 @@ const NovoFornecedor = (() => {
         state: document.getElementById('novo-estado').value || null,
         city: valor('novo-cidade') || null,
         description: valor('novo-descricao') || null,
-        category: valor('novo-categoria') || null,
-        plan: document.getElementById('novo-plano').value,
-        avatar_url: AVATAR_URL,
-        logo_url: LOGO_URL
+        avatar_url: AVATAR_URL
       })
       .eq('id', criado.user.id);
 

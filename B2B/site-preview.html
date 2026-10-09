@@ -51,6 +51,7 @@
       const params = new URLSearchParams(location.search);
       const isCheckout = params.get('page') === 'checkout';
       const linkId = params.get('link');
+      const publicSlug = params.get('site'); // setado pelo middleware.mjs ao acessar <slug>.love.com.br
       canvas.dataset.pageKey = isCheckout ? 'checkout' : 'home';
 
       let paymentLink = null;
@@ -76,7 +77,21 @@
         }
       }
 
-      if (!loadedState) {
+      // Visitante entrando por <slug>.love.com.br: busca o site publicado
+      // pelo slug. Se não achar, para aqui — nunca cai pro localStorage,
+      // senão um visitante que compartilhe o navegador com quem edita
+      // acabaria vendo o rascunho local de outra pessoa.
+      if (!loadedState && publicSlug) {
+        const { data: page } = await supabaseClient.from('site_pages').select('state').eq('slug', publicSlug).maybeSingle();
+        if (page && page.state) loadedState = page.state;
+        else {
+          canvas.innerHTML = '<div class="site-preview-empty">Esse site ainda não foi publicado.</div>';
+          window.b2bPageReady?.();
+          return;
+        }
+      }
+
+      if (!loadedState && !publicSlug) {
         const raw = localStorage.getItem(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY);
         if (raw) {
           try { loadedState = JSON.parse(raw); } catch (e) { loadedState = null; }
@@ -85,6 +100,7 @@
 
       if (!loadedState) {
         canvas.innerHTML = '<div class="site-preview-empty">Esta página ainda não foi publicada. Volte para "Editor de Site" e clique em "Publicar".</div>';
+        window.b2bPageReady?.();
         return;
       }
 
@@ -94,6 +110,7 @@
         migrateElementDefaults(builderState);
       } catch (e) {
         canvas.innerHTML = '<div class="site-preview-empty">Não foi possível carregar sua página.</div>';
+        window.b2bPageReady?.();
         return;
       }
 
@@ -159,6 +176,7 @@
       }
 
       renderForDevice(currentDeviceBucket());
+      window.b2bPageReady?.();
 
       let resizeTimer = null;
       const handleViewportChange = () => {

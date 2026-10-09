@@ -676,6 +676,10 @@ function persistBuilderState(silent) {
   if (!silent) showToast('Alterações salvas!');
 }
 
+// Devolve 'ok' quando publicou de verdade (ou quando não há sessão — mantém
+// o comportamento antigo de só salvar local nesse caso), ou 'erro' quando a
+// publicação no Supabase falhou — pra quem chama não mostrar um toast de
+// sucesso mentiroso.
 async function publishBuilderState() {
   const snapshot = JSON.stringify(builderState);
   const isCheckout = currentPageKey === 'checkout';
@@ -684,19 +688,38 @@ async function publishBuilderState() {
   localStorage.setItem(isCheckout ? CHECKOUT_PUBLISHED_KEY : BUILDER_PUBLISHED_KEY, '1');
   hasUnsavedChanges = false;
 
-  // O checkout precisa ficar visível pra qualquer cliente que abra um link de
-  // pagamento (sem login, de outro navegador) — por isso, além do localStorage
-  // (cache local do editor), publica também no Supabase.
+  // O checkout e o site principal precisam ficar visíveis pra quem não está
+  // logado (cliente abrindo um link de pagamento, visitante do site
+  // publicado) — por isso, além do localStorage (cache local do editor),
+  // publica também no Supabase.
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return 'ok';
+
   if (isCheckout) {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-      await supabaseClient.from('checkout_pages').upsert({
-        fornecedor_id: session.user.id,
-        state: builderState,
-        updated_at: new Date().toISOString()
-      });
-    }
+    await supabaseClient.from('checkout_pages').upsert({
+      fornecedor_id: session.user.id,
+      state: builderState,
+      updated_at: new Date().toISOString()
+    });
+    return 'ok';
   }
+
+  const slug = builderState.siteSettings && builderState.siteSettings.slug;
+  if (!slug) {
+    showToast('Defina uma URL personalizada antes de publicar.', true);
+    return 'erro';
+  }
+  const { error } = await supabaseClient.from('site_pages').upsert({
+    fornecedor_id: session.user.id,
+    slug,
+    state: builderState,
+    updated_at: new Date().toISOString()
+  });
+  if (error) {
+    showToast(error.code === '23505' ? 'Essa URL já está em uso por outro fornecedor.' : 'Não foi possível publicar o site.', true);
+    return 'erro';
+  }
+  return 'ok';
 }
 
 /* -------------------- Alerta de alterações não salvas -------------------- */
@@ -1445,21 +1468,38 @@ function renderEstiloTab(body) {
     const slugError = body.querySelector('#site-slug-error');
     const savedSlug = siteSettings.slug;
     let slugCheckTimer = null;
-    const checkSlug = () => {
+    let slugCheckToken = 0;
+    const markSlugStatus = (taken) => {
+      slugStatus.classList.toggle('is-taken', taken);
+      slugStatus.classList.toggle('is-available', !taken);
+      slugStatus.innerHTML = taken ? BI.close : BI.check;
+      slugError.hidden = !taken;
+    };
+    // Reservado (nome fixo da plataforma) é checagem instantânea, local.
+    // Em uso por outro fornecedor só dá pra saber perguntando ao banco — a
+    // RLS não deixa um fornecedor enxergar a linha de outro, por isso existe
+    // a function verificar_site_slug_disponivel (ver migration 031).
+    const checkSlug = async () => {
       const val = slugInput.value;
       slugStatus.classList.remove('is-available', 'is-taken');
       slugStatus.innerHTML = '';
       slugError.hidden = true;
       if (!val) return;
-      const taken = RESERVED_SLUGS.includes(val) && val !== savedSlug;
-      if (taken) {
-        slugStatus.classList.add('is-taken');
-        slugStatus.innerHTML = BI.close;
-        slugError.hidden = false;
-      } else {
-        slugStatus.classList.add('is-available');
-        slugStatus.innerHTML = BI.check;
+
+      if (RESERVED_SLUGS.includes(val) && val !== savedSlug) {
+        markSlugStatus(true);
+        return;
       }
+
+      const token = ++slugCheckToken;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { markSlugStatus(false); return; }
+      const { data: available } = await supabaseClient.rpc('verificar_site_slug_disponivel', {
+        p_slug: val,
+        p_fornecedor_id: session.user.id
+      });
+      if (token !== slugCheckToken) return; // resposta de uma checagem antiga — ignora
+      markSlugStatus(available === false);
     };
     slugInput.addEventListener('input', () => {
       const cursorAtEnd = slugInput.selectionStart === slugInput.value.length;
@@ -4087,8 +4127,8 @@ function initSiteBuilder() {
   document.getElementById('builder-redo').addEventListener('click', redo);
   document.getElementById('builder-save').addEventListener('click', () => persistBuilderState(false));
   document.getElementById('builder-publish').addEventListener('click', async () => {
-    await publishBuilderState();
-    showToast('Site publicado com sucesso!');
+    const result = await publishBuilderState();
+    if (result === 'ok') showToast('Site publicado com sucesso!');
   });
   wireUnsavedChangesGuard();
 

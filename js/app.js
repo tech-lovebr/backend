@@ -9653,7 +9653,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const card = document.createElement('div');
       card.id = `card-${item.id}`;
-      card.className = 'b2b-item-card group bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row gap-6 items-stretch w-full cursor-pointer';
+      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 cursor-pointer';
 
       card.innerHTML = `
         <!-- Imagem prévia da empresa -->
@@ -9696,7 +9696,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
                 <svg class="w-5 h-5 absolute inset-0 m-auto text-[#ebf4ff]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
               </div>
-              <span class="font-semibold text-zinc-700">${recommendPct}% de recomendação</span>
+              <span class="font-semibold text-zinc-700">${recommendPct}%</span>
             </div>
 
             <div class="flex items-center gap-2.5">
@@ -10282,7 +10282,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (categoryTabs) categoryTabs.style.setProperty('display', 'none', 'important');
           currentB2BCategory = 'favorites';
         } else {
-          if (toolbarTitle) toolbarTitle.textContent = 'Catálogo de produtos e serviços';
+          if (toolbarTitle) toolbarTitle.textContent = 'Encontrar fornecedor';
           if (categoryTabs) categoryTabs.style.removeProperty('display');
           if (viewId === 'explore' && currentB2BCategory === 'favorites') {
             currentB2BCategory = 'all';

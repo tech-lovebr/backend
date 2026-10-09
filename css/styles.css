@@ -5505,6 +5505,7 @@ body[data-theme="dark"] #drawer-contracted-vendor-details {
    a linha (divide-y) entre um fornecedor e outro. */
 body[data-theme="dark"] .b2b-item-card,
 body[data-theme="dark"] #b2b-contracted-list-container > div {
+  background: transparent !important;
   box-shadow: none !important;
   border-color: #404040 !important;
 }

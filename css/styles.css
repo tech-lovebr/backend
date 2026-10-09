@@ -3883,7 +3883,10 @@ body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important;
 
 /* -------------------- Página Legal (Termos de Uso / Política de Privacidade) -------------------- */
 /* Texto vindo do editor rico do Admin (CMS → Legal) — ver openLegalDocPage em app.js */
-.legal-doc-body h2 { font-size: 1.25rem; font-weight: 800; color: #18181b; margin: 2rem 0 0.75rem; }
+/* O !important é obrigatório aqui: a regra de marca "h1, h2, .font-title"
+   fixa font-weight: 400 !important, e sem isto todo h2 do documento sai com
+   peso de texto corrido — mais largo que o h3 logo abaixo, mas mais fraco. */
+.legal-doc-body h2 { font-size: 1.25rem; font-weight: 800 !important; color: #18181b; margin: 2rem 0 0.75rem; }
 .legal-doc-body h3 { font-size: 1.05rem; font-weight: 700; color: #18181b; margin: 1.5rem 0 0.5rem; }
 .legal-doc-body p { color: #3f3f46; line-height: 1.75; margin-bottom: 1rem; }
 .legal-doc-body ul, .legal-doc-body ol { color: #3f3f46; line-height: 1.75; margin: 0 0 1rem 1.25rem; }

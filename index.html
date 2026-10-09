@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
+  <!-- Evita o "flash" da home pública pra quem já está logado: antes de
+       qualquer outro script rodar (inclusive o Tailwind), já adivinha pelo
+       localStorage se existe sessão Supabase e esconde a home nesse caso —
+       só um palpite visual; js/app.js confirma de verdade depois e corrige
+       caso esteja errado (ver switchView, que remove essa classe). -->
+  <style>html.love-likely-logged-in #view-public-site { display: none !important; }</style>
+  <script>
+    try {
+      if (localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token')) {
+        document.documentElement.classList.add('love-likely-logged-in');
+      }
+    } catch (e) {}
+  </script>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>

@@ -171,6 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let pendingInitialDashboardRoute = null;
 
   function switchView(viewName) {
+    // Essa é a decisão de verdade — solta o palpite visual do <head> (ver
+    // index.html), que só existia pra cobrir o instante antes desta função
+    // rodar pela primeira vez.
+    document.documentElement.classList.remove('love-likely-logged-in');
+
     state.currentView = viewName;
 
     if (viewName === 'dashboard') {
@@ -11657,7 +11662,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
   else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab };
 
-  switchView((window.location.pathname === '/login' || window.location.hash === '#login') ? 'login' : 'public');
+  // Só chama switchView('public') de cara se NÃO houver pista de sessão no
+  // localStorage. Quando há (ver o <script> no <head> de index.html, que já
+  // escondeu #view-public-site por CSS antes deste arquivo inteiro rodar),
+  // deixa a decisão pra quando initClienteSession() confirmar de verdade —
+  // chamar switchView('public') aqui e trocar pra 'dashboard' alguns
+  // instantes depois é exatamente o que fazia a home pública piscar pra
+  // quem já estava logado, em QUALQUER página (não só nas legais).
+  const isLoginRoute = window.location.pathname === '/login' || window.location.hash === '#login';
+  const hasPlausibleSession = (() => {
+    try { return !!localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token'); } catch (e) { return false; }
+  })();
+
+  if (isLoginRoute) {
+    switchView('login');
+  } else if (!hasPlausibleSession) {
+    switchView('public');
+  }
+  // Se houver pista de sessão e não for /login, state.currentView já nasce
+  // 'public' (valor padrão) sem a função ter sido chamada — initClienteSession
+  // decide de verdade (switchView('dashboard') ou, se a sessão não se
+  // confirmar, switchView('public') no fallback abaixo).
 
   // Mostra a página legal (com um estado de carregamento) JÁ na primeira
   // pintura da tela, cobrindo o caso de quem NÃO está logado — sem isso,
@@ -11681,7 +11706,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function initClienteSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;
+    if (!session) {
+      // Cobre o palpite de sessão (localStorage tinha a chave, mas o token
+      // não se confirmou) — sem a classe ainda presente, switchView() nunca
+      // chegou a rodar (ela mesma se encarrega de removê-la), e sem isso
+      // aqui quem tivesse um token velho/inválido ficava travado na tela
+      // escondida pelo CSS do <head>, sem nunca cair de volta pra home.
+      if (document.documentElement.classList.contains('love-likely-logged-in')) switchView('public');
+      return;
+    }
 
     const { data: cliente } = await supabaseClient
       .from('clientes')

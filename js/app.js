@@ -11632,8 +11632,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const initialRailTab = RAIL_ROUTE_TO_TAB[window.location.pathname] || null;
 
   switchView((window.location.pathname === '/login' || window.location.hash === '#login') ? 'login' : 'public');
+
+  // Mostra a página legal (com um estado de carregamento) JÁ na primeira
+  // pintura da tela — sem isso, dava pra ver a home piscar por um instante
+  // em /termos e /politica-de-privacidade antes da sessão terminar de
+  // resolver (initClienteSession é assíncrono) e só então trocar pra lá.
+  if (initialLegalSlug) {
+    const landingSections = document.getElementById('public-landing-sections');
+    const legalPage = document.getElementById('legal-doc-page');
+    const loadingEl = document.getElementById('legal-doc-loading');
+    const titleEl = document.getElementById('legal-doc-title');
+    if (landingSections) landingSections.classList.add('hidden');
+    if (legalPage) legalPage.classList.remove('hidden');
+    if (loadingEl) loadingEl.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = initialLegalSlug === 'termos' ? 'Termos de Uso' : 'Política de Privacidade';
+  }
+
   initClienteSession().then(() => {
-    if (initialLegalSlug) openLegalDocPage(initialLegalSlug, { pushUrl: false });
+    // pushUrl sem forçar false de propósito: se a sessão existir,
+    // switchView('dashboard') já chamou switchRailTab('overview') por
+    // dentro, o que reescreveu a URL pra "/" — aqui o guard interno do
+    // openLegalDocPage (só troca se a URL atual for diferente) repõe
+    // /termos ou /politica-de-privacidade; sem sessão a URL nunca mudou,
+    // então o mesmo guard não faz nada.
+    if (initialLegalSlug) openLegalDocPage(initialLegalSlug);
     else if (initialRailTab && initialRailTab !== 'overview' && state.currentView === 'dashboard') switchRailTab(initialRailTab);
   });
 

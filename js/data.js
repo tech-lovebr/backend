@@ -696,7 +696,13 @@ const LOVE_DATA = {
       tag: 'Mais Escolhido',
       isFavorite: true,
       description: 'Espaço contemporâneo com pé direito duplo, alta gastronomia italiana e iluminação cênica integrada.',
-      features: ['Ar Condicionado Central', 'Mobiliário Completo', 'Gerador Próprio', 'Camarim dos Noivos', 'Estacionamento']
+      features: ['Ar Condicionado Central', 'Mobiliário Completo', 'Gerador Próprio', 'Camarim dos Noivos', 'Estacionamento'],
+      portfolioPhotos: ['assets/theme_blacktie.jpg', 'assets/wedding_table_dinner.jpg', 'assets/wedding_hero_banner.jpg'],
+      services: [
+        { name: 'Aluguel do Espaço (Diária)', price: 'R$ 38.000', desc: 'Uso exclusivo por até 8 horas, montagem e desmontagem inclusas.' },
+        { name: 'Hora Extra', price: 'R$ 3.500 / h', desc: 'Extensão do evento além do horário contratado.' },
+        { name: 'Gastronomia Própria (por pessoa)', price: 'R$ 320', desc: 'Buffet completo com equipe própria da casa.' }
+      ]
     },
     {
       id: 'venue-palacio-tangara',
@@ -717,7 +723,13 @@ const LOVE_DATA = {
       tag: 'Luxo 5 Estrelas',
       isFavorite: false,
       description: 'O refúgio de luxo mais exclusivo da capital, cercado pela exuberante vegetação do Parque Burle Marx.',
-      features: ['Hospedagem Inclusa', 'Spa & Beleza', 'Heliponto', 'Alta Gastronomia', 'Segurança Privada']
+      features: ['Hospedagem Inclusa', 'Spa & Beleza', 'Heliponto', 'Alta Gastronomia', 'Segurança Privada'],
+      portfolioPhotos: ['assets/theme_garden.jpg', 'assets/orchid_luxury.jpg', 'assets/wedding_sunset_couple.jpg'],
+      services: [
+        { name: 'Aluguel do Espaço (Diária)', price: 'R$ 85.000', desc: 'Inclui parque Burle Marx, salões e jardins.' },
+        { name: 'Hospedagem para Convidados', price: 'A partir de R$ 1.200 / noite', desc: 'Diárias com tarifa corporativa para o evento.' },
+        { name: 'Chef Michelin (por pessoa)', price: 'R$ 480', desc: 'Menu degustação assinado por chef premiado.' }
+      ]
     },
     {
       id: 'venue-espaco-wood',
@@ -738,7 +750,12 @@ const LOVE_DATA = {
       tag: 'Rústico Elegante',
       isFavorite: false,
       description: 'Estrutura aconchegante com madeira nobre de demolição, cascata e gazebo cercado de verde.',
-      features: ['Área Externa Coberta', 'Lounge Bar', 'Espaço Kids', 'Gerador', 'Decoração Rústica']
+      features: ['Área Externa Coberta', 'Lounge Bar', 'Espaço Kids', 'Gerador', 'Decoração Rústica'],
+      portfolioPhotos: ['assets/theme_coastal.jpg', 'assets/wedding_table_dinner.jpg'],
+      services: [
+        { name: 'Aluguel do Espaço (Diária)', price: 'R$ 26.000', desc: 'Gazebo, área externa coberta e lounge bar inclusos.' },
+        { name: 'Buffet Contemporâneo (por pessoa)', price: 'R$ 260', desc: 'Estações interativas e menu sazonal.' }
+      ]
     },
     {
       id: 'venue-espaco-gardens',
@@ -759,7 +776,12 @@ const LOVE_DATA = {
       tag: 'Natureza & Design',
       isFavorite: true,
       description: 'Arquitetura premiada com estrutura em madeira rústica, paredes vivas e espelhos d\'água.',
-      features: ['Isolamento Acústico', 'Cozinha Industrial', 'Palco Integrado', 'Valet Próprio', 'Suíte Nupcial']
+      features: ['Isolamento Acústico', 'Cozinha Industrial', 'Palco Integrado', 'Valet Próprio', 'Suíte Nupcial'],
+      portfolioPhotos: ['assets/wedding_hero_banner.jpg', 'assets/theme_garden.jpg'],
+      services: [
+        { name: 'Aluguel do Espaço (Diária)', price: 'R$ 32.000', desc: 'Jardim tropical, cozinha industrial e palco integrado.' },
+        { name: 'Produção de Palco & Som', price: 'R$ 4.800', desc: 'Estrutura completa para banda ou DJ.' }
+      ]
     },
     {
       id: 'venue-casa-fasano',
@@ -780,7 +802,13 @@ const LOVE_DATA = {
       tag: 'Alta Sociedade',
       isFavorite: false,
       description: 'Sinônimo de sofisticação e tradição gastronômica no coração nobre de São Paulo.',
-      features: ['Serviço de Somelier', 'Mobiliário de Design', 'Segurança VIP', 'Coordenação Exclusiva']
+      features: ['Serviço de Somelier', 'Mobiliário de Design', 'Segurança VIP', 'Coordenação Exclusiva'],
+      portfolioPhotos: ['assets/theme_blacktie.jpg', 'assets/orchid_luxury.jpg'],
+      services: [
+        { name: 'Aluguel do Espaço (Diária)', price: 'R$ 68.000', desc: 'Pátio central, segurança VIP e coordenação exclusiva.' },
+        { name: 'Gastronomia Fasano (por pessoa)', price: 'R$ 520', desc: 'Menu autoral assinado pela cozinha Fasano.' },
+        { name: 'Serviço de Sommelier', price: 'R$ 2.200', desc: 'Curadoria e serviço de vinhos durante o evento.' }
+      ]
     }
   ],
 
@@ -805,7 +833,7 @@ const LOVE_DATA = {
       about: 'Mais de 10 anos transformando sonhos em momentos inesquecíveis. Nossa metodologia foca na gestão financeira transparente, curadoria de fornecedores de elite e assessoria do dia com equipe sincronizada.',
       specialties: ['Assessoria Completa', 'Assessoria do Dia', 'Gestão Financeira & RSVP', 'Curadoria de Fornecedores', 'Cronograma Minuto a Minuto'],
       portfolioPhotos: ['assets/theme_garden.jpg', 'assets/theme_blacktie.jpg', 'assets/theme_coastal.jpg', 'assets/wedding_hero_banner.jpg'],
-      packages: [
+      services: [
         { name: 'Assessoria do Dia (Final)', price: 'R$ 3.800', desc: 'Coordenação no dia + alinhamento 30 dias antes.' },
         { name: 'Assessoria Completa (Recomendado)', price: 'R$ 6.500', desc: 'Planejamento de ponta a ponta desde o início.' },
         { name: 'Produção Executiva VIP', price: 'R$ 9.800', desc: 'Assessoria ilimitada + RSVP ativo + Concierge convidados.' }
@@ -834,7 +862,7 @@ const LOVE_DATA = {
       about: 'Especialista em casamentos e celebrações contemporâneas. Foco em detalhes refinados, tranquilidade para o casal e orçamentos otimizados.',
       specialties: ['Casamentos Contemporâneos', 'Assessoria do Dia', 'Gestão de Contratos'],
       portfolioPhotos: ['assets/theme_blacktie.jpg', 'assets/theme_garden.jpg'],
-      packages: [
+      services: [
         { name: 'Assessoria Essencial', price: 'R$ 4.500', desc: 'Alinhamento 60 dias antes + dia do evento.' },
         { name: 'Assessoria Completa', price: 'R$ 7.200', desc: 'Curadoria completa de fornecedores e cronograma.' }
       ],
@@ -861,7 +889,7 @@ const LOVE_DATA = {
       about: 'Produção executiva de grande porte, casamentos black tie e destination weddings nos destinos mais nobres do Brasil.',
       specialties: ['Destination Wedding', 'Black Tie', 'Decoração & Luz'],
       portfolioPhotos: ['assets/theme_blacktie.jpg', 'assets/card_safari.jpg'],
-      packages: [
+      services: [
         { name: 'Luxury Full Experience', price: 'R$ 8.800', desc: 'Produção executiva internacional e cenografia.' }
       ],
       reviews: [
@@ -887,7 +915,7 @@ const LOVE_DATA = {
       about: 'Planejamento acolhedor e focado na experiência humana dos noivos e convidados com maestria.',
       specialties: ['Casamentos na Praia', 'Mini Weddings', 'R.S.V.P. Ativo'],
       portfolioPhotos: ['assets/theme_coastal.jpg', 'assets/theme_garden.jpg'],
-      packages: [
+      services: [
         { name: 'Mini Wedding & Praia', price: 'R$ 3.800', desc: 'Planejamento para celebrações intimistas.' }
       ],
       reviews: [
@@ -909,7 +937,13 @@ const LOVE_DATA = {
       image: 'assets/wedding_hero_banner.jpg',
       tag: 'Foto & Cinema 4K',
       isFavorite: true,
-      description: 'Linguagem documental e cinematográfica com captação em 4K, drones e pós-produção artística refinada.'
+      description: 'Linguagem documental e cinematográfica com captação em 4K, drones e pós-produção artística refinada.',
+      portfolioPhotos: ['assets/wedding_sunset_couple.jpg', 'assets/wedding_table_dinner.jpg', 'assets/theme_blacktie.jpg'],
+      services: [
+        { name: 'Cobertura Completa do Dia', price: 'R$ 7.800', desc: 'Foto + filme em 4K, 10h de cobertura.' },
+        { name: 'Drone & Pós-produção Cinematográfica', price: 'R$ 2.400', desc: 'Imagens aéreas e edição artística do filme.' },
+        { name: 'Álbum Fine Art', price: 'R$ 1.900', desc: 'Álbum impresso 30x30cm, capa em tecido.' }
+      ]
     },
     {
       id: 'photo-2',
@@ -922,7 +956,12 @@ const LOVE_DATA = {
       image: 'assets/theme_blacktie.jpg',
       tag: 'Fine Art & Editorial',
       isFavorite: false,
-      description: 'Fotografia poética e editorial inspirada na alta moda e registros espontâneos com luz natural.'
+      description: 'Fotografia poética e editorial inspirada na alta moda e registros espontâneos com luz natural.',
+      portfolioPhotos: ['assets/theme_blacktie.jpg', 'assets/orchid_luxury.jpg'],
+      services: [
+        { name: 'Editorial Fine Art (Dia Todo)', price: 'R$ 9.500', desc: 'Cobertura completa com luz natural e still life editorial.' },
+        { name: 'Ensaio Pré-Wedding', price: 'R$ 2.800', desc: 'Sessão externa de até 3 horas.' }
+      ]
     }
   ],
 
@@ -939,7 +978,12 @@ const LOVE_DATA = {
       image: 'assets/theme_garden.jpg',
       tag: 'Tradição & Alta Gastronomia',
       isFavorite: true,
-      description: 'Cardápios contemporâneos autorais, serviço à francesa e ilhas gastronômicas requintadas.'
+      description: 'Cardápios contemporâneos autorais, serviço à francesa e ilhas gastronômicas requintadas.',
+      portfolioPhotos: ['assets/theme_garden.jpg', 'assets/wedding_table_dinner.jpg'],
+      services: [
+        { name: 'Menu Degustação Completo (por pessoa)', price: 'R$ 280', desc: 'Serviço à francesa com ilhas gastronômicas.' },
+        { name: 'Open Bar Premium (por pessoa)', price: 'R$ 85', desc: 'Drinks autorais e carta de vinhos selecionada.' }
+      ]
     },
     {
       id: 'buffet-2',
@@ -952,7 +996,12 @@ const LOVE_DATA = {
       image: 'assets/theme_coastal.jpg',
       tag: 'Gastronomia Criativa',
       isFavorite: false,
-      description: 'Menu sensorial contemporâneo focado em ingredientes orgânicos, finger foods e estações interativas.'
+      description: 'Menu sensorial contemporâneo focado em ingredientes orgânicos, finger foods e estações interativas.',
+      portfolioPhotos: ['assets/theme_coastal.jpg', 'assets/wedding_table_dinner.jpg'],
+      services: [
+        { name: 'Menu Sensorial (por pessoa)', price: 'R$ 220', desc: 'Finger foods e estações interativas.' },
+        { name: 'Estação de Drinks Artesanais (por pessoa)', price: 'R$ 65', desc: 'Mixologia com ingredientes orgânicos.' }
+      ]
     }
   ],
 

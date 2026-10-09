@@ -9546,22 +9546,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // 12.4 Fechar Modal Mobile
-    const btnCloseMobileModal = document.getElementById('btn-close-b2b-mobile-modal');
-    const mobileModal = document.getElementById('drawer-b2b-mobile-modal');
-    if (btnCloseMobileModal && mobileModal) {
-      btnCloseMobileModal.addEventListener('click', () => {
-        mobileModal.classList.add('hidden');
-        mobileModal.classList.remove('flex');
-      });
-      mobileModal.addEventListener('click', (e) => {
-        if (e.target === mobileModal) {
-          mobileModal.classList.add('hidden');
-          mobileModal.classList.remove('flex');
-        }
-      });
-    }
-
     // 12.5 Inicialização do Chat Messenger B2B & Render Inicial
     initB2BChatHandlers();
     renderB2BExplore();
@@ -9728,17 +9712,16 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
+      // Imagem, nome (resto do card) e "Contratar" abrem a página completa
+      // do fornecedor — nunca mais um pop-up ou drawer inferior pra essas 3 ações.
       card.querySelector('.btn-open-supplier-gallery')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        openSupplierGalleryModal(item);
+        openB2BVendorProfile(item);
       });
 
       card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        const sourceKey = { venue: 'venues', decor: 'venues', advisor: 'advisors', photo: 'photo', buffet: 'buffet' }[item.type];
-        const source = sourceKey && (window.LOVE_DATA[sourceKey] || []).find(x => x.id === item.id);
-        if (source) source.isFavorite = !source.isFavorite;
-        item.isFavorite = !item.isFavorite;
+        toggleB2BFavorite(item);
         renderB2BExplore();
       });
 
@@ -9749,11 +9732,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        openB2BMobileModal(item, item.type || 'venue');
+        openB2BVendorProfile(item);
       });
 
       card.addEventListener('click', () => {
-        openB2BMobileModal(item, item.type || 'venue');
+        openB2BVendorProfile(item);
       });
 
       listContainer.appendChild(card);
@@ -9827,114 +9810,170 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function renderB2BAdvisorDetails(adv) {
-    const pane = document.getElementById('b2b-right-pane-details');
-    if (!pane) return;
+  // ==========================================
+  // 12.3b PÁGINA COMPLETA DO FORNECEDOR (substitui a lista do Explorar)
+  // ==========================================
+  let activeB2BProfileItem = null;
 
-    pane.innerHTML = `
-      <div class="h-full flex flex-col">
-        <!-- Cover & Header -->
-        <div class="relative h-44 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 flex-shrink-0">
-          <img src="${adv.portfolioPhotos[0] || adv.image}" alt="Capa" class="w-full h-full object-cover opacity-30 mix-blend-overlay">
-          <div class="absolute -bottom-7 left-6 flex items-end gap-4">
-            <img src="${adv.avatar}" alt="${adv.name}" class="w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-md bg-white">
-          </div>
-          <div class="absolute top-3 right-3 flex items-center gap-2">
-            <span class="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-blue-700 shadow-sm border border-white/50">
-              ${adv.badge}
-            </span>
-          </div>
-        </div>
+  // Mesma lógica de favoritar usada no card — extraída pra ser reaproveitada
+  // aqui e na página de perfil.
+  function toggleB2BFavorite(item) {
+    const sourceKey = { venue: 'venues', decor: 'venues', advisor: 'advisors', photo: 'photo', buffet: 'buffet' }[item.type];
+    const source = sourceKey && (window.LOVE_DATA[sourceKey] || []).find(x => x.id === item.id);
+    if (source) source.isFavorite = !source.isFavorite;
+    item.isFavorite = !item.isFavorite;
+    return item.isFavorite;
+  }
 
-        <!-- Conteúdo do Dossiê -->
-        <div class="flex-1 overflow-y-auto p-6 pt-9 space-y-6">
-          
-          <!-- Título & Ações Principais -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 pb-5">
-            <div>
-              <h3 class="text-xl font-bold text-zinc-900">${adv.name}</h3>
-              <p class="text-xs text-zinc-500">${adv.company} • ${adv.location}</p>
-              <div class="flex items-center gap-2 mt-1.5 text-xs">
-                <span class="text-amber-500 font-bold">★ ${adv.rating}</span>
-                <span class="text-zinc-400">(${adv.reviewsCount} avaliações)</span>
-                <span class="text-zinc-300">•</span>
-                <span class="text-emerald-600 font-semibold">${adv.weddingsCount} casamentos organizados</span>
-              </div>
-            </div>
+  // "Contratar" não tem checkout de verdade ainda — abre o chat de verdade
+  // já com uma mensagem de intenção de contratação pré-preenchida.
+  function handleB2BHireAction(item) {
+    switchB2BView('messages', item.chatId || 'mariana-assessoria');
+    setTimeout(() => {
+      const chatInput = document.getElementById('b2b-chat-input');
+      if (chatInput && !chatInput.value) {
+        chatInput.value = `Olá! Gostaria de contratar os serviços de ${item.name}. Pode me passar mais detalhes?`;
+        chatInput.focus();
+      }
+    }, 50);
+  }
 
-            <!-- Botão Direto para o Chat Messenger -->
-            <div class="flex items-center gap-2">
-              <button type="button" class="btn-open-chat-with-advisor bg-[#537bae] hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-all cursor-pointer" data-chat-id="${adv.chatId}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                <span>Conversar no Chat</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Sobre & Metodologia -->
-          <div class="space-y-2">
-            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider">Sobre a Assessoria</h4>
-            <p class="text-xs text-zinc-600 leading-relaxed">${adv.about}</p>
-            <div class="flex flex-wrap gap-1.5 pt-2">
-              ${adv.specialties.map(s => `<span class="bg-blue-50 text-blue-700 text-[11px] font-medium px-2.5 py-1 rounded-lg border border-blue-100">${s}</span>`).join('')}
-            </div>
-          </div>
-
-          <!-- Pacotes & Investimento -->
-          <div class="space-y-3">
-            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider">Pacotes de Serviços & Preços</h4>
-            <div class="grid grid-cols-1 gap-2.5">
-              ${adv.packages.map(pkg => `
-                <div class="p-3.5 rounded-xl border border-zinc-200 bg-zinc-50/50 flex items-center justify-between gap-3">
-                  <div>
-                    <h5 class="text-xs font-bold text-zinc-900">${pkg.name}</h5>
-                    <p class="text-[11px] text-zinc-500">${pkg.desc}</p>
-                  </div>
-                  <span class="text-xs font-black text-zinc-900 whitespace-nowrap">${pkg.price}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Galeria de Fotos Recentes -->
-          <div class="space-y-2">
-            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider">Galeria de Eventos Recentes</h4>
-            <div class="grid grid-cols-3 gap-2">
-              ${adv.portfolioPhotos.map(photo => `
-                <img src="${photo}" alt="Portfólio" class="w-full h-20 rounded-xl object-cover border border-zinc-200 shadow-2xs hover:scale-105 transition-transform">
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- Depoimentos Reais -->
-          <div class="space-y-2 pb-4">
-            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider">Depoimentos de Casais Love</h4>
-            <div class="space-y-2">
-              ${adv.reviews.map(rev => `
-                <div class="p-3 rounded-xl bg-amber-50/60 border border-amber-100 text-xs space-y-1">
-                  <div class="flex items-center justify-between">
-                    <span class="font-bold text-zinc-900">${rev.author}</span>
-                    <span class="text-amber-500">${rev.stars}</span>
-                  </div>
-                  <p class="text-zinc-600 italic leading-relaxed">"${rev.text}"</p>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-        </div>
-      </div>
-    `;
-
-    // Conecta o botão de abrir chat direto
-    const btnChat = pane.querySelector('.btn-open-chat-with-advisor');
-    if (btnChat) {
-      btnChat.addEventListener('click', () => {
-        const chatId = btnChat.getAttribute('data-chat-id') || 'mariana-assessoria';
-        switchB2BView('messages', chatId);
-      });
+  function handleB2BShare(item, triggerBtn) {
+    const shareText = `${item.name} — ${item.description || item.about || ''}`.trim();
+    const marcarCopiado = () => {
+      if (!triggerBtn) return;
+      triggerBtn.classList.add('text-emerald-600');
+      setTimeout(() => triggerBtn.classList.remove('text-emerald-600'), 2000);
+    };
+    if (navigator.share) {
+      navigator.share({ title: item.name, text: shareText }).catch(() => {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareText).then(marcarCopiado).catch(() => {});
     }
   }
+
+  function renderB2BVendorProfile(item) {
+    const coverImg = document.getElementById('b2b-profile-cover-img');
+    const avatarImg = document.getElementById('b2b-profile-avatar-img');
+    const nameEl = document.getElementById('b2b-profile-name');
+    const roleEl = document.getElementById('b2b-profile-role');
+    const locationTextEl = document.getElementById('b2b-profile-location-text');
+    const ratingWrap = document.getElementById('b2b-profile-rating-wrap');
+    const ratingEl = document.getElementById('b2b-profile-rating');
+    const reviewsCountEl = document.getElementById('b2b-profile-reviews-count');
+    const aboutEl = document.getElementById('b2b-profile-about');
+    const specialtiesEl = document.getElementById('b2b-profile-specialties');
+    const servicesSection = document.getElementById('b2b-profile-services-section');
+    const servicesGrid = document.getElementById('b2b-profile-services-grid');
+    const portfolioSection = document.getElementById('b2b-profile-portfolio-section');
+    const portfolioGrid = document.getElementById('b2b-profile-portfolio-grid');
+    const favIcon = document.getElementById('b2b-profile-favorite-icon');
+
+    const portfolioPhotos = (item.portfolioPhotos && item.portfolioPhotos.length) ? item.portfolioPhotos : [item.image];
+    const avatarSrc = item.avatar || item.image;
+
+    if (coverImg) coverImg.src = portfolioPhotos[0] || item.image;
+    if (avatarImg) avatarImg.src = avatarSrc;
+    if (nameEl) nameEl.textContent = item.name;
+    if (roleEl) {
+      const roleText = item.role || item.company || '';
+      roleEl.textContent = roleText;
+      roleEl.classList.toggle('hidden', !roleText);
+    }
+    if (locationTextEl) locationTextEl.textContent = item.location || item.neighborhood || '';
+    if (ratingWrap) ratingWrap.classList.toggle('hidden', !item.rating);
+    if (ratingEl) ratingEl.textContent = item.rating || '';
+    if (reviewsCountEl) reviewsCountEl.textContent = item.reviewsCount ? `(${item.reviewsCount} avaliações)` : '';
+    if (aboutEl) aboutEl.textContent = item.about || item.description || '';
+
+    const specialties = item.specialties || item.features || [];
+    if (specialtiesEl) {
+      specialtiesEl.innerHTML = specialties.map(s => `<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium">${s}</span>`).join('');
+    }
+
+    const services = item.services || [];
+    if (servicesGrid) {
+      servicesGrid.innerHTML = services.map(svc => `
+        <div class="p-4 rounded-xl border border-zinc-200 bg-zinc-50/60 space-y-1">
+          <div class="flex items-start justify-between gap-2">
+            <h4 class="text-sm font-bold text-zinc-900">${svc.name}</h4>
+            <span class="text-xs font-black text-zinc-900 whitespace-nowrap">${svc.price}</span>
+          </div>
+          <p class="text-xs text-zinc-500 leading-relaxed">${svc.desc || ''}</p>
+        </div>
+      `).join('');
+    }
+    if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0);
+
+    if (portfolioGrid) {
+      portfolioGrid.innerHTML = portfolioPhotos.map((photo, i) => `
+        <button type="button" class="b2b-profile-portfolio-photo-btn relative aspect-square rounded-xl overflow-hidden bg-zinc-100 cursor-pointer group" data-index="${i}">
+          <img src="${photo}" alt="Portfólio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        </button>
+      `).join('');
+      portfolioGrid.querySelectorAll('.b2b-profile-portfolio-photo-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openSupplierGalleryModal(item);
+          supplierGalleryIndex = parseInt(btn.getAttribute('data-index'), 10) || 0;
+          renderSupplierGalleryImage();
+        });
+      });
+    }
+    if (portfolioSection) portfolioSection.classList.toggle('hidden', portfolioPhotos.length === 0);
+
+    if (favIcon) {
+      favIcon.classList.toggle('fill-[#c7305b]', !!item.isFavorite);
+      favIcon.classList.toggle('text-[#c7305b]', !!item.isFavorite);
+      favIcon.classList.toggle('fill-none', !item.isFavorite);
+      favIcon.classList.toggle('text-zinc-300', !item.isFavorite);
+    }
+  }
+
+  function openB2BVendorProfile(item) {
+    activeB2BProfileItem = item;
+    renderB2BVendorProfile(item);
+
+    const exploreView = document.getElementById('b2b-explore-view');
+    const profileView = document.getElementById('b2b-vendor-profile-view');
+    const searchBar = document.getElementById('b2b-top-search-bar');
+    if (exploreView) exploreView.classList.add('hidden');
+    if (profileView) profileView.classList.remove('hidden');
+    if (searchBar) searchBar.classList.add('hidden');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeB2BVendorProfile() {
+    activeB2BProfileItem = null;
+    const exploreView = document.getElementById('b2b-explore-view');
+    const profileView = document.getElementById('b2b-vendor-profile-view');
+    const searchBar = document.getElementById('b2b-top-search-bar');
+    if (profileView) profileView.classList.add('hidden');
+    if (exploreView) exploreView.classList.remove('hidden');
+    if (searchBar) searchBar.classList.remove('hidden');
+
+    renderB2BExplore();
+  }
+
+  document.getElementById('btn-b2b-profile-back')?.addEventListener('click', closeB2BVendorProfile);
+
+  document.getElementById('btn-b2b-profile-message')?.addEventListener('click', () => {
+    if (activeB2BProfileItem) switchB2BView('messages', activeB2BProfileItem.chatId || 'mariana-assessoria');
+  });
+
+  document.getElementById('btn-b2b-profile-hire')?.addEventListener('click', () => {
+    if (activeB2BProfileItem) handleB2BHireAction(activeB2BProfileItem);
+  });
+
+  document.getElementById('btn-b2b-profile-favorite')?.addEventListener('click', () => {
+    if (!activeB2BProfileItem) return;
+    toggleB2BFavorite(activeB2BProfileItem);
+    renderB2BVendorProfile(activeB2BProfileItem);
+  });
+
+  document.getElementById('btn-b2b-profile-share')?.addEventListener('click', (e) => {
+    if (activeB2BProfileItem) handleB2BShare(activeB2BProfileItem, e.currentTarget);
+  });
 
   // ==========================================
   // 12.4 GALERIA/PORTFÓLIO DO FORNECEDOR (Explorar → clique na imagem)
@@ -10017,87 +10056,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-supplier-gallery-hire')?.addEventListener('click', () => {
     if (!supplierGalleryItem) return;
     closeModal(document.getElementById('modal-supplier-gallery'));
-    openB2BMobileModal(supplierGalleryItem, supplierGalleryItem.type || 'venue');
+    handleB2BHireAction(supplierGalleryItem);
   });
-
-  function openB2BMobileModal(item, type) {
-    const modal = document.getElementById('drawer-b2b-mobile-modal');
-    const titleEl = document.getElementById('b2b-mobile-modal-title');
-    const contentEl = document.getElementById('b2b-mobile-modal-content');
-    if (!modal || !contentEl) return;
-
-    if (titleEl) titleEl.textContent = item.name;
-
-    if (type === 'venue') {
-      contentEl.innerHTML = `
-        <div class="space-y-4">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-44 rounded-2xl object-cover border border-zinc-200">
-          <div>
-            <div class="flex items-center justify-between">
-              <h4 class="font-bold text-zinc-900 text-base">${item.name}</h4>
-              <span class="text-sm font-black text-[#537bae]">${item.price}</span>
-            </div>
-            <p class="text-xs text-zinc-500">${item.location}</p>
-            <div class="flex items-center gap-1 text-xs text-amber-500 font-bold mt-1">
-              ★ ${item.rating} <span class="text-zinc-400 font-normal">(${item.reviewsCount} avaliações)</span>
-            </div>
-          </div>
-          <p class="text-xs text-zinc-600 leading-relaxed">${item.description}</p>
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="p-2.5 bg-zinc-50 rounded-xl border border-zinc-100">
-              <span class="text-[10px] text-zinc-400 block font-medium">Capacidade</span>
-              <span class="font-bold text-zinc-800">${item.guests} convidados</span>
-            </div>
-            <div class="p-2.5 bg-zinc-50 rounded-xl border border-zinc-100">
-              <span class="text-[10px] text-zinc-400 block font-medium">Área Total</span>
-              <span class="font-bold text-zinc-800">${item.area}</span>
-            </div>
-          </div>
-          <button type="button" class="btn-mobile-chat-cta w-full bg-[#537bae] text-white py-3 rounded-xl font-bold text-xs shadow-md cursor-pointer">
-            Conversar com o Espaço no Chat
-          </button>
-        </div>
-      `;
-
-      const btnChat = contentEl.querySelector('.btn-mobile-chat-cta');
-      if (btnChat) {
-        btnChat.addEventListener('click', () => {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-          switchB2BView('messages', 'villa-bisutti');
-        });
-      }
-    } else {
-      contentEl.innerHTML = `
-        <div class="space-y-4">
-          <div class="flex items-center gap-3">
-            <img src="${item.avatar}" alt="${item.name}" class="w-14 h-14 rounded-2xl object-cover border border-zinc-200">
-            <div>
-              <h4 class="font-bold text-zinc-900 text-base">${item.name}</h4>
-              <p class="text-xs text-zinc-500">${item.role}</p>
-              <span class="text-xs font-bold text-blue-700">${item.startingPrice}</span>
-            </div>
-          </div>
-          <p class="text-xs text-zinc-600 leading-relaxed">${item.about}</p>
-          <button type="button" class="btn-mobile-chat-cta w-full bg-[#537bae] text-white py-3 rounded-xl font-bold text-xs shadow-md cursor-pointer">
-            Abrir Conversa no Chat
-          </button>
-        </div>
-      `;
-
-      const btnChat = contentEl.querySelector('.btn-mobile-chat-cta');
-      if (btnChat) {
-        btnChat.addEventListener('click', () => {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-          switchB2BView('messages', item.chatId || 'mariana-assessoria');
-        });
-      }
-    }
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
 
   // ==========================================
   // 12. B2B FORNECEDORES & MESSENGER CHAT
@@ -10232,6 +10192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const exploreView = document.getElementById('b2b-explore-view');
+    const vendorProfileView = document.getElementById('b2b-vendor-profile-view');
     const messagesView = document.getElementById('b2b-messages-view');
     const contractedView = document.getElementById('b2b-contracted-view');
     const insuranceView = document.getElementById('b2b-insurance-view');
@@ -10240,6 +10201,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('b2b-search-input');
     const sortContainer = document.getElementById('b2b-sort-container');
     const b2bNavTabs = document.querySelectorAll('.tab-b2b-nav');
+
+    // Navegar pra qualquer aba nomeada (Mensagens, Meus Contratos, etc.)
+    // sempre sai da página de perfil de um fornecedor específico.
+    activeB2BProfileItem = null;
+    if (vendorProfileView) vendorProfileView.classList.add('hidden');
 
     currentB2BView = viewId;
     if (sortContainer) sortContainer.classList.toggle('hidden', viewId === 'messages' || viewId === 'contracted');

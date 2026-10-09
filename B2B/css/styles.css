@@ -1235,7 +1235,13 @@ body[data-theme="dark"] .form-fields-empty { background: #333333 !important; bor
    que tudo estiver pronto — ver window.b2bPageReady em js/shell.js — em vez
    de cada elemento surgindo num momento diferente conforme vai carregando. */
 body:not(.app-ready) .b2b-shell { opacity: 0; visibility: hidden; }
-body:not(.app-ready)::before {
+
+/* O ícone/fundo do loading só aparece num carregamento direto (URL digitada,
+   favorito, atualização de página) — numa navegação de dentro do próprio
+   B2B (.nav-transition, ver js/shell.js) a transição nativa do navegador já
+   cobre a troca, então só o conteúdo fica escondido até ficar pronto, sem
+   ícone por cima. */
+body:not(.app-ready):not(.nav-transition)::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -1243,7 +1249,7 @@ body:not(.app-ready)::before {
   background: #fff;
   display: flex;
 }
-body:not(.app-ready)::after {
+body:not(.app-ready):not(.nav-transition)::after {
   content: '';
   position: fixed;
   top: 50%; left: 50%;
@@ -1256,7 +1262,7 @@ body:not(.app-ready)::after {
   animation: b2b-app-loading-spin 0.7s linear infinite;
 }
 @keyframes b2b-app-loading-spin { to { transform: rotate(360deg); } }
-body[data-theme="dark"]:not(.app-ready)::before { background: #181D24; }
+body[data-theme="dark"]:not(.app-ready):not(.nav-transition)::before { background: #181D24; }
 
 .b2b-avatar {
   width: 38px;

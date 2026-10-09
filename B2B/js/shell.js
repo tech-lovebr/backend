@@ -13,6 +13,21 @@ if (localStorage.getItem('b2b-sidebar-collapsed') === '1') {
   document.body.classList.add('sidebar-collapsed');
 }
 
+// Ao navegar de uma página do próprio B2B para outra (clicou num link do
+// sidebar, por exemplo), a página já tem a transição nativa do navegador
+// (@view-transition no CSS) fazendo a troca suave a partir da página
+// anterior — então não mostra o ícone de loading por cima, só esconde o
+// conteúdo até ficar pronto. O ícone continua aparecendo num carregamento
+// direto (digitou a URL, abriu um favorito/link externo) ou numa atualização
+// de página, onde não existe uma página anterior para servir de transição.
+try {
+  const navEntry = performance.getEntriesByType('navigation')[0];
+  const cameFromSameApp = document.referrer && document.referrer.startsWith(location.origin);
+  if (navEntry && navEntry.type === 'navigate' && cameFromSameApp) {
+    document.body.classList.add('nav-transition');
+  }
+} catch (e) { /* Navigation Timing indisponível — mantém o ícone de loading padrão */ }
+
 // Perfil da empresa (mock local — sem backend) salvo em Editar Perfil.
 const savedProfile = localStorage.getItem('b2b-professional-profile');
 if (savedProfile && typeof B2B_DATA !== 'undefined') {

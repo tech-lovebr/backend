@@ -161,6 +161,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 2. GESTÃO DE TELAS & DOUBLE-SIDEBAR
   // ==========================================
+  // Rota pendente do carregamento inicial (ex: a pessoa recarregou a página
+  // em /termos, ou em /presentes, já logada) — setada uma única vez antes do
+  // primeiro switchView(), e consumida aqui dentro assim que a sessão
+  // confirma 'dashboard'. Sem isso, switchView('dashboard') sempre abria
+  // primeiro na Visão Geral (chamando updateAllCelebrationData, montando a
+  // aba inteira) só pra, um instante depois, trocar pra rota pedida —
+  // dava pra ver esse "pulo" pela Visão Geral antes da página certa aparecer.
+  let pendingInitialDashboardRoute = null;
+
   function switchView(viewName) {
     state.currentView = viewName;
 
@@ -189,7 +198,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = '';
       }
       renderEventsSwitcher();
-      switchRailTab('overview'); // Inicia na Home / Visão Geral
+
+      if (pendingInitialDashboardRoute) {
+        const route = pendingInitialDashboardRoute;
+        pendingInitialDashboardRoute = null;
+        if (route.type === 'legal') {
+          openLegalDocPage(route.slug);
+        } else if (route.type === 'tab') {
+          switchRailTab(route.tab);
+        } else {
+          switchRailTab('overview');
+        }
+      } else {
+        switchRailTab('overview'); // Inicia na Home / Visão Geral
+      }
 
       // Aplica tema salvo ao entrar na plataforma logada
       const savedTheme = localStorage.getItem('love-theme') || 'light';
@@ -11618,25 +11640,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // Início padrão na página pública — troca para o dashboard automaticamente
   // se já existir uma sessão Supabase válida (usuário já logado). Quem acessa
   // /login direto (URL limpa, sem hash) já abre na tela de login.
-  // Quem acessa /termos ou /politica-de-privacidade direto (link externo,
-  // favorito) abre o documento assim que a sessão terminar de resolver —
-  // só então dá pra saber se mostra dentro do dashboard ou da home pública.
   const initialLegalSlug =
     window.location.pathname === '/termos' ? 'termos' :
     window.location.pathname === '/politica-de-privacidade' ? 'privacidade' :
     null;
 
   // Quem acessa /presentes, /convidados etc. direto (link externo, favorito,
-  // F5) já abre naquela aba do painel — mas só depois de confirmar que há
-  // sessão: sem conta logada essas rotas não significam nada.
+  // F5) já abre naquela aba do painel; sem conta logada essas rotas não
+  // significam nada e o pendingInitialDashboardRoute simplesmente nunca é
+  // consumido (switchView('dashboard') nunca roda).
   const initialRailTab = RAIL_ROUTE_TO_TAB[window.location.pathname] || null;
+
+  // Guardado ANTES do switchView/initClienteSession: se a sessão confirmar
+  // 'dashboard', é consumido ali dentro mesmo, sem passar pela Visão Geral
+  // no meio do caminho (ver pendingInitialDashboardRoute, perto do topo).
+  if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
+  else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab };
 
   switchView((window.location.pathname === '/login' || window.location.hash === '#login') ? 'login' : 'public');
 
   // Mostra a página legal (com um estado de carregamento) JÁ na primeira
-  // pintura da tela — sem isso, dava pra ver a home piscar por um instante
-  // em /termos e /politica-de-privacidade antes da sessão terminar de
-  // resolver (initClienteSession é assíncrono) e só então trocar pra lá.
+  // pintura da tela, cobrindo o caso de quem NÃO está logado — sem isso,
+  // dava pra ver a home piscar por um instante em /termos e
+  // /politica-de-privacidade antes da sessão terminar de resolver
+  // (initClienteSession é assíncrono) e só então trocar pra lá. Quem está
+  // logado nem chega a ver isso: switchView('dashboard') troca pra cá antes
+  // de qualquer pintura (ver pendingInitialDashboardRoute).
   if (initialLegalSlug) {
     const landingSections = document.getElementById('public-landing-sections');
     const legalPage = document.getElementById('legal-doc-page');
@@ -11648,16 +11677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (titleEl) titleEl.textContent = initialLegalSlug === 'termos' ? 'Termos de Uso' : 'Política de Privacidade';
   }
 
-  initClienteSession().then(() => {
-    // pushUrl sem forçar false de propósito: se a sessão existir,
-    // switchView('dashboard') já chamou switchRailTab('overview') por
-    // dentro, o que reescreveu a URL pra "/" — aqui o guard interno do
-    // openLegalDocPage (só troca se a URL atual for diferente) repõe
-    // /termos ou /politica-de-privacidade; sem sessão a URL nunca mudou,
-    // então o mesmo guard não faz nada.
-    if (initialLegalSlug) openLegalDocPage(initialLegalSlug);
-    else if (initialRailTab && initialRailTab !== 'overview' && state.currentView === 'dashboard') switchRailTab(initialRailTab);
-  });
+  initClienteSession();
 
   async function initClienteSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();

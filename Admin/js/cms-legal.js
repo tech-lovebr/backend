@@ -9,7 +9,6 @@
 let DOCUMENTOS = new Map();
 let ATUAL = 'termos';
 let EDITOR = null;
-let VERSOES = [];
 let BOTAO_SALVAR = null;
 
 /* O que o editor mostrava quando o documento acabou de carregar. A
@@ -22,13 +21,7 @@ let BASE = '';
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
-  const [documentos, versoes] = await Promise.all([
-    safeSelect('documentos_legais', '*'),
-    safeSelect('documento_legal_versoes', 'slug, autor_nome, created_at')
-  ]);
-
-  const { data, error } = documentos;
-  VERSOES = versoes.data || [];
+  const { data, error } = await safeSelect('documentos_legais', '*');
 
   if (error) {
     toast(/documentos_legais|does not exist|schema cache/i.test(error.message || '')
@@ -78,36 +71,11 @@ function mostrar(slug) {
   BASE = EDITOR.html();
   document.getElementById('doc-atualizado').textContent =
     doc.updated_at ? formatDateTime(doc.updated_at) : '—';
-  renderHistorico();
 
   // O cabeçalho acompanha a aba: "Legal" sozinho não diz qual documento
   // está aberto quando a página é compartilhada por captura de tela.
   const titulo = document.querySelector('.admin-header-bar .header-bar-titulo h1');
   if (titulo) titulo.textContent = doc.titulo || 'Legal';
-}
-
-/* Só datas e autoria: o que interessa aqui é quando mudou e por quem, não
-   o diff. O texto de cada versão fica guardado no banco para quando for
-   preciso provar o que valia numa data. */
-function renderHistorico() {
-  const host = document.getElementById('doc-historico');
-  const lista = VERSOES
-    .filter(v => v.slug === ATUAL)
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-  if (!lista.length) {
-    host.innerHTML = '<p class="cell-muted" style="font-size:.8125rem;margin:0">Nenhuma atualização ainda.</p>';
-    return;
-  }
-
-  host.innerHTML = `
-    <ol class="historico-legal">
-      ${lista.map(v => `
-        <li>
-          <span class="historico-data">${escapeHtml(formatDateTime(v.created_at))}</span>
-          <span class="historico-autor">${escapeHtml(v.autor_nome || 'Equipe Love')}</span>
-        </li>`).join('')}
-    </ol>`;
 }
 
 async function salvar() {
@@ -136,12 +104,6 @@ async function salvar() {
   DOCUMENTOS.set(ATUAL, data);
   BASE = EDITOR.html();
   document.getElementById('doc-atualizado').textContent = formatDateTime(data.updated_at);
-
-  // O histórico é escrito por trigger no banco; relê para a lista já mostrar
-  // a versão que acabou de nascer.
-  const { data: versoes } = await safeSelect('documento_legal_versoes', 'slug, autor_nome, created_at');
-  VERSOES = versoes || [];
-  renderHistorico();
 
   toast('Documento salvo.');
 }

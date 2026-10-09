@@ -2518,27 +2518,6 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 /* O card logo abaixo já traz a própria margem. */
 .bloco-cabecalho + .table-card { margin-top: .75rem; }
 
-/* Histórico de atualizações dos documentos legais. */
-.historico-legal {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.historico-legal li {
-  display: flex;
-  flex-direction: column;
-  gap: .0625rem;
-  padding: .5rem 0;
-  border-top: 1px solid var(--border);
-}
-
-.historico-legal li:first-child { border-top: 0; padding-top: 0; }
-
-.historico-data { font-size: .8125rem; font-weight: 600; color: var(--text); }
-.historico-autor { font-size: .75rem; color: var(--text-muted); }
 
 /* ------------------------------------------------ Documentos legais
 
@@ -2554,4 +2533,3 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 .legal-ultima-edicao strong { color: var(--text); font-weight: 600; }
 
-.legal-historico { margin-top: var(--bloco-gap); }

@@ -221,7 +221,7 @@ function slugify(value) {
 
 function defaultSiteSettings() {
   return {
-    slug: 'sophia-eventos',
+    slug: '',
     social: [
       { platform: 'instagram', url: 'https://instagram.com/sophiaeventos' },
       { platform: 'whatsapp', url: 'https://wa.me/5511999999999' }
@@ -1361,6 +1361,13 @@ function renderEstiloTab(body) {
   if (!builderState.siteSettings.seo) builderState.siteSettings.seo = defaultSeoSettings();
   const seo = builderState.siteSettings.seo;
   const siteSettings = builderState.siteSettings;
+
+  // Sugere URL e Título da Página a partir do nome da empresa (em vez de
+  // ficar vazio ou com texto de exemplo) — só preenche campo que a pessoa
+  // ainda não mexeu; uma vez editado ou salvo, para de sugerir.
+  const companyName = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.company) || '';
+  if (!siteSettings.slug && companyName) siteSettings.slug = slugify(companyName);
+  if (!seo.metaTitle && companyName) seo.metaTitle = companyName;
   const isPro = typeof isProPlan === 'function' && isProPlan();
 
   body.innerHTML = `

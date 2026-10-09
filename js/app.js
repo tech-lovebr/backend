@@ -3247,15 +3247,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const activeEv = getActiveEvent();
       const slugAtual = (inputEditorSlug && inputEditorSlug.value) || activeEv.slug || '';
       const url = activeEv.publicUrl || `https://love.com.br/${slugAtual}`;
-      const linkTextSpan = btnEditorDataCopyLink.querySelector('span');
       const restoreLabel = () => {
-        if (linkTextSpan) linkTextSpan.textContent = 'Copiar link';
+        btnEditorDataCopyLink.title = 'Copiar link';
         btnEditorDataCopyLink.classList.remove('text-emerald-600');
-        btnEditorDataCopyLink.classList.add('text-[#537bae]');
+        btnEditorDataCopyLink.classList.add('text-zinc-400');
       };
       const marcarCopiado = () => {
-        if (linkTextSpan) linkTextSpan.textContent = 'Copiado! ✓';
-        btnEditorDataCopyLink.classList.remove('text-[#537bae]');
+        btnEditorDataCopyLink.title = 'Copiado!';
+        btnEditorDataCopyLink.classList.remove('text-zinc-400');
         btnEditorDataCopyLink.classList.add('text-emerald-600');
         setTimeout(restoreLabel, 2000);
       };

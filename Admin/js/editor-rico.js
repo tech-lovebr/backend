@@ -157,6 +157,17 @@ const EditorRico = (() => {
 
       // <font size> é o que o execCommand antigo deixa para trás.
       corpo.querySelectorAll('font[size]').forEach(f => f.removeAttribute('size'));
+
+      desembrulharNegritoDeTitulo();
+    }
+
+    /* Título já é negrito. Um <b> dentro dele não acrescenta nada e ainda
+       atrapalha: a regra de negrito tem peso próprio e rebaixa o do título,
+       fazendo dois títulos do mesmo nível saírem diferentes. */
+    function desembrulharNegritoDeTitulo() {
+      corpo.querySelectorAll('h2 b, h2 strong, h3 b, h3 strong, h4 b, h4 strong').forEach(el => {
+        el.replaceWith(...el.childNodes);
+      });
     }
 
     /* O select mostra o bloco onde o cursor está. Antes ele voltava para

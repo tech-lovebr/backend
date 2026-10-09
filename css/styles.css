@@ -3897,6 +3897,13 @@ body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important;
 .legal-doc-body blockquote { border-left: 3px solid #e4e4e7; padding-left: 1rem; color: #52525b; font-style: italic; margin: 1.25rem 0; }
 .legal-doc-body strong, .legal-doc-body b { font-weight: 700; color: #18181b; }
 
+/* Um <b> envolvendo o título inteiro é redundante, mas acontece. Sem esta
+   regra ele rebaixava o peso de 800 para 700 e, numa fonte variável, isso
+   faz o título parecer menor que os irmãos do mesmo nível. */
+.legal-doc-body h2 :is(b, strong),
+.legal-doc-body h3 :is(b, strong),
+.legal-doc-body h4 :is(b, strong) { font-weight: inherit; }
+
 /* -------------------- Ajustes Love: convite de página única (sem header/menu fixo) -------------------- */
 .builder-wrap {
   /* Acentos do construtor (botões, seleção, abas) na mesma cor usada no B2B: #333333 */

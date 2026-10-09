@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadCrmProducts();
     renderLeadProductOptions();
   });
+  window.b2bPageReady?.();
 });
 
 async function loadLeads() {

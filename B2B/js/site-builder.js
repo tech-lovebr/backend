@@ -4126,6 +4126,7 @@ function initSiteBuilder() {
   applyGlobalStyleVars();
   renderLeftPanel();
   updateHistoryButtons();
+  window.b2bPageReady?.();
 }
 
 document.addEventListener('DOMContentLoaded', initSiteBuilder);

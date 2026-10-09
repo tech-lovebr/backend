@@ -19,6 +19,7 @@ async function initB2BMensagens() {
   renderActiveChat();
   setupChatEvents();
   subscribeToB2BMessages();
+  window.b2bPageReady?.();
 }
 
 async function loadB2BConversations() {

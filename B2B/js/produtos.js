@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (new URLSearchParams(location.search).get('add') === '1') {
     document.getElementById('product-add-btn')?.click();
   }
+  window.b2bPageReady?.();
 });
 
 async function loadProducts() {

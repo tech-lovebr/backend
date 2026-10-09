@@ -72,6 +72,24 @@ function initSpeculationRules() {
 // dados do perfil mockado por uma fração de segundo antes do overlay real.
 window.b2bAuthReady = initAuthGuard();
 
+// A página só aparece (classe `app-ready` no body, ver css/styles.css) depois
+// que o shell (sidebar/topbar) E os dados próprios da página (tabela,
+// cards, etc.) estiverem prontos — pra tudo surgir junto, em vez de um
+// elemento de cada vez. Cada página chama `window.b2bPageReady()` no fim do
+// próprio carregamento; quem não chamar (página sem dado assíncrono) cai só
+// no timeout de segurança abaixo, que garante que a página nunca fique
+// escondida pra sempre se algo travar ou der erro.
+let shellIsReady = false;
+let pageIsReady = false;
+function revealAppIfReady() {
+  if (shellIsReady && pageIsReady) document.body.classList.add('app-ready');
+}
+window.b2bPageReady = function () {
+  pageIsReady = true;
+  revealAppIfReady();
+};
+setTimeout(() => document.body.classList.add('app-ready'), 4000);
+
 document.addEventListener('DOMContentLoaded', async () => {
   const authed = await window.b2bAuthReady;
   if (!authed) return;
@@ -92,6 +110,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initThemeToggle();
   initLogout();
   document.dispatchEvent(new CustomEvent('shell:ready'));
+  shellIsReady = true;
+  revealAppIfReady();
 });
 
 /* -------------------- Autenticação (Supabase) -------------------- */

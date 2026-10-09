@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initPaymentLinkModal();
   initWithdrawalModal();
   initChargeDrawer();
+  window.b2bPageReady?.();
 });
 
 async function loadContratosData() {

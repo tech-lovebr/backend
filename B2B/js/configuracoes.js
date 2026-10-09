@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initBankDetailsForm();
   initAccordionCards();
   initRequestChangeLinks();
+  window.b2bPageReady?.();
 });
 
 /* -------------------- Acordeão (Segurança / Dados bancários) -------------------- */

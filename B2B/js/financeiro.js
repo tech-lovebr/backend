@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initProposalForm();
   renderNotasFiscais();
   initNotasFiscaisActions();
+  window.b2bPageReady?.();
 });
 
 async function loadNotasFiscais() {

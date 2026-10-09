@@ -1231,6 +1231,33 @@ body[data-theme="dark"] .form-fields-empty { background: #333333 !important; bor
   overflow: hidden;
 }
 
+/* A página só aparece de uma vez (sidebar, topbar e conteúdo juntos) depois
+   que tudo estiver pronto — ver window.b2bPageReady em js/shell.js — em vez
+   de cada elemento surgindo num momento diferente conforme vai carregando. */
+body:not(.app-ready) .b2b-shell { opacity: 0; visibility: hidden; }
+body:not(.app-ready)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #fff;
+  display: flex;
+}
+body:not(.app-ready)::after {
+  content: '';
+  position: fixed;
+  top: 50%; left: 50%;
+  width: 34px; height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 3px solid var(--border-card);
+  border-top-color: var(--primary-blue);
+  z-index: 10000;
+  animation: b2b-app-loading-spin 0.7s linear infinite;
+}
+@keyframes b2b-app-loading-spin { to { transform: rotate(360deg); } }
+body[data-theme="dark"]:not(.app-ready)::before { background: #181D24; }
+
 .b2b-avatar {
   width: 38px;
   height: 38px;

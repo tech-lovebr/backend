@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAgendaLeads();
   await initAgendaCalendar();
   await initContratosTab();
+  window.b2bPageReady?.();
 });
 
 /* -------------------- Utilitários de atividade -------------------- */

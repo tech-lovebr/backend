@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initAnalyticsPeriodPopover();
   initDashboardPaymentLinkModal();
   initFirstProductModal();
+  window.b2bPageReady?.();
 });
 
 document.addEventListener('shell:ready', initMobileGreetingHeader);

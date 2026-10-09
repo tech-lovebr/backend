@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   renderTeam();
   initMemberDrawer();
+  window.b2bPageReady?.();
 });
 
 function renderTeam() {

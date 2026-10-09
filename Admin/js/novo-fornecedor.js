@@ -24,7 +24,6 @@ const NovoFornecedor = (() => {
 
     Drawer.open({
       title: 'Cadastrar fornecedor',
-      subtitle: 'A pessoa recebe um e-mail para definir a senha',
       body: `
         <p class="drawer-section-title">Imagem de perfil</p>
         <label class="foto-perfil" id="previa-avatar">

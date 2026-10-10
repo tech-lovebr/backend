@@ -9709,6 +9709,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ? 'w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'
       : 'w-full flex flex-col divide-y divide-zinc-200/80';
 
+    // A lista tem padding próprio no card (p-6) antes da imagem; o grid não.
+    // Ajusta o filtro de cidade pra alinhar com o conteúdo visível de cada
+    // modo (sem isso, as setas "<"/">" ficam deslocadas na lista).
+    document.getElementById('b2b-city-filter-wrap')?.classList.toggle('px-6', b2bViewMode === 'list');
+
     let items = [];
     let categoryName = 'fornecedores';
 
@@ -9791,30 +9796,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     items.forEach(item => {
-      let tagText = item.tag || 'Destaque';
-      let tagBg = 'bg-emerald-50 text-emerald-700';
-
-      if (item.type === 'advisor') {
-        tagText = item.tag || 'Assessoria & Cerimonial';
-        tagBg = 'bg-sky-50 text-sky-700';
-      } else if (item.type === 'photo') {
-        tagText = item.tag || 'Foto & Cinema';
-        tagBg = 'bg-purple-50 text-purple-700';
-      } else if (item.type === 'buffet') {
-        tagText = item.tag || 'Gastronomia';
-        tagBg = 'bg-amber-50 text-amber-700';
-      } else if (item.type === 'venue') {
-        tagText = item.tag || 'Espaço para Casamento';
-        tagBg = 'bg-emerald-50 text-emerald-700';
-      }
-
       const avatarSrc = item.avatar || item.image;
       const matchedConversation = (b2bConversationsData || []).find(c => c.id === item.chatId);
       const isOnline = !!(matchedConversation && matchedConversation.online);
       const priceLabel = b2bPriceLabel(item);
 
       if (b2bViewMode === 'grid') {
-        listContainer.appendChild(buildB2BGridCard(item, { tagText, tagBg, priceLabel }));
+        listContainer.appendChild(buildB2BGridCard(item, { priceLabel }));
         return;
       }
 
@@ -9909,7 +9897,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Card do modo Grid do Explorar: caixa sem sombra (só borda), imagem com
   // selo de destaque + favoritar, nome, nota, preço/capacidade e CTA.
-  function buildB2BGridCard(item, { tagText, tagBg, priceLabel }) {
+  function buildB2BGridCard(item, { priceLabel }) {
     const capacityLabel = item.guests ? `Até ${item.guests} pessoas` : '';
 
     const card = document.createElement('div');
@@ -9919,7 +9907,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.innerHTML = `
       <div class="btn-open-supplier-gallery relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden cursor-pointer">
         <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-        <span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide ${tagBg}">${tagText}</span>
         <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
           <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>

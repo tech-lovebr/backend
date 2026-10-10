@@ -9597,10 +9597,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Seta ">" do filtro de cidade: arrasta a fileira de caixinhas pra ver
-    // mais nomes de cidade além do que cabe na largura visível.
+    // Setas "<"/">" do filtro de cidade: arrastam a fileira de caixinhas
+    // pra ver mais nomes de cidade além do que cabe na largura visível.
     document.getElementById('btn-b2b-city-scroll-next')?.addEventListener('click', () => {
       document.getElementById('b2b-city-filter-row')?.scrollBy({ left: 240, behavior: 'smooth' });
+    });
+    document.getElementById('btn-b2b-city-scroll-prev')?.addEventListener('click', () => {
+      document.getElementById('b2b-city-filter-row')?.scrollBy({ left: -240, behavior: 'smooth' });
     });
 
     // Alternância Lista / Grid do Explorar.

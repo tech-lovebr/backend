@@ -9852,6 +9852,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               <div class="flex items-center gap-1.5 text-sm shrink-0">
                 ${b2bRatingBadgeHTML(item)}
+                <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
               </div>
             </div>
 

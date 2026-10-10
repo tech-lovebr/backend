@@ -9481,7 +9481,23 @@ document.addEventListener('DOMContentLoaded', () => {
     { city: 'Brasília', uf: 'DF' },
     { city: 'Fortaleza', uf: 'CE' },
     { city: 'Salvador', uf: 'BA' },
-    { city: 'Belo Horizonte', uf: 'MG' }
+    { city: 'Belo Horizonte', uf: 'MG' },
+    { city: 'Curitiba', uf: 'PR' },
+    { city: 'Porto Alegre', uf: 'RS' },
+    { city: 'Recife', uf: 'PE' },
+    { city: 'Campinas', uf: 'SP' },
+    { city: 'Goiânia', uf: 'GO' },
+    { city: 'Manaus', uf: 'AM' },
+    { city: 'Belém', uf: 'PA' },
+    { city: 'Florianópolis', uf: 'SC' },
+    { city: 'Vitória', uf: 'ES' },
+    { city: 'Natal', uf: 'RN' },
+    { city: 'Maceió', uf: 'AL' },
+    { city: 'João Pessoa', uf: 'PB' },
+    { city: 'Cuiabá', uf: 'MT' },
+    { city: 'Campo Grande', uf: 'MS' },
+    { city: 'Teresina', uf: 'PI' },
+    { city: 'São Luís', uf: 'MA' }
   ];
   let b2bSelectedCity = null;
 
@@ -9578,6 +9594,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Seta ">" do filtro de cidade: arrasta a fileira de caixinhas pra ver
+    // mais nomes de cidade além do que cabe na largura visível.
+    document.getElementById('btn-b2b-city-scroll-next')?.addEventListener('click', () => {
+      document.getElementById('b2b-city-filter-row')?.scrollBy({ left: 240, behavior: 'smooth' });
+    });
+
     // 12.5 Inicialização do Chat Messenger B2B & Render Inicial
     initB2BChatHandlers();
     renderB2BCityFilter();
@@ -9593,7 +9615,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.innerHTML = B2B_CITIES.map(({ city, uf }) => {
       const active = b2bSelectedCity === city;
       return `
-        <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${city}">
+        <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer shrink-0 whitespace-nowrap ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${city}">
           ${city} (${uf})
         </button>
       `;

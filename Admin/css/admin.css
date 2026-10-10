@@ -189,7 +189,9 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   flex-shrink: 0;
 }
 
-.admin-nav-item:hover { background: var(--azul-claro); color: var(--text); }
+/* Dois cinzas, não um: o item ativo precisa continuar reconhecível com o
+   mouse em cima de outro — por isso o hover é mais claro que o ativo. */
+.admin-nav-item:hover { background: #F5F5F6; color: var(--text); }
 .admin-nav-item:hover svg:not(.sidebar-chevron) { color: var(--text); }
 
 .admin-nav-item.is-active {
@@ -240,8 +242,12 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: background .15s ease, color .15s ease;
 }
 
-.admin-nav-subitem:hover { background: var(--azul-claro); color: var(--text); }
-.admin-nav-subitem.is-active { background: var(--azul-claro); color: var(--text); }
+.admin-nav-subitem:hover { background: #F5F5F6; color: var(--text); }
+
+/* Depois do hover para vencer por ordem: passar o mouse sobre o item
+   aberto não pode clarear justamente o que marca onde você está. */
+.admin-nav-subitem.is-active,
+.admin-nav-subitem.is-active:hover { background: #ECECEE; color: var(--text); }
 
 .admin-nav-badge {
   background: #BF612E;

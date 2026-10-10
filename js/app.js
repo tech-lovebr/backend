@@ -553,6 +553,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Pop-up de configurar orçamento só faz sentido dentro de Orçamento —
+    // sai ao trocar de menu (reabre sozinho se voltar pra lá sem orçamento definido).
+    closeModal(document.getElementById('modal-setup-budget'));
+
     state.currentTab = tabKey;
 
     const tabPath = RAIL_TAB_ROUTES[tabKey];
@@ -7837,6 +7841,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. FINANCEIRO: CARTEIRA DIGITAL, ORÇAMENTO & EXTRATO
   // ==========================================
   function switchWalletSubSection(subId, subLabel) {
+    // Pop-up de configurar orçamento só deve aparecer dentro de Orçamento —
+    // sai ao trocar pra qualquer outra sub-seção da Carteira.
+    if (subId !== 'wallet-budget') closeModal(document.getElementById('modal-setup-budget'));
+
     document.body.classList.add('wallet-mode');
     const title = document.getElementById('wallet-header-title');
     const desc = document.getElementById('wallet-header-desc');

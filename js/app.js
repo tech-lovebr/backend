@@ -9816,7 +9816,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const card = document.createElement('div');
       card.id = `card-${item.id}`;
-      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 cursor-pointer';
+      // Sem padding à esquerda no desktop (onde a imagem fica ao lado do
+      // texto): ela fica flush com a borda do container, igual ao card do
+      // grid (que não tem padding próprio) — sem isso a margem esquerda da
+      // foto ficava diferente ao trocar lista/grid. No mobile (empilhado)
+      // mantém o padding de todos os lados, já que a imagem fica em cima.
+      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 md:pl-0 cursor-pointer';
 
       card.innerHTML = `
         <!-- Imagem prévia da empresa -->

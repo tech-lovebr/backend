@@ -9613,6 +9613,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-b2b-city-scroll-prev')?.addEventListener('click', () => {
       document.getElementById('b2b-city-filter-row')?.scrollBy({ left: -240, behavior: 'smooth' });
     });
+    // A seta "<" só faz sentido depois que a fileira foi rolada pra direita —
+    // em São Paulo (primeira cidade) não há pra onde voltar.
+    document.getElementById('b2b-city-filter-row')?.addEventListener('scroll', updateB2BCityScrollArrows);
+    updateB2BCityScrollArrows();
 
     // Alternância Lista / Grid do Explorar.
     document.getElementById('btn-b2b-view-list')?.addEventListener('click', () => {
@@ -9656,6 +9660,17 @@ document.addEventListener('DOMContentLoaded', () => {
         renderB2BExplore();
       });
     });
+
+    updateB2BCityScrollArrows();
+  }
+
+  // Esconde a seta "<" quando a fileira de cidades está no começo (nada
+  // pra voltar) — só aparece depois que a pessoa rola pra direita.
+  function updateB2BCityScrollArrows() {
+    const row = document.getElementById('b2b-city-filter-row');
+    const prevBtn = document.getElementById('btn-b2b-city-scroll-prev');
+    if (!row || !prevBtn) return;
+    prevBtn.classList.toggle('hidden', row.scrollLeft <= 0);
   }
 
   // Destaca o botão ativo da alternância Lista / Grid.
@@ -9716,11 +9731,6 @@ document.addEventListener('DOMContentLoaded', () => {
     listContainer.className = b2bViewMode === 'grid'
       ? 'w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'
       : 'w-full flex flex-col divide-y divide-zinc-200/80';
-
-    // A lista tem padding próprio no card (p-6) antes da imagem; o grid não.
-    // Ajusta o filtro de cidade pra alinhar com o conteúdo visível de cada
-    // modo (sem isso, as setas "<"/">" ficam deslocadas na lista).
-    document.getElementById('b2b-city-filter-wrap')?.classList.toggle('px-6', b2bViewMode === 'list');
 
     let items = [];
     let categoryName = 'fornecedores';

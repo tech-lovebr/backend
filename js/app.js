@@ -9474,6 +9474,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let b2bSelectedSubcategory = null;
   let b2bExpandedCategoryGroup = null;
 
+  // Filtro rápido por cidade, acima da lista do Explorar.
+  const B2B_CITIES = [
+    { city: 'São Paulo', uf: 'SP' },
+    { city: 'Rio de Janeiro', uf: 'RJ' },
+    { city: 'Brasília', uf: 'DF' },
+    { city: 'Fortaleza', uf: 'CE' },
+    { city: 'Salvador', uf: 'BA' },
+    { city: 'Belo Horizonte', uf: 'MG' }
+  ];
+  let b2bSelectedCity = null;
+
   let b2bMarketplaceInitialized = false;
   function initB2BMarketplace() {
     if (b2bMarketplaceInitialized) return;
@@ -9569,7 +9580,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 12.5 Inicialização do Chat Messenger B2B & Render Inicial
     initB2BChatHandlers();
+    renderB2BCityFilter();
     renderB2BExplore();
+  }
+
+  // Caixinhas de cidade acima da lista do Explorar — filtro rápido por
+  // localização, junto com o que já é filtrado por categoria/busca.
+  function renderB2BCityFilter() {
+    const row = document.getElementById('b2b-city-filter-row');
+    if (!row) return;
+
+    row.innerHTML = B2B_CITIES.map(({ city, uf }) => {
+      const active = b2bSelectedCity === city;
+      return `
+        <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${city}">
+          ${city} (${uf})
+        </button>
+      `;
+    }).join('');
+
+    row.querySelectorAll('.btn-b2b-city-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const city = btn.getAttribute('data-city');
+        b2bSelectedCity = (b2bSelectedCity === city) ? null : city;
+        renderB2BCityFilter();
+        renderB2BExplore();
+      });
+    });
   }
 
   // Preço de vitrine do card: segue a mesma unidade de cobrança cadastrada
@@ -9639,9 +9676,13 @@ document.addEventListener('DOMContentLoaded', () => {
       categoryName = b2bSelectedSubcategory || b2bSelectedMainCategory;
     }
 
+    if (b2bSelectedCity) {
+      items = items.filter(item => (item.location || '').includes(b2bSelectedCity));
+    }
+
     if (b2bSearchQuery) {
       const q = b2bSearchQuery.toLowerCase();
-      items = items.filter(item => 
+      items = items.filter(item =>
         (item.name && item.name.toLowerCase().includes(q)) ||
         (item.location && item.location.toLowerCase().includes(q)) ||
         (item.description && item.description.toLowerCase().includes(q)) ||
@@ -9661,7 +9702,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (resultsCountEl) {
-      resultsCountEl.innerHTML = `<strong class="font-semibold text-zinc-900">${items.length}</strong> ${categoryName} encontrados em São Paulo`;
+      resultsCountEl.innerHTML = `<strong class="font-semibold text-zinc-900">${items.length}</strong> ${categoryName} encontrados em ${b2bSelectedCity || 'São Paulo'}`;
     }
 
     if (items.length === 0) {

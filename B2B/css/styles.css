@@ -5309,9 +5309,13 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 .product-wizard-panel { display: none; flex-direction: column; gap: 1rem; }
 .product-wizard-panel.is-active { display: flex; }
 
-.product-wizard-footer { display: flex; align-items: center; gap: 0.75rem; }
-.product-wizard-footer .btn-secondary, .product-wizard-footer .btn-primary { flex: 1; justify-content: center; }
+.product-wizard-footer-row { display: flex; align-items: center; gap: 0.75rem; }
+.product-wizard-footer-row .btn-secondary, .product-wizard-footer-row .btn-primary { flex: 1; justify-content: center; }
 #product-drawer-delete-btn { flex: 0 0 auto; padding-left: 0.75rem; padding-right: 0.75rem; }
+
+.product-wizard-confirm-text { flex: 2; font-size: 0.8125rem; font-weight: 600; color: #3F3F46; }
+.btn-primary.btn-danger { background: #B91C1C; }
+.btn-primary.btn-danger:hover { background: #991B1B; }
 
 .pricing-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 .pricing-type-card {

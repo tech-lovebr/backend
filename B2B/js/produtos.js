@@ -728,12 +728,18 @@ function initProductDrawer() {
   const cancelBtn = document.getElementById('product-drawer-cancel');
   const form = document.getElementById('product-form');
 
+  const showDeleteConfirm = (show) => {
+    setPanelHidden('product-wizard-footer-default', show);
+    setPanelHidden('product-wizard-footer-confirm-delete', !show);
+  };
+
   const open = () => { drawer.classList.add('show'); backdrop.classList.add('show'); };
   const close = () => {
     drawer.classList.remove('show');
     backdrop.classList.remove('show');
     form.reset();
     delete form.dataset.editId;
+    showDeleteConfirm(false);
   };
 
   // Campos de moeda do motor de precificação (texto mascarado, como já é
@@ -788,6 +794,7 @@ function initProductDrawer() {
     document.getElementById('product-setup-minutes').value = '';
     document.getElementById('product-teardown-minutes').value = '';
     setPanelHidden('product-drawer-delete-btn', true);
+    showDeleteConfirm(false);
 
     goToStep(1);
   };
@@ -808,7 +815,13 @@ function initProductDrawer() {
   if (backdrop) backdrop.addEventListener('click', close);
 
   const deleteBtn = document.getElementById('product-drawer-delete-btn');
-  if (deleteBtn) deleteBtn.addEventListener('click', async () => {
+  if (deleteBtn) deleteBtn.addEventListener('click', () => showDeleteConfirm(true));
+
+  const deleteNoBtn = document.getElementById('product-drawer-delete-no-btn');
+  if (deleteNoBtn) deleteNoBtn.addEventListener('click', () => showDeleteConfirm(false));
+
+  const deleteYesBtn = document.getElementById('product-drawer-delete-yes-btn');
+  if (deleteYesBtn) deleteYesBtn.addEventListener('click', async () => {
     const id = form.dataset.editId;
     if (!id) return;
     const { error } = await supabaseClient.from('products').delete().eq('id', id);
@@ -1132,6 +1145,8 @@ function openProductDrawer(id) {
   const form = document.getElementById('product-form');
   form.dataset.editId = p.id;
   setPanelHidden('product-drawer-delete-btn', false);
+  setPanelHidden('product-wizard-footer-default', false);
+  setPanelHidden('product-wizard-footer-confirm-delete', true);
   goToStep(1);
   document.getElementById('product-drawer').classList.add('show');
   document.getElementById('product-drawer-backdrop').classList.add('show');

@@ -9455,6 +9455,25 @@ document.addEventListener('DOMContentLoaded', () => {
   let b2bSearchQuery = '';
   let currentB2BView = 'explore';
 
+  // Mesma árvore de categoria/subcategoria do cadastro de produto no B2B
+  // (B2B/js/produtos.js, SUBCATEGORY_MAP) — repetida aqui de propósito: são
+  // apps/arquivos diferentes, sem import entre eles.
+  const B2B_CATEGORY_TREE = {
+    'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
+    'Bar e Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Bebidas Não Alcoólicas', 'Bar Infantil'],
+    'Espaços para Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
+    'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Montadores', 'Carregadores'],
+    'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
+    'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa', 'Recreação Infantil', 'Orquestra', 'Personagens Vivos', 'Mágicos', 'Efeitos Especiais'],
+    'Decoração': ['Florais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Esculturas em Balões', 'Lembrancinhas', 'Papelaria'],
+    'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator', 'Celebrante'],
+    'Trajes, Beleza e Estilo': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa', 'Moda Infantil', 'Dia da Noiva', 'Maquiagem', 'Camarim'],
+    'Aluguel de Carros': []
+  };
+  let b2bSelectedMainCategory = null;
+  let b2bSelectedSubcategory = null;
+  let b2bExpandedCategoryGroup = null;
+
   let b2bMarketplaceInitialized = false;
   function initB2BMarketplace() {
     if (b2bMarketplaceInitialized) return;
@@ -9469,21 +9488,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // 12.2 Filtros de Categoria em Pills Horizontais
-    const b2bPills = document.querySelectorAll('.b2b-category-pill');
-    b2bPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        b2bPills.forEach(p => {
-          p.classList.remove('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
-          p.classList.add('border-transparent', 'text-zinc-500', 'font-medium');
-        });
-        pill.classList.remove('border-transparent', 'text-zinc-500', 'font-medium');
-        pill.classList.add('border-[#537bae]', 'text-[#537bae]', 'font-semibold', 'active');
-
-        currentB2BCategory = pill.getAttribute('data-category') || 'all';
-        renderB2BExplore();
+    // 12.2 Drawer de Categorias (abre ao clicar na caixa de busca) — mesma
+    // árvore de categorias/subcategorias do cadastro de produto no B2B.
+    const b2bSearchContainer = document.getElementById('b2b-search-container');
+    const b2bCategoryMenu = document.getElementById('b2b-category-menu');
+    if (b2bSearchContainer && b2bCategoryMenu) {
+      b2bSearchContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Sempre abre (nunca fecha por clicar de novo na caixa) — fechar é
+        // só clicando fora ou escolhendo uma categoria.
+        openB2BCategoryMenu();
       });
-    });
+      document.addEventListener('click', (e) => {
+        if (!b2bCategoryMenu.classList.contains('hidden') && !b2bSearchContainer.contains(e.target)) {
+          closeB2BCategoryMenu();
+        }
+      });
+    }
 
     // 12.3 Busca em Tempo Real
     const b2bSearch = document.getElementById('b2b-search-input');
@@ -9551,6 +9572,19 @@ document.addEventListener('DOMContentLoaded', () => {
     renderB2BExplore();
   }
 
+  // Preço de vitrine do card: segue a mesma unidade de cobrança cadastrada
+  // pelo fornecedor em B2B/produtos.html (POR_HORA, POR_PESSOA, VALOR_FIXO,
+  // SOB_CONSULTA — ver B2B/js/produtos.js:productPriceLabel).
+  function b2bPriceLabel(item) {
+    const amount = item.priceNum;
+    if (!amount) return item.startingPrice || item.price || 'Sob consulta';
+    const formatted = `R$ ${amount.toLocaleString('pt-BR')}`;
+    if (item.pricingType === 'POR_HORA') return `A partir de ${formatted} a hora`;
+    if (item.pricingType === 'POR_PESSOA') return `A partir de ${formatted} por pessoa`;
+    if (item.pricingType === 'SOB_CONSULTA') return 'Sob consulta';
+    return `A partir de ${formatted}`;
+  }
+
   function renderB2BExplore() {
     const listContainer = document.getElementById('b2b-cards-list-container');
     const resultsCountEl = document.getElementById('b2b-results-count');
@@ -9593,6 +9627,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const favBuffet = (window.LOVE_DATA.buffet || []).filter(b => b.isFavorite).map(b => ({ ...b, type: 'buffet' }));
       items = [...favVenues, ...favAdvisors, ...favPhoto, ...favBuffet];
       categoryName = 'itens favoritados';
+    }
+
+    // Categoria/subcategoria escolhida no drawer de busca (mesma árvore do
+    // cadastro de produto no B2B) — filtra por cima do que já foi montado
+    // acima (currentB2BCategory vira 'all' ao escolher uma categoria aqui,
+    // pra buscar em todos os tipos de fornecedor, não só no tipo da aba atual).
+    if (b2bSelectedMainCategory) {
+      items = items.filter(item => item.mainCategory === b2bSelectedMainCategory &&
+        (!b2bSelectedSubcategory || (item.subcategories || []).includes(b2bSelectedSubcategory)));
+      categoryName = b2bSelectedSubcategory || b2bSelectedMainCategory;
     }
 
     if (b2bSearchQuery) {
@@ -9650,6 +9694,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const ringRadius = 9;
       const ringCircumference = 2 * Math.PI * ringRadius;
       const ringOffset = ringCircumference * (1 - recommendPct / 100);
+      const priceLabel = b2bPriceLabel(item);
 
       const card = document.createElement('div');
       card.id = `card-${item.id}`;
@@ -9659,6 +9704,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Imagem prévia da empresa -->
         <div class="btn-open-supplier-gallery relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 cursor-pointer">
           <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
+            <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+            </svg>
+          </button>
         </div>
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
@@ -9677,26 +9727,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
               </div>
 
-              <button type="button" class="btn-toggle-card-fav w-9 h-9 rounded-full border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Favoritar">
-                <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-                </svg>
-              </button>
+              <div class="flex items-center gap-1.5 text-sm shrink-0">
+                <div class="relative w-8 h-8 shrink-0">
+                  <svg class="w-8 h-8 -rotate-90" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#E4E4E7" stroke-width="2.5"></circle>
+                    <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#ebf4ff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
+                  </svg>
+                  <svg class="w-4 h-4 absolute inset-0 m-auto text-[#ebf4ff]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
+                </div>
+                <span class="font-semibold text-zinc-700">${recommendPct}%</span>
+              </div>
             </div>
 
             <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.description || item.about || ''}</p>
           </div>
 
           <div class="flex flex-wrap items-center justify-between gap-4 pt-3.5 mt-3.5 border-t border-zinc-100">
-            <div class="flex items-center gap-2.5 text-sm">
-              <div class="relative w-10 h-10 shrink-0">
-                <svg class="w-10 h-10 -rotate-90" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#E4E4E7" stroke-width="2.5"></circle>
-                  <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#ebf4ff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
-                </svg>
-                <svg class="w-5 h-5 absolute inset-0 m-auto text-[#ebf4ff]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
-              </div>
-              <span class="font-semibold text-zinc-700">${recommendPct}%</span>
+            <div class="flex items-center gap-2 text-sm min-w-0">
+              <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>
+              <span class="font-semibold text-zinc-800 truncate">${priceLabel}</span>
             </div>
 
             <div class="flex items-center gap-2.5">
@@ -9740,6 +9789,106 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       listContainer.appendChild(card);
+    });
+  }
+
+  // ==========================================
+  // 12.3b DRAWER DE CATEGORIAS DA BUSCA (mesma árvore do cadastro de
+  // produto no B2B — ver B2B_CATEGORY_TREE)
+  // ==========================================
+  function openB2BCategoryMenu() {
+    b2bExpandedCategoryGroup = b2bSelectedMainCategory;
+    renderB2BCategoryMenu();
+    document.getElementById('b2b-category-menu')?.classList.remove('hidden');
+  }
+
+  function closeB2BCategoryMenu() {
+    document.getElementById('b2b-category-menu')?.classList.add('hidden');
+  }
+
+  function renderB2BCategoryMenu() {
+    const menu = document.getElementById('b2b-category-menu');
+    if (!menu) return;
+
+    const allActive = !b2bSelectedMainCategory;
+    let html = `
+      <button type="button" class="b2b-category-all-btn w-full text-left px-3.5 py-2.5 text-xs font-bold ${allActive ? 'text-[#537bae] bg-blue-50/60' : 'text-zinc-800 hover:bg-zinc-50'} flex items-center justify-between transition-colors cursor-pointer">
+        <span>Todos os fornecedores</span>
+        ${allActive ? '<span>✓</span>' : ''}
+      </button>
+      <div class="border-t border-zinc-100 my-1"></div>
+    `;
+
+    html += Object.entries(B2B_CATEGORY_TREE).map(([main, subs]) => {
+      const isMainSelected = b2bSelectedMainCategory === main && !b2bSelectedSubcategory;
+      const isExpanded = b2bExpandedCategoryGroup === main;
+      return `
+        <div class="b2b-category-group">
+          <div class="w-full flex items-center justify-between pl-3.5 pr-2 py-2">
+            <button type="button" class="b2b-category-main-btn flex-1 text-left text-xs font-semibold ${isMainSelected ? 'text-[#537bae]' : 'text-zinc-800'} hover:text-[#537bae] transition-colors cursor-pointer" data-main="${main}">
+              ${main}
+            </button>
+            ${subs.length ? `
+              <button type="button" class="b2b-category-toggle-btn w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-zinc-700 cursor-pointer flex-shrink-0" data-main="${main}" title="Ver subcategorias">
+                <svg class="w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            ` : ''}
+          </div>
+          ${subs.length ? `
+            <div class="b2b-subcategory-list ${isExpanded ? '' : 'hidden'} pb-1.5">
+              ${subs.map(sub => {
+                const isSubSelected = b2bSelectedSubcategory === sub;
+                return `
+                  <button type="button" class="b2b-category-sub-btn w-full text-left pl-7 pr-3.5 py-1.5 text-[11px] ${isSubSelected ? 'text-[#537bae] font-bold bg-blue-50/60' : 'text-zinc-600 hover:bg-zinc-50'} transition-colors cursor-pointer flex items-center justify-between" data-main="${main}" data-sub="${sub}">
+                    <span>${sub}</span>
+                    ${isSubSelected ? '<span>✓</span>' : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+
+    menu.innerHTML = html;
+
+    menu.querySelector('.b2b-category-all-btn')?.addEventListener('click', () => {
+      b2bSelectedMainCategory = null;
+      b2bSelectedSubcategory = null;
+      currentB2BCategory = 'all';
+      closeB2BCategoryMenu();
+      renderB2BExplore();
+    });
+
+    menu.querySelectorAll('.b2b-category-main-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        b2bSelectedMainCategory = btn.getAttribute('data-main');
+        b2bSelectedSubcategory = null;
+        currentB2BCategory = 'all';
+        closeB2BCategoryMenu();
+        renderB2BExplore();
+      });
+    });
+
+    menu.querySelectorAll('.b2b-category-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const main = btn.getAttribute('data-main');
+        b2bExpandedCategoryGroup = (b2bExpandedCategoryGroup === main) ? null : main;
+        renderB2BCategoryMenu();
+      });
+    });
+
+    menu.querySelectorAll('.b2b-category-sub-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        b2bSelectedMainCategory = btn.getAttribute('data-main');
+        b2bSelectedSubcategory = btn.getAttribute('data-sub');
+        currentB2BCategory = 'all';
+        closeB2BCategoryMenu();
+        renderB2BExplore();
+      });
     });
   }
 

@@ -702,7 +702,10 @@ const LOVE_DATA = {
         { name: 'Aluguel do Espaço (Diária)', price: 'R$ 38.000', desc: 'Uso exclusivo por até 8 horas, montagem e desmontagem inclusas.' },
         { name: 'Hora Extra', price: 'R$ 3.500 / h', desc: 'Extensão do evento além do horário contratado.' },
         { name: 'Gastronomia Própria (por pessoa)', price: 'R$ 320', desc: 'Buffet completo com equipe própria da casa.' }
-      ]
+      ],
+      mainCategory: 'Espaços para Locação',
+      subcategories: ['Espaços Exclusivos'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'venue-palacio-tangara',
@@ -729,7 +732,10 @@ const LOVE_DATA = {
         { name: 'Aluguel do Espaço (Diária)', price: 'R$ 85.000', desc: 'Inclui parque Burle Marx, salões e jardins.' },
         { name: 'Hospedagem para Convidados', price: 'A partir de R$ 1.200 / noite', desc: 'Diárias com tarifa corporativa para o evento.' },
         { name: 'Chef Michelin (por pessoa)', price: 'R$ 480', desc: 'Menu degustação assinado por chef premiado.' }
-      ]
+      ],
+      mainCategory: 'Espaços para Locação',
+      subcategories: ['Hotel', 'Espaços Exclusivos'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'venue-espaco-wood',
@@ -755,7 +761,10 @@ const LOVE_DATA = {
       services: [
         { name: 'Aluguel do Espaço (Diária)', price: 'R$ 26.000', desc: 'Gazebo, área externa coberta e lounge bar inclusos.' },
         { name: 'Buffet Contemporâneo (por pessoa)', price: 'R$ 260', desc: 'Estações interativas e menu sazonal.' }
-      ]
+      ],
+      mainCategory: 'Espaços para Locação',
+      subcategories: ['Salão de Festas'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'venue-espaco-gardens',
@@ -781,7 +790,10 @@ const LOVE_DATA = {
       services: [
         { name: 'Aluguel do Espaço (Diária)', price: 'R$ 32.000', desc: 'Jardim tropical, cozinha industrial e palco integrado.' },
         { name: 'Produção de Palco & Som', price: 'R$ 4.800', desc: 'Estrutura completa para banda ou DJ.' }
-      ]
+      ],
+      mainCategory: 'Espaços para Locação',
+      subcategories: ['Salão de Festas'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'venue-casa-fasano',
@@ -808,7 +820,10 @@ const LOVE_DATA = {
         { name: 'Aluguel do Espaço (Diária)', price: 'R$ 68.000', desc: 'Pátio central, segurança VIP e coordenação exclusiva.' },
         { name: 'Gastronomia Fasano (por pessoa)', price: 'R$ 520', desc: 'Menu autoral assinado pela cozinha Fasano.' },
         { name: 'Serviço de Sommelier', price: 'R$ 2.200', desc: 'Curadoria e serviço de vinhos durante o evento.' }
-      ]
+      ],
+      mainCategory: 'Espaços para Locação',
+      subcategories: ['Espaços Exclusivos'],
+      pricingType: 'VALOR_FIXO'
     }
   ],
 
@@ -841,7 +856,10 @@ const LOVE_DATA = {
       reviews: [
         { author: 'Camila & Gabriel', stars: '★★★★★', text: 'A Mariana e equipe salvaram nosso casamento! Organização impecável!' },
         { author: 'Fernanda & Thiago', stars: '★★★★★', text: 'Melhor investimento da festa. Não tivemos nenhuma preocupação no dia!' }
-      ]
+      ],
+      mainCategory: 'Assessoria e Cerimonialista',
+      subcategories: ['Assessoria completa'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'adv-1',
@@ -868,7 +886,10 @@ const LOVE_DATA = {
       ],
       reviews: [
         { author: 'Renata & Bruno', stars: '★★★★★', text: 'Incrível atendimento e pontualidade. Super indico!' }
-      ]
+      ],
+      mainCategory: 'Assessoria e Cerimonialista',
+      subcategories: ['Assessoria completa'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'adv-2',
@@ -894,7 +915,10 @@ const LOVE_DATA = {
       ],
       reviews: [
         { author: 'Isabella & Rodrigo', stars: '★★★★★', text: 'Transformou nossa festa em uma noite de gala de cinema!' }
-      ]
+      ],
+      mainCategory: 'Assessoria e Cerimonialista',
+      subcategories: ['Assessoria completa', 'Planejamento'],
+      pricingType: 'VALOR_FIXO'
     },
     {
       id: 'adv-3',
@@ -920,7 +944,10 @@ const LOVE_DATA = {
       ],
       reviews: [
         { author: 'Beatriz & Leonardo', stars: '★★★★★', text: 'Muito atenciosa e calma, nos passou muita tranquilidade.' }
-      ]
+      ],
+      mainCategory: 'Assessoria e Cerimonialista',
+      subcategories: ['Cerimonial no dia'],
+      pricingType: 'VALOR_FIXO'
     }
   ],
 
@@ -931,6 +958,8 @@ const LOVE_DATA = {
       name: 'Lumina Wedding Cinema & Photo',
       location: 'São Paulo - SP & Destination',
       price: 'A partir de R$ 7.800',
+      priceNum: 7800,
+      pricingType: 'VALOR_FIXO',
       rating: 4.97,
       reviewsCount: 96,
       weddingsCount: 160,
@@ -943,13 +972,17 @@ const LOVE_DATA = {
         { name: 'Cobertura Completa do Dia', price: 'R$ 7.800', desc: 'Foto + filme em 4K, 10h de cobertura.' },
         { name: 'Drone & Pós-produção Cinematográfica', price: 'R$ 2.400', desc: 'Imagens aéreas e edição artística do filme.' },
         { name: 'Álbum Fine Art', price: 'R$ 1.900', desc: 'Álbum impresso 30x30cm, capa em tecido.' }
-      ]
+      ],
+      mainCategory: 'Mídia e Audiovisual',
+      subcategories: ['Fotografia', 'Filmagem']
     },
     {
       id: 'photo-2',
       name: 'Arthur Moura Fine Art Photography',
       location: 'Jardins, São Paulo - SP',
       price: 'A partir de R$ 9.500',
+      priceNum: 9500,
+      pricingType: 'VALOR_FIXO',
       rating: 5.0,
       reviewsCount: 64,
       weddingsCount: 120,
@@ -961,7 +994,9 @@ const LOVE_DATA = {
       services: [
         { name: 'Editorial Fine Art (Dia Todo)', price: 'R$ 9.500', desc: 'Cobertura completa com luz natural e still life editorial.' },
         { name: 'Ensaio Pré-Wedding', price: 'R$ 2.800', desc: 'Sessão externa de até 3 horas.' }
-      ]
+      ],
+      mainCategory: 'Mídia e Audiovisual',
+      subcategories: ['Fotografia']
     }
   ],
 
@@ -972,6 +1007,8 @@ const LOVE_DATA = {
       name: 'Buffet França Alta Gastronomia',
       location: 'Higienópolis, São Paulo - SP',
       price: 'R$ 280 / pessoa',
+      priceNum: 280,
+      pricingType: 'POR_PESSOA',
       rating: 4.95,
       reviewsCount: 190,
       weddingsCount: 300,
@@ -983,13 +1020,17 @@ const LOVE_DATA = {
       services: [
         { name: 'Menu Degustação Completo (por pessoa)', price: 'R$ 280', desc: 'Serviço à francesa com ilhas gastronômicas.' },
         { name: 'Open Bar Premium (por pessoa)', price: 'R$ 85', desc: 'Drinks autorais e carta de vinhos selecionada.' }
-      ]
+      ],
+      mainCategory: 'Buffet e Gastronomia',
+      subcategories: ['Buffet Completo']
     },
     {
       id: 'buffet-2',
       name: 'Nômade Catering & Experiências',
       location: 'Pinheiros, São Paulo - SP',
       price: 'R$ 220 / pessoa',
+      priceNum: 220,
+      pricingType: 'POR_PESSOA',
       rating: 4.89,
       reviewsCount: 78,
       weddingsCount: 90,
@@ -1001,7 +1042,9 @@ const LOVE_DATA = {
       services: [
         { name: 'Menu Sensorial (por pessoa)', price: 'R$ 220', desc: 'Finger foods e estações interativas.' },
         { name: 'Estação de Drinks Artesanais (por pessoa)', price: 'R$ 65', desc: 'Mixologia com ingredientes orgânicos.' }
-      ]
+      ],
+      mainCategory: 'Buffet e Gastronomia',
+      subcategories: ['Buffet Completo', 'Cardápio Vegano']
     }
   ],
 

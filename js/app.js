@@ -9664,6 +9664,28 @@ document.addEventListener('DOMContentLoaded', () => {
     inactiveBtn.classList.add(...inactiveClasses);
   }
 
+  // Selo de avaliação (anel + ícone) do card, em nota de 0 a 10 — usado na
+  // lista e no grid. Ícone e anel em amarelo (mesma cor da estrela).
+  function b2bRatingBadgeHTML(item, compact) {
+    const recommendPct = Math.round(((item.rating || 4.9) / 5) * 100);
+    const ratingScore = (recommendPct / 10).toFixed(1);
+    const ringRadius = 9;
+    const ringCircumference = 2 * Math.PI * ringRadius;
+    const ringOffset = ringCircumference * (1 - recommendPct / 100);
+    const ringSizeClass = compact ? 'w-5 h-5' : 'w-8 h-8';
+    const iconSizeClass = compact ? 'w-3 h-3' : 'w-4 h-4';
+    return `
+      <div class="relative ${ringSizeClass} shrink-0">
+        <svg class="${ringSizeClass} -rotate-90" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#E4E4E7" stroke-width="2.5"></circle>
+          <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
+        </svg>
+        <svg class="${iconSizeClass} absolute inset-0 m-auto text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
+      </div>
+      <span class="font-semibold text-zinc-700">${ratingScore}</span>
+    `;
+  }
+
   // Preço de vitrine do card: segue a mesma unidade de cobrança cadastrada
   // pelo fornecedor em B2B/produtos.html (POR_HORA, POR_PESSOA, VALOR_FIXO,
   // SOB_CONSULTA — ver B2B/js/produtos.js:productPriceLabel).
@@ -9786,13 +9808,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tagBg = 'bg-emerald-50 text-emerald-700';
       }
 
-      const recommendPct = Math.round(((item.rating || 4.9) / 5) * 100);
       const avatarSrc = item.avatar || item.image;
       const matchedConversation = (b2bConversationsData || []).find(c => c.id === item.chatId);
       const isOnline = !!(matchedConversation && matchedConversation.online);
-      const ringRadius = 9;
-      const ringCircumference = 2 * Math.PI * ringRadius;
-      const ringOffset = ringCircumference * (1 - recommendPct / 100);
       const priceLabel = b2bPriceLabel(item);
 
       if (b2bViewMode === 'grid') {
@@ -9832,14 +9850,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
 
               <div class="flex items-center gap-1.5 text-sm shrink-0">
-                <div class="relative w-8 h-8 shrink-0">
-                  <svg class="w-8 h-8 -rotate-90" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#E4E4E7" stroke-width="2.5"></circle>
-                    <circle cx="12" cy="12" r="${ringRadius}" fill="none" stroke="#ebf4ff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${ringCircumference.toFixed(2)}" stroke-dashoffset="${ringOffset.toFixed(2)}"></circle>
-                  </svg>
-                  <svg class="w-4 h-4 absolute inset-0 m-auto text-[#ebf4ff]" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 2h14v2H5v-2z"/></svg>
-                </div>
-                <span class="font-semibold text-zinc-700">${recommendPct}%</span>
+                ${b2bRatingBadgeHTML(item)}
               </div>
             </div>
 
@@ -9920,8 +9931,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
 
         <div class="flex items-center gap-1.5 text-sm text-zinc-600">
-          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7-5.4-4.7 7.1-.6z"/></svg>
-          <span class="font-semibold text-zinc-800">${(item.rating || 4.9).toFixed(1)}</span>
+          ${b2bRatingBadgeHTML(item, true)}
           <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
           <span class="text-zinc-400">·</span>
           <span class="truncate">${item.location || item.neighborhood || ''}</span>
@@ -9940,9 +9950,15 @@ document.addEventListener('DOMContentLoaded', () => {
           ` : ''}
         </div>
 
-        <button type="button" class="btn-hire-supplier mt-auto pt-1.5 text-left text-sm font-bold text-[#c7305b] hover:text-[#a4254a] transition-colors cursor-pointer">
-          Contratar
-        </button>
+        <div class="flex items-center gap-2 mt-auto pt-2">
+          <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
+            <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+            <span>Mensagem</span>
+          </button>
+          <button type="button" class="btn-hire-supplier flex-1 px-3 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer">
+            Contratar
+          </button>
+        </div>
       </div>
     `;
 
@@ -9955,6 +9971,11 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       toggleB2BFavorite(item);
       renderB2BExplore();
+    });
+
+    card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      switchB2BView('messages', item.chatId || 'mariana-assessoria');
     });
 
     card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {

@@ -272,9 +272,6 @@ function renderProducts() {
         <p class="text-base font-bold text-zinc-900 mt-auto">${productPriceLabel(p)}</p>
         <div class="flex items-center gap-2 mt-1">
           <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">Editar</button>
-          <button class="btn-secondary text-xs py-2 px-3" data-remove-product="${p.id}" aria-label="Remover">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7m2 0-.6 12.1a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5.5 7" /></svg>
-          </button>
         </div>
       </div>
     </div>
@@ -288,17 +285,6 @@ function renderProducts() {
     btn.addEventListener('click', () => {
       openProductDrawer(btn.dataset.addImage);
       goToStep(4);
-    });
-  });
-
-  grid.querySelectorAll('[data-remove-product]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const { error } = await supabaseClient.from('products').delete().eq('id', btn.dataset.removeProduct);
-      if (error) { showToast('Não foi possível remover o item.', true); return; }
-      await loadProducts();
-      renderCategoryTabs();
-      renderProducts();
-      showToast('Item removido da vitrine.');
     });
   });
 }
@@ -801,6 +787,7 @@ function initProductDrawer() {
     document.getElementById('product-video-url').value = '';
     document.getElementById('product-setup-minutes').value = '';
     document.getElementById('product-teardown-minutes').value = '';
+    setPanelHidden('product-drawer-delete-btn', true);
 
     goToStep(1);
   };
@@ -819,6 +806,19 @@ function initProductDrawer() {
   if (closeBtn) closeBtn.addEventListener('click', close);
   if (cancelBtn) cancelBtn.addEventListener('click', close);
   if (backdrop) backdrop.addEventListener('click', close);
+
+  const deleteBtn = document.getElementById('product-drawer-delete-btn');
+  if (deleteBtn) deleteBtn.addEventListener('click', async () => {
+    const id = form.dataset.editId;
+    if (!id) return;
+    const { error } = await supabaseClient.from('products').delete().eq('id', id);
+    if (error) { showToast('Não foi possível remover o item.', true); return; }
+    close();
+    await loadProducts();
+    renderCategoryTabs();
+    renderProducts();
+    showToast('Item removido da vitrine.');
+  });
 
   document.getElementById('product-category').addEventListener('change', () => {
     const category = document.getElementById('product-category').value;
@@ -1131,6 +1131,7 @@ function openProductDrawer(id) {
 
   const form = document.getElementById('product-form');
   form.dataset.editId = p.id;
+  setPanelHidden('product-drawer-delete-btn', false);
   goToStep(1);
   document.getElementById('product-drawer').classList.add('show');
   document.getElementById('product-drawer-backdrop').classList.add('show');

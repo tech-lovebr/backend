@@ -5311,6 +5311,7 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 
 .product-wizard-footer { display: flex; align-items: center; gap: 0.75rem; }
 .product-wizard-footer .btn-secondary, .product-wizard-footer .btn-primary { flex: 1; justify-content: center; }
+#product-drawer-delete-btn { flex: 0 0 auto; padding-left: 0.75rem; padding-right: 0.75rem; }
 
 .pricing-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
 .pricing-type-card {

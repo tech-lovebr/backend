@@ -2009,6 +2009,17 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
   box-shadow: none !important;
 }
 
+/* Drawer de categorias da busca (Explorar fornecedores): linhas retas (sem
+   o border-radius padrão de botão) e hover sempre num cinza bem clarinho.
+   Especificidade dobrada no #id pra vencer a regra global de raio de botão
+   (button:not(...), que já usa !important). */
+#b2b-category-menu#b2b-category-menu button {
+  border-radius: 0 !important;
+}
+#b2b-category-menu .b2b-category-group > div:hover {
+  background-color: #FAFAFA;
+}
+
 /* Badges de Data e Local do Topo */
 #dash-hub-event-date-badge {
   border: 1.5px solid #18181B !important;

@@ -3058,6 +3058,16 @@
           <div id="b2b-top-search-bar" class="builder-toolbar">
             <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Explorar</h2>
             <div class="flex items-center gap-2.5 flex-shrink-0">
+              <!-- Alternância Lista / Grid (ver b2bViewMode em app.js) — lista é o padrão. -->
+              <div class="flex items-center gap-0.5 border border-zinc-200 rounded-xl p-0.5 bg-white" id="b2b-view-toggle">
+                <button type="button" id="btn-b2b-view-list" class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer" title="Ver em lista">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+                </button>
+                <button type="button" id="btn-b2b-view-grid" class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer" title="Ver em grid">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h7.5v7.5h-7.5v-7.5Zm9 0h7.5v7.5h-7.5v-7.5Zm-9 9h7.5v7.5h-7.5v-7.5Zm9 0h7.5v7.5h-7.5v-7.5Z"/></svg>
+                </button>
+              </div>
+
               <div class="relative w-52 sm:w-64" id="b2b-search-container">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>

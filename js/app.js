@@ -9501,6 +9501,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   let b2bSelectedCity = null;
 
+  // Alternância Lista / Grid do Explorar — lista é o padrão.
+  let b2bViewMode = 'list';
+
   let b2bMarketplaceInitialized = false;
   function initB2BMarketplace() {
     if (b2bMarketplaceInitialized) return;
@@ -9600,6 +9603,19 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('b2b-city-filter-row')?.scrollBy({ left: 240, behavior: 'smooth' });
     });
 
+    // Alternância Lista / Grid do Explorar.
+    document.getElementById('btn-b2b-view-list')?.addEventListener('click', () => {
+      b2bViewMode = 'list';
+      renderB2BViewToggle();
+      renderB2BExplore();
+    });
+    document.getElementById('btn-b2b-view-grid')?.addEventListener('click', () => {
+      b2bViewMode = 'grid';
+      renderB2BViewToggle();
+      renderB2BExplore();
+    });
+    renderB2BViewToggle();
+
     // 12.5 Inicialização do Chat Messenger B2B & Render Inicial
     initB2BChatHandlers();
     renderB2BCityFilter();
@@ -9631,6 +9647,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Destaca o botão ativo da alternância Lista / Grid.
+  function renderB2BViewToggle() {
+    const listBtn = document.getElementById('btn-b2b-view-list');
+    const gridBtn = document.getElementById('btn-b2b-view-grid');
+    if (!listBtn || !gridBtn) return;
+    const activeClasses = ['bg-[#537bae]', 'text-white'];
+    const inactiveClasses = ['text-zinc-400', 'hover:bg-zinc-50', 'hover:text-zinc-700'];
+    [listBtn, gridBtn].forEach(btn => btn.classList.remove(...activeClasses, ...inactiveClasses));
+    const activeBtn = b2bViewMode === 'grid' ? gridBtn : listBtn;
+    const inactiveBtn = b2bViewMode === 'grid' ? listBtn : gridBtn;
+    activeBtn.classList.add(...activeClasses);
+    inactiveBtn.classList.add(...inactiveClasses);
+  }
+
   // Preço de vitrine do card: segue a mesma unidade de cobrança cadastrada
   // pelo fornecedor em B2B/produtos.html (POR_HORA, POR_PESSOA, VALOR_FIXO,
   // SOB_CONSULTA — ver B2B/js/produtos.js:productPriceLabel).
@@ -9650,6 +9680,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!listContainer) return;
     listContainer.innerHTML = '';
+    listContainer.className = b2bViewMode === 'grid'
+      ? 'w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'
+      : 'w-full flex flex-col divide-y divide-zinc-200/80';
 
     let items = [];
     let categoryName = 'fornecedores';
@@ -9759,6 +9792,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const ringOffset = ringCircumference * (1 - recommendPct / 100);
       const priceLabel = b2bPriceLabel(item);
 
+      if (b2bViewMode === 'grid') {
+        listContainer.appendChild(buildB2BGridCard(item, { tagText, tagBg, priceLabel }));
+        return;
+      }
+
       const card = document.createElement('div');
       card.id = `card-${item.id}`;
       card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 cursor-pointer';
@@ -9853,6 +9891,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
       listContainer.appendChild(card);
     });
+  }
+
+  // Card do modo Grid do Explorar: caixa sem sombra (só borda), imagem com
+  // selo de destaque + favoritar, nome, nota, preço/capacidade e CTA.
+  function buildB2BGridCard(item, { tagText, tagBg, priceLabel }) {
+    const capacityLabel = item.guests ? `Até ${item.guests} pessoas` : '';
+
+    const card = document.createElement('div');
+    card.id = `grid-card-${item.id}`;
+    card.className = 'b2b-grid-card group border border-zinc-200 rounded-xl overflow-hidden bg-white cursor-pointer flex flex-col';
+
+    card.innerHTML = `
+      <div class="btn-open-supplier-gallery relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden cursor-pointer">
+        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        <span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide ${tagBg}">${tagText}</span>
+        <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
+          <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 flex flex-col gap-2.5 flex-1">
+        <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
+
+        <div class="flex items-center gap-1.5 text-sm text-zinc-600">
+          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 7-6.3-3.8-6.3 3.8 1.7-7-5.4-4.7 7.1-.6z"/></svg>
+          <span class="font-semibold text-zinc-800">${(item.rating || 4.9).toFixed(1)}</span>
+          <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
+          <span class="text-zinc-400">·</span>
+          <span class="truncate">${item.location || item.neighborhood || ''}</span>
+        </div>
+
+        <div class="flex items-center gap-3 text-sm text-zinc-600 flex-wrap">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>
+            ${priceLabel}
+          </span>
+          ${capacityLabel ? `
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+              ${capacityLabel}
+            </span>
+          ` : ''}
+        </div>
+
+        <button type="button" class="btn-hire-supplier mt-auto pt-1.5 text-left text-sm font-bold text-[#c7305b] hover:text-[#a4254a] transition-colors cursor-pointer">
+          Contratar
+        </button>
+      </div>
+    `;
+
+    card.querySelector('.btn-open-supplier-gallery')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openB2BVendorProfile(item);
+    });
+
+    card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleB2BFavorite(item);
+      renderB2BExplore();
+    });
+
+    card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openB2BVendorProfile(item);
+    });
+
+    card.addEventListener('click', () => {
+      openB2BVendorProfile(item);
+    });
+
+    return card;
   }
 
   // ==========================================

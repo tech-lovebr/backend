@@ -10219,9 +10219,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameEl = document.getElementById('b2b-profile-name');
     const roleEl = document.getElementById('b2b-profile-role');
     const locationTextEl = document.getElementById('b2b-profile-location-text');
+    const siteLink = document.getElementById('b2b-profile-site-link');
     const ratingWrap = document.getElementById('b2b-profile-rating-wrap');
-    const ratingEl = document.getElementById('b2b-profile-rating');
-    const reviewsCountEl = document.getElementById('b2b-profile-reviews-count');
     const aboutEl = document.getElementById('b2b-profile-about');
     const specialtiesEl = document.getElementById('b2b-profile-specialties');
     const servicesSection = document.getElementById('b2b-profile-services-section');
@@ -10242,33 +10241,70 @@ document.addEventListener('DOMContentLoaded', () => {
       roleEl.classList.toggle('hidden', !roleText);
     }
     if (locationTextEl) locationTextEl.textContent = item.location || item.neighborhood || '';
-    if (ratingWrap) ratingWrap.classList.toggle('hidden', !item.rating);
-    if (ratingEl) ratingEl.textContent = item.rating || '';
-    if (reviewsCountEl) reviewsCountEl.textContent = item.reviewsCount ? `(${item.reviewsCount} avaliações)` : '';
-    if (aboutEl) aboutEl.textContent = item.about || item.description || '';
 
-    const specialties = item.specialties || item.features || [];
-    if (specialtiesEl) {
-      specialtiesEl.innerHTML = specialties.map(s => `<span class="px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium">${s}</span>`).join('');
+    // "Acessar site" só aparece se o fornecedor publicou um site próprio
+    // pelo construtor do Love (B2B/js/site-builder.js).
+    if (siteLink) {
+      siteLink.classList.toggle('hidden', !item.siteUrl);
+      if (item.siteUrl) siteLink.href = item.siteUrl;
     }
 
+    // Mesmo selo (anel + ícone, nota de 0 a 10) usado no card da lista/grid
+    // do Explorar — a nota aqui é exatamente a mesma daquele card.
+    if (ratingWrap) {
+      ratingWrap.classList.toggle('hidden', !item.rating);
+      if (item.rating) {
+        ratingWrap.innerHTML = `${b2bRatingBadgeHTML(item)}<span class="text-zinc-400">(${item.reviewsCount || 0})</span>`;
+      }
+    }
+
+    if (aboutEl) aboutEl.textContent = item.about || item.description || '';
+
+    // Tags sem fundo, separadas por vírgula — texto corrido, não mais pills.
+    const specialties = item.specialties || item.features || [];
+    if (specialtiesEl) {
+      specialtiesEl.textContent = specialties.join(', ');
+      specialtiesEl.classList.toggle('hidden', specialties.length === 0);
+    }
+
+    // Serviços oferecidos: mesmo card do cadastro de produto no B2B
+    // (B2B/js/produtos.js:renderProducts → .product-card) — clicar expande
+    // e mostra a descrição completa e o valor.
     const services = item.services || [];
     if (servicesGrid) {
-      servicesGrid.innerHTML = services.map(svc => `
-        <div class="p-4 rounded-xl border border-zinc-200 bg-zinc-50/60 space-y-1">
-          <div class="flex items-start justify-between gap-2">
-            <h4 class="text-sm font-bold text-zinc-900">${svc.name}</h4>
-            <span class="text-xs font-black text-zinc-900 whitespace-nowrap">${svc.price}</span>
+      servicesGrid.innerHTML = services.map((svc, i) => {
+        const thumb = portfolioPhotos[i % portfolioPhotos.length] || item.image;
+        return `
+          <div class="b2b-profile-service-card border border-zinc-200 rounded-xl bg-white overflow-hidden cursor-pointer" data-index="${i}">
+            <div class="flex items-center gap-3 p-3">
+              <div class="w-14 h-14 rounded-lg overflow-hidden bg-zinc-100 flex-shrink-0">
+                <img src="${thumb}" alt="" class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-bold text-zinc-900 truncate">${svc.name}</h4>
+                <p class="text-sm font-semibold text-zinc-600 mt-0.5">${svc.price}</p>
+              </div>
+              <svg class="b2b-profile-service-chevron w-4 h-4 text-zinc-400 transition-transform flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+            <div class="b2b-profile-service-detail hidden px-3 pb-3 text-xs text-zinc-500 leading-relaxed border-t border-zinc-100 pt-3">
+              ${svc.desc || ''}
+            </div>
           </div>
-          <p class="text-xs text-zinc-500 leading-relaxed">${svc.desc || ''}</p>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+
+      servicesGrid.querySelectorAll('.b2b-profile-service-card').forEach(card => {
+        card.addEventListener('click', () => {
+          card.querySelector('.b2b-profile-service-detail')?.classList.toggle('hidden');
+          card.querySelector('.b2b-profile-service-chevron')?.classList.toggle('rotate-180');
+        });
+      });
     }
     if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0);
 
     if (portfolioGrid) {
       portfolioGrid.innerHTML = portfolioPhotos.map((photo, i) => `
-        <button type="button" class="b2b-profile-portfolio-photo-btn relative aspect-square rounded-xl overflow-hidden bg-zinc-100 cursor-pointer group" data-index="${i}">
+        <button type="button" class="b2b-profile-portfolio-photo-btn relative w-40 h-40 sm:w-48 sm:h-48 rounded-xl overflow-hidden bg-zinc-100 cursor-pointer group shrink-0" data-index="${i}">
           <img src="${photo}" alt="Portfólio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
         </button>
       `).join('');
@@ -10279,6 +10315,7 @@ document.addEventListener('DOMContentLoaded', () => {
           renderSupplierGalleryImage();
         });
       });
+      updateB2BProfilePortfolioArrows();
     }
     if (portfolioSection) portfolioSection.classList.toggle('hidden', portfolioPhotos.length === 0);
 
@@ -10288,6 +10325,15 @@ document.addEventListener('DOMContentLoaded', () => {
       favIcon.classList.toggle('fill-none', !item.isFavorite);
       favIcon.classList.toggle('text-zinc-300', !item.isFavorite);
     }
+  }
+
+  // Esconde a seta "<" do carrossel de portfólio quando está no começo —
+  // mesmo padrão do filtro de cidade do Explorar.
+  function updateB2BProfilePortfolioArrows() {
+    const row = document.getElementById('b2b-profile-portfolio-grid');
+    const prevBtn = document.getElementById('btn-b2b-profile-portfolio-prev');
+    if (!row || !prevBtn) return;
+    prevBtn.classList.toggle('hidden', row.scrollLeft <= 0);
   }
 
   function openB2BVendorProfile(item) {
@@ -10335,6 +10381,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-b2b-profile-share')?.addEventListener('click', (e) => {
     if (activeB2BProfileItem) handleB2BShare(activeB2BProfileItem, e.currentTarget);
   });
+
+  // Setas "<"/">" do carrossel de portfólio do perfil do fornecedor.
+  document.getElementById('btn-b2b-profile-portfolio-next')?.addEventListener('click', () => {
+    document.getElementById('b2b-profile-portfolio-grid')?.scrollBy({ left: 220, behavior: 'smooth' });
+  });
+  document.getElementById('btn-b2b-profile-portfolio-prev')?.addEventListener('click', () => {
+    document.getElementById('b2b-profile-portfolio-grid')?.scrollBy({ left: -220, behavior: 'smooth' });
+  });
+  document.getElementById('b2b-profile-portfolio-grid')?.addEventListener('scroll', updateB2BProfilePortfolioArrows);
 
   // ==========================================
   // 12.4 GALERIA/PORTFÓLIO DO FORNECEDOR (Explorar → clique na imagem)

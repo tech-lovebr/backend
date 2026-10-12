@@ -3165,9 +3165,12 @@
                   <span id="b2b-profile-location-text"></span>
                 </p>
               </div>
-              <div id="b2b-profile-rating-wrap" class="flex items-center gap-2 text-sm flex-shrink-0">
-                <span class="text-amber-500 font-bold">★ <span id="b2b-profile-rating"></span></span>
-                <span class="text-zinc-400" id="b2b-profile-reviews-count"></span>
+              <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+                <a href="#" id="b2b-profile-site-link" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 text-sm font-semibold text-[#537bae] hover:text-[#416799] transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                  <span>Acessar site</span>
+                </a>
+                <div id="b2b-profile-rating-wrap" class="flex items-center gap-1.5 text-sm"></div>
               </div>
             </div>
 
@@ -3175,19 +3178,29 @@
             <div class="mt-6 pt-6 border-t border-zinc-100">
               <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-2">Sobre</h3>
               <p id="b2b-profile-about" class="text-sm text-zinc-600 leading-relaxed max-w-3xl"></p>
-              <div id="b2b-profile-specialties" class="flex flex-wrap gap-2 mt-3"></div>
+              <p id="b2b-profile-specialties" class="text-sm text-zinc-500 mt-3 max-w-3xl"></p>
             </div>
 
-            <!-- Produtos & Serviços cadastrados no B2B -->
+            <!-- Serviços oferecidos: cadastrados pelo fornecedor no B2B (mesmo
+                 padrão de card de B2B/produtos.html) — clicar expande e mostra
+                 a descrição completa e o valor. -->
             <div id="b2b-profile-services-section" class="mt-8 pt-6 border-t border-zinc-100">
-              <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Produtos & Serviços</h3>
+              <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Serviços oferecidos</h3>
               <div id="b2b-profile-services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
             </div>
 
-            <!-- Portfólio -->
+            <!-- Portfólio: carrossel horizontal com setas "<"/">" -->
             <div id="b2b-profile-portfolio-section" class="mt-8 pt-6 border-t border-zinc-100 pb-10">
               <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Portfólio</h3>
-              <div id="b2b-profile-portfolio-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2"></div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="btn-b2b-profile-portfolio-prev" class="hidden w-8 h-8 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Anterior">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <div id="b2b-profile-portfolio-grid" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar min-w-0 scroll-smooth"></div>
+                <button type="button" id="btn-b2b-profile-portfolio-next" class="w-8 h-8 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Próximo">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
             </div>
 
           </div>

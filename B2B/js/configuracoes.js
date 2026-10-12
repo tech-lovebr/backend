@@ -9,6 +9,11 @@ const PROFILE_LOGO_ASPECT_RATIO = 8 / 5;
 const PROFILE_AVATAR_ASPECT_RATIO = 1;
 const PROFILE_STORAGE_KEY = 'b2b-professional-profile';
 
+// Posições do slider de raio de atendimento → km reais. 0 = "qualquer distância"
+// (sentinela, não um raio de 0km) — ver comentário da coluna no banco.
+const RADIUS_STEPS = [50, 100, 150, 200, 250, 300, 0];
+function radiusLabelFor(km) { return km === 0 ? 'Qualquer distância' : `${km} km`; }
+
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   initSettingsTabs();
@@ -260,28 +265,248 @@ function initCompanyForm() {
   if (!form) return;
   const p = B2B_DATA.professional;
 
+  /* -------- Endereço comercial -------- */
+  const sameAddressCheckbox = document.getElementById('company-same-address');
+  const addressInput = document.getElementById('company-address');
+  const stateSelect = document.getElementById('company-state');
+  const cityInput = document.getElementById('company-city');
+
+  initStateCityFields(p, 'company');
+  addressInput.value = p.businessAddress || '';
+
+  const applySameAddressState = () => {
+    const useProfile = sameAddressCheckbox.checked;
+    if (useProfile) {
+      addressInput.value = p.address || '';
+      stateSelect.value = p.state || 'SP';
+      cityInput.value = p.city || '';
+      document.getElementById('company-city-options').innerHTML =
+        citiesForState(stateSelect.value).map(c => `<option value="${c}"></option>`).join('');
+    }
+    [addressInput, stateSelect, cityInput].forEach(el => { el.disabled = useProfile; });
+  };
+  sameAddressCheckbox.checked = p.useProfileAddress !== false;
+  applySameAddressState();
+  sameAddressCheckbox.addEventListener('change', applySameAddressState);
+
+  /* -------- Raio de atendimento -------- */
   const radiusInput = document.getElementById('company-service-radius');
   const radiusValue = document.getElementById('company-service-radius-value');
-  const updateRadiusLabel = () => { radiusValue.textContent = `${radiusInput.value} km`; };
-  radiusInput.value = p.serviceRadiusKm ?? 50;
+  const updateRadiusLabel = () => { radiusValue.textContent = radiusLabelFor(RADIUS_STEPS[Number(radiusInput.value)]); };
+  const initialStepIndex = RADIUS_STEPS.indexOf(p.serviceRadiusKm ?? 50);
+  radiusInput.value = initialStepIndex > -1 ? initialStepIndex : 0;
   updateRadiusLabel();
   radiusInput.addEventListener('input', updateRadiusLabel);
 
   document.getElementById('company-delivery-time').value = p.deliveryTime || '';
+
+  /* -------- Forma e condições de pagamento -------- */
+  const installmentsSelect = document.getElementById('company-max-installments');
+  installmentsSelect.innerHTML = ['<option value="0">Não oferece parcelamento sem juros</option>']
+    .concat(Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}x sem juros</option>`))
+    .join('');
+  installmentsSelect.value = String(p.maxInstallmentsNoInterest ?? 0);
+
   document.getElementById('company-deposit-percent').value = p.depositPercent ?? '';
   document.getElementById('company-deposit-deadline').value = p.depositDeadlineDays ?? '';
+  document.getElementById('company-accepts-boleto').checked = !!p.acceptsBoleto;
+  document.getElementById('company-requires-full-payment').checked = !!p.requiresFullPaymentByEvent;
   document.getElementById('company-cancellation-policy').value = p.cancellationPolicy || '';
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    p.serviceRadiusKm = Number(radiusInput.value);
+    p.useProfileAddress = sameAddressCheckbox.checked;
+    p.businessAddress = sameAddressCheckbox.checked ? null : addressInput.value.trim();
+    p.businessCity = sameAddressCheckbox.checked ? null : cityInput.value.trim();
+    p.businessState = sameAddressCheckbox.checked ? null : stateSelect.value;
+    p.serviceRadiusKm = RADIUS_STEPS[Number(radiusInput.value)];
     p.deliveryTime = document.getElementById('company-delivery-time').value.trim();
+    p.maxInstallmentsNoInterest = Number(installmentsSelect.value);
     p.depositPercent = Number(document.getElementById('company-deposit-percent').value) || null;
     p.depositDeadlineDays = Number(document.getElementById('company-deposit-deadline').value) || null;
+    p.acceptsBoleto = document.getElementById('company-accepts-boleto').checked;
+    p.requiresFullPaymentByEvent = document.getElementById('company-requires-full-payment').checked;
     p.cancellationPolicy = document.getElementById('company-cancellation-policy').value.trim();
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    salvarEmpresaNoBanco(p);
     showToast('Informações da empresa atualizadas.');
   });
+
+  /* -------- Portfólio (fora do submit — salva a cada ação) -------- */
+  renderPortfolioImages();
+  renderTestimonials();
+  document.getElementById('company-testimonial-add-btn')?.addEventListener('click', addTestimonial);
+}
+
+/* O mesmo bug que o Perfil já teve: sem isto, "Minha Empresa" só existia no
+   localStorage de quem preenchia e nunca chegava ao banco/Admin. */
+async function salvarEmpresaNoBanco(p) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+
+  const { error } = await supabaseClient
+    .from('fornecedores')
+    .update({
+      usa_endereco_perfil: p.useProfileAddress !== false,
+      business_address: p.businessAddress || null,
+      business_city: p.businessCity || null,
+      business_state: p.businessState || null,
+      service_radius_km: p.serviceRadiusKm ?? 50,
+      delivery_time: p.deliveryTime || null,
+      max_installments_no_interest: p.maxInstallmentsNoInterest ?? 0,
+      deposit_percent: p.depositPercent ?? null,
+      deposit_deadline_days: p.depositDeadlineDays ?? null,
+      accepts_boleto: !!p.acceptsBoleto,
+      requires_full_payment_by_event: !!p.requiresFullPaymentByEvent,
+      cancellation_policy: p.cancellationPolicy || null
+    })
+    .eq('id', session.user.id);
+
+  if (error) console.error('Não foi possível sincronizar as informações da empresa com o banco.', error);
+}
+
+/* -------------------- Portfólio: fotos (upload real no Storage) -------------------- */
+
+function renderPortfolioImages() {
+  const grid = document.getElementById('company-portfolio-grid');
+  if (!grid) return;
+  const images = B2B_DATA.professional.portfolioImages || [];
+
+  grid.innerHTML = images.map((img, i) => `
+    <div class="header-logo-picker-wrap">
+      <div class="image-upload-zone has-image" style="cursor:default;">
+        <img src="${img.url}" class="image-upload-zone-preview" alt="">
+      </div>
+      <button type="button" class="header-logo-picker-remove" data-remove-portfolio-image="${i}" title="Remover foto">${PROFILE_LOGO_CLOSE_ICON}</button>
+    </div>
+  `).join('') + `
+    <label class="image-upload-zone" id="company-portfolio-add-zone">
+      <span class="image-upload-zone-plus">${PROFILE_LOGO_PLUS_ICON}</span>
+      <span class="image-upload-zone-text">Adicionar foto</span>
+      <input type="file" accept="image/*" class="image-upload-zone-input" id="company-portfolio-input">
+    </label>
+  `;
+
+  grid.querySelectorAll('[data-remove-portfolio-image]').forEach(btn => {
+    btn.addEventListener('click', () => removePortfolioImage(Number(btn.dataset.removePortfolioImage)));
+  });
+
+  const input = document.getElementById('company-portfolio-input');
+  if (input) {
+    input.addEventListener('change', () => { if (input.files[0]) uploadPortfolioImage(input.files[0]); });
+    wireImageDropZone(document.getElementById('company-portfolio-add-zone'), uploadPortfolioImage);
+  }
+}
+
+async function uploadPortfolioImage(file) {
+  if (file.size > 3 * 1024 * 1024) {
+    showToast('A imagem precisa ter até 3 MB.', true);
+    return;
+  }
+
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+
+  const addZone = document.getElementById('company-portfolio-add-zone');
+  if (addZone) addZone.classList.add('is-enviando');
+
+  const extensao = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const caminho = `portfolio/${session.user.id}/${Date.now()}-${Math.round(performance.now())}.${extensao}`;
+
+  const { error } = await supabaseClient.storage.from('fornecedores').upload(caminho, file, {
+    cacheControl: '31536000',
+    contentType: file.type || 'image/jpeg'
+  });
+
+  if (addZone) addZone.classList.remove('is-enviando');
+
+  if (error) {
+    showToast(/bucket|not found/i.test(error.message || '')
+      ? 'Não foi possível enviar: verifique se o bucket de Storage está configurado.'
+      : `Não foi possível enviar: ${error.message}`, true);
+    return;
+  }
+
+  const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+  B2B_DATA.professional.portfolioImages = B2B_DATA.professional.portfolioImages || [];
+  B2B_DATA.professional.portfolioImages.push({ url, uploadedAt: new Date().toISOString() });
+  renderPortfolioImages();
+  persistPortfolioImages();
+}
+
+function removePortfolioImage(index) {
+  // O arquivo em si fica no Storage (delete é admin-only hoje) — isto só
+  // tira a foto da lista exibida para o fornecedor.
+  B2B_DATA.professional.portfolioImages.splice(index, 1);
+  renderPortfolioImages();
+  persistPortfolioImages();
+}
+
+async function persistPortfolioImages() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { error } = await supabaseClient
+    .from('fornecedores')
+    .update({ portfolio_images: B2B_DATA.professional.portfolioImages || [] })
+    .eq('id', session.user.id);
+  if (error) console.error('Não foi possível sincronizar o portfólio com o banco.', error);
+}
+
+/* -------------------- Portfólio: depoimentos -------------------- */
+
+function renderTestimonials() {
+  const wrap = document.getElementById('company-testimonials-list');
+  if (!wrap) return;
+  const items = B2B_DATA.professional.depoimentos || [];
+
+  wrap.innerHTML = items.map(item => `
+    <div class="inspector-list-item">
+      <button type="button" class="inspector-list-item-remove" data-remove-testimonial="${item.id}">${PROFILE_LOGO_CLOSE_ICON}</button>
+      <input type="text" class="field-input" data-testimonial-author="${item.id}" value="${escapeHtml(item.autor || '')}" placeholder="Nome de quem deu o depoimento">
+      <textarea class="field-textarea" style="min-height:70px;" data-testimonial-text="${item.id}" placeholder="O que o cliente disse sobre o seu trabalho…">${escapeHtml(item.texto || '')}</textarea>
+    </div>
+  `).join('');
+
+  wrap.querySelectorAll('[data-remove-testimonial]').forEach(btn => {
+    btn.addEventListener('click', () => removeTestimonial(btn.dataset.removeTestimonial));
+  });
+  wrap.querySelectorAll('[data-testimonial-author]').forEach(input => {
+    input.addEventListener('change', () => updateTestimonialField(input.dataset.testimonialAuthor, 'autor', input.value.trim()));
+  });
+  wrap.querySelectorAll('[data-testimonial-text]').forEach(textarea => {
+    textarea.addEventListener('change', () => updateTestimonialField(textarea.dataset.testimonialText, 'texto', textarea.value.trim()));
+  });
+}
+
+function addTestimonial() {
+  B2B_DATA.professional.depoimentos = B2B_DATA.professional.depoimentos || [];
+  B2B_DATA.professional.depoimentos.push({ id: 't' + Date.now() + '-' + Math.round(Math.random() * 999), autor: '', texto: '' });
+  renderTestimonials();
+}
+
+function removeTestimonial(id) {
+  const arr = B2B_DATA.professional.depoimentos || [];
+  const idx = arr.findIndex(x => x.id === id);
+  if (idx > -1) arr.splice(idx, 1);
+  renderTestimonials();
+  persistTestimonials();
+}
+
+function updateTestimonialField(id, campo, valor) {
+  const item = (B2B_DATA.professional.depoimentos || []).find(x => x.id === id);
+  if (!item) return;
+  item[campo] = valor;
+  persistTestimonials();
+}
+
+async function persistTestimonials() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { error } = await supabaseClient
+    .from('fornecedores')
+    .update({ depoimentos: B2B_DATA.professional.depoimentos || [] })
+    .eq('id', session.user.id);
+  if (error) console.error('Não foi possível sincronizar os depoimentos com o banco.', error);
 }
 
 function setProfileDocType(type) {
@@ -301,15 +526,20 @@ function setProfileDocType(type) {
   input.value = formatDocumentValue(input.value, type);
 }
 
-function initStateCityFields(p) {
-  const stateSelect = document.getElementById('profile-state');
-  const cityInput = document.getElementById('profile-city');
-  const cityOptions = document.getElementById('profile-city-options');
+// prefix: 'profile' (Perfil) ou 'company' (Minha Empresa → endereço comercial) —
+// mesmos ids em padrão <prefix>-state/<prefix>-city/<prefix>-city-options.
+function initStateCityFields(p, prefix = 'profile') {
+  const stateSelect = document.getElementById(`${prefix}-state`);
+  const cityInput = document.getElementById(`${prefix}-city`);
+  const cityOptions = document.getElementById(`${prefix}-city-options`);
   if (!stateSelect || !cityInput || !cityOptions) return;
 
+  const state = prefix === 'company' ? p.businessState : p.state;
+  const city = prefix === 'company' ? p.businessCity : p.city;
+
   stateSelect.innerHTML = BRAZIL_STATES.map(s => `<option value="${s.uf}" title="${s.name}">${s.uf}</option>`).join('');
-  stateSelect.value = p.state || 'SP';
-  cityInput.value = p.city || '';
+  stateSelect.value = state || 'SP';
+  cityInput.value = city || '';
 
   const refreshCityOptions = () => {
     cityOptions.innerHTML = citiesForState(stateSelect.value).map(c => `<option value="${c}"></option>`).join('');

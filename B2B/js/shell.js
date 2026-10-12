@@ -145,7 +145,7 @@ async function initAuthGuard() {
 
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
-    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description')
+    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, accepts_boleto, requires_full_payment_by_event, portfolio_images, depoimentos')
     .eq('id', session.user.id)
     .maybeSingle();
 
@@ -178,7 +178,7 @@ async function initAuthGuard() {
         email: session.user.email,
         avatar_url: meta.avatar_url || meta.picture || null
       })
-      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description')
+      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, accepts_boleto, requires_full_payment_by_event, portfolio_images, depoimentos')
       .maybeSingle();
     fornecedor = created;
   }
@@ -226,6 +226,24 @@ async function initAuthGuard() {
     Object.entries(doBanco).forEach(([chave, valor]) => {
       if (valor) B2B_DATA.professional[chave] = valor;
     });
+
+    /* Campos de "Minha Empresa": aqui o valor do banco vence mesmo quando for
+       "falsy" (false, 0, array vazio) — para esses campos isso é um valor
+       explícito já salvo, não um campo que nunca foi preenchido. */
+    B2B_DATA.professional.useProfileAddress = fornecedor.usa_endereco_perfil ?? true;
+    B2B_DATA.professional.businessAddress = fornecedor.business_address || '';
+    B2B_DATA.professional.businessCity = fornecedor.business_city || '';
+    B2B_DATA.professional.businessState = fornecedor.business_state || 'SP';
+    B2B_DATA.professional.serviceRadiusKm = fornecedor.service_radius_km ?? 50;
+    if (fornecedor.delivery_time) B2B_DATA.professional.deliveryTime = fornecedor.delivery_time;
+    if (fornecedor.deposit_percent !== null) B2B_DATA.professional.depositPercent = fornecedor.deposit_percent;
+    if (fornecedor.deposit_deadline_days !== null) B2B_DATA.professional.depositDeadlineDays = fornecedor.deposit_deadline_days;
+    if (fornecedor.cancellation_policy) B2B_DATA.professional.cancellationPolicy = fornecedor.cancellation_policy;
+    B2B_DATA.professional.maxInstallmentsNoInterest = fornecedor.max_installments_no_interest ?? 0;
+    B2B_DATA.professional.acceptsBoleto = fornecedor.accepts_boleto ?? false;
+    B2B_DATA.professional.requiresFullPaymentByEvent = fornecedor.requires_full_payment_by_event ?? false;
+    B2B_DATA.professional.portfolioImages = fornecedor.portfolio_images || [];
+    B2B_DATA.professional.depoimentos = fornecedor.depoimentos || [];
   }
 
   return true;

@@ -32,7 +32,16 @@ const B2B_DATA = {
     deliveryTime: '',
     depositPercent: null,
     depositDeadlineDays: null,
-    cancellationPolicy: ''
+    cancellationPolicy: '',
+    useProfileAddress: true,
+    businessAddress: '',
+    businessCity: '',
+    businessState: 'SP',
+    maxInstallmentsNoInterest: 0,
+    acceptsBoleto: false,
+    requiresFullPaymentByEvent: false,
+    portfolioImages: [],
+    depoimentos: []
   },
 
   siteMetrics: {

@@ -5088,6 +5088,7 @@ body[data-theme="dark"] .b2b-range-value { color: #FFFFFF !important; }
 .image-upload-zone-plus svg { width: 13px; height: 13px; }
 .image-upload-zone-text { font-size: 0.6875rem; color: #A1A1AA; text-align: center; padding: 0 0.6rem; line-height: 1.3; }
 .image-upload-zone-preview { width: 100%; height: 100%; object-fit: cover; }
+.image-upload-zone.is-enviando { opacity: .6; pointer-events: none; }
 
 .header-logo-picker-wrap { position: relative; }
 .header-logo-picker {

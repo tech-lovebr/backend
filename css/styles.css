@@ -4515,8 +4515,7 @@ body.b2b-chat-mode footer {
 .guest-details-drawer,
 .guest-add-drawer,
 .gift-drawer,
-.budget-expense-drawer,
-.contracted-vendor-drawer {
+.budget-expense-drawer {
   position: fixed;
   top: 0;
   right: 0;
@@ -4535,8 +4534,7 @@ body.b2b-chat-mode footer {
 .guest-add-drawer.open,
 .guest-details-drawer.open,
 .gift-drawer.open,
-.budget-expense-drawer.open,
-.contracted-vendor-drawer.open {
+.budget-expense-drawer.open {
   display: flex !important;
   transform: translateX(0);
 }
@@ -4556,8 +4554,7 @@ body.b2b-chat-mode footer {
 
 .guest-drawer-backdrop,
 .gift-drawer-backdrop,
-.budget-expense-drawer-backdrop,
-.contracted-drawer-backdrop {
+.budget-expense-drawer-backdrop {
   display: none !important;
   position: fixed;
   inset: 0;
@@ -4569,8 +4566,7 @@ body.b2b-chat-mode footer {
 
 .guest-drawer-backdrop.open,
 .gift-drawer-backdrop.open,
-.budget-expense-drawer-backdrop.open,
-.contracted-drawer-backdrop.open {
+.budget-expense-drawer-backdrop.open {
   display: block !important;
 }
 

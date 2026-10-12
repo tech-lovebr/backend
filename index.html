@@ -2170,26 +2170,18 @@
         <!-- =================================================================
              PAGE 3.3: CONFIGURAÇÕES DA LISTA DE CONVIDADOS (Compartilhar com Fornecedores)
              ================================================================= -->
-        <section id="tab-rsvp-settings" class="dashboard-tab-content space-y-0 w-full">
+        <section id="tab-rsvp-checklist" class="dashboard-tab-content space-y-0 w-full">
 
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes) -->
           <div class="builder-toolbar">
-            <h2 id="rsvp-settings-header-title" class="floorplan-page-name" style="margin:0;">Configurações</h2>
+            <h2 id="rsvp-checklist-header-title" class="floorplan-page-name" style="margin:0;">Checklist</h2>
           </div>
 
           <div class="px-6 sm:px-8 py-6 space-y-5">
-            <p id="rsvp-settings-header-subtitle" class="text-sm text-zinc-500 font-sans -mt-2">Escolha o que cada fornecedor contratado pode ver e fazer na sua lista de convidados.</p>
+            <p class="text-sm text-zinc-500 font-sans -mt-2">Organize tudo que precisa ser resolvido pro seu evento e quem é o responsável por cada item.</p>
 
-            <div class="flex gap-6 items-start">
-              <!-- Coluna Esquerda: Lista de Fornecedores -->
-              <div class="w-64 flex-shrink-0 space-y-1.5" id="rsvp-share-vendors-list">
-                <!-- Renderizado via JS com os fornecedores contratados -->
-              </div>
-
-              <!-- Coluna Direita: Permissões do Fornecedor Selecionado -->
-              <div class="flex-1 min-w-0 border border-zinc-200/80 rounded-2xl p-5 sm:p-6" id="rsvp-share-permissions-panel">
-                <!-- Renderizado via JS: permissões do fornecedor ativo, ou estado vazio -->
-              </div>
+            <div id="event-checklist-list" class="max-w-3xl divide-y divide-zinc-200/80">
+              <!-- Injetado dinamicamente via JS (renderEventChecklist) -->
             </div>
           </div>
         </section>
@@ -3231,9 +3223,58 @@
 
             <p id="b2b-contracted-header-subtitle" class="text-sm text-zinc-500 font-sans -mt-2">Acompanhe todos os seus contratos fechados, responsáveis diretos e cronograma financeiro.</p>
 
-            <!-- Lista de Fornecedores Contratados (Full Width Cards) -->
+            <!-- Lista de Fornecedores Contratados (mesmo padrão estético da lista do Explorar) -->
             <div id="b2b-contracted-list-container" class="w-full flex flex-col divide-y divide-zinc-200/80">
               <!-- Injetado dinamicamente via JS -->
+            </div>
+
+          </div>
+
+          <!-- ===============================================================
+               SUB-VIEW: PÁGINA DO FORNECEDOR CONTRATADO (Meus Contratos →
+               clique num fornecedor) — mesmo padrão da página do fornecedor
+               em Explorar, nunca mais um drawer/pop-up pra essa ação.
+               Submenu Contrato / Configurações (permissões desse fornecedor
+               específico na lista de convidados).
+               =============================================================== -->
+          <div id="b2b-contracted-vendor-view" class="hidden px-6 sm:px-8 py-6 w-full max-w-none">
+
+            <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+              <button type="button" id="btn-contracted-vendor-back" class="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <span>Voltar para Meus Contratos</span>
+              </button>
+              <button type="button" id="btn-contracted-vendor-chat" class="btn-secondary">
+                <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                <span>Chat</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-14 h-14 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 border border-zinc-200">
+                <img id="contracted-vendor-page-image" src="" alt="" class="w-full h-full object-cover">
+              </div>
+              <div class="min-w-0">
+                <span id="contracted-vendor-page-category" class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block"></span>
+                <h2 id="contracted-vendor-page-name" class="text-lg sm:text-xl font-bold text-zinc-900 truncate"></h2>
+              </div>
+            </div>
+
+            <!-- Submenu: Contrato / Configurações -->
+            <div class="flex items-center gap-5 border-b border-zinc-200/80 mb-6">
+              <button type="button" class="contracted-vendor-subtab px-0.5 pb-3 text-sm font-bold border-b-2 border-transparent text-zinc-400 transition-colors cursor-pointer" data-subtab="contract">Contrato</button>
+              <button type="button" class="contracted-vendor-subtab px-0.5 pb-3 text-sm font-bold border-b-2 border-transparent text-zinc-400 transition-colors cursor-pointer" data-subtab="settings">Configurações</button>
+            </div>
+
+            <!-- Painel: Contrato -->
+            <div id="contracted-vendor-panel-contract" class="space-y-5 max-w-3xl pb-10">
+              <!-- Injetado dinamicamente via JS (renderContractedVendorContract) -->
+            </div>
+
+            <!-- Painel: Configurações (permissões desse fornecedor na lista de convidados) -->
+            <div id="contracted-vendor-panel-settings" class="hidden max-w-3xl pb-10">
+              <p class="text-sm text-zinc-500 font-sans mb-5">Escolha o que esse fornecedor pode ver e fazer na sua lista de convidados.</p>
+              <div id="contracted-vendor-permissions-list"></div>
             </div>
 
           </div>
@@ -5203,42 +5244,6 @@
       </div>
     </div>
   </div>
-
-  <!-- =========================================================================
-       DRAWER LATERAL: DETALHES DO FORNECEDOR CONTRATADO (Slide-Over Drawer)
-       ========================================================================= -->
-  <div id="contracted-drawer-backdrop" class="contracted-drawer-backdrop hidden" style="display: none !important;"></div>
-  <aside id="drawer-contracted-vendor-details" class="contracted-vendor-drawer hidden" style="display: none !important;" aria-label="Detalhes do Fornecedor Contratado">
-    <!-- Header do Drawer -->
-    <div class="p-5 border-b border-zinc-200 bg-white flex items-center justify-between flex-shrink-0">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="relative w-12 h-12 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 border border-zinc-200">
-          <img id="contracted-drawer-image" src="assets/theme_blacktie.jpg" alt="Fornecedor" class="w-full h-full object-cover">
-        </div>
-        <div class="min-w-0">
-          <span id="contracted-drawer-category" class="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wider">Locais & Espaços</span>
-          <h3 id="contracted-drawer-name" class="text-base sm:text-lg font-bold text-zinc-900 truncate mt-0.5">Villa Bisutti Casa do Ator</h3>
-        </div>
-      </div>
-      <button id="btn-close-contracted-drawer" type="button" class="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center text-sm transition-colors flex-shrink-0 cursor-pointer">✕</button>
-    </div>
-
-    <!-- Conteúdo Scrollável do Drawer -->
-    <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5" id="contracted-drawer-body">
-      <!-- Injetado dinamicamente via JS -->
-    </div>
-
-    <!-- Rodapé de Ações do Drawer -->
-    <div class="p-4 border-t border-zinc-200 bg-zinc-50/80 flex items-center justify-between gap-3 flex-shrink-0">
-      <button type="button" id="btn-contracted-drawer-chat" class="flex-1 py-2.5 px-4 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-        <span>Abrir no Chat</span>
-      </button>
-      <button type="button" id="btn-contracted-drawer-close-footer" class="py-2.5 px-4 rounded-xl bg-white border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-semibold transition-all cursor-pointer">
-        Fechar
-      </button>
-    </div>
-  </aside>
 
   <!-- Scripts Modulares -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>

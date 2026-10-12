@@ -153,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       closeAddGuestDrawer();
       closeGiftDrawer();
-      closeContractedVendorDrawer();
       document.body.style.overflow = '';
     }
   });
@@ -169,6 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // aba inteira) só pra, um instante depois, trocar pra rota pedida —
   // dava pra ver esse "pulo" pela Visão Geral antes da página certa aparecer.
   let pendingInitialDashboardRoute = null;
+
+  // Navegação programática (ex.: botão "Checklist do Evento" no dashboard)
+  // que precisa abrir já num sub-item específico de uma aba, sem precisar
+  // clicar nele — setado antes de switchRailTab(), consumido e zerado logo
+  // em seguida, dentro da própria renderização da sub-barra.
+  let pendingSubItemId = null;
 
   function switchView(viewName) {
     // Essa é a decisão de verdade — solta o palpite visual do <head> (ver
@@ -528,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'all', label: 'Meus convidados' },
         { id: 'tables', label: 'Mapear mesas' },
-        { id: 'rsvp-settings', label: 'Configurações' }
+        { id: 'checklist', label: 'Checklist' }
       ]
     },
     wallet: {
@@ -710,7 +715,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         config.subItems.forEach((item, index) => {
           const btn = document.createElement('div');
-          const isFirstActive = (tabKey === 'edit-site' && item.id === (state.activeSubSection || 'home')) || (tabKey !== 'edit-site' && index === 0);
+          const isFirstActive = (tabKey === 'edit-site' && item.id === (state.activeSubSection || 'home'))
+            || (pendingSubItemId && item.id === pendingSubItemId)
+            || (tabKey !== 'edit-site' && !pendingSubItemId && index === 0);
           btn.className = `sub-drawer-item ${isFirstActive ? 'active' : ''}`;
           
           let badgeMarkup = '';
@@ -735,20 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (tabKey === 'info-event') {
               switchInfoSubSection(item.id, item.label);
             } else if (tabKey === 'rsvp') {
-              document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
-              if (item.id === 'tables') {
-                const target = document.getElementById('tab-rsvp-tables');
-                if (target) target.classList.add('active');
-                renderTablesOrganization();
-              } else if (item.id === 'rsvp-settings') {
-                const target = document.getElementById('tab-rsvp-settings');
-                if (target) target.classList.add('active');
-                renderRsvpShareSettings();
-              } else {
-                const target = document.getElementById('tab-rsvp');
-                if (target) target.classList.add('active');
-                renderGuestsTable('all');
-              }
+              switchRsvpSubSection(item.id);
             } else if (tabKey === 'wallet') {
               switchWalletSubSection(item.id, item.label);
             } else if (tabKey === 'b2b') {
@@ -773,6 +767,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           elements.drawerSubItemsList.appendChild(btn);
         });
+
+        pendingSubItemId = null;
       }
     }
 
@@ -6058,6 +6054,21 @@ document.addEventListener('DOMContentLoaded', () => {
   let rsvpPageSize = 15;
   let rsvpCurrentPage = 1;
 
+  // Sub-seções de Lista de Convidados: Meus convidados / Mapear mesas / Checklist.
+  function switchRsvpSubSection(id) {
+    document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
+    if (id === 'tables') {
+      document.getElementById('tab-rsvp-tables')?.classList.add('active');
+      renderTablesOrganization();
+    } else if (id === 'checklist') {
+      document.getElementById('tab-rsvp-checklist')?.classList.add('active');
+      renderEventChecklist();
+    } else {
+      document.getElementById('tab-rsvp')?.classList.add('active');
+      renderGuestsTable('all');
+    }
+  }
+
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
     currentRsvpFilter = activeFilter;
     const listEl = document.getElementById('rsvp-guests-table-body');
@@ -6230,8 +6241,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  let rsvpSettingsSelectedVendorId = null;
-
   function getVendorGuestListPermissions(activeEvent, vendorId) {
     if (!activeEvent.guestListPermissions) activeEvent.guestListPermissions = {};
     if (!activeEvent.guestListPermissions[vendorId]) {
@@ -6248,68 +6257,48 @@ document.addEventListener('DOMContentLoaded', () => {
     return activeEvent.guestListPermissions[vendorId];
   }
 
-  function renderRsvpShareSettings() {
-    const listContainer = document.getElementById('rsvp-share-vendors-list');
-    const panel = document.getElementById('rsvp-share-permissions-panel');
-    if (!listContainer || !panel) return;
+  // Checklist do evento (Convidados → Checklist): lista de tarefas por
+  // categoria (mesma árvore do B2B_CATEGORY_TREE) — pra cada uma, escolhe
+  // qual fornecedor contratado é o responsável.
+  function renderEventChecklist() {
+    const container = document.getElementById('event-checklist-list');
+    if (!container) return;
+    const activeEvent = getActiveEvent();
+    if (!activeEvent.checklistAssignments) activeEvent.checklistAssignments = {};
     const vendors = (window.LOVE_DATA && Array.isArray(window.LOVE_DATA.contractedVendors)) ? window.LOVE_DATA.contractedVendors : [];
+    const categories = Object.keys(B2B_CATEGORY_TREE);
 
-    listContainer.innerHTML = '';
-
-    if (!vendors.length) {
-      listContainer.innerHTML = `
-        <div class="py-8 px-3 text-center border border-zinc-200/80 rounded-2xl">
-          <p class="text-xs text-zinc-500 font-medium font-sans">Nenhum fornecedor contratado ainda.</p>
+    container.innerHTML = categories.map(cat => {
+      const assignedId = activeEvent.checklistAssignments[cat] || '';
+      return `
+        <div class="flex items-center justify-between gap-4 py-3.5">
+          <span class="text-sm font-semibold text-zinc-800">${cat}</span>
+          <select class="field-input checklist-assign-select" style="max-width: 260px;" data-category="${cat}">
+            <option value="">— Ninguém atribuído —</option>
+            ${vendors.map(v => `<option value="${v.id}" ${v.id === assignedId ? 'selected' : ''}>${v.name}</option>`).join('')}
+          </select>
         </div>
       `;
-      panel.innerHTML = '';
-      return;
-    }
+    }).join('');
 
-    if (!rsvpSettingsSelectedVendorId || !vendors.some(v => v.id === rsvpSettingsSelectedVendorId)) {
-      rsvpSettingsSelectedVendorId = vendors[0].id;
-    }
-
-    vendors.forEach(v => {
-      const isActive = v.id === rsvpSettingsSelectedVendorId;
-      const row = document.createElement('button');
-      row.type = 'button';
-      row.className = `w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left transition-colors cursor-pointer ${isActive ? 'bg-zinc-100' : 'hover:bg-zinc-50'}`;
-      row.innerHTML = `
-        <img src="${v.image || ''}" alt="${v.name}" class="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-zinc-100">
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-bold ${isActive ? 'text-zinc-900' : 'text-zinc-700'} truncate font-sans">${v.name}</p>
-          <p class="text-[11px] text-zinc-400 truncate font-sans">${v.category || ''}</p>
-        </div>
-      `;
-      row.addEventListener('click', () => {
-        rsvpSettingsSelectedVendorId = v.id;
-        renderRsvpShareSettings();
+    container.querySelectorAll('.checklist-assign-select').forEach(select => {
+      select.addEventListener('change', () => {
+        activeEvent.checklistAssignments[select.dataset.category] = select.value || null;
       });
-      listContainer.appendChild(row);
     });
-
-    renderRsvpVendorPermissionsPanel(vendors.find(v => v.id === rsvpSettingsSelectedVendorId));
   }
 
-  function renderRsvpVendorPermissionsPanel(vendor) {
-    const panel = document.getElementById('rsvp-share-permissions-panel');
-    if (!panel || !vendor) return;
+  // Permissões de UM fornecedor contratado (Fornecedores → Meus Contratos →
+  // fornecedor → aba Configurações) — mesmos dados/estrutura de antes
+  // (activeEvent.guestListPermissions[vendorId]), só que sem o seletor de
+  // fornecedor ao lado, já que a página inteira é desse fornecedor.
+  function renderContractedVendorPermissions(vendor) {
+    const list = document.getElementById('contracted-vendor-permissions-list');
+    if (!list || !vendor) return;
     const activeEvent = getActiveEvent();
     const perms = getVendorGuestListPermissions(activeEvent, vendor.id);
 
-    panel.innerHTML = `
-      <div class="flex items-center gap-3 pb-4 mb-1 border-b border-zinc-100">
-        <img src="${vendor.image || ''}" alt="${vendor.name}" class="w-11 h-11 rounded-xl object-cover border border-zinc-100 flex-shrink-0">
-        <div class="min-w-0">
-          <h3 class="text-base font-bold text-zinc-900 font-sans truncate">${vendor.name}</h3>
-          <p class="text-xs text-zinc-400 font-sans">${vendor.category || ''}</p>
-        </div>
-      </div>
-      <div id="rsvp-permissions-list"></div>
-    `;
-
-    const list = panel.querySelector('#rsvp-permissions-list');
+    list.innerHTML = '';
     RSVP_SHARE_PERMISSIONS.forEach(perm => {
       const row = document.createElement('div');
       row.className = 'py-3.5 border-b border-zinc-100 last:border-b-0';
@@ -6348,7 +6337,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (parentDef && !input.checked) {
           perms[parentDef.child.key] = false;
         }
-        renderRsvpVendorPermissionsPanel(vendor);
+        renderContractedVendorPermissions(vendor);
       });
     });
   }
@@ -8246,15 +8235,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) modal.classList.remove('hidden');
   };
 
+  // Botão "Checklist do Evento" no dashboard: leva direto pra Convidados → Checklist.
   window.navigateToChecklist = function() {
-    const guideWidget = document.getElementById('quick-start-guide-widget');
-    if (guideWidget) {
-      guideWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      guideWidget.classList.add('ring-2', 'ring-[#537bae]', 'ring-offset-2');
-      setTimeout(() => {
-        guideWidget.classList.remove('ring-2', 'ring-[#537bae]', 'ring-offset-2');
-      }, 2000);
-    }
+    pendingSubItemId = 'checklist';
+    switchRailTab('rsvp');
+    switchRsvpSubSection('checklist');
   };
 
   window.navigateToVendors = function() {
@@ -10745,6 +10730,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // sempre sai da página de perfil de um fornecedor específico.
     activeB2BProfileItem = null;
     if (vendorProfileView) vendorProfileView.classList.add('hidden');
+    document.getElementById('b2b-contracted-vendor-view')?.classList.add('hidden');
 
     currentB2BView = viewId;
     if (sortContainer) sortContainer.classList.toggle('hidden', viewId === 'messages' || viewId === 'contracted');
@@ -10849,8 +10835,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     contractedList.forEach(item => {
+      // Mesmo padrão estético (flat, sem caixa) da lista do Explorar — ver
+      // renderB2BExplore() / .b2b-item-card.
       const card = document.createElement('div');
-      card.className = 'bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row gap-6 items-stretch w-full';
+      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 md:pl-0 first:pt-0 cursor-pointer';
 
       card.innerHTML = `
         <div class="relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0">
@@ -10907,13 +10895,17 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      card.querySelector('.btn-contracted-chat')?.addEventListener('click', () => {
+      card.querySelector('.btn-contracted-chat')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         switchB2BView('messages', item.chatId || 'mariana-assessoria');
       });
 
-      card.querySelector('.btn-contracted-actions')?.addEventListener('click', () => {
-        openContractedVendorDrawer(item);
+      card.querySelector('.btn-contracted-actions')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openContractedVendorPage(item);
       });
+
+      card.addEventListener('click', () => openContractedVendorPage(item));
 
       container.appendChild(card);
     });
@@ -10921,20 +10913,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let activeContractedVendor = null;
 
-  function openContractedVendorDrawer(vendor) {
+  // Página do fornecedor contratado (Meus Contratos → clique num
+  // fornecedor) — mesmo padrão da página do fornecedor em Explorar, nunca
+  // mais um drawer/pop-up pra essa ação. Submenu Contrato / Configurações.
+  function openContractedVendorPage(vendor) {
     activeContractedVendor = vendor;
-    const drawer = document.getElementById('drawer-contracted-vendor-details');
-    const backdrop = document.getElementById('contracted-drawer-backdrop');
-    const nameEl = document.getElementById('contracted-drawer-name');
-    const categoryEl = document.getElementById('contracted-drawer-category');
-    const imageEl = document.getElementById('contracted-drawer-image');
-    const bodyEl = document.getElementById('contracted-drawer-body');
+    const listView = document.getElementById('b2b-contracted-view');
+    const pageView = document.getElementById('b2b-contracted-vendor-view');
+    if (!pageView) return;
 
-    if (!drawer || !bodyEl) return;
+    if (listView) listView.classList.add('hidden');
+    pageView.classList.remove('hidden');
 
-    if (nameEl) nameEl.textContent = vendor.name;
-    if (categoryEl) categoryEl.textContent = vendor.category;
-    if (imageEl) imageEl.src = vendor.image;
+    document.getElementById('contracted-vendor-page-name').textContent = vendor.name;
+    document.getElementById('contracted-vendor-page-category').textContent = vendor.category;
+    document.getElementById('contracted-vendor-page-image').src = vendor.image;
+
+    renderContractedVendorContract(vendor);
+    renderContractedVendorPermissions(vendor);
+    setContractedVendorSubtab('contract');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeContractedVendorPage() {
+    document.getElementById('b2b-contracted-vendor-view')?.classList.add('hidden');
+    document.getElementById('b2b-contracted-view')?.classList.remove('hidden');
+    activeContractedVendor = null;
+  }
+
+  function setContractedVendorSubtab(id) {
+    document.querySelectorAll('.contracted-vendor-subtab').forEach(btn => {
+      const active = btn.dataset.subtab === id;
+      btn.classList.toggle('border-[#181D24]', active);
+      btn.classList.toggle('text-zinc-900', active);
+      btn.classList.toggle('border-transparent', !active);
+      btn.classList.toggle('text-zinc-400', !active);
+    });
+    document.getElementById('contracted-vendor-panel-contract')?.classList.toggle('hidden', id !== 'contract');
+    document.getElementById('contracted-vendor-panel-settings')?.classList.toggle('hidden', id !== 'settings');
+  }
+
+  function renderContractedVendorContract(vendor) {
+    const bodyEl = document.getElementById('contracted-vendor-panel-contract');
+    if (!bodyEl) return;
 
     const deliverablesHtml = (vendor.deliverables || []).map(d => `
       <li class="flex items-start gap-2 text-xs text-zinc-700">
@@ -11043,37 +11064,24 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
-
-    drawer.classList.add('open');
-    if (backdrop) backdrop.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
 
-  function closeContractedVendorDrawer() {
-    const drawer = document.getElementById('drawer-contracted-vendor-details');
-    const backdrop = document.getElementById('contracted-drawer-backdrop');
-    if (drawer) drawer.classList.remove('open');
-    if (backdrop) backdrop.classList.remove('open');
-    document.body.style.overflow = '';
-  }
+  // Inicialização de Listeners da Página de Fornecedor Contratado
+  const btnContractedVendorBack = document.getElementById('btn-contracted-vendor-back');
+  if (btnContractedVendorBack) btnContractedVendorBack.addEventListener('click', closeContractedVendorPage);
 
-  // Inicialização de Listeners do Drawer de Contratados
-  const btnCloseContractedDrawer = document.getElementById('btn-close-contracted-drawer');
-  const btnCloseContractedDrawerFooter = document.getElementById('btn-contracted-drawer-close-footer');
-  const contractedDrawerBackdrop = document.getElementById('contracted-drawer-backdrop');
-  const btnContractedDrawerChat = document.getElementById('btn-contracted-drawer-chat');
-
-  if (btnCloseContractedDrawer) btnCloseContractedDrawer.addEventListener('click', closeContractedVendorDrawer);
-  if (btnCloseContractedDrawerFooter) btnCloseContractedDrawerFooter.addEventListener('click', closeContractedVendorDrawer);
-  if (contractedDrawerBackdrop) contractedDrawerBackdrop.addEventListener('click', closeContractedVendorDrawer);
-  if (btnContractedDrawerChat) {
-    btnContractedDrawerChat.addEventListener('click', () => {
-      closeContractedVendorDrawer();
+  const btnContractedVendorChat = document.getElementById('btn-contracted-vendor-chat');
+  if (btnContractedVendorChat) {
+    btnContractedVendorChat.addEventListener('click', () => {
       if (activeContractedVendor) {
         switchB2BView('messages', activeContractedVendor.chatId || 'mariana-assessoria');
       }
     });
   }
+
+  document.querySelectorAll('.contracted-vendor-subtab').forEach(btn => {
+    btn.addEventListener('click', () => setContractedVendorSubtab(btn.dataset.subtab));
+  });
 
   async function renderB2BChat() {
     await loadB2BConversationsData();

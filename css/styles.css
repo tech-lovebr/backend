@@ -4574,6 +4574,45 @@ body.b2b-chat-mode footer {
   display: block !important;
 }
 
+/* Observações — histórico de comentários, mesmo padrão do "Comentários e
+   atividade" do quadro (B2B/agenda.html). */
+.guest-drawer-comment-card { background: #fff; border: 1px solid #E4E7EB; border-radius: 10px; padding: 0.75rem 0.85rem; }
+.guest-drawer-comment-box { display: flex; flex-direction: column; gap: 0.5rem; }
+.guest-drawer-comment-input {
+  width: 100% !important; resize: none !important; border: none !important; border-radius: 0 !important;
+  padding: 0 !important; font-family: inherit; font-size: 0.8125rem !important; color: #18181B !important;
+  background: transparent !important; min-height: 2.2rem; box-shadow: none !important;
+}
+.guest-drawer-comment-input:focus { outline: none !important; }
+.guest-drawer-comment-actions { display: flex; justify-content: flex-end; margin-top: 0.2rem; padding-top: 0.5rem; border-top: 1px solid #E4E7EB; }
+.guest-drawer-comment-actions .btn-primary { padding: 0.5rem 1.1rem; font-size: 0.8125rem; }
+
+.guest-drawer-comments-list { display: flex; flex-direction: column; gap: 1rem; }
+.guest-comment-empty { font-size: 0.8125rem; color: #A1A1AA; text-align: center; padding: 0.5rem 0; }
+.guest-comment-item { display: flex; align-items: flex-start; gap: 0.6rem; }
+.guest-comment-avatar {
+  width: 28px; height: 28px; border-radius: 999px; flex-shrink: 0;
+  background: #333333; color: #fff; font-size: 0.6875rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.guest-comment-content { flex: 1; min-width: 0; }
+.guest-comment-author { font-size: 0.8125rem; color: #3F3F46; margin: 0; line-height: 1.5; }
+.guest-comment-author strong { color: #18181B; }
+.guest-comment-bubble {
+  position: relative;
+  background: #F8FAFC; border: 1px solid #E4E7EB; border-radius: 8px;
+  padding: 0.6rem 1.75rem 0.6rem 0.7rem; font-size: 0.8125rem; color: #18181B; line-height: 1.5;
+  white-space: pre-wrap; margin-top: 0.3rem;
+}
+.guest-comment-delete {
+  position: absolute; top: 0.35rem; right: 0.35rem;
+  width: 18px; height: 18px; border: none; background: transparent;
+  color: #A1A1AA; font-size: 0.875rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; border-radius: 4px;
+}
+.guest-comment-delete:hover { color: #B91C1C; background: #FEE2E2; }
+.guest-comment-time { font-size: 0.6875rem; color: #A1A1AA; margin: 0.3rem 0 0; }
+
 /* =========================================================
    CONTROLE DESLIZANTE MODERNO (Soft Inset Track + 3D Disc Thumb)
 /* =========================================================

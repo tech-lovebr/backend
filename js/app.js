@@ -6378,6 +6378,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return raw.split('&').map(n => n.trim()).filter(Boolean);
   }
 
+  // Nome(s) do(s) anfitrião(ões) de verdade — do PERFIL DO CLIENTE logado,
+  // não do evento (activeEvent.hostName às vezes é só o título do evento,
+  // ex.: "Aniversário de Victor", que não é um nome de anfitrião).
+  function getClienteHostNames() {
+    const raw = (window.loveClienteProfile && window.loveClienteProfile.couple_name)
+      ? window.loveClienteProfile.couple_name.split('(')[0].trim()
+      : '';
+    return raw.split('&').map(n => n.trim()).filter(Boolean);
+  }
+
   // Rótulo da coluna/campo "Título" na lista de convidados: "Pai/Beatriz",
   // ou só "Pai" quando não há anfitrião associado (ou só um anfitrião no evento).
   function formatGuestTitleLabel(guest) {
@@ -6391,11 +6401,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // DRAWER LATERAL: CONVIDADO (Adicionar Convidado / editar convidado existente)
   // ==========================================
-
-  // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
   const GUEST_AGE_GROUP_LABELS = { adult: 'Adulto', child: 'Criança (5 a 11 anos)', baby: 'Bebê (0 a 4 anos)' };
-  const GUEST_DIETARY_TAGS = ['Vegetariano', 'Vegano', 'Celíaco / Sem glúten', 'Sem lactose'];
-  let guestFormSelectedStatus = 'pending';
 
   // Máscara de celular brasileiro: (11) 98888-7777 — DDD + 9 dígitos.
   function maskBrazilPhone(raw) {
@@ -6426,57 +6432,102 @@ document.addEventListener('DOMContentLoaded', () => {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
     `;
-    row.querySelector('.btn-remove-companion-row').addEventListener('click', () => {
-      row.remove();
-      updateGuestCompanionsCounter();
-    });
-    row.querySelector('.guest-companion-age-input').addEventListener('change', updateGuestCompanionsCounter);
+    row.querySelector('.btn-remove-companion-row').addEventListener('click', () => row.remove());
     list.appendChild(row);
     if (!name) row.querySelector('input').focus();
-    updateGuestCompanionsCounter();
   }
 
-  // Badge "Total: X pessoas (Y adultos, Z crianças)" — bebês entram na
-  // contagem de crianças aqui, mas mantêm a própria faixa etária salva.
-  function updateGuestCompanionsCounter() {
-    const counterEl = document.getElementById('guest-companions-counter');
-    if (!counterEl) return;
-    const ageGroups = Array.from(document.querySelectorAll('.guest-companion-age-input')).map(s => s.value);
-    const adults = 1 + ageGroups.filter(a => a === 'adult').length;
-    const children = ageGroups.filter(a => a === 'child' || a === 'baby').length;
-    const total = adults + children;
-    const childrenPart = children > 0 ? `, ${children} criança${children > 1 ? 's' : ''}` : '';
-    counterEl.textContent = `Total: ${total} pessoa${total > 1 ? 's' : ''} (${adults} adulto${adults > 1 ? 's' : ''}${childrenPart})`;
+  // Observações — histórico de comentários (igual ao comportamento original).
+  const NO_DIETARY_FILLERS = ['não informado', 'nenhuma', 'nenhuma restrição', 'nenhuma restrição alimentar cadastrada'];
+
+  function initialsFromName(name) {
+    const words = (name || '').replace(/&/g, ' ').split(' ').map(w => w.trim()).filter(Boolean);
+    const chars = words.slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    return chars || '?';
   }
 
-  function setGuestStatusPill(status) {
-    guestFormSelectedStatus = status;
-    document.querySelectorAll('.guest-status-pill').forEach(btn => {
-      const active = btn.dataset.status === status;
-      btn.classList.toggle('bg-[#181D24]', active);
-      btn.classList.toggle('text-white', active);
-      btn.classList.toggle('border-[#181D24]', active);
-      btn.classList.toggle('bg-white', !active);
-      btn.classList.toggle('text-zinc-600', !active);
-      btn.classList.toggle('border-zinc-200', !active);
+  function formatCommentDate(date) {
+    try {
+      const d = date instanceof Date ? date : new Date(date);
+      if (isNaN(d.getTime())) return '';
+      const datePart = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      const timePart = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return `${datePart}, ${timePart}`;
+    } catch (e) { return ''; }
+  }
+
+  function getGuestCommentAuthorName() {
+    const raw = (window.loveClienteProfile && window.loveClienteProfile.couple_name)
+      ? window.loveClienteProfile.couple_name.split('(')[0].trim()
+      : '';
+    return raw || 'Você';
+  }
+
+  function getGuestComments(guest) {
+    if (!Array.isArray(guest.observationComments)) {
+      const seed = (guest.dietaryRestrictions || '').trim();
+      guest.observationComments = (seed && !NO_DIETARY_FILLERS.includes(seed.toLowerCase()))
+        ? [{ text: seed, at: guest.confirmedAt || '', author: getGuestCommentAuthorName() }]
+        : [];
+    }
+    return guest.observationComments;
+  }
+
+  function renderGuestComments(guest) {
+    const listEl = document.getElementById('guest-drawer-comments-list');
+    if (!listEl) return;
+    const comments = getGuestComments(guest);
+    if (!comments.length) {
+      listEl.innerHTML = '<p class="guest-comment-empty">Nenhuma observação registrada ainda.</p>';
+      return;
+    }
+    listEl.innerHTML = comments.map((c, i) => {
+      const author = c.author || getGuestCommentAuthorName();
+      return `
+        <div class="guest-comment-item">
+          <span class="guest-comment-avatar">${initialsFromName(author)}</span>
+          <div class="guest-comment-content">
+            <p class="guest-comment-author"><strong>${author.replace(/</g, '&lt;')}</strong></p>
+            <div class="guest-comment-bubble">
+              ${(c.text || '').replace(/</g, '&lt;')}
+              <button type="button" class="guest-comment-delete" data-comment-index="${i}" title="Excluir comentário">×</button>
+            </div>
+            ${c.at ? `<p class="guest-comment-time">${c.at}</p>` : ''}
+          </div>
+        </div>
+      `;
+    }).reverse().join('');
+
+    listEl.querySelectorAll('.guest-comment-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.commentIndex, 10);
+        comments.splice(idx, 1);
+        renderGuestComments(guest);
+      });
     });
   }
-  document.querySelectorAll('.guest-status-pill').forEach(btn => {
-    btn.addEventListener('click', () => setGuestStatusPill(btn.dataset.status));
-  });
 
-  function setGuestDietaryTagActive(tagBtn, active) {
-    tagBtn.classList.toggle('bg-[#537bae]', active);
-    tagBtn.classList.toggle('text-white', active);
-    tagBtn.classList.toggle('border-[#537bae]', active);
-    tagBtn.classList.toggle('bg-white', !active);
-    tagBtn.classList.toggle('text-zinc-600', !active);
-    tagBtn.classList.toggle('border-zinc-200', !active);
+  function submitGuestComment() {
+    const input = document.getElementById('guest-drawer-comment-input');
+    if (!input || !activeDrawerGuestId) return;
+    const text = input.value.trim();
+    if (!text) return;
+    const activeEvent = getActiveEvent();
+    const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
+    if (!guest) return;
+    getGuestComments(guest).push({ text, at: formatCommentDate(new Date()), author: getGuestCommentAuthorName() });
+    input.value = '';
+    renderGuestComments(guest);
   }
-  document.querySelectorAll('.guest-dietary-tag').forEach(btn => {
-    setGuestDietaryTagActive(btn, false);
-    btn.addEventListener('click', () => setGuestDietaryTagActive(btn, !btn.classList.contains('bg-[#537bae]')));
-  });
+
+  const guestCommentSubmitBtn = document.getElementById('guest-drawer-comment-submit');
+  const guestCommentInput = document.getElementById('guest-drawer-comment-input');
+  if (guestCommentSubmitBtn) guestCommentSubmitBtn.addEventListener('click', submitGuestComment);
+  if (guestCommentInput) {
+    guestCommentInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitGuestComment(); }
+    });
+  }
 
   // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
   function openAddGuestDrawer(guestId = null) {
@@ -6513,7 +6564,7 @@ document.addEventListener('DOMContentLoaded', () => {
         status: 'pending',
         giftsBought: [],
         dietaryRestrictions: '',
-        notes: '',
+        observationComments: [],
         relationshipTitle: 'Convidado',
         relationshipHost: ''
       };
@@ -6528,12 +6579,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('guest-name-input').value = guest.name || '';
     document.getElementById('guest-phone-input').value = guest.phone || '';
     document.getElementById('guest-email-input').value = guest.email || '';
-    document.getElementById('guest-notes-input').value = guest.notes || '';
 
-    // "Convidado de quem?" — um item por anfitrião + "Ambos / Em comum".
+    // "Convidado de quem?" — nome(s) real(is) do(s) anfitrião(ões), do
+    // perfil do cliente, + "Ambos / Em comum".
     const titleHostSelect = document.getElementById('guest-title-host-input');
     if (titleHostSelect) {
-      const hostNames = getEventHostNames();
+      const hostNames = getClienteHostNames();
       titleHostSelect.innerHTML = '<option value="">—</option>' +
         hostNames.map(name => `<option value="${name}">Lado de ${name}</option>`).join('') +
         '<option value="Ambos">Ambos / Em comum</option>';
@@ -6542,28 +6593,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleSelect = document.getElementById('guest-title-input');
     if (titleSelect) titleSelect.value = guest.relationshipTitle || 'Convidado';
 
-    setGuestStatusPill(guest.status || 'pending');
-
-    // Restrições alimentares: marca as tags rápidas que batem com o texto
-    // salvo e joga o restante (texto livre) no campo de baixo.
-    const savedDietary = (guest.dietaryRestrictions || '').split(',').map(s => s.trim()).filter(Boolean);
-    document.querySelectorAll('.guest-dietary-tag').forEach(btn => {
-      setGuestDietaryTagActive(btn, savedDietary.includes(btn.dataset.tag));
-    });
-    const freeTextDietary = savedDietary.filter(d => !GUEST_DIETARY_TAGS.includes(d)).join(', ');
-    document.getElementById('guest-dietary-input').value = freeTextDietary;
-
     const companionsDetailed = (guest.companionsDetailed && guest.companionsDetailed.length)
       ? guest.companionsDetailed
       : (guest.companionsNames || []).map(name => ({ name, ageGroup: 'adult' }));
     companionsDetailed.forEach(c => addCompanionRow(c));
-    updateGuestCompanionsCounter();
+
+    renderGuestComments(guest);
 
     const removeBtn = document.getElementById('btn-remove-guest');
     if (removeBtn) removeBtn.hidden = !guestId;
-
-    const saveAndAddAnother = document.getElementById('guest-save-and-add-another');
-    if (saveAndAddAnother) saveAndAddAnother.checked = false;
 
     backdrop.classList.remove('hidden');
     backdrop.style.setProperty('display', 'block', 'important');
@@ -7895,13 +7933,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const adults = 1 + companionsDetailed.filter(c => c.ageGroup === 'adult').length;
       const children = companionsDetailed.filter(c => c.ageGroup === 'child' || c.ageGroup === 'baby').length;
 
-      // Restrições alimentares: tags rápidas ativas + texto livre, uma lista só.
-      const activeDietaryTags = Array.from(document.querySelectorAll('.guest-dietary-tag'))
-        .filter(btn => btn.classList.contains('bg-[#537bae]'))
-        .map(btn => btn.dataset.tag);
-      const freeTextDietary = document.getElementById('guest-dietary-input').value.trim();
-      const dietaryRestrictions = [...activeDietaryTags, ...(freeTextDietary ? [freeTextDietary] : [])].join(', ');
-
       const wasNew = isNewGuestDraft;
       const previousCompanionsCount = guest.companions || 0;
       guest.name = name;
@@ -7914,9 +7945,6 @@ document.addEventListener('DOMContentLoaded', () => {
       guest.children = children;
       guest.relationshipTitle = document.getElementById('guest-title-input').value || '';
       guest.relationshipHost = document.getElementById('guest-title-host-input').value || '';
-      guest.status = guestFormSelectedStatus;
-      guest.dietaryRestrictions = dietaryRestrictions;
-      guest.notes = document.getElementById('guest-notes-input').value.trim();
 
       if (wasNew) {
         activeEvent.totalConvidados = (activeEvent.totalConvidados || 0) + (1 + companionsNames.length);
@@ -7925,17 +7953,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       isNewGuestDraft = false;
+      closeAddGuestDrawer();
       renderGuestsTable();
       updateAllCelebrationData();
       showToast(wasNew ? `Convidado ${name} adicionado à lista de ${activeEvent.title}!` : `Convidado ${name} atualizado!`, '👤');
-
-      const saveAndAddAnother = document.getElementById('guest-save-and-add-another');
-      if (saveAndAddAnother && saveAndAddAnother.checked) {
-        openAddGuestDrawer();
-        document.getElementById('guest-save-and-add-another').checked = true;
-      } else {
-        closeAddGuestDrawer();
-      }
     });
   }
 

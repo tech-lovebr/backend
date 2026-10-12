@@ -6580,14 +6580,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('guest-phone-input').value = guest.phone || '';
     document.getElementById('guest-email-input').value = guest.email || '';
 
-    // "Convidado de quem?" — nome(s) real(is) do(s) anfitrião(ões), do
-    // perfil do cliente, + "Ambos / Em comum".
+    // "Convidado de quem?" — um item por anfitrião de verdade, do perfil do
+    // cliente (pode ter mais de dois, então sem opção fixa de "Ambos").
     const titleHostSelect = document.getElementById('guest-title-host-input');
     if (titleHostSelect) {
       const hostNames = getClienteHostNames();
       titleHostSelect.innerHTML = '<option value="">—</option>' +
-        hostNames.map(name => `<option value="${name}">Lado de ${name}</option>`).join('') +
-        '<option value="Ambos">Ambos / Em comum</option>';
+        hostNames.map(name => `<option value="${name}">${name}</option>`).join('');
       titleHostSelect.value = guest.relationshipHost || '';
     }
     const titleSelect = document.getElementById('guest-title-input');

@@ -2713,3 +2713,12 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 }
 
 .pessoa-escolhida[hidden] { display: none; }
+
+/* Coluna do alfinete, na ponta direita. Largura pelo conteúdo e um respiro
+   à esquerda para o ícone não encostar no número de views. */
+.col-fixar {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  padding-left: 1.25rem;
+}

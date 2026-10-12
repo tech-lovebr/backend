@@ -142,15 +142,6 @@ function render() {
 
     return `
       <tr data-id="${n.id}">
-        <td class="col-selecao">
-          <button type="button" class="btn-fixar ${n.fixada ? 'is-fixada' : ''}" data-fixar="${n.id}"
-                  title="${n.fixada ? 'Desafixar' : 'Fixar no topo'}"
-                  aria-label="${n.fixada ? 'Desafixar' : 'Fixar no topo'}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4" /><path d="M9 15l-4.5 4.5" /><path d="M14.5 4l5.5 5.5" />
-            </svg>
-          </button>
-        </td>
         <td>
           <span class="cell-strong">${dash(n.titulo)}</span>
           ${TIPOS[n.tipo] ? `<span class="artigo-situacao">— ${escapeHtml(TIPOS[n.tipo])}</span>` : ''}
@@ -159,6 +150,15 @@ function render() {
         <td class="cell-muted">${perfil}</td>
         <td class="cell-muted">${escapeHtml(formatDate(n.created_at))}</td>
         <td class="col-numero ${views ? '' : 'cell-muted'}">${views ? formatNumber(views) : '—'}</td>
+        <td class="col-fixar">
+          <button type="button" class="btn-fixar ${n.fixada ? 'is-fixada' : ''}" data-fixar="${n.id}"
+                  title="${n.fixada ? 'Desafixar' : 'Fixar no topo'}"
+                  aria-label="${n.fixada ? 'Desafixar' : 'Fixar no topo'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4" /><path d="M9 15l-4.5 4.5" /><path d="M14.5 4l5.5 5.5" />
+            </svg>
+          </button>
+        </td>
       </tr>`;
   }).join('');
 

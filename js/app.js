@@ -10021,7 +10021,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const allActive = !b2bSelectedMainCategory;
     let html = `
-      <button type="button" class="b2b-category-all-btn w-full text-left px-3.5 py-2.5 text-xs font-bold ${allActive ? 'text-[#537bae] bg-blue-50/60' : 'text-zinc-800 hover:bg-zinc-50'} flex items-center justify-between transition-colors cursor-pointer">
+      <button type="button" class="b2b-category-all-btn w-full text-left px-3.5 py-2.5 text-xs font-bold ${allActive ? 'text-zinc-900 bg-blue-50/60' : 'text-zinc-800 hover:bg-zinc-50'} flex items-center justify-between transition-colors cursor-pointer">
         <span>Todos os fornecedores</span>
         ${allActive ? '<span>✓</span>' : ''}
       </button>
@@ -10034,7 +10034,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <div class="b2b-category-group">
           <div class="w-full flex items-center justify-between pl-3.5 pr-2 py-2">
-            <button type="button" class="b2b-category-main-btn flex-1 text-left text-xs font-semibold ${isMainSelected ? 'text-[#537bae]' : 'text-zinc-800'} hover:text-[#537bae] transition-colors cursor-pointer" data-main="${main}">
+            <button type="button" class="b2b-category-main-btn flex-1 text-left text-xs font-semibold ${isMainSelected ? 'text-zinc-900' : 'text-zinc-800'} hover:text-zinc-900 transition-colors cursor-pointer" data-main="${main}">
               ${main}
             </button>
             ${subs.length ? `
@@ -10048,7 +10048,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${subs.map(sub => {
                 const isSubSelected = b2bSelectedSubcategory === sub;
                 return `
-                  <button type="button" class="b2b-category-sub-btn w-full text-left pl-7 pr-3.5 py-1.5 text-[11px] ${isSubSelected ? 'text-[#537bae] font-bold bg-blue-50/60' : 'text-zinc-600 hover:bg-zinc-50'} transition-colors cursor-pointer flex items-center justify-between" data-main="${main}" data-sub="${sub}">
+                  <button type="button" class="b2b-category-sub-btn w-full text-left pl-7 pr-3.5 py-1.5 text-[11px] ${isSubSelected ? 'text-zinc-900 font-bold bg-blue-50/60' : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900'} transition-colors cursor-pointer flex items-center justify-between" data-main="${main}" data-sub="${sub}">
                     <span>${sub}</span>
                     ${isSubSelected ? '<span>✓</span>' : ''}
                   </button>

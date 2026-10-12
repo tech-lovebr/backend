@@ -2645,32 +2645,35 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 /* ------------------------------------------------------ Notificações */
 
-.publico-opcoes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-}
-
-.publico-opcao {
-  padding: .4375rem .75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-control);
-  background: var(--bg-surface);
-  font-family: inherit;
-  font-size: .8125rem;
-  font-weight: 600;
-  color: var(--text-muted);
+/* Ícone de fixar na primeira coluna. Apagado até ser usado, e na cor da
+   marca quando a notificação está presa no topo. */
+.btn-fixar {
+  display: inline-flex;
+  padding: .25rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #c4cad3;
   cursor: pointer;
-  transition: border-color .15s ease, color .15s ease, background .15s ease;
 }
 
-.publico-opcao:hover { border-color: #ccd5e0; }
+.btn-fixar:hover { background: rgba(16, 24, 40, .06); color: var(--text-muted); }
+.btn-fixar svg { width: 16px; height: 16px; }
 
-.publico-opcao.is-ativa {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
-  color: #fff;
+.btn-fixar.is-fixada,
+.btn-fixar.is-fixada:hover { color: var(--primary-color); }
+
+.aviso-tipo {
+  margin: .75rem 0 0;
+  padding: .625rem .75rem;
+  border-radius: var(--radius-card);
+  background: var(--danger-bg);
+  font-size: .8125rem;
+  line-height: 1.6;
+  color: #7a2018;
 }
+
+.aviso-tipo[hidden] { display: none; }
 
 /* Resultados da busca por pessoa, logo abaixo do campo. */
 .pessoa-resultados {

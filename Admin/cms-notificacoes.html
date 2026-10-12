@@ -41,16 +41,28 @@
       <header class="admin-topbar" id="admin-topbar"></header>
       <main class="admin-content">
 
-        <nav class="conteudo-tabs" id="abas-destino" aria-label="Filtrar por público">
-          <button type="button" class="conteudo-tab is-active" data-destino="">Todas</button>
-          <button type="button" class="conteudo-tab" data-destino="todos">Todos</button>
-          <button type="button" class="conteudo-tab" data-destino="b2b">HUB/B2B</button>
-          <button type="button" class="conteudo-tab" data-destino="anfitriao">Anfitriões</button>
-          <button type="button" class="conteudo-tab" data-destino="individual">Individual</button>
-        </nav>
-
         <div id="page-controls" hidden>
-          <input type="search" class="search-input" id="busca" placeholder="Buscar título...">
+          <input type="search" class="search-input" id="busca" placeholder="Buscar assunto...">
+
+          <div class="filtro-wrap">
+            <button type="button" class="btn btn-ghost" id="btn-filtros" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
+              <span>Filtrar</span>
+              <span class="filtro-badge" id="filtro-badge" hidden></span>
+            </button>
+
+            <div class="filtro-menu" id="filtro-menu" hidden>
+              <label class="field" style="margin-bottom:0">
+                <span class="field-label">Perfil</span>
+                <select class="field-select" id="filtro-perfil">
+                  <option value="">Todos</option>
+                  <option value="b2b">HUB/B2B</option>
+                  <option value="anfitriao">Anfitriões</option>
+                </select>
+              </label>
+              <button type="button" class="filtro-limpar" id="limpar-filtros">Limpar filtros</button>
+            </div>
+          </div>
         </div>
 
         <p class="contagem-chamados" id="contagem-notificacoes"></p>
@@ -59,7 +71,8 @@
           <div class="table-wrap">
             <table class="data">
               <thead><tr>
-                <th>Título</th><th>Público</th><th>Enviada em</th><th class="col-numero">Leituras</th>
+                <th class="col-selecao"></th>
+                <th>Assunto</th><th>Conteúdo</th><th>Perfil</th><th>Criada em</th><th class="col-numero">Views</th>
               </tr></thead>
               <tbody id="tbody"></tbody>
             </table>

@@ -5107,91 +5107,117 @@
       <button type="button" id="btn-close-add-guest-drawer" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm transition-colors flex-shrink-0">✕</button>
     </div>
 
-    <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
-      <form id="form-add-guest" class="space-y-5">
-        <div>
-          <label class="block text-xs font-bold text-zinc-700 mb-1.5">Nome</label>
-          <input type="text" id="guest-name-input" required placeholder="Ex: Roberto Justus" class="field-input">
+    <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+      <form id="form-add-guest" class="space-y-6">
+
+        <!-- BLOCO 1: Dados principais -->
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-zinc-700 mb-1.5">Nome do convidado principal</label>
+            <input type="text" id="guest-name-input" required minlength="3" placeholder="Ex: Maria Silva" class="field-input">
+            <p class="text-[11px] text-rose-600 mt-1 hidden" id="guest-name-error">Informe pelo menos 3 letras.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-zinc-700 mb-1.5">WhatsApp / Celular</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#25D366]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+              </div>
+              <input type="text" id="guest-phone-input" placeholder="(11) 98888-7777" class="field-input pl-9" inputmode="numeric" maxlength="15">
+            </div>
+            <p class="text-[11px] text-rose-600 mt-1 hidden" id="guest-phone-error">Informe o DDD + 9 dígitos.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-zinc-700 mb-1.5">E-mail <span class="font-normal text-zinc-400">(opcional)</span></label>
+            <input type="email" id="guest-email-input" placeholder="maria@email.com" class="field-input">
+            <p class="text-[11px] text-zinc-400 mt-1">Útil pra disparar Save the Date e RSVP digital automaticamente.</p>
+          </div>
         </div>
 
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold text-zinc-700">Acompanhantes</label>
-            <button type="button" id="btn-add-companion-row" class="text-xs font-bold text-[#333333] hover:underline cursor-pointer flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Adicionar acompanhante
-            </button>
-          </div>
-          <div id="guest-companions-list" class="space-y-2">
-            <!-- Linhas de acompanhante adicionadas dinamicamente via JS -->
-          </div>
-        </div>
-
+        <!-- BLOCO 2: Vínculo & papel no evento -->
         <div class="flex gap-3">
           <div class="flex-1">
-            <label class="block text-xs font-bold text-zinc-700 mb-1.5">Título</label>
+            <label class="block text-xs font-bold text-zinc-700 mb-1.5">Convidado de quem?</label>
+            <select id="guest-title-host-input" class="field-input">
+              <!-- Preenchido dinamicamente via JS: cada anfitrião + "Ambos / Em comum" -->
+            </select>
+          </div>
+          <div class="flex-1">
+            <label class="block text-xs font-bold text-zinc-700 mb-1.5">Grupo / Papel</label>
             <select id="guest-title-input" class="field-input">
-              <option value="">Selecione</option>
-              <option value="Amigo">Amigo</option>
+              <option value="Convidado">Convidado</option>
+              <option value="Padrinho/Madrinha">Padrinho / Madrinha</option>
+              <option value="Namorado(a)">Namorado (a)</option>
+              <option value="Amigo">Amigo (a)</option>
+              <option value="Trabalho">Trabalho</option>
               <option value="Parente">Parente</option>
               <option value="Pai">Pai</option>
               <option value="Mãe">Mãe</option>
               <option value="Irmão">Irmão</option>
               <option value="Irmã">Irmã</option>
-              <option value="Padrinho">Padrinho</option>
-              <option value="Madrinha">Madrinha</option>
               <option value="Avô">Avô</option>
               <option value="Avó">Avó</option>
-              <option value="Tio">Tio</option>
-              <option value="Tia">Tia</option>
+              <option value="Tio">Tio(a)</option>
               <option value="Primo">Primo(a)</option>
-              <option value="Colega de trabalho">Colega de trabalho</option>
               <option value="Outro">Outro</option>
             </select>
           </div>
-          <div class="flex-1">
-            <label class="block text-xs font-bold text-zinc-700 mb-1.5">Anfitrião</label>
-            <select id="guest-title-host-input" class="field-input">
-              <!-- Preenchido dinamicamente via JS com os nomes dos anfitriões -->
-            </select>
+        </div>
+
+        <!-- BLOCO 3: Acompanhantes & contagem real -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+            <label class="block text-xs font-bold text-zinc-700">Acompanhantes permitidos neste convite</label>
+            <button type="button" id="btn-add-companion-row" class="text-xs font-bold text-[#333333] hover:underline cursor-pointer flex items-center gap-1 shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Adicionar acompanhante
+            </button>
+          </div>
+          <p id="guest-companions-counter" class="text-xs font-semibold text-zinc-500 mb-2">Total: 1 pessoa (1 adulto)</p>
+          <div id="guest-companions-list" class="space-y-2">
+            <!-- Linhas de acompanhante adicionadas dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- BLOCO 4: Status do RSVP & preferências -->
+        <div>
+          <label class="block text-xs font-bold text-zinc-700 mb-1.5">Status de confirmação</label>
+          <div class="flex items-center gap-2" id="guest-status-pills">
+            <button type="button" class="guest-status-pill flex-1 text-center px-3 py-2 rounded-xl border text-xs font-bold transition-colors cursor-pointer" data-status="pending">Pendente</button>
+            <button type="button" class="guest-status-pill flex-1 text-center px-3 py-2 rounded-xl border text-xs font-bold transition-colors cursor-pointer" data-status="confirmed">Confirmado</button>
+            <button type="button" class="guest-status-pill flex-1 text-center px-3 py-2 rounded-xl border text-xs font-bold transition-colors cursor-pointer" data-status="declined">Recusou</button>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-zinc-700 mb-1.5">WhatsApp</label>
-          <input type="text" id="guest-phone-input" placeholder="(11) 98888-7777" class="field-input">
+          <label class="block text-xs font-bold text-zinc-700 mb-1.5">Restrições alimentares <span class="font-normal text-zinc-400">(opcional)</span></label>
+          <div class="flex flex-wrap gap-1.5 mb-2" id="guest-dietary-tags">
+            <button type="button" class="guest-dietary-tag px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors cursor-pointer" data-tag="Vegetariano">Vegetariano</button>
+            <button type="button" class="guest-dietary-tag px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors cursor-pointer" data-tag="Vegano">Vegano</button>
+            <button type="button" class="guest-dietary-tag px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors cursor-pointer" data-tag="Celíaco / Sem glúten">Celíaco / Sem glúten</button>
+            <button type="button" class="guest-dietary-tag px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors cursor-pointer" data-tag="Sem lactose">Sem lactose</button>
+          </div>
+          <input type="text" id="guest-dietary-input" placeholder="Outra restrição ou observação do buffet..." class="field-input">
+        </div>
+
+        <!-- BLOCO 5: Notas internas -->
+        <div>
+          <label class="block text-xs font-bold text-zinc-700 mb-1.5">Notas privadas dos anfitriões <span class="font-normal text-zinc-400">(opcional)</span></label>
+          <p class="text-[11px] text-zinc-400 mb-1.5">Apenas vocês veem isso. Ex: Colocar na mesa perto dos tios; não bebe álcool.</p>
+          <textarea id="guest-notes-input" rows="3" placeholder="Escrever uma nota..." class="field-input resize-none"></textarea>
         </div>
       </form>
-
-      <!-- Observação — histórico de comentários, igual aos comentários de tarefas -->
-      <div>
-        <label class="block text-xs font-bold text-zinc-700 mb-1.5">Observação</label>
-        <div class="guest-drawer-comment-card">
-          <div class="guest-drawer-comment-box">
-            <textarea class="guest-drawer-comment-input" id="guest-drawer-comment-input" placeholder="Escrever uma observação..." rows="1"></textarea>
-            <div class="guest-drawer-comment-actions">
-              <button type="button" class="btn-primary" id="guest-drawer-comment-submit">Comentar</button>
-            </div>
-          </div>
-        </div>
-        <div class="guest-drawer-comments-list mt-3" id="guest-drawer-comments-list"></div>
-      </div>
-
-      <!-- Presente comprado -->
-      <div>
-        <div class="flex items-center justify-between mb-1.5">
-          <label class="block text-xs font-bold text-zinc-700">Presente comprado</label>
-          <span id="guest-drawer-total-gifts" class="text-xs font-bold text-zinc-500"></span>
-        </div>
-        <div id="guest-drawer-gifts-list" class="space-y-3">
-          <!-- Injetado dinamicamente via JS -->
-        </div>
-      </div>
 
       <button type="button" id="btn-remove-guest" class="guest-remove-btn" hidden>Remover convidado</button>
     </div>
 
-    <div class="p-5 sm:p-6 border-t border-zinc-100 flex-shrink-0">
+    <div class="p-5 sm:p-6 border-t border-zinc-100 flex-shrink-0 space-y-2.5">
+      <label class="flex items-center gap-2 text-xs font-semibold text-zinc-600 cursor-pointer select-none" id="guest-save-and-add-another-label">
+        <input type="checkbox" id="guest-save-and-add-another" class="rounded border-zinc-300 text-[#333333] focus:ring-0 cursor-pointer">
+        Salvar e adicionar outro
+      </label>
       <button type="submit" form="form-add-guest" id="btn-save-guest" class="btn-primary w-full justify-center">Salvar Convidado</button>
     </div>
   </aside>

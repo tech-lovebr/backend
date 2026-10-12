@@ -6290,9 +6290,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeDrawerGuestId = null;
   let isNewGuestDraft = false;
 
-  // Observação — histórico de comentários (igual aos comentários de tarefas no quadro B2B)
-  const NO_DIETARY_FILLERS = ['não informado', 'nenhuma', 'nenhuma restrição', 'nenhuma restrição alimentar cadastrada'];
-
   // Nomes individuais dos anfitriões, extraídos de "Beatriz & Lucas" (ou
   // "Beatriz & Lucas (Pais do Theo)") -> ["Beatriz", "Lucas"].
   function getEventHostNames() {
@@ -6311,136 +6308,95 @@ document.addEventListener('DOMContentLoaded', () => {
     return guest.relationshipTitle;
   }
 
-  function getGuestCommentAuthorName() {
-    const activeEvent = getActiveEvent();
-    const raw = (activeEvent && activeEvent.hostName) ? activeEvent.hostName.split('(')[0].trim() : '';
-    return raw || 'Você';
-  }
-
-  function initialsFromName(name) {
-    const words = (name || '').replace(/&/g, ' ').split(' ').map(w => w.trim()).filter(Boolean);
-    const chars = words.slice(0, 2).map(w => w[0]).join('').toUpperCase();
-    return chars || '?';
-  }
-
-  function formatCommentDate(date) {
-    try {
-      const d = date instanceof Date ? date : new Date(date);
-      if (isNaN(d.getTime())) return '';
-      const datePart = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-      const timePart = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      return `${datePart}, ${timePart}`;
-    } catch (e) { return ''; }
-  }
-
-  function getGuestComments(guest) {
-    if (!Array.isArray(guest.observationComments)) {
-      const seed = (guest.dietaryRestrictions || '').trim();
-      guest.observationComments = (seed && !NO_DIETARY_FILLERS.includes(seed.toLowerCase()))
-        ? [{ text: seed, at: guest.confirmedAt || '', author: getGuestCommentAuthorName() }]
-        : [];
-    }
-    return guest.observationComments;
-  }
-
-  function renderGuestComments(guest) {
-    const listEl = document.getElementById('guest-drawer-comments-list');
-    if (!listEl) return;
-    const comments = getGuestComments(guest);
-    if (!comments.length) {
-      listEl.innerHTML = '<p class="guest-comment-empty">Nenhuma observação registrada ainda.</p>';
-      return;
-    }
-    listEl.innerHTML = comments.map((c, i) => {
-      const author = c.author || getGuestCommentAuthorName();
-      return `
-        <div class="guest-comment-item">
-          <span class="guest-comment-avatar">${initialsFromName(author)}</span>
-          <div class="guest-comment-content">
-            <p class="guest-comment-author"><strong>${author.replace(/</g, '&lt;')}</strong></p>
-            <div class="guest-comment-bubble">
-              ${(c.text || '').replace(/</g, '&lt;')}
-              <button type="button" class="guest-comment-delete" data-comment-index="${i}" title="Excluir comentário">×</button>
-            </div>
-            ${c.at ? `<p class="guest-comment-time">${c.at}</p>` : ''}
-          </div>
-        </div>
-      `;
-    }).reverse().join('');
-
-    listEl.querySelectorAll('.guest-comment-delete').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.dataset.commentIndex, 10);
-        comments.splice(idx, 1);
-        renderGuestComments(guest);
-      });
-    });
-  }
-
-  function submitGuestComment() {
-    const input = document.getElementById('guest-drawer-comment-input');
-    if (!input || !activeDrawerGuestId) return;
-    const text = input.value.trim();
-    if (!text) return;
-    const activeEvent = getActiveEvent();
-    const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
-    if (!guest) return;
-    getGuestComments(guest).push({ text, at: formatCommentDate(new Date()), author: getGuestCommentAuthorName() });
-    input.value = '';
-    renderGuestComments(guest);
-  }
-
-  const guestCommentSubmitBtn = document.getElementById('guest-drawer-comment-submit');
-  const guestCommentInput = document.getElementById('guest-drawer-comment-input');
-  if (guestCommentSubmitBtn) guestCommentSubmitBtn.addEventListener('click', submitGuestComment);
-  if (guestCommentInput) {
-    guestCommentInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitGuestComment(); }
-    });
-  }
-
   // ==========================================
   // DRAWER LATERAL: CONVIDADO (Adicionar Convidado / editar convidado existente)
   // ==========================================
-  function renderGuestGifts(guest) {
-    const totalGiftsEl = document.getElementById('guest-drawer-total-gifts');
-    const giftsListEl = document.getElementById('guest-drawer-gifts-list');
-    const gifts = guest.giftsBought || [];
 
-    const totalSpent = gifts.reduce((acc, curr) => acc + (curr.amount || 0), 0);
-    if (totalGiftsEl) {
-      totalGiftsEl.textContent = totalSpent > 0 ? `Total: R$ ${totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '';
-    }
+  // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
+  const GUEST_AGE_GROUP_LABELS = { adult: 'Adulto', child: 'Criança (5 a 11 anos)', baby: 'Bebê (0 a 4 anos)' };
+  const GUEST_DIETARY_TAGS = ['Vegetariano', 'Vegano', 'Celíaco / Sem glúten', 'Sem lactose'];
+  let guestFormSelectedStatus = 'pending';
 
-    if (!giftsListEl) return;
-    giftsListEl.innerHTML = '';
-    if (gifts.length === 0) {
-      giftsListEl.innerHTML = `
-        <div class="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-1">
-          <p class="text-xs font-bold text-slate-700">Ainda não comprou nenhum presente</p>
-          <p class="text-[11px] text-slate-400">Este convidado ainda não presenteou pela lista online.</p>
-        </div>
-      `;
-      return;
-    }
-    gifts.forEach(g => {
-      const item = document.createElement('div');
-      item.className = 'p-3.5 rounded-2xl border border-slate-200 bg-white shadow-sm flex items-start gap-3';
-      item.innerHTML = `
-        <img src="${g.image}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 flex-shrink-0" alt="${g.giftTitle}">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-1.5 flex-wrap mb-0.5">
-            <span class="text-[9px] font-bold text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">${g.type === 'real' ? 'Produto Real' : 'Resgate em Dinheiro'}</span>
-            <span class="text-[10px] text-slate-400">${g.date}</span>
-          </div>
-          <h5 class="text-xs font-bold text-slate-900 truncate">${g.giftTitle}</h5>
-          <div class="text-xs font-black text-zinc-700 mt-0.5">R$ ${g.amount.toFixed(2).replace('.', ',')} (${g.method})</div>
-          ${g.message ? `<div class="mt-1.5 p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-600 italic">"${g.message}"</div>` : ''}
-        </div>
-      `;
-      giftsListEl.appendChild(item);
+  // Máscara de celular brasileiro: (11) 98888-7777 — DDD + 9 dígitos.
+  function maskBrazilPhone(raw) {
+    const digits = (raw || '').replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+  function isValidBrazilPhone(masked) {
+    return /^\(\d{2}\) \d{5}-\d{4}$/.test((masked || '').trim());
+  }
+
+  // "+ Adicionar acompanhante" — insere uma linha com nome + faixa etária
+  // (adulto/criança/bebê), fundamental pra contagem real de custo do buffet.
+  function addCompanionRow(companion = {}) {
+    const list = document.getElementById('guest-companions-list');
+    if (!list) return;
+    const { id, name = '', ageGroup = 'adult' } = companion;
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2 guest-companion-row';
+    row.dataset.id = id || `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    row.innerHTML = `
+      <input type="text" placeholder="Nome ou 'Acompanhante'" class="field-input guest-companion-name-input" value="${name.replace(/"/g, '&quot;')}">
+      <select class="field-input guest-companion-age-input" style="flex: 0 0 auto; width: 150px;">
+        ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([val, label]) => `<option value="${val}" ${val === ageGroup ? 'selected' : ''}>${label}</option>`).join('')}
+      </select>
+      <button type="button" class="btn-remove-companion-row w-9 h-9 rounded-xl border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Remover acompanhante">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    `;
+    row.querySelector('.btn-remove-companion-row').addEventListener('click', () => {
+      row.remove();
+      updateGuestCompanionsCounter();
+    });
+    row.querySelector('.guest-companion-age-input').addEventListener('change', updateGuestCompanionsCounter);
+    list.appendChild(row);
+    if (!name) row.querySelector('input').focus();
+    updateGuestCompanionsCounter();
+  }
+
+  // Badge "Total: X pessoas (Y adultos, Z crianças)" — bebês entram na
+  // contagem de crianças aqui, mas mantêm a própria faixa etária salva.
+  function updateGuestCompanionsCounter() {
+    const counterEl = document.getElementById('guest-companions-counter');
+    if (!counterEl) return;
+    const ageGroups = Array.from(document.querySelectorAll('.guest-companion-age-input')).map(s => s.value);
+    const adults = 1 + ageGroups.filter(a => a === 'adult').length;
+    const children = ageGroups.filter(a => a === 'child' || a === 'baby').length;
+    const total = adults + children;
+    const childrenPart = children > 0 ? `, ${children} criança${children > 1 ? 's' : ''}` : '';
+    counterEl.textContent = `Total: ${total} pessoa${total > 1 ? 's' : ''} (${adults} adulto${adults > 1 ? 's' : ''}${childrenPart})`;
+  }
+
+  function setGuestStatusPill(status) {
+    guestFormSelectedStatus = status;
+    document.querySelectorAll('.guest-status-pill').forEach(btn => {
+      const active = btn.dataset.status === status;
+      btn.classList.toggle('bg-[#181D24]', active);
+      btn.classList.toggle('text-white', active);
+      btn.classList.toggle('border-[#181D24]', active);
+      btn.classList.toggle('bg-white', !active);
+      btn.classList.toggle('text-zinc-600', !active);
+      btn.classList.toggle('border-zinc-200', !active);
     });
   }
+  document.querySelectorAll('.guest-status-pill').forEach(btn => {
+    btn.addEventListener('click', () => setGuestStatusPill(btn.dataset.status));
+  });
+
+  function setGuestDietaryTagActive(tagBtn, active) {
+    tagBtn.classList.toggle('bg-[#537bae]', active);
+    tagBtn.classList.toggle('text-white', active);
+    tagBtn.classList.toggle('border-[#537bae]', active);
+    tagBtn.classList.toggle('bg-white', !active);
+    tagBtn.classList.toggle('text-zinc-600', !active);
+    tagBtn.classList.toggle('border-zinc-200', !active);
+  }
+  document.querySelectorAll('.guest-dietary-tag').forEach(btn => {
+    setGuestDietaryTagActive(btn, false);
+    btn.addEventListener('click', () => setGuestDietaryTagActive(btn, !btn.classList.contains('bg-[#537bae]')));
+  });
 
   // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
   function openAddGuestDrawer(guestId = null) {
@@ -6454,6 +6410,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const companionsList = document.getElementById('guest-companions-list');
     if (form) form.reset();
     if (companionsList) companionsList.innerHTML = '';
+    document.getElementById('guest-name-error')?.classList.add('hidden');
+    document.getElementById('guest-phone-error')?.classList.add('hidden');
 
     let guest;
     if (guestId) {
@@ -6464,14 +6422,19 @@ document.addEventListener('DOMContentLoaded', () => {
       guest = {
         id: `g-${Date.now()}`,
         name: '',
+        email: '',
         companions: 0,
         companionsNames: [],
+        companionsDetailed: [],
+        adults: 1,
+        children: 0,
         phone: '',
         table: 'Mesa a Definir',
         status: 'pending',
         giftsBought: [],
-        observationComments: [],
-        relationshipTitle: '',
+        dietaryRestrictions: '',
+        notes: '',
+        relationshipTitle: 'Convidado',
         relationshipHost: ''
       };
       activeEvent.guests.unshift(guest);
@@ -6484,24 +6447,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saveBtn) saveBtn.textContent = guestId ? 'Salvar Alterações' : 'Salvar Convidado';
     document.getElementById('guest-name-input').value = guest.name || '';
     document.getElementById('guest-phone-input').value = guest.phone || '';
+    document.getElementById('guest-email-input').value = guest.email || '';
+    document.getElementById('guest-notes-input').value = guest.notes || '';
 
+    // "Convidado de quem?" — um item por anfitrião + "Ambos / Em comum".
     const titleHostSelect = document.getElementById('guest-title-host-input');
     if (titleHostSelect) {
       const hostNames = getEventHostNames();
       titleHostSelect.innerHTML = '<option value="">—</option>' +
-        hostNames.map(name => `<option value="${name}">${name}</option>`).join('');
+        hostNames.map(name => `<option value="${name}">Lado de ${name}</option>`).join('') +
+        '<option value="Ambos">Ambos / Em comum</option>';
       titleHostSelect.value = guest.relationshipHost || '';
     }
     const titleSelect = document.getElementById('guest-title-input');
-    if (titleSelect) titleSelect.value = guest.relationshipTitle || '';
+    if (titleSelect) titleSelect.value = guest.relationshipTitle || 'Convidado';
 
-    (guest.companionsNames || []).forEach(name => addCompanionRow(name));
+    setGuestStatusPill(guest.status || 'pending');
+
+    // Restrições alimentares: marca as tags rápidas que batem com o texto
+    // salvo e joga o restante (texto livre) no campo de baixo.
+    const savedDietary = (guest.dietaryRestrictions || '').split(',').map(s => s.trim()).filter(Boolean);
+    document.querySelectorAll('.guest-dietary-tag').forEach(btn => {
+      setGuestDietaryTagActive(btn, savedDietary.includes(btn.dataset.tag));
+    });
+    const freeTextDietary = savedDietary.filter(d => !GUEST_DIETARY_TAGS.includes(d)).join(', ');
+    document.getElementById('guest-dietary-input').value = freeTextDietary;
+
+    const companionsDetailed = (guest.companionsDetailed && guest.companionsDetailed.length)
+      ? guest.companionsDetailed
+      : (guest.companionsNames || []).map(name => ({ name, ageGroup: 'adult' }));
+    companionsDetailed.forEach(c => addCompanionRow(c));
+    updateGuestCompanionsCounter();
 
     const removeBtn = document.getElementById('btn-remove-guest');
     if (removeBtn) removeBtn.hidden = !guestId;
 
-    renderGuestComments(guest);
-    renderGuestGifts(guest);
+    const saveAndAddAnother = document.getElementById('guest-save-and-add-another');
+    if (saveAndAddAnother) saveAndAddAnother.checked = false;
 
     backdrop.classList.remove('hidden');
     backdrop.style.setProperty('display', 'block', 'important');
@@ -6544,6 +6526,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCloseAddGuestDrawer) btnCloseAddGuestDrawer.addEventListener('click', closeAddGuestDrawer);
   if (addGuestDrawerBackdrop) addGuestDrawerBackdrop.addEventListener('click', closeAddGuestDrawer);
 
+  const guestPhoneInput = document.getElementById('guest-phone-input');
+  if (guestPhoneInput) {
+    guestPhoneInput.addEventListener('input', (e) => {
+      e.target.value = maskBrazilPhone(e.target.value);
+    });
+  }
+
   const btnRemoveGuest = document.getElementById('btn-remove-guest');
   if (btnRemoveGuest) {
     btnRemoveGuest.addEventListener('click', () => {
@@ -6561,22 +6550,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // "+ Adicionar acompanhante" — insere uma nova linha de nome de acompanhante
-  function addCompanionRow(value = '') {
-    const list = document.getElementById('guest-companions-list');
-    if (!list) return;
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-2 guest-companion-row';
-    row.innerHTML = `
-      <input type="text" placeholder="Nome do acompanhante" class="field-input guest-companion-name-input" value="${value.replace(/"/g, '&quot;')}">
-      <button type="button" class="btn-remove-companion-row w-9 h-9 rounded-xl border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Remover acompanhante">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
-      </button>
-    `;
-    row.querySelector('.btn-remove-companion-row').addEventListener('click', () => row.remove());
-    list.appendChild(row);
-    if (!value) row.querySelector('input').focus();
-  }
   const btnAddCompanionRow = document.getElementById('btn-add-companion-row');
   if (btnAddCompanionRow) btnAddCompanionRow.addEventListener('click', () => addCompanionRow());
 
@@ -7809,30 +7782,80 @@ document.addEventListener('DOMContentLoaded', () => {
       const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
       if (!guest) return;
 
-      const name = document.getElementById('guest-name-input').value.trim();
-      if (!name) return;
-      const phone = document.getElementById('guest-phone-input').value || '(11) 99999-9999';
-      const companionsNames = Array.from(document.querySelectorAll('.guest-companion-name-input'))
-        .map(input => input.value.trim())
-        .filter(Boolean);
+      // Validação: nome com no mínimo 3 caracteres.
+      const nameInput = document.getElementById('guest-name-input');
+      const name = nameInput.value.trim();
+      const nameError = document.getElementById('guest-name-error');
+      if (name.length < 3) {
+        nameError?.classList.remove('hidden');
+        nameInput.focus();
+        return;
+      }
+      nameError?.classList.add('hidden');
+
+      // Validação: se preenchido, telefone precisa estar no formato
+      // (DDD) 9XXXX-XXXX completo.
+      const phoneInput = document.getElementById('guest-phone-input');
+      const phoneRaw = phoneInput.value.trim();
+      const phoneError = document.getElementById('guest-phone-error');
+      if (phoneRaw && !isValidBrazilPhone(phoneRaw)) {
+        phoneError?.classList.remove('hidden');
+        phoneInput.focus();
+        return;
+      }
+      phoneError?.classList.add('hidden');
+
+      // Acompanhantes: { id, name, ageGroup } por linha.
+      const companionsDetailed = Array.from(document.querySelectorAll('.guest-companion-row')).map(row => ({
+        id: row.dataset.id,
+        name: row.querySelector('.guest-companion-name-input').value.trim() || 'Acompanhante',
+        ageGroup: row.querySelector('.guest-companion-age-input').value
+      }));
+      const companionsNames = companionsDetailed.map(c => c.name);
+      const adults = 1 + companionsDetailed.filter(c => c.ageGroup === 'adult').length;
+      const children = companionsDetailed.filter(c => c.ageGroup === 'child' || c.ageGroup === 'baby').length;
+
+      // Restrições alimentares: tags rápidas ativas + texto livre, uma lista só.
+      const activeDietaryTags = Array.from(document.querySelectorAll('.guest-dietary-tag'))
+        .filter(btn => btn.classList.contains('bg-[#537bae]'))
+        .map(btn => btn.dataset.tag);
+      const freeTextDietary = document.getElementById('guest-dietary-input').value.trim();
+      const dietaryRestrictions = [...activeDietaryTags, ...(freeTextDietary ? [freeTextDietary] : [])].join(', ');
 
       const wasNew = isNewGuestDraft;
+      const previousCompanionsCount = guest.companions || 0;
       guest.name = name;
-      guest.phone = phone;
+      guest.phone = phoneRaw;
+      guest.email = document.getElementById('guest-email-input').value.trim();
       guest.companionsNames = companionsNames;
-      guest.companions = companionsNames.length;
+      guest.companionsDetailed = companionsDetailed;
+      guest.companions = companionsDetailed.length;
+      guest.adults = adults;
+      guest.children = children;
       guest.relationshipTitle = document.getElementById('guest-title-input').value || '';
       guest.relationshipHost = document.getElementById('guest-title-host-input').value || '';
+      guest.status = guestFormSelectedStatus;
+      guest.dietaryRestrictions = dietaryRestrictions;
+      guest.notes = document.getElementById('guest-notes-input').value.trim();
 
       if (wasNew) {
         activeEvent.totalConvidados = (activeEvent.totalConvidados || 0) + (1 + companionsNames.length);
+      } else {
+        activeEvent.totalConvidados = (activeEvent.totalConvidados || 0) + (companionsDetailed.length - previousCompanionsCount);
       }
 
       isNewGuestDraft = false;
-      closeAddGuestDrawer();
       renderGuestsTable();
       updateAllCelebrationData();
       showToast(wasNew ? `Convidado ${name} adicionado à lista de ${activeEvent.title}!` : `Convidado ${name} atualizado!`, '👤');
+
+      const saveAndAddAnother = document.getElementById('guest-save-and-add-another');
+      if (saveAndAddAnother && saveAndAddAnother.checked) {
+        openAddGuestDrawer();
+        document.getElementById('guest-save-and-add-another').checked = true;
+      } else {
+        closeAddGuestDrawer();
+      }
     });
   }
 

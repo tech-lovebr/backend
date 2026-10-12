@@ -2607,3 +2607,71 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 }
 
 .doc-tipo-opcao.is-ativa { background: var(--bg-surface); color: var(--text); }
+
+/* ------------------------------------------------------ Notificações */
+
+.publico-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.publico-opcao {
+  padding: .4375rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--bg-surface);
+  font-family: inherit;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.publico-opcao:hover { border-color: #ccd5e0; }
+
+.publico-opcao.is-ativa {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Resultados da busca por pessoa, logo abaixo do campo. */
+.pessoa-resultados {
+  margin-top: .375rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.pessoa-resultados[hidden] { display: none; }
+
+.pessoa-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: .0625rem;
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: var(--bg-surface);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.pessoa-resultado:first-child { border-top: 0; }
+.pessoa-resultado:hover { background: #F5F5F6; }
+
+.pessoa-nome { font-size: .8125rem; font-weight: 600; color: var(--text); }
+.pessoa-email { font-size: .75rem; color: var(--text-muted); }
+
+.pessoa-escolhida {
+  margin: .5rem 0 0;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.pessoa-escolhida[hidden] { display: none; }

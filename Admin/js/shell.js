@@ -50,7 +50,8 @@ const NAV_SECTIONS = [
     label: 'CMS',
     items: [
       { page: 'cms', href: 'cms.html', text: 'Blog', icon: 'artigo' },
-      { page: 'cms-legal', href: 'cms-legal.html', text: 'Legal', icon: 'legal' }
+      { page: 'cms-legal', href: 'cms-legal.html', text: 'Legal', icon: 'legal' },
+      { page: 'cms-notificacoes', href: 'cms-notificacoes.html', text: 'Notificações', icon: 'sino' }
     ]
   }
 ];
@@ -67,6 +68,7 @@ const ICONS = {
   plane: '<path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" />',
   artigo: '<path d="M19 3v18h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2z" /><path d="M7 7h8" /><path d="M7 11h8" /><path d="M7 15h5" />',
   legal: '<path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M5 8v-3a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-5" /><path d="M3 13h6" /><path d="M6 10v6" />',
+  sino: '<path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" />',
   chat: '<path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" />',
 };
 

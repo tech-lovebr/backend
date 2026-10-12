@@ -220,7 +220,42 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: transform .2s ease;
 }
 
-.admin-nav-group.is-open .sidebar-chevron { transform: rotate(180deg); }
+/* Link e seta dividem a linha: o link cresce, a seta fica com a largura
+   dela. O hover pinta a linha inteira para os dois parecerem um item só. */
+.admin-nav-grupo-linha {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-control);
+}
+
+.admin-nav-grupo-linha:hover { background: #F5F5F6; }
+.admin-nav-grupo-linha.is-active,
+.admin-nav-grupo-linha.is-active:hover { background: #ECECEE; }
+
+.admin-nav-grupo-link { flex: 1; min-width: 0; }
+
+/* O hover do link não pode repintar por cima da linha. */
+.admin-nav-grupo-linha .admin-nav-item:hover { background: transparent; }
+
+.admin-nav-seta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: .25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #7b8798;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-nav-seta:hover { background: rgba(16, 24, 40, .06); color: var(--text); }
+.admin-nav-seta .sidebar-chevron { margin-left: 0; }
+.admin-nav-seta.is-open .sidebar-chevron { transform: rotate(180deg); }
 
 /* Filhos do grupo — escondidos até o grupo ser aberto. */
 .admin-nav-children {

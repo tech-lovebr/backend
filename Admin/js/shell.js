@@ -14,19 +14,19 @@ const NAV_SECTIONS = [
     label: 'Contas',
     items: [
       {
-        // Grupos não navegam: clicar apenas abre e fecha os filhos.
+        // O grupo leva ao próprio dashboard; a seta ao lado abre os filhos.
         grupo: 'fornecedores', text: 'HUB/B2B', icon: 'store',
+        page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
-          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' },
-          { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Dashboard' }
+          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' }
         ]
       },
       {
         grupo: 'clientes', text: 'Anfitriões', icon: 'users',
+        page: 'clientes-dashboard', href: 'clientes-dashboard.html',
         children: [
-          { page: 'clientes', href: 'clientes.html', text: 'Cadastros' },
-          { page: 'clientes-dashboard', href: 'clientes-dashboard.html', text: 'Dashboard' }
+          { page: 'clientes', href: 'clientes.html', text: 'Cadastros' }
         ]
       }
     ]
@@ -140,17 +140,27 @@ function renderSidebar() {
       ${dados.badge ? `<span class="admin-nav-badge" id="${dados.badge}" hidden></span>` : ''}
     </a>`;
 
+  /* O grupo navega e abre: o rótulo é um link para o próprio dashboard e a
+     seta ao lado é um botão separado, que só mostra e esconde os filhos.
+     Fundir os dois obrigaria a escolher entre navegar e expandir. */
   const grupo = (dados) => {
-    // O grupo já nasce aberto quando a página atual é uma das filhas — senão
-    // você estaria numa tela sem nada no menu indicando onde está.
+    // Já nasce aberto quando a página atual é uma das filhas — senão você
+    // estaria numa tela sem nada no menu indicando onde está.
     const aberto = dados.children.some(f => f.page === current);
+    const ativo = dados.page === current;
+
     return `
-      <button type="button" class="admin-nav-item admin-nav-group ${aberto ? 'is-open' : ''}"
-              data-grupo="${dados.grupo}" aria-expanded="${aberto}" title="${dados.text}">
-        <span class="admin-nav-icon-box">${icon(dados.icon)}</span>
-        <span class="admin-nav-text">${dados.text}</span>
-        ${CHEVRON}
-      </button>
+      <div class="admin-nav-grupo-linha ${ativo ? 'is-active' : ''}">
+        <a class="admin-nav-item admin-nav-grupo-link" href="${dados.href}" title="${dados.text}">
+          <span class="admin-nav-icon-box">${icon(dados.icon)}</span>
+          <span class="admin-nav-text">${dados.text}</span>
+        </a>
+        <button type="button" class="admin-nav-seta ${aberto ? 'is-open' : ''}"
+                data-grupo="${dados.grupo}" aria-expanded="${aberto}"
+                aria-label="Mostrar itens de ${dados.text}">
+          ${CHEVRON}
+        </button>
+      </div>
       <div class="admin-nav-children" data-filhos="${dados.grupo}" ${aberto ? '' : 'hidden'}>
         ${dados.children.map(f => `
           <a class="admin-nav-subitem ${f.page === current ? 'is-active' : ''}" href="${f.href}">${f.text}</a>

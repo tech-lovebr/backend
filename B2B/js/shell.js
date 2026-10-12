@@ -4,9 +4,16 @@
    ========================================================================== */
 
 // site-preview.html é a página pública do site publicado pelo fornecedor
-// (quem acessa é o cliente final, não precisa estar logado no B2B). termos
-// e privacidade também são públicas — qualquer um pode ler, logado ou não.
-const PUBLIC_PAGES = ['site-preview', 'termos', 'privacidade'];
+// (quem acessa é o cliente final, não precisa estar logado no B2B nem tentar
+// sessão nenhuma).
+const PUBLIC_PAGES = ['site-preview'];
+
+// termos e privacidade também são de leitura livre (logado ou não), mas ao
+// contrário de site-preview elas IMPORTAM se há sessão: logado, o texto abre
+// dentro do mesmo shell (sidebar + header) de qualquer página do portal —
+// exatamente como a plataforma principal (love.com.br) já faz — em vez de
+// uma página solta aberta em outra aba.
+const AUTH_OPTIONAL_PAGES = ['termos', 'privacidade'];
 
 // Aplica o tema e o estado do sidebar salvos o quanto antes, para evitar flash.
 document.body.dataset.theme = localStorage.getItem('b2b-theme') || 'light';
@@ -110,6 +117,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const authed = await window.b2bAuthReady;
   if (!authed) return;
 
+  // termos/privacidade sem sessão: não tem sidebar/topbar pra montar — só
+  // libera a página (ver initAuthGuard, que marcou 'legal-logged-out').
+  if (document.body.classList.contains('legal-logged-out')) {
+    document.dispatchEvent(new CustomEvent('shell:ready'));
+    shellIsReady = true;
+    revealAppIfReady();
+    return;
+  }
+
   // O chat real ainda não rastreia mensagens não lidas (ver mensagens.js),
   // então por enquanto o badge de notificação de chat fica sempre zerado.
   const unreadSnapshot = 0;
@@ -133,10 +149,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 /* -------------------- Autenticação (Supabase) -------------------- */
 
 async function initAuthGuard() {
-  if (PUBLIC_PAGES.includes(document.body.dataset.page)) return true;
+  const page = document.body.dataset.page;
+  if (PUBLIC_PAGES.includes(page)) return true;
 
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) {
+    if (AUTH_OPTIONAL_PAGES.includes(page)) {
+      // Sem sessão: mostra a versão solta da página (ver termos.html/
+      // privacidade.html), não tenta montar sidebar/topbar nem redireciona.
+      document.body.classList.add('legal-logged-out');
+      return true;
+    }
     window.location.href = 'login.html';
     return false;
   }
@@ -308,8 +331,8 @@ async function loadShell() {
           </div>
           <p class="b2b-footer-desc">O sistema operacional completo para planejar, gerenciar e celebrar os momentos mais especiais da sua vida.</p>
           <div class="b2b-footer-legal-links">
-            <a href="privacidade" target="_blank" rel="noopener">Privacidade</a>
-            <a href="termos" target="_blank" rel="noopener">Termos e condições</a>
+            <a href="privacidade">Privacidade</a>
+            <a href="termos">Termos e condições</a>
           </div>
         </div>
         <div class="b2b-footer-social">

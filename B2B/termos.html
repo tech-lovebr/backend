@@ -30,30 +30,54 @@
   </script>
 
   <link rel="stylesheet" href="css/styles.css?v=465">
-  <script src="js/data.js"></script>
-  <script src="js/utils.js"></script>
+  <script src="js/data.js?v=14"></script>
+  <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/supabase-init.js"></script>
+  <script src="js/supabase-init.js?v=1"></script>
 </head>
 <body class="font-sans bg-white" data-page="termos" data-legal-slug="termos">
 
-  <header style="padding:1.5rem 1.5rem 0;">
-    <a href="dashboard" style="display:inline-flex;">
-      <img src="assets/logo.png" alt="Love" style="height:28px;">
-    </a>
-  </header>
-
-  <main class="w-full px-6 py-12 sm:py-16">
-    <div class="max-w-[760px] mx-auto">
-      <div id="legal-doc-loading" class="text-sm text-zinc-400">Carregando...</div>
-      <h1 id="legal-doc-title" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
-      <p id="legal-doc-date" class="text-sm text-zinc-400 mt-2 mb-10"></p>
-      <div id="legal-doc-body" class="legal-doc-body"></div>
-      <a href="dashboard" class="text-sm font-semibold text-[#537bae] hover:underline mt-10 inline-block">← Voltar</a>
+  <!-- Logado: abre dentro do mesmo shell (sidebar + header) de qualquer página do portal,
+       em vez de uma aba isolada — mesma ideia da plataforma principal (love.com.br), que
+       mostra Termos/Privacidade dentro do dashboard quando a pessoa já está logada. -->
+  <div class="b2b-shell" id="legal-shell-view" hidden>
+    <div id="shell-sidebar"></div>
+    <div class="b2b-main">
+      <div id="shell-topbar"></div>
+      <main class="b2b-content">
+        <div class="b2b-header-bar">
+          <h2 class="text-xl font-bold text-zinc-900" id="legal-doc-title-dash"></h2>
+        </div>
+        <p class="text-sm text-zinc-500 mb-5" id="legal-doc-date-dash"></p>
+        <div class="dash-card">
+          <div id="legal-doc-loading-dash" class="text-sm text-zinc-400">Carregando...</div>
+          <div id="legal-doc-body-dash" class="legal-doc-body"></div>
+        </div>
+      </main>
     </div>
-  </main>
+  </div>
 
-  <script src="js/shell.js"></script>
-  <script src="js/legal-doc.js"></script>
+  <!-- Deslogado (ou na landing pública): página isolada, sem sidebar — não existe um
+       portal logado pra mostrar ainda, então o cabeçalho fica reduzido só à marca. -->
+  <div id="legal-standalone-view" hidden>
+    <header style="padding:1.5rem 1.5rem 0;">
+      <a href="index.html" style="display:inline-flex;">
+        <img src="assets/logo.png" alt="Love" style="height:28px;">
+      </a>
+    </header>
+
+    <main class="w-full px-6 py-12 sm:py-16">
+      <div class="max-w-[760px] mx-auto">
+        <div id="legal-doc-loading" class="text-sm text-zinc-400">Carregando...</div>
+        <h1 id="legal-doc-title" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
+        <p id="legal-doc-date" class="text-sm text-zinc-400 mt-2 mb-10"></p>
+        <div id="legal-doc-body" class="legal-doc-body"></div>
+        <a href="login" class="text-sm font-semibold text-[#537bae] hover:underline mt-10 inline-block">← Voltar</a>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/shell.js?v=30"></script>
+  <script src="js/legal-doc.js?v=2"></script>
 </body>
 </html>

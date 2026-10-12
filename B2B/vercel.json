@@ -70,6 +70,11 @@
       "permanent": true
     },
     {
+      "source": "/privacidade.html",
+      "destination": "/privacidade",
+      "permanent": true
+    },
+    {
       "source": "/produtos.html",
       "destination": "/produtos",
       "permanent": true
@@ -87,6 +92,11 @@
     {
       "source": "/site-preview.html",
       "destination": "/site-preview",
+      "permanent": true
+    },
+    {
+      "source": "/termos.html",
+      "destination": "/termos",
       "permanent": true
     },
     {
@@ -159,6 +169,10 @@
       "destination": "/planos.html"
     },
     {
+      "source": "/privacidade",
+      "destination": "/privacidade.html"
+    },
+    {
       "source": "/produtos",
       "destination": "/produtos.html"
     },
@@ -173,6 +187,10 @@
     {
       "source": "/site-preview",
       "destination": "/site-preview.html"
+    },
+    {
+      "source": "/termos",
+      "destination": "/termos.html"
     },
     {
       "source": "/vendas",

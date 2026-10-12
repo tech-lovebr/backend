@@ -4,8 +4,9 @@
    ========================================================================== */
 
 // site-preview.html é a página pública do site publicado pelo fornecedor
-// (quem acessa é o cliente final, não precisa estar logado no B2B).
-const PUBLIC_PAGES = ['site-preview'];
+// (quem acessa é o cliente final, não precisa estar logado no B2B). termos
+// e privacidade também são públicas — qualquer um pode ler, logado ou não.
+const PUBLIC_PAGES = ['site-preview', 'termos', 'privacidade'];
 
 // Aplica o tema e o estado do sidebar salvos o quanto antes, para evitar flash.
 document.body.dataset.theme = localStorage.getItem('b2b-theme') || 'light';
@@ -290,8 +291,8 @@ async function loadShell() {
           </div>
           <p class="b2b-footer-desc">O sistema operacional completo para planejar, gerenciar e celebrar os momentos mais especiais da sua vida.</p>
           <div class="b2b-footer-legal-links">
-            <a href="#" onclick="return false;">Privacidade</a>
-            <a href="#" onclick="return false;">Termos e condições</a>
+            <a href="privacidade" target="_blank" rel="noopener">Privacidade</a>
+            <a href="termos" target="_blank" rel="noopener">Termos e condições</a>
           </div>
         </div>
         <div class="b2b-footer-social">

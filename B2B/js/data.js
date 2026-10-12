@@ -38,7 +38,6 @@ const B2B_DATA = {
     businessCity: '',
     businessState: 'SP',
     maxInstallmentsNoInterest: 0,
-    acceptsBoleto: false,
     requiresFullPaymentByEvent: false,
     portfolioImages: [],
     depoimentos: []

@@ -145,7 +145,7 @@ async function initAuthGuard() {
 
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
-    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, accepts_boleto, requires_full_payment_by_event, portfolio_images, depoimentos')
+    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
     .eq('id', session.user.id)
     .maybeSingle();
 
@@ -178,7 +178,7 @@ async function initAuthGuard() {
         email: session.user.email,
         avatar_url: meta.avatar_url || meta.picture || null
       })
-      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, accepts_boleto, requires_full_payment_by_event, portfolio_images, depoimentos')
+      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
       .maybeSingle();
     fornecedor = created;
   }
@@ -240,7 +240,6 @@ async function initAuthGuard() {
     if (fornecedor.deposit_deadline_days !== null) B2B_DATA.professional.depositDeadlineDays = fornecedor.deposit_deadline_days;
     if (fornecedor.cancellation_policy) B2B_DATA.professional.cancellationPolicy = fornecedor.cancellation_policy;
     B2B_DATA.professional.maxInstallmentsNoInterest = fornecedor.max_installments_no_interest ?? 0;
-    B2B_DATA.professional.acceptsBoleto = fornecedor.accepts_boleto ?? false;
     B2B_DATA.professional.requiresFullPaymentByEvent = fornecedor.requires_full_payment_by_event ?? false;
     B2B_DATA.professional.portfolioImages = fornecedor.portfolio_images || [];
     B2B_DATA.professional.depoimentos = fornecedor.depoimentos || [];

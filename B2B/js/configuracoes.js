@@ -292,7 +292,16 @@ function initCompanyForm() {
   /* -------- Raio de atendimento -------- */
   const radiusInput = document.getElementById('company-service-radius');
   const radiusValue = document.getElementById('company-service-radius-value');
-  const updateRadiusLabel = () => { radiusValue.textContent = radiusLabelFor(RADIUS_STEPS[Number(radiusInput.value)]); };
+  const radiusTicks = document.getElementById('company-service-radius-ticks');
+  if (radiusTicks) {
+    radiusTicks.innerHTML = RADIUS_STEPS.map(() => '<span class="b2b-range-tick"></span>').join('');
+  }
+  const updateRadiusLabel = () => {
+    radiusValue.textContent = radiusLabelFor(RADIUS_STEPS[Number(radiusInput.value)]);
+    radiusTicks?.querySelectorAll('.b2b-range-tick').forEach((tick, i) => {
+      tick.classList.toggle('is-active', i === Number(radiusInput.value));
+    });
+  };
   const initialStepIndex = RADIUS_STEPS.indexOf(p.serviceRadiusKm ?? 50);
   radiusInput.value = initialStepIndex > -1 ? initialStepIndex : 0;
   updateRadiusLabel();
@@ -302,16 +311,30 @@ function initCompanyForm() {
 
   /* -------- Forma e condições de pagamento -------- */
   const installmentsSelect = document.getElementById('company-max-installments');
-  installmentsSelect.innerHTML = ['<option value="0">Não oferece parcelamento sem juros</option>']
-    .concat(Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}x sem juros</option>`))
+  installmentsSelect.innerHTML = ['<option value="0">O cliente assume os juros desde a 1ª parcela</option>']
+    .concat(Array.from({ length: 12 }, (_, i) =>
+      `<option value="${i + 1}">Eu assumo os juros até ${i + 1}x — depois o cliente paga juros</option>`))
     .join('');
   installmentsSelect.value = String(p.maxInstallmentsNoInterest ?? 0);
 
   document.getElementById('company-deposit-percent').value = p.depositPercent ?? '';
   document.getElementById('company-deposit-deadline').value = p.depositDeadlineDays ?? '';
-  document.getElementById('company-accepts-boleto').checked = !!p.acceptsBoleto;
-  document.getElementById('company-requires-full-payment').checked = !!p.requiresFullPaymentByEvent;
   document.getElementById('company-cancellation-policy').value = p.cancellationPolicy || '';
+
+  const fullPaymentToggle = document.getElementById('company-full-payment-toggle');
+  let requiresFullPayment = !!p.requiresFullPaymentByEvent;
+  const applyFullPaymentToggle = () => {
+    fullPaymentToggle.querySelectorAll('[data-full-payment]').forEach(btn => {
+      btn.classList.toggle('active', (btn.dataset.fullPayment === 'sim') === requiresFullPayment);
+    });
+  };
+  applyFullPaymentToggle();
+  fullPaymentToggle.querySelectorAll('[data-full-payment]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      requiresFullPayment = btn.dataset.fullPayment === 'sim';
+      applyFullPaymentToggle();
+    });
+  });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -324,8 +347,7 @@ function initCompanyForm() {
     p.maxInstallmentsNoInterest = Number(installmentsSelect.value);
     p.depositPercent = Number(document.getElementById('company-deposit-percent').value) || null;
     p.depositDeadlineDays = Number(document.getElementById('company-deposit-deadline').value) || null;
-    p.acceptsBoleto = document.getElementById('company-accepts-boleto').checked;
-    p.requiresFullPaymentByEvent = document.getElementById('company-requires-full-payment').checked;
+    p.requiresFullPaymentByEvent = requiresFullPayment;
     p.cancellationPolicy = document.getElementById('company-cancellation-policy').value.trim();
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
     salvarEmpresaNoBanco(p);
@@ -356,7 +378,6 @@ async function salvarEmpresaNoBanco(p) {
       max_installments_no_interest: p.maxInstallmentsNoInterest ?? 0,
       deposit_percent: p.depositPercent ?? null,
       deposit_deadline_days: p.depositDeadlineDays ?? null,
-      accepts_boleto: !!p.acceptsBoleto,
       requires_full_payment_by_event: !!p.requiresFullPaymentByEvent,
       cancellation_policy: p.cancellationPolicy || null
     })

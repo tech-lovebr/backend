@@ -9678,7 +9678,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const listBtn = document.getElementById('btn-b2b-view-list');
     const gridBtn = document.getElementById('btn-b2b-view-grid');
     if (!listBtn || !gridBtn) return;
-    const activeClasses = ['bg-[#537bae]', 'text-white'];
+    const activeClasses = ['bg-[#181D24]', 'text-[#ebf4ff]'];
     const inactiveClasses = ['text-zinc-400', 'hover:bg-zinc-50', 'hover:text-zinc-700'];
     [listBtn, gridBtn].forEach(btn => btn.classList.remove(...activeClasses, ...inactiveClasses));
     const activeBtn = b2bViewMode === 'grid' ? gridBtn : listBtn;
@@ -9831,7 +9831,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // grid (que não tem padding próprio) — sem isso a margem esquerda da
       // foto ficava diferente ao trocar lista/grid. No mobile (empilhado)
       // mantém o padding de todos os lados, já que a imagem fica em cima.
-      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 md:pl-0 cursor-pointer';
+      // first:pt-0 no primeiro card: sem padding-top extra ali, a margem
+      // até o filtro de cidade acima fica igual à do grid (que não tem
+      // padding próprio nenhum).
+      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 md:pl-0 first:pt-0 cursor-pointer';
 
       card.innerHTML = `
         <!-- Imagem prévia da empresa -->

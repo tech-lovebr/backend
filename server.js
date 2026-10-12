@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
-  const CLEAN_SPA_ROUTES = ['/', '/login', '/termos', '/politica-de-privacidade', '/personalizar', '/presentes', '/convidados', '/carteira', '/fornecedores'];
+  const CLEAN_SPA_ROUTES = ['/', '/login', '/termos', '/politica-de-privacidade', '/personalizar', '/presentes', '/convidados', '/carteira', '/fornecedores', '/notificacoes'];
   if (CLEAN_SPA_ROUTES.includes(pathname)) {
     pathname = '/index.html';
   }

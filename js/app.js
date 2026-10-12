@@ -209,6 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pendingInitialDashboardRoute = null;
         if (route.type === 'legal') {
           openLegalDocPage(route.slug);
+        } else if (route.type === 'notifications') {
+          openNotificationsPage({ pushUrl: false });
         } else if (route.type === 'tab') {
           switchRailTab(route.tab);
         } else {
@@ -339,6 +341,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const d = new Date(texto.length <= 10 ? `${texto}T00:00:00` : texto);
     if (isNaN(d.getTime())) return '';
     return `${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  }
+
+  // =========================================================================
+  // PÁGINA DE NOTIFICAÇÕES (/notificacoes) — página própria no lugar do
+  // dropdown do sino, mesmo padrão de cabeçalho/tamanhos de Meus Presentes,
+  // sem sub-sidebar expandida (mesmo esquema de switchRailTab('overview')).
+  // =========================================================================
+  const NOTIFICATIONS_MOCK = [
+    {
+      iconPath: 'M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 0 0 0-4.5H3a2.25 2.25 0 0 0 0 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 0 1 0-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 0 0 0-4.5c-1.864 0-3.75 2.25-3.75 4.5',
+      html: '<strong class="text-zinc-900 font-bold">Mariana Silveira</strong> comprou um <strong class="text-zinc-900 font-bold">Jogo de Talheres Tramontina 24 Peças</strong> na sua lista de presentes.',
+      time: 'Há 25 minutos',
+      railTab: 'gifts'
+    },
+    {
+      iconPath: 'M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.502 49.188 49.188 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v5.992z',
+      html: '<strong class="text-zinc-900 font-bold">Villa Bisutti - Espaço Jardim</strong> respondeu sua mensagem sobre a disponibilidade do local.',
+      quote: 'Olá Beatriz! Temos a data de 18 de Outubro disponível para vocês...',
+      time: 'Há 1 hora',
+      railTab: 'b2b'
+    },
+    {
+      iconPath: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
+      html: '<strong class="text-zinc-900 font-bold">Carlos Eduardo & Família</strong> confirmaram presença no seu evento (2 adultos, 1 criança).',
+      quote: 'Muito felizes por vocês! Mal podemos esperar...',
+      time: 'Hoje, às 14:22',
+      railTab: 'rsvp'
+    }
+  ];
+
+  function renderNotificationsPage() {
+    const listEl = document.getElementById('notifications-list-container');
+    if (!listEl) return;
+    listEl.innerHTML = NOTIFICATIONS_MOCK.map(n => `
+      <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer hover:bg-zinc-50/80 transition-colors -mx-2 px-2 rounded-xl" data-rail-tab="${n.railTab}">
+        <div class="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${n.iconPath}"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-zinc-800 leading-snug font-sans">${n.html}</p>
+          ${n.quote ? `<p class="text-sm text-zinc-500 italic mt-1 font-sans">"${n.quote}"</p>` : ''}
+          <span class="text-xs text-zinc-400 mt-1.5 block font-sans">${n.time}</span>
+        </div>
+      </div>
+    `).join('');
+
+    listEl.querySelectorAll('.notification-row').forEach(row => {
+      row.addEventListener('click', () => {
+        switchRailTab(row.dataset.railTab);
+        if (row.dataset.railTab === 'b2b') switchB2BView('messages');
+      });
+    });
+  }
+
+  function openNotificationsPage(opts = {}) {
+    state.currentTab = 'notifications';
+    elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
+    if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
+    if (elements.mainArea) elements.mainArea.classList.add('full-width');
+    document.querySelectorAll('.dashboard-tab-content').forEach(content => {
+      content.classList.toggle('active', content.id === 'tab-notifications');
+    });
+
+    if (opts.pushUrl !== false && window.location.pathname !== '/notificacoes') {
+      history.pushState({ notifications: true }, '', '/notificacoes');
+    }
+    document.title = 'Notificações — Love';
+
+    renderNotificationsPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const btnNotificationsMarkAllRead = document.getElementById('btn-notifications-mark-all-read');
+  if (btnNotificationsMarkAllRead) {
+    btnNotificationsMarkAllRead.addEventListener('click', () => {
+      document.querySelector('.badge-header-notifications')?.classList.add('hidden');
+      showToast('Todas as notificações foram marcadas como lidas.', '✓');
+    });
   }
 
   // =========================================================================
@@ -11367,12 +11447,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 13. MINHA CONTA & NOTIFICAÇÕES DROPDOWNS
+  // 13. MINHA CONTA & NOTIFICAÇÕES
   // ==========================================
   const btnUserAccount = document.getElementById('btn-user-account-menu');
   const dropdownUserAccount = document.getElementById('dropdown-user-account');
   const btnNotifications = document.getElementById('btn-notifications-menu');
-  const dropdownNotifications = document.getElementById('dropdown-notifications');
   const btnProfileData = document.getElementById('btn-account-profile-data');
   const btnAccountSettings = document.getElementById('btn-account-settings');
   const btnAccountLogout = document.getElementById('btn-account-logout');
@@ -11381,7 +11460,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnUserAccount && dropdownUserAccount) {
     btnUserAccount.addEventListener('click', (e) => {
       e.stopPropagation();
-      dropdownNotifications?.classList.add('hidden');
       dropdownUserAccount.classList.toggle('hidden');
     });
   }
@@ -11391,7 +11469,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnHeaderChat) {
     btnHeaderChat.addEventListener('click', (e) => {
       e.preventDefault();
-      dropdownNotifications?.classList.add('hidden');
       dropdownUserAccount?.classList.add('hidden');
       const badgeChat = document.querySelector('.badge-header-chat');
       if (badgeChat) badgeChat.classList.add('hidden');
@@ -11400,34 +11477,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Notificações Dropdown
-  if (btnNotifications && dropdownNotifications) {
+  // Sino de notificações: abre a página própria (ver openNotificationsPage).
+  if (btnNotifications) {
     btnNotifications.addEventListener('click', (e) => {
       e.stopPropagation();
       dropdownUserAccount?.classList.add('hidden');
-      dropdownNotifications.classList.toggle('hidden');
+      openNotificationsPage();
     });
-
-    const btnMarkRead = dropdownNotifications.querySelector('button');
-    if (btnMarkRead) {
-      btnMarkRead.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const badgeNotif = document.querySelector('.badge-header-notifications');
-        if (badgeNotif) badgeNotif.classList.add('hidden');
-        const badgeCount = dropdownNotifications.querySelector('span[style*="#27394f"]');
-        if (badgeCount) badgeCount.textContent = '0 novas';
-        showToast('Todas as notificações foram marcadas como lidas.', '✓');
-      });
-    }
   }
 
-  // Fecha dropdowns ao clicar fora
+  // Fecha o dropdown de Minha Conta ao clicar fora
   document.addEventListener('click', (e) => {
     if (btnUserAccount && dropdownUserAccount && !btnUserAccount.contains(e.target) && !dropdownUserAccount.contains(e.target)) {
       dropdownUserAccount.classList.add('hidden');
-    }
-    if (btnNotifications && dropdownNotifications && !btnNotifications.contains(e.target) && !dropdownNotifications.contains(e.target)) {
-      dropdownNotifications.classList.add('hidden');
     }
   });
 
@@ -11861,6 +11923,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
     if (path === '/termos') { openLegalDocPage('termos', { pushUrl: false }); return; }
     if (path === '/politica-de-privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
+    if (path === '/notificacoes' && state.currentView === 'dashboard') { openNotificationsPage({ pushUrl: false }); return; }
 
     const railTab = RAIL_ROUTE_TO_TAB[path];
     if (state.currentView === 'dashboard' && railTab) {
@@ -12061,10 +12124,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // consumido (switchView('dashboard') nunca roda).
   const initialRailTab = RAIL_ROUTE_TO_TAB[window.location.pathname] || null;
 
+  // /notificacoes não é uma aba do rail (sem ícone próprio) — mesma lógica
+  // de rota "direta" das legais/abas, só que abrindo a página de notificações.
+  const initialIsNotifications = window.location.pathname === '/notificacoes';
+
   // Guardado ANTES do switchView/initClienteSession: se a sessão confirmar
   // 'dashboard', é consumido ali dentro mesmo, sem passar pela Visão Geral
   // no meio do caminho (ver pendingInitialDashboardRoute, perto do topo).
   if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
+  else if (initialIsNotifications) pendingInitialDashboardRoute = { type: 'notifications' };
   else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab };
 
   // Só chama switchView('public') de cara se NÃO houver pista de sessão no

@@ -10971,6 +10971,8 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
       if (messagesView) messagesView.classList.add('hidden');
+      // Meus contratos é sempre em lista — sem o seletor grade/lista no cabeçalho.
+      document.getElementById('b2b-view-toggle')?.classList.toggle('hidden', viewId === 'contracted');
       if (viewId === 'contracted') {
         if (exploreView) exploreView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');

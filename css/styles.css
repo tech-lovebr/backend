@@ -88,6 +88,7 @@ h1, h2, h3, h4, h5, h6,
 #gifts-header-title,
 #rsvp-header-title,
 #rsvp-settings-header-title,
+#rsvp-checklist-header-title,
 #wallet-header-title,
 #editor-active-sub-title,
 #info-active-sub-title,
@@ -6387,3 +6388,19 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 
 
 
+
+/* ==========================================================================
+   Barras de título sem sombra (pedido do cliente): busca, local, grade/lista
+   e botões de ação de Meus convidados, Meus presentes, Encontrar fornecedor,
+   Favoritos, Meus contratos e Chat. Sobrepõe a sombra global de
+   .bg-white.rounded-xl e a do .btn-primary.
+   ========================================================================== */
+#tab-rsvp .builder-toolbar input,
+#tab-rsvp .builder-toolbar .btn-primary,
+#tab-gifts .builder-toolbar .btn-primary,
+#b2b-top-search-bar input,
+#b2b-top-search-bar #b2b-view-toggle,
+#b2b-chat-input,
+#b2b-chat-send-btn {
+  box-shadow: none !important;
+}

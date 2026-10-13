@@ -662,7 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'explore', label: 'Explorar' },
-        { id: 'messages', label: 'Mensagens' },
+        { id: 'messages', label: 'Chat' },
         { id: 'contracted', label: 'Meus contratos' },
         { id: 'insurance', label: 'Benefícios' },
         { id: 'favorites', label: 'Favoritos' }
@@ -10941,7 +10941,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
-        'messages': 'Mensagens',
+        'messages': 'Chat',
         'contracted': 'Meus contratos',
         'insurance': 'Benefícios',
         'favorites': 'Favoritos'
@@ -10957,7 +10957,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (viewId === 'messages') {
       document.body.classList.add('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
-      if (toolbarTitle) toolbarTitle.textContent = 'Mensagens';
+      if (toolbarTitle) toolbarTitle.textContent = 'Chat';
       if (searchInput) searchInput.placeholder = 'Buscar nas conversas...';
       if (exploreView) exploreView.classList.add('hidden');
       if (contractedView) contractedView.classList.add('hidden');

@@ -9477,8 +9477,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const submitBtn = document.getElementById('btn-do-forgot-password');
 
       submitBtn.disabled = true;
+      // Em produção o link sempre aponta para love.com.br, mesmo que o pedido
+      // tenha sido feito pelo domínio .vercel.app; localhost segue local.
+      const resetOrigin = window.location.hostname.endsWith('vercel.app')
+        ? 'https://love.com.br'
+        : window.location.origin;
       await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/resetar-senha`,
+        redirectTo: `${resetOrigin}/resetar-senha`,
       });
       submitBtn.disabled = false;
 
@@ -9503,7 +9508,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formRegisterUser) {
     formRegisterUser.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('register-name-input').value.trim();
+      // Esse popup só tem um campo de nome: primeira palavra vira first_name,
+      // o resto last_name (mesma regra da migração do banco).
+      const nameParts = document.getElementById('register-name-input').value.trim().split(/\s+/);
+      const { first_name, last_name, full_name } = montarNomeCliente(nameParts[0], nameParts.slice(1).join(' '));
+      const name = full_name;
       const email = document.getElementById('register-email-input').value.trim();
       const password = document.getElementById('register-password-input').value;
       const submitBtn = document.getElementById('btn-register-submit');
@@ -9512,7 +9521,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { role: 'cliente', couple_name: name, ...dadosDoDispositivo() } }
+        options: { data: { role: 'cliente', first_name, last_name, full_name, couple_name: full_name, ...dadosDoDispositivo() } }
       });
       submitBtn.disabled = false;
 
@@ -11652,9 +11661,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnProfileData) {
     btnProfileData.addEventListener('click', () => {
       dropdownUserAccount?.classList.add('hidden');
-      const nameInput = document.getElementById('settings-user-name');
+      const firstNameInput = document.getElementById('settings-user-first-name');
+      const lastNameInput = document.getElementById('settings-user-last-name');
       const emailInput = document.getElementById('settings-user-email');
-      if (nameInput) nameInput.value = window.loveClienteProfile?.couple_name || '';
+      const profile = window.loveClienteProfile || {};
+      // Antes da migration 034 só existia couple_name: divide na hora.
+      const legacyParts = (profile.couple_name || '').trim().split(/\s+/);
+      const first = profile.first_name ?? legacyParts[0] ?? '';
+      const last = profile.first_name ? (profile.last_name || '') : legacyParts.slice(1).join(' ');
+      if (firstNameInput) firstNameInput.value = first;
+      if (lastNameInput) lastNameInput.value = last;
       if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
       ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => {
         const el = document.getElementById(id);
@@ -11891,12 +11907,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!session) return;
 
       const saveBtn = document.getElementById('btn-save-user-settings');
-      const name = document.getElementById('settings-user-name').value.trim();
+      const { first_name, last_name, full_name } = montarNomeCliente(
+        document.getElementById('settings-user-first-name').value,
+        document.getElementById('settings-user-last-name').value
+      );
+      const name = full_name;
       const currentPassword = document.getElementById('settings-password-current').value;
       const newPassword = document.getElementById('settings-password-new').value;
       const confirmPassword = document.getElementById('settings-password-confirm').value;
 
-      if (!name) {
+      if (!first_name) {
         showToast('O nome não pode ficar vazio.', '⚠️');
         return;
       }
@@ -11938,19 +11958,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      const { error: profileError } = await supabaseClient
-        .from('clientes')
-        .update({ couple_name: name })
-        .eq('id', session.user.id);
+      // Nome vai pros dois lugares: tabela clientes (couple_name é mantido
+      // igual a full_name pelo gatilho do banco) e user_metadata do Auth
+      // (usado nos templates de e-mail).
+      const [{ error: profileError }, { error: metaError }] = await Promise.all([
+        supabaseClient
+          .from('clientes')
+          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name })
+          .eq('id', session.user.id),
+        supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name } })
+      ]);
 
       saveBtn.disabled = false;
 
-      if (profileError) {
+      if (profileError || metaError) {
         showToast('Não foi possível salvar seu nome. Tente novamente.', '⚠️');
         return;
       }
 
-      if (window.loveClienteProfile) window.loveClienteProfile.couple_name = name;
+      if (window.loveClienteProfile) {
+        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name });
+      }
       const dropdownUsername = document.getElementById('account-dropdown-username');
       if (dropdownUsername) dropdownUsername.textContent = name;
 
@@ -12329,7 +12357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const { data: cliente } = await supabaseClient
       .from('clientes')
-      .select('id, couple_name, email, avatar_url, status')
+      .select('*') // inclui first_name/last_name/full_name sem quebrar se a migration 034 ainda não rodou
       .eq('id', session.user.id)
       .maybeSingle();
 

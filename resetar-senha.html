@@ -16,94 +16,224 @@
   <title>Redefinir senha — Love</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/png" href="assets/fav-love.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Guarda a URL do link antes do cliente Supabase consumir/limpar o token.
+    window.__resetUrl = { hash: window.location.hash, search: window.location.search };
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js"></script>
+  <script src="js/supabase-init.js?v=2"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 9999px; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body class="bg-white">
 
-  <div class="min-h-screen w-full flex items-center justify-center p-6">
-    <div class="w-full max-w-md">
-      <img src="assets/logo.png?v=2" alt="Love" class="h-9 w-auto mb-6 object-contain">
+  <div class="w-full min-h-screen flex">
 
-      <div id="reset-panel-form">
-        <h3 class="text-2xl font-extrabold text-slate-900">Crie uma nova senha</h3>
-        <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">Escolha uma senha nova para acessar sua conta.</p>
+    <!-- Esquerda: conteúdo -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
+      <div class="w-full max-w-md">
+        <a href="/"><img src="assets/logo.png?v=2" alt="Love" class="h-9 w-auto mb-6 object-contain"></a>
 
-        <form id="reset-form" class="space-y-3.5 text-left">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Nova senha</label>
-            <input type="password" id="reset-password" required minlength="6" autocomplete="new-password" placeholder="Nova senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Confirme a nova senha</label>
-            <input type="password" id="reset-password-confirm" required minlength="6" autocomplete="new-password" placeholder="Confirme a nova senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-          </div>
-          <p id="reset-error" class="text-xs text-red-600 hidden"></p>
-          <button type="submit" id="reset-btn" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-            Salvar nova senha
-          </button>
-        </form>
+        <!-- Validando o link -->
+        <div id="reset-panel-loading">
+          <h3 class="text-2xl font-extrabold text-slate-900">Validando seu link…</h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2">Só um instante.</p>
+        </div>
+
+        <!-- Formulário -->
+        <div id="reset-panel-form" class="hidden">
+          <h3 class="text-2xl font-extrabold text-slate-900">Crie uma nova senha</h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">
+            Escolha uma senha nova para acessar sua conta<span id="reset-user-email"></span>.
+          </p>
+
+          <form id="reset-form" class="space-y-3.5 text-left" novalidate>
+            <div>
+              <label for="reset-password" class="block text-xs font-bold text-slate-700 mb-1">Nova senha</label>
+              <div class="relative">
+                <input type="password" id="reset-password" required minlength="6" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" class="w-full text-xs sm:text-sm p-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+                <button type="button" data-toggle="reset-password" class="btn-toggle-pass absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" aria-label="Mostrar senha">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32a1 1 0 010-.64C3.42 7.51 7.36 4.5 12 4.5c4.64 0 8.57 3 9.96 7.18.07.2.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5c-4.64 0-8.57-3-9.96-7.18z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label for="reset-password-confirm" class="block text-xs font-bold text-slate-700 mb-1">Confirme a nova senha</label>
+              <div class="relative">
+                <input type="password" id="reset-password-confirm" required minlength="6" autocomplete="new-password" placeholder="Repita a nova senha" class="w-full text-xs sm:text-sm p-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+                <button type="button" data-toggle="reset-password-confirm" class="btn-toggle-pass absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" aria-label="Mostrar senha">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32a1 1 0 010-.64C3.42 7.51 7.36 4.5 12 4.5c4.64 0 8.57 3 9.96 7.18.07.2.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5c-4.64 0-8.57-3-9.96-7.18z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <p id="reset-error" class="text-xs text-red-600 hidden"></p>
+
+            <button type="submit" id="reset-btn" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] disabled:opacity-70 disabled:cursor-not-allowed text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2 flex items-center justify-center gap-2">
+              <span id="reset-btn-label">Salvar nova senha</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Link inválido / expirado -->
+        <div id="reset-panel-invalid" class="hidden">
+          <h3 class="text-2xl font-extrabold text-slate-900">Link inválido ou expirado</h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">Esse link de redefinição não é mais válido. Por segurança, ele só pode ser usado uma vez e expira depois de um tempo.</p>
+          <a href="/login" class="block w-full text-center py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer">
+            Solicitar um novo link
+          </a>
+        </div>
+
+        <!-- Sucesso -->
+        <div id="reset-panel-success" class="hidden">
+          <h3 class="text-2xl font-extrabold text-slate-900">Senha atualizada!</h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">Sua senha foi redefinida com sucesso. Use a nova senha nos próximos acessos.</p>
+          <a href="/" class="block w-full text-center py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer">
+            Acessar minha conta
+          </a>
+        </div>
+
+        <div class="pt-4 text-xs text-slate-500">
+          <a href="/login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors">← Voltar para o login</a>
+        </div>
       </div>
+    </div>
 
-      <div id="reset-panel-invalid" class="hidden">
-        <h3 class="text-2xl font-extrabold text-slate-900">Link inválido ou expirado</h3>
-        <p class="text-xs sm:text-sm text-slate-500 mt-2">Esse link de redefinição não é mais válido. <a href="/login" class="font-semibold text-[#537bae] hover:underline">Solicite um novo</a> na tela de login.</p>
-      </div>
-
-      <div id="reset-panel-success" class="hidden">
-        <h3 class="text-2xl font-extrabold text-slate-900">Senha atualizada!</h3>
-        <p class="text-xs sm:text-sm text-slate-500 mt-2 mb-6">Sua senha foi redefinida com sucesso.</p>
-        <a href="/" class="inline-block w-full text-center py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer">
-          Acessar minha conta
-        </a>
+    <!-- Direita: imagem (igual à tela de login) -->
+    <div class="hidden lg:flex w-1/2 relative overflow-hidden">
+      <img src="assets/wedding_hero_banner.jpg" alt="" class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
+      <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
+        <div></div>
+        <div>
+          <h2 class="text-white text-4xl font-normal leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
+          <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    (async function () {
-      // O link do e-mail traz o token no hash/query da URL; o cliente Supabase
-      // detecta sozinho (detectSessionInUrl, ligado por padrão) e abre uma
-      // sessão de recuperação — só então dá pra trocar a senha.
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        document.getElementById('reset-panel-form').classList.add('hidden');
-        document.getElementById('reset-panel-invalid').classList.remove('hidden');
+    (function () {
+      const panels = ['loading', 'form', 'invalid', 'success'];
+      function show(name) {
+        panels.forEach(p => {
+          document.getElementById('reset-panel-' + p).classList.toggle('hidden', p !== name);
+        });
       }
-    })();
 
-    document.getElementById('reset-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const password = document.getElementById('reset-password').value;
-      const confirm = document.getElementById('reset-password-confirm').value;
+      // Lê o que veio no link do e-mail. Dependendo do template/fluxo do
+      // Supabase, o token pode vir no hash (#access_token=…&type=recovery),
+      // como ?code=… (PKCE) ou como ?token_hash=…&type=recovery.
+      const hash = new URLSearchParams(window.__resetUrl.hash.slice(1));
+      const query = new URLSearchParams(window.__resetUrl.search);
+      const linkError = hash.get('error_code') || hash.get('error') || query.get('error_code') || query.get('error');
+      const tokenHash = query.get('token_hash');
+      const hasRecoveryToken =
+        hash.get('type') === 'recovery' || hash.has('access_token') ||
+        query.has('code') || (tokenHash && query.get('type') === 'recovery');
+
+      function limparUrl() {
+        history.replaceState(null, '', window.location.pathname);
+      }
+
+      function abrirFormulario(session) {
+        const email = session && session.user && session.user.email;
+        if (email) document.getElementById('reset-user-email').textContent = ' (' + email + ')';
+        limparUrl();
+        show('form');
+        document.getElementById('reset-password').focus();
+      }
+
+      async function init() {
+        if (linkError) { limparUrl(); show('invalid'); return; }
+
+        // Sem token na URL não é um acesso vindo do e-mail — mesmo que haja
+        // uma sessão normal aberta neste navegador, não liberamos a troca aqui.
+        if (!hasRecoveryToken) { show('invalid'); return; }
+
+        if (tokenHash) {
+          const { data, error } = await supabaseClient.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+          if (error || !data.session) { limparUrl(); show('invalid'); return; }
+          abrirFormulario(data.session);
+          return;
+        }
+
+        // #access_token e ?code são processados automaticamente pelo cliente
+        // (detectSessionInUrl). getSession() aguarda essa inicialização.
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) { limparUrl(); show('invalid'); return; }
+        abrirFormulario(session);
+      }
+
+      init().catch(() => show('invalid'));
+
+      // Mostrar/ocultar senha
+      document.querySelectorAll('.btn-toggle-pass').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = document.getElementById(btn.dataset.toggle);
+          const visivel = input.type === 'text';
+          input.type = visivel ? 'password' : 'text';
+          btn.setAttribute('aria-label', visivel ? 'Mostrar senha' : 'Ocultar senha');
+          btn.classList.toggle('text-[#537bae]', !visivel);
+        });
+      });
+
+      const form = document.getElementById('reset-form');
       const errorEl = document.getElementById('reset-error');
       const btn = document.getElementById('reset-btn');
+      const btnLabel = document.getElementById('reset-btn-label');
 
-      errorEl.classList.add('hidden');
-
-      if (password !== confirm) {
-        errorEl.textContent = 'As senhas não coincidem.';
+      function mostrarErro(msg) {
+        errorEl.textContent = msg;
         errorEl.classList.remove('hidden');
-        return;
       }
 
-      btn.disabled = true;
-      const { error } = await supabaseClient.auth.updateUser({ password });
-      btn.disabled = false;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = document.getElementById('reset-password').value;
+        const confirm = document.getElementById('reset-password-confirm').value;
 
-      if (error) {
-        errorEl.textContent = 'Não foi possível salvar a nova senha. Tente novamente.';
-        errorEl.classList.remove('hidden');
-        return;
-      }
+        errorEl.classList.add('hidden');
 
-      document.getElementById('reset-panel-form').classList.add('hidden');
-      document.getElementById('reset-panel-success').classList.remove('hidden');
-    });
+        if (password.length < 6) return mostrarErro('A senha precisa ter pelo menos 6 caracteres.');
+        if (password !== confirm) return mostrarErro('As senhas não coincidem.');
+
+        btn.disabled = true;
+        btnLabel.textContent = 'Salvando…';
+        btn.insertAdjacentHTML('afterbegin', '<span class="spinner" id="reset-spinner"></span>');
+
+        const { error } = await supabaseClient.auth.updateUser({ password });
+
+        btn.disabled = false;
+        btnLabel.textContent = 'Salvar nova senha';
+        const spinner = document.getElementById('reset-spinner');
+        if (spinner) spinner.remove();
+
+        if (error) {
+          const msg = (error.message || '').toLowerCase();
+          if (msg.includes('different from the old')) {
+            mostrarErro('A nova senha precisa ser diferente da senha atual.');
+          } else if (msg.includes('session') || error.status === 401 || error.status === 403) {
+            show('invalid');
+          } else if (msg.includes('password')) {
+            mostrarErro('Senha fraca. Use pelo menos 6 caracteres, misturando letras e números.');
+          } else {
+            mostrarErro('Não foi possível salvar a nova senha. Tente novamente.');
+          }
+          return;
+        }
+
+        show('success');
+      });
+    })();
   </script>
 </body>
 </html>

@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" href="assets/fav-love.png?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js"></script>
+  <script src="js/supabase-init.js?v=2"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -367,14 +367,15 @@
 
     document.getElementById('form-onboard-register').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const firstName = document.getElementById('onboard-firstname-input').value.trim();
-      const lastName = document.getElementById('onboard-lastname-input').value.trim();
+      const { first_name: firstName, last_name: lastName, full_name: fullName } = montarNomeCliente(
+        document.getElementById('onboard-firstname-input').value,
+        document.getElementById('onboard-lastname-input').value
+      );
       const birthday = document.getElementById('onboard-birthday-input').value;
       const eventDate = document.getElementById('onboard-eventdate-input').value;
       const email = document.getElementById('onboard-email-input').value.trim();
       const password = document.getElementById('onboard-password-input').value;
       const submitBtn = document.getElementById('btn-onboard-submit');
-      const fullName = `${firstName} ${lastName}`.trim();
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Criando...';
@@ -386,6 +387,10 @@
           emailRedirectTo: `${window.location.origin}/login`,
           data: {
             role: 'cliente',
+            // Os templates de e-mail do Supabase usam {{ .Data.first_name }}.
+            first_name: firstName,
+            last_name: lastName,
+            full_name: fullName,
             couple_name: fullName,
             birthday: birthday || null,
             intended_event_type: onboardType || null,

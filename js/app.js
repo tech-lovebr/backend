@@ -11742,8 +11742,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
       const birthdayInput = document.getElementById('settings-user-birthday');
       if (birthdayInput) {
-        birthdayInput.max = new Date().toISOString().slice(0, 10);
-        birthdayInput.value = profile.birthday || window.loveClienteSession?.user?.user_metadata?.birthday || '';
+        criarSeletorData(birthdayInput);
+        birthdayInput.definirData(profile.birthday || window.loveClienteSession?.user?.user_metadata?.birthday || '');
       }
       document.getElementById('settings-form-error')?.classList.add('hidden');
       resetSettingsSecurity();

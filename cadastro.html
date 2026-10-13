@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" href="assets/fav-love.png?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=2"></script>
+  <script src="js/supabase-init.js?v=3"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -281,8 +281,9 @@
       });
     });
 
-    // Limita o aniversário a datas até hoje (sem nascimento no futuro)
-    document.getElementById('onboard-birthday-input').max = new Date().toISOString().slice(0, 10);
+    // Aniversário em listas Dia / Mês / Ano (de 1917 até o ano atual) no
+    // lugar do calendário — o id continua guardando "AAAA-MM-DD".
+    criarSeletorData(document.getElementById('onboard-birthday-input'));
 
     // Ano só pode começar com 19 ou 20 (ex: não aceita "3" como primeiro
     // dígito) — min/max do input não impede digitar fora da faixa, então
@@ -296,7 +297,6 @@
         }
       });
     }
-    restrictYearPrefix(document.getElementById('onboard-birthday-input'));
     restrictYearPrefix(document.getElementById('onboard-eventdate-input'));
 
     const eventDateInput = document.getElementById('onboard-eventdate-input');

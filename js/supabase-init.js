@@ -29,6 +29,76 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
    é sempre nome + sobrenome; sobrenome vazio → full_name é só o nome.
    ========================================================================== */
 
+/* ==========================================================================
+   Data de aniversário em 3 listas (Dia / Mês / Ano) no lugar do calendário
+
+   Recebe o <input type="date"> já existente, transforma em campo oculto (o
+   mesmo id continua guardando "AAAA-MM-DD" — ou "" enquanto faltar escolher
+   algo) e põe as três listas logo depois dele, com as mesmas classes.
+   Para preencher por código: input.definirData('1990-05-17').
+   ========================================================================== */
+
+const MESES_PT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const ANO_MINIMO_ANIVERSARIO = 1917;
+
+function criarSeletorData(input) {
+  if (!input || input.definirData) return input;
+
+  const classe = input.className;
+  input.type = 'hidden';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'grid grid-cols-3 gap-2';
+
+  function criarSelect(rotulo, opcoes) {
+    const select = document.createElement('select');
+    select.className = classe;
+    select.setAttribute('aria-label', rotulo);
+    select.innerHTML = `<option value="">${rotulo}</option>` +
+      opcoes.map(([valor, texto]) => `<option value="${valor}">${texto}</option>`).join('');
+    wrapper.appendChild(select);
+    return select;
+  }
+
+  const anoAtual = new Date().getFullYear();
+  const anos = [];
+  for (let a = anoAtual; a >= ANO_MINIMO_ANIVERSARIO; a--) anos.push([a, a]);
+
+  const dia = criarSelect('Dia', Array.from({ length: 31 }, (_, i) => [i + 1, i + 1]));
+  const mes = criarSelect('Mês', MESES_PT.map((nome, i) => [i + 1, nome]));
+  const ano = criarSelect('Ano', anos);
+  input.after(wrapper);
+
+  // Esconde os dias que não existem no mês/ano escolhido (31/04, 29/02…).
+  function ajustarDias() {
+    const ultimoDia = new Date(Number(ano.value) || 2000, Number(mes.value) || 1, 0).getDate();
+    Array.from(dia.options).forEach(opt => {
+      if (opt.value) opt.hidden = opt.disabled = Number(opt.value) > ultimoDia;
+    });
+    if (Number(dia.value) > ultimoDia) dia.value = String(ultimoDia);
+  }
+
+  function sincronizar() {
+    ajustarDias();
+    input.value = dia.value && mes.value && ano.value
+      ? `${ano.value}-${String(mes.value).padStart(2, '0')}-${String(dia.value).padStart(2, '0')}`
+      : '';
+  }
+
+  [dia, mes, ano].forEach(s => s.addEventListener('change', sincronizar));
+
+  input.definirData = (valor) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(valor || '');
+    ano.value = m && Number(m[1]) >= ANO_MINIMO_ANIVERSARIO ? String(Number(m[1])) : '';
+    mes.value = m ? String(Number(m[2])) : '';
+    dia.value = m ? String(Number(m[3])) : '';
+    sincronizar();
+  };
+
+  input.definirData(input.value);
+  return input;
+}
+
 function montarNomeCliente(firstName, lastName) {
   const first_name = (firstName || '').trim().replace(/\s+/g, ' ');
   const last_name = (lastName || '').trim().replace(/\s+/g, ' ');

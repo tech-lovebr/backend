@@ -10176,7 +10176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-center gap-2.5">
               <button type="button" class="btn-message-supplier btn-secondary">
                 <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-                <span>Mensagem</span>
+                <span>Chat</span>
               </button>
               <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
                 Contratar
@@ -10262,7 +10262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-center gap-2 mt-auto pt-2">
           <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
             <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-            <span>Mensagem</span>
+            <span>Chat</span>
           </button>
           <button type="button" class="btn-hire-supplier flex-1 px-3 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer">
             Contratar
@@ -11005,6 +11005,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // "R$ 28.500,00" → 28500
+  function parseValorBRL(texto) {
+    const n = parseFloat(String(texto || '').replace(/[^d,]/g, '').replace(',', '.'));
+    return Number.isFinite(n) ? n : 0;
+  }
+
   function renderB2BContracted() {
     const container = document.getElementById('b2b-contracted-list-container');
     if (!container) return;
@@ -11027,55 +11033,46 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 md:pl-0 first:pt-0 cursor-pointer';
 
+      // Quitação = quanto já foi pago do valor negociado (barra de progresso).
+      const valorPago = item.paidValueNum ?? parseValorBRL(item.paidValue);
+      const valorTotal = item.negotiatedValueNum ?? parseValorBRL(item.negotiatedValue);
+      const quitacao = valorTotal > 0 ? Math.min(100, Math.round((valorPago / valorTotal) * 100)) : 0;
+
       card.innerHTML = `
         <div class="relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
-          <span class="absolute top-3 left-3 px-3 py-1 rounded-lg text-[11px] font-bold bg-zinc-900/85 backdrop-blur-xs text-white">${item.tag || item.category}</span>
+          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
         </div>
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">${item.category}</span>
-                <h3 class="text-lg sm:text-xl font-bold text-zinc-900 leading-snug mt-0.5">${item.name}</h3>
-              </div>
-              <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${item.contractStatusColor}">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                <span>${item.contractStatus}</span>
-              </span>
-            </div>
-
-            <p class="text-xs sm:text-sm text-zinc-600 mt-2.5 leading-relaxed font-normal">
-              <strong class="font-bold text-zinc-800">Serviço:</strong> ${item.service}
-            </p>
-
-            <div class="flex flex-wrap items-center gap-x-8 gap-y-2 mt-4 pt-3.5 border-t border-zinc-100 text-xs sm:text-sm">
-              <div class="flex items-center gap-2">
-                <span class="text-zinc-400">👤 Responsável:</span>
-                <span class="font-bold text-zinc-900">${item.responsibleName}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-zinc-400">💰 Negociado:</span>
-                <span class="font-bold text-zinc-900">${item.negotiatedValue}</span>
-                <span class="text-[11px] px-2.5 py-0.5 rounded-md border font-medium ${item.paymentStatusColor}">${item.paymentStatus}</span>
-              </div>
-            </div>
+            <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">${item.name}</h4>
+            <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.service || ''}</p>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-4 pt-3.5 mt-3.5 border-t border-zinc-100">
-            <span class="text-xs sm:text-sm font-medium text-zinc-500 flex items-center gap-2">
-              <span>📅</span> <strong>Próximo Marco:</strong> ${item.nextMilestone}
-            </span>
+          <div class="flex flex-wrap items-end justify-between gap-4 pt-3.5 mt-3.5 border-t border-zinc-100">
+            <div class="flex flex-wrap items-end gap-x-8 gap-y-3 min-w-0">
+              <div>
+                <span class="block text-xs text-zinc-400">Valor do contrato</span>
+                <span class="block text-sm font-semibold text-zinc-800">${item.negotiatedValue || '—'}</span>
+              </div>
+              <div class="w-44">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-zinc-400">Quitação</span>
+                  <span class="font-semibold text-zinc-700">${quitacao}%</span>
+                </div>
+                <div class="mt-1.5 h-2 w-full rounded-full bg-zinc-100 overflow-hidden" role="progressbar" aria-label="Quitação do contrato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${quitacao}">
+                  <div class="h-full rounded-full bg-[#537bae]" style="width: ${quitacao}%"></div>
+                </div>
+              </div>
+            </div>
 
             <div class="flex items-center gap-2.5">
-              <button type="button" class="btn-contracted-chat px-4 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2">
-                <svg class="w-4 h-4 text-[#537bae]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+              <button type="button" class="btn-contracted-chat btn-secondary">
+                <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
                 <span>Chat</span>
               </button>
-              <button type="button" class="btn-contracted-actions px-5 py-2.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer flex items-center gap-2">
-                <span>Ver Contrato & Ações</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              <button type="button" class="btn-contracted-actions px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
+                Meu contrato
               </button>
             </div>
           </div>

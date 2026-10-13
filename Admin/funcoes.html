@@ -55,22 +55,6 @@
             </table>
           </div>
         </section>
-
-        <section class="card bloco" style="max-width:900px">
-          <div class="card-body">
-            <h3 style="font-size:.9375rem;font-weight:600;margin-bottom:.5rem">Como incluir um novo administrador</h3>
-            <p class="cell-muted" style="font-size:.8125rem;line-height:1.7;margin:0">
-              1. No Supabase, em <strong>Authentication → Users → Add user</strong>, crie o usuário com e-mail e senha
-              (marque <em>Auto Confirm User</em>).<br>
-              2. Copie o UUID gerado e rode no SQL Editor:
-            </p>
-            <pre style="background:var(--bg-muted);border-radius:var(--radius-card);padding:.875rem 1rem;font-size:.8125rem;overflow-x:auto;margin:.75rem 0 0"><code>insert into admins (id, name, email, role)
-values (&#39;UUID-AQUI&#39;, &#39;Nome&#39;, &#39;email@love.com.br&#39;, &#39;admin&#39;);</code></pre>
-            <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:.75rem 0 0">
-              A senha é definida por você no Supabase — o painel nunca a armazena nem a manipula.
-            </p>
-          </div>
-        </section>
       </main>
     </div>
   </div>

@@ -474,6 +474,7 @@ function criarClienteDemo() {
     auth: {
       getSession: () => Promise.resolve({ data: { session: { user: { id: 'admin-demo', email: 'admin@love.com.br' } } }, error: null }),
       signInWithPassword: () => Promise.resolve({ data: { user: { id: 'admin-demo' } }, error: null }),
+      updateUser: () => Promise.resolve({ data: { user: { id: 'admin-demo' } }, error: null }),
       signOut: () => Promise.resolve({ error: null })
     }
   };

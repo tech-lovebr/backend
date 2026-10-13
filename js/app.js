@@ -11739,11 +11739,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (firstNameInput) firstNameInput.value = first;
       if (lastNameInput) lastNameInput.value = last;
       if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
-      const birthdayInput = document.getElementById('settings-user-birthday');
-      if (birthdayInput) {
-        criarSeletorData(birthdayInput);
-        birthdayInput.definirData(profile.birthday || window.loveClienteSession?.user?.user_metadata?.birthday || '');
-      }
       document.getElementById('settings-form-error')?.classList.add('hidden');
       resetSettingsSecurity();
       openModal(elements.modals.userSettings);
@@ -11982,7 +11977,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('settings-user-last-name').value
       );
       const name = full_name;
-      const birthday = document.getElementById('settings-user-birthday').value || null;
       const currentPassword = document.getElementById('settings-password-current').value;
       const newPassword = document.getElementById('settings-password-new').value;
       const confirmPassword = document.getElementById('settings-password-confirm').value;
@@ -12038,9 +12032,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const [{ error: profileError }, { error: metaError }] = await Promise.all([
         supabaseClient
           .from('clientes')
-          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name, birthday })
+          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name })
           .eq('id', session.user.id),
-        supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name, birthday } })
+        supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name } })
       ]);
 
       saveBtn.disabled = false;
@@ -12048,7 +12042,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (profileError || metaError) return showSettingsError('Não foi possível salvar seus dados. Tente novamente.');
 
       if (window.loveClienteProfile) {
-        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name, birthday });
+        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name });
       }
       const dropdownUsername = document.getElementById('account-dropdown-username');
       if (dropdownUsername) dropdownUsername.textContent = name;

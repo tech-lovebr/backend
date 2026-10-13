@@ -9432,8 +9432,75 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       loginFailedAttempts = 0;
+
+      // Senha certa, mas a conta tem dois fatores ativos: a sessão ainda é
+      // aal1 e só vira aal2 depois do código do app autenticador.
+      if (await precisaCodigoMfa()) {
+        showLoginMfaPanel();
+        return;
+      }
+
       setSidebarLocked(false);
       window.location.reload();
+    });
+  }
+
+  // 10.1a Verificação em duas etapas (TOTP) no login
+  async function precisaCodigoMfa() {
+    const { data, error } = await supabaseClient.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (error || !data) return false;
+    return data.nextLevel === 'aal2' && data.currentLevel !== 'aal2';
+  }
+
+  function showLoginMfaPanel() {
+    ['login-panel-signin', 'login-panel-forgot'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    const panelMfa = document.getElementById('login-panel-mfa');
+    if (!panelMfa) return;
+    panelMfa.classList.remove('hidden');
+    document.getElementById('login-mfa-error')?.classList.add('hidden');
+    const codeInput = document.getElementById('login-mfa-code-input');
+    if (codeInput) { codeInput.value = ''; codeInput.focus(); }
+  }
+
+  const formLoginMfa = document.getElementById('form-login-mfa');
+  if (formLoginMfa) {
+    formLoginMfa.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('login-mfa-code-input').value.replace(/\D/g, '');
+      const errorEl = document.getElementById('login-mfa-error');
+      const submitBtn = document.getElementById('btn-do-mfa-login');
+      errorEl.classList.add('hidden');
+
+      if (code.length !== 6) {
+        errorEl.textContent = 'O código tem 6 dígitos.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      const { data: factors } = await supabaseClient.auth.mfa.listFactors();
+      const factor = (factors?.totp || []).find(f => f.status === 'verified');
+      const { error } = factor
+        ? await supabaseClient.auth.mfa.challengeAndVerify({ factorId: factor.id, code })
+        : { error: new Error('sem fator') };
+      submitBtn.disabled = false;
+
+      if (error) {
+        errorEl.textContent = 'Código inválido ou expirado. Tente de novo.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      setSidebarLocked(false);
+      window.location.reload();
+    });
+  }
+
+  const btnMfaToLogin = document.getElementById('btn-mfa-to-login');
+  if (btnMfaToLogin) {
+    btnMfaToLogin.addEventListener('click', async () => {
+      await supabaseClient.auth.signOut({ scope: 'local' });
+      showLoginSigninPanel();
     });
   }
 
@@ -9453,6 +9520,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelForgot = document.getElementById('login-panel-forgot');
     if (!panelSignin || !panelForgot) return;
     panelForgot.classList.add('hidden');
+    document.getElementById('login-panel-mfa')?.classList.add('hidden');
     panelSignin.classList.remove('hidden');
   }
 
@@ -11672,10 +11740,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (firstNameInput) firstNameInput.value = first;
       if (lastNameInput) lastNameInput.value = last;
       if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
-      ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
+      const birthdayInput = document.getElementById('settings-user-birthday');
+      if (birthdayInput) {
+        birthdayInput.max = new Date().toISOString().slice(0, 10);
+        birthdayInput.value = profile.birthday || window.loveClienteSession?.user?.user_metadata?.birthday || '';
+      }
+      document.getElementById('settings-form-error')?.classList.add('hidden');
+      resetSettingsSecurity();
       openModal(elements.modals.userSettings);
     });
   }
@@ -11912,49 +11983,53 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('settings-user-last-name').value
       );
       const name = full_name;
+      const birthday = document.getElementById('settings-user-birthday').value || null;
       const currentPassword = document.getElementById('settings-password-current').value;
       const newPassword = document.getElementById('settings-password-new').value;
       const confirmPassword = document.getElementById('settings-password-confirm').value;
+      const errorEl = document.getElementById('settings-form-error');
 
-      if (!first_name) {
-        showToast('O nome não pode ficar vazio.', '⚠️');
-        return;
+      // showToast está desligado na plataforma — o erro aparece no formulário.
+      function showSettingsError(message) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
       }
+      errorEl.classList.add('hidden');
+
+      if (!first_name) return showSettingsError('O nome não pode ficar vazio.');
 
       const wantsPasswordChange = currentPassword || newPassword || confirmPassword;
       if (wantsPasswordChange) {
-        if (!currentPassword || !newPassword || !confirmPassword) {
-          showToast('Preencha os 3 campos de senha para trocá-la.', '⚠️');
-          return;
-        }
-        if (newPassword !== confirmPassword) {
-          showToast('A confirmação não coincide com a nova senha.', '⚠️');
-          return;
-        }
-        if (newPassword.length < 6) {
-          showToast('A nova senha precisa ter pelo menos 6 caracteres.', '⚠️');
-          return;
-        }
+        if (!currentPassword || !newPassword || !confirmPassword) return showSettingsError('Preencha os 3 campos de senha para trocá-la.');
+        if (newPassword !== confirmPassword) return showSettingsError('A confirmação não coincide com a nova senha.');
+        if (newPassword.length < 6) return showSettingsError('A nova senha precisa ter pelo menos 6 caracteres.');
       }
 
       saveBtn.disabled = true;
 
       if (wantsPasswordChange) {
-        const { error: authError } = await supabaseClient.auth.signInWithPassword({
+        // Confere a senha atual num cliente separado e descartável: um
+        // signInWithPassword no cliente principal trocaria a sessão atual por
+        // uma nova de nível aal1, derrubando quem tem dois fatores ativos.
+        const checker = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'love-password-check' }
+        });
+        const { error: authError } = await checker.auth.signInWithPassword({
           email: session.user.email,
           password: currentPassword
         });
+        if (!authError) await checker.auth.signOut({ scope: 'local' });
         if (authError) {
           saveBtn.disabled = false;
-          showToast('Senha atual incorreta.', '⚠️');
-          return;
+          return showSettingsError('Senha atual incorreta.');
         }
 
         const { error: updateError } = await supabaseClient.auth.updateUser({ password: newPassword });
         if (updateError) {
           saveBtn.disabled = false;
-          showToast('Não foi possível trocar sua senha. Tente novamente.', '⚠️');
-          return;
+          return showSettingsError(/different from the old/i.test(updateError.message || '')
+            ? 'A nova senha precisa ser diferente da atual.'
+            : 'Não foi possível trocar sua senha. Tente novamente.');
         }
       }
 
@@ -11964,32 +12039,159 @@ document.addEventListener('DOMContentLoaded', () => {
       const [{ error: profileError }, { error: metaError }] = await Promise.all([
         supabaseClient
           .from('clientes')
-          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name })
+          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name, birthday })
           .eq('id', session.user.id),
-        supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name } })
+        supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name, birthday } })
       ]);
 
       saveBtn.disabled = false;
 
-      if (profileError || metaError) {
-        showToast('Não foi possível salvar seu nome. Tente novamente.', '⚠️');
-        return;
-      }
+      if (profileError || metaError) return showSettingsError('Não foi possível salvar seus dados. Tente novamente.');
 
       if (window.loveClienteProfile) {
-        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name });
+        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name, birthday });
       }
       const dropdownUsername = document.getElementById('account-dropdown-username');
       if (dropdownUsername) dropdownUsername.textContent = name;
 
-      ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
-
+      resetSettingsSecurity();
       closeModal(elements.modals.userSettings);
-      showToast('Configurações da conta salvas com sucesso!', '⚙️');
     });
   }
+
+  // Configurações da conta › acordeão "Segurança" (senha + dois fatores)
+  const btnSecurityToggle = document.getElementById('btn-settings-security-toggle');
+  const securityBody = document.getElementById('settings-security-body');
+  const securityChevron = document.getElementById('settings-security-chevron');
+  const btnChangePassword = document.getElementById('btn-settings-change-password');
+  const passwordFields = document.getElementById('settings-password-fields');
+  const passwordInputIds = ['settings-password-current', 'settings-password-new', 'settings-password-confirm'];
+
+  function setSecurityOpen(open) {
+    if (!securityBody) return;
+    securityBody.classList.toggle('hidden', !open);
+    btnSecurityToggle.setAttribute('aria-expanded', String(open));
+    securityChevron?.classList.toggle('rotate-180', open);
+    if (open) refreshMfaStatus();
+  }
+
+  function setPasswordFieldsOpen(open) {
+    if (!passwordFields) return;
+    passwordFields.classList.toggle('hidden', !open);
+    btnChangePassword.textContent = open ? 'Cancelar' : 'Alterar senha';
+    // Fechar = desistir da troca: limpa pra não salvar uma senha esquecida ali.
+    if (!open) passwordInputIds.forEach(id => { document.getElementById(id).value = ''; });
+    else document.getElementById('settings-password-current').focus();
+  }
+
+  // Chamado ao abrir/salvar o popup: tudo fechado e sem senha preenchida.
+  function resetSettingsSecurity() {
+    setSecurityOpen(false);
+    setPasswordFieldsOpen(false);
+    hideMfaSetup();
+  }
+
+  btnSecurityToggle?.addEventListener('click', () => {
+    setSecurityOpen(securityBody.classList.contains('hidden'));
+  });
+  btnChangePassword?.addEventListener('click', () => {
+    setPasswordFieldsOpen(passwordFields.classList.contains('hidden'));
+  });
+
+  // Dois fatores (TOTP via Supabase Auth MFA)
+  const mfaStatusEl = document.getElementById('settings-mfa-status');
+  const btnMfaToggle = document.getElementById('btn-settings-mfa-toggle');
+  const mfaSetup = document.getElementById('settings-mfa-setup');
+  const mfaErrorEl = document.getElementById('settings-mfa-error');
+  let mfaVerifiedFactor = null;
+  let mfaPendingFactorId = null;
+
+  function showMfaError(message) {
+    mfaErrorEl.textContent = message;
+    mfaErrorEl.classList.remove('hidden');
+  }
+
+  function hideMfaSetup() {
+    if (!mfaSetup) return;
+    mfaSetup.classList.add('hidden');
+    mfaErrorEl.classList.add('hidden');
+    document.getElementById('settings-mfa-code').value = '';
+  }
+
+  async function refreshMfaStatus() {
+    if (!mfaStatusEl) return;
+    btnMfaToggle.disabled = true;
+    const { data, error } = await supabaseClient.auth.mfa.listFactors();
+    if (error) {
+      mfaStatusEl.textContent = 'indisponível';
+      mfaStatusEl.className = 'font-semibold text-slate-500';
+      return;
+    }
+    mfaVerifiedFactor = (data.totp || []).find(f => f.status === 'verified') || null;
+    mfaStatusEl.textContent = mfaVerifiedFactor ? 'ativada' : 'desativada';
+    mfaStatusEl.className = mfaVerifiedFactor ? 'font-semibold text-emerald-600' : 'font-semibold text-slate-500';
+    btnMfaToggle.textContent = mfaVerifiedFactor ? 'Desativar' : 'Ativar';
+    btnMfaToggle.disabled = false;
+  }
+
+  btnMfaToggle?.addEventListener('click', async () => {
+    mfaErrorEl.classList.add('hidden');
+
+    if (mfaVerifiedFactor) {
+      if (!confirm('Desativar a autenticação de dois fatores? Seu login voltará a pedir só e-mail e senha.')) return;
+      btnMfaToggle.disabled = true;
+      const { error } = await supabaseClient.auth.mfa.unenroll({ factorId: mfaVerifiedFactor.id });
+      if (error) {
+        btnMfaToggle.disabled = false;
+        mfaSetup.classList.remove('hidden');
+        return showMfaError('Não foi possível desativar agora. Saia e entre de novo na conta e tente outra vez.');
+      }
+      hideMfaSetup();
+      return refreshMfaStatus();
+    }
+
+    // Já aberto: o botão funciona como "cancelar".
+    if (!mfaSetup.classList.contains('hidden')) {
+      hideMfaSetup();
+      btnMfaToggle.textContent = 'Ativar';
+      return;
+    }
+
+    btnMfaToggle.disabled = true;
+    // Tentativas anteriores abandonadas deixam fatores "unverified" que
+    // bloqueiam um novo enroll — remove antes de gerar o QR code.
+    const { data: factors } = await supabaseClient.auth.mfa.listFactors();
+    for (const f of (factors?.all || []).filter(f => f.status === 'unverified')) {
+      await supabaseClient.auth.mfa.unenroll({ factorId: f.id });
+    }
+    const { data, error } = await supabaseClient.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Love' });
+    btnMfaToggle.disabled = false;
+    mfaSetup.classList.remove('hidden');
+    if (error) return showMfaError('Não foi possível iniciar a ativação. Tente novamente.');
+
+    mfaPendingFactorId = data.id;
+    document.getElementById('settings-mfa-qr').src = data.totp.qr_code;
+    document.getElementById('settings-mfa-secret').textContent = data.totp.secret;
+    btnMfaToggle.textContent = 'Cancelar';
+    document.getElementById('settings-mfa-code').focus();
+  });
+
+  document.getElementById('btn-settings-mfa-verify')?.addEventListener('click', async (e) => {
+    const code = document.getElementById('settings-mfa-code').value.replace(/\D/g, '');
+    mfaErrorEl.classList.add('hidden');
+    if (!mfaPendingFactorId) return;
+    if (code.length !== 6) return showMfaError('O código tem 6 dígitos.');
+
+    const verifyBtn = e.currentTarget;
+    verifyBtn.disabled = true;
+    const { error } = await supabaseClient.auth.mfa.challengeAndVerify({ factorId: mfaPendingFactorId, code });
+    verifyBtn.disabled = false;
+    if (error) return showMfaError('Código inválido ou expirado. Confira o app e tente de novo.');
+
+    mfaPendingFactorId = null;
+    hideMfaSetup();
+    refreshMfaStatus();
+  });
 
   function triggerConfetti() {
     const emojis = ['💙', '💍', '✨', '🌸', '🥂', '🎉', '🎁'];
@@ -12376,6 +12578,14 @@ document.addEventListener('DOMContentLoaded', () => {
       await supabaseClient.auth.signOut();
       showToast('Este usuário está bloqueado.', '⛔');
       switchView('public');
+      return;
+    }
+
+    // Sessão salva que parou antes do código de dois fatores (ex.: fechou a
+    // aba na tela do código): não entra no painel até completar a etapa.
+    if (await precisaCodigoMfa()) {
+      switchView('login');
+      showLoginMfaPanel();
       return;
     }
 

@@ -208,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = '';
       }
       renderEventsSwitcher();
+      loadNotificationsFeed();
 
       if (pendingInitialDashboardRoute) {
         const route = pendingInitialDashboardRoute;
@@ -352,50 +353,159 @@ document.addEventListener('DOMContentLoaded', () => {
   // PÁGINA DE NOTIFICAÇÕES (/notificacoes) — página própria no lugar do
   // dropdown do sino, mesmo padrão de cabeçalho/tamanhos de Meus Presentes,
   // sem sub-sidebar expandida (mesmo esquema de switchRailTab('overview')).
+  //
+  // Mistura dois tipos de notificação:
+  //  - "admin": enviadas pelo Admin (tabela `notificacoes`, Assunto/Texto
+  //    = titulo/mensagem), com leitura rastreada em `notificacao_leituras`.
+  //  - "gift": geradas a partir dos presentes recebidos de verdade
+  //    (activeEvent.receivedGifts) — sem tabela própria, sempre "lidas".
   // =========================================================================
-  const NOTIFICATIONS_MOCK = [
-    {
-      iconPath: 'M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M21 11.25H3m18 0a2.25 2.25 0 0 0 0-4.5H3a2.25 2.25 0 0 0 0 4.5m9-4.5v14.25m0-14.25H8.25a2.25 2.25 0 0 1 0-4.5c1.864 0 3.75 2.25 3.75 4.5m0 0h3.75a2.25 2.25 0 0 0 0-4.5c-1.864 0-3.75 2.25-3.75 4.5',
-      html: '<strong class="text-zinc-900 font-bold">Mariana Silveira</strong> comprou um <strong class="text-zinc-900 font-bold">Jogo de Talheres Tramontina 24 Peças</strong> na sua lista de presentes.',
-      time: 'Há 25 minutos',
-      railTab: 'gifts'
-    },
-    {
-      iconPath: 'M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.502 49.188 49.188 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v5.992z',
-      html: '<strong class="text-zinc-900 font-bold">Villa Bisutti - Espaço Jardim</strong> respondeu sua mensagem sobre a disponibilidade do local.',
-      quote: 'Olá Beatriz! Temos a data de 18 de Outubro disponível para vocês...',
-      time: 'Há 1 hora',
-      railTab: 'b2b'
-    },
-    {
-      iconPath: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
-      html: '<strong class="text-zinc-900 font-bold">Carlos Eduardo & Família</strong> confirmaram presença no seu evento (2 adultos, 1 criança).',
-      quote: 'Muito felizes por vocês! Mal podemos esperar...',
-      time: 'Hoje, às 14:22',
-      railTab: 'rsvp'
-    }
-  ];
+  const NOTIFICATION_ICONS = {
+    // Mesmo sino do header.
+    admin: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
+    // Mesmo ícone do rail "Presentes".
+    gift: 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7'
+  };
+
+  let notificationsFeedCache = [];
+
+  function escapeNotificationText(s) {
+    return (s || '').replace(/</g, '&lt;');
+  }
+
+  async function fetchAdminNotifications() {
+    const { data, error } = await supabaseClient
+      .from('notificacoes')
+      .select('*')
+      .order('fixada', { ascending: false })
+      .order('created_at', { ascending: false });
+    if (error) { console.error('Erro ao carregar notificações:', error); return []; }
+    return data || [];
+  }
+
+  async function fetchReadNotificationIds(userId) {
+    const { data, error } = await supabaseClient
+      .from('notificacao_leituras')
+      .select('notificacao_id')
+      .eq('user_id', userId);
+    if (error) return new Set();
+    return new Set((data || []).map(r => r.notificacao_id));
+  }
+
+  async function markNotificationRead(notificacaoId) {
+    const userId = window.loveClienteSession?.user?.id;
+    if (!userId) return;
+    await supabaseClient
+      .from('notificacao_leituras')
+      .upsert({ notificacao_id: notificacaoId, user_id: userId }, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true });
+  }
+
+  async function markAllNotificationsRead() {
+    const userId = window.loveClienteSession?.user?.id;
+    const unreadIds = notificationsFeedCache.filter(n => n.kind === 'admin' && n.unread).map(n => n.id);
+    if (!userId || !unreadIds.length) return;
+    const rows = unreadIds.map(id => ({ notificacao_id: id, user_id: userId }));
+    const { error } = await supabaseClient
+      .from('notificacao_leituras')
+      .upsert(rows, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true });
+    if (error) { console.error('Erro ao marcar notificações como lidas:', error); return; }
+    await loadNotificationsFeed();
+  }
+
+  // Presentes recebidos de verdade (activeEvent.receivedGifts) viram
+  // notificação: "Fulano comprou Tal Presente, pelo valor de R$X. O saldo
+  // já está na sua conta."
+  function buildGiftNotifications() {
+    const activeEvent = getActiveEvent();
+    const gifts = (activeEvent && activeEvent.receivedGifts) || [];
+    return gifts.map(g => ({
+      kind: 'gift',
+      id: `gift-${g.id}`,
+      iconPath: NOTIFICATION_ICONS.gift,
+      titleHtml: '',
+      bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(g.guestName)}</strong> comprou <strong class="text-zinc-900 font-bold">${escapeNotificationText(g.giftTitle)}</strong>, pelo valor de R$ ${Number(g.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. O saldo já está na sua conta.`,
+      time: g.date || '',
+      unread: false,
+      onClick: () => switchRailTab('gifts')
+    }));
+  }
+
+  async function loadNotificationsFeed() {
+    const userId = window.loveClienteSession?.user?.id;
+    const adminRows = await fetchAdminNotifications();
+    const readIds = userId ? await fetchReadNotificationIds(userId) : new Set();
+
+    const adminItems = adminRows.map(n => {
+      const item = {
+        kind: 'admin',
+        id: n.id,
+        iconPath: NOTIFICATION_ICONS.admin,
+        titleHtml: escapeNotificationText(n.titulo),
+        bodyHtml: escapeNotificationText(n.mensagem),
+        time: n.created_at ? formatCommentDate(n.created_at) : '',
+        unread: !readIds.has(n.id),
+        linkUrl: n.link_url || null
+      };
+      item.onClick = () => {
+        if (!item.linkUrl) return;
+        if (/^https?:\/\//i.test(item.linkUrl)) { window.open(item.linkUrl, '_blank'); return; }
+        const tab = RAIL_ROUTE_TO_TAB[item.linkUrl];
+        if (tab) switchRailTab(tab);
+      };
+      return item;
+    });
+
+    notificationsFeedCache = [...adminItems, ...buildGiftNotifications()];
+    renderNotificationsPage();
+    updateNotificationsBadge();
+  }
+
+  function updateNotificationsBadge() {
+    const badge = document.querySelector('.badge-header-notifications');
+    if (!badge) return;
+    const unreadCount = notificationsFeedCache.filter(n => n.kind === 'admin' && n.unread).length;
+    badge.textContent = String(unreadCount);
+    badge.classList.toggle('hidden', unreadCount === 0);
+  }
 
   function renderNotificationsPage() {
     const listEl = document.getElementById('notifications-list-container');
     if (!listEl) return;
-    listEl.innerHTML = NOTIFICATIONS_MOCK.map(n => `
-      <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer hover:bg-zinc-50/80 transition-colors -mx-2 px-2 rounded-xl" data-rail-tab="${n.railTab}">
+
+    if (!notificationsFeedCache.length) {
+      listEl.innerHTML = '<div class="py-16 text-center text-sm text-zinc-400 font-sans">Nenhuma notificação por enquanto.</div>';
+      return;
+    }
+
+    listEl.innerHTML = notificationsFeedCache.map((n, i) => `
+      <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer hover:bg-zinc-50/80 transition-colors -mx-2 px-2 rounded-xl" data-index="${i}">
         <div class="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${n.iconPath}"/></svg>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm text-zinc-800 leading-snug font-sans">${n.html}</p>
-          ${n.quote ? `<p class="text-sm text-zinc-500 italic mt-1 font-sans">"${n.quote}"</p>` : ''}
-          <span class="text-xs text-zinc-400 mt-1.5 block font-sans">${n.time}</span>
+        <div class="flex-1 min-w-0 flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            ${n.titleHtml ? `<p class="text-sm font-bold text-zinc-900 font-sans">${n.titleHtml}</p>` : ''}
+            <p class="text-sm ${n.titleHtml ? 'text-zinc-600 mt-0.5' : 'text-zinc-800'} leading-snug font-sans">${n.bodyHtml}</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
+            ${n.unread ? '<span class="w-1.5 h-1.5 rounded-full bg-[#537bae]"></span>' : ''}
+            <span class="text-xs text-zinc-400 whitespace-nowrap font-sans">${n.time}</span>
+          </div>
         </div>
       </div>
     `).join('');
 
     listEl.querySelectorAll('.notification-row').forEach(row => {
+      const n = notificationsFeedCache[parseInt(row.dataset.index, 10)];
+      if (!n) return;
       row.addEventListener('click', () => {
-        switchRailTab(row.dataset.railTab);
-        if (row.dataset.railTab === 'b2b') switchB2BView('messages');
+        if (n.kind === 'admin' && n.unread) {
+          n.unread = false;
+          markNotificationRead(n.id);
+          updateNotificationsBadge();
+          renderNotificationsPage();
+        }
+        if (typeof n.onClick === 'function') n.onClick();
       });
     });
   }
@@ -414,14 +524,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.title = 'Notificações — Love';
 
-    renderNotificationsPage();
+    loadNotificationsFeed();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const btnNotificationsMarkAllRead = document.getElementById('btn-notifications-mark-all-read');
   if (btnNotificationsMarkAllRead) {
-    btnNotificationsMarkAllRead.addEventListener('click', () => {
-      document.querySelector('.badge-header-notifications')?.classList.add('hidden');
+    btnNotificationsMarkAllRead.addEventListener('click', async () => {
+      await markAllNotificationsRead();
       showToast('Todas as notificações foram marcadas como lidas.', '✓');
     });
   }

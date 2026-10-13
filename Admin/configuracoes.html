@@ -46,7 +46,7 @@
           <div class="card">
             <div class="card-head"><div><h2>Seus dados</h2></div></div>
             <div class="card-body">
-              <form id="form-perfil">
+              <form id="form-perfil" autocomplete="off">
                 <label class="field">
                   <span class="field-label">Nome</span>
                   <input class="field-input" name="name" type="text">
@@ -55,46 +55,36 @@
                   <span class="field-label">E-mail</span>
                   <input class="field-input" name="email" type="email" disabled>
                 </label>
+
+                <!-- Só o super admin vê: o JS revela depois de conferir o papel. -->
+                <div class="field" id="senha-linha" hidden>
+                  <span class="field-label">Senha</span>
+                  <button type="button" class="btn btn-ghost" id="btn-abrir-senha" aria-expanded="false" aria-controls="campos-senha">Alterar senha</button>
+                </div>
+
+                <div id="campos-senha" hidden>
+                  <label class="field">
+                    <span class="field-label">Senha atual</span>
+                    <input class="field-input" name="atual" type="password" autocomplete="current-password">
+                  </label>
+                  <div class="field senha-nova">
+                    <label class="field-label" for="senha-nova">Nova senha</label>
+                    <input class="field-input" id="senha-nova" name="nova" type="password" autocomplete="new-password"
+                           aria-describedby="senha-regras">
+                    <ul class="senha-regras" id="senha-regras" hidden>
+                      <li data-regra="tamanho">Mínimo de 8 caracteres</li>
+                      <li data-regra="numero">Pelo menos 1 número</li>
+                      <li data-regra="simbolo">Pelo menos 1 símbolo</li>
+                    </ul>
+                  </div>
+                  <label class="field">
+                    <span class="field-label">Confirmar nova senha</span>
+                    <input class="field-input" name="confirmacao" type="password" autocomplete="new-password">
+                  </label>
+                </div>
+
                 <button type="button" class="btn btn-primary" id="btn-salvar-perfil">Salvar</button>
               </form>
-
-              <!-- Só o super admin vê: o JS revela depois de conferir o papel. -->
-              <details class="lista-recolhivel seguranca" id="seguranca" hidden>
-                <summary class="lista-recolhivel-topo">
-                  <span class="rotulo">Segurança</span>
-                  <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
-                  </svg>
-                </summary>
-                <div class="lista-recolhivel-corpo seguranca-corpo">
-                  <button type="button" class="btn btn-ghost" id="btn-abrir-senha">Alterar senha</button>
-
-                  <form id="form-senha" autocomplete="off" hidden>
-                    <label class="field">
-                      <span class="field-label">Senha atual</span>
-                      <input class="field-input" name="atual" type="password" autocomplete="current-password">
-                    </label>
-                    <div class="field senha-nova">
-                      <label class="field-label" for="senha-nova">Nova senha</label>
-                      <input class="field-input" id="senha-nova" name="nova" type="password" autocomplete="new-password"
-                             aria-describedby="senha-regras">
-                      <ul class="senha-regras" id="senha-regras" hidden>
-                        <li data-regra="tamanho">Mínimo de 8 caracteres</li>
-                        <li data-regra="numero">Pelo menos 1 número</li>
-                        <li data-regra="simbolo">Pelo menos 1 símbolo</li>
-                      </ul>
-                    </div>
-                    <label class="field">
-                      <span class="field-label">Confirmar nova senha</span>
-                      <input class="field-input" name="confirmacao" type="password" autocomplete="new-password">
-                    </label>
-                    <div class="seguranca-acoes">
-                      <button type="button" class="btn btn-ghost" id="btn-cancelar-senha">Cancelar</button>
-                      <button type="button" class="btn btn-primary" id="btn-salvar-senha">Salvar senha</button>
-                    </div>
-                  </form>
-                </div>
-              </details>
             </div>
           </div>
 

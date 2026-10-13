@@ -2676,12 +2676,7 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   padding-left: 1.25rem;
 }
 
-/* ------------------------------------------- Configurações: Segurança */
-
-/* Acordeão dentro de "Seus dados": a troca de senha não ganha card próprio. */
-.seguranca { margin-top: 1.25rem; overflow: visible; }
-.seguranca-corpo { padding: 1rem; }
-.seguranca-acoes { display: flex; justify-content: flex-end; gap: .5rem; }
+/* ---------------------------------------------- Configurações: senha */
 
 /* Requisitos da nova senha: abre como um dropdown colado no campo enquanto
    ele está em foco, e cada regra fica verde quando é cumprida. */

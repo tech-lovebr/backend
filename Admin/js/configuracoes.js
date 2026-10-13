@@ -4,42 +4,6 @@
    própria senha aqui, pela sessão do Supabase — sem chave mestra.
    ========================================================================== */
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const admin = await window.adminReady;
-  if (!admin) return;
-
-  const form = document.getElementById('form-perfil');
-  form.name.value = admin.name || '';
-  form.email.value = admin.email || '';
-
-  document.getElementById('btn-salvar-perfil').addEventListener('click', async () => {
-    const nome = form.name.value.trim();
-
-    if (!nome) {
-      toast('O nome não pode ficar vazio.');
-      return;
-    }
-
-    const botao = document.getElementById('btn-salvar-perfil');
-    botao.disabled = true;
-    const { error } = await supabaseClient.from('admins').update({ name: nome }).eq('id', admin.id);
-    botao.disabled = false;
-
-    if (error) {
-      toast(`Não foi possível salvar: ${error.message}`);
-      return;
-    }
-
-    toast('Dados atualizados.');
-    // A topbar mostra o nome e as iniciais — recarrega para refletir a mudança.
-    setTimeout(() => window.location.reload(), 900);
-  });
-
-  if (admin.role === 'superadmin') iniciarTrocaDeSenha(admin);
-});
-
-/* ---------------------------------------------------------- Trocar senha */
-
 /* Cada regra da nova senha, na ordem em que aparece no dropdown. */
 const REGRAS_SENHA = {
   tamanho: s => s.length >= 8,
@@ -49,84 +13,139 @@ const REGRAS_SENHA = {
 
 const senhaValida = s => Object.values(REGRAS_SENHA).every(regra => regra(s));
 
-/**
- * O `updateUser` só altera a conta da sessão aberta, então não precisa da
- * chave mestra. Antes, a senha atual é conferida com um novo login: quem
- * achar o painel aberto num computador não troca a senha sem saber a antiga.
- */
-function iniciarTrocaDeSenha(admin) {
-  const secao = document.getElementById('seguranca');
-  const form = document.getElementById('form-senha');
-  const abrir = document.getElementById('btn-abrir-senha');
-  const cancelar = document.getElementById('btn-cancelar-senha');
-  const salvar = document.getElementById('btn-salvar-senha');
-  const regras = document.getElementById('senha-regras');
-  secao.hidden = false;
+document.addEventListener('DOMContentLoaded', async () => {
+  const admin = await window.adminReady;
+  if (!admin) return;
 
-  const mostrarFormulario = visivel => {
-    form.hidden = !visivel;
-    abrir.hidden = visivel;
-    if (visivel) form.atual.focus();
-    else { form.reset(); atualizarRegras(); }
-  };
+  const form = document.getElementById('form-perfil');
+  const botao = document.getElementById('btn-salvar-perfil');
+  form.name.value = admin.name || '';
+  form.email.value = admin.email || '';
+
+  const senha = admin.role === 'superadmin' ? iniciarCamposDeSenha(form) : null;
+
+  botao.addEventListener('click', async () => {
+    const nome = form.name.value.trim();
+
+    if (!nome) {
+      toast('O nome não pode ficar vazio.');
+      return;
+    }
+
+    const trocarSenha = senha?.aberto();
+    if (trocarSenha && !senha.validar()) return;
+
+    const mudouNome = nome !== (admin.name || '');
+    if (!mudouNome && !trocarSenha) {
+      toast('Nada para salvar.');
+      return;
+    }
+
+    botao.disabled = true;
+
+    if (trocarSenha) {
+      const ok = await senha.salvar(admin.email);
+      if (!ok) { botao.disabled = false; return; }
+    }
+
+    if (mudouNome) {
+      const { error } = await supabaseClient.from('admins').update({ name: nome }).eq('id', admin.id);
+      if (error) {
+        botao.disabled = false;
+        toast(`Não foi possível salvar: ${error.message}`);
+        return;
+      }
+    }
+
+    botao.disabled = false;
+    toast(trocarSenha && mudouNome ? 'Dados e senha atualizados.' : trocarSenha ? 'Senha alterada.' : 'Dados atualizados.');
+
+    // A topbar mostra o nome e as iniciais — recarrega para refletir a mudança.
+    if (mudouNome) setTimeout(() => window.location.reload(), 900);
+  });
+});
+
+/* ---------------------------------------------------------- Trocar senha */
+
+/**
+ * "Alterar senha" abre os campos entre o e-mail e o Salvar; o mesmo Salvar
+ * grava tudo. O `updateUser` só altera a conta da sessão aberta, então não
+ * precisa da chave mestra. Antes, a senha atual é conferida com um novo
+ * login: quem achar o painel aberto não troca a senha sem saber a antiga.
+ */
+function iniciarCamposDeSenha(form) {
+  const linha = document.getElementById('senha-linha');
+  const campos = document.getElementById('campos-senha');
+  const alternar = document.getElementById('btn-abrir-senha');
+  const regras = document.getElementById('senha-regras');
+  linha.hidden = false;
 
   const atualizarRegras = () => {
-    const senha = form.nova.value;
     regras.querySelectorAll('li').forEach(li => {
-      li.classList.toggle('ok', REGRAS_SENHA[li.dataset.regra](senha));
+      li.classList.toggle('ok', REGRAS_SENHA[li.dataset.regra](form.nova.value));
     });
   };
 
-  abrir.addEventListener('click', () => mostrarFormulario(true));
-  cancelar.addEventListener('click', () => mostrarFormulario(false));
+  const mostrar = visivel => {
+    campos.hidden = !visivel;
+    alternar.textContent = visivel ? 'Cancelar alteração' : 'Alterar senha';
+    alternar.setAttribute('aria-expanded', String(visivel));
+    if (visivel) {
+      form.atual.focus();
+    } else {
+      form.atual.value = form.nova.value = form.confirmacao.value = '';
+      atualizarRegras();
+    }
+  };
+
+  alternar.addEventListener('click', () => mostrar(campos.hidden));
 
   form.nova.addEventListener('focus', () => { regras.hidden = false; });
   form.nova.addEventListener('blur', () => { regras.hidden = true; });
   form.nova.addEventListener('input', atualizarRegras);
 
-  salvar.addEventListener('click', async () => {
-    const atual = form.atual.value;
-    const nova = form.nova.value;
-    const confirmacao = form.confirmacao.value;
+  return {
+    aberto: () => !campos.hidden,
 
-    if (!atual || !nova || !confirmacao) {
-      toast('Preencha os três campos.');
-      return;
+    validar() {
+      const { atual, nova, confirmacao } = form;
+      if (!atual.value || !nova.value || !confirmacao.value) {
+        toast('Preencha os três campos de senha.');
+        return false;
+      }
+      if (!senhaValida(nova.value)) {
+        toast('A nova senha precisa de 8 caracteres, 1 número e 1 símbolo.');
+        nova.focus();
+        return false;
+      }
+      if (nova.value !== confirmacao.value) {
+        toast('A confirmação não bate com a nova senha.');
+        return false;
+      }
+      if (nova.value === atual.value) {
+        toast('A nova senha é igual à atual.');
+        return false;
+      }
+      return true;
+    },
+
+    async salvar(email) {
+      const { error: erroLogin } = await supabaseClient.auth
+        .signInWithPassword({ email, password: form.atual.value });
+
+      if (erroLogin) {
+        toast('Senha atual incorreta.');
+        return false;
+      }
+
+      const { error } = await supabaseClient.auth.updateUser({ password: form.nova.value });
+      if (error) {
+        toast(`Não foi possível alterar a senha: ${error.message}`);
+        return false;
+      }
+
+      mostrar(false);
+      return true;
     }
-    if (!senhaValida(nova)) {
-      toast('A nova senha precisa de 8 caracteres, 1 número e 1 símbolo.');
-      form.nova.focus();
-      return;
-    }
-    if (nova !== confirmacao) {
-      toast('A confirmação não bate com a nova senha.');
-      return;
-    }
-    if (nova === atual) {
-      toast('A nova senha é igual à atual.');
-      return;
-    }
-
-    salvar.disabled = true;
-
-    const { error: erroLogin } = await supabaseClient.auth
-      .signInWithPassword({ email: admin.email, password: atual });
-
-    if (erroLogin) {
-      salvar.disabled = false;
-      toast('Senha atual incorreta.');
-      return;
-    }
-
-    const { error } = await supabaseClient.auth.updateUser({ password: nova });
-    salvar.disabled = false;
-
-    if (error) {
-      toast(`Não foi possível alterar a senha: ${error.message}`);
-      return;
-    }
-
-    mostrarFormulario(false);
-    toast('Senha alterada.');
-  });
+  };
 }

@@ -1240,8 +1240,10 @@ body:not(.app-ready) .b2b-shell { opacity: 0; visibility: hidden; }
    favorito, atualização de página) — numa navegação de dentro do próprio
    B2B (.nav-transition, ver js/shell.js) a transição nativa do navegador já
    cobre a troca, então só o conteúdo fica escondido até ficar pronto, sem
-   ícone por cima. */
-body:not(.app-ready):not(.nav-transition)::before {
+   ícone por cima. Só vale em página com data-page (as que carregam o
+   shell.js, único lugar que adiciona .app-ready) — login, signup, index
+   etc. não têm shell e ficariam presas no loading pra sempre. */
+body[data-page]:not(.app-ready):not(.nav-transition)::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -1249,7 +1251,7 @@ body:not(.app-ready):not(.nav-transition)::before {
   background: #fff;
   display: flex;
 }
-body:not(.app-ready):not(.nav-transition)::after {
+body[data-page]:not(.app-ready):not(.nav-transition)::after {
   content: '';
   position: fixed;
   top: 50%; left: 50%;
@@ -1262,7 +1264,7 @@ body:not(.app-ready):not(.nav-transition)::after {
   animation: b2b-app-loading-spin 0.7s linear infinite;
 }
 @keyframes b2b-app-loading-spin { to { transform: rotate(360deg); } }
-body[data-theme="dark"]:not(.app-ready):not(.nav-transition)::before { background: #181D24; }
+body[data-page][data-theme="dark"]:not(.app-ready):not(.nav-transition)::before { background: #181D24; }
 
 .b2b-avatar {
   width: 38px;

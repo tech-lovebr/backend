@@ -10074,7 +10074,7 @@ document.addEventListener('DOMContentLoaded', () => {
       categoryName = b2bSelectedSubcategory || b2bSelectedMainCategory;
     }
 
-    if (b2bSelectedCity) {
+    if (b2bSelectedCity && currentB2BCategory !== 'favorites') {
       items = items.filter(item => (item.location || '').includes(b2bSelectedCity));
     }
 
@@ -10100,7 +10100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (resultsCountEl) {
-      resultsCountEl.innerHTML = `<strong class="font-semibold text-zinc-900">${items.length}</strong> ${categoryName} encontrados em ${b2bSelectedCity || 'São Paulo'}`;
+      resultsCountEl.innerHTML = `<strong class="font-semibold text-zinc-900">${items.length}</strong> ${categoryName} encontrados${currentB2BCategory === 'favorites' ? '' : ` em ${b2bSelectedCity || 'São Paulo'}`}`;
     }
 
     if (items.length === 0) {
@@ -10991,8 +10991,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (exploreView) exploreView.classList.remove('hidden');
         if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
         const categoryTabs = document.getElementById('b2b-category-tabs');
+        // Favoritos não tem o filtro de cidades (a barra só existe no Explorar).
+        document.getElementById('b2b-city-filter-wrap')?.classList.toggle('hidden', viewId === 'favorites');
         if (viewId === 'favorites') {
-          if (toolbarTitle) toolbarTitle.textContent = 'Fornecedores Favoritos';
+          if (toolbarTitle) toolbarTitle.textContent = 'Favoritos';
           if (categoryTabs) categoryTabs.style.setProperty('display', 'none', 'important');
           currentB2BCategory = 'favorites';
         } else {

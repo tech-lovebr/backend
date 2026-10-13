@@ -2961,15 +2961,21 @@
 
         <!-- =================================================================
              PÁGINA LEGAL (Termos de Uso / Política de Privacidade) dentro do
-             painel logado — mesmo header/rail do dashboard, texto lido de
+             painel logado — mesmo cabeçalho (builder-toolbar + floorplan-page-name)
+             de Meus Presentes/Meus Convidados/Notificações, texto lido de
              documentos_legais (ver openLegalDocPage em app.js).
              ================================================================= -->
-        <section id="tab-legal-doc" class="dashboard-tab-content w-full px-6 sm:px-8 py-10">
-          <div class="max-w-[760px] mx-auto">
-            <div id="legal-doc-loading-dash" class="text-sm text-zinc-400 hidden">Carregando...</div>
-            <h1 id="legal-doc-title-dash" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
-            <p id="legal-doc-date-dash" class="text-sm text-zinc-400 mt-2 mb-10"></p>
-            <div id="legal-doc-body-dash" class="legal-doc-body"></div>
+        <section id="tab-legal-doc" class="dashboard-tab-content space-y-0 w-full">
+          <div class="builder-toolbar">
+            <h2 id="legal-doc-title-dash" class="floorplan-page-name" style="margin:0;"></h2>
+          </div>
+
+          <div class="px-6 sm:px-8 py-6 w-full max-w-none">
+            <div style="max-width:60%;">
+              <div id="legal-doc-loading-dash" class="text-sm text-zinc-400 hidden">Carregando...</div>
+              <p id="legal-doc-date-dash" class="text-sm text-zinc-400 mb-5"></p>
+              <div id="legal-doc-body-dash" class="legal-doc-body"></div>
+            </div>
           </div>
         </section>
 

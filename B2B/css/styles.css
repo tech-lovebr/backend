@@ -1531,9 +1531,9 @@ body.sidebar-collapsed .upgrade-card-btn,
 body.sidebar-collapsed .upgrade-card-plan { display: none; }
 
 body.sidebar-collapsed .upgrade-card-icon {
-  background: #EBF4FF !important;
-  border: none !important;
-  color: #333333 !important;
+  background: transparent !important;
+  border: 1.5px solid #EBF4FF !important;
+  color: #EBF4FF !important;
 }
 
 body.sidebar-collapsed[data-theme="dark"] .upgrade-card-icon {
@@ -1541,13 +1541,16 @@ body.sidebar-collapsed[data-theme="dark"] .upgrade-card-icon {
   border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Presente (convidar e ganhar): sem círculo em volta, em qualquer estado. */
+/* Presente (convidar e ganhar): sem círculo em volta, em qualquer estado — só
+   o ícone em azul claro, nunca uma bolinha preenchida atrás dele. */
 body.sidebar-collapsed .upgrade-card-icon--gift {
+  background: transparent !important;
   border: none !important;
   color: #EBF4FF !important;
 }
 
 body.sidebar-collapsed[data-theme="dark"] .upgrade-card-icon--gift {
+  background: transparent !important;
   border: none !important;
 }
 

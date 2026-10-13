@@ -6404,3 +6404,14 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #b2b-chat-send-btn {
   box-shadow: none !important;
 }
+
+/* Configurações da conta: e-mail não editável em cinza claro (a regra global
+   de inputs deixava o campo branco, parecendo editável). */
+#settings-user-email:disabled {
+  background-color: #F4F4F5 !important;
+  color: #71717A !important;
+  -webkit-text-fill-color: #71717A;
+  border-color: #E4E4E7 !important;
+  cursor: not-allowed;
+  opacity: 1;
+}

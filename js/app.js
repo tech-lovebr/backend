@@ -218,7 +218,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (route.type === 'notifications') {
           openNotificationsPage({ pushUrl: false });
         } else if (route.type === 'tab') {
-          switchRailTab(route.tab);
+          if (route.rota) aplicarRota(route.rota);
+          else switchRailTab(route.tab);
         } else {
           switchRailTab('overview');
         }
@@ -741,6 +742,110 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const RAIL_ROUTE_TO_TAB = Object.fromEntries(Object.entries(RAIL_TAB_ROUTES).map(([k, v]) => [v, k]));
 
+  // ==========================================
+  // Sub-rotas: cada sub-item (e as páginas de fornecedor) tem URL própria,
+  // pra o voltar/avançar do navegador passar por elas em vez de pular
+  // direto pra aba anterior. O sub-item padrão de cada aba usa a URL base.
+  //   /fornecedores/contratos/<id>  → página do fornecedor contratado
+  //   /fornecedores/perfil/<id>     → página do fornecedor (Explorar/Favoritos)
+  // ==========================================
+  const SUB_ROUTES = {
+    'edit-site': { home: '', data: 'informacoes', about: 'anfitrioes', 'invite-print': 'convite' },
+    gifts: { 'my-gifts': '', 'gift-settings': 'configuracoes' },
+    rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
+    wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento', 'wallet-statement': 'extrato' },
+    b2b: { explore: '', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
+  };
+
+  // Ligado enquanto a tela está sendo montada a partir da URL (voltar/avançar
+  // ou F5) — nesse caso nada pode empilhar uma entrada nova no histórico.
+  let aplicandoRotaDoHistorico = false;
+
+  function caminhoSubRota(tab, subId) {
+    const base = RAIL_TAB_ROUTES[tab];
+    if (!base) return null;
+    const slug = (SUB_ROUTES[tab] || {})[subId] || '';
+    return slug ? base + '/' + slug : base;
+  }
+
+  // voltarComHistorico: a entrada anterior é a lista de onde a página foi
+  // aberta — o botão "Voltar" da própria tela pode usar history.back().
+  function registrarRota(path, { voltarComHistorico = false } = {}) {
+    if (aplicandoRotaDoHistorico || !path || window.location.pathname === path) return;
+    history.pushState({ loveRoute: path, voltarComHistorico }, '', path);
+  }
+
+  function lerRota(pathname) {
+    const partes = pathname.split('/').filter(Boolean);
+    const base = '/' + (partes[0] || '');
+    const tab = RAIL_ROUTE_TO_TAB[base];
+    if (!tab) return null;
+    const slug = partes[1] || '';
+    if (tab === 'b2b' && slug === 'perfil' && partes[2]) {
+      return { tab, subId: null, perfilId: decodeURIComponent(partes[2]) };
+    }
+    const subs = SUB_ROUTES[tab] || {};
+    const subId = Object.keys(subs).find(id => subs[id] === slug);
+    if (subId === undefined) return slug ? null : { tab, subId: null };
+    return {
+      tab,
+      subId,
+      contratoId: tab === 'b2b' && subId === 'contracted' && partes[2] ? decodeURIComponent(partes[2]) : null
+    };
+  }
+
+  // Abre um sub-item como se tivesse sido clicado na sub-barra (sem empilhar URL).
+  function abrirSubItem(tab, subId) {
+    if (!subId) return;
+    const label = (railTabsConfig[tab]?.subItems || []).find(i => i.id === subId)?.label || '';
+    elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => {
+      b.classList.toggle('active', b.dataset.routeSub === subId);
+    });
+    if (tab === 'edit-site') switchEditorSubSection(subId, label);
+    else if (tab === 'gifts') {
+      document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-gifts'));
+      switchGiftsSubSection(subId);
+    }
+    else if (tab === 'rsvp') switchRsvpSubSection(subId);
+    else if (tab === 'wallet') switchWalletSubSection(subId, label);
+    else if (tab === 'b2b') switchB2BView(subId);
+  }
+
+  function encontrarFornecedorExplorar(id) {
+    const fontes = { venues: 'venue', advisors: 'advisor', photo: 'photo', buffet: 'buffet' };
+    for (const [chave, type] of Object.entries(fontes)) {
+      const item = (window.LOVE_DATA[chave] || []).find(i => String(i.id) === String(id));
+      if (item) return { ...item, type };
+    }
+    return null;
+  }
+
+  function aplicarRota(rota) {
+    if (!rota) return;
+    aplicandoRotaDoHistorico = true;
+    try {
+      if (state.currentTab !== rota.tab) {
+        if (rota.subId) pendingSubItemId = rota.subId;
+        switchRailTab(rota.tab);
+      }
+      if (rota.tab === 'overview') return;
+      if (rota.tab === 'b2b' && rota.perfilId) {
+        // Explorar primeiro: esconde Chat/Contratos que possam estar abertos.
+        abrirSubItem('b2b', 'explore');
+        const item = encontrarFornecedorExplorar(rota.perfilId);
+        if (item) openB2BVendorProfile(item);
+        return;
+      }
+      abrirSubItem(rota.tab, rota.subId || Object.keys(SUB_ROUTES[rota.tab] || {})[0]);
+      if (rota.contratoId) {
+        const contrato = (window.LOVE_DATA.contractedVendors || []).find(v => String(v.id) === String(rota.contratoId));
+        if (contrato) openContractedVendorPage(contrato);
+      }
+    } finally {
+      aplicandoRotaDoHistorico = false;
+    }
+  }
+
   function switchRailTab(tabKey) {
     // Se o usuário ainda não criou seu primeiro evento, bloqueia o acesso aos outros menus
     if (!state.hasEventCreated) {
@@ -754,10 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.currentTab = tabKey;
 
-    const tabPath = RAIL_TAB_ROUTES[tabKey];
-    if (tabPath && window.location.pathname !== tabPath) {
-      history.pushState({ railTab: tabKey }, '', tabPath);
-    }
+    registrarRota(pendingSubItemId ? caminhoSubRota(tabKey, pendingSubItemId) : RAIL_TAB_ROUTES[tabKey]);
     // Sem isso, o título da aba do navegador ficava preso em "Política de
     // Privacidade" (ou Termos) depois de sair da página legal pra qualquer
     // outro lugar do painel.
@@ -829,6 +931,7 @@ document.addEventListener('DOMContentLoaded', () => {
             || (pendingSubItemId && item.id === pendingSubItemId)
             || (tabKey !== 'edit-site' && !pendingSubItemId && index === 0);
           btn.className = `sub-drawer-item ${isFirstActive ? 'active' : ''}`;
+          btn.dataset.routeSub = item.id;
           
           let badgeMarkup = '';
           if (item.id === 'messages' && unreadCount > 0) {
@@ -860,6 +963,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
               showToast(`Opção "${item.label}" selecionada.`, 'ℹ️');
             }
+
+            registrarRota(caminhoSubRota(tabKey, item.id));
 
             // Apenas fecha a gaveta se estiver em tela mobile (< 768px). No desktop fica SEMPRE FIXO!
             if (window.innerWidth <= 768) {
@@ -904,11 +1009,16 @@ document.addEventListener('DOMContentLoaded', () => {
       switchWalletSubSection('wallet-digital', 'Carteira Digital');
     } else if (tabKey === 'b2b') {
       document.body.classList.add('b2b-mode');
+      // Montagem padrão da aba: a URL já foi definida acima por registrarRota
+      // (base ou sub-item pedido) — aqui não pode empilhar outra.
+      const aplicandoAntes = aplicandoRotaDoHistorico;
+      aplicandoRotaDoHistorico = true;
       if (document.body.classList.contains('b2b-chat-mode')) {
         switchB2BView('messages');
       } else {
         switchB2BView('explore');
       }
+      aplicandoRotaDoHistorico = aplicandoAntes;
     } else if (tabKey === 'info-event') {
       switchInfoSubSection('my-event', 'Meu evento');
     }
@@ -8198,6 +8308,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8.5 MÓDULO DE ORÇAMENTO & ONBOARDING POPUP
   // ==========================================
   window.navigateToBudget = function() {
+    pendingSubItemId = 'wallet-budget';
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
@@ -8208,6 +8319,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.navigateToTables = function() {
+    pendingSubItemId = 'tables';
     switchRailTab('rsvp');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
@@ -10633,6 +10745,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openB2BVendorProfile(item) {
     activeB2BProfileItem = item;
+    registrarRota(`/fornecedores/perfil/${encodeURIComponent(item.id)}`, { voltarComHistorico: true });
     renderB2BVendorProfile(item);
 
     const exploreView = document.getElementById('b2b-explore-view');
@@ -10657,7 +10770,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renderB2BExplore();
   }
 
-  document.getElementById('btn-b2b-profile-back')?.addEventListener('click', closeB2BVendorProfile);
+  document.getElementById('btn-b2b-profile-back')?.addEventListener('click', () => {
+    // Aberta a partir da lista nesta sessão: volta pelo histórico (o popstate
+    // remonta a lista certa — Explorar ou Favoritos).
+    if (history.state?.voltarComHistorico) { history.back(); return; }
+    // Entrou direto pela URL do perfil (F5, link): não há lista antes no
+    // histórico, então troca a URL pela da lista em vez de empilhar.
+    closeB2BVendorProfile();
+    const lista = caminhoSubRota('b2b', currentB2BView);
+    history.replaceState({ loveRoute: lista }, '', lista);
+  });
 
   document.getElementById('btn-b2b-profile-message')?.addEventListener('click', () => {
     if (activeB2BProfileItem) switchB2BView('messages', activeB2BProfileItem.chatId || 'mariana-assessoria');
@@ -10893,6 +11015,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function switchB2BView(viewId, targetVendorId) {
+    registrarRota(caminhoSubRota('b2b', viewId));
     const tabB2B = document.getElementById('tab-b2b');
     if (tabB2B && !tabB2B.classList.contains('active')) {
       document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
@@ -11106,6 +11229,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // mais um drawer/pop-up pra essa ação. Submenu Contrato / Configurações.
   function openContractedVendorPage(vendor) {
     activeContractedVendor = vendor;
+    registrarRota(`/fornecedores/contratos/${encodeURIComponent(vendor.id)}`, { voltarComHistorico: true });
     const listView = document.getElementById('b2b-contracted-view');
     const pageView = document.getElementById('b2b-contracted-vendor-view');
     if (!pageView) return;
@@ -11256,7 +11380,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Inicialização de Listeners da Página de Fornecedor Contratado
   const btnContractedVendorBack = document.getElementById('btn-contracted-vendor-back');
-  if (btnContractedVendorBack) btnContractedVendorBack.addEventListener('click', closeContractedVendorPage);
+  if (btnContractedVendorBack) {
+    btnContractedVendorBack.addEventListener('click', () => {
+      if (history.state?.voltarComHistorico) { history.back(); return; }
+      closeContractedVendorPage();
+      history.replaceState({ loveRoute: '/fornecedores/contratos' }, '', '/fornecedores/contratos');
+    });
+  }
 
   const btnContractedVendorChat = document.getElementById('btn-contracted-vendor-chat');
   if (btnContractedVendorChat) {
@@ -11688,6 +11818,8 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdownUserAccount?.classList.add('hidden');
       const badgeChat = document.querySelector('.badge-header-chat');
       if (badgeChat) badgeChat.classList.add('hidden');
+      // Já entra com /fornecedores/chat (uma entrada só no histórico).
+      pendingSubItemId = 'messages';
       switchRailTab('b2b');
       switchB2BView('messages');
     });
@@ -12288,9 +12420,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (path === '/politica-de-privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
     if (path === '/notificacoes' && state.currentView === 'dashboard') { openNotificationsPage({ pushUrl: false }); return; }
 
-    const railTab = RAIL_ROUTE_TO_TAB[path];
-    if (state.currentView === 'dashboard' && railTab) {
-      switchRailTab(railTab);
+    const rota = lerRota(path);
+    if (state.currentView === 'dashboard' && rota) {
+      aplicarRota(rota);
       return;
     }
 
@@ -12485,7 +12617,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // F5) já abre naquela aba do painel; sem conta logada essas rotas não
   // significam nada e o pendingInitialDashboardRoute simplesmente nunca é
   // consumido (switchView('dashboard') nunca roda).
-  const initialRailTab = RAIL_ROUTE_TO_TAB[window.location.pathname] || null;
+  const initialRoute = lerRota(window.location.pathname);
+  const initialRailTab = initialRoute ? initialRoute.tab : null;
 
   // /notificacoes não é uma aba do rail (sem ícone próprio) — mesma lógica
   // de rota "direta" das legais/abas, só que abrindo a página de notificações.
@@ -12496,7 +12629,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // no meio do caminho (ver pendingInitialDashboardRoute, perto do topo).
   if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
   else if (initialIsNotifications) pendingInitialDashboardRoute = { type: 'notifications' };
-  else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab };
+  else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab, rota: initialRoute };
 
   // Só chama switchView('public') de cara se NÃO houver pista de sessão no
   // localStorage. Quando há (ver o <script> no <head> de index.html, que já

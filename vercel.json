@@ -21,6 +21,11 @@
     { "source": "/convidados", "destination": "/" },
     { "source": "/carteira", "destination": "/" },
     { "source": "/fornecedores", "destination": "/" },
+    { "source": "/personalizar/:path*", "destination": "/" },
+    { "source": "/presentes/:path*", "destination": "/" },
+    { "source": "/convidados/:path*", "destination": "/" },
+    { "source": "/carteira/:path*", "destination": "/" },
+    { "source": "/fornecedores/:path*", "destination": "/" },
     { "source": "/notificacoes", "destination": "/" },
     { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
     { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" }

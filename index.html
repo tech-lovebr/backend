@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
+  <!-- Sub-rotas do painel (/fornecedores/contratos/…, /convidados/mesas…):
+       sem isso, js/, css/ e assets/ (caminhos relativos) seriam buscados
+       dentro da sub-rota e quebrariam. -->
+  <base href="/">
   <!-- Evita o "flash" da home pública pra quem já está logado: antes de
        qualquer outro script rodar (inclusive o Tailwind), já adivinha pelo
        localStorage se existe sessão Supabase e esconde a home nesse caso —
@@ -5338,7 +5342,7 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20260917_guestnames"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261013_favoritos"></script>
+  <script src="js/app.js?v=20261013_rotas"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261001_supabase1"></script>
 </body>

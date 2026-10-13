@@ -40,18 +40,51 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ---------------------------------------------------------- Trocar senha */
 
+/* Cada regra da nova senha, na ordem em que aparece no dropdown. */
+const REGRAS_SENHA = {
+  tamanho: s => s.length >= 8,
+  numero: s => /\d/.test(s),
+  simbolo: s => /[^A-Za-z0-9\s]/.test(s)
+};
+
+const senhaValida = s => Object.values(REGRAS_SENHA).every(regra => regra(s));
+
 /**
  * O `updateUser` só altera a conta da sessão aberta, então não precisa da
  * chave mestra. Antes, a senha atual é conferida com um novo login: quem
  * achar o painel aberto num computador não troca a senha sem saber a antiga.
  */
 function iniciarTrocaDeSenha(admin) {
-  const card = document.getElementById('card-senha');
+  const secao = document.getElementById('seguranca');
   const form = document.getElementById('form-senha');
-  const botao = document.getElementById('btn-salvar-senha');
-  card.hidden = false;
+  const abrir = document.getElementById('btn-abrir-senha');
+  const cancelar = document.getElementById('btn-cancelar-senha');
+  const salvar = document.getElementById('btn-salvar-senha');
+  const regras = document.getElementById('senha-regras');
+  secao.hidden = false;
 
-  botao.addEventListener('click', async () => {
+  const mostrarFormulario = visivel => {
+    form.hidden = !visivel;
+    abrir.hidden = visivel;
+    if (visivel) form.atual.focus();
+    else { form.reset(); atualizarRegras(); }
+  };
+
+  const atualizarRegras = () => {
+    const senha = form.nova.value;
+    regras.querySelectorAll('li').forEach(li => {
+      li.classList.toggle('ok', REGRAS_SENHA[li.dataset.regra](senha));
+    });
+  };
+
+  abrir.addEventListener('click', () => mostrarFormulario(true));
+  cancelar.addEventListener('click', () => mostrarFormulario(false));
+
+  form.nova.addEventListener('focus', () => { regras.hidden = false; });
+  form.nova.addEventListener('blur', () => { regras.hidden = true; });
+  form.nova.addEventListener('input', atualizarRegras);
+
+  salvar.addEventListener('click', async () => {
     const atual = form.atual.value;
     const nova = form.nova.value;
     const confirmacao = form.confirmacao.value;
@@ -60,8 +93,9 @@ function iniciarTrocaDeSenha(admin) {
       toast('Preencha os três campos.');
       return;
     }
-    if (nova.length < 8) {
-      toast('A nova senha precisa ter pelo menos 8 caracteres.');
+    if (!senhaValida(nova)) {
+      toast('A nova senha precisa de 8 caracteres, 1 número e 1 símbolo.');
+      form.nova.focus();
       return;
     }
     if (nova !== confirmacao) {
@@ -73,26 +107,26 @@ function iniciarTrocaDeSenha(admin) {
       return;
     }
 
-    botao.disabled = true;
+    salvar.disabled = true;
 
     const { error: erroLogin } = await supabaseClient.auth
       .signInWithPassword({ email: admin.email, password: atual });
 
     if (erroLogin) {
-      botao.disabled = false;
+      salvar.disabled = false;
       toast('Senha atual incorreta.');
       return;
     }
 
     const { error } = await supabaseClient.auth.updateUser({ password: nova });
-    botao.disabled = false;
+    salvar.disabled = false;
 
     if (error) {
       toast(`Não foi possível alterar a senha: ${error.message}`);
       return;
     }
 
-    form.reset();
+    mostrarFormulario(false);
     toast('Senha alterada.');
   });
 }

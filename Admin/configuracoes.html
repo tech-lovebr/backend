@@ -44,7 +44,7 @@
         <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem;max-width:900px">
 
           <div class="card">
-            <div class="card-head"><div><h2>Seus dados</h2><p>Como você aparece no painel</p></div></div>
+            <div class="card-head"><div><h2>Seus dados</h2></div></div>
             <div class="card-body">
               <form id="form-perfil">
                 <label class="field">
@@ -57,31 +57,44 @@
                 </label>
                 <button type="button" class="btn btn-primary" id="btn-salvar-perfil">Salvar</button>
               </form>
-            </div>
-          </div>
 
-          <!-- Só o super admin vê: o JS revela o card depois de conferir o papel. -->
-          <div class="card" id="card-senha" hidden>
-            <div class="card-head"><div><h2>Senha</h2><p>Troque a senha de acesso ao painel</p></div></div>
-            <div class="card-body">
-              <form id="form-senha" autocomplete="off">
-                <label class="field">
-                  <span class="field-label">Senha atual</span>
-                  <input class="field-input" name="atual" type="password" autocomplete="current-password">
-                </label>
-                <label class="field">
-                  <span class="field-label">Nova senha</span>
-                  <input class="field-input" name="nova" type="password" autocomplete="new-password" minlength="8">
-                </label>
-                <label class="field">
-                  <span class="field-label">Confirmar nova senha</span>
-                  <input class="field-input" name="confirmacao" type="password" autocomplete="new-password" minlength="8">
-                </label>
-                <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:0 0 1rem">
-                  Mínimo de 8 caracteres. A troca vale na hora; esta sessão continua aberta.
-                </p>
-                <button type="button" class="btn btn-primary" id="btn-salvar-senha">Alterar senha</button>
-              </form>
+              <!-- Só o super admin vê: o JS revela depois de conferir o papel. -->
+              <details class="lista-recolhivel seguranca" id="seguranca" hidden>
+                <summary class="lista-recolhivel-topo">
+                  <span class="rotulo">Segurança</span>
+                  <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                  </svg>
+                </summary>
+                <div class="lista-recolhivel-corpo seguranca-corpo">
+                  <button type="button" class="btn btn-ghost" id="btn-abrir-senha">Alterar senha</button>
+
+                  <form id="form-senha" autocomplete="off" hidden>
+                    <label class="field">
+                      <span class="field-label">Senha atual</span>
+                      <input class="field-input" name="atual" type="password" autocomplete="current-password">
+                    </label>
+                    <div class="field senha-nova">
+                      <label class="field-label" for="senha-nova">Nova senha</label>
+                      <input class="field-input" id="senha-nova" name="nova" type="password" autocomplete="new-password"
+                             aria-describedby="senha-regras">
+                      <ul class="senha-regras" id="senha-regras" hidden>
+                        <li data-regra="tamanho">Mínimo de 8 caracteres</li>
+                        <li data-regra="numero">Pelo menos 1 número</li>
+                        <li data-regra="simbolo">Pelo menos 1 símbolo</li>
+                      </ul>
+                    </div>
+                    <label class="field">
+                      <span class="field-label">Confirmar nova senha</span>
+                      <input class="field-input" name="confirmacao" type="password" autocomplete="new-password">
+                    </label>
+                    <div class="seguranca-acoes">
+                      <button type="button" class="btn btn-ghost" id="btn-cancelar-senha">Cancelar</button>
+                      <button type="button" class="btn btn-primary" id="btn-salvar-senha">Salvar senha</button>
+                    </div>
+                  </form>
+                </div>
+              </details>
             </div>
           </div>
 

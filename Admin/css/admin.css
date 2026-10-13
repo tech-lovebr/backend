@@ -105,6 +105,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   padding: 0 1.25rem;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--sidebar-borda);
+  text-decoration: none;
 }
 
 .admin-sidebar-brand img { height: 32px; width: auto; object-fit: contain; }
@@ -467,29 +468,6 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   height: 1px;
   background: var(--border);
   margin: .375rem 0;
-}
-
-/* Identificação da empresa, no pé do menu lateral. */
-.admin-sidebar-footer {
-  padding: 1rem 1.25rem 1.25rem;
-  border-top: 1px solid var(--sidebar-borda);
-  flex-shrink: 0;
-}
-
-.admin-sidebar-footer p { margin: 0; white-space: nowrap; }
-
-/* Azul da marca. O #EBF4FF de antes era para o fundo escuro; sobre o cinza
-   claro ele sumiria. */
-.admin-sidebar-footer .razao-social {
-  font-size: .8125rem;
-  font-weight: 600;
-  color: var(--primary-color);
-}
-
-.admin-sidebar-footer .cnpj {
-  font-size: .75rem;
-  color: var(--primary-color);
-  margin-top: .1875rem;
 }
 
 /* ----------------------------------------------------------------- Cards */

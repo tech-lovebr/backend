@@ -174,15 +174,11 @@ function renderSidebar() {
   `).join('');
 
   host.innerHTML = `
-    <div class="admin-sidebar-brand">
+    <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
       <span class="marca-admin">Admin</span>
-    </div>
-    <nav class="admin-nav">${sections}</nav>
-    <footer class="admin-sidebar-footer">
-      <p class="razao-social">LOVE HUB LTDA</p>
-      <p class="cnpj">69.386.397/0001-06</p>
-    </footer>`;
+    </a>
+    <nav class="admin-nav">${sections}</nav>`;
 
 
 

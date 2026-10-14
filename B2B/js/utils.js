@@ -53,7 +53,7 @@ function formatPhoneDigits(digits) {
 function wirePercentMaskInput(input) {
   let prevDigits = '';
   input.addEventListener('input', (e) => {
-    let digits = input.value.replace(/D/g, '').replace(/^0+(?=d)/, '').slice(0, 3);
+    let digits = input.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 3);
     const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;
     if (isDeleting && digits.length === prevDigits.length && digits.length > 0) {
       digits = digits.slice(0, -1);
@@ -67,13 +67,13 @@ function wirePercentMaskInput(input) {
   });
   // Clicar depois do "%" também deixa o cursor antes dele.
   input.addEventListener('click', () => {
-    const pos = input.value.replace(/D/g, '').length;
+    const pos = input.value.replace(/\D/g, '').length;
     if (input.selectionStart > pos) { try { input.setSelectionRange(pos, pos); } catch (err) {} }
   });
 }
 
 function percentMaskValue(input) {
-  const digits = (input.value || '').replace(/D/g, '');
+  const digits = (input.value || '').replace(/\D/g, '');
   return digits ? Math.min(100, parseInt(digits, 10)) : null;
 }
 

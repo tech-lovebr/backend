@@ -5924,7 +5924,9 @@ body[data-theme="dark"] .agenda-notif-item:hover { background: #1c1c1c !importan
 
 .agenda-timeline-scroll { max-height: 620px; overflow-y: auto; }
 
-.agenda-timeline-grid { display: flex; position: relative; }
+/* O rótulo de cada hora sobe meia linha acima da divisória (top: -0.55em):
+   sem esse respiro, o da primeira hora era cortado pela área de rolagem. */
+.agenda-timeline-grid { display: flex; position: relative; padding-top: 0.6rem; }
 
 .agenda-timeline-hours-col { flex: 0 0 52px; }
 .agenda-timeline-hour-row { position: relative; box-sizing: border-box; }

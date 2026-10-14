@@ -9396,7 +9396,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (v('bairro')) endereco = [endereco, v('bairro')].filter(Boolean).join(', ');
     const oculto = cepCampo('endereco');
     if (oculto) oculto.value = endereco;
-    const cidadeUf = [v('cidade'), v('uf')].filter(Boolean).join(' - ');
+    // "São Paulo - SP": cidade por extenso e estado em 2 letras. Sem a cidade,
+    // fica vazio (não mostra a sigla sozinha).
+    const cidadeUf = v('cidade') ? [v('cidade'), v('uf').toUpperCase()].filter(Boolean).join(' - ') : '';
     if (cepCampo('cidadeVisivel')) cepCampo('cidadeVisivel').value = cidadeUf;
   }
 
@@ -9414,6 +9416,27 @@ document.addEventListener('DOMContentLoaded', () => {
     mensagemCep('');
     montarEnderecoInformacoes();
     mostrarCamposDeEndereco(!!(detalhes.cep || detalhes.address || detalhes.street));
+    // Evento salvo sem cidade (ou sem UF): completa pelo CEP, sem mexer no resto.
+    const digitos = String(detalhes.cep || '').replace(/D/g, '');
+    if (digitos.length === 8 && (!detalhes.city || !detalhes.state)) completarCidadePeloCep(digitos);
+  }
+
+  // Busca só a cidade (nome completo) e a UF (2 letras) do CEP; o bairro
+  // entra apenas se estiver vazio.
+  async function completarCidadePeloCep(digitos) {
+    try {
+      const resp = await fetch(`https://viacep.com.br/ws/${digitos}/json/`);
+      const dados = await resp.json();
+      if (!resp.ok || dados.erro) return;
+      if ((cepCampo('cep')?.value || '').replace(/D/g, '') !== digitos) return;
+      if (dados.localidade) cepCampo('cidade').value = dados.localidade;
+      if (dados.uf) cepCampo('uf').value = dados.uf;
+      if (dados.bairro && !(cepCampo('bairro')?.value || '').trim()) cepCampo('bairro').value = dados.bairro;
+      montarEnderecoInformacoes();
+      cepCampo('endereco')?.dispatchEvent(new Event('input', { bubbles: true }));
+    } catch (e) {
+      console.error('Erro ao completar cidade pelo CEP:', e);
+    }
   }
 
   async function buscarCepInformacoes(digitos) {

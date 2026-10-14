@@ -3283,7 +3283,9 @@ function renderInformacoesPreview() {
 // "Av. Duquesa de Goiás, 825" + "São Paulo" + "SP" → "Av. Duquesa de Goiás, 825, São Paulo - SP"
 // (cidade/UF vêm dos campos Estado e Cidade de Informações).
 function enderecoComCidade(endereco, cidade, uf) {
-  const cidadeUf = [(cidade || '').trim(), (uf || '').trim()].filter(Boolean).join(' - ');
+  // Cidade por extenso + UF em 2 letras; sem a cidade, a sigla sozinha não entra.
+  const nomeCidade = (cidade || '').trim();
+  const cidadeUf = nomeCidade ? [nomeCidade, (uf || '').trim().toUpperCase()].filter(Boolean).join(' - ') : '';
   return [(endereco || '').trim(), cidadeUf].filter(Boolean).join(', ');
 }
 

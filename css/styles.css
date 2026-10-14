@@ -1992,7 +1992,7 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
 .bg-white.shadow-2xs,
 .bg-white.shadow-md {
   background: #FFFFFF !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
@@ -2001,7 +2001,7 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
 .dashboard-card:hover,
 .dashboard-tab-content .bg-white.group:hover:not(.b2b-item-card),
 .dashboard-main-area .bg-white.group:hover:not(.b2b-item-card) {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Explorar / Meus Contratos / Favoritos: lista plana, sem caixa por item —
@@ -6446,7 +6446,7 @@ body[data-theme="dark"] #live-preview-buttons-callout {
    (sem linha, com a mesma sombra leve). */
 #tab-rsvp .dash-card {
   border-color: transparent;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 /* Carteira e Configurações da lista de presentes: cards no visual de
@@ -6457,12 +6457,12 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #gifts-panel-settings .installment-card:not(.active),
 #gifts-panel-settings label.rounded-xl.border {
   border-color: transparent !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
 /* Dashboard (Visão Geral): Guia de primeiros passos, cards e carrossel no
-   visual de Benefícios Love — sem linha, com sombra um pouco mais forte que a
-   de Benefícios (pedido do cliente) e maior no hover. As etiquetas redondas (data/local do evento) ficam como estão. */
+   visual de Benefícios Love — sem linha, sombra (a mesma de todas as caixas
+   da plataforma) e maior no hover. As etiquetas redondas (data/local do evento) ficam como estão. */
 #tab-overview .bg-white.border:not(.rounded-full),
 #quick-start-guide-widget,
 #dashboard-promo-carousel {
@@ -6544,7 +6544,7 @@ body[data-theme="dark"] #live-preview-buttons-callout {
   padding: 1.25rem 0 0;
   overflow: hidden;
   border-color: transparent;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.035), 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 #wallet-sub-statement .guests-table th {
   color: #333333;

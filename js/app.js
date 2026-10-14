@@ -10513,6 +10513,17 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(foto => (typeof foto === 'string' ? foto : foto && foto.url))
       .filter(Boolean);
     const capasServicos = servicos.map(s => s.cover_image_url).filter(Boolean);
+    // Imagem do card (lista 5:3, grid 4:3, capa do perfil): a original da
+    // capa com o ponto de foco que o fornecedor escolheu no recorte
+    // (extra.cover, Hub) — cada formato "cobre" em volta do foco, em vez de
+    // cortar o recorte 14:5 pelo centro. Sem original/foco: capa e centro.
+    const capaPrincipal = servicos.map(s => {
+      const meta = (s.extra && s.extra.cover) || null;
+      const src = (meta && meta.originalUrl) || s.cover_image_url;
+      if (!src) return null;
+      const foco = meta && meta.focus && Number.isFinite(meta.focus.x) && Number.isFinite(meta.focus.y) ? meta.focus : null;
+      return { src, focus: foco ? `${foco.x}% ${foco.y}%` : '50% 50%' };
+    }).find(Boolean) || null;
     // Galeria de cada serviço ("Mais imagens" no Hub) entra no portfólio do
     // perfil, depois das fotos do portfólio da empresa; sem nenhuma das
     // duas, ficam as capas dos serviços.
@@ -10531,7 +10542,8 @@ document.addEventListener('DOMContentLoaded', () => {
       address: usaPerfil ? f.address : f.business_address,
       city: usaPerfil ? f.city : f.business_city,
       state: usaPerfil ? f.state : f.business_state,
-      image: fotos[0] || capasServicos[0] || '',
+      image: fotos[0] || (capaPrincipal && capaPrincipal.src) || '',
+      imageFocus: (fotos[0] || !capaPrincipal) ? '50% 50%' : capaPrincipal.focus,
       avatar: f.avatar_url || f.logo_url || '',
       portfolioPhotos: portfolio.length ? portfolio : capasServicos,
       services: servicos,
@@ -10973,7 +10985,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Imagem prévia da empresa -->
         <div class="btn-open-supplier-gallery relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 cursor-pointer">
           ${item.image
-            ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+            ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.imageFocus || '50% 50%'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
           <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
             <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
@@ -11066,7 +11078,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.innerHTML = `
       <div class="btn-open-supplier-gallery relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden cursor-pointer">
         ${item.image
-          ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+          ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.imageFocus || '50% 50%'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
           : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
         <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
           <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
@@ -11542,6 +11554,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sem foto: fica o degradê do container da capa.
     if (coverImg) {
       coverImg.src = capa;
+      coverImg.style.objectPosition = (capa && capa === item.image) ? (item.imageFocus || '50% 50%') : '50% 50%';
       coverImg.classList.toggle('hidden', !capa);
     }
     if (avatarImg) avatarImg.src = item.avatar || avatarComIniciais(item.name);

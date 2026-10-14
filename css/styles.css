@@ -6632,7 +6632,7 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 /* Aparência: área para soltar um elemento logo abaixo da capa e criar uma
    seção nova (acima dos botões). Escondida até começar a arrastar. */
 .builder-new-section-dropzone { display: none; }
-#builder-canvas.is-arrastando-elemento .builder-new-section-dropzone {
+#builder-canvas.is-arrastando-elemento .builder-new-section-dropzone.is-perto {
   display: flex;
   align-items: center;
   justify-content: center;

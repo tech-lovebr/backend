@@ -1007,6 +1007,30 @@ function renderElementEditorPanel(panel, sel) {
   wireColorSwatchPopovers(body);
 }
 
+/* Áreas "Solte aqui para criar uma seção nova": durante o arraste, só a mais
+   perto do cursor aparece, e só quando ele chega perto (não as duas juntas).
+   A distância é medida até o fim da seção logo acima da área (capa ou
+   botões), que não se mexe quando a área aparece. */
+const DISTANCIA_AREA_NOVA_SECAO = 110;
+function atualizarAreaNovaSecaoPerto(y) {
+  const canvas = document.getElementById('builder-canvas');
+  if (!canvas || !canvas.classList.contains('is-arrastando-elemento')) return;
+  let maisPerto = null;
+  let menorDistancia = Infinity;
+  canvas.querySelectorAll('[data-new-section-dropzone]').forEach(zona => {
+    const acima = zona.previousElementSibling;
+    if (!acima) return;
+    const distancia = Math.abs(y - acima.getBoundingClientRect().bottom);
+    if (distancia < menorDistancia) { menorDistancia = distancia; maisPerto = zona; }
+  });
+  canvas.querySelectorAll('[data-new-section-dropzone]').forEach(zona => {
+    zona.classList.toggle('is-perto', zona === maisPerto && menorDistancia <= DISTANCIA_AREA_NOVA_SECAO);
+  });
+}
+document.addEventListener('dragover', (e) => atualizarAreaNovaSecaoPerto(e.clientY));
+document.addEventListener('pointermove', (e) => atualizarAreaNovaSecaoPerto(e.clientY));
+document.addEventListener('mousemove', (e) => atualizarAreaNovaSecaoPerto(e.clientY));
+
 /* -------------------- Render: canvas -------------------- */
 
 function renderCanvas() {

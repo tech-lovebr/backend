@@ -6452,3 +6452,8 @@ body[data-theme="dark"] .notification-row-icon { background: #333333 !important;
   border-color: #D4D4D8;
   color: #3F3F46;
 }
+
+/* Busca no cabeçalho das páginas (ex.: "Pesquisar contato..." em Contatos):
+   mesmo contorno da barra de busca do header (.topbar-search-trigger).
+   :not(:focus) mantém a borda azul de foco do .field-input. */
+.b2b-header-bar .field-input:not(:focus) { border-color: #E4E4E4; }

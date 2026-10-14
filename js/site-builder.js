@@ -282,7 +282,7 @@ function defaultPageState() {
 // trocar por `tmpl.coverImage` quando as imagens definitivas chegarem.
 const EVENT_TYPE_BUILDER_TEMPLATES = {
   wedding: { primaryColor: '#537bae', coverImage: 'assets/criar-casamento.jpg' },
-  birthday: { primaryColor: '#D97706', coverImage: 'assets/criar-aniversario.jpg' },
+  birthday: { primaryColor: '#D97706', coverImage: 'assets/criar-aniversario.jpg?v=20261014' },
   baby_shower: { primaryColor: '#8EC5D6', coverImage: 'assets/criar-cha-de-bebe.jpg' },
   bridal_shower: { primaryColor: '#D98B9E', coverImage: 'assets/criar-cha-de-panela.jpg' },
   gender_reveal: { primaryColor: '#B48FC9', coverImage: 'assets/criar-revelacao.jpg' },

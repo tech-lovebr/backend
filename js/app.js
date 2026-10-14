@@ -2596,6 +2596,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputDataRecommended) inputDataRecommended.value = activeEvent.eventDetails.recommended || '';
       if (inputDataNotRecommended) inputDataNotRecommended.value = activeEvent.eventDetails.notRecommended || '';
       if (inputDataGeneralInfo) inputDataGeneralInfo.value = activeEvent.eventDetails.generalInfo || '';
+      const inputDataMusic = document.getElementById('editor-data-music');
+      if (inputDataMusic) inputDataMusic.value = activeEvent.eventDetails.musicUrl || '';
+      validarLinkDaMusica();
     }
 
     let bIcons = activeEvent.buttonIconsStyle || activeEvent.themeStyle || 'animado';
@@ -3569,6 +3572,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputDataRecommended) activeEvent.eventDetails.recommended = inputDataRecommended.value;
     if (inputDataNotRecommended) activeEvent.eventDetails.notRecommended = inputDataNotRecommended.value;
     if (inputDataGeneralInfo) activeEvent.eventDetails.generalInfo = inputDataGeneralInfo.value;
+    // Música de fundo: só guarda link do YouTube (link inválido = sem música).
+    const inputDataMusic = document.getElementById('editor-data-music');
+    if (inputDataMusic) {
+      const link = inputDataMusic.value.trim();
+      activeEvent.eventDetails.musicUrl = idDoVideoYoutube(link) ? link : '';
+    }
 
     activeEvent.bgColor = builderState.bgColor;
     activeEvent.fontFamily = builderState.font;
@@ -9579,6 +9588,31 @@ document.addEventListener('DOMContentLoaded', () => {
       complementInput: document.getElementById('editor-data-complement')
     }
   );
+
+  // ==========================================
+  // Informações › música de fundo (link do YouTube)
+  // ==========================================
+  // Aceita youtube.com/watch?v=, youtu.be/, /shorts/, /embed/ e music.youtube.com.
+  function idDoVideoYoutube(link) {
+    const texto = String(link || '').trim();
+    if (!texto) return '';
+    const m = texto.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
+    return m ? m[1] : '';
+  }
+
+  function validarLinkDaMusica() {
+    const input = document.getElementById('editor-data-music');
+    const status = document.getElementById('editor-data-music-status');
+    if (!input || !status) return;
+    const link = input.value.trim();
+    if (!link) { status.textContent = ''; status.classList.add('hidden'); return; }
+    const ok = !!idDoVideoYoutube(link);
+    status.textContent = ok ? 'Música do YouTube encontrada. Ela toca de fundo no convite publicado.' : 'Esse link não é de um vídeo do YouTube. Confira e cole de novo.';
+    status.classList.remove('hidden');
+    status.classList.toggle('text-emerald-600', ok);
+    status.classList.toggle('text-rose-600', !ok);
+  }
+  document.getElementById('editor-data-music')?.addEventListener('input', validarLinkDaMusica);
 
   // ==========================================
   // Informações › endereço pelo CEP

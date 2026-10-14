@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261014_areaperto">
+  <link rel="stylesheet" href="css/styles.css?v=20261014_musica">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1377,6 +1377,19 @@
                   <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Informações Gerais e Programação</label>
                     <textarea id="editor-data-general-info" rows="4" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 leading-relaxed"></textarea>
+                  </div>
+                </div>
+
+                <!-- 6. MÚSICA DE FUNDO (link do YouTube) — toca no convite publicado -->
+                <div class="space-y-4 pb-2">
+                  <div>
+                    <h4 class="font-bold text-slate-900 text-sm">Adicionar música</h4>
+                    <p class="text-xs text-slate-500">Cole o link de uma música do YouTube. Ela toca de fundo no convite, em todas as telas.</p>
+                  </div>
+                  <div>
+                    <label for="editor-data-music" class="block text-xs font-bold text-slate-700 mb-1.5">Link do YouTube</label>
+                    <input type="url" id="editor-data-music" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=…" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                    <p id="editor-data-music-status" class="hidden text-[11px] mt-1.5"></p>
                   </div>
                 </div>
 
@@ -5368,8 +5381,8 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_mesanalista"></script>
+  <script src="js/app.js?v=20261014_musica"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261014_infoprevia"></script>
+  <script src="js/site-builder.js?v=20261014_musica"></script>
 </body>
 </html>

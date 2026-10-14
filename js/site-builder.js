@@ -2912,6 +2912,90 @@ function slugDaUrlPublica() {
 let conviteSlugPublico = null;
 let conviteDadosPublicos = null;
 
+// ==========================================
+// Música de fundo do convite publicado (link do YouTube em Informações).
+// Toca escondida, em loop, e continua ao trocar de tela (as telas do convite
+// são da mesma página). Navegadores só deixam tocar som depois de um toque
+// ou clique na página — por isso começa no primeiro toque, e há um botão
+// pequeno para pausar/voltar a tocar.
+// ==========================================
+function idDoVideoYoutubePublico(link) {
+  const m = String(link || '').trim().match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
+  return m ? m[1] : '';
+}
+
+let musicaPlayer = null;
+let musicaTocando = false;
+let musicaPausadaPeloConvidado = false;
+
+function iniciarMusicaDeFundo(link) {
+  const videoId = idDoVideoYoutubePublico(link);
+  if (!videoId || document.getElementById('convite-musica')) return;
+
+  const holder = document.createElement('div');
+  holder.id = 'convite-musica';
+  holder.setAttribute('aria-hidden', 'true');
+  holder.innerHTML = '<div id="convite-musica-player"></div>';
+  document.body.appendChild(holder);
+
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.id = 'convite-musica-botao';
+  botao.className = 'convite-musica-botao';
+  botao.setAttribute('aria-label', 'Tocar música');
+  botao.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+  document.body.appendChild(botao);
+
+  const atualizarBotao = () => {
+    botao.classList.toggle('is-tocando', musicaTocando);
+    botao.setAttribute('aria-label', musicaTocando ? 'Pausar música' : 'Tocar música');
+    botao.title = musicaTocando ? 'Pausar música' : 'Tocar música';
+  };
+  atualizarBotao();
+
+  const tocar = () => {
+    if (!musicaPlayer || typeof musicaPlayer.playVideo !== 'function') return;
+    try { musicaPlayer.unMute(); musicaPlayer.setVolume(60); musicaPlayer.playVideo(); } catch (e) {}
+  };
+
+  botao.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!musicaPlayer) return;
+    if (musicaTocando) { musicaPausadaPeloConvidado = true; try { musicaPlayer.pauseVideo(); } catch (err) {} }
+    else { musicaPausadaPeloConvidado = false; tocar(); }
+  });
+
+  // Primeiro toque/clique/tecla na página: começa a música (se não foi pausada).
+  const primeiroToque = () => {
+    if (!musicaTocando && !musicaPausadaPeloConvidado) tocar();
+  };
+  ['pointerdown', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, primeiroToque, { passive: true }));
+
+  const criarPlayer = () => {
+    musicaPlayer = new YT.Player('convite-musica-player', {
+      width: '200', height: '200', videoId,
+      playerVars: { autoplay: 1, loop: 1, playlist: videoId, controls: 0, disablekb: 1, playsinline: 1, modestbranding: 1, rel: 0 },
+      events: {
+        onReady: () => tocar(),
+        onStateChange: (ev) => {
+          musicaTocando = ev.data === YT.PlayerState.PLAYING;
+          // Garante o loop mesmo se o YouTube parar no fim.
+          if (ev.data === YT.PlayerState.ENDED) { try { musicaPlayer.seekTo(0); musicaPlayer.playVideo(); } catch (e) {} }
+          atualizarBotao();
+        }
+      }
+    });
+  };
+
+  if (window.YT && window.YT.Player) { criarPlayer(); return; }
+  const anterior = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = () => { if (typeof anterior === 'function') anterior(); criarPlayer(); };
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  s.async = true;
+  document.head.appendChild(s);
+}
+
 // escapeHtml (acima) não escapa aspas — aqui o texto também vai para atributos.
 function escaparPublico(valor) {
   return String(valor ?? '')
@@ -2946,6 +3030,7 @@ async function initPublicPreview() {
     conviteSlugPublico = slug;
     conviteDadosPublicos = dados;
     if (dados.titulo) document.title = `${dados.titulo} — Love`;
+    iniciarMusicaDeFundo(dados.evento && dados.evento.musica);
   } else {
     // Prévia do editor (/convite-preview): o que foi publicado neste navegador.
     try {

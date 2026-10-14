@@ -69,6 +69,12 @@
     .convite-voltar:hover { color: #18181B; }
     .convite-tela-titulo { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 1.5rem; letter-spacing: -0.01em; }
     /* Cabeçalho das telas internas (Voltar + título) sempre branco, de ponta a ponta. */
+    /* Música de fundo: player do YouTube fora da tela + botão pequeno de pausar/tocar. */
+    #convite-musica { position: fixed; left: -9999px; top: 0; width: 200px; height: 200px; overflow: hidden; pointer-events: none; opacity: 0; }
+    .convite-musica-botao { position: fixed; right: 14px; bottom: 14px; z-index: 60; width: 40px; height: 40px; border-radius: 9999px; border: 0; background: rgba(255,255,255,0.92); color: #18181B; box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .convite-musica-botao svg { width: 18px; height: 18px; }
+    .convite-musica-botao:not(.is-tocando) { color: #A1A1AA; }
+    .convite-musica-botao:not(.is-tocando)::after { content: ''; position: absolute; width: 22px; height: 1.5px; background: currentColor; transform: rotate(-45deg); }
     .convite-tela-topo { background: #FFFFFF; margin: -1.5rem -1.5rem 0; padding: 1.5rem 1.5rem 0.25rem; }
     .convite-tela-topo .convite-tela-titulo { margin-bottom: 1.25rem; }
     .convite-tela-topo + :not(.convite-tela-capa) { margin-top: 1.5rem; }
@@ -111,6 +117,6 @@
   <div id="public-preview-root" class="builder-canvas"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=3"></script>
-  <script src="js/site-builder.js?v=20261014_infoprevia"></script>
+  <script src="js/site-builder.js?v=20261014_musica"></script>
 </body>
 </html>

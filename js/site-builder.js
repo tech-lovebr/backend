@@ -2887,6 +2887,20 @@ function renderConvitePublico(root) {
     capaEl.classList.add('convite-capa');
   }
 
+  // Mesmas seções de Informações da prévia da aba Informações (dados do
+  // evento vindos de convite_publicado).
+  if (conviteDadosPublicos) {
+    const ev = conviteDadosPublicos.evento || {};
+    inserirSecoesDeInformacoes(root, {
+      local: (ev.local || '').trim(),
+      endereco: (ev.endereco || '').trim(),
+      inicio: formatarDataPublica(ev.data, ev.hora),
+      termino: formatarDataPublica(ev.data_fim, ev.hora_fim),
+      dresscode: (ev.dresscode || '').trim(),
+      generalInfo: (ev.informacoes || '').trim()
+    });
+  }
+
   startCountdownTicker(root);
 }
 
@@ -3225,11 +3239,21 @@ function renderInformacoesPreview() {
   const dresscode = campo('editor-data-dresscode', details.dresscode);
   const generalInfo = campo('editor-data-general-info', details.generalInfo);
 
+  inserirSecoesDeInformacoes(container, { local, endereco, inicio, termino, dresscode, generalInfo });
+
+  wireClassicPreviewCoverEdit(container, renderInformacoesPreview);
+  startCountdownTicker(container);
+}
+
+// Seções de Informações dentro do convite — usada pela prévia da aba
+// Informações e pelo convite publicado, para os dois ficarem iguais:
+//   abaixo da imagem e antes dos botões → local/endereço + início e término;
+//   embaixo dos botões → Dress code e Informações gerais, cada um na sua seção.
+function inserirSecoesDeInformacoes(container, { local, endereco, inicio, termino, dresscode, generalInfo }) {
   const secaoInfo = conteudo => `<section class="classic-preview-info-section"><div class="classic-preview-info-box">${conteudo}</div></section>`;
   const quickNav = container.querySelector('.builder-quicknav-section');
   const capa = container.querySelector(':scope > section');
 
-  // 1) Abaixo da imagem e antes dos botões: local/endereço + início e término.
   if (local || endereco || inicio || termino) {
     const topoHtml = secaoInfo(`
       ${local ? `<h4>${escapeHtml(local)}</h4>` : ''}
@@ -3244,7 +3268,6 @@ function renderInformacoesPreview() {
     else container.insertAdjacentHTML('afterbegin', topoHtml);
   }
 
-  // 2) Embaixo dos botões: Dress code e Informações gerais, cada um na sua seção.
   const baixoHtml =
     (dresscode ? secaoInfo(`<h4>Dress Code</h4><p>${escapeHtml(dresscode)}</p>`) : '') +
     (generalInfo ? secaoInfo(`<h4>Informações Gerais</h4><p>${escapeHtml(generalInfo)}</p>`) : '');
@@ -3256,9 +3279,6 @@ function renderInformacoesPreview() {
       else container.insertAdjacentHTML('beforeend', baixoHtml);
     }
   }
-
-  wireClassicPreviewCoverEdit(container, renderInformacoesPreview);
-  startCountdownTicker(container);
 }
 
 // A prévia de Informações acompanha os campos enquanto a pessoa digita.

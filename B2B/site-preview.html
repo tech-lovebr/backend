@@ -51,7 +51,16 @@
       const params = new URLSearchParams(location.search);
       const isCheckout = params.get('page') === 'checkout';
       const linkId = params.get('link');
-      const publicSlug = params.get('site'); // setado pelo middleware.mjs ao acessar <slug>.love.com.br
+      // Visitante em <slug>.love.com.br: o middleware.js reescreve pra cá no
+      // servidor, mas a URL do navegador continua sem o ?site= — então o slug
+      // sai do próprio domínio. O ?site= fica como alternativa manual.
+      const SITE_DOMAIN_SUFFIX = '.love.com.br';
+      const hostSlug = location.hostname.endsWith(SITE_DOMAIN_SUFFIX)
+        ? location.hostname.slice(0, -SITE_DOMAIN_SUFFIX.length)
+        : '';
+      const publicSlug = (hostSlug && hostSlug !== 'hub' && hostSlug !== 'www' && !hostSlug.includes('.'))
+        ? hostSlug
+        : params.get('site');
       canvas.dataset.pageKey = isCheckout ? 'checkout' : 'home';
 
       let paymentLink = null;

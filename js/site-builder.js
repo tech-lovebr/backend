@@ -3380,7 +3380,10 @@ function renderInformacoesPreview() {
   container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
   container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 
-  const visible = (builderState.sections || []).filter(s => !s.hidden);
+  // Só a capa e a seção de botões: seções extras criadas em Aparência são do
+  // convite principal, não da tela de Informações.
+  const capaInfo = (builderState.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const visible = (builderState.sections || []).filter(s => !s.hidden && (s === capaInfo || s.isQuickNav));
   container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
 
   // Remove os elementos de Título/Texto (a marcação de tipo só existe em modo preview).
@@ -3477,12 +3480,12 @@ function inserirSecoesDeInformacoes(container, { local, endereco, inicio, termin
     else container.insertAdjacentHTML('afterbegin', topoHtml);
   }
 
-  // Dress code e Informações gerais: cada um ocupa uma seção inteira (branca,
-  // de ponta a ponta), não uma caixinha. Sem texto, a seção não aparece.
-  const secaoInteira = (titulo, texto) => `<section class="classic-preview-info-full"><h4>${titulo}</h4><p>${escapeHtml(texto)}</p></section>`;
+  // Dress code e Informações gerais: cada um na sua seção, com o fundo
+  // colorido da seção de botões e o texto numa caixa branca. Sem texto, a
+  // seção não aparece.
   const baixoHtml =
-    ((dresscode || '').trim() ? secaoInteira('Dress Code', dresscode.trim()) : '') +
-    ((generalInfo || '').trim() ? secaoInteira('Informações Gerais', generalInfo.trim()) : '');
+    ((dresscode || '').trim() ? secaoInfo(`<h4>Dress Code</h4><p>${escapeHtml(dresscode.trim())}</p>`) : '') +
+    ((generalInfo || '').trim() ? secaoInfo(`<h4>Informações Gerais</h4><p>${escapeHtml(generalInfo.trim())}</p>`) : '');
   if (baixoHtml) {
     if (quickNav) quickNav.insertAdjacentHTML('afterend', baixoHtml);
     else {

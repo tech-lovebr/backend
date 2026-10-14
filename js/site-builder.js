@@ -2807,6 +2807,13 @@ async function initPublicPreview() {
   const visible = builderState.sections.filter(s => !s.hidden);
   root.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
 
+  // No modo "preview" a capa não ganha a altura que tem em Aparência e a
+  // foto aparecia cortada — mesma altura mínima usada na prévia das abas
+  // clássicas (wireClassicPreviewCoverEdit).
+  const capa = visible.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const capaEl = (capa && root.querySelector(`[data-section-id="${capa.id}"]`)) || root.querySelector(':scope > section');
+  if (capaEl) capaEl.style.minHeight = '348px';
+
   startCountdownTicker(root);
 }
 

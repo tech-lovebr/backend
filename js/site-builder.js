@@ -96,8 +96,8 @@ const QUICKNAV_ICON_MAP = {
 const QUICKNAV_EMOJI_MAP = {
   'qn-loc': '📍',
   'qn-gifts': '🎁',
-  'qn-rsvp': '✔️',
-  'qn-dress': '👔',
+  'qn-rsvp': '💌',
+  'qn-dress': '👗',
   'qn-about': '💞'
 };
 

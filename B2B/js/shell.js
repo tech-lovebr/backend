@@ -399,7 +399,10 @@ function setSidebarCollapsed(collapsed) {
   if (btn) { btn.title = label; btn.setAttribute('aria-label', label); }
 }
 
-const B2B_PROFILE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+// Sem foto, o avatar padrão é o ícone da Love (não um bonequinho genérico):
+// escuro no tema claro, branco no escuro (as classes sidebar-icon-* já
+// alternam por tema). Usado no cabeçalho, no dropdown e no chat (mensagens.js).
+const B2B_PROFILE_ICON = '<img src="assets/iconelove2.png" class="avatar-love-icon sidebar-icon-light" alt=""><img src="assets/icon-white1.png" class="avatar-love-icon sidebar-icon-dark" alt="">';
 
 function renderAvatarInto(el, photo) {
   if (!el) return;

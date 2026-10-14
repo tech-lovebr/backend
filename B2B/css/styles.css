@@ -5313,6 +5313,10 @@ body[data-theme="dark"] .product-cover-adjust-frame { border-color: #404040 !imp
 body[data-theme="dark"] #topbar-user-avatar,
 body[data-theme="dark"] #profile-dropdown-avatar { background: #333333 !important; }
 .avatar-photo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: block; }
+/* Ícone da Love como avatar padrão: inteiro (contain) e com respiro, em
+   qualquer quadrado de avatar (cabeçalho, dropdown, chat). */
+img.avatar-love-icon { width: 100%; height: 100%; object-fit: contain; padding: 20%; box-sizing: border-box; }
+.b2b-avatar-square img.avatar-love-icon { object-fit: contain; padding: 20%; }
 .b2b-avatar-square {
   border-radius: 8px;
   overflow: hidden;

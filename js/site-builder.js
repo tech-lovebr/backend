@@ -2905,14 +2905,24 @@ function renderConvitePublico(root) {
 }
 
 // Moldura das telas internas do convite (Informações, Presentes, Confirmar).
-function telaPublicaHtml(titulo, conteudo) {
+function telaPublicaHtml(titulo, conteudo, { comCapa = false } = {}) {
   return `
     <div class="convite-tela">
       <button type="button" class="convite-voltar" data-convite-voltar>← Voltar ao convite</button>
       <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
+      ${comCapa ? capaDoConviteHtml() : ''}
       ${conteudo}
     </div>
   ` + renderFixedFooterHtml();
+}
+
+// Mesma foto de capa do convite (primeira seção de conteúdo), para as telas
+// internas que mostram a imagem logo abaixo do título.
+function capaDoConviteHtml() {
+  const secao = (builderState && builderState.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock && !s.hidden);
+  const imagem = secao && secao.bgImage;
+  if (!imagem) return '';
+  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt=""></div>`;
 }
 
 function semDadosPublicos(root, titulo) {
@@ -2949,7 +2959,7 @@ function renderInformacoesPublicas(root) {
     bloco('Dress code', ev.dresscode) +
     bloco('Informações gerais', ev.informacoes);
 
-  root.innerHTML = telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>');
+  root.innerHTML = telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>', { comCapa: true });
 }
 
 // "Sobre" → o que foi preenchido em Personalizar evento → Anfitriões.

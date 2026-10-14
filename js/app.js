@@ -7995,6 +7995,14 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.addEventListener('drop', (e) => {
       e.preventDefault();
       canvas.classList.remove('is-dragover');
+      // Pessoa arrastada de um assento e solta sobre outra mesa (não num
+      // assento): vai para o primeiro lugar vazio dessa mesa.
+      if (e.dataTransfer.types.includes('application/x-floorplan-seat')) {
+        let origem;
+        try { origem = JSON.parse(e.dataTransfer.getData('application/x-floorplan-seat')); } catch (err) { return; }
+        if (origem) moverPessoaDoAssentoParaMesa(origem.tableId, origem.seatIndex, e.clientX, e.clientY);
+        return;
+      }
       let payload;
       try { payload = JSON.parse(e.dataTransfer.getData('text/plain')); } catch (err) { return; }
       if (!payload) return;
@@ -8027,6 +8035,39 @@ document.addEventListener('DOMContentLoaded', () => {
       saveFloorPlanElements(elements);
       renderFloorPlanCanvas();
     });
+  }
+
+  // Move quem está num assento para a mesa solta (primeiro lugar vazio, ou
+  // um lugar a mais se ela estiver cheia). Soltar na própria mesa não muda nada.
+  function moverPessoaDoAssentoParaMesa(sourceTableId, sourceIdx, clientX, clientY) {
+    const hit = document.elementFromPoint(clientX, clientY);
+    const targetTableEl = hit && hit.closest('.floorplan-el.is-mesa');
+    if (!targetTableEl) return;
+    const targetId = targetTableEl.dataset.elId;
+    if (targetId === sourceTableId) return;
+    const elements = getFloorPlanElements();
+    const origem = elements.find(item => item.id === sourceTableId);
+    const destino = elements.find(item => item.id === targetId);
+    if (!origem || !destino) return;
+    resizeSeatNames(origem);
+    resizeSeatNames(destino);
+    const nome = (origem.seatNames[sourceIdx] || '').trim();
+    if (!nome) return;
+
+    let idx = destino.seatNames.findIndex(n => !n || !n.trim());
+    if (idx === -1) {
+      if ((parseInt(destino.seats) || 1) >= FLOORPLAN_MAX_SEATS) return;
+      destino.seats = (parseInt(destino.seats) || 1) + 1;
+      resizeSeatNames(destino);
+      idx = destino.seatNames.length - 1;
+    }
+    destino.seatNames[idx] = nome;
+    origem.seatNames[sourceIdx] = '';
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+    renderFloorPlanGuestCards();
+    if (floorplanActiveTableId === origem.id) renderFloorPlanSeatAssignments(origem);
+    if (floorplanActiveTableId === destino.id) renderFloorPlanSeatAssignments(destino);
   }
 
   // Solta um convidado sobre uma mesa posicionada: acomoda no primeiro assento

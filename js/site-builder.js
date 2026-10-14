@@ -3306,8 +3306,11 @@ document.addEventListener('click', (e) => {
 //   abaixo da imagem e antes dos botões → local/endereço + início e término;
 //   embaixo dos botões → Dress code e Informações gerais, cada um na sua seção.
 function inserirSecoesDeInformacoes(container, { local, endereco, inicio, termino, dresscode, generalInfo }) {
-  const secaoInfo = conteudo => `<section class="classic-preview-info-section"><div class="classic-preview-info-box">${conteudo}</div></section>`;
   const quickNav = container.querySelector('.builder-quicknav-section');
+  // Mesmo fundo da seção de botões (que já acompanha a cor de Aparência).
+  const fundo = quickNav ? quickNav.style.backgroundColor : '';
+  const estiloFundo = fundo ? ` style="background-color:${fundo};"` : '';
+  const secaoInfo = conteudo => `<section class="classic-preview-info-section"${estiloFundo}><div class="classic-preview-info-box">${conteudo}</div></section>`;
   const capa = container.querySelector(':scope > section');
 
   if (local || endereco || inicio || termino) {

@@ -101,6 +101,11 @@ function setPanelHidden(id, hide) {
 }
 
 let currentCoverImage = null;
+// Junto com a capa recortada (14:5) vai a imagem original e o ponto de foco
+// (centro do recorte, em % da original) — extra.cover. É o que deixa o
+// Explorar do anfitrião mostrar a capa em outros formatos (lista 5:3, grid
+// 4:3) sem perder o assunto: cada formato "cobre" em volta do foco.
+let currentCoverMeta = null;
 let currentGalleryImages = [];
 let currentOpenDays = {};
 let currentDishes = [];
@@ -148,6 +153,7 @@ async function loadProducts() {
     description: p.description,
     active: p.active,
     coverImage: p.cover_image_url,
+    cover: (p.extra && p.extra.cover) || null,
     gallery: p.gallery || [],
     venue: (p.extra && p.extra.venue) || null,
     equipmentType: (p.extra && p.extra.equipmentType) || null,
@@ -315,7 +321,7 @@ function renderCoverImagePicker() {
     wireImageDropZone(input.closest('.header-logo-picker'), applyFile);
   }
   const removeBtn = document.getElementById('product-cover-remove');
-  if (removeBtn) removeBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); currentCoverImage = null; renderCoverImagePicker(); });
+  if (removeBtn) removeBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); currentCoverImage = null; currentCoverMeta = null; renderCoverImagePicker(); });
 }
 
 /* -------------------- Modal: cortar a imagem de capa --------------------
@@ -392,12 +398,58 @@ function exportCoverCrop() {
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/jpeg', 0.88);
+  const crop = canvas.toDataURL('image/jpeg', 0.88);
+
+  // Foco = centro do recorte, em % da imagem original (object-position).
+  const clampPct = v => Math.max(0, Math.min(100, v));
+  const focus = {
+    x: +clampPct((sx + sw / 2) / img.naturalWidth * 100).toFixed(1),
+    y: +clampPct((sy + sh / 2) / img.naturalHeight * 100).toFixed(1)
+  };
+
+  // Original reduzida (lado maior até 1600px) — é ela que o Explorar usa
+  // nos formatos que não são 14:5.
+  const maxSide = 1600;
+  const ratio = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+  const oc = document.createElement('canvas');
+  oc.width = Math.round(img.naturalWidth * ratio);
+  oc.height = Math.round(img.naturalHeight * ratio);
+  const octx = oc.getContext('2d');
+  octx.fillStyle = '#fff';
+  octx.fillRect(0, 0, oc.width, oc.height);
+  octx.drawImage(img, 0, 0, oc.width, oc.height);
+  const original = oc.toDataURL('image/jpeg', 0.85);
+
+  return { crop, original, focus };
+}
+
+// Sobe recorte e original pro Storage (bucket fornecedores, pasta do próprio
+// fornecedor — migration 042) e devolve as URLs públicas. Se não der (bucket
+// ausente, sem sessão), devolve null e a capa fica como data URL, como antes.
+async function salvarCapaNoStorage(result) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return null;
+  const toBlob = dataUrl => fetch(dataUrl).then(r => r.blob());
+  const base = `portfolio/${session.user.id}/capas/${Date.now()}-${Math.round(performance.now())}`;
+  try {
+    const [cropBlob, originalBlob] = await Promise.all([toBlob(result.crop), toBlob(result.original)]);
+    const opts = { cacheControl: '31536000', contentType: 'image/jpeg' };
+    const [a, b] = await Promise.all([
+      supabaseClient.storage.from('fornecedores').upload(`${base}-capa.jpg`, cropBlob, opts),
+      supabaseClient.storage.from('fornecedores').upload(`${base}-original.jpg`, originalBlob, opts)
+    ]);
+    if (a.error || b.error) { console.warn('Capa ficou local (Storage indisponível).', a.error || b.error); return null; }
+    const pub = caminho => supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+    return { coverUrl: pub(`${base}-capa.jpg`), originalUrl: pub(`${base}-original.jpg`) };
+  } catch (err) {
+    console.warn('Capa ficou local (Storage indisponível).', err);
+    return null;
+  }
 }
 
 function openProductCoverCropModal(dataUrl) {
   const modal = document.getElementById('product-cover-crop-modal');
-  if (!modal) { currentCoverImage = dataUrl; renderCoverImagePicker(); return; }
+  if (!modal) { currentCoverImage = dataUrl; currentCoverMeta = null; renderCoverImagePicker(); return; }
   wireProductCoverCropModalOnce();
   const img = new Image();
   img.onload = () => {
@@ -426,10 +478,20 @@ function wireProductCoverCropModalOnce() {
 
   modal.addEventListener('click', (e) => { if (e.target === modal) closeProductCoverCropModal(); });
   modal.querySelector('[data-cover-crop-close]').addEventListener('click', closeProductCoverCropModal);
-  modal.querySelector('[data-cover-crop-done]').addEventListener('click', () => {
+  modal.querySelector('[data-cover-crop-done]').addEventListener('click', async () => {
     const result = exportCoverCrop();
-    if (result) { currentCoverImage = result; renderCoverImagePicker(); }
     closeProductCoverCropModal();
+    if (!result) return;
+    // Mostra já o recorte (data URL); se o Storage aceitar, troca pelas URLs.
+    currentCoverImage = result.crop;
+    currentCoverMeta = { originalUrl: null, focus: result.focus };
+    renderCoverImagePicker();
+    const urls = await salvarCapaNoStorage(result);
+    if (urls && currentCoverImage === result.crop) {
+      currentCoverImage = urls.coverUrl;
+      currentCoverMeta = { originalUrl: urls.originalUrl, focus: result.focus };
+      renderCoverImagePicker();
+    }
   });
 
   const range = modal.querySelector('[data-cover-crop-range]');
@@ -932,6 +994,7 @@ function initProductDrawer() {
 
   const resetDrawerState = () => {
     currentCoverImage = null;
+    currentCoverMeta = null;
     currentGalleryImages = [];
     currentOpenDays = defaultOpenDays();
     currentDishes = [];
@@ -1187,6 +1250,8 @@ function initProductDrawer() {
         gallery: currentGalleryImages.filter(Boolean),
         extra: {
           offerType: 'servico',
+          // original + foco do recorte da capa (null sem capa) — ver currentCoverMeta
+          cover: currentCoverImage ? currentCoverMeta : null,
           subcategory: currentSubcategory,
           pricing,
           scope: {
@@ -1242,6 +1307,7 @@ function openProductDrawer(id) {
   document.getElementById('product-description').value = p.description || '';
 
   currentCoverImage = p.coverImage || null;
+  currentCoverMeta = p.cover || null;
   currentGalleryImages = (p.gallery || []).slice();
   currentOpenDays = (p.venue && p.venue.days) ? { ...p.venue.days } : defaultOpenDays();
   currentDishes = (p.dishes || []).map(d => ({ ...d }));

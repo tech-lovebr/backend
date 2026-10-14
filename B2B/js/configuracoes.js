@@ -443,7 +443,7 @@ async function uploadPortfolioImage(file) {
 
   if (error) {
     showToast(/bucket|not found/i.test(error.message || '')
-      ? 'Não foi possível enviar: verifique se o bucket de Storage está configurado.'
+      ? 'Não foi possível enviar: o Storage ainda não está configurado (migration 042_storage_fornecedores.sql).'
       : `Não foi possível enviar: ${error.message}`, true);
     return;
   }
@@ -455,12 +455,21 @@ async function uploadPortfolioImage(file) {
   persistPortfolioImages();
 }
 
-function removePortfolioImage(index) {
-  // O arquivo em si fica no Storage (delete é admin-only hoje) — isto só
-  // tira a foto da lista exibida para o fornecedor.
-  B2B_DATA.professional.portfolioImages.splice(index, 1);
+async function removePortfolioImage(index) {
+  const [removida] = B2B_DATA.professional.portfolioImages.splice(index, 1);
   renderPortfolioImages();
   persistPortfolioImages();
+
+  // Apaga o arquivo do Storage também (a policy da migration 042 deixa o
+  // fornecedor remover o que está em portfolio/<seu id>/). Se falhar, a
+  // foto já saiu da lista — o arquivo só fica órfão, sem prejuízo pra tela.
+  const marcador = '/object/public/fornecedores/';
+  const url = removida && removida.url ? String(removida.url) : '';
+  const pos = url.indexOf(marcador);
+  if (pos === -1) return;
+  const caminho = decodeURIComponent(url.slice(pos + marcador.length).split('?')[0]);
+  const { error } = await supabaseClient.storage.from('fornecedores').remove([caminho]);
+  if (error) console.error('Não foi possível apagar a foto do Storage.', error);
 }
 
 async function persistPortfolioImages() {

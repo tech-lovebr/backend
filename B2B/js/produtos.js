@@ -906,6 +906,9 @@ function initProductDrawer() {
   if (form) {
     form.addEventListener('submit', async e => {
       e.preventDefault();
+      // Clique repetido (ou Enter) enquanto o primeiro envio ainda está
+      // salvando criava o mesmo item várias vezes.
+      if (form.dataset.saving) return;
       const name = document.getElementById('product-name').value.trim();
       const category = document.getElementById('product-category').value;
       const description = document.getElementById('product-description').value.trim();
@@ -1030,23 +1033,32 @@ function initProductDrawer() {
         }
       };
 
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) return;
+      const submitBtn = document.getElementById('product-wizard-submit-btn');
+      form.dataset.saving = '1';
+      if (submitBtn) submitBtn.disabled = true;
 
-      if (form.dataset.editId) {
-        const { error } = await supabaseClient.from('products').update(row).eq('id', form.dataset.editId);
-        if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
-        showToast('Produto atualizado.');
-      } else {
-        const { error } = await supabaseClient.from('products').insert({ fornecedor_id: session.user.id, ...row });
-        if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
-        showToast('Produto adicionado à vitrine.');
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) return;
+
+        if (form.dataset.editId) {
+          const { error } = await supabaseClient.from('products').update(row).eq('id', form.dataset.editId);
+          if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
+          showToast('Produto atualizado.');
+        } else {
+          const { error } = await supabaseClient.from('products').insert({ fornecedor_id: session.user.id, ...row });
+          if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
+          showToast('Produto adicionado à vitrine.');
+        }
+        await loadProducts();
+        renderCategoryTabs();
+        renderProducts();
+        populateProductCategoryOptions();
+        close();
+      } finally {
+        delete form.dataset.saving;
+        if (submitBtn) submitBtn.disabled = false;
       }
-      await loadProducts();
-      renderCategoryTabs();
-      renderProducts();
-      populateProductCategoryOptions();
-      close();
     });
   }
 }

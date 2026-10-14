@@ -186,10 +186,13 @@
                 <span>Forma e condições de pagamento</span>
               </div>
 
-              <div>
-                <label for="company-max-installments" class="field-label">Até quantas vezes sem juros</label>
-                <p class="text-xs text-zinc-500 mb-2">Acima disso, o cliente paga os juros do cartão.</p>
-                <select id="company-max-installments" class="field-select"></select>
+              <!-- Mesma largura do "Sinal mínimo" logo abaixo (grade de 2 colunas). -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="company-max-installments" class="field-label">Até quantas vezes sem juros</label>
+                  <p class="text-xs text-zinc-500 mb-2">Acima disso, o cliente paga os juros do cartão.</p>
+                  <select id="company-max-installments" class="field-select"></select>
+                </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -820,12 +820,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function encontrarFornecedorExplorar(id) {
-    const fontes = { venues: 'venue', advisors: 'advisor', photo: 'photo', buffet: 'buffet' };
-    for (const [chave, type] of Object.entries(fontes)) {
-      const item = (window.LOVE_DATA[chave] || []).find(i => String(i.id) === String(id));
-      if (item) return { ...item, type };
-    }
-    return null;
+    const item = b2bFornecedores.find(f => String(f.id) === String(id));
+    return item ? { ...item, isFavorite: b2bFavoritosIds.has(item.id) } : null;
   }
 
   function aplicarRota(rota) {
@@ -840,8 +836,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (rota.tab === 'b2b' && rota.perfilId) {
         // Explorar primeiro: esconde Chat/Contratos que possam estar abertos.
         abrirSubItem('b2b', 'explore');
-        const item = encontrarFornecedorExplorar(rota.perfilId);
-        if (item) openB2BVendorProfile(item);
+        // A vitrine vem do Supabase: no F5 direto num perfil ela ainda pode
+        // estar carregando — abre o perfil assim que chegar.
+        const abrirPerfil = () => {
+          const item = encontrarFornecedorExplorar(rota.perfilId);
+          if (!item || state.currentTab !== 'b2b') return;
+          const antes = aplicandoRotaDoHistorico;
+          aplicandoRotaDoHistorico = true;
+          openB2BVendorProfile(item);
+          aplicandoRotaDoHistorico = antes;
+        };
+        if (b2bFornecedoresCarregados) abrirPerfil();
+        else carregarFornecedoresVitrine().then(abrirPerfil);
         return;
       }
       abrirSubItem(rota.tab, rota.subId || Object.keys(SUB_ROUTES[rota.tab] || {})[0]);
@@ -9872,7 +9878,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 12. B2B MARKETPLACE & ENCONTRAR FORNECEDORES (SPLIT SCREEN LISTA & MAPA/DETALHES)
   // ==========================================
-  let currentB2BCategory = 'advisors';
+  let currentB2BCategory = 'all';
   let currentB2BSort = 'recommended';
   let activeB2BItemId = 'venue-villa-bisutti';
   let b2bSearchQuery = '';
@@ -9897,31 +9903,130 @@ document.addEventListener('DOMContentLoaded', () => {
   let b2bSelectedSubcategory = null;
   let b2bExpandedCategoryGroup = null;
 
-  // Filtro rápido por cidade, acima da lista do Explorar.
-  const B2B_CITIES = [
-    { city: 'São Paulo', uf: 'SP' },
-    { city: 'Rio de Janeiro', uf: 'RJ' },
-    { city: 'Brasília', uf: 'DF' },
-    { city: 'Fortaleza', uf: 'CE' },
-    { city: 'Salvador', uf: 'BA' },
-    { city: 'Belo Horizonte', uf: 'MG' },
-    { city: 'Curitiba', uf: 'PR' },
-    { city: 'Porto Alegre', uf: 'RS' },
-    { city: 'Recife', uf: 'PE' },
-    { city: 'Campinas', uf: 'SP' },
-    { city: 'Goiânia', uf: 'GO' },
-    { city: 'Manaus', uf: 'AM' },
-    { city: 'Belém', uf: 'PA' },
-    { city: 'Florianópolis', uf: 'SC' },
-    { city: 'Vitória', uf: 'ES' },
-    { city: 'Natal', uf: 'RN' },
-    { city: 'Maceió', uf: 'AL' },
-    { city: 'João Pessoa', uf: 'PB' },
-    { city: 'Cuiabá', uf: 'MT' },
-    { city: 'Campo Grande', uf: 'MS' },
-    { city: 'Teresina', uf: 'PI' },
-    { city: 'São Luís', uf: 'MA' }
-  ];
+  // ==========================================
+  // Vitrine real: só fornecedores cadastrados no B2B (tabela fornecedores),
+  // não bloqueados e com pelo menos um serviço ativo (products). Os serviços
+  // de outros fornecedores só são legíveis pela policy da migration 037.
+  // ==========================================
+  let b2bFornecedores = [];
+  let b2bFornecedoresCarregados = false;
+  let b2bFornecedoresPromise = null;
+  let b2bFavoritosIds = new Set();
+
+  // Texto digitado pelo fornecedor no B2B vai pra dentro de innerHTML aqui —
+  // sempre escapado.
+  function escaparHtml(valor) {
+    return String(valor ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // O B2B ainda não salva a foto de perfil no banco: sem avatar_url/logo_url,
+  // mostra as iniciais do nome.
+  function avatarComIniciais(nome) {
+    const iniciais = String(nome || '').trim().split(/\s+/)
+      .map(palavra => (palavra.match(/[\p{L}\p{N}]/u) || [''])[0])
+      .filter(Boolean).slice(0, 2).join('').toUpperCase() || '?';
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">' +
+      '<rect width="96" height="96" fill="#ebf4ff"/>' +
+      '<text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="Inter, sans-serif" font-size="36" font-weight="700" fill="#183b54">' +
+      escaparHtml(iniciais) + '</text></svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+
+  function mapearFornecedorVitrine(f) {
+    const servicos = (f.products || []).filter(p => p.active !== false);
+    // "Minha empresa" pode ter endereço comercial próprio (032_empresa_config).
+    const usaPerfil = f.usa_endereco_perfil !== false;
+    const fotos = (Array.isArray(f.portfolio_images) ? f.portfolio_images : [])
+      .map(foto => (typeof foto === 'string' ? foto : foto && foto.url))
+      .filter(Boolean);
+    const capasServicos = servicos.map(s => s.cover_image_url).filter(Boolean);
+    const comPreco = servicos.filter(s => Number(s.price) > 0).sort((a, b) => Number(a.price) - Number(b.price));
+    const maisBarato = comPreco[0];
+
+    return {
+      id: f.id,
+      name: f.company_name || 'Fornecedor',
+      description: f.description || '',
+      about: f.description || '',
+      address: usaPerfil ? f.address : f.business_address,
+      city: usaPerfil ? f.city : f.business_city,
+      state: usaPerfil ? f.state : f.business_state,
+      image: fotos[0] || capasServicos[0] || '',
+      avatar: f.avatar_url || f.logo_url || '',
+      portfolioPhotos: fotos.length ? fotos : capasServicos,
+      services: servicos,
+      // Categoria do fornecedor = categorias dos serviços que ele cadastrou
+      // (o B2B não tem categoria no nível do fornecedor).
+      categories: [...new Set(servicos.map(s => s.category).filter(Boolean))],
+      mainCategory: servicos.find(s => s.category)?.category || '',
+      subcategories: [...new Set(servicos.map(s => s.extra?.subcategory).filter(Boolean))],
+      priceNum: maisBarato ? Number(maisBarato.price) : 0,
+      pricingType: maisBarato?.extra?.pricing?.type || (maisBarato ? 'VALOR_FIXO' : 'SOB_CONSULTA'),
+      isFavorite: b2bFavoritosIds.has(f.id)
+    };
+  }
+
+  // Carrega uma vez por sessão (e de novo só se pedido). Sem sessão não
+  // carrega — a policy de fornecedores/products é só pra quem está logado.
+  function carregarFornecedoresVitrine({ forcar = false } = {}) {
+    const userId = window.loveClienteSession?.user?.id;
+    if (!userId) return Promise.resolve([]);
+    if (b2bFornecedoresPromise && !forcar) return b2bFornecedoresPromise;
+
+    b2bFornecedoresPromise = (async () => {
+      const [fornecedoresRes, favoritosRes] = await Promise.all([
+        supabaseClient
+          .from('fornecedores')
+          .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, extra)')
+          .neq('status', 'bloqueado')
+          .order('company_name'),
+        supabaseClient
+          .from('fornecedores_favoritos')
+          .select('fornecedor_id')
+          .eq('cliente_id', userId)
+      ]);
+
+      if (favoritosRes.error) console.error('[vitrine] favoritos:', favoritosRes.error);
+      b2bFavoritosIds = new Set((favoritosRes.data || []).map(r => r.fornecedor_id));
+
+      if (fornecedoresRes.error) {
+        console.error('[vitrine] fornecedores:', fornecedoresRes.error);
+        b2bFornecedores = [];
+      } else {
+        b2bFornecedores = (fornecedoresRes.data || [])
+          .map(mapearFornecedorVitrine)
+          .filter(f => f.services.length > 0);
+      }
+      b2bFornecedoresCarregados = true;
+      return b2bFornecedores;
+    })();
+
+    return b2bFornecedoresPromise;
+  }
+
+  // Cidades que têm fornecedor na vitrine (filtro rápido acima da lista).
+  function cidadesDaVitrine() {
+    const porCidade = new Map();
+    b2bFornecedores.forEach(f => {
+      const cidade = (f.city || '').trim();
+      if (cidade && !porCidade.has(cidade)) porCidade.set(cidade, { city: cidade, uf: (f.state || '').trim().toUpperCase() });
+    });
+    return [...porCidade.values()].sort((a, b) => a.city.localeCompare(b.city, 'pt-BR'));
+  }
+
+  // Chat/Contratar abrem (ou criam) a conversa real com aquele fornecedor.
+  async function abrirChatComFornecedor(fornecedorId) {
+    switchB2BView('messages');
+    if (fornecedorId && window.LoveChatService) {
+      await window.LoveChatService.openConversationWithFornecedor(fornecedorId);
+    }
+  }
+
   let b2bSelectedCity = null;
 
   // Alternância Lista / Grid do Explorar — lista é o padrão.
@@ -10058,11 +10163,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const row = document.getElementById('b2b-city-filter-row');
     if (!row) return;
 
-    row.innerHTML = B2B_CITIES.map(({ city, uf }) => {
+    const cidades = cidadesDaVitrine();
+    // Só as cidades que têm fornecedor na vitrine; sem nenhuma, a barra some.
+    document.getElementById('b2b-city-filter-wrap')?.classList.toggle('hidden', cidades.length === 0 || currentB2BCategory === 'favorites');
+    row.innerHTML = cidades.map(({ city, uf }) => {
       const active = b2bSelectedCity === city;
       return `
-        <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer shrink-0 whitespace-nowrap ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${city}">
-          ${city} (${uf})
+        <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer shrink-0 whitespace-nowrap ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${escaparHtml(city)}">
+          ${escaparHtml(city)}${uf ? ` (${escaparHtml(uf)})` : ''}
         </button>
       `;
     }).join('');
@@ -10147,40 +10255,23 @@ document.addEventListener('DOMContentLoaded', () => {
       ? 'w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'
       : 'w-full flex flex-col divide-y divide-zinc-200/80';
 
-    let items = [];
+    // Vitrine real (Supabase): na primeira vez carrega e redesenha.
+    if (!b2bFornecedoresCarregados) {
+      listContainer.innerHTML = '<div class="p-12 text-center text-sm text-zinc-400">Carregando fornecedores…</div>';
+      if (window.loveClienteSession) {
+        carregarFornecedoresVitrine().then(() => {
+          renderB2BCityFilter();
+          renderB2BExplore();
+        });
+      }
+      return;
+    }
+
+    let items = b2bFornecedores.map(f => ({ ...f, isFavorite: b2bFavoritosIds.has(f.id) }));
     let categoryName = 'fornecedores';
 
-    if (currentB2BCategory === 'all') {
-      const allVenues = (window.LOVE_DATA.venues || []).map(v => ({ ...v, type: 'venue' }));
-      const allAdvisors = (window.LOVE_DATA.advisors || []).map(a => ({ ...a, type: 'advisor' }));
-      const allPhoto = (window.LOVE_DATA.photo || []).map(p => ({ ...p, type: 'photo' }));
-      const allBuffet = (window.LOVE_DATA.buffet || []).map(b => ({ ...b, type: 'buffet' }));
-      items = [...allVenues, ...allAdvisors, ...allPhoto, ...allBuffet];
-      categoryName = 'todos os fornecedores';
-    } else if (currentB2BCategory === 'venues') {
-      items = (window.LOVE_DATA.venues || []).map(v => ({ ...v, type: 'venue' }));
-      categoryName = 'locais & espaços';
-    } else if (currentB2BCategory === 'advisors' || currentB2BCategory === 'assessoria') {
-      items = (window.LOVE_DATA.advisors || []).map(a => ({ ...a, type: 'advisor' }));
-      categoryName = 'assessoria';
-    } else if (currentB2BCategory === 'cerimonial') {
-      items = (window.LOVE_DATA.advisors || []).map(a => ({ ...a, type: 'advisor' }));
-      categoryName = 'cerimonial';
-    } else if (currentB2BCategory === 'decor') {
-      items = (window.LOVE_DATA.venues || []).slice(0, 3).map(v => ({ ...v, type: 'decor', category: 'Decoração' }));
-      categoryName = 'decoração';
-    } else if (currentB2BCategory === 'photo') {
-      items = (window.LOVE_DATA.photo || []).map(p => ({ ...p, type: 'photo' }));
-      categoryName = 'fotografia';
-    } else if (currentB2BCategory === 'buffet') {
-      items = (window.LOVE_DATA.buffet || []).map(b => ({ ...b, type: 'buffet' }));
-      categoryName = 'buffets & gastronomia';
-    } else if (currentB2BCategory === 'favorites') {
-      const favVenues = (window.LOVE_DATA.venues || []).filter(v => v.isFavorite).map(v => ({ ...v, type: 'venue' }));
-      const favAdvisors = (window.LOVE_DATA.advisors || []).filter(a => a.isFavorite).map(a => ({ ...a, type: 'advisor' }));
-      const favPhoto = (window.LOVE_DATA.photo || []).filter(p => p.isFavorite).map(p => ({ ...p, type: 'photo' }));
-      const favBuffet = (window.LOVE_DATA.buffet || []).filter(b => b.isFavorite).map(b => ({ ...b, type: 'buffet' }));
-      items = [...favVenues, ...favAdvisors, ...favPhoto, ...favBuffet];
+    if (currentB2BCategory === 'favorites') {
+      items = items.filter(item => item.isFavorite);
       categoryName = 'itens favoritados';
     }
 
@@ -10189,20 +10280,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // acima (currentB2BCategory vira 'all' ao escolher uma categoria aqui,
     // pra buscar em todos os tipos de fornecedor, não só no tipo da aba atual).
     if (b2bSelectedMainCategory) {
-      items = items.filter(item => item.mainCategory === b2bSelectedMainCategory &&
+      items = items.filter(item => (item.categories || []).includes(b2bSelectedMainCategory) &&
         (!b2bSelectedSubcategory || (item.subcategories || []).includes(b2bSelectedSubcategory)));
       categoryName = b2bSelectedSubcategory || b2bSelectedMainCategory;
     }
 
     if (b2bSelectedCity && currentB2BCategory !== 'favorites') {
-      items = items.filter(item => (item.location || '').includes(b2bSelectedCity));
+      items = items.filter(item => (item.city || '').trim() === b2bSelectedCity);
     }
 
     if (b2bSearchQuery) {
       const q = b2bSearchQuery.toLowerCase();
       items = items.filter(item =>
         (item.name && item.name.toLowerCase().includes(q)) ||
-        (item.location && item.location.toLowerCase().includes(q)) ||
+        (item.city && item.city.toLowerCase().includes(q)) ||
+        (item.services || []).some(s => (s.name || '').toLowerCase().includes(q)) ||
         (item.description && item.description.toLowerCase().includes(q)) ||
         (item.neighborhood && item.neighborhood.toLowerCase().includes(q))
       );
@@ -10224,7 +10316,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (items.length === 0) {
-      listContainer.innerHTML = `<div class="p-12 text-center bg-white rounded-2xl border border-zinc-200/80 text-sm text-zinc-500">Nenhum fornecedor encontrado nesta categoria.</div>`;
+      const mensagemVazia = currentB2BCategory === 'favorites'
+        ? 'Você ainda não favoritou nenhum fornecedor.'
+        : (b2bFornecedores.length === 0 ? 'Ainda não há fornecedores na vitrine.' : 'Nenhum fornecedor encontrado com esses filtros.');
+      listContainer.innerHTML = `<div class="p-12 text-center bg-white rounded-2xl border border-zinc-200/80 text-sm text-zinc-500">${mensagemVazia}</div>`;
       return;
     }
 
@@ -10251,7 +10346,9 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <!-- Imagem prévia da empresa -->
         <div class="btn-open-supplier-gallery relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 cursor-pointer">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          ${item.image
+            ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+            : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
           <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
             <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -10264,20 +10361,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-start justify-between gap-3 flex-wrap">
               <div class="min-w-0">
                 <div class="min-w-0">
-                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
-                    ${item.name}
+                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${escaparHtml(item.name)}">
+                    ${escaparHtml(item.name)}
                   </h4>
-                  <p class="text-sm text-zinc-400 font-medium font-sans">${localCurto(item)}</p>
+                  <p class="text-sm text-zinc-400 font-medium font-sans">${escaparHtml(localCurto(item))}</p>
                 </div>
               </div>
 
+              ${item.rating ? `
               <div class="flex items-center gap-1.5 text-sm shrink-0">
                 ${b2bRatingBadgeHTML(item)}
                 <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
-              </div>
+              </div>` : ''}
             </div>
 
-            <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.description || item.about || ''}</p>
+            <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${escaparHtml(item.description || item.about || '')}</p>
           </div>
 
           <div class="flex flex-wrap items-center justify-between gap-4 pt-3.5 mt-3.5 border-t border-zinc-100">
@@ -10314,7 +10412,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        switchB2BView('messages', item.chatId || 'mariana-assessoria');
+        abrirChatComFornecedor(item.id);
       });
 
       card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
@@ -10341,7 +10439,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.innerHTML = `
       <div class="btn-open-supplier-gallery relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden cursor-pointer">
-        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        ${item.image
+          ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+          : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
         <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
           <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -10350,13 +10450,14 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
-        <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
+        <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${escaparHtml(item.name)}">${escaparHtml(item.name)}</h4>
 
         <div class="flex items-center gap-1.5 text-sm text-zinc-600">
+          ${item.rating ? `
           ${b2bRatingBadgeHTML(item, true)}
           <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
-          <span class="text-zinc-400">·</span>
-          <span class="truncate">${localCurto(item)}</span>
+          <span class="text-zinc-400">·</span>` : ''}
+          <span class="truncate">${escaparHtml(localCurto(item))}</span>
         </div>
 
         <div class="flex items-center gap-3 text-sm text-zinc-600 flex-wrap">
@@ -10397,7 +10498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      switchB2BView('messages', item.chatId || 'mariana-assessoria');
+      abrirChatComFornecedor(item.id);
     });
 
     card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
@@ -10586,25 +10687,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Mesma lógica de favoritar usada no card — extraída pra ser reaproveitada
   // aqui e na página de perfil.
+  // Favoritos ficam salvos em fornecedores_favoritos (migration 037). Muda
+  // na tela na hora e desfaz se o banco recusar.
   function toggleB2BFavorite(item) {
-    const sourceKey = { venue: 'venues', decor: 'venues', advisor: 'advisors', photo: 'photo', buffet: 'buffet' }[item.type];
-    const source = sourceKey && (window.LOVE_DATA[sourceKey] || []).find(x => x.id === item.id);
-    if (source) source.isFavorite = !source.isFavorite;
-    item.isFavorite = !item.isFavorite;
-    return item.isFavorite;
+    const userId = window.loveClienteSession?.user?.id;
+    if (!userId || !item?.id) return item?.isFavorite;
+
+    const virouFavorito = !b2bFavoritosIds.has(item.id);
+    if (virouFavorito) b2bFavoritosIds.add(item.id); else b2bFavoritosIds.delete(item.id);
+    item.isFavorite = virouFavorito;
+
+    const pedido = virouFavorito
+      ? supabaseClient.from('fornecedores_favoritos').insert({ cliente_id: userId, fornecedor_id: item.id })
+      : supabaseClient.from('fornecedores_favoritos').delete().eq('cliente_id', userId).eq('fornecedor_id', item.id);
+
+    pedido.then(({ error }) => {
+      if (!error) return;
+      console.error('[vitrine] favorito:', error);
+      if (virouFavorito) b2bFavoritosIds.delete(item.id); else b2bFavoritosIds.add(item.id);
+      item.isFavorite = !virouFavorito;
+      renderB2BExplore();
+      if (activeB2BProfileItem && activeB2BProfileItem.id === item.id) renderB2BVendorProfile(item);
+    });
+
+    return virouFavorito;
   }
 
-  // "Contratar" não tem checkout de verdade ainda — abre o chat de verdade
-  // já com uma mensagem de intenção de contratação pré-preenchida.
-  function handleB2BHireAction(item) {
-    switchB2BView('messages', item.chatId || 'mariana-assessoria');
-    setTimeout(() => {
-      const chatInput = document.getElementById('b2b-chat-input');
-      if (chatInput && !chatInput.value) {
-        chatInput.value = `Olá! Gostaria de contratar os serviços de ${item.name}. Pode me passar mais detalhes?`;
-        chatInput.focus();
-      }
-    }, 50);
+  // "Contratar" não tem checkout de verdade ainda — abre a conversa real com
+  // o fornecedor já com uma mensagem de intenção de contratação.
+  async function handleB2BHireAction(item) {
+    await abrirChatComFornecedor(item.id);
+    const chatInput = document.getElementById('b2b-chat-input');
+    if (chatInput && !chatInput.value) {
+      chatInput.value = `Olá! Gostaria de contratar os serviços de ${item.name}. Pode me passar mais detalhes?`;
+      chatInput.focus();
+    }
   }
 
   function handleB2BShare(item, triggerBtn) {
@@ -10680,11 +10797,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const portfolioGrid = document.getElementById('b2b-profile-portfolio-grid');
     const favIcon = document.getElementById('b2b-profile-favorite-icon');
 
-    const portfolioPhotos = (item.portfolioPhotos && item.portfolioPhotos.length) ? item.portfolioPhotos : [item.image];
-    const avatarSrc = item.avatar || item.image;
+    const portfolioPhotos = (item.portfolioPhotos || []).filter(Boolean);
+    const capa = portfolioPhotos[0] || item.image || '';
 
-    if (coverImg) coverImg.src = portfolioPhotos[0] || item.image;
-    if (avatarImg) avatarImg.src = avatarSrc;
+    // Sem foto: fica o degradê do container da capa.
+    if (coverImg) {
+      coverImg.src = capa;
+      coverImg.classList.toggle('hidden', !capa);
+    }
+    if (avatarImg) avatarImg.src = item.avatar || avatarComIniciais(item.name);
     if (nameEl) nameEl.textContent = item.name;
     if (roleEl) {
       const roleText = item.role || item.company || '';
@@ -10729,12 +10850,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return `
           <div class="border border-zinc-200 rounded-xl bg-white overflow-hidden flex flex-col">
             <div class="h-36 bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50 overflow-hidden">
-              ${capa ? `<img src="${capa}" alt="${svc.name}" class="w-full h-full object-cover">` : ''}
+              ${capa ? `<img src="${escaparHtml(capa)}" alt="${escaparHtml(svc.name)}" class="w-full h-full object-cover">` : ''}
             </div>
             <div class="p-4 flex flex-col gap-2 flex-1">
-              <p class="text-sm font-semibold text-zinc-900 leading-snug">${svc.name}</p>
-              <p class="text-xs text-zinc-500">${categoria}</p>
-              <p class="text-base font-bold text-zinc-900 mt-auto">${rotuloPrecoServico(svc)}</p>
+              <p class="text-sm font-semibold text-zinc-900 leading-snug">${escaparHtml(svc.name)}</p>
+              <p class="text-xs text-zinc-500">${escaparHtml(categoria)}</p>
+              <p class="text-base font-bold text-zinc-900 mt-auto">${escaparHtml(rotuloPrecoServico(svc))}</p>
             </div>
           </div>
         `;
@@ -10815,7 +10936,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-b2b-profile-message')?.addEventListener('click', () => {
-    if (activeB2BProfileItem) switchB2BView('messages', activeB2BProfileItem.chatId || 'mariana-assessoria');
+    if (activeB2BProfileItem) abrirChatComFornecedor(activeB2BProfileItem.id);
   });
 
   document.getElementById('btn-b2b-profile-hire')?.addEventListener('click', () => {
@@ -11167,7 +11288,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // "R$ 28.500,00" → 28500
   function parseValorBRL(texto) {
-    const n = parseFloat(String(texto || '').replace(/[^d,]/g, '').replace(',', '.'));
+    const n = parseFloat(String(texto || '').replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.'));
     return Number.isFinite(n) ? n : 0;
   }
 
@@ -11241,7 +11362,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.querySelector('.btn-contracted-chat')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        switchB2BView('messages', item.chatId || 'mariana-assessoria');
+        switchB2BView('messages');
       });
 
       card.querySelector('.btn-contracted-actions')?.addEventListener('click', (e) => {
@@ -11425,7 +11546,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnContractedVendorChat) {
     btnContractedVendorChat.addEventListener('click', () => {
       if (activeContractedVendor) {
-        switchB2BView('messages', activeContractedVendor.chatId || 'mariana-assessoria');
+        switchB2BView('messages');
       }
     });
   }

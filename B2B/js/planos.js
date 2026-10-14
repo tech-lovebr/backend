@@ -1,6 +1,8 @@
 /* ==========================================================================
    LOVE B2B — Planos e recursos
-   Mock local (sem backend): grava o plano escolhido no localStorage.
+   Ainda sem pagamento real: o plano escolhido vai pro localStorage e também
+   pra `fornecedores.plan` — é o banco que a página pública do site consulta
+   (function site_publicado) pra liberar o subdomínio só pro Pro.
    ========================================================================== */
 
 function renderPlanButtons() {
@@ -16,7 +18,18 @@ function renderPlanButtons() {
   proBtn.textContent = pro ? 'Seu plano atual' : 'Fazer upgrade';
 }
 
-function setPlan(planName, message) {
+async function setPlan(planName, message) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  // Escolha manual substitui qualquer bonificação do Admin (origem/expiração
+  // deixam de valer), senão uma bonificação vencida rebaixaria o Pro escolhido.
+  const { error } = await supabaseClient
+    .from('fornecedores')
+    .update({ plan: planName, plan_origem: null, plan_expira_em: null })
+    .eq('id', session.user.id);
+  if (error) { showToast('Não foi possível alterar o plano.', true); return; }
+
   localStorage.setItem('b2b-plan', planName);
   if (typeof B2B_DATA !== 'undefined') B2B_DATA.professional.plan = planName;
   renderPlanButtons();

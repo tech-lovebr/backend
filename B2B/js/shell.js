@@ -217,18 +217,13 @@ async function initAuthGuard() {
     B2B_DATA.professional.company = fornecedor.company_name || B2B_DATA.professional.company;
     B2B_DATA.professional.email = fornecedor.email || B2B_DATA.professional.email;
     if (fornecedor.avatar_url) B2B_DATA.professional.avatar = fornecedor.avatar_url;
-    // Bonificação concedida no Admin vence o localStorage: sem isto, quem já
-    // tivesse mexido na página de planos nunca receberia a cortesia — nem a
-    // perderia quando vencesse.
-    const bonificado = fornecedor.plan_origem === 'bonificacao_admin';
+    // O plano vem sempre do banco (a página de planos grava lá, e o Admin
+    // grava as bonificações): é o mesmo dado que a página pública do site
+    // usa pra liberar o subdomínio — ver site_publicado na migration 038,
+    // que tem esta mesma regra. O localStorage é só cache.
     const vencido = fornecedor.plan_expira_em && new Date(fornecedor.plan_expira_em) < new Date();
-
-    if (bonificado) {
-      B2B_DATA.professional.plan = vencido ? 'Gratuito' : (fornecedor.plan || 'Gratuito');
-      localStorage.setItem('b2b-plan', B2B_DATA.professional.plan);
-    } else if (!localStorage.getItem('b2b-plan') && fornecedor.plan) {
-      B2B_DATA.professional.plan = fornecedor.plan;
-    }
+    B2B_DATA.professional.plan = (fornecedor.plan === 'Pro' && !vencido) ? 'Pro' : 'Gratuito';
+    localStorage.setItem('b2b-plan', B2B_DATA.professional.plan);
     B2B_DATA.professional.pixKey = fornecedor.pix_key || null;
     B2B_DATA.professional.pixKeyType = fornecedor.pix_key_type || null;
 

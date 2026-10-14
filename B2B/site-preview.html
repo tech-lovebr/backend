@@ -43,7 +43,7 @@
   <script src="js/utils.js?v=10"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
-  <script src="js/shell.js?v=30"></script>
+  <script src="js/shell.js?v=31"></script>
   <script src="js/site-builder.js?v=280"></script>
   <script>
     (async function () {
@@ -62,11 +62,9 @@
         ? location.hostname.slice(0, -SITE_DOMAIN_SUFFIX.length)
         : '';
       const pathSlug = location.pathname.replace(/^\/+|\/+$/g, '');
-      const publicSlug = (hostSlug && hostSlug !== 'hub' && hostSlug !== 'www' && !hostSlug.includes('.'))
-        ? hostSlug
-        : (/^[a-z0-9-]+$/.test(pathSlug) && pathSlug !== 'site-preview')
-          ? pathSlug
-          : params.get('site');
+      const viaSubdomain = !!hostSlug && hostSlug !== 'hub' && hostSlug !== 'www' && !hostSlug.includes('.');
+      const viaHubPath = !viaSubdomain && /^[a-z0-9-]+$/.test(pathSlug) && pathSlug !== 'site-preview';
+      const publicSlug = viaSubdomain ? hostSlug : viaHubPath ? pathSlug : params.get('site');
       canvas.dataset.pageKey = isCheckout ? 'checkout' : 'home';
 
       let paymentLink = null;
@@ -97,13 +95,38 @@
       // senão um visitante que compartilhe o navegador com quem edita
       // acabaria vendo o rascunho local de outra pessoa.
       if (!loadedState && publicSlug) {
-        const { data: page } = await supabaseClient.from('site_pages').select('state').eq('slug', publicSlug).maybeSingle();
-        if (page && page.state) loadedState = page.state;
-        else {
+        // site_publicado (migration 038) devolve o site e se o dono é Pro —
+        // o anon não pode ler o plano direto em `fornecedores`. Se a function
+        // ainda não existir no banco, cai pra leitura simples sem checar plano.
+        let page = null;
+        let donoPro = null;
+        const rpc = await supabaseClient.rpc('site_publicado', { p_slug: publicSlug }).maybeSingle();
+        if (!rpc.error) {
+          page = rpc.data;
+          donoPro = !!(page && page.dono_pro);
+        } else {
+          const { data } = await supabaseClient.from('site_pages').select('state').eq('slug', publicSlug).maybeSingle();
+          page = data;
+        }
+
+        if (!page || !page.state) {
           canvas.innerHTML = '<div class="site-preview-empty">Esse site ainda não foi publicado.</div>';
           window.b2bPageReady?.();
           return;
         }
+
+        // Subdomínio é só do Pro; o Gratuito fica em hub.love.com.br/<slug>.
+        // Cada um que chegar pelo endereço do outro plano é levado pro certo.
+        if (viaSubdomain && donoPro === false) {
+          location.replace(`https://hub.love.com.br/${publicSlug}`);
+          return;
+        }
+        if (viaHubPath && donoPro === true) {
+          location.replace(`https://${publicSlug}${SITE_DOMAIN_SUFFIX}/`);
+          return;
+        }
+
+        loadedState = page.state;
       }
 
       if (!loadedState && !publicSlug) {

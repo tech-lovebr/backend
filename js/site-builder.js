@@ -2760,6 +2760,20 @@ function slugDaUrlPublica() {
   return slug;
 }
 
+// Dados do convite publicado (função convite_publicado): evento + presentes.
+let conviteSlugPublico = null;
+let conviteDadosPublicos = null;
+
+// escapeHtml (acima) não escapa aspas — aqui o texto também vai para atributos.
+function escaparPublico(valor) {
+  return String(valor ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 async function initPublicPreview() {
   const root = document.getElementById('public-preview-root');
   if (!root) return;
@@ -2781,6 +2795,8 @@ async function initPublicPreview() {
       return;
     }
     publishedState = dados.state;
+    conviteSlugPublico = slug;
+    conviteDadosPublicos = dados;
     if (dados.titulo) document.title = `${dados.titulo} — Love`;
   } else {
     // Prévia do editor (/convite-preview): o que foi publicado neste navegador.
@@ -2804,6 +2820,44 @@ async function initPublicPreview() {
   root.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
   root.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 
+  // Botões do convite: Localização/Dress code → Informações, Lista de
+  // Presentes → presentes, Confirmar presença → formulário. Cada tela tem
+  // um #hash, então o voltar do navegador também funciona.
+  const destinoDoBotao = { 'qn-loc': 'informacoes', 'qn-dress': 'informacoes', 'qn-gifts': 'presentes', 'qn-rsvp': 'confirmar' };
+  // Só volta pelo histórico se a tela foi aberta por um botão do convite;
+  // se o visitante entrou direto em /<slug>#presentes, voltar = ir ao convite.
+  let abriuPeloConvite = false;
+  root.addEventListener('click', (e) => {
+    const botao = e.target.closest('[data-quicknav-btn-id]');
+    if (botao && destinoDoBotao[botao.dataset.quicknavBtnId]) {
+      abriuPeloConvite = true;
+      window.location.hash = destinoDoBotao[botao.dataset.quicknavBtnId];
+      return;
+    }
+    if (e.target.closest('[data-convite-voltar]')) {
+      if (abriuPeloConvite) {
+        abriuPeloConvite = false;
+        window.history.back();
+      } else {
+        window.history.replaceState(null, '', window.location.pathname);
+        renderTelaPublica(root);
+      }
+    }
+  });
+  window.addEventListener('hashchange', () => renderTelaPublica(root));
+  renderTelaPublica(root);
+}
+
+function renderTelaPublica(root) {
+  const tela = window.location.hash.replace('#', '');
+  window.scrollTo(0, 0);
+  if (tela === 'informacoes') return renderInformacoesPublicas(root);
+  if (tela === 'presentes') return renderPresentesPublicos(root);
+  if (tela === 'confirmar') return renderConfirmarPresencaPublica(root);
+  renderConvitePublico(root);
+}
+
+function renderConvitePublico(root) {
   const visible = builderState.sections.filter(s => !s.hidden);
   root.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
 
@@ -2815,6 +2869,137 @@ async function initPublicPreview() {
   if (capaEl) capaEl.style.minHeight = '348px';
 
   startCountdownTicker(root);
+}
+
+// Moldura das telas internas do convite (Informações, Presentes, Confirmar).
+function telaPublicaHtml(titulo, conteudo) {
+  return `
+    <div class="convite-tela">
+      <button type="button" class="convite-voltar" data-convite-voltar>← Voltar ao convite</button>
+      <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
+      ${conteudo}
+    </div>
+  ` + renderFixedFooterHtml();
+}
+
+function semDadosPublicos(root, titulo) {
+  root.innerHTML = telaPublicaHtml(titulo, '<p class="convite-vazio">Disponível no site publicado do evento.</p>');
+}
+
+function formatarDataPublica(data, hora) {
+  if (!data) return '';
+  const d = new Date(`${String(data).slice(0, 10)}T00:00:00`);
+  if (isNaN(d.getTime())) return '';
+  const texto = d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  return hora ? `${texto} às ${hora}` : texto;
+}
+
+function renderInformacoesPublicas(root) {
+  if (!conviteDadosPublicos) return semDadosPublicos(root, 'Informações');
+  const ev = conviteDadosPublicos.evento || {};
+  const quando = formatarDataPublica(ev.data, ev.hora);
+  const ate = ev.data_fim ? formatarDataPublica(ev.data_fim, ev.hora_fim) : (ev.hora_fim ? `até ${ev.hora_fim}` : '');
+  const enderecoMapa = [ev.local, ev.endereco].filter(Boolean).join(', ');
+  const mapa = enderecoMapa ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(enderecoMapa)}` : '';
+
+  const bloco = (rotulo, valor, extra = '') => valor ? `
+    <div class="convite-info">
+      <p class="convite-info-rotulo">${rotulo}</p>
+      <p class="convite-info-valor">${escaparPublico(valor).replace(/\n/g, '<br>')}</p>
+      ${extra}
+    </div>` : '';
+
+  const conteudo =
+    bloco('Quando', [quando, ate].filter(Boolean).join(' — ')) +
+    bloco('Local', ev.local) +
+    bloco('Endereço', ev.endereco, mapa ? `<a class="convite-link" href="${escaparPublico(mapa)}" target="_blank" rel="noopener noreferrer">Abrir no mapa</a>` : '') +
+    bloco('Ponto de referência', ev.referencia) +
+    bloco('Dress code', ev.dresscode) +
+    bloco('Informações gerais', ev.informacoes);
+
+  root.innerHTML = telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>');
+}
+
+function renderPresentesPublicos(root) {
+  if (!conviteDadosPublicos) return semDadosPublicos(root, 'Lista de Presentes');
+  const presentes = conviteDadosPublicos.presentes || [];
+  const brl = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  const conteudo = presentes.length ? `
+    <div class="convite-presentes">
+      ${presentes.map(p => `
+        <div class="convite-presente${p.recebido ? ' is-recebido' : ''}">
+          <div class="convite-presente-foto">
+            ${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="${escaparPublico(p.nome)}" loading="lazy">` : ''}
+          </div>
+          <div class="convite-presente-texto">
+            <p class="convite-presente-nome">${escaparPublico(p.nome)}</p>
+            <p class="convite-presente-valor">${p.recebido ? 'Já presenteado' : brl(p.valor)}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>` : '<p class="convite-vazio">A lista de presentes ainda está sendo montada.</p>';
+
+  root.innerHTML = telaPublicaHtml('Lista de Presentes', conteudo);
+}
+
+function renderConfirmarPresencaPublica(root) {
+  if (!conviteDadosPublicos) return semDadosPublicos(root, 'Confirmar presença');
+
+  root.innerHTML = telaPublicaHtml('Confirmar presença', `
+    <form class="convite-form" data-convite-rsvp novalidate>
+      <label>Seu nome completo
+        <input type="text" name="nome" required maxlength="120" autocomplete="name" placeholder="Como está no convite">
+      </label>
+      <label>E-mail <span>(opcional)</span>
+        <input type="email" name="email" maxlength="200" autocomplete="email" placeholder="seu@email.com">
+      </label>
+      <label>Telefone <span>(opcional)</span>
+        <input type="tel" name="telefone" maxlength="40" autocomplete="tel" placeholder="(11) 99999-9999">
+      </label>
+      <p class="convite-erro" hidden></p>
+      <button type="submit" class="convite-botao">Confirmar minha presença</button>
+    </form>
+  `);
+
+  const form = root.querySelector('[data-convite-rsvp]');
+  const erroEl = form.querySelector('.convite-erro');
+  const botao = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erroEl.hidden = true;
+    const nome = form.nome.value.trim();
+    if (nome.length < 2) {
+      erroEl.textContent = 'Digite seu nome completo.';
+      erroEl.hidden = false;
+      return;
+    }
+
+    botao.disabled = true;
+    botao.textContent = 'Confirmando…';
+    const { data, error } = await supabaseClient.rpc('confirmar_presenca', {
+      p_slug: conviteSlugPublico,
+      p_nome: nome,
+      p_email: form.email.value.trim() || null,
+      p_telefone: form.telefone.value.trim() || null
+    });
+
+    if (error || !data || !data.ok) {
+      if (error) console.error('Erro ao confirmar presença:', error);
+      botao.disabled = false;
+      botao.textContent = 'Confirmar minha presença';
+      erroEl.textContent = 'Não foi possível confirmar agora. Tente de novo em instantes.';
+      erroEl.hidden = false;
+      return;
+    }
+
+    form.outerHTML = `
+      <div class="convite-sucesso">
+        <p class="convite-sucesso-titulo">Presença confirmada!</p>
+        <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Sua presença já aparece na lista dos anfitriões.</p>
+      </div>`;
+  });
 }
 
 document.addEventListener('DOMContentLoaded', initPublicPreview);

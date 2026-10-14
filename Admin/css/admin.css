@@ -1790,7 +1790,8 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 /* --------------------------------------- Lista de dados em painel lateral
-   Rótulo à esquerda, valor à direita — em vez de caixas lado a lado. */
+   Duas colunas: rótulos alinhados à esquerda e valores começando todos na
+   mesma linha vertical, também à esquerda — em vez de caixas lado a lado. */
 
 .lista-dados {
   border: 1px solid var(--border);
@@ -1799,9 +1800,9 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 }
 
 .dados-linha {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   align-items: baseline;
-  justify-content: space-between;
   gap: 1rem;
   padding: .75rem 1rem;
   border-top: 1px solid var(--border);
@@ -1812,14 +1813,13 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .dados-linha .rotulo {
   font-size: .8125rem;
   color: var(--text-muted);
-  flex-shrink: 0;
 }
 
 .dados-linha .valor {
   font-size: .8125rem;
   font-weight: 600;
   color: var(--text);
-  text-align: right;
+  text-align: left;
   word-break: break-word;
 }
 

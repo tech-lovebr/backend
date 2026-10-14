@@ -6393,7 +6393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (previewQtyLabel) previewQtyLabel.textContent = `1 cota (R$ ${formatGiftCurrency(quotaValue)})`;
     // Um botão só: "Presentear com 1 cota · R$ X".
-    if (previewBtnPartial) previewBtnPartial.textContent = `Presentear com 1 cota · R$ ${formatGiftCurrency(quotaValue)}`;
+    if (previewBtnPartial) previewBtnPartial.textContent = 'Presentear com 1 cota';
     if (previewBtnFull) previewBtnFull.textContent = `Comprar as ${count} cotas (R$ ${formatGiftCurrency(total)})`;
 
     document.querySelectorAll('#gift-quota-preset-group .gift-chip').forEach(chip => {

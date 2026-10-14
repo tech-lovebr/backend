@@ -142,8 +142,10 @@ function initDatePicker(input, initialIso) {
       <button type="button" class="mini-cal-month-label-btn" data-dp-label>—</button>
       <button type="button" class="mini-cal-nav-btn" data-dp-next aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
     </div>
-    <div class="mini-cal-weekdays" data-dp-weekdays><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
-    <div class="mini-cal-grid" data-dp-grid></div>
+    <div class="dp-body" data-dp-body>
+      <div class="mini-cal-weekdays" data-dp-weekdays><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+      <div class="mini-cal-grid" data-dp-grid></div>
+    </div>
   `;
   document.body.appendChild(popover);
 
@@ -164,7 +166,8 @@ function initDatePicker(input, initialIso) {
 
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
-    label.textContent = capitalize(viewDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }));
+    // "Outubro de 1995" — só a primeira letra maiúscula.
+    label.textContent = `${capitalize(viewDate.toLocaleDateString('pt-BR', { month: 'long' }))} de ${year}`;
 
     const firstWeekday = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -183,8 +186,10 @@ function initDatePicker(input, initialIso) {
       if (iso === isoValue) classes.push('is-selected');
       html += `<button type="button" class="${classes.join(' ')}" data-dp-date="${iso}">${d}</button>`;
     }
+    // Sempre 6 semanas (42 dias): o calendário tem o mesmo tamanho em todo
+    // mês, em vez de crescer nos meses que ocupam 6 linhas.
     const totalCells = firstWeekday + daysInMonth;
-    const trailing = (7 - (totalCells % 7)) % 7;
+    const trailing = 42 - totalCells;
     for (let d = 1; d <= trailing; d++) {
       html += `<button type="button" class="mini-cal-day is-muted" disabled>${d}</button>`;
     }
@@ -225,15 +230,60 @@ function initDatePicker(input, initialIso) {
     grid.querySelectorAll('[data-dp-year]').forEach(btn => {
       btn.addEventListener('click', () => {
         viewDate.setFullYear(Number(btn.dataset.dpYear));
+        viewMode = 'months';
+        render();
+      });
+    });
+  }
+
+  // Clicar no rótulo "Outubro de 1995" mostra os meses do ano; clicar no ano
+  // (rótulo desta visão) leva aos anos.
+  function renderMonths() {
+    const label = popover.querySelector('[data-dp-label]');
+    const grid = popover.querySelector('[data-dp-grid]');
+    const weekdaysEl = popover.querySelector('[data-dp-weekdays]');
+    weekdaysEl.style.display = 'none';
+    grid.className = 'mini-cal-year-grid';
+
+    const year = viewDate.getFullYear();
+    label.textContent = String(year);
+
+    const now = new Date();
+    const selected = isoValue ? new Date(isoValue + 'T00:00:00') : null;
+
+    let html = '';
+    for (let m = 0; m < 12; m++) {
+      const classes = ['mini-cal-year-btn'];
+      if (year === now.getFullYear() && m === now.getMonth()) classes.push('is-current');
+      if (selected && year === selected.getFullYear() && m === selected.getMonth()) classes.push('is-selected');
+      const name = capitalize(new Date(year, m, 1).toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''));
+      html += `<button type="button" class="${classes.join(' ')}" data-dp-month="${m}">${name}</button>`;
+    }
+    grid.innerHTML = html;
+
+    grid.querySelectorAll('[data-dp-month]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        viewDate = new Date(year, Number(btn.dataset.dpMonth), 1);
         viewMode = 'days';
         render();
       });
     });
   }
 
+  // Altura do corpo (dias da semana + 6 semanas), medida uma vez: meses e
+  // anos ocupam exatamente o mesmo espaço, então a caixinha não muda de
+  // tamanho ao trocar de visão.
+  let bodyHeight = 0;
+
   function render() {
     if (viewMode === 'years') renderYears();
+    else if (viewMode === 'months') renderMonths();
     else renderDays();
+    const body = popover.querySelector('[data-dp-body]');
+    if (!bodyHeight && viewMode === 'days' && popover.style.display === 'block') {
+      bodyHeight = body.offsetHeight;
+      body.style.height = `${bodyHeight}px`;
+    }
     // A altura muda (5 ou 6 semanas, grade de anos): aberto em cima do
     // campo, ele precisa ser reposicionado pra continuar encostado nele.
     if (popover.style.display === 'block') position();
@@ -279,11 +329,12 @@ function initDatePicker(input, initialIso) {
     viewDate = isoValue ? new Date(isoValue + 'T00:00:00') : new Date();
     viewMode = 'days';
     yearRangeStart = Math.floor(viewDate.getFullYear() / 12) * 12;
-    render();
-    // Visível (mas transparente) antes de posicionar: position() precisa
-    // da altura real do calendário pra decidir se abre em cima ou embaixo.
+    // Visível (mas transparente) antes de desenhar e posicionar: render()
+    // mede a altura do corpo e position() a do calendário inteiro pra
+    // decidir se abre em cima ou embaixo.
     popover.style.visibility = 'hidden';
     popover.style.display = 'block';
+    render();
     position();
     popover.style.visibility = '';
     document.addEventListener('click', onOutsideClick);
@@ -300,8 +351,11 @@ function initDatePicker(input, initialIso) {
 
   popover.addEventListener('click', (e) => e.stopPropagation());
 
+  // Dias → meses → anos; escolher um ano volta aos meses, um mês aos dias.
   popover.querySelector('[data-dp-label]').addEventListener('click', () => {
     if (viewMode === 'days') {
+      viewMode = 'months';
+    } else if (viewMode === 'months') {
       yearRangeStart = Math.floor(viewDate.getFullYear() / 12) * 12;
       viewMode = 'years';
     } else {
@@ -310,13 +364,17 @@ function initDatePicker(input, initialIso) {
     render();
   });
 
+  // setDate(1) antes de trocar o mês: no dia 31, avançar um mês pulava
+  // os meses de 30 dias.
   popover.querySelector('[data-dp-prev]').addEventListener('click', () => {
     if (viewMode === 'years') { yearRangeStart -= 12; renderYears(); }
-    else { viewDate.setMonth(viewDate.getMonth() - 1); render(); }
+    else if (viewMode === 'months') { viewDate.setFullYear(viewDate.getFullYear() - 1); render(); }
+    else { viewDate.setDate(1); viewDate.setMonth(viewDate.getMonth() - 1); render(); }
   });
   popover.querySelector('[data-dp-next]').addEventListener('click', () => {
     if (viewMode === 'years') { yearRangeStart += 12; renderYears(); }
-    else { viewDate.setMonth(viewDate.getMonth() + 1); render(); }
+    else if (viewMode === 'months') { viewDate.setFullYear(viewDate.getFullYear() + 1); render(); }
+    else { viewDate.setDate(1); viewDate.setMonth(viewDate.getMonth() + 1); render(); }
   });
 
   input.addEventListener('click', (e) => { e.stopPropagation(); open(); });

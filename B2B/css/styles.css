@@ -6457,3 +6457,10 @@ body[data-theme="dark"] .notification-row-icon { background: #333333 !important;
    mesmo contorno da barra de busca do header (.topbar-search-trigger).
    :not(:focus) mantém a borda azul de foco do .field-input. */
 .b2b-header-bar .field-input:not(:focus) { border-color: #E4E4E4; }
+
+/* Seletor de data (initDatePicker, js/utils.js): rótulo como escrito
+   ("Outubro de 1995", "de" minúsculo) e meses/anos ocupando a mesma altura
+   da grade de dias — a caixinha não muda de tamanho ao trocar de visão. */
+.date-picker-popover .mini-cal-month-label-btn { text-transform: none; }
+.date-picker-popover .dp-body > .mini-cal-year-grid { height: 100%; grid-auto-rows: 1fr; }
+.date-picker-popover .dp-body > .mini-cal-year-grid .mini-cal-year-btn { padding: 0; }

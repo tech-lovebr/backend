@@ -10568,11 +10568,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mesma árvore de categoria/subcategoria do cadastro de produto no B2B
   // (B2B/js/produtos.js, SUBCATEGORY_MAP) — repetida aqui de propósito: são
   // apps/arquivos diferentes, sem import entre eles.
+  // Subcategorias renomeadas no cadastro do Hub: serviço salvo com o nome
+  // antigo continua casando com a opção nova do filtro.
+  const SUBCATEGORIA_ALIASES = {
+    'Open Bar': 'Bar Completo / Open Bar',
+    'Carrinhos': 'Carrinhos / Food Truck'
+  };
+  function subcategoriaAtual(sub) {
+    return SUBCATEGORIA_ALIASES[sub] || sub;
+  }
+
   const B2B_CATEGORY_TREE = {
     'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator', 'Celebrante'],
     'Espaços para Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
-    'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
-    'Bar e Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Bebidas Não Alcoólicas', 'Bar Infantil'],
+    'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos / Food Truck', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
+    'Bar e Bebidas': ['Bar Completo / Open Bar', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Consignação de Bebidas', 'Bar Infantil'],
     'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Montadores', 'Carregadores'],
     'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
     'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa', 'Recreação Infantil', 'Orquestra', 'Personagens Vivos', 'Mágicos', 'Efeitos Especiais'],
@@ -10669,7 +10679,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // (o B2B não tem categoria no nível do fornecedor).
       categories: [...new Set(servicos.map(s => s.category).filter(Boolean))],
       mainCategory: servicos.find(s => s.category)?.category || '',
-      subcategories: [...new Set(servicos.map(s => s.extra?.subcategory).filter(Boolean))],
+      subcategories: [...new Set(servicos.map(s => subcategoriaAtual(s.extra?.subcategory)).filter(Boolean))],
       priceNum: maisBarato ? Number(maisBarato.price) : 0,
       pricingType: maisBarato?.extra?.pricing?.type || (maisBarato ? 'VALOR_FIXO' : 'SOB_CONSULTA'),
       isFavorite: b2bFavoritosIds.has(f.id)
@@ -10999,7 +11009,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const servicos = item.services || [];
     if (b2bSelectedMainCategory) {
       const daCategoria = servicos.find(s => s.category === b2bSelectedMainCategory
-        && (!b2bSelectedSubcategory || (s.extra && s.extra.subcategory) === b2bSelectedSubcategory));
+        && (!b2bSelectedSubcategory || subcategoriaAtual(s.extra && s.extra.subcategory) === b2bSelectedSubcategory));
       if (daCategoria) return daCategoria;
     }
     return servicos.find(s => s.id === item.imageServiceId) || servicos[0] || null;

@@ -68,7 +68,9 @@
     .convite-voltar { background: none; border: 0; padding: 0; color: #71717A; font-size: 0.8125rem; font-weight: 600; cursor: pointer; font-family: inherit; }
     .convite-voltar:hover { color: #18181B; }
     .convite-tela-titulo { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 1.5rem; letter-spacing: -0.01em; }
-    .convite-tela-capa { margin: -0.25rem 0 1.5rem; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 10; background: #F4F4F5; }
+    /* Foto cheia, de ponta a ponta (sem as margens da tela), com a mesma
+       altura da capa da página principal do convite. */
+    .convite-tela-capa { margin: -0.25rem -1.5rem 1.5rem; height: 348px; overflow: hidden; background: #F4F4F5; }
     .convite-tela-capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .convite-vazio { color: #71717A; font-size: 0.9375rem; line-height: 1.6; }
     .convite-info { padding: 1rem 0; border-top: 1px solid #EAEAEA; }

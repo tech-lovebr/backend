@@ -5232,6 +5232,20 @@ body[data-theme="dark"] .profile-logo-hint { color: #71717A !important; }
 }
 .profile-logo-adjust-frame.is-dragging { cursor: grabbing; }
 
+/* Corte da imagem de capa do produto (proporção da capa do card, 14:5). */
+.product-cover-adjust-frame {
+  width: 100%; aspect-ratio: 14 / 5;
+  background: repeating-conic-gradient(#F4F4F5 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;
+  border: 1px solid var(--border-light); border-radius: 10px;
+  overflow: hidden; cursor: grab; touch-action: none; position: relative; user-select: none;
+}
+.product-cover-adjust-frame.is-dragging { cursor: grabbing; }
+.product-cover-adjust-img { position: absolute; max-width: none; pointer-events: none; }
+/* O seletor da capa tem a mesma proporção, e a prévia preenche o quadro. */
+.product-cover-picker { height: auto; aspect-ratio: 14 / 5; }
+.product-cover-picker .header-logo-picker-preview { width: 100%; height: 100%; max-height: none; object-fit: cover; }
+body[data-theme="dark"] .product-cover-adjust-frame { border-color: #404040 !important; }
+
 .avatar-crop-img {
   width: 100%; height: 100%;
   object-fit: contain;

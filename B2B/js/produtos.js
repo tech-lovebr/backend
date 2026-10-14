@@ -296,7 +296,7 @@ function renderCoverImagePicker() {
   if (!wrap) return;
   wrap.innerHTML = `
     <div class="header-logo-picker-wrap">
-      <label class="header-logo-picker ${currentCoverImage ? 'has-image' : ''}">
+      <label class="header-logo-picker product-cover-picker ${currentCoverImage ? 'has-image' : ''}">
         ${currentCoverImage
           ? `<img src="${currentCoverImage}" class="header-logo-picker-preview" alt="">
              <div class="header-logo-picker-overlay">${PI_IMAGE}<span>Alterar imagem</span></div>`
@@ -308,13 +308,156 @@ function renderCoverImagePicker() {
   `;
 
   const input = document.getElementById('product-cover-input');
-  const applyFile = (file) => readFileAsDataUrl(file, (dataUrl) => { currentCoverImage = dataUrl; renderCoverImagePicker(); });
+  // A imagem escolhida abre no modal de corte; só vira capa ao Concluir.
+  const applyFile = (file) => readFileAsDataUrl(file, (dataUrl) => openProductCoverCropModal(dataUrl));
   if (input) {
     input.addEventListener('change', () => { if (input.files[0]) applyFile(input.files[0]); });
     wireImageDropZone(input.closest('.header-logo-picker'), applyFile);
   }
   const removeBtn = document.getElementById('product-cover-remove');
   if (removeBtn) removeBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); currentCoverImage = null; renderCoverImagePicker(); });
+}
+
+/* -------------------- Modal: cortar a imagem de capa --------------------
+   A capa do card tem proporção 14:5 (≈390×140 no catálogo). Em vez de
+   guardar a foto inteira e deixar o object-fit decidir o enquadramento, o
+   fornecedor arrasta/zoom e o resultado é recortado de verdade (canvas) já
+   no tamanho da capa — é esse recorte que vai pro banco e pra vitrine. */
+const PRODUCT_COVER_ASPECT = 14 / 5;
+const PRODUCT_COVER_EXPORT_WIDTH = 1400;
+
+const coverCrop = { img: null, zoom: 1, dx: 0, dy: 0 };
+
+function coverCropFrame() {
+  return document.querySelector('#product-cover-crop-modal [data-cover-crop-frame]');
+}
+
+// Escala pra imagem cobrir o quadro no zoom 1 ("cover"), vezes o zoom.
+function coverCropScale() {
+  const frame = coverCropFrame();
+  const { img, zoom } = coverCrop;
+  if (!frame || !img) return 1;
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  return Math.max(fw / img.naturalWidth, fh / img.naturalHeight) * zoom;
+}
+
+// O deslocamento nunca deixa aparecer fundo: a imagem sempre cobre o quadro.
+function clampCoverCropOffset() {
+  const frame = coverCropFrame();
+  const { img } = coverCrop;
+  if (!frame || !img) return;
+  const s = coverCropScale();
+  const maxDx = Math.max(0, (img.naturalWidth * s - frame.clientWidth) / 2);
+  const maxDy = Math.max(0, (img.naturalHeight * s - frame.clientHeight) / 2);
+  coverCrop.dx = Math.min(maxDx, Math.max(-maxDx, coverCrop.dx));
+  coverCrop.dy = Math.min(maxDy, Math.max(-maxDy, coverCrop.dy));
+}
+
+function updateCoverCropView() {
+  const frame = coverCropFrame();
+  const modal = document.getElementById('product-cover-crop-modal');
+  const el = modal && modal.querySelector('[data-cover-crop-img]');
+  const { img } = coverCrop;
+  if (!frame || !el || !img) return;
+  clampCoverCropOffset();
+  const s = coverCropScale();
+  const w = img.naturalWidth * s, h = img.naturalHeight * s;
+  el.style.width = `${w}px`;
+  el.style.height = `${h}px`;
+  el.style.left = `${frame.clientWidth / 2 - w / 2 + coverCrop.dx}px`;
+  el.style.top = `${frame.clientHeight / 2 - h / 2 + coverCrop.dy}px`;
+  const range = modal.querySelector('[data-cover-crop-range]');
+  if (range) range.value = coverCrop.zoom;
+}
+
+function setCoverCropZoom(zoom) {
+  coverCrop.zoom = Math.min(4, Math.max(1, +Number(zoom).toFixed(2)));
+  updateCoverCropView();
+}
+
+// Recorta a área visível do quadro num canvas 14:5 e devolve JPEG.
+function exportCoverCrop() {
+  const frame = coverCropFrame();
+  const { img } = coverCrop;
+  if (!frame || !img) return null;
+  const s = coverCropScale();
+  const fw = frame.clientWidth, fh = frame.clientHeight;
+  const sx = (img.naturalWidth * s / 2 - fw / 2 - coverCrop.dx) / s;
+  const sy = (img.naturalHeight * s / 2 - fh / 2 - coverCrop.dy) / s;
+  const sw = fw / s, sh = fh / s;
+  const canvas = document.createElement('canvas');
+  canvas.width = PRODUCT_COVER_EXPORT_WIDTH;
+  canvas.height = Math.round(PRODUCT_COVER_EXPORT_WIDTH / PRODUCT_COVER_ASPECT);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL('image/jpeg', 0.88);
+}
+
+function openProductCoverCropModal(dataUrl) {
+  const modal = document.getElementById('product-cover-crop-modal');
+  if (!modal) { currentCoverImage = dataUrl; renderCoverImagePicker(); return; }
+  wireProductCoverCropModalOnce();
+  const img = new Image();
+  img.onload = () => {
+    coverCrop.img = img;
+    coverCrop.zoom = 1;
+    coverCrop.dx = 0;
+    coverCrop.dy = 0;
+    modal.querySelector('[data-cover-crop-img]').src = dataUrl;
+    modal.classList.add('show');
+    // O quadro só tem tamanho depois de aparecer.
+    requestAnimationFrame(updateCoverCropView);
+  };
+  img.src = dataUrl;
+}
+
+function closeProductCoverCropModal() {
+  const modal = document.getElementById('product-cover-crop-modal');
+  if (modal) modal.classList.remove('show');
+  coverCrop.img = null;
+}
+
+function wireProductCoverCropModalOnce() {
+  const modal = document.getElementById('product-cover-crop-modal');
+  if (!modal || modal.dataset.wired) return;
+  modal.dataset.wired = '1';
+
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeProductCoverCropModal(); });
+  modal.querySelector('[data-cover-crop-close]').addEventListener('click', closeProductCoverCropModal);
+  modal.querySelector('[data-cover-crop-done]').addEventListener('click', () => {
+    const result = exportCoverCrop();
+    if (result) { currentCoverImage = result; renderCoverImagePicker(); }
+    closeProductCoverCropModal();
+  });
+
+  const range = modal.querySelector('[data-cover-crop-range]');
+  range.addEventListener('input', () => setCoverCropZoom(range.value));
+  modal.querySelector('[data-cover-crop-zoom-minus]').addEventListener('click', () => setCoverCropZoom(coverCrop.zoom - 0.1));
+  modal.querySelector('[data-cover-crop-zoom-plus]').addEventListener('click', () => setCoverCropZoom(coverCrop.zoom + 0.1));
+
+  const frame = modal.querySelector('[data-cover-crop-frame]');
+  let dragging = false, startX = 0, startY = 0, startDx = 0, startDy = 0;
+  frame.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    startX = e.clientX; startY = e.clientY;
+    startDx = coverCrop.dx; startDy = coverCrop.dy;
+    frame.setPointerCapture(e.pointerId);
+    frame.classList.add('is-dragging');
+  });
+  frame.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    coverCrop.dx = startDx + (e.clientX - startX);
+    coverCrop.dy = startDy + (e.clientY - startY);
+    updateCoverCropView();
+  });
+  const stop = () => { dragging = false; frame.classList.remove('is-dragging'); };
+  frame.addEventListener('pointerup', stop);
+  frame.addEventListener('pointercancel', stop);
+  // Roda do mouse dá zoom no quadro.
+  frame.addEventListener('wheel', (e) => { e.preventDefault(); setCoverCropZoom(coverCrop.zoom + (e.deltaY < 0 ? 0.1 : -0.1)); }, { passive: false });
+  window.addEventListener('resize', () => { if (modal.classList.contains('show')) updateCoverCropView(); });
 }
 
 function renderGalleryImages() {

@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=491">
+  <link rel="stylesheet" href="css/styles.css?v=492">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -526,12 +526,34 @@
     </div>
   </div>
 
+  <!-- Modal: cortar a imagem de capa no tamanho da capa (ver
+       openProductCoverCropModal em js/produtos.js) -->
+  <div class="modal-backdrop" id="product-cover-crop-modal">
+    <div class="modal-card logo-adjust-modal-card">
+      <button type="button" class="logo-adjust-modal-close" data-cover-crop-close aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+      <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar imagem de capa</h2>
+      <p class="text-sm text-zinc-500 mb-4">Arraste pra enquadrar e use o zoom. A área visível é o que aparece na capa.</p>
+      <div class="product-cover-adjust-frame" data-cover-crop-frame>
+        <img src="" class="product-cover-adjust-img" data-cover-crop-img alt="">
+      </div>
+      <div class="logo-adjust-modal-controls">
+        <span class="logo-adjust-modal-zoom-label">Zoom:</span>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-cover-crop-zoom-minus>−</button>
+        <input type="range" min="1" max="4" step="0.02" value="1" class="logo-adjust-modal-range" data-cover-crop-range>
+        <button type="button" class="logo-adjust-modal-zoom-btn" data-cover-crop-zoom-plus>+</button>
+      </div>
+      <button type="button" class="btn-primary justify-center w-full py-3 mt-2" data-cover-crop-done>Concluir</button>
+    </div>
+  </div>
+
   <script src="js/data.js?v=15"></script>
   <script src="js/utils.js?v=15"></script>
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=33"></script>
-  <script src="js/produtos.js?v=13"></script>
+  <script src="js/produtos.js?v=14"></script>
 </body>
 </html>

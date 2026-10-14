@@ -1719,7 +1719,10 @@ body[data-page="dashboard"] .b2b-footer {
 .b2b-header-bar {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   flex-wrap: wrap;
-  min-height: 4rem;
+  /* Altura do botão de cabeçalho (42px) + padding: a barra — e a posição do
+     título — fica igual em página com ou sem botão (ex.: Configurações,
+     onde Preferências não tem botão e Perfil/Minha Empresa têm). */
+  min-height: calc(42px + 1.8rem);
   margin: calc(-1 * var(--b2b-content-pad-y)) calc(-1 * var(--b2b-content-pad-x)) 1.25rem;
   padding: 0.9rem var(--b2b-content-pad-x);
   background: #FAFAFA;

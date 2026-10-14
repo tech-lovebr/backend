@@ -50,8 +50,14 @@ function initSettingsTabs() {
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
         panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
       });
+      // Mesmo botão "Salvar alterações" pra Perfil e Minha Empresa — só
+      // muda qual formulário ele envia. Preferências salva sozinha.
       const saveBtn = document.getElementById('profile-save-top-btn');
-      if (saveBtn) saveBtn.hidden = btn.dataset.settingsTab !== 'perfil';
+      if (saveBtn) {
+        const tab = btn.dataset.settingsTab;
+        saveBtn.hidden = tab === 'preferencias';
+        saveBtn.setAttribute('form', tab === 'empresa' ? 'company-form' : 'profile-form');
+      }
     });
   });
 }

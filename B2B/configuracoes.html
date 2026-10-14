@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=496">
+  <link rel="stylesheet" href="css/styles.css?v=497">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -32,6 +32,9 @@
       <main class="b2b-content">
         <div class="b2b-header-bar">
           <h2 class="text-xl font-bold text-zinc-900">Configurações</h2>
+          <!-- Salva a aba aberta: Perfil (profile-form) ou Minha Empresa
+               (company-form) — o JS troca o atributo form. Em Preferências
+               fica escondido, e o cabeçalho mantém a mesma altura. -->
           <button type="submit" form="profile-form" class="btn-primary builder-toolbar-btn" id="profile-save-top-btn">Salvar alterações</button>
         </div>
         <p class="text-sm text-zinc-500 mb-5">Gerencie os dados da sua empresa e as preferências da sua conta.</p>
@@ -225,9 +228,6 @@
                 <textarea id="company-cancellation-policy" class="field-textarea" style="min-height:100px;" placeholder="Ex: Em caso de remarcação com aviso de até 60 dias, o sinal é mantido para a nova data. Cancelamentos têm direito a 50% de devolução."></textarea>
               </div>
 
-              <div>
-                <button type="submit" class="btn-secondary">Salvar informações da empresa</button>
-              </div>
             </form>
           </div>
 
@@ -413,6 +413,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=33"></script>
-  <script src="js/configuracoes.js?v=29"></script>
+  <script src="js/configuracoes.js?v=30"></script>
 </body>
 </html>

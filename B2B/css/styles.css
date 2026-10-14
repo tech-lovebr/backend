@@ -2419,21 +2419,15 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
 
 .btn-secondary:hover { background: #F4F4F5; }
 
-/* Botões de destaque em azul clarinho */
-#lead-add-btn.btn-secondary,
-#product-add-btn.btn-secondary,
-#share-board-btn.btn-secondary,
-#agenda-add-event-btn.btn-secondary,
-#member-add-btn.btn-secondary {
+/* Botão de destaque em azul clarinho. Os do cabeçalho das páginas
+   (Adicionar contato/produto/membro, Compartilhar agenda) saíram daqui:
+   seguem o padrão do cabeçalho, cor da sidebar — ver fim do arquivo. */
+#agenda-add-event-btn.btn-secondary {
   background: #EBF4FF;
   color: #333333;
   border-color: transparent;
 }
-#lead-add-btn.btn-secondary:hover,
-#product-add-btn.btn-secondary:hover,
-#share-board-btn.btn-secondary:hover,
-#agenda-add-event-btn.btn-secondary:hover,
-#member-add-btn.btn-secondary:hover {
+#agenda-add-event-btn.btn-secondary:hover {
   background: #DCEAFB;
 }
 

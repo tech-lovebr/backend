@@ -5700,13 +5700,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const isPurchased = Boolean(buyerName);
 
       const card = document.createElement('div');
-      card.className = `group bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
+      card.className = `group bg-white rounded-[var(--radius-card,10px)] border border-transparent shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
         isPurchased ? 'opacity-55 hover:opacity-100 cursor-pointer' : ''
       }`;
 
       card.innerHTML = `
         <!-- Topo do Card: Imagem com Proporção Ampla e Background Suave -->
-        <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden border-b border-zinc-100">
+        <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden">
           <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
           
           ${isPurchased ? `
@@ -5898,7 +5898,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     list.forEach(item => {
       const card = document.createElement('div');
-      card.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col justify-between gap-3 hover:shadow-md transition-shadow';
+      card.className = 'bg-white rounded-2xl border border-transparent shadow-sm p-4 flex flex-col justify-between gap-3 hover:shadow-md transition-shadow';
       card.innerHTML = `
         <div class="flex items-start gap-3">
           <img src="${item.image}" alt="${item.giftTitle}" class="w-16 h-16 rounded-xl object-cover border border-gray-100 flex-shrink-0">

@@ -311,9 +311,9 @@ function initCompanyForm() {
 
   /* -------- Forma e condições de pagamento -------- */
   const installmentsSelect = document.getElementById('company-max-installments');
-  installmentsSelect.innerHTML = ['<option value="0">O cliente assume os juros desde a 1ª parcela</option>']
-    .concat(Array.from({ length: 12 }, (_, i) =>
-      `<option value="${i + 1}">Eu assumo os juros até ${i + 1}x — depois o cliente paga juros</option>`))
+  // 0 = nenhuma parcela sem juros (o cliente paga juros desde a 1ª).
+  installmentsSelect.innerHTML = ['<option value="0">Nenhuma</option>', '<option value="1">1x (à vista)</option>']
+    .concat(Array.from({ length: 11 }, (_, i) => `<option value="${i + 2}">Até ${i + 2}x</option>`))
     .join('');
   installmentsSelect.value = String(p.maxInstallmentsNoInterest ?? 0);
 

@@ -2059,7 +2059,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Lista de slugs já ocupados (outros eventos no database e palavras reservadas do sistema)
-    const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento'];
+    // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
+    // um evento não pode ter o mesmo nome de uma página da plataforma.
+    const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
+      'cadastro', 'resetar-senha', 'convite-preview', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'blog', 'assets', 'css', 'js', 'lib'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -5309,14 +5312,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!evt || !ehUuid(evt.id)) return { error: null };
     const { cliente_id, status, tipo, ...campos } = mapEventToEventoRow(evt, null);
     let { error } = await supabaseClient.from('eventos').update(campos).eq('id', evt.id);
+    let slugEmUso = false;
     if (error && error.code === '23505') {
       // Link (slug) já usado por outro evento: salva o resto sem trocar o link.
+      slugEmUso = true;
       const { slug, ...semSlug } = campos;
       ({ error } = await supabaseClient.from('eventos').update(semSlug).eq('id', evt.id));
     }
     if (error) console.error('Erro ao salvar evento:', error);
-    return { error };
+    return { error, slugEmUso };
   }
+  // O "Publicar" do Convite Digital (js/site-builder.js) usa pra garantir que o
+  // link público (eventos.slug) está salvo antes de pôr o site no ar.
+  window.persistirEventoAtivo = persistirEventoAtivo;
 
   // showToast está desligado na plataforma — o retorno aparece no próprio botão.
   async function salvarComRetornoNoBotao(btn, salvar) {

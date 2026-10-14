@@ -445,6 +445,44 @@ async function persistBuilderStateRemote(pageKey, state) {
   if (error) console.error('Erro ao salvar Convite Digital no Supabase:', error);
 }
 
+// "Publicar": grava a cópia publicada (published_state) que a página pública
+// love.com.br/<slug> lê pela função convite_publicado (migration 038).
+async function publishBuilderStateRemote(pageKey, state) {
+  const eventId = getActiveEventUuid();
+  if (!eventId || typeof supabaseClient === 'undefined') return { error: new Error('Evento sem id do banco') };
+  const agora = new Date().toISOString();
+  const { error } = await supabaseClient
+    .from('convite_digital_pages')
+    .upsert({ evento_id: eventId, page_key: pageKey, state, published_state: state, published_at: agora, updated_at: agora }, { onConflict: 'evento_id,page_key' });
+  if (error) console.error('Erro ao publicar Convite Digital:', error);
+  return { error };
+}
+
+// Retorno no próprio botão (os avisos flutuantes estão desligados no painel).
+async function publicarConviteNoAr(btn) {
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Publicando…';
+  let resultado = 'Publicado';
+  try {
+    // O link público vem do evento (eventos.slug): garante que está salvo.
+    const evento = typeof window.persistirEventoAtivo === 'function'
+      ? await window.persistirEventoAtivo()
+      : { error: null };
+    const { error } = await publishBuilderStateRemote(currentPageKey, builderState);
+    if (error || (evento && evento.error)) resultado = 'Erro ao publicar';
+    else if (evento && evento.slugEmUso) resultado = 'Link já em uso';
+  } catch (e) {
+    console.error('Erro ao publicar Convite Digital:', e);
+    resultado = 'Erro ao publicar';
+  }
+  btn.textContent = resultado;
+  setTimeout(() => {
+    btn.textContent = textoOriginal;
+    btn.disabled = false;
+  }, 2200);
+}
+
 // Cria a primeira linha do Convite Digital de um evento recém-criado
 // (chamado por app.js, tanto na criação manual quanto ao semear os eventos
 // de demonstração) — já com o template de cor/imagem do tipo escolhido.
@@ -2633,12 +2671,12 @@ function initSiteBuilder() {
   const saveBtn = document.getElementById('builder-save');
   if (saveBtn) saveBtn.addEventListener('click', () => persistBuilderState(false));
   const publishBtn = document.getElementById('builder-publish');
-  if (publishBtn) publishBtn.addEventListener('click', () => {
+  if (publishBtn) publishBtn.addEventListener('click', async () => {
     persistBuilderState(true);
     const keys = pagePublishedKeys(currentPageKey);
     localStorage.setItem(keys.flag, '1');
     localStorage.setItem(keys.state, JSON.stringify(builderState));
-    showToast('Site publicado com sucesso!');
+    await publicarConviteNoAr(publishBtn);
   });
 
   const previewBtn = document.getElementById('builder-preview-link');
@@ -2713,14 +2751,43 @@ document.addEventListener('DOMContentLoaded', initSiteBuilder);
 
 /* -------------------- Página pública de pré-visualização (/convite-preview) -------------------- */
 
-function initPublicPreview() {
+// love.com.br/<slug> → "<slug>"; /convite-preview (prévia do editor) → null.
+function slugDaUrlPublica() {
+  const partes = window.location.pathname.split('/').filter(Boolean);
+  if (partes.length !== 1) return null;
+  const slug = decodeURIComponent(partes[0]).toLowerCase();
+  if (slug === 'convite-preview' || slug === 'convite-preview.html') return null;
+  return slug;
+}
+
+async function initPublicPreview() {
   const root = document.getElementById('public-preview-root');
   if (!root) return;
 
   let publishedState = null;
-  try {
-    publishedState = JSON.parse(localStorage.getItem(BUILDER_PUBLISHED_STATE_KEY) || 'null');
-  } catch (e) { publishedState = null; }
+  const slug = slugDaUrlPublica();
+
+  if (slug) {
+    // Site publicado do evento: vem do banco (função convite_publicado).
+    root.innerHTML = '<div class="public-preview-empty">Carregando convite…</div>';
+    let dados = null;
+    if (typeof supabaseClient !== 'undefined') {
+      const { data, error } = await supabaseClient.rpc('convite_publicado', { p_slug: slug });
+      if (error) console.error('Erro ao carregar convite publicado:', error);
+      dados = data;
+    }
+    if (!dados || !dados.state) {
+      root.innerHTML = '<div class="public-preview-empty">Convite não encontrado.<br>Confira o link ou peça um novo aos anfitriões.</div>';
+      return;
+    }
+    publishedState = dados.state;
+    if (dados.titulo) document.title = `${dados.titulo} — Love`;
+  } else {
+    // Prévia do editor (/convite-preview): o que foi publicado neste navegador.
+    try {
+      publishedState = JSON.parse(localStorage.getItem(BUILDER_PUBLISHED_STATE_KEY) || 'null');
+    } catch (e) { publishedState = null; }
+  }
 
   if (!publishedState || !Array.isArray(publishedState.sections) || !publishedState.sections.length) {
     root.innerHTML = '<div class="public-preview-empty">Este convite ainda não foi publicado.<br>Volte para "Personalizar evento" → "Aparência" e clique em "Publicar".</div>';

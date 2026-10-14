@@ -28,6 +28,7 @@
     { "source": "/fornecedores/:path*", "destination": "/" },
     { "source": "/notificacoes", "destination": "/" },
     { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
-    { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" }
+    { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" },
+    { "source": "/:slug([a-z0-9-]+)", "destination": "/convite-preview.html" }
   ]
 }

@@ -87,6 +87,10 @@ const server = http.createServer((req, res) => {
             if (!err2 && stats2.isFile()) {
               return serveFile(htmlPath);
             }
+            // love.com.br/<slug>: site publicado do evento (igual ao vercel.json).
+            if (/^\/[a-z0-9-]+$/.test(pathname)) {
+              return serveFile(path.join(PUBLIC_DIR, 'convite-preview.html'));
+            }
             res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
             return res.end('404 Arquivo não encontrado');
           });

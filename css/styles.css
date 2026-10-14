@@ -6853,3 +6853,7 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+/* Etiqueta da categoria do fornecedor: só contorno cinza, fundo transparente. */
+.b2b-categoria-tag { background: transparent !important; border: 1px solid #D4D4D8; }

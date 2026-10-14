@@ -10733,6 +10733,10 @@ document.addEventListener('DOMContentLoaded', () => {
       image: fotos[0] || (capaPrincipal && capaPrincipal.src) || '',
       imageFocus: (fotos[0] || !capaPrincipal) ? '50% 50%' : capaPrincipal.focus,
       imageServiceId: capaPrincipal ? capaPrincipal.id : null,
+      // Cards do Explorar (lista e grid): a capa já recortada no Hub (14:5,
+      // 1400×500) — mostrada no mesmo formato, fica idêntica ao que o
+      // fornecedor enquadrou. Sem capa: a primeira foto do portfólio.
+      cardImage: (servicos.map(s => s.cover_image_url).find(Boolean)) || fotos[0] || '',
       avatar: f.avatar_url || f.logo_url || '',
       portfolioPhotos: fotos,
       services: servicos,
@@ -11225,9 +11229,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.innerHTML = `
         <!-- Imagem prévia da empresa -->
-        <div class="btn-open-supplier-gallery relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 cursor-pointer">
-          ${item.image
-            ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.imageFocus || '50% 50%'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+        <div class="btn-open-supplier-gallery relative w-full md:w-[22rem] aspect-[14/5] self-start rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 cursor-pointer">
+          ${(item.cardImage || item.image)
+            ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
           <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
             <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
@@ -11329,9 +11333,9 @@ document.addEventListener('DOMContentLoaded', () => {
     card.className = 'b2b-grid-card group border border-zinc-200 rounded-xl overflow-hidden bg-[#FFFFFF] cursor-pointer flex flex-col';
 
     card.innerHTML = `
-      <div class="btn-open-supplier-gallery relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden cursor-pointer">
-        ${item.image
-          ? `<img src="${escaparHtml(item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.imageFocus || '50% 50%'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+      <div class="btn-open-supplier-gallery relative w-full aspect-[14/5] bg-zinc-100 overflow-hidden cursor-pointer">
+        ${(item.cardImage || item.image)
+          ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
           : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
         <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
           <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">

@@ -6731,3 +6731,20 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
   padding-bottom: 44px;
   transition: padding-bottom .12s ease;
 }
+
+
+/* Pop-up de cor: "Remover" abaixo da cor/código/copiar (ex.: Cor da transição). */
+.color-alpha-remove-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px !important;
+  background: #FFFFFF;
+  color: #DC2626;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.color-alpha-remove-btn:hover { background: #FEF2F2; }

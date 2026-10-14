@@ -1218,11 +1218,12 @@ function renderSectionHtml(section, mode, device) {
   const overlayDiv = (section.bgImage && section.overlayColor)
     ? `<div class="builder-section-overlay" style="background-color:${section.overlayColor};opacity:${section.overlayOpacity !== undefined ? section.overlayOpacity : 1};"></div>`
     : '';
-  const fadeColor = section.fadeColor || '#ffffff';
-  const fadeTopDiv = (section.bgImage && section.fadePosition === 'top')
+  // fadeColor '' = cor removida no inspetor: sem degradê. Sem valor = branco (padrão antigo).
+  const fadeColor = section.fadeColor === '' ? '' : (section.fadeColor || '#ffffff');
+  const fadeTopDiv = (section.bgImage && fadeColor && section.fadePosition === 'top')
     ? `<div class="builder-section-fade builder-section-fade-top" style="background:linear-gradient(to bottom, ${fadeColor} 0%, ${fadeColor} 35%, ${fadeColor}00 100%);"></div>`
     : '';
-  const fadeBottomDiv = (section.bgImage && section.fadePosition === 'bottom')
+  const fadeBottomDiv = (section.bgImage && fadeColor && section.fadePosition === 'bottom')
     ? `<div class="builder-section-fade builder-section-fade-bottom" style="background:linear-gradient(to top, ${fadeColor} 0%, ${fadeColor} 35%, ${fadeColor}00 100%);"></div>`
     : '';
   const columnsRowHtml = `<div class="builder-columns-row" data-section-id="${section.id}">
@@ -1992,7 +1993,7 @@ function renderSectionInspector(section) {
     ${section.fadePosition && section.fadePosition !== 'none' ? `
     <div class="inspector-field inspector-field-row">
       <span class="inspector-field-label">Cor da transição</span>
-      ${colorSwatchPopoverHtml(section.fadeColor || '#ffffff', 'data-section-fade-color')}
+      ${colorSwatchPopoverHtml(section.fadeColor === '' ? '' : (section.fadeColor || '#ffffff'), 'data-section-fade-color', { removivel: true })}
     </div>
     ` : ''}
     <div class="inspector-field">
@@ -2078,6 +2079,8 @@ function wireSectionInspector(section, body) {
   const fadeColorInput = body.querySelector('[data-section-fade-color]');
   if (fadeColorInput) {
     fadeColorInput.addEventListener('input', () => { section.fadeColor = fadeColorInput.value; renderCanvas(); });
+    // Remover: sem cor de transição (a imagem fica sem o degradê).
+    fadeColorInput.addEventListener('color-remover', () => { section.fadeColor = ''; renderCanvas(); pushHistory(); });
     fadeColorInput.addEventListener('change', () => pushHistory());
   }
 }
@@ -2437,7 +2440,8 @@ function segRow(label, path, options, current) {
   `;
 }
 
-function colorSwatchPopoverHtml(value, attrs) {
+// removivel: mostra "Remover" abaixo da cor (volta o campo para sem cor).
+function colorSwatchPopoverHtml(value, attrs, { removivel = false } = {}) {
   const isEmpty = !value;
   const v = value || '#000000';
   return `
@@ -2449,6 +2453,7 @@ function colorSwatchPopoverHtml(value, attrs) {
           <input type="text" class="color-alpha-hex" value="${isEmpty ? '' : escapeHtml(v.toUpperCase())}" maxlength="7" spellcheck="false" placeholder="#000000">
           <button type="button" class="color-alpha-copy-btn" data-color-swatch-copy title="Copiar cor">${BI.duplicate}</button>
         </div>
+        ${removivel ? '<button type="button" class="color-alpha-remove-btn" data-color-swatch-remove>Remover</button>' : ''}
       </div>
     </div>
   `;
@@ -2498,6 +2503,20 @@ function wireColorSwatchPopovers(root) {
         navigator.clipboard?.writeText(val).then(() => {
           showToast('Cor copiada!');
         }).catch(() => {});
+      });
+    }
+
+    const removeBtn = field.querySelector('[data-color-swatch-remove]');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hexInput.value = '';
+        toggle.classList.add('is-empty');
+        toggle.style.backgroundColor = '';
+        toggle.innerHTML = '<span class="color-alpha-swatch-empty-icon">+</span>';
+        popover.hidden = true;
+        if (typeof closeOpenColorPopover === 'function') closeOpenColorPopover();
+        nativeColor.dispatchEvent(new CustomEvent('color-remover', { bubbles: true }));
       });
     }
 

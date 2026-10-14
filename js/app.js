@@ -10353,7 +10353,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const mensagemVazia = currentB2BCategory === 'favorites'
         ? 'Você ainda não favoritou nenhum fornecedor.'
         : (b2bFornecedores.length === 0 ? 'Ainda não há fornecedores na vitrine.' : 'Nenhum fornecedor encontrado com esses filtros.');
-      listContainer.innerHTML = `<div class="p-12 text-center bg-[#FFFFFF] rounded-2xl border border-zinc-200/80 text-sm text-zinc-500">${mensagemVazia}</div>`;
+      // Favoritos: mesmo visual das caixas de Benefícios Love (sem linha, com a
+      // sombra leve da regra global de .bg-white.rounded-*). Explorar: com
+      // linha e sem sombra (bg-[#FFFFFF] escapa daquela regra).
+      const caixaVazia = currentB2BCategory === 'favorites'
+        ? 'bg-white border border-transparent'
+        : 'bg-[#FFFFFF] border border-zinc-200/80';
+      listContainer.innerHTML = `<div class="p-12 text-center ${caixaVazia} rounded-2xl text-sm text-zinc-500">${mensagemVazia}</div>`;
       return;
     }
 

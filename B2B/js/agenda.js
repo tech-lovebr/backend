@@ -1433,7 +1433,7 @@ function renderContratosClientes() {
       const info = CONTRATO_STATUS_LABELS[c.status] || CONTRATO_STATUS_LABELS.em_dia;
       return `
       <tr class="contratos-cliente-row${c.id === selectedContratoId ? ' is-selected' : ''}" data-contrato-select="${c.id}">
-        <td class="contratos-cliente-name-cell">${escapeHtml(c.client)}</td>
+        <td class="contratos-cliente-name-cell col-principal">${escapeHtml(c.client)}</td>
         <td>${escapeHtml(c.categoria || '—')}</td>
         <td><span class="${info.className}">${info.label}</span></td>
       </tr>
@@ -1485,7 +1485,7 @@ function renderContratoConvidados(contrato) {
       const info = CONVIDADO_STATUS_LABELS[g.status] || CONVIDADO_STATUS_LABELS.pendente;
       return `
       <tr class="contratos-convidado-row">
-        <td>${escapeHtml(g.nome)}</td>
+        <td class="col-principal">${escapeHtml(g.nome)}</td>
         <td><span class="${info.className}">${info.label}</span></td>
         <td>${g.mesa ? escapeHtml(g.mesa) : '—'}</td>
         <td>${g.whatsapp ? escapeHtml(g.whatsapp) : '—'}</td>

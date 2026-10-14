@@ -14,15 +14,15 @@ function renderTeam() {
 
   tbody.innerHTML = B2B_DATA.team.map(m => `
     <tr>
-      <td>
+      <td class="col-principal">
         <div class="min-w-0">
-          <p class="text-sm font-semibold text-zinc-900 truncate">${m.name} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</p>
-          <p class="text-xs text-zinc-500 truncate">${m.email}</p>
+          <p class="truncate">${m.name} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</p>
+          <p class="text-xs text-zinc-500 font-normal truncate">${m.email}</p>
         </div>
       </td>
-      <td><span class="text-sm text-zinc-700">${m.role}</span></td>
+      <td>${m.role}</td>
       <td><span class="modules-summary">${m.modules.length} de ${Object.keys(B2B_DATA.modules).length} áreas</span></td>
-      <td><span class="text-sm text-zinc-700">${statusLabel(m.status)}</span></td>
+      <td>${statusLabel(m.status)}</td>
       <td>
         ${m.owner ? '' : `
           <div class="flex items-center justify-end">

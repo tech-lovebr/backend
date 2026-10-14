@@ -2181,6 +2181,20 @@ body[data-theme="dark"] .payment-progress { background: #4B4B4B !important; }
 .dash-card > .leads-table-wrap:first-child,
 .dash-card > .empty-state + .leads-table-wrap { margin-top: -1.5rem; }
 .leads-table-wrap .leads-table th { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+
+/* Convidados (Agenda › Contratos): a tabela fica no fim do painel do
+   evento, não direto no card — mesma ida de ponta a ponta, até a borda de
+   baixo. O título "Convidados" acima já dá o respiro de cima. */
+.contratos-convidados-block > .leads-table-wrap {
+  margin: 0 -1.5rem -1.5rem;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+}
+
+/* Cliente selecionado na lista de contratos: a faixa da linha não pode
+   esconder a seleção. */
+.leads-table-wrap .leads-table tbody tr.is-selected td,
+.leads-table-wrap .leads-table tbody tr.is-selected:hover td { background: #EBF4FF; }
+body[data-theme="dark"] .leads-table-wrap .leads-table tbody tr.is-selected td { background: rgba(255, 255, 255, 0.1) !important; }
 .leads-table-wrap .leads-table th:first-child,
 .leads-table-wrap .leads-table td:first-child { padding-left: 1.5rem; }
 .leads-table-wrap .leads-table th:last-child,

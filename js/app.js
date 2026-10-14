@@ -10814,6 +10814,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Chat/Contratar abrem (ou criam) a conversa real com aquele fornecedor.
   async function abrirChatComFornecedor(fornecedorId) {
+    // Já marca a conversa desse fornecedor como a ativa (se estiver na
+    // memória), para o Chat abrir direto nela.
+    const conhecida = fornecedorId && b2bConversationsData.find(c => c.fornecedorId === fornecedorId);
+    if (conhecida) activeB2BConversationId = conhecida.id;
     switchB2BView('messages');
     if (fornecedorId && window.LoveChatService) {
       await window.LoveChatService.openConversationWithFornecedor(fornecedorId);
@@ -12127,7 +12131,17 @@ document.addEventListener('DOMContentLoaded', () => {
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   }
 
-  async function loadB2BConversationsData() {
+  // Várias telas pedem as conversas quase ao mesmo tempo (abrir o Chat,
+  // abrir a conversa, redesenhar): uma busca em andamento é reaproveitada
+  // em vez de repetir a mesma consulta pesada várias vezes seguidas.
+  let b2bConversasCarregando = null;
+  function loadB2BConversationsData() {
+    if (b2bConversasCarregando) return b2bConversasCarregando;
+    b2bConversasCarregando = carregarConversasDoBanco().finally(() => { b2bConversasCarregando = null; });
+    return b2bConversasCarregando;
+  }
+
+  async function carregarConversasDoBanco() {
     if (!window.loveClienteSession) { b2bConversationsData = []; return; }
 
     const { data: rows, error } = await supabaseClient
@@ -12143,6 +12157,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const last = msgs[msgs.length - 1];
       return {
         id: row.id,
+        fornecedorId: row.fornecedor && row.fornecedor.id,
         name: (row.fornecedor && row.fornecedor.company_name) || 'Fornecedor',
         // Categoria do fornecedor = a do primeiro serviço ativo com categoria (ex.: "Bar e Bebidas").
         category: ((row.fornecedor && row.fornecedor.products) || []).filter(p => p && p.active !== false && p.category).map(p => p.category)[0] || '',
@@ -12167,6 +12182,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.loveClienteSession) return;
     const clienteId = window.loveClienteSession.user.id;
 
+    // Conversa já carregada: abre na hora e atualiza em segundo plano.
+    const jaCarregada = b2bConversationsData.find(c => c.fornecedorId === fornecedorId);
+    if (jaCarregada) {
+      activeB2BConversationId = jaCarregada.id;
+      renderB2BChat();
+      return;
+    }
+
     const { data: existing } = await supabaseClient
       .from('conversations')
       .select('id')
@@ -12185,9 +12208,8 @@ document.addEventListener('DOMContentLoaded', () => {
       convId = created.id;
     }
 
-    await loadB2BConversationsData();
     activeB2BConversationId = convId;
-    renderB2BChat();
+    await renderB2BChat();
   }
 
   // Total de mensagens não lidas (todas as conversas) no envelope do
@@ -12683,14 +12705,21 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => setContractedVendorSubtab(btn.dataset.subtab));
   });
 
-  async function renderB2BChat() {
-    await loadB2BConversationsData();
+  function desenharChatComOQueTem() {
     if (!b2bConversationsData.some(c => c.id === activeB2BConversationId)) {
       activeB2BConversationId = b2bConversationsData[0] ? b2bConversationsData[0].id : null;
     }
     renderB2BChatContacts();
     renderB2BChatMessages();
     initB2BChatHandlers();
+  }
+
+  // Desenha na hora com as conversas já carregadas (sem esperar o banco) e
+  // redesenha quando a busca atualizada chega.
+  async function renderB2BChat() {
+    if (b2bConversationsData.length) desenharChatComOQueTem();
+    await loadB2BConversationsData();
+    desenharChatComOQueTem();
     await marcarConversaAtivaComoLida();
     atualizarContadoresDoChat();
   }

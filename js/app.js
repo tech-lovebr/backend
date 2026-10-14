@@ -10229,9 +10229,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     items.forEach(item => {
-      const avatarSrc = item.avatar || item.image;
-      const matchedConversation = (b2bConversationsData || []).find(c => c.id === item.chatId);
-      const isOnline = !!(matchedConversation && matchedConversation.online);
       const priceLabel = b2bPriceLabel(item);
 
       if (b2bViewMode === 'grid') {
@@ -10265,13 +10262,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex-1 flex flex-col justify-between min-w-0">
           <div>
             <div class="flex items-start justify-between gap-3 flex-wrap">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div class="relative shrink-0">
-                  <img src="${avatarSrc}" alt="" class="w-11 h-11 rounded-full object-cover border border-zinc-200">
-                  <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${isOnline ? 'bg-emerald-500' : 'bg-zinc-300'}" title="${isOnline ? 'Online' : 'Offline'}"></span>
-                </div>
+              <div class="min-w-0">
                 <div class="min-w-0">
-                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
+                  <h4 class="text-base sm:text-lg font-normal text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
                     ${item.name}
                   </h4>
                   <p class="text-sm text-zinc-400 font-medium font-sans">${item.location || item.neighborhood || ''}</p>
@@ -10357,7 +10350,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
-        <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
+        <h4 class="text-base font-normal text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
 
         <div class="flex items-center gap-1.5 text-sm text-zinc-600">
           ${b2bRatingBadgeHTML(item, true)}
@@ -11180,7 +11173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">${item.name}</h4>
+            <h4 class="text-base sm:text-lg font-normal text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">${item.name}</h4>
             <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.service || ''}</p>
           </div>
 

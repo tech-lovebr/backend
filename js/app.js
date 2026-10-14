@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (route.type === 'notifications') {
           openNotificationsPage({ pushUrl: false });
         } else if (route.type === 'tab') {
-          if (route.rota) aplicarRota(route.rota);
+          if (route.rota) aplicarRota(route.rota, { inicial: true });
           else switchRailTab(route.tab);
         } else {
           switchRailTab('overview');
@@ -837,11 +837,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return item ? { ...item, isFavorite: b2bFavoritosIds.has(item.id) } : null;
   }
 
-  function aplicarRota(rota) {
+  // inicial: abertura pela URL (F5/link). state.currentTab já nasce como
+  // 'edit-site' sem a aba estar aberta — sem forçar, recarregar em
+  // /personalizar não abria nada e ficava a Home do HTML.
+  function aplicarRota(rota, { inicial = false } = {}) {
     if (!rota) return;
     aplicandoRotaDoHistorico = true;
     try {
-      if (state.currentTab !== rota.tab) {
+      if (inicial || state.currentTab !== rota.tab) {
         if (rota.subId) pendingSubItemId = rota.subId;
         switchRailTab(rota.tab);
       }

@@ -2912,9 +2912,18 @@ function renderConvitePublico(root) {
 }
 
 // Moldura das telas internas do convite (Informações, Presentes, Confirmar).
+// Cor de fundo da seção de botões (ela já acompanha a cor de Aparência) —
+// as telas internas do convite usam a mesma, como as seções de informação.
+function corDeFundoDosBotoes() {
+  const qn = (builderState && builderState.sections || []).find(sec => sec.isQuickNav);
+  if (!qn) return '';
+  return qn.bg || resolveAdjacentSectionBg(qn) || '';
+}
+
 function telaPublicaHtml(titulo, conteudo, { comCapa = false } = {}) {
+  const fundo = corDeFundoDosBotoes();
   return `
-    <div class="convite-tela">
+    <div class="convite-tela"${fundo ? ` style="background-color:${escaparPublico(fundo)};"` : ''}>
       <button type="button" class="convite-voltar" data-convite-voltar>← Voltar ao convite</button>
       <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
       ${comCapa ? capaDoConviteHtml() : ''}

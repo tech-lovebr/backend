@@ -6574,3 +6574,11 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #wallet-sub-statement .guests-table td:last-child { padding-right: 1.5rem; }
 #wallet-sub-statement #wallet-transactions-list tr.linha-vazia td,
 #wallet-sub-statement #wallet-transactions-list tr.linha-vazia:hover td { background: #FFFFFF; }
+
+/* Convite publicado e prévias (Informações/Anfitriões): sem a borda tracejada
+   transparente de 1px das seções — ela só serve ao hover do editor e deixava
+   uma linha do fundo da seção (branca) em volta da foto da capa. */
+#public-preview-root .builder-section,
+#classic-builder-preview .builder-section {
+  border: 0;
+}

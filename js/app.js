@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('love-theme') || 'light';
       applyTheme(savedTheme);
     } else {
-      document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'first-access-locked');
+      document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'first-access-locked');
       document.body.removeAttribute('data-theme');
       document.documentElement.removeAttribute('data-theme');
       if (elements.viewDashboard) {
@@ -282,6 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isDashboard) {
       state.currentTab = 'legal-doc';
       elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
+      // Mesmo encaixe das outras páginas do painel: barra de título colada
+      // no header e no rail (ver body.page-mode em styles.css).
+      document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+      document.body.classList.add('page-mode');
       if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
       if (elements.mainArea) elements.mainArea.classList.add('full-width');
       document.querySelectorAll('.dashboard-tab-content').forEach(content => {
@@ -514,6 +518,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function openNotificationsPage(opts = {}) {
     state.currentTab = 'notifications';
     elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
+    // Mesmo encaixe das outras páginas do painel: barra de título colada
+    // no header e no rail (ver body.page-mode em styles.css).
+    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+    document.body.classList.add('page-mode');
     if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
     if (elements.mainArea) elements.mainArea.classList.add('full-width');
     document.querySelectorAll('.dashboard-tab-content').forEach(content => {
@@ -868,7 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Reseta todos os modos especiais do body primeiro
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode');
+    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode');
 
     // 1. Atualiza destaque circular do ícone na Sidebar Rail
     elements.railIconBtns.forEach(btn => {
@@ -992,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', () => {
       content.classList.toggle('active', content.id === `tab-${tabKey}`);
     });
 
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode');
 
     // Ativa os modos e sub-seções correspondentes
     if (tabKey === 'edit-site') {

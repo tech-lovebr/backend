@@ -4273,7 +4273,8 @@ body.editor-split-mode .dashboard-main-area > footer {
 body.rsvp-mode .dashboard-main-area,
 body.b2b-mode .dashboard-main-area,
 body.gifts-mode .dashboard-main-area,
-body.wallet-mode .dashboard-main-area {
+body.wallet-mode .dashboard-main-area,
+body.page-mode .dashboard-main-area {
   margin-left: calc(var(--rail-width-desktop) + var(--drawer-width-desktop)) !important;
   padding-top: var(--navbar-height-desktop) !important;
   padding-left: 0 !important;
@@ -4286,7 +4287,8 @@ body.wallet-mode .dashboard-main-area {
 body.rsvp-mode .dashboard-main-area.full-width,
 body.b2b-mode .dashboard-main-area.full-width,
 body.gifts-mode .dashboard-main-area.full-width,
-body.wallet-mode .dashboard-main-area.full-width {
+body.wallet-mode .dashboard-main-area.full-width,
+body.page-mode .dashboard-main-area.full-width {
   margin-left: var(--rail-width-desktop) !important;
 }
 
@@ -4296,10 +4298,12 @@ body.wallet-mode .dashboard-main-area.full-width {
   body.b2b-mode .dashboard-main-area,
   body.gifts-mode .dashboard-main-area,
   body.wallet-mode .dashboard-main-area,
+  body.page-mode .dashboard-main-area,
   body.rsvp-mode .dashboard-main-area.full-width,
   body.b2b-mode .dashboard-main-area.full-width,
   body.gifts-mode .dashboard-main-area.full-width,
-  body.wallet-mode .dashboard-main-area.full-width {
+  body.wallet-mode .dashboard-main-area.full-width,
+  body.page-mode .dashboard-main-area.full-width {
     margin-left: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -4312,7 +4316,8 @@ body.wallet-mode .dashboard-main-area.full-width {
   body.rsvp-mode .dashboard-main-area > footer,
   body.b2b-mode .dashboard-main-area > footer,
   body.gifts-mode .dashboard-main-area > footer,
-  body.wallet-mode .dashboard-main-area > footer {
+  body.wallet-mode .dashboard-main-area > footer,
+  body.page-mode .dashboard-main-area > footer {
     margin-left: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -4322,7 +4327,8 @@ body.wallet-mode .dashboard-main-area.full-width {
 body.rsvp-mode .dashboard-main-area > .dashboard-content-wrapper,
 body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper,
 body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper,
-body.wallet-mode .dashboard-main-area > .dashboard-content-wrapper {
+body.wallet-mode .dashboard-main-area > .dashboard-content-wrapper,
+body.page-mode .dashboard-main-area > .dashboard-content-wrapper {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   padding-left: 0 !important;
@@ -4335,13 +4341,16 @@ body.wallet-mode .dashboard-main-area > .dashboard-content-wrapper {
 body.rsvp-mode .dashboard-main-area > .dashboard-content-wrapper > *,
 body.b2b-mode .dashboard-main-area > .dashboard-content-wrapper > *,
 body.gifts-mode .dashboard-main-area > .dashboard-content-wrapper > *,
-body.wallet-mode .dashboard-main-area > .dashboard-content-wrapper > * {
+body.wallet-mode .dashboard-main-area > .dashboard-content-wrapper > *,
+body.page-mode .dashboard-main-area > .dashboard-content-wrapper > * {
   margin-top: 0 !important;
 }
 
 body.b2b-mode #tab-b2b,
 body.gifts-mode #tab-gifts,
-body.wallet-mode #tab-wallet {
+body.wallet-mode #tab-wallet,
+body.page-mode #tab-legal-doc,
+body.page-mode #tab-notifications {
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
@@ -4352,7 +4361,8 @@ body.wallet-mode #tab-wallet {
 body.rsvp-mode .dashboard-main-area > footer,
 body.b2b-mode .dashboard-main-area > footer,
 body.gifts-mode .dashboard-main-area > footer,
-body.wallet-mode .dashboard-main-area > footer {
+body.wallet-mode .dashboard-main-area > footer,
+body.page-mode .dashboard-main-area > footer {
   width: 100% !important;
   max-width: 100% !important;
   margin-left: 0 !important;

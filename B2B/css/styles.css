@@ -5333,6 +5333,57 @@ body[data-theme="dark"] img.avatar-love-icon.sidebar-icon-dark { display: block 
 .w-7 > .avatar-initials { font-size: 0.625rem; }
 body[data-theme="dark"] .avatar-initials { background: #333333 !important; color: #FFFFFF !important; }
 
+/* Chat: ⋮ ao lado das mensagens do fornecedor + menu Copiar/Salvar modelo */
+.chat-msg-menu-btn {
+  width: 26px; height: 26px; flex-shrink: 0; border: none; background: transparent; cursor: pointer;
+  border-radius: 8px; color: #A1A1AA; display: flex; align-items: center; justify-content: center;
+}
+.chat-msg-menu-btn svg { width: 15px; height: 15px; }
+.chat-msg-menu-btn:hover { background: #F4F4F5; color: #3F3F46; }
+.chat-msg-menu {
+  position: fixed; z-index: 130; display: none; min-width: 160px; padding: 0.3rem;
+  background: #fff; border: 1px solid var(--border-card); border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.chat-msg-menu.show { display: block; }
+.chat-msg-menu button {
+  display: block; width: 100%; text-align: left; border: none; background: transparent; cursor: pointer;
+  padding: 0.5rem 0.65rem; border-radius: 8px; font-size: 0.8125rem; color: #18181B;
+}
+.chat-msg-menu button:hover { background: #F4F4F5; }
+
+/* Comandos "/" acima da caixa de mensagem */
+.chat-command-menu {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 20;
+  max-height: 260px; overflow-y: auto; padding: 0.3rem;
+  background: #fff; border: 1px solid var(--border-card); border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.chat-command-option {
+  display: flex; flex-direction: column; gap: 0.1rem; width: 100%; text-align: left;
+  border: none; background: transparent; cursor: pointer; padding: 0.5rem 0.65rem; border-radius: 8px;
+}
+.chat-command-option:hover, .chat-command-option.is-active { background: #EBF4FF; }
+.chat-command-empty { padding: 0.6rem 0.65rem; font-size: 0.75rem; color: #A1A1AA; }
+.chat-template-command { font-size: 0.8125rem; font-weight: 700; color: #183B54; }
+.chat-template-preview { font-size: 0.75rem; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.chat-template-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  padding: 0.55rem 0.7rem; border: 1px solid var(--border-light); border-radius: var(--radius-control);
+}
+.chat-template-item > .min-w-0 { display: flex; flex-direction: column; min-width: 0; }
+.chat-template-remove { border: none; background: transparent; color: #A1A1AA; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; }
+.chat-template-remove:hover { color: #DC2626; }
+.chat-template-command-field { display: flex; align-items: center; gap: 0.4rem; }
+.chat-template-command-field > span { font-weight: 700; color: #183B54; font-size: 1rem; }
+body[data-theme="dark"] .chat-msg-menu,
+body[data-theme="dark"] .chat-command-menu { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .chat-msg-menu button { color: #FFFFFF !important; }
+body[data-theme="dark"] .chat-msg-menu button:hover,
+body[data-theme="dark"] .chat-command-option:hover,
+body[data-theme="dark"] .chat-command-option.is-active { background: #333333 !important; }
+body[data-theme="dark"] .chat-template-command { color: #FFFFFF !important; }
+
 /* Número de não lidas na lista de conversas do chat. */
 .chat-unread-count {
   min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9999px;

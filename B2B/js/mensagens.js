@@ -195,7 +195,7 @@ function renderActiveChat() {
     </div>
   `;
 
-  activeConv.messages.forEach(msg => {
+  activeConv.messages.forEach((msg, msgIndex) => {
     const isMe = msg.sender === 'me';
     const row = document.createElement('div');
     row.className = `flex items-end gap-2.5 ${isMe ? 'justify-end' : 'justify-start'} animate-fade-in`;
@@ -228,7 +228,10 @@ function renderActiveChat() {
 
     if (isMe) {
       const myPhoto = typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.profilePhoto;
+      // ⋮ ao lado de cada mensagem do fornecedor com texto: Copiar / Salvar
+      // modelo (js/chat-modelos.js).
       row.innerHTML = `
+        ${msg.text ? `<button type="button" class="chat-msg-menu-btn mb-5" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
           <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
@@ -298,6 +301,9 @@ function setupChatEvents() {
 
     if (input) input.value = '';
   }
+
+  // Usado pelos comandos de modelo (js/chat-modelos.js) pra mandar o texto salvo.
+  window.b2bChatSend = (text) => sendMessage(text);
 
   if (form) {
     form.addEventListener('submit', (e) => {

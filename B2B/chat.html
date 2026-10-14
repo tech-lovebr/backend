@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=501">
+  <link rel="stylesheet" href="css/styles.css?v=502">
 </head>
 <body class="font-sans" data-page="chat">
 
@@ -92,7 +92,9 @@
 
             <!-- Chat Input Bar -->
             <div class="p-4 bg-white border-t border-zinc-200 flex-shrink-0">
-              <form id="chat-form" class="flex items-center gap-3" onsubmit="return false;">
+              <form id="chat-form" class="relative flex items-center gap-3" onsubmit="return false;">
+                <!-- Comandos de modelo: aparece ao digitar "/" (js/chat-modelos.js) -->
+                <div id="chat-command-menu" class="chat-command-menu" hidden></div>
                 <input type="file" id="chat-file-input" class="hidden" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
                 <div class="chat-attach-wrap" id="chat-attach-wrap">
                   <button type="button" id="chat-attach-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-[#537bae] hover:border-[#537bae]/40 flex items-center justify-center transition-all cursor-pointer flex-shrink-0 shadow-2xs group" title="Adicionar anexo ou foto">
@@ -139,6 +141,53 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/mensagens.js?v=9"></script>
+  <!-- Menu ⋮ das mensagens do fornecedor -->
+  <div id="chat-msg-menu" class="chat-msg-menu" role="menu">
+    <button type="button" id="chat-msg-menu-copy" role="menuitem">Copiar</button>
+    <button type="button" id="chat-msg-menu-template" role="menuitem">Salvar modelo</button>
+  </div>
+
+  <!-- Drawer: modelo de mensagem (comando "/") -->
+  <div class="drawer-backdrop" id="template-drawer-backdrop"></div>
+  <aside class="form-drawer" id="template-drawer" aria-label="Modelo de mensagem">
+    <div class="form-drawer-header">
+      <div class="form-drawer-header-main">
+        <p class="task-drawer-list-label">Chat</p>
+        <h2 class="task-drawer-title">Modelo de mensagem</h2>
+      </div>
+      <button type="button" class="form-drawer-close" id="template-drawer-close" aria-label="Fechar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="form-drawer-body">
+      <p class="text-sm text-zinc-500 -mt-2 mb-4">Salve a mensagem com um comando. No chat, digite <strong>/</strong> e escolha o comando pra mandar a mensagem na hora.</p>
+      <div class="flex flex-col gap-4">
+        <div>
+          <label for="template-text" class="field-label">Mensagem</label>
+          <textarea id="template-text" class="field-textarea" style="min-height:140px;" maxlength="4000"></textarea>
+        </div>
+        <div>
+          <label for="template-command" class="field-label">Comando</label>
+          <div class="chat-template-command-field">
+            <span>/</span>
+            <input id="template-command" type="text" class="field-input" placeholder="orcamento" maxlength="40" autocomplete="off" spellcheck="false">
+          </div>
+          <p class="text-xs text-zinc-400 mt-1">Só letras, números e hífen. Ex.: orcamento, bem-vindo.</p>
+          <p id="template-error" class="text-xs text-rose-600 mt-1" hidden></p>
+        </div>
+        <div id="template-list-wrap" hidden>
+          <p class="field-label">Seus modelos</p>
+          <div id="template-list" class="flex flex-col gap-2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-drawer-footer">
+      <button type="button" id="template-drawer-cancel" class="btn-secondary">Cancelar</button>
+      <button type="button" id="template-save-btn" class="btn-primary">Salvar modelo</button>
+    </div>
+  </aside>
+
+  <script src="js/mensagens.js?v=10"></script>
+  <script src="js/chat-modelos.js?v=1"></script>
 </body>
 </html>

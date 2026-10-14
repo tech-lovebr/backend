@@ -10486,6 +10486,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // O B2B ainda não salva a foto de perfil no banco: sem avatar_url/logo_url,
   // mostra as iniciais do nome.
+  // Fornecedor sem foto: o ícone da Love é o avatar padrão no chat (e não
+  // uma foto de tema aleatória). O ícone é mostrado inteiro, com respiro,
+  // em vez de cortado no círculo.
+  const LOVE_AVATAR_PADRAO = 'assets/iconelove2.png';
+  function classeAvatarChat(src) {
+    return src === LOVE_AVATAR_PADRAO ? 'object-contain p-1.5 bg-white' : 'object-cover';
+  }
+
   function avatarComIniciais(nome) {
     const iniciais = String(nome || '').trim().split(/\s+/)
       .map(palavra => (palavra.match(/[\p{L}\p{N}]/u) || [''])[0])
@@ -11856,7 +11864,7 @@ document.addEventListener('DOMContentLoaded', () => {
         id: row.id,
         name: (row.fornecedor && row.fornecedor.company_name) || 'Fornecedor',
         category: '',
-        avatar: (row.fornecedor && row.fornecedor.avatar_url) || 'assets/theme_garden.jpg',
+        avatar: (row.fornecedor && row.fornecedor.avatar_url) || LOVE_AVATAR_PADRAO,
         online: false,
         // Não lidas = mensagens do fornecedor ainda sem read_at.
         unread: msgs.filter(m => m.sender_role === 'fornecedor' && !m.read_at).length,
@@ -12436,7 +12444,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       item.innerHTML = `
         <div class="relative flex-shrink-0">
-          <img src="${conv.avatar}" alt="${conv.name}" class="w-10 h-10 rounded-full object-cover border border-zinc-200">
+          <img src="${conv.avatar}" alt="${conv.name}" class="w-10 h-10 rounded-full ${classeAvatarChat(conv.avatar)} border border-zinc-200">
           ${conv.online ? '<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>' : ''}
         </div>
         <div class="flex-1 min-w-0">
@@ -12477,7 +12485,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (nameEl) nameEl.textContent = activeConv.name;
     if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : '';
-    if (avatarEl) avatarEl.src = activeConv.avatar;
+    if (avatarEl) {
+      avatarEl.src = activeConv.avatar;
+      const padrao = activeConv.avatar === LOVE_AVATAR_PADRAO;
+      avatarEl.classList.toggle('object-contain', padrao);
+      avatarEl.classList.toggle('p-1.5', padrao);
+      avatarEl.classList.toggle('bg-white', padrao);
+      avatarEl.classList.toggle('object-cover', !padrao);
+    }
 
     container.innerHTML = `
       <div class="flex justify-center my-2">
@@ -12529,7 +12544,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         row.innerHTML = `
-          <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-full object-cover flex-shrink-0 border border-zinc-200 mb-4">
+          <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-full ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
             <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
               ${msg.text ? `<p class="whitespace-pre-wrap break-words">${msg.text}</p>` : ''}
@@ -12630,7 +12645,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         newConvPicker.innerHTML = fornecedores.map(f => `
           <button type="button" data-fornecedor-id="${f.id}" class="w-full flex items-center gap-2.5 p-3 hover:bg-zinc-50 text-left border-b border-zinc-100 last:border-0">
-            <img src="${f.avatar_url || 'assets/theme_garden.jpg'}" class="w-8 h-8 rounded-full object-cover border border-zinc-200" alt="">
+            <img src="${f.avatar_url || LOVE_AVATAR_PADRAO}" class="w-8 h-8 rounded-full ${classeAvatarChat(f.avatar_url || LOVE_AVATAR_PADRAO)} border border-zinc-200" alt="">
             <span class="text-xs font-medium text-zinc-800 truncate">${f.company_name}</span>
           </button>
         `).join('');

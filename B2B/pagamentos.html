@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=468">
+  <link rel="stylesheet" href="css/styles.css?v=469">
 </head>
 <body class="font-sans" data-page="contratos">
   <div class="b2b-shell">
@@ -49,7 +49,7 @@
                 <h2 class="text-base font-bold text-zinc-900">Gestão de pagamentos</h2>
               </div>
             </div>
-            <div class="overflow-x-auto -mx-1">
+            <div class="overflow-x-auto leads-table-wrap">
               <table class="leads-table w-full">
                 <thead>
                   <tr><th>Cliente</th><th>Valor total</th><th>Pago</th><th>Parcelas</th><th>Próxima parcela</th><th>Quitação</th></tr>
@@ -80,15 +80,15 @@
                 <h2 class="text-base font-bold text-zinc-900">Links de Cobrança</h2>
               </div>
             </div>
-            <div class="overflow-x-auto -mx-1">
+            <div class="overflow-x-auto leads-table-wrap">
               <table class="leads-table w-full">
                 <thead>
                   <tr><th>Criado em</th><th>Valor</th><th>Parcelas</th><th>Situação</th><th>Link</th></tr>
                 </thead>
                 <tbody id="payment-links-body"></tbody>
               </table>
+              <div class="payment-link-empty" id="payment-links-empty" style="display:none;">Nenhum link de pagamento gerado ainda.</div>
             </div>
-            <div class="payment-link-empty" id="payment-links-empty" style="display:none;">Nenhum link de pagamento gerado ainda.</div>
           </div>
         </div>
       </main>
@@ -351,6 +351,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=30"></script>
-  <script src="js/contratos.js?v=25"></script>
+  <script src="js/contratos.js?v=26"></script>
 </body>
 </html>

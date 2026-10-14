@@ -175,7 +175,7 @@ function renderLeadsTable() {
 
   tbody.innerHTML = items.map(lead => `
     <tr data-open-lead="${lead.id}" style="cursor:pointer;">
-      <td class="font-medium text-zinc-900">${escapeHtml(lead.name)}</td>
+      <td class="font-semibold text-zinc-900">${escapeHtml(lead.name)}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
       <td>${formatCurrency(lead.value || 0)}</td>

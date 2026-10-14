@@ -348,7 +348,7 @@ function renderContratosAbertos() {
       const pct = row.valor_total ? Math.min(100, Math.round((row.valor_pago / row.valor_total) * 100)) : 0;
       return `
       <tr>
-        <td>${escapeHtml(row.client_name)}</td>
+        <td class="font-semibold text-zinc-900">${escapeHtml(row.client_name)}</td>
         <td>${formatCurrency(row.valor_total)}</td>
         <td>
           ${formatCurrency(row.valor_pago)} de ${formatCurrency(row.valor_total)}

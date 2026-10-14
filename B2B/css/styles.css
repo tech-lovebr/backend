@@ -2157,6 +2157,37 @@ body[data-theme="dark"] .payment-progress { background: #4B4B4B !important; }
 .leads-table tr:hover td { background: #FAFAFA; }
 .leads-table tbody tr:first-child td { border-top: none; }
 
+/* Listas de dados (Contatos, Gestão de pagamentos, Links de cobrança): mesmo
+   padrão das tabelas do Admin — cabeçalho escuro, faixas alternadas
+   começando pela cinza, hover azul claro, e as faixas indo de uma borda à
+   outra do card (por isso a margem negativa anulando o padding do
+   .dash-card; o respiro do texto vem do padding das células). */
+.dash-card > .leads-table-wrap { margin: 0 -1.5rem; }
+.dash-card > .leads-table-wrap:last-child {
+  margin-bottom: -1.5rem;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+}
+
+.leads-table-wrap .leads-table th { color: #333333; font-weight: 700; }
+.leads-table-wrap .leads-table th:first-child,
+.leads-table-wrap .leads-table td:first-child { padding-left: 1.5rem; }
+.leads-table-wrap .leads-table th:last-child,
+.leads-table-wrap .leads-table td:last-child { padding-right: 1.5rem; }
+.leads-table-wrap .leads-table td { vertical-align: middle; transition: background .12s ease; }
+
+.leads-table-wrap .leads-table tbody tr:nth-child(odd) td { background: #F9F9F9; }
+.leads-table-wrap .leads-table tbody tr:nth-child(even) td { background: #FFFFFF; }
+.leads-table-wrap .leads-table tbody tr:hover td { background: #EBF4FF; }
+
+/* Linha de "nenhum item" não é dado: sem faixa nem hover. */
+.leads-table-wrap .leads-table tbody td[colspan],
+.leads-table-wrap .leads-table tbody tr:hover td[colspan] { background: transparent; }
+
+body[data-theme="dark"] .leads-table-wrap .leads-table tbody tr:nth-child(odd) td { background: rgba(255, 255, 255, 0.03) !important; }
+body[data-theme="dark"] .leads-table-wrap .leads-table tbody tr:nth-child(even) td { background: transparent !important; }
+body[data-theme="dark"] .leads-table-wrap .leads-table tbody tr:hover td { background: rgba(255, 255, 255, 0.07) !important; }
+body[data-theme="dark"] .leads-table-wrap .leads-table tbody td[colspan] { background: transparent !important; }
+
 /* Messages / chat */
 
 .chat-shell {

@@ -6328,12 +6328,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewQtyLabel = document.getElementById('gift-quota-preview-qty-label');
     const previewBtnPartial = document.getElementById('gift-quota-preview-btn-partial');
     const previewBtnFull = document.getElementById('gift-quota-preview-btn-full');
-    if (!priceInput || !quotaCountInput || !quotaValueInput) return;
+    if (!priceInput || !quotaCountInput) return;
 
     const total = parseFloat(priceInput.value) || 0;
     let count = Math.max(2, parseInt(quotaCountInput.value, 10) || 2);
 
-    if (source === 'value') {
+    if (source === 'value' && quotaValueInput) {
       const typedQuotaValue = parseFloat(quotaValueInput.value) || 0;
       if (typedQuotaValue > 0 && total > 0) {
         count = Math.max(2, Math.round(total / typedQuotaValue));
@@ -6342,13 +6342,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     quotaCountInput.value = count;
     const quotaValue = count > 0 ? total / count : 0;
-    quotaValueInput.value = quotaValue > 0 ? quotaValue.toFixed(2) : '';
+    if (quotaValueInput) quotaValueInput.value = quotaValue > 0 ? quotaValue.toFixed(2) : '';
 
     if (summaryText) {
       summaryText.innerHTML = `Cada cota custará <strong class="text-zinc-900">R$ ${formatGiftCurrency(quotaValue)}</strong> (${count} cotas no total)`;
     }
     if (previewQtyLabel) previewQtyLabel.textContent = `1 cota (R$ ${formatGiftCurrency(quotaValue)})`;
-    if (previewBtnPartial) previewBtnPartial.textContent = `Presentear R$ ${formatGiftCurrency(quotaValue)}`;
+    // Um botão só: "Presentear com 1 cota · R$ X".
+    if (previewBtnPartial) previewBtnPartial.textContent = `Presentear com 1 cota · R$ ${formatGiftCurrency(quotaValue)}`;
     if (previewBtnFull) previewBtnFull.textContent = `Comprar as ${count} cotas (R$ ${formatGiftCurrency(total)})`;
 
     document.querySelectorAll('#gift-quota-preset-group .gift-chip').forEach(chip => {

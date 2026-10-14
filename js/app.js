@@ -6535,6 +6535,18 @@ document.addEventListener('DOMContentLoaded', () => {
       declined: '<span class="text-xs sm:text-sm font-medium whitespace-nowrap" style="color:#b04369;">Recusado</span>'
     };
 
+    // Mesa de cada pessoa: a da planta (Mapear mesas); sem assento lá, a mesa
+    // antiga do convidado (Organizar mesas), se houver.
+    // try: na abertura da plataforma a lista pode ser desenhada antes de o
+    // módulo da planta existir.
+    let elementosDaPlanta = [];
+    try { elementosDaPlanta = getFloorPlanElements(); } catch (e) {}
+    const mesaDaPessoa = (seatName, guest) => {
+      const numero = findFloorPlanTableNumberForGuest(seatName, elementosDaPlanta);
+      if (numero !== null && numero !== undefined) return String(numero);
+      return extractTableNumber(guest.table === 'Mesa a Definir' ? '' : guest.table);
+    };
+
     // Um convidado com acompanhantes nunca aparece com nomes concatenados
     // ("Fulano & Beltrano") numa única linha — cada pessoa ganha sua própria
     // linha, sempre com um nome único, compartilhando status e mesa da mesma reserva.
@@ -6545,10 +6557,18 @@ document.addEventListener('DOMContentLoaded', () => {
         ? `R$ ${giftsTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
         : '—';
 
-      const attendees = [{ name: guest.name, isPrimary: true }];
+      // seatName: o nome com que a pessoa aparece na planta (Mapear mesas) —
+      // acompanhante sem nome lá é "Acompanhante de <primeiro nome>".
+      const primeiroNome = (guest.name || '').trim().split(/\s+/)[0];
+      const attendees = [{ name: guest.name, seatName: guest.name, isPrimary: true }];
       (guest.companionsNames || []).forEach(comp => {
         const cleanName = (comp || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
-        if (cleanName) attendees.push({ name: cleanName, isPrimary: false });
+        const generico = !cleanName || cleanName.toLowerCase() === 'acompanhante';
+        attendees.push({
+          name: cleanName || 'Acompanhante',
+          seatName: generico ? `Acompanhante de ${primeiroNome}` : cleanName,
+          isPrimary: false
+        });
       });
 
       attendees.forEach(attendee => {
@@ -6565,7 +6585,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? formatGuestTitleLabel(guest) : '—'}</span>
           </td>
           <td>
-            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${extractTableNumber(guest.table)}</span>
+            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${mesaDaPessoa(attendee.seatName, guest)}</span>
           </td>
           <td>
             <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? giftLabel : '—'}</span>
@@ -7612,6 +7632,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeEvent = getActiveEvent();
     const eventId = (activeEvent && activeEvent.id) || 'default';
     const key = `love_floorplan_${eventId}`;
+    // Fonte principal: a planta salva no evento (banco). O localStorage fica
+    // como reserva para plantas montadas antes de ela ir para o banco.
+    if (activeEvent && Array.isArray(activeEvent.floorPlan)) {
+      return JSON.parse(JSON.stringify(activeEvent.floorPlan)).filter(el => el && FLOORPLAN_TYPE_META[el.type]);
+    }
     const stored = localStorage.getItem(key);
     if (stored) {
       try {
@@ -7621,6 +7646,8 @@ document.addEventListener('DOMContentLoaded', () => {
           // versão anterior sem "type" válido, que apareciam na planta com ícone "?").
           const cleaned = parsed.filter(el => el && FLOORPLAN_TYPE_META[el.type]);
           if (cleaned.length !== parsed.length) localStorage.setItem(key, JSON.stringify(cleaned));
+          // Planta montada antes de ir para o banco: leva para o evento agora.
+          if (cleaned.length && activeEvent && ehUuid(activeEvent.id)) saveFloorPlanElements(cleaned);
           return cleaned;
         }
       } catch (e) {}
@@ -7628,10 +7655,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return [];
   }
 
+  let gravarPlantaTimer = null;
   function saveFloorPlanElements(elements) {
     const activeEvent = getActiveEvent();
     const eventId = (activeEvent && activeEvent.id) || 'default';
-    localStorage.setItem(`love_floorplan_${eventId}`, JSON.stringify(elements));
+    try { localStorage.setItem(`love_floorplan_${eventId}`, JSON.stringify(elements)); } catch (e) {}
+    if (!activeEvent) return;
+    activeEvent.floorPlan = JSON.parse(JSON.stringify(elements));
+    // Grava no banco (eventos.extra.floorPlan) logo depois da última mudança.
+    clearTimeout(gravarPlantaTimer);
+    gravarPlantaTimer = setTimeout(() => {
+      persistirEventoAtivo().catch(e => console.error('Erro ao salvar a planta:', e));
+    }, 800);
   }
 
   // Mantém o array de nomes por assento do mesmo tamanho de "seats"

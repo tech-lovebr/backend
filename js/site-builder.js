@@ -3172,7 +3172,12 @@ function formatarDataPublica(data, hora) {
 
 function renderInformacoesPublicas(root) {
   if (!conviteDadosPublicos) return semDadosPublicos(root, 'Informações');
-  const ev = conviteDadosPublicos.evento || {};
+  root.innerHTML = telaInformacoesHtml(conviteDadosPublicos.evento || {});
+}
+
+// Tela Informações (convite publicado e prévia da aba Informações no editor —
+// as duas usam esta mesma função, para ficarem idênticas).
+function telaInformacoesHtml(ev) {
   const quando = formatarDataPublica(ev.data, ev.hora);
   const ate = ev.data_fim ? formatarDataPublica(ev.data_fim, ev.hora_fim) : (ev.hora_fim ? `até ${ev.hora_fim}` : '');
   const enderecoCompleto = enderecoComCidade(ev.endereco, ev.cidade, ev.uf);
@@ -3191,12 +3196,15 @@ function renderInformacoesPublicas(root) {
     bloco('Local', ev.local) +
     bloco('Endereço', enderecoCompleto, botoesMapa) +
     bloco('Ponto de referência', ev.referencia);
+  // Dress code e Informações gerais: cada um na sua caixa branca, sobre o
+  // fundo colorido — só aparecem se tiver texto.
+  const caixa = html => html ? `<div class="convite-info-caixa">${html}</div>` : '';
   const conteudo =
-    (principais ? `<div class="convite-info-caixa">${principais}</div>` : '') +
-    bloco('Dress code', ev.dresscode) +
-    bloco('Informações gerais', ev.informacoes);
+    caixa(principais) +
+    caixa(bloco('Dress code', (ev.dresscode || '').trim())) +
+    caixa(bloco('Informações gerais', (ev.informacoes || '').trim()));
 
-  root.innerHTML = telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>', { comCapa: true });
+  return telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>', { comCapa: true });
 }
 
 // "Sobre" → o que foi preenchido em Personalizar evento → Anfitriões.
@@ -3468,40 +3476,30 @@ function renderInformacoesPreview() {
   container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
   container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 
-  // Só a capa e a seção de botões: seções extras criadas em Aparência são do
-  // convite principal, não da tela de Informações.
-  const capaInfo = (builderState.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock);
-  const visible = (builderState.sections || []).filter(s => !s.hidden && (s === capaInfo || s.isQuickNav));
-  container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
-
-  // Remove os elementos de Título/Texto (a marcação de tipo só existe em modo preview).
-  container.querySelectorAll('[data-element-type="titulo"], [data-element-type="texto"]').forEach(node => node.remove());
-
-  // Tudo vem dos campos ao lado (com o que já está salvo no evento como reserva).
+  // Mesma tela do convite publicado (#informacoes), montada com os campos ao
+  // lado — o que já está salvo no evento serve de reserva.
   const activeEvent = getActiveEventForBuilder();
   const details = (activeEvent && activeEvent.eventDetails) || {};
   const campo = (id, salvo) => (document.getElementById(id)?.value || salvo || '').trim();
-  const local = campo('editor-data-location', details.locationName);
-  const endereco = enderecoComCidade(
-    campo('editor-data-address', details.address),
-    campo('editor-data-city', details.city),
-    campo('editor-data-state', details.state)
-  );
-  const inicio = formatarDataPublica(campo('editor-data-date', details.date), campo('editor-data-time', details.time));
-  const termino = formatarDataPublica(campo('editor-data-end-date', details.endDate), campo('editor-data-end-time', details.endTime));
-  // Dress code e Informações gerais só aparecem se houver texto no campo
-  // (campo vazio = sem seção, mesmo que algo antigo esteja salvo).
+  // Dress code e Informações gerais: campo vazio = não aparece (mesmo com algo antigo salvo).
   const soDoCampo = (id, salvo) => {
     const el = document.getElementById(id);
     return (el ? el.value : (salvo || '')).trim();
   };
-  const dresscode = soDoCampo('editor-data-dresscode', details.dresscode);
-  const generalInfo = soDoCampo('editor-data-general-info', details.generalInfo);
-
-  inserirSecoesDeInformacoes(container, { local, endereco, inicio, termino, dresscode, generalInfo });
-
-  wireClassicPreviewCoverEdit(container, renderInformacoesPreview);
-  startCountdownTicker(container);
+  const ev = {
+    data: campo('editor-data-date', details.date),
+    hora: campo('editor-data-time', details.time),
+    data_fim: campo('editor-data-end-date', details.endDate),
+    hora_fim: campo('editor-data-end-time', details.endTime),
+    local: campo('editor-data-location', details.locationName),
+    endereco: campo('editor-data-address', details.address),
+    cidade: campo('editor-data-city', details.city),
+    uf: campo('editor-data-state', details.state),
+    referencia: soDoCampo('editor-data-reference', details.referencePoint),
+    dresscode: soDoCampo('editor-data-dresscode', details.dresscode),
+    informacoes: soDoCampo('editor-data-general-info', details.generalInfo)
+  };
+  container.innerHTML = telaInformacoesHtml(ev);
 }
 
 // "Av. Duquesa de Goiás, 825" + "São Paulo" + "SP" → "Av. Duquesa de Goiás, 825, São Paulo - SP"

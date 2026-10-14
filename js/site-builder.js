@@ -544,6 +544,13 @@ async function syncBuilderStateFromSupabase(pageKey) {
         renderCanvas();
         applyGlobalStyleVars();
       }
+      // F5 em Informações/Anfitriões: a prévia foi desenhada antes de o
+      // convite chegar do banco (sem a imagem) — redesenha com o convite real.
+      const previa = document.getElementById('classic-builder-preview');
+      if (previa && !previa.classList.contains('hidden')) {
+        if (previa.dataset.previa === 'data') renderInformacoesPreview();
+        else if (previa.dataset.previa === 'about') renderAnfitrioesPreview();
+      }
     }
   } else {
     persistBuilderStateRemote(pageKey, loadPageState(pageKey));

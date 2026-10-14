@@ -1890,7 +1890,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (subId === 'data' || subId === 'about') {
       if (coverImageWrapper) coverImageWrapper.classList.add('hidden');
       if (livePreviewBody) livePreviewBody.classList.add('hidden');
-      if (classicBuilderPreview) classicBuilderPreview.classList.remove('hidden');
+      if (classicBuilderPreview) {
+        classicBuilderPreview.classList.remove('hidden');
+        // site-builder.js redesenha a prévia certa quando o convite chega do banco.
+        classicBuilderPreview.dataset.previa = subId;
+      }
       if (subId === 'data' && typeof renderInformacoesPreview === 'function') {
         renderInformacoesPreview();
       } else if (subId === 'about' && typeof renderAnfitrioesPreview === 'function') {

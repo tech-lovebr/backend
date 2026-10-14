@@ -2172,6 +2172,15 @@ body[data-theme="dark"] .payment-progress { background: #4B4B4B !important; }
 }
 
 .leads-table-wrap .leads-table th { color: #333333; font-weight: 700; }
+
+/* Cabeçalho com o mesmo respiro em cima e embaixo (como as linhas de
+   dados): a tabela sobe até a borda de cima do card, anulando o padding
+   dele, e o th ganha o espaço por conta própria. Antes sobrava 25px em
+   cima e 14px embaixo. Notas fiscais tem o estado vazio antes da tabela
+   (escondido quando há notas), por isso o segundo seletor. */
+.dash-card > .leads-table-wrap:first-child,
+.dash-card > .empty-state + .leads-table-wrap { margin-top: -1.5rem; }
+.leads-table-wrap .leads-table th { padding-top: 0.875rem; padding-bottom: 0.875rem; }
 .leads-table-wrap .leads-table th:first-child,
 .leads-table-wrap .leads-table td:first-child { padding-left: 1.5rem; }
 .leads-table-wrap .leads-table th:last-child,

@@ -7788,6 +7788,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Altura da planta: a da tela (CSS) ou, se alguma mesa passar dela, até a
+  // mesa mais baixa. Encolhe de novo quando as mesas sobem.
+  function ajustarAlturaDaPlanta(canvas, elements) {
+    const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + (item.type === 'mesa' ? 220 : 84)), 0);
+    canvas.style.minHeight = maisBaixa ? `${Math.max(360, maisBaixa + 16)}px` : '';
+  }
+
+  function alturaVisivelDaPlanta(canvas) {
+    const antes = canvas.style.minHeight;
+    canvas.style.minHeight = '';
+    const altura = canvas.getBoundingClientRect().height || 480;
+    canvas.style.minHeight = antes;
+    return altura;
+  }
+
+  function trazerMesasPerdidasDeVolta(canvas, elements) {
+    let limite = alturaVisivelDaPlanta(canvas);
+    let mudou = false;
+    elements.slice().sort((a, b) => (parseFloat(a.y) || 0) - (parseFloat(b.y) || 0)).forEach(item => {
+      const altura = item.type === 'mesa' ? 220 : 84;
+      const y = parseFloat(item.y) || 0;
+      if (y > limite) { item.y = Math.max(0, limite - 40); mudou = true; }
+      limite = Math.max(limite, (parseFloat(item.y) || 0) + altura);
+    });
+    return mudou;
+  }
+
   function renderFloorPlanCanvas() {
     const canvas = document.getElementById('floorplan-canvas');
     const emptyHint = document.getElementById('floorplan-empty-hint');
@@ -7796,9 +7823,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.querySelectorAll('.floorplan-el').forEach(el => el.remove());
     if (emptyHint) emptyHint.style.display = elements.length ? 'none' : 'flex';
-    // Altura: a da tela (CSS) ou, se alguma mesa passar dela, até a mesa mais baixa.
-    const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + (item.type === 'mesa' ? 220 : 84)), 0);
-    canvas.style.minHeight = maisBaixa ? `${Math.max(360, maisBaixa + 16)}px` : '';
+    // Mesa "perdida" lá embaixo (arrastada para longe): sobe para logo abaixo
+    // da área visível / da mesa anterior, para sempre dar para alcançá-la.
+    if (trazerMesasPerdidasDeVolta(canvas, elements)) saveFloorPlanElements(elements);
+    ajustarAlturaDaPlanta(canvas, elements);
 
     elements.forEach(elData => {
       const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
@@ -7934,13 +7962,18 @@ document.addEventListener('DOMContentLoaded', () => {
         base: Math.max(...partes.map(r => r.bottom)) - caixa.top
       } : { esq: 0, dir: el.offsetWidth, topo: 0, base: el.offsetHeight };
 
+      // Até onde a mesa pode descer neste arraste: o fundo atual da planta
+      // + o tamanho de uma mesa (cresce aos poucos, nunca sem fim).
+      const alturaInicial = canvas.getBoundingClientRect().height;
+      const topoMaximo = alturaInicial + 220 - el.offsetHeight - 16;
+
       const onMouseMove = (moveEvt) => {
         const dx = moveEvt.clientX - startX;
         const dy = moveEvt.clientY - startY;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
         const rect = canvas.getBoundingClientRect();
         const newLeft = Math.max(4 - visivel.esq, Math.min(origLeft + dx, rect.width - 4 - visivel.dir));
-        const newTop = Math.max(4 - visivel.topo, origTop + dy);
+        const newTop = Math.max(4 - visivel.topo, Math.min(origTop + dy, topoMaximo));
         const fundoNecessario = newTop + el.offsetHeight + 16;
         if (fundoNecessario > rect.height) canvas.style.minHeight = `${fundoNecessario}px`;
         el.style.left = `${newLeft}px`;
@@ -7958,6 +7991,7 @@ document.addEventListener('DOMContentLoaded', () => {
             t.y = parseFloat(el.style.top) || 0;
             saveFloorPlanElements(elements);
           }
+          ajustarAlturaDaPlanta(canvas, elements);
         } else {
           openFloorplanTableModal(elData.id);
         }

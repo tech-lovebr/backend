@@ -3276,12 +3276,23 @@ function botoesDeMapaHtml(local, endereco) {
   const maps = `https://www.google.com/maps/search/?api=1&query=${q}`;
   const waze = `https://waze.com/ul?q=${q}&navigate=yes`;
   const attr = v => String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  // Um botão "Como chegar?" que abre um menu para a pessoa escolher o app.
   return `
-    <div class="convite-mapas">
-      <a class="convite-mapa-btn" href="${attr(maps)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
-      <a class="convite-mapa-btn" href="${attr(waze)}" target="_blank" rel="noopener noreferrer">Waze</a>
-    </div>`;
+    <details class="convite-como-chegar">
+      <summary class="convite-como-chegar-btn">Como chegar?</summary>
+      <div class="convite-como-chegar-menu">
+        <a href="${attr(maps)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+        <a href="${attr(waze)}" target="_blank" rel="noopener noreferrer">Waze</a>
+      </div>
+    </details>`;
 }
+
+// Fecha o menu "Como chegar?" ao clicar fora dele ou escolher um app.
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('details.convite-como-chegar[open]').forEach(menu => {
+    if (!menu.contains(e.target) || e.target.closest('.convite-como-chegar-menu a')) menu.removeAttribute('open');
+  });
+});
 
 // Seções de Informações dentro do convite — usada pela prévia da aba
 // Informações e pelo convite publicado, para os dois ficarem iguais:

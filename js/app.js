@@ -11001,7 +11001,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        openB2BVendorProfile(item);
+        handleB2BHireAction(item);
       });
 
       card.addEventListener('click', () => {
@@ -11087,7 +11087,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      openB2BVendorProfile(item);
+      handleB2BHireAction(item);
     });
 
     card.addEventListener('click', () => {
@@ -11299,13 +11299,126 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // "Contratar" não tem checkout de verdade ainda — abre a conversa real com
   // o fornecedor já com uma mensagem de intenção de contratação.
-  async function handleB2BHireAction(item) {
+  /* ---- Pedido de orçamento (Contratar) ----
+     "Contratar" abre um pedido com o serviço escolhido. Ao enviar, vira um
+     lead em Contatos do fornecedor no Hub (function solicitar_orcamento,
+     migration 043 — a tabela leads é só do fornecedor) e o mesmo texto vai
+     como primeira mensagem no chat. Se a function ainda não existir no
+     banco, cai no comportamento antigo: abre o chat com o texto pronto. */
+  let orcamentoFornecedor = null;
+  let orcamentoServicoInicial = null;
+
+  function handleB2BHireAction(item, servico) {
+    abrirPedidoOrcamento(item, servico);
+  }
+
+  async function abrirChatComTextoPronto(item, texto) {
     await abrirChatComFornecedor(item.id);
     const chatInput = document.getElementById('b2b-chat-input');
     if (chatInput && !chatInput.value) {
-      chatInput.value = `Olá! Gostaria de contratar os serviços de ${item.name}. Pode me passar mais detalhes?`;
+      chatInput.value = texto || `Olá! Gostaria de contratar os serviços de ${item.name}. Pode me passar mais detalhes?`;
       chatInput.focus();
     }
+  }
+
+  function dataEventoAtivoTexto() {
+    const ev = getActiveEvent();
+    const iso = ev && ((ev.eventDetails && ev.eventDetails.date) || ev.date);
+    return iso ? (formatEventDateLong(iso) || String(iso)) : '';
+  }
+
+  function abrirPedidoOrcamento(item, servico) {
+    const modal = document.getElementById('modal-b2b-orcamento');
+    if (!modal) { abrirChatComTextoPronto(item); return; }
+    orcamentoFornecedor = item;
+    orcamentoServicoInicial = servico || null;
+
+    const ev = getActiveEvent();
+    const servicos = (item.services || []).filter(s => s.active !== false);
+    const select = document.getElementById('orcamento-servico');
+    if (select) {
+      select.innerHTML = servicos.length
+        ? servicos.map(s => {
+            const preco = rotuloPrecoServico(s);
+            return `<option value="${escaparHtml(s.id)}">${escaparHtml(s.name)}${preco ? ` — ${escaparHtml(preco)}` : ''}</option>`;
+          }).join('')
+        : '<option value="">Serviço a combinar</option>';
+      if (servico && servico.id) select.value = servico.id;
+    }
+    const nomeEl = document.getElementById('orcamento-fornecedor-nome');
+    if (nomeEl) nomeEl.textContent = item.name;
+    const dataEl = document.getElementById('orcamento-data');
+    if (dataEl) dataEl.value = dataEventoAtivoTexto();
+    const convEl = document.getElementById('orcamento-convidados');
+    if (convEl) convEl.value = (ev && Array.isArray(ev.guests) && ev.guests.length) ? ev.guests.length : '';
+    const msgEl = document.getElementById('orcamento-mensagem');
+    if (msgEl) msgEl.value = '';
+    document.getElementById('orcamento-form')?.classList.remove('hidden');
+    document.getElementById('orcamento-sucesso')?.classList.add('hidden');
+    document.getElementById('orcamento-erro')?.classList.add('hidden');
+    const btn = document.getElementById('btn-orcamento-enviar');
+    if (btn) btn.disabled = false;
+    openModal(modal);
+  }
+
+  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem) {
+    const ev = getActiveEvent();
+    return [
+      'Pedido de orçamento' + (servico ? ` — ${servico.name}` : ''),
+      ev && ev.title ? `Evento: ${ev.title}` : '',
+      data ? `Data: ${data}` : '',
+      convidados ? `Convidados: ${convidados}` : '',
+      mensagem ? `Mensagem: ${mensagem}` : ''
+    ].filter(Boolean).join('\n');
+  }
+
+  async function enviarPedidoOrcamento() {
+    const item = orcamentoFornecedor;
+    if (!item || !window.loveClienteSession) return;
+    const modal = document.getElementById('modal-b2b-orcamento');
+    const btn = document.getElementById('btn-orcamento-enviar');
+    const erro = document.getElementById('orcamento-erro');
+    if (btn && btn.disabled) return;
+    if (btn) btn.disabled = true;
+    if (erro) erro.classList.add('hidden');
+
+    const select = document.getElementById('orcamento-servico');
+    const servico = (item.services || []).find(s => s.id === (select && select.value)) || null;
+    const data = (document.getElementById('orcamento-data')?.value || '').trim();
+    const convidados = parseInt(document.getElementById('orcamento-convidados')?.value, 10) || null;
+    const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();
+    const nome = getGuestCommentAuthorName();
+    const email = (window.loveClienteProfile && window.loveClienteProfile.email) || window.loveClienteSession.user.email || '';
+    const texto = textoDoPedidoOrcamento(item, servico, data, convidados, mensagem);
+
+    const { error } = await supabaseClient.rpc('solicitar_orcamento', {
+      p_fornecedor_id: item.id,
+      p_product_id: servico ? servico.id : null,
+      p_nome: nome,
+      p_email: email,
+      p_data_evento: data || null,
+      p_mensagem: texto
+    });
+
+    if (error) {
+      console.error('[orçamento] solicitar_orcamento:', error);
+      // Function ainda não rodou no banco (ou outro erro): não perde o
+      // pedido — abre o chat com o texto pronto, como era antes.
+      if (btn) btn.disabled = false;
+      closeModal(modal);
+      await abrirChatComTextoPronto(item, texto);
+      return;
+    }
+
+    // Mesmo texto como primeira mensagem do chat (abre/acha a conversa).
+    await openConversationWithFornecedor(item.id);
+    if (activeB2BConversationId) {
+      await window.LoveChatService.sendMessage(activeB2BConversationId, texto, 'cliente');
+    }
+
+    document.getElementById('orcamento-form')?.classList.add('hidden');
+    document.getElementById('orcamento-sucesso')?.classList.remove('hidden');
+    if (btn) btn.disabled = false;
   }
 
   function handleB2BShare(item, triggerBtn) {
@@ -11451,10 +11564,19 @@ document.addEventListener('DOMContentLoaded', () => {
               <p class="text-sm font-semibold text-zinc-900 leading-snug">${escaparHtml(svc.name)}</p>
               <p class="text-xs text-zinc-500">${escaparHtml(categoria)}</p>
               <p class="text-base font-bold text-zinc-900 mt-auto">${escaparHtml(rotuloPrecoServico(svc))}</p>
+              <button type="button" class="b2b-profile-service-hire mt-1 w-full py-2 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer" data-svc-index="${svcIndex}">Pedir orçamento</button>
             </div>
           </div>
         `;
       }).join('');
+
+      servicesGrid.querySelectorAll('.b2b-profile-service-hire').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const svc = services[Number(btn.dataset.svcIndex)];
+          handleB2BHireAction(item, svc || null);
+        });
+      });
 
       servicesGrid.querySelectorAll('.b2b-profile-service-photo').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -11548,6 +11670,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-b2b-profile-hire')?.addEventListener('click', () => {
     if (activeB2BProfileItem) handleB2BHireAction(activeB2BProfileItem);
+  });
+
+  document.getElementById('btn-orcamento-enviar')?.addEventListener('click', enviarPedidoOrcamento);
+  document.getElementById('btn-orcamento-ir-chat')?.addEventListener('click', () => {
+    closeModal(document.getElementById('modal-b2b-orcamento'));
+    if (orcamentoFornecedor) abrirChatComFornecedor(orcamentoFornecedor.id);
   });
 
   document.getElementById('btn-b2b-profile-favorite')?.addEventListener('click', () => {

@@ -372,6 +372,17 @@ document.addEventListener('DOMContentLoaded', () => {
     gift: 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7'
   };
 
+  // Tema escolhido no Admin (coluna notificacoes.tema): ícone e cor da
+  // caixinha. "padrao" é o sino no cinza de sempre; tema desconhecido cai nele.
+  const NOTIFICATION_THEMES = {
+    padrao: { icon: NOTIFICATION_ICONS.admin, box: 'bg-zinc-100 text-zinc-600' },
+    // Mesmo avião de "Viagens" em Mais Recursos.
+    viagens: { icon: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z', box: 'bg-orange-50 text-orange-600' },
+    beneficios: { icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', box: 'bg-green-50 text-green-700' },
+    novidades: { icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z', box: 'bg-[#EBF4FF] text-[#183b54]' },
+    aviso: { icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', box: 'bg-yellow-50 text-yellow-700' }
+  };
+
   let notificationsFeedCache = [];
 
   function escapeNotificationText(s) {
@@ -441,10 +452,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const readIds = userId ? await fetchReadNotificationIds(userId) : new Set();
 
     const adminItems = adminRows.map(n => {
+      const theme = NOTIFICATION_THEMES[n.tema] || NOTIFICATION_THEMES.padrao;
       const item = {
         kind: 'admin',
         id: n.id,
-        iconPath: NOTIFICATION_ICONS.admin,
+        iconPath: theme.icon,
+        iconBox: theme.box,
         titleHtml: escapeNotificationText(n.titulo),
         bodyHtml: escapeNotificationText(n.mensagem),
         time: n.created_at ? formatCommentDate(n.created_at) : '',
@@ -484,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     listEl.innerHTML = notificationsFeedCache.map((n, i) => `
       <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer transition-colors -mx-2 px-2 rounded-xl ${n.unread ? 'bg-[#EBF4FF] hover:bg-[#DCEBFF]' : 'bg-zinc-50/80 hover:bg-zinc-100'}" data-index="${i}">
-        <div class="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
+        <div class="w-10 h-10 rounded-xl ${n.iconBox || 'bg-zinc-100 text-zinc-600'} flex items-center justify-center flex-shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${n.iconPath}"/></svg>
         </div>
         <div class="flex-1 min-w-0 flex items-start justify-between gap-3">
@@ -2570,6 +2583,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputDataEndTime) inputDataEndTime.value = activeEvent.eventDetails.endTime || '23:30';
       if (inputDataLocation) inputDataLocation.value = activeEvent.eventDetails.locationName || activeEvent.location || '';
       if (inputDataAddress) inputDataAddress.value = activeEvent.eventDetails.address || '';
+      const inputDataState = document.getElementById('editor-data-state');
+      const inputDataCity = document.getElementById('editor-data-city');
+      if (inputDataState) inputDataState.value = activeEvent.eventDetails.state || '';
+      if (inputDataCity) inputDataCity.value = activeEvent.eventDetails.city || '';
       if (inputDataReference) inputDataReference.value = activeEvent.eventDetails.referencePoint || '';
       if (inputDataDresscode) inputDataDresscode.value = activeEvent.eventDetails.dresscode || '';
       if (inputDataRecommended) inputDataRecommended.value = activeEvent.eventDetails.recommended || '';
@@ -3532,6 +3549,11 @@ document.addEventListener('DOMContentLoaded', () => {
       activeEvent.location = inputDataLocation.value;
     }
     if (inputDataAddress) activeEvent.eventDetails.address = inputDataAddress.value;
+    // Estado (UF) e cidade: completam o endereço na busca do Maps/Waze do convite.
+    const inputDataState = document.getElementById('editor-data-state');
+    const inputDataCity = document.getElementById('editor-data-city');
+    if (inputDataState) activeEvent.eventDetails.state = inputDataState.value;
+    if (inputDataCity) activeEvent.eventDetails.city = inputDataCity.value.trim();
     if (inputDataReference) activeEvent.eventDetails.referencePoint = inputDataReference.value;
     if (inputDataDresscode) activeEvent.eventDetails.dresscode = inputDataDresscode.value;
     if (inputDataRecommended) activeEvent.eventDetails.recommended = inputDataRecommended.value;

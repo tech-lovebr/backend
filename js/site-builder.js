@@ -2893,7 +2893,7 @@ function renderConvitePublico(root) {
     const ev = conviteDadosPublicos.evento || {};
     inserirSecoesDeInformacoes(root, {
       local: (ev.local || '').trim(),
-      endereco: (ev.endereco || '').trim(),
+      endereco: enderecoComCidade(ev.endereco, ev.cidade, ev.uf),
       inicio: formatarDataPublica(ev.data, ev.hora),
       termino: formatarDataPublica(ev.data_fim, ev.hora_fim),
       dresscode: (ev.dresscode || '').trim(),
@@ -2942,7 +2942,8 @@ function renderInformacoesPublicas(root) {
   const ev = conviteDadosPublicos.evento || {};
   const quando = formatarDataPublica(ev.data, ev.hora);
   const ate = ev.data_fim ? formatarDataPublica(ev.data_fim, ev.hora_fim) : (ev.hora_fim ? `até ${ev.hora_fim}` : '');
-  const botoesMapa = botoesDeMapaHtml(ev.local, ev.endereco);
+  const enderecoCompleto = enderecoComCidade(ev.endereco, ev.cidade, ev.uf);
+  const botoesMapa = botoesDeMapaHtml(ev.local, enderecoCompleto);
 
   const bloco = (rotulo, valor, extra = '') => valor ? `
     <div class="convite-info">
@@ -2954,7 +2955,7 @@ function renderInformacoesPublicas(root) {
   const conteudo =
     bloco('Quando', [quando, ate].filter(Boolean).join(' — ')) +
     bloco('Local', ev.local) +
-    bloco('Endereço', ev.endereco, botoesMapa) +
+    bloco('Endereço', enderecoCompleto, botoesMapa) +
     bloco('Ponto de referência', ev.referencia) +
     bloco('Dress code', ev.dresscode) +
     bloco('Informações gerais', ev.informacoes);
@@ -3242,7 +3243,11 @@ function renderInformacoesPreview() {
   const details = (activeEvent && activeEvent.eventDetails) || {};
   const campo = (id, salvo) => (document.getElementById(id)?.value || salvo || '').trim();
   const local = campo('editor-data-location', details.locationName);
-  const endereco = campo('editor-data-address', details.address);
+  const endereco = enderecoComCidade(
+    campo('editor-data-address', details.address),
+    campo('editor-data-city', details.city),
+    campo('editor-data-state', details.state)
+  );
   const inicio = formatarDataPublica(campo('editor-data-date', details.date), campo('editor-data-time', details.time));
   const termino = formatarDataPublica(campo('editor-data-end-date', details.endDate), campo('editor-data-end-time', details.endTime));
   const dresscode = campo('editor-data-dresscode', details.dresscode);
@@ -3252,6 +3257,13 @@ function renderInformacoesPreview() {
 
   wireClassicPreviewCoverEdit(container, renderInformacoesPreview);
   startCountdownTicker(container);
+}
+
+// "Av. Duquesa de Goiás, 825" + "São Paulo" + "SP" → "Av. Duquesa de Goiás, 825, São Paulo - SP"
+// (cidade/UF vêm dos campos Estado e Cidade de Informações).
+function enderecoComCidade(endereco, cidade, uf) {
+  const cidadeUf = [(cidade || '').trim(), (uf || '').trim()].filter(Boolean).join(' - ');
+  return [(endereco || '').trim(), cidadeUf].filter(Boolean).join(', ');
 }
 
 // "Google Maps" e "Waze" com o endereço do evento (abre o app no celular).

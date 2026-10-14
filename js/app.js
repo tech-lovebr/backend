@@ -1417,6 +1417,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const b2bPopularCity = document.getElementById('b2b-popular-venues-city');
 
     const loc = (activeEvent.eventDetails && (activeEvent.eventDetails.address || activeEvent.eventDetails.locationName)) || activeEvent.location || 'São Paulo, SP';
+    // Explorar volta a seguir a cidade deste evento (a escolha manual nas
+    // caixinhas vale só enquanto o mesmo evento estiver ativo).
+    b2bCityChosenByUser = false;
     if (b2bLocationTitle) b2bLocationTitle.textContent = `${loc} & Região`;
     if (b2bEventNameTag) b2bEventNameTag.textContent = activeEvent.title;
     if (b2bPopularCity) b2bPopularCity.textContent = loc;
@@ -10564,6 +10567,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   let b2bSelectedCity = null;
+  // Cidade escolhida à mão nas caixinhas; enquanto for false, o Explorar
+  // segue a cidade do evento ativo (aplicarCidadePadraoVitrine).
+  let b2bCityChosenByUser = false;
+
+  // "São Paulo" ≡ "sao paulo " ≡ "SÃO PAULO": comparação de cidade sem
+  // acento, caixa nem espaço sobrando — o cadastro do Hub e o CEP do evento
+  // escrevem de jeitos diferentes.
+  function cidadeNormalizada(valor) {
+    return String(valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+  }
+
+  function cidadeDoEventoAtivo() {
+    const ev = getActiveEvent();
+    return ((ev && ev.eventDetails && ev.eventDetails.city) || '').trim();
+  }
+
+  // Por padrão o Explorar mostra só quem atende a cidade do evento — um
+  // fornecedor cadastrado em Indaiatuba não aparece pra um evento em São
+  // Paulo. Usa a grafia da vitrine quando há fornecedor lá; senão a do
+  // evento, e a lista fica vazia dizendo a cidade (as caixinhas deixam
+  // trocar). Evento sem cidade: mostra todas.
+  function aplicarCidadePadraoVitrine() {
+    if (b2bCityChosenByUser) return;
+    const cidadeEvento = cidadeDoEventoAtivo();
+    if (!cidadeEvento) { b2bSelectedCity = null; return; }
+    const naVitrine = cidadesDaVitrine().find(c => cidadeNormalizada(c.city) === cidadeNormalizada(cidadeEvento));
+    b2bSelectedCity = naVitrine ? naVitrine.city : cidadeEvento;
+  }
 
   // Alternância Lista / Grid do Explorar — lista é o padrão.
   let b2bViewMode = 'list';
@@ -10703,7 +10734,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Só as cidades que têm fornecedor na vitrine; sem nenhuma, a barra some.
     document.getElementById('b2b-city-filter-wrap')?.classList.toggle('hidden', cidades.length === 0 || currentB2BCategory === 'favorites');
     row.innerHTML = cidades.map(({ city, uf }) => {
-      const active = b2bSelectedCity === city;
+      const active = cidadeNormalizada(b2bSelectedCity) === cidadeNormalizada(city);
       return `
         <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer shrink-0 whitespace-nowrap ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${escaparHtml(city)}">
           ${escaparHtml(city)}${uf ? ` (${escaparHtml(uf)})` : ''}
@@ -10714,7 +10745,8 @@ document.addEventListener('DOMContentLoaded', () => {
     row.querySelectorAll('.btn-b2b-city-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         const city = btn.getAttribute('data-city');
-        b2bSelectedCity = (b2bSelectedCity === city) ? null : city;
+        b2bCityChosenByUser = true;
+        b2bSelectedCity = (cidadeNormalizada(b2bSelectedCity) === cidadeNormalizada(city)) ? null : city;
         renderB2BCityFilter();
         renderB2BExplore();
       });
@@ -10796,12 +10828,15 @@ document.addEventListener('DOMContentLoaded', () => {
       listContainer.innerHTML = '<div class="p-12 text-center text-sm text-zinc-400">Carregando fornecedores…</div>';
       if (window.loveClienteSession) {
         carregarFornecedoresVitrine().then(() => {
+          aplicarCidadePadraoVitrine();
           renderB2BCityFilter();
           renderB2BExplore();
         });
       }
       return;
     }
+
+    aplicarCidadePadraoVitrine();
 
     let items = b2bFornecedores.map(f => ({ ...f, isFavorite: b2bFavoritosIds.has(f.id) }));
     let categoryName = 'fornecedores';
@@ -10822,7 +10857,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (b2bSelectedCity && currentB2BCategory !== 'favorites') {
-      items = items.filter(item => (item.city || '').trim() === b2bSelectedCity);
+      items = items.filter(item => cidadeNormalizada(item.city) === cidadeNormalizada(b2bSelectedCity));
     }
 
     if (b2bSearchQuery) {
@@ -10848,13 +10883,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (resultsCountEl) {
-      resultsCountEl.innerHTML = `<strong class="font-semibold text-zinc-900">${items.length}</strong> ${categoryName} encontrados${currentB2BCategory === 'favorites' ? '' : ` em ${b2bSelectedCity || 'São Paulo'}`}`;
+      resultsCountEl.innerHTML = `<strong class="font-semibold text-zinc-900">${items.length}</strong> ${categoryName} encontrados${currentB2BCategory === 'favorites' ? '' : ` em ${b2bSelectedCity || 'todas as cidades'}`}`;
     }
 
     if (items.length === 0) {
       const mensagemVazia = currentB2BCategory === 'favorites'
         ? 'Você ainda não favoritou nenhum fornecedor.'
-        : (b2bFornecedores.length === 0 ? 'Ainda não há fornecedores na vitrine.' : 'Nenhum fornecedor encontrado com esses filtros.');
+        : (b2bFornecedores.length === 0
+          ? 'Ainda não há fornecedores na vitrine.'
+          : (b2bSelectedCity && !b2bSelectedMainCategory && !b2bSearchQuery
+            ? `Ainda não há fornecedores em ${escaparHtml(b2bSelectedCity)}. Escolha outra cidade acima.`
+            : 'Nenhum fornecedor encontrado com esses filtros.'));
       // Mesmo visual das caixas de Benefícios Love: sem linha, com a sombra
       // leve da regra global de .bg-white.rounded-*.
       listContainer.innerHTML = `<div class="p-12 text-center bg-white border border-transparent rounded-2xl text-sm text-zinc-500">${mensagemVazia}</div>`;

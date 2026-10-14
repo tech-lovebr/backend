@@ -401,8 +401,9 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 /* Voltar: fecha o pop-up da mesa */
 .floorplan-back-btn { flex: 1; height: 34px; padding: 0.5rem; border: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; color: #18181B; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 .floorplan-back-btn:hover { background: #F4F4F5; }
-.floorplan-clear-btn { background: #EBF4FF; color: #000000; }
-.floorplan-clear-btn:hover { background: #DCEAFB; }
+/* Limpar: cinza clarinho, igual ao botão da lixeira */
+.floorplan-clear-btn { background: #FAFAFA; color: #71717A; }
+.floorplan-clear-btn:hover { background: #F4F4F5; color: #3F3F46; }
 
 .floorplan-canvas {
   position: relative;

@@ -12444,7 +12444,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       item.innerHTML = `
         <div class="relative flex-shrink-0">
-          <img src="${conv.avatar}" alt="${conv.name}" class="w-10 h-10 rounded-full ${classeAvatarChat(conv.avatar)} border border-zinc-200">
+          <img src="${conv.avatar}" alt="${conv.name}" class="w-10 h-10 rounded-xl chat-avatar-quadrado ${classeAvatarChat(conv.avatar)} border border-zinc-200">
           ${conv.online ? '<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>' : ''}
         </div>
         <div class="flex-1 min-w-0">
@@ -12544,7 +12544,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         row.innerHTML = `
-          <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-full ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
+          <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
             <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
               ${msg.text ? `<p class="whitespace-pre-wrap break-words">${msg.text}</p>` : ''}

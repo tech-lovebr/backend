@@ -6801,3 +6801,8 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .musica-botao-previa.hidden { display: none !important; }
 .musica-botao-previa svg { width: 18px; height: 18px; pointer-events: none; }
 .musica-botao-previa:not(.is-tocando)::after { content: ''; position: absolute; width: 22px; height: 1.5px; background: currentColor; transform: rotate(-45deg); }
+
+
+/* Chat: foto do fornecedor em quadrado com cantos arredondados (nunca círculo). */
+.chat-avatar-quadrado { border-radius: 10px !important; }
+#b2b-chat-active-avatar { border-radius: 10px !important; }

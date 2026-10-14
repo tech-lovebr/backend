@@ -1017,15 +1017,17 @@ function renderCanvas() {
   if (frame) frame.dataset.device = currentDevice;
 
   const visible = builderState.sections.filter(s => !s.hidden);
-  // Logo abaixo da capa: área para soltar um elemento e criar uma seção nova
-  // com ele (acima dos botões). Só aparece enquanto um elemento é arrastado.
+  // Logo abaixo da capa e logo abaixo da seção de botões: áreas para soltar
+  // um elemento e criar uma seção nova com ele ali. Só aparecem enquanto um
+  // elemento é arrastado.
   const capa = secaoDeCapa();
-  const novaSecaoDropzoneHtml = `
-    <div class="builder-new-section-dropzone" id="builder-new-section-dropzone" data-new-section-dropzone>
+  const novaSecaoDropzoneHtml = (depoisDe) => `
+    <div class="builder-new-section-dropzone" data-new-section-dropzone data-after-section-id="${depoisDe}">
       <span>Solte aqui para criar uma seção nova</span>
     </div>`;
   const sectionsHtml = visible.map(section =>
-    renderAnySectionHtml(section, 'edit', currentDevice) + (section === capa ? novaSecaoDropzoneHtml : '')
+    renderAnySectionHtml(section, 'edit', currentDevice) +
+    ((section === capa || section.isQuickNav) ? novaSecaoDropzoneHtml(section.id) : '')
   ).join('');
   const endDropzoneHtml = `
     <div class="builder-canvas-end-dropzone" id="builder-canvas-end-dropzone">
@@ -1544,17 +1546,17 @@ function initSortables(canvas) {
     }));
   });
 
-  const novaSecaoDropzone = canvas.querySelector('#builder-new-section-dropzone');
-  if (novaSecaoDropzone) {
+  canvas.querySelectorAll('[data-new-section-dropzone]').forEach(novaSecaoDropzone => {
     sortableInstances.push(new Sortable(novaSecaoDropzone, {
       group: { name: 'builder-elements', pull: false, put: true },
       sort: false,
       animation: 160,
       ghostClass: 'sortable-ghost',
       onAdd: (evt) => {
-        const capaAtual = secaoDeCapa();
+        // Entra logo depois da seção marcada (capa ou botões).
+        const anterior = findSection(novaSecaoDropzone.dataset.afterSectionId);
         const nova = createSection();
-        builderState.sections.splice(capaAtual ? builderState.sections.indexOf(capaAtual) + 1 : 0, 0, nova);
+        builderState.sections.splice(anterior ? builderState.sections.indexOf(anterior) + 1 : builderState.sections.length, 0, nova);
         let selecionar = { id: nova.id, kind: 'section' };
         if (evt.item.classList.contains('builder-el-item')) {
           const type = evt.item.dataset.elType;
@@ -1578,7 +1580,7 @@ function initSortables(canvas) {
         selectElement(selecionar.id, selecionar.kind);
       }
     }));
-  }
+  });
   // Enquanto um elemento é arrastado, o canvas mostra a área "nova seção".
   const marcarArrastando = (ativo) => {
     const c = document.getElementById('builder-canvas');

@@ -125,6 +125,24 @@ function nomeDaConta(id) {
 
 const TIPOS = { padrao: 'Mensagem padrão', boas_vindas: 'Boas-vindas' };
 
+/* Tema = ícone e cor da caixinha com que a notificação aparece na
+   plataforma. Os mesmos desenhos de NOTIFICATION_THEMES em js/app.js. */
+const TEMAS = {
+  padrao: { rotulo: 'Padrão', icone: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' },
+  viagens: { rotulo: 'Viagens', icone: 'M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z' },
+  beneficios: { rotulo: 'Benefícios', icone: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z' },
+  novidades: { rotulo: 'Novidades', icone: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
+  aviso: { rotulo: 'Aviso', icone: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' }
+};
+
+/** Caixinha colorida com o ícone do tema, igual à da plataforma. */
+function iconeTema(tema) {
+  const chave = TEMAS[tema] ? tema : 'padrao';
+  return `<span class="tema-icone tema-${chave}" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${TEMAS[chave].icone}"/></svg>
+  </span>`;
+}
+
 function render() {
   atualizarBadgeDeFiltros();
 
@@ -154,7 +172,8 @@ function render() {
 
     return `
       <tr data-id="${n.id}">
-        <td>
+        <td class="col-assunto">
+          ${iconeTema(n.tema)}
           <span class="cell-strong">${dash(n.titulo)}</span>
           ${TIPOS[n.tipo] ? `<span class="artigo-situacao">— ${escapeHtml(TIPOS[n.tipo])}</span>` : ''}
         </td>
@@ -221,6 +240,7 @@ function abrirDetalhe(id) {
     title: n.titulo,
     body: `
       <div class="lista-dados">
+        ${linha('Tema', `${iconeTema(n.tema)} ${escapeHtml(TEMAS[n.tema]?.rotulo || 'Padrão')}`)}
         ${linha('Público', n.destino === 'individual'
           ? escapeHtml(nomeDaConta(n.destinatario_id))
           : escapeHtml(PUBLICOS[n.destino] || n.destino))}
@@ -289,6 +309,18 @@ function abrirComposicao() {
                placeholder="Digite o nome ou o e-mail">
         <div class="pessoa-resultados" id="pessoa-resultados" hidden></div>
         <p class="pessoa-escolhida" id="pessoa-escolhida" hidden></p>
+      </div>
+
+      <div class="field">
+        <span class="field-label">Tema</span>
+        <div class="tema-opcoes" role="radiogroup" aria-label="Tema">
+          ${Object.entries(TEMAS).map(([valor, t], i) => `
+            <label class="tema-opcao">
+              <input type="radio" name="nova-tema" value="${valor}" ${i === 0 ? 'checked' : ''}>
+              ${iconeTema(valor)}
+              <span>${escapeHtml(t.rotulo)}</span>
+            </label>`).join('')}
+        </div>
       </div>
 
       <label class="field">
@@ -421,6 +453,7 @@ function ligarComposicao() {
 async function enviar() {
   const destino = document.getElementById('nova-destino').value;
   const tipo = document.getElementById('nova-tipo').value;
+  const tema = document.querySelector('input[name="nova-tema"]:checked')?.value || 'padrao';
   const titulo = document.getElementById('nova-titulo').value.trim();
   const mensagem = document.getElementById('nova-mensagem').value.trim();
   const link = document.getElementById('nova-link').value.trim();
@@ -458,6 +491,7 @@ async function enviar() {
     link_label: link ? (document.getElementById('nova-link-label').value.trim() || null) : null,
     destino,
     tipo,
+    tema,
     destinatario_id: destino === 'individual' ? DESTINATARIO.id : null,
     autor_id: window.adminUser.id,
     autor_nome: window.adminUser.name || 'Equipe Love',
@@ -467,9 +501,11 @@ async function enviar() {
   Drawer.setFooterBusy(false);
 
   if (error) {
+    const faltaTema = /tema/i.test(error.message || '');
     const faltaColuna = /tipo|fixada|column|schema cache/i.test(error.message || '');
     const duplicada = /duplicate|unique/i.test(error.message || '');
     toast(duplicada ? `Já existe outra notificação como ${TIPOS[tipo].toLowerCase()}.`
+        : faltaTema ? 'Rode supabase/migrations/040_notificacoes_tema.sql no Supabase.'
         : faltaColuna ? 'Rode supabase/migrations/032_notificacoes_fixar_tipo.sql no Supabase.'
         : `Não foi possível enviar: ${error.message}`);
     return;

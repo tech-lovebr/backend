@@ -2722,3 +2722,49 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
   border-color: var(--success);
   background: var(--success) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E") center / 9px no-repeat;
 }
+
+/* ----------------------------------------- Notificações: tema (ícone) */
+
+/* Mesmas cores da caixinha na plataforma (NOTIFICATION_THEMES em js/app.js). */
+.tema-icone {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.tema-icone svg { width: 15px; height: 15px; }
+
+.tema-padrao     { background: #f4f4f5; color: #52525b; }
+.tema-viagens    { background: #fff7ed; color: #ea580c; }
+.tema-beneficios { background: #f0fdf4; color: #15803d; }
+.tema-novidades  { background: #EBF4FF; color: #183b54; }
+.tema-aviso      { background: #fefce8; color: #a16207; }
+
+.col-assunto .tema-icone { margin-right: .5rem; }
+.dados-linha .valor .tema-icone { width: 22px; height: 22px; border-radius: 6px; margin-right: .25rem; }
+.dados-linha .valor .tema-icone svg { width: 12px; height: 12px; }
+
+/* Escolha do tema no drawer: cada opção mostra a caixinha como vai ficar. */
+.tema-opcoes { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+.tema-opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .375rem .75rem .375rem .375rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  font-size: .8125rem;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--bg-surface);
+}
+
+.tema-opcao input { position: absolute; opacity: 0; pointer-events: none; }
+.tema-opcao:hover { background: var(--bg-muted); }
+.tema-opcao:has(input:checked) { border-color: var(--primary-color); box-shadow: 0 0 0 1px var(--primary-color); }
+.tema-opcao:has(input:focus-visible) { outline: 2px solid var(--primary-color); outline-offset: 2px; }

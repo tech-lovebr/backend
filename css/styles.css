@@ -2703,8 +2703,6 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 .convite-como-chegar { position: relative; margin-top: 0.75rem; }
 .convite-como-chegar-btn { list-style: none; display: block; text-align: center; padding: 0.6rem 0.75rem; border-radius: 9999px; background: #F4F4F5; color: #18181B; font-size: 0.75rem; font-weight: 600; cursor: pointer; user-select: none; transition: background-color .15s ease; }
 .convite-como-chegar-btn::-webkit-details-marker { display: none; }
-.convite-como-chegar-btn::after { content: ''; display: inline-block; width: 0.4rem; height: 0.4rem; margin-left: 0.45rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .15s ease; }
-.convite-como-chegar[open] .convite-como-chegar-btn::after { transform: translateY(1px) rotate(-135deg); }
 .convite-como-chegar-btn:hover,
 .convite-como-chegar[open] .convite-como-chegar-btn { background: #E4E4E7; }
 .convite-como-chegar-menu { position: absolute; left: 0; right: 0; top: calc(100% + 0.35rem); z-index: 20; background: #FFFFFF; border-radius: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04); padding: 0.35rem; display: flex; flex-direction: column; }

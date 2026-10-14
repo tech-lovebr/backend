@@ -5673,13 +5673,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filteredGifts.length === 0) {
       if (searchQuery && searchQuery.trim()) {
         container.innerHTML = `
-          <div class="col-span-full py-16 text-center bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80">
+          <div class="col-span-full py-16 text-center bg-white rounded-[var(--radius-card,10px)] border border-transparent">
             <p class="text-xs sm:text-sm text-zinc-500 font-medium font-sans">Nenhum presente encontrado para "${searchQuery}".</p>
           </div>
         `;
       } else {
         container.innerHTML = `
-          <div class="col-span-full py-16 text-center bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 space-y-3">
+          <div class="col-span-full py-16 text-center bg-white rounded-[var(--radius-card,10px)] border border-transparent space-y-3">
             <svg class="w-10 h-10 mx-auto text-zinc-300" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
             </svg>
@@ -5887,7 +5887,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (list.length === 0) {
       container.innerHTML = `
-        <div class="col-span-full py-12 text-center bg-white rounded-3xl border border-slate-200 p-8 space-y-2">
+        <div class="col-span-full py-12 text-center bg-white rounded-[var(--radius-card,10px)] border border-transparent p-8 space-y-2">
           <span class="text-3xl block">🎁</span>
           <h4 class="font-bold text-slate-800 text-sm">Nenhum presente recebido ainda</h4>
           <p class="text-xs text-slate-400">Quando os convidados presentearem você pela página pública, eles aparecerão aqui com os valores e recados.</p>

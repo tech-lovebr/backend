@@ -44,23 +44,29 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=30"></script>
-  <script src="js/site-builder.js?v=279"></script>
+  <script src="js/site-builder.js?v=280"></script>
   <script>
     (async function () {
       const canvas = document.getElementById('builder-canvas');
       const params = new URLSearchParams(location.search);
       const isCheckout = params.get('page') === 'checkout';
       const linkId = params.get('link');
-      // Visitante em <slug>.love.com.br: o middleware.js reescreve pra cá no
-      // servidor, mas a URL do navegador continua sem o ?site= — então o slug
-      // sai do próprio domínio. O ?site= fica como alternativa manual.
+      // De onde vem o slug do site publicado (as duas reescritas acontecem no
+      // servidor, então a URL do navegador não traz ?site=):
+      // - plano Pro: <slug>.love.com.br (middleware.js) → slug é o subdomínio;
+      // - plano gratuito: hub.love.com.br/<slug> (último rewrite do
+      //   vercel.json) → slug é o caminho.
+      // O ?site= fica como alternativa manual.
       const SITE_DOMAIN_SUFFIX = '.love.com.br';
       const hostSlug = location.hostname.endsWith(SITE_DOMAIN_SUFFIX)
         ? location.hostname.slice(0, -SITE_DOMAIN_SUFFIX.length)
         : '';
+      const pathSlug = location.pathname.replace(/^\/+|\/+$/g, '');
       const publicSlug = (hostSlug && hostSlug !== 'hub' && hostSlug !== 'www' && !hostSlug.includes('.'))
         ? hostSlug
-        : params.get('site');
+        : (/^[a-z0-9-]+$/.test(pathSlug) && pathSlug !== 'site-preview')
+          ? pathSlug
+          : params.get('site');
       canvas.dataset.pageKey = isCheckout ? 'checkout' : 'home';
 
       let paymentLink = null;

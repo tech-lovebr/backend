@@ -209,7 +209,15 @@ function uid(prefix) {
   return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-const RESERVED_SLUGS = ['sophia-eventos', 'buffet-real', 'espaco-jardim', 'casa-de-festas', 'eventos-vip', 'admin', 'love'];
+// Além dos nomes da plataforma, o site gratuito mora em hub.love.com.br/<slug> —
+// então nenhum slug pode ter o nome de uma página ou pasta do próprio Hub.
+const RESERVED_SLUGS = [
+  'sophia-eventos', 'buffet-real', 'espaco-jardim', 'casa-de-festas', 'eventos-vip', 'admin', 'love',
+  'hub', 'www', 'app', 'api', 'assets', 'css', 'js', 'partials', 'index', 'site-preview',
+  'agenda', 'configuracoes', 'crm', 'dashboard', 'esqueci-senha', 'faq', 'funcoes', 'guias', 'login',
+  'mensagens', 'pagamentos', 'paginas-site', 'planos', 'privacidade', 'produtos', 'resetar-senha',
+  'signup', 'termos', 'vendas', 'verificar', 'vitrine'
+];
 
 function slugify(value) {
   return (value || '')
@@ -1406,7 +1414,7 @@ function renderEstiloTab(body) {
         `}
       </span>
       <div class="url-slug-field">
-        ${isPro ? '' : `<span class="url-slug-prefix">app.love.com.br/</span>`}
+        ${isPro ? '' : `<span class="url-slug-prefix">hub.love.com.br/</span>`}
         <input type="text" class="url-slug-input" id="site-slug-input" value="${escapeHtml(siteSettings.slug || '')}" placeholder="sua-empresa" autocomplete="off" spellcheck="false">
         ${isPro ? `<span class="url-slug-suffix">.love.com.br</span>` : ''}
         <span class="url-slug-status" id="site-slug-status"></span>

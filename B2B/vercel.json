@@ -203,6 +203,10 @@
     {
       "source": "/vitrine",
       "destination": "/vitrine.html"
+    },
+    {
+      "source": "/:slug([a-z0-9-]+)",
+      "destination": "/site-preview.html"
     }
   ]
 }

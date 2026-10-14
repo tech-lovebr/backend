@@ -5378,6 +5378,13 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 /* Abas do drawer de produto (Categoria · Preço · Escopo · Mídia): botões
    clicáveis, em vez de etapas em sequência. */
 .product-wizard-tabs { display: flex; align-items: stretch; gap: 0.4rem; width: 100%; margin-top: 0.75rem; }
+/* No drawer de produto o ✕ fica preso no canto, fora do fluxo: assim o bloco
+   do título (e as abas dentro dele) ocupa a largura toda do cabeçalho, em
+   vez de parar antes da coluna do botão. O título ganha respiro à direita
+   pra não passar por baixo do ✕. */
+#product-drawer .form-drawer-close { position: absolute; top: 1.25rem; right: 1.5rem; }
+#product-drawer .form-drawer-header-main > .task-drawer-list-label,
+#product-drawer .form-drawer-header-main > .task-drawer-title { padding-right: 2.75rem; }
 .product-wizard-tab {
   flex: 1 1 0; min-width: 0; text-align: center;
   border: 1px solid #E4E4E7; background: #fff; color: #52525B;

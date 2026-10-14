@@ -3477,6 +3477,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (inputDate && inputDate.value) activeEvent.date = inputDate.value;
     if (inputLocation && inputLocation.value) activeEvent.location = inputLocation.value;
+    // Evento vindo do banco pode não ter siteSections ainda.
+    if (!activeEvent.siteSections) activeEvent.siteSections = {};
     if (inputHeadline && inputHeadline.value) activeEvent.siteSections.heroHeadline = inputHeadline.value;
     if (inputSubtitle && inputSubtitle.value) activeEvent.siteSections.heroSubtitle = inputSubtitle.value;
     if (inputAboutTitle && inputAboutTitle.value) activeEvent.siteSections.aboutTitle = inputAboutTitle.value;
@@ -3522,7 +3524,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputDataTime && inputDataTime.value) activeEvent.eventDetails.time = inputDataTime.value;
     if (inputDataEndDate && inputDataEndDate.value) activeEvent.eventDetails.endDate = inputDataEndDate.value;
     if (inputDataEndTime && inputDataEndTime.value) activeEvent.eventDetails.endTime = inputDataEndTime.value;
-    if (inputDataLocation && inputLocation.value) {
+    if (inputDataLocation && inputDataLocation.value) {
       activeEvent.eventDetails.locationName = inputDataLocation.value;
       activeEvent.location = inputDataLocation.value;
     }
@@ -5299,12 +5301,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Grava no banco o evento ativo (antes as edições só ficavam na memória da
+  // página e voltavam ao recarregar). Mesmo formato do insert ao criar o
+  // evento (mapEventToEventoRow); tipo/status/dono não mudam aqui.
+  async function persistirEventoAtivo() {
+    const evt = getActiveEvent();
+    if (!evt || !ehUuid(evt.id)) return { error: null };
+    const { cliente_id, status, tipo, ...campos } = mapEventToEventoRow(evt, null);
+    let { error } = await supabaseClient.from('eventos').update(campos).eq('id', evt.id);
+    if (error && error.code === '23505') {
+      // Link (slug) já usado por outro evento: salva o resto sem trocar o link.
+      const { slug, ...semSlug } = campos;
+      ({ error } = await supabaseClient.from('eventos').update(semSlug).eq('id', evt.id));
+    }
+    if (error) console.error('Erro ao salvar evento:', error);
+    return { error };
+  }
+
+  // showToast está desligado na plataforma — o retorno aparece no próprio botão.
+  async function salvarComRetornoNoBotao(btn, salvar) {
+    const label = btn.querySelector('span') || btn;
+    const textoOriginal = label.textContent;
+    btn.disabled = true;
+    label.textContent = 'Salvando…';
+    const { error } = await salvar();
+    label.textContent = error ? 'Erro ao salvar' : 'Salvo';
+    setTimeout(() => {
+      label.textContent = textoOriginal;
+      btn.disabled = false;
+    }, 1800);
+  }
+
   const btnSaveHeaderEdit = document.getElementById('btn-save-header-edit');
   if (btnSaveHeaderEdit) {
     btnSaveHeaderEdit.addEventListener('click', () => {
-      saveEditorChanges();
-      showToast('Alterações salvas e sincronizadas com o site do evento!', '✨');
-      triggerConfetti();
+      salvarComRetornoNoBotao(btnSaveHeaderEdit, () => {
+        saveEditorChanges();
+        return persistirEventoAtivo();
+      });
     });
   }
 
@@ -11843,14 +11877,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnSaveInfoName && infoNameInput) {
     btnSaveInfoName.addEventListener('click', () => {
       const val = infoNameInput.value.trim();
-      if (val) {
+      if (!val) return;
+      salvarComRetornoNoBotao(btnSaveInfoName, () => {
         const activeEvent = getActiveEvent();
         activeEvent.title = val;
         updateAllCelebrationData();
         renderEventsSwitcher();
-        showToast(`Nome do evento atualizado para "${val}"!`, '✅');
-        triggerConfetti();
-      }
+        return persistirEventoAtivo();
+      });
     });
   }
 

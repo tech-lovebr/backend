@@ -5317,6 +5317,19 @@ body[data-theme="dark"] #profile-dropdown-avatar { background: #333333 !importan
    qualquer quadrado de avatar (cabeçalho, dropdown, chat). */
 img.avatar-love-icon { width: 100%; height: 100%; object-fit: contain; padding: 20%; box-sizing: border-box; }
 .b2b-avatar-square img.avatar-love-icon { object-fit: contain; padding: 20%; }
+/* Só uma das duas versões do ícone aparece (escura no tema claro, branca no
+   escuro). Sem isto, o "display: block" das imagens de avatar mostrava as
+   duas lado a lado e o ícone visível ficava na metade esquerda. */
+img.avatar-love-icon.sidebar-icon-dark { display: none !important; }
+body[data-theme="dark"] img.avatar-love-icon.sidebar-icon-light { display: none !important; }
+body[data-theme="dark"] img.avatar-love-icon.sidebar-icon-dark { display: block !important; }
+
+/* Número de não lidas na lista de conversas do chat. */
+.chat-unread-count {
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9999px;
+  background: #C7305B; color: #fff; font-size: 10px; font-weight: 700; line-height: 18px;
+  text-align: center; flex-shrink: 0;
+}
 .b2b-avatar-square {
   border-radius: 8px;
   overflow: hidden;

@@ -17,6 +17,7 @@ async function initB2BMensagens() {
 
   renderContactsList();
   renderActiveChat();
+  markActiveConversationRead();
   setupChatEvents();
   subscribeToB2BMessages();
   window.b2bPageReady?.();
@@ -28,7 +29,7 @@ async function loadB2BConversations() {
 
   const { data: rows, error } = await supabaseClient
     .from('conversations')
-    .select('id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type)')
+    .select('id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at)')
     .eq('fornecedor_id', session.user.id)
     .order('last_message_at', { ascending: false });
 
@@ -45,7 +46,7 @@ async function loadB2BConversations() {
       online: false,
       lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
       time: last ? formatB2BMsgTime(last.created_at) : '',
-      unread: 0,
+      unread: msgs.filter(m => m.sender_role === 'cliente' && !m.read_at).length,
       messages: msgs.map(m => ({
         sender: m.sender_role === 'fornecedor' ? 'me' : 'them',
         text: m.text,
@@ -54,6 +55,18 @@ async function loadB2BConversations() {
       }))
     };
   });
+}
+
+// Conversa aberta = mensagens do cliente lidas (marcar_conversa_lida,
+// migration 045); o número do ícone do chat atualiza junto.
+async function markActiveConversationRead() {
+  const conv = b2bConversations.find(c => c.id === activeConvId);
+  if (!conv || !conv.unread) return;
+  conv.unread = 0;
+  renderContactsList(document.getElementById('chat-search-input')?.value || '');
+  const { error } = await supabaseClient.rpc('marcar_conversa_lida', { p_conversation_id: conv.id });
+  if (error) console.error('Não foi possível marcar a conversa como lida.', error);
+  window.b2bRefreshChatUnreadBadge?.();
 }
 
 function formatB2BMsgTime(iso) {
@@ -80,6 +93,8 @@ function subscribeToB2BMessages() {
       }
       renderContactsList(searchInput ? searchInput.value : '');
       renderActiveChat();
+      // Chegou mensagem na conversa que está aberta: já conta como lida.
+      markActiveConversationRead();
     })
     .subscribe();
 }
@@ -132,7 +147,10 @@ function renderContactsList(searchQuery = '') {
           <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
           <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
         </div>
-        <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-xs ${conv.unread ? 'text-zinc-900 font-semibold' : 'text-zinc-500'} truncate leading-tight">${conv.lastMessage}</p>
+          ${conv.unread ? `<span class="chat-unread-count">${conv.unread > 99 ? '99+' : conv.unread}</span>` : ''}
+        </div>
       </div>
     `;
 
@@ -140,6 +158,7 @@ function renderContactsList(searchQuery = '') {
       activeConvId = conv.id;
       renderContactsList(document.getElementById('chat-search-input') ? document.getElementById('chat-search-input').value : '');
       renderActiveChat();
+      markActiveConversationRead();
     });
 
     listEl.appendChild(item);

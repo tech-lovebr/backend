@@ -126,8 +126,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // O chat real ainda não rastreia mensagens não lidas (ver mensagens.js),
-  // então por enquanto o badge de notificação de chat fica sempre zerado.
+  // Não lidas do chat: contadas de verdade em initNotifications e
+  // atualizadas em tempo real (subscribeChatUnreadBadge).
   const unreadSnapshot = 0;
 
   await loadShell();
@@ -563,16 +563,58 @@ async function initNotifications(unreadSnapshot) {
     }
   }
 
-  const navBadge = document.getElementById('nav-msg-badge');
-  const railBadge = document.getElementById('nav-msg-badge-rail');
-  const headerBadge = document.getElementById('nav-msg-badge-header');
-  const mobileBadge = document.getElementById('nav-msg-badge-mobile');
-  const unreadMsgs = unreadSnapshot || 0;
-  [navBadge, railBadge, headerBadge, mobileBadge].forEach(badge => {
+  await refreshChatUnreadBadge();
+  subscribeChatUnreadBadge();
+}
+
+/* -------------------- Chat: mensagens não lidas -------------------- */
+
+// Não lidas = mensagens do cliente com read_at nulo nas conversas deste
+// fornecedor. Quem marca como lidas é o chat (marcar_conversa_lida,
+// migration 045) ao abrir a conversa.
+async function countChatUnread() {
+  const userId = window.b2bSession && window.b2bSession.user.id;
+  if (!userId) return 0;
+  const { data: convs, error: convErr } = await supabaseClient
+    .from('conversations')
+    .select('id')
+    .eq('fornecedor_id', userId);
+  if (convErr || !convs || !convs.length) return 0;
+  const { count, error } = await supabaseClient
+    .from('messages')
+    .select('id', { count: 'exact', head: true })
+    .in('conversation_id', convs.map(c => c.id))
+    .eq('sender_role', 'cliente')
+    .is('read_at', null);
+  return error ? 0 : (count || 0);
+}
+
+function updateChatUnreadBadge(unreadMsgs) {
+  ['nav-msg-badge', 'nav-msg-badge-rail', 'nav-msg-badge-header', 'nav-msg-badge-mobile'].forEach(id => {
+    const badge = document.getElementById(id);
     if (!badge) return;
-    if (unreadMsgs > 0) { badge.textContent = unreadMsgs; badge.style.display = ''; }
-    else badge.style.display = 'none';
+    if (unreadMsgs > 0) { badge.textContent = unreadMsgs > 99 ? '99+' : String(unreadMsgs); badge.style.display = ''; }
+    else { badge.textContent = ''; badge.style.display = 'none'; }
   });
+}
+
+async function refreshChatUnreadBadge() {
+  updateChatUnreadBadge(await countChatUnread());
+}
+window.b2bRefreshChatUnreadBadge = refreshChatUnreadBadge;
+
+// Mensagem nova (ou lida) em qualquer página do Hub: o número do ícone do
+// chat atualiza sozinho, sem recarregar.
+let chatUnreadChannel = null;
+function subscribeChatUnreadBadge() {
+  if (chatUnreadChannel || !window.b2bSession) return;
+  chatUnreadChannel = supabaseClient
+    .channel('b2b-chat-unread-badge')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, refreshChatUnreadBadge)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, refreshChatUnreadBadge)
+    .subscribe();
+  // Rede: se o realtime cair, a aba volta a contar ao ganhar foco.
+  window.addEventListener('focus', refreshChatUnreadBadge);
 }
 
 /* -------------------- Command palette (busca global) -------------------- */

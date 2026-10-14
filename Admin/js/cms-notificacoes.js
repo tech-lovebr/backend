@@ -330,7 +330,8 @@ function abrirComposicao() {
         </select>
       </label>
 
-      <div class="field-row" id="campo-agendamento" hidden style="margin-top:.875rem">
+      <div id="campo-agendamento" hidden style="margin-top:.875rem">
+      <div class="field-row">
         <label class="field" style="margin-bottom:0">
           <span class="field-label">Data <span class="campo-obrigatorio">*</span></span>
           <input class="field-input" id="nova-data" type="date">
@@ -339,6 +340,8 @@ function abrirComposicao() {
           <span class="field-label">Horário <span class="campo-obrigatorio">*</span></span>
           <input class="field-input" id="nova-hora" type="time">
         </label>
+      </div>
+      <p class="cell-muted" style="font-size:.75rem;margin:.375rem 0 0">Horário de Brasília</p>
       </div>`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
@@ -433,8 +436,9 @@ async function enviar() {
     if (!data) return avisar('Escolha a data do envio.', 'nova-data');
     if (!hora) return avisar('Escolha o horário do envio.', 'nova-hora');
 
-    // "AAAA-MM-DDTHH:MM" sem fuso é lido no horário de quem está agendando.
-    envio = new Date(`${data}T${hora}`);
+    // Sempre horário de Brasília (UTC−3, sem horário de verão desde 2019),
+    // mesmo que quem agenda esteja com o computador em outro fuso.
+    envio = new Date(`${data}T${hora}:00-03:00`);
     if (Number.isNaN(envio.getTime())) return avisar('Data ou horário inválido.', 'nova-data');
     if (envio <= new Date()) return avisar('Escolha um horário no futuro.', 'nova-hora');
   }

@@ -2226,8 +2226,8 @@ body[data-theme="dark"] .leads-table-wrap .leads-table tbody td[colspan] { backg
   overflow: hidden;
 }
 
-/* Mensagens ocupa 100% do espaço disponível, sem respiro ao redor */
-body[data-page="mensagens"] .b2b-content {
+/* Chat ocupa 100% do espaço disponível, sem respiro ao redor */
+body[data-page="chat"] .b2b-content {
   padding: 0;
   height: calc(100vh - var(--topbar-height));
   display: flex;
@@ -2237,20 +2237,20 @@ body[data-page="mensagens"] .b2b-content {
 
 /* Cabeçalho de título padrão (igual às outras páginas), mas sem o respiro
    lateral do .b2b-content genérico — aqui o padding do conteúdo é 0. */
-body[data-page="mensagens"] .b2b-header-bar {
+body[data-page="chat"] .b2b-header-bar {
   margin: 0;
   padding: 0.9rem 1.5rem;
   flex-shrink: 0;
 }
 
 /* O rodapé padrão assume o padding genérico de 2rem do .b2b-content pra
-   calcular suas margens negativas — na página de Mensagens o padding é 0
+   calcular suas margens negativas — na página de Chat o padding é 0
    (interface de chat em tela cheia, sem scroll), então o rodapé saía
    desalinhado. Como a tela de chat não tem espaço/sentido pra um rodapé
    de marketing, ele simplesmente não aparece aqui. */
-body[data-page="mensagens"] .b2b-footer { display: none; }
+body[data-page="chat"] .b2b-footer { display: none; }
 
-body[data-page="mensagens"] .chat-shell {
+body[data-page="chat"] .chat-shell {
   height: 100%;
   flex: 1;
   border: none;

@@ -50,8 +50,18 @@
       "permanent": true
     },
     {
+      "source": "/chat.html",
+      "destination": "/chat",
+      "permanent": true
+    },
+    {
+      "source": "/mensagens",
+      "destination": "/chat",
+      "permanent": true
+    },
+    {
       "source": "/mensagens.html",
-      "destination": "/mensagens",
+      "destination": "/chat",
       "permanent": true
     },
     {
@@ -153,8 +163,8 @@
       "destination": "/login.html"
     },
     {
-      "source": "/mensagens",
-      "destination": "/mensagens.html"
+      "source": "/chat",
+      "destination": "/chat.html"
     },
     {
       "source": "/pagamentos",

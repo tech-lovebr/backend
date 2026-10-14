@@ -2932,8 +2932,7 @@ function renderInformacoesPublicas(root) {
   const ev = conviteDadosPublicos.evento || {};
   const quando = formatarDataPublica(ev.data, ev.hora);
   const ate = ev.data_fim ? formatarDataPublica(ev.data_fim, ev.hora_fim) : (ev.hora_fim ? `até ${ev.hora_fim}` : '');
-  const enderecoMapa = [ev.local, ev.endereco].filter(Boolean).join(', ');
-  const mapa = enderecoMapa ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(enderecoMapa)}` : '';
+  const botoesMapa = botoesDeMapaHtml(ev.local, ev.endereco);
 
   const bloco = (rotulo, valor, extra = '') => valor ? `
     <div class="convite-info">
@@ -2945,7 +2944,7 @@ function renderInformacoesPublicas(root) {
   const conteudo =
     bloco('Quando', [quando, ate].filter(Boolean).join(' — ')) +
     bloco('Local', ev.local) +
-    bloco('Endereço', ev.endereco, mapa ? `<a class="convite-link" href="${escaparPublico(mapa)}" target="_blank" rel="noopener noreferrer">Abrir no mapa</a>` : '') +
+    bloco('Endereço', ev.endereco, botoesMapa) +
     bloco('Ponto de referência', ev.referencia) +
     bloco('Dress code', ev.dresscode) +
     bloco('Informações gerais', ev.informacoes);
@@ -3245,6 +3244,23 @@ function renderInformacoesPreview() {
   startCountdownTicker(container);
 }
 
+// "Google Maps" e "Waze" com o endereço do evento (abre o app no celular).
+function botoesDeMapaHtml(local, endereco) {
+  // Busca pelo endereço; o nome do local (ex.: "Churrasqueira do prédio") só
+  // atrapalha o Maps/Waze — entra apenas quando não há endereço.
+  const destino = (endereco || '').trim() || (local || '').trim();
+  if (!destino) return '';
+  const q = encodeURIComponent(destino);
+  const maps = `https://www.google.com/maps/search/?api=1&query=${q}`;
+  const waze = `https://waze.com/ul?q=${q}&navigate=yes`;
+  const attr = v => String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  return `
+    <div class="convite-mapas">
+      <a class="convite-mapa-btn" href="${attr(maps)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+      <a class="convite-mapa-btn" href="${attr(waze)}" target="_blank" rel="noopener noreferrer">Waze</a>
+    </div>`;
+}
+
 // Seções de Informações dentro do convite — usada pela prévia da aba
 // Informações e pelo convite publicado, para os dois ficarem iguais:
 //   abaixo da imagem e antes dos botões → local/endereço + início e término;
@@ -3262,6 +3278,7 @@ function inserirSecoesDeInformacoes(container, { local, endereco, inicio, termin
         ${inicio ? `<p><strong>Início:</strong> ${escapeHtml(inicio)}</p>` : ''}
         ${termino ? `<p><strong>Término:</strong> ${escapeHtml(termino)}</p>` : ''}
       </div>` : ''}
+      ${botoesDeMapaHtml(local, endereco)}
     `);
     if (quickNav) quickNav.insertAdjacentHTML('beforebegin', topoHtml);
     else if (capa) capa.insertAdjacentHTML('afterend', topoHtml);

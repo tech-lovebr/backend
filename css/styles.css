@@ -6596,17 +6596,21 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 .guest-tipo-badge.is-acompanhante { background: #F4F4F5; color: #71717A; }
 
 
-/* Mapear mesas ocupa a altura toda da tela (do header até o rodapé):
-   lista de convidados e planta crescem juntas, sem espaço branco embaixo. */
+/* Mapear mesas preenche só o espaço que sobra até o rodapé (sem faixa branca
+   e sem rolagem quando cabe na tela). A planta só fica mais alta — e a
+   página rola — quando as mesas passam da área visível. */
+.dashboard-content-wrapper:has(> #tab-rsvp-tables.active) {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0 !important;
+}
 #tab-rsvp-tables.dashboard-tab-content.active {
   display: flex !important;
   flex-direction: column;
-  min-height: calc(100vh - var(--navbar-height-desktop, 76px));
+  flex: 1 0 auto;
   padding-bottom: 0;
 }
-#tab-rsvp-tables .floorplan-wrap { flex: 1; display: flex; flex-direction: column; }
-#tab-rsvp-tables .floorplan-body { flex: 1; min-height: 480px; }
-#tab-rsvp-tables .floorplan-sidebar { max-height: none; }
-@media (max-width: 767px) {
-  #tab-rsvp-tables.dashboard-tab-content.active { min-height: 0; }
-}
+#tab-rsvp-tables .floorplan-wrap { flex: 1 0 auto; display: flex; flex-direction: column; }
+#tab-rsvp-tables .floorplan-body { flex: 1 0 auto; }
+#tab-rsvp-tables .floorplan-sidebar { max-height: none; min-height: 0; }
+#tab-rsvp-tables .floorplan-canvas { min-height: 360px; }

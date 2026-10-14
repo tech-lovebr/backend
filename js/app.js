@@ -7796,6 +7796,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.querySelectorAll('.floorplan-el').forEach(el => el.remove());
     if (emptyHint) emptyHint.style.display = elements.length ? 'none' : 'flex';
+    // Altura: a da tela (CSS) ou, se alguma mesa passar dela, até a mesa mais baixa.
+    const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + (item.type === 'mesa' ? 220 : 84)), 0);
+    canvas.style.minHeight = maisBaixa ? `${Math.max(360, maisBaixa + 16)}px` : '';
 
     elements.forEach(elData => {
       const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
@@ -7937,7 +7940,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
         const rect = canvas.getBoundingClientRect();
         const newLeft = Math.max(4 - visivel.esq, Math.min(origLeft + dx, rect.width - 4 - visivel.dir));
-        const newTop = Math.max(4 - visivel.topo, Math.min(origTop + dy, rect.height - 4 - visivel.base));
+        const newTop = Math.max(4 - visivel.topo, origTop + dy);
+        const fundoNecessario = newTop + el.offsetHeight + 16;
+        if (fundoNecessario > rect.height) canvas.style.minHeight = `${fundoNecessario}px`;
         el.style.left = `${newLeft}px`;
         el.style.top = `${newTop}px`;
       };

@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261013_tabelascarteira">
+  <link rel="stylesheet" href="css/styles.css?v=20261013_extrato">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2228,6 +2228,10 @@
           <div class="builder-toolbar">
             <h2 id="wallet-header-title" class="floorplan-page-name" style="margin:0;">Carteira Digital</h2>
             <div id="wallet-header-actions" class="hidden flex-shrink-0">
+              <button type="button" id="btn-wallet-export" class="btn-secondary">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                <span>Exportar</span>
+              </button>
             </div>
           </div>
 
@@ -2430,40 +2434,25 @@
           <!-- SUB-PAINEL 3: EXTRATO (Statement) -->
           <div id="wallet-sub-statement" class="wallet-sub-panel hidden space-y-6 w-full">
             
-            <!-- Header do Extrato -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-200/80">
-              <div>
-                <h4 class="font-bold text-zinc-900 text-base sm:text-lg font-sans tracking-tight">Extrato Completo de Movimentações</h4>
-                <p class="text-xs sm:text-sm text-zinc-500 font-sans mt-0.5">Histórico detalhado de presentes recebidos, saques PIX e conciliação bancária.</p>
-              </div>
-              
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="showToast('Exportando extrato...', '📄')" class="btn-white text-xs py-2 px-3.5 font-bold rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-400 text-zinc-800 shadow-2xs flex items-center gap-1.5 cursor-pointer font-sans transition-all">
-                  <svg class="w-3.5 h-3.5 text-zinc-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-                  </svg>
-                  <span>Exportar</span>
-                </button>
+            <!-- Lista no mesmo padrão de Meus convidados (caixa + .guests-table);
+                 Exportar fica no cabeçalho da Carteira (#wallet-header-actions). -->
+            <div class="dash-card">
+              <div class="overflow-x-auto">
+                <table class="guests-table w-full">
+                  <thead>
+                    <tr>
+                      <th>Descrição / Convidado</th>
+                      <th>Data</th>
+                      <th>Status</th>
+                      <th class="text-right">Valor líquido</th>
+                    </tr>
+                  </thead>
+                  <tbody id="wallet-transactions-list">
+                    <!-- Linhas renderizadas via JS (renderWalletTransactions) -->
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            <!-- Tabela em Tela Cheia 100% do Espaço (Full Bleed sem margens laterais, igual ao Orçamento) -->
-            <div class="w-full overflow-x-auto min-h-[220px] budget-table-full-bleed">
-              <table class="w-full text-left border-collapse font-sans">
-                <thead class="bg-zinc-100/70 border-y border-zinc-200">
-                  <tr class="text-[11px] sm:text-xs font-bold text-zinc-700 font-sans uppercase tracking-wider">
-                    <th class="py-3.5 pl-6 sm:pl-8 pr-4">Descrição / Convidado</th>
-                    <th class="py-3.5 px-4">Data</th>
-                    <th class="py-3.5 px-4">Status</th>
-                    <th class="py-3.5 pl-4 pr-6 sm:pr-8 text-right">Valor Líquido</th>
-                  </tr>
-                </thead>
-                <tbody id="wallet-transactions-list" class="divide-y divide-zinc-100 font-sans">
-                  <!-- Linhas renderizadas dinamicamente via JS -->
-                </tbody>
-              </table>
-            </div>
-
           </div>
           </div>
         </section>
@@ -5341,7 +5330,7 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261013_tabelaconvidados"></script>
+  <script src="js/app.js?v=20261013_extrato"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261001_supabase1"></script>
 </body>

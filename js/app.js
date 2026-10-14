@@ -8230,8 +8230,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const desc = document.getElementById('wallet-header-desc');
     const headerActions = document.getElementById('wallet-header-actions');
 
+    // Ações do cabeçalho (Exportar) só fazem sentido no Extrato.
     if (headerActions) {
-      headerActions.classList.add('hidden');
+      headerActions.classList.toggle('hidden', subId !== 'wallet-statement');
     }
 
     if (title) {
@@ -8248,10 +8249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderBudgetExpensesTable();
       } else if (subId === 'wallet-statement') {
         title.textContent = 'Extrato';
-        if (desc) {
-          desc.textContent = 'Histórico completo de entradas de presentes, saques PIX realizados e conciliação financeira.';
-          desc.classList.remove('hidden');
-        }
+        if (desc) desc.classList.add('hidden');
       } else {
         title.textContent = subLabel;
         if (desc) desc.classList.add('hidden');
@@ -8282,28 +8280,57 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!listEl) return;
     listEl.innerHTML = '';
 
-    activeEvent.wallet.transactions.forEach(tx => {
+    const transactions = activeEvent.wallet.transactions || [];
+    if (!transactions.length) {
+      listEl.innerHTML = '<tr class="linha-vazia"><td colspan="4" class="text-center text-sm text-zinc-500 py-12">Nenhuma movimentação por enquanto.</td></tr>';
+      return;
+    }
+
+    // Mesmo padrão de célula de Meus convidados: título em semi-negrito,
+    // demais colunas em cinza 13px (o espaçamento vem de .guests-table td).
+    transactions.forEach(tx => {
       const isNegative = tx.amount < 0;
       const row = document.createElement('tr');
-      row.className = 'border-b border-zinc-100 hover:bg-zinc-50/80 transition-colors text-xs sm:text-sm font-sans';
       row.innerHTML = `
-        <td class="py-3.5 pl-6 sm:pl-8 pr-4">
-          <div class="font-bold text-zinc-900 font-sans">${tx.title}</div>
-          <div class="text-[11px] text-zinc-500 font-sans">${tx.guest} • ${tx.method}</div>
+        <td>
+          <span class="font-semibold text-zinc-900 block truncate">${escaparHtml(tx.title)}</span>
+          <span class="text-[0.75rem] text-[#667085] block truncate">${escaparHtml([tx.guest, tx.method].filter(Boolean).join(' • '))}</span>
         </td>
-        <td class="py-3.5 px-4 text-zinc-500 text-xs font-sans">${tx.date}</td>
-        <td class="py-3.5 px-4 font-sans">
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold font-sans ${tx.status === 'Disponível' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}">
-            ● ${tx.status}
+        <td><span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${escaparHtml(tx.date)}</span></td>
+        <td>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold font-sans whitespace-nowrap ${tx.status === 'Disponível' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}">
+            ● ${escaparHtml(tx.status)}
           </span>
         </td>
-        <td class="py-3.5 pl-4 pr-6 sm:pr-8 text-right font-extrabold font-sans ${isNegative ? 'text-zinc-800' : 'text-emerald-600'}">
+        <td class="text-right font-semibold whitespace-nowrap ${isNegative ? 'text-zinc-800' : 'text-emerald-600'}">
           ${isNegative ? '-' : '+'} R$ ${Math.abs(tx.amount).toFixed(2).replace('.', ',')}
         </td>
       `;
       listEl.appendChild(row);
     });
   }
+
+  // Exportar (cabeçalho do Extrato): baixa as movimentações do evento ativo
+  // em CSV (separador ";" e BOM, pra abrir certo no Excel em português).
+  function exportarExtratoCsv() {
+    const evento = getActiveEvent();
+    const transacoes = (evento && evento.wallet && evento.wallet.transactions) || [];
+    const campo = valor => `"${String(valor ?? '').replace(/"/g, '""')}"`;
+    const linhas = [
+      ['Descrição', 'Convidado', 'Forma', 'Data', 'Status', 'Valor líquido (R$)'],
+      ...transacoes.map(tx => [tx.title, tx.guest, tx.method, tx.date, tx.status, Number(tx.amount || 0).toFixed(2).replace('.', ',')])
+    ];
+    const csv = '﻿' + linhas.map(l => l.map(campo).join(';')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `extrato-${(evento && (evento.slug || evento.id)) || 'evento'}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  document.getElementById('btn-wallet-export')?.addEventListener('click', exportarExtratoCsv);
 
   // Saque PIX da comemoração ativa
   const formWithdrawPix = document.getElementById('form-withdraw-pix');

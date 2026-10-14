@@ -2693,6 +2693,11 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 /* Caixas de Dress Code / Informações Gerais na prévia da aba "Informações":
    sempre brancas, independente da cor de fundo do convite. */
 .classic-preview-info-boxes { padding: 1.5rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+/* Prévia de Informações: cada informação numa seção própria (local/datas acima
+   dos botões; Dress code e Informações gerais abaixo). */
+.classic-preview-info-section { padding: 0.75rem 1.25rem; }
+.classic-preview-info-datas { margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid #F0F0F1; display: flex; flex-direction: column; gap: 0.2rem; }
+.classic-preview-info-datas strong { color: #18181B; font-weight: 600; }
 .classic-preview-info-box { background: #fff; border-radius: 14px; padding: 1rem 1.125rem; box-shadow: 0 1px 3px rgba(16,24,40,0.08); }
 .classic-preview-info-box h4 { font-size: 0.8125rem; font-weight: 700; color: #18181B; margin: 0 0 0.35rem; }
 .classic-preview-info-box p { font-size: 0.75rem; color: #52525B; line-height: 1.5; margin: 0; white-space: pre-line; }

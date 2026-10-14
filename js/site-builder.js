@@ -3214,27 +3214,64 @@ function renderInformacoesPreview() {
   // Remove os elementos de Título/Texto (a marcação de tipo só existe em modo preview).
   container.querySelectorAll('[data-element-type="titulo"], [data-element-type="texto"]').forEach(node => node.remove());
 
-  // Monta as caixas de Dress Code / Informações Gerais com o que está preenchido em Informações.
+  // Tudo vem dos campos ao lado (com o que já está salvo no evento como reserva).
   const activeEvent = getActiveEventForBuilder();
   const details = (activeEvent && activeEvent.eventDetails) || {};
-  const dresscode = (document.getElementById('editor-data-dresscode')?.value || details.dresscode || '').trim();
-  const generalInfo = (document.getElementById('editor-data-general-info')?.value || details.generalInfo || '').trim();
+  const campo = (id, salvo) => (document.getElementById(id)?.value || salvo || '').trim();
+  const local = campo('editor-data-location', details.locationName);
+  const endereco = campo('editor-data-address', details.address);
+  const inicio = formatarDataPublica(campo('editor-data-date', details.date), campo('editor-data-time', details.time));
+  const termino = formatarDataPublica(campo('editor-data-end-date', details.endDate), campo('editor-data-end-time', details.endTime));
+  const dresscode = campo('editor-data-dresscode', details.dresscode);
+  const generalInfo = campo('editor-data-general-info', details.generalInfo);
 
-  if (dresscode || generalInfo) {
-    const boxesHtml = `
-      <div class="classic-preview-info-boxes">
-        ${dresscode ? `<div class="classic-preview-info-box"><h4>Dress Code</h4><p>${escapeHtml(dresscode)}</p></div>` : ''}
-        ${generalInfo ? `<div class="classic-preview-info-box"><h4>Informações Gerais</h4><p>${escapeHtml(generalInfo)}</p></div>` : ''}
-      </div>
-    `;
-    const firstSection = container.querySelector(':scope > section');
-    if (firstSection) {
-      firstSection.insertAdjacentHTML('afterend', boxesHtml);
-    } else {
-      container.insertAdjacentHTML('afterbegin', boxesHtml);
+  const secaoInfo = conteudo => `<section class="classic-preview-info-section"><div class="classic-preview-info-box">${conteudo}</div></section>`;
+  const quickNav = container.querySelector('.builder-quicknav-section');
+  const capa = container.querySelector(':scope > section');
+
+  // 1) Abaixo da imagem e antes dos botões: local/endereço + início e término.
+  if (local || endereco || inicio || termino) {
+    const topoHtml = secaoInfo(`
+      ${local ? `<h4>${escapeHtml(local)}</h4>` : ''}
+      ${endereco ? `<p>${escapeHtml(endereco)}</p>` : ''}
+      ${inicio || termino ? `<div class="classic-preview-info-datas">
+        ${inicio ? `<p><strong>Início:</strong> ${escapeHtml(inicio)}</p>` : ''}
+        ${termino ? `<p><strong>Término:</strong> ${escapeHtml(termino)}</p>` : ''}
+      </div>` : ''}
+    `);
+    if (quickNav) quickNav.insertAdjacentHTML('beforebegin', topoHtml);
+    else if (capa) capa.insertAdjacentHTML('afterend', topoHtml);
+    else container.insertAdjacentHTML('afterbegin', topoHtml);
+  }
+
+  // 2) Embaixo dos botões: Dress code e Informações gerais, cada um na sua seção.
+  const baixoHtml =
+    (dresscode ? secaoInfo(`<h4>Dress Code</h4><p>${escapeHtml(dresscode)}</p>`) : '') +
+    (generalInfo ? secaoInfo(`<h4>Informações Gerais</h4><p>${escapeHtml(generalInfo)}</p>`) : '');
+  if (baixoHtml) {
+    if (quickNav) quickNav.insertAdjacentHTML('afterend', baixoHtml);
+    else {
+      const rodape = container.querySelector('.builder-fixed-footer');
+      if (rodape) rodape.insertAdjacentHTML('beforebegin', baixoHtml);
+      else container.insertAdjacentHTML('beforeend', baixoHtml);
     }
   }
 
   wireClassicPreviewCoverEdit(container, renderInformacoesPreview);
   startCountdownTicker(container);
 }
+
+// A prévia de Informações acompanha os campos enquanto a pessoa digita.
+let infoPreviewTimer = null;
+document.addEventListener('input', (e) => {
+  const id = e.target && e.target.id;
+  if (!id || !id.startsWith('editor-data-')) return;
+  clearTimeout(infoPreviewTimer);
+  infoPreviewTimer = setTimeout(renderInformacoesPreview, 150);
+});
+document.addEventListener('change', (e) => {
+  const id = e.target && e.target.id;
+  if (!id || !id.startsWith('editor-data-')) return;
+  clearTimeout(infoPreviewTimer);
+  infoPreviewTimer = setTimeout(renderInformacoesPreview, 150);
+});

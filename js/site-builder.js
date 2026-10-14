@@ -3271,8 +3271,14 @@ function renderInformacoesPreview() {
   );
   const inicio = formatarDataPublica(campo('editor-data-date', details.date), campo('editor-data-time', details.time));
   const termino = formatarDataPublica(campo('editor-data-end-date', details.endDate), campo('editor-data-end-time', details.endTime));
-  const dresscode = campo('editor-data-dresscode', details.dresscode);
-  const generalInfo = campo('editor-data-general-info', details.generalInfo);
+  // Dress code e Informações gerais só aparecem se houver texto no campo
+  // (campo vazio = sem seção, mesmo que algo antigo esteja salvo).
+  const soDoCampo = (id, salvo) => {
+    const el = document.getElementById(id);
+    return (el ? el.value : (salvo || '')).trim();
+  };
+  const dresscode = soDoCampo('editor-data-dresscode', details.dresscode);
+  const generalInfo = soDoCampo('editor-data-general-info', details.generalInfo);
 
   inserirSecoesDeInformacoes(container, { local, endereco, inicio, termino, dresscode, generalInfo });
 
@@ -3344,9 +3350,12 @@ function inserirSecoesDeInformacoes(container, { local, endereco, inicio, termin
     else container.insertAdjacentHTML('afterbegin', topoHtml);
   }
 
+  // Dress code e Informações gerais: cada um ocupa uma seção inteira (branca,
+  // de ponta a ponta), não uma caixinha. Sem texto, a seção não aparece.
+  const secaoInteira = (titulo, texto) => `<section class="classic-preview-info-full"><h4>${titulo}</h4><p>${escapeHtml(texto)}</p></section>`;
   const baixoHtml =
-    (dresscode ? secaoInfo(`<h4>Dress Code</h4><p>${escapeHtml(dresscode)}</p>`) : '') +
-    (generalInfo ? secaoInfo(`<h4>Informações Gerais</h4><p>${escapeHtml(generalInfo)}</p>`) : '');
+    ((dresscode || '').trim() ? secaoInteira('Dress Code', dresscode.trim()) : '') +
+    ((generalInfo || '').trim() ? secaoInteira('Informações Gerais', generalInfo.trim()) : '');
   if (baixoHtml) {
     if (quickNav) quickNav.insertAdjacentHTML('afterend', baixoHtml);
     else {

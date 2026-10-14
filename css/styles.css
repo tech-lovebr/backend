@@ -2708,6 +2708,11 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 .convite-como-chegar-menu { position: absolute; left: 0; right: 0; top: calc(100% + 0.35rem); z-index: 20; background: #FFFFFF; border-radius: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04); padding: 0.35rem; display: flex; flex-direction: column; }
 .convite-como-chegar-menu a { padding: 0.6rem 0.75rem; border-radius: 8px; color: #18181B; font-size: 0.8125rem; font-weight: 600; text-decoration: none; text-align: center; }
 .convite-como-chegar-menu a:hover { background: #F4F4F5; }
+/* Dress code / Informações gerais: seção inteira, branca, de ponta a ponta. */
+.classic-preview-info-full { background: #FFFFFF; padding: 1.75rem 1.5rem; }
+.classic-preview-info-full + .classic-preview-info-full { border-top: 1px solid #F0F0F1; }
+.classic-preview-info-full h4 { font-size: 0.9375rem; font-weight: 700; color: #18181B; margin: 0 0 0.5rem; }
+.classic-preview-info-full p { font-size: 0.8125rem; color: #52525B; line-height: 1.6; margin: 0; white-space: pre-line; }
 .classic-preview-info-box { background: #fff; border-radius: 14px; padding: 1rem 1.125rem; box-shadow: 0 1px 3px rgba(16,24,40,0.08); }
 .classic-preview-info-box h4 { font-size: 0.8125rem; font-weight: 700; color: #18181B; margin: 0 0 0.35rem; }
 .classic-preview-info-box p { font-size: 0.75rem; color: #52525B; line-height: 1.5; margin: 0; white-space: pre-line; }

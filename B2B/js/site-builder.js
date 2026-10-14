@@ -215,7 +215,7 @@ const RESERVED_SLUGS = [
   'sophia-eventos', 'buffet-real', 'espaco-jardim', 'casa-de-festas', 'eventos-vip', 'admin', 'love',
   'hub', 'www', 'app', 'api', 'assets', 'css', 'js', 'partials', 'index', 'site-preview',
   'agenda', 'configuracoes', 'crm', 'dashboard', 'esqueci-senha', 'faq', 'funcoes', 'guias', 'login',
-  'mensagens', 'chat', 'pagamentos', 'paginas-site', 'planos', 'privacidade', 'produtos', 'resetar-senha',
+  'mensagens', 'chat', 'notificacoes', 'pagamentos', 'paginas-site', 'planos', 'privacidade', 'produtos', 'resetar-senha',
   'signup', 'termos', 'vendas', 'verificar', 'vitrine'
 ];
 

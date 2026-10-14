@@ -509,55 +509,61 @@ function initMobileNav() {
 
 /* -------------------- Notificações -------------------- */
 
-async function getKanbanDueTomorrowAlerts() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) return [];
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
-
+/* Notificações enviadas pelo Admin (tabela `notificacoes`, migrations 031,
+   032 e 039). A RLS já esconde as agendadas e as de outro público, mas
+   quem também é admin ou anfitrião enxergaria mais — por isso o filtro de
+   público e de data vai explícito na consulta: o Hub só mostra as de
+   'todos', 'b2b' e as 'individual' endereçadas a este fornecedor.
+   Usado aqui (número do sino, em toda página) e em js/notificacoes.js. */
+async function fetchB2BNotificacoes(userId) {
   const { data, error } = await supabaseClient
-    .from('agenda_tasks')
-    .select('text, done, due_date')
-    .eq('fornecedor_id', session.user.id)
-    .eq('due_date', tomorrowStr)
-    .eq('done', false);
+    .from('notificacoes')
+    .select('id, titulo, mensagem, link_url, link_label, created_at')
+    .or(`destino.in.(todos,b2b),and(destino.eq.individual,destinatario_id.eq.${userId})`)
+    .lte('created_at', new Date().toISOString())
+    .order('created_at', { ascending: false });
+  if (error) { console.error('Erro ao carregar notificações:', error); return []; }
+  return data || [];
+}
 
-  if (error || !data) return [];
+async function fetchB2BNotificacoesLidas(userId) {
+  const { data, error } = await supabaseClient
+    .from('notificacao_leituras')
+    .select('notificacao_id')
+    .eq('user_id', userId);
+  if (error) return new Set();
+  return new Set((data || []).map(r => r.notificacao_id));
+}
 
-  return data.map(task => ({
-    text: `Amanhã é o último dia para finalizar a tarefa "${escapeHtml(task.text)}"`,
-    href: 'agenda.html',
-    tone: 'warning'
-  }));
+// O número começa escondido e vazio no HTML (partials/topbar.html) e só
+// aparece quando o número real chega; com 0 não lidas, some.
+function updateNotificationsBadge(unreadCount) {
+  // Guarda o valor: na página de Notificações a lista pode chegar antes de
+  // o topbar ser injetado — initNotifications reaplica quando ele existir.
+  window.b2bUnreadNotifications = unreadCount;
+  const badge = document.getElementById('notif-dot');
+  if (!badge) return;
+  badge.textContent = unreadCount > 0 ? String(unreadCount) : '';
+  badge.classList.toggle('hidden', !(unreadCount > 0));
 }
 
 async function initNotifications(unreadSnapshot) {
-  const list = document.getElementById('notif-list');
-  const dot = document.getElementById('notif-dot');
+  // A página de Notificações calcula o número ela mesma ao carregar a lista
+  // (se já calculou antes do topbar existir, só reaplica).
+  if (document.body.dataset.page === 'notificacoes') {
+    if (window.b2bUnreadNotifications !== undefined) updateNotificationsBadge(window.b2bUnreadNotifications);
+  } else {
+    const userId = window.b2bSession && window.b2bSession.user.id;
+    if (userId) {
+      const [rows, lidas] = await Promise.all([fetchB2BNotificacoes(userId), fetchB2BNotificacoesLidas(userId)]);
+      updateNotificationsBadge(rows.filter(n => !lidas.has(n.id)).length);
+    }
+  }
+
   const navBadge = document.getElementById('nav-msg-badge');
   const railBadge = document.getElementById('nav-msg-badge-rail');
   const headerBadge = document.getElementById('nav-msg-badge-header');
   const mobileBadge = document.getElementById('nav-msg-badge-mobile');
-  if (!list) return;
-
-  const staticAlerts = typeof B2B_DATA !== 'undefined' ? B2B_DATA.alertas : [];
-  const alerts = [...(await getKanbanDueTomorrowAlerts()), ...staticAlerts];
-
-  if (alerts.length) {
-    dot.textContent = alerts.length;
-    dot.style.display = '';
-    list.innerHTML = alerts.map(a => `
-      <a href="${a.href}" class="topbar-dropdown-item" style="align-items:flex-start;white-space:normal;">
-        <span class="notif-dot-${a.tone}"></span>
-        <span>${a.text}</span>
-      </a>
-    `).join('');
-  } else {
-    list.innerHTML = '<p class="text-sm text-zinc-500 px-3 py-4 text-center">Nenhuma notificação nova.</p>';
-  }
-
   const unreadMsgs = unreadSnapshot || 0;
   [navBadge, railBadge, headerBadge, mobileBadge].forEach(badge => {
     if (!badge) return;

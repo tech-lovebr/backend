@@ -6404,3 +6404,36 @@ body[data-theme="dark"] .leads-table-wrap .leads-table td.col-principal { color:
   border-color: #262D36;
   color: #FFFFFF;
 }
+
+/* ==========================================================================
+   Notificações (página /notificacoes e número do sino)
+   ========================================================================== */
+/* O número do sino some com .hidden mesmo que alguma regra de badge force
+   um display (a do sino não força hoje, mas não pode depender disso). */
+.topbar-icon-badge.hidden { display: none !important; }
+
+/* Mesmo desenho da página de notificações da plataforma do anfitrião. */
+.notification-row {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+  padding: 1rem 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color .15s ease;
+}
+.notification-row.is-unread { background: #EBF4FF; }
+.notification-row.is-unread:hover { background: #DCEBFF; }
+.notification-row.is-read { background: rgba(250, 250, 250, 0.8); }
+.notification-row.is-read:hover { background: #F4F4F5; }
+.notification-row-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: #F4F4F5; color: #52525B;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.notification-row-dot { width: 6px; height: 6px; border-radius: 9999px; background: #537bae; flex-shrink: 0; }
+
+body[data-theme="dark"] .notification-row.is-unread { background: rgba(83, 123, 174, 0.22) !important; }
+body[data-theme="dark"] .notification-row.is-unread:hover { background: rgba(83, 123, 174, 0.3) !important; }
+body[data-theme="dark"] .notification-row.is-read { background: rgba(255, 255, 255, 0.03) !important; }
+body[data-theme="dark"] .notification-row.is-read:hover { background: rgba(255, 255, 255, 0.07) !important; }
+body[data-theme="dark"] .notification-row-icon { background: #333333 !important; color: #E4E4E7 !important; }

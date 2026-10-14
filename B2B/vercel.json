@@ -123,6 +123,11 @@
       "source": "/vitrine.html",
       "destination": "/vitrine",
       "permanent": true
+    },
+    {
+      "source": "/notificacoes.html",
+      "destination": "/notificacoes",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -213,6 +218,10 @@
     {
       "source": "/vitrine",
       "destination": "/vitrine.html"
+    },
+    {
+      "source": "/notificacoes",
+      "destination": "/notificacoes.html"
     },
     {
       "source": "/:slug([a-z0-9-]+)",

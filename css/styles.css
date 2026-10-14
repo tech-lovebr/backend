@@ -6587,3 +6587,9 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #classic-builder-preview .builder-section {
   border: 0;
 }
+
+
+/* Lista de convidados: C = convidado, A = acompanhante (à esquerda do nome). */
+.guest-tipo-badge { flex: 0 0 auto; width: 22px; height: 22px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; line-height: 1; }
+.guest-tipo-badge.is-convidado { background: #E8EEF3; color: #183b54; }
+.guest-tipo-badge.is-acompanhante { background: #F4F4F5; color: #71717A; }

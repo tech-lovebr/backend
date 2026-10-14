@@ -6410,10 +6410,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (summaryPending) summaryPending.textContent = activeEvent.convidadosPendentes || 25;
 
     // 2. Contagens do Menu de Status
-    const totalCount = activeEvent.guests.length;
-    const confirmedCount = activeEvent.guests.filter(g => g.status === 'confirmed').length;
-    const declinedCount = activeEvent.guests.filter(g => g.status === 'declined').length;
-    const pendingCount = activeEvent.guests.filter(g => g.status === 'pending').length;
+    // Conta pessoas, não reservas: convidado + acompanhantes (1 + 1 = 2).
+    const pessoasDaReserva = g => 1 + Math.max(
+      (g.companionsNames || []).filter(n => (n || '').trim()).length,
+      parseInt(g.companions) || 0
+    );
+    const somaPessoas = lista => lista.reduce((acc, g) => acc + pessoasDaReserva(g), 0);
+    const totalCount = somaPessoas(activeEvent.guests);
+    const confirmedCount = somaPessoas(activeEvent.guests.filter(g => g.status === 'confirmed'));
+    const declinedCount = somaPessoas(activeEvent.guests.filter(g => g.status === 'declined'));
+    const pendingCount = somaPessoas(activeEvent.guests.filter(g => g.status === 'pending'));
 
     const countOptAll = document.getElementById('count-rsvp-opt-all');
     const countOptConfirmed = document.getElementById('count-rsvp-opt-confirmed');
@@ -6458,7 +6464,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const footerCountEl = document.getElementById('rsvp-footer-count');
     if (footerCountEl) {
-      footerCountEl.textContent = `(${filteredGuests.length})`;
+      footerCountEl.textContent = `(${somaPessoas(filteredGuests)})`;
     }
 
     if (filteredGuests.length === 0) {
@@ -6512,7 +6518,10 @@ document.addEventListener('DOMContentLoaded', () => {
         row.className = 'cursor-pointer group';
         row.innerHTML = `
           <td>
-            <span class="font-semibold text-zinc-900 block truncate">${attendee.name}</span>
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="guest-tipo-badge ${attendee.isPrimary ? 'is-convidado' : 'is-acompanhante'}" title="${attendee.isPrimary ? 'Convidado' : 'Acompanhante'}">${attendee.isPrimary ? 'C' : 'A'}</span>
+              <span class="font-semibold text-zinc-900 block truncate">${attendee.name}</span>
+            </div>
           </td>
           <td>
             <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? formatGuestTitleLabel(guest) : '—'}</span>

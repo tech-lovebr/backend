@@ -47,6 +47,36 @@ function formatPhoneDigits(digits) {
   return formatted;
 }
 
+/* Porcentagem: o "%" entra sozinho ao digitar e não dá pra apagar — só os
+   dígitos. Mesmo truque da máscara de telefone: um backspace que só tirou
+   o "%" (contagem de dígitos igual) apaga o último dígito de verdade. */
+function wirePercentMaskInput(input) {
+  let prevDigits = '';
+  input.addEventListener('input', (e) => {
+    let digits = input.value.replace(/D/g, '').replace(/^0+(?=d)/, '').slice(0, 3);
+    const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;
+    if (isDeleting && digits.length === prevDigits.length && digits.length > 0) {
+      digits = digits.slice(0, -1);
+    }
+    if (digits && Number(digits) > 100) digits = '100';
+    prevDigits = digits;
+    input.value = digits ? digits + '%' : '';
+    // Cursor sempre antes do "%".
+    const pos = digits.length;
+    try { input.setSelectionRange(pos, pos); } catch (err) { /* campo sem seleção */ }
+  });
+  // Clicar depois do "%" também deixa o cursor antes dele.
+  input.addEventListener('click', () => {
+    const pos = input.value.replace(/D/g, '').length;
+    if (input.selectionStart > pos) { try { input.setSelectionRange(pos, pos); } catch (err) {} }
+  });
+}
+
+function percentMaskValue(input) {
+  const digits = (input.value || '').replace(/D/g, '');
+  return digits ? Math.min(100, parseInt(digits, 10)) : null;
+}
+
 function wirePhoneMaskInput(input) {
   let prevDigits = '';
   input.addEventListener('input', (e) => {

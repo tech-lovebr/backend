@@ -317,7 +317,9 @@ function initCompanyForm() {
     .join('');
   installmentsSelect.value = String(p.maxInstallmentsNoInterest ?? 0);
 
-  document.getElementById('company-deposit-percent').value = p.depositPercent ?? '';
+  const depositInput = document.getElementById('company-deposit-percent');
+  wirePercentMaskInput(depositInput);
+  depositInput.value = (p.depositPercent ?? '') === '' ? '' : `${p.depositPercent}%`;
   document.getElementById('company-deposit-deadline').value = p.depositDeadlineDays ?? '';
   document.getElementById('company-cancellation-policy').value = p.cancellationPolicy || '';
 
@@ -345,7 +347,7 @@ function initCompanyForm() {
     p.serviceRadiusKm = RADIUS_STEPS[Number(radiusInput.value)];
     p.deliveryTime = document.getElementById('company-delivery-time').value.trim();
     p.maxInstallmentsNoInterest = Number(installmentsSelect.value);
-    p.depositPercent = Number(document.getElementById('company-deposit-percent').value) || null;
+    p.depositPercent = percentMaskValue(document.getElementById('company-deposit-percent'));
     p.depositDeadlineDays = Number(document.getElementById('company-deposit-deadline').value) || null;
     p.requiresFullPaymentByEvent = requiresFullPayment;
     p.cancellationPolicy = document.getElementById('company-cancellation-policy').value.trim();

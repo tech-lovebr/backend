@@ -41,9 +41,19 @@ function normalizeCategory(category) {
   return CATEGORY_LEGACY_ALIASES[category] || category;
 }
 
+// Subcategorias renomeadas: produto salvo com o nome antigo continua
+// casando com a opção nova (no Hub e no filtro do Explorar).
+const SUBCATEGORY_LEGACY_ALIASES = {
+  'Open Bar': 'Bar Completo / Open Bar',
+  'Carrinhos': 'Carrinhos / Food Truck'
+};
+function normalizeSubcategory(sub) {
+  return SUBCATEGORY_LEGACY_ALIASES[sub] || sub;
+}
+
 const SUBCATEGORY_MAP = {
-  'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
-  'Bar e Bebidas': ['Open Bar', 'Drinks Autorais', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Bebidas Não Alcoólicas', 'Bar Infantil'],
+  'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos / Food Truck', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
+  'Bar e Bebidas': ['Bar Completo / Open Bar', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Consignação de Bebidas', 'Bar Infantil'],
   'Espaços para Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
   'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Montadores', 'Carregadores'],
   'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
@@ -159,7 +169,7 @@ async function loadProducts() {
     equipmentType: (p.extra && p.extra.equipmentType) || null,
     dishes: (p.extra && p.extra.dishes) || [],
     offerType: (p.extra && p.extra.offerType) || 'servico',
-    subcategory: (p.extra && p.extra.subcategory) || null,
+    subcategory: normalizeSubcategory((p.extra && p.extra.subcategory) || null),
     pricing: (p.extra && p.extra.pricing) || null,
     scope: (p.extra && p.extra.scope) || { included: [], excluded: [] },
     attributes: (p.extra && p.extra.attributes) || {},

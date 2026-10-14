@@ -6825,3 +6825,7 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .gift-card-comprado { opacity: 0.55; cursor: default; }
 .gift-card-comprado:hover { opacity: 0.55; }
 #btn-submit-gift-icon.hidden { display: none !important; }
+
+
+/* Tela interna sem cabeçalho (prévia de Informações no editor): a foto começa colada no topo. */
+.convite-tela > .convite-tela-capa:first-child { margin-top: -1.5rem; }

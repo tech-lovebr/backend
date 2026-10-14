@@ -3555,6 +3555,8 @@ function renderInformacoesPreview() {
     informacoes: soDoCampo('editor-data-general-info', details.generalInfo)
   };
   container.innerHTML = telaInformacoesHtml(ev);
+  // Prévia: sem o título "Informações" e a setinha de voltar (só no convite publicado).
+  container.querySelector('.convite-tela-topo')?.remove();
 }
 
 // "Av. Duquesa de Goiás, 825" + "São Paulo" + "SP" → "Av. Duquesa de Goiás, 825, São Paulo - SP"

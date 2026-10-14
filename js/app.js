@@ -10353,13 +10353,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const mensagemVazia = currentB2BCategory === 'favorites'
         ? 'Você ainda não favoritou nenhum fornecedor.'
         : (b2bFornecedores.length === 0 ? 'Ainda não há fornecedores na vitrine.' : 'Nenhum fornecedor encontrado com esses filtros.');
-      // Favoritos: mesmo visual das caixas de Benefícios Love (sem linha, com a
-      // sombra leve da regra global de .bg-white.rounded-*). Explorar: com
-      // linha e sem sombra (bg-[#FFFFFF] escapa daquela regra).
-      const caixaVazia = currentB2BCategory === 'favorites'
-        ? 'bg-white border border-transparent'
-        : 'bg-[#FFFFFF] border border-zinc-200/80';
-      listContainer.innerHTML = `<div class="p-12 text-center ${caixaVazia} rounded-2xl text-sm text-zinc-500">${mensagemVazia}</div>`;
+      // Mesmo visual das caixas de Benefícios Love: sem linha, com a sombra
+      // leve da regra global de .bg-white.rounded-*.
+      listContainer.innerHTML = `<div class="p-12 text-center bg-white border border-transparent rounded-2xl text-sm text-zinc-500">${mensagemVazia}</div>`;
       return;
     }
 
@@ -11340,10 +11336,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const contractedList = window.LOVE_DATA.contractedVendors || [];
 
     if (contractedList.length === 0) {
-      // bg-[#FFFFFF] em vez de bg-white: a regra global de .bg-white.rounded-*
-      // põe sombra, e essas caixas são sem sombra.
+      // Mesmo visual das caixas de Benefícios Love: sem linha, com a sombra
+      // leve da regra global de .bg-white.rounded-*.
       container.innerHTML = `
-        <div class="p-12 text-center bg-[#FFFFFF] rounded-2xl border border-zinc-200/80 text-sm text-zinc-500 flex flex-col items-center gap-4">
+        <div class="p-12 text-center bg-white rounded-2xl border border-transparent text-sm text-zinc-500 flex flex-col items-center gap-4">
           <p>Você ainda não possui fornecedores contratados, que tal explorar?</p>
           <button type="button" class="btn-contracted-empty-explore px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all cursor-pointer">
             Explorar Fornecedores

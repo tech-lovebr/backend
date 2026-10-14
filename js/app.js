@@ -12161,7 +12161,8 @@ document.addEventListener('DOMContentLoaded', () => {
         name: (row.fornecedor && row.fornecedor.company_name) || 'Fornecedor',
         // Categoria do fornecedor = a do primeiro serviço ativo com categoria (ex.: "Bar e Bebidas").
         category: ((row.fornecedor && row.fornecedor.products) || []).filter(p => p && p.active !== false && p.category).map(p => p.category)[0] || '',
-        avatar: (row.fornecedor && row.fornecedor.avatar_url) || LOVE_AVATAR_PADRAO,
+        // Sem foto: as iniciais da empresa (mesmo avatar do perfil no Explorar).
+        avatar: (row.fornecedor && row.fornecedor.avatar_url) || avatarComIniciais((row.fornecedor && row.fornecedor.company_name) || 'Fornecedor'),
         online: false,
         // Não lidas = mensagens do fornecedor ainda sem read_at.
         unread: msgs.filter(m => m.sender_role === 'fornecedor' && !m.read_at).length,
@@ -12963,7 +12964,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         newConvPicker.innerHTML = fornecedores.map(f => `
           <button type="button" data-fornecedor-id="${f.id}" class="w-full flex items-center gap-2.5 p-3 hover:bg-zinc-50 text-left border-b border-zinc-100 last:border-0">
-            <img src="${f.avatar_url || LOVE_AVATAR_PADRAO}" class="w-8 h-8 rounded-full ${classeAvatarChat(f.avatar_url || LOVE_AVATAR_PADRAO)} border border-zinc-200" alt="">
+            <img src="${f.avatar_url || avatarComIniciais(f.company_name)}" class="w-8 h-8 rounded-full object-cover border border-zinc-200" alt="">
             <span class="text-xs font-medium text-zinc-800 truncate">${f.company_name}</span>
           </button>
         `).join('');

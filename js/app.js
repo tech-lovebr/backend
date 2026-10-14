@@ -10688,6 +10688,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
 
+  // Serviço do tipo espaço guarda o endereço no próprio serviço (extra.venue).
+  function enderecoDoEspacoDoServico(servicos) {
+    const venue = (servicos || []).map(s => s && s.extra && s.extra.venue).find(v => v && v.city);
+    if (!venue) return { address: '', city: '', state: '' };
+    const rua = [venue.street, venue.number].filter(Boolean).join(', ');
+    return { address: rua, city: venue.city || '', state: venue.state || '' };
+  }
+
   function mapearFornecedorVitrine(f) {
     const servicos = (f.products || []).filter(p => p.active !== false);
     // "Minha empresa" pode ter endereço comercial próprio (032_empresa_config).
@@ -10718,9 +10726,10 @@ document.addEventListener('DOMContentLoaded', () => {
       name: f.company_name || 'Fornecedor',
       description: f.description || '',
       about: f.description || '',
-      address: usaPerfil ? f.address : f.business_address,
-      city: usaPerfil ? f.city : f.business_city,
-      state: usaPerfil ? f.state : f.business_state,
+      address: (usaPerfil ? f.address : f.business_address) || enderecoDoEspacoDoServico(servicos).address,
+      // Sem cidade no perfil do Hub: usa a do espaço cadastrado no serviço.
+      city: (usaPerfil ? f.city : f.business_city) || enderecoDoEspacoDoServico(servicos).city,
+      state: (usaPerfil ? f.state : f.business_state) || enderecoDoEspacoDoServico(servicos).state,
       image: fotos[0] || (capaPrincipal && capaPrincipal.src) || '',
       imageFocus: (fotos[0] || !capaPrincipal) ? '50% 50%' : capaPrincipal.focus,
       imageServiceId: capaPrincipal ? capaPrincipal.id : null,
@@ -10967,9 +10976,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Caixinhas de cidade acima da lista do Explorar — filtro rápido por
   // localização, junto com o que já é filtrado por categoria/busca.
+  // Campo "Em … Local" da barra do Explorar: digitar a cidade filtra a
+  // vitrine (Enter ou ao parar de digitar). Aceita parte do nome e ignora
+  // acento/maiúscula ("indaia" → Indaiatuba). Vazio = todas as cidades.
+  function aplicarCidadeDigitada(texto) {
+    const digitado = String(texto || '').trim();
+    b2bCityChosenByUser = true;
+    if (!digitado) {
+      b2bSelectedCity = null;
+    } else {
+      const alvo = cidadeNormalizada(digitado);
+      const cidades = cidadesDaVitrine();
+      const exata = cidades.find(c => cidadeNormalizada(c.city) === alvo);
+      const parcial = cidades.find(c => cidadeNormalizada(c.city).startsWith(alvo)) || cidades.find(c => cidadeNormalizada(c.city).includes(alvo));
+      b2bSelectedCity = (exata || parcial) ? (exata || parcial).city : digitado;
+    }
+    renderB2BCityFilter();
+    renderB2BExplore();
+  }
+  (function ligarCampoLocalDoExplorar() {
+    const input = document.getElementById('b2b-location-input');
+    if (!input || input.dataset.ligado) return;
+    input.dataset.ligado = '1';
+    let timer = null;
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => aplicarCidadeDigitada(input.value), 450);
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      clearTimeout(timer);
+      aplicarCidadeDigitada(input.value);
+      const escolhida = b2bSelectedCity || '';
+      if (escolhida) input.value = escolhida;
+    });
+  })();
+
   function renderB2BCityFilter() {
     const row = document.getElementById('b2b-city-filter-row');
     if (!row) return;
+    // O campo "Local" mostra a cidade que está filtrando (se não estiver sendo digitado).
+    const campoLocal = document.getElementById('b2b-location-input');
+    if (campoLocal && document.activeElement !== campoLocal) campoLocal.value = b2bSelectedCity || '';
 
     const cidades = cidadesDaVitrine();
     // Só as cidades que têm fornecedor na vitrine; sem nenhuma, a barra some.

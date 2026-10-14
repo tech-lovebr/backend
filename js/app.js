@@ -7673,23 +7673,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (floorplanActiveTableId === targetTable.id) renderFloorPlanSeatAssignments(targetTable);
   }
 
-  // Um assento fica verde quando o nome digitado bate (case-insensitive)
-  // com um convidado da lista cujo RSVP está confirmado.
-  function isFloorPlanSeatConfirmed(name) {
-    if (!name || !name.trim()) return false;
+  // Pessoas que ocupam assento: cada convidado e cada acompanhante dele
+  // (com o status da reserva). Acompanhante sem nome vira
+  // "Acompanhante de <primeiro nome>", para não repetir o mesmo nome.
+  function pessoasParaMesas() {
     const activeEvent = getActiveEvent();
     const guests = (activeEvent && activeEvent.guests) || [];
-    const match = guests.find(g => g.name && g.name.trim().toLowerCase() === name.trim().toLowerCase());
+    const pessoas = [];
+    guests.forEach(g => {
+      if (!g.name || !g.name.trim()) return;
+      pessoas.push({ name: g.name.trim(), status: g.status, isPrimary: true });
+      (g.companionsNames || []).forEach(comp => {
+        let nome = (comp || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+        if (!nome || nome.toLowerCase() === 'acompanhante') {
+          nome = `Acompanhante de ${g.name.trim().split(/\s+/)[0]}`;
+        }
+        pessoas.push({ name: nome, status: g.status, isPrimary: false });
+      });
+    });
+    return pessoas;
+  }
+
+  function pessoaPeloNome(name) {
+    const alvo = (name || '').trim().toLowerCase();
+    if (!alvo) return null;
+    return pessoasParaMesas().find(p => p.name.toLowerCase() === alvo) || null;
+  }
+
+  // Um assento fica verde quando o nome digitado bate (case-insensitive)
+  // com um convidado (ou acompanhante) cujo RSVP está confirmado.
+  function isFloorPlanSeatConfirmed(name) {
+    const match = pessoaPeloNome(name);
     return !!(match && match.status === 'confirmed');
   }
 
   // Convidado recusado mantém a cor de recusado no assento/card independente
   // da mesa em que estiver — só muda se ele voltar a pendente ou confirmado.
   function isFloorPlanSeatDeclined(name) {
-    if (!name || !name.trim()) return false;
-    const activeEvent = getActiveEvent();
-    const guests = (activeEvent && activeEvent.guests) || [];
-    const match = guests.find(g => g.name && g.name.trim().toLowerCase() === name.trim().toLowerCase());
+    const match = pessoaPeloNome(name);
     return !!(match && match.status === 'declined');
   }
 
@@ -7710,8 +7731,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderFloorPlanGuestCards() {
     const container = document.getElementById('floorplan-guest-cards');
     if (!container) return;
-    const activeEvent = getActiveEvent();
-    let guests = (activeEvent && activeEvent.guests) || [];
+    // Convidados e acompanhantes, cada um com seu card.
+    let guests = pessoasParaMesas();
     if (floorplanGuestStatusFilter !== 'all') {
       guests = guests.filter(g => g.status === floorplanGuestStatusFilter);
     }
@@ -7826,19 +7847,11 @@ document.addEventListener('DOMContentLoaded', () => {
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {
-              // Nome e sobrenome em duas linhas, pra economizar espaço no assento.
-              const nameParts = guestName.trim().split(/\s+/);
+              // Só o primeiro nome no assento (o nome inteiro fica no title).
               const firstLine = document.createElement('span');
               firstLine.className = 'floorplan-seat-dot-line';
-              firstLine.textContent = nameParts[0] || '';
+              firstLine.textContent = guestName.split(/\s+/)[0] || '';
               seatDot.appendChild(firstLine);
-              const lastName = nameParts.slice(1).join(' ');
-              if (lastName) {
-                const secondLine = document.createElement('span');
-                secondLine.className = 'floorplan-seat-dot-line';
-                secondLine.textContent = lastName;
-                seatDot.appendChild(secondLine);
-              }
             }
             seatDot.draggable = true;
             seatDot.addEventListener('dragstart', (e) => {

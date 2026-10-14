@@ -1309,25 +1309,44 @@
                       </div>
                     </div>
 
+                    <!-- Endereço pelo CEP: ao digitar o CEP, os campos abaixo aparecem já
+                         preenchidos (rua, bairro, cidade e estado via ViaCEP). Endereço,
+                         cidade e estado finais ficam nos campos ocultos, que a prévia, o
+                         convite e o "Como chegar?" (Maps/Waze) já usam. -->
                     <div>
-                      <label class="block text-xs font-bold text-slate-700 mb-1.5">Endereço Completo</label>
-                      <input type="text" id="editor-data-address" placeholder="Endereço, número e complemento" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                      <label for="editor-data-cep" class="block text-xs font-bold text-slate-700 mb-1.5">CEP</label>
+                      <input type="text" id="editor-data-cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                      <p id="editor-data-cep-status" class="hidden text-[11px] mt-1.5"></p>
                     </div>
 
-                    <!-- Estado + Cidade: entram na busca do Google Maps / Waze do convite -->
-                    <div class="grid grid-cols-[110px_1fr] gap-3">
+                    <div id="editor-data-address-fields" class="hidden space-y-3">
                       <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Estado</label>
-                        <select id="editor-data-state" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
-                          <option value="">UF</option>
-                          <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
-                        </select>
+                        <label for="editor-data-street" class="block text-xs font-bold text-slate-700 mb-1.5">Endereço</label>
+                        <input type="text" id="editor-data-street" placeholder="Rua, avenida…" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                      </div>
+                      <div class="grid grid-cols-[110px_1fr] gap-3">
+                        <div>
+                          <label for="editor-data-number" class="block text-xs font-bold text-slate-700 mb-1.5">Número</label>
+                          <input type="text" id="editor-data-number" placeholder="Nº" maxlength="12" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                        </div>
+                        <div>
+                          <label for="editor-data-complement" class="block text-xs font-bold text-slate-700 mb-1.5">Complemento</label>
+                          <input type="text" id="editor-data-complement" placeholder="Apto, bloco, salão…" maxlength="60" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                        </div>
                       </div>
                       <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Cidade</label>
-                        <input type="text" id="editor-data-city" placeholder="Ex.: São Paulo" maxlength="80" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                        <label for="editor-data-district" class="block text-xs font-bold text-slate-700 mb-1.5">Bairro</label>
+                        <input type="text" id="editor-data-district" placeholder="Bairro" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
+                      </div>
+                      <div>
+                        <label for="editor-data-city-uf-view" class="block text-xs font-bold text-slate-700 mb-1.5">Cidade</label>
+                        <input type="text" id="editor-data-city-uf-view" disabled placeholder="Preenchida pelo CEP" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed">
                       </div>
                     </div>
+
+                    <input type="hidden" id="editor-data-address">
+                    <input type="hidden" id="editor-data-city">
+                    <input type="hidden" id="editor-data-state">
 
                     <div>
                       <label class="block text-xs font-bold text-slate-700 mb-1.5">Ponto de referência</label>
@@ -5344,7 +5363,7 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_previaf5"></script>
+  <script src="js/app.js?v=20261014_cep"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261014_previaf5"></script>
 </body>

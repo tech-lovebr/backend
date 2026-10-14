@@ -2589,11 +2589,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputDataEndDate) inputDataEndDate.value = activeEvent.eventDetails.endDate || activeEvent.eventDetails.date || activeEvent.date || '';
       if (inputDataEndTime) inputDataEndTime.value = activeEvent.eventDetails.endTime || '23:30';
       if (inputDataLocation) inputDataLocation.value = activeEvent.eventDetails.locationName || activeEvent.location || '';
-      if (inputDataAddress) inputDataAddress.value = activeEvent.eventDetails.address || '';
-      const inputDataState = document.getElementById('editor-data-state');
-      const inputDataCity = document.getElementById('editor-data-city');
-      if (inputDataState) inputDataState.value = activeEvent.eventDetails.state || '';
-      if (inputDataCity) inputDataCity.value = activeEvent.eventDetails.city || '';
+      // Endereço: CEP + rua/número/complemento/bairro (e cidade/UF do CEP).
+      preencherEnderecoInformacoes(activeEvent.eventDetails);
       if (inputDataReference) inputDataReference.value = activeEvent.eventDetails.referencePoint || '';
       if (inputDataDresscode) inputDataDresscode.value = activeEvent.eventDetails.dresscode || '';
       if (inputDataRecommended) inputDataRecommended.value = activeEvent.eventDetails.recommended || '';
@@ -3555,12 +3552,18 @@ document.addEventListener('DOMContentLoaded', () => {
       activeEvent.eventDetails.locationName = inputDataLocation.value;
       activeEvent.location = inputDataLocation.value;
     }
+    montarEnderecoInformacoes();
     if (inputDataAddress) activeEvent.eventDetails.address = inputDataAddress.value;
-    // Estado (UF) e cidade: completam o endereço na busca do Maps/Waze do convite.
-    const inputDataState = document.getElementById('editor-data-state');
-    const inputDataCity = document.getElementById('editor-data-city');
-    if (inputDataState) activeEvent.eventDetails.state = inputDataState.value;
-    if (inputDataCity) activeEvent.eventDetails.city = inputDataCity.value.trim();
+    // Partes do endereço (CEP) — address acima já é a junção delas; cidade e
+    // UF vêm do CEP e completam a busca do Maps/Waze do convite.
+    const parteEndereco = nome => (cepCampo(nome)?.value || '').trim();
+    activeEvent.eventDetails.cep = parteEndereco('cep');
+    activeEvent.eventDetails.street = parteEndereco('rua');
+    activeEvent.eventDetails.number = parteEndereco('numero');
+    activeEvent.eventDetails.complement = parteEndereco('complemento');
+    activeEvent.eventDetails.district = parteEndereco('bairro');
+    activeEvent.eventDetails.city = parteEndereco('cidade');
+    activeEvent.eventDetails.state = parteEndereco('uf');
     if (inputDataReference) activeEvent.eventDetails.referencePoint = inputDataReference.value;
     if (inputDataDresscode) activeEvent.eventDetails.dresscode = inputDataDresscode.value;
     if (inputDataRecommended) activeEvent.eventDetails.recommended = inputDataRecommended.value;
@@ -9347,8 +9350,121 @@ document.addEventListener('DOMContentLoaded', () => {
   wirePartnerVenueAutocomplete(
     document.getElementById('editor-data-location'),
     document.getElementById('editor-data-location-dropdown'),
-    { addressInput: document.getElementById('editor-data-address') }
+    {
+      addressInput: document.getElementById('editor-data-street'),
+      numberInput: document.getElementById('editor-data-number'),
+      complementInput: document.getElementById('editor-data-complement')
+    }
   );
+
+  // ==========================================
+  // Informações › endereço pelo CEP
+  // Ao digitar o CEP (8 dígitos), busca no ViaCEP e mostra os campos de
+  // endereço já preenchidos. O endereço final ("Rua, Nº - Compl, Bairro"),
+  // a cidade e o estado vão para os campos ocultos editor-data-address /
+  // -city / -state, que a prévia, o convite e o "Como chegar?" já usam.
+  // ==========================================
+  // Função (e não const) para poder ser usada antes desta linha rodar.
+  function cepCampo(nome) {
+    return document.getElementById({
+      cep: 'editor-data-cep', status: 'editor-data-cep-status', blocos: 'editor-data-address-fields',
+      rua: 'editor-data-street', numero: 'editor-data-number', complemento: 'editor-data-complement',
+      bairro: 'editor-data-district', cidadeVisivel: 'editor-data-city-uf-view',
+      endereco: 'editor-data-address', cidade: 'editor-data-city', uf: 'editor-data-state'
+    }[nome]);
+  }
+
+  function mostrarCamposDeEndereco(mostrar) {
+    cepCampo('blocos')?.classList.toggle('hidden', !mostrar);
+  }
+
+  function mensagemCep(texto, erro = false) {
+    const el = cepCampo('status');
+    if (!el) return;
+    el.textContent = texto || '';
+    el.classList.toggle('hidden', !texto);
+    el.classList.toggle('text-rose-600', !!erro);
+    el.classList.toggle('text-slate-400', !erro);
+  }
+
+  // Junta os campos visíveis no endereço único usado pelo resto da plataforma.
+  function montarEnderecoInformacoes() {
+    const v = nome => (cepCampo(nome)?.value || '').trim();
+    let endereco = v('rua');
+    if (endereco && v('numero')) endereco += `, ${v('numero')}`;
+    if (endereco && v('complemento')) endereco += ` - ${v('complemento')}`;
+    if (v('bairro')) endereco = [endereco, v('bairro')].filter(Boolean).join(', ');
+    const oculto = cepCampo('endereco');
+    if (oculto) oculto.value = endereco;
+    const cidadeUf = [v('cidade'), v('uf')].filter(Boolean).join(' - ');
+    if (cepCampo('cidadeVisivel')) cepCampo('cidadeVisivel').value = cidadeUf;
+  }
+
+  // Abre a aba Informações com o que está salvo no evento. Eventos antigos
+  // (sem CEP) têm só o endereço inteiro: ele vai para o campo Endereço.
+  function preencherEnderecoInformacoes(detalhes = {}) {
+    const set = (nome, valor) => { const el = cepCampo(nome); if (el) el.value = valor || ''; };
+    set('cep', detalhes.cep);
+    set('rua', detalhes.street || (detalhes.cep ? '' : detalhes.address));
+    set('numero', detalhes.number);
+    set('complemento', detalhes.complement);
+    set('bairro', detalhes.district);
+    set('cidade', detalhes.city);
+    set('uf', detalhes.state);
+    mensagemCep('');
+    montarEnderecoInformacoes();
+    mostrarCamposDeEndereco(!!(detalhes.cep || detalhes.address || detalhes.street));
+  }
+
+  async function buscarCepInformacoes(digitos) {
+    mensagemCep('Buscando endereço…');
+    try {
+      const resp = await fetch(`https://viacep.com.br/ws/${digitos}/json/`);
+      const dados = await resp.json();
+      // Digitou outro CEP enquanto buscava: ignora a resposta antiga.
+      if ((cepCampo('cep')?.value || '').replace(/\D/g, '') !== digitos) return;
+      if (!resp.ok || dados.erro) {
+        mensagemCep('CEP não encontrado. Confira o número.', true);
+        return;
+      }
+      cepCampo('rua').value = dados.logradouro || '';
+      cepCampo('bairro').value = dados.bairro || '';
+      cepCampo('cidade').value = dados.localidade || '';
+      cepCampo('uf').value = dados.uf || '';
+      mensagemCep('');
+      montarEnderecoInformacoes();
+      mostrarCamposDeEndereco(true);
+      // Avisa a prévia (ela escuta "input" nos campos editor-data-*).
+      cepCampo('endereco')?.dispatchEvent(new Event('input', { bubbles: true }));
+      (dados.logradouro ? cepCampo('numero') : cepCampo('rua'))?.focus();
+    } catch (e) {
+      console.error('Erro ao buscar CEP:', e);
+      mensagemCep('Não foi possível buscar o CEP agora. Tente de novo.', true);
+    }
+  }
+
+  cepCampo('cep')?.addEventListener('input', (e) => {
+    const digitos = e.target.value.replace(/\D/g, '').slice(0, 8);
+    e.target.value = digitos.length > 5 ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : digitos;
+    if (digitos.length === 8) buscarCepInformacoes(digitos);
+    else mensagemCep('');
+  });
+
+  // Editar rua/número/complemento/bairro atualiza o endereço oculto na hora
+  // (antes da prévia, que espera 150ms para redesenhar).
+  ['editor-data-street', 'editor-data-number', 'editor-data-complement', 'editor-data-district'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', montarEnderecoInformacoes);
+  });
+
+  // Espaço parceiro escolhido no autocomplete de "Nome do espaço/local":
+  // ele preenche rua/número/complemento — mostra os campos e monta o endereço.
+  document.getElementById('editor-data-location')?.addEventListener('input', () => {
+    if ((cepCampo('rua')?.value || '').trim()) {
+      mostrarCamposDeEndereco(true);
+      montarEnderecoInformacoes();
+    }
+  });
+
 
   // 9.5 Sincronização do Nome com o Slug
   const pageNewName = document.getElementById('page-new-event-name');

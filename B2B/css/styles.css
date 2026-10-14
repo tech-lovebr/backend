@@ -31,6 +31,9 @@
   --radius-card: 10px;
   --radius-control: 12px;
   --shadow-soft: 0 2px 8px rgba(16,24,40,0.08);
+  /* Cards no padrão da plataforma do anfitrião ("Benefícios Love"). */
+  --card-shadow: 0 1px 4px rgba(0,0,0,0.035), 0 1px 2px rgba(0,0,0,0.02);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);
   --shadow-nav-active: 0 6px 14px rgba(210, 141, 92,0.28);
 
   /* Margens do conteúdo principal: encolhem de forma gradual conforme a
@@ -6300,3 +6303,55 @@ body[data-theme="dark"] .payment-link-result-url { color: #D4D4D8 !important; }
 .legal-doc-body h3 :is(b, strong),
 .legal-doc-body h4 :is(b, strong) { font-weight: inherit; }
 
+
+/* ==========================================================================
+   Cards e caixas — padrão da plataforma do anfitrião ("Benefícios Love")
+   Sem linha (borda transparente, não removida, pra não mudar o tamanho),
+   sombra leve e cantos de 10px. Fica no fim do arquivo de propósito: vence
+   os `box-shadow: none` / bordas definidos card a card lá em cima.
+   Não vale pra campos, botões, pills, alertas, overlays nem pro card
+   selecionável no estado selecionado (o contorno é o que indica a seleção).
+   O modo escuro mantém as próprias bordas (#404040, com !important).
+   ========================================================================== */
+.dash-card,
+.dashboard-panel-section .dash-card,
+.dashboard-help-card,
+.product-card,
+.plan-card,
+.plan-card.featured,
+.form-list-item,
+.form-field-card,
+.response-list-row,
+.task-drawer-comment-card,
+.checkout-payment-banner:not(.is-paid),
+.pricing-type-card:not(.active),
+.forms-empty,
+.form-fields-empty {
+  border-color: transparent;
+  border-style: solid;
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-shadow);
+}
+
+/* Cards planos de propósito continuam planos. */
+.dash-card.dash-ads-card,
+.dash-card.guias-flat-card { box-shadow: none; }
+
+/* Cards clicáveis: no hover a sombra cresce (em vez de a borda acender). */
+a.dash-card:hover,
+.response-list-row:hover,
+.pricing-type-card:not(.active):hover {
+  border-color: transparent;
+  box-shadow: var(--card-shadow-hover);
+}
+.response-list-row,
+.pricing-type-card { transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease; }
+
+/* ==========================================================================
+   Tabelas de dados (.leads-table-wrap) — padrão table.data do Admin:
+   coluna principal em semi-negrito, demais em cinza 13px.
+   ========================================================================== */
+.leads-table-wrap .leads-table td { color: #667085; font-size: 0.8125rem; }
+.leads-table-wrap .leads-table td.col-principal { color: #101828; font-weight: 600; font-size: 0.875rem; }
+body[data-theme="dark"] .leads-table-wrap .leads-table td { color: #A1A1AA !important; }
+body[data-theme="dark"] .leads-table-wrap .leads-table td.col-principal { color: #FFFFFF !important; }

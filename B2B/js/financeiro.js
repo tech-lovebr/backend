@@ -104,7 +104,7 @@ function renderNotasFiscais() {
     body.innerHTML = rows.map(n => `
       <tr>
         <td>#${n.number}</td>
-        <td>${escapeHtml(n.client)}</td>
+        <td class="col-principal">${escapeHtml(n.client)}</td>
         <td>${formatNotaFiscalDate(n.created_at)}</td>
         <td>${formatCurrency(n.value)}</td>
         <td><span class="status-badge status-ativo">Emitida</span></td>

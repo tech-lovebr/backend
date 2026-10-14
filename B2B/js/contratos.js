@@ -348,7 +348,7 @@ function renderContratosAbertos() {
       const pct = row.valor_total ? Math.min(100, Math.round((row.valor_pago / row.valor_total) * 100)) : 0;
       return `
       <tr>
-        <td class="font-semibold text-zinc-900">${escapeHtml(row.client_name)}</td>
+        <td class="col-principal">${escapeHtml(row.client_name)}</td>
         <td>${formatCurrency(row.valor_total)}</td>
         <td>
           ${formatCurrency(row.valor_pago)} de ${formatCurrency(row.valor_total)}
@@ -381,7 +381,7 @@ function renderPaymentLinksList() {
   body.innerHTML = links.map(link => `
     <tr class="payment-link-row" data-link-row="${link.id}">
       <td>${formatLinkDate(link.created_at)}</td>
-      <td>${formatCurrency(link.amount)}</td>
+      <td class="col-principal">${formatCurrency(link.amount)}</td>
       <td>${link.installments}x${link.installments === 1 ? ' (à vista)' : ''}</td>
       <td><span class="status-badge status-badge-plain ${link.status === 'pago' ? 'status-ativo' : 'status-enviado'}">${link.status === 'pago' ? 'Pago' : 'Aguardando pagamento'}</span></td>
       <td>

@@ -60,6 +60,14 @@
                   <option value="anfitriao">Anfitriões</option>
                 </select>
               </label>
+              <label class="field" style="margin:.75rem 0 0">
+                <span class="field-label">Status</span>
+                <select class="field-select" id="filtro-status">
+                  <option value="">Todas</option>
+                  <option value="enviada">Enviadas</option>
+                  <option value="agendada">Agendadas</option>
+                </select>
+              </label>
               <button type="button" class="filtro-limpar" id="limpar-filtros">Limpar filtros</button>
             </div>
           </div>
@@ -71,7 +79,7 @@
           <div class="table-wrap">
             <table class="data">
               <thead><tr>
-                <th>Assunto</th><th>Conteúdo</th><th>Perfil</th><th>Criada em</th>
+                <th>Assunto</th><th>Conteúdo</th><th>Perfil</th><th>Envio</th>
                 <th class="col-numero">Views</th><th class="col-fixar"></th>
               </tr></thead>
               <tbody id="tbody"></tbody>

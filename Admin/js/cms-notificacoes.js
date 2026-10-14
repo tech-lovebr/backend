@@ -6,6 +6,10 @@
    apagar a mensagem depois sem caçar cópias espalhadas.
 
    Só texto e link — notificação não carrega imagem.
+
+   Agendar é gravar a data de envio em `created_at`: enquanto ela está no
+   futuro, a policy do banco esconde a notificação de todo mundo menos do
+   admin (supabase/migrations/039_notificacoes_agendadas.sql).
    ========================================================================== */
 
 let NOTIFICACOES = [];
@@ -43,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-perfil').addEventListener('change', render);
+  document.getElementById('filtro-status').addEventListener('change', render);
 
   addHeaderAction('Nova notificação', abrirComposicao, {
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>'
@@ -74,6 +79,7 @@ function ligarMenuDeFiltros() {
 
   document.getElementById('limpar-filtros').addEventListener('click', () => {
     document.getElementById('filtro-perfil').value = '';
+    document.getElementById('filtro-status').value = '';
     render();
     fechar();
   });
@@ -81,10 +87,14 @@ function ligarMenuDeFiltros() {
 
 function atualizarBadgeDeFiltros() {
   const badge = document.getElementById('filtro-badge');
-  const ativos = document.getElementById('filtro-perfil').value ? 1 : 0;
+  const ativos = ['filtro-perfil', 'filtro-status']
+    .filter(id => document.getElementById(id).value).length;
   badge.textContent = ativos;
   badge.hidden = ativos === 0;
 }
+
+/** Agendada = data de envio ainda no futuro. */
+const agendada = n => new Date(n.created_at) > new Date();
 
 /* Filtrar por "HUB/B2B" traz também as enviadas a "Todos": elas chegam ao
    fornecedor do mesmo jeito, e escondê-las daria a impressão de que ele não
@@ -92,9 +102,11 @@ function atualizarBadgeDeFiltros() {
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
   const perfil = document.getElementById('filtro-perfil').value;
+  const status = document.getElementById('filtro-status').value;
 
   return NOTIFICACOES.filter(n => {
     if (perfil && n.destino !== perfil && n.destino !== 'todos') return false;
+    if (status && (status === 'agendada') !== agendada(n)) return false;
     if (!termo) return true;
     return [n.titulo, n.mensagem].some(v => String(v || '').toLowerCase().includes(termo));
   });
@@ -148,7 +160,9 @@ function render() {
         </td>
         <td class="cell-muted">${escapeHtml(resumo(n.mensagem))}</td>
         <td class="cell-muted">${perfil}</td>
-        <td class="cell-muted">${escapeHtml(formatDate(n.created_at))}</td>
+        <td class="cell-muted">${agendada(n)
+          ? `${badge('Agendada', 'badge-warning')} ${escapeHtml(formatDateTime(n.created_at))}`
+          : escapeHtml(formatDate(n.created_at))}</td>
         <td class="col-numero ${views ? '' : 'cell-muted'}">${views ? formatNumber(views) : '—'}</td>
         <td class="col-fixar">
           <button type="button" class="btn-fixar ${n.fixada ? 'is-fixada' : ''}" data-fixar="${n.id}"
@@ -210,8 +224,8 @@ function abrirDetalhe(id) {
         ${linha('Público', n.destino === 'individual'
           ? escapeHtml(nomeDaConta(n.destinatario_id))
           : escapeHtml(PUBLICOS[n.destino] || n.destino))}
-        ${linha('Enviada em', escapeHtml(formatDateTime(n.created_at)))}
-        ${linha('Enviada por', escapeHtml(n.autor_nome || '—'))}
+        ${linha(agendada(n) ? 'Agendada para' : 'Enviada em', escapeHtml(formatDateTime(n.created_at)))}
+        ${linha(agendada(n) ? 'Agendada por' : 'Enviada por', escapeHtml(n.autor_nome || '—'))}
         ${linha('Leituras', formatNumber(lidas))}
         ${n.link_url
           ? linha('Link', `<a href="${escapeHtml(n.link_url)}" target="_blank" rel="noopener" class="link-convite">${escapeHtml(n.link_label || n.link_url)}</a>`)
@@ -306,7 +320,26 @@ function abrirComposicao() {
         </select>
       </label>
 
-      <p class="aviso-tipo" id="aviso-tipo" hidden></p>`,
+      <p class="aviso-tipo" id="aviso-tipo" hidden></p>
+
+      <label class="field" style="margin:.875rem 0 0">
+        <span class="field-label">Quando enviar</span>
+        <select class="field-select" id="nova-quando">
+          <option value="agora">Agora</option>
+          <option value="agendar">Agendar data e horário</option>
+        </select>
+      </label>
+
+      <div class="field-row" id="campo-agendamento" hidden style="margin-top:.875rem">
+        <label class="field" style="margin-bottom:0">
+          <span class="field-label">Data <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" id="nova-data" type="date">
+        </label>
+        <label class="field" style="margin-bottom:0">
+          <span class="field-label">Horário <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" id="nova-hora" type="time">
+        </label>
+      </div>`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
       <button type="button" class="btn btn-primary" id="btn-enviar">Enviar</button>`
@@ -318,6 +351,18 @@ function abrirComposicao() {
 function ligarComposicao() {
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
   document.getElementById('btn-enviar').addEventListener('click', enviar);
+
+  document.getElementById('nova-quando').addEventListener('change', (e) => {
+    const agendar = e.target.value === 'agendar';
+    document.getElementById('campo-agendamento').hidden = !agendar;
+    document.getElementById('btn-enviar').textContent = agendar ? 'Agendar' : 'Enviar';
+    if (agendar) {
+      const data = document.getElementById('nova-data');
+      data.min = dataLocal(new Date());
+      if (!data.value) data.value = data.min;
+      data.focus();
+    }
+  });
 
   document.getElementById('nova-destino').addEventListener('change', (e) => {
     document.getElementById('campo-destinatario').hidden = e.target.value !== 'individual';
@@ -381,6 +426,19 @@ async function enviar() {
   if (!mensagem) return avisar('Escreva o texto da notificação.', 'nova-mensagem');
   if (destino === 'individual' && !DESTINATARIO) return avisar('Escolha a pessoa.', 'busca-pessoa');
 
+  let envio = null;
+  if (document.getElementById('nova-quando').value === 'agendar') {
+    const data = document.getElementById('nova-data').value;
+    const hora = document.getElementById('nova-hora').value;
+    if (!data) return avisar('Escolha a data do envio.', 'nova-data');
+    if (!hora) return avisar('Escolha o horário do envio.', 'nova-hora');
+
+    // "AAAA-MM-DDTHH:MM" sem fuso é lido no horário de quem está agendando.
+    envio = new Date(`${data}T${hora}`);
+    if (Number.isNaN(envio.getTime())) return avisar('Data ou horário inválido.', 'nova-data');
+    if (envio <= new Date()) return avisar('Escolha um horário no futuro.', 'nova-hora');
+  }
+
   const jaExiste = tipo !== 'comum' && NOTIFICACOES.find(n => n.tipo === tipo);
   if (jaExiste) {
     toast(`Já existe outra "${jaExiste.titulo}" como ${TIPOS[tipo].toLowerCase()}.`);
@@ -398,7 +456,8 @@ async function enviar() {
     tipo,
     destinatario_id: destino === 'individual' ? DESTINATARIO.id : null,
     autor_id: window.adminUser.id,
-    autor_nome: window.adminUser.name || 'Equipe Love'
+    autor_nome: window.adminUser.name || 'Equipe Love',
+    ...(envio ? { created_at: envio.toISOString() } : {})
   });
 
   Drawer.setFooterBusy(false);
@@ -413,11 +472,17 @@ async function enviar() {
   }
 
   Drawer.close();
-  toast('Notificação enviada.');
+  toast(envio ? `Notificação agendada para ${formatDateTime(envio)}.` : 'Notificação enviada.');
   window.location.reload();
 }
 
 function avisar(mensagem, campo) {
   toast(mensagem);
   document.getElementById(campo).focus();
+}
+
+/** Data local no formato do <input type="date">, sem passar por UTC. */
+function dataLocal(d) {
+  const dois = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${dois(d.getMonth() + 1)}-${dois(d.getDate())}`;
 }

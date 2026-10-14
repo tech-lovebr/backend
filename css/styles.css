@@ -6427,3 +6427,12 @@ body[data-theme="dark"] #live-preview-buttons-callout {
   cursor: not-allowed;
   opacity: 1;
 }
+
+/* As bolinhas acima forçam display:flex !important — sem isso o .hidden
+   nunca escondia nada: o sino mostrava o "3" fixo do HTML até carregar e
+   "0" quando não havia notificação não lida. */
+.badge-header-chat.hidden,
+.badge-header-notifications.hidden,
+.badge-recados-count.hidden {
+  display: none !important;
+}

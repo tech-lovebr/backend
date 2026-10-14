@@ -65,8 +65,10 @@
 
     /* Telas internas do convite: Informações, Lista de Presentes, Confirmar presença */
     .convite-tela { padding: 1.5rem 1.5rem 3rem; font-family: 'Inter', sans-serif; color: #18181B; }
-    .convite-voltar { background: none; border: 0; padding: 0; color: #71717A; font-size: 0.8125rem; font-weight: 600; cursor: pointer; font-family: inherit; }
-    .convite-voltar:hover { color: #18181B; }
+    /* Voltar: setinha numa caixinha cinza-clara, à esquerda do título. */
+    .convite-voltar { flex: 0 0 auto; width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F4F4F5; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+    .convite-voltar svg { width: 18px; height: 18px; }
+    .convite-voltar:hover { background: #E4E4E7; color: #18181B; }
     .convite-tela-titulo { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 1.5rem; letter-spacing: -0.01em; }
     /* Cabeçalho das telas internas (Voltar + título) sempre branco, de ponta a ponta. */
     /* Música de fundo: player do YouTube fora da tela + botão pequeno de pausar/tocar. */
@@ -75,8 +77,8 @@
     .convite-musica-botao svg { width: 18px; height: 18px; }
     .convite-musica-botao:not(.is-tocando) { color: #A1A1AA; }
     .convite-musica-botao:not(.is-tocando)::after { content: ''; position: absolute; width: 22px; height: 1.5px; background: currentColor; transform: rotate(-45deg); }
-    .convite-tela-topo { background: #FFFFFF; margin: -1.5rem -1.5rem 0; padding: 1.5rem 1.5rem 0.25rem; }
-    .convite-tela-topo .convite-tela-titulo { margin-bottom: 1.25rem; }
+    .convite-tela-topo { background: #FFFFFF; margin: -1.5rem -1.5rem 0; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+    .convite-tela-topo .convite-tela-titulo { margin: 0; }
     .convite-tela-topo + :not(.convite-tela-capa) { margin-top: 1.5rem; }
     /* Foto cheia, de ponta a ponta (sem as margens da tela), com a mesma
        altura da capa da página principal do convite. */
@@ -117,6 +119,6 @@
   <div id="public-preview-root" class="builder-canvas"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=3"></script>
-  <script src="js/site-builder.js?v=20261014_musica"></script>
+  <script src="js/site-builder.js?v=20261014_setavoltar"></script>
 </body>
 </html>

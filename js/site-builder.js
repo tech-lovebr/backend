@@ -3137,7 +3137,10 @@ function telaPublicaHtml(titulo, conteudo, { comCapa = false } = {}) {
   return `
     <div class="convite-tela"${fundo ? ` style="background-color:${escaparPublico(fundo)};"` : ''}>
       <div class="convite-tela-topo">
-        <button type="button" class="convite-voltar" data-convite-voltar>← Voltar ao convite</button>
+        <!-- Voltar: só uma setinha numa caixinha cinza-clara, ao lado do título -->
+        <button type="button" class="convite-voltar" data-convite-voltar aria-label="Voltar ao convite" title="Voltar ao convite">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        </button>
         <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
       </div>
       ${comCapa ? capaDoConviteHtml() : ''}

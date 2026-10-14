@@ -130,7 +130,8 @@
 
                   <div>
                     <label for="profile-description" class="field-label">Descrição da empresa</label>
-                    <textarea id="profile-description" class="field-textarea" style="min-height:110px;" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
+                    <textarea id="profile-description" class="field-textarea" style="min-height:110px;" maxlength="650" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
+                    <p class="text-xs text-zinc-400 text-right mt-1" id="profile-description-count">0/650</p>
                   </div>
                 </div>
               </div>
@@ -413,6 +414,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=35"></script>
-  <script src="js/configuracoes.js?v=30"></script>
+  <script src="js/configuracoes.js?v=31"></script>
 </body>
 </html>

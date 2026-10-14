@@ -72,7 +72,15 @@ function initProfileForm() {
   const birthdatePicker = initDatePicker(document.getElementById('profile-birthdate'), p.birthDate || '');
   document.getElementById('profile-phone').value = p.phone || '';
   document.getElementById('profile-address').value = p.address || '';
-  document.getElementById('profile-description').value = p.description || '';
+  // Descrição da empresa: até 650 caracteres, com contador embaixo.
+  const descriptionInput = document.getElementById('profile-description');
+  const descriptionCount = document.getElementById('profile-description-count');
+  descriptionInput.value = (p.description || '').slice(0, 650);
+  const updateDescriptionCount = () => {
+    if (descriptionCount) descriptionCount.textContent = `${descriptionInput.value.length}/650`;
+  };
+  descriptionInput.addEventListener('input', updateDescriptionCount);
+  updateDescriptionCount();
   document.getElementById('profile-document').value = p.documentNumber || '';
 
   wirePhoneMaskInput(document.getElementById('profile-phone'));

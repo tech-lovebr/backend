@@ -358,8 +358,6 @@ function initCompanyForm() {
 
   /* -------- Portfólio (fora do submit — salva a cada ação) -------- */
   renderPortfolioImages();
-  renderTestimonials();
-  document.getElementById('company-testimonial-add-btn')?.addEventListener('click', addTestimonial);
 }
 
 /* O mesmo bug que o Perfil já teve: sem isto, "Minha Empresa" só existia no
@@ -475,7 +473,9 @@ async function persistPortfolioImages() {
   if (error) console.error('Não foi possível sincronizar o portfólio com o banco.', error);
 }
 
-/* -------------------- Portfólio: depoimentos -------------------- */
+/* -------------------- Portfólio: depoimentos --------------------
+   A seção saiu de Configurações; o código fica porque a coluna
+   fornecedores.depoimentos continua existindo e pode voltar. */
 
 function renderTestimonials() {
   const wrap = document.getElementById('company-testimonials-list');

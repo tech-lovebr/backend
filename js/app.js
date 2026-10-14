@@ -7920,15 +7920,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const origLeft = parseFloat(el.style.left) || 0;
       const origTop = parseFloat(el.style.top) || 0;
       let moved = false;
+      // Área visível da mesa (círculo + assentos) dentro da caixa de 220px:
+      // é ela que não pode sair da planta, não a caixa inteira.
+      const caixa = el.getBoundingClientRect();
+      const partes = Array.from(el.children).map(c => c.getBoundingClientRect()).filter(r => r.width && r.height);
+      const visivel = partes.length ? {
+        esq: Math.min(...partes.map(r => r.left)) - caixa.left,
+        dir: Math.max(...partes.map(r => r.right)) - caixa.left,
+        topo: Math.min(...partes.map(r => r.top)) - caixa.top,
+        base: Math.max(...partes.map(r => r.bottom)) - caixa.top
+      } : { esq: 0, dir: el.offsetWidth, topo: 0, base: el.offsetHeight };
 
       const onMouseMove = (moveEvt) => {
         const dx = moveEvt.clientX - startX;
         const dy = moveEvt.clientY - startY;
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
         const rect = canvas.getBoundingClientRect();
-        const w = el.offsetWidth, h = el.offsetHeight;
-        const newLeft = Math.max(0, Math.min(origLeft + dx, rect.width - w));
-        const newTop = Math.max(0, Math.min(origTop + dy, rect.height - h));
+        const newLeft = Math.max(4 - visivel.esq, Math.min(origLeft + dx, rect.width - 4 - visivel.dir));
+        const newTop = Math.max(4 - visivel.topo, Math.min(origTop + dy, rect.height - 4 - visivel.base));
         el.style.left = `${newLeft}px`;
         el.style.top = `${newTop}px`;
       };

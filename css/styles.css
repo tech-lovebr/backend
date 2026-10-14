@@ -6594,3 +6594,19 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 .guest-tipo-badge { flex: 0 0 auto; width: 22px; height: 22px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; line-height: 1; }
 .guest-tipo-badge.is-convidado { background: #E8EEF3; color: #183b54; }
 .guest-tipo-badge.is-acompanhante { background: #F4F4F5; color: #71717A; }
+
+
+/* Mapear mesas ocupa a altura toda da tela (do header até o rodapé):
+   lista de convidados e planta crescem juntas, sem espaço branco embaixo. */
+#tab-rsvp-tables.dashboard-tab-content.active {
+  display: flex !important;
+  flex-direction: column;
+  min-height: calc(100vh - var(--navbar-height-desktop, 76px));
+  padding-bottom: 0;
+}
+#tab-rsvp-tables .floorplan-wrap { flex: 1; display: flex; flex-direction: column; }
+#tab-rsvp-tables .floorplan-body { flex: 1; min-height: 480px; }
+#tab-rsvp-tables .floorplan-sidebar { max-height: none; }
+@media (max-width: 767px) {
+  #tab-rsvp-tables.dashboard-tab-content.active { min-height: 0; }
+}

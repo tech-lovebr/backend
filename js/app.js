@@ -10353,7 +10353,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const mensagemVazia = currentB2BCategory === 'favorites'
         ? 'Você ainda não favoritou nenhum fornecedor.'
         : (b2bFornecedores.length === 0 ? 'Ainda não há fornecedores na vitrine.' : 'Nenhum fornecedor encontrado com esses filtros.');
-      listContainer.innerHTML = `<div class="p-12 text-center bg-white rounded-2xl border border-zinc-200/80 text-sm text-zinc-500">${mensagemVazia}</div>`;
+      listContainer.innerHTML = `<div class="p-12 text-center bg-[#FFFFFF] rounded-2xl border border-zinc-200/80 text-sm text-zinc-500">${mensagemVazia}</div>`;
       return;
     }
 
@@ -10469,7 +10469,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const card = document.createElement('div');
     card.id = `grid-card-${item.id}`;
-    card.className = 'b2b-grid-card group border border-zinc-200 rounded-xl overflow-hidden bg-white cursor-pointer flex flex-col';
+    card.className = 'b2b-grid-card group border border-zinc-200 rounded-xl overflow-hidden bg-[#FFFFFF] cursor-pointer flex flex-col';
 
     card.innerHTML = `
       <div class="btn-open-supplier-gallery relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden cursor-pointer">
@@ -10882,7 +10882,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const capa = svc.cover_image_url || svc.coverImage || '';
         const categoria = svc.category || item.mainCategory || '';
         return `
-          <div class="border border-zinc-200 rounded-xl bg-white overflow-hidden flex flex-col">
+          <div class="border border-zinc-200 rounded-xl bg-[#FFFFFF] overflow-hidden flex flex-col">
             <div class="h-36 bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50 overflow-hidden">
               ${capa ? `<img src="${escaparHtml(capa)}" alt="${escaparHtml(svc.name)}" class="w-full h-full object-cover">` : ''}
             </div>
@@ -11334,11 +11334,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const contractedList = window.LOVE_DATA.contractedVendors || [];
 
     if (contractedList.length === 0) {
+      // bg-[#FFFFFF] em vez de bg-white: a regra global de .bg-white.rounded-*
+      // põe sombra, e essas caixas são sem sombra.
       container.innerHTML = `
-        <div class="p-12 text-center bg-white rounded-2xl border border-zinc-200/80 text-sm text-zinc-500">
-          Você ainda não possui fornecedores contratados registrados.
+        <div class="p-12 text-center bg-[#FFFFFF] rounded-2xl border border-zinc-200/80 text-sm text-zinc-500 flex flex-col items-center gap-4">
+          <p>Você ainda não possui fornecedores contratados, que tal explorar?</p>
+          <button type="button" class="btn-contracted-empty-explore px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all cursor-pointer">
+            Explorar Fornecedores
+          </button>
         </div>
       `;
+      // Mesmo efeito de clicar em "Explorar" na sub-barra (marca o item e troca a URL).
+      container.querySelector('.btn-contracted-empty-explore')?.addEventListener('click', () => {
+        abrirSubItem('b2b', 'explore');
+      });
       return;
     }
 

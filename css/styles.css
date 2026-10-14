@@ -6806,3 +6806,22 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 /* Chat: foto do fornecedor em quadrado com cantos arredondados (nunca círculo). */
 .chat-avatar-quadrado { border-radius: 10px !important; }
 #b2b-chat-active-avatar { border-radius: 10px !important; }
+
+
+/* Meus presentes: status (Ativo / Comprado) numa caixinha quadrada cinza-clara. */
+.gift-status-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0 !important;
+  background: #F4F4F5;
+  color: #52525B;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+/* Presente comprado: esmaecido, sem clique no cartão (Editar/Excluir funcionam). */
+.gift-card-comprado { opacity: 0.55; cursor: default; }
+.gift-card-comprado:hover { opacity: 0.55; }
+#btn-submit-gift-icon.hidden { display: none !important; }

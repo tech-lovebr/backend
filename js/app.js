@@ -5398,6 +5398,42 @@ document.addEventListener('DOMContentLoaded', () => {
     return { error };
   }
 
+  // ==========================================
+  // Presentes no banco (tabela presentes). Antes a lista só existia na
+  // memória da página — sumia ao recarregar e nunca chegava ao convite
+  // publicado (que lê presentes do banco). Presente novo tem id local
+  // ("gift-…"): o insert devolve o id real.
+  // ==========================================
+  async function salvarPresenteNoBanco(gift) {
+    const evt = getActiveEvent();
+    if (!gift || !evt || !ehUuid(evt.id)) return { error: null };
+    const { data: sessao } = await supabaseClient.auth.getSession();
+    const clienteId = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
+    if (!clienteId) return { error: new Error('Sessão expirada') };
+    const linha = mapGiftToPresenteRow(gift, evt.id, clienteId);
+    if (ehUuid(gift.id)) {
+      const { error } = await supabaseClient.from('presentes').update(linha).eq('id', gift.id);
+      if (error) console.error('Erro ao salvar presente:', error);
+      return { error };
+    }
+    const { data, error } = await supabaseClient.from('presentes').insert(linha).select('id').single();
+    if (error) { console.error('Erro ao criar presente:', error); return { error }; }
+    if (editingGiftId === gift.id) editingGiftId = data.id;
+    gift.id = data.id;
+    return { error: null };
+  }
+
+  async function excluirPresenteNoBanco(giftId) {
+    if (!ehUuid(giftId)) return { error: null };
+    const { error } = await supabaseClient.from('presentes').delete().eq('id', giftId);
+    if (error) console.error('Erro ao excluir presente:', error);
+    return { error };
+  }
+
+  function gravarPresenteEmSegundoPlano(gift) {
+    salvarPresenteNoBanco(gift).then(() => renderHostGifts()).catch(e => console.error('Erro ao salvar presente:', e));
+  }
+
   // Mudança de mesa etc.: grava em segundo plano (sem botão para dar retorno).
   function gravarConvidadoEmSegundoPlano(guest) {
     salvarConvidadoNoBanco(guest).catch(e => console.error('Erro ao salvar convidado:', e));
@@ -5577,6 +5613,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (drawerTitle) drawerTitle.textContent = 'Adicionar Presente';
     if (drawerSub) drawerSub.textContent = 'Cadastre um novo presente fictício para sua lista de presentes.';
     if (btnSubmitText) btnSubmitText.textContent = 'Adicionar Presente';
+    document.getElementById('btn-submit-gift-icon')?.classList.remove('hidden');
+    document.getElementById('btn-duplicate-gift')?.classList.add('hidden');
     resetGiftCrowdfundingFields();
 
     const drawer = document.getElementById('drawer-add-gift');
@@ -5594,13 +5632,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openGiftDrawerForEdit(gift) {
-    const activeEvent = getActiveEvent();
-    const buyerName = gift.buyerName || (gift.received > 0 ? (activeEvent.receivedGifts?.find(r => r.giftTitle === gift.title || r.id === gift.id)?.guestName || 'Convidado') : null);
-    if (buyerName) {
-      showToast('Presentes já recebidos não podem ser editados.', '🔒');
-      return;
-    }
-
+    // Presente comprado também pode ser editado (pedido do cliente).
     editingGiftId = gift.id;
     const titleInput = document.getElementById('gift-title-input');
     const priceInput = document.getElementById('gift-price-input');
@@ -5622,6 +5654,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (drawerTitle) drawerTitle.textContent = 'Editar Presente';
     if (drawerSub) drawerSub.textContent = 'Modifique os detalhes ou o valor deste presente.';
     if (btnSubmitText) btnSubmitText.textContent = 'Salvar Alterações';
+    // Editar: sem o "+" no botão e com "Duplicar" ao lado.
+    document.getElementById('btn-submit-gift-icon')?.classList.add('hidden');
+    document.getElementById('btn-duplicate-gift')?.classList.remove('hidden');
     populateGiftCrowdfundingFields(gift);
 
     const drawer = document.getElementById('drawer-add-gift');
@@ -5688,6 +5723,7 @@ document.addEventListener('DOMContentLoaded', () => {
           image: item.image,
           contributorsCount: 0
         });
+        gravarPresenteEmSegundoPlano(activeEvent.giftList[0]);
         activeEvent.presentesRecebidos += 1;
         closeGiftModal();
         renderHostGifts();
@@ -5735,6 +5771,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     activeEvent.giftList.unshift(newGift);
+    gravarPresenteEmSegundoPlano(newGift);
     const searchInput = document.getElementById('gifts-search-input');
     renderHostGifts(searchInput ? searchInput.value : '');
     showToast(`"${randomItem.title}" adicionado à lista!`, '🎁');
@@ -5801,8 +5838,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const isPurchased = Boolean(buyerName);
 
       const card = document.createElement('div');
+      // Comprado: esmaecido e sem clique no cartão — só Editar/Excluir.
       card.className = `group bg-white rounded-[var(--radius-card,10px)] border border-transparent shadow-2xs overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
-        isPurchased ? 'opacity-55 hover:opacity-100 cursor-pointer' : ''
+        isPurchased ? 'gift-card-comprado' : ''
       }`;
 
       card.innerHTML = `
@@ -5832,11 +5870,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight" title="${gift.title}">
                 ${gift.title}
               </h4>
-              ${isPurchased ? '' : `
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F8F9FA] text-emerald-700 border border-[#EAEAEA] font-sans shrink-0">
-                  Ativo
-                </span>
-              `}
+              <span class="gift-status-badge">${isPurchased ? 'Comprado' : 'Ativo'}</span>
             </div>
             <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">
               ${gift.category || 'Presente fictício'}
@@ -5849,8 +5883,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </p>
           </div>
 
-          <!-- Linha de Ações: Apenas disponível se o presente NÃO foi recebido -->
-          ${!isPurchased ? `
+          <!-- Linha de Ações: Editar / Excluir (também no presente comprado) -->
+          ${true ? `
             <div class="flex items-center gap-2 pt-1 mt-auto">
               <button type="button" class="btn-edit-gift flex-1 py-2 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-all font-sans cursor-pointer text-center">
                 Editar
@@ -5876,10 +5910,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnEdit) {
         btnEdit.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (isPurchased) {
-            showToast('Presentes já recebidos não podem ser editados.', '🔒');
-            return;
-          }
           openGiftDrawerForEdit(gift);
         });
       }
@@ -5887,12 +5917,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Evento de exclusão do presente
       const btnDelete = card.querySelector('.btn-delete-gift');
       if (btnDelete) {
-        btnDelete.addEventListener('click', (e) => {
+        btnDelete.addEventListener('click', async (e) => {
           e.stopPropagation();
-          if (isPurchased) {
-            showToast('Presentes já recebidos não podem ser apagados.', '🔒');
-            return;
-          }
+          if (btnDelete.disabled) return;
+          btnDelete.disabled = true;
+          const { error } = await excluirPresenteNoBanco(gift.id).catch(err => ({ error: err }));
+          btnDelete.disabled = false;
+          if (error) return;
           activeEvent.giftList = activeEvent.giftList.filter(g => g.id !== gift.id);
           const searchInput = document.getElementById('gifts-search-input');
           renderHostGifts(searchInput ? searchInput.value : '');
@@ -5915,8 +5946,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // Abre o recado deixado pelo convidado ao comprar o presente
-      if (isPurchased) {
+      // Presente comprado não abre nada ao clicar no cartão (pedido do cliente).
+      if (false) {
         card.addEventListener('click', () => {
           const buyerNameLower = (buyerName || '').trim().toLowerCase();
           const buyerGuest = activeEvent.guests.find(g => {
@@ -6156,10 +6187,59 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    formAddGift.addEventListener('submit', (e) => {
+    // Duplicar (gaveta de editar): cria uma cópia do presente na lista.
+    document.getElementById('btn-duplicate-gift')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-duplicate-gift');
+      if (!btn || btn.disabled || !editingGiftId) return;
+      const activeEvent = getActiveEvent();
+      const original = (activeEvent.giftList || []).find(g => g.id === editingGiftId);
+      if (!original) return;
+      const copia = JSON.parse(JSON.stringify(original));
+      copia.id = `gift-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      copia.title = `${original.title || 'Presente'} (cópia)`;
+      // A cópia nasce disponível: sem comprador nem valor recebido.
+      copia.received = 0;
+      copia.buyerName = null;
+      copia.contributorsCount = 0;
+      copia.status = 'Disponível para Presentear';
+      const textoAntes = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Duplicando…';
+      const { error } = await salvarPresenteNoBanco(copia).catch(err => ({ error: err }));
+      btn.disabled = false;
+      if (error) {
+        btn.textContent = 'Erro ao duplicar';
+        setTimeout(() => { btn.textContent = textoAntes; }, 1800);
+        return;
+      }
+      btn.textContent = textoAntes;
+      const idx = activeEvent.giftList.indexOf(original);
+      activeEvent.giftList.splice(idx >= 0 ? idx + 1 : 0, 0, copia);
+      editingGiftId = null;
+      closeGiftDrawer();
+      renderHostGifts();
+      updateAllCelebrationData();
+    });
+
+    formAddGift.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btnSubmitGift = formAddGift.querySelector('button[type="submit"]');
+      const btnSubmitGiftText = document.getElementById('btn-submit-gift-text');
+      if (btnSubmitGift && btnSubmitGift.disabled) return;
       const activeEvent = getActiveEvent();
       if (!activeEvent.giftList) activeEvent.giftList = [];
+      // Retorno no próprio botão (avisos flutuantes desligados).
+      const salvarComRetorno = async (gift) => {
+        const textoAntes = btnSubmitGiftText ? btnSubmitGiftText.textContent : '';
+        if (btnSubmitGift) btnSubmitGift.disabled = true;
+        if (btnSubmitGiftText) btnSubmitGiftText.textContent = 'Salvando…';
+        let erro = null;
+        try { ({ error: erro } = await salvarPresenteNoBanco(gift)); } catch (err) { erro = err; }
+        if (btnSubmitGift) btnSubmitGift.disabled = false;
+        if (btnSubmitGiftText) btnSubmitGiftText.textContent = erro ? 'Erro ao salvar' : textoAntes;
+        if (erro && btnSubmitGiftText) setTimeout(() => { btnSubmitGiftText.textContent = textoAntes; }, 1800);
+        return !erro;
+      };
 
       const title = document.getElementById('gift-title-input')?.value?.trim() || 'Presente Especial';
       const price = parseFloat(document.getElementById('gift-price-input')?.value) || 250;
@@ -6189,6 +6269,7 @@ document.addEventListener('DOMContentLoaded', () => {
           giftItem.isCrowdfunding = isCrowdfunding;
           giftItem.crowdfundingConfig = crowdfundingConfig;
           giftItem.categoryTag = categoryTag;
+          if (!(await salvarComRetorno(giftItem))) return;
         }
         editingGiftId = null;
         formAddGift.reset();
@@ -6203,7 +6284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      activeEvent.giftList.unshift({
+      const novoPresente = {
         id: `gift-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         title: title,
         description: description,
@@ -6218,7 +6299,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isCrowdfunding: isCrowdfunding,
         crowdfundingConfig: crowdfundingConfig,
         categoryTag: categoryTag
-      });
+      };
+      if (!(await salvarComRetorno(novoPresente))) return;
+      activeEvent.giftList.unshift(novoPresente);
 
       activeEvent.presentesRecebidos = (activeEvent.presentesRecebidos || 0) + 1;
       formAddGift.reset();

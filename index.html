@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261014_avatarchat">
+  <link rel="stylesheet" href="css/styles.css?v=20261014_presentes">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4164,10 +4164,14 @@
 
         <!-- 5. Botão Submeter -->
         <div class="pt-4 border-t border-zinc-200/80">
-          <button type="submit" class="btn-primary w-full justify-center">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            <span id="btn-submit-gift-text">Adicionar Presente</span>
-          </button>
+          <!-- Editar: "Duplicar" à esquerda do Salvar alterações (sem o "+") -->
+          <div class="flex items-center gap-2.5">
+            <button type="button" id="btn-duplicate-gift" class="btn-secondary justify-center hidden">Duplicar</button>
+            <button type="submit" class="btn-primary flex-1 justify-center">
+              <svg id="btn-submit-gift-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+              <span id="btn-submit-gift-text">Adicionar Presente</span>
+            </button>
+          </div>
         </div>
 
       </form>
@@ -5432,7 +5436,7 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_avatarchat"></script>
+  <script src="js/app.js?v=20261014_presentes"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261014_musica2"></script>
 </body>

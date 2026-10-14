@@ -5232,7 +5232,10 @@ body[data-theme="dark"] .profile-logo-hint { color: #71717A !important; }
 }
 .profile-logo-adjust-frame.is-dragging { cursor: grabbing; }
 
-/* Corte da imagem de capa do produto (proporção da capa do card, 14:5). */
+/* Corte da imagem de capa do produto (proporção da capa do card, 14:5).
+   O modal abre por cima do drawer de produto (drawer: z-index 96), senão
+   ficava atrás dele e os cliques caíam no fundo do drawer. */
+#product-cover-crop-modal { z-index: 120; }
 .product-cover-adjust-frame {
   width: 100%; aspect-ratio: 14 / 5;
   background: repeating-conic-gradient(#F4F4F5 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;

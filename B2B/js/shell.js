@@ -324,7 +324,7 @@ async function loadShell() {
             <img src="assets/Love-dark-03.png" alt="Love" class="sidebar-word-light">
             <img src="assets/Love-white-03.png" alt="Love" class="sidebar-word-dark">
           </div>
-          <p class="b2b-footer-desc">O sistema operacional completo para planejar, gerenciar e celebrar os momentos mais especiais da sua vida.</p>
+          <p class="b2b-footer-desc">Os dias mais felizes da sua vida, organizados sem esforço.</p>
           <div class="b2b-footer-legal-links">
             <a href="privacidade">Privacidade</a>
             <a href="termos">Termos e condições</a>

@@ -6378,3 +6378,35 @@ a.dash-card:hover,
 .leads-table-wrap .leads-table td.col-principal { color: #101828; font-weight: 600; font-size: 0.875rem; }
 body[data-theme="dark"] .leads-table-wrap .leads-table td { color: #A1A1AA !important; }
 body[data-theme="dark"] .leads-table-wrap .leads-table td.col-principal { color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Botões do cabeçalho das páginas (Adicionar contato, Adicionar
+   produto/serviço, Compartilhar agenda, Salvar, Ver site…): mesma altura
+   da barra de busca e mesma cor da sidebar. Altura igual = mesmo padding
+   vertical, mesma line-height e mesma borda nos dois (10 + 20 + 10 + 2 = 42px).
+   O modo escuro mantém o estilo próprio dos botões (regras com !important).
+   ========================================================================== */
+.b2b-header-bar .field-input,
+.b2b-header-bar .btn-primary,
+.b2b-header-bar .btn-secondary {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-width: 1px;
+}
+.b2b-header-bar .btn-primary,
+.b2b-header-bar .btn-secondary {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background: #181D24;
+  border-color: #181D24;
+  border-style: solid;
+  color: #FFFFFF;
+}
+.b2b-header-bar .btn-primary:hover,
+.b2b-header-bar .btn-secondary:hover {
+  background: #262D36;
+  border-color: #262D36;
+  color: #FFFFFF;
+}

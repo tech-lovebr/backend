@@ -4076,11 +4076,8 @@
         <div class="rounded-[14px] border border-zinc-200 bg-zinc-50 p-4 space-y-4">
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-start gap-2.5">
-              <div class="w-8 h-8 rounded-[10px] bg-white border border-zinc-200 flex items-center justify-center flex-shrink-0 text-zinc-500">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
-                </svg>
-              </div>
+              <!-- Ícone da vaquinha -->
+              <div class="w-8 h-8 rounded-[10px] bg-white border border-zinc-200 flex items-center justify-center flex-shrink-0 text-base leading-none" aria-hidden="true">🐮</div>
               <div>
                 <p class="text-xs sm:text-sm font-bold text-zinc-900 font-sans">Permitir vaquinha / cotas para este presente</p>
                 <p class="text-[11px] sm:text-xs text-zinc-500 font-sans mt-0.5 leading-snug">Ideal para presentes de maior valor. Vários convidados podem contribuir com cotas menores, ou um convidado pode pagar o valor integral.</p>
@@ -4150,17 +4147,9 @@
           </div>
         </div>
 
-        <!-- 4.2 Categoria do presente (opcional) -->
-        <div class="space-y-2">
-          <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Categoria <span class="text-zinc-400 font-normal lowercase">(opcional)</span></label>
-          <div class="flex items-center gap-1.5 flex-wrap" id="gift-category-tag-group">
-            <button type="button" class="gift-chip" data-category="honeymoon">Lua de Mel / Viagem</button>
-            <button type="button" class="gift-chip" data-category="home">Casa Nova &amp; Eletros</button>
-            <button type="button" class="gift-chip" data-category="experience">Experiência Romântica</button>
-            <button type="button" class="gift-chip" data-category="other">Outro</button>
-          </div>
-          <input type="hidden" id="gift-category-tag-input" value="">
-        </div>
+        <!-- Categoria removida da gaveta (pedido do cliente); o campo oculto
+             continua porque o salvar ainda lê o valor (fica vazio). -->
+        <input type="hidden" id="gift-category-tag-input" value="">
 
         <!-- 5. Botão Submeter -->
         <div class="pt-4 border-t border-zinc-200/80">
@@ -5436,7 +5425,7 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_presentes"></script>
+  <script src="js/app.js?v=20261014_presentes2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261014_musica2"></script>
 </body>

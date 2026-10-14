@@ -5853,14 +5853,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="gift-received-buyer absolute bottom-2 left-3 z-10 text-white text-xs font-bold font-sans max-w-[85%] truncate pointer-events-none" style="text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 1px 6px rgba(0,0,0,0.6);">
               ${buyerName}
             </div>
-          ` : `
-            <!-- Botão de Favoritar no topo direito da imagem -->
-            <button type="button" class="btn-fav-gift absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors shadow-2xs cursor-pointer border border-zinc-200/80 z-10" title="Favoritar">
-              <svg class="w-3.5 h-3.5 fill-none stroke-currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-              </svg>
-            </button>
-          `}
+          ` : ''}
         </div>
 
         <!-- Corpo do Card: Título com Badge de Status, Subtítulo, Valor e Botões -->

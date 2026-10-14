@@ -5354,6 +5354,42 @@ document.addEventListener('DOMContentLoaded', () => {
     if (error) console.error('Erro ao salvar evento:', error);
     return { error, slugEmUso };
   }
+  // ==========================================
+  // Convidados no banco (tabela convidados). Antes a lista só existia na
+  // memória da página e sumia ao recarregar. Convidado novo tem id local
+  // ("g-…"): o insert devolve o id real, que passa a ser o id do convidado.
+  // ==========================================
+  async function salvarConvidadoNoBanco(guest) {
+    const evt = getActiveEvent();
+    if (!guest || !evt || !ehUuid(evt.id)) return { error: null };
+    const { data: sessao } = await supabaseClient.auth.getSession();
+    const clienteId = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
+    if (!clienteId) return { error: new Error('Sessão expirada') };
+    const linha = mapGuestToConvidadoRow(guest, evt.id, clienteId);
+    if (ehUuid(guest.id)) {
+      const { error } = await supabaseClient.from('convidados').update(linha).eq('id', guest.id);
+      if (error) console.error('Erro ao salvar convidado:', error);
+      return { error };
+    }
+    const { data, error } = await supabaseClient.from('convidados').insert(linha).select('id').single();
+    if (error) { console.error('Erro ao criar convidado:', error); return { error }; }
+    if (activeDrawerGuestId === guest.id) activeDrawerGuestId = data.id;
+    guest.id = data.id;
+    return { error: null };
+  }
+
+  async function excluirConvidadoNoBanco(guestId) {
+    if (!ehUuid(guestId)) return { error: null };
+    const { error } = await supabaseClient.from('convidados').delete().eq('id', guestId);
+    if (error) console.error('Erro ao remover convidado:', error);
+    return { error };
+  }
+
+  // Mudança de mesa etc.: grava em segundo plano (sem botão para dar retorno).
+  function gravarConvidadoEmSegundoPlano(guest) {
+    salvarConvidadoNoBanco(guest).catch(e => console.error('Erro ao salvar convidado:', e));
+  }
+
   // O "Publicar" do Convite Digital (js/site-builder.js) usa pra garantir que o
   // link público (eventos.slug) está salvo antes de pôr o site no ar.
   window.persistirEventoAtivo = persistirEventoAtivo;
@@ -6380,6 +6416,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'tables') {
       document.getElementById('tab-rsvp-tables')?.classList.add('active');
       renderTablesOrganization();
+      // Lista da planta sempre atual (convidados adicionados depois de abrir a plataforma).
+      renderFloorPlanGuestCards();
     } else if (id === 'checklist') {
       document.getElementById('tab-rsvp-checklist')?.classList.add('active');
       renderEventChecklist();
@@ -6970,16 +7008,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnRemoveGuest = document.getElementById('btn-remove-guest');
   if (btnRemoveGuest) {
-    btnRemoveGuest.addEventListener('click', () => {
-      if (!activeDrawerGuestId) return;
+    btnRemoveGuest.addEventListener('click', async () => {
+      if (!activeDrawerGuestId || btnRemoveGuest.disabled) return;
       const activeEvent = getActiveEvent();
       const idx = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
       if (idx === -1) return;
       const name = activeEvent.guests[idx].name;
-      activeEvent.guests.splice(idx, 1);
+      const textoRemover = btnRemoveGuest.textContent;
+      btnRemoveGuest.disabled = true;
+      btnRemoveGuest.textContent = 'Removendo…';
+      const { error } = await excluirConvidadoNoBanco(activeDrawerGuestId).catch(err => ({ error: err }));
+      if (error) {
+        btnRemoveGuest.textContent = 'Erro ao remover';
+        setTimeout(() => { btnRemoveGuest.textContent = textoRemover; btnRemoveGuest.disabled = false; }, 1800);
+        return;
+      }
+      btnRemoveGuest.textContent = textoRemover;
+      btnRemoveGuest.disabled = false;
+      const idxAtual = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
+      if (idxAtual !== -1) activeEvent.guests.splice(idxAtual, 1);
       isNewGuestDraft = false;
       closeAddGuestDrawer();
       renderGuestsTable();
+      renderFloorPlanGuestCards();
       updateAllCelebrationData();
       showToast(`Convidado ${name} removido da lista.`, '🗑️');
     });
@@ -7305,6 +7356,7 @@ document.addEventListener('DOMContentLoaded', () => {
           guests.forEach(g => {
             if (g.table && (g.table.toLowerCase() === tbl.name.toLowerCase() || g.table === tbl.id)) {
               g.table = 'Mesa a Definir';
+              gravarConvidadoEmSegundoPlano(g);
             }
           });
           saveEventTables(updated);
@@ -7320,6 +7372,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const guest = guests.find(g => g.id === gId);
           if (guest) {
             guest.table = 'Mesa a Definir';
+            gravarConvidadoEmSegundoPlano(guest);
             renderTablesOrganization();
             showToast(`${guest.name} retirado(a) da mesa.`, 'ℹ️');
           }
@@ -7396,6 +7449,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isCurrentTable) {
           row.addEventListener('click', () => {
             g.table = table.name;
+            gravarConvidadoEmSegundoPlano(g);
             closeAssignGuestDrawer();
             renderTablesOrganization();
             showToast(`${g.name} acomodado(a) na ${table.name}!`, '🪑');
@@ -8211,8 +8265,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Salvar Convidado (drawer compartilhado: cria um novo ou atualiza o que está sendo editado)
   const formAddGuest = document.getElementById('form-add-guest');
   if (formAddGuest) {
-    formAddGuest.addEventListener('submit', (e) => {
+    formAddGuest.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const btnSalvar = document.getElementById('btn-save-guest');
+      if (btnSalvar && btnSalvar.disabled) return;
       const activeEvent = getActiveEvent();
       const guest = activeEvent.guests.find(g => g.id === activeDrawerGuestId);
       if (!guest) return;
@@ -8263,6 +8319,26 @@ document.addEventListener('DOMContentLoaded', () => {
       guest.relationshipTitle = document.getElementById('guest-title-input').value || '';
       guest.relationshipHost = document.getElementById('guest-title-host-input').value || '';
 
+      // Grava no banco antes de fechar; se falhar, o aviso fica no botão e a
+      // gaveta continua aberta para tentar de novo.
+      const textoBotao = btnSalvar ? btnSalvar.textContent : '';
+      if (btnSalvar) { btnSalvar.disabled = true; btnSalvar.textContent = 'Salvando…'; }
+      let erroAoSalvar = null;
+      try {
+        ({ error: erroAoSalvar } = await salvarConvidadoNoBanco(guest));
+      } catch (err) {
+        erroAoSalvar = err;
+      }
+      if (erroAoSalvar) {
+        console.error('Erro ao salvar convidado:', erroAoSalvar);
+        if (btnSalvar) {
+          btnSalvar.textContent = 'Erro ao salvar';
+          setTimeout(() => { btnSalvar.textContent = textoBotao; btnSalvar.disabled = false; }, 1800);
+        }
+        return;
+      }
+      if (btnSalvar) { btnSalvar.textContent = textoBotao; btnSalvar.disabled = false; }
+
       if (wasNew) {
         activeEvent.totalConvidados = (activeEvent.totalConvidados || 0) + (1 + companionsNames.length);
       } else {
@@ -8272,6 +8348,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isNewGuestDraft = false;
       closeAddGuestDrawer();
       renderGuestsTable();
+      renderFloorPlanGuestCards();
       updateAllCelebrationData();
       showToast(wasNew ? `Convidado ${name} adicionado à lista de ${activeEvent.title}!` : `Convidado ${name} atualizado!`, '👤');
     });

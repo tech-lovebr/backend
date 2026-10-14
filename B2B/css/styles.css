@@ -5360,10 +5360,11 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 
 /* Abas do drawer de produto (Categoria · Preço · Escopo · Mídia): botões
    clicáveis, em vez de etapas em sequência. */
-.product-wizard-tabs { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.product-wizard-tabs { display: flex; align-items: stretch; gap: 0.4rem; width: 100%; margin-top: 0.75rem; }
 .product-wizard-tab {
+  flex: 1 1 0; min-width: 0; text-align: center;
   border: 1px solid #E4E4E7; background: #fff; color: #52525B;
-  font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 600; padding: 0.45rem 0.5rem; border-radius: var(--radius-control);
   cursor: pointer; transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 }
 .product-wizard-tab:hover { background: #F4F4F5; color: #18181B; }

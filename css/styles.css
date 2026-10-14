@@ -6614,3 +6614,9 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #tab-rsvp-tables .floorplan-body { flex: 1 0 auto; }
 #tab-rsvp-tables .floorplan-sidebar { max-height: none; min-height: 0; }
 #tab-rsvp-tables .floorplan-canvas { min-height: 360px; }
+
+/* Mapear mesas: sem a margem de 40px acima do rodapé (rsvp-mode) — a planta e
+   a linha da lista de convidados vão até o rodapé. */
+body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
+  margin-top: 0 !important;
+}

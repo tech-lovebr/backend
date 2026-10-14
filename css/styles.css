@@ -6723,3 +6723,11 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
   color: #000000 !important;
 }
 .convite-musica-botao svg { stroke: #000000 !important; }
+
+
+/* Aparência: durante o arraste, cada seção ganha um espaço embaixo do último
+   elemento — fica fácil soltar logo abaixo de um título já existente. */
+#builder-canvas.is-arrastando-elemento .builder-elements-list:not(.is-empty) {
+  padding-bottom: 44px;
+  transition: padding-bottom .12s ease;
+}

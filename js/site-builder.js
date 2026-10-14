@@ -1007,25 +1007,26 @@ function renderElementEditorPanel(panel, sel) {
   wireColorSwatchPopovers(body);
 }
 
-/* Áreas "Solte aqui para criar uma seção nova": durante o arraste, só a mais
-   perto do cursor aparece, e só quando ele chega perto (não as duas juntas).
-   A distância é medida até o fim da seção logo acima da área (capa ou
-   botões), que não se mexe quando a área aparece. */
-const DISTANCIA_AREA_NOVA_SECAO = 110;
+/* Áreas "Solte aqui para criar uma seção nova" (logo acima e logo abaixo da
+   seção de botões). Só aparecem com o cursor EM CIMA da seção de botões —
+   metade de cima = área de cima; metade de baixo = área de baixo — ou em cima
+   da própria área. Arrastar sobre um título/texto de uma seção nunca abre a
+   área: ali o elemento entra na seção, como esperado. */
 function atualizarAreaNovaSecaoPerto(y) {
   const canvas = document.getElementById('builder-canvas');
   if (!canvas || !canvas.classList.contains('is-arrastando-elemento')) return;
-  let maisPerto = null;
-  let menorDistancia = Infinity;
-  canvas.querySelectorAll('[data-new-section-dropzone]').forEach(zona => {
-    const acima = zona.previousElementSibling;
-    if (!acima) return;
-    const distancia = Math.abs(y - acima.getBoundingClientRect().bottom);
-    if (distancia < menorDistancia) { menorDistancia = distancia; maisPerto = zona; }
-  });
-  canvas.querySelectorAll('[data-new-section-dropzone]').forEach(zona => {
-    zona.classList.toggle('is-perto', zona === maisPerto && menorDistancia <= DISTANCIA_AREA_NOVA_SECAO);
-  });
+  const zonas = Array.from(canvas.querySelectorAll('[data-new-section-dropzone]'));
+  const dentro = el => { const r = el.getBoundingClientRect(); return r.height > 0 && y >= r.top && y <= r.bottom; };
+  let ativa = zonas.find(z => z.classList.contains('is-perto') && dentro(z)) || null;
+  if (!ativa) {
+    const botoes = canvas.querySelector('.builder-section.builder-quicknav-section, .builder-quicknav-section');
+    if (botoes && dentro(botoes)) {
+      const r = botoes.getBoundingClientRect();
+      const posicao = y < r.top + r.height / 2 ? 'antes' : 'depois';
+      ativa = zonas.find(z => z.dataset.posicao === posicao) || null;
+    }
+  }
+  zonas.forEach(z => z.classList.toggle('is-perto', z === ativa));
 }
 // Fim do arraste: some a marca "arrastando" (e as áreas). O onEnd do Sortable
 // nem sempre chega — soltar redesenha o canvas e recria os Sortables no meio.
@@ -1055,17 +1056,16 @@ function renderCanvas() {
   if (frame) frame.dataset.device = currentDevice;
 
   const visible = builderState.sections.filter(s => !s.hidden);
-  // Logo abaixo da capa e logo abaixo da seção de botões: áreas para soltar
-  // um elemento e criar uma seção nova com ele ali. Só aparecem enquanto um
-  // elemento é arrastado.
-  const capa = secaoDeCapa();
-  const novaSecaoDropzoneHtml = (depoisDe) => `
-    <div class="builder-new-section-dropzone" data-new-section-dropzone data-after-section-id="${depoisDe}">
+  // Logo acima e logo abaixo da seção de botões: áreas para soltar um
+  // elemento e criar uma seção nova com ele ali (aparecem só com o cursor
+  // sobre os botões durante o arraste).
+  const novaSecaoDropzoneHtml = (posicao) => `
+    <div class="builder-new-section-dropzone" data-new-section-dropzone data-posicao="${posicao}">
       <span>Solte aqui para criar uma seção nova</span>
     </div>`;
-  const sectionsHtml = visible.map(section =>
-    renderAnySectionHtml(section, 'edit', currentDevice) +
-    ((section === capa || section.isQuickNav) ? novaSecaoDropzoneHtml(section.id) : '')
+  const sectionsHtml = visible.map(section => section.isQuickNav
+    ? novaSecaoDropzoneHtml('antes') + renderAnySectionHtml(section, 'edit', currentDevice) + novaSecaoDropzoneHtml('depois')
+    : renderAnySectionHtml(section, 'edit', currentDevice)
   ).join('');
   const endDropzoneHtml = `
     <div class="builder-canvas-end-dropzone" id="builder-canvas-end-dropzone">
@@ -1591,10 +1591,11 @@ function initSortables(canvas) {
       animation: 160,
       ghostClass: 'sortable-ghost',
       onAdd: (evt) => {
-        // Entra logo depois da seção marcada (capa ou botões).
-        const anterior = findSection(novaSecaoDropzone.dataset.afterSectionId);
+        // Entra logo antes ou logo depois da seção de botões.
+        const botoes = builderState.sections.find(s => s.isQuickNav);
         const nova = createSection();
-        builderState.sections.splice(anterior ? builderState.sections.indexOf(anterior) + 1 : builderState.sections.length, 0, nova);
+        const idxBotoes = botoes ? builderState.sections.indexOf(botoes) : builderState.sections.length - 1;
+        builderState.sections.splice(novaSecaoDropzone.dataset.posicao === 'antes' ? idxBotoes : idxBotoes + 1, 0, nova);
         let selecionar = { id: nova.id, kind: 'section' };
         if (evt.item.classList.contains('builder-el-item')) {
           const type = evt.item.dataset.elType;

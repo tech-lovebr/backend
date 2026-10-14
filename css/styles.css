@@ -6473,3 +6473,33 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #dashboard-promo-carousel:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
 }
+
+/* Meus convidados: tabela no mesmo padrão das listas do Admin (table.data em
+   Admin/css/admin.css) — cabeçalho escuro em negrito, faixas alternadas
+   começando pela cinza, hover azul-claro e as faixas indo de ponta a ponta
+   da caixa. */
+#tab-rsvp .dash-card {
+  padding: 1.25rem 0 0;
+  overflow: hidden;
+}
+#tab-rsvp .dash-card > .overflow-x-auto { margin: 0; }
+#tab-rsvp .guests-table th {
+  color: #333333;
+  font-weight: 700;
+}
+#tab-rsvp .guests-table th:first-child,
+#tab-rsvp .guests-table td:first-child { padding-left: 1.5rem; }
+#tab-rsvp .guests-table th:last-child,
+#tab-rsvp .guests-table td:last-child { padding-right: 1.5rem; }
+#tab-rsvp .guests-table td {
+  border-top: 1px solid #F2F3F6;
+  vertical-align: middle;
+  transition: background .12s ease;
+}
+#tab-rsvp .guests-table tbody tr:nth-child(odd) td { background: #F9F9F9; }
+#tab-rsvp .guests-table tbody tr:nth-child(even) td { background: #FFFFFF; }
+#tab-rsvp .guests-table tbody tr:hover td { background: #EBF4FF; }
+#tab-rsvp .dash-card .guests-pagination {
+  margin-top: 0;
+  padding: 1rem 1.5rem 1.25rem;
+}

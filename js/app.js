@@ -6460,16 +6460,16 @@ document.addEventListener('DOMContentLoaded', () => {
         row.className = 'cursor-pointer group';
         row.innerHTML = `
           <td>
-            <span class="font-medium text-zinc-900 group-hover:text-[#537bae] transition-colors block truncate">${attendee.name}</span>
+            <span class="font-semibold text-zinc-900 block truncate">${attendee.name}</span>
           </td>
           <td>
-            <span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">${attendee.isPrimary ? formatGuestTitleLabel(guest) : '—'}</span>
+            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? formatGuestTitleLabel(guest) : '—'}</span>
           </td>
           <td>
-            <span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">${extractTableNumber(guest.table)}</span>
+            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${extractTableNumber(guest.table)}</span>
           </td>
           <td>
-            <span class="text-xs sm:text-sm font-medium text-zinc-700 whitespace-nowrap">${attendee.isPrimary ? giftLabel : '—'}</span>
+            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? giftLabel : '—'}</span>
           </td>
           <td>
             <div class="flex items-center">

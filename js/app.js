@@ -10098,6 +10098,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Senha certa, mas a conta tem dois fatores ativos: a sessão ainda é
       // aal1 e só vira aal2 depois do código do app autenticador.
+      // Login certo: pede ao navegador para oferecer "Salvar senha".
+      await oferecerSalvarSenha(email, password);
+
       if (await precisaCodigoMfa()) {
         showLoginMfaPanel();
         return;
@@ -10106,6 +10109,24 @@ document.addEventListener('DOMContentLoaded', () => {
       setSidebarLocked(false);
       window.location.reload();
     });
+  }
+
+  // O login é feito por JavaScript (sem enviar o formulário de verdade) e a
+  // página recarrega logo depois — o navegador não percebe que foi um login e
+  // não oferece salvar a senha. No Chrome/Edge (inclusive Android), a API de
+  // credenciais pede isso direto; nos outros, os campos já têm autocomplete
+  // username/current-password. Nunca bloqueia o login se falhar.
+  async function oferecerSalvarSenha(email, password) {
+    try {
+      if (!window.PasswordCredential || !navigator.credentials || !navigator.credentials.store) return;
+      const credencial = new PasswordCredential({ id: email, password, name: email });
+      await Promise.race([
+        navigator.credentials.store(credencial),
+        new Promise(resolve => setTimeout(resolve, 1500))
+      ]);
+    } catch (e) {
+      console.warn('Navegador não ofereceu salvar a senha:', e);
+    }
   }
 
   // 10.1a Verificação em duas etapas (TOTP) no login

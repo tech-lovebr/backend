@@ -3480,27 +3480,23 @@ function renderAnfitrioesPreview() {
 
   // Monta a caixa com a lista de anfitriões a partir do que está em "Anfitriões com Acesso à Conta".
   const hostsTeamItems = document.querySelectorAll('#hosts-team-list > div');
+  // Só o nome de cada anfitrião (sem bolinha de iniciais nem "Criador(a)").
   const hostsCardsHtml = Array.from(hostsTeamItems || []).map(item => {
-    const nameEl = item.querySelector('p.font-bold');
-    const avatarEl = item.querySelector('.rounded-full');
-    const badgeEl = item.querySelector('span');
-    const nameText = nameEl ? (nameEl.childNodes[0]?.textContent?.trim() || nameEl.textContent?.trim()) : 'Anfitrião';
-    const initials = avatarEl ? avatarEl.textContent.trim() : nameText.substring(0, 2).toUpperCase();
-    const roleText = badgeEl ? badgeEl.textContent.trim() : 'Anfitrião';
-    const isCreator = roleText.includes('Criador');
+    const nameEl = item.querySelector('.host-name-text, .host-name-input') || item.querySelector('p.font-bold');
+    const nameText = nameEl ? ((nameEl.value !== undefined ? nameEl.value : '') || nameEl.textContent || '').trim() : 'Anfitrião';
     return `
       <div class="classic-preview-host-card">
-        <div class="classic-preview-host-avatar" style="background:${isCreator ? '#537bae' : '#27272A'};">${escapeHtml(initials)}</div>
         <div class="classic-preview-host-info">
-          <p>${escapeHtml(nameText)}</p>
-          <span class="${isCreator ? 'is-creator' : ''}">${escapeHtml(roleText)}</span>
+          <p>${escapeHtml(nameText || 'Anfitrião')}</p>
         </div>
       </div>
     `;
   }).join('');
 
+  // Fundo atrás dos nomes = mesma cor da seção de botões (padronizado).
+  const fundoBotoes = corDeFundoDosBotoes();
   const boxesHtml = `
-    <div class="classic-preview-info-boxes">
+    <div class="classic-preview-info-boxes"${fundoBotoes ? ` style="background-color:${fundoBotoes};"` : ''}>
       <div class="classic-preview-info-box">
         <h4>Anfitriões</h4>
         <div class="classic-preview-hosts-list">${hostsCardsHtml}</div>
@@ -3517,6 +3513,7 @@ function renderAnfitrioesPreview() {
   wireClassicPreviewCoverEdit(container, renderAnfitrioesPreview);
   startCountdownTicker(container);
 }
+window.renderAnfitrioesPreview = renderAnfitrioesPreview;
 
 // Prévia da aba "Informações": mesmo convite real, mas sem os elementos de
 // Título/Texto (a "capa" do convite) — no lugar deles entram Dress Code e

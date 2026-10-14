@@ -1472,22 +1472,75 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderHostsTeam() {
     const hostsList = document.getElementById('hosts-team-list');
     if (!hostsList) return;
-    const nome = (window.loveClienteProfile && window.loveClienteProfile.couple_name) || 'Anfitrião';
+    const nomeConta = (window.loveClienteProfile && window.loveClienteProfile.couple_name) || 'Anfitrião';
     const email = (window.loveClienteProfile && window.loveClienteProfile.email) || '';
-    const iniciais = nome.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase() || 'AN';
+    // Nome exibido no convite: o editado neste evento (lápis) ou o da conta.
+    const ev = getActiveEvent();
+    const nomes = (ev && ev.anfitrioesNomes) || {};
+    const nome = nomes[email] || nomeConta;
+    hostsList.innerHTML = linhaDeAnfitriaoHtml(nome, email, 'Criador(a)');
+  }
 
-    hostsList.innerHTML = `
-      <div class="p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-[#537bae] text-white font-bold text-xs flex items-center justify-center">${iniciais}</div>
-          <div>
-            <p class="text-xs font-bold text-zinc-900">${nome} <span class="text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 ml-1">Criador(a)</span></p>
-            <p class="text-[11px] text-zinc-500">${email}</p>
-          </div>
+  // Uma linha da lista: nome (editável pelo lápis) e e-mail (não editável).
+  function linhaDeAnfitriaoHtml(nome, email, papel) {
+    return `
+      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3" data-host-email="${escaparHtml(email)}">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-bold text-zinc-900"><span class="host-name-text">${escaparHtml(nome)}</span> <span class="host-role-badge text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 ml-1">${escaparHtml(papel)}</span></p>
+          <p class="text-[11px] text-zinc-500 truncate">${escaparHtml(email)}</p>
         </div>
+        <button type="button" class="btn-edit-host-name w-8 h-8 flex-shrink-0 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer" title="Editar nome" aria-label="Editar nome">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+        </button>
       </div>
     `;
   }
+
+  // Lápis: troca o nome por um campo; Enter ou sair do campo salva, Esc cancela.
+  // Salva no evento (anfitrioesNomes por e-mail) e no nome dos anfitriões do
+  // convite (hostName), e atualiza a prévia ao lado.
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-edit-host-name');
+    if (!btn) return;
+    const linha = btn.closest('.host-team-row');
+    const nomeEl = linha && linha.querySelector('.host-name-text');
+    if (!nomeEl || linha.querySelector('.host-name-input')) return;
+    const original = nomeEl.textContent.trim();
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = original;
+    input.maxLength = 80;
+    input.className = 'host-name-input text-xs font-bold text-zinc-900 px-2 py-1 rounded-md border border-zinc-300 bg-white focus:outline-none focus:border-[#537bae] w-full max-w-[220px]';
+    nomeEl.replaceWith(input);
+    input.focus();
+    input.select();
+    let terminou = false;
+    const terminar = (salvar) => {
+      if (terminou) return;
+      terminou = true;
+      const novo = input.value.trim();
+      const final = salvar && novo ? novo : original;
+      const span = document.createElement('span');
+      span.className = 'host-name-text';
+      span.textContent = final;
+      input.replaceWith(span);
+      if (!salvar || !novo || novo === original) return;
+      const ev = getActiveEvent();
+      if (ev) {
+        ev.anfitrioesNomes = Object.assign({}, ev.anfitrioesNomes || {}, { [linha.dataset.hostEmail || '']: final });
+        const todos = Array.from(document.querySelectorAll('#hosts-team-list .host-name-text')).map(n => n.textContent.trim()).filter(Boolean);
+        if (todos.length) ev.hostName = todos.join(' & ');
+        persistirEventoAtivo().catch(err => console.error('Erro ao salvar o nome do anfitrião:', err));
+      }
+      if (typeof updateHostsPreview === 'function') updateHostsPreview();
+      if (typeof window.renderAnfitrioesPreview === 'function') window.renderAnfitrioesPreview();
+    };
+    input.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') { ev.preventDefault(); terminar(true); }
+      if (ev.key === 'Escape') { ev.preventDefault(); terminar(false); }
+    });
+    input.addEventListener('blur', () => terminar(true));
+  });
 
   // ==========================================
   // GUIA DE PRIMEIROS PASSOS (Checklist de Progresso da Plataforma)
@@ -5529,9 +5582,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const hostsList = document.getElementById('hosts-team-list');
       if (hostsList) {
-        const initials = email.substring(0, 2).toUpperCase();
+        hostsList.insertAdjacentHTML('beforeend', linhaDeAnfitriaoHtml(email.split('@')[0], email, 'Anfitrião Convidado'));
         const hostCard = document.createElement('div');
-        hostCard.className = 'p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+        hostCard.className = 'hidden';
         hostCard.innerHTML = `
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center shadow-sm flex-shrink-0">
@@ -5546,7 +5599,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ● Acesso Total & Saques PIX
           </span>
         `;
-        hostsList.appendChild(hostCard);
       }
 
       showToast(`Convite de co-gestão enviado para ${email}! O anfitrião terá acesso total e poderá realizar saques.`, '📩');

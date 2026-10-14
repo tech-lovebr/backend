@@ -5626,6 +5626,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let editingGiftId = null;
 
+  // Imagem da gaveta de presente: o campo oculto é a fonte. Sem imagem
+  // (presente novo) aparece "Adicionar imagem"; com imagem (editar, presente
+  // aleatório ou foto enviada) aparece a foto e "Clique para trocar a imagem".
+  function mostrarImagemDoPresente(src) {
+    const img = document.getElementById('gift-image-preview-img');
+    const urlInput = document.getElementById('gift-image-url-input');
+    const vazio = document.getElementById('gift-image-empty');
+    const trocar = document.getElementById('gift-image-change-overlay');
+    const temImagem = !!src;
+    if (urlInput) urlInput.value = src || '';
+    if (img) {
+      if (temImagem) img.src = src; else img.removeAttribute('src');
+      img.classList.toggle('hidden', !temImagem);
+    }
+    if (vazio) vazio.classList.toggle('hidden', temImagem);
+    if (trocar) { trocar.classList.toggle('hidden', !temImagem); trocar.classList.toggle('flex', temImagem); }
+  }
+
   function openGiftDrawer() {
     editingGiftId = null;
     const formAddGift = document.getElementById('form-add-gift');
@@ -5636,9 +5654,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const giftUrlInput = document.getElementById('gift-image-url-input');
 
     if (formAddGift) formAddGift.reset();
-    selectedGiftImage = 'assets/card_lecreuset.jpg';
-    if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
-    if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+    // Presente novo: começa sem imagem.
+    mostrarImagemDoPresente('');
     if (drawerTitle) drawerTitle.textContent = 'Adicionar Presente';
     if (drawerSub) drawerSub.textContent = 'Cadastre um novo presente fictício para sua lista de presentes.';
     if (btnSubmitText) btnSubmitText.textContent = 'Adicionar Presente';
@@ -5675,10 +5692,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (titleInput) titleInput.value = gift.title || '';
     if (priceInput) priceInput.value = gift.price !== undefined ? gift.price : '';
     if (descInput) descInput.value = gift.description || '';
-    const imgSrc = gift.image || 'assets/card_lecreuset.jpg';
-    selectedGiftImage = imgSrc;
-    if (giftPreviewImg) giftPreviewImg.src = imgSrc;
-    if (giftUrlInput) giftUrlInput.value = imgSrc;
+    mostrarImagemDoPresente(gift.image || '');
 
     if (drawerTitle) drawerTitle.textContent = 'Editar Presente';
     if (drawerSub) drawerSub.textContent = 'Modifique os detalhes ou o valor deste presente.';
@@ -5875,7 +5889,9 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <!-- Topo do Card: Imagem com Proporção Ampla e Background Suave -->
         <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden">
-          <img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          ${gift.image
+            ? `<img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+            : '<div class="w-full h-full flex items-center justify-center bg-zinc-100 text-zinc-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div>'}
           
           ${isPurchased ? `
             <!-- Nome do Convidado no canto inferior esquerdo, sem fundo, com sombra para legibilidade -->
@@ -6135,7 +6151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Adicionar Presente via Drawer (Nome, Imagem, Descrição Opcional, Valor)
   const formAddGift = document.getElementById('form-add-gift');
   if (formAddGift) {
-    let selectedGiftImage = 'assets/card_lecreuset.jpg';
+    let selectedGiftImage = '';
     const giftDropzone = document.getElementById('gift-image-dropzone');
     const giftFileInput = document.getElementById('gift-file-input');
     const giftPreviewImg = document.getElementById('gift-image-preview-img');
@@ -6150,8 +6166,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const reader = new FileReader();
           reader.onload = (event) => {
             selectedGiftImage = event.target.result;
-            if (giftPreviewImg) giftPreviewImg.src = event.target.result;
-            if (giftUrlInput) giftUrlInput.value = event.target.result;
+            mostrarImagemDoPresente(event.target.result);
           };
           reader.readAsDataURL(file);
         }
@@ -6263,10 +6278,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return !erro;
       };
 
-      const title = document.getElementById('gift-title-input')?.value?.trim() || 'Presente Especial';
-      const price = parseFloat(document.getElementById('gift-price-input')?.value) || 250;
+      const title = document.getElementById('gift-title-input')?.value?.trim() || '';
+      const price = parseFloat(document.getElementById('gift-price-input')?.value) || 0;
+      if (!title || !(price > 0)) return;
       const description = document.getElementById('gift-description-input')?.value?.trim() || '';
-      const image = giftUrlInput?.value || giftPreviewImg?.src || selectedGiftImage;
+      // Só a imagem escolhida (vazio = presente sem foto).
+      const image = (giftUrlInput && giftUrlInput.value) || '';
 
       // Presente Coletivo / Cotas — ver interface GiftItemPayload
       const isCrowdfunding = !!document.getElementById('gift-crowdfunding-toggle')?.checked;
@@ -6295,9 +6312,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         editingGiftId = null;
         formAddGift.reset();
-        selectedGiftImage = 'assets/card_lecreuset.jpg';
-        if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
-        if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+        selectedGiftImage = '';
+        mostrarImagemDoPresente('');
         resetGiftCrowdfundingFields();
         closeGiftDrawer();
         renderHostGifts();
@@ -6327,9 +6343,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       activeEvent.presentesRecebidos = (activeEvent.presentesRecebidos || 0) + 1;
       formAddGift.reset();
-      selectedGiftImage = 'assets/card_lecreuset.jpg';
-      if (giftPreviewImg) giftPreviewImg.src = 'assets/card_lecreuset.jpg';
-      if (giftUrlInput) giftUrlInput.value = 'assets/card_lecreuset.jpg';
+      selectedGiftImage = '';
+      mostrarImagemDoPresente('');
       resetGiftCrowdfundingFields();
 
       closeGiftDrawer();

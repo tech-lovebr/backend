@@ -2598,6 +2598,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputDataGeneralInfo) inputDataGeneralInfo.value = activeEvent.eventDetails.generalInfo || '';
       const inputDataMusic = document.getElementById('editor-data-music');
       if (inputDataMusic) inputDataMusic.value = activeEvent.eventDetails.musicUrl || '';
+      const inputDataMusicAutoplay = document.getElementById('editor-data-music-autoplay');
+      if (inputDataMusicAutoplay) inputDataMusicAutoplay.checked = activeEvent.eventDetails.musicAutoplay !== false;
       validarLinkDaMusica();
     }
 
@@ -3578,6 +3580,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const link = inputDataMusic.value.trim();
       activeEvent.eventDetails.musicUrl = idDoVideoYoutube(link) ? link : '';
     }
+    const inputDataMusicAutoplay = document.getElementById('editor-data-music-autoplay');
+    if (inputDataMusicAutoplay) activeEvent.eventDetails.musicAutoplay = inputDataMusicAutoplay.checked;
 
     activeEvent.bgColor = builderState.bgColor;
     activeEvent.fontFamily = builderState.font;

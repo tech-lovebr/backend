@@ -2928,7 +2928,9 @@ let musicaPlayer = null;
 let musicaTocando = false;
 let musicaPausadaPeloConvidado = false;
 
-function iniciarMusicaDeFundo(link) {
+// autoplay = true: começa sozinha (no primeiro toque, se o navegador bloquear).
+// autoplay = false: só toca quando o convidado clicar no botão de música.
+function iniciarMusicaDeFundo(link, autoplay = true) {
   const videoId = idDoVideoYoutubePublico(link);
   if (!videoId || document.getElementById('convite-musica')) return;
 
@@ -2941,7 +2943,8 @@ function iniciarMusicaDeFundo(link) {
   const botao = document.createElement('button');
   botao.type = 'button';
   botao.id = 'convite-musica-botao';
-  botao.className = 'convite-musica-botao';
+  // rounded-full: fica de fora da regra geral que dá 12px de raio a todo botão.
+  botao.className = 'convite-musica-botao rounded-full';
   botao.setAttribute('aria-label', 'Tocar música');
   botao.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
   document.body.appendChild(botao);
@@ -2969,14 +2972,16 @@ function iniciarMusicaDeFundo(link) {
   const primeiroToque = () => {
     if (!musicaTocando && !musicaPausadaPeloConvidado) tocar();
   };
-  ['pointerdown', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, primeiroToque, { passive: true }));
+  if (autoplay) {
+    ['pointerdown', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, primeiroToque, { passive: true }));
+  }
 
   const criarPlayer = () => {
     musicaPlayer = new YT.Player('convite-musica-player', {
       width: '200', height: '200', videoId,
-      playerVars: { autoplay: 1, loop: 1, playlist: videoId, controls: 0, disablekb: 1, playsinline: 1, modestbranding: 1, rel: 0 },
+      playerVars: { autoplay: autoplay ? 1 : 0, loop: 1, playlist: videoId, controls: 0, disablekb: 1, playsinline: 1, modestbranding: 1, rel: 0 },
       events: {
-        onReady: () => tocar(),
+        onReady: () => { if (autoplay) tocar(); },
         onStateChange: (ev) => {
           musicaTocando = ev.data === YT.PlayerState.PLAYING;
           // Garante o loop mesmo se o YouTube parar no fim.
@@ -3030,7 +3035,7 @@ async function initPublicPreview() {
     conviteSlugPublico = slug;
     conviteDadosPublicos = dados;
     if (dados.titulo) document.title = `${dados.titulo} — Love`;
-    iniciarMusicaDeFundo(dados.evento && dados.evento.musica);
+    iniciarMusicaDeFundo(dados.evento && dados.evento.musica, !(dados.evento && dados.evento.musica_autoplay === false));
   } else {
     // Prévia do editor (/convite-preview): o que foi publicado neste navegador.
     try {

@@ -6711,3 +6711,15 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .convite-sucesso-titulo { font-size: 1.25rem; font-weight: 700 !important; color: #18181B; margin: 0 0 0.5rem; }
 .convite-sobre-nomes { margin-bottom: 1.25rem; font-weight: 600 !important; }
 .convite-sobre-texto { font-size: 0.9375rem; line-height: 1.7; color: #3F3F46; margin: 0; }
+
+
+/* Botão de música do convite: círculo com contorno preto e ícone preto
+   (!important: regras gerais de botão da plataforma mudam raio e cor). */
+.convite-musica-botao,
+.convite-musica-botao:not(.is-tocando) {
+  border-radius: 50% !important;
+  border: 1.5px solid #000000 !important;
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+.convite-musica-botao svg { stroke: #000000 !important; }

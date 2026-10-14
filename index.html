@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261014_infoigual2">
+  <link rel="stylesheet" href="css/styles.css?v=20261014_autoplay">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1391,6 +1391,11 @@
                     <input type="url" id="editor-data-music" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=…" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800">
                     <p id="editor-data-music-status" class="hidden text-[11px] mt-1.5"></p>
                   </div>
+                  <!-- Autoplay: marcado = começa sozinha ao abrir o convite; desmarcado = só pelo botão de música -->
+                  <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" id="editor-data-music-autoplay" class="mt-0.5 w-4 h-4 accent-[#183b54] cursor-pointer" checked>
+                    <span class="text-xs text-slate-700"><span class="font-bold">Tocar automaticamente</span><br><span class="text-slate-500">Desmarcado, a música só toca quando o convidado clicar no botão de música do convite.</span></span>
+                  </label>
                 </div>
 
 
@@ -5381,8 +5386,8 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_musica"></script>
+  <script src="js/app.js?v=20261014_autoplay"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261014_infoigual"></script>
+  <script src="js/site-builder.js?v=20261014_autoplay2"></script>
 </body>
 </html>

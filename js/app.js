@@ -5354,7 +5354,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const textoOriginal = label.textContent;
     btn.disabled = true;
     label.textContent = 'Salvando…';
-    const { error } = await salvar();
+    let error = null;
+    try {
+      ({ error } = await salvar());
+    } catch (e) {
+      console.error('Erro ao salvar:', e);
+      error = e;
+    }
     label.textContent = error ? 'Erro ao salvar' : 'Salvo';
     setTimeout(() => {
       label.textContent = textoOriginal;
@@ -5366,7 +5372,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnSaveHeaderEdit) {
     btnSaveHeaderEdit.addEventListener('click', () => {
       salvarComRetornoNoBotao(btnSaveHeaderEdit, () => {
-        saveEditorChanges();
+        // Erro só de atualização da tela não pode impedir a gravação no banco:
+        // os campos já foram copiados para o evento antes desses passos.
+        try {
+          saveEditorChanges();
+        } catch (e) {
+          console.error('Erro ao aplicar alterações na tela (o evento será salvo mesmo assim):', e);
+        }
         return persistirEventoAtivo();
       });
     });

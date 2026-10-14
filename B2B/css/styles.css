@@ -5063,7 +5063,9 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   box-shadow: 0 1px 3px rgba(16,24,40,0.25);
   cursor: pointer;
 }
-.b2b-range-value { font-size: 0.8125rem; font-weight: 600; color: #18181B; width: 60px; text-align: right; flex-shrink: 0; }
+/* Largura mínima pra "50 km" e "100 km" não mexerem o slider; nowrap pra
+   "Qualquer distância" ficar numa linha só. */
+.b2b-range-value { font-size: 0.8125rem; font-weight: 600; color: #18181B; min-width: 60px; text-align: right; flex-shrink: 0; white-space: nowrap; }
 .b2b-range-track-wrap { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
 .b2b-range-ticks { display: flex; justify-content: space-between; padding: 0 2px; }
 .b2b-range-tick { width: 6px; height: 6px; border-radius: 50%; background: #D4D4D8; transition: background-color .15s ease, transform .15s ease; }

@@ -9374,8 +9374,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }[nome]);
   }
 
-  function mostrarCamposDeEndereco(mostrar) {
-    cepCampo('blocos')?.classList.toggle('hidden', !mostrar);
+  // Os campos de endereço ficam sempre visíveis: sem CEP, a pessoa digita
+  // tudo à mão (inclusive a cidade).
+  function mostrarCamposDeEndereco() {
+    cepCampo('blocos')?.classList.remove('hidden');
+  }
+
+  // Cidade travada só quando veio do CEP (CEP completo + cidade preenchida).
+  function travarCidadeSeVeioDoCep() {
+    const visivel = cepCampo('cidadeVisivel');
+    if (!visivel) return;
+    const cepCompleto = (cepCampo('cep')?.value || '').replace(/D/g, '').length === 8;
+    visivel.disabled = cepCompleto && !!(cepCampo('cidade')?.value || '').trim();
+  }
+
+  // "São Paulo - SP" digitado à mão → cidade "São Paulo" e UF "SP".
+  function lerCidadeDigitada() {
+    const texto = (cepCampo('cidadeVisivel')?.value || '').trim();
+    const m = texto.match(/^(.*?)s*[-–/,]s*([A-Za-z]{2})$/);
+    if (cepCampo('cidade')) cepCampo('cidade').value = m ? m[1].trim() : texto;
+    if (cepCampo('uf')) cepCampo('uf').value = m ? m[2].toUpperCase() : '';
   }
 
   function mensagemCep(texto, erro = false) {
@@ -9388,7 +9406,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Junta os campos visíveis no endereço único usado pelo resto da plataforma.
-  function montarEnderecoInformacoes() {
+  function montarEnderecoInformacoes({ atualizarCidade = true } = {}) {
     const v = nome => (cepCampo(nome)?.value || '').trim();
     let endereco = v('rua');
     if (endereco && v('numero')) endereco += `, ${v('numero')}`;
@@ -9399,7 +9417,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // "São Paulo - SP": cidade por extenso e estado em 2 letras. Sem a cidade,
     // fica vazio (não mostra a sigla sozinha).
     const cidadeUf = v('cidade') ? [v('cidade'), v('uf').toUpperCase()].filter(Boolean).join(' - ') : '';
-    if (cepCampo('cidadeVisivel')) cepCampo('cidadeVisivel').value = cidadeUf;
+    if (atualizarCidade && cepCampo('cidadeVisivel')) cepCampo('cidadeVisivel').value = cidadeUf;
+    travarCidadeSeVeioDoCep();
   }
 
   // Abre a aba Informações com o que está salvo no evento. Eventos antigos
@@ -9471,6 +9490,13 @@ document.addEventListener('DOMContentLoaded', () => {
     e.target.value = digitos.length > 5 ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : digitos;
     if (digitos.length === 8) buscarCepInformacoes(digitos);
     else mensagemCep('');
+    travarCidadeSeVeioDoCep();
+  });
+
+  // Cidade digitada à mão (sem CEP): vai para os campos ocultos cidade/UF.
+  cepCampo('cidadeVisivel')?.addEventListener('input', () => {
+    lerCidadeDigitada();
+    montarEnderecoInformacoes({ atualizarCidade: false });
   });
 
   // Editar rua/número/complemento/bairro atualiza o endereço oculto na hora

@@ -953,7 +953,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elements.drawerSubItemsList) {
         elements.drawerSubItemsList.innerHTML = '';
         const activeEvent = getActiveEvent();
-        const unreadCount = (activeEvent && activeEvent.messages && activeEvent.messages.length) || 3;
+        // Não lidas do chat com fornecedores (0 enquanto não carregou).
+        let unreadCount = 0;
+        try { unreadCount = totalNaoLidasDoChat(); } catch (e) { /* chat ainda não carregou */ }
 
         config.subItems.forEach((item, index) => {
           const btn = document.createElement('div');
@@ -10538,10 +10540,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Carrega uma vez por sessão (e de novo só se pedido). Sem sessão não
   // carrega — a policy de fornecedores/products é só pra quem está logado.
+  let b2bFornecedoresCarregadosEm = 0;
   function carregarFornecedoresVitrine({ forcar = false } = {}) {
     const userId = window.loveClienteSession?.user?.id;
     if (!userId) return Promise.resolve([]);
     if (b2bFornecedoresPromise && !forcar) return b2bFornecedoresPromise;
+    b2bFornecedoresCarregadosEm = Date.now();
 
     b2bFornecedoresPromise = (async () => {
       const [fornecedoresRes, favoritosRes] = await Promise.all([
@@ -10572,6 +10576,17 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
 
     return b2bFornecedoresPromise;
+  }
+
+  // Serviço publicado no Hub depois que a página abriu: ao voltar para o
+  // Explorar, a vitrine é buscada de novo (no máximo a cada 20s) e redesenha.
+  function atualizarVitrineSeAntiga() {
+    if (!b2bFornecedoresCarregados || Date.now() - b2bFornecedoresCarregadosEm < 20000) return;
+    carregarFornecedoresVitrine({ forcar: true }).then(() => {
+      aplicarCidadePadraoVitrine();
+      renderB2BCityFilter();
+      if (currentB2BView !== 'messages' && currentB2BView !== 'contracted') renderB2BExplore();
+    }).catch(e => console.error('[vitrine] atualizar:', e));
   }
 
   // Cidades que têm fornecedor na vitrine (filtro rápido acima da lista).
@@ -11828,7 +11843,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const { data: rows, error } = await supabaseClient
       .from('conversations')
-      .select('id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type)')
+      .select('id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at)')
       .eq('cliente_id', window.loveClienteSession.user.id)
       .order('last_message_at', { ascending: false });
 
@@ -11843,7 +11858,8 @@ document.addEventListener('DOMContentLoaded', () => {
         category: '',
         avatar: (row.fornecedor && row.fornecedor.avatar_url) || 'assets/theme_garden.jpg',
         online: false,
-        unread: 0,
+        // Não lidas = mensagens do fornecedor ainda sem read_at.
+        unread: msgs.filter(m => m.sender_role === 'fornecedor' && !m.read_at).length,
         lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
         time: last ? formatB2BChatTime(last.created_at) : '',
         messages: msgs.map(m => ({
@@ -11884,6 +11900,56 @@ document.addEventListener('DOMContentLoaded', () => {
     renderB2BChat();
   }
 
+  // Total de mensagens não lidas (todas as conversas) no envelope do
+  // cabeçalho e no item "Chat" do submenu — antes eram números fixos (2 e 3).
+  function totalNaoLidasDoChat() {
+    return b2bConversationsData.reduce((acc, c) => acc + (c.unread || 0), 0);
+  }
+
+  function atualizarContadoresDoChat() {
+    const total = totalNaoLidasDoChat();
+    const texto = total > 99 ? '99+' : String(total);
+    const badgeHeader = document.querySelector('.badge-header-chat');
+    if (badgeHeader) {
+      badgeHeader.textContent = texto;
+      badgeHeader.classList.toggle('hidden', total === 0);
+    }
+    const itemChat = document.querySelector('.sub-drawer-item[data-route-sub="messages"]');
+    if (itemChat) {
+      let badge = itemChat.querySelector('.badge-recados-count');
+      if (total > 0) {
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'badge-recados-count px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm ml-auto';
+          badge.style.cssText = 'background-color: #c7305b !important; color: #FFFFFF !important;';
+          itemChat.appendChild(badge);
+        }
+        badge.textContent = texto;
+      } else if (badge) {
+        badge.remove();
+      }
+    }
+  }
+
+  // Chat aberto na tela (aba Fornecedores › Chat visível)?
+  function chatEstaVisivel() {
+    const tab = document.getElementById('tab-b2b');
+    const view = document.getElementById('b2b-messages-view');
+    return !!(tab && tab.classList.contains('active') && view && !view.classList.contains('hidden') && currentB2BView === 'messages');
+  }
+
+  // Conversa aberta e visível: marca como lidas as mensagens recebidas
+  // (função marcar_conversa_lida — migration 045).
+  async function marcarConversaAtivaComoLida() {
+    if (!chatEstaVisivel() || !activeB2BConversationId) return;
+    const conv = b2bConversationsData.find(c => c.id === activeB2BConversationId);
+    if (!conv || !conv.unread) return;
+    conv.unread = 0;
+    atualizarContadoresDoChat();
+    const { error } = await supabaseClient.rpc('marcar_conversa_lida', { p_conversation_id: activeB2BConversationId });
+    if (error) console.error('Erro ao marcar conversa como lida:', error);
+  }
+
   // Hub global de chat Love - Conecta esta tela com a futura tela dos assessores
   window.LoveChatService = {
     getConversations: () => b2bConversationsData,
@@ -11920,8 +11986,9 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bMessagesRealtimeChannel = supabaseClient
       .channel('love-b2b-mensagens')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
+        if (chatEstaVisivel()) { await renderB2BChat(); return; }
         await loadB2BConversationsData();
-        renderB2BChat();
+        atualizarContadoresDoChat();
       })
       .subscribe();
   }
@@ -11955,6 +12022,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('b2b-contracted-vendor-view')?.classList.add('hidden');
 
     currentB2BView = viewId;
+    if (viewId !== 'messages' && viewId !== 'contracted') atualizarVitrineSeAntiga();
     if (sortContainer) sortContainer.classList.toggle('hidden', viewId === 'messages' || viewId === 'contracted');
     if (searchInput) searchInput.value = '';
     b2bSearchQuery = '';
@@ -12333,6 +12401,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderB2BChatContacts();
     renderB2BChatMessages();
     initB2BChatHandlers();
+    await marcarConversaAtivaComoLida();
+    atualizarContadoresDoChat();
   }
 
   function renderB2BChatContacts(filterQuery = '') {
@@ -12740,8 +12810,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnHeaderChat.addEventListener('click', (e) => {
       e.preventDefault();
       dropdownUserAccount?.classList.add('hidden');
-      const badgeChat = document.querySelector('.badge-header-chat');
-      if (badgeChat) badgeChat.classList.add('hidden');
       // Já entra com /fornecedores/chat (uma entrada só no histórico).
       pendingSubItemId = 'messages';
       switchRailTab('b2b');
@@ -13690,6 +13758,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     subscribeToB2BChatRealtime();
+    loadB2BConversationsData().then(atualizarContadoresDoChat).catch(e => console.error('Erro ao carregar o chat:', e));
 
     switchView('dashboard');
 

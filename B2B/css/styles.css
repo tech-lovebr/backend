@@ -2191,10 +2191,10 @@ body[data-theme="dark"] .payment-progress { background: #4B4B4B !important; }
 }
 
 /* Cliente selecionado na lista de contratos: a faixa da linha não pode
-   esconder a seleção. */
-.leads-table-wrap .leads-table tbody tr.is-selected td,
-.leads-table-wrap .leads-table tbody tr.is-selected:hover td { background: #EBF4FF; }
-body[data-theme="dark"] .leads-table-wrap .leads-table tbody tr.is-selected td { background: rgba(255, 255, 255, 0.1) !important; }
+   esconder a seleção (o :nth-child(n) só existe pra vencer a especificidade
+   das faixas ímpar/par, definidas mais abaixo). */
+.leads-table-wrap .leads-table tbody tr.is-selected:nth-child(n) td { background: #EBF4FF; }
+body[data-theme="dark"] .leads-table-wrap .leads-table tbody tr.is-selected:nth-child(n) td { background: rgba(255, 255, 255, 0.1) !important; }
 .leads-table-wrap .leads-table th:first-child,
 .leads-table-wrap .leads-table td:first-child { padding-left: 1.5rem; }
 .leads-table-wrap .leads-table th:last-child,

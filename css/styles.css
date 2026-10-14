@@ -399,7 +399,7 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 .floorplan-remove-btn:hover { background: #FEF2F2; color: #DC2626; }
 .floorplan-clear-btn { height: 34px; }
 /* Voltar: fecha o pop-up da mesa */
-.floorplan-back-btn { width: 100%; padding: 0.55rem; border: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; color: #18181B; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+.floorplan-back-btn { flex: 1; height: 34px; padding: 0.5rem; border: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; color: #18181B; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 .floorplan-back-btn:hover { background: #F4F4F5; }
 .floorplan-clear-btn { background: #EBF4FF; color: #000000; }
 .floorplan-clear-btn:hover { background: #DCEAFB; }

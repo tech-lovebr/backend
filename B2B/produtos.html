@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=495">
+  <link rel="stylesheet" href="css/styles.css?v=496">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -433,12 +433,14 @@
           </div>
 
           <div>
-            <label class="field-label">Mais imagens (opcional)</label>
-            <div id="product-gallery-list" class="flex flex-col gap-2"></div>
-            <button type="button" id="product-gallery-add-btn" class="inspector-add-btn mt-2">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Adicionar imagem
-            </button>
+            <div class="flex items-center justify-between gap-3">
+              <label class="field-label">Mais imagens (opcional)</label>
+              <span class="text-xs text-zinc-400" id="product-gallery-count"></span>
+            </div>
+            <!-- Carrossel de quadradinhos (até 6), do jeito que aparecem na
+                 galeria do fornecedor — ver renderGalleryImages em
+                 js/produtos.js. -->
+            <div id="product-gallery-list" class="product-gallery-strip"></div>
           </div>
 
           <div>
@@ -554,6 +556,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=33"></script>
-  <script src="js/produtos.js?v=14"></script>
+  <script src="js/produtos.js?v=15"></script>
 </body>
 </html>

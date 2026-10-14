@@ -460,33 +460,67 @@ function wireProductCoverCropModalOnce() {
   window.addEventListener('resize', () => { if (modal.classList.contains('show')) updateCoverCropView(); });
 }
 
+/* "Mais imagens": carrossel de quadradinhos (como aparecem na galeria), com
+   um quadradinho "+" no fim pra adicionar — até 6 fotos, várias de uma vez.
+   Diferente da capa, aqui não tem corte: a galeria mostra a foto inteira
+   num quadrado (object-fit: cover), que é o que a prévia aqui imita. */
+const PRODUCT_GALLERY_MAX = 6;
+
 function renderGalleryImages() {
   const wrap = document.getElementById('product-gallery-list');
   if (!wrap) return;
+  // Slots vazios do fluxo antigo (push('')) não fazem sentido no carrossel.
+  currentGalleryImages = currentGalleryImages.filter(Boolean).slice(0, PRODUCT_GALLERY_MAX);
+  const cheio = currentGalleryImages.length >= PRODUCT_GALLERY_MAX;
+
   wrap.innerHTML = currentGalleryImages.map((src, i) => `
-    <div class="inspector-list-item">
-      <button type="button" class="inspector-list-item-remove" data-remove-gallery-image="${i}">${PI_TRASH}</button>
-      <label class="image-upload-zone">
-        ${src
-          ? `<img src="${src}" class="image-upload-zone-preview" alt="">`
-          : `<span class="image-upload-zone-plus">${PI_PLUS}</span><span class="image-upload-zone-text">Adicione ou arraste uma imagem</span>`}
-        <input type="file" accept="image/*" class="image-upload-zone-input" data-gallery-image-input="${i}">
-      </label>
+    <div class="product-gallery-tile">
+      <img src="${src}" alt="">
+      <button type="button" class="header-logo-picker-remove" data-remove-gallery-image="${i}" title="Remover imagem">${PI_CLOSE}</button>
     </div>
-  `).join('');
+  `).join('') + (cheio ? '' : `
+    <label class="image-upload-zone product-gallery-add" id="product-gallery-add-zone" title="Adicionar imagem">
+      <span class="image-upload-zone-plus">${PI_PLUS}</span>
+      <span class="image-upload-zone-text">Adicionar</span>
+      <input type="file" accept="image/*" multiple class="image-upload-zone-input" id="product-gallery-input">
+    </label>
+  `);
+
+  const count = document.getElementById('product-gallery-count');
+  if (count) count.textContent = `${currentGalleryImages.length}/${PRODUCT_GALLERY_MAX}`;
 
   wrap.querySelectorAll('[data-remove-gallery-image]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       currentGalleryImages.splice(Number(btn.dataset.removeGalleryImage), 1);
       renderGalleryImages();
     });
   });
-  wrap.querySelectorAll('[data-gallery-image-input]').forEach(input => {
-    const idx = Number(input.dataset.galleryImageInput);
-    const applyFile = (file) => readFileAsDataUrl(file, (dataUrl) => { currentGalleryImages[idx] = dataUrl; renderGalleryImages(); });
-    input.addEventListener('change', () => { if (input.files[0]) applyFile(input.files[0]); });
-    wireImageDropZone(input.closest('.image-upload-zone'), applyFile);
-  });
+
+  const input = document.getElementById('product-gallery-input');
+  if (input) {
+    input.addEventListener('change', () => addGalleryFiles(input.files));
+    wireImageDropZone(document.getElementById('product-gallery-add-zone'), (file) => addGalleryFiles([file]));
+  }
+}
+
+// Lê os arquivos em ordem e só entra o que couber até o limite de 6.
+function addGalleryFiles(files) {
+  const lista = Array.from(files || []).filter(f => f && /^image\//.test(f.type || ''));
+  const vagas = PRODUCT_GALLERY_MAX - currentGalleryImages.length;
+  if (vagas <= 0) { showToast(`Limite de ${PRODUCT_GALLERY_MAX} imagens.`, true); return; }
+  if (lista.length > vagas) showToast(`Só cabem mais ${vagas} ${vagas === 1 ? 'imagem' : 'imagens'} (limite de ${PRODUCT_GALLERY_MAX}).`, true);
+  const aceitos = lista.slice(0, vagas);
+  let pendentes = aceitos.length;
+  if (!pendentes) return;
+  const lidos = new Array(aceitos.length);
+  aceitos.forEach((file, i) => readFileAsDataUrl(file, (dataUrl) => {
+    lidos[i] = dataUrl;
+    if (--pendentes === 0) {
+      currentGalleryImages.push(...lidos.filter(Boolean));
+      renderGalleryImages();
+    }
+  }));
 }
 
 /* -------------------- Detalhes do local (Espaços para Locação) -------------------- */
@@ -1033,10 +1067,6 @@ function initProductDrawer() {
     if (currentStep < 4) goToStep(currentStep + 1);
   });
 
-  document.getElementById('product-gallery-add-btn').addEventListener('click', () => {
-    currentGalleryImages.push('');
-    renderGalleryImages();
-  });
 
   document.getElementById('product-dish-add-btn').addEventListener('click', () => {
     currentDishes.push({ id: 'd' + Date.now() + '-' + Math.round(Math.random() * 999), name: '', price: 0, quantity: 0 });

@@ -11294,6 +11294,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initB2BMarketplace();
 
+    // Chat: só o título no cabeçalho — sem busca, local e lista/grade.
+    document.getElementById('b2b-toolbar-controls')?.classList.toggle('hidden', viewId === 'messages');
+
     if (viewId === 'messages') {
       document.body.classList.add('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');

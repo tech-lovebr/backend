@@ -6503,3 +6503,36 @@ body[data-theme="dark"] #live-preview-buttons-callout {
   margin-top: 0;
   padding: 1rem 1.5rem 1.25rem;
 }
+
+/* Orçamento e Extrato: mesmo padrão de tabela de Meus convidados / Admin —
+   cabeçalho sem faixa (só a linha embaixo), escuro em negrito; linhas
+   alternando de 1 em 1 (cinza, branca, cinza…) e hover azul-claro. */
+#wallet-sub-budget .budget-table-full-bleed thead,
+#wallet-sub-budget .budget-table-full-bleed thead tr,
+#wallet-sub-statement .budget-table-full-bleed thead,
+#wallet-sub-statement .budget-table-full-bleed thead tr {
+  background: transparent;
+  border-top: none;
+}
+#wallet-sub-budget .budget-table-full-bleed thead th,
+#wallet-sub-statement .budget-table-full-bleed thead th {
+  color: #333333;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-card);
+}
+#wallet-sub-budget #budget-expenses-tbody tr td,
+#wallet-sub-statement #wallet-transactions-list tr td {
+  border-top: 1px solid #F2F3F6;
+  transition: background .12s ease;
+}
+#wallet-sub-budget #budget-expenses-tbody tr:first-child td,
+#wallet-sub-statement #wallet-transactions-list tr:first-child td { border-top: none; }
+#wallet-sub-budget #budget-expenses-tbody tr:nth-child(odd) td,
+#wallet-sub-statement #wallet-transactions-list tr:nth-child(odd) td { background: #F9F9F9; }
+#wallet-sub-budget #budget-expenses-tbody tr:nth-child(even) td,
+#wallet-sub-statement #wallet-transactions-list tr:nth-child(even) td { background: #FFFFFF; }
+#wallet-sub-budget #budget-expenses-tbody tr:hover td,
+#wallet-sub-statement #wallet-transactions-list tr:hover td { background: #EBF4FF; }

@@ -5358,6 +5358,21 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 
 /* -------------------- Wizard do drawer de produto/serviço -------------------- */
 
+/* Abas do drawer de produto (Categoria · Preço · Escopo · Mídia): botões
+   clicáveis, em vez de etapas em sequência. */
+.product-wizard-tabs { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.product-wizard-tab {
+  border: 1px solid #E4E4E7; background: #fff; color: #52525B;
+  font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.8rem; border-radius: 999px;
+  cursor: pointer; transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.product-wizard-tab:hover { background: #F4F4F5; color: #18181B; }
+.product-wizard-tab.is-active { background: var(--primary-blue); border-color: var(--primary-blue); color: #fff; }
+.product-wizard-tab.is-active:hover { background: var(--primary-blue-hover); border-color: var(--primary-blue-hover); }
+body[data-theme="dark"] .product-wizard-tab { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .product-wizard-tab:hover { background: #333333 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .product-wizard-tab.is-active { background: #4E4E4E !important; border-color: #4E4E4E !important; color: #FFFFFF !important; }
+
 .product-wizard-steps { display: flex; align-items: center; width: 100%; margin-top: 0.75rem; }
 .product-wizard-step-circle {
   width: 22px; height: 22px; border-radius: 999px; border: 1.5px solid #D4D4D8;

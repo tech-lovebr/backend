@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=489">
+  <link rel="stylesheet" href="css/styles.css?v=490">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -63,26 +63,14 @@
       <div class="form-drawer-header-main">
         <p class="task-drawer-list-label">Catálogo</p>
         <h2 class="task-drawer-title" id="product-drawer-title">Adicionar produto ou serviço</h2>
-        <div class="product-wizard-steps" id="product-wizard-steps">
-          <div class="flex items-center gap-1.5" data-step-indicator="1">
-            <div class="product-wizard-step-circle">1</div>
-            <span class="product-wizard-step-label">Identificação</span>
-          </div>
-          <div class="product-wizard-step-line"></div>
-          <div class="flex items-center gap-1.5" data-step-indicator="2">
-            <div class="product-wizard-step-circle">2</div>
-            <span class="product-wizard-step-label">Preço</span>
-          </div>
-          <div class="product-wizard-step-line"></div>
-          <div class="flex items-center gap-1.5" data-step-indicator="3">
-            <div class="product-wizard-step-circle">3</div>
-            <span class="product-wizard-step-label">Escopo</span>
-          </div>
-          <div class="product-wizard-step-line"></div>
-          <div class="flex items-center gap-1.5" data-step-indicator="4">
-            <div class="product-wizard-step-circle">4</div>
-            <span class="product-wizard-step-label">Mídia</span>
-          </div>
+        <!-- Abas clicáveis (não mais etapas): dá pra ir direto em Mídia, por
+             exemplo, sem passar pelas outras. Salvar valida Categoria e Preço
+             e leva pra aba que faltar. -->
+        <div class="product-wizard-tabs" id="product-wizard-steps" role="tablist">
+          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="1">Categoria</button>
+          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="2">Preço</button>
+          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="3">Escopo</button>
+          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="4">Mídia</button>
         </div>
       </div>
       <button type="button" class="form-drawer-close" id="product-drawer-close" aria-label="Fechar">
@@ -544,6 +532,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=33"></script>
-  <script src="js/produtos.js?v=12"></script>
+  <script src="js/produtos.js?v=13"></script>
 </body>
 </html>

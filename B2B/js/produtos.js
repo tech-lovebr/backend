@@ -661,22 +661,16 @@ function goToStep(n) {
   });
 
   document.querySelectorAll('#product-wizard-steps [data-step-indicator]').forEach(el => {
-    const stepNum = Number(el.dataset.stepIndicator);
-    const circle = el.querySelector('.product-wizard-step-circle');
-    const label = el.querySelector('.product-wizard-step-label');
-    circle.classList.toggle('is-active', stepNum === n);
-    circle.classList.toggle('is-done', stepNum < n);
-    circle.textContent = stepNum < n ? '✓' : stepNum;
-    label.classList.toggle('is-active', stepNum === n);
-    label.classList.toggle('is-done', stepNum < n);
-  });
-  document.querySelectorAll('.product-wizard-step-line').forEach((line, i) => {
-    line.classList.toggle('is-done', n > i + 1);
+    const active = Number(el.dataset.stepIndicator) === n;
+    el.classList.toggle('is-active', active);
+    el.setAttribute('aria-selected', active ? 'true' : 'false');
   });
 
+  // Com as abas clicáveis, Salvar fica disponível em qualquer uma (o
+  // submit valida Categoria e Preço e leva pra aba que faltar).
   setPanelHidden('product-wizard-back-btn', n === 1);
   setPanelHidden('product-wizard-next-btn', n === 4);
-  setPanelHidden('product-wizard-submit-btn', n !== 4);
+  setPanelHidden('product-wizard-submit-btn', false);
   updateWizardNextButtonState();
 }
 
@@ -885,6 +879,9 @@ function initProductDrawer() {
 
   document.getElementById('product-wizard-back-btn').addEventListener('click', () => {
     if (currentStep > 1) goToStep(currentStep - 1);
+  });
+  document.querySelectorAll('#product-wizard-steps [data-step-indicator]').forEach(tab => {
+    tab.addEventListener('click', () => goToStep(Number(tab.dataset.stepIndicator)));
   });
   document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
     const validators = { 1: validateStep1, 2: validateStep2, 3: validateStep3 };

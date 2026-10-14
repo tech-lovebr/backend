@@ -2962,6 +2962,7 @@ function idDoVideoYoutubePublico(link) {
 
 let musicaPlayer = null;
 let musicaTocando = false;
+let musicaComSom = false;
 let musicaPausadaPeloConvidado = false;
 
 // autoplay = true: começa sozinha (no primeiro toque, se o navegador bloquear).
@@ -2985,39 +2986,52 @@ function iniciarMusicaDeFundo(link, autoplay = true) {
   botao.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
   document.body.appendChild(botao);
 
+  // "Tocando" no botão = tocando E com som (no autoplay a música começa muda).
   const atualizarBotao = () => {
-    botao.classList.toggle('is-tocando', musicaTocando);
-    botao.setAttribute('aria-label', musicaTocando ? 'Pausar música' : 'Tocar música');
-    botao.title = musicaTocando ? 'Pausar música' : 'Tocar música';
+    const ativo = musicaTocando && musicaComSom;
+    botao.classList.toggle('is-tocando', ativo);
+    botao.setAttribute('aria-label', ativo ? 'Pausar música' : 'Tocar música');
+    botao.title = ativo ? 'Pausar música' : 'Tocar música';
   };
   atualizarBotao();
 
-  const tocar = () => {
+  const tocarComSom = () => {
     if (!musicaPlayer || typeof musicaPlayer.playVideo !== 'function') return;
     try { musicaPlayer.unMute(); musicaPlayer.setVolume(60); musicaPlayer.playVideo(); } catch (e) {}
+    musicaComSom = true;
+    atualizarBotao();
   };
 
   botao.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!musicaPlayer) return;
-    if (musicaTocando) { musicaPausadaPeloConvidado = true; try { musicaPlayer.pauseVideo(); } catch (err) {} }
-    else { musicaPausadaPeloConvidado = false; tocar(); }
+    if (musicaTocando && musicaComSom) { musicaPausadaPeloConvidado = true; try { musicaPlayer.pauseVideo(); } catch (err) {} }
+    else { musicaPausadaPeloConvidado = false; tocarComSom(); }
   });
 
-  // Primeiro toque/clique/tecla na página: começa a música (se não foi pausada).
-  const primeiroToque = () => {
-    if (!musicaTocando && !musicaPausadaPeloConvidado) tocar();
+  // Autoplay: navegadores não deixam tocar som antes de a pessoa interagir.
+  // A música começa MUDA assim que o convite abre (isso é permitido) e o som
+  // liga no primeiro toque/clique/tecla — eventos que o navegador aceita como
+  // interação (no celular é o "touchend"/"pointerup", não o "touchstart").
+  const eventosDeInteracao = ['pointerup', 'touchend', 'click', 'keydown'];
+  const primeiraInteracao = (e) => {
+    if (e && e.target && e.target.closest && e.target.closest('#convite-musica-botao')) return;
+    eventosDeInteracao.forEach(ev => document.removeEventListener(ev, primeiraInteracao, true));
+    if (!musicaPausadaPeloConvidado && !musicaComSom) tocarComSom();
   };
   if (autoplay) {
-    ['pointerdown', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, primeiroToque, { passive: true }));
+    eventosDeInteracao.forEach(ev => document.addEventListener(ev, primeiraInteracao, true));
   }
 
   const criarPlayer = () => {
     musicaPlayer = new YT.Player('convite-musica-player', {
       width: '200', height: '200', videoId,
-      playerVars: { autoplay: autoplay ? 1 : 0, loop: 1, playlist: videoId, controls: 0, disablekb: 1, playsinline: 1, modestbranding: 1, rel: 0 },
+      playerVars: { autoplay: autoplay ? 1 : 0, mute: autoplay ? 1 : 0, loop: 1, playlist: videoId, controls: 0, disablekb: 1, playsinline: 1, modestbranding: 1, rel: 0 },
       events: {
-        onReady: () => { if (autoplay) tocar(); },
+        onReady: () => {
+          if (!autoplay) return;
+          try { musicaPlayer.mute(); musicaPlayer.playVideo(); } catch (e) {}
+        },
         onStateChange: (ev) => {
           musicaTocando = ev.data === YT.PlayerState.PLAYING;
           // Garante o loop mesmo se o YouTube parar no fim.

@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261014_botoesiguais">
+  <link rel="stylesheet" href="css/styles.css?v=20261014_musica2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1189,8 +1189,9 @@
                 </div>
 
                 <!-- Widget Flutuante de Música no Convite (Apenas Ícone Circular) -->
-                <div id="live-preview-floating-music" class="sticky bottom-4 right-4 ml-auto mr-4 mb-2 z-30 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-white/95 hover:bg-white text-zinc-800 backdrop-blur-md rounded-full border border-zinc-200/90 shadow-md cursor-pointer transition-all hover:scale-110 active:scale-95" title="Música do evento">
-                  <svg id="music-note-icon" class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#537bae] pointer-events-none transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a.75.75 0 0 0 .632-.723V4.5a.75.75 0 0 0-.54-.722l-8.25 2.357A.75.75 0 0 0 9 6.857v8.943a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66A.75.75 0 0 0 7.5 13.5V9.75"/></svg>
+                <!-- Mesmo botão do convite publicado: círculo com a nota musical; riscado quando pausado -->
+                <div id="live-preview-floating-music" class="musica-botao-previa sticky bottom-4 ml-auto mr-4 mb-2 z-30 hidden" title="Tocar música">
+                  <svg id="music-note-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                   <iframe id="youtube-audio-iframe" class="hidden" width="0" height="0" src="" allow="autoplay"></iframe>
                 </div>
 
@@ -5431,8 +5432,8 @@
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_pedido_orcamento"></script>
+  <script src="js/app.js?v=20261014_musica2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261014_botoesiguais"></script>
+  <script src="js/site-builder.js?v=20261014_musica2"></script>
 </body>
 </html>

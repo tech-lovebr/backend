@@ -2295,45 +2295,39 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? match[1] : null;
   }
 
+  // Link da música da prévia: o campo "Adicionar música" de Informações (ou o
+  // que já está salvo no evento) — o mesmo que o convite publicado toca.
+  function linkDaMusicaDaPrevia() {
+    const campo = document.getElementById('editor-data-music');
+    const ev = getActiveEvent();
+    const link = (campo && campo.value.trim()) || (ev && ev.eventDetails && ev.eventDetails.musicUrl) || '';
+    return idDoVideoYoutube(link) ? link : '';
+  }
+
   function updateFloatingMusicWidget() {
     const widget = document.getElementById('live-preview-floating-music');
     if (!widget) return;
-
-    const firstTrack = builderState.music?.tracks?.find(t => t.url && t.url.trim());
-    if (!firstTrack) {
+    if (!linkDaMusicaDaPrevia()) {
       widget.classList.add('hidden');
       return;
     }
     widget.classList.remove('hidden');
-
-    const musicIcon = document.getElementById('music-note-icon');
-    if (musicIcon) {
-      if (isMusicPlaying) {
-        musicIcon.classList.add('text-emerald-500', 'animate-pulse');
-        musicIcon.classList.remove('text-[#537bae]');
-        widget.title = 'Pausar música do evento';
-      } else {
-        musicIcon.classList.remove('text-emerald-500', 'animate-pulse');
-        musicIcon.classList.add('text-[#537bae]');
-        widget.title = 'Tocar música do evento';
-      }
-    }
+    // Mesmo visual do convite publicado: nota normal tocando, riscada pausada.
+    widget.classList.toggle('is-tocando', !!isMusicPlaying);
+    widget.title = isMusicPlaying ? 'Pausar música' : 'Tocar música';
   }
 
   function toggleLiveMusic() {
-    const firstTrack = builderState.music?.tracks?.find(t => t.url && t.url.trim());
-    if (!firstTrack) {
-      showToast('Insira um link do YouTube válido no campo de música.', '🎵');
-      return;
-    }
+    const link = linkDaMusicaDaPrevia();
+    if (!link) return;
 
     const iframe = document.getElementById('youtube-audio-iframe');
-    const videoId = getYouTubeVideoId(firstTrack.url);
+    const videoId = idDoVideoYoutube(link);
 
     if (!isMusicPlaying) {
       isMusicPlaying = true;
       if (iframe && videoId) {
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&loop=1`;
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&loop=1&playlist=${videoId}`;
       }
       showToast('Reproduzindo música do convite... 🎶', '✨');
     } else {
@@ -2603,6 +2597,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputDataMusic) inputDataMusic.value = activeEvent.eventDetails.musicUrl || '';
       const inputDataMusicAutoplay = document.getElementById('editor-data-music-autoplay');
       if (inputDataMusicAutoplay) inputDataMusicAutoplay.checked = activeEvent.eventDetails.musicAutoplay !== false;
+      updateFloatingMusicWidget();
       validarLinkDaMusica();
     }
 
@@ -9619,7 +9614,10 @@ document.addEventListener('DOMContentLoaded', () => {
     status.classList.toggle('text-emerald-600', ok);
     status.classList.toggle('text-rose-600', !ok);
   }
-  document.getElementById('editor-data-music')?.addEventListener('input', validarLinkDaMusica);
+  document.getElementById('editor-data-music')?.addEventListener('input', () => {
+    validarLinkDaMusica();
+    if (typeof updateFloatingMusicWidget === 'function') updateFloatingMusicWidget();
+  });
 
   // ==========================================
   // Informações › endereço pelo CEP

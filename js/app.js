@@ -796,18 +796,39 @@ document.addEventListener('DOMContentLoaded', () => {
     history.pushState({ loveRoute: path, voltarComHistorico }, '', path);
   }
 
+  // URL do perfil do fornecedor legível e rastreável:
+  //   /fornecedores/<empresa>-<id8>                      → perfil
+  //   /fornecedores/<empresa>-<id8>/<servico>-<id8>      → perfil aberto a
+  //   partir daquele serviço — cada serviço vira um "source" próprio no
+  //   Analytics. id8 = os 8 primeiros caracteres do uuid; é por ele que a
+  //   rota acha o fornecedor/serviço de novo (F5, link compartilhado).
+  function rotaPerfilFornecedor(item, servico) {
+    const id8 = v => String(v || '').slice(0, 8);
+    let path = `/fornecedores/${slugify(item.name) || 'fornecedor'}-${id8(item.id)}`;
+    if (servico && servico.id) path += `/${slugify(servico.name) || 'servico'}-${id8(servico.id)}`;
+    return path;
+  }
+
   function lerRota(pathname) {
     const partes = pathname.split('/').filter(Boolean);
     const base = '/' + (partes[0] || '');
     const tab = RAIL_ROUTE_TO_TAB[base];
     if (!tab) return null;
     const slug = partes[1] || '';
+    // Formato antigo (/fornecedores/perfil/<uuid>): links já compartilhados continuam valendo.
     if (tab === 'b2b' && slug === 'perfil' && partes[2]) {
       return { tab, subId: null, perfilId: decodeURIComponent(partes[2]) };
     }
     const subs = SUB_ROUTES[tab] || {};
     const subId = Object.keys(subs).find(id => subs[id] === slug);
-    if (subId === undefined) return slug ? null : { tab, subId: null };
+    if (subId === undefined) {
+      const mPerfil = tab === 'b2b' ? /-([0-9a-f]{8})$/i.exec(decodeURIComponent(slug)) : null;
+      if (mPerfil) {
+        const mServ = partes[2] ? /-([0-9a-f]{8})$/i.exec(decodeURIComponent(partes[2])) : null;
+        return { tab, subId: null, perfilId: mPerfil[1], servicoId: mServ ? mServ[1] : null };
+      }
+      return slug ? null : { tab, subId: null };
+    }
     return {
       tab,
       subId,
@@ -832,8 +853,13 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (tab === 'b2b') switchB2BView(subId);
   }
 
+  // id completo (rota antiga) ou os 8 primeiros caracteres (rota nova).
   function encontrarFornecedorExplorar(id) {
-    const item = b2bFornecedores.find(f => String(f.id) === String(id));
+    const alvo = String(id || '').toLowerCase();
+    const item = b2bFornecedores.find(f => {
+      const fid = String(f.id).toLowerCase();
+      return fid === alvo || (alvo.length === 8 && fid.startsWith(alvo));
+    });
     return item ? { ...item, isFavorite: b2bFavoritosIds.has(item.id) } : null;
   }
 
@@ -857,9 +883,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const abrirPerfil = () => {
           const item = encontrarFornecedorExplorar(rota.perfilId);
           if (!item || state.currentTab !== 'b2b') return;
+          const servico = rota.servicoId
+            ? (item.services || []).find(s => String(s.id).toLowerCase().startsWith(rota.servicoId.toLowerCase())) || null
+            : null;
           const antes = aplicandoRotaDoHistorico;
           aplicandoRotaDoHistorico = true;
-          openB2BVendorProfile(item);
+          openB2BVendorProfile(item, servico);
           aplicandoRotaDoHistorico = antes;
         };
         if (b2bFornecedoresCarregados) abrirPerfil();
@@ -10599,15 +10628,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const src = (meta && meta.originalUrl) || s.cover_image_url;
       if (!src) return null;
       const foco = meta && meta.focus && Number.isFinite(meta.focus.x) && Number.isFinite(meta.focus.y) ? meta.focus : null;
-      return { src, focus: foco ? `${foco.x}% ${foco.y}%` : '50% 50%' };
+      return { id: s.id, src, focus: foco ? `${foco.x}% ${foco.y}%` : '50% 50%' };
     }).find(Boolean) || null;
-    // Galeria de cada serviço ("Mais imagens" no Hub) entra no portfólio do
-    // perfil, depois das fotos do portfólio da empresa; sem nenhuma das
-    // duas, ficam as capas dos serviços.
-    const galeriaServicos = servicos
-      .flatMap(s => Array.isArray(s.gallery) ? s.gallery : [])
-      .filter(foto => typeof foto === 'string' && foto);
-    const portfolio = [...new Set([...fotos, ...galeriaServicos])];
+    // Portfólio do perfil = só as fotos de Configurações › Minha Empresa ›
+    // Portfólio (fornecedores.portfolio_images). Sem foto lá, a seção não
+    // aparece — a galeria de cada serviço fica no card do serviço.
     const comPreco = servicos.filter(s => Number(s.price) > 0).sort((a, b) => Number(a.price) - Number(b.price));
     const maisBarato = comPreco[0];
 
@@ -10621,8 +10646,9 @@ document.addEventListener('DOMContentLoaded', () => {
       state: usaPerfil ? f.state : f.business_state,
       image: fotos[0] || (capaPrincipal && capaPrincipal.src) || '',
       imageFocus: (fotos[0] || !capaPrincipal) ? '50% 50%' : capaPrincipal.focus,
+      imageServiceId: capaPrincipal ? capaPrincipal.id : null,
       avatar: f.avatar_url || f.logo_url || '',
-      portfolioPhotos: portfolio.length ? portfolio : capasServicos,
+      portfolioPhotos: fotos,
       services: servicos,
       // Categoria do fornecedor = categorias dos serviços que ele cadastrou
       // (o B2B não tem categoria no nível do fornecedor).
@@ -10951,6 +10977,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return `A partir de ${formatted}`;
   }
 
+  // Serviço que o card do Explorar representa (vai na URL do perfil como
+  // "source"): o da categoria/subcategoria filtrada, senão o da capa que o
+  // card mostra, senão o primeiro.
+  function servicoDestaque(item) {
+    const servicos = item.services || [];
+    if (b2bSelectedMainCategory) {
+      const daCategoria = servicos.find(s => s.category === b2bSelectedMainCategory
+        && (!b2bSelectedSubcategory || (s.extra && s.extra.subcategory) === b2bSelectedSubcategory));
+      if (daCategoria) return daCategoria;
+    }
+    return servicos.find(s => s.id === item.imageServiceId) || servicos[0] || null;
+  }
+
   function renderB2BExplore() {
     const listContainer = document.getElementById('b2b-cards-list-container');
     const resultsCountEl = document.getElementById('b2b-results-count');
@@ -11116,7 +11155,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // do fornecedor — nunca mais um pop-up ou drawer inferior pra essas 3 ações.
       card.querySelector('.btn-open-supplier-gallery')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        openB2BVendorProfile(item);
+        openB2BVendorProfile(item, servicoDestaque(item));
       });
 
       card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
@@ -11136,7 +11175,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       card.addEventListener('click', () => {
-        openB2BVendorProfile(item);
+        openB2BVendorProfile(item, servicoDestaque(item));
       });
 
       listContainer.appendChild(card);
@@ -11202,7 +11241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.querySelector('.btn-open-supplier-gallery')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      openB2BVendorProfile(item);
+      openB2BVendorProfile(item, servicoDestaque(item));
     });
 
     card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
@@ -11222,7 +11261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     card.addEventListener('click', () => {
-      openB2BVendorProfile(item);
+      openB2BVendorProfile(item, servicoDestaque(item));
     });
 
     return card;
@@ -11758,9 +11797,11 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.classList.toggle('hidden', row.scrollLeft <= 0);
   }
 
-  function openB2BVendorProfile(item) {
+  // servico: o que levou até o perfil (vai na URL como "source") — o perfil
+  // em si sempre mostra todos os serviços do fornecedor.
+  function openB2BVendorProfile(item, servico) {
     activeB2BProfileItem = item;
-    registrarRota(`/fornecedores/perfil/${encodeURIComponent(item.id)}`, { voltarComHistorico: true });
+    registrarRota(rotaPerfilFornecedor(item, servico), { voltarComHistorico: true });
     renderB2BVendorProfile(item);
 
     const exploreView = document.getElementById('b2b-explore-view');

@@ -77,21 +77,24 @@ const BI = {
   grip: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.8"/><circle cx="16" cy="6" r="1.8"/><circle cx="8" cy="12" r="1.8"/><circle cx="16" cy="12" r="1.8"/><circle cx="8" cy="18" r="1.8"/><circle cx="16" cy="18" r="1.8"/></svg>',
   gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="4" rx="1"/><rect x="4.5" y="13" width="15" height="8" rx="1"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v12M12 9c-1.8 0-3.4-1.7-3.4-3.4A2.6 2.6 0 0 1 12 5c0 1.5-1.1 2.7-2.5 3.3M12 9c1.8 0 3.4-1.7 3.4-3.4A2.6 2.6 0 0 0 12 5c0 1.5 1.1 2.7 2.5 3.3"/></svg>',
   checkCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.5 12.5 2.3 2.3 4.7-5.1"/></svg>',
-  shirt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 4 4 7l2 3 2-1.2V20h8V8.8L18 10l2-3-4-3-2 2h-4L8 4Z"/></svg>'
+  shirt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 4 4 7l2 3 2-1.2V20h8V8.8L18 10l2-3-4-3-2 2h-4L8 4Z"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>'
 };
 
 const QUICKNAV_ICON_MAP = {
   'qn-loc': 'map',
   'qn-gifts': 'gift',
   'qn-rsvp': 'checkCircle',
-  'qn-dress': 'shirt'
+  'qn-dress': 'shirt',
+  'qn-about': 'users'
 };
 
 const QUICKNAV_EMOJI_MAP = {
   'qn-loc': '📍',
   'qn-gifts': '🎁',
   'qn-rsvp': '✅',
-  'qn-dress': '👗'
+  'qn-dress': '👗',
+  'qn-about': '💞'
 };
 
 // Ícones "Modernos": emblema colorido com glifo sólido (não são emoji nem os ícones de linha "Clássicos")
@@ -99,14 +102,16 @@ const QUICKNAV_MODERN_COLOR_MAP = {
   'qn-loc': '#3B82F6',
   'qn-gifts': '#F43F5E',
   'qn-rsvp': '#10B981',
-  'qn-dress': '#8B5CF6'
+  'qn-dress': '#8B5CF6',
+  'qn-about': '#F59E0B'
 };
 
 const QUICKNAV_MODERN_ICON_MAP = {
   'qn-loc': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-4.14 0-7.5 3.36-7.5 7.5 0 5.63 6.5 11.86 6.78 12.12a1 1 0 0 0 1.44 0C13 21.36 19.5 15.13 19.5 9.5 19.5 5.36 16.14 2 12 2Zm0 10.25a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5Z"/></svg>',
   'qn-gifts': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 7h-2.1a3 3 0 0 0 .1-.75A3.25 3.25 0 0 0 14.75 3c-1.3 0-2.42.77-2.94 1.88a.9.9 0 0 0-.1.24l-.02.05a3.29 3.29 0 0 0-.12-.29A3.24 3.24 0 0 0 8.63 3 3.25 3.25 0 0 0 5.38 6.25c0 .27.04.51.1.75H4a2 2 0 0 0-2 2v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V9a2 2 0 0 0-2-2ZM8.63 5.5a.75.75 0 0 1 0 1.5A.75.75 0 0 1 8.63 5.5Zm6.12 0a.75.75 0 0 1 0 1.5.75.75 0 0 1 0-1.5ZM3 13v6a2 2 0 0 0 2 2h6v-8H3Zm10 8h6a2 2 0 0 0 2-2v-6h-8v8Z"/></svg>',
   'qn-rsvp': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1.2 14.6-4.4-4.4 1.4-1.4 3 3 6-6 1.4 1.4-7.4 7.4Z"/></svg>',
-  'qn-dress': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 2a2.5 2.5 0 0 0 5 0h1.5l3.6 3.6a1 1 0 0 1 0 1.41l-1.9 1.9-2.2-2.2V21a1 1 0 0 1-1 1H9.5a1 1 0 0 1-1-1V6.71l-2.2 2.2-1.9-1.9a1 1 0 0 1 0-1.41L8 2h1.5Z"/></svg>'
+  'qn-dress': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 2a2.5 2.5 0 0 0 5 0h1.5l3.6 3.6a1 1 0 0 1 0 1.41l-1.9 1.9-2.2-2.2V21a1 1 0 0 1-1 1H9.5a1 1 0 0 1-1-1V6.71l-2.2 2.2-1.9-1.9a1 1 0 0 1 0-1.41L8 2h1.5Z"/></svg>',
+  'qn-about': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM9 13c-3.87 0-7 2.24-7 5v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1c0-2.76-3.13-5-7-5Zm8 0c-.6 0-1.17.07-1.71.2A6.3 6.3 0 0 1 17.5 18v1c0 .35-.06.69-.17 1H21a1 1 0 0 0 1-1v-1c0-2.76-2.24-5-5-5Z"/></svg>'
 };
 
 function defaultQuickNavSection() {
@@ -123,7 +128,8 @@ function defaultQuickNavSection() {
       { id: 'qn-loc', label: 'Localização', visible: true },
       { id: 'qn-gifts', label: 'Lista de Presentes', visible: true },
       { id: 'qn-rsvp', label: 'Confirmar presença', visible: true },
-      { id: 'qn-dress', label: 'Dress code', visible: true }
+      { id: 'qn-dress', label: 'Dress code', visible: true },
+      { id: 'qn-about', label: 'Sobre', visible: true }
     ]
   };
 }
@@ -148,6 +154,15 @@ function migrateQuickNavSection(state) {
     qnSection.iconStyleMigrated = true;
   }
   if (state.quickNav) delete state.quickNav;
+
+  // Convites salvos antes de um botão novo existir (ex.: "Sobre") ganham o
+  // botão, logo depois do anterior a ele na lista padrão.
+  if (!Array.isArray(qnSection.buttons)) qnSection.buttons = [];
+  defaultQuickNavSection().buttons.forEach((padrao, i, padroes) => {
+    if (qnSection.buttons.some(b => b.id === padrao.id)) return;
+    const anterior = i > 0 ? qnSection.buttons.findIndex(b => b.id === padroes[i - 1].id) : -1;
+    qnSection.buttons.splice(anterior >= 0 ? anterior + 1 : qnSection.buttons.length, 0, { ...padrao });
+  });
 }
 
 const FONT_OPTIONS = [
@@ -1964,7 +1979,7 @@ function wireColumnInspector() { /* somente leitura por enquanto */ }
 
 function renderQuickNavInspector(qn) {
   return `
-    <p class="inspector-hint">Esta barra de botões aparece no início do conteúdo, em todos os sites, como uma seção fixa (não pode ser removida ou arrastada). Por padrão a cor de fundo acompanha a seção logo acima, mas você pode definir uma cor própria abaixo. Você também pode editar as cores dos botões, o formato dos ícones, os nomes, a ordem e ativar ou desativar cada botão.</p>
+    <p class="inspector-hint">Seção fixa no topo de todas as páginas. Personalize a cor de fundo ou mantenha a da seção acima. Abaixo, edite o estilo, a ordem e ative ou desative os botões.</p>
 
     <div class="inspector-section-title">Fundo da seção</div>
     <div class="inspector-field inspector-field-row">
@@ -2823,7 +2838,7 @@ async function initPublicPreview() {
   // Botões do convite: Localização/Dress code → Informações, Lista de
   // Presentes → presentes, Confirmar presença → formulário. Cada tela tem
   // um #hash, então o voltar do navegador também funciona.
-  const destinoDoBotao = { 'qn-loc': 'informacoes', 'qn-dress': 'informacoes', 'qn-gifts': 'presentes', 'qn-rsvp': 'confirmar' };
+  const destinoDoBotao = { 'qn-loc': 'informacoes', 'qn-dress': 'informacoes', 'qn-gifts': 'presentes', 'qn-rsvp': 'confirmar', 'qn-about': 'sobre' };
   // Só volta pelo histórico se a tela foi aberta por um botão do convite;
   // se o visitante entrou direto em /<slug>#presentes, voltar = ir ao convite.
   let abriuPeloConvite = false;
@@ -2854,6 +2869,7 @@ function renderTelaPublica(root) {
   if (tela === 'informacoes') return renderInformacoesPublicas(root);
   if (tela === 'presentes') return renderPresentesPublicos(root);
   if (tela === 'confirmar') return renderConfirmarPresencaPublica(root);
+  if (tela === 'sobre') return renderSobrePublico(root);
   renderConvitePublico(root);
 }
 
@@ -2918,6 +2934,20 @@ function renderInformacoesPublicas(root) {
     bloco('Informações gerais', ev.informacoes);
 
   root.innerHTML = telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>');
+}
+
+// "Sobre" → o que foi preenchido em Personalizar evento → Anfitriões.
+function renderSobrePublico(root) {
+  if (!conviteDadosPublicos) return semDadosPublicos(root, 'Sobre');
+  const sobre = conviteDadosPublicos.sobre || {};
+  const ev = conviteDadosPublicos.evento || {};
+  const titulo = sobre.titulo || 'Sobre';
+  const conteudo = (sobre.texto || ev.anfitrioes)
+    ? `
+      ${ev.anfitrioes ? `<p class="convite-info-rotulo">Anfitriões</p><p class="convite-info-valor convite-sobre-nomes">${escaparPublico(ev.anfitrioes)}</p>` : ''}
+      ${sobre.texto ? `<p class="convite-sobre-texto">${escaparPublico(sobre.texto).replace(/\n/g, '<br>')}</p>` : ''}`
+    : '<p class="convite-vazio">Os anfitriões ainda não contaram a história deles por aqui.</p>';
+  root.innerHTML = telaPublicaHtml(titulo, conteudo);
 }
 
 function renderPresentesPublicos(root) {

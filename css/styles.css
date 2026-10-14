@@ -6475,8 +6475,8 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 }
 
 /* Meus convidados: tabela no mesmo padrão das listas do Admin (table.data em
-   Admin/css/admin.css) — cabeçalho escuro em negrito, faixas alternadas
-   começando pela cinza, hover azul-claro e as faixas indo de ponta a ponta
+   Admin/css/admin.css) — cabeçalho escuro em negrito, faixas alternadas (branca e a cor da barra de título, #FAFAFA)
+   , hover azul-claro e as faixas indo de ponta a ponta
    da caixa. */
 #tab-rsvp .dash-card {
   padding: 1.25rem 0 0;
@@ -6496,8 +6496,8 @@ body[data-theme="dark"] #live-preview-buttons-callout {
   vertical-align: middle;
   transition: background .12s ease;
 }
-#tab-rsvp .guests-table tbody tr:nth-child(odd) td { background: #F9F9F9; }
-#tab-rsvp .guests-table tbody tr:nth-child(even) td { background: #FFFFFF; }
+#tab-rsvp .guests-table tbody tr:nth-child(odd) td { background: #FFFFFF; }
+#tab-rsvp .guests-table tbody tr:nth-child(even) td { background: #FAFAFA; }
 #tab-rsvp .guests-table tbody tr:hover td { background: #EBF4FF; }
 #tab-rsvp .dash-card .guests-pagination {
   margin-top: 0;
@@ -6506,7 +6506,7 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 
 /* Orçamento e Extrato: mesmo padrão de tabela de Meus convidados / Admin —
    cabeçalho sem faixa (só a linha embaixo), escuro em negrito; linhas
-   alternando de 1 em 1 (cinza, branca, cinza…) e hover azul-claro. */
+   alternando de 1 em 1 (branca e #FAFAFA, a cor da barra de título) e hover azul-claro. */
 #wallet-sub-budget .budget-table-full-bleed thead,
 #wallet-sub-budget .budget-table-full-bleed thead tr,
 #wallet-sub-statement .budget-table-full-bleed thead,
@@ -6531,9 +6531,9 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 #wallet-sub-budget #budget-expenses-tbody tr:first-child td,
 #wallet-sub-statement #wallet-transactions-list tr:first-child td { border-top: none; }
 #wallet-sub-budget #budget-expenses-tbody tr:nth-child(odd) td,
-#wallet-sub-statement #wallet-transactions-list tr:nth-child(odd) td { background: #F9F9F9; }
+#wallet-sub-statement #wallet-transactions-list tr:nth-child(odd) td { background: #FFFFFF; }
 #wallet-sub-budget #budget-expenses-tbody tr:nth-child(even) td,
-#wallet-sub-statement #wallet-transactions-list tr:nth-child(even) td { background: #FFFFFF; }
+#wallet-sub-statement #wallet-transactions-list tr:nth-child(even) td { background: #FAFAFA; }
 #wallet-sub-budget #budget-expenses-tbody tr:hover td,
 #wallet-sub-statement #wallet-transactions-list tr:hover td { background: #EBF4FF; }
 

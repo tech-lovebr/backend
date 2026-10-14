@@ -1027,9 +1027,23 @@ function atualizarAreaNovaSecaoPerto(y) {
     zona.classList.toggle('is-perto', zona === maisPerto && menorDistancia <= DISTANCIA_AREA_NOVA_SECAO);
   });
 }
+// Fim do arraste: some a marca "arrastando" (e as áreas). O onEnd do Sortable
+// nem sempre chega — soltar redesenha o canvas e recria os Sortables no meio.
+function encerrarArrasteDeElemento() {
+  const canvas = document.getElementById('builder-canvas');
+  if (!canvas) return;
+  canvas.classList.remove('is-arrastando-elemento');
+  canvas.querySelectorAll('[data-new-section-dropzone].is-perto').forEach(z => z.classList.remove('is-perto'));
+}
 document.addEventListener('dragover', (e) => atualizarAreaNovaSecaoPerto(e.clientY));
-document.addEventListener('pointermove', (e) => atualizarAreaNovaSecaoPerto(e.clientY));
-document.addEventListener('mousemove', (e) => atualizarAreaNovaSecaoPerto(e.clientY));
+// Mouse andando sem botão apertado = não está arrastando nada.
+document.addEventListener('mousemove', (e) => {
+  if (e.buttons === 0) { encerrarArrasteDeElemento(); return; }
+  atualizarAreaNovaSecaoPerto(e.clientY);
+});
+['dragend', 'drop', 'mouseup', 'pointerup'].forEach(evento => {
+  document.addEventListener(evento, () => setTimeout(encerrarArrasteDeElemento, 0), true);
+});
 
 /* -------------------- Render: canvas -------------------- */
 

@@ -10264,10 +10264,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-start justify-between gap-3 flex-wrap">
               <div class="min-w-0">
                 <div class="min-w-0">
-                  <h4 class="text-base sm:text-lg font-normal text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
+                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">
                     ${item.name}
                   </h4>
-                  <p class="text-sm text-zinc-400 font-medium font-sans">${item.location || item.neighborhood || ''}</p>
+                  <p class="text-sm text-zinc-400 font-medium font-sans">${localCurto(item)}</p>
                 </div>
               </div>
 
@@ -10350,13 +10350,13 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
-        <h4 class="text-base font-normal text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
+        <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${item.name}">${item.name}</h4>
 
         <div class="flex items-center gap-1.5 text-sm text-zinc-600">
           ${b2bRatingBadgeHTML(item, true)}
           <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
           <span class="text-zinc-400">·</span>
-          <span class="truncate">${item.location || item.neighborhood || ''}</span>
+          <span class="truncate">${localCurto(item)}</span>
         </div>
 
         <div class="flex items-center gap-3 text-sm text-zinc-600 flex-wrap">
@@ -10621,6 +10621,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Local do fornecedor no formato salvo pelo B2B: fornecedores.address
+  // ("Rua, número, bairro"), city e state (UF de 2 letras). Os fornecedores
+  // de demonstração (LOVE_DATA) só têm "Bairro, Cidade - UF" em location —
+  // lido como alternativa.
+  function partesDoLocal(item) {
+    if (item.city || item.state) {
+      return { endereco: (item.address || '').trim(), cidade: (item.city || '').trim(), uf: (item.state || '').trim().toUpperCase() };
+    }
+    // "Bairro, Cidade - UF", "Cidade - UF & Região", "Cidade, UF & Litoral"…
+    const texto = item.location || '';
+    const m = /^(?:(.*?),\s*)?([^,&]+?)\s*[-,]\s*([A-Z]{2})\b/.exec(texto);
+    if (m) return { endereco: (m[1] || item.neighborhood || '').trim(), cidade: m[2].trim(), uf: m[3] };
+    // Sem UF ("São Paulo & Rio de Janeiro"): fica só a primeira cidade.
+    return { endereco: item.neighborhood || '', cidade: texto.split(/[,&]/)[0].trim(), uf: '' };
+  }
+
+  // "São Paulo (SP)" — usado nos cards da lista/grade.
+  function localCurto(item) {
+    const { cidade, uf } = partesDoLocal(item);
+    return uf ? `${cidade} (${uf})` : cidade;
+  }
+
+  // "Rua, número, bairro, São Paulo (SP)" — usado na página do fornecedor.
+  function enderecoCompleto(item) {
+    return [partesDoLocal(item).endereco, localCurto(item)].filter(Boolean).join(', ');
+  }
+
+  // Preço do serviço como no card do B2B (B2B/js/produtos.js:productPriceLabel):
+  // aceita o texto pronto dos dados de demonstração ou a linha de `products`
+  // (price + extra.pricing).
+  function rotuloPrecoServico(svc) {
+    if (typeof svc.price === 'string') return svc.price;
+    const brl = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+    const pricing = svc.extra?.pricing || svc.pricing;
+    if (pricing?.type === 'SOB_CONSULTA') {
+      const inicial = pricing.onRequest?.startingPrice;
+      return inicial > 0 ? `A partir de ${brl(inicial)}` : 'Sob consulta';
+    }
+    if (pricing?.type === 'POR_PESSOA' && pricing.perPerson?.pricePerPerson) return `${brl(pricing.perPerson.pricePerPerson)} / pessoa`;
+    if (pricing?.type === 'POR_HORA' && pricing.perHour?.pricePerHour) return `${brl(pricing.perHour.pricePerHour)} / hora`;
+    return svc.price != null ? brl(svc.price) : '';
+  }
+
   function renderB2BVendorProfile(item) {
     const coverImg = document.getElementById('b2b-profile-cover-img');
     const avatarImg = document.getElementById('b2b-profile-avatar-img');
@@ -10648,7 +10691,7 @@ document.addEventListener('DOMContentLoaded', () => {
       roleEl.textContent = roleText;
       roleEl.classList.toggle('hidden', !roleText);
     }
-    if (locationTextEl) locationTextEl.textContent = item.location || item.neighborhood || '';
+    if (locationTextEl) locationTextEl.textContent = enderecoCompleto(item);
 
     // "Acessar site" só aparece se o fornecedor publicou um site próprio
     // pelo construtor do Love (B2B/js/site-builder.js).
@@ -10675,38 +10718,27 @@ document.addEventListener('DOMContentLoaded', () => {
       specialtiesEl.classList.toggle('hidden', specialties.length === 0);
     }
 
-    // Serviços oferecidos: mesmo card do cadastro de produto no B2B
-    // (B2B/js/produtos.js:renderProducts → .product-card) — clicar expande
-    // e mostra a descrição completa e o valor.
-    const services = item.services || [];
+    // Serviços oferecidos: mesmo card de B2B/produtos.html (capa ou degradê,
+    // nome, categoria e preço). Só os ativos; "Ativo"/"Editar" são do painel
+    // do fornecedor e não aparecem pro anfitrião.
+    const services = (item.services || []).filter(svc => svc.active !== false);
     if (servicesGrid) {
-      servicesGrid.innerHTML = services.map((svc, i) => {
-        const thumb = portfolioPhotos[i % portfolioPhotos.length] || item.image;
+      servicesGrid.innerHTML = services.map(svc => {
+        const capa = svc.cover_image_url || svc.coverImage || '';
+        const categoria = svc.category || item.mainCategory || '';
         return `
-          <div class="b2b-profile-service-card border border-zinc-200 rounded-xl bg-white overflow-hidden cursor-pointer" data-index="${i}">
-            <div class="flex items-center gap-3 p-3">
-              <div class="w-14 h-14 rounded-lg overflow-hidden bg-zinc-100 flex-shrink-0">
-                <img src="${thumb}" alt="" class="w-full h-full object-cover">
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-bold text-zinc-900 truncate">${svc.name}</h4>
-                <p class="text-sm font-semibold text-zinc-600 mt-0.5">${svc.price}</p>
-              </div>
-              <svg class="b2b-profile-service-chevron w-4 h-4 text-zinc-400 transition-transform flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          <div class="border border-zinc-200 rounded-xl bg-white overflow-hidden flex flex-col">
+            <div class="h-36 bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50 overflow-hidden">
+              ${capa ? `<img src="${capa}" alt="${svc.name}" class="w-full h-full object-cover">` : ''}
             </div>
-            <div class="b2b-profile-service-detail hidden px-3 pb-3 text-xs text-zinc-500 leading-relaxed border-t border-zinc-100 pt-3">
-              ${svc.desc || ''}
+            <div class="p-4 flex flex-col gap-2 flex-1">
+              <p class="text-sm font-semibold text-zinc-900 leading-snug">${svc.name}</p>
+              <p class="text-xs text-zinc-500">${categoria}</p>
+              <p class="text-base font-bold text-zinc-900 mt-auto">${rotuloPrecoServico(svc)}</p>
             </div>
           </div>
         `;
       }).join('');
-
-      servicesGrid.querySelectorAll('.b2b-profile-service-card').forEach(card => {
-        card.addEventListener('click', () => {
-          card.querySelector('.b2b-profile-service-detail')?.classList.toggle('hidden');
-          card.querySelector('.b2b-profile-service-chevron')?.classList.toggle('rotate-180');
-        });
-      });
     }
     if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0);
 
@@ -11173,7 +11205,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
           <div>
-            <h4 class="text-base sm:text-lg font-normal text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">${item.name}</h4>
+            <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">${item.name}</h4>
             <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.service || ''}</p>
           </div>
 

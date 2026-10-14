@@ -6436,3 +6436,8 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 .badge-recados-count.hidden {
   display: none !important;
 }
+
+/* Página do fornecedor: nome em negrito (a regra global de títulos h2 deixava 400). */
+#b2b-profile-name {
+  font-weight: 700 !important;
+}

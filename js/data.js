@@ -901,7 +901,7 @@ const LOVE_DATA = {
       rating: 4.95,
       reviewsCount: 112,
       weddingsCount: 140,
-      location: 'São Paulo & Rio de Janeiro',
+      location: 'São Paulo - SP & Rio de Janeiro - RJ',
       image: 'assets/advisor_marcos.jpg',
       badge: 'Top Producer 2026',
       startingPrice: 'A partir de R$ 6.800',

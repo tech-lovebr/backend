@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261013_badge">
+  <link rel="stylesheet" href="css/styles.css?v=20261013_perfilfornecedor">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3133,20 +3133,19 @@
               <img id="b2b-profile-cover-img" src="" alt="" class="w-full h-full object-cover">
             </div>
 
-            <!-- Avatar -->
-            <div class="flex items-end -mt-10 ml-6 relative z-10">
-              <img id="b2b-profile-avatar-img" src="" alt="" class="w-24 h-24 rounded-2xl border-4 border-white object-cover shadow-md bg-white flex-shrink-0">
-            </div>
-
-            <!-- Nome, função, local, avaliação -->
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mt-3 ml-6 pr-2">
-              <div class="min-w-0">
-                <h2 id="b2b-profile-name" class="text-xl sm:text-2xl font-bold text-zinc-900 font-sans tracking-tight"></h2>
-                <p id="b2b-profile-role" class="text-sm text-zinc-500 font-sans"></p>
-                <p id="b2b-profile-location" class="text-sm text-zinc-400 font-sans flex items-center gap-1 mt-0.5">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                  <span id="b2b-profile-location-text"></span>
-                </p>
+            <!-- Foto de perfil abaixo da capa, alinhada à esquerda; ao lado,
+                 nome em negrito, função e endereço completo. -->
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-5">
+              <div class="flex items-start gap-4 min-w-0">
+                <img id="b2b-profile-avatar-img" src="" alt="" class="w-20 h-20 rounded-2xl border border-zinc-200 object-cover bg-white flex-shrink-0">
+                <div class="min-w-0 pt-1">
+                  <h2 id="b2b-profile-name" class="text-xl sm:text-2xl font-bold text-zinc-900 font-sans tracking-tight"></h2>
+                  <p id="b2b-profile-role" class="text-sm text-zinc-500 font-sans"></p>
+                  <p id="b2b-profile-location" class="text-sm text-zinc-500 font-sans flex items-start gap-1 mt-1">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                    <span id="b2b-profile-location-text"></span>
+                  </p>
+                </div>
               </div>
               <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
                 <a href="#" id="b2b-profile-site-link" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 text-sm font-semibold text-[#537bae] hover:text-[#416799] transition-colors">
@@ -5340,9 +5339,9 @@
   <!-- Scripts Modulares -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=3"></script>
-  <script src="js/data.js?v=20260917_guestnames"></script>
+  <script src="js/data.js?v=20261013_local"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261013_cards"></script>
+  <script src="js/app.js?v=20261013_perfilfornecedor2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261001_supabase1"></script>
 </body>

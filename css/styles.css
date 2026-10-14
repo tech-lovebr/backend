@@ -6829,3 +6829,8 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 
 /* Tela interna sem cabeçalho (prévia de Informações no editor): a foto começa colada no topo. */
 .convite-tela > .convite-tela-capa:first-child { margin-top: -1.5rem; }
+
+
+/* Capa das telas internas (Informações): camadas de cor e transição por cima da foto. */
+.convite-tela-capa { position: relative; }
+.convite-tela-capa-camada { position: absolute; pointer-events: none; }

@@ -3210,7 +3210,20 @@ function capaDoConviteHtml() {
   const secao = (builderState && builderState.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock && !s.hidden);
   const imagem = secao && secao.bgImage;
   if (!imagem) return '';
-  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt=""></div>`;
+  // Mesmas camadas da capa em Aparência: cor por cima da foto e transição
+  // (degradê) em cima ou embaixo — assim a capa fica igual em todas as telas.
+  const camadas = [];
+  if (secao.overlayColor) {
+    const opacidade = secao.overlayOpacity !== undefined ? secao.overlayOpacity : 1;
+    camadas.push(`<div class="convite-tela-capa-camada" style="inset:0;background-color:${escaparPublico(secao.overlayColor)};opacity:${Number(opacidade) || 0};"></div>`);
+  }
+  const corTransicao = secao.fadeColor === '' ? '' : (secao.fadeColor || '#ffffff');
+  if (corTransicao && (secao.fadePosition === 'top' || secao.fadePosition === 'bottom')) {
+    const emCima = secao.fadePosition === 'top';
+    const c = escaparPublico(corTransicao);
+    camadas.push(`<div class="convite-tela-capa-camada" style="left:0;right:0;height:45%;${emCima ? 'top:0' : 'bottom:0'};background:linear-gradient(to ${emCima ? 'bottom' : 'top'}, ${c} 0%, ${c} 35%, ${c}00 100%);"></div>`);
+  }
+  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt="">${camadas.join('')}</div>`;
 }
 
 function semDadosPublicos(root, titulo) {

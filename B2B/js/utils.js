@@ -234,16 +234,32 @@ function initDatePicker(input, initialIso) {
   function render() {
     if (viewMode === 'years') renderYears();
     else renderDays();
+    // A altura muda (5 ou 6 semanas, grade de anos): aberto em cima do
+    // campo, ele precisa ser reposicionado pra continuar encostado nele.
+    if (popover.style.display === 'block') position();
   }
 
+  // O popover é position:fixed, preso à janela — mas quem rola no B2B é o
+  // .b2b-content, não a janela. Por isso a posição é recalculada a cada
+  // rolagem (ver onScrollOrResize) e, sem espaço embaixo do campo, ele abre
+  // em cima, em vez de ficar cortado no fim da tela.
   function position() {
     const rect = input.getBoundingClientRect();
     const popoverWidth = 260;
+    const popoverHeight = popover.offsetHeight;
     const margin = 8;
     let left = rect.left;
     left = Math.min(left, window.innerWidth - popoverWidth - margin);
     left = Math.max(left, margin);
-    popover.style.top = `${rect.bottom + 4}px`;
+
+    const spaceBelow = window.innerHeight - rect.bottom - margin;
+    const spaceAbove = rect.top - margin;
+    let top = (spaceBelow < popoverHeight + 4 && spaceAbove > spaceBelow)
+      ? rect.top - popoverHeight - 4
+      : rect.bottom + 4;
+    top = Math.max(margin, Math.min(top, window.innerHeight - popoverHeight - margin));
+
+    popover.style.top = `${top}px`;
     popover.style.left = `${left}px`;
   }
 
@@ -251,19 +267,35 @@ function initDatePicker(input, initialIso) {
     if (!popover.contains(e.target) && e.target !== input) close();
   }
 
+  // Campo saiu da tela rolando: fecha, em vez de deixar o calendário solto.
+  function onScrollOrResize(e) {
+    if (e && e.target && popover.contains(e.target)) return;
+    const rect = input.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) { close(); return; }
+    position();
+  }
+
   function open() {
     viewDate = isoValue ? new Date(isoValue + 'T00:00:00') : new Date();
     viewMode = 'days';
     yearRangeStart = Math.floor(viewDate.getFullYear() / 12) * 12;
     render();
-    position();
+    // Visível (mas transparente) antes de posicionar: position() precisa
+    // da altura real do calendário pra decidir se abre em cima ou embaixo.
+    popover.style.visibility = 'hidden';
     popover.style.display = 'block';
+    position();
+    popover.style.visibility = '';
     document.addEventListener('click', onOutsideClick);
+    document.addEventListener('scroll', onScrollOrResize, true);
+    window.addEventListener('resize', onScrollOrResize);
   }
 
   function close() {
     popover.style.display = 'none';
     document.removeEventListener('click', onOutsideClick);
+    document.removeEventListener('scroll', onScrollOrResize, true);
+    window.removeEventListener('resize', onScrollOrResize);
   }
 
   popover.addEventListener('click', (e) => e.stopPropagation());

@@ -49,9 +49,11 @@
           <div class="b2b-chat-contacts-column w-full md:w-80 lg:w-[340px] md:min-w-[320px] border-r border-zinc-200 flex flex-col h-full flex-shrink-0">
             
             <!-- Header da Lista -->
-            <div class="b2b-chat-contacts-header p-4 border-b border-zinc-200/70 space-y-3 flex-shrink-0">
+            <!-- Mesma altura fixa (64px) do cabeçalho da conversa à direita,
+                 pra linha de baixo das duas colunas ficar alinhada. -->
+            <div class="b2b-chat-contacts-header px-4 h-[64px] flex items-center border-b border-zinc-200 flex-shrink-0">
               <!-- Busca de Contatos -->
-              <div class="relative">
+              <div class="relative w-full">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>

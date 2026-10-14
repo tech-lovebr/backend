@@ -68,13 +68,20 @@
     .convite-voltar { background: none; border: 0; padding: 0; color: #71717A; font-size: 0.8125rem; font-weight: 600; cursor: pointer; font-family: inherit; }
     .convite-voltar:hover { color: #18181B; }
     .convite-tela-titulo { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 1.5rem; letter-spacing: -0.01em; }
+    /* Cabeçalho das telas internas (Voltar + título) sempre branco, de ponta a ponta. */
+    .convite-tela-topo { background: #FFFFFF; margin: -1.5rem -1.5rem 0; padding: 1.5rem 1.5rem 0.25rem; }
+    .convite-tela-topo .convite-tela-titulo { margin-bottom: 1.25rem; }
+    .convite-tela-topo + :not(.convite-tela-capa) { margin-top: 1.5rem; }
     /* Foto cheia, de ponta a ponta (sem as margens da tela), com a mesma
        altura da capa da página principal do convite. */
-    .convite-tela-capa { margin: -0.25rem -1.5rem 1.5rem; height: 348px; overflow: hidden; background: #F4F4F5; }
+    .convite-tela-capa { margin: 0 -1.5rem 1.5rem; height: 348px; overflow: hidden; background: #F4F4F5; }
     .convite-tela-capa img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .convite-vazio { color: #71717A; font-size: 0.9375rem; line-height: 1.6; }
     .convite-info { padding: 1rem 0; border-top: 1px solid #EAEAEA; }
     .convite-info:first-of-type { border-top: 0; padding-top: 0; }
+    /* Quando / Local / Endereço / Ponto de referência: caixa branca. */
+    .convite-info-caixa { background: #FFFFFF; border-radius: 10px; padding: 1rem 1.125rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1rem; }
+    .convite-info-caixa .convite-info:last-child { padding-bottom: 0; }
     .convite-info-rotulo { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #71717A; margin: 0 0 0.35rem; }
     .convite-info-valor { font-size: 0.9375rem; line-height: 1.55; margin: 0; }
     .convite-link { display: inline-block; margin-top: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--bx-primary, #537bae); }
@@ -104,6 +111,6 @@
   <div id="public-preview-root" class="builder-canvas"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=3"></script>
-  <script src="js/site-builder.js?v=20261014_fundotelas"></script>
+  <script src="js/site-builder.js?v=20261014_topobranco"></script>
 </body>
 </html>

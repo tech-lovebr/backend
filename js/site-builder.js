@@ -2924,8 +2924,10 @@ function telaPublicaHtml(titulo, conteudo, { comCapa = false } = {}) {
   const fundo = corDeFundoDosBotoes();
   return `
     <div class="convite-tela"${fundo ? ` style="background-color:${escaparPublico(fundo)};"` : ''}>
-      <button type="button" class="convite-voltar" data-convite-voltar>← Voltar ao convite</button>
-      <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
+      <div class="convite-tela-topo">
+        <button type="button" class="convite-voltar" data-convite-voltar>← Voltar ao convite</button>
+        <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
+      </div>
       ${comCapa ? capaDoConviteHtml() : ''}
       ${conteudo}
     </div>
@@ -2968,11 +2970,14 @@ function renderInformacoesPublicas(root) {
       ${extra}
     </div>` : '';
 
-  const conteudo =
+  // Quando, Local, Endereço e Ponto de referência ficam numa caixa branca.
+  const principais =
     bloco('Quando', [quando, ate].filter(Boolean).join(' — ')) +
     bloco('Local', ev.local) +
     bloco('Endereço', enderecoCompleto, botoesMapa) +
-    bloco('Ponto de referência', ev.referencia) +
+    bloco('Ponto de referência', ev.referencia);
+  const conteudo =
+    (principais ? `<div class="convite-info-caixa">${principais}</div>` : '') +
     bloco('Dress code', ev.dresscode) +
     bloco('Informações gerais', ev.informacoes);
 

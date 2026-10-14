@@ -6434,7 +6434,9 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 
 /* Configurações da conta: e-mail não editável em cinza claro (a regra global
    de inputs deixava o campo branco, parecendo editável). */
-#settings-user-email:disabled {
+/* Também: Cidade em Informações, travada porque vem do CEP. */
+#settings-user-email:disabled,
+#editor-data-city-uf-view:disabled {
   background-color: #F4F4F5 !important;
   color: #71717A !important;
   -webkit-text-fill-color: #71717A;

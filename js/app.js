@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     listEl.innerHTML = notificationsFeedCache.map((n, i) => `
-      <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer hover:bg-zinc-50/80 transition-colors -mx-2 px-2 rounded-xl" data-index="${i}">
+      <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer transition-colors -mx-2 px-2 rounded-xl ${n.unread ? 'bg-[#EBF4FF] hover:bg-[#DCEBFF]' : 'bg-zinc-50/80 hover:bg-zinc-100'}" data-index="${i}">
         <div class="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-600 flex items-center justify-center flex-shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${n.iconPath}"/></svg>
         </div>

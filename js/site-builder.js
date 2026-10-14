@@ -1893,6 +1893,17 @@ const STYLE_CAPABLE_TYPES = ['texto', 'titulo', 'botao'];
 
 function applyBind(el, path, rawValue, unit) {
   const value = unit ? (rawValue === '' ? '' : rawValue + unit) : rawValue;
+  // Fonte vale para todos os tamanhos de tela de uma vez: antes ficava por
+  // dispositivo e uma fonte escolhida em outra visualização "prendia" no
+  // celular (que é o que o convite publicado mostra).
+  if (path === 'style:fontFamily') {
+    ['desktop', 'tablet', 'mobile'].forEach(d => {
+      el.styles[d] = el.styles[d] || {};
+      if (value === '' || value === null || value === undefined) delete el.styles[d].fontFamily;
+      else el.styles[d].fontFamily = value;
+    });
+    return;
+  }
   if (path.startsWith('style:')) {
     const key = path.slice(6);
     el.styles[currentDevice] = el.styles[currentDevice] || {};

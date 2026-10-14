@@ -6834,3 +6834,22 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 /* Capa das telas internas (Informações): camadas de cor e transição por cima da foto. */
 .convite-tela-capa { position: relative; }
 .convite-tela-capa-camada { position: absolute; pointer-events: none; }
+
+
+/* Explorar: categoria do fornecedor ao lado do nome da empresa. */
+.b2b-categoria-tag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  max-width: 180px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #F4F4F5;
+  color: #52525B;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

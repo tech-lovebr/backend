@@ -11199,11 +11199,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
               </div>
 
-              ${item.rating ? `
-              <div class="flex items-center gap-1.5 text-sm shrink-0">
-                ${b2bRatingBadgeHTML(item)}
-                <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
-              </div>` : ''}
+              <div class="flex items-center gap-3 shrink-0">
+                ${item.rating ? `
+                <div class="flex items-center gap-1.5 text-sm">
+                  ${b2bRatingBadgeHTML(item)}
+                  <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
+                </div>` : ''}
+                ${categoriaDoFornecedorHtml(item)}
+              </div>
             </div>
 
             <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${escaparHtml(item.description || item.about || '')}</p>
@@ -11259,6 +11262,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Categoria do fornecedor (a do serviço que ele cadastrou no Hub — ex.:
+  // "Bar e Bebidas"), à direita do nome da empresa nos cards do Explorar.
+  function categoriaDoFornecedorHtml(item) {
+    const categoria = (item && (item.mainCategory || (item.categories || [])[0])) || '';
+    if (!categoria) return '';
+    return `<span class="b2b-categoria-tag" title="${escaparHtml(categoria)}">${escaparHtml(categoria)}</span>`;
+  }
+
   // Card do modo Grid do Explorar: caixa sem sombra (só borda), imagem com
   // selo de destaque + favoritar, nome, nota, preço/capacidade e CTA.
   function buildB2BGridCard(item, { priceLabel }) {
@@ -11281,7 +11292,10 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
-        <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight" title="${escaparHtml(item.name)}">${escaparHtml(item.name)}</h4>
+        <div class="flex items-start justify-between gap-2 min-w-0">
+          <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight min-w-0" title="${escaparHtml(item.name)}">${escaparHtml(item.name)}</h4>
+          ${categoriaDoFornecedorHtml(item)}
+        </div>
 
         <div class="flex items-center gap-1.5 text-sm text-zinc-600">
           ${item.rating ? `

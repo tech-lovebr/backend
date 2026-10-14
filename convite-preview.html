@@ -33,6 +33,27 @@
       min-height: 100vh;
       box-shadow: 0 0 40px rgba(0,0,0,0.06);
     }
+
+    /* O convite ocupa sempre a altura toda da janela, com o rodapé colado
+       embaixo: o espaço que sobra vira respiro (em cima e embaixo) nas seções
+       abaixo da capa. Conteúdo maior que a tela rola normalmente. */
+    #public-preview-root {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+    }
+    #public-preview-root > section:not(.convite-capa),
+    #public-preview-root > .convite-tela {
+      flex: 1 0 auto;
+      /* !important: o CSS do editor força display:block nas seções. */
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #public-preview-root > .convite-tela { justify-content: flex-start; }
+    /* Em flex, conteúdo com margin:auto encolhe — mantém a largura original. */
+    #public-preview-root > section:not(.convite-capa) > * { width: 100%; box-sizing: border-box; }
+    #public-preview-root > .builder-fixed-footer { flex-shrink: 0; margin-top: auto; }
     .public-preview-empty {
       padding: 6rem 1.5rem;
       text-align: center;
@@ -43,7 +64,7 @@
     }
 
     /* Telas internas do convite: Informações, Lista de Presentes, Confirmar presença */
-    .convite-tela { padding: 1.5rem 1.5rem 3rem; font-family: 'Inter', sans-serif; color: #18181B; min-height: 70vh; }
+    .convite-tela { padding: 1.5rem 1.5rem 3rem; font-family: 'Inter', sans-serif; color: #18181B; }
     .convite-voltar { background: none; border: 0; padding: 0; color: #71717A; font-size: 0.8125rem; font-weight: 600; cursor: pointer; font-family: inherit; }
     .convite-voltar:hover { color: #18181B; }
     .convite-tela-titulo { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 1.5rem; letter-spacing: -0.01em; }
@@ -79,6 +100,6 @@
   <div id="public-preview-root" class="builder-canvas"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=3"></script>
-  <script src="js/site-builder.js?v=20261014_sobre"></script>
+  <script src="js/site-builder.js?v=20261014_alturatotal"></script>
 </body>
 </html>

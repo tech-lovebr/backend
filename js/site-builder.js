@@ -2882,7 +2882,10 @@ function renderConvitePublico(root) {
   // clássicas (wireClassicPreviewCoverEdit).
   const capa = visible.find(s => !s.isQuickNav && !s.isGiftsBlock);
   const capaEl = (capa && root.querySelector(`[data-section-id="${capa.id}"]`)) || root.querySelector(':scope > section');
-  if (capaEl) capaEl.style.minHeight = '348px';
+  if (capaEl) {
+    capaEl.style.minHeight = '348px';
+    capaEl.classList.add('convite-capa');
+  }
 
   startCountdownTicker(root);
 }

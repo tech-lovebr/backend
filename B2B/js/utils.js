@@ -423,6 +423,74 @@ function initDatePicker(input, initialIso) {
   };
 }
 
+/* Avatar padrão (sem foto): as iniciais do nome — de preferência o da
+   empresa ("Vitor Drinks" → VD). Usado no cabeçalho, no dropdown e no chat. */
+function avatarInitials(name) {
+  const letras = String(name || '').trim().split(/\s+/)
+    .map(palavra => (palavra.match(/[\p{L}\p{N}]/u) || [''])[0])
+    .filter(Boolean).slice(0, 2).join('').toUpperCase();
+  return letras || '?';
+}
+
+function initialsAvatarHtml(name) {
+  return `<span class="avatar-initials">${escapeHtml(avatarInitials(name))}</span>`;
+}
+
+/* Foto de perfil do fornecedor → fornecedores.avatar_url, pra aparecer na
+   plataforma do anfitrião (Explorar, perfil do fornecedor, chat). Renderiza
+   o enquadramento escolhido no Hub (escala + deslocamento sobre a imagem
+   "contida" num quadrado, igual ao .avatar-crop-img) num JPEG 400×400, sobe
+   pro bucket fornecedores (avatar/<id>/...) e grava a URL. Sem foto: limpa
+   o avatar_url. Falhar não trava nada — a foto continua valendo no Hub. */
+async function syncFornecedorAvatar(p) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return null;
+  const userId = session.user.id;
+
+  if (!p.profilePhoto) {
+    await supabaseClient.from('fornecedores').update({ avatar_url: null }).eq('id', userId);
+    return null;
+  }
+  // Já é a URL publicada (veio do banco) e sem ajuste novo: nada a fazer.
+  if (/^https?:\/\//.test(p.profilePhoto) && (p.profilePhotoScale || 1) === 1 && !p.profilePhotoOffsetX && !p.profilePhotoOffsetY) {
+    return p.profilePhoto;
+  }
+
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.crossOrigin = 'anonymous';
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = p.profilePhoto;
+    });
+    const N = 400;
+    const canvas = document.createElement('canvas');
+    canvas.width = N; canvas.height = N;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, N, N);
+    const fit = Math.min(N / img.naturalWidth, N / img.naturalHeight);
+    const s = p.profilePhotoScale || 1;
+    const w = img.naturalWidth * fit * s, h = img.naturalHeight * fit * s;
+    const cx = N / 2 + s * ((p.profilePhotoOffsetX || 0) / 100) * N;
+    const cy = N / 2 + s * ((p.profilePhotoOffsetY || 0) / 100) * N;
+    ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+    const caminho = `avatar/${userId}/${Date.now()}.jpg`;
+    const { error: upErr } = await supabaseClient.storage.from('fornecedores')
+      .upload(caminho, blob, { cacheControl: '31536000', contentType: 'image/jpeg' });
+    if (upErr) { console.warn('Foto de perfil não subiu pro Storage.', upErr); return null; }
+    const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+    const { error } = await supabaseClient.from('fornecedores').update({ avatar_url: url }).eq('id', userId);
+    if (error) { console.warn('Não foi possível gravar avatar_url.', error); return null; }
+    return url;
+  } catch (err) {
+    console.warn('Não foi possível sincronizar a foto de perfil.', err);
+    return null;
+  }
+}
+
 function initials(name) {
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }

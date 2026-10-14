@@ -217,6 +217,13 @@ async function initAuthGuard() {
     B2B_DATA.professional.company = fornecedor.company_name || B2B_DATA.professional.company;
     B2B_DATA.professional.email = fornecedor.email || B2B_DATA.professional.email;
     if (fornecedor.avatar_url) B2B_DATA.professional.avatar = fornecedor.avatar_url;
+    // A foto de perfil vem do banco (é a mesma que o anfitrião vê). Foto só
+    // local (de antes de sincronizar) sobe uma vez, em segundo plano.
+    if (fornecedor.avatar_url) {
+      Object.assign(B2B_DATA.professional, { profilePhoto: fornecedor.avatar_url, profilePhotoScale: 1, profilePhotoOffsetX: 0, profilePhotoOffsetY: 0 });
+    } else if (B2B_DATA.professional.profilePhoto && typeof syncFornecedorAvatar === 'function') {
+      syncFornecedorAvatar(B2B_DATA.professional);
+    }
     // O plano vem sempre do banco (a página de planos grava lá, e o Admin
     // grava as bonificações): é o mesmo dado que a página pública do site
     // usa pra liberar o subdomínio — ver site_publicado na migration 038,
@@ -404,15 +411,16 @@ function setSidebarCollapsed(collapsed) {
 // alternam por tema). Usado no cabeçalho, no dropdown e no chat (mensagens.js).
 const B2B_PROFILE_ICON = '<img src="assets/iconelove2.png" class="avatar-love-icon sidebar-icon-light" alt=""><img src="assets/icon-white1.png" class="avatar-love-icon sidebar-icon-dark" alt="">';
 
-function renderAvatarInto(el, photo) {
+// Sem foto: as iniciais da empresa (ou do nome) no lugar de um ícone.
+function renderAvatarInto(el, photo, name) {
   if (!el) return;
-  el.innerHTML = photo ? `<img src="${photo}" class="avatar-photo-img" alt="">` : B2B_PROFILE_ICON;
+  el.innerHTML = photo ? `<img src="${photo}" class="avatar-photo-img" alt="">` : initialsAvatarHtml(name);
 }
 
 function initUserCard() {
   const p = B2B_DATA.professional;
-  renderAvatarInto(document.getElementById('topbar-user-avatar'), p.profilePhoto);
-  renderAvatarInto(document.getElementById('profile-dropdown-avatar'), p.profilePhoto);
+  renderAvatarInto(document.getElementById('topbar-user-avatar'), p.profilePhoto, p.company || p.name);
+  renderAvatarInto(document.getElementById('profile-dropdown-avatar'), p.profilePhoto, p.company || p.name);
 
   setText('profile-dropdown-name', p.company);
   setText('topbar-account-name', p.company);

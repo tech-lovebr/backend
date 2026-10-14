@@ -5324,6 +5324,15 @@ img.avatar-love-icon.sidebar-icon-dark { display: none !important; }
 body[data-theme="dark"] img.avatar-love-icon.sidebar-icon-light { display: none !important; }
 body[data-theme="dark"] img.avatar-love-icon.sidebar-icon-dark { display: block !important; }
 
+/* Avatar sem foto: iniciais (mesmo azul do avatar com iniciais do Explorar). */
+.avatar-initials {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: #EBF4FF; color: #183B54; font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.02em;
+  border-radius: inherit; line-height: 1;
+}
+.w-7 > .avatar-initials { font-size: 0.625rem; }
+body[data-theme="dark"] .avatar-initials { background: #333333 !important; color: #FFFFFF !important; }
+
 /* Número de não lidas na lista de conversas do chat. */
 .chat-unread-count {
   min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9999px;

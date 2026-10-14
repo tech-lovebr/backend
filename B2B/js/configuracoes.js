@@ -645,6 +645,8 @@ function renderProfileAvatarPicker() {
     p.profilePhotoScale = 1;
     p.profilePhotoOffsetX = 0;
     p.profilePhotoOffsetY = 0;
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    syncFornecedorAvatar(p);
     renderProfileAvatarPicker();
     if (typeof initUserCard === 'function') initUserCard();
   });
@@ -667,6 +669,16 @@ function closeProfileAvatarAdjustModal() {
   if (modal) modal.classList.remove('show');
   renderProfileAvatarPicker();
   if (typeof initUserCard === 'function') initUserCard();
+  // A foto (com o enquadramento) vira o avatar_url que o anfitrião vê.
+  const p = B2B_DATA.professional;
+  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+  syncFornecedorAvatar(p).then(url => {
+    if (!url) return;
+    Object.assign(p, { profilePhoto: url, profilePhotoScale: 1, profilePhotoOffsetX: 0, profilePhotoOffsetY: 0 });
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    renderProfileAvatarPicker();
+    if (typeof initUserCard === 'function') initUserCard();
+  });
 }
 
 function updateProfileAvatarAdjustTransform() {

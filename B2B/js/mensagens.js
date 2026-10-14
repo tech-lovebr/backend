@@ -102,9 +102,9 @@ function subscribeToB2BMessages() {
 // Mesmo ícone de perfil padrão usado no cabeçalho (B2B_PROFILE_ICON, definido
 // em shell.js) — quadrado com cantos arredondados, nunca foto/placeholder
 // genérico quando o cliente ainda não tem avatar cadastrado.
-function b2bAvatarHtml(url) {
+function b2bAvatarHtml(url, name) {
   if (url) return `<img src="${url}" alt="">`;
-  return typeof B2B_PROFILE_ICON !== 'undefined' ? B2B_PROFILE_ICON : '';
+  return typeof initialsAvatarHtml === 'function' ? initialsAvatarHtml(name) : '';
 }
 
 function renderContactsList(searchQuery = '') {
@@ -139,7 +139,7 @@ function renderContactsList(searchQuery = '') {
 
     item.innerHTML = `
       <div class="relative flex-shrink-0">
-        <span class="w-10 h-10 b2b-avatar-square border border-zinc-200">${b2bAvatarHtml(conv.avatar)}</span>
+        <span class="w-10 h-10 b2b-avatar-square border border-zinc-200">${b2bAvatarHtml(conv.avatar, conv.name)}</span>
         ${conv.online ? '<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>' : ''}
       </div>
       <div class="flex-1 min-w-0">
@@ -186,7 +186,7 @@ function renderActiveChat() {
   if (statusEl) {
     statusEl.innerHTML = `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
   }
-  if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(activeConv.avatar);
+  if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(activeConv.avatar, activeConv.name);
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';
 
   container.innerHTML = `
@@ -238,11 +238,11 @@ function renderActiveChat() {
             <span>${msg.time || 'Agora'}</span>
           </div>
         </div>
-        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(myPhoto)}</span>
+        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(myPhoto, B2B_DATA.professional.company || B2B_DATA.professional.name)}</span>
       `;
     } else {
       row.innerHTML = `
-        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar)}</span>
+        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
           <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}

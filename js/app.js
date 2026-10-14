@@ -11765,7 +11765,12 @@ document.addEventListener('DOMContentLoaded', () => {
       coverImg.classList.toggle('hidden', !capa);
     }
     if (avatarImg) avatarImg.src = item.avatar || avatarComIniciais(item.name);
-    if (nameEl) nameEl.textContent = item.name;
+    if (nameEl) {
+      // Nome da empresa + categoria do serviço (ex.: "Bar e Bebidas") ao lado.
+      nameEl.textContent = item.name;
+      const categoriaPerfil = categoriaDoFornecedorHtml(item);
+      if (categoriaPerfil) nameEl.insertAdjacentHTML('beforeend', ' ' + categoriaPerfil.replace('class="b2b-categoria-tag"', 'class="b2b-categoria-tag ml-1 align-middle"'));
+    }
     if (roleEl) {
       const roleText = item.role || item.company || '';
       roleEl.textContent = roleText;
@@ -12073,7 +12078,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const { data: rows, error } = await supabaseClient
       .from('conversations')
-      .select('id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at)')
+      .select('id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url, products(category, active)), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at)')
       .eq('cliente_id', window.loveClienteSession.user.id)
       .order('last_message_at', { ascending: false });
 
@@ -12085,7 +12090,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return {
         id: row.id,
         name: (row.fornecedor && row.fornecedor.company_name) || 'Fornecedor',
-        category: '',
+        // Categoria do fornecedor = a do primeiro serviço ativo com categoria (ex.: "Bar e Bebidas").
+        category: ((row.fornecedor && row.fornecedor.products) || []).filter(p => p && p.active !== false && p.category).map(p => p.category)[0] || '',
         avatar: (row.fornecedor && row.fornecedor.avatar_url) || LOVE_AVATAR_PADRAO,
         online: false,
         // Não lidas = mensagens do fornecedor ainda sem read_at.
@@ -12671,7 +12677,10 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between gap-1 mb-0.5">
-            <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
+            <div class="flex items-center gap-1.5 min-w-0">
+              <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
+              ${conv.category ? `<span class="b2b-categoria-tag">${escaparHtml(conv.category)}</span>` : ''}
+            </div>
             <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
           </div>
           <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
@@ -12705,7 +12714,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     activeB2BConversationId = activeConv.id;
 
-    if (nameEl) nameEl.textContent = activeConv.name;
+    if (nameEl) {
+      // Nome da empresa + categoria (ex.: "Bar e Bebidas") ao lado.
+      nameEl.textContent = activeConv.name;
+      if (activeConv.category) nameEl.insertAdjacentHTML('beforeend', ` <span class="b2b-categoria-tag ml-1 align-middle">${escaparHtml(activeConv.category)}</span>`);
+    }
     if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : '';
     if (avatarEl) {
       avatarEl.src = activeConv.avatar;

@@ -348,16 +348,19 @@ function coverCropFrame() {
   return document.querySelector('#product-cover-crop-modal [data-cover-crop-frame]');
 }
 
-// Escala pra imagem cobrir o quadro no zoom 1 ("cover"), vezes o zoom.
+// Zoom 1 = a imagem inteira cabendo no quadro ("contain"): quem sobe uma
+// foto em outro formato vê ela toda e aumenta o zoom até preencher a capa
+// (o que sobrar do quadro vai branco no recorte). Daí pra cima, vezes o zoom.
 function coverCropScale() {
   const frame = coverCropFrame();
   const { img, zoom } = coverCrop;
   if (!frame || !img) return 1;
   const fw = frame.clientWidth, fh = frame.clientHeight;
-  return Math.max(fw / img.naturalWidth, fh / img.naturalHeight) * zoom;
+  return Math.min(fw / img.naturalWidth, fh / img.naturalHeight) * zoom;
 }
 
-// O deslocamento nunca deixa aparecer fundo: a imagem sempre cobre o quadro.
+// No eixo em que a imagem é maior que o quadro, o arrasto para na borda;
+// no eixo em que é menor (imagem inteira visível), fica centrada.
 function clampCoverCropOffset() {
   const frame = coverCropFrame();
   const { img } = coverCrop;
@@ -387,7 +390,7 @@ function updateCoverCropView() {
 }
 
 function setCoverCropZoom(zoom) {
-  coverCrop.zoom = Math.min(4, Math.max(1, +Number(zoom).toFixed(2)));
+  coverCrop.zoom = Math.min(8, Math.max(1, +Number(zoom).toFixed(2)));
   updateCoverCropView();
 }
 
@@ -407,7 +410,16 @@ function exportCoverCrop() {
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  // Posição da imagem dentro do quadro, levada pra escala do canvas: vale
+  // tanto com a imagem cobrindo o quadro quanto com ela inteira (sobra branca).
+  const k = canvas.width / fw;
+  ctx.drawImage(
+    img,
+    (fw / 2 - img.naturalWidth * s / 2 + coverCrop.dx) * k,
+    (fh / 2 - img.naturalHeight * s / 2 + coverCrop.dy) * k,
+    img.naturalWidth * s * k,
+    img.naturalHeight * s * k
+  );
   const crop = canvas.toDataURL('image/jpeg', 0.88);
 
   // Foco = centro do recorte, em % da imagem original (object-position).

@@ -536,14 +536,14 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
       <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar imagem de capa</h2>
-      <p class="text-sm text-zinc-500 mb-4">Arraste pra enquadrar e use o zoom. A área visível é o que aparece na capa.</p>
+      <p class="text-sm text-zinc-500 mb-4">A imagem começa inteira. Aumente o zoom e arraste até preencher o quadro — o que está no quadro é o que aparece na capa.</p>
       <div class="product-cover-adjust-frame" data-cover-crop-frame>
         <img src="" class="product-cover-adjust-img" data-cover-crop-img alt="">
       </div>
       <div class="logo-adjust-modal-controls">
         <span class="logo-adjust-modal-zoom-label">Zoom:</span>
         <button type="button" class="logo-adjust-modal-zoom-btn" data-cover-crop-zoom-minus>−</button>
-        <input type="range" min="1" max="4" step="0.02" value="1" class="logo-adjust-modal-range" data-cover-crop-range>
+        <input type="range" min="1" max="8" step="0.02" value="1" class="logo-adjust-modal-range" data-cover-crop-range>
         <button type="button" class="logo-adjust-modal-zoom-btn" data-cover-crop-zoom-plus>+</button>
       </div>
       <button type="button" class="btn-primary justify-center w-full py-3 mt-2" data-cover-crop-done>Concluir</button>
@@ -556,6 +556,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=34"></script>
-  <script src="js/produtos.js?v=17"></script>
+  <script src="js/produtos.js?v=18"></script>
 </body>
 </html>

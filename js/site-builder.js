@@ -1017,7 +1017,16 @@ function renderCanvas() {
   if (frame) frame.dataset.device = currentDevice;
 
   const visible = builderState.sections.filter(s => !s.hidden);
-  const sectionsHtml = visible.map(section => renderAnySectionHtml(section, 'edit', currentDevice)).join('');
+  // Logo abaixo da capa: área para soltar um elemento e criar uma seção nova
+  // com ele (acima dos botões). Só aparece enquanto um elemento é arrastado.
+  const capa = secaoDeCapa();
+  const novaSecaoDropzoneHtml = `
+    <div class="builder-new-section-dropzone" id="builder-new-section-dropzone" data-new-section-dropzone>
+      <span>Solte aqui para criar uma seção nova</span>
+    </div>`;
+  const sectionsHtml = visible.map(section =>
+    renderAnySectionHtml(section, 'edit', currentDevice) + (section === capa ? novaSecaoDropzoneHtml : '')
+  ).join('');
   const endDropzoneHtml = `
     <div class="builder-canvas-end-dropzone" id="builder-canvas-end-dropzone">
       ${BI.section}
@@ -1508,6 +1517,8 @@ function initSortables(canvas) {
       ghostClass: 'sortable-ghost',
       dragClass: 'sortable-drag',
       emptyInsertThreshold: 24,
+      onStart: () => { const c = document.getElementById('builder-canvas'); if (c) c.classList.add('is-arrastando-elemento'); },
+      onEnd: () => { const c = document.getElementById('builder-canvas'); if (c) c.classList.remove('is-arrastando-elemento'); },
       onAdd: (evt) => {
         const toColumnId = evt.to.dataset.columnId;
         const newIndex = evt.newIndex;
@@ -1532,6 +1543,47 @@ function initSortables(canvas) {
       }
     }));
   });
+
+  const novaSecaoDropzone = canvas.querySelector('#builder-new-section-dropzone');
+  if (novaSecaoDropzone) {
+    sortableInstances.push(new Sortable(novaSecaoDropzone, {
+      group: { name: 'builder-elements', pull: false, put: true },
+      sort: false,
+      animation: 160,
+      ghostClass: 'sortable-ghost',
+      onAdd: (evt) => {
+        const capaAtual = secaoDeCapa();
+        const nova = createSection();
+        builderState.sections.splice(capaAtual ? builderState.sections.indexOf(capaAtual) + 1 : 0, 0, nova);
+        let selecionar = { id: nova.id, kind: 'section' };
+        if (evt.item.classList.contains('builder-el-item')) {
+          const type = evt.item.dataset.elType;
+          evt.item.remove();
+          if (type && type !== 'secao') {
+            const el = insertElementAt(nova.columns[0].id, 0, type);
+            if (el) selecionar = { id: el.id, kind: 'element' };
+          }
+        } else if (evt.item.dataset.elementId) {
+          // Elemento que já estava no convite: sai de onde estava e vai para a seção nova.
+          const loc = findElementLocation(evt.item.dataset.elementId);
+          evt.item.remove();
+          if (loc) {
+            loc.column.elements.splice(loc.index, 1);
+            nova.columns[0].elements.push(loc.element);
+            selecionar = { id: loc.element.id, kind: 'element' };
+          }
+        }
+        pushHistory();
+        renderCanvas();
+        selectElement(selecionar.id, selecionar.kind);
+      }
+    }));
+  }
+  // Enquanto um elemento é arrastado, o canvas mostra a área "nova seção".
+  const marcarArrastando = (ativo) => {
+    const c = document.getElementById('builder-canvas');
+    if (c) c.classList.toggle('is-arrastando-elemento', ativo);
+  };
 
   const endDropzone = canvas.querySelector('#builder-canvas-end-dropzone');
   if (endDropzone) {
@@ -1558,7 +1610,9 @@ function initSortables(canvas) {
         group: { name: 'builder-elements', pull: 'clone', put: false },
         sort: false,
         animation: 150,
-        ghostClass: 'sortable-chosen'
+        ghostClass: 'sortable-chosen',
+        onStart: () => marcarArrastando(true),
+        onEnd: () => marcarArrastando(false)
       }));
     });
   }

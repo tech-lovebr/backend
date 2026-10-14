@@ -6627,3 +6627,27 @@ body[data-theme="dark"] #live-preview-buttons-callout {
 body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
   margin-top: 0 !important;
 }
+
+
+/* Aparência: área para soltar um elemento logo abaixo da capa e criar uma
+   seção nova (acima dos botões). Escondida até começar a arrastar. */
+.builder-new-section-dropzone { display: none; }
+#builder-canvas.is-arrastando-elemento .builder-new-section-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0.75rem 1.25rem;
+  min-height: 56px;
+  padding: 0.75rem 1rem;
+  border: 1.5px dashed var(--primary-blue, #537bae);
+  border-radius: 10px;
+  background: #F8FAFC;
+  color: #537bae;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+.builder-new-section-dropzone .sortable-ghost,
+.builder-new-section-dropzone .builder-el-item { width: 100%; height: 36px; opacity: 0.6; }
+.builder-new-section-dropzone > .builder-element { display: none; }

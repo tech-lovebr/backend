@@ -137,6 +137,25 @@ function defaultQuickNavSection() {
 // Garante que a seção de botões de navegação exista dentro de builderState.sections
 // (ela é uma seção como qualquer outra — pode ser arrastada — só não pode ser excluída
 // nem ficar em primeiro lugar). Migra estados antigos que guardavam "quickNav" à parte.
+// Capa com imagem é só imagem: elementos que caíram dentro dela (versões
+// antigas deixavam) vão para uma seção nova logo abaixo da capa.
+function tirarElementosDaCapa(state) {
+  if (!state || !Array.isArray(state.sections)) return;
+  const capa = state.sections.find(sec => !sec.isQuickNav && !sec.isGiftsBlock);
+  if (!capa || !capa.bgImage || !Array.isArray(capa.columns)) return;
+  const elementos = [];
+  capa.columns.forEach(col => {
+    if (Array.isArray(col.elements) && col.elements.length) {
+      elementos.push(...col.elements);
+      col.elements = [];
+    }
+  });
+  if (!elementos.length) return;
+  const nova = createSection();
+  nova.columns[0].elements = elementos;
+  state.sections.splice(state.sections.indexOf(capa) + 1, 0, nova);
+}
+
 function migrateQuickNavSection(state) {
   if (!Array.isArray(state.sections)) state.sections = [];
   let qnSection = state.sections.find(s => s.isQuickNav);
@@ -305,6 +324,7 @@ function loadBuilderState() {
       if (parsed.name === 'Meu Convite Digital') parsed.name = 'Convite Digital';
       if (!Array.isArray(parsed.sections) || !parsed.sections.length) parsed.sections = defaultPageState().sections;
       migrateQuickNavSection(parsed);
+      tirarElementosDaCapa(parsed);
       migrateElementDefaults(parsed);
       return parsed;
     }
@@ -535,6 +555,7 @@ async function syncBuilderStateFromSupabase(pageKey) {
     if (pageKey === currentPageKey) {
       builderState = row.state;
       migrateQuickNavSection(builderState);
+      tirarElementosDaCapa(builderState);
       migrateElementDefaults(builderState);
       historyStack = [snapshotState()];
       historyIndex = 0;
@@ -795,6 +816,25 @@ function removeSectionById(sectionId) {
   const before = builderState.sections.length;
   builderState.sections = builderState.sections.filter(s => s.id !== sectionId);
   return builderState.sections.length < before;
+}
+
+// A primeira seção de conteúdo é a capa: só imagem. Elemento solto nela vai
+// para uma seção nova, criada logo abaixo da capa.
+function secaoDeCapa() {
+  return builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) || null;
+}
+
+function colunaEhDaCapa(columnId) {
+  const capa = secaoDeCapa();
+  return !!(capa && capa.columns && capa.columns.some(c => c.id === columnId));
+}
+
+function novaSecaoAbaixoDaCapa() {
+  const capa = secaoDeCapa();
+  const nova = createSection();
+  const idx = capa ? builderState.sections.indexOf(capa) : -1;
+  builderState.sections.splice(idx + 1, 0, nova);
+  return nova;
 }
 
 function insertElementAt(columnId, index, type) {
@@ -1483,13 +1523,29 @@ function initSortables(canvas) {
           const type = evt.item.dataset.elType;
           evt.item.remove();
           if (!type) return;
-          const newEl = insertElementAt(toColumnId, newIndex, type);
+          // Solto na capa (só imagem): abre uma seção abaixo dela e põe lá.
+          let colunaDestino = toColumnId;
+          let indiceDestino = newIndex;
+          if (colunaEhDaCapa(toColumnId)) {
+            colunaDestino = novaSecaoAbaixoDaCapa().columns[0].id;
+            indiceDestino = 0;
+          }
+          const newEl = insertElementAt(colunaDestino, indiceDestino, type);
           pushHistory();
           renderCanvas();
           if (newEl) selectElement(newEl.id, 'element');
           return;
         }
         resyncColumnsFromDom([evt.from, evt.to]);
+        // Elemento já existente arrastado para a capa: sai dela e vai para
+        // uma seção nova logo abaixo.
+        if (colunaEhDaCapa(toColumnId) && evt.item.dataset.elementId) {
+          const loc = findElementLocation(evt.item.dataset.elementId);
+          if (loc) {
+            loc.column.elements.splice(loc.index, 1);
+            novaSecaoAbaixoDaCapa().columns[0].elements.push(loc.element);
+          }
+        }
         pushHistory();
         renderCanvas();
       },
@@ -2834,6 +2890,7 @@ async function initPublicPreview() {
 
   builderState = publishedState;
   migrateQuickNavSection(builderState);
+  tirarElementosDaCapa(builderState);
   migrateElementDefaults(builderState);
   currentDevice = 'mobile';
 

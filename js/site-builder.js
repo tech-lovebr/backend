@@ -78,26 +78,32 @@ const BI = {
   gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="4" rx="1"/><rect x="4.5" y="13" width="15" height="8" rx="1"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v12M12 9c-1.8 0-3.4-1.7-3.4-3.4A2.6 2.6 0 0 1 12 5c0 1.5-1.1 2.7-2.5 3.3M12 9c1.8 0 3.4-1.7 3.4-3.4A2.6 2.6 0 0 0 12 5c0 1.5 1.1 2.7 2.5 3.3"/></svg>',
   checkCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.5 12.5 2.3 2.3 4.7-5.1"/></svg>',
   shirt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 4 4 7l2 3 2-1.2V20h8V8.8L18 10l2-3-4-3-2 2h-4L8 4Z"/></svg>',
+  // Clássicos dos botões: presente igual ao do menu lateral, cabide (dress code) e coração (sobre).
+  giftSidebar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
+  hanger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 5.75a2.25 2.25 0 1 1 3.06 2.1c-.49.19-.81.66-.81 1.18V10m0 0 8.36 5.57A1.5 1.5 0 0 1 19.53 18.3H4.47a1.5 1.5 0 0 1-.83-2.73L12 10Z"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>',
   users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>'
 };
 
 const QUICKNAV_ICON_MAP = {
   'qn-loc': 'map',
-  'qn-gifts': 'gift',
+  'qn-gifts': 'giftSidebar',
   'qn-rsvp': 'checkCircle',
-  'qn-dress': 'shirt',
-  'qn-about': 'users'
+  'qn-dress': 'hanger',
+  'qn-about': 'heart'
 };
 
 const QUICKNAV_EMOJI_MAP = {
   'qn-loc': '📍',
   'qn-gifts': '🎁',
-  'qn-rsvp': '✅',
-  'qn-dress': '👗',
+  'qn-rsvp': '✔️',
+  'qn-dress': '👔',
   'qn-about': '💞'
 };
 
-// Ícones "Modernos": emblema colorido com glifo sólido (não são emoji nem os ícones de linha "Clássicos")
+// Ícones "Modernos": glifo sólido dentro de um círculo discreto, na cor dos
+// ícones da seção (monocromático — sem as cores fortes de antes). O mapa de
+// cores abaixo não é mais usado no desenho; fica só por compatibilidade.
 const QUICKNAV_MODERN_COLOR_MAP = {
   'qn-loc': '#3B82F6',
   'qn-gifts': '#F43F5E',
@@ -110,8 +116,8 @@ const QUICKNAV_MODERN_ICON_MAP = {
   'qn-loc': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-4.14 0-7.5 3.36-7.5 7.5 0 5.63 6.5 11.86 6.78 12.12a1 1 0 0 0 1.44 0C13 21.36 19.5 15.13 19.5 9.5 19.5 5.36 16.14 2 12 2Zm0 10.25a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5Z"/></svg>',
   'qn-gifts': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 7h-2.1a3 3 0 0 0 .1-.75A3.25 3.25 0 0 0 14.75 3c-1.3 0-2.42.77-2.94 1.88a.9.9 0 0 0-.1.24l-.02.05a3.29 3.29 0 0 0-.12-.29A3.24 3.24 0 0 0 8.63 3 3.25 3.25 0 0 0 5.38 6.25c0 .27.04.51.1.75H4a2 2 0 0 0-2 2v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V9a2 2 0 0 0-2-2ZM8.63 5.5a.75.75 0 0 1 0 1.5A.75.75 0 0 1 8.63 5.5Zm6.12 0a.75.75 0 0 1 0 1.5.75.75 0 0 1 0-1.5ZM3 13v6a2 2 0 0 0 2 2h6v-8H3Zm10 8h6a2 2 0 0 0 2-2v-6h-8v8Z"/></svg>',
   'qn-rsvp': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1.2 14.6-4.4-4.4 1.4-1.4 3 3 6-6 1.4 1.4-7.4 7.4Z"/></svg>',
-  'qn-dress': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 2a2.5 2.5 0 0 0 5 0h1.5l3.6 3.6a1 1 0 0 1 0 1.41l-1.9 1.9-2.2-2.2V21a1 1 0 0 1-1 1H9.5a1 1 0 0 1-1-1V6.71l-2.2 2.2-1.9-1.9a1 1 0 0 1 0-1.41L8 2h1.5Z"/></svg>',
-  'qn-about': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM9 13c-3.87 0-7 2.24-7 5v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1c0-2.76-3.13-5-7-5Zm8 0c-.6 0-1.17.07-1.71.2A6.3 6.3 0 0 1 17.5 18v1c0 .35-.06.69-.17 1H21a1 1 0 0 0 1-1v-1c0-2.76-2.24-5-5-5Z"/></svg>'
+  'qn-dress': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 5.75a2.25 2.25 0 1 1 3.06 2.1c-.49.19-.81.66-.81 1.18V10m0 0 8.36 5.57A1.5 1.5 0 0 1 19.53 18.3H4.47a1.5 1.5 0 0 1-.83-2.73L12 10Z"/></svg>',
+  'qn-about': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.65 20.91l-.01-.01-.02-.01a15.2 15.2 0 0 1-.38-.22 25.2 25.2 0 0 1-4.25-3.17C4.69 15.36 2.25 12.17 2.25 8.25 2.25 5.32 4.71 3 7.69 3A5.5 5.5 0 0 1 12 5.05 5.5 5.5 0 0 1 16.31 3c2.98 0 5.44 2.32 5.44 5.25 0 3.93-2.44 7.11-4.74 9.26a25.2 25.2 0 0 1-4.24 3.17 15.2 15.2 0 0 1-.39.22l-.02.01-.01.01a.75.75 0 0 1-.7 0Z"/></svg>'
 };
 
 function defaultQuickNavSection() {
@@ -1162,9 +1168,8 @@ function renderQuickNavSectionHtml(section, mode) {
           const iconKey = QUICKNAV_ICON_MAP[btn.id] || 'plusCircle';
           iconHtml = `<span class="builder-quicknav-icon" style="color:${iconColor};">${BI[iconKey]}</span>`;
         } else if (iconStyle === 'moderno') {
-          const badgeColor = QUICKNAV_MODERN_COLOR_MAP[btn.id] || '#333333';
           const modernSvg = QUICKNAV_MODERN_ICON_MAP[btn.id] || BI.plusCircle;
-          iconHtml = `<span class="builder-quicknav-icon-modern" style="background:${badgeColor};">${modernSvg}</span>`;
+          iconHtml = `<span class="builder-quicknav-icon-modern" style="color:${iconColor};">${modernSvg}</span>`;
         } else if (iconStyle === 'animado') {
           const emoji = QUICKNAV_EMOJI_MAP[btn.id] || '⭐';
           iconHtml = `<span class="builder-quicknav-emoji">${emoji}</span>`;

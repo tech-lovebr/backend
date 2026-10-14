@@ -10484,6 +10484,13 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(foto => (typeof foto === 'string' ? foto : foto && foto.url))
       .filter(Boolean);
     const capasServicos = servicos.map(s => s.cover_image_url).filter(Boolean);
+    // Galeria de cada serviço ("Mais imagens" no Hub) entra no portfólio do
+    // perfil, depois das fotos do portfólio da empresa; sem nenhuma das
+    // duas, ficam as capas dos serviços.
+    const galeriaServicos = servicos
+      .flatMap(s => Array.isArray(s.gallery) ? s.gallery : [])
+      .filter(foto => typeof foto === 'string' && foto);
+    const portfolio = [...new Set([...fotos, ...galeriaServicos])];
     const comPreco = servicos.filter(s => Number(s.price) > 0).sort((a, b) => Number(a.price) - Number(b.price));
     const maisBarato = comPreco[0];
 
@@ -10497,7 +10504,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state: usaPerfil ? f.state : f.business_state,
       image: fotos[0] || capasServicos[0] || '',
       avatar: f.avatar_url || f.logo_url || '',
-      portfolioPhotos: fotos.length ? fotos : capasServicos,
+      portfolioPhotos: portfolio.length ? portfolio : capasServicos,
       services: servicos,
       // Categoria do fornecedor = categorias dos serviços que ele cadastrou
       // (o B2B não tem categoria no nível do fornecedor).
@@ -10521,7 +10528,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const [fornecedoresRes, favoritosRes] = await Promise.all([
         supabaseClient
           .from('fornecedores')
-          .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, extra)')
+          .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
           .neq('status', 'bloqueado')
           .order('company_name'),
         supabaseClient
@@ -11421,14 +11428,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // do fornecedor e não aparecem pro anfitrião.
     const services = (item.services || []).filter(svc => svc.active !== false);
     if (servicesGrid) {
-      servicesGrid.innerHTML = services.map(svc => {
+      servicesGrid.innerHTML = services.map((svc, svcIndex) => {
         const capa = svc.cover_image_url || svc.coverImage || '';
         const categoria = svc.category || item.mainCategory || '';
+        // "Mais imagens" do serviço (até 6, como no Hub): quadradinhos
+        // abaixo da capa; clicar abre a foto no lightbox.
+        const galeria = (Array.isArray(svc.gallery) ? svc.gallery : []).filter(f => typeof f === 'string' && f).slice(0, 6);
         return `
           <div class="border border-zinc-200 rounded-xl bg-[#FFFFFF] overflow-hidden flex flex-col">
-            <div class="h-36 bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50 overflow-hidden">
+            <div class="aspect-[14/5] bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50 overflow-hidden">
               ${capa ? `<img src="${escaparHtml(capa)}" alt="${escaparHtml(svc.name)}" class="w-full h-full object-cover">` : ''}
             </div>
+            ${galeria.length ? `
+            <div class="flex gap-1.5 px-3 pt-3 overflow-x-auto no-scrollbar">
+              ${galeria.map((foto, fotoIndex) => `
+                <button type="button" class="b2b-profile-service-photo w-12 h-12 rounded-lg overflow-hidden bg-zinc-100 shrink-0 cursor-pointer" data-svc-index="${svcIndex}" data-photo-index="${fotoIndex}" title="Ver foto">
+                  <img src="${escaparHtml(foto)}" alt="" class="w-full h-full object-cover">
+                </button>
+              `).join('')}
+            </div>` : ''}
             <div class="p-4 flex flex-col gap-2 flex-1">
               <p class="text-sm font-semibold text-zinc-900 leading-snug">${escaparHtml(svc.name)}</p>
               <p class="text-xs text-zinc-500">${escaparHtml(categoria)}</p>
@@ -11437,6 +11455,18 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
       }).join('');
+
+      servicesGrid.querySelectorAll('.b2b-profile-service-photo').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const svc = services[Number(btn.dataset.svcIndex)];
+          if (!svc) return;
+          const fotos = (Array.isArray(svc.gallery) ? svc.gallery : []).filter(f => typeof f === 'string' && f).slice(0, 6);
+          openSupplierGalleryModal(item, fotos);
+          supplierGalleryIndex = Number(btn.dataset.photoIndex) || 0;
+          renderSupplierGalleryImage();
+        });
+      });
     }
     if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0);
 
@@ -11566,11 +11596,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function openSupplierGalleryModal(item) {
+  // `fotos` opcional: abre com esse conjunto (ex.: galeria de um serviço)
+  // em vez do portfólio do fornecedor.
+  function openSupplierGalleryModal(item, fotos) {
     const modal = document.getElementById('modal-supplier-gallery');
     if (!modal) return;
 
-    supplierGalleryPhotos = (item.portfolioPhotos && item.portfolioPhotos.length) ? item.portfolioPhotos : [item.image];
+    supplierGalleryPhotos = (fotos && fotos.length)
+      ? fotos
+      : ((item.portfolioPhotos && item.portfolioPhotos.length) ? item.portfolioPhotos : [item.image]);
     supplierGalleryIndex = 0;
     supplierGalleryItem = item;
 

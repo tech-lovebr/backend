@@ -29,11 +29,12 @@
   --topbar-height: 76px;
 
   --radius-card: 10px;
-  --radius-control: 12px;
+  --radius-control: 8px;
   --shadow-soft: 0 2px 8px rgba(16,24,40,0.08);
   /* Cards no padrão da plataforma do anfitrião ("Benefícios Love"). */
-  --card-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
-  --card-shadow-hover: 0 8px 20px rgba(0,0,0,0.10), 0 2px 5px rgba(0,0,0,0.05);
+  /* Cards sem sombra: só a borda fina (identidade sem cara de Tailwind). */
+  --card-shadow: none;
+  --card-shadow-hover: none;
   --shadow-nav-active: 0 6px 14px rgba(210, 141, 92,0.28);
 
   /* Margens do conteúdo principal: encolhem de forma gradual conforme a
@@ -2316,8 +2317,8 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
 .field-select:focus,
 .field-textarea:focus {
   outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(24, 59, 84, 0.15);
+  border-color: #181D24;
+  box-shadow: none;
 }
 
 .field-textarea { resize: vertical; min-height: 220px; font-family: inherit; }
@@ -2422,7 +2423,7 @@ body[data-theme="dark"] .btn-primary:not([style*="background"]):hover { backgrou
   gap: 0.5rem;
 }
 
-.btn-secondary:hover { background: #F4F4F5; }
+.btn-secondary:hover { background: #FFFFFF; border-color: #181D24; color: #181D24; }
 
 /* Botão de destaque em azul clarinho. Os do cabeçalho das páginas
    (Adicionar contato/produto/membro, Compartilhar agenda) saíram daqui:
@@ -6649,3 +6650,55 @@ body[data-theme="dark"] #topbar-user-avatar,
 body[data-theme="dark"] #profile-dropdown-avatar { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] #topbar-user-avatar .avatar-initials,
 body[data-theme="dark"] #profile-dropdown-avatar .avatar-initials { background: #252525 !important; }
+
+/* ==========================================================================
+   Identidade própria, sem cara de Tailwind
+   Bordas finas no lugar de sombras, cantos contidos (8px em botões, campos
+   e caixinhas; 10px em cards e modais), nada de zoom no hover nem anel
+   colorido no foco. Overlays (menus, modais) mantêm uma sombra discreta só
+   pra se descolarem do fundo.
+   ========================================================================== */
+.rounded-md, .rounded-lg, .rounded-xl { border-radius: 8px !important; }
+.rounded-2xl:not([class*="rounded-b"]):not([class*="rounded-t"]):not([class*="rounded-l"]):not([class*="rounded-r"]),
+.rounded-3xl:not([class*="rounded-b"]):not([class*="rounded-t"]):not([class*="rounded-l"]):not([class*="rounded-r"]) { border-radius: 10px !important; }
+
+.shadow-2xs, .shadow-xs, .shadow-sm, .shadow, .shadow-md { box-shadow: none !important; }
+.shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important; }
+
+[class*="hover:scale-"]:hover,
+.group:hover [class*="group-hover:scale-"] { transform: none !important; }
+
+[class*="focus:ring"]:focus,
+[class*="focus:ring"]:focus-visible {
+  box-shadow: none !important;
+  border-color: #181D24 !important;
+  outline: none !important;
+}
+
+/* Hub: cards e caixas com borda fina #E4E4E7 (antes: borda transparente +
+   sombra); clicáveis escurecem a borda no hover. */
+.dash-card,
+.dashboard-panel-section .dash-card,
+.dashboard-help-card,
+.product-card,
+.plan-card,
+.plan-card.featured,
+.form-list-item,
+.form-field-card,
+.response-list-row,
+.task-drawer-comment-card,
+.checkout-payment-banner:not(.is-paid),
+.pricing-type-card:not(.active),
+.forms-empty,
+.form-fields-empty { border-color: #E4E4E7; box-shadow: none; }
+a.dash-card:hover,
+.response-list-row:hover,
+.pricing-type-card:not(.active):hover { border-color: #A1A1AA; box-shadow: none; }
+.dash-card.dash-ads-card { border-color: transparent; }
+.dash-card.guias-flat-card { border-color: transparent; }
+
+/* Botões de texto secundários e campos: borda neutra única. */
+.btn-secondary { border-color: #E4E4E7; }
+
+/* Etiquetas de status: retângulo de cantos curtos, não pílula. */
+.status-badge { border-radius: 6px; }

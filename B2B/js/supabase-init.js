@@ -34,3 +34,75 @@ function dadosDoDispositivo() {
 
   return { dispositivo: aparelho, navegador };
 }
+
+/* ==========================================================================
+   Entrar com o Google em janelinha (pop-up), como no love.com.br
+
+   No computador abre a tela do Google numa janela pequena por cima do Hub.
+   A volta do Google cai na mesma página de sempre (dashboard.html, que já
+   está liberada no Supabase); como a janela tem nome próprio, ela só avisa
+   o Hub e fecha. No celular, ou se o navegador bloquear o pop-up, segue o
+   caminho antigo (a página inteira vai para o Google e volta).
+   ========================================================================== */
+
+const JANELA_GOOGLE_HUB = 'love-hub-google-login';
+
+async function entrarComGoogleHub(redirectTo) {
+  const opcoesBase = { redirectTo, queryParams: { prompt: 'select_account' } };
+  const ehCelular = window.matchMedia('(max-width: 767px)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (ehCelular) return supabaseClient.auth.signInWithOAuth({ provider: 'google', options: opcoesBase });
+
+  const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { ...opcoesBase, skipBrowserRedirect: true }
+  });
+  if (error || !data || !data.url) return supabaseClient.auth.signInWithOAuth({ provider: 'google', options: opcoesBase });
+
+  const largura = 500, altura = 640;
+  const esquerda = Math.round(window.screenX + (window.outerWidth - largura) / 2);
+  const topo = Math.round(window.screenY + (window.outerHeight - altura) / 2.5);
+  const janela = window.open(data.url, JANELA_GOOGLE_HUB, `width=${largura},height=${altura},left=${esquerda},top=${topo},menubar=no,toolbar=no,location=yes,status=no`);
+  if (!janela) return supabaseClient.auth.signInWithOAuth({ provider: 'google', options: opcoesBase });
+  janela.focus();
+
+  return new Promise(resolve => {
+    let terminou = false;
+    const terminar = (ok) => {
+      if (terminou) return;
+      terminou = true;
+      window.removeEventListener('message', aoReceber);
+      clearInterval(vigia);
+      // Entrou: o Hub (esta aba) segue para o painel.
+      if (ok) window.location.href = 'dashboard.html';
+      resolve({ error: ok ? null : new Error('Login com o Google não concluído') });
+    };
+    const aoReceber = (e) => {
+      if (e.origin !== window.location.origin || !e.data || e.data.tipo !== 'love-hub-google-login') return;
+      terminar(e.data.resultado === 'ok');
+    };
+    window.addEventListener('message', aoReceber);
+    // Janela fechada sem aviso: confere se a sessão existe mesmo assim.
+    const vigia = setInterval(async () => {
+      if (!janela.closed) return;
+      const { data: s } = await supabaseClient.auth.getSession();
+      terminar(!!(s && s.session));
+    }, 600);
+  });
+}
+
+// Dentro da janelinha, na volta do Google: esconde a página, espera a sessão
+// ser lida da URL, avisa o Hub que abriu a janela e fecha.
+if (window.name === JANELA_GOOGLE_HUB && window.opener && !window.opener.closed) {
+  document.documentElement.style.visibility = 'hidden';
+  (async () => {
+    const temErro = /error=/.test(location.hash + location.search);
+    let sessao = null;
+    for (let i = 0; i < 20 && !temErro; i++) {
+      const { data } = await supabaseClient.auth.getSession();
+      if (data && data.session) { sessao = data.session; break; }
+      await new Promise(r => setTimeout(r, 150));
+    }
+    try { window.opener.postMessage({ tipo: 'love-hub-google-login', resultado: sessao ? 'ok' : 'erro' }, location.origin); } catch (e) {}
+    window.close();
+  })();
+}

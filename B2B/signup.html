@@ -35,7 +35,7 @@
 
   <link rel="stylesheet" href="css/styles.css?v=515">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/supabase-init.js"></script>
+  <script src="js/supabase-init.js?v=2"></script>
 </head>
 <body class="font-sans bg-white" data-auth-view="signup">
 
@@ -207,11 +207,9 @@
 
     showAuthView(document.body.dataset.authView);
 
-    document.getElementById('google-login-btn').addEventListener('click', async () => {
-      await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html') }
-      });
+    // Google em janelinha (pop-up) no computador — ver entrarComGoogleHub em js/supabase-init.js.
+    document.getElementById('google-login-btn').addEventListener('click', () => {
+      entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html'));
     });
 
     document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -242,11 +240,8 @@
       window.location.href = 'dashboard.html';
     });
 
-    document.getElementById('google-signup-btn').addEventListener('click', async () => {
-      await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html') }
-      });
+    document.getElementById('google-signup-btn').addEventListener('click', () => {
+      entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html'));
     });
 
     document.getElementById('signup-email-form').addEventListener('submit', async (e) => {

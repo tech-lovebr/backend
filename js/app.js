@@ -11844,7 +11844,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${escaparHtml(tituloDoCard(item))}">
                     ${escaparHtml(tituloDoCard(item))}
                   </h4>
-                  <p class="text-sm text-zinc-400 font-medium font-sans truncate">Oferecido por ${escaparHtml(item.name)}</p>
+                  <p class="text-sm text-zinc-400 font-medium font-sans truncate">por ${escaparHtml(item.name)}</p>
                 </div>
               </div>
 
@@ -11953,7 +11953,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${b2bRatingBadgeHTML(item, true)}
           <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
           <span class="text-zinc-400">·</span>` : ''}
-          <span class="truncate">Oferecido por ${escaparHtml(item.name)}</span>
+          <span class="truncate">por ${escaparHtml(item.name)}</span>
         </div>
 
         <div class="flex items-center gap-3 text-sm text-zinc-600 flex-wrap">
@@ -12390,7 +12390,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return svc.price != null ? brl(svc.price) : '';
   }
 
+  // Serviço pelo qual o perfil foi aberto (card do Explorar): o topo do
+  // perfil mostra o nome dele, "por <empresa>" e a categoria na capa.
+  let activeB2BProfileServico = null;
+
   function renderB2BVendorProfile(item) {
+    const servicoAtual = activeB2BProfileServico && (item.services || []).some(s => s.id === activeB2BProfileServico.id)
+      ? activeB2BProfileServico : null;
     const coverImg = document.getElementById('b2b-profile-cover-img');
     const avatarImg = document.getElementById('b2b-profile-avatar-img');
     const nameEl = document.getElementById('b2b-profile-name');
@@ -12407,23 +12413,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const favIcon = document.getElementById('b2b-profile-favorite-icon');
 
     const portfolioPhotos = (item.portfolioPhotos || []).filter(Boolean);
-    const capa = portfolioPhotos[0] || item.image || '';
+    // Aberto por um serviço: a capa é a daquele serviço (original + foco do
+    // recorte do Hub); senão, a do fornecedor como antes.
+    const capaMeta = servicoAtual && servicoAtual.extra && servicoAtual.extra.cover;
+    const capaServico = servicoAtual ? ((capaMeta && capaMeta.originalUrl) || servicoAtual.cover_image_url || '') : '';
+    const focoServico = capaMeta && capaMeta.focus && Number.isFinite(capaMeta.focus.x) && Number.isFinite(capaMeta.focus.y)
+      ? `${capaMeta.focus.x}% ${capaMeta.focus.y}%` : '50% 50%';
+    const capa = capaServico || portfolioPhotos[0] || item.image || '';
 
     // Sem foto: fica o degradê do container da capa.
     if (coverImg) {
       coverImg.src = capa;
-      coverImg.style.objectPosition = (capa && capa === item.image) ? (item.imageFocus || '50% 50%') : '50% 50%';
+      coverImg.style.objectPosition = capaServico ? focoServico : ((capa && capa === item.image) ? (item.imageFocus || '50% 50%') : '50% 50%');
       coverImg.classList.toggle('hidden', !capa);
+
+      // Categoria no canto inferior direito da capa.
+      const caixaCapa = coverImg.parentElement;
+      caixaCapa.querySelector('.b2b-categoria-capa')?.remove();
+      const categoriaCapa = (servicoAtual && servicoAtual.category) || item.mainCategory || (item.categories || [])[0] || '';
+      if (categoriaCapa) caixaCapa.insertAdjacentHTML('beforeend', `<span class="b2b-categoria-capa">${escaparHtml(categoriaCapa)}</span>`);
     }
     if (avatarImg) avatarImg.src = item.avatar || avatarComIniciais(item.name);
-    if (nameEl) {
-      // Nome da empresa + categoria do serviço (ex.: "Bar e Bebidas") ao lado.
-      nameEl.textContent = item.name;
-      const categoriaPerfil = categoriaDoFornecedorHtml(item);
-      if (categoriaPerfil) nameEl.insertAdjacentHTML('beforeend', ' ' + categoriaPerfil.replace('class="b2b-categoria-tag"', 'class="b2b-categoria-tag ml-1 align-middle"'));
-    }
+    // Aberto por um serviço: título = nome do serviço (ex.: "Bar Completo"),
+    // abaixo "por <empresa>" e o endereço. Sem serviço: nome da empresa.
+    const nomeServico = servicoAtual && servicoAtual.name ? servicoAtual.name.trim() : '';
+    if (nameEl) nameEl.textContent = nomeServico || item.name;
     if (roleEl) {
-      const roleText = item.role || item.company || '';
+      const roleText = nomeServico ? `por ${item.name}` : (item.role || item.company || '');
       roleEl.textContent = roleText;
       roleEl.classList.toggle('hidden', !roleText);
     }
@@ -12548,6 +12564,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // em si sempre mostra todos os serviços do fornecedor.
   function openB2BVendorProfile(item, servico) {
     activeB2BProfileItem = item;
+    activeB2BProfileServico = servico || null;
     registrarRota(rotaPerfilFornecedor(item, servico), { voltarComHistorico: true });
     renderB2BVendorProfile(item);
 
@@ -12563,6 +12580,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeB2BVendorProfile() {
     activeB2BProfileItem = null;
+    activeB2BProfileServico = null;
     const exploreView = document.getElementById('b2b-explore-view');
     const profileView = document.getElementById('b2b-vendor-profile-view');
     const searchBar = document.getElementById('b2b-top-search-bar');

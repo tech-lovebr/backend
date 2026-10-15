@@ -60,7 +60,7 @@
                   <div class="profile-form-top-cover">
                     <label class="field-label">Imagem de Capa</label>
                     <div id="profile-logo-wrap"></div>
-                    <p class="profile-logo-hint">Recomendado: 1280 × 520 px</p>
+                    <p class="profile-logo-hint">1280 × 520 px</p>
                   </div>
                 </div>
 
@@ -199,17 +199,6 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="company-deposit-percent" class="field-label">Sinal mínimo para reserva de data (%)</label>
-                  <input id="company-deposit-percent" type="text" inputmode="numeric" class="field-input" placeholder="Ex: 30%">
-                </div>
-                <div>
-                  <label for="company-deposit-deadline" class="field-label">Restante pago até (dias antes do evento)</label>
-                  <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15">
-                </div>
-              </div>
-
               <div>
                 <label class="field-label">Pagamento deve estar totalmente quitado até o dia do evento?</label>
                 <div class="plan-billing-toggle" id="company-full-payment-toggle" style="margin-bottom:0; width:fit-content;">
@@ -221,6 +210,18 @@
                   </button>
                 </div>
               </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="company-deposit-percent" class="field-label">Sinal mínimo para reserva de data (%)</label>
+                  <input id="company-deposit-percent" type="text" inputmode="numeric" class="field-input" placeholder="Ex: 30%">
+                </div>
+                <div>
+                  <label for="company-deposit-deadline" class="field-label">Restante pago até (dias antes do evento)</label>
+                  <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15">
+                </div>
+              </div>
+
 
               <!-- Política de cancelamento e remarcação saiu da tela (escondida
                    só para não perder o que já foi salvo). -->

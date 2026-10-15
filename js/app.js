@@ -12733,7 +12733,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // servico: o que levou até o perfil (vai na URL como "source") — o perfil
   // em si sempre mostra todos os serviços do fornecedor.
+  // Clique no serviço (Admin › HUB/B2B › Serviços/Produtos, migration 054).
+  // Conta o serviço aberto ou, sem ele, o principal do card do fornecedor.
+  // Reabrir pela rota (F5, voltar) não é clique novo. Falhar não atrapalha.
+  function registrarCliqueNoServico(item, servico) {
+    if (aplicandoRotaDoHistorico) return;
+    const alvo = servico || ((item && item.services) || [])[0];
+    const id = alvo && alvo.id;
+    if (!id || !/^[0-9a-f-]{36}$/i.test(String(id)) || !window.loveClienteSession?.user?.id) return;
+    supabaseClient.from('produto_cliques').insert({ produto_id: id }).then(() => {}, () => {});
+  }
+
   function openB2BVendorProfile(item, servico) {
+    registrarCliqueNoServico(item, servico);
     activeB2BProfileItem = item;
     activeB2BProfileServico = servico || null;
     registrarRota(rotaPerfilFornecedor(item, servico), { voltarComHistorico: true });

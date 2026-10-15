@@ -6778,24 +6778,22 @@ body[data-theme="dark"] .field-label.product-title-label { color: #FFFFFF !impor
 /* Guia de início / Dúvidas: categorias numa tabela (borda fina, uma por
    linha). Texto cinza; a ativa fica em negrito escuro com uma linha
    vertical reta à esquerda (sem cantos arredondados nem fundo). */
-.guias-menu-table {
-  display: flex; flex-direction: column;
-  border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; background: #FFFFFF;
-}
+.guias-menu-table { display: flex; flex-direction: column; }
+/* Só uma linha vertical à direita separa as categorias do conteúdo. */
+.guias-layout > .guias-sidebar { border-right: 1px solid #E4E4E7; padding-right: 1.25rem; }
+body[data-theme="dark"] .guias-layout > .guias-sidebar { border-right-color: #404040 !important; }
 .guias-menu-table .guide-link {
-  border-radius: 0; border: none; border-bottom: 1px solid #E4E4E7;
+  border-radius: 0; border: none;
   padding: 0.8rem 1rem; color: #71717A; font-weight: 500;
   box-shadow: inset 2px 0 0 transparent;
 }
-.guias-menu-table .guide-link:last-child { border-bottom: none; }
 .guias-menu-table .guide-link:hover { background: #FFFFFF; color: #181D24; }
 .guias-menu-table .guide-link--active,
 .guias-menu-table .guide-link--active:hover {
   color: #181D24; font-weight: 700; background: #FFFFFF;
   box-shadow: inset 2px 0 0 #181D24;
 }
-body[data-theme="dark"] .guias-menu-table { background: #181D24 !important; border-color: #404040 !important; }
-body[data-theme="dark"] .guias-menu-table .guide-link { border-bottom-color: #404040 !important; color: #A1A1AA !important; background: transparent !important; }
+body[data-theme="dark"] .guias-menu-table .guide-link { color: #A1A1AA !important; background: transparent !important; }
 body[data-theme="dark"] .guias-menu-table .guide-link--active { color: #FFFFFF !important; box-shadow: inset 2px 0 0 #FFFFFF !important; }
 
 /* Resposta dos guias escrita no Admin: parágrafos, listas, links e vídeo. */

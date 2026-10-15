@@ -262,7 +262,7 @@ function renderLeadsTable() {
   tbody.innerHTML = items.map(lead => `
     <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
-      <td class="col-principal"><span class="lead-nome-cel"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}">${escapeHtml(lead.name)}</span></td>
+      <td class="col-principal"><span class="lead-nome-cel${pedidoDoLead(lead) ? ' tem-origem' : ''}"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}"><span>${escapeHtml(lead.name)}${pedidoDoLead(lead) ? '<span class="lead-origem-tag">Pedido pelo chat</span>' : ''}</span></span></td>
       <td>${escapeHtml(lead.tipo_evento || '—')}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
@@ -385,6 +385,8 @@ function initLeadDrawer() {
     preencherCidadesDoLead('');
     atualizarLinkWhatsAppDoLead();
     if (subtitle) subtitle.hidden = false;
+    const origem = document.getElementById('lead-origem');
+    if (origem) origem.hidden = true;
     if (commentsSection) commentsSection.hidden = true;
     renderLeadProductOptions();
     deleteBtn.hidden = true;
@@ -480,6 +482,24 @@ function initLeadDrawer() {
 function openLeadDrawer(id) {
   const lead = crmLeads.find(l => l.id === id);
   if (!lead) return;
+
+  // Veio de um pedido de orçamento do chat: mostra a origem e "Criar orçamento".
+  const pedido = pedidoDoLead(lead);
+  const origem = document.getElementById('lead-origem');
+  if (origem) {
+    origem.hidden = !pedido;
+    const btn = document.getElementById('lead-criar-orcamento');
+    if (btn) btn.onclick = () => {
+      window.location.href = urlCriarOrcamento({
+        leadId: lead.id,
+        clienteId: lead.cliente_id,
+        servico: (pedido && pedido.servico) || lead.event_name || '',
+        data: (pedido && pedido.data) || lead.event_date || '',
+        convidados: pedido && pedido.convidados,
+        evento: pedido && pedido.evento
+      });
+    };
+  }
 
   document.getElementById('lead-drawer-title').textContent = 'Editar lead';
   document.getElementById('lead-cpf').value = lead.cpf || '';

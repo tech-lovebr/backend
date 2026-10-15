@@ -1118,3 +1118,72 @@ function confirmarNoHub({ titulo, texto = '', botao = 'Confirmar', perigo = fals
     okBtn.focus();
   });
 }
+
+/* ==========================================================================
+   Pedido de orçamento enviado pelo anfitrião (love.com.br › Solicitar
+   orçamento → function solicitar_orcamento, migration 043). O texto chega
+   no chat e no comentário do lead assim:
+     Pedido de orçamento — <serviço>
+     Evento: <título>
+     Data: <data>
+     Convidados: <n>
+     Mensagem: <texto>
+   ========================================================================== */
+
+function lerPedidoOrcamento(texto) {
+  const t = String(texto || '').trim();
+  if (!/^pedido de orçamento/i.test(t)) return null;
+  const linhas = t.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const partesTitulo = linhas[0].split(/\s+[—–-]\s+/);
+  const campo = (rotulo) => {
+    const l = linhas.find(x => x.toLowerCase().startsWith(rotulo.toLowerCase() + ':'));
+    return l ? l.slice(rotulo.length + 1).trim() : '';
+  };
+  let data = campo('Data');
+  const iso = data.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (iso) data = `${iso[3]}/${iso[2]}/${iso[1]}`;
+  return {
+    servico: (partesTitulo[1] || '').trim(),
+    evento: campo('Evento'),
+    data,
+    convidados: parseInt(campo('Convidados'), 10) || null,
+    mensagem: campo('Mensagem')
+  };
+}
+
+/* Endereço da Proposta (Vendas) já preenchida com o pedido. */
+function urlCriarOrcamento({ leadId, clienteId, servico, data, convidados, evento } = {}) {
+  const q = new URLSearchParams({ criar: 'orcamento' });
+  if (leadId) q.set('lead', leadId);
+  if (clienteId) q.set('cliente', clienteId);
+  if (servico) q.set('servico', servico);
+  if (data) q.set('data', data);
+  if (convidados) q.set('convidados', String(convidados));
+  if (evento) q.set('evento', evento);
+  return 'vendas?' + q.toString();
+}
+
+/* Card "Solicitação de orçamento" (chat do Hub). attrs: atributos extras do
+   botão "Criar orçamento". */
+function pedidoOrcamentoCardHtml(p, attrs = '') {
+  const linha = (rotulo, valor) => valor ? `<div class="pedido-card-linha"><span>${escapeHtml(rotulo)}</span><strong>${escapeHtml(String(valor))}</strong></div>` : '';
+  return `
+    <div class="pedido-card">
+      <p class="pedido-card-titulo">Solicitação de orçamento</p>
+      ${linha('Serviço', p.servico)}
+      ${linha('Evento', p.evento)}
+      ${linha('Data', p.data)}
+      ${linha('Convidados', p.convidados)}
+      ${p.mensagem ? `<p class="pedido-card-mensagem">${escapeHtml(p.mensagem)}</p>` : ''}
+      <button type="button" class="btn-primary pedido-card-btn" ${attrs}>Criar orçamento</button>
+    </div>`;
+}
+
+/* Último pedido de orçamento guardado nos comentários do lead (o id do
+   comentário começa com "pedido-"). */
+function pedidoDoLead(lead) {
+  const comentarios = (lead && Array.isArray(lead.comentarios)) ? lead.comentarios : [];
+  const pedidos = comentarios.filter(c => String(c && c.id || '').startsWith('pedido-'));
+  if (!pedidos.length) return null;
+  return lerPedidoOrcamento(pedidos[pedidos.length - 1].text) || {};
+}

@@ -42,6 +42,7 @@ async function loadB2BConversations() {
     const last = msgs[msgs.length - 1];
     return {
       id: row.id,
+      clienteId: (row.cliente && row.cliente.id) || null,
       name: (row.cliente && row.cliente.couple_name) || 'Cliente',
       category: '',
       avatar: (row.cliente && row.cliente.avatar_url) || null,
@@ -249,13 +250,16 @@ function renderActiveChat() {
         <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(myPhoto, B2B_DATA.professional.company || B2B_DATA.professional.name)}</span>
       `;
     } else {
+      // Pedido de orçamento enviado pelo love.com.br vira um card destacado
+      // com o botão "Criar orçamento".
+      const pedido = typeof lerPedidoOrcamento === 'function' ? lerPedidoOrcamento(msg.text) : null;
       row.innerHTML = `
         <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
-          <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
+          ${pedido ? pedidoOrcamentoCardHtml(pedido, `data-criar-orcamento="${msgIndex}"`) : `<div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
-          </div>
+          </div>`}
           <span class="text-[10px] text-zinc-400 pl-1 block">${msg.time || 'Agora'}</span>
         </div>
       `;
@@ -442,3 +446,36 @@ function escapeMsg(text) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+/* "Criar orçamento" no card de pedido: acha o lead do anfitrião (mesmo
+   cliente, de preferência o do mesmo serviço — é o que solicitar_orcamento
+   criou) e abre a Proposta em Vendas já preenchida. */
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('[data-criar-orcamento]');
+  if (!btn) return;
+  const conv = b2bConversations.find(c => c.id === activeConvId);
+  const msg = conv && conv.messages[Number(btn.dataset.criarOrcamento)];
+  const pedido = msg && lerPedidoOrcamento(msg.text);
+  if (!pedido) return;
+  btn.disabled = true;
+
+  let leadId = null;
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session && conv.clienteId) {
+      const { data } = await supabaseClient.from('leads')
+        .select('id, event_name')
+        .eq('fornecedor_id', session.user.id)
+        .eq('cliente_id', conv.clienteId)
+        .order('created_at', { ascending: false });
+      const leads = data || [];
+      const doServico = pedido.servico && leads.find(l => (l.event_name || '').trim().toLowerCase() === pedido.servico.toLowerCase());
+      leadId = (doServico || leads[0] || {}).id || null;
+    }
+  } catch (err) { /* segue sem o lead: a Proposta usa o cliente */ }
+
+  window.location.href = urlCriarOrcamento({
+    leadId, clienteId: conv.clienteId, servico: pedido.servico,
+    data: pedido.data, convidados: pedido.convidados, evento: pedido.evento
+  });
+});

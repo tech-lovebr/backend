@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([loadNotasFiscais(), loadFinLeadsAndProducts()]);
   initSalesViewTabs();
   await initProposalForm();
+  await preencherPropostaDoPedido();
   renderNotasFiscais();
   initNotasFiscaisActions();
   window.b2bPageReady?.();
@@ -35,7 +36,7 @@ async function loadFinLeadsAndProducts() {
 
   const [leadsRes, productsRes] = await Promise.all([
     supabaseClient.from('leads').select('id, name').eq('fornecedor_id', session.user.id),
-    supabaseClient.from('products').select('id, name, price, category').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('products').select('id, name, price, category, extra').eq('fornecedor_id', session.user.id)
   ]);
 
   bFinLeads = leadsRes.data || [];
@@ -186,6 +187,9 @@ async function initProposalForm() {
 
   const saveBtn = document.getElementById('proposal-save-btn');
   if (saveBtn) saveBtn.addEventListener('click', () => saveProposal());
+
+  const eventDateInput = document.getElementById('proposal-event-date');
+  if (eventDateInput) wireDateMaskInput(eventDateInput);
 
   initProposalExtraToolbar();
   initProposalClientAutocomplete();
@@ -380,17 +384,22 @@ async function saveProposal() {
     leadId = fallbackLead ? fallbackLead.id : null;
   }
 
-  const { data: orcamento, error } = await supabaseClient
-    .from('orcamentos')
-    .insert({
-      fornecedor_id: session.user.id,
-      lead_id: leadId,
-      cliente_nome: client,
-      valor_total,
-      itens
-    })
-    .select('id')
-    .single();
+  const dadosOrcamento = {
+    fornecedor_id: session.user.id,
+    lead_id: leadId,
+    cliente_nome: client,
+    valor_total,
+    itens,
+    data_evento: (document.getElementById('proposal-event-date')?.value || '').trim() || null,
+    convidados: parseInt(document.getElementById('proposal-guests')?.value, 10) || null
+  };
+  let { data: orcamento, error } = await supabaseClient
+    .from('orcamentos').insert(dadosOrcamento).select('id').single();
+  // Sem a migration 059 (data_evento/convidados): salva sem esses dois.
+  if (error && /column|schema cache/i.test(error.message || '')) {
+    const { data_evento, convidados, ...semNovos } = dadosOrcamento;
+    ({ data: orcamento, error } = await supabaseClient.from('orcamentos').insert(semNovos).select('id').single());
+  }
 
   if (error) { showToast('Não foi possível salvar a proposta.', true); return; }
 
@@ -428,11 +437,102 @@ async function saveProposal() {
   await resetProposalForm();
 }
 
+/* -------------------- Proposta vinda de um pedido de orçamento -------------------- */
+
+// vendas?criar=orcamento&lead=…&cliente=…&servico=…&data=…&convidados=…&evento=…
+// (botão "Criar orçamento" do chat e de Contatos). Preenche cliente,
+// vendedor, serviço, data do evento e convidados.
+async function preencherPropostaDoPedido() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('criar') !== 'orcamento') return;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+
+  const aba = document.querySelector('#sales-view-tabs [data-view="orcamentos"]');
+  if (aba) aba.click();
+
+  // Cliente: o lead indicado; senão o lead desse anfitrião; senão o próprio
+  // cadastro do anfitrião (a proposta cria o lead ao salvar).
+  let lead = null;
+  if (q.get('lead')) {
+    const { data } = await supabaseClient.from('leads').select('id, name, email').eq('id', q.get('lead')).maybeSingle();
+    lead = data;
+  }
+  if (!lead && q.get('cliente')) {
+    const { data } = await supabaseClient.from('leads').select('id, name, email')
+      .eq('fornecedor_id', session.user.id).eq('cliente_id', q.get('cliente'))
+      .order('created_at', { ascending: false }).limit(1);
+    lead = (data || [])[0] || null;
+  }
+  const clientInput = document.getElementById('proposal-client');
+  if (lead) {
+    clientInput.value = lead.name;
+    proposalSelectedLeadId = lead.id;
+  } else if (q.get('cliente')) {
+    const { data: c } = await supabaseClient.from('clientes').select('id, couple_name, email').eq('id', q.get('cliente')).maybeSingle();
+    if (c) { clientInput.value = c.couple_name || c.email; proposalSelectedClienteId = c.id; }
+  }
+
+  // Vendedor: quem está logado no Hub.
+  const vendedor = document.getElementById('proposal-seller-field');
+  const meuNome = typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.name;
+  if (vendedor && meuNome) {
+    if (vendedor.tagName === 'SELECT') {
+      if ([...vendedor.options].some(o => o.value === meuNome)) vendedor.value = meuNome;
+    } else if (!vendedor.value) {
+      vendedor.value = meuNome;
+    }
+  }
+
+  // Data do evento e convidados.
+  if (q.get('data')) document.getElementById('proposal-event-date').value = q.get('data');
+  const convidados = parseInt(q.get('convidados'), 10) || null;
+  if (convidados) document.getElementById('proposal-guests').value = String(convidados);
+
+  // Serviço do pedido vira o primeiro item (por pessoa: quantidade = convidados).
+  const nomeServico = (q.get('servico') || '').trim().toLowerCase();
+  const produto = nomeServico && bFinProducts.find(p => (p.name || '').trim().toLowerCase() === nomeServico);
+  if (produto) {
+    const body = document.getElementById('proposal-items-body');
+    const primeira = body && body.firstElementChild;
+    const vazio = body && body.children.length === 1 && !primeira.querySelector('[data-item-name]').value;
+    const row = vazio ? primeira : addProposalItemRow();
+    const nameInput = row.querySelector('[data-item-name]');
+    nameInput.value = produto.name;
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    const porPessoa = produto.extra && produto.extra.pricing && produto.extra.pricing.type === 'POR_PESSOA';
+    if (porPessoa && convidados) {
+      const qty = row.querySelector('[data-item-qty]');
+      qty.value = String(convidados);
+      qty.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
+  // Introdução com o resumo do pedido (só se estiver vazia).
+  const intro = document.getElementById('proposal-intro');
+  if (intro && !intro.value.trim()) {
+    const partes = [
+      q.get('evento') ? 'Evento: ' + q.get('evento') : '',
+      q.get('data') ? 'Data: ' + q.get('data') : '',
+      convidados ? 'Convidados: ' + convidados : ''
+    ].filter(Boolean);
+    if (partes.length) intro.value = 'Proposta referente ao pedido de orçamento recebido pelo chat.\n' + partes.join('\n');
+  }
+
+  // Tira os parâmetros da URL (recarregar não preenche de novo).
+  history.replaceState(null, '', location.pathname);
+  showToast('Proposta preenchida com o pedido de orçamento.');
+}
+
 async function resetProposalForm() {
   document.getElementById('proposal-client').value = '';
   proposalSelectedLeadId = null;
   proposalSelectedClienteId = null;
   document.getElementById('proposal-intro').value = '';
+  const eventDate = document.getElementById('proposal-event-date');
+  if (eventDate) eventDate.value = '';
+  const guests = document.getElementById('proposal-guests');
+  if (guests) guests.value = '';
   if (proposalDatePicker) proposalDatePicker.setValue(todayIso());
   if (proposalNextContactPicker) proposalNextContactPicker.setValue('');
   document.getElementById('proposal-extra-items').innerHTML = '';

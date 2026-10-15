@@ -7310,3 +7310,34 @@ body[data-theme="dark"] .hub-confirmar-titulo { color: #FFFFFF !important; }
 #leads-table-card .leads-table th.col-id,
 #leads-table-card .leads-table td.col-id { width: 1%; white-space: nowrap; padding-right: 8px; }
 #leads-table-card .lead-nome-cel { gap: 24px; }
+
+/* Pedido de orçamento (love.com.br): card no chat do Hub. */
+.pedido-card {
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-left: 3px solid #183B54;
+  border-radius: 10px; padding: 14px 16px; min-width: 260px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pedido-card-titulo { font-size: 0.875rem; font-weight: 700; color: #181D24; margin: 0 0 4px; }
+.pedido-card-linha { display: flex; justify-content: space-between; gap: 16px; font-size: 0.8125rem; }
+.pedido-card-linha span { color: #71717A; }
+.pedido-card-linha strong { color: #18181B; font-weight: 600; text-align: right; }
+.pedido-card-mensagem { font-size: 0.8125rem; color: #3F3F46; margin: 4px 0 0; white-space: pre-wrap; }
+.pedido-card-btn { margin-top: 8px; height: 34px; padding: 0 1rem; align-self: flex-start; font-size: 0.8125rem; }
+body[data-theme="dark"] .pedido-card { background: #252525 !important; border-color: #404040 !important; border-left-color: #EBF4FF !important; }
+body[data-theme="dark"] .pedido-card-titulo, body[data-theme="dark"] .pedido-card-linha strong { color: #FFFFFF !important; }
+
+/* Leads: origem "Pedido pelo chat" (drawer e tabela). */
+.lead-origem {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border: 1px solid #E4E4E7; border-radius: 10px; padding: 12px 14px; margin: -0.5rem 0 1rem; background: #FAFAFA;
+}
+.lead-origem[hidden] { display: none; }
+.lead-origem-rotulo { font-size: 0.75rem; color: #71717A; margin: 0; }
+.lead-origem-valor { font-size: 0.875rem; font-weight: 600; color: #181D24; margin: 0; }
+.lead-origem .btn-primary { height: 34px; padding: 0 1rem; }
+.lead-origem-tag {
+  display: inline-block; margin-left: 8px; padding: 1px 6px; border-radius: 6px;
+  background: #F4F4F5; color: #52525B; font-size: 0.6875rem; vertical-align: middle;
+}
+body[data-theme="dark"] .lead-origem { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .lead-origem-valor { color: #FFFFFF !important; }

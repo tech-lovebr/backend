@@ -7094,3 +7094,10 @@ body[data-theme="dark"] .field-copy-btn:hover { color: #FFFFFF !important; backg
 .lead-import-steps li { align-items: center; font-size: 0.8125rem; color: #52525B; }
 .lead-import-steps li strong { display: inline; }
 p.lead-import-cols { font-size: 0.75rem; color: #71717A; margin: 0 0 1.25rem; }
+
+/* Chat: caixinhas de avatar com iniciais em fundo branco (borda fina cinza,
+   iniciais azul-escuras), igual ao love.com.br — antes azul clarinho. */
+body[data-page="chat"] .b2b-avatar-square { background: #FFFFFF; border-color: #E4E4E7; }
+body[data-page="chat"] .b2b-avatar-square .avatar-initials { background: #FFFFFF; color: #183B54; }
+body[data-theme="dark"][data-page="chat"] .b2b-avatar-square { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"][data-page="chat"] .b2b-avatar-square .avatar-initials { background: #252525 !important; color: #FFFFFF !important; }

@@ -3422,6 +3422,9 @@ function renderConfirmarPresencaPublica(root) {
 
 const brlPublico = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+// Checkout e carrinho: sempre com fundo branco, seja qual for a cor do convite.
+function telaPublicaHtmlBranca(titulo, conteudo) { return telaPublicaHtml(titulo, conteudo, { fundoBranco: true }); }
+
 function presentePublicoPorId(id) {
   const lista = (conviteDadosPublicos && conviteDadosPublicos.presentes) || [];
   return lista.find(p => String(p.id) === String(id)) || null;
@@ -3485,7 +3488,7 @@ function renderCheckoutPublico(root, id) {
   const vaquinha = !!p.vaquinha;
 
   if (p.recebido || (vaquinha && falta <= 0)) {
-    root.innerHTML = telaPublicaHtml('Presentear', '<p class="convite-vazio">Este presente já foi presenteado. Escolha outro da lista.</p>');
+    root.innerHTML = telaPublicaHtmlBranca('Presentear', '<p class="convite-vazio">Este presente já foi presenteado. Escolha outro da lista.</p>');
     voltarPara(root, '#presentes');
     return;
   }
@@ -3536,7 +3539,7 @@ function renderCheckoutPublico(root, id) {
       <p class="convite-erro" hidden></p>
       <button type="submit" class="convite-botao">Pagar ${brlPublico(valorInicial)}</button>
     </form>`;
-  root.innerHTML = telaPublicaHtml('Presentear', conteudo);
+  root.innerHTML = telaPublicaHtmlBranca('Presentear', conteudo);
   voltarPara(root, `#presente=${p.id}`);
 
   const form = root.querySelector('[data-convite-checkout]');
@@ -3601,7 +3604,7 @@ function renderCheckoutPublico(root, id) {
     }
 
     const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
-    root.innerHTML = telaPublicaHtml('Presentear', `
+    root.innerHTML = telaPublicaHtmlBranca('Presentear', `
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presente registrado!</p>
         <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear <strong>${escaparPublico(p.nome)}</strong> com <strong>${brlPublico(Number(data.valor) || valor)}</strong> por ${escaparPublico(nomeMetodo)}.</p>
@@ -3680,7 +3683,7 @@ function atualizarCarrinhoNaLista(root) {
 function renderCheckoutCarrinho(root) {
   const itens = presentesDoCarrinho();
   if (!itens.length) {
-    root.innerHTML = telaPublicaHtml('Carrinho', `
+    root.innerHTML = telaPublicaHtmlBranca('Carrinho', `
       <p class="convite-vazio">Seu carrinho está vazio. Marque a caixinha dos presentes que quer dar e volte aqui.</p>
       <button type="button" class="convite-botao" data-convite-ir="#presentes">Ver a lista de presentes</button>`);
     voltarPara(root, '#presentes');
@@ -3725,7 +3728,7 @@ function renderCheckoutCarrinho(root) {
       <p class="convite-erro" hidden></p>
       <button type="submit" class="convite-botao">Pagar ${brlPublico(total)}</button>
     </form>`;
-  root.innerHTML = telaPublicaHtml('Carrinho', conteudo);
+  root.innerHTML = telaPublicaHtmlBranca('Carrinho', conteudo);
   voltarPara(root, '#presentes');
 
   root.querySelectorAll('[data-carrinho-remover]').forEach(btn => {
@@ -3795,7 +3798,7 @@ function renderCheckoutCarrinho(root) {
 
     const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
     const somaFinal = registrados.reduce((s, r) => s + r.valor, 0);
-    root.innerHTML = telaPublicaHtml('Carrinho', `
+    root.innerHTML = telaPublicaHtmlBranca('Carrinho', `
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presentes registrados!</p>
         <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear ${registrados.length} ${registrados.length === 1 ? 'presente' : 'presentes'}, no total de <strong>${brlPublico(somaFinal)}</strong>, por ${escaparPublico(nomeMetodo)}.</p>

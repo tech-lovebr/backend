@@ -7403,3 +7403,14 @@ html body .convite-tela .convite-tela-titulo { font-family: 'Inter', -apple-syst
 .convite-presente-texto { display: flex; flex-direction: column; flex: 1 1 auto; }
 .convite-presente-botao { margin-top: auto; }
 .convite-presente-mini-barra { height: 8px; margin: -.25rem 0 .75rem; }
+
+/* Checkout e carrinho do convite: caixinhas no padrão da plataforma
+   (borda bem clara + sombra leve), sobre fundo branco. */
+.convite-tela-branca .convite-checkout-resumo,
+.convite-tela-branca .convite-form .convite-pagamento-opcao,
+.convite-tela-branca .convite-form input,
+.convite-tela-branca .convite-form textarea { border: 1px solid #EEEEF0; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
+.convite-tela-branca .convite-form input:focus,
+.convite-tela-branca .convite-form textarea:focus { border-color: var(--bx-primary, #537bae); box-shadow: 0 0 0 3px rgba(83,123,174,0.15); }
+.convite-tela-branca .convite-form .convite-pagamento-opcao.is-ativo { border-color: var(--bx-primary, #537bae); }
+.convite-tela-branca .convite-carrinho-total { border-top-color: #EEEEF0; }

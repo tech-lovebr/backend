@@ -36,7 +36,8 @@ const CATEGORIAS_FAQ = {
 };
 
 const GRUPOS = [
-  // No Hub a primeira aba reúne banners, notícias e workshops; nos anfitriões
+  // No Hub a primeira aba reúne banners e workshops (as notícias vêm do blog,
+  // categoria Notícias); nos anfitriões
   // é só o carrossel.
   { key: 'informacoes', label: PLATAFORMA === 'fornecedor' ? 'Conteúdo' : 'Informações', botao: null },
   { key: 'faq', label: 'FAQ', botao: 'Adicionar pergunta' },
@@ -80,7 +81,7 @@ async function carregar() {
       ? safeSelect('servicos_beneficios', '*', q => q.order('posicao'))
       : Promise.resolve({ data: [], error: null }),
     PLATAFORMA === 'fornecedor'
-      ? safeSelect('hub_conteudo', '*', q => q.in('tipo', ['noticia', 'workshop']).order('ordem'))
+      ? safeSelect('hub_conteudo', '*', q => q.eq('tipo', 'workshop').order('ordem'))
       : Promise.resolve({ data: [], error: null })
   ]);
 
@@ -211,7 +212,7 @@ function renderBanners() {
         ${vagas ? '' : `<p class="cell-muted" style="font-size:.75rem;margin:1rem 0 0">Limite de ${MAX_BANNERS} imagens atingido. Exclua uma para adicionar outra.</p>`}
       </div>
     </div>
-    ${PLATAFORMA === 'fornecedor' ? blocoHub('noticia') + blocoHub('workshop') : ''}`;
+    ${PLATAFORMA === 'fornecedor' ? blocoHub('workshop') : ''}`;
 
   if (PLATAFORMA === 'fornecedor') ligarBlocosHub(lista);
 
@@ -274,12 +275,11 @@ function abrirFormularioBanner(item) {
   });
 }
 
-/* ------------------------------------- Notícias e workshops (só no Hub)
-   Tabela hub_conteudo. Os dois aparecem na lista de notícias do dashboard
-   do Hub; os workshops também vão para a página /workshop. */
+/* --------------------------------------------- Workshops (só no Hub)
+   Tabela hub_conteudo. Aparecem na página /workshop e na lista de notícias
+   do dashboard do Hub, junto com os artigos da categoria Notícias do blog. */
 
 const TIPOS_HUB = {
-  noticia: { label: 'Notícias', singular: 'notícia', descricao: 'Links da lista de notícias no dashboard do Hub.' },
   workshop: { label: 'Workshops', singular: 'workshop', descricao: 'Workshops da página hub.love.com.br/workshop. Também entram na lista de notícias do dashboard.' }
 };
 
@@ -327,7 +327,7 @@ function abrirFormularioHub(item) {
   const t = TIPOS_HUB[tipo];
 
   Drawer.open({
-    title: editando ? `Editar ${t.singular}` : (tipo === 'noticia' ? 'Nova notícia' : 'Novo workshop'),
+    title: editando ? `Editar ${t.singular}` : 'Novo workshop',
     subtitle: NOME_PLATAFORMA,
     body: `
       <form id="form-conteudo">

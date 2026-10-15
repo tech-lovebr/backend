@@ -7101,3 +7101,12 @@ body[data-page="chat"] .b2b-avatar-square { background: #FFFFFF; border-color: #
 body[data-page="chat"] .b2b-avatar-square .avatar-initials { background: #FFFFFF; color: #183B54; }
 body[data-theme="dark"][data-page="chat"] .b2b-avatar-square { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"][data-page="chat"] .b2b-avatar-square .avatar-initials { background: #252525 !important; color: #FFFFFF !important; }
+
+/* Configurações › Imagem de perfil e Imagem de Capa: só o "+" nas duas
+   caixas vazias, a de perfil no mesmo cinza da capa (sem o azul clarinho),
+   e a capa um pouco mais larga. */
+.profile-form-top-cover { width: 240px; }
+.profile-avatar-picker:not(.has-image) { background: #FAFAFA; border-color: var(--border-light); }
+.profile-avatar-picker:not(.has-image):hover,
+.profile-avatar-picker:not(.has-image).is-dragover { background: #F4F8FC; border-color: var(--primary-blue); }
+body[data-theme="dark"] .profile-avatar-picker:not(.has-image) { background: #1c1c1c !important; border-color: #404040 !important; }

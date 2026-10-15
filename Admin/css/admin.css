@@ -755,8 +755,11 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 
 .drawer.is-open { transform: translateX(0); }
 
+/* Cabeçalho do drawer em cinza clarinho, como nos drawers do Hub
+   (.form-drawer-header) e do love.com.br. */
 .drawer-head {
   padding: 1.25rem 1.5rem;
+  background: #FAFAFA;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: flex-start;
@@ -3067,3 +3070,9 @@ table.data th button {
 table.data tbody td,
 table.data tbody td *:not(svg):not(path) { font-weight: 400 !important; }
 body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
+
+/* Cadastrar empresa: foto de perfil (quadrada) e capa (larga) lado a lado. */
+.imagens-empresa { display: flex; gap: 1rem; align-items: flex-start; }
+.imagens-empresa-capa { flex: 1; min-width: 0; }
+.imagens-empresa .foto-perfil { width: 128px; }
+.imagens-empresa .foto-capa { width: 100%; aspect-ratio: auto; height: 128px; }

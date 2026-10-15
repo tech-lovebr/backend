@@ -1,19 +1,25 @@
 /* ==========================================================================
-   LOVE ADMIN — Cadastrar fornecedor
+   LOVE ADMIN — Cadastrar empresa
 
-   Os mesmos campos que o fornecedor preencheria em Configurações no Hub,
+   Os mesmos campos que a empresa preencheria em Configurações no Hub,
    menos "Minha empresa" e "Preferências". Ao salvar, a conta nasce sem
-   senha e a pessoa recebe o e-mail para definir a dela.
+   senha e a pessoa recebe no e-mail cadastrado o link para confirmar e
+   criar a senha dela — a partir daí ela entra no Hub.
+
+   A imagem de capa vai para fornecedores.logo_url, o mesmo campo que o Hub
+   usa como capa da página da empresa no love.com.br.
    ========================================================================== */
 
 const NovoFornecedor = (() => {
   const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 
   let AVATAR_URL = null;
+  let CAPA_URL = null;
   let TIPO_DOC = 'cnpj';
 
   function abrir() {
     AVATAR_URL = null;
+    CAPA_URL = null;
     TIPO_DOC = 'cnpj';
 
     const campo = (id, rotulo, { tipo = 'text', placeholder = '', obrigatorio = false } = {}) => `
@@ -23,25 +29,31 @@ const NovoFornecedor = (() => {
       </label>`;
 
     Drawer.open({
-      title: 'Cadastrar fornecedor',
+      title: 'Cadastrar empresa',
+      subtitle: 'A empresa recebe um e-mail para confirmar e criar a senha',
       body: `
-        <p class="drawer-section-title">Imagem de perfil</p>
-        <label class="foto-perfil" id="previa-avatar">
-          <span class="foto-perfil-mais">+</span>
-          <span class="foto-perfil-texto">Adicione uma foto</span>
-          <input type="file" id="arquivo-avatar" accept="image/*" class="foto-perfil-input">
-        </label>
+        <div class="imagens-empresa">
+          <div>
+            <p class="drawer-section-title">Imagem de perfil</p>
+            <label class="foto-perfil" id="previa-avatar">
+              <span class="foto-perfil-mais">+</span>
+              <span class="foto-perfil-texto">Adicione uma foto</span>
+              <input type="file" id="arquivo-avatar" accept="image/*" class="foto-perfil-input">
+            </label>
+          </div>
+          <div class="imagens-empresa-capa">
+            <p class="drawer-section-title">Imagem de capa</p>
+            <label class="foto-perfil foto-capa" id="previa-capa">
+              <span class="foto-perfil-mais">+</span>
+              <span class="foto-perfil-texto">Adicione a capa</span>
+              <input type="file" id="arquivo-capa" accept="image/*" class="foto-perfil-input">
+            </label>
+          </div>
+        </div>
 
         <p class="drawer-section-title">Identificação</p>
         ${campo('novo-empresa', 'Nome da empresa', { placeholder: 'Ex: Sophia Eventos & Decoração', obrigatorio: true })}
         ${campo('novo-nome', 'Nome do responsável', { placeholder: 'Ex: Sophia Ramos', obrigatorio: true })}
-
-        <div class="field-row">
-          ${campo('novo-email', 'E-mail', { tipo: 'email', placeholder: 'contato@empresa.com.br', obrigatorio: true })}
-          ${campo('novo-nascimento', 'Data de nascimento', { tipo: 'date' })}
-        </div>
-
-        ${campo('novo-telefone', 'Celular', { tipo: 'tel', placeholder: '(00) 00000-0000', obrigatorio: true })}
 
         <label class="field">
           <span class="field-label">Tipo de documento</span>
@@ -52,6 +64,10 @@ const NovoFornecedor = (() => {
         </label>
 
         ${campo('novo-documento', 'CNPJ', { placeholder: '00.000.000/0000-00', obrigatorio: true })}
+
+        <p class="drawer-section-title">Contato</p>
+        ${campo('novo-email', 'E-mail', { tipo: 'email', placeholder: 'contato@empresa.com.br', obrigatorio: true })}
+        ${campo('novo-telefone', 'Celular', { tipo: 'tel', placeholder: '(00) 00000-0000', obrigatorio: true })}
 
         <p class="drawer-section-title">Endereço</p>
         ${campo('novo-endereco', 'Endereço', { placeholder: 'Rua, número, bairro' })}
@@ -101,24 +117,27 @@ const NovoFornecedor = (() => {
 
     // O <label> já abre o seletor de arquivo; só o envio precisa de código.
     document.getElementById('arquivo-avatar')
-      .addEventListener('change', e => enviarImagem(e.target));
+      .addEventListener('change', e => enviarImagem(e.target, 'avatar'));
+    document.getElementById('arquivo-capa')
+      .addEventListener('change', e => enviarImagem(e.target, 'capa'));
   }
 
-  async function enviarImagem(input) {
+  async function enviarImagem(input, tipo) {
     const file = input.files[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      toast('A imagem precisa ter até 3 MB.');
+    const limite = tipo === 'capa' ? 5 : 3;
+    if (file.size > limite * 1024 * 1024) {
+      toast(`A imagem precisa ter até ${limite} MB.`);
       input.value = '';
       return;
     }
 
-    const caixa = document.getElementById('previa-avatar');
+    const caixa = document.getElementById(tipo === 'capa' ? 'previa-capa' : 'previa-avatar');
     caixa.classList.add('is-enviando');
 
     const extensao = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const caminho = `avatar/${Date.now()}-${Math.round(performance.now())}.${extensao}`;
+    const caminho = `${tipo === 'capa' ? 'capa' : 'avatar'}/${Date.now()}-${Math.round(performance.now())}.${extensao}`;
 
     const { error } = await supabaseClient.storage.from('fornecedores').upload(caminho, file, {
       cacheControl: '31536000',
@@ -135,11 +154,14 @@ const NovoFornecedor = (() => {
       return;
     }
 
-    AVATAR_URL = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+    const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+    if (tipo === 'capa') CAPA_URL = url; else AVATAR_URL = url;
+
     caixa.classList.add('tem-foto');
-    caixa.querySelector('.foto-perfil-mais').remove();
-    caixa.querySelector('.foto-perfil-texto').textContent = 'Trocar foto';
-    caixa.insertAdjacentHTML('afterbegin', `<img src="${escapeHtml(AVATAR_URL)}" alt="">`);
+    caixa.querySelector('.foto-perfil-mais')?.remove();
+    caixa.querySelector('img')?.remove();
+    caixa.querySelector('.foto-perfil-texto').textContent = tipo === 'capa' ? 'Trocar capa' : 'Trocar foto';
+    caixa.insertAdjacentHTML('afterbegin', `<img src="${escapeHtml(url)}" alt="">`);
   }
 
   const valor = id => document.getElementById(id).value.trim();
@@ -200,14 +222,14 @@ const NovoFornecedor = (() => {
         contact_name: nome,
         email,
         phone: telefone,
-        birth_date: valor('novo-nascimento') || null,
         document_type: TIPO_DOC,
         cnpj: documento,
         address: valor('novo-endereco') || null,
         state: document.getElementById('novo-estado').value || null,
         city: valor('novo-cidade') || null,
         description: valor('novo-descricao') || null,
-        avatar_url: AVATAR_URL
+        avatar_url: AVATAR_URL,
+        logo_url: CAPA_URL
       })
       .eq('id', criado.user.id);
 
@@ -223,9 +245,9 @@ const NovoFornecedor = (() => {
     if (erroPerfil) {
       toast(`Conta criada, mas o cadastro ficou incompleto: ${erroPerfil.message}`);
     } else if (erroEmail) {
-      toast('Fornecedor cadastrado, mas o e-mail de senha não saiu. Peça para usar "Esqueci minha senha".');
+      toast('Empresa cadastrada, mas o e-mail de senha não saiu. Peça para usar "Esqueci minha senha".');
     } else {
-      toast(`${empresa} cadastrado. O e-mail para definir a senha foi enviado.`);
+      toast(`${empresa} cadastrada. O e-mail para confirmar e criar a senha foi enviado.`);
     }
 
     window.location.reload();

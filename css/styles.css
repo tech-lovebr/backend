@@ -7454,3 +7454,23 @@ html body .b2b-perfil-portfolio-grade .b2b-profile-portfolio-photo-btn { width: 
 body[data-theme="dark"] .b2b-breadcrumb-link { color: #A1A1AA !important; }
 body[data-theme="dark"] .b2b-breadcrumb-link:hover,
 body[data-theme="dark"] .b2b-breadcrumb-atual { color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Tabelas da plataforma no padrão do Hub B2B: cabeçalho sem maiúsculas
+   forçadas, negrito 13px #181D24 (branco no escuro); linhas em peso normal.
+   ========================================================================== */
+html body #view-event-os-dashboard table th,
+html body #view-event-os-dashboard table th button,
+html body #view-event-os-dashboard table th > span,
+html body #view-event-os-dashboard table th > span > span:not(.cursor-help) {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: 0.8125rem !important;
+  font-weight: 700 !important;
+  color: #181D24 !important;
+}
+html body #view-event-os-dashboard table tbody td,
+html body #view-event-os-dashboard table tbody td *:not(svg):not(path) { font-weight: 400 !important; }
+body[data-theme="dark"] #view-event-os-dashboard table th,
+body[data-theme="dark"] #view-event-os-dashboard table th button,
+body[data-theme="dark"] #view-event-os-dashboard table th > span { color: #FFFFFF !important; }

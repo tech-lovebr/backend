@@ -7257,3 +7257,47 @@ html body .gift-drawer,
 html body .guest-add-drawer,
 html body .budget-expense-drawer,
 html body .table-drawer { background-color: #FFFFFF; }
+
+/* Títulos dos drawers exatamente como no Hub B2B (.task-drawer-title):
+   18px, negrito, #18181B; cabeçalho com o mesmo respiro (1.25rem 1.5rem)
+   e botão de fechar redondo de 34px. */
+html body .gift-drawer > div:first-child,
+html body .guest-add-drawer > div:first-child,
+html body .budget-expense-drawer > div:first-child,
+html body .table-drawer > div:first-child {
+  padding: 1.25rem 1.5rem !important;
+  gap: 0.75rem;
+  align-items: flex-start !important;
+}
+html body .gift-drawer > div:first-child h2,
+html body .guest-add-drawer > div:first-child h2,
+html body .budget-expense-drawer > div:first-child h2,
+html body .table-drawer > div:first-child h2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  letter-spacing: normal !important;
+  color: #18181B !important;
+  margin: 0 !important;
+}
+html body .gift-drawer > div:first-child p,
+html body .guest-add-drawer > div:first-child p,
+html body .budget-expense-drawer > div:first-child p,
+html body .table-drawer > div:first-child p {
+  font-size: 0.75rem !important;
+  color: #71717A !important;
+  margin-top: 0.3rem !important;
+}
+html body .gift-drawer > div:first-child > button:not(#love-h-a),
+html body .guest-add-drawer > div:first-child > button:not(#love-h-a),
+html body .budget-expense-drawer > div:first-child > button:not(#love-h-a),
+html body .table-drawer > div:first-child > button:not(#love-h-a) {
+  width: 34px; height: 34px; margin: -0.35rem -0.35rem 0 0; padding: 0;
+  border: none; border-radius: 999px !important; background: transparent; color: #71717A;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+html body .gift-drawer > div:first-child > button:not(#love-h-a):hover,
+html body .guest-add-drawer > div:first-child > button:not(#love-h-a):hover,
+html body .budget-expense-drawer > div:first-child > button:not(#love-h-a):hover,
+html body .table-drawer > div:first-child > button:not(#love-h-a):hover { background: #F4F4F5; color: #18181B; }

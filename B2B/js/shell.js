@@ -168,7 +168,7 @@ async function initAuthGuard() {
 
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
-    .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
+    .select('id, company_name, email, avatar_url, logo_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
     .eq('id', session.user.id)
     .maybeSingle();
 
@@ -201,7 +201,7 @@ async function initAuthGuard() {
         email: session.user.email,
         avatar_url: meta.avatar_url || meta.picture || null
       })
-      .select('id, company_name, email, avatar_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
+      .select('id, company_name, email, avatar_url, logo_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
       .maybeSingle();
     fornecedor = created;
   }
@@ -223,6 +223,13 @@ async function initAuthGuard() {
       Object.assign(B2B_DATA.professional, { profilePhoto: fornecedor.avatar_url, profilePhotoScale: 1, profilePhotoOffsetX: 0, profilePhotoOffsetY: 0 });
     } else if (B2B_DATA.professional.profilePhoto && typeof syncFornecedorAvatar === 'function') {
       syncFornecedorAvatar(B2B_DATA.professional);
+    }
+    // Capa: a do banco é a que aparece na página da empresa. Capa só local
+    // (de antes de sincronizar) sobe uma vez, em segundo plano.
+    if (fornecedor.logo_url) {
+      Object.assign(B2B_DATA.professional, { logo: fornecedor.logo_url, logoScale: 1, logoOffsetX: 0, logoOffsetY: 0 });
+    } else if (B2B_DATA.professional.logo && typeof syncFornecedorCapa === 'function') {
+      syncFornecedorCapa(B2B_DATA.professional);
     }
     // O plano vem sempre do banco (a página de planos grava lá, e o Admin
     // grava as bonificações): é o mesmo dado que a página pública do site

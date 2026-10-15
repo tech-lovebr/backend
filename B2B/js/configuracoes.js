@@ -806,6 +806,8 @@ function renderProfileLogoPicker() {
     p.logoScale = 1;
     p.logoOffsetX = 0;
     p.logoOffsetY = 0;
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    syncFornecedorCapa(p);
     renderProfileLogoPicker();
   });
 }
@@ -826,6 +828,16 @@ function closeProfileLogoAdjustModal() {
   const modal = document.getElementById('profile-logo-adjust-modal');
   if (modal) modal.classList.remove('show');
   renderProfileLogoPicker();
+  // A capa (com o enquadramento) vira o logo_url: a capa da página da
+  // empresa no love.com.br.
+  const p = B2B_DATA.professional;
+  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+  syncFornecedorCapa(p).then(url => {
+    if (!url) return;
+    Object.assign(p, { logo: url, logoScale: 1, logoOffsetX: 0, logoOffsetY: 0 });
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    renderProfileLogoPicker();
+  });
 }
 
 function updateProfileLogoAdjustTransform() {

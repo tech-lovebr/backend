@@ -634,6 +634,60 @@ async function syncFornecedorAvatar(p) {
   }
 }
 
+/* Imagem de capa do fornecedor → fornecedores.logo_url, que é a capa da
+   página da empresa no love.com.br (Explorar › perfil do fornecedor).
+   Renderiza o enquadramento escolhido no Hub — a imagem preenchendo a caixa
+   (cover) com o zoom e o deslocamento, igual ao .logo-crop-img da caixa de
+   320 × 130 — num JPEG 1280 × 520, sobe pro bucket fornecedores
+   (capa/<id>/...) e grava a URL. Sem capa: limpa o logo_url. */
+async function syncFornecedorCapa(p) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return null;
+  const userId = session.user.id;
+
+  if (!p.logo) {
+    await supabaseClient.from('fornecedores').update({ logo_url: null }).eq('id', userId);
+    return null;
+  }
+  if (/^https?:\/\//.test(p.logo) && (p.logoScale || 1) === 1 && !p.logoOffsetX && !p.logoOffsetY) {
+    return p.logo;
+  }
+
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.crossOrigin = 'anonymous';
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = p.logo;
+    });
+    const W = 1280, H = 520;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, W, H);
+    const cover = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const s = p.logoScale || 1;
+    const w = img.naturalWidth * cover * s, h = img.naturalHeight * cover * s;
+    const cx = W / 2 + s * ((p.logoOffsetX || 0) / 100) * W;
+    const cy = H / 2 + s * ((p.logoOffsetY || 0) / 100) * H;
+    ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
+    const caminho = `capa/${userId}/${Date.now()}.jpg`;
+    const { error: upErr } = await supabaseClient.storage.from('fornecedores')
+      .upload(caminho, blob, { cacheControl: '31536000', contentType: 'image/jpeg' });
+    if (upErr) { console.warn('Capa não subiu pro Storage.', upErr); return null; }
+    const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
+    const { error } = await supabaseClient.from('fornecedores').update({ logo_url: url }).eq('id', userId);
+    if (error) { console.warn('Não foi possível gravar logo_url.', error); return null; }
+    return url;
+  } catch (err) {
+    console.warn('Não foi possível sincronizar a capa.', err);
+    return null;
+  }
+}
+
 /* Formulários do Editor de Site — tabela site_formularios (migration 047).
    O navegador (b2b-site-forms) fica como cache; se a tabela ainda não
    existir, é o único lugar, como antes. Na primeira carga com a tabela

@@ -6850,3 +6850,12 @@ body[data-theme="dark"] .btn-secondary.dashboard-quick-action-btn:hover,
 body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn:hover {
   background: #252525 !important; border-color: #A1A1AA !important; color: #FFFFFF !important;
 }
+
+/* Ativo / Inativo: sem contorno e 100% quadrado (sem cantos arredondados).
+   Inativo ganha um fundo cinza bem claro para não sumir sem a borda. */
+.status-badge.status-ativo,
+.status-badge.status-inativo { border: none; border-radius: 0; }
+.status-badge.status-inativo { background: #F4F4F5; }
+body[data-theme="dark"] .status-badge.status-ativo,
+body[data-theme="dark"] .status-badge.status-inativo { border: none !important; border-radius: 0 !important; }
+body[data-theme="dark"] .status-badge.status-inativo { background: rgba(255, 255, 255, 0.06) !important; }

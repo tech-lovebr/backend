@@ -256,10 +256,7 @@ function renderTopbar(admin) {
       <span>Buscar fornecedor, cliente ou evento…</span>
       <kbd>⌘K</kbd>
     </button>
-    <div class="topbar-empresa">
-      <p class="topbar-empresa-nome">Love Hub Ltda.</p>
-      <p class="topbar-empresa-cnpj">CNPJ 69.386.397/0001-06</p>
-    </div>
+    <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>
 
     <div class="admin-user">
       <button type="button" class="admin-user-chip" id="btn-user-menu"

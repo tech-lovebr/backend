@@ -2,7 +2,7 @@
    LOVE ADMIN — Configurações
    Dados da própria conta de administrador. O super admin também troca a
    própria senha aqui, no card Segurança, pela sessão do Supabase — sem
-   chave mestra.
+   chave mestra. A senha atual aparece só como máscara.
    ========================================================================== */
 
 /* Cada regra da nova senha, na ordem em que aparece no dropdown. */
@@ -45,20 +45,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => window.location.reload(), 900);
   });
 
-  if (admin.role === 'superadmin') iniciarTrocaDeSenha(admin);
+  if (admin.role === 'superadmin') iniciarTrocaDeSenha();
 });
 
 /* ---------------------------------------------------------- Trocar senha */
 
 /**
  * O `updateUser` só altera a conta da sessão aberta, então não precisa da
- * chave mestra. Antes, a senha atual é conferida com um novo login: quem
- * achar o painel aberto num computador não troca a senha sem saber a antiga.
+ * chave mestra nem da senha antiga.
  */
-function iniciarTrocaDeSenha(admin) {
+function iniciarTrocaDeSenha() {
   const card = document.getElementById('card-seguranca');
   const form = document.getElementById('form-senha');
-  const abrir = document.getElementById('btn-abrir-senha');
   const salvar = document.getElementById('btn-salvar-senha');
   const regras = document.getElementById('senha-regras');
   card.hidden = false;
@@ -69,32 +67,16 @@ function iniciarTrocaDeSenha(admin) {
     });
   };
 
-  const mostrar = visivel => {
-    form.hidden = !visivel;
-    abrir.hidden = visivel;
-    abrir.setAttribute('aria-expanded', String(visivel));
-    if (visivel) {
-      form.atual.focus();
-    } else {
-      form.reset();
-      atualizarRegras();
-    }
-  };
-
-  abrir.addEventListener('click', () => mostrar(true));
-  document.getElementById('btn-cancelar-senha').addEventListener('click', () => mostrar(false));
-
   form.nova.addEventListener('focus', () => { regras.hidden = false; });
   form.nova.addEventListener('blur', () => { regras.hidden = true; });
   form.nova.addEventListener('input', atualizarRegras);
 
   salvar.addEventListener('click', async () => {
-    const atual = form.atual.value;
     const nova = form.nova.value;
     const confirmacao = form.confirmacao.value;
 
-    if (!atual || !nova || !confirmacao) {
-      toast('Preencha os três campos.');
+    if (!nova || !confirmacao) {
+      toast('Preencha a nova senha e a confirmação.');
       return;
     }
     if (!senhaValida(nova)) {
@@ -106,22 +88,7 @@ function iniciarTrocaDeSenha(admin) {
       toast('A confirmação não bate com a nova senha.');
       return;
     }
-    if (nova === atual) {
-      toast('A nova senha é igual à atual.');
-      return;
-    }
-
     salvar.disabled = true;
-
-    const { error: erroLogin } = await supabaseClient.auth
-      .signInWithPassword({ email: admin.email, password: atual });
-
-    if (erroLogin) {
-      salvar.disabled = false;
-      toast('Senha atual incorreta.');
-      return;
-    }
-
     const { error } = await supabaseClient.auth.updateUser({ password: nova });
     salvar.disabled = false;
 
@@ -130,7 +97,8 @@ function iniciarTrocaDeSenha(admin) {
       return;
     }
 
-    mostrar(false);
+    form.nova.value = form.confirmacao.value = '';
+    atualizarRegras();
     toast('Senha alterada.');
   });
 }

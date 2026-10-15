@@ -65,12 +65,11 @@
           <div class="card" id="card-seguranca" hidden>
             <div class="card-head"><div><h2>Segurança</h2></div></div>
             <div class="card-body">
-              <button type="button" class="btn btn-ghost" id="btn-abrir-senha" aria-expanded="false" aria-controls="form-senha">Alterar senha</button>
-
-              <form id="form-senha" autocomplete="off" hidden style="max-width:420px">
+              <form id="form-senha" autocomplete="off">
+                <!-- Só a máscara: o painel nunca conhece a senha de verdade. -->
                 <label class="field">
                   <span class="field-label">Senha atual</span>
-                  <input class="field-input" name="atual" type="password" autocomplete="current-password">
+                  <input class="field-input" type="password" value="••••••••••" disabled aria-label="Senha atual, salva">
                 </label>
                 <div class="field senha-nova">
                   <label class="field-label" for="senha-nova">Nova senha</label>
@@ -86,10 +85,7 @@
                   <span class="field-label">Confirmar nova senha</span>
                   <input class="field-input" name="confirmacao" type="password" autocomplete="new-password">
                 </label>
-                <div style="display:flex;gap:.5rem">
-                  <button type="button" class="btn btn-ghost" id="btn-cancelar-senha">Cancelar</button>
-                  <button type="button" class="btn btn-primary" id="btn-salvar-senha">Salvar senha</button>
-                </div>
+                <button type="button" class="btn btn-primary" id="btn-salvar-senha">Salvar senha</button>
               </form>
             </div>
           </div>

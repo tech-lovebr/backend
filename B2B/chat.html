@@ -42,9 +42,6 @@
       <main class="b2b-content">
         <div class="b2b-header-bar">
           <h2 class="text-xl font-bold text-zinc-900">Chat</h2>
-          <button type="button" id="chat-commands-btn" class="btn-secondary builder-toolbar-btn">
-            <span>Meus comandos</span>
-          </button>
         </div>
         <div class="chat-shell w-full flex-1 min-h-0 bg-white flex flex-col md:flex-row overflow-hidden border-t border-zinc-200">
           
@@ -125,6 +122,12 @@
                     </div>
                   </div>
                 </div>
+                <!-- Meus comandos (raio = automação): abre o drawer dos comandos "/" -->
+                <button type="button" id="chat-commands-btn" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 hover:text-[#537bae] hover:border-[#537bae]/40 flex items-center justify-center transition-all cursor-pointer flex-shrink-0 shadow-2xs group" title="Meus comandos" aria-label="Meus comandos">
+                  <svg class="w-5 h-5 sm:w-[22px] sm:h-[22px] transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 3 4 14h7l-1 7 9-11h-7l1-7Z"/>
+                  </svg>
+                </button>
                 <input type="text" id="chat-input" placeholder="Escreva uma mensagem para o fornecedor..." class="flex-1 text-xs sm:text-sm bg-white border border-zinc-200 rounded-xl px-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 placeholder:text-zinc-400 shadow-2xs" autocomplete="off">
                 <button type="submit" id="chat-send-btn" class="bg-[#27394f] hover:bg-[#1d2b3c] text-white px-5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs flex-shrink-0" style="background-color: #27394f !important;" title="Enviar mensagem">
                   <span>Enviar</span>

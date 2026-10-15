@@ -5888,6 +5888,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.classList.toggle('hidden', qtd === 0);
     btn.classList.toggle('flex', qtd > 0);
     btn.title = qtd === 1 ? 'Excluir 1 presente selecionado' : `Excluir ${qtd} presentes selecionados`;
+    const cont = document.getElementById('gifts-selected-count');
+    if (cont) cont.textContent = String(qtd);
 
     // "N selecionados" ao lado da caixinha de selecionar tudo.
     const label = document.getElementById('gifts-selected-label');

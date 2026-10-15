@@ -7143,3 +7143,15 @@ html body button.faq-categoria-btn.ativa:not(#love-faq-a):not(#love-faq-b) { bor
 .faq-resposta h2, .faq-resposta h3 { font-weight: 700; color: #18181B; margin: .75rem 0 .25rem; }
 .faq-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: .75rem 0; border-radius: 10px; overflow: hidden; background: #000; }
 .faq-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* Menu da conta: linhas divisórias mais fortes e de borda a borda da caixa
+   (anulam o p-2 do #dropdown-user-account). */
+#dropdown-user-account .account-dropdown-header {
+  margin-left: -0.5rem; margin-right: -0.5rem;
+  padding-left: 1.375rem; padding-right: 1.375rem;
+  border-bottom-color: #E4E4E7;
+}
+#dropdown-user-account > .border-t {
+  margin-left: -0.5rem; margin-right: -0.5rem;
+  border-top-color: #E4E4E7;
+}

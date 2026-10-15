@@ -6820,3 +6820,33 @@ body[data-theme="dark"] .profile-dropdown .topbar-dropdown-divider { background:
 .status-badge.status-inativo::before { background: #A1A1AA; }
 body[data-theme="dark"] .status-badge.status-ativo { background: rgba(103, 151, 78, 0.16) !important; color: #B7D3A8 !important; border-color: rgba(103, 151, 78, 0.4) !important; }
 body[data-theme="dark"] .status-badge.status-inativo { background: transparent !important; color: #A1A1AA !important; border-color: #404040 !important; }
+
+/* Botões que eram azul clarinho (Adicionar da Agenda, atalhos do painel —
+   Cobrar, Orçamento, Financeiro, Editor, Tarefas — e o do card de plano
+   gratuito) passam ao formato padrão claro, como "Membros", "Adicionar
+   tarefa" e "Salvar" do editor: fundo branco, borda fina cinza, texto
+   escuro; no hover só a borda e o texto escurecem. */
+#agenda-add-event-btn.btn-secondary,
+.btn-secondary.dashboard-quick-action-btn,
+.upgrade-card-face--free .upgrade-card-btn {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  color: #3F3F46;
+}
+#agenda-add-event-btn.btn-secondary:hover,
+.btn-secondary.dashboard-quick-action-btn:hover,
+.upgrade-card-face--free .upgrade-card-btn:hover {
+  background: #FFFFFF;
+  border-color: #181D24;
+  color: #181D24;
+}
+body[data-theme="dark"] #agenda-add-event-btn.btn-secondary,
+body[data-theme="dark"] .btn-secondary.dashboard-quick-action-btn,
+body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn {
+  background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important;
+}
+body[data-theme="dark"] #agenda-add-event-btn.btn-secondary:hover,
+body[data-theme="dark"] .btn-secondary.dashboard-quick-action-btn:hover,
+body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn:hover {
+  background: #252525 !important; border-color: #A1A1AA !important; color: #FFFFFF !important;
+}

@@ -14357,7 +14357,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="flex items-center justify-between gap-1 mb-0.5">
             <div class="flex items-center gap-1.5 min-w-0">
               <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
-              ${conv.category ? `<span class="b2b-categoria-tag">${escaparHtml(conv.category)}</span>` : ''}
             </div>
             <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
           </div>
@@ -14395,9 +14394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     activeB2BConversationId = activeConv.id;
 
     if (nameEl) {
-      // Nome da empresa + categoria (ex.: "Bar e Bebidas") ao lado.
+      // Só o nome da empresa (sem a categoria ao lado).
       nameEl.textContent = activeConv.name;
-      if (activeConv.category) nameEl.insertAdjacentHTML('beforeend', ` <span class="b2b-categoria-tag ml-1 align-middle">${escaparHtml(activeConv.category)}</span>`);
     }
     if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : '';
     if (avatarEl) {

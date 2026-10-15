@@ -611,18 +611,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Dúvidas (FAQ) ----
   // Ordem fixa das categorias pedidas; outras criadas no Admin vêm depois, em
   // ordem alfabética.
-  const FAQ_CATEGORIAS_ORDEM = ['Lista de convidados', 'Meus presentes', 'Edição de site', 'Fornecedores'];
+  const FAQ_CATEGORIAS_ORDEM = ['Convidados', 'Presentes', 'Convite digital', 'Fornecedores', 'Financeiro', 'Benefícios e serviços'];
 
   // Usada só quando a tabela `faq` não existe ou está vazia.
   const FAQ_PADRAO = [
-    { categoria: 'Lista de convidados', pergunta: 'Como os convidados confirmam presença?', resposta: 'Pelo link do seu site: o convidado clica em "Confirmar presença", informa quem vai com ele e pode deixar um recado. A confirmação aparece na hora em Meus Convidados.' },
-    { categoria: 'Lista de convidados', pergunta: 'Posso adicionar acompanhantes a um convidado?', resposta: 'Sim. Ao criar ou editar um convidado, informe os acompanhantes. Eles contam na lista, no mapa de mesas e nos números da Home.' },
-    { categoria: 'Meus presentes', pergunta: 'Como funciona o resgate dos presentes em dinheiro?', resposta: 'Tudo que os convidados presenteiam entra como saldo disponível na sua Carteira. Você pede o saque quando quiser, pela chave Pix ou conta cadastrada em Dados de saque.' },
-    { categoria: 'Meus presentes', pergunta: 'Posso duplicar um presente?', resposta: 'Sim. Em Meus Presentes, abra o presente e use "Duplicar": uma cópia é criada e você só ajusta o que mudar.' },
-    { categoria: 'Edição de site', pergunta: 'Como mudar as cores e o visual do meu site?', resposta: 'Em Personalizar, na aba Aparência, escolha um modelo pronto ou ajuste cores, fontes e foto de capa com a prévia ao vivo.' },
-    { categoria: 'Edição de site', pergunta: 'Dá para colocar música no site?', resposta: 'Sim. Em Personalizar, informe o link da música e, se quiser, marque para tocar automaticamente quando o convidado abrir o site.' },
+    { categoria: 'Convidados', pergunta: 'Como os convidados confirmam presença?', resposta: 'Pelo link do seu site: o convidado clica em "Confirmar presença", informa quem vai com ele e pode deixar um recado. A confirmação aparece na hora em Meus Convidados.' },
+    { categoria: 'Convidados', pergunta: 'Posso adicionar acompanhantes a um convidado?', resposta: 'Sim. Ao criar ou editar um convidado, informe os acompanhantes. Eles contam na lista, no mapa de mesas e nos números da Home.' },
+    { categoria: 'Presentes', pergunta: 'Como funciona o resgate dos presentes em dinheiro?', resposta: 'Tudo que os convidados presenteiam entra como saldo disponível na sua Carteira. Você pede o saque quando quiser, pela chave Pix ou conta cadastrada em Dados de saque.' },
+    { categoria: 'Presentes', pergunta: 'Posso duplicar um presente?', resposta: 'Sim. Em Meus Presentes, abra o presente e use "Duplicar": uma cópia é criada e você só ajusta o que mudar.' },
+    { categoria: 'Convite digital', pergunta: 'Como mudar as cores e o visual do meu site?', resposta: 'Em Personalizar, na aba Aparência, escolha um modelo pronto ou ajuste cores, fontes e foto de capa com a prévia ao vivo.' },
+    { categoria: 'Convite digital', pergunta: 'Dá para colocar música no site?', resposta: 'Sim. Em Personalizar, informe o link da música e, se quiser, marque para tocar automaticamente quando o convidado abrir o site.' },
     { categoria: 'Fornecedores', pergunta: 'Como contratar um fornecedor pela Love?', resposta: 'Em Fornecedores, encontre quem você procura, abra o perfil e use "Contratar" ou peça um orçamento. Os contratados ficam reunidos em Contratados.' },
-    { categoria: 'Fornecedores', pergunta: 'Como falo com um fornecedor?', resposta: 'Pelo chat da plataforma: clique em "Chat" no card ou no perfil do fornecedor. As conversas ficam em Fornecedores › Mensagens.' }
+    { categoria: 'Fornecedores', pergunta: 'Como falo com um fornecedor?', resposta: 'Pelo chat da plataforma: clique em "Chat" no card ou no perfil do fornecedor. As conversas ficam em Fornecedores › Mensagens.' },
+    { categoria: 'Financeiro', pergunta: 'Como faço o saque do meu saldo?', resposta: 'Na Carteira, cadastre seus dados de saque (chave Pix ou conta para TED) e peça o saque do saldo disponível.' },
+    { categoria: 'Financeiro', pergunta: 'Onde vejo quanto já arrecadei?', resposta: 'Na Carteira aparecem o saldo disponível e o total arrecadado com os presentes do seu evento.' },
+    { categoria: 'Benefícios e serviços', pergunta: 'O que são os Benefícios e Serviços da Love?', resposta: 'São vantagens e serviços de parceiros, como seguros, com condições especiais para quem organiza o evento pela Love. Eles ficam na Home e em Fornecedores › Benefícios Love.' },
+    { categoria: 'Benefícios e serviços', pergunta: 'Como contrato um benefício?', resposta: 'Abra o benefício que interessa e siga o botão de contratação: você é levado ao parceiro responsável, que conclui a contratação.' }
   ];
 
   let faqItensCache = null;

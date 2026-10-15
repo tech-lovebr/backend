@@ -798,9 +798,7 @@ function renderShareBoardMembers() {
 
   wrap.innerHTML = B2B_DATA.team.map(m => `
     <div class="share-board-member-row">
-      ${m.avatar
-        ? `<img src="${m.avatar}" alt="${m.name}" class="member-avatar">`
-        : `<div class="member-avatar b2b-avatar" style="display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.75rem;">${initials(m.name)}</div>`}
+      <!-- Sem foto/iniciais: só nome, e-mail e acesso. -->
       <div class="min-w-0 flex-1">
         <p class="text-sm font-semibold text-zinc-900 truncate">${m.name} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</p>
         <p class="text-xs text-zinc-500 truncate">${m.email}</p>

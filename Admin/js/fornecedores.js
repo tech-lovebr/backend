@@ -301,7 +301,7 @@ function render() {
   });
 
   // A linha não abre o drawer: dá para selecionar e copiar o texto. Quem
-  // abre é o ícone de três linhas no fim da linha.
+  // abre é o ícone de três bolinhas no fim da linha.
   ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   renderBarraDeSelecao();

@@ -2915,7 +2915,7 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .hub-item .btn { flex-shrink: 0; }
 
 /* Listas de cadastros: a linha não é clicável nem muda de cor no hover —
-   mantém só as faixas alternadas. O drawer abre pelo ícone de três linhas (.col-acoes). */
+   mantém só as faixas alternadas. O drawer abre pelo ícone de três bolinhas (.col-acoes). */
 table.data.linhas-estaticas tbody tr { cursor: default; }
 table.data.linhas-estaticas tbody tr:nth-child(odd):hover td { background: #F9F9F9; }
 table.data.linhas-estaticas tbody tr:nth-child(even):hover td { background: #FFFFFF; }

@@ -6157,54 +6157,73 @@ document.addEventListener('DOMContentLoaded', () => {
     return (PAPEIS_ORGANIZADOR[papel] && PAPEIS_ORGANIZADOR[papel].label) || 'Colaborador';
   }
 
+  // Áreas liberadas de um organizador (ids): as do papel antigo ou as marcadas.
+  function areasDoOrganizador(o) {
+    const preset = PAPEIS_ORGANIZADOR[o.papel];
+    return preset && preset.areas ? preset.areas : (Array.isArray(o.permissoes) ? o.permissoes : []);
+  }
+
+  function checklistDeAreasHtml(classe, marcadas = []) {
+    return AREAS_ORGANIZADOR.map(a => `
+      <label class="flex items-center gap-2 text-xs text-zinc-700 cursor-pointer select-none">
+        <input type="checkbox" value="${a.id}" class="gifts-select-all-check ${classe}"${marcadas.includes(a.id) ? ' checked' : ''}>
+        <span>${a.label}</span>
+      </label>`).join('');
+  }
+
+  const ICONE_LAPIS = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>';
+  const ICONE_X = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+
+  // Linha de um organizador convidado: nome, e-mail, situação (Pendente/Aceito)
+  // e áreas; para o criador do evento, lápis (editar as áreas) e X (remover).
   function linhaDeOrganizadorHtml(o, ehDono) {
     const nome = (o.nome || '').trim() || String(o.email || '').split('@')[0];
     const aceito = o.status === 'aceito';
-    const areas = o.papel === 'personalizado'
-      ? AREAS_ORGANIZADOR.filter(a => (o.permissoes || []).includes(a.id)).map(a => a.label).join(', ')
-      : '';
+    const areas = areasDoOrganizador(o);
+    const rotulos = AREAS_ORGANIZADOR.filter(a => areas.includes(a.id)).map(a => a.label).join(', ');
     const link = `${window.location.origin}/organizador?token=${encodeURIComponent(o.token || '')}`;
     return `
-      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3" data-organizador-id="${escaparHtml(o.id)}">
-        <div class="min-w-0 flex-1">
-          <p class="text-xs font-bold text-zinc-900 flex items-center gap-1.5 flex-wrap">
-            <span>${escaparHtml(nome)}</span>
-            <span class="host-role-badge text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">${escaparHtml(rotuloDoPapel(o.papel))}</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md border ${aceito ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}">${aceito ? 'Aceito' : 'Pendente'}</span>
-          </p>
-          <p class="text-[11px] text-zinc-500 truncate">${escaparHtml(o.email)}${areas ? ` · ${escaparHtml(areas)}` : ''}</p>
+      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80" data-organizador-id="${escaparHtml(o.id)}" data-permissoes="${escaparHtml(JSON.stringify(areas))}">
+        <div class="flex items-center justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-bold text-zinc-900">${escaparHtml(nome)} <span class="font-medium ${aceito ? 'text-emerald-600' : 'text-amber-600'}">· ${aceito ? 'Aceito' : 'Pendente'}</span></p>
+            <p class="text-[11px] text-zinc-500 truncate">${escaparHtml(o.email)}</p>
+            <p class="text-[11px] text-zinc-500 mt-0.5">${rotulos ? escaparHtml(rotulos) : 'Sem áreas liberadas'}</p>
+          </div>
+          ${ehDono ? `
+          <div class="flex items-center gap-1 shrink-0">
+            ${aceito ? '' : `<button type="button" class="btn-org-copiar org-icone-btn org-icone-texto" data-link="${escaparHtml(link)}" title="Copiar link do convite">Copiar link</button>`}
+            <button type="button" class="btn-org-editar org-icone-btn" title="Editar o que a pessoa pode acessar" aria-label="Editar acesso">${ICONE_LAPIS}</button>
+            <button type="button" class="btn-org-remover org-icone-btn" title="Remover" aria-label="Remover">${ICONE_X}</button>
+          </div>` : ''}
         </div>
         ${ehDono ? `
-        <div class="flex items-center gap-1.5 shrink-0">
-          ${aceito ? '' : `<button type="button" class="btn-org-copiar text-[11px] font-semibold text-zinc-600 hover:text-[#181D24] px-2 py-1 rounded-md border border-zinc-200 bg-white cursor-pointer" data-link="${escaparHtml(link)}" title="Copiar link do convite">Copiar link</button>`}
-          <button type="button" class="btn-org-remover w-8 h-8 rounded-lg border border-zinc-200 bg-white hover:border-red-300 text-zinc-400 hover:text-red-600 flex items-center justify-center cursor-pointer" title="Remover" aria-label="Remover">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+        <div class="org-editar hidden mt-3 pt-3 border-t border-zinc-200/80 space-y-3">
+          <p class="text-xs font-semibold text-zinc-800">O que ${escaparHtml(nome)} pode acessar</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${checklistDeAreasHtml('org-editar-area', areas)}</div>
+          <p class="org-editar-erro text-xs text-red-600 hidden"></p>
+          <div class="flex items-center gap-3">
+            <button type="button" class="btn-org-salvar btn-secondary">Salvar</button>
+            <button type="button" class="btn-org-cancelar text-xs text-zinc-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
+          </div>
         </div>` : ''}
       </div>`;
   }
 
-  // Lista "Quem organiza este evento": criador + organizadores do banco.
+  // Lista "Organizadores": criador (só leitura) + convidados do banco.
   async function renderOrganizadores() {
     const hostsList = document.getElementById('hosts-team-list');
     const ev = getActiveEvent();
     if (!hostsList || !ev) return;
     const ehDono = !ev.souOrganizador;
     const perfil = window.loveClienteProfile || {};
-    const nomes = ev.anfitrioesNomes || {};
-    let criadorHtml;
-    if (ehDono) {
-      const email = perfil.email || '';
-      criadorHtml = linhaDeAnfitriaoHtml(nomes[email] || perfil.couple_name || 'Anfitrião', email, 'Criador(a)');
-    } else {
-      criadorHtml = `
-        <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3">
-          <div class="min-w-0 flex-1">
-            <p class="text-xs font-bold text-zinc-900">${escaparHtml(ev.hostName || 'Anfitrião')} <span class="host-role-badge text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 ml-1">Criador(a)</span></p>
-          </div>
-        </div>`;
-    }
-    hostsList.innerHTML = criadorHtml;
+    const nomeCriador = ehDono ? (perfil.couple_name || 'Anfitrião') : (ev.hostName || 'Anfitrião');
+    const emailCriador = ehDono ? (perfil.email || '') : '';
+    hostsList.innerHTML = `
+      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80">
+        <p class="text-xs font-bold text-zinc-900">${escaparHtml(nomeCriador)} <span class="font-medium text-zinc-500">· Criador(a)</span></p>
+        ${emailCriador ? `<p class="text-[11px] text-zinc-500 truncate">${escaparHtml(emailCriador)}</p>` : ''}
+      </div>`;
     if (!ehUuid(ev.id)) return;
     const { data, error } = await supabaseClient
       .from('eventos_organizadores')
@@ -6219,7 +6238,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hostsList.insertAdjacentHTML('beforeend', (data || []).map(o => linhaDeOrganizadorHtml(o, ehDono)).join(''));
   }
 
-  // Copiar link / remover (delegação: a lista é redesenhada).
+  // Copiar link / editar acesso / remover (delegação: a lista é redesenhada).
   document.addEventListener('click', async (e) => {
     const copiar = e.target.closest('.btn-org-copiar');
     if (copiar) {
@@ -6227,12 +6246,42 @@ document.addEventListener('DOMContentLoaded', () => {
       catch (err) { window.prompt('Copie o link do convite:', copiar.dataset.link); }
       return;
     }
-    const remover = e.target.closest('.btn-org-remover');
-    if (remover) {
-      const linha = remover.closest('[data-organizador-id]');
-      const id = linha && linha.dataset.organizadorId;
-      if (!id) return;
-      const ok = await confirmarNaLove({ titulo: 'Remover este organizador?', texto: 'A pessoa deixa de ver o evento na conta dela.', botao: 'Remover' , aoConfirmar: async () => {
+    const linha = e.target.closest('[data-organizador-id]');
+    if (!linha) return;
+    const id = linha.dataset.organizadorId;
+    const editor = linha.querySelector('.org-editar');
+
+    if (e.target.closest('.btn-org-editar')) {
+      if (!editor) return;
+      const abrir = editor.classList.contains('hidden');
+      if (abrir) {
+        let marcadas = [];
+        try { marcadas = JSON.parse(linha.dataset.permissoes || '[]'); } catch (err) { marcadas = []; }
+        editor.querySelectorAll('.org-editar-area').forEach(c => { c.checked = marcadas.includes(c.value); });
+        editor.querySelector('.org-editar-erro').classList.add('hidden');
+      }
+      editor.classList.toggle('hidden', !abrir);
+      return;
+    }
+    if (e.target.closest('.btn-org-cancelar')) {
+      editor?.classList.add('hidden');
+      return;
+    }
+    if (e.target.closest('.btn-org-salvar')) {
+      const btn = e.target.closest('.btn-org-salvar');
+      const erro = editor.querySelector('.org-editar-erro');
+      const permissoes = Array.from(editor.querySelectorAll('.org-editar-area:checked')).map(c => c.value);
+      erro.classList.add('hidden');
+      if (!permissoes.length) { erro.textContent = 'Marque pelo menos uma área.'; erro.classList.remove('hidden'); return; }
+      btn.disabled = true;
+      const { error } = await supabaseClient.from('eventos_organizadores').update({ papel: 'personalizado', permissoes }).eq('id', id);
+      btn.disabled = false;
+      if (error) { console.error('Erro ao salvar acesso:', error); erro.textContent = 'Não foi possível salvar agora. Tente de novo.'; erro.classList.remove('hidden'); return; }
+      renderOrganizadores();
+      return;
+    }
+    if (e.target.closest('.btn-org-remover')) {
+      const ok = await confirmarNaLove({ titulo: 'Remover este organizador?', texto: 'A pessoa deixa de ver o evento na conta dela.', botao: 'Remover', aoConfirmar: async () => {
         const { error } = await supabaseClient.from('eventos_organizadores').update({ status: 'removido' }).eq('id', id);
         return error ? 'Não foi possível remover agora. Tente de novo.' : null;
       } });
@@ -6240,25 +6289,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Formulário "Convidar": e-mail + papel (+ áreas, no personalizado).
+  // Convidar: e-mail → Enter → marca as áreas → Enviar convite.
   const formInviteHost = document.getElementById('form-invite-host');
   if (formInviteHost) {
-    const selectPapel = document.getElementById('select-host-invite-papel');
+    const inputEmail = document.getElementById('input-host-invite-email');
+    const passo2 = document.getElementById('host-invite-passo2');
     const areasBox = document.getElementById('host-invite-areas');
+    const emailLabel = document.getElementById('host-invite-email-label');
     const feedback = document.getElementById('host-invite-feedback');
-    const renderAreas = () => {
-      if (!areasBox) return;
-      if (!areasBox.children.length) {
-        areasBox.innerHTML = AREAS_ORGANIZADOR.map(a => `
-          <label class="flex items-center gap-2 text-xs text-zinc-700 cursor-pointer select-none">
-            <input type="checkbox" value="${a.id}" class="gifts-select-all-check host-invite-area">
-            <span>${a.label}</span>
-          </label>`).join('');
-      }
-      areasBox.classList.toggle('hidden', !selectPapel || selectPapel.value !== 'personalizado');
-    };
-    selectPapel?.addEventListener('change', renderAreas);
-    renderAreas();
 
     const avisar = (html, erro = false) => {
       if (!feedback) return;
@@ -6266,25 +6304,39 @@ document.addEventListener('DOMContentLoaded', () => {
       feedback.className = `text-xs leading-relaxed ${erro ? 'text-red-600' : 'text-zinc-600'}`;
       feedback.classList.remove('hidden');
     };
+    const limparPasso2 = () => {
+      passo2.classList.add('hidden');
+      areasBox.innerHTML = '';
+    };
+    const abrirPasso2 = () => {
+      const email = (inputEmail.value || '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { avisar('Digite um e-mail válido.', true); return false; }
+      feedback?.classList.add('hidden');
+      emailLabel.textContent = email;
+      if (!areasBox.children.length) areasBox.innerHTML = checklistDeAreasHtml('host-invite-area');
+      passo2.classList.remove('hidden');
+      return true;
+    };
+
+    inputEmail.addEventListener('input', () => { if (!passo2.classList.contains('hidden')) emailLabel.textContent = inputEmail.value.trim(); });
+    document.getElementById('btn-cancel-host-invite')?.addEventListener('click', () => { limparPasso2(); inputEmail.value = ''; feedback?.classList.add('hidden'); });
 
     formInviteHost.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // Primeiro Enter: só abre as áreas.
+      if (passo2.classList.contains('hidden')) { abrirPasso2(); return; }
       const ev = getActiveEvent();
-      const inputEmail = document.getElementById('input-host-invite-email');
-      const email = inputEmail ? inputEmail.value.trim() : '';
-      const papel = selectPapel ? selectPapel.value : 'anfitriao';
-      const permissoes = papel === 'personalizado'
-        ? Array.from(document.querySelectorAll('.host-invite-area:checked')).map(c => c.value)
-        : [];
-      if (!email) return;
+      const email = (inputEmail.value || '').trim();
+      const permissoes = Array.from(document.querySelectorAll('.host-invite-area:checked')).map(c => c.value);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('Digite um e-mail válido.', true);
       if (!ev || !ehUuid(ev.id)) return avisar('Salve o evento antes de convidar organizadores.', true);
-      if (papel === 'personalizado' && !permissoes.length) return avisar('Marque pelo menos uma área para o acesso personalizado.', true);
+      if (!permissoes.length) return avisar('Marque pelo menos uma área para a pessoa acessar.', true);
 
       const btn = document.getElementById('btn-submit-host-invite');
       if (btn) btn.disabled = true;
       avisar('Enviando convite…');
       const { data, error } = await supabaseClient.rpc('convidar_organizador', {
-        p_evento_id: ev.id, p_email: email, p_papel: papel, p_permissoes: permissoes, p_nome: null
+        p_evento_id: ev.id, p_email: email, p_papel: 'personalizado', p_permissoes: permissoes, p_nome: null
       });
       if (btn) btn.disabled = false;
       if (error || !data || !data.ok) {
@@ -6304,10 +6356,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const conta = data.conta === 'fornecedor' ? ' Esse e-mail tem conta de fornecedor na Love: a pessoa entra com ela e vê só as áreas liberadas.'
         : data.conta === 'anfitriao' ? '' : ' Esse e-mail ainda não tem conta na Love; pelo link a pessoa pode criar uma e aceitar.';
-      if (data.status === 'aceito') avisar(`${escaparHtml(email)} já organiza este evento — o papel foi atualizado para ${rotuloDoPapel(papel)}.`);
-      else if (enviado) avisar(`Convite enviado para <strong>${escaparHtml(email)}</strong> como ${rotuloDoPapel(papel)}.${conta}`);
+      if (data.status === 'aceito') avisar(`${escaparHtml(email)} já organiza este evento — o acesso foi atualizado.`);
+      else if (enviado) avisar(`Convite enviado para <strong>${escaparHtml(email)}</strong>.${conta}`);
       else avisar(`Convite criado para <strong>${escaparHtml(email)}</strong>, mas o e-mail não pôde ser enviado. Copie o link e mande para a pessoa: <a href="${escaparHtml(link)}" class="font-semibold text-[#537bae] break-all">${escaparHtml(link)}</a>${conta}`);
-      if (inputEmail) inputEmail.value = '';
+      inputEmail.value = '';
+      limparPasso2();
       renderOrganizadores();
     });
   }

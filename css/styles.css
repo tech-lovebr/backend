@@ -7417,3 +7417,9 @@ html body .convite-tela .convite-tela-titulo { font-family: 'Inter', -apple-syst
 
 /* Organizador sem acesso a uma área: o ícone some do rail. */
 .rail-icon-btn.love-sem-acesso { display: none !important; }
+
+/* Organizadores: lápis, X e "Copiar link" só o ícone/texto, sem caixinha. */
+html body button.org-icone-btn:not(#love-h-a) { width: 28px; height: 28px; padding: 0; border: 0; border-radius: 6px !important; background: transparent; color: #A1A1AA; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; }
+html body button.org-icone-btn:not(#love-h-a):hover { background: transparent; color: #181D24; }
+html body button.org-icone-btn.org-icone-texto:not(#love-h-a) { width: auto; padding: 0 .4rem; font-size: 11px; font-weight: 600; color: #71717A; }
+html body button.org-icone-btn.org-icone-texto:not(#love-h-a):hover { color: #181D24; text-decoration: underline; }

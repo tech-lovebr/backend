@@ -3128,7 +3128,7 @@ async function initPublicPreview() {
     const cardPresente = e.target.closest('[data-presente-abrir]');
     if (cardPresente) {
       abriuPeloConvite = true;
-      window.location.hash = (cardPresente.dataset.presenteVaquinha ? 'presente=' : 'checkout=') + cardPresente.dataset.presenteAbrir;
+      window.location.hash = 'presente=' + cardPresente.dataset.presenteAbrir;
       return;
     }
     const ir = e.target.closest('[data-convite-ir]');
@@ -3214,10 +3214,10 @@ function corDeFundoDosBotoes() {
   return qn.bg || resolveAdjacentSectionBg(qn) || '';
 }
 
-function telaPublicaHtml(titulo, conteudo, { comCapa = false } = {}) {
-  const fundo = corDeFundoDosBotoes();
+function telaPublicaHtml(titulo, conteudo, { comCapa = false, fundoBranco = false } = {}) {
+  const fundo = fundoBranco ? '#FFFFFF' : corDeFundoDosBotoes();
   return `
-    <div class="convite-tela"${fundo ? ` style="background-color:${escaparPublico(fundo)};"` : ''}>
+    <div class="convite-tela${fundoBranco ? ' convite-tela-branca' : ''}"${fundo ? ` style="background-color:${escaparPublico(fundo)};"` : ''}>
       <div class="convite-tela-topo">
         <!-- Voltar: só uma setinha numa caixinha cinza-clara, ao lado do título -->
         <button type="button" class="convite-voltar" data-convite-voltar aria-label="Voltar ao convite" title="Voltar ao convite">
@@ -3433,25 +3433,37 @@ function progressoDoPresente(p) {
 function renderPresentePublico(root, id) {
   const p = presentePublicoPorId(id);
   if (!p) return renderPresentesPublicos(root);
-  if (!p.vaquinha) return renderCheckoutPublico(root, id);
 
   const { meta, arrecadado, pct, falta } = progressoDoPresente(p);
-  const fechado = p.recebido || falta <= 0;
+  const vaquinha = !!p.vaquinha;
+  const fechado = p.recebido || (vaquinha && falta <= 0);
+  const botao = fechado
+    ? '<p class="convite-vazio">Este presente já foi presenteado. Obrigado!</p>'
+    : `<button type="button" class="convite-botao" data-convite-ir="#checkout=${escaparPublico(p.id)}">Presentear</button>`;
+  const sobre = p.descricao
+    ? `<div class="convite-presente-detalhe-sobre">
+         <h3>Sobre o presente</h3>
+         <p>${escaparPublico(p.descricao)}</p>
+       </div>`
+    : '';
+
   const conteudo = `
     <div class="convite-presente-detalhe">
       <div class="convite-presente-detalhe-foto">
         ${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="${escaparPublico(p.nome)}">` : ''}
       </div>
       <h2 class="convite-presente-detalhe-nome">${escaparPublico(p.nome)}</h2>
-      ${p.descricao ? `<p class="convite-presente-detalhe-desc">${escaparPublico(p.descricao)}</p>` : ''}
-      <p class="convite-presente-detalhe-arrecadado">Arrecadado <strong>${brlPublico(arrecadado)}</strong></p>
-      <div class="convite-presente-detalhe-meta"><span>Meta: ${brlPublico(meta)}</span><span>${pct}% da meta</span></div>
-      <div class="convite-vaquinha-trilho"><div class="convite-vaquinha-barra" style="width:${pct}%"></div></div>
-      ${fechado
-        ? '<p class="convite-vazio">Este presente já foi completado. Obrigado a todos!</p>'
-        : `<button type="button" class="convite-botao" data-convite-ir="#checkout=${escaparPublico(p.id)}">Presentear</button>`}
+      ${vaquinha ? `
+        <p class="convite-presente-detalhe-arrecadado">Arrecadado <strong>${brlPublico(arrecadado)}</strong></p>
+        <div class="convite-vaquinha-trilho"><div class="convite-vaquinha-barra" style="width:${pct}%"></div></div>
+        <div class="convite-presente-detalhe-meta"><strong>Meta: ${brlPublico(meta)}</strong><strong>${pct}% da meta</strong></div>
+      ` : `
+        <p class="convite-presente-detalhe-preco">${brlPublico(meta)}</p>
+      `}
+      ${botao}
+      ${sobre}
     </div>`;
-  root.innerHTML = telaPublicaHtml('Vaquinha', conteudo);
+  root.innerHTML = telaPublicaHtml(vaquinha ? 'Vaquinha' : 'Presente', conteudo, { fundoBranco: true });
   voltarPara(root, '#presentes');
 }
 
@@ -3514,7 +3526,7 @@ function renderCheckoutPublico(root, id) {
       <button type="submit" class="convite-botao">Pagar ${brlPublico(valorInicial)}</button>
     </form>`;
   root.innerHTML = telaPublicaHtml('Presentear', conteudo);
-  voltarPara(root, vaquinha ? `#presente=${p.id}` : '#presentes');
+  voltarPara(root, `#presente=${p.id}`);
 
   const form = root.querySelector('[data-convite-checkout]');
   const erroEl = form.querySelector('.convite-erro');

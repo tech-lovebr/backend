@@ -6670,9 +6670,9 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 /* Telas internas do convite: Informações, Lista de Presentes, Confirmar presença */
 .convite-tela { padding: 1.5rem 1.5rem 3rem; font-family: 'Inter', sans-serif; color: #18181B; }
 /* Voltar: setinha numa caixinha cinza-clara, à esquerda do título. */
-.convite-voltar { flex: 0 0 auto; width: 36px; height: 36px; border: 0; border-radius: 10px; background: #F4F4F5; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-.convite-voltar svg { width: 18px; height: 18px; }
-.convite-voltar:hover { background: #E4E4E7; color: #18181B; }
+.convite-voltar { flex: 0 0 auto; width: 36px; height: 36px; border: 0; border-radius: 0; background: transparent; color: #18181B; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+.convite-voltar svg { width: 24px; height: 24px; }
+.convite-voltar:hover { background: transparent; color: #18181B; }
 .convite-tela-titulo { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 1.5rem; letter-spacing: -0.01em; }
 /* Cabeçalho das telas internas (Voltar + título) sempre branco, de ponta a ponta. */
 /* Música de fundo: player do YouTube fora da tela + botão pequeno de pausar/tocar. */
@@ -6681,8 +6681,10 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .convite-musica-botao svg { width: 18px; height: 18px; }
 .convite-musica-botao:not(.is-tocando) { color: #A1A1AA; }
 .convite-musica-botao:not(.is-tocando)::after { content: ''; position: absolute; width: 22px; height: 1.5px; background: currentColor; transform: rotate(-45deg); }
-.convite-tela-topo { background: #FFFFFF; margin: -1.5rem -1.5rem 0; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
-.convite-tela-topo .convite-tela-titulo { margin: 0; }
+/* Voltar à esquerda e título sempre centralizado (a coluna da direita
+   tem a mesma largura do botão, para o centro ser o centro de verdade). */
+.convite-tela-topo { background: #FFFFFF; margin: -1.5rem -1.5rem 0; padding: 1rem 1.5rem; display: grid; grid-template-columns: 36px minmax(0, 1fr) 36px; align-items: center; gap: 0.5rem; }
+.convite-tela-topo .convite-tela-titulo { margin: 0; grid-column: 2; text-align: center; font-size: 1.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .convite-tela-topo + :not(.convite-tela-capa) { margin-top: 1.5rem; }
 /* Foto cheia, de ponta a ponta (sem as margens da tela), com a mesma
    altura da capa da página principal do convite. */
@@ -7347,3 +7349,14 @@ html body .table-drawer > div:first-child > button:not(#love-h-a):hover { backgr
 .convite-form .convite-pagamento-opcao.is-ativo { border-color: var(--bx-primary, #537bae); }
 .convite-form .convite-pagamento-opcao input { width: 16px; height: 16px; margin: 0; accent-color: var(--bx-primary, #537bae); }
 .convite-sucesso .convite-botao { margin-top: 1.25rem; width: 100%; }
+
+/* Tela do presente: fundo branco, foto de ponta a ponta, barra mais grossa,
+   meta e porcentagem em negrito abaixo da barra, descrição abaixo do botão. */
+.convite-tela-branca .convite-presente-detalhe-foto { margin-top: 0; }
+.convite-presente-detalhe-preco { font-size: 1.5rem; font-weight: 700 !important; margin: .25rem 0 0; }
+.convite-vaquinha-trilho { height: 12px; }
+.convite-presente-detalhe-meta { margin-top: .1rem; color: #18181B; font-size: .875rem; }
+.convite-presente-detalhe-meta strong { font-weight: 700; }
+.convite-presente-detalhe-sobre { margin-top: 1.25rem; }
+.convite-presente-detalhe-sobre h3 { font-size: 1.0625rem; font-weight: 700 !important; margin: 0 0 .4rem; }
+.convite-presente-detalhe-sobre p { color: #52525B; font-size: .9rem; line-height: 1.65; margin: 0; white-space: pre-line; }

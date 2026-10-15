@@ -1064,3 +1064,57 @@ function tabelaBateBusca(estado, campos) {
   if (!estado || !estado.busca) return true;
   return campos.some(v => String(v ?? '').toLowerCase().includes(estado.busca));
 }
+
+/* ==========================================================================
+   Pop-up de confirmação padrão do Hub (no lugar do confirm() do navegador)
+   confirmarNoHub({ titulo, texto, botao, perigo, aoConfirmar })
+   - aoConfirmar: função (pode ser async). Se lançar erro, a mensagem
+     aparece dentro do pop-up e ele continua aberto.
+   Devolve uma Promise: true se confirmou (e deu certo), false se cancelou.
+   ========================================================================== */
+function confirmarNoHub({ titulo, texto = '', botao = 'Confirmar', perigo = false, aoConfirmar } = {}) {
+  return new Promise(resolve => {
+    const fundo = document.createElement('div');
+    fundo.className = 'modal-backdrop show hub-confirmar';
+    fundo.innerHTML = `
+      <div class="modal-card hub-confirmar-card" role="dialog" aria-modal="true">
+        <h3 class="hub-confirmar-titulo">${escapeHtml(titulo || '')}</h3>
+        ${texto ? `<p class="hub-confirmar-texto">${escapeHtml(texto)}</p>` : ''}
+        <p class="hub-confirmar-erro" hidden></p>
+        <div class="hub-confirmar-acoes">
+          <button type="button" class="btn-secondary" data-confirmar-cancelar>Cancelar</button>
+          <button type="button" class="btn-primary${perigo ? ' btn-danger' : ''}" data-confirmar-ok>${escapeHtml(botao)}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(fundo);
+    const okBtn = fundo.querySelector('[data-confirmar-ok]');
+    const erroEl = fundo.querySelector('.hub-confirmar-erro');
+    let ocupado = false;
+
+    const fechar = (resultado) => {
+      document.removeEventListener('keydown', aoTeclar);
+      fundo.remove();
+      resolve(resultado);
+    };
+    const aoTeclar = (e) => { if (e.key === 'Escape' && !ocupado) fechar(false); };
+    document.addEventListener('keydown', aoTeclar);
+    fundo.addEventListener('click', (e) => { if (e.target === fundo && !ocupado) fechar(false); });
+    fundo.querySelector('[data-confirmar-cancelar]').addEventListener('click', () => { if (!ocupado) fechar(false); });
+    okBtn.addEventListener('click', async () => {
+      if (ocupado) return;
+      ocupado = true;
+      okBtn.disabled = true;
+      erroEl.hidden = true;
+      try {
+        if (aoConfirmar) await aoConfirmar();
+        fechar(true);
+      } catch (err) {
+        erroEl.textContent = (err && err.message) || 'Não foi possível concluir. Tente de novo.';
+        erroEl.hidden = false;
+        ocupado = false;
+        okBtn.disabled = false;
+      }
+    });
+    okBtn.focus();
+  });
+}

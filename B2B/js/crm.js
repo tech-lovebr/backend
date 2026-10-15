@@ -7,6 +7,8 @@ const LEAD_STATUS_ORDER = ['novo', 'conversa', 'proposta', 'fechado'];
 let activeLeadStatus = 'todos';
 let leadSearchQuery = '';
 let leadsTabelaEstado = null;
+// Leads marcados nas caixinhas (exclusão em massa).
+const leadsSelecionados = new Set();
 let crmLeads = [];
 let crmProducts = [];
 let leadMatchedClienteId = null;
@@ -47,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ], leadsFiltrados()),
     aoMudar: () => renderLeadsTable()
   });
+  montarLixeiraDeLeads();
 
   // Ao voltar de "Cadastrar serviço" (aberto em outra aba), atualiza a lista
   // de produtos do dropdown sem precisar recarregar a página.
@@ -245,18 +248,22 @@ function renderLeadsTable() {
   if (!tbody) return;
 
   const items = leadsFiltrados();
+  // Seleção: tira ids que não existem mais.
+  const existentes = new Set(crmLeads.map(l => l.id));
+  [...leadsSelecionados].forEach(id => { if (!existentes.has(id)) leadsSelecionados.delete(id); });
 
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
 
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="7" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
+    atualizarLixeiraDeLeads();
     return;
   }
 
   tbody.innerHTML = items.map(lead => `
     <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
-      <td class="col-principal">${escapeHtml(lead.name)}</td>
+      <td class="col-principal"><span class="lead-nome-cel"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}">${escapeHtml(lead.name)}</span></td>
       <td>${escapeHtml(lead.tipo_evento || '—')}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
@@ -268,6 +275,81 @@ function renderLeadsTable() {
   // Só o "ver mais" abre o lead; a linha fica livre para selecionar texto.
   tbody.querySelectorAll('[data-open-lead]').forEach(btn => {
     btn.addEventListener('click', () => openLeadDrawer(btn.dataset.openLead));
+  });
+  tbody.querySelectorAll('[data-lead-check]').forEach(chk => {
+    chk.addEventListener('change', () => {
+      if (chk.checked) leadsSelecionados.add(chk.dataset.leadCheck);
+      else leadsSelecionados.delete(chk.dataset.leadCheck);
+      atualizarLixeiraDeLeads();
+    });
+  });
+  atualizarLixeiraDeLeads();
+}
+
+/* -------------------- Exclusão em massa (caixinhas + lixeira) -------------------- */
+
+const LEADS_ICONE_LIXEIRA = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>';
+
+// Lixeira na barra da tabela, logo à esquerda do "Filtrar por". Só aparece
+// com pelo menos 1 lead marcado.
+function montarLixeiraDeLeads() {
+  const acoes = document.querySelector('#leads-table-card .tabela-barra-acoes');
+  if (!acoes || document.getElementById('leads-lixeira-btn')) return;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.id = 'leads-lixeira-btn';
+  btn.className = 'tabela-barra-btn tabela-lixeira-btn';
+  btn.hidden = true;
+  btn.innerHTML = LEADS_ICONE_LIXEIRA;
+  acoes.insertBefore(btn, acoes.firstChild);
+  btn.addEventListener('click', excluirLeadsSelecionados);
+
+  document.getElementById('leads-selecionar-todos')?.addEventListener('change', (e) => {
+    const visiveis = leadsFiltrados().map(l => l.id);
+    visiveis.forEach(id => { if (e.target.checked) leadsSelecionados.add(id); else leadsSelecionados.delete(id); });
+    renderLeadsTable();
+  });
+  atualizarLixeiraDeLeads();
+}
+
+function atualizarLixeiraDeLeads() {
+  const n = leadsSelecionados.size;
+  const btn = document.getElementById('leads-lixeira-btn');
+  if (btn) {
+    btn.hidden = n === 0;
+    const texto = `Excluir ${n} ${n === 1 ? 'lead selecionado' : 'leads selecionados'}`;
+    btn.title = texto;
+    btn.setAttribute('aria-label', texto);
+  }
+  // "Selecionar tudo": marcado se todos os visíveis estão marcados; meio
+  // marcado se só alguns.
+  const todos = document.getElementById('leads-selecionar-todos');
+  if (todos) {
+    const visiveis = leadsFiltrados().map(l => l.id);
+    const marcados = visiveis.filter(id => leadsSelecionados.has(id)).length;
+    todos.checked = visiveis.length > 0 && marcados === visiveis.length;
+    todos.indeterminate = marcados > 0 && marcados < visiveis.length;
+  }
+}
+
+async function excluirLeadsSelecionados() {
+  const ids = [...leadsSelecionados];
+  if (!ids.length) return;
+  const n = ids.length;
+  await confirmarNoHub({
+    titulo: `Deseja excluir ${n} ${n === 1 ? 'lead selecionado' : 'leads selecionados'}?`,
+    texto: 'Essa ação não pode ser desfeita.',
+    botao: 'Excluir',
+    perigo: true,
+    aoConfirmar: async () => {
+      const { error } = await supabaseClient.from('leads').delete().in('id', ids);
+      if (error) throw new Error('Não foi possível excluir os leads: ' + (error.message || 'tente de novo.'));
+      const apagados = new Set(ids);
+      crmLeads = crmLeads.filter(l => !apagados.has(l.id));
+      leadsSelecionados.clear();
+      renderLeadsTable();
+      showToast(n === 1 ? 'Lead excluído.' : `${n} leads excluídos.`);
+    }
   });
 }
 

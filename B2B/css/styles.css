@@ -7271,3 +7271,32 @@ body[data-theme="dark"] .leads-table tbody tr:hover td { background: #222222 !im
 body[data-theme="dark"] .tabela-busca input,
 body[data-theme="dark"] .tabela-barra-btn,
 body[data-theme="dark"] .tabela-filtro-menu { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Caixinha de seleção das tabelas (mesma do love.com.br, Meus convidados). */
+.gifts-select-all-check { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 1.5px solid #D4D4D8; border-radius: 5px; background: #fff; display: inline-grid; place-content: center; cursor: pointer; flex-shrink: 0; transition: border-color .15s, background-color .15s; }
+.gifts-select-all-check::before { content: ''; width: 10px; height: 10px; background: #fff; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); transform: scale(0); transition: transform .12s; }
+.gifts-select-all-check:hover { border-color: #181D24; }
+.gifts-select-all-check:checked { background: #183b54; border-color: #183b54; }
+.gifts-select-all-check:checked::before { transform: scale(1); }
+.gifts-select-all-check:indeterminate { background: #183b54; border-color: #183b54; }
+.gifts-select-all-check:indeterminate::before { transform: scale(1); clip-path: none; height: 2px; border-radius: 1px; }
+body[data-theme="dark"] .gifts-select-all-check { background: #252525; border-color: #52525B; }
+
+/* Leads: caixinha à esquerda do nome, com 14px de folga. */
+.lead-nome-cel { display: inline-flex; align-items: center; gap: 14px; }
+
+/* Lixeira da barra da tabela (exclusão em massa): só o ícone; no hover,
+   borda e ícone vermelhos. */
+.tabela-lixeira-btn { padding: 0 11px; }
+.tabela-lixeira-btn[hidden] { display: none; }
+.tabela-lixeira-btn:hover { border-color: #DC2626; color: #DC2626; background: #FFFFFF; }
+
+/* Pop-up de confirmação padrão do Hub (confirmarNoHub em js/utils.js). */
+.hub-confirmar { z-index: 200; }
+.modal-card.hub-confirmar-card { max-width: 420px; padding: 1.5rem; }
+.hub-confirmar-titulo { font-size: 1.0625rem; font-weight: 700; color: #18181B; margin: 0 0 0.4rem; }
+.hub-confirmar-texto { font-size: 0.875rem; color: #71717A; margin: 0; }
+.hub-confirmar-erro { font-size: 0.8125rem; color: #DC2626; margin: 0.75rem 0 0; }
+.hub-confirmar-acoes { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.25rem; }
+.hub-confirmar-acoes .btn-primary, .hub-confirmar-acoes .btn-secondary { height: 36px; padding: 0 1.1rem; }
+body[data-theme="dark"] .hub-confirmar-titulo { color: #FFFFFF !important; }

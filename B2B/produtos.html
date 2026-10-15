@@ -240,7 +240,7 @@
             <span>O que está incluso</span>
           </div>
           <div class="scope-add-row">
-            <input id="product-scope-included-input" type="text" class="field-input" placeholder="Escreva um item e aperte Enter" autocomplete="off">
+            <input id="product-scope-included-input" type="text" class="field-input" placeholder="Escreva um item" autocomplete="off">
             <button type="button" id="product-scope-included-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item incluso">Adicionar</button>
           </div>
           <div id="product-scope-included-list" class="scope-list"></div>
@@ -250,7 +250,7 @@
             <span>O que não está incluso</span>
           </div>
           <div class="scope-add-row">
-            <input id="product-scope-excluded-input" type="text" class="field-input" placeholder="Escreva um item e aperte Enter" autocomplete="off">
+            <input id="product-scope-excluded-input" type="text" class="field-input" placeholder="Escreva um item" autocomplete="off">
             <button type="button" id="product-scope-excluded-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item não incluso">Adicionar</button>
           </div>
           <div id="product-scope-excluded-list" class="scope-list"></div>
@@ -349,16 +349,12 @@
                 <label for="product-food-dietary" class="field-label">Restrições atendidas</label>
                 <input id="product-food-dietary" type="text" class="field-input" placeholder="Ex: Vegano, sem glúten, sem lactose">
               </div>
-              <div>
-                <label for="product-food-tasting-policy" class="field-label">Política de degustação</label>
-                <input id="product-food-tasting-policy" type="text" class="field-input" placeholder="Ex: Degustação gratuita para até 4 pessoas">
-              </div>
             </div>
-            <div id="product-dishes-list" class="flex flex-col gap-2 mt-3"></div>
-            <button type="button" id="product-dish-add-btn" class="inspector-add-btn mt-2">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Adicionar prato
-            </button>
+          </div>
+
+          <!-- Buffet e Gastronomia / Bar e Bebidas: degustação é só sim ou não. -->
+          <div id="product-tasting-field" class="mt-2" hidden>
+            <label class="checkbox-row"><input type="checkbox" id="product-tasting-allowed"> Permitido agendar degustação</label>
           </div>
 
           <div id="product-staff-fields" hidden>
@@ -554,6 +550,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/produtos.js?v=22"></script>
+  <script src="js/produtos.js?v=23"></script>
 </body>
 </html>

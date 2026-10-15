@@ -14,6 +14,7 @@ let activeCategory = 'Todos';
 const PRODUCT_VENUE_CATEGORIES = ['Locação de espaço', 'Espaços & Locações', 'Espaço de Locação', 'Espaços para Locação'];
 const PRODUCT_EQUIPMENT_CATEGORIES = ['Aluguel de equipamentos'];
 const PRODUCT_FOOD_CATEGORIES = ['Buffet', 'Gastronomia & Alimentos', 'Buffet e Gastronomia'];
+const PRODUCT_BAR_CATEGORIES = ['Bar e Bebidas', 'Bar e Coquetelaria', 'Bebidas', 'Bar'];
 const PRODUCT_STAFF_CATEGORIES = ['Staff & Mão de Obra', 'Staff e Mão de Obra'];
 const PRODUCT_AV_CATEGORIES = ['Foto, Vídeo & Audiovisual', 'Mídia e Audiovisual'];
 
@@ -738,6 +739,7 @@ function categoryGroups(category) {
     isVenue: PRODUCT_VENUE_CATEGORIES.includes(category),
     isEquipment: PRODUCT_EQUIPMENT_CATEGORIES.includes(category),
     isFood: PRODUCT_FOOD_CATEGORIES.includes(category),
+    isBar: PRODUCT_BAR_CATEGORIES.includes(category),
     isStaff: PRODUCT_STAFF_CATEGORIES.includes(category),
     isAV: PRODUCT_AV_CATEGORIES.includes(category)
   };
@@ -750,6 +752,7 @@ function updateCategoryFieldsVisibility() {
   // Etapa 3: bloco de atributos específico por categoria.
   setPanelHidden('product-venue-fields', !isVenue);
   setPanelHidden('product-food-fields', !isFood);
+  setPanelHidden('product-tasting-field', !(isFood || categoryGroups(category).isBar));
   setPanelHidden('product-staff-fields', !isStaff);
   setPanelHidden('product-audiovisual-fields', !isAV);
   setPanelHidden('product-equipment-fields', !isEquipment);
@@ -1185,7 +1188,9 @@ function initProductDrawer() {
   });
 
 
-  document.getElementById('product-dish-add-btn').addEventListener('click', () => {
+  // "Adicionar prato" saiu do drawer; pratos já salvos continuam no item.
+  const dishAddBtn = document.getElementById('product-dish-add-btn');
+  if (dishAddBtn) dishAddBtn.addEventListener('click', () => {
     currentDishes.push({ id: 'd' + Date.now() + '-' + Math.round(Math.random() * 999), name: '', price: 0, quantity: 0 });
     renderDishes();
   });
@@ -1268,7 +1273,10 @@ function initProductDrawer() {
         food: isFood ? {
           menuAttachmentUrl: null,
           dietaryRestrictions: document.getElementById('product-food-dietary').value.trim().split(',').map(s => s.trim()).filter(Boolean),
-          tastingPolicy: document.getElementById('product-food-tasting-policy').value.trim()
+          tastingAllowed: document.getElementById('product-tasting-allowed').checked
+        } : null,
+        bar: categoryGroups(category).isBar ? {
+          tastingAllowed: document.getElementById('product-tasting-allowed').checked
         } : null,
         staff: isStaff ? {
           uniformDescription: document.getElementById('product-staff-uniform').value.trim(),
@@ -1400,7 +1408,9 @@ function openProductDrawer(id) {
 
   const food = p.attributes && p.attributes.food;
   document.getElementById('product-food-dietary').value = (food && food.dietaryRestrictions || []).join(', ');
-  document.getElementById('product-food-tasting-policy').value = (food && food.tastingPolicy) || '';
+  // Degustação: caixa de marcar (itens antigos com texto de política contam como permitido).
+  const bar = p.attributes && p.attributes.bar;
+  document.getElementById('product-tasting-allowed').checked = !!((food && (food.tastingAllowed || food.tastingPolicy)) || (bar && bar.tastingAllowed));
 
   const staff = p.attributes && p.attributes.staff;
   document.getElementById('product-staff-uniform').value = (staff && staff.uniformDescription) || '';

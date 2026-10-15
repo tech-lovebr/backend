@@ -13,7 +13,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRM · Oportunidades — Portal do Fornecedor Love</title>
+  <title>Leads — Portal do Fornecedor Love</title>
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#537bae">
@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=531">
+  <link rel="stylesheet" href="css/styles.css?v=532">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -31,17 +31,21 @@
       <div id="shell-topbar"></div>
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900">Contatos</h2>
+          <h2 class="text-xl font-bold text-zinc-900">Leads</h2>
           <div class="flex items-center gap-3">
             <div class="relative" style="width:240px;">
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               </div>
-              <input type="text" id="lead-search-input" class="field-input" style="padding-left:2.25rem;" placeholder="Pesquisar contato...">
+              <input type="text" id="lead-search-input" class="field-input" style="padding-left:2.25rem;" placeholder="Pesquisar lead...">
             </div>
+            <button type="button" id="lead-import-btn" class="btn-secondary builder-toolbar-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+              Importar
+            </button>
             <button type="button" id="lead-add-btn" class="btn-secondary builder-toolbar-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Adicionar contato
+              Adicionar lead
             </button>
           </div>
         </div>
@@ -63,12 +67,32 @@
     </div>
   </div>
 
-  <!-- Drawer contato -->
+  <!-- Importar lista de leads (CSV, ex.: exportado do Excel ou Google Planilhas) -->
+  <div class="modal-backdrop" id="lead-import-modal">
+    <div class="modal-card lead-import-card">
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <h3 class="text-lg font-bold text-zinc-900">Importar leads</h3>
+        <button type="button" class="form-drawer-close" id="lead-import-close" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <p class="text-sm text-zinc-600 mb-2">Envie uma planilha em <strong>CSV</strong> (no Excel ou no Google Planilhas: Arquivo › Salvar como / Fazer download › CSV). A primeira linha deve ter os nomes das colunas.</p>
+      <p class="text-xs text-zinc-500 mb-4">Colunas aceitas: Nome (obrigatória), E-mail, CPF, WhatsApp, Endereço, Estado, Cidade, Data do orçamento, Data do evento e Orçamento.</p>
+      <div class="flex items-center gap-3 flex-wrap">
+        <button type="button" class="btn-secondary" id="lead-import-template">Baixar modelo</button>
+        <button type="button" class="btn-primary" id="lead-import-choose">Escolher arquivo</button>
+        <input type="file" id="lead-import-file" accept=".csv,text/csv" hidden>
+      </div>
+      <p class="text-sm text-zinc-600 mt-4" id="lead-import-status" hidden></p>
+    </div>
+  </div>
+
+  <!-- Drawer lead -->
   <div class="drawer-backdrop" id="lead-drawer-backdrop"></div>
-  <aside class="form-drawer" id="lead-drawer" aria-label="Contato">
+  <aside class="form-drawer" id="lead-drawer" aria-label="Lead">
     <div class="form-drawer-header">
       <div class="form-drawer-header-main">
-        <h2 class="task-drawer-title" id="lead-drawer-title">Novo contato</h2>
+        <h2 class="task-drawer-title" id="lead-drawer-title">Adicionar lead</h2>
       </div>
       <button type="button" class="form-drawer-close" id="lead-drawer-close" aria-label="Fechar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
@@ -76,7 +100,7 @@
     </div>
 
     <div class="form-drawer-body">
-      <p class="text-sm text-zinc-500 -mt-2 mb-4" id="lead-drawer-subtitle">Adicione um novo lead para a sua base de contatos</p>
+      <p class="text-sm text-zinc-500 -mt-2 mb-4" id="lead-drawer-subtitle">Adicione um novo lead para a sua base de leads</p>
       <form id="lead-form" class="flex flex-col gap-4">
         <div>
           <label for="lead-name" class="field-label">Nome</label>
@@ -90,6 +114,34 @@
           <p class="text-xs text-zinc-400 mt-1" id="lead-email-match-hint" hidden>✓ Vinculado à conta deste cliente na Love</p>
         </div>
 
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="lead-cpf" class="field-label">CPF</label>
+            <input id="lead-cpf" type="text" class="field-input" inputmode="numeric" maxlength="14">
+          </div>
+          <div>
+            <label for="lead-whatsapp" class="field-label">WhatsApp</label>
+            <input id="lead-whatsapp" type="tel" class="field-input" inputmode="numeric" maxlength="15">
+          </div>
+        </div>
+
+        <div>
+          <label for="lead-endereco" class="field-label">Endereço</label>
+          <input id="lead-endereco" type="text" class="field-input" autocomplete="off">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="lead-estado" class="field-label">Estado</label>
+            <select id="lead-estado" class="field-select"><option value="">Selecione</option></select>
+          </div>
+          <div>
+            <label for="lead-cidade" class="field-label">Cidade</label>
+            <input id="lead-cidade" type="text" class="field-input" list="lead-cidade-options" autocomplete="off" disabled>
+            <datalist id="lead-cidade-options"></datalist>
+          </div>
+        </div>
+
         <div>
           <label for="lead-product" class="field-label">Produto/Serviço de interesse</label>
           <select id="lead-product" class="field-select"></select>
@@ -98,13 +150,18 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
+            <label for="lead-quote-date" class="field-label">Data do orçamento</label>
+            <input id="lead-quote-date" type="text" class="field-input" inputmode="numeric" maxlength="10">
+          </div>
+          <div>
             <label for="lead-date" class="field-label">Data do evento</label>
             <input id="lead-date" type="text" class="field-input" inputmode="numeric" maxlength="10">
           </div>
-          <div>
-            <label for="lead-value" class="field-label">Valor estimado</label>
-            <input id="lead-value" type="text" class="field-input" inputmode="numeric">
-          </div>
+        </div>
+
+        <div>
+          <label for="lead-value" class="field-label">Orçamento</label>
+          <input id="lead-value" type="text" class="field-input" inputmode="numeric">
         </div>
 
         <div class="flex items-center gap-3 pt-2">
@@ -137,6 +194,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/crm.js?v=12"></script>
+  <script src="js/data-br-localidades.js?v=1"></script>
+  <script src="js/crm.js?v=13"></script>
 </body>
 </html>

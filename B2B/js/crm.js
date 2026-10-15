@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LOVE B2B — Contatos (lista de leads e oportunidades, dados reais via Supabase)
+   LOVE B2B — Leads (lista de leads e oportunidades, dados reais via Supabase)
    ========================================================================== */
 
 const LEAD_STATUS_ORDER = ['novo', 'conversa', 'proposta', 'fechado'];
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderLeadsTable();
   initLeadDrawer();
   initLeadEmailAutocomplete();
+  initLeadImport();
 
   document.getElementById('lead-search-input')?.addEventListener('input', (e) => {
     leadSearchQuery = e.target.value.trim();
@@ -101,9 +102,38 @@ function initLeadEmailAutocomplete() {
   wireNameCaseInput(document.getElementById('lead-name'));
   const dateInput = document.getElementById('lead-date');
   if (dateInput) wireDateMaskInput(dateInput);
+  const quoteDateInput = document.getElementById('lead-quote-date');
+  if (quoteDateInput) wireDateMaskInput(quoteDateInput);
   const valueInput = document.getElementById('lead-value');
   // "R$" fixo dentro da caixa (igual aos preços do catálogo); só o número é digitado.
   if (valueInput) { wireCurrencyMaskInput(valueInput); wireMoneyPrefix(valueInput); }
+
+  // CPF (000.000.000-00) e WhatsApp com o DDD entre parênteses.
+  const cpfInput = document.getElementById('lead-cpf');
+  if (cpfInput) cpfInput.addEventListener('input', () => {
+    cpfInput.value = formatCPF(cpfInput.value.replace(/\D/g, '').slice(0, 11));
+  });
+  const whatsInput = document.getElementById('lead-whatsapp');
+  if (whatsInput) {
+    // Vazio, já mostra os parênteses para a pessoa saber onde vai o DDD.
+    whatsInput.placeholder = '(\u00a0\u00a0\u00a0\u00a0)';
+    wirePhoneMaskInput(whatsInput);
+  }
+
+  // Estado antes da cidade; a cidade lista as do estado (base do IBGE).
+  const estadoSelect = document.getElementById('lead-estado');
+  if (estadoSelect && typeof BR_ESTADOS !== 'undefined' && estadoSelect.options.length <= 1) {
+    BR_ESTADOS.forEach(({ uf, nome }) => {
+      const opt = document.createElement('option');
+      opt.value = uf;
+      opt.textContent = `${uf} — ${nome}`;
+      estadoSelect.appendChild(opt);
+    });
+  }
+  estadoSelect?.addEventListener('change', () => {
+    document.getElementById('lead-cidade').value = '';
+    preencherCidadesDoLead(estadoSelect.value);
+  });
 
   let timer = null;
   let lastMatches = [];
@@ -149,7 +179,7 @@ function renderLeadStatusTabs() {
 
   const statuses = ['todos', ...LEAD_STATUS_ORDER.filter(s => crmLeads.some(l => l.status === s))];
   wrap.innerHTML = statuses.map(s => `
-    <button type="button" class="category-tab ${s === activeLeadStatus ? 'active' : ''}" data-lead-status="${s}">${s === 'todos' ? 'Todos os contatos' : statusLabel(s)}</button>
+    <button type="button" class="category-tab ${s === activeLeadStatus ? 'active' : ''}" data-lead-status="${s}">${s === 'todos' ? 'Todos os leads' : statusLabel(s)}</button>
   `).join('');
 
   wrap.querySelectorAll('[data-lead-status]').forEach(btn => {
@@ -161,7 +191,7 @@ function renderLeadStatusTabs() {
   });
 }
 
-/* -------------------- Tabela de contatos -------------------- */
+/* -------------------- Tabela de leads -------------------- */
 
 function renderLeadsTable() {
   const tbody = document.getElementById('leads-table-body');
@@ -173,13 +203,14 @@ function renderLeadsTable() {
 
   if (leadSearchQuery) {
     const q = leadSearchQuery.toLowerCase();
-    items = items.filter(l => l.name.toLowerCase().includes(q) || (l.event_name || '').toLowerCase().includes(q));
+    items = items.filter(l => [l.name, l.event_name, l.email, l.cpf, l.whatsapp, l.cidade]
+      .some(v => String(v || '').toLowerCase().includes(q)));
   }
 
-  setText('leads-count-label', `${items.length} ${items.length === 1 ? 'contato' : 'contatos'}`);
+  setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-sm text-zinc-500 py-6 text-center">Nenhum contato encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
     return;
   }
 
@@ -198,7 +229,7 @@ function renderLeadsTable() {
   });
 }
 
-/* -------------------- Drawer: novo / editar contato -------------------- */
+/* -------------------- Drawer: adicionar / editar lead -------------------- */
 
 function initLeadDrawer() {
   const addBtn = document.getElementById('lead-add-btn');
@@ -227,7 +258,8 @@ function initLeadDrawer() {
     delete form.dataset.editId;
     leadMatchedClienteId = null;
     if (emailHint) emailHint.hidden = true;
-    document.getElementById('lead-drawer-title').textContent = 'Novo contato';
+    document.getElementById('lead-drawer-title').textContent = 'Adicionar lead';
+    preencherCidadesDoLead('');
     if (subtitle) subtitle.hidden = false;
     if (commentsSection) commentsSection.hidden = true;
     renderLeadProductOptions();
@@ -242,12 +274,12 @@ function initLeadDrawer() {
     const id = form.dataset.editId;
     if (!id) return;
     const { error } = await supabaseClient.from('leads').delete().eq('id', id);
-    if (error) { showToast('Não foi possível remover o contato.', true); return; }
+    if (error) { showToast('Não foi possível remover o lead.', true); return; }
     await loadLeads();
     close();
     renderLeadStatusTabs();
     renderLeadsTable();
-    showToast('Contato removido.');
+    showToast('Lead removido.');
   });
 
   form?.addEventListener('submit', async (e) => {
@@ -257,9 +289,18 @@ function initLeadDrawer() {
     const productId = document.getElementById('lead-product').value || null;
     const event_date = document.getElementById('lead-date').value.trim();
     const value = currencyMaskValue(document.getElementById('lead-value')) || 0;
+    const val = id => (document.getElementById(id)?.value || '').trim() || null;
+    const dadosCliente = {
+      cpf: val('lead-cpf'),
+      whatsapp: val('lead-whatsapp'),
+      endereco: val('lead-endereco'),
+      estado: val('lead-estado'),
+      cidade: val('lead-cidade'),
+      data_orcamento: val('lead-quote-date')
+    };
 
     if (!name) {
-      showToast('Preencha o nome do contato.', true);
+      showToast('Preencha o nome do lead.', true);
       return;
     }
 
@@ -275,20 +316,26 @@ function initLeadDrawer() {
       product_id: productId,
       event_name: product ? product.name : null,
       event_date,
-      value
+      value,
+      ...dadosCliente
     };
 
-    if (form.dataset.editId) {
-      const { error } = await supabaseClient.from('leads').update(payload).eq('id', form.dataset.editId);
-      if (error) { showToast('Não foi possível atualizar o contato.', true); return; }
-      showToast('Contato atualizado.');
-    } else {
-      const { error } = await supabaseClient
-        .from('leads')
-        .insert(Object.assign({ fornecedor_id: session.user.id }, payload));
-      if (error) { showToast('Não foi possível adicionar o contato.', true); return; }
-      showToast('Contato adicionado.');
+    // Sem a migration 054 o banco não tem as colunas novas: salva o resto e avisa.
+    const gravar = async (dados) => form.dataset.editId
+      ? supabaseClient.from('leads').update(dados).eq('id', form.dataset.editId)
+      : supabaseClient.from('leads').insert(Object.assign({ fornecedor_id: session.user.id }, dados));
+    let { error } = await gravar(payload);
+    if (error && /column|schema cache/i.test(error.message || '')) {
+      const semNovos = { ...payload };
+      Object.keys(dadosCliente).forEach(k => delete semNovos[k]);
+      ({ error } = await gravar(semNovos));
+      if (!error) showToast('CPF, WhatsApp, endereço e datas não foram salvos: rode a migration 054 no Supabase.', true);
     }
+    if (error) {
+      showToast(form.dataset.editId ? 'Não foi possível atualizar o lead.' : 'Não foi possível adicionar o lead.', true);
+      return;
+    }
+    showToast(form.dataset.editId ? 'Lead atualizado.' : 'Lead adicionado.');
 
     await loadLeads();
     close();
@@ -310,7 +357,14 @@ function openLeadDrawer(id) {
   const lead = crmLeads.find(l => l.id === id);
   if (!lead) return;
 
-  document.getElementById('lead-drawer-title').textContent = 'Editar contato';
+  document.getElementById('lead-drawer-title').textContent = 'Editar lead';
+  document.getElementById('lead-cpf').value = lead.cpf || '';
+  document.getElementById('lead-whatsapp').value = lead.whatsapp || '';
+  document.getElementById('lead-endereco').value = lead.endereco || '';
+  document.getElementById('lead-estado').value = lead.estado || '';
+  preencherCidadesDoLead(lead.estado || '');
+  document.getElementById('lead-cidade').value = lead.cidade || '';
+  document.getElementById('lead-quote-date').value = lead.data_orcamento || '';
   document.getElementById('lead-name').value = lead.name;
   document.getElementById('lead-email').value = lead.email || '';
   document.getElementById('lead-date').value = lead.event_date || '';
@@ -337,6 +391,158 @@ function openLeadDrawer(id) {
 
   document.getElementById('lead-drawer').classList.add('show');
   document.getElementById('lead-drawer-backdrop').classList.add('show');
+}
+
+/* -------------------- Cidade do lead (depende do estado) -------------------- */
+
+function preencherCidadesDoLead(uf) {
+  const input = document.getElementById('lead-cidade');
+  const lista = document.getElementById('lead-cidade-options');
+  if (!input || !lista) return;
+  const cidades = (typeof BR_CIDADES_POR_UF !== 'undefined' && BR_CIDADES_POR_UF[uf]) || [];
+  lista.innerHTML = cidades.map(c => `<option value="${escapeHtml(c)}">`).join('');
+  input.disabled = !uf;
+  input.placeholder = uf ? 'Digite ou escolha a cidade' : 'Escolha o estado primeiro';
+}
+
+/* -------------------- Importar lista de leads (CSV) -------------------- */
+
+// Cabeçalhos aceitos na planilha (sem acento, minúsculo) → campo do lead.
+const LEAD_IMPORT_COLUNAS = {
+  nome: 'name', name: 'name', cliente: 'name',
+  email: 'email', 'e-mail': 'email',
+  cpf: 'cpf',
+  whatsapp: 'whatsapp', telefone: 'whatsapp', celular: 'whatsapp', fone: 'whatsapp',
+  endereco: 'endereco',
+  estado: 'estado', uf: 'estado',
+  cidade: 'cidade',
+  'data do orcamento': 'data_orcamento', 'data orcamento': 'data_orcamento',
+  'data do evento': 'event_date', 'data evento': 'event_date', data: 'event_date',
+  orcamento: 'value', valor: 'value'
+};
+
+const LEAD_IMPORT_MODELO = [
+  'Nome;E-mail;CPF;WhatsApp;Endereço;Estado;Cidade;Data do orçamento;Data do evento;Orçamento',
+  'Maria da Silva;maria@email.com;123.456.789-00;(11) 98765-4321;Rua das Flores, 100;SP;São Paulo;15/10/2026;20/03/2027;15000,00'
+].join('\r\n');
+
+function normalizarCabecalho(texto) {
+  return String(texto || '').trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, ' ');
+}
+
+// CSV simples com aspas; separador ; (Excel em português) ou , (Google).
+function lerCsv(texto) {
+  const linhas = [];
+  const primeira = texto.split(/\r?\n/)[0] || '';
+  const sep = (primeira.match(/;/g) || []).length >= (primeira.match(/,/g) || []).length ? ';' : ',';
+  let linha = [], campo = '', aspas = false;
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    if (aspas) {
+      if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; }
+      else if (c === '"') aspas = false;
+      else campo += c;
+    } else if (c === '"') aspas = true;
+    else if (c === sep) { linha.push(campo); campo = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && texto[i + 1] === '\n') i++;
+      linha.push(campo); campo = '';
+      if (linha.some(v => v.trim())) linhas.push(linha);
+      linha = [];
+    } else campo += c;
+  }
+  linha.push(campo);
+  if (linha.some(v => v.trim())) linhas.push(linha);
+  return linhas;
+}
+
+function valorEmReais(texto) {
+  const limpo = String(texto || '').replace(/[^\d,.-]/g, '');
+  if (!limpo) return 0;
+  // "15.000,50" → 15000.50; "15000.50" → 15000.50
+  const numero = limpo.includes(',') ? limpo.replace(/\./g, '').replace(',', '.') : limpo;
+  return Number(numero) || 0;
+}
+
+function initLeadImport() {
+  const modal = document.getElementById('lead-import-modal');
+  const fileInput = document.getElementById('lead-import-file');
+  const status = document.getElementById('lead-import-status');
+  if (!modal || !fileInput) return;
+
+  const abrir = () => { status.hidden = true; fileInput.value = ''; modal.classList.add('show'); };
+  const fechar = () => modal.classList.remove('show');
+
+  document.getElementById('lead-import-btn')?.addEventListener('click', abrir);
+  document.getElementById('lead-import-close')?.addEventListener('click', fechar);
+  modal.addEventListener('click', e => { if (e.target === modal) fechar(); });
+  document.getElementById('lead-import-choose')?.addEventListener('click', () => fileInput.click());
+
+  document.getElementById('lead-import-template')?.addEventListener('click', () => {
+    const blob = new Blob(['﻿' + LEAD_IMPORT_MODELO], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modelo-importar-leads.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  fileInput.addEventListener('change', async () => {
+    const arquivo = fileInput.files && fileInput.files[0];
+    if (!arquivo) return;
+    const mostrar = (texto) => { status.textContent = texto; status.hidden = false; };
+
+    const texto = (await arquivo.text()).replace(/^﻿/, '');
+    const linhas = lerCsv(texto);
+    if (linhas.length < 2) return mostrar('A planilha precisa ter o cabeçalho e pelo menos uma linha de lead.');
+
+    const campos = linhas[0].map(h => LEAD_IMPORT_COLUNAS[normalizarCabecalho(h)] || null);
+    if (!campos.includes('name')) return mostrar('Não achei a coluna "Nome". Use o modelo para ver os nomes das colunas.');
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
+    const leads = linhas.slice(1).map(cols => {
+      const lead = { fornecedor_id: session.user.id, status: 'novo' };
+      campos.forEach((campo, i) => {
+        if (!campo) return;
+        const v = String(cols[i] || '').trim();
+        if (!v) return;
+        if (campo === 'value') lead.value = valorEmReais(v);
+        else if (campo === 'cpf') lead.cpf = formatCPF(v.replace(/\D/g, '').slice(0, 11));
+        else if (campo === 'whatsapp') lead.whatsapp = formatPhoneDigits(v.replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '').slice(0, 11));
+        else if (campo === 'estado') lead.estado = v.toUpperCase().slice(0, 2);
+        else if (campo === 'name') lead.name = maiusculaNoNome(v);
+        else lead[campo] = v;
+      });
+      return lead;
+    }).filter(l => l.name);
+
+    if (!leads.length) return mostrar('Nenhuma linha com nome para importar.');
+
+    mostrar(`Importando ${leads.length} ${leads.length === 1 ? 'lead' : 'leads'}…`);
+    let { error } = await supabaseClient.from('leads').insert(leads);
+    let aviso = '';
+    if (error && /column|schema cache/i.test(error.message || '')) {
+      // Sem a migration 054: importa só nome, e-mail, data do evento e orçamento.
+      const basicos = leads.map(({ fornecedor_id, status: st, name, email, event_date, value }) =>
+        ({ fornecedor_id, status: st, name, email: email || null, event_date: event_date || null, value: value || 0 }));
+      ({ error } = await supabaseClient.from('leads').insert(basicos));
+      aviso = ' CPF, WhatsApp, endereço e datas ficaram de fora: rode a migration 054 no Supabase.';
+    }
+    if (error) return mostrar('Não foi possível importar a lista. Confira o arquivo e tente de novo.');
+
+    await loadLeads();
+    renderLeadStatusTabs();
+    renderLeadsTable();
+    mostrar(`${leads.length} ${leads.length === 1 ? 'lead importado' : 'leads importados'}.${aviso}`);
+    showToast(`${leads.length} ${leads.length === 1 ? 'lead importado' : 'leads importados'}.`);
+  });
 }
 
 /* -------------------- Observações e comentários -------------------- */

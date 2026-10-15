@@ -7033,3 +7033,6 @@ body[data-theme="dark"] .dash-range-cal .mini-cal-day.is-in-range { background: 
 .pricing-type-card.active,
 .pricing-type-card.active:hover { background: #F4F4F5; border-color: transparent; }
 body[data-theme="dark"] .pricing-type-card.active { border-color: transparent !important; }
+
+/* Leads › Importar: janelinha com as instruções e os botões. */
+.modal-card.lead-import-card { max-width: 480px; padding: 1.5rem; }

@@ -6973,3 +6973,25 @@ body[data-theme="dark"] .faq-table-title { color: #FFFFFF !important; }
 .builder-tool-btn { width: 34px; height: 34px; }
 .builder-device-toggle { padding: 3px; height: 34px; box-sizing: border-box; }
 .builder-device-btn { height: 28px; }
+
+/* Botões dos drawers (Salvar, Cancelar, Avançar, Salvar item, Voltar,
+   Excluir, Comentar…): a mesma altura de 34px e o espaçamento lateral dos
+   botões de ação. O "Adicionar" do escopo fica de fora porque acompanha a
+   altura do campo ao lado. */
+.form-drawer .btn-primary:not(.scope-add-btn),
+.form-drawer .btn-secondary:not(.scope-add-btn),
+.form-drawer .agenda-event-delete-btn {
+  height: 34px;
+  min-height: 34px;
+  padding-top: 0;
+  padding-bottom: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+.form-drawer .btn-primary:not(.scope-add-btn),
+.form-drawer .btn-secondary:not(.scope-add-btn) { padding-left: 1.25rem; padding-right: 1.25rem; }
+#product-drawer-delete-btn { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }

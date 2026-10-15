@@ -15,7 +15,7 @@ const NAV_SECTIONS = [
     items: [
       {
         // O grupo leva ao próprio dashboard; a seta ao lado abre os filhos.
-        grupo: 'fornecedores', text: 'HUB/B2B', icon: 'store',
+        grupo: 'fornecedores', text: 'Empresas', icon: 'store',
         page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },

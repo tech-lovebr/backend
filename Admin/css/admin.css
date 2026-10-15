@@ -98,13 +98,14 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   transition: transform .22s ease;
 }
 
-/* Topo da sidebar: só o logotipo, maior e centralizado, no mesmo cinza da
+/* Topo da sidebar: só o logotipo, maior e alinhado à esquerda, no mesmo cinza da
    coluna e sem linha separando do menu. */
 .admin-sidebar-brand {
   height: var(--topbar-h);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  /* Começa onde começam os ícones do menu (padding do menu + do item). */
   padding: 0 1.25rem;
   background: transparent;
   text-decoration: none;
@@ -342,7 +343,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
      tendo botão ou não. */
   min-height: 72.8px;
   background: var(--header-bar-bg);
-  border-bottom: 1px solid var(--topbar-border);
+  /* Sem linha embaixo: a do topo (acima) já separa. */
 }
 
 .header-bar-titulo { display: flex; align-items: center; gap: .5rem; min-width: 0; }
@@ -362,14 +363,13 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 .header-bar-link:hover { background: var(--bg-muted); color: var(--primary-color); }
 .header-bar-link svg { width: 16px; height: 16px; }
 
-/* Mesmo corpo do h2 das páginas do B2B (text-xl / font-bold / zinc-900). */
+/* Título da página: menor e sem negrito, abaixo do "Admin" do topo, para os
+   dois não disputarem atenção. */
 .admin-header-bar h1 {
   margin: 0;
-  font-size: 1.25rem;
-  /* line-height do text-xl do Tailwind, que é o que o B2B usa. Sem isto a
-     barra fica ~3,5px mais baixa que a do B2B. */
+  font-size: 1rem;
   line-height: 1.75rem;
-  font-weight: 700;
+  font-weight: 400;
   color: #18181B;
 }
 
@@ -2952,7 +2952,7 @@ table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4
 /* Título do topo, no lugar da antiga busca. */
 .topbar-titulo {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text);
   letter-spacing: -.01em;

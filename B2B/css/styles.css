@@ -6629,3 +6629,23 @@ body[data-theme="dark"] .notification-row-icon { background: #333333 !important;
 .date-picker-popover .mini-cal-month-label-btn { text-transform: none; }
 .date-picker-popover .dp-body > .mini-cal-year-grid { height: 100%; grid-auto-rows: 1fr; }
 .date-picker-popover .dp-body > .mini-cal-year-grid .mini-cal-year-btn { padding: 0; }
+
+/* Avatar do perfil no cabeçalho (e no menu do perfil): mesma caixinha dos
+   botões + e raio do chat (.chat-composer-icon-btn) — 40×40, fundo branco,
+   borda #E4E4E7, cantos 8px. Sem foto, as iniciais ficam sobre o branco. */
+#topbar-user-avatar,
+#profile-dropdown-avatar {
+  width: 40px !important; height: 40px !important;
+  border-radius: 8px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E4E4E7 !important;
+  box-sizing: border-box;
+}
+#topbar-user-avatar .avatar-initials,
+#profile-dropdown-avatar .avatar-initials { background: #FFFFFF; border-radius: 7px; }
+#topbar-user-avatar .avatar-photo-img,
+#profile-dropdown-avatar .avatar-photo-img { border-radius: 7px; }
+body[data-theme="dark"] #topbar-user-avatar,
+body[data-theme="dark"] #profile-dropdown-avatar { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] #topbar-user-avatar .avatar-initials,
+body[data-theme="dark"] #profile-dropdown-avatar .avatar-initials { background: #252525 !important; }

@@ -61,7 +61,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261014_avatarchat3">
+  <link rel="stylesheet" href="css/styles.css?v=20261014_padraohub3">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -739,7 +739,7 @@
         <div class="relative">
           <button id="btn-user-account-menu" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Minha conta">
             <!-- Foto da conta ou, sem foto, as iniciais do nome (preenchido pelo app.js) -->
-            <span id="header-user-avatar" class="header-user-avatar hidden" aria-hidden="true"></span>
+            <span id="header-user-avatar" class="header-user-avatar love-avatar-box hidden" aria-hidden="true"></span>
             <svg id="header-user-icon" class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"></path>
             </svg>
@@ -748,6 +748,15 @@
 
           <!-- Dropdown Menu de Minha Conta -->
           <div id="dropdown-user-account" class="hidden absolute right-0 top-full mt-2 w-64 sm:w-72 glass-dropdown rounded-2xl shadow-2xl p-2 z-50 space-y-0.5">
+
+            <!-- Topo do menu: avatar (foto ou iniciais) + nome + e-mail da conta -->
+            <div class="account-dropdown-header">
+              <span id="account-dropdown-avatar" class="love-avatar-box" aria-hidden="true"></span>
+              <div class="min-w-0">
+                <p id="account-dropdown-username" class="account-dropdown-name"></p>
+                <p id="account-dropdown-email" class="account-dropdown-email"></p>
+              </div>
+            </div>
 
             <!-- 1. Ver meu site -->
             <button id="btn-account-preview-site" class="w-full text-left px-3.5 py-2.5 rounded-xl text-[14.5px] font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 flex items-center gap-3 transition-all cursor-pointer">
@@ -3261,7 +3270,7 @@
                 <div class="px-6 py-3.5 bg-white border-b border-zinc-200 flex items-center justify-between flex-shrink-0 h-[64px]">
                   <div class="flex items-center gap-3.5 min-w-0">
                     <div class="relative flex-shrink-0">
-                      <img id="b2b-chat-active-avatar" src="assets/theme_garden.jpg" alt="Avatar" class="w-10 h-10 rounded-xl object-cover border border-zinc-200">
+                      <img id="b2b-chat-active-avatar" alt="" class="w-10 h-10 rounded-xl object-cover border border-zinc-200">
                       <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
                     </div>
                     <div class="min-w-0">
@@ -3280,8 +3289,8 @@
                 <div class="p-4 bg-white border-t border-zinc-200 flex-shrink-0">
                   <form id="b2b-chat-form" class="flex items-center gap-3">
                     <input type="file" id="b2b-chat-file-input" class="hidden" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
-                    <button type="button" id="b2b-chat-attach-btn" class="w-10 h-10 rounded-xl border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer flex-shrink-0" title="Anexar arquivo">
-                      <svg class="w-5 h-5 -rotate-45" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <button type="button" id="b2b-chat-attach-btn" class="chat-composer-icon-btn" title="Anexar arquivo" aria-label="Anexar arquivo">
+                      <svg class="-rotate-45" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                       </svg>
                     </button>
@@ -5414,7 +5423,7 @@
   <script src="js/supabase-init.js?v=20261014_nomes"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261014_mesas"></script>
+  <script src="js/app.js?v=20261014_padraohub3"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261014_capafade"></script>
 </body>

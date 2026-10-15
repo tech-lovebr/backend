@@ -14,6 +14,9 @@ const REGRAS_SENHA = {
 
 const senhaValida = s => Object.values(REGRAS_SENHA).every(regra => regra(s));
 
+/* Mesmos nomes da página Funções. */
+const PAPEIS = { superadmin: 'Super admin', admin: 'Administrador' };
+
 document.addEventListener('DOMContentLoaded', async () => {
   const admin = await window.adminReady;
   if (!admin) return;
@@ -21,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('form-perfil');
   form.name.value = admin.name || '';
   form.email.value = admin.email || '';
+  form.funcao.value = PAPEIS[admin.role] || admin.role || '';
 
   document.getElementById('btn-salvar-perfil').addEventListener('click', async () => {
     const nome = form.name.value.trim();

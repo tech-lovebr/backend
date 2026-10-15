@@ -7826,7 +7826,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) {
       const qtd = convidadosSelecionados.size;
       btn.classList.toggle('hidden', qtd === 0);
-      btn.querySelector('.love-tabela-filtro-contador').textContent = String(qtd);
       btn.title = qtd === 1 ? 'Excluir 1 convidado selecionado' : `Excluir ${qtd} convidados selecionados`;
     }
     const checks = Array.from(document.querySelectorAll('#rsvp-guests-table-body .guest-select-check'));
@@ -7864,7 +7863,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.type = 'button';
     btn.id = 'btn-rsvp-delete-selected';
     btn.className = 'love-tabela-botao love-tabela-lixeira hidden';
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg><span class="love-tabela-filtro-contador">0</span>';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>';
     dir.prepend(btn);
     btn.addEventListener('click', async () => {
       const ev = getActiveEvent();

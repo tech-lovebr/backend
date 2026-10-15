@@ -7542,3 +7542,5 @@ html body button.guest-remove-nao:not(#love-h-a):hover { border-color: #181D24; 
 .guest-select-espaco { display: inline-block; width: 18px; flex-shrink: 0; }
 html body #view-event-os-dashboard .love-tabela-lixeira:not(#love-h-a) .love-tabela-filtro-contador { background: #DC2626; }
 html body #view-event-os-dashboard .love-tabela-lixeira:not(#love-h-a):hover { border-color: #DC2626; color: #DC2626; }
+.guest-select-check { margin-right: .4rem; }
+.guest-select-espaco { margin-right: .4rem; }

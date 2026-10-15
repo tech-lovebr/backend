@@ -7105,4 +7105,4 @@ html body #wallet-sub-digital .wallet-card {
 
 /* /login: campos, "Continuar" e o botão do Google com a MESMA largura —
    o botão do Google vai no máximo a 400px, então a coluna do login também. */
-#login-panel-signin, #login-panel-forgot, #login-panel-mfa { max-width: 400px; }
+#login-panel-signin, #login-panel-forgot, #login-panel-mfa { max-width: 400px; margin-left: auto; margin-right: auto; }

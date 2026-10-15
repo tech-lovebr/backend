@@ -5285,6 +5285,16 @@ body[data-theme="dark"] .product-cover-adjust-frame { border-color: #404040 !imp
   transition: border-color .15s ease, background-color .15s ease;
 }
 .profile-avatar-picker:hover, .profile-avatar-picker.is-dragover { border-color: var(--primary-blue); background: #F4F8FC; }
+/* Sem foto: a caixa inteira em azul clarinho com as iniciais da empresa
+   (o mesmo avatar do cabeçalho e do chat), em vez de um "+" no cinza. */
+.profile-avatar-picker:not(.has-image) { background: #EBF4FF; border-color: #CFE2FA; }
+.profile-avatar-picker:not(.has-image):hover,
+.profile-avatar-picker:not(.has-image).is-dragover { background: #DCEBFF; border-color: var(--primary-blue); }
+.profile-avatar-initials { font-size: 1.75rem; font-weight: 700; color: #183B54; letter-spacing: 0.02em; line-height: 1; }
+.profile-avatar-add-text { font-size: 0.6875rem; color: #537BAE; font-weight: 600; }
+body[data-theme="dark"] .profile-avatar-picker:not(.has-image) { background: #333333 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .profile-avatar-initials { color: #FFFFFF !important; }
+
 .profile-avatar-picker.has-image {
   border-style: solid; border-color: var(--border-light);
   background: repeating-conic-gradient(#F4F4F5 0% 25%, #fff 0% 50%) 0 0 / 16px 16px;

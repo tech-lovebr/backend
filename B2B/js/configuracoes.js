@@ -606,7 +606,7 @@ function renderProfileAvatarPicker() {
         ${photo
           ? `<img src="${photo}" class="avatar-crop-img" alt="" style="${cropStyle}">
              <div class="header-logo-picker-overlay">${PROFILE_LOGO_IMAGE_ICON}<span>Alterar foto</span></div>`
-          : `<span class="image-upload-zone-plus">${PROFILE_LOGO_PLUS_ICON}</span><span class="image-upload-zone-text">Adicione uma foto</span>`}
+          : `<span class="profile-avatar-initials">${escapeHtml(avatarInitials(p.company || p.name))}</span><span class="profile-avatar-add-text">Adicione uma foto</span>`}
         <input type="file" accept="image/*" class="image-upload-zone-input" id="profile-avatar-input">
       </label>
       ${photo ? `<button type="button" class="header-logo-picker-remove" id="profile-avatar-remove" title="Remover foto">${PROFILE_LOGO_CLOSE_ICON}</button>` : ''}

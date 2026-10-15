@@ -9188,6 +9188,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (balanceDisponivel) balanceDisponivel.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (balanceArrecadado) balanceArrecadado.textContent = `R$ ${(activeEvent.wallet.saldoDisponivel + activeEvent.wallet.totalSacado).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (balanceSacado) balanceSacado.textContent = `R$ ${activeEvent.wallet.totalSacado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    // Quantos presentes os convidados compraram = entradas do extrato
+    // (antes era um "48" fixo do HTML de demonstração).
+    const presentesCompradosEl = document.getElementById('wallet-presentes-comprados');
+    if (presentesCompradosEl) {
+      const qtd = (activeEvent.wallet.transactions || []).filter(tx => Number(tx.amount) > 0).length;
+      presentesCompradosEl.textContent = qtd === 0 ? 'Nenhum presente comprado ainda'
+        : `${qtd} ${qtd === 1 ? 'presente comprado' : 'presentes comprados'} por convidados`;
+    }
     preencherDadosDeSaque();
 
     if (!listEl) return;

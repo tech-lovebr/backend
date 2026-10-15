@@ -87,6 +87,7 @@ async function excluirModelo(id) {
 /* ---------------- Menu ⋮ das mensagens ---------------- */
 
 let menuMensagemTexto = '';
+let menuMensagemIndice = -1;
 
 function fecharMenuMensagem() {
   document.getElementById('chat-msg-menu')?.classList.remove('show');
@@ -282,8 +283,10 @@ async function initChatModelos() {
     e.stopPropagation();
     const conv = b2bConversations.find(c => c.id === activeConvId);
     const msg = conv && conv.messages[Number(btn.dataset.msgMenu)];
+    menuMensagemIndice = Number(btn.dataset.msgMenu);
     if (msg && msg.text) abrirMenuMensagem(btn, msg.text);
   });
+  document.getElementById('chat-msg-menu-edit')?.addEventListener('click', () => { fecharMenuMensagem(); window.iniciarEdicaoMensagem?.(menuMensagemIndice); });
   document.getElementById('chat-msg-menu-copy')?.addEventListener('click', () => { fecharMenuMensagem(); copiarTexto(menuMensagemTexto); });
   document.getElementById('chat-msg-menu-template')?.addEventListener('click', () => { fecharMenuMensagem(); abrirDrawerModelo(menuMensagemTexto); });
   document.addEventListener('click', (e) => { if (!e.target.closest('#chat-msg-menu')) fecharMenuMensagem(); });

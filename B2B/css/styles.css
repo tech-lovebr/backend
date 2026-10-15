@@ -7341,3 +7341,17 @@ body[data-theme="dark"] .pedido-card-titulo, body[data-theme="dark"] .pedido-car
 }
 body[data-theme="dark"] .lead-origem { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .lead-origem-valor { color: #FFFFFF !important; }
+
+/* Chat: edição da mensagem no próprio balão (⋮ › Editar). */
+.chat-msg-edicao { display: flex; flex-direction: column; gap: 8px; min-width: 240px; }
+.chat-msg-edicao-campo {
+  width: 100%; box-sizing: border-box; resize: none; overflow: hidden;
+  font-family: inherit; font-size: 0.875rem; line-height: 1.45; color: #18181B;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; padding: 8px 10px; outline: none;
+}
+.chat-msg-edicao-campo:focus { border-color: #181D24; }
+.chat-msg-edicao-acoes { display: flex; justify-content: flex-end; gap: 6px; }
+.chat-msg-edicao-acoes .btn-primary, .chat-msg-edicao-acoes .btn-secondary { height: 30px; padding: 0 0.8rem; font-size: 0.75rem; }
+.chat-bubble-user-glass .chat-msg-edicao-acoes .btn-primary { color: #FFFFFF !important; }
+.chat-msg-editado { font-style: italic; }
+body[data-theme="dark"] .chat-msg-edicao-campo { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

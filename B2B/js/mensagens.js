@@ -29,11 +29,14 @@ async function loadB2BConversations() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) return;
 
-  const { data: rows, error } = await supabaseClient
+  // edited_at vem da migration 057_editar_mensagem_chat; sem ela, carrega sem.
+  const consultar = (campos) => supabaseClient
     .from('conversations')
-    .select('id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at)')
+    .select(`id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(${campos})`)
     .eq('fornecedor_id', session.user.id)
     .order('last_message_at', { ascending: false });
+  let { data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at, edited_at');
+  if (error) ({ data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at'));
 
   if (error || !rows) { b2bConversations = []; return; }
 
@@ -51,6 +54,8 @@ async function loadB2BConversations() {
       time: last ? formatB2BMsgTime(last.created_at) : '',
       unread: msgs.filter(m => m.sender_role === 'cliente' && !m.read_at).length,
       messages: msgs.map(m => ({
+        id: m.id,
+        editedAt: m.edited_at || null,
         sender: m.sender_role === 'fornecedor' ? 'me' : 'them',
         text: m.text,
         time: formatB2BMsgTime(m.created_at),
@@ -88,6 +93,12 @@ function subscribeToB2BMessages() {
   if (b2bMessagesChannel) supabaseClient.removeChannel(b2bMessagesChannel);
   b2bMessagesChannel = supabaseClient
     .channel('b2b-mensagens')
+    // Mensagem editada (aqui ou pelo anfitrião): redesenha com o texto novo.
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, async () => {
+      if (mensagemEmEdicaoId) return;
+      await loadB2BConversations();
+      renderActiveChat();
+    })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
       const searchInput = document.getElementById('chat-search-input');
       await loadB2BConversations();
@@ -240,10 +251,19 @@ function renderActiveChat() {
         ${msg.text ? `<button type="button" class="chat-msg-menu-btn mb-5" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
           <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
-            ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
+            ${msg.id && msg.id === mensagemEmEdicaoId
+              ? `<div class="chat-msg-edicao">
+                  <textarea class="chat-msg-edicao-campo" data-edicao-campo rows="2">${escapeMsg(msg.text || '')}</textarea>
+                  <div class="chat-msg-edicao-acoes">
+                    <button type="button" class="btn-secondary" data-edicao-cancelar>Cancelar</button>
+                    <button type="button" class="btn-primary" data-edicao-salvar="${msgIndex}">Salvar</button>
+                  </div>
+                </div>`
+              : (msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : '')}
             ${attachmentHTML}
           </div>
           <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
+            ${msg.editedAt ? '<span class="chat-msg-editado">(editado)</span>' : ''}
             <span>${msg.time || 'Agora'}</span>
           </div>
         </div>
@@ -260,7 +280,7 @@ function renderActiveChat() {
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>`}
-          <span class="text-[10px] text-zinc-400 pl-1 block">${msg.time || 'Agora'}</span>
+          <span class="text-[10px] text-zinc-400 pl-1 block">${msg.editedAt ? '(editado) ' : ''}${msg.time || 'Agora'}</span>
         </div>
       `;
     }
@@ -478,4 +498,78 @@ document.addEventListener('click', async (e) => {
     leadId, clienteId: conv.clienteId, servico: pedido.servico,
     data: pedido.data, convidados: pedido.convidados, evento: pedido.evento
   });
+});
+
+/* ---------------- Editar mensagem (⋮ › Editar) ----------------
+   Edição no próprio balão: o texto vira um campo com Cancelar/Salvar.
+   Salvar grava o texto novo e edited_at (migration 057_editar_mensagem_chat:
+   só o autor altera a própria mensagem); o chat mostra "(editado)". */
+let mensagemEmEdicaoId = null;
+
+window.iniciarEdicaoMensagem = function (msgIndex) {
+  const conv = b2bConversations.find(c => c.id === activeConvId);
+  const msg = conv && conv.messages[msgIndex];
+  if (!msg || !msg.id || msg.sender !== 'me') return;
+  mensagemEmEdicaoId = msg.id;
+  renderActiveChat();
+  const campo = document.querySelector('[data-edicao-campo]');
+  if (campo) {
+    campo.focus();
+    campo.setSelectionRange(campo.value.length, campo.value.length);
+    campo.style.height = 'auto';
+    campo.style.height = campo.scrollHeight + 'px';
+  }
+};
+
+function cancelarEdicaoMensagem() {
+  mensagemEmEdicaoId = null;
+  renderActiveChat();
+}
+
+async function salvarEdicaoMensagem(msgIndex) {
+  const conv = b2bConversations.find(c => c.id === activeConvId);
+  const msg = conv && conv.messages[msgIndex];
+  const campo = document.querySelector('[data-edicao-campo]');
+  if (!msg || !campo) return;
+  const texto = campo.value.trim();
+  if (!texto) { showToast('A mensagem não pode ficar vazia.', true); return; }
+  if (texto === (msg.text || '').trim()) { cancelarEdicaoMensagem(); return; }
+
+  const { data, error } = await supabaseClient.from('messages')
+    .update({ text: texto, edited_at: new Date().toISOString() })
+    .eq('id', msg.id)
+    .select('id');
+  if (error || !data || !data.length) {
+    showToast('Não foi possível editar a mensagem.', true);
+    return;
+  }
+  msg.text = texto;
+  msg.editedAt = new Date().toISOString();
+  mensagemEmEdicaoId = null;
+  renderActiveChat();
+  showToast('Mensagem editada.');
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-edicao-cancelar]')) { cancelarEdicaoMensagem(); return; }
+  const salvar = e.target.closest('[data-edicao-salvar]');
+  if (salvar) salvarEdicaoMensagem(Number(salvar.dataset.edicaoSalvar));
+});
+
+document.addEventListener('keydown', (e) => {
+  const campo = e.target.closest && e.target.closest('[data-edicao-campo]');
+  if (!campo) return;
+  if (e.key === 'Escape') { e.preventDefault(); cancelarEdicaoMensagem(); }
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const btn = document.querySelector('[data-edicao-salvar]');
+    if (btn) salvarEdicaoMensagem(Number(btn.dataset.edicaoSalvar));
+  }
+});
+
+document.addEventListener('input', (e) => {
+  const campo = e.target.closest && e.target.closest('[data-edicao-campo]');
+  if (!campo) return;
+  campo.style.height = 'auto';
+  campo.style.height = campo.scrollHeight + 'px';
 });

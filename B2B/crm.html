@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=536">
+  <link rel="stylesheet" href="css/styles.css?v=537">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -76,28 +76,13 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
         </button>
       </div>
-      <p class="text-sm text-zinc-600 mb-4">Envie uma planilha em <strong>CSV</strong>, feita no Excel ou no Google Planilhas.</p>
-
-      <!-- Passo a passo da importação -->
+      <!-- Passo a passo curto da importação -->
       <ol class="lead-import-steps">
-        <li>
-          <span class="lead-import-step-num">1</span>
-          <div><strong>Baixe o modelo</strong><p>Use o botão "Baixar modelo" abaixo e abra o arquivo no Excel ou no Google Planilhas.</p></div>
-        </li>
-        <li>
-          <span class="lead-import-step-num">2</span>
-          <div><strong>Preencha os leads</strong><p>A primeira linha deve ter os nomes das colunas. Uma linha por lead, a partir da segunda.</p>
-            <p class="lead-import-cols">Colunas aceitas: <span>Nome</span> (obrigatória), <span>E-mail</span>, <span>CPF</span>, <span>WhatsApp</span>, <span>Endereço</span>, <span>Estado</span>, <span>Cidade</span>, <span>Data do orçamento</span>, <span>Data do evento</span> e <span>Orçamento</span>.</p></div>
-        </li>
-        <li>
-          <span class="lead-import-step-num">3</span>
-          <div><strong>Salve em CSV</strong><p>No Excel: Arquivo › Salvar como › CSV. No Google Planilhas: Arquivo › Fazer download › CSV.</p></div>
-        </li>
-        <li>
-          <span class="lead-import-step-num">4</span>
-          <div><strong>Envie o arquivo</strong><p>Clique em "Escolher arquivo" e selecione o CSV salvo. Os leads entram como "Novo".</p></div>
-        </li>
+        <li><span class="lead-import-step-num">1</span><div><strong>Baixe o modelo</strong> e preencha um lead por linha.</div></li>
+        <li><span class="lead-import-step-num">2</span><div><strong>Salve em CSV</strong> (Arquivo › Salvar como ou Fazer download).</div></li>
+        <li><span class="lead-import-step-num">3</span><div><strong>Escolha o arquivo</strong> para importar.</div></li>
       </ol>
+      <p class="lead-import-cols">Só a coluna <span>Nome</span> é obrigatória.</p>
 
       <div class="lead-import-actions">
         <button type="button" class="btn-secondary" id="lead-import-template">Baixar modelo</button>

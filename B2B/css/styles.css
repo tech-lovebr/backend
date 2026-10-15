@@ -7088,3 +7088,9 @@ body[data-theme="dark"] .lead-import-cols span { color: #E4E4E7 !important; }
 }
 .field-copy-btn:hover { color: #181D24; background: #F4F4F5; }
 body[data-theme="dark"] .field-copy-btn:hover { color: #FFFFFF !important; background: #333333 !important; }
+
+/* Importar leads: passo a passo curto, uma linha por passo. */
+.lead-import-steps { gap: 0.6rem; margin-bottom: 0.75rem; }
+.lead-import-steps li { align-items: center; font-size: 0.8125rem; color: #52525B; }
+.lead-import-steps li strong { display: inline; }
+p.lead-import-cols { font-size: 0.75rem; color: #71717A; margin: 0 0 1.25rem; }

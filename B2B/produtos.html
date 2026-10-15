@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=509">
+  <link rel="stylesheet" href="css/styles.css?v=510">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -118,7 +118,7 @@
           <div>
             <label for="product-name" class="field-label">Título do anúncio</label>
             <p class="field-hint">Dê um nome claro e objetivo para o cliente identificar sua oferta rapidamente.</p>
-            <input id="product-name" type="text" class="field-input" placeholder="Selecione uma categoria para ver um exemplo">
+            <input id="product-name" type="text" class="field-input">
           </div>
         </div>
 
@@ -148,7 +148,7 @@
 
             <div id="pricing-per-person-fields" class="flex flex-col gap-4 mt-4" hidden>
               <div>
-                <label for="pricing-per-person-price" class="field-label">Preço por pessoa (R$)</label>
+                <label for="pricing-per-person-price" class="field-label">Preço por pessoa</label>
                 <input id="pricing-per-person-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
               <div class="grid grid-cols-2 gap-4">
@@ -165,7 +165,7 @@
 
             <div id="pricing-per-hour-fields" class="flex flex-col gap-4 mt-4" hidden>
               <div>
-                <label for="pricing-per-hour-price" class="field-label">Valor da hora (R$)</label>
+                <label for="pricing-per-hour-price" class="field-label">Valor da hora</label>
                 <input id="pricing-per-hour-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
               <div class="grid grid-cols-2 gap-4">
@@ -174,7 +174,7 @@
                   <input id="pricing-per-hour-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
                 </div>
                 <div>
-                  <label for="pricing-per-hour-extra" class="field-label">Hora adicional (R$)</label>
+                  <label for="pricing-per-hour-extra" class="field-label">Hora adicional</label>
                   <input id="pricing-per-hour-extra" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
                 </div>
               </div>
@@ -182,11 +182,11 @@
 
             <div id="pricing-fixed-fields" class="flex flex-col gap-4 mt-4" hidden>
               <div>
-                <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária (R$)</label>
+                <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária</label>
                 <input id="pricing-fixed-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
               <div>
-                <label for="pricing-fixed-duration-value" class="field-label">Duração inclusa</label>
+                <label for="pricing-fixed-duration-value" class="field-label">Duração/Permanência</label>
                 <div class="flex gap-2">
                   <input id="pricing-fixed-duration-value" type="number" min="0" step="1" class="field-input" placeholder="Ex: 6" style="flex:1;">
                   <select id="pricing-fixed-duration-unit" class="field-select" style="flex:1;">
@@ -470,7 +470,7 @@
               <input id="product-service-radius-km" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
             </div>
             <div>
-              <label for="product-service-extra-km-fee" class="field-label">Valor por km adicional (R$)</label>
+              <label for="product-service-extra-km-fee" class="field-label">Valor por km adicional</label>
               <input id="product-service-extra-km-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
             </div>
           </div>
@@ -551,11 +551,11 @@
   </div>
 
   <script src="js/data.js?v=16"></script>
-  <script src="js/utils.js?v=20"></script>
+  <script src="js/utils.js?v=21"></script>
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/produtos.js?v=18"></script>
+  <script src="js/produtos.js?v=19"></script>
 </body>
 </html>

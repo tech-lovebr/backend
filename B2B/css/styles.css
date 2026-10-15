@@ -5410,6 +5410,15 @@ body[data-theme="dark"] .chat-template-command { color: #FFFFFF !important; }
 body[data-theme="dark"] .chat-composer-icon-btn { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 body[data-theme="dark"] .chat-composer-icon-btn:hover { border-color: #FFFFFF !important; color: #FFFFFF !important; }
 
+/* Campo de dinheiro com "R$" fixo no começo, dentro da caixa. */
+.money-field { position: relative; }
+.money-field-prefix {
+  position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+  font-size: 0.875rem; font-weight: 600; color: #52525B; pointer-events: none;
+}
+.money-field > .field-input { padding-left: 2.4rem; }
+body[data-theme="dark"] .money-field-prefix { color: #D4D4D8 !important; }
+
 /* Sugestões de provedor de e-mail (abaixo do campo, ao digitar "@"). */
 .email-suggest {
   position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30;

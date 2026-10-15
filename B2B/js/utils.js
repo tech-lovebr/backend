@@ -47,6 +47,46 @@ function formatPhoneDigits(digits) {
   return formatted;
 }
 
+/* Nomes: primeira letra de cada palavra em maiúscula também no computador
+   (no celular o teclado já faz). "da/de/do/das/dos/e" ficam minúsculas
+   fora do começo; as outras letras não mudam e o cursor fica no lugar —
+   mesma regra do index (maiusculaNoNome em js/app.js). */
+const PARTICULAS_DE_NOME = ['da', 'de', 'do', 'das', 'dos', 'e'];
+function maiusculaNoNome(texto) {
+  let palavra = 0;
+  return String(texto || '').replace(/(^|\s)(\S)(\S*)/g, (m, espaco, primeira, resto) => {
+    const inteira = primeira + resto;
+    const ehParticula = palavra > 0 && PARTICULAS_DE_NOME.includes(inteira.toLowerCase());
+    palavra++;
+    return espaco + (ehParticula ? primeira.toLowerCase() : primeira.toLocaleUpperCase('pt-BR')) + resto;
+  });
+}
+function wireNameCaseInput(input) {
+  if (!input) return;
+  input.setAttribute('autocapitalize', 'words');
+  input.addEventListener('input', () => {
+    const novo = maiusculaNoNome(input.value);
+    if (novo === input.value) return;
+    const ini = input.selectionStart, fim = input.selectionEnd;
+    input.value = novo;
+    try { input.setSelectionRange(ini, fim); } catch (e) { /* campo sem seleção */ }
+  });
+}
+
+/* Campo de dinheiro com "R$" fixo no começo, dentro da caixa (o número é
+   digitado depois dele). Envolve o input num .money-field. */
+function wireMoneyPrefix(input) {
+  if (!input || input.parentElement.classList.contains('money-field')) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'money-field';
+  input.parentElement.insertBefore(wrap, input);
+  wrap.appendChild(input);
+  const prefixo = document.createElement('span');
+  prefixo.className = 'money-field-prefix';
+  prefixo.textContent = 'R$';
+  wrap.insertBefore(prefixo, input);
+}
+
 /* Data DD/MM/AAAA: a barra entra sozinha depois do dia e do mês; dia acima
    de 31 vira 31 e mês acima de 12 vira 12. Apagar a barra apaga o dígito
    antes dela (mesmo truque da máscara de telefone). */

@@ -81,7 +81,8 @@ const PRODUCT_TITLE_PLACEHOLDERS = {
   'Trajes, Beleza e Estilo': 'Ex: Aluguel de Vestido de Noiva com Provas Inclusas',
   'Aluguel de Carros': 'Ex: Locação de Carro Clássico para Cerimônia'
 };
-const DEFAULT_TITLE_PLACEHOLDER = 'Selecione uma categoria para ver um exemplo';
+// Título do anúncio sem exemplo nenhum (antes mudava com a categoria).
+const DEFAULT_TITLE_PLACEHOLDER = '';
 
 const PRODUCT_WEEKDAYS = [
   { key: 'seg', label: 'Seg' },
@@ -1006,7 +1007,7 @@ function initProductDrawer() {
    'product-venue-cleaning-fee', 'product-service-extra-km-fee'
   ].forEach(id => {
     const el = document.getElementById(id);
-    if (el) wireCurrencyMaskInput(el);
+    if (el) { wireCurrencyMaskInput(el); wireMoneyPrefix(el); }
   });
 
   populateVenueStateOptions();
@@ -1093,7 +1094,7 @@ function initProductDrawer() {
     const category = document.getElementById('product-category').value;
     updateCategoryTriggerLabel();
     updateCategoryFieldsVisibility();
-    document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[category] || DEFAULT_TITLE_PLACEHOLDER;
+    document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
     updateWizardNextButtonState();
   });
 
@@ -1406,7 +1407,7 @@ function openProductDrawer(id) {
   renderVenueCommonAreas();
   closeCategoryPanel();
   updateCategoryTriggerLabel();
-  document.getElementById('product-name').placeholder = PRODUCT_TITLE_PLACEHOLDERS[p.category] || DEFAULT_TITLE_PLACEHOLDER;
+  document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
   renderScopeList('included');
   renderScopeList('excluded');
   renderPricingTypeFields();

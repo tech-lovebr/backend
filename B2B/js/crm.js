@@ -95,8 +95,10 @@ function initLeadEmailAutocomplete() {
   const options = document.getElementById('lead-email-options') || document.createElement('datalist');
   if (!input) return;
 
-  // Sugestões de provedor ao digitar "@"; máscaras de data e de valor.
+  // Sugestões de provedor ao digitar "@"; máscaras de data e de valor;
+  // nome com maiúscula no início das palavras.
   wireEmailDomainSuggestions(input);
+  wireNameCaseInput(document.getElementById('lead-name'));
   const dateInput = document.getElementById('lead-date');
   if (dateInput) wireDateMaskInput(dateInput);
   const valueInput = document.getElementById('lead-value');

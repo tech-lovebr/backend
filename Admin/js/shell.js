@@ -232,10 +232,15 @@ function renderHeaderBar() {
   content.prepend(barra);
 }
 
-/* Mesmo ícone e mesma espessura de traço do botão "Minha conta" da
-   plataforma principal (index.html). O Admin não guarda foto do
-   administrador, então é sempre ele. */
-const ICONE_PERFIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>';
+/* Iniciais do avatar — mesma regra do Hub (B2B/js/utils.js avatarInitials)
+   e da plataforma (js/app.js avatarIniciais): primeira letra das duas
+   primeiras palavras. "Victor Maranhão" → VM; vazio → "?". */
+function iniciaisDoAvatar(nome) {
+  const letras = String(nome || '').trim().split(/\s+/)
+    .map(palavra => (palavra.match(/[\p{L}\p{N}]/u) || [''])[0])
+    .filter(Boolean).slice(0, 2).join('').toLocaleUpperCase('pt-BR');
+  return letras || '?';
+}
 
 function renderTopbar(admin) {
   const host = document.getElementById('admin-topbar');
@@ -251,11 +256,16 @@ function renderTopbar(admin) {
       <span>Buscar fornecedor, cliente ou evento…</span>
       <kbd>⌘K</kbd>
     </button>
+    <div class="topbar-empresa">
+      <p class="topbar-empresa-nome">Love Hub Ltda.</p>
+      <p class="topbar-empresa-cnpj">CNPJ 69.386.397/0001-06</p>
+    </div>
+
     <div class="admin-user">
       <button type="button" class="admin-user-chip" id="btn-user-menu"
               aria-haspopup="true" aria-expanded="false"
               aria-label="${escapeHtml(admin.name || 'Administrador')}">
-        <span class="avatar">${ICONE_PERFIL}</span>
+        <span class="avatar">${escapeHtml(iniciaisDoAvatar(admin.name || admin.email))}</span>
       </button>
       <div class="admin-user-menu" id="user-menu" hidden>
         <p class="admin-user-menu-nome">${escapeHtml(admin.name || 'Administrador')}</p>

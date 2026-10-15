@@ -13123,6 +13123,49 @@ document.addEventListener('DOMContentLoaded', () => {
   let orcamentoFornecedor = null;
   let orcamentoServicoInicial = null;
 
+  // Chat › "Solicitar orçamento" (ao lado do anexar): manda o pedido para o
+  // fornecedor desta conversa com os dados do evento ativo, sem formulário.
+  // Vira lead no Hub (solicitar_orcamento, migration 043) e entra como
+  // mensagem na própria conversa.
+  document.getElementById('b2b-chat-orcamento-btn')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    if (btn.disabled || !window.loveClienteSession) return;
+    const conv = b2bConversationsData.find(c => c.id === activeB2BConversationId);
+    if (!conv || !conv.fornecedorId) return;
+    btn.disabled = true;
+    try {
+      if (!b2bFornecedoresCarregados) await carregarFornecedoresVitrine();
+      const item = encontrarFornecedorExplorar(conv.fornecedorId) || { id: conv.fornecedorId, name: conv.name, services: [] };
+      const servicos = (item.services || []).filter(s => s && s.active !== false);
+      const servico = servicos.length === 1 ? servicos[0] : null;
+      const ev = getActiveEvent();
+      const convidados = ev ? (ev.totalConvidados || (ev.guests || []).length || null) : null;
+      const data = dataEventoAtivoTexto();
+      const texto = textoDoPedidoOrcamento(item, servico, data, convidados, '');
+      const nome = getGuestCommentAuthorName();
+      const email = (window.loveClienteProfile && window.loveClienteProfile.email) || window.loveClienteSession.user.email || '';
+
+      const { error } = await supabaseClient.rpc('solicitar_orcamento', {
+        p_fornecedor_id: item.id,
+        p_product_id: servico ? servico.id : null,
+        p_nome: nome,
+        p_email: email,
+        p_data_evento: data || null,
+        p_mensagem: texto
+      });
+      if (error) {
+        console.error('[chat] solicitar_orcamento:', error);
+        // Sem a function no banco (ou outro erro): deixa o texto pronto no campo.
+        const input = document.getElementById('b2b-chat-input');
+        if (input && !input.value) { input.value = texto; input.focus(); }
+        return;
+      }
+      if (window.LoveChatService) await window.LoveChatService.sendMessage(activeB2BConversationId, texto, 'cliente');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
   function handleB2BHireAction(item, servico) {
     abrirPedidoOrcamento(item, servico);
   }

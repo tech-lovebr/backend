@@ -3452,6 +3452,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                       </svg>
                     </button>
+                    <!-- Solicitar orçamento: manda o pedido para o fornecedor desta conversa (vira lead no Hub) -->
+                    <button type="button" id="b2b-chat-orcamento-btn" class="chat-composer-icon-btn" title="Solicitar orçamento" aria-label="Solicitar orçamento">
+                      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v5h5M9 13h6M9 17h4"/>
+                      </svg>
+                    </button>
                     <input type="text" id="b2b-chat-input" placeholder="Escreva uma mensagem para o fornecedor..." class="flex-1 text-xs sm:text-sm bg-white border border-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 placeholder:text-zinc-400" autocomplete="off">
                     <button type="submit" id="b2b-chat-send-btn" class="btn-primary flex-shrink-0" title="Enviar mensagem">
                       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -5418,7 +5425,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_lixeira2"></script>
+  <script src="js/app.js?v=20261015_chatorcamento"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_checkoutbranco"></script>
 </body>

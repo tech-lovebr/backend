@@ -7110,3 +7110,12 @@ body[data-theme="dark"][data-page="chat"] .b2b-avatar-square .avatar-initials { 
 .profile-avatar-picker:not(.has-image):hover,
 .profile-avatar-picker:not(.has-image).is-dragover { background: #F4F8FC; border-color: var(--primary-blue); }
 body[data-theme="dark"] .profile-avatar-picker:not(.has-image) { background: #1c1c1c !important; border-color: #404040 !important; }
+
+/* Configurações: a capa tem a mesma altura da imagem de perfil (130px) e é
+   mais comprida, no formato de capa; "+" maior nas duas caixas. */
+.profile-form-top-cover { width: 320px; }
+.profile-logo-picker { aspect-ratio: auto; height: 130px; }
+.profile-avatar-picker .image-upload-zone-plus,
+.profile-logo-picker .image-upload-zone-plus { width: 36px; height: 36px; }
+.profile-avatar-picker .image-upload-zone-plus svg,
+.profile-logo-picker .image-upload-zone-plus svg { width: 18px; height: 18px; }

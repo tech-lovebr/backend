@@ -7025,3 +7025,11 @@ body[data-theme="dark"] .dash-range-cal .mini-cal-day.is-in-range { background: 
 .dashboard-panel-section > .dash-card { border-radius: 0 0 var(--radius-card) var(--radius-card); }
 .dash-analytics-header { position: relative; z-index: 5; }
 .dash-range-cal .mini-cal-month-label { text-transform: none; }
+
+/* Preço › Unidade de cobrança (Por pessoa, Por hora, Valor fixo, Sob
+   consulta): a opção escolhida fica cinza claro e sem borda (antes azul
+   clarinho com borda azul); no hover, só um cinza bem leve. */
+.pricing-type-card:not(.active):hover { background: #FAFAFA; border-color: #E4E4E7; }
+.pricing-type-card.active,
+.pricing-type-card.active:hover { background: #F4F4F5; border-color: transparent; }
+body[data-theme="dark"] .pricing-type-card.active { border-color: transparent !important; }

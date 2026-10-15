@@ -436,8 +436,29 @@ function initOnboardingModal() {
   if (!modal || !closeBtn) return;
 
   modal.classList.add('show');
+  carregarPrimeirosPassos(modal);
   closeBtn.addEventListener('click', () => modal.classList.remove('show'));
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
+}
+
+// Os pontos de partida da boas-vindas vêm do Admin (HUB/B2B → Dashboard →
+// FAQ → Primeiros passos). Sem resposta, ficam os três fixos do HTML.
+async function carregarPrimeirosPassos(modal) {
+  const lista = modal.querySelector('.onboarding-tips');
+  if (!lista) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('primeiros_passos')
+      .select('titulo, descricao, icone, link_url, ordem')
+      .eq('plataforma', 'fornecedor')
+      .eq('ativo', true)
+      .order('ordem', { ascending: true })
+      .limit(6);
+    if (error || !Array.isArray(data) || !data.length) return;
+    lista.innerHTML = data.map(p => `
+      <li><span>${escapeHtml(p.icone || '•')}</span> <strong>${escapeHtml(p.titulo)}</strong>${p.descricao ? ' — ' + escapeHtml(p.descricao) : ''}</li>
+    `).join('');
+  } catch (e) { /* mantém os fixos */ }
 }
 
 function renderGreeting() {
@@ -639,10 +660,29 @@ function formatShortDate(iso) {
 
 /* -------------------- Eventos e notícias -------------------- */
 
-function renderNewsList() {
+// Notícias e workshops publicados no Admin (HUB/B2B → Conteúdo). Sem
+// resposta do banco, fica a lista fixa de data.js.
+async function renderNewsList() {
   const wrap = document.getElementById('dash-news-list');
   if (!wrap) return;
-  wrap.innerHTML = B2B_DATA.news.map(item => `
-    <a href="${item.url}" class="dash-news-link">${escapeHtml(item.title)}</a>
-  `).join('');
+
+  const desenhar = lista => {
+    wrap.innerHTML = lista.map(item => `
+      <a href="${escapeHtml(item.url || '#')}" class="dash-news-link"${/^https?:/i.test(item.url || '') ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escapeHtml(item.title)}</a>
+    `).join('');
+  };
+
+  desenhar(B2B_DATA.news);
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('hub_conteudo')
+      .select('titulo, link_url, tipo, ordem')
+      .in('tipo', ['noticia', 'workshop'])
+      .eq('ativo', true)
+      .order('ordem', { ascending: true })
+      .limit(6);
+    if (error || !Array.isArray(data) || !data.length) return;
+    desenhar(data.map(i => ({ title: i.titulo, url: i.link_url || '#' })));
+  } catch (e) { /* mantém a lista fixa */ }
 }

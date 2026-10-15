@@ -5769,7 +5769,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td class="py-3 px-3">
             <span class="text-slate-600 block">${g.phone || '(11) 98765-4321'}</span>
-            <span class="text-[10px] text-slate-400">${g.email || 'convidado@email.com'}</span>
+            <span class="text-[10px] text-slate-400 inline-flex items-center gap-1">${escaparHtml(g.email || 'convidado@email.com')}${botaoCopiarEmailHtml(g.email || '')}</span>
           </td>
           <td class="py-3 px-3">
             ${statusBadge}
@@ -6048,6 +6048,247 @@ document.addEventListener('DOMContentLoaded', () => {
       triggerConfetti();
     });
   }
+
+  // ==========================================
+  // TABELAS NO PADRÃO DO ADMIN: barra dentro da caixa (busca à esquerda;
+  // "Filtrar por", extras e "Exportar" à direita), CSV do que está visível,
+  // "ver mais" (⋯) por linha e copiar e-mail.
+  // ==========================================
+  const ICONE_FUNIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h18l-7 8.5v6l-4 2v-8L3 4.5z"/></svg>';
+  const ICONE_EXPORTAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 3v12m0-12 4.5 4.5M12 3 7.5 7.5"/></svg>';
+  const ICONE_BUSCA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>';
+  const ICONE_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+  const ICONE_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+
+  function botaoVerMaisHtml(titulo = 'Ver mais') {
+    return `<button type="button" class="love-tabela-mais" title="${escaparHtml(titulo)}" aria-label="${escaparHtml(titulo)}">${ICONE_MAIS}</button>`;
+  }
+
+  function botaoCopiarEmailHtml(email) {
+    if (!email) return '';
+    return `<button type="button" class="love-copiar-email" data-email="${escaparHtml(email)}" title="Copiar e-mail" aria-label="Copiar e-mail">${ICONE_COPIAR}</button><span class="love-copiar-email-ok hidden">E-mail copiado.</span>`;
+  }
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.love-copiar-email');
+    if (!btn) return;
+    e.stopPropagation();
+    try { await navigator.clipboard.writeText(btn.dataset.email || ''); } catch (err) { window.prompt('Copie o e-mail:', btn.dataset.email || ''); return; }
+    const ok = btn.nextElementSibling;
+    if (ok && ok.classList.contains('love-copiar-email-ok')) {
+      ok.classList.remove('hidden');
+      setTimeout(() => ok.classList.add('hidden'), 2000);
+    }
+  });
+
+  // Linhas visíveis (fora as de "nenhum resultado") de uma tabela.
+  function linhasVisiveisDaTabela(tabela) {
+    return Array.from(tabela.querySelectorAll('tbody tr')).filter(tr =>
+      !tr.classList.contains('hidden') && !tr.classList.contains('linha-vazia') && tr.offsetParent !== null && !tr.querySelector('td[colspan]'));
+  }
+
+  // CSV (separador ";" e BOM, para abrir certo no Excel) só com as colunas
+  // visíveis e as linhas que passaram na busca/filtro.
+  function exportarTabelaVisivelCsv(tabela, nomeArquivo) {
+    const ths = Array.from(tabela.querySelectorAll('thead th'));
+    const colunas = ths.map((th, i) => ({ i, nome: th.textContent.replace(/\s+/g, ' ').replace(/\(\d+\)|ⓘ/g, '').trim() }))
+      .filter(c => c.nome && !ths[c.i].classList.contains('love-tabela-col-acoes') && !ths[c.i].classList.contains('love-tabela-col-mais') && ths[c.i].offsetParent !== null);
+    const esc = v => `"${String(v ?? '').replace(/\s+/g, ' ').trim().replace(/"/g, '""')}"`;
+    const linhas = [colunas.map(c => esc(c.nome)).join(';')];
+    linhasVisiveisDaTabela(tabela).forEach(tr => {
+      const tds = tr.children;
+      linhas.push(colunas.map(c => {
+        const td = tds[c.i];
+        if (!td) return esc('');
+        const clone = td.cloneNode(true);
+        clone.querySelectorAll('button, .love-copiar-email-ok, svg, .guest-tipo-badge, .guest-sub-conector').forEach(el => el.remove());
+        return esc(clone.textContent);
+      }).join(';'));
+    });
+    const blob = new Blob(['﻿' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${nomeArquivo || 'tabela'}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  // Busca e filtro genéricos (tabelas cujas linhas o JS já desenhou): esconde
+  // as linhas que não batem. Reaplicado sempre que a tabela redesenha.
+  function aplicarFiltroDaTabela(tabela) {
+    const busca = (tabela.dataset.busca || '').trim().toLowerCase();
+    const filtro = tabela.dataset.filtro || '';
+    const col = Number(tabela.dataset.filtroColuna);
+    Array.from(tabela.querySelectorAll('tbody tr')).forEach(tr => {
+      if (tr.querySelector('td[colspan]')) return;
+      const texto = tr.textContent.replace(/\s+/g, ' ').toLowerCase();
+      const passaBusca = !busca || texto.includes(busca);
+      const celula = Number.isFinite(col) ? tr.children[col] : null;
+      const valor = celula ? celula.textContent.replace(/\s+/g, ' ').trim() : '';
+      const passaFiltro = !filtro || valor === filtro;
+      tr.classList.toggle('hidden', !(passaBusca && passaFiltro));
+    });
+  }
+
+  function opcoesDaColuna(tabela, col) {
+    const vistos = new Set();
+    Array.from(tabela.querySelectorAll('tbody tr')).forEach(tr => {
+      if (tr.querySelector('td[colspan]')) return;
+      const celula = tr.children[col];
+      const v = celula ? celula.textContent.replace(/\s+/g, ' ').trim() : '';
+      if (v && v !== '—') vistos.add(v);
+    });
+    return Array.from(vistos).sort((a, b) => a.localeCompare(b, 'pt-BR')).map(v => ({ label: v, value: v }));
+  }
+
+  // Monta a barra no topo da caixa da tabela.
+  //   placeholder: do campo de busca | buscaExistente: elemento já com listeners (é movido para a barra)
+  //   filtro: { coluna } (opções = valores da coluna) ou { opcoes: [{label,value}], aoEscolher(value) }
+  //   extras: [elementos ou html] à direita, antes de Exportar | exportar: { nome } ou elemento existente (movido)
+  function montarBarraDaTabela(tabela, cfg = {}) {
+    if (!tabela || tabela.dataset.barraMontada) return;
+    tabela.dataset.barraMontada = '1';
+    const caixa = cfg.caixa || tabela.closest('.dash-card') || tabela.parentElement;
+    caixa.classList.add('love-tabela-caixa');
+    tabela.classList.add('love-tabela');
+
+    const barra = document.createElement('div');
+    barra.className = 'love-tabela-barra';
+    const esquerda = document.createElement('div');
+    esquerda.className = 'love-tabela-barra-esq';
+    const direita = document.createElement('div');
+    direita.className = 'love-tabela-barra-dir';
+    barra.append(esquerda, direita);
+
+    // Busca
+    if (cfg.buscaExistente) {
+      cfg.buscaExistente.classList.add('love-tabela-busca');
+      esquerda.appendChild(cfg.buscaExistente);
+    } else {
+      const wrap = document.createElement('div');
+      wrap.className = 'love-tabela-busca';
+      wrap.innerHTML = `${ICONE_BUSCA}<input type="search" placeholder="${escaparHtml(cfg.placeholder || 'Buscar...')}" aria-label="Buscar">`;
+      wrap.querySelector('input').addEventListener('input', (e) => {
+        tabela.dataset.busca = e.target.value;
+        aplicarFiltroDaTabela(tabela);
+      });
+      esquerda.appendChild(wrap);
+    }
+
+    // Filtrar por
+    if (cfg.filtro) {
+      const filtroWrap = document.createElement('div');
+      filtroWrap.className = 'love-tabela-filtro';
+      filtroWrap.innerHTML = `<button type="button" class="love-tabela-botao love-tabela-filtro-btn">${ICONE_FUNIL}<span>Filtrar por</span><span class="love-tabela-filtro-contador hidden">1</span></button><div class="love-tabela-filtro-menu hidden"></div>`;
+      const btn = filtroWrap.querySelector('.love-tabela-filtro-btn');
+      const menu = filtroWrap.querySelector('.love-tabela-filtro-menu');
+      const contador = filtroWrap.querySelector('.love-tabela-filtro-contador');
+      let atual = '';
+      if (Number.isFinite(cfg.filtro.coluna)) tabela.dataset.filtroColuna = String(cfg.filtro.coluna);
+      const renderMenu = () => {
+        const opcoes = cfg.filtro.opcoes || opcoesDaColuna(tabela, cfg.filtro.coluna);
+        menu.innerHTML = [{ label: cfg.filtro.rotuloTodos || 'Todos', value: '' }, ...opcoes].map(o =>
+          `<button type="button" class="love-tabela-filtro-opcao${o.value === atual ? ' is-ativa' : ''}" data-valor="${escaparHtml(o.value)}">${escaparHtml(o.label)}</button>`).join('');
+      };
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (menu.classList.contains('hidden')) { renderMenu(); menu.classList.remove('hidden'); }
+        else menu.classList.add('hidden');
+      });
+      menu.addEventListener('click', (e) => {
+        const op = e.target.closest('.love-tabela-filtro-opcao');
+        if (!op) return;
+        atual = op.dataset.valor || '';
+        menu.classList.add('hidden');
+        contador.classList.toggle('hidden', !atual);
+        btn.classList.toggle('is-ativo', !!atual);
+        if (typeof cfg.filtro.aoEscolher === 'function') cfg.filtro.aoEscolher(atual);
+        else { tabela.dataset.filtro = atual; aplicarFiltroDaTabela(tabela); }
+      });
+      document.addEventListener('click', (e) => { if (!filtroWrap.contains(e.target)) menu.classList.add('hidden'); });
+      direita.appendChild(filtroWrap);
+    }
+
+    // Extras (ex.: Importar) e Exportar
+    (cfg.extras || []).forEach(el => { if (el) { el.classList.add('love-tabela-botao'); direita.appendChild(el); } });
+    if (cfg.exportar instanceof HTMLElement) {
+      cfg.exportar.classList.add('love-tabela-botao');
+      direita.appendChild(cfg.exportar);
+    } else {
+      const exp = document.createElement('button');
+      exp.type = 'button';
+      exp.className = 'love-tabela-botao';
+      exp.innerHTML = `${ICONE_EXPORTAR}<span>Exportar</span>`;
+      exp.addEventListener('click', () => exportarTabelaVisivelCsv(tabela, (cfg.exportar && cfg.exportar.nome) || cfg.nome || 'tabela'));
+      direita.appendChild(exp);
+    }
+
+    caixa.insertBefore(barra, caixa.firstChild);
+
+    // Tabela redesenhada pelo JS: reaplica busca/filtro genéricos.
+    if (!cfg.buscaExistente || cfg.filtro && Number.isFinite(cfg.filtro.coluna)) {
+      const tbody = tabela.querySelector('tbody');
+      if (tbody) new MutationObserver(() => { if (tabela.dataset.busca || tabela.dataset.filtro) aplicarFiltroDaTabela(tabela); }).observe(tbody, { childList: true });
+    }
+  }
+
+  // Monta as barras das tabelas da plataforma (uma vez; os elementos existem desde o carregamento).
+  function montarBarrasDasTabelas() {
+    // Meus convidados: busca e "Adicionar" estavam no cabeçalho — a busca desce
+    // para a caixa; "Filtrar por" aciona as abas de status já existentes.
+    const tabelaConvidados = document.querySelector('#rsvp-guests-table-body')?.closest('table');
+    const buscaConvidados = document.getElementById('rsvp-search-input')?.closest('.relative');
+    if (tabelaConvidados) {
+      montarBarraDaTabela(tabelaConvidados, {
+        buscaExistente: buscaConvidados,
+        nome: 'convidados',
+        filtro: {
+          opcoes: [{ label: 'Confirmados', value: 'confirmed' }, { label: 'Pendentes', value: 'pending' }, { label: 'Recusados', value: 'declined' }],
+          aoEscolher: (v) => document.querySelector(`.rsvp-status-option[data-filter="${v || 'all'}"]`)?.click()
+        }
+      });
+      if (buscaConvidados) {
+        const input = buscaConvidados.querySelector('input');
+        if (input && !input.placeholder) input.placeholder = 'Buscar convidado...';
+      }
+    }
+
+    // Extrato da carteira: o "Exportar" do cabeçalho desce para a caixa.
+    const tabelaExtrato = document.getElementById('wallet-transactions-list')?.closest('table');
+    if (tabelaExtrato) {
+      montarBarraDaTabela(tabelaExtrato, {
+        placeholder: 'Buscar no extrato...',
+        filtro: { coluna: 2 },
+        exportar: document.getElementById('btn-wallet-export')
+      });
+      document.getElementById('wallet-header-actions')?.classList.add('hidden');
+    }
+
+    // Orçamento
+    const tabelaOrcamento = document.getElementById('budget-expenses-tbody')?.closest('table');
+    if (tabelaOrcamento) {
+      montarBarraDaTabela(tabelaOrcamento, {
+        caixa: tabelaOrcamento.closest('.budget-table-full-bleed') || tabelaOrcamento.parentElement,
+        placeholder: 'Buscar item ou fornecedor...',
+        filtro: { coluna: 1, rotuloTodos: 'Todos os fornecedores' },
+        nome: 'orcamento'
+      });
+    }
+
+    // Convite online
+    const tabelaConvites = document.getElementById('table-online-invites-guests')?.closest('table');
+    if (tabelaConvites) {
+      montarBarraDaTabela(tabelaConvites, {
+        caixa: tabelaConvites.parentElement,
+        placeholder: 'Buscar convidado...',
+        filtro: { coluna: 2 },
+        nome: 'convites-online'
+      });
+    }
+  }
+  montarBarrasDasTabelas();
 
   // ==========================================
   // ORGANIZADORES DO EVENTO (anfitriões convidados e colaboradores)
@@ -7534,7 +7775,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = document.createElement('tr');
         // Mesma cor para o convidado e seus acompanhantes (o grupo alterna,
         // não cada linha); o acompanhante aparece como subitem do convidado.
-        row.className = `cursor-pointer group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
+        row.className = `group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
         row.innerHTML = `
           <td>
             <div class="flex items-center gap-2 min-w-0">
@@ -7557,9 +7798,12 @@ document.addEventListener('DOMContentLoaded', () => {
               ${statusBadges[guest.status] || guest.status}
             </div>
           </td>
+          <td class="love-tabela-col-mais">${botaoVerMaisHtml('Ver convidado')}</td>
         `;
 
-        row.addEventListener('click', () => {
+        // Só o ⋯ abre o convidado: a linha fica livre para selecionar/copiar texto.
+        row.querySelector('.love-tabela-mais')?.addEventListener('click', (e) => {
+          e.stopPropagation();
           openAddGuestDrawer(guest.id);
         });
 

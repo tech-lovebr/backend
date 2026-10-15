@@ -105,7 +105,10 @@ function subscribeToB2BMessages() {
 // em shell.js) — quadrado com cantos arredondados, nunca foto/placeholder
 // genérico quando o cliente ainda não tem avatar cadastrado.
 function b2bAvatarHtml(url, name) {
-  if (url) return `<img src="${url}" alt="">`;
+  // Avatar "de iniciais" gerado pelo love.com.br (SVG com fundo azul claro):
+  // desenha as iniciais aqui mesmo, em fundo branco, como as outras caixinhas.
+  const ehIniciaisGeradas = url && /^data:image\/svg\+xml/i.test(url);
+  if (url && !ehIniciaisGeradas) return `<img src="${url}" alt="">`;
   return typeof initialsAvatarHtml === 'function' ? initialsAvatarHtml(name) : '';
 }
 

@@ -7241,3 +7241,19 @@ html body button.love-confirmar-perigo:not(#love-h-a):disabled { opacity: .6; cu
 .gifts-select-all-check:indeterminate { background: #183b54; border-color: #183b54; }
 .gifts-select-all-check:indeterminate::before { transform: scale(1); clip-path: polygon(10% 40%, 90% 40%, 90% 60%, 10% 60%); }
 #gifts-select-all-wrap:hover span { color: #181D24; }
+
+/* ==========================================================================
+   Drawers (Adicionar presente, convidado, mesa, acomodar, despesa): mesmo
+   padrão de cores do Hub B2B — cabeçalho cinza bem claro, corpo branco.
+   ========================================================================== */
+html body .gift-drawer > div:first-child,
+html body .guest-add-drawer > div:first-child,
+html body .budget-expense-drawer > div:first-child,
+html body .table-drawer > div:first-child {
+  background-color: #FAFAFA !important;
+  border-bottom: 1px solid #E4E4E7 !important;
+}
+html body .gift-drawer,
+html body .guest-add-drawer,
+html body .budget-expense-drawer,
+html body .table-drawer { background-color: #FFFFFF; }

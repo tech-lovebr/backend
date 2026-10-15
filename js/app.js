@@ -589,6 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openNotificationsPage(opts = {}) {
+    fecharTodosOsDrawers();
     state.currentTab = 'notifications';
     elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
     // Mesmo encaixe das outras páginas do painel: barra de título colada
@@ -617,6 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // no rail, barra de título colada no header (body.page-mode).
   // ------------------------------------------------------------------
   function abrirPaginaDaConta(tabId, path, titulo, opts = {}) {
+    fecharTodosOsDrawers();
     state.currentTab = tabId;
     elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
     document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
@@ -1200,8 +1202,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Abre um sub-item como se tivesse sido clicado na sub-barra (sem empilhar URL).
+  // Fecha qualquer drawer lateral aberto (presente, convidado, mesa,
+  // acomodar, despesa): ao trocar de página ele não pode continuar na tela.
+  function fecharTodosOsDrawers() {
+    if (typeof closeGiftDrawer === 'function') closeGiftDrawer();
+    if (typeof closeAddGuestDrawer === 'function') closeAddGuestDrawer();
+    document.querySelectorAll('aside.gift-drawer, aside.guest-add-drawer, aside.budget-expense-drawer, aside.table-drawer, aside.guest-details-drawer').forEach(d => {
+      d.classList.remove('open');
+      d.style.setProperty('display', 'none', 'important');
+      d.classList.add('hidden');
+    });
+    document.querySelectorAll('.gift-drawer-backdrop, .guest-drawer-backdrop, .budget-expense-drawer-backdrop, .table-drawer-backdrop').forEach(b => {
+      b.classList.remove('open');
+      b.style.setProperty('display', 'none', 'important');
+      b.classList.add('hidden');
+    });
+  }
+
   function abrirSubItem(tab, subId) {
     if (!subId) return;
+    fecharTodosOsDrawers();
     const label = (railTabsConfig[tab]?.subItems || []).find(i => i.id === subId)?.label || '';
     elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => {
       b.classList.toggle('active', b.dataset.routeSub === subId);
@@ -1278,6 +1298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Pop-up de configurar orçamento só faz sentido dentro de Orçamento —
     // sai ao trocar de menu (reabre sozinho se voltar pra lá sem orçamento definido).
     closeModal(document.getElementById('modal-setup-budget'));
+    fecharTodosOsDrawers();
 
     state.currentTab = tabKey;
 

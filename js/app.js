@@ -626,6 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   let faqItensCache = null;
+  let faqCategoriaAtiva = null;
 
   async function loadFaqPage() {
     const cont = document.getElementById('faq-page-container');
@@ -667,12 +668,19 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Primeira categoria fica selecionada; mantém a escolhida ao recarregar.
+    if (!faqCategoriaAtiva || !grupos.has(faqCategoriaAtiva)) faqCategoriaAtiva = categorias[0];
+
     const seta = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>';
-    cont.innerHTML = categorias.map(cat => `
-      <div class="faq-categoria">
-        <h3 class="faq-categoria-titulo">${escaparHtml(cat)}</h3>
+    cont.innerHTML = `
+      <nav class="faq-categorias" aria-label="Categorias">
+        ${categorias.map(cat => `
+          <button type="button" class="faq-categoria-btn${cat === faqCategoriaAtiva ? ' ativa' : ''}" data-categoria="${escaparHtml(cat)}">${escaparHtml(cat)}</button>`).join('')}
+      </nav>
+      <div class="faq-conteudo">
+        <h3 class="faq-categoria-titulo">${escaparHtml(faqCategoriaAtiva)}</h3>
         <div class="faq-lista">
-          ${grupos.get(cat).map(item => `
+          ${grupos.get(faqCategoriaAtiva).map(item => `
             <div class="faq-item">
               <button type="button" class="faq-pergunta" aria-expanded="false">
                 <span>${escaparHtml(item.pergunta || '')}</span>
@@ -681,8 +689,14 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="faq-resposta">${escaparHtml(item.resposta || '').replace(/\r?\n/g, '<br>')}</div>
             </div>`).join('')}
         </div>
-      </div>`).join('');
+      </div>`;
 
+    cont.querySelectorAll('.faq-categoria-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        faqCategoriaAtiva = btn.dataset.categoria;
+        renderFaqPage(itens);
+      });
+    });
     cont.querySelectorAll('.faq-pergunta').forEach(btn => {
       btn.addEventListener('click', () => {
         const item = btn.closest('.faq-item');

@@ -2779,3 +2779,10 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .tema-opcao:hover { background: var(--bg-muted); }
 .tema-opcao:has(input:checked) { border-color: var(--primary-color); box-shadow: 0 0 0 1px var(--primary-color); }
 .tema-opcao:has(input:focus-visible) { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+
+/* Configurações: os dois cards têm a mesma altura (grid) e o botão de cada
+   um fica colado no pé — Salvar e Salvar senha na mesma linha. */
+.config-grid > .card { display: flex; flex-direction: column; }
+.config-grid .card-body { flex: 1; display: flex; flex-direction: column; }
+.config-grid .card-body > form { flex: 1; display: flex; flex-direction: column; }
+.config-grid .card-body > form > .btn { margin-top: auto; align-self: flex-start; }

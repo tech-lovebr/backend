@@ -5523,7 +5523,14 @@ body[data-theme="dark"] .b2b-avatar-square { background: #333333 !important; }
 
 /* Abas do drawer de produto (Categoria · Preço · Escopo · Mídia): botões
    clicáveis, em vez de etapas em sequência. */
-.product-wizard-tabs { display: flex; align-items: stretch; gap: 0.4rem; width: 100%; margin-top: 0.75rem; }
+/* Cabeçalho = só o título e o ✕; uma linha horizontal de ponta a ponta
+   separa as abas logo abaixo, com respiro dos dois lados. */
+.product-wizard-tabs {
+  display: flex; align-items: stretch; gap: 0.4rem;
+  margin: 1.25rem -1.5rem 0; padding: 1.1rem 1.5rem 0;
+  border-top: 1px solid #E4E4E7;
+}
+body[data-theme="dark"] .product-wizard-tabs { border-top-color: #404040 !important; }
 /* No drawer de produto o ✕ fica preso no canto, fora do fluxo: assim o bloco
    do título (e as abas dentro dele) ocupa a largura toda do cabeçalho, em
    vez de parar antes da coluna do botão. O título ganha respiro à direita

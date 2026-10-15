@@ -95,6 +95,60 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   }
 
+  // Pop-up de confirmação da Love (no lugar do confirm() do navegador).
+  // aoConfirmar (opcional, async): roda com o pop-up aberto e o botão
+  // travado; se devolver um texto, ele aparece como erro e o pop-up fica.
+  // Resolve true se confirmou (e deu certo), false se cancelou.
+  function confirmarNaLove({ titulo, texto = '', botao = 'Excluir', aoConfirmar = null } = {}) {
+    const modal = document.getElementById('modal-love-confirmar');
+    if (!modal) return Promise.resolve(window.confirm(titulo));
+    const btnOk = document.getElementById('love-confirmar-ok');
+    const btnCancelar = document.getElementById('love-confirmar-cancelar');
+    const erroEl = document.getElementById('love-confirmar-erro');
+    document.getElementById('love-confirmar-titulo').textContent = titulo || '';
+    const textoEl = document.getElementById('love-confirmar-texto');
+    textoEl.textContent = texto;
+    textoEl.classList.toggle('hidden', !texto);
+    erroEl.classList.add('hidden');
+    btnOk.textContent = botao;
+    btnOk.disabled = false;
+    openModal(modal);
+    btnCancelar.focus();
+
+    return new Promise(resolve => {
+      const fechar = (resultado) => {
+        btnOk.removeEventListener('click', aoOk);
+        btnCancelar.removeEventListener('click', aoCancelar);
+        modal.removeEventListener('click', aoFundo);
+        document.removeEventListener('keydown', aoTecla);
+        closeModal(modal);
+        resolve(resultado);
+      };
+      const aoCancelar = () => { if (!btnOk.disabled) fechar(false); };
+      const aoFundo = (e) => { if (e.target === modal) aoCancelar(); };
+      const aoTecla = (e) => { if (e.key === 'Escape') aoCancelar(); };
+      const aoOk = async () => {
+        if (btnOk.disabled) return;
+        if (!aoConfirmar) return fechar(true);
+        btnOk.disabled = true;
+        erroEl.classList.add('hidden');
+        let erro = null;
+        try { erro = await aoConfirmar(); } catch (e) { erro = 'Algo deu errado. Tente de novo.'; }
+        btnOk.disabled = false;
+        if (erro) {
+          erroEl.textContent = erro;
+          erroEl.classList.remove('hidden');
+          return;
+        }
+        fechar(true);
+      };
+      btnOk.addEventListener('click', aoOk);
+      btnCancelar.addEventListener('click', aoCancelar);
+      modal.addEventListener('click', aoFundo);
+      document.addEventListener('keydown', aoTecla);
+    });
+  }
+
   function foldSubDrawer() {
     if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
     if (elements.mainArea) elements.mainArea.classList.add('full-width');
@@ -5843,21 +5897,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const evento = getActiveEvent();
     const ids = [...presentesSelecionados];
     if (!evento || !ids.length || btn.disabled) return;
-    const pergunta = ids.length === 1 ? 'Excluir o presente selecionado?' : `Excluir os ${ids.length} presentes selecionados?`;
-    if (!confirm(pergunta)) return;
-
-    btn.disabled = true;
-    const doBanco = ids.filter(ehUuid);
-    let erro = null;
-    if (doBanco.length) {
-      const { error } = await supabaseClient.from('presentes').delete().in('id', doBanco);
-      if (error) { console.error('Erro ao excluir presentes:', error); erro = error; }
-    }
-    btn.disabled = false;
-    if (erro) {
-      alert('Não foi possível excluir os presentes agora. Tente de novo.');
-      return;
-    }
+    const excluiu = await confirmarNaLove({
+      titulo: ids.length === 1 ? 'Deseja excluir 1 presente selecionado?' : `Deseja excluir ${ids.length} presentes selecionados?`,
+      texto: 'Essa ação não pode ser desfeita.',
+      botao: 'Excluir',
+      aoConfirmar: async () => {
+        const doBanco = ids.filter(ehUuid);
+        if (!doBanco.length) return null;
+        const { error } = await supabaseClient.from('presentes').delete().in('id', doBanco);
+        if (error) {
+          console.error('Erro ao excluir presentes:', error);
+          return 'Não foi possível excluir os presentes agora. Tente de novo.';
+        }
+        return null;
+      }
+    });
+    if (!excluiu) return;
     const apagados = new Set(ids);
     evento.giftList = (evento.giftList || []).filter(g => !apagados.has(g.id));
     presentesSelecionados.clear();

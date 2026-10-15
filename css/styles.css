@@ -7224,3 +7224,10 @@ html body #b2b-location-input:not(#love-h-a) {
   box-sizing: border-box !important;
 }
 html body #b2b-view-toggle:not(#love-h-a) { height: 34px !important; box-sizing: border-box !important; }
+
+/* Pop-up de confirmação da Love: botão de ação destrutiva */
+html body button.love-confirmar-perigo:not(#love-h-a) { height: 34px; padding: 0 1rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px !important; border: 1px solid #DC2626; background: #DC2626; color: #fff; font-size: .8125rem; font-weight: 600; cursor: pointer; }
+html body button.love-confirmar-perigo:not(#love-h-a):hover { background: #B91C1C; border-color: #B91C1C; }
+html body button.love-confirmar-perigo:not(#love-h-a):disabled { opacity: .6; cursor: default; }
+#modal-love-confirmar #love-confirmar-cancelar { height: 34px; padding-top: 0; padding-bottom: 0; }
+#modal-love-confirmar .modal-container-custom { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }

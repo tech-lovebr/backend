@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261015_favservico">
+  <link rel="stylesheet" href="css/styles.css?v=20261015_perfilcolunas">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3369,32 +3369,32 @@
               <p id="b2b-profile-specialties" class="text-sm text-zinc-500 mt-3 max-w-3xl"></p>
             </div>
 
-            <!-- Serviços oferecidos: cadastrados pelo fornecedor no B2B (mesmo
-                 padrão de card de B2B/produtos.html) — clicar expande e mostra
-                 a descrição completa e o valor. -->
-            <div id="b2b-profile-services-section" class="mt-8 pt-6 border-t border-zinc-100">
-              <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Todos os serviços</h3>
-              <div id="b2b-profile-services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-            </div>
+            <!-- Duas colunas: serviços e avaliações à esquerda; portfólio numa
+                 caixa à direita. -->
+            <div class="b2b-perfil-colunas mt-8 pt-6 border-t border-zinc-100 pb-10">
+              <div class="min-w-0">
+                <!-- Serviços oferecidos: cadastrados pelo fornecedor no B2B (mesmo
+                     padrão de card de B2B/produtos.html). -->
+                <div id="b2b-profile-services-section">
+                  <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Todos os serviços</h3>
+                  <div id="b2b-profile-services-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                </div>
 
-            <!-- Portfólio: carrossel horizontal com setas "<"/">" -->
-            <div id="b2b-profile-portfolio-section" class="mt-8 pt-6 border-t border-zinc-100 pb-10">
-              <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Portfólio</h3>
-              <div class="flex items-center gap-2">
-                <button type="button" id="btn-b2b-profile-portfolio-prev" class="hidden w-8 h-8 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Anterior">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <div id="b2b-profile-portfolio-grid" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar min-w-0 scroll-smooth"></div>
-                <button type="button" id="btn-b2b-profile-portfolio-next" class="w-8 h-8 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Próximo">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                </button>
+                <!-- Avaliações dos anfitriões (fornecedores_avaliacoes, migration 056):
+                     só na página da empresa. -->
+                <div id="b2b-profile-reviews-section" class="mt-8 pt-6 border-t border-zinc-100">
+                  <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Avaliações</h3>
+                  <div id="b2b-profile-reviews-list" class="space-y-3"></div>
+                </div>
               </div>
-            </div>
 
-            <!-- Avaliações dos anfitriões (fornecedores_avaliacoes, migration 056) -->
-            <div id="b2b-profile-reviews-section" class="mt-8 pt-6 border-t border-zinc-100 pb-10">
-              <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Avaliações</h3>
-              <div id="b2b-profile-reviews-list" class="space-y-3 max-w-3xl"></div>
+              <!-- Portfólio: caixinha à direita (fotos em grade; clicar abre a galeria) -->
+              <aside id="b2b-profile-portfolio-section" class="b2b-perfil-caixa">
+                <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Portfólio</h3>
+                <button type="button" id="btn-b2b-profile-portfolio-prev" class="hidden" aria-hidden="true"></button>
+                <div id="b2b-profile-portfolio-grid" class="b2b-perfil-portfolio-grade"></div>
+                <button type="button" id="btn-b2b-profile-portfolio-next" class="hidden" aria-hidden="true"></button>
+              </aside>
             </div>
 
           </div>
@@ -5412,7 +5412,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_favservico"></script>
+  <script src="js/app.js?v=20261015_perfilcolunas"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_checkoutbranco"></script>
 </body>

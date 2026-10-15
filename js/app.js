@@ -12988,7 +12988,10 @@ document.addEventListener('DOMContentLoaded', () => {
       ratingWrap.classList.remove('hidden');
       ratingWrap.innerHTML = estrelasHtml(item.avaliacaoMedia, item.avaliacaoTotal);
     }
-    carregarAvaliacoesDoPerfil(item);
+    // A lista de avaliações é só da página da empresa (não da do serviço).
+    const reviewsSection = document.getElementById('b2b-profile-reviews-section');
+    if (reviewsSection) reviewsSection.classList.toggle('hidden', !!servicoAtual);
+    if (!servicoAtual) carregarAvaliacoesDoPerfil(item);
 
     if (aboutEl) aboutEl.textContent = item.about || item.description || '';
 

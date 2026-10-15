@@ -7432,3 +7432,11 @@ html body button.b2b-profile-empresa-link:not(#love-h-a):hover { color: #416799;
 .b2b-estrela-cheia { color: #F59E0B; }
 .b2b-estrela-vazia { color: #D4D4D8; }
 .b2b-avaliacao { padding: .85rem 1rem; border: 1px solid #EEEEF0; border-radius: 10px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
+
+/* Perfil do fornecedor: duas colunas (serviços/avaliações | caixa do portfólio) */
+.b2b-perfil-colunas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; }
+@media (min-width: 1024px) { .b2b-perfil-colunas { grid-template-columns: minmax(0, 1fr) 320px; } }
+.b2b-perfil-caixa { background: #fff; border: 1px solid #EEEEF0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); position: sticky; top: 1rem; }
+.b2b-perfil-portfolio-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+html body .b2b-perfil-portfolio-grade .b2b-profile-portfolio-photo-btn { width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 8px !important; }
+@media (min-width: 640px) and (max-width: 1023px) { .b2b-perfil-portfolio-grade { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

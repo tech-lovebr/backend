@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261015_confirmarlove">
+  <link rel="stylesheet" href="css/styles.css?v=20261015_selecionartudo">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1988,10 +1988,16 @@
                 </svg>
               </button>
 
+              <!-- Selecionar tudo + "N selecionados" (exclusão em massa) -->
+              <label id="gifts-select-all-wrap" class="hidden items-center gap-2 text-xs text-zinc-600 font-sans font-medium cursor-pointer select-none flex-shrink-0" title="Selecionar todos os presentes da lista">
+                <input type="checkbox" id="gifts-select-all" class="gifts-select-all-check">
+                <span>Selecionar tudo</span>
+              </label>
+              <span id="gifts-selected-label" class="hidden text-xs font-bold text-zinc-900 font-sans flex-shrink-0 whitespace-nowrap"></span>
+
               <!-- Excluir em massa: aparece ao marcar presentes (caixinha no canto da imagem) -->
               <button type="button" id="btn-gifts-delete-selected" title="Excluir presentes selecionados" class="hidden btn-white text-xs py-2 px-3 font-semibold items-center justify-center gap-1.5 rounded-xl border border-zinc-200 text-zinc-700 cursor-pointer flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>
-                <span id="gifts-selected-count">0</span>
               </button>
 
               <!-- Botão Adicionar Presente (Abre o Drawer) -->
@@ -5451,7 +5457,7 @@
   <script src="js/supabase-init.js?v=20261015_textoforn"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_confirmarlove"></script>
+  <script src="js/app.js?v=20261015_selecionartudo2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_lixeira"></script>
 </body>

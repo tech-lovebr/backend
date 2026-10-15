@@ -5887,10 +5887,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const qtd = presentesSelecionados.size;
     btn.classList.toggle('hidden', qtd === 0);
     btn.classList.toggle('flex', qtd > 0);
-    const cont = document.getElementById('gifts-selected-count');
-    if (cont) cont.textContent = String(qtd);
     btn.title = qtd === 1 ? 'Excluir 1 presente selecionado' : `Excluir ${qtd} presentes selecionados`;
+
+    // "N selecionados" ao lado da caixinha de selecionar tudo.
+    const label = document.getElementById('gifts-selected-label');
+    if (label) {
+      label.textContent = qtd === 1 ? '1 selecionado' : `${qtd} selecionados`;
+      label.classList.toggle('hidden', qtd === 0);
+    }
+
+    // Caixinha "Selecionar tudo": marcada quando todos os presentes da lista
+    // estão marcados; meio marcada quando só alguns.
+    const checks = [...document.querySelectorAll('#host-gifts-list-container .gift-select-check, .gift-select-check')];
+    const wrap = document.getElementById('gifts-select-all-wrap');
+    const todos = document.getElementById('gifts-select-all');
+    if (wrap) {
+      wrap.classList.toggle('hidden', checks.length === 0);
+      wrap.classList.toggle('flex', checks.length > 0);
+    }
+    if (todos) {
+      const marcados = checks.filter(c => c.checked).length;
+      todos.checked = checks.length > 0 && marcados === checks.length;
+      todos.indeterminate = marcados > 0 && marcados < checks.length;
+    }
   }
+
+  // Marca/desmarca todos os presentes que estão na lista (respeita a busca).
+  document.getElementById('gifts-select-all')?.addEventListener('change', (e) => {
+    const marcar = e.currentTarget.checked;
+    document.querySelectorAll('.gift-select-check').forEach(check => {
+      if (check.checked === marcar) return;
+      check.checked = marcar;
+      check.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    atualizarLixeiraDePresentes();
+  });
 
   document.getElementById('btn-gifts-delete-selected')?.addEventListener('click', async (e) => {
     const btn = e.currentTarget;
@@ -6473,6 +6504,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       container.appendChild(card);
     });
+
+    // Cards na tela: mostra "Selecionar tudo" e acerta o estado da caixinha.
+    atualizarLixeiraDePresentes();
   }
 
   function openGiftMessageModal({ image, title, buyerName, message, date, amount, rsvpStatus }) {

@@ -7231,3 +7231,13 @@ html body button.love-confirmar-perigo:not(#love-h-a):hover { background: #B91C1
 html body button.love-confirmar-perigo:not(#love-h-a):disabled { opacity: .6; cursor: default; }
 #modal-love-confirmar #love-confirmar-cancelar { height: 34px; padding-top: 0; padding-bottom: 0; }
 #modal-love-confirmar .modal-container-custom { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+/* Meus presentes: caixinha "Selecionar tudo" da barra de título */
+.gifts-select-all-check { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; margin: 0; border: 1.5px solid #D4D4D8; border-radius: 5px; background: #fff; display: inline-grid; place-content: center; cursor: pointer; flex-shrink: 0; transition: border-color .15s, background-color .15s; }
+.gifts-select-all-check::before { content: ''; width: 10px; height: 10px; background: #fff; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); transform: scale(0); transition: transform .12s; }
+.gifts-select-all-check:hover { border-color: #181D24; }
+.gifts-select-all-check:checked { background: #183b54; border-color: #183b54; }
+.gifts-select-all-check:checked::before { transform: scale(1); }
+.gifts-select-all-check:indeterminate { background: #183b54; border-color: #183b54; }
+.gifts-select-all-check:indeterminate::before { transform: scale(1); clip-path: polygon(10% 40%, 90% 40%, 90% 60%, 10% 60%); }
+#gifts-select-all-wrap:hover span { color: #181D24; }

@@ -27,7 +27,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=526">
+  <link rel="stylesheet" href="css/styles.css?v=527">
   <style>
     html, body { background: #fff; overflow-x: hidden; max-width: 100%; }
     .site-preview-empty { padding: 6rem 1.5rem; text-align: center; color: #71717A; font-size: 0.9375rem; }
@@ -127,6 +127,21 @@
         }
 
         loadedState = page.state;
+
+        // Sessões no site (Analytics do dashboard): uma visita por sessão do
+        // navegador. O id vive no sessionStorage (some ao fechar a aba). Ver
+        // registrar_visita_site na migration 053.
+        try {
+          const chaveSessao = 'love-site-sessao-' + publicSlug;
+          let sessao = sessionStorage.getItem(chaveSessao);
+          if (!sessao) {
+            sessao = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+            sessionStorage.setItem(chaveSessao, sessao);
+          }
+          supabaseClient.rpc('registrar_visita_site', {
+            p_slug: publicSlug, p_sessao: sessao, p_referrer: document.referrer || null
+          }).then(() => {}, () => {});
+        } catch (e) { /* sem sessionStorage: não conta */ }
       }
 
       if (!loadedState && !publicSlug) {

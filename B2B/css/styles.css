@@ -6995,3 +6995,25 @@ body[data-theme="dark"] .faq-table-title { color: #FFFFFF !important; }
 .form-drawer .btn-primary:not(.scope-add-btn),
 .form-drawer .btn-secondary:not(.scope-add-btn) { padding-left: 1.25rem; padding-right: 1.25rem; }
 #product-drawer-delete-btn { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+
+/* Analytics › Personalizado: calendário de intervalo dentro do menu de
+   período (primeiro e último dia, dias no meio destacados). */
+.dash-analytics-period-popover[hidden] { display: none !important; }
+.dash-range-cal { width: 252px; padding: 0.6rem 0.4rem 0.2rem; border-top: 1px solid #E4E4E7; margin-top: 0.3rem; }
+.dash-range-cal[hidden] { display: none; }
+.dash-range-cal .mini-cal-header { margin-bottom: 0.5rem; }
+.dash-range-cal .mini-cal-day { height: 30px; font-size: 0.75rem; }
+.dash-range-cal .mini-cal-day:disabled { color: #D4D4D8; cursor: default; }
+.dash-range-cal .mini-cal-day.is-in-range { background: #EEF2F6; color: #181D24; border-radius: 0; }
+.dash-range-cal-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: 0.6rem; }
+.dash-range-cal-hint { font-size: 0.75rem; color: #71717A; }
+.dash-analytics-period-popover .dash-range-cal button.dash-range-apply {
+  height: 30px; padding: 0 0.9rem; font-size: 0.75rem; font-weight: 600;
+  background: #181D24; color: #FFFFFF; border-radius: 8px; text-align: center;
+}
+.dash-analytics-period-popover .dash-range-cal button.dash-range-apply:disabled { opacity: 0.4; cursor: default; }
+body[data-theme="dark"] .dash-range-cal { border-top-color: #404040; }
+body[data-theme="dark"] .dash-range-cal .mini-cal-day.is-in-range { background: #333333 !important; color: #FFFFFF !important; }
+.dash-analytics-period-popover .dash-range-cal .mini-cal-day,
+.dash-analytics-period-popover .dash-range-cal .mini-cal-nav-btn { padding: 0; text-align: center; justify-content: center; }
+.dash-range-cal .mini-cal-day { aspect-ratio: auto; }

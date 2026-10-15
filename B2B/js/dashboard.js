@@ -368,8 +368,35 @@ async function initAdsCarousel() {
 
 /* -------------------- Analytics -------------------- */
 
+// Período do Analytics: início e fim (Date) — padrão, últimos 30 dias.
+let analyticsRange = analyticsLastDays(30);
+
+function analyticsLastDays(n) {
+  const end = new Date();
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - (n - 1));
+  return { start, end };
+}
+
+// Sessões no site: visitas reais ao site publicado do fornecedor
+// (<slug>.love.com.br ou hub.love.com.br/<slug>), uma por sessão do
+// navegador, no período escolhido. Ver migration 053_site_visitas.sql.
+async function renderSiteSessions() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const { count, error } = await supabaseClient
+    .from('site_visitas')
+    .select('id', { count: 'exact', head: true })
+    .eq('fornecedor_id', session.user.id)
+    .gte('criado_em', analyticsRange.start.toISOString())
+    .lte('criado_em', analyticsRange.end.toISOString());
+  // Sem a tabela (migration 053 ainda não rodada) mostra zero.
+  setText('analytics-sessions', padTwoDigits(error ? 0 : (count || 0)));
+}
+
 async function renderAnalyticsCard() {
-  setText('analytics-sessions', padTwoDigits(B2B_DATA.siteMetrics.visits30d));
+  renderSiteSessions();
 
   const { data: { session } } = await supabaseClient.auth.getSession();
   const { data: leads } = session
@@ -405,8 +432,87 @@ function initAnalyticsPeriodPopover() {
   const label = document.getElementById('dash-analytics-period-label');
   if (!btn || !popover || !label) return;
 
-  const close = () => { popover.hidden = true; document.removeEventListener('click', onOutsideClick); };
-  const onOutsideClick = (e) => { if (!popover.contains(e.target) && e.target !== btn) close(); };
+  // Calendário do "Personalizado": escolhe o primeiro e o último dia.
+  const cal = document.createElement('div');
+  cal.className = 'dash-range-cal';
+  cal.hidden = true;
+  popover.appendChild(cal);
+
+  const pad2 = n => String(n).padStart(2, '0');
+  const isoOf = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const fromIso = iso => new Date(iso + 'T00:00:00');
+  const curto = iso => { const [, m, d] = iso.split('-'); return `${d}/${m}`; };
+  let viewDate = new Date();
+  viewDate.setDate(1);
+  let rangeStart = null;
+  let rangeEnd = null;
+
+  const renderCal = () => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const firstWeekday = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayIso = isoOf(new Date());
+    let dias = '';
+    for (let i = 0; i < firstWeekday; i++) dias += '<span></span>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = isoOf(new Date(year, month, d));
+      const classes = ['mini-cal-day'];
+      if (iso === todayIso) classes.push('is-today');
+      if (iso === rangeStart || iso === rangeEnd) classes.push('is-selected');
+      else if (rangeStart && rangeEnd && iso > rangeStart && iso < rangeEnd) classes.push('is-in-range');
+      const futuro = iso > todayIso;
+      dias += `<button type="button" class="${classes.join(' ')}" data-range-day="${iso}"${futuro ? ' disabled' : ''}>${d}</button>`;
+    }
+    const mes = capitalize(viewDate.toLocaleDateString('pt-BR', { month: 'long' }));
+    const dica = !rangeStart ? 'Escolha o primeiro dia' : !rangeEnd ? 'Agora o último dia' : `${curto(rangeStart)} a ${curto(rangeEnd)}`;
+    cal.innerHTML = `
+      <div class="mini-cal-header">
+        <button type="button" class="mini-cal-nav-btn" data-range-prev aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
+        <span class="mini-cal-month-label">${mes} de ${year}</span>
+        <button type="button" class="mini-cal-nav-btn" data-range-next aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
+      </div>
+      <div class="mini-cal-weekdays"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+      <div class="mini-cal-grid">${dias}</div>
+      <div class="dash-range-cal-foot">
+        <span class="dash-range-cal-hint">${dica}</span>
+        <button type="button" class="btn-primary dash-range-apply" data-range-apply${rangeStart && rangeEnd ? '' : ' disabled'}>Aplicar</button>
+      </div>`;
+  };
+
+  cal.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const alvo = e.target.closest('button');
+    if (!alvo || alvo.disabled) return;
+    if (alvo.hasAttribute('data-range-prev')) { viewDate.setMonth(viewDate.getMonth() - 1); return renderCal(); }
+    if (alvo.hasAttribute('data-range-next')) { viewDate.setMonth(viewDate.getMonth() + 1); return renderCal(); }
+    if (alvo.dataset.rangeDay) {
+      const iso = alvo.dataset.rangeDay;
+      if (!rangeStart || rangeEnd) { rangeStart = iso; rangeEnd = null; }
+      else if (iso < rangeStart) { rangeEnd = rangeStart; rangeStart = iso; }
+      else rangeEnd = iso;
+      return renderCal();
+    }
+    if (alvo.hasAttribute('data-range-apply') && rangeStart && rangeEnd) {
+      const end = fromIso(rangeEnd);
+      end.setHours(23, 59, 59, 999);
+      aplicar({ start: fromIso(rangeStart), end }, `${curto(rangeStart)} a ${curto(rangeEnd)}`);
+    }
+  });
+
+  const close = () => {
+    popover.hidden = true;
+    cal.hidden = true;
+    document.removeEventListener('click', onOutsideClick);
+  };
+  const onOutsideClick = (e) => { if (!popover.contains(e.target) && e.target !== btn && !btn.contains(e.target)) close(); };
+
+  const aplicar = (range, texto) => {
+    analyticsRange = range;
+    setText('dash-analytics-period-label', texto);
+    close();
+    renderSiteSessions();
+  };
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -419,10 +525,15 @@ function initAnalyticsPeriodPopover() {
   });
 
   popover.querySelectorAll('[data-period]').forEach(option => {
-    option.addEventListener('click', () => {
+    option.addEventListener('click', (e) => {
+      e.stopPropagation();
       popover.querySelectorAll('[data-period]').forEach(o => o.classList.toggle('is-active', o === option));
-      setText('dash-analytics-period-label', option.dataset.periodLabel);
-      close();
+      if (option.dataset.period === 'personalizado') {
+        cal.hidden = false;
+        renderCal();
+        return;
+      }
+      aplicar(analyticsLastDays(Number(option.dataset.period)), option.dataset.periodLabel);
     });
   });
 }

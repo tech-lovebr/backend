@@ -7151,3 +7151,25 @@ body[data-theme="dark"] .profile-logo-picker:not(.has-image):hover { background:
    de preenchimento (cover) da caixa da capa — o que se vê aqui é o que fica. */
 .profile-logo-adjust-frame { aspect-ratio: 320 / 130; background: #FAFAFA; }
 .profile-logo-adjust-frame .logo-crop-img { object-fit: cover; }
+
+/* ==========================================================================
+   Tabelas do Hub (Leads, Cobranças, Notas fiscais, Contratos, Convidados,
+   Equipe, Orçamentos…): cabeçalho escrito normal — só a primeira letra
+   maiúscula, como está no texto ("Criado em", "Data do evento"; siglas
+   como "ID" ficam como escritas) — e em negrito. As linhas de dados ficam
+   todas em peso normal (nada de nome em negrito).
+   ========================================================================== */
+.leads-table th,
+.leads-table th .contratos-status-filter-btn {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #181D24;
+}
+.leads-table-wrap .leads-table th { color: #181D24; font-weight: 700; }
+.leads-table tbody td,
+.leads-table tbody td *:not(svg):not(path) { font-weight: 400 !important; }
+.leads-table-wrap .leads-table td.col-principal { font-weight: 400; color: #18181B; }
+body[data-theme="dark"] .leads-table th,
+body[data-theme="dark"] .leads-table th .contratos-status-filter-btn { color: #FFFFFF !important; }

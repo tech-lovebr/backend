@@ -4,6 +4,8 @@
 
 const PROFILE_LOGO_PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>';
 const PROFILE_LOGO_IMAGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>';
+// Lápis no canto da imagem já enviada: clicar troca a imagem (sem excluir).
+const PROFILE_IMAGEM_LAPIS = '<span class="profile-imagem-editar" title="Alterar imagem" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/></svg></span>';
 const PROFILE_LOGO_CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
 // Mesmo formato da caixa "Imagem de Capa" (320 × 130px): o que se ajusta
 // na janela de enquadramento é exatamente o que aparece na caixa.
@@ -607,11 +609,11 @@ function renderProfileAvatarPicker() {
       <label class="profile-avatar-picker ${photo ? 'has-image' : ''}">
         ${photo
           ? `<img src="${photo}" class="avatar-crop-img" alt="" style="${cropStyle}">
-             <div class="header-logo-picker-overlay">${PROFILE_LOGO_IMAGE_ICON}<span>Alterar foto</span></div>`
+             ${PROFILE_IMAGEM_LAPIS}`
           : `<span class="image-upload-zone-plus">${PROFILE_LOGO_PLUS_ICON}</span>`}
         <input type="file" accept="image/*" class="image-upload-zone-input" id="profile-avatar-input">
       </label>
-      ${photo ? `<button type="button" class="header-logo-picker-remove" id="profile-avatar-remove" title="Remover foto">${PROFILE_LOGO_CLOSE_ICON}</button>` : ''}
+
     </div>
   `;
 
@@ -770,11 +772,11 @@ function renderProfileLogoPicker() {
       <label class="profile-logo-picker ${logo ? 'has-image' : ''}">
         ${logo
           ? `<img src="${logo}" class="logo-crop-img" alt="" style="${cropStyle}">
-             <div class="header-logo-picker-overlay">${PROFILE_LOGO_IMAGE_ICON}<span>Alterar logotipo</span></div>`
+             ${PROFILE_IMAGEM_LAPIS}`
           : `<span class="image-upload-zone-plus">${PROFILE_LOGO_PLUS_ICON}</span>`}
         <input type="file" accept="image/*" class="image-upload-zone-input" id="profile-logo-input">
       </label>
-      ${logo ? `<button type="button" class="header-logo-picker-remove" id="profile-logo-remove" title="Remover logotipo">${PROFILE_LOGO_CLOSE_ICON}</button>` : ''}
+
     </div>
   `;
 

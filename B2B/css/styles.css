@@ -7422,3 +7422,17 @@ body[data-theme="dark"] .settings-secao-titulo { color: #FFFFFF !important; }
   color: #181D24; padding: 0.6rem 0.4rem 0.45rem;
 }
 body[data-theme="dark"] .builder-el-group-title { color: #FFFFFF !important; }
+
+/* Configurações › Imagem de perfil e Capa com imagem: só um lápis branco no
+   canto de baixo (clicar troca a imagem); sem o X de excluir. */
+.profile-imagem-editar {
+  position: absolute; right: 8px; bottom: 8px; z-index: 2;
+  width: 32px; height: 32px; border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  background: #FFFFFF; color: #181D24; border: 1px solid #E4E4E7;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); pointer-events: none;
+}
+.profile-imagem-editar svg { width: 15px; height: 15px; }
+.profile-avatar-picker:hover .profile-imagem-editar,
+.profile-logo-picker:hover .profile-imagem-editar { border-color: #181D24; }
+body[data-theme="dark"] .profile-imagem-editar { background: #252525 !important; color: #FFFFFF !important; border-color: #404040 !important; }

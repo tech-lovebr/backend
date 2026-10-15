@@ -23,4 +23,12 @@ Sempre que "primária" ou "secundária" forem mencionadas, utilize `#183b54` e `
 - **Tipografia de Títulos & Headlines**: Todos os títulos, subtítulos e headlines da plataforma (h1 a h6, Aparência, Informações, Anfitriões, Fornecedores Contratados, Seguros, Financeiro, etc.) DEVEM utilizar exclusivamente a fonte **Inter** (`font-sans`), sem serifa.
 - **Border Radius Padronizado**:
   - `--radius-card: 10px;` — cards, tabelas, modais (presentes, convidados confirmados, guia de primeiros passos, containers).
-  - `--radius-control: 12px;` — botões, campos de formulário, itens de menu do sidebar, ícones de métrica.
+  - `--radius-control: 8px;` — botões, campos de formulário, itens de menu do sidebar, ícones de métrica.
+
+## Identidade sem cara de Tailwind
+- Botões, campos, caixas e cards NÃO devem ter o visual padrão de Tailwind/"vibe code".
+- **Bordas finas no lugar de sombras**: cards e caixas com `1px solid #E4E4E7`, sem `box-shadow`. Sombra só em overlays (menus, modais): `0 8px 24px rgba(0,0,0,0.08)`.
+- **Cantos contidos**: 8px em botões, campos e caixinhas; 10px em cards e modais. Nada de `rounded-2xl/3xl` em botão; etiquetas de status com 6px (não pílula).
+- **Hover**: sem zoom (`hover:scale`), sem trocar o fundo por cinza/colorido. Botões claros mantêm o fundo branco e escurecem só a borda e o texto/ícone para `#181D24` (cor da sidebar).
+- **Foco**: sem anel/glow (`focus:ring`); só a borda escurece para `#181D24`.
+- A camada "Identidade própria, sem cara de Tailwind" no fim de `css/styles.css` e `B2B/css/styles.css` aplica isso às classes Tailwind usadas no HTML — ao criar componente novo, siga as regras acima em vez de empilhar utilitários.

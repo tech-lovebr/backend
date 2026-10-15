@@ -33,7 +33,7 @@
 
   /* Border Radius Tokens */
   --radius-card: 10px;
-  --radius-control: 12px;
+  --radius-control: 8px;
 }
 
 .text-logo-blue,
@@ -717,7 +717,7 @@ body[data-theme="dark"] .footer-security-badge svg {
 /* ==========================================================================
    PADRONIZAÇÃO GLOBAL DE BORDER RADIUS
    --radius-card: 10px — cards, tabelas, modal (presentes, convidados confirmados, guia de primeiros passos, etc.)
-   --radius-control: 12px — botões, campos de formulário, item de menu do sidebar, ícones de métrica
+   --radius-control: 8px — botões, campos de formulário, item de menu do sidebar, ícones de métrica
    ========================================================================== */
 
 /* 1. Cards, Tabelas, Modais e Painéis: 10px */
@@ -1935,7 +1935,7 @@ label,
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 10px rgba(24, 29, 36, 0.22);
+  box-shadow: none;
   text-decoration: none;
 }
 .btn-primary:hover { background: #0F1216; }
@@ -1959,7 +1959,7 @@ body[data-theme="dark"] .btn-primary:hover { background: #0F1216; }
   gap: 0.5rem;
   text-decoration: none;
 }
-.btn-secondary:hover { background: #F4F4F5; }
+.btn-secondary:hover { background: #FFFFFF; border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; color: #FFFFFF !important; border-color: rgba(255,255,255,0.12) !important; }
 
 .btn-primary svg, .btn-secondary svg { width: 16px; height: 16px; flex-shrink: 0; }
@@ -2000,8 +2000,9 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
 .bg-white.shadow-2xs,
 .bg-white.shadow-md {
   background: #FFFFFF !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  /* Sem sombra (identidade sem cara de Tailwind): o contorno vem da borda. */
+  box-shadow: none !important;
+  transition: border-color .15s ease !important;
 }
 
 .card-luxury:hover,
@@ -2009,7 +2010,8 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
 .dashboard-card:hover,
 .dashboard-tab-content .bg-white.group:hover:not(.b2b-item-card),
 .dashboard-main-area .bg-white.group:hover:not(.b2b-item-card) {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: none !important;
+  border-color: #D4D4D8 !important;
 }
 
 /* Explorar / Meus Contratos / Favoritos: lista plana, sem caixa por item —
@@ -6977,3 +6979,34 @@ button#b2b-chat-attach-btn.chat-composer-icon-btn { border-radius: 8px !importan
 .chat-unread-count { display: inline-block; box-sizing: border-box; }
 button#b2b-chat-attach-btn.chat-composer-icon-btn.chat-composer-icon-btn.chat-composer-icon-btn { border-radius: 8px !important; }
 button#btn-user-account-menu.tem-avatar.tem-avatar.tem-avatar { border-radius: 8px !important; }
+
+/* ==========================================================================
+   Identidade própria, sem cara de Tailwind
+   Bordas finas no lugar de sombras, cantos contidos (8px em botões, campos
+   e caixinhas; 10px em cards e modais), nada de zoom no hover nem anel
+   colorido no foco. Overlays (menus, modais) mantêm uma sombra discreta só
+   pra se descolarem do fundo.
+   ========================================================================== */
+.rounded-md, .rounded-lg, .rounded-xl { border-radius: 8px !important; }
+.rounded-2xl:not([class*="rounded-b"]):not([class*="rounded-t"]):not([class*="rounded-l"]):not([class*="rounded-r"]),
+.rounded-3xl:not([class*="rounded-b"]):not([class*="rounded-t"]):not([class*="rounded-l"]):not([class*="rounded-r"]) { border-radius: 10px !important; }
+
+.shadow-2xs, .shadow-xs, .shadow-sm, .shadow, .shadow-md { box-shadow: none !important; }
+.shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important; }
+
+[class*="hover:scale-"]:hover,
+.group:hover [class*="group-hover:scale-"] { transform: none !important; }
+
+[class*="focus:ring"]:focus,
+[class*="focus:ring"]:focus-visible {
+  box-shadow: none !important;
+  border-color: #181D24 !important;
+  outline: none !important;
+}
+
+/* Index: as caixas brancas grandes (cards) ganham a borda fina que
+   substitui a sombra. Caixas menores (rounded-xl/lg) já têm borda própria
+   quando precisam. */
+.bg-white.rounded-2xl:not(button):not(a),
+.bg-white.rounded-3xl:not(button):not(a) { border: 1px solid #E4E4E7; }
+.btn-white { box-shadow: none !important; }

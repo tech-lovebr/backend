@@ -733,7 +733,7 @@ const ICONE_VER_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx=
 
 function celulaEmail(email) {
   if (!email) return '—';
-  return `<span class="email-copiavel"><span>${escapeHtml(email)}</span><button type="button" class="btn-icone-linha" data-copiar="${escapeHtml(email)}" title="Copiar e-mail" aria-label="Copiar e-mail">${ICONE_COPIAR}</button></span>`;
+  return `<span class="email-copiavel"><button type="button" class="btn-icone-linha" data-copiar="${escapeHtml(email)}" title="Copiar e-mail" aria-label="Copiar e-mail">${ICONE_COPIAR}</button><span>${escapeHtml(email)}</span></span>`;
 }
 
 function botaoVerMais(id) {

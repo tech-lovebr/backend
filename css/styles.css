@@ -7301,3 +7301,12 @@ html body .gift-drawer > div:first-child > button:not(#love-h-a):hover,
 html body .guest-add-drawer > div:first-child > button:not(#love-h-a):hover,
 html body .budget-expense-drawer > div:first-child > button:not(#love-h-a):hover,
 html body .table-drawer > div:first-child > button:not(#love-h-a):hover { background: #F4F4F5; color: #18181B; }
+
+/* Meus presentes: barra de progresso da vaquinha (cotas) abaixo do valor */
+.gift-vaquinha { margin-top: .6rem; }
+.gift-vaquinha-linha { display: flex; align-items: center; gap: .5rem; }
+.gift-vaquinha-pct { flex-shrink: 0; min-width: 2.4rem; padding: .2rem .4rem; border-radius: 4px; background: #18181B; color: #fff; font-size: .6875rem; font-weight: 700; line-height: 1; text-align: center; }
+.gift-vaquinha-trilho { flex: 1; height: 8px; border-radius: 999px; background: #E4E4E7; overflow: hidden; }
+.gift-vaquinha-barra { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #4ADE80, #16A34A); transition: width .3s ease; }
+.gift-vaquinha-info { margin: .4rem 0 0; font-size: .6875rem; color: #71717A; }
+.gift-vaquinha-info strong { color: #18181B; font-weight: 700; }

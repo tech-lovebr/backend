@@ -6337,6 +6337,29 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`"${randomItem.title}" adicionado à lista!`, '🎁');
   }
 
+  // Presente com vaquinha/cotas: barra de progresso abaixo do valor
+  // (porcentagem, quanto já foi arrecadado e quantas cotas foram vendidas).
+  function barraDaVaquinhaHtml(gift) {
+    if (!gift || !gift.isCrowdfunding) return '';
+    const meta = parseFloat(gift.price) || 0;
+    const arrecadado = Math.max(0, parseFloat(gift.received) || 0);
+    const pct = meta > 0 ? Math.min(100, Math.round((arrecadado / meta) * 100)) : 0;
+    const cfg = gift.crowdfundingConfig || {};
+    const totalCotas = Math.max(0, parseInt(cfg.totalQuotas, 10) || 0);
+    const valorCota = totalCotas > 0 ? (parseFloat(cfg.quotaValue) || meta / totalCotas) : 0;
+    const cotasVendidas = valorCota > 0 ? Math.min(totalCotas, Math.floor(arrecadado / valorCota + 1e-9)) : 0;
+    const brl = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const cotas = totalCotas > 0 ? ` · ${cotasVendidas} de ${totalCotas} cotas` : '';
+    return `
+      <div class="gift-vaquinha" title="Vaquinha: ${pct}% arrecadado">
+        <div class="gift-vaquinha-linha">
+          <span class="gift-vaquinha-pct">${pct}%</span>
+          <div class="gift-vaquinha-trilho"><div class="gift-vaquinha-barra" style="width:${pct}%"></div></div>
+        </div>
+        <p class="gift-vaquinha-info">Arrecadado <strong>${brl(arrecadado)}</strong>${escaparHtml(cotas)}</p>
+      </div>`;
+  }
+
   function renderHostGifts(searchQuery = '') {
     const container = document.getElementById('host-gifts-grid');
     const headerTitle = document.getElementById('gifts-header-title');
@@ -6445,6 +6468,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="text-base sm:text-lg font-bold text-zinc-900 font-sans">
               R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
+            ${barraDaVaquinhaHtml(gift)}
           </div>
 
           <!-- Linha de Ações: Editar / Excluir (também no presente comprado) -->

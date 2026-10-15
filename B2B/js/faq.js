@@ -20,4 +20,9 @@ function initFaqPage() {
   });
 }
 
-document.addEventListener('shell:ready', initFaqPage);
+// Avisa o shell que a página está pronta (sem isso a tela de carregamento
+// só some no limite de 4 segundos).
+document.addEventListener('shell:ready', () => {
+  initFaqPage();
+  window.b2bPageReady?.();
+});

@@ -465,6 +465,7 @@ function renderGreeting() {
   const now = new Date();
   const dateStr = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
   setText('greeting-date', capitalize(dateStr));
+  setText('greeting-date-side', capitalize(dateStr));
 
   const titleEl = document.getElementById('greeting-title');
   if (titleEl) {

@@ -64,4 +64,7 @@ function initPlanosPage() {
   });
 }
 
-document.addEventListener('shell:ready', initPlanosPage);
+document.addEventListener('shell:ready', () => {
+  initPlanosPage();
+  window.b2bPageReady?.(); // sem isso a tela de carregamento esperava 4s
+});

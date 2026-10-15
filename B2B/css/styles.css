@@ -6909,3 +6909,38 @@ body[data-theme="dark"] .dashboard-help-section { background: #181D24 !important
 body[data-theme="dark"] .dashboard-panel-section > .dashboard-panel-header,
 body[data-theme="dark"] .dashboard-help-section > .dashboard-help-header { background: #181D24 !important; border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .dashboard-help-section > .dashboard-help-grid { background: transparent !important; }
+
+/* Painel: a data de hoje fica à direita, no lugar do antigo "Guia de
+   início" (no celular continua embaixo do "Olá"). */
+.greeting-date-side { font-size: 0.875rem; font-weight: 600; color: #181D24; margin: 0; white-space: nowrap; }
+body[data-theme="dark"] .greeting-date-side { color: #FFFFFF !important; }
+@media (min-width: 769px) {
+  body[data-page="dashboard"] .dashboard-greeting-text .greeting-date { display: none; }
+}
+
+/* Títulos das seções do painel (Sua agenda, Precisa de ajuda?, Analytics,
+   Notícias e eventos): mesma fonte de "Saldo"/"Faturamento" e a cor da
+   sidebar, sem maiúsculas. */
+.dashboard-panel-header .dashboard-help-title,
+.dashboard-help-header .dashboard-help-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #181D24;
+}
+
+/* Dúvidas: card no estilo de tabela — faixa de cabeçalho branca com a
+   categoria (fonte de "Saldo", cor da sidebar) e as perguntas abaixo. */
+.dash-card.faq-table-card { padding: 0; overflow: hidden; background: #FFFFFF; }
+.faq-table-card > .dash-card-header {
+  margin: 0; padding: 0.875rem 1.5rem; min-height: 46px;
+  border-bottom: 1px solid #E4E4E7; background: #FFFFFF;
+}
+.faq-table-title { font-size: 0.875rem; font-weight: 700; color: #181D24; margin: 0; }
+.faq-table-card > .faq-list { padding: 0.25rem 1.5rem; background: #FBFBFB; }
+.faq-table-card > .faq-list .faq-item:last-child { border-bottom: none; }
+body[data-theme="dark"] .dash-card.faq-table-card,
+body[data-theme="dark"] .faq-table-card > .dash-card-header { background: #181D24 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .faq-table-card > .faq-list { background: transparent !important; }
+body[data-theme="dark"] .faq-table-title { color: #FFFFFF !important; }

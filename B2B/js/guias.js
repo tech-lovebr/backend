@@ -86,5 +86,10 @@ async function carregarGuiasDoAdmin() {
 
 document.addEventListener('shell:ready', () => {
   ligarGuias();
-  carregarGuiasDoAdmin();
+  // Mostra a página quando os guias do Admin chegarem (ou falharem), em vez
+  // de esperar o limite de 4 segundos da tela de carregamento.
+  Promise.resolve()
+    .then(() => carregarGuiasDoAdmin())
+    .catch(() => {})
+    .finally(() => window.b2bPageReady?.());
 });

@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=523">
+  <link rel="stylesheet" href="css/styles.css?v=524">
 </head>
 <body class="font-sans" data-page="faq">
 
@@ -39,11 +39,15 @@
       <div id="shell-topbar"></div>
 
       <main class="b2b-content">
+      <!-- Cabeçalho padrão das páginas do Hub. -->
+      <div class="b2b-header-bar">
+        <h2 class="text-xl font-bold text-zinc-900">Dúvidas</h2>
+      </div>
+
       <div class="guias-layout">
 
         <aside class="guias-sidebar">
-          <h1 class="text-base font-bold text-zinc-900 mb-3">Dúvidas</h1>
-          <nav class="flex flex-col gap-0.5" id="faq-categories">
+          <nav class="guias-menu-table" id="faq-categories">
             <button type="button" class="guide-link guide-link--active" data-category="produtos">Produtos e Serviços</button>
             <button type="button" class="guide-link" data-category="contratos">Contratos e Pagamentos</button>
             <button type="button" class="guide-link" data-category="crm">CRM e Chat</button>
@@ -53,11 +57,11 @@
           </nav>
         </aside>
 
-        <div class="dash-card">
+        <!-- Estilo de tabela: faixa de cabeçalho com a categoria e as perguntas abaixo. -->
+        <div class="dash-card faq-table-card">
           <div class="dash-card-header">
             <div class="dash-card-header-left">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-zinc-400"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
-              <h2 class="text-base font-bold text-zinc-900" id="faq-category-title">Produtos e Serviços</h2>
+              <h2 class="faq-table-title" id="faq-category-title">Produtos e Serviços</h2>
             </div>
           </div>
 
@@ -138,6 +142,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/faq.js"></script>
+  <script src="js/faq.js?v=2"></script>
 </body>
 </html>

@@ -14272,11 +14272,19 @@ document.addEventListener('DOMContentLoaded', () => {
       showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
       return;
     }
+    let motivoSemCadastro = '';
     if (!cliente && veioDoGoogle) {
       const { data: criado, error: erroCriar } = await supabaseClient.rpc('garantir_cliente_google');
       if (erroCriar) console.error('Erro ao criar cadastro pelo Google:', erroCriar);
       if (criado) {
         ({ data: cliente } = await supabaseClient.from('clientes').select('*').eq('id', session.user.id).maybeSingle());
+      }
+      // A função recusa (false) quando o e-mail já é de uma conta de
+      // fornecedor do Hub B2B — cada conta é de anfitrião OU de fornecedor.
+      if (!cliente) {
+        motivoSemCadastro = erroCriar
+          ? 'Não foi possível criar sua conta com o Google agora. Tente de novo em instantes.'
+          : `O e-mail ${escaparHtml(session.user.email || '')} já está em uso numa conta de fornecedor do Hub B2B. Para usar a plataforma de anfitrião, entre ou cadastre-se com outro e-mail.`;
       }
     }
 
@@ -14286,8 +14294,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // no navegador) continuaria entrando normalmente.
     if (!cliente) {
       await supabaseClient.auth.signOut();
-      showToast('Essa conta não está cadastrada como anfitrião nesta plataforma.', '⚠️');
-      switchView('public');
+      // Os avisos flutuantes estão desligados: a explicação vai para a tela
+      // de login (antes voltava calado para a página inicial).
+      switchView('login');
+      showLoginError(motivoSemCadastro || 'Essa conta não está cadastrada como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
       return;
     }
 

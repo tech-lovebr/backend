@@ -59,8 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
       inviteAdvisor: document.getElementById('modal-invite-advisor'),
       searchWedding: document.getElementById('modal-search-wedding'),
       deleteEvent: document.getElementById('modal-delete-event'),
-      userSettings: document.getElementById('modal-user-settings'),
-      userFaq: document.getElementById('modal-user-faq'),
       templatePicker: document.getElementById('modal-template-picker'),
       register: document.getElementById('modal-register'),
       verifyCode: document.getElementById('modal-verify-code'),
@@ -218,6 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
           openLegalDocPage(route.slug);
         } else if (route.type === 'notifications') {
           openNotificationsPage({ pushUrl: false });
+        } else if (route.type === 'faq') {
+          openFaqPage({ pushUrl: false });
+        } else if (route.type === 'settings') {
+          openAccountSettingsPage({ pushUrl: false });
         } else if (route.type === 'tab') {
           if (route.rota) aplicarRota(route.rota, { inicial: true });
           else switchRailTab(route.tab);
@@ -549,6 +551,182 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadNotificationsFeed();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+
+  // ------------------------------------------------------------------
+  // PÁGINAS DO MENU DA CONTA: Dúvidas (/duvidas) e Configurações
+  // (/configuracoes). Mesmo encaixe da página de notificações: sem aba
+  // no rail, barra de título colada no header (body.page-mode).
+  // ------------------------------------------------------------------
+  function abrirPaginaDaConta(tabId, path, titulo, opts = {}) {
+    state.currentTab = tabId;
+    elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
+    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+    document.body.classList.add('page-mode');
+    if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
+    if (elements.mainArea) elements.mainArea.classList.add('full-width');
+    document.querySelectorAll('.dashboard-tab-content').forEach(content => {
+      content.classList.toggle('active', content.id === tabId);
+    });
+    if (opts.pushUrl !== false && window.location.pathname !== path) {
+      history.pushState({ paginaConta: tabId }, '', path);
+    }
+    document.title = `${titulo} — Love`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function openFaqPage(opts = {}) {
+    abrirPaginaDaConta('tab-faq', '/duvidas', 'Dúvidas', opts);
+    loadFaqPage();
+  }
+
+  function openAccountSettingsPage(opts = {}) {
+    abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
+    preencherConfiguracoesDaConta();
+  }
+
+  // Preenche nome/sobrenome/e-mail e zera senha, 2FA e a caixa de excluir.
+  function preencherConfiguracoesDaConta() {
+    const firstNameInput = document.getElementById('settings-user-first-name');
+    const lastNameInput = document.getElementById('settings-user-last-name');
+    const emailInput = document.getElementById('settings-user-email');
+    const profile = window.loveClienteProfile || {};
+    // Antes da migration 034 só existia couple_name: divide na hora.
+    const legacyParts = (profile.couple_name || '').trim().split(/\s+/);
+    const first = profile.first_name ?? legacyParts[0] ?? '';
+    const last = profile.first_name ? (profile.last_name || '') : legacyParts.slice(1).join(' ');
+    if (firstNameInput) firstNameInput.value = first;
+    if (lastNameInput) lastNameInput.value = last;
+    if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
+    document.getElementById('settings-form-error')?.classList.add('hidden');
+    document.getElementById('settings-form-ok')?.classList.add('hidden');
+    document.getElementById('settings-delete-box')?.classList.add('hidden');
+    const confirmInput = document.getElementById('settings-delete-confirm-input');
+    if (confirmInput) confirmInput.value = '';
+    resetSettingsSecurity();
+    refreshMfaStatus();
+  }
+
+  // ---- Dúvidas (FAQ) ----
+  // Ordem fixa das categorias pedidas; outras criadas no Admin vêm depois, em
+  // ordem alfabética.
+  const FAQ_CATEGORIAS_ORDEM = ['Lista de convidados', 'Meus presentes', 'Edição de site', 'Fornecedores'];
+
+  // Usada só quando a tabela `faq` não existe ou está vazia.
+  const FAQ_PADRAO = [
+    { categoria: 'Lista de convidados', pergunta: 'Como os convidados confirmam presença?', resposta: 'Pelo link do seu site: o convidado clica em "Confirmar presença", informa quem vai com ele e pode deixar um recado. A confirmação aparece na hora em Meus Convidados.' },
+    { categoria: 'Lista de convidados', pergunta: 'Posso adicionar acompanhantes a um convidado?', resposta: 'Sim. Ao criar ou editar um convidado, informe os acompanhantes. Eles contam na lista, no mapa de mesas e nos números da Home.' },
+    { categoria: 'Meus presentes', pergunta: 'Como funciona o resgate dos presentes em dinheiro?', resposta: 'Tudo que os convidados presenteiam entra como saldo disponível na sua Carteira. Você pede o saque quando quiser, pela chave Pix ou conta cadastrada em Dados de saque.' },
+    { categoria: 'Meus presentes', pergunta: 'Posso duplicar um presente?', resposta: 'Sim. Em Meus Presentes, abra o presente e use "Duplicar": uma cópia é criada e você só ajusta o que mudar.' },
+    { categoria: 'Edição de site', pergunta: 'Como mudar as cores e o visual do meu site?', resposta: 'Em Personalizar, na aba Aparência, escolha um modelo pronto ou ajuste cores, fontes e foto de capa com a prévia ao vivo.' },
+    { categoria: 'Edição de site', pergunta: 'Dá para colocar música no site?', resposta: 'Sim. Em Personalizar, informe o link da música e, se quiser, marque para tocar automaticamente quando o convidado abrir o site.' },
+    { categoria: 'Fornecedores', pergunta: 'Como contratar um fornecedor pela Love?', resposta: 'Em Fornecedores, encontre quem você procura, abra o perfil e use "Contratar" ou peça um orçamento. Os contratados ficam reunidos em Contratados.' },
+    { categoria: 'Fornecedores', pergunta: 'Como falo com um fornecedor?', resposta: 'Pelo chat da plataforma: clique em "Chat" no card ou no perfil do fornecedor. As conversas ficam em Fornecedores › Mensagens.' }
+  ];
+
+  let faqItensCache = null;
+
+  async function loadFaqPage() {
+    const cont = document.getElementById('faq-page-container');
+    if (!cont) return;
+    if (faqItensCache) renderFaqPage(faqItensCache);
+    else cont.innerHTML = '<p class="text-sm text-zinc-400">Carregando…</p>';
+
+    let itens = [];
+    try {
+      const { data, error } = await supabaseClient
+        .from('faq')
+        .select('id, categoria, pergunta, resposta, ordem')
+        .eq('ativo', true)
+        .order('ordem', { ascending: true })
+        .order('created_at', { ascending: true });
+      if (!error && Array.isArray(data)) itens = data;
+    } catch (e) { /* sem tabela ainda: usa a lista padrão */ }
+    faqItensCache = itens.length ? itens : FAQ_PADRAO;
+    renderFaqPage(faqItensCache);
+  }
+
+  function renderFaqPage(itens) {
+    const cont = document.getElementById('faq-page-container');
+    if (!cont) return;
+    const grupos = new Map();
+    itens.forEach(item => {
+      const cat = (item.categoria || 'Outras dúvidas').trim();
+      if (!grupos.has(cat)) grupos.set(cat, []);
+      grupos.get(cat).push(item);
+    });
+    const posicao = cat => {
+      const i = FAQ_CATEGORIAS_ORDEM.findIndex(c => c.toLowerCase() === cat.toLowerCase());
+      return i === -1 ? FAQ_CATEGORIAS_ORDEM.length : i;
+    };
+    const categorias = [...grupos.keys()].sort((a, b) => posicao(a) - posicao(b) || a.localeCompare(b, 'pt-BR'));
+
+    if (!categorias.length) {
+      cont.innerHTML = '<p class="text-sm text-zinc-400">Nenhuma dúvida cadastrada ainda.</p>';
+      return;
+    }
+
+    const seta = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>';
+    cont.innerHTML = categorias.map(cat => `
+      <div class="faq-categoria">
+        <h3 class="faq-categoria-titulo">${escaparHtml(cat)}</h3>
+        <div class="faq-lista">
+          ${grupos.get(cat).map(item => `
+            <div class="faq-item">
+              <button type="button" class="faq-pergunta" aria-expanded="false">
+                <span>${escaparHtml(item.pergunta || '')}</span>
+                ${seta}
+              </button>
+              <div class="faq-resposta">${escaparHtml(item.resposta || '').replace(/\r?\n/g, '<br>')}</div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+
+    cont.querySelectorAll('.faq-pergunta').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const aberto = item.classList.toggle('aberto');
+        btn.setAttribute('aria-expanded', String(aberto));
+      });
+    });
+  }
+
+  // ---- Excluir a própria conta (RPC excluir_minha_conta, migration 051) ----
+  const btnDeleteAccount = document.getElementById('btn-settings-delete-account');
+  const deleteBox = document.getElementById('settings-delete-box');
+  if (btnDeleteAccount && deleteBox) {
+    btnDeleteAccount.addEventListener('click', () => {
+      deleteBox.classList.toggle('hidden');
+      if (!deleteBox.classList.contains('hidden')) document.getElementById('settings-delete-confirm-input')?.focus();
+    });
+    document.getElementById('btn-settings-delete-cancel')?.addEventListener('click', () => {
+      deleteBox.classList.add('hidden');
+      document.getElementById('settings-delete-confirm-input').value = '';
+      document.getElementById('settings-delete-error').classList.add('hidden');
+    });
+    document.getElementById('btn-settings-delete-confirm')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      const input = document.getElementById('settings-delete-confirm-input');
+      const err = document.getElementById('settings-delete-error');
+      err.classList.add('hidden');
+      if (input.value.trim().toUpperCase() !== 'EXCLUIR') {
+        err.textContent = 'Digite EXCLUIR para confirmar.';
+        err.classList.remove('hidden');
+        return;
+      }
+      btn.disabled = true;
+      const { error } = await supabaseClient.rpc('excluir_minha_conta');
+      if (error) {
+        console.error('Erro ao excluir a conta:', error);
+        btn.disabled = false;
+        err.textContent = 'Não foi possível excluir sua conta agora. Tente de novo em instantes.';
+        err.classList.remove('hidden');
+        return;
+      }
+      try { await supabaseClient.auth.signOut({ scope: 'local' }); } catch (e2) { /* a conta já não existe */ }
+      window.location.replace('/');
+    });
   }
 
   const btnNotificationsMarkAllRead = document.getElementById('btn-notifications-mark-all-read');
@@ -2183,7 +2361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'blog', 'assets', 'css', 'js', 'lib'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'configuracoes', 'blog', 'assets', 'css', 'js', 'lib'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -13433,23 +13611,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Configurações e Dúvidas são páginas próprias (/configuracoes, /duvidas).
   if (btnProfileData) {
     btnProfileData.addEventListener('click', () => {
       dropdownUserAccount?.classList.add('hidden');
-      const firstNameInput = document.getElementById('settings-user-first-name');
-      const lastNameInput = document.getElementById('settings-user-last-name');
-      const emailInput = document.getElementById('settings-user-email');
-      const profile = window.loveClienteProfile || {};
-      // Antes da migration 034 só existia couple_name: divide na hora.
-      const legacyParts = (profile.couple_name || '').trim().split(/\s+/);
-      const first = profile.first_name ?? legacyParts[0] ?? '';
-      const last = profile.first_name ? (profile.last_name || '') : legacyParts.slice(1).join(' ');
-      if (firstNameInput) firstNameInput.value = first;
-      if (lastNameInput) lastNameInput.value = last;
-      if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
-      document.getElementById('settings-form-error')?.classList.add('hidden');
-      resetSettingsSecurity();
-      openModal(elements.modals.userSettings);
+      openAccountSettingsPage();
     });
   }
 
@@ -13473,7 +13639,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnAccountFaq) {
     btnAccountFaq.addEventListener('click', () => {
       dropdownUserAccount?.classList.add('hidden');
-      openModal(elements.modals.userFaq);
+      openFaqPage();
     });
   }
 
@@ -13483,14 +13649,6 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdownUserAccount?.classList.add('hidden');
       const switcher = document.getElementById('btn-event-switcher');
       if (switcher) switcher.click();
-    });
-  }
-
-  const btnFaqSupport = document.getElementById('btn-faq-contact-support');
-  if (btnFaqSupport) {
-    btnFaqSupport.addEventListener('click', () => {
-      closeModal(elements.modals.userFaq);
-      showToast('Suporte Love via WhatsApp: (11) 98765-4321 • Atendimento 24/7.', '💬');
     });
   }
 
@@ -13757,7 +13915,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (dropdownUsername) dropdownUsername.textContent = name;
 
       resetSettingsSecurity();
-      closeModal(elements.modals.userSettings);
+      // Página (não popup): confirma ali mesmo, sem fechar nada.
+      const okEl = document.getElementById('settings-form-ok');
+      if (okEl) {
+        okEl.classList.remove('hidden');
+        setTimeout(() => okEl.classList.add('hidden'), 4000);
+      }
     });
   }
 
@@ -13786,7 +13949,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else document.getElementById('settings-password-current').focus();
   }
 
-  // Chamado ao abrir/salvar o popup: tudo fechado e sem senha preenchida.
+  // Chamado ao abrir/salvar a página: tudo fechado e sem senha preenchida.
   function resetSettingsSecurity() {
     setSecurityOpen(false);
     setPasswordFieldsOpen(false);
@@ -13994,6 +14157,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (path === '/termos') { openLegalDocPage('termos', { pushUrl: false }); return; }
     if (path === '/politica-de-privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
     if (path === '/notificacoes' && state.currentView === 'dashboard') { openNotificationsPage({ pushUrl: false }); return; }
+    if (path === '/duvidas' && state.currentView === 'dashboard') { openFaqPage({ pushUrl: false }); return; }
+    if (path === '/configuracoes' && state.currentView === 'dashboard') { openAccountSettingsPage({ pushUrl: false }); return; }
 
     const rota = lerRota(path);
     if (state.currentView === 'dashboard' && rota) {
@@ -14198,12 +14363,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // /notificacoes não é uma aba do rail (sem ícone próprio) — mesma lógica
   // de rota "direta" das legais/abas, só que abrindo a página de notificações.
   const initialIsNotifications = window.location.pathname === '/notificacoes';
+  const initialIsFaq = window.location.pathname === '/duvidas';
+  const initialIsSettings = window.location.pathname === '/configuracoes';
 
   // Guardado ANTES do switchView/initClienteSession: se a sessão confirmar
   // 'dashboard', é consumido ali dentro mesmo, sem passar pela Visão Geral
   // no meio do caminho (ver pendingInitialDashboardRoute, perto do topo).
   if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
   else if (initialIsNotifications) pendingInitialDashboardRoute = { type: 'notifications' };
+  else if (initialIsFaq) pendingInitialDashboardRoute = { type: 'faq' };
+  else if (initialIsSettings) pendingInitialDashboardRoute = { type: 'settings' };
   else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab, rota: initialRoute };
 
   // Só chama switchView('public') de cara se NÃO houver pista de sessão no

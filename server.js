@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
-  const CLEAN_SPA_ROUTES = ['/', '/login', '/termos', '/politica-de-privacidade', '/personalizar', '/presentes', '/convidados', '/carteira', '/fornecedores', '/notificacoes'];
+  const CLEAN_SPA_ROUTES = ['/', '/login', '/termos', '/politica-de-privacidade', '/personalizar', '/presentes', '/convidados', '/carteira', '/fornecedores', '/notificacoes', '/duvidas', '/configuracoes'];
   // Sub-rotas do painel (/fornecedores/contratos/…, /convidados/mesas…) também
   // servem o index.html — a SPA lê o caminho e abre a tela certa.
   const SPA_PREFIXES = ['/personalizar/', '/presentes/', '/convidados/', '/carteira/', '/fornecedores/'];

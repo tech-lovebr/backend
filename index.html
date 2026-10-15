@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261015_centro">
+  <link rel="stylesheet" href="css/styles.css?v=20261015_paginasconta">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3119,6 +3119,137 @@
         </section>
 
         <!-- =================================================================
+             PÁGINA: DÚVIDAS (/duvidas) — FAQ por categoria, no lugar do popup.
+             As perguntas vêm da tabela `faq` (editada no Admin); sem tabela
+             ou sem linhas, usa a lista padrão do app.js.
+             ================================================================= -->
+        <section id="tab-faq" class="dashboard-tab-content space-y-0 w-full">
+          <div class="builder-toolbar">
+            <h2 class="floorplan-page-name" style="margin:0;">Dúvidas</h2>
+            <div class="flex items-center gap-2.5 flex-shrink-0"></div>
+          </div>
+
+          <div class="px-6 sm:px-8 py-6 w-full max-w-none">
+            <div id="faq-page-container" class="max-w-3xl space-y-8">
+              <!-- Injetado via JS (renderFaqPage) -->
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             PÁGINA: CONFIGURAÇÕES DA CONTA (/configuracoes) — no lugar do popup.
+             Mesmos ids do antigo modal: o JS de salvar/senha/2FA continua igual.
+             ================================================================= -->
+        <section id="tab-account-settings" class="dashboard-tab-content space-y-0 w-full">
+          <div class="builder-toolbar">
+            <h2 class="floorplan-page-name" style="margin:0;">Configurações</h2>
+            <div class="flex items-center gap-2.5 flex-shrink-0">
+              <button type="submit" form="form-user-settings" id="btn-save-user-settings" class="btn-brand flex-shrink-0 px-4 py-2 text-xs sm:text-sm font-bold">Salvar alterações</button>
+            </div>
+          </div>
+
+          <div class="px-6 sm:px-8 py-6 w-full max-w-none">
+            <div class="max-w-3xl space-y-6">
+
+              <form id="form-user-settings" class="space-y-6">
+                <!-- Perfil -->
+                <div class="dash-card">
+                  <h3 class="text-base font-bold text-zinc-900 mb-4">Perfil</h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Nome</label>
+                      <input type="text" id="settings-user-first-name" autocapitalize="words" required placeholder="Seu nome" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Sobrenome</label>
+                      <input type="text" id="settings-user-last-name" autocapitalize="words" placeholder="Seu sobrenome" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800">
+                    </div>
+                    <div class="sm:col-span-2">
+                      <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
+                      <input type="email" id="settings-user-email" disabled class="w-full text-sm p-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Senha -->
+                <div class="dash-card">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <h3 class="text-base font-bold text-zinc-900">Senha</h3>
+                      <p class="text-xs text-slate-500 mt-0.5">Troque a senha de acesso à sua conta.</p>
+                    </div>
+                    <button type="button" id="btn-settings-change-password" class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl">Alterar senha</button>
+                  </div>
+                  <div id="settings-password-fields" class="hidden mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Senha atual</label>
+                      <input type="password" id="settings-password-current" autocomplete="current-password" placeholder="••••••••" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Nova senha</label>
+                      <input type="password" id="settings-password-new" autocomplete="new-password" placeholder="••••••••" minlength="6" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">Confirmar nova senha</label>
+                      <input type="password" id="settings-password-confirm" autocomplete="new-password" placeholder="••••••••" minlength="6" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800">
+                    </div>
+                    <p class="sm:col-span-3 text-[11px] text-slate-400">A nova senha é salva ao clicar em "Salvar alterações".</p>
+                  </div>
+                </div>
+
+                <!-- Segurança -->
+                <div class="dash-card">
+                  <h3 class="text-base font-bold text-zinc-900 mb-4">Segurança</h3>
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <p class="text-sm font-semibold text-slate-800">Autenticação de dois fatores</p>
+                      <p class="text-xs text-slate-500 mt-0.5">Status: <span id="settings-mfa-status" class="font-semibold text-slate-500">verificando…</span></p>
+                    </div>
+                    <button type="button" id="btn-settings-mfa-toggle" disabled class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl disabled:opacity-60">Ativar</button>
+                  </div>
+                  <div id="settings-mfa-setup" class="hidden mt-4 space-y-3 max-w-sm">
+                    <p class="text-xs text-slate-500 leading-relaxed">1. Abra um app autenticador (Google Authenticator, Microsoft Authenticator, 1Password…) e escaneie o QR code.</p>
+                    <div class="flex justify-center">
+                      <img id="settings-mfa-qr" alt="QR code para o app autenticador" class="w-40 h-40 border border-slate-200 rounded-xl p-2 bg-white">
+                    </div>
+                    <p class="text-xs text-slate-500 text-center">Ou digite a chave: <code id="settings-mfa-secret" class="font-mono text-[11px] text-slate-700 break-all select-all"></code></p>
+                    <div>
+                      <label class="block text-xs font-bold text-slate-700 mb-1">2. Digite o código de 6 dígitos do app</label>
+                      <input type="text" id="settings-mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800 tracking-[0.3em] text-center font-mono">
+                    </div>
+                    <p id="settings-mfa-error" class="text-xs text-red-600 hidden"></p>
+                    <button type="button" id="btn-settings-mfa-verify" class="btn-brand w-full py-2.5 text-xs font-bold">Confirmar ativação</button>
+                  </div>
+                </div>
+
+                <p id="settings-form-error" class="text-xs text-red-600 hidden"></p>
+                <p id="settings-form-ok" class="text-xs text-emerald-600 hidden">Alterações salvas.</p>
+              </form>
+
+              <!-- Excluir conta: discreto, mas ao alcance de quem procura. -->
+              <div class="pt-2">
+                <button type="button" id="btn-settings-delete-account" class="text-xs text-zinc-400 hover:text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0">Excluir minha conta</button>
+                <div id="settings-delete-box" class="hidden mt-3 border border-red-200 rounded-[10px] p-5 space-y-3 max-w-lg">
+                  <p class="text-sm font-semibold text-slate-800">Excluir a conta é definitivo.</p>
+                  <p class="text-xs text-slate-500 leading-relaxed">Seus eventos, listas de convidados, presentes, conversas e dados de saque serão apagados e não poderão ser recuperados. Saldo ainda não sacado também é perdido — faça o saque antes.</p>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Para confirmar, digite <span class="font-mono">EXCLUIR</span></label>
+                    <input type="text" id="settings-delete-confirm-input" autocomplete="off" placeholder="EXCLUIR" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800 uppercase">
+                  </div>
+                  <p id="settings-delete-error" class="text-xs text-red-600 hidden"></p>
+                  <div class="flex items-center gap-3">
+                    <button type="button" id="btn-settings-delete-confirm" class="px-4 py-2 text-xs font-bold rounded-xl border border-red-300 text-red-600 bg-white hover:border-red-600 cursor-pointer">Excluir definitivamente</button>
+                    <button type="button" id="btn-settings-delete-cancel" class="text-xs text-slate-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+
+        <!-- =================================================================
              PAGE 7: MARKETPLACE B2B & ENCONTRAR FORNECEDORES (Zola Inspired Layout)
              ================================================================= -->
         <section id="tab-b2b" class="dashboard-tab-content space-y-0 w-full">
@@ -4416,163 +4547,6 @@
   </div>
 
   <!-- =======================================================================
-       MODAL: CONFIGURAÇÕES DA CONTA (Perfil + Segurança)
-       ======================================================================= -->
-  <div id="modal-user-settings" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
-    <div class="modal-container-custom bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto">
-      <button data-close-modal class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">✕</button>
-
-      <h3 class="text-xl font-extrabold text-slate-900 mb-5">Configurações da conta</h3>
-
-      <form id="form-user-settings" class="space-y-6">
-        <div class="space-y-4">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">Perfil</span>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Nome</label>
-              <input type="text" id="settings-user-first-name" autocapitalize="words" required placeholder="Seu nome" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Sobrenome</label>
-              <input type="text" id="settings-user-last-name" autocapitalize="words" placeholder="Seu sobrenome" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-            </div>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
-            <input type="email" id="settings-user-email" disabled class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed">
-          </div>
-        </div>
-
-        <!-- Acordeão: Segurança -->
-        <div class="border border-slate-200 rounded-xl overflow-hidden">
-          <button type="button" id="btn-settings-security-toggle" aria-expanded="false" aria-controls="settings-security-body" class="w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-slate-50 transition-colors cursor-pointer">
-            <span class="flex items-center gap-2.5">
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
-              <span class="text-sm font-bold text-slate-800">Segurança</span>
-            </span>
-            <svg id="settings-security-chevron" class="w-4 h-4 text-slate-400 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-          </button>
-
-          <div id="settings-security-body" class="hidden border-t border-slate-200 divide-y divide-slate-100">
-
-            <!-- Senha -->
-            <div class="px-4 py-4 space-y-3">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="text-xs font-bold text-slate-700">Senha</p>
-                  <p class="text-[11px] text-slate-400">Troque a senha de acesso à sua conta.</p>
-                </div>
-                <button type="button" id="btn-settings-change-password" class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl">Alterar senha</button>
-              </div>
-              <div id="settings-password-fields" class="hidden space-y-3">
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Senha atual</label>
-                  <input type="password" id="settings-password-current" autocomplete="current-password" placeholder="••••••••" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Nova senha</label>
-                  <input type="password" id="settings-password-new" autocomplete="new-password" placeholder="••••••••" minlength="6" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-                </div>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">Confirmar nova senha</label>
-                  <input type="password" id="settings-password-confirm" autocomplete="new-password" placeholder="••••••••" minlength="6" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-                </div>
-                <p class="text-[11px] text-slate-400">A nova senha é salva ao clicar em "Salvar alterações".</p>
-              </div>
-            </div>
-
-            <!-- Autenticação de dois fatores -->
-            <div class="px-4 py-4 space-y-3">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="text-xs font-bold text-slate-700">Autenticação de dois fatores</p>
-                  <p class="text-[11px] text-slate-400">Status: <span id="settings-mfa-status" class="font-semibold text-slate-500">verificando…</span></p>
-                </div>
-                <button type="button" id="btn-settings-mfa-toggle" disabled class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl disabled:opacity-60">Ativar</button>
-              </div>
-              <div id="settings-mfa-setup" class="hidden space-y-3">
-                <p class="text-[11px] text-slate-500 leading-relaxed">1. Abra um app autenticador (Google Authenticator, Microsoft Authenticator, 1Password…) e escaneie o QR code.</p>
-                <div class="flex justify-center">
-                  <img id="settings-mfa-qr" alt="QR code para o app autenticador" class="w-40 h-40 border border-slate-200 rounded-xl p-2 bg-white">
-                </div>
-                <p class="text-[11px] text-slate-500 text-center">Ou digite a chave: <code id="settings-mfa-secret" class="font-mono text-[11px] text-slate-700 break-all select-all"></code></p>
-                <div>
-                  <label class="block text-xs font-bold text-slate-700 mb-1">2. Digite o código de 6 dígitos do app</label>
-                  <input type="text" id="settings-mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800 tracking-[0.3em] text-center font-mono">
-                </div>
-                <p id="settings-mfa-error" class="text-xs text-red-600 hidden"></p>
-                <button type="button" id="btn-settings-mfa-verify" class="btn-brand w-full py-2.5 text-xs font-bold">Confirmar ativação</button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <p id="settings-form-error" class="text-xs text-red-600 hidden"></p>
-
-        <button type="submit" id="btn-save-user-settings" class="btn-brand w-full py-3 text-xs sm:text-sm font-bold shadow-md">
-          Salvar alterações
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- =======================================================================
-       MODAL: CENTRAL DE DÚVIDAS & FAQ
-       ======================================================================= -->
-  <div id="modal-user-faq" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
-    <div class="modal-container-custom bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto space-y-6">
-      <button data-close-modal class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all">✕</button>
-
-      <div>
-        <span class="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-1">Central de Ajuda</span>
-        <h3 class="text-2xl font-extrabold text-slate-900 font-heading">Dúvidas Frequentes</h3>
-        <p class="text-xs sm:text-sm text-slate-500 mt-1">
-          Confira respostas rápidas para as principais dúvidas sobre presentes, PIX, convidados e personalização.
-        </p>
-      </div>
-
-      <div class="space-y-3">
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-          <h4 class="font-bold text-slate-900 text-sm">
-            Como funciona o resgate dos presentes em dinheiro via PIX?
-          </h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Todos os presentes fictícios comprados pelos seus convidados entram diretamente como saldo disponível na Minha Carteira. Você pode solicitar o saque PIX a qualquer momento, sem limite de retiradas e com transferência instantânea para sua chave cadastrada.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-          <h4 class="font-bold text-slate-900 text-sm">
-            Como os convidados realizam a confirmação de presença (RSVP)?
-          </h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Ao acessar o link público do seu evento, os convidados clicam em "Confirmar Presença", informam o número de acompanhantes e podem deixar um recado carinhoso no mural. Você acompanha tudo em tempo real no painel.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-          <h4 class="font-bold text-slate-900 text-sm">
-            Como personalizar as cores e o layout do meu site?
-          </h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            No menu "Personalizar evento", vá na aba "Aparência" para escolher templates prontos ou customizar livremente a cor de fundo, textos, foto de capa e fontes com prévia ao vivo.
-          </p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-          <h4 class="font-bold text-slate-900 text-sm">
-            Como entrar em contato com o suporte?
-          </h4>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Nossa equipe de suporte está disponível de segunda a sábado via chat ao vivo ou e-mail com tempo médio de resposta de 15 minutos.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- =======================================================================
        MODAL: ADICIONAR / EDITAR LOCAL DO EVENTO (Com Mapa e Design Joy/Ref)
        ======================================================================= -->
   <div id="modal-add-venue" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
@@ -5456,7 +5430,7 @@
   <script src="js/supabase-init.js?v=20261015_textoforn"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_pessoas"></script>
+  <script src="js/app.js?v=20261015_paginasconta"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_lixeira"></script>
 </body>

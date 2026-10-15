@@ -6762,3 +6762,10 @@ a.dash-card:hover,
    como títulos de seção; a primeira sem a linha de cima (é o topo da aba). */
 .product-media-title { margin-bottom: 0.6rem; }
 .product-wizard-panel[data-step="4"] > div:first-of-type > .product-media-title { border-top: none; padding-top: 0; }
+
+/* Drawer de produto: rótulos principais (Categoria principal, Título do
+   anúncio, Unidade de cobrança, Descrição) no mesmo texto dos títulos
+   "Imagem de capa" / "Carrossel de imagens". */
+.field-label.product-title-label { font-size: 0.875rem; font-weight: 700; color: #18181B; margin-bottom: 0.6rem; }
+body[data-theme="dark"] .field-label.product-title-label { color: #FFFFFF !important; }
+.product-title-label + .field-hint { margin-top: -0.35rem; }

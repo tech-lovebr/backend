@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=513">
+  <link rel="stylesheet" href="css/styles.css?v=514">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -83,7 +83,7 @@
         <!-- ETAPA 1: Identificação & Taxonomia -->
         <div class="product-wizard-panel product-wizard-panel-spaced" data-step="1">
           <div>
-            <label class="field-label">Categoria principal</label>
+            <label class="field-label product-title-label">Categoria principal</label>
             <div class="category-select" id="product-category-select">
               <button type="button" class="category-select-trigger" id="product-category-trigger">
                 <span id="product-category-trigger-label">Selecione a categoria principal...</span>
@@ -115,7 +115,7 @@
           </div>
 
           <div>
-            <label for="product-name" class="field-label">Título do anúncio</label>
+            <label for="product-name" class="field-label product-title-label">Título do anúncio</label>
             <p class="field-hint">Dê um nome claro e objetivo para o cliente identificar sua oferta rapidamente.</p>
             <input id="product-name" type="text" class="field-input">
           </div>
@@ -125,7 +125,7 @@
         <div class="product-wizard-panel" data-step="2">
 
           <div id="pricing-standard-section">
-            <label class="field-label mb-1">Unidade de cobrança</label>
+            <label class="field-label product-title-label">Unidade de cobrança</label>
             <div class="pricing-type-grid" id="pricing-type-grid">
               <button type="button" class="pricing-type-card" data-pricing-type="POR_PESSOA">
                 <p class="pricing-type-card-title">Por pessoa</p>
@@ -408,7 +408,7 @@
           </div>
 
           <div>
-            <label for="product-description" class="field-label">Descrição</label>
+            <label for="product-description" class="field-label product-title-label">Descrição</label>
             <textarea id="product-description" class="field-textarea" style="min-height:100px;" placeholder="Detalhe o que está incluso neste produto ou serviço…"></textarea>
           </div>
         </div>
@@ -438,7 +438,10 @@
           </div>
 
           <div>
-            <label for="product-video-url" class="field-label">Vídeo (YouTube/Vimeo, opcional)</label>
+            <div class="form-section-header product-media-title">
+              <label for="product-video-url">Vídeo</label>
+            </div>
+            <p class="field-hint">YouTube, Vimeo</p>
             <input id="product-video-url" type="url" class="field-input" placeholder="https://youtube.com/...">
           </div>
 

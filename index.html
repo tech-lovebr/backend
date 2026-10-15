@@ -10,11 +10,15 @@
        localStorage se existe sessão Supabase e esconde a home nesse caso —
        só um palpite visual; js/app.js confirma de verdade depois e corrige
        caso esteja errado (ver switchView, que remove essa classe). -->
-  <style>html.love-likely-logged-in #view-public-site { display: none !important; }</style>
+  <style>html.love-likely-logged-in #view-public-site, html.love-rota-login #view-public-site { display: none !important; }</style>
   <script>
     try {
       if (localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token')) {
         document.documentElement.classList.add('love-likely-logged-in');
+      } else if (location.pathname === '/login' || location.hash === '#login') {
+        // Abriu /login (ex.: "Entre por aqui" do cadastro): já começa na tela
+        // de login, sem piscar a página inicial (ver o script logo após #view-login).
+        document.documentElement.classList.add('love-rota-login');
       }
     } catch (e) {}
   </script>
@@ -529,6 +533,14 @@
        VIEW 1.5: PÁGINA DE LOGIN (antes era um popup — agora página própria)
        ======================================================================= -->
   <div id="view-login" class="w-full min-h-screen flex hidden" style="display: none !important;">
+  <script>
+    // /login: mostra a tela de login já no primeiro desenho (o app.js confirma depois).
+    if (document.documentElement.classList.contains('love-rota-login')) {
+      var telaLoginInicial = document.getElementById('view-login');
+      telaLoginInicial.classList.remove('hidden');
+      telaLoginInicial.style.setProperty('display', 'flex', 'important');
+    }
+  </script>
 
     <!-- Esquerda: formulário -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
@@ -5444,7 +5456,7 @@
   <script src="js/supabase-init.js?v=20261015_textoforn"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_lixeira"></script>
+  <script src="js/app.js?v=20261015_rotalogin"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_lixeira"></script>
 </body>

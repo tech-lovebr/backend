@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // index.html), que só existia pra cobrir o instante antes desta função
     // rodar pela primeira vez.
     document.documentElement.classList.remove('love-likely-logged-in');
+    document.documentElement.classList.remove('love-rota-login');
 
     state.currentView = viewName;
 

@@ -7844,6 +7844,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   let gravarPlantaTimer = null;
+  // Mesas sempre numeradas em sequência (1, 2, 3…), mantendo a ordem atual:
+  // excluir a Mesa 2 faz a Mesa 3 virar Mesa 2, e assim por diante — nunca
+  // sobra buraco nem número repetido. Devolve true se algum número mudou.
+  function renumerarMesas(elements) {
+    const mesas = elements
+      .map((el, i) => ({ el, i }))
+      .filter(x => x.el && x.el.type === 'mesa')
+      .sort((a, b) => ((parseInt(a.el.number) || 0) - (parseInt(b.el.number) || 0)) || (a.i - b.i));
+    let mudou = false;
+    mesas.forEach((x, idx) => {
+      if (x.el.number !== idx + 1) { x.el.number = idx + 1; mudou = true; }
+    });
+    return mudou;
+  }
+
   function saveFloorPlanElements(elements) {
     const activeEvent = getActiveEvent();
     const eventId = (activeEvent && activeEvent.id) || 'default';
@@ -8048,7 +8063,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emptyHint) emptyHint.style.display = elements.length ? 'none' : 'flex';
     // Mesa "perdida" lá embaixo (arrastada para longe): sobe para logo abaixo
     // da área visível / da mesa anterior, para sempre dar para alcançá-la.
-    if (trazerMesasPerdidasDeVolta(canvas, elements)) saveFloorPlanElements(elements);
+    // Planta antiga com mesas repetidas ou buracos (ex.: duas "Mesa 7"):
+    // renumera em sequência e salva.
+    const renumerou = renumerarMesas(elements);
+    if (trazerMesasPerdidasDeVolta(canvas, elements) || renumerou) saveFloorPlanElements(elements);
     ajustarAlturaDaPlanta(canvas, elements);
 
     elements.forEach(elData => {
@@ -8509,7 +8527,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (removeBtn) {
       removeBtn.addEventListener('click', () => {
         const els = getFloorPlanElements().filter(item => item.id !== floorplanActiveTableId);
+        renumerarMesas(els);
         saveFloorPlanElements(els);
+        // A coluna Mesa de Meus convidados lê a planta: redesenha com os números novos.
+        renderGuestsTable();
         renderFloorPlanCanvas();
         renderFloorPlanGuestCards();
         closeModal(document.getElementById('modal-floorplan-table'));

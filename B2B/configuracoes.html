@@ -77,18 +77,14 @@
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-[1fr_150px] gap-4">
-                    <div>
-                      <label for="profile-name" class="field-label">Responsável principal <span style="color:#DC2626;">*</span></label>
-                      <input id="profile-name" type="text" class="field-input">
-                    </div>
-                    <div>
-                      <label for="profile-birthdate" class="field-label">Data de nascimento</label>
-                      <div class="date-picker-field">
-                        <input id="profile-birthdate" type="text" class="field-input" placeholder="dd/mm/aaaa" readonly autocomplete="off">
-                        <svg class="date-picker-field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path stroke-linecap="round" d="M3 9h18M8 3v3M16 3v3"/></svg>
-                      </div>
-                    </div>
+                  <div>
+                    <label for="profile-name" class="field-label">Responsável principal <span style="color:#DC2626;">*</span></label>
+                    <input id="profile-name" type="text" class="field-input">
+                  </div>
+                  <!-- Data de nascimento saiu da tela; fica escondida só para não
+                       perder o que já foi salvo. -->
+                  <div hidden>
+                    <input id="profile-birthdate" type="text" class="field-input" readonly autocomplete="off">
                   </div>
 
                   <div class="grid grid-cols-2 gap-4">

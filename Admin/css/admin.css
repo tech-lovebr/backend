@@ -2913,3 +2913,31 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .hub-item .desc { font-size: .8125rem; color: var(--text-muted); margin: .125rem 0 0; line-height: 1.5; }
 .hub-item .meta { font-size: .75rem; color: var(--text-soft); margin: .25rem 0 0; }
 .hub-item .btn { flex-shrink: 0; }
+
+/* Listas de cadastros: a linha não é clicável nem muda de cor no hover —
+   mantém só as faixas alternadas. O drawer abre pelo olho (.col-acoes). */
+table.data.linhas-estaticas tbody tr { cursor: default; }
+table.data.linhas-estaticas tbody tr:nth-child(odd):hover td { background: #F9F9F9; }
+table.data.linhas-estaticas tbody tr:nth-child(even):hover td { background: #FFFFFF; }
+table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4f5; }
+
+.col-acoes { width: 1%; white-space: nowrap; text-align: right; }
+
+.email-copiavel { display: inline-flex; align-items: center; gap: .25rem; }
+
+.btn-icone-linha {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.btn-icone-linha svg { width: 16px; height: 16px; }
+.btn-icone-linha:hover { color: #181D24; border-color: #E4E4E7; background: #fff; }

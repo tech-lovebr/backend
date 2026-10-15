@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 7);
+  renderLoading(tbody, 9);
 
   const [fornecedores, carteira, conversas, leads, produtos, contratos, links] = await Promise.all([
     safeSelect('fornecedores', '*'),
@@ -262,7 +262,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 7, 'Nenhum fornecedor encontrado',
+    renderEmpty(tbody, 9, 'Nenhum fornecedor encontrado',
       FORNECEDORES.length ? 'Ajuste a busca ou os filtros acima.' : 'Nenhuma conta B2B foi criada ainda.');
     return;
   }
@@ -280,10 +280,12 @@ function render() {
       </td>
       <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(f.id))}</td>
       <td class="cell-strong">${dash(f.company_name)}</td>
+      <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${dash(f.cnpj)}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
       <td>${formatNumber(m.contratosAtivos)} <span class="cell-muted">de ${formatNumber(m.contratos)}</span></td>
       <td class="col-numero ${f.score ? 'cell-strong' : 'cell-muted'}">${f.score ? formatNumber(f.score) : '—'}</td>
+      <td class="col-acoes">${botaoVerMais(f.id)}</td>
     </tr>`;
   }).join('');
 
@@ -298,9 +300,9 @@ function render() {
     });
   });
 
-  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => abrirDetalhe(tr.dataset.id));
-  });
+  // A linha não abre o drawer: dá para selecionar e copiar o texto. Quem
+  // abre é o olho no fim da linha.
+  ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   renderBarraDeSelecao();
 }

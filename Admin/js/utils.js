@@ -684,3 +684,37 @@ function blocoPublicacao(posicao, ativo, rotuloPosicao = 'Posição') {
     </p>`;
 }
 
+
+
+/* ------------------------------------------ Linhas sem clique (cadastros)
+   Nas listas de cadastros a linha não abre o drawer — clicar para copiar
+   um e-mail abria o painel. O e-mail tem botão de copiar ao lado e o
+   drawer abre pelo olho no fim da linha. */
+
+const ICONE_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2 2 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>';
+const ICONE_OLHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>';
+
+function celulaEmail(email) {
+  if (!email) return '—';
+  return `<span class="email-copiavel"><span>${escapeHtml(email)}</span><button type="button" class="btn-icone-linha" data-copiar="${escapeHtml(email)}" title="Copiar e-mail" aria-label="Copiar e-mail">${ICONE_COPIAR}</button></span>`;
+}
+
+function botaoVerMais(id) {
+  return `<button type="button" class="btn-icone-linha" data-ver="${escapeHtml(id)}" title="Ver mais" aria-label="Ver mais">${ICONE_OLHO}</button>`;
+}
+
+function ligarAcoesDaLinha(host, abrir) {
+  host.querySelectorAll('[data-copiar]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copiar);
+        toast('E-mail copiado.');
+      } catch {
+        toast('Não foi possível copiar.');
+      }
+    });
+  });
+  host.querySelectorAll('[data-ver]').forEach(btn => {
+    btn.addEventListener('click', () => abrir(btn.dataset.ver));
+  });
+}

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 6);
+  renderLoading(tbody, 7);
 
   const [clientes, eventos, convidados, presentes, carteira, conversas, contas] = await Promise.all([
     safeSelect('clientes', '*'),
@@ -246,7 +246,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 6, 'Nenhum cliente encontrado',
+    renderEmpty(tbody, 7, 'Nenhum cliente encontrado',
       CLIENTES.length ? 'Ajuste a busca acima.' : 'Nenhuma conta de cliente foi criada ainda.');
     return;
   }
@@ -262,9 +262,10 @@ function render() {
         </td>
         <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c.id))}</td>
         <td class="cell-strong">${dash(c.couple_name)}</td>
-        <td class="cell-muted">${dash(c.email)}</td>
+        <td class="cell-muted">${celulaEmail(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
         <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>
+        <td class="col-acoes">${botaoVerMais(c.id)}</td>
       </tr>`;
   }).join('');
 
@@ -279,9 +280,9 @@ function render() {
     });
   });
 
-  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => abrirDetalhe(tr.dataset.id));
-  });
+  // A linha não abre o drawer: dá para selecionar e copiar o texto. Quem
+  // abre é o olho no fim da linha.
+  ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   renderBarraDeSelecao();
 }

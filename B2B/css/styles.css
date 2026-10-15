@@ -7043,3 +7043,14 @@ body[data-theme="dark"] .pricing-type-card.active { border-color: transparent !i
 .b2b-header-bar .btn-secondary.header-btn-light { background: #FFFFFF; border-color: #E4E4E7; color: #3F3F46; box-shadow: none; }
 .b2b-header-bar .btn-secondary.header-btn-light:hover { background: #FFFFFF; border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .b2b-header-bar .btn-secondary.header-btn-light { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Leads › WhatsApp: ícone verde do WhatsApp no começo do campo (como no
+   love.com.br); com o número completo, clicar abre a conversa. */
+.lead-whatsapp-field { position: relative; }
+.lead-whatsapp-field .field-input { padding-left: 2.25rem; }
+.lead-whatsapp-icon {
+  position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+  display: flex; align-items: center; color: #25D366; pointer-events: none;
+}
+.lead-whatsapp-icon.is-ativo { pointer-events: auto; cursor: pointer; }
+.lead-whatsapp-icon.is-ativo:hover { color: #1DA851; }

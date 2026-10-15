@@ -118,6 +118,7 @@ function initLeadEmailAutocomplete() {
     // Vazio, já mostra os parênteses para a pessoa saber onde vai o DDD.
     whatsInput.placeholder = '(\u00a0\u00a0\u00a0\u00a0)';
     wirePhoneMaskInput(whatsInput);
+    whatsInput.addEventListener('input', atualizarLinkWhatsAppDoLead);
   }
 
   // Estado antes da cidade; a cidade lista as do estado (base do IBGE).
@@ -260,6 +261,7 @@ function initLeadDrawer() {
     if (emailHint) emailHint.hidden = true;
     document.getElementById('lead-drawer-title').textContent = 'Adicionar lead';
     preencherCidadesDoLead('');
+    atualizarLinkWhatsAppDoLead();
     if (subtitle) subtitle.hidden = false;
     if (commentsSection) commentsSection.hidden = true;
     renderLeadProductOptions();
@@ -360,6 +362,7 @@ function openLeadDrawer(id) {
   document.getElementById('lead-drawer-title').textContent = 'Editar lead';
   document.getElementById('lead-cpf').value = lead.cpf || '';
   document.getElementById('lead-whatsapp').value = lead.whatsapp || '';
+  atualizarLinkWhatsAppDoLead();
   document.getElementById('lead-endereco').value = lead.endereco || '';
   document.getElementById('lead-estado').value = lead.estado || '';
   preencherCidadesDoLead(lead.estado || '');
@@ -391,6 +394,25 @@ function openLeadDrawer(id) {
 
   document.getElementById('lead-drawer').classList.add('show');
   document.getElementById('lead-drawer-backdrop').classList.add('show');
+}
+
+/* -------------------- WhatsApp do lead -------------------- */
+
+// Número completo (DDD + 8 ou 9 dígitos): o ícone vira link para a conversa.
+function atualizarLinkWhatsAppDoLead() {
+  const input = document.getElementById('lead-whatsapp');
+  const link = document.getElementById('lead-whatsapp-link');
+  if (!input || !link) return;
+  const digitos = input.value.replace(/D/g, '');
+  if (digitos.length >= 10) {
+    link.href = 'https://wa.me/55' + digitos;
+    link.classList.add('is-ativo');
+    link.title = 'Abrir conversa no WhatsApp';
+  } else {
+    link.removeAttribute('href');
+    link.classList.remove('is-ativo');
+    link.title = '';
+  }
 }
 
 /* -------------------- Cidade do lead (depende do estado) -------------------- */

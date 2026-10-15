@@ -7011,3 +7011,62 @@ button#btn-user-account-menu.tem-avatar.tem-avatar.tem-avatar { border-radius: 8
 .bg-white.rounded-2xl:not(button):not(a),
 .bg-white.rounded-3xl:not(button):not(a) { border: 1px solid #E4E4E7; }
 .btn-white { box-shadow: none !important; }
+
+/* ==========================================================================
+   Cards do index: sombra de volta + linha bem clara (pedido do cliente).
+   A camada "sem cara de Tailwind" (e3a7426) tirou a sombra das caixas
+   brancas e deixou a borda só no hover. Aqui volta a sombra suave de antes
+   e a borda fica sempre visível, bem clara (#EEEEF0); no hover a sombra
+   cresce um pouco e a borda continua a mesma. Overlays e campos de
+   formulário não entram aqui (campos seguem o padrão do Hub: #E4E4E7).
+   ========================================================================== */
+html body .card-luxury,
+html body .metric-card,
+html body .dashboard-card,
+html body .dash-card,
+html body .ticket-card,
+html body .dashboard-tab-content .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body .dashboard-main-area .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  transition: box-shadow .2s ease !important;
+}
+html body .card-luxury,
+html body .metric-card,
+html body .dashboard-card,
+html body .dash-card,
+html body .ticket-card,
+html body .dashboard-main-area .bg-white.rounded-3xl:not(button):not(a),
+html body .dashboard-main-area .bg-white.rounded-2xl:not(button):not(a),
+html body .dashboard-main-area .bg-white.rounded-xl:not(button):not(a):not(input):not(select):not(textarea),
+html body .dashboard-main-area .bg-white.rounded-lg:not(button):not(a):not(input):not(select):not(textarea),
+html body .dashboard-main-area .bg-white[class*="rounded-[var(--radius-card"]:not(button):not(a),
+html body .dashboard-main-area .bg-white[class*="shadow-"]:not(button):not(a):not(input):not(select):not(textarea) {
+  border: 1px solid #EEEEF0 !important;
+}
+html body .card-luxury:hover,
+html body .metric-card:hover,
+html body .dashboard-card:hover,
+html body .dashboard-tab-content .bg-white.group:hover:not(.b2b-item-card),
+html body .dashboard-main-area .bg-white.group:hover:not(.b2b-item-card) {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  border-color: #EEEEF0 !important;
+}
+
+/* Mesma sombra também quando a caixa está dentro de uma aba (as regras antigas usam o id da aba e eram mais fortes). */
+html body #tab-overview .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-rsvp .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-gifts .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-wallet .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-edit-site .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-b2b .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+html body #tab-overview .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-rsvp .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-gifts .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-wallet .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-edit-site .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
+html body #tab-b2b .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th) {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  border-color: #EEEEF0 !important;
+}

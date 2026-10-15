@@ -319,17 +319,32 @@ async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = '
   caixa.style.cssText = 'display:flex;justify-content:center;width:100%;min-height:44px;';
   botaoAntigo.insertAdjacentElement('afterend', caixa);
   botaoAntigo.style.display = 'none';
-  const larguraBase = botaoAntigo.parentElement ? botaoAntigo.parentElement.getBoundingClientRect().width : 0;
-  const largura = Math.max(240, Math.min(400, Math.round(larguraBase || 360)));
-  google.accounts.id.renderButton(caixa, {
-    type: 'standard',
-    theme: 'outline',
-    size: 'large',
-    text: texto,
-    shape: 'rectangular',
-    logo_alignment: 'center',
-    width: largura,
-    locale: 'pt-BR',
-    click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; }
-  });
+  // A largura do botão do Google é fixa (200 a 400px): desenha com a largura
+  // real da caixa — que é a mesma dos campos acima — só quando ela aparece
+  // (telas escondidas medem 0) e redesenha se a largura mudar.
+  let larguraDesenhada = 0;
+  const desenhar = () => {
+    const disponivel = Math.round(caixa.getBoundingClientRect().width);
+    if (!disponivel) return;
+    const largura = Math.max(200, Math.min(400, disponivel));
+    if (Math.abs(largura - larguraDesenhada) < 2) return;
+    larguraDesenhada = largura;
+    caixa.innerHTML = '';
+    google.accounts.id.renderButton(caixa, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: texto,
+      shape: 'rectangular',
+      logo_alignment: 'center',
+      width: largura,
+      locale: 'pt-BR',
+      click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; }
+    });
+  };
+  desenhar();
+  if (window.ResizeObserver) {
+    let espera = null;
+    new ResizeObserver(() => { clearTimeout(espera); espera = setTimeout(desenhar, 120); }).observe(caixa);
+  }
 }

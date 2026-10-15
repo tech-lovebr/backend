@@ -7101,3 +7101,8 @@ html body #wallet-sub-digital .wallet-card {
 .wallet-saque-seta { transition: transform .15s ease; }
 .wallet-saque-acordeao[open] .wallet-saque-seta { transform: rotate(180deg); }
 .wallet-saque-corpo { padding: 0 1.5rem 1.5rem; border-top: 1px solid #F0F0F1; padding-top: 1.1rem; }
+
+
+/* /login: campos, "Continuar" e o botão do Google com a MESMA largura —
+   o botão do Google vai no máximo a 400px, então a coluna do login também. */
+#login-panel-signin, #login-panel-forgot, #login-panel-mfa { max-width: 400px; }

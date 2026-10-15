@@ -583,3 +583,104 @@ function moverControlesParaHeader(seletor = '#page-controls') {
   [...controles.children].forEach(filho => host.insertBefore(filho, ancora));
   controles.remove();
 }
+
+/* ------------------------------------------ Conteúdo: campos comuns
+   Usados pelos dashboards de conteúdo e pelo Conteúdo do Hub. */
+
+/** Imagens enviadas pelo Admin vão para o bucket público do blog. */
+const BUCKET_IMAGENS = 'blog';
+
+/** Sobe uma imagem e devolve a URL pública. Mostra o erro e devolve null. */
+async function enviarImagem(file, pasta) {
+  if (file.size > 5 * 1024 * 1024) {
+    toast('A imagem precisa ter até 5 MB.');
+    return null;
+  }
+
+  const extensao = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const caminho = `${pasta}/${Date.now()}-${Math.round(performance.now())}.${extensao}`;
+
+  const { error } = await supabaseClient.storage.from(BUCKET_IMAGENS).upload(caminho, file, {
+    cacheControl: '31536000',
+    contentType: file.type || 'image/jpeg'
+  });
+
+  if (error) {
+    toast(/bucket|not found/i.test(error.message || '')
+      ? 'Rode supabase/migrations/027_cms_blog.sql no Supabase.'
+      : `Não foi possível enviar: ${error.message}`);
+    return null;
+  }
+
+  return supabaseClient.storage.from(BUCKET_IMAGENS).getPublicUrl(caminho).data.publicUrl;
+}
+
+/* Campo de imagem: prévia, botão de envio e a URL (que também pode ser colada). */
+function campoImagem(nome, rotulo, valor) {
+  return `
+    <div class="field">
+      <span class="field-label">${rotulo}</span>
+      <div class="imagem-campo">
+        <div class="imagem-previa" data-previa="${nome}" ${valor ? `style="background-image:url('${escapeHtml(valor)}')"` : ''}>
+          ${valor ? '' : '<span>sem imagem</span>'}
+        </div>
+        <div class="imagem-acoes">
+          <button type="button" class="btn btn-ghost btn-sm" data-enviar="${nome}">Enviar imagem</button>
+          <input type="file" accept="image/*" data-arquivo="${nome}" hidden>
+          <input class="field-input" name="${nome}" type="url" placeholder="ou cole a URL da imagem" value="${escapeHtml(valor || '')}">
+        </div>
+      </div>
+    </div>`;
+}
+
+function ligarCamposDeImagem(form, pasta) {
+  form.querySelectorAll('[data-enviar]').forEach(botao => {
+    const nome = botao.dataset.enviar;
+    const arquivo = form.querySelector(`[data-arquivo="${nome}"]`);
+    const url = form.querySelector(`input[name="${nome}"]`);
+    const previa = form.querySelector(`[data-previa="${nome}"]`);
+
+    const mostrar = () => {
+      previa.style.backgroundImage = url.value ? `url('${url.value}')` : '';
+      previa.innerHTML = url.value ? '' : '<span>sem imagem</span>';
+    };
+
+    botao.addEventListener('click', () => arquivo.click());
+    url.addEventListener('input', mostrar);
+
+    arquivo.addEventListener('change', async () => {
+      const file = arquivo.files[0];
+      if (!file) return;
+      botao.disabled = true;
+      botao.textContent = 'Enviando…';
+      const publica = await enviarImagem(file, pasta);
+      botao.disabled = false;
+      botao.textContent = 'Enviar imagem';
+      arquivo.value = '';
+      if (publica) { url.value = publica; mostrar(); }
+    });
+  });
+}
+
+function blocoPublicacao(posicao, ativo, rotuloPosicao = 'Posição') {
+  return `
+    <p class="drawer-section-title">Publicação</p>
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">${rotuloPosicao}</span>
+        <input class="field-input" name="posicao" type="number" min="0" value="${posicao}">
+      </label>
+      <label class="field">
+        <span class="field-label">Status</span>
+        <select class="field-select" name="ativo">
+          <option value="true" ${ativo ? 'selected' : ''}>Publicado</option>
+          <option value="false" ${ativo ? '' : 'selected'}>Rascunho</option>
+        </select>
+      </label>
+    </div>
+    <p class="cell-muted" style="font-size:.75rem;line-height:1.6">
+      Itens em rascunho continuam aqui, mas não aparecem na plataforma.
+      A ordem vai do menor número para o maior.
+    </p>`;
+}
+

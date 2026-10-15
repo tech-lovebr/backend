@@ -1,12 +1,17 @@
 /* ==========================================================================
-   LOVE ADMIN — Gestão do conteúdo publicado nas plataformas
+   LOVE ADMIN — Conteúdo publicado nas plataformas
    Mesmo script para os dois dashboards: a plataforma vem de
    `document.body.dataset.plataforma` ('fornecedor' ou 'cliente').
 
-   Abas (todas no mesmo nível):
-     Informações     → carrossel da home, até 5 imagens
-     Guias de início → um guia por assunto, em formato FAQ
-     Serviços        → cada serviço, com os benefícios associados a ele
+   Abas:
+     Informações → carrossel da home (conteudo_plataforma, até 5 imagens)
+     FAQ         → perguntas e respostas por categoria (tabela faq) e os
+                   primeiros passos de quem acabou de entrar (primeiros_passos)
+     Serviços    → só anfitriões: cards de Benefícios & Serviços da home e
+                   de Benefícios Love (servicos_beneficios)
+
+   A resposta do FAQ é HTML escrito no EditorRico; o vídeo entra como
+   <iframe> no meio do texto, onde o cursor estiver.
    ========================================================================== */
 
 const PLATAFORMA = document.body.dataset.plataforma;
@@ -14,63 +19,36 @@ const PLATAFORMA = document.body.dataset.plataforma;
 /** Quantas imagens o carrossel da home aceita. */
 const MAX_BANNERS = 5;
 
-const SECOES = {
-  banner: {
-    label: 'Informações',
-    descricao: `Carrossel da página inicial — até ${MAX_BANNERS} imagens, exibidas na ordem abaixo.`,
-    campos: ['imagem_url', 'link_url', 'titulo', 'descricao']
-  },
-  guia: {
-    label: 'Guias de início',
-    descricao: 'Um guia por assunto. Cada guia abre com as perguntas e respostas escritas aqui.',
-    vazio: 'Nenhum guia criado ainda. Crie um guia por assunto — mensagens, CRM, contratos, produtos e serviços, vitrine, agenda, financeiro.',
-    campos: ['titulo', 'descricao']
-  },
-  faq: {
-    label: 'Pergunta',
-    descricao: 'Pergunta e resposta dentro de um guia.',
-    campos: ['titulo', 'descricao']
-  },
-  servico: {
-    label: 'Serviços',
-    descricao: 'Serviços da Love apresentados dentro da plataforma, cada um com seus benefícios.',
-    vazio: 'Nenhum serviço cadastrado. Cadastre um serviço para depois associar benefícios a ele.',
-    campos: ['titulo', 'subtitulo', 'descricao', 'imagem_url', 'icone', 'link_url', 'link_label']
-  },
-  beneficio: {
-    label: 'Benefício',
-    descricao: 'Vantagem associada a um serviço.',
-    campos: ['titulo', 'descricao', 'icone']
-  }
+/** Quantos primeiros passos cada plataforma mostra. */
+const MAX_PASSOS = 6;
+
+/* Categorias oferecidas no seletor, na ordem em que aparecem na plataforma.
+   Uma pergunta pode receber outra categoria digitada à mão. */
+const CATEGORIAS_FAQ = {
+  cliente: [
+    'Fornecedores', 'Carteira digital', 'Lista de convidados', 'Meus presentes',
+    'Editar meu site', 'Convite digital', 'Benefícios', 'Serviços'
+  ],
+  fornecedor: [
+    'Construtor de site', 'Guia de CRM', 'Guia de contratos', 'Guia de produtos e serviços',
+    'Guia de agenda e tarefas', 'Gestão de compromissos', 'Guia financeiro'
+  ]
 };
 
 const GRUPOS = [
-  { key: 'informacoes', label: 'Informações', secao: 'banner', botao: null },
-  { key: 'guias', label: 'Guias de início', secao: 'guia', botao: 'Adicionar guia' },
-  { key: 'servicos', label: 'Serviços', secao: 'servico', botao: 'Adicionar serviço' }
+  { key: 'informacoes', label: 'Informações', botao: null },
+  { key: 'faq', label: 'FAQ', botao: 'Adicionar pergunta' },
+  ...(PLATAFORMA === 'cliente' ? [{ key: 'servicos', label: 'Serviços', botao: 'Adicionar' }] : [])
 ];
 
-const ROTULOS = {
-  titulo: 'Título',
-  subtitulo: 'Resumo curto',
-  descricao: 'Texto',
-  imagem_url: 'URL da imagem',
-  icone: 'Ícone (nome ou emoji)',
-  link_url: 'Link de destino',
-  link_label: 'Texto do botão'
-};
+const NOME_PLATAFORMA = PLATAFORMA === 'fornecedor' ? 'Plataforma B2B' : 'Plataforma dos anfitriões';
 
-/** Rótulos que mudam de sentido dependendo da seção. */
-const ROTULOS_POR_SECAO = {
-  banner: { descricao: 'Texto do banner', link_url: 'Link do banner' },
-  guia: { descricao: 'Introdução (opcional)' },
-  faq: { titulo: 'Pergunta', descricao: 'Resposta' }
-};
-
-let ITENS = [];
+let BANNERS = [];
+let FAQ = [];
+let PASSOS = [];
+let SERVICOS = [];
 let BOTAO_ADICIONAR = null;
 let GRUPO_ATUAL = GRUPOS[0].key;
-let GUIA_ABERTO = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
@@ -78,7 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderTabs();
 
   BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
-    abrirFormulario({ secao: grupoAtual().secao });
+    if (GRUPO_ATUAL === 'faq') abrirFormularioPergunta(null);
+    if (GRUPO_ATUAL === 'servicos') abrirFormularioServico(null);
   }, {
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
   });
@@ -90,24 +69,29 @@ async function carregar() {
   const lista = document.getElementById('conteudo-lista');
   lista.innerHTML = `<div class="card"><div class="card-body"><div class="skeleton" style="width:55%"></div></div></div>`;
 
-  const { data, error } = await safeSelect(
-    'conteudo_plataforma',
-    '*',
-    q => q.eq('plataforma', PLATAFORMA).order('posicao', { ascending: true })
-  );
+  const [banners, faq, passos, servicos] = await Promise.all([
+    safeSelect('conteudo_plataforma', '*', q => q.eq('plataforma', PLATAFORMA).eq('secao', 'banner').order('posicao')),
+    safeSelect('faq', '*', q => q.eq('plataforma', PLATAFORMA).order('ordem')),
+    safeSelect('primeiros_passos', '*', q => q.eq('plataforma', PLATAFORMA).order('ordem')),
+    PLATAFORMA === 'cliente'
+      ? safeSelect('servicos_beneficios', '*', q => q.order('posicao'))
+      : Promise.resolve({ data: [], error: null })
+  ]);
 
-  if (error) {
-    const faltaFaq = /secao_check/.test(error.message || '');
-    const faltaParent = /parent_id/.test(error.message || '');
+  const erro = [faq, passos, servicos].find(r => r.error)?.error;
+  if (erro && /plataforma|primeiros_passos|tipo|desconto_texto|schema cache|does not exist/i.test(erro.message || '')) {
     lista.innerHTML = `
       <div class="card"><div class="empty-state">
         <strong>Banco ainda não está preparado</strong>
-        <p>Rode ${faltaFaq ? '012_conteudo_faq.sql' : faltaParent ? '011_conteudo_hierarquia.sql' : '010_conteudo_plataforma.sql'} no SQL Editor do Supabase (pasta supabase/migrations) para habilitar a gestão de conteúdo.</p>
+        <p>Rode supabase/migrations/052_faq_plataforma_passos_beneficios_hub.sql no SQL Editor do Supabase.</p>
       </div></div>`;
     return;
   }
 
-  ITENS = data;
+  BANNERS = banners.data;
+  FAQ = faq.data;
+  PASSOS = passos.data;
+  SERVICOS = servicos.data;
   render();
 }
 
@@ -128,22 +112,14 @@ function renderTabs() {
   host.querySelectorAll('[data-grupo]').forEach(btn => {
     btn.addEventListener('click', () => {
       GRUPO_ATUAL = btn.dataset.grupo;
-      GUIA_ABERTO = null;
       renderTabs();
       render();
     });
   });
 }
 
-/* -------------------------------------------------------------- Listagem */
-
-function itensDa(secao) {
-  return ITENS.filter(i => i.secao === secao).sort((a, b) => a.posicao - b.posicao);
-}
-
 function render() {
   const grupo = grupoAtual();
-
 
   // O carrossel tem os próprios espaços de "adicionar", então o botão do
   // cabeçalho só faz sentido nas outras abas.
@@ -153,15 +129,42 @@ function render() {
   }
 
   if (grupo.key === 'informacoes') return renderBanners();
-  if (grupo.key === 'guias') return renderGuias();
+  if (grupo.key === 'faq') return renderFaq();
   renderServicos();
 }
+
+/* ----------------------------------------------------------- Utilidades */
+
+/** Texto corrido de um HTML, para o resumo nas listas. */
+function textoDe(html, limite = 160) {
+  const caixa = document.createElement('div');
+  caixa.innerHTML = html || '';
+  caixa.querySelectorAll('iframe').forEach(f => f.replaceWith(' [vídeo] '));
+  const texto = caixa.textContent.replace(/\s+/g, ' ').trim();
+  return texto.length > limite ? `${texto.slice(0, limite).trimEnd()}…` : texto;
+}
+
+/**
+ * Link de YouTube ou Vimeo → endereço que o <iframe> aceita.
+ * Devolve null quando o link não é de nenhum dos dois.
+ */
+function urlDeEmbed(url) {
+  const limpa = String(url || '').trim();
+  const yt = limpa.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,})/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vimeo = limpa.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return null;
+}
+
+const proximaPosicao = (lista, campo = 'posicao') =>
+  lista.reduce((max, i) => Math.max(max, Number(i[campo]) || 0), 0) + 1;
 
 /* ------------------------------------------------ Informações (carrossel) */
 
 function renderBanners() {
   const lista = document.getElementById('conteudo-lista');
-  const banners = itensDa('banner').slice(0, MAX_BANNERS);
+  const banners = BANNERS.slice(0, MAX_BANNERS);
   const vagas = MAX_BANNERS - banners.length;
 
   const slots = banners.map((b, i) => `
@@ -177,8 +180,8 @@ function renderBanners() {
       </div>
       <div class="banner-slot-foot">
         <span class="pos">${b.ativo ? 'publicado' : 'rascunho'}</span>
-        <button type="button" class="btn btn-ghost btn-sm" data-editar="${b.id}">Editar</button>
-        <button type="button" class="btn btn-danger btn-sm" data-excluir="${b.id}">Excluir</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-editar-banner="${b.id}">Editar</button>
+        <button type="button" class="btn btn-danger btn-sm" data-excluir-banner="${b.id}">Excluir</button>
       </div>
     </article>`).join('');
 
@@ -202,527 +205,584 @@ function renderBanners() {
       </div>
     </div>`;
 
-  ligarBotoes(lista);
-}
-
-/* ------------------------------------------------- Guias de início (FAQ) */
-
-function renderGuias() {
-  const lista = document.getElementById('conteudo-lista');
-  const guias = itensDa('guia');
-
-  // Pergunta sem guia não aparece em lugar nenhum — mostra aqui para não virar
-  // dado órfão invisível.
-  const orfas = ITENS.filter(i => i.secao === 'faq' && !i.parent_id);
-
-  if (!guias.length && !orfas.length) {
-    lista.innerHTML = `<div class="card"><div class="empty-state">
-      <strong>Nenhum guia criado ainda</strong><p>${escapeHtml(SECOES.guia.vazio)}</p>
-    </div></div>`;
-    return;
-  }
-
-  const blocoOrfas = orfas.length ? `
-    <article class="faq-item" style="border-color:var(--warning)">
-      <div class="faq-head" style="cursor:default">
-        <span style="flex:1;min-width:0">
-          <span class="faq-titulo">Perguntas sem guia</span>
-          <span class="faq-resumo">Não estão ligadas a nenhum guia, por isso não aparecem na plataforma. Edite cada uma para escolher o guia, ou exclua.</span>
-        </span>
-      </div>
-      <div class="faq-corpo">${orfas.map(linhaPergunta).join('')}</div>
-    </article>` : '';
-
-  lista.innerHTML = `<div class="faq">${guias.map(g => {
-    const aberto = GUIA_ABERTO === g.id;
-    const perguntas = ITENS
-      .filter(i => i.secao === 'faq' && i.parent_id === g.id)
-      .sort((a, b) => a.posicao - b.posicao);
-
-    return `
-      <article class="faq-item ${g.ativo ? '' : 'is-inativo'} ${aberto ? 'is-open' : ''}"
-               draggable="true" data-id="${g.id}">
-        <div class="faq-head">
-          <span class="faq-arrasta" title="Arraste para reordenar" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <circle cx="9" cy="6" r=".6"/><circle cx="15" cy="6" r=".6"/>
-              <circle cx="9" cy="12" r=".6"/><circle cx="15" cy="12" r=".6"/>
-              <circle cx="9" cy="18" r=".6"/><circle cx="15" cy="18" r=".6"/>
-            </svg>
-          </span>
-
-          <button type="button" class="faq-titulo-btn" data-toggle="${g.id}" aria-expanded="${aberto}">
-            <span class="faq-titulo">${escapeHtml(g.titulo)}</span>
-          </button>
-
-          ${g.ativo ? '' : badge('rascunho', 'badge-warning')}
-
-          <button type="button" class="faq-acao" data-renomear="${g.id}" title="Renomear guia" aria-label="Renomear guia">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" />
-            </svg>
-          </button>
-
-          <button type="button" class="faq-acao" data-toggle="${g.id}" aria-label="Abrir guia">
-            <svg class="faq-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
-            </svg>
-          </button>
-        </div>
-
-        ${aberto ? `
-          <div class="faq-corpo">
-            ${g.descricao ? `<div class="faq-intro">${escapeHtml(g.descricao)}</div>` : ''}
-
-            <p class="beneficio-titulo">Perguntas e respostas</p>
-            ${perguntas.length
-              ? perguntas.map(linhaPergunta).join('')
-              : `<p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Este guia ainda não tem perguntas. Adicione a primeira abaixo.</p>`}
-
-            <div class="faq-acoes">
-              <button type="button" class="btn btn-ghost btn-sm" data-nova-pergunta="${g.id}">
-                + Adicionar pergunta
-              </button>
-              <span class="pos"></span>
-              <button type="button" class="btn btn-ghost btn-sm" data-editar="${g.id}">Editar guia</button>
-              <button type="button" class="btn btn-danger btn-sm" data-excluir="${g.id}">Excluir guia</button>
-            </div>
-          </div>` : ''}
-      </article>`;
-  }).join('')}${blocoOrfas}</div>`;
-
-  lista.querySelectorAll('[data-toggle]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      GUIA_ABERTO = GUIA_ABERTO === btn.dataset.toggle ? null : btn.dataset.toggle;
-      renderGuias();
-    });
+  lista.querySelectorAll('[data-editar-banner]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioBanner(BANNERS.find(b => b.id === btn.dataset.editarBanner)));
   });
-
-  lista.querySelectorAll('[data-renomear]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      renomearNoLugar(btn.dataset.renomear);
-    });
+  lista.querySelectorAll('[data-excluir-banner]').forEach(btn => {
+    btn.addEventListener('click', () => excluir('conteudo_plataforma', btn.dataset.excluirBanner, BANNERS.find(b => b.id === btn.dataset.excluirBanner)?.titulo));
   });
-
-  ligarArrastar(lista);
-  ligarBotoes(lista);
-}
-
-/* ------------------------------------------------- Renomear no próprio item */
-
-/** Troca o título por um campo de texto, sem abrir painel. */
-function renomearNoLugar(id) {
-  const guia = ITENS.find(i => i.id === id);
-  const artigo = document.querySelector(`.faq-item[data-id="${id}"]`);
-  if (!guia || !artigo || artigo.querySelector('.faq-titulo-input')) return;
-
-  const botao = artigo.querySelector('.faq-titulo-btn');
-  const campo = document.createElement('input');
-  campo.type = 'text';
-  campo.className = 'faq-titulo-input';
-  campo.value = guia.titulo;
-
-  botao.replaceWith(campo);
-  campo.focus();
-  campo.select();
-
-  let encerrado = false;
-
-  const encerrar = async (salvando) => {
-    if (encerrado) return;
-    encerrado = true;
-
-    const novo = campo.value.trim();
-
-    if (!salvando || !novo || novo === guia.titulo) {
-      renderGuias();
-      if (salvando && !novo) toast('O nome do guia não pode ficar vazio.');
-      return;
-    }
-
-    const { error } = await supabaseClient.from('conteudo_plataforma')
-      .update({ titulo: novo }).eq('id', id);
-
-    if (error) {
-      toast(`Não foi possível renomear: ${error.message}`);
-      renderGuias();
-      return;
-    }
-
-    guia.titulo = novo;
-    renderGuias();
-    toast('Guia renomeado.');
-  };
-
-  campo.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); encerrar(true); }
-    if (e.key === 'Escape') { e.preventDefault(); encerrar(false); }
-  });
-  campo.addEventListener('blur', () => encerrar(true));
-}
-
-/* ------------------------------------------------------ Reordenar por arraste */
-
-let ARRASTANDO = null;
-
-function ligarArrastar(lista) {
-  lista.querySelectorAll('.faq-item[draggable]').forEach(item => {
-    item.addEventListener('dragstart', (e) => {
-      ARRASTANDO = item;
-      item.classList.add('is-dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      // Necessário no Firefox para o arraste iniciar.
-      e.dataTransfer.setData('text/plain', item.dataset.id);
-    });
-
-    item.addEventListener('dragend', () => {
-      item.classList.remove('is-dragging');
-      lista.querySelectorAll('.is-drop-alvo').forEach(el => el.classList.remove('is-drop-alvo'));
-      ARRASTANDO = null;
-    });
-
-    item.addEventListener('dragover', (e) => {
-      if (!ARRASTANDO || ARRASTANDO === item) return;
-      e.preventDefault();
-      item.classList.add('is-drop-alvo');
-    });
-
-    item.addEventListener('dragleave', () => item.classList.remove('is-drop-alvo'));
-
-    item.addEventListener('drop', async (e) => {
-      e.preventDefault();
-      item.classList.remove('is-drop-alvo');
-      if (!ARRASTANDO || ARRASTANDO === item) return;
-      await reordenar(ARRASTANDO.dataset.id, item.dataset.id);
-    });
+  lista.querySelectorAll('[data-nova-imagem]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioBanner({ posicao: Number(btn.dataset.novaImagem) }));
   });
 }
 
-/** Move o guia arrastado para a posição do guia sobre o qual foi solto. */
-async function reordenar(idArrastado, idAlvo) {
-  const guias = itensDa('guia');
-  const de = guias.findIndex(g => g.id === idArrastado);
-  const para = guias.findIndex(g => g.id === idAlvo);
-  if (de < 0 || para < 0) return;
-
-  const [movido] = guias.splice(de, 1);
-  guias.splice(para, 0, movido);
-
-  // Renumera todos em sequência — evita empates e buracos na ordem.
-  const mudancas = guias
-    .map((g, i) => ({ g, posicao: i + 1 }))
-    .filter(({ g, posicao }) => g.posicao !== posicao);
-
-  mudancas.forEach(({ g, posicao }) => { g.posicao = posicao; });
-  renderGuias();
-
-  const erros = await Promise.all(mudancas.map(({ g }) =>
-    supabaseClient.from('conteudo_plataforma').update({ posicao: g.posicao }).eq('id', g.id)
-  ));
-
-  const falhou = erros.find(r => r && r.error);
-  if (falhou) {
-    toast(`Não foi possível salvar a ordem: ${falhou.error.message}`);
-    await carregar();
-    return;
-  }
-
-  toast('Ordem atualizada.');
-}
-
-function linhaPergunta(q) {
-  return `
-    <div class="pergunta-item ${q.ativo ? '' : 'is-inativo'}">
-      <div style="flex:1;min-width:0">
-        <p class="pergunta">${escapeHtml(q.titulo)}</p>
-        ${q.descricao ? `<p class="resposta">${escapeHtml(q.descricao)}</p>` : ''}
-      </div>
-      ${q.ativo ? '' : badge('rascunho', 'badge-warning')}
-      <button type="button" class="btn btn-ghost btn-sm" data-editar="${q.id}">Editar</button>
-      <button type="button" class="btn btn-danger btn-sm" data-excluir="${q.id}">Excluir</button>
-    </div>`;
-}
-
-/* --------------------------------------------- Serviços com benefícios */
-
-function renderServicos() {
-  const lista = document.getElementById('conteudo-lista');
-  const servicos = itensDa('servico');
-
-  // Benefícios sem serviço não aparecem na plataforma — mas também não podem
-  // sumir daqui em silêncio, senão viram dado órfão invisível.
-  const orfaos = ITENS.filter(i => i.secao === 'beneficio' && !i.parent_id);
-
-  if (!servicos.length && !orfaos.length) {
-    lista.innerHTML = `<div class="card"><div class="empty-state">
-      <strong>Nenhum serviço cadastrado</strong><p>${escapeHtml(SECOES.servico.vazio)}</p>
-    </div></div>`;
-    return;
-  }
-
-  const blocoOrfaos = orfaos.length ? `
-    <div class="card servico-bloco" style="border-color:var(--warning)">
-      <div class="servico-head">
-        <div style="flex:1;min-width:0">
-          <h3>Benefícios sem serviço</h3>
-          <p>Estes benefícios não estão ligados a nenhum serviço e por isso não aparecem na plataforma. Edite cada um para escolher o serviço, ou exclua.</p>
-        </div>
-      </div>
-      <div class="beneficio-lista">${orfaos.map(linhaBeneficio).join('')}</div>
-    </div>` : '';
-
-  lista.innerHTML = servicos.map(servico => {
-    const beneficios = ITENS
-      .filter(i => i.secao === 'beneficio' && i.parent_id === servico.id)
-      .sort((a, b) => a.posicao - b.posicao);
-
-    return `
-      <div class="card servico-bloco ${servico.ativo ? '' : 'is-inativo'}">
-        <div class="servico-head">
-          ${servico.imagem_url
-            ? `<div class="servico-thumb" style="background-image:url('${escapeHtml(servico.imagem_url)}')"></div>`
-            : ''}
-          <div style="flex:1;min-width:0">
-            <h3>${escapeHtml(servico.titulo)}</h3>
-            <p>${escapeHtml(servico.subtitulo || servico.descricao || '')}</p>
-            <span class="pos">Posição ${formatNumber(servico.posicao)} · ${servico.ativo ? 'publicado' : 'rascunho'}</span>
-          </div>
-          <div style="display:flex;gap:.5rem;flex-shrink:0">
-            <button type="button" class="btn btn-ghost btn-sm" data-editar="${servico.id}">Editar</button>
-            <button type="button" class="btn btn-danger btn-sm" data-excluir="${servico.id}">Excluir</button>
-          </div>
-        </div>
-
-        <div class="beneficio-lista">
-          <p class="beneficio-titulo">Benefícios associados</p>
-          ${beneficios.length
-            ? beneficios.map(linhaBeneficio).join('')
-            : `<p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Nenhum benefício associado a este serviço ainda.</p>`}
-          <button type="button" class="btn btn-ghost btn-sm" data-novo-beneficio="${servico.id}">
-            + Adicionar benefício
-          </button>
-        </div>
-      </div>`;
-  }).join('') + blocoOrfaos;
-
-  ligarBotoes(lista);
-}
-
-function linhaBeneficio(b) {
-  return `
-    <div class="beneficio-item ${b.ativo ? '' : 'is-inativo'}">
-      ${b.icone ? `<span class="beneficio-icone">${escapeHtml(b.icone)}</span>` : ''}
-      <div style="flex:1;min-width:0">
-        <p class="nome">${escapeHtml(b.titulo)}</p>
-        ${b.descricao ? `<p class="desc">${escapeHtml(b.descricao)}</p>` : ''}
-      </div>
-      ${b.ativo ? '' : badge('rascunho', 'badge-warning')}
-      <button type="button" class="btn btn-ghost btn-sm" data-editar="${b.id}">Editar</button>
-      <button type="button" class="btn btn-danger btn-sm" data-excluir="${b.id}">Excluir</button>
-    </div>`;
-}
-
-function ligarBotoes(host) {
-  host.querySelectorAll('[data-editar]').forEach(btn => {
-    const item = ITENS.find(i => i.id === btn.dataset.editar);
-    btn.addEventListener('click', () => abrirFormulario(item));
-  });
-  host.querySelectorAll('[data-excluir]').forEach(btn => {
-    btn.addEventListener('click', () => excluir(btn.dataset.excluir));
-  });
-  host.querySelectorAll('[data-novo-beneficio]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      abrirFormulario({ secao: 'beneficio', parent_id: btn.dataset.novoBeneficio });
-    });
-  });
-  host.querySelectorAll('[data-nova-pergunta]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      abrirFormulario({ secao: 'faq', parent_id: btn.dataset.novaPergunta });
-    });
-  });
-  host.querySelectorAll('[data-nova-imagem]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      abrirFormulario({ secao: 'banner', posicao: Number(btn.dataset.novaImagem) });
-    });
-  });
-}
-
-/* -------------------------------------------------------- Criar / editar */
-
-/**
- * `alvo` é o item existente (edição) ou um rascunho {secao, parent_id, posicao}
- * indicando o que criar.
- */
-function abrirFormulario(alvo) {
-  const editando = Boolean(alvo && alvo.id);
-  const secaoKey = alvo.secao;
-  const secao = SECOES[secaoKey];
-  const item = editando ? alvo : null;
-
-  if (!editando && secaoKey === 'banner' && itensDa('banner').length >= MAX_BANNERS) {
-    toast(`O carrossel aceita no máximo ${MAX_BANNERS} imagens.`);
-    return;
-  }
-
-  // Seções filhas (benefício, pergunta) contam a posição dentro do próprio pai.
-  const temPai = secaoKey === 'beneficio' || secaoKey === 'faq';
-  const irmaos = ITENS.filter(i =>
-    i.secao === secaoKey && (!temPai || i.parent_id === alvo.parent_id)
-  );
-  const proximaPosicao = alvo.posicao
-    ?? irmaos.reduce((max, i) => Math.max(max, i.posicao), 0) + 1;
-
-  const rotulo = (nome) => (ROTULOS_POR_SECAO[secaoKey]?.[nome]) || ROTULOS[nome];
-
-  const campos = secao.campos.map(nome => {
-    const valor = item ? (item[nome] ?? '') : '';
-    if (nome === 'descricao') {
-      const alto = secaoKey === 'faq';
-      return `
-        <label class="field">
-          <span class="field-label">${rotulo(nome)}</span>
-          <textarea class="field-textarea" name="${nome}"
-                    ${alto ? 'style="min-height:220px"' : ''}
-                    placeholder="${alto ? 'Escreva aqui a resposta completa. Quebras de linha são preservadas.' : ''}">${escapeHtml(valor)}</textarea>
-        </label>`;
-    }
-    return `
-      <label class="field">
-        <span class="field-label">${rotulo(nome)}</span>
-        <input class="field-input" name="${nome}" type="text" value="${escapeHtml(valor)}">
-      </label>`;
-  }).join('');
-
-  // Benefício pende de um serviço; pergunta pende de um guia. Nos dois casos
-  // o pai pode ser trocado aqui.
-  const parentAtual = item ? item.parent_id : alvo.parent_id;
-  const PAI = {
-    beneficio: { secao: 'servico', label: 'Serviço associado', vazio: '— escolha um serviço —' },
-    faq: { secao: 'guia', label: 'Guia ao qual esta pergunta pertence', vazio: '— escolha um guia —' }
-  }[secaoKey];
-
-  const seletorPai = PAI ? `
-    <label class="field">
-      <span class="field-label">${PAI.label}</span>
-      <select class="field-select" name="parent_id">
-        <option value="">${PAI.vazio}</option>
-        ${itensDa(PAI.secao).map(p =>
-          `<option value="${p.id}" ${p.id === parentAtual ? 'selected' : ''}>${escapeHtml(p.titulo)}</option>`
-        ).join('')}
-      </select>
-    </label>` : '';
-
-  const TITULOS_NOVO = {
-    banner: 'Nova imagem do carrossel',
-    guia: 'Novo guia',
-    faq: 'Nova pergunta',
-    servico: 'Novo serviço',
-    beneficio: 'Novo benefício'
-  };
+function abrirFormularioBanner(item) {
+  const editando = Boolean(item && item.id);
 
   Drawer.open({
-    title: editando ? `Editar ${secao.label.toLowerCase()}` : TITULOS_NOVO[secaoKey],
-    subtitle: PLATAFORMA === 'fornecedor' ? 'Plataforma B2B' : 'Plataforma dos noivos',
+    title: editando ? 'Editar imagem do carrossel' : 'Nova imagem do carrossel',
+    subtitle: NOME_PLATAFORMA,
     body: `
       <form id="form-conteudo">
-        ${seletorPai}
-        ${campos}
-
-        <p class="drawer-section-title">Publicação</p>
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">${secaoKey === 'banner' ? 'Ordem no carrossel' : 'Posição'}</span>
-            <input class="field-input" name="posicao" type="number" min="0"
-                   value="${item ? item.posicao : proximaPosicao}">
-          </label>
-          <label class="field">
-            <span class="field-label">Status</span>
-            <select class="field-select" name="ativo">
-              <option value="true" ${!item || item.ativo ? 'selected' : ''}>Publicado</option>
-              <option value="false" ${item && !item.ativo ? 'selected' : ''}>Rascunho</option>
-            </select>
-          </label>
-        </div>
-
-        <p class="cell-muted" style="font-size:.75rem;line-height:1.6">
-          Itens em rascunho continuam aqui, mas não aparecem na plataforma.
-          A ordem vai do menor número para o maior.
-          ${secaoKey === 'servico' ? 'Excluir um serviço apaga junto os benefícios associados a ele.' : ''}
-        </p>
+        ${campoImagem('imagem_url', 'Imagem', item?.imagem_url)}
+        <label class="field">
+          <span class="field-label">Título</span>
+          <input class="field-input" name="titulo" type="text" value="${escapeHtml(item?.titulo || '')}">
+        </label>
+        <label class="field">
+          <span class="field-label">Texto do banner</span>
+          <textarea class="field-textarea" name="descricao">${escapeHtml(item?.descricao || '')}</textarea>
+        </label>
+        <label class="field">
+          <span class="field-label">Link do banner</span>
+          <input class="field-input" name="link_url" type="text" placeholder="https://" value="${escapeHtml(item?.link_url || '')}">
+        </label>
+        ${blocoPublicacao(item?.posicao ?? proximaPosicao(BANNERS), !item || item.ativo, 'Ordem no carrossel')}
       </form>`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
       <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
   });
 
+  const form = document.getElementById('form-conteudo');
+  ligarCamposDeImagem(form, 'banners');
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
-  document.getElementById('btn-salvar').addEventListener('click', () => salvar(alvo));
+  document.getElementById('btn-salvar').addEventListener('click', async () => {
+    const d = Object.fromEntries(new FormData(form).entries());
+    const payload = {
+      plataforma: PLATAFORMA,
+      secao: 'banner',
+      titulo: d.titulo.trim(),
+      descricao: d.descricao.trim() || null,
+      imagem_url: d.imagem_url.trim() || null,
+      link_url: d.link_url.trim() || null,
+      posicao: Number(d.posicao) || 0,
+      ativo: d.ativo === 'true'
+    };
+    if (!payload.titulo) return toast('O título é obrigatório.');
+    await gravar('conteudo_plataforma', item?.id, payload);
+  });
 }
 
-async function salvar(alvo) {
-  const form = document.getElementById('form-conteudo');
-  const dados = Object.fromEntries(new FormData(form).entries());
-  const secaoKey = alvo.secao;
+/* ------------------------------------------------------------------ FAQ */
 
-  const payload = { plataforma: PLATAFORMA, secao: secaoKey };
-  SECOES[secaoKey].campos.forEach(nome => {
-    payload[nome] = String(dados[nome] || '').trim() || null;
+function categoriasOrdenadas() {
+  const fixas = CATEGORIAS_FAQ[PLATAFORMA] || [];
+  const usadas = [...new Set(FAQ.map(q => (q.categoria || '').trim()).filter(Boolean))];
+  const extras = usadas
+    .filter(c => !fixas.some(f => f.toLowerCase() === c.toLowerCase()))
+    .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  return [...fixas, ...extras];
+}
+
+function renderFaq() {
+  const lista = document.getElementById('conteudo-lista');
+
+  const passos = PASSOS.slice().sort((a, b) => a.ordem - b.ordem);
+  const blocoPassos = `
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-head" style="justify-content:space-between">
+        <div>
+          <h2>Primeiros passos</h2>
+          <p>Até ${MAX_PASSOS} passos mostrados a quem acabou de entrar. ${formatNumber(passos.length)} de ${MAX_PASSOS}.</p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-novo-passo" ${passos.length >= MAX_PASSOS ? 'disabled' : ''}>+ Adicionar passo</button>
+      </div>
+      <div class="card-body">
+        ${passos.length ? passos.map(p => `
+          <div class="passo-item ${p.ativo ? '' : 'is-inativo'}">
+            <span class="passo-ordem">${formatNumber(p.ordem)}</span>
+            ${p.icone ? `<span class="passo-icone">${escapeHtml(p.icone)}</span>` : ''}
+            <div style="flex:1;min-width:0">
+              <p class="nome">${escapeHtml(p.titulo)}</p>
+              ${p.descricao ? `<p class="desc">${escapeHtml(p.descricao)}</p>` : ''}
+              ${p.link_url ? `<p class="link">${escapeHtml(p.link_label || p.link_url)}</p>` : ''}
+            </div>
+            ${p.ativo ? '' : badge('rascunho', 'badge-warning')}
+            <button type="button" class="btn btn-ghost btn-sm" data-editar-passo="${p.id}">Editar</button>
+            <button type="button" class="btn btn-danger btn-sm" data-excluir-passo="${p.id}">Excluir</button>
+          </div>`).join('')
+        : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nenhum passo ainda. Os passos aparecem na ordem abaixo, do 1 ao ${MAX_PASSOS}.</p>`}
+      </div>
+    </div>`;
+
+  const categorias = categoriasOrdenadas();
+  const perguntasDe = cat => FAQ
+    .filter(q => (q.categoria || '').trim().toLowerCase() === cat.toLowerCase())
+    .sort((a, b) => a.ordem - b.ordem);
+
+  const blocoFaq = FAQ.length
+    ? categorias.map(cat => {
+        const perguntas = perguntasDe(cat);
+        if (!perguntas.length) return '';
+        return `
+          <div class="card faq-categoria-card">
+            <div class="card-head" style="justify-content:space-between">
+              <div><h2>${escapeHtml(cat)}</h2><p>${formatNumber(perguntas.length)} ${perguntas.length === 1 ? 'pergunta' : 'perguntas'}</p></div>
+              <button type="button" class="btn btn-ghost btn-sm" data-nova-pergunta="${escapeHtml(cat)}">+ Pergunta</button>
+            </div>
+            <div class="card-body">
+              ${perguntas.map(q => `
+                <div class="pergunta-item ${q.ativo ? '' : 'is-inativo'}">
+                  <div style="flex:1;min-width:0">
+                    <p class="pergunta">${escapeHtml(q.pergunta)}</p>
+                    <p class="resposta">${escapeHtml(textoDe(q.resposta))}</p>
+                  </div>
+                  ${/<iframe/i.test(q.resposta || '') ? badge('vídeo', 'badge-info') : ''}
+                  ${q.ativo ? '' : badge('rascunho', 'badge-warning')}
+                  <button type="button" class="btn btn-ghost btn-sm" data-editar-pergunta="${q.id}">Editar</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-excluir-pergunta="${q.id}">Excluir</button>
+                </div>`).join('')}
+            </div>
+          </div>`;
+      }).join('')
+    : `<div class="card"><div class="empty-state">
+        <strong>Nenhuma pergunta ainda</strong>
+        <p>Clique em "Adicionar pergunta" no cabeçalho. Cada pergunta entra numa categoria e aparece na plataforma com a resposta escrita aqui.</p>
+      </div></div>`;
+
+  lista.innerHTML = blocoPassos + blocoFaq;
+
+  document.getElementById('btn-novo-passo').addEventListener('click', () => abrirFormularioPasso(null));
+  lista.querySelectorAll('[data-editar-passo]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioPasso(PASSOS.find(p => p.id === btn.dataset.editarPasso)));
   });
-  payload.posicao = Number(dados.posicao) || 0;
-  payload.ativo = dados.ativo === 'true';
+  lista.querySelectorAll('[data-excluir-passo]').forEach(btn => {
+    btn.addEventListener('click', () => excluir('primeiros_passos', btn.dataset.excluirPasso, PASSOS.find(p => p.id === btn.dataset.excluirPasso)?.titulo));
+  });
+  lista.querySelectorAll('[data-nova-pergunta]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioPergunta(null, btn.dataset.novaPergunta));
+  });
+  lista.querySelectorAll('[data-editar-pergunta]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioPergunta(FAQ.find(q => q.id === btn.dataset.editarPergunta)));
+  });
+  lista.querySelectorAll('[data-excluir-pergunta]').forEach(btn => {
+    btn.addEventListener('click', () => excluir('faq', btn.dataset.excluirPergunta, FAQ.find(q => q.id === btn.dataset.excluirPergunta)?.pergunta));
+  });
+}
 
-  if (secaoKey === 'beneficio' || secaoKey === 'faq') {
-    payload.parent_id = dados.parent_id || null;
-    if (!payload.parent_id) {
-      toast(secaoKey === 'faq'
-        ? 'Escolha o guia ao qual esta pergunta pertence.'
-        : 'Escolha o serviço ao qual este benefício pertence.');
+function abrirFormularioPergunta(item, categoriaInicial) {
+  const editando = Boolean(item && item.id);
+  const categorias = categoriasOrdenadas();
+  const atual = (item?.categoria || categoriaInicial || categorias[0] || '').trim();
+  const conhecida = categorias.some(c => c.toLowerCase() === atual.toLowerCase());
+
+  const irmas = FAQ.filter(q => (q.categoria || '').trim().toLowerCase() === atual.toLowerCase());
+
+  Drawer.open({
+    title: editando ? 'Editar pergunta' : 'Nova pergunta',
+    subtitle: NOME_PLATAFORMA,
+    body: `
+      <form id="form-conteudo">
+        <label class="field">
+          <span class="field-label">Categoria <span class="campo-obrigatorio">*</span></span>
+          <select class="field-select" name="categoria_opcao" id="categoria-opcao">
+            ${categorias.map(c => `<option value="${escapeHtml(c)}" ${c.toLowerCase() === atual.toLowerCase() ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}
+            <option value="__outra" ${conhecida || !atual ? '' : 'selected'}>Outra…</option>
+          </select>
+        </label>
+        <label class="field" id="campo-categoria-outra" ${conhecida || !atual ? 'hidden' : ''}>
+          <span class="field-label">Nome da categoria</span>
+          <input class="field-input" name="categoria_outra" type="text" value="${conhecida ? '' : escapeHtml(atual)}">
+        </label>
+
+        <label class="field">
+          <span class="field-label">Pergunta <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" name="pergunta" type="text" maxlength="200" value="${escapeHtml(item?.pergunta || '')}">
+        </label>
+
+        <div class="field">
+          <span class="field-label">Resposta</span>
+          <div id="faq-editor"></div>
+          <div class="editor-video">
+            <input class="field-input" id="video-url" type="url" placeholder="Link do YouTube ou Vimeo">
+            <button type="button" class="btn btn-ghost btn-sm" id="btn-inserir-video">Inserir vídeo</button>
+          </div>
+          <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:.375rem 0 0">
+            O vídeo entra onde o cursor estiver no texto — dá para escrever antes e depois dele.
+          </p>
+        </div>
+
+        ${blocoPublicacao(item?.ordem ?? proximaPosicao(irmas, 'ordem'), !item || item.ativo, 'Ordem na categoria')}
+      </form>`,
+    footer: `
+      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
+  });
+
+  const form = document.getElementById('form-conteudo');
+  const editor = EditorRico.montar(document.getElementById('faq-editor'), {
+    placeholder: 'Escreva a resposta. Negrito, listas, links e vídeo são permitidos.'
+  });
+  editor.definir(item?.resposta || '');
+
+  document.getElementById('categoria-opcao').addEventListener('change', e => {
+    document.getElementById('campo-categoria-outra').hidden = e.target.value !== '__outra';
+    if (e.target.value === '__outra') form.categoria_outra.focus();
+  });
+
+  document.getElementById('btn-inserir-video').addEventListener('click', () => {
+    const campo = document.getElementById('video-url');
+    const embed = urlDeEmbed(campo.value);
+    if (!embed) {
+      toast('Cole um link do YouTube ou do Vimeo.');
+      campo.focus();
       return;
     }
-  }
+    editor.inserirHtml(
+      `<div class="faq-video"><iframe src="${escapeHtml(embed)}" title="Vídeo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p><br></p>`
+    );
+    campo.value = '';
+  });
 
-  if (!payload.titulo) {
-    toast(secaoKey === 'faq' ? 'A pergunta não pode ficar vazia.' : 'O título é obrigatório.');
+  document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-salvar').addEventListener('click', async () => {
+    const d = Object.fromEntries(new FormData(form).entries());
+    const categoria = (d.categoria_opcao === '__outra' ? d.categoria_outra : d.categoria_opcao).trim();
+    const pergunta = d.pergunta.trim();
+    const resposta = editor.html();
+
+    if (!categoria) return toast('Escolha ou escreva a categoria.');
+    if (!pergunta) return toast('Escreva a pergunta.');
+    if (!editor.texto().trim() && !/<iframe/i.test(resposta)) return toast('Escreva a resposta.');
+
+    await gravar('faq', item?.id, {
+      plataforma: PLATAFORMA,
+      categoria,
+      pergunta,
+      resposta,
+      ordem: Number(d.posicao) || 0,
+      ativo: d.ativo === 'true',
+      atualizado_por: window.adminUser.id
+    });
+  });
+}
+
+function abrirFormularioPasso(item) {
+  const editando = Boolean(item && item.id);
+
+  if (!editando && PASSOS.length >= MAX_PASSOS) {
+    toast(`São no máximo ${MAX_PASSOS} passos.`);
     return;
   }
 
+  Drawer.open({
+    title: editando ? 'Editar passo' : 'Novo passo',
+    subtitle: NOME_PLATAFORMA,
+    body: `
+      <form id="form-conteudo">
+        <div class="field-row">
+          <label class="field" style="flex:0 0 96px">
+            <span class="field-label">Ícone</span>
+            <input class="field-input" name="icone" type="text" maxlength="4" placeholder="emoji" value="${escapeHtml(item?.icone || '')}">
+          </label>
+          <label class="field">
+            <span class="field-label">Título <span class="campo-obrigatorio">*</span></span>
+            <input class="field-input" name="titulo" type="text" maxlength="80" value="${escapeHtml(item?.titulo || '')}">
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label">Descrição</span>
+          <textarea class="field-textarea" name="descricao" maxlength="240">${escapeHtml(item?.descricao || '')}</textarea>
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Link (página ou URL)</span>
+            <input class="field-input" name="link_url" type="text" placeholder="ex.: crm ou https://" value="${escapeHtml(item?.link_url || '')}">
+          </label>
+          <label class="field">
+            <span class="field-label">Texto do link</span>
+            <input class="field-input" name="link_label" type="text" value="${escapeHtml(item?.link_label || '')}">
+          </label>
+        </div>
+        ${blocoPublicacao(item?.ordem ?? proximaPosicao(PASSOS, 'ordem'), !item || item.ativo, 'Ordem (1 a 6)')}
+      </form>`,
+    footer: `
+      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
+  });
+
+  const form = document.getElementById('form-conteudo');
+  document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-salvar').addEventListener('click', async () => {
+    const d = Object.fromEntries(new FormData(form).entries());
+    if (!d.titulo.trim()) return toast('O título é obrigatório.');
+    await gravar('primeiros_passos', item?.id, {
+      plataforma: PLATAFORMA,
+      titulo: d.titulo.trim(),
+      descricao: d.descricao.trim() || null,
+      icone: d.icone.trim() || null,
+      link_url: d.link_url.trim() || null,
+      link_label: d.link_label.trim() || null,
+      ordem: Number(d.posicao) || 0,
+      ativo: d.ativo === 'true'
+    });
+  });
+}
+
+/* ------------------------------------------- Serviços (só anfitriões) */
+
+const PRECO_TIPO = { a_partir: 'A partir de', fixo: 'Valor fixo' };
+
+function precoDe(s) {
+  if (!(Number(s.preco) > 0)) return '';
+  const prefixo = s.preco_tipo === 'fixo' ? '' : 'A partir de ';
+  return `${prefixo}${formatCurrency(s.preco)}${s.preco_sufixo ? ` ${s.preco_sufixo}` : ''}`;
+}
+
+function renderServicos() {
+  const lista = document.getElementById('conteudo-lista');
+  const descontos = SERVICOS.filter(s => s.tipo === 'desconto').sort((a, b) => a.posicao - b.posicao);
+  const servicos = SERVICOS.filter(s => s.tipo !== 'desconto').sort((a, b) => a.posicao - b.posicao);
+
+  const cardDesconto = s => `
+    <article class="desconto-card ${s.ativo ? '' : 'is-inativo'}">
+      <div class="desconto-logo" ${s.imagem_url ? `style="background-image:url('${escapeHtml(s.imagem_url)}')"` : ''}>
+        ${s.imagem_url ? '' : `<span>${escapeHtml(s.nome)}</span>`}
+      </div>
+      <div class="desconto-body">
+        <p class="empresa">${escapeHtml(s.nome)}</p>
+        <p class="oferta">${escapeHtml(s.desconto_texto || '—')}</p>
+        <p class="acao">${s.cupom ? `Cupom ${escapeHtml(s.cupom)}` : s.link_url ? 'Abre o link' : 'Sem ação ao clicar'}</p>
+      </div>
+      <div class="banner-slot-foot">
+        <span class="pos">${s.ativo ? 'publicado' : 'rascunho'}</span>
+        <button type="button" class="btn btn-ghost btn-sm" data-editar-servico="${s.id}">Editar</button>
+        <button type="button" class="btn btn-danger btn-sm" data-excluir-servico="${s.id}">Excluir</button>
+      </div>
+    </article>`;
+
+  const grupos = [...new Set(servicos.map(s => (s.grupo || '').trim() || 'Sem grupo'))];
+
+  const cardServico = s => `
+    <div class="card servico-bloco ${s.ativo ? '' : 'is-inativo'}">
+      <div class="servico-head">
+        <div class="servico-thumb" ${s.imagem_url ? `style="background-image:url('${escapeHtml(s.imagem_url)}')"` : ''}></div>
+        <div style="flex:1;min-width:0">
+          <h3>${escapeHtml(s.titulo || s.nome)}</h3>
+          <p>${escapeHtml(s.descricao || '')}</p>
+          <span class="pos">${escapeHtml(s.nome)}${precoDe(s) ? ` · ${escapeHtml(precoDe(s))}` : ''} · ${s.ativo ? 'publicado' : 'rascunho'}</span>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-shrink:0">
+          <button type="button" class="btn btn-ghost btn-sm" data-editar-servico="${s.id}">Editar</button>
+          <button type="button" class="btn btn-danger btn-sm" data-excluir-servico="${s.id}">Excluir</button>
+        </div>
+      </div>
+    </div>`;
+
+  lista.innerHTML = `
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-head">
+        <div>
+          <h2>Benefícios &amp; Serviços — home</h2>
+          <p>Cards do clube de vantagens na página inicial: logo, empresa, desconto e cupom ou link.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        ${descontos.length
+          ? `<div class="desconto-grid">${descontos.map(cardDesconto).join('')}</div>`
+          : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Nenhum card ainda. Clique em "Adicionar" e escolha o tipo "Desconto na home".</p>`}
+      </div>
+    </div>
+
+    <div class="bloco-cabecalho" style="margin-top:0">
+      <h2>Benefícios Love</h2>
+    </div>
+    ${servicos.length
+      ? grupos.map(g => `
+          <p class="beneficio-titulo" style="margin:1rem 0 .625rem">${escapeHtml(g)}</p>
+          ${servicos.filter(s => ((s.grupo || '').trim() || 'Sem grupo') === g).map(cardServico).join('')}`).join('')
+      : `<div class="card"><div class="empty-state">
+          <strong>Nenhum serviço ainda</strong>
+          <p>Clique em "Adicionar" e escolha o tipo "Serviço em Benefícios Love".</p>
+        </div></div>`}`;
+
+  lista.querySelectorAll('[data-editar-servico]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioServico(SERVICOS.find(s => s.id === btn.dataset.editarServico)));
+  });
+  lista.querySelectorAll('[data-excluir-servico]').forEach(btn => {
+    btn.addEventListener('click', () => excluir('servicos_beneficios', btn.dataset.excluirServico, SERVICOS.find(s => s.id === btn.dataset.excluirServico)?.nome));
+  });
+}
+
+function abrirFormularioServico(item) {
+  const editando = Boolean(item && item.id);
+  const tipo = item?.tipo || 'desconto';
+  const grupos = [...new Set(SERVICOS.map(s => (s.grupo || '').trim()).filter(Boolean))];
+
+  Drawer.open({
+    title: editando ? 'Editar' : 'Novo benefício ou serviço',
+    subtitle: NOME_PLATAFORMA,
+    body: `
+      <form id="form-conteudo">
+        <label class="field">
+          <span class="field-label">Onde aparece</span>
+          <select class="field-select" name="tipo" id="servico-tipo">
+            <option value="desconto" ${tipo === 'desconto' ? 'selected' : ''}>Desconto na home (Benefícios &amp; Serviços)</option>
+            <option value="servico" ${tipo === 'servico' ? 'selected' : ''}>Serviço em Benefícios Love</option>
+          </select>
+        </label>
+
+        ${campoImagem('imagem_url', 'Imagem', item?.imagem_url)}
+
+        <label class="field">
+          <span class="field-label">Empresa / parceiro <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" name="nome" type="text" value="${escapeHtml(item?.nome || '')}">
+        </label>
+
+        <div data-so="desconto">
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">Desconto <span class="campo-obrigatorio">*</span></span>
+              <input class="field-input" name="desconto_texto" type="text" placeholder="ex.: Até 25% OFF" value="${escapeHtml(item?.desconto_texto || '')}">
+            </label>
+            <label class="field">
+              <span class="field-label">Cupom (copiado ao clicar)</span>
+              <input class="field-input" name="cupom" type="text" placeholder="ex.: LOVE25" value="${escapeHtml(item?.cupom || '')}">
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">Mensagem ao ativar o cupom</span>
+            <input class="field-input" name="descricao_desconto" type="text" placeholder="ex.: 25% OFF em trajes a rigor." value="${escapeHtml(tipo === 'desconto' ? (item?.descricao || '') : '')}">
+          </label>
+        </div>
+
+        <div data-so="servico">
+          <label class="field">
+            <span class="field-label">Título do card <span class="campo-obrigatorio">*</span></span>
+            <input class="field-input" name="titulo" type="text" placeholder="ex.: Seguro residência" value="${escapeHtml(item?.titulo || '')}">
+          </label>
+          <label class="field">
+            <span class="field-label">Breve descrição</span>
+            <textarea class="field-textarea" name="descricao" maxlength="240">${escapeHtml(tipo === 'servico' ? (item?.descricao || '') : '')}</textarea>
+          </label>
+          <label class="field">
+            <span class="field-label">Grupo (seção em Benefícios Love)</span>
+            <input class="field-input" name="grupo" type="text" list="grupos-servico" placeholder="ex.: Para os casais" value="${escapeHtml(item?.grupo || '')}">
+            <datalist id="grupos-servico">${grupos.map(g => `<option value="${escapeHtml(g)}">`).join('')}</datalist>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">Preço (R$)</span>
+              <input class="field-input" name="preco" type="number" step="0.01" min="0" value="${item?.preco ?? ''}">
+            </label>
+            <label class="field">
+              <span class="field-label">Como mostrar</span>
+              <select class="field-select" name="preco_tipo">
+                ${Object.entries(PRECO_TIPO).map(([v, r]) => `<option value="${v}" ${(item?.preco_tipo || 'a_partir') === v ? 'selected' : ''}>${r}</option>`).join('')}
+              </select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field">
+              <span class="field-label">Depois do preço</span>
+              <input class="field-input" name="preco_sufixo" type="text" placeholder="ex.: por mês" value="${escapeHtml(item?.preco_sufixo || '')}">
+            </label>
+            <label class="field">
+              <span class="field-label">Preço cheio (riscado)</span>
+              <input class="field-input" name="preco_de" type="number" step="0.01" min="0" value="${item?.preco_de ?? ''}">
+            </label>
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Link</span>
+          <input class="field-input" name="link_url" type="url" placeholder="https://" value="${escapeHtml(item?.link_url || '')}">
+          <span class="cell-muted" style="font-size:.75rem;line-height:1.6;display:block;margin-top:.25rem" data-so="desconto">Sem cupom, o clique no card abre este link.</span>
+          <span class="cell-muted" style="font-size:.75rem;line-height:1.6;display:block;margin-top:.25rem" data-so="servico">Para onde o botão de contratar leva.</span>
+        </label>
+
+        ${blocoPublicacao(item?.posicao ?? proximaPosicao(SERVICOS), !item || item.ativo)}
+      </form>`,
+    footer: `
+      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
+  });
+
+  const form = document.getElementById('form-conteudo');
+  ligarCamposDeImagem(form, 'servicos');
+
+  const seletorTipo = document.getElementById('servico-tipo');
+  const mostrarCampos = () => {
+    form.querySelectorAll('[data-so]').forEach(el => { el.hidden = el.dataset.so !== seletorTipo.value; });
+  };
+  seletorTipo.addEventListener('change', mostrarCampos);
+  mostrarCampos();
+
+  document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-salvar').addEventListener('click', async () => {
+    const d = Object.fromEntries(new FormData(form).entries());
+    const ehDesconto = d.tipo === 'desconto';
+
+    if (!d.nome.trim()) return toast('Informe a empresa ou parceiro.');
+    if (ehDesconto && !d.desconto_texto.trim()) return toast('Escreva o desconto, ex.: "Até 25% OFF".');
+    if (!ehDesconto && !d.titulo.trim()) return toast('Escreva o título do card.');
+
+    const payload = {
+      tipo: d.tipo,
+      nome: d.nome.trim(),
+      parceiro: d.nome.trim(),
+      imagem_url: d.imagem_url.trim() || null,
+      link_url: d.link_url.trim() || null,
+      posicao: Number(d.posicao) || 0,
+      ativo: d.ativo === 'true'
+    };
+
+    if (ehDesconto) {
+      Object.assign(payload, {
+        desconto_texto: d.desconto_texto.trim(),
+        cupom: d.cupom.trim().toUpperCase() || null,
+        descricao: d.descricao_desconto.trim() || null,
+        titulo: null, grupo: null, preco: 0, preco_de: null, preco_sufixo: null
+      });
+    } else {
+      Object.assign(payload, {
+        titulo: d.titulo.trim(),
+        descricao: d.descricao.trim() || null,
+        grupo: d.grupo.trim() || null,
+        preco: Number(d.preco) || 0,
+        preco_tipo: d.preco_tipo,
+        preco_sufixo: d.preco_sufixo.trim() || null,
+        preco_de: d.preco_de === '' ? null : Number(d.preco_de),
+        desconto_texto: null, cupom: null
+      });
+    }
+
+    await gravar('servicos_beneficios', item?.id, payload);
+  });
+}
+
+/* ------------------------------------------------------- Gravar / excluir */
+
+async function gravar(tabela, id, payload) {
   Drawer.setFooterBusy(true);
-  const { error } = alvo.id
-    ? await supabaseClient.from('conteudo_plataforma').update(payload).eq('id', alvo.id)
-    : await supabaseClient.from('conteudo_plataforma').insert(payload);
+  const { error } = id
+    ? await supabaseClient.from(tabela).update(payload).eq('id', id)
+    : await supabaseClient.from(tabela).insert(payload);
   Drawer.setFooterBusy(false);
 
   if (error) {
-    toast(`Não foi possível salvar: ${error.message}`);
+    toast(/column|schema cache|does not exist/i.test(error.message || '')
+      ? 'Rode supabase/migrations/052_faq_plataforma_passos_beneficios_hub.sql no Supabase.'
+      : `Não foi possível salvar: ${error.message}`);
     return;
   }
 
   Drawer.close();
-  toast(alvo.id ? 'Item atualizado.' : 'Item publicado.');
+  toast(id ? 'Item atualizado.' : 'Item publicado.');
   await carregar();
 }
 
-async function excluir(id) {
-  const item = ITENS.find(i => i.id === id);
-  if (!item) return;
+async function excluir(tabela, id, nome) {
+  if (!window.confirm(`Excluir "${nome || 'este item'}"? Esta ação não pode ser desfeita.`)) return;
 
-  const filhos = ITENS.filter(i => i.parent_id === id).length;
-  const NOME_FILHO = { servico: 'benefício(s) associados', guia: 'pergunta(s) deste guia' };
-  const aviso = filhos
-    ? `\n\nOs ${filhos} ${NOME_FILHO[item.secao] || 'item(ns) ligados a ele'} também serão excluídos.`
-    : '';
-
-  if (!window.confirm(`Excluir "${item.titulo}"? Esta ação não pode ser desfeita.${aviso}`)) return;
-
-  const { error } = await supabaseClient.from('conteudo_plataforma').delete().eq('id', id);
+  const { error } = await supabaseClient.from(tabela).delete().eq('id', id);
 
   if (error) {
     toast(`Não foi possível excluir: ${error.message}`);
     return;
   }
 
-  if (GUIA_ABERTO === id) GUIA_ABERTO = null;
   toast('Item excluído.');
   await carregar();
 }

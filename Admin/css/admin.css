@@ -2793,3 +2793,121 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .periodo-menu .field-row { gap: .5rem; }
 .periodo-aplicar { width: 100%; margin-top: .25rem; justify-content: center; }
 #btn-periodo.is-ativo { border-color: var(--primary-color); color: var(--primary-color); }
+
+/* ------------------------------------------ Conteúdo: imagem com envio */
+
+.imagem-campo { display: flex; gap: .75rem; align-items: flex-start; }
+
+.imagem-previa {
+  width: 96px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  background: var(--bg-muted) center / contain no-repeat;
+  display: grid;
+  place-items: center;
+  font-size: .6875rem;
+  color: var(--text-soft);
+}
+
+.imagem-acoes { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .5rem; align-items: flex-start; }
+.imagem-acoes .field-input { width: 100%; }
+
+/* ------------------------------------------- Conteúdo: FAQ com vídeo */
+
+.editor-video { display: flex; gap: .5rem; margin-top: .5rem; }
+.editor-video .field-input { flex: 1; }
+.editor-video .btn { flex-shrink: 0; white-space: nowrap; }
+
+/* O mesmo enquadramento que a plataforma dá ao vídeo. */
+.faq-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: .75rem 0; border-radius: var(--radius-card); overflow: hidden; background: #000; }
+.faq-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.faq-categoria-card { margin-bottom: 1rem; }
+
+/* ----------------------------------------- Conteúdo: primeiros passos */
+
+.passo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: .875rem 1rem;
+  margin-bottom: .5rem;
+}
+
+.passo-item.is-inativo { opacity: .65; }
+.passo-item .nome { font-size: .875rem; font-weight: 600; margin: 0; }
+.passo-item .desc { font-size: .8125rem; color: var(--text-muted); margin: .125rem 0 0; line-height: 1.5; }
+.passo-item .link { font-size: .75rem; color: var(--primary-color); margin: .25rem 0 0; }
+.passo-item .btn { flex-shrink: 0; }
+
+.passo-ordem {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--info-bg);
+  color: var(--primary-color);
+  font-size: .6875rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.passo-icone { font-size: 1.125rem; line-height: 22px; flex-shrink: 0; }
+
+/* -------------------------------- Conteúdo: cards de desconto da home */
+
+.desconto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.desconto-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--bg-surface);
+}
+
+.desconto-card.is-inativo { opacity: .6; }
+
+.desconto-logo {
+  height: 96px;
+  background: #fff center / contain no-repeat;
+  background-origin: content-box;
+  padding: 1rem;
+  display: grid;
+  place-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.desconto-logo span { font-size: 1.125rem; font-weight: 800; letter-spacing: -.02em; color: var(--text); text-align: center; }
+
+.desconto-body { padding: .75rem .875rem; flex: 1; }
+.desconto-body .empresa { font-size: .75rem; color: var(--text-muted); margin: 0; }
+.desconto-body .oferta { font-size: .875rem; font-weight: 700; margin: .125rem 0 0; }
+.desconto-body .acao { font-size: .6875rem; color: var(--text-soft); margin: .25rem 0 0; }
+
+/* ------------------------------------------------ Conteúdo do Hub */
+
+.hub-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.hub-item:first-child { border-top: 0; }
+.hub-item.is-inativo { opacity: .65; }
+.hub-item .nome { font-size: .875rem; font-weight: 600; margin: 0; }
+.hub-item .desc { font-size: .8125rem; color: var(--text-muted); margin: .125rem 0 0; line-height: 1.5; }
+.hub-item .meta { font-size: .75rem; color: var(--text-soft); margin: .25rem 0 0; }
+.hub-item .btn { flex-shrink: 0; }

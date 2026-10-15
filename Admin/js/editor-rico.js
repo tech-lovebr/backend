@@ -233,6 +233,8 @@ const EditorRico = (() => {
     return {
       html: () => corpo.innerHTML,
       texto: () => corpo.innerText,
+      // Entra onde o cursor estiver — é assim que um vídeo fica no meio do texto.
+      inserirHtml: (html) => aplicar('insertHTML', html),
       definir: (html) => { corpo.innerHTML = normalizar(html); limparDimensoes(); contar(); sincronizarBloco(); },
       focar: () => corpo.focus()
     };

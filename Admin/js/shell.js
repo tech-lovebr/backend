@@ -19,7 +19,8 @@ const NAV_SECTIONS = [
         page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
-          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' }
+          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' },
+          { page: 'hub-conteudo', href: 'hub-conteudo.html', text: 'Conteúdo' }
         ]
       },
       {

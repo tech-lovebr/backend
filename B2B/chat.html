@@ -171,7 +171,12 @@
       <!-- Lista -->
       <div id="template-list-view">
         <div id="template-list" class="flex flex-col gap-2"></div>
-        <p id="template-list-empty" class="text-sm text-zinc-400 py-6 text-center" hidden>Você ainda não tem comandos.</p>
+        <!-- Primeira vez (nenhum comando): o botão fica aqui, e o formulário
+             aparece abaixo ao clicar. -->
+        <div id="template-list-empty" class="py-6 flex flex-col items-center gap-3" hidden>
+          <p class="text-sm text-zinc-400">Você ainda não tem comandos.</p>
+          <button type="button" id="template-empty-add-btn" class="btn-primary">Adicionar comando</button>
+        </div>
       </div>
 
       <!-- Formulário -->
@@ -198,6 +203,6 @@
   </aside>
 
   <script src="js/mensagens.js?v=10"></script>
-  <script src="js/chat-modelos.js?v=2"></script>
+  <script src="js/chat-modelos.js?v=3"></script>
 </body>
 </html>

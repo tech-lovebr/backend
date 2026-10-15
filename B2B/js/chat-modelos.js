@@ -138,7 +138,9 @@ function mostrarListaComandos() {
   document.getElementById('template-drawer-title').textContent = 'Meus comandos';
   document.getElementById('template-list-view').hidden = false;
   document.getElementById('template-form-view').hidden = true;
-  document.getElementById('template-add-btn').hidden = false;
+  // Sem nenhum comando, o "Adicionar comando" fica no meio da tela (logo
+  // abaixo do aviso), não no rodapé.
+  document.getElementById('template-add-btn').hidden = chatModelos.length === 0;
   document.getElementById('template-save-btn').hidden = true;
   document.getElementById('template-drawer-cancel').textContent = 'Fechar';
   renderListaModelosDrawer();
@@ -146,7 +148,10 @@ function mostrarListaComandos() {
 
 function mostrarFormularioComando(texto, origem) {
   origemFormularioComando = origem;
-  document.getElementById('template-drawer-title').textContent = 'Adicionar comando';
+  // Primeiro comando (lista vazia): continua "Meus comandos", só aparecem os
+  // campos abaixo do aviso.
+  const primeiroComando = origem === 'lista' && chatModelos.length === 0;
+  document.getElementById('template-drawer-title').textContent = primeiroComando ? 'Meus comandos' : 'Adicionar comando';
   document.getElementById('template-list-view').hidden = true;
   document.getElementById('template-form-view').hidden = false;
   document.getElementById('template-add-btn').hidden = true;
@@ -288,6 +293,7 @@ async function initChatModelos() {
   document.getElementById('template-drawer-close')?.addEventListener('click', fecharDrawerModelo);
   document.getElementById('template-drawer-cancel')?.addEventListener('click', cancelarDrawerComandos);
   document.getElementById('template-add-btn')?.addEventListener('click', () => mostrarFormularioComando('', 'lista'));
+  document.getElementById('template-empty-add-btn')?.addEventListener('click', () => mostrarFormularioComando('', 'lista'));
   document.getElementById('chat-commands-btn')?.addEventListener('click', abrirMeusComandos);
   document.getElementById('template-drawer-backdrop')?.addEventListener('click', fecharDrawerModelo);
   document.getElementById('template-save-btn')?.addEventListener('click', enviarFormularioModelo);

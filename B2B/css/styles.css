@@ -7074,3 +7074,17 @@ body[data-theme="dark"] .b2b-header-bar .btn-secondary.header-btn-light { backgr
 body[data-theme="dark"] .lead-import-step-num { background: #333333 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] .lead-import-steps strong { color: #FFFFFF !important; }
 body[data-theme="dark"] .lead-import-cols span { color: #E4E4E7 !important; }
+
+/* Leads: coluna ID (número do lead) à esquerda do nome. */
+.leads-table th.col-id, .leads-table td.col-id { width: 64px; color: #71717A; font-variant-numeric: tabular-nums; }
+
+/* Botão de copiar no fim da caixa (e-mail, CPF, WhatsApp, endereço). */
+.field-copy-wrap { position: relative; }
+.field-copy-wrap > .field-input { padding-right: 2.5rem; }
+.field-copy-btn {
+  position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: #A1A1AA; border-radius: 6px; cursor: pointer;
+}
+.field-copy-btn:hover { color: #181D24; background: #F4F4F5; }
+body[data-theme="dark"] .field-copy-btn:hover { color: #FFFFFF !important; background: #333333 !important; }

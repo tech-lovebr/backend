@@ -44,6 +44,11 @@ async function loadLeads() {
 
   crmLeads = leadsRes.error || !leadsRes.data ? [] : leadsRes.data;
 
+  // ID do lead: número sequencial por fornecedor (coluna numero, migration
+  // 055). Sem a migration, numera aqui pela ordem de criação.
+  const porCriacao = [...crmLeads].sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+  porCriacao.forEach((l, i) => { if (l.numero == null) l.numeroExibido = i + 1; else l.numeroExibido = l.numero; });
+
   // Todo lead começa "novo" e vira "em conversa" sozinho assim que existir
   // uma conversa de chat aberta com o cliente vinculado a ele.
   const clientesComConversa = new Set((convosRes.data || []).map(c => c.cliente_id));
@@ -98,6 +103,8 @@ function initLeadEmailAutocomplete() {
 
   // Sugestões de provedor ao digitar "@"; máscaras de data e de valor;
   // nome com maiúscula no início das palavras.
+  // Botão de copiar no fim das caixas de e-mail, CPF, WhatsApp e endereço.
+  ['lead-email', 'lead-cpf', 'lead-whatsapp', 'lead-endereco'].forEach(id => wireCopyField(document.getElementById(id)));
   wireEmailDomainSuggestions(input);
   wireNameCaseInput(document.getElementById('lead-name'));
   const dateInput = document.getElementById('lead-date');
@@ -211,12 +218,13 @@ function renderLeadsTable() {
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = items.map(lead => `
     <tr data-open-lead="${lead.id}" style="cursor:pointer;">
+      <td class="col-id">${lead.numeroExibido || ''}</td>
       <td class="col-principal">${escapeHtml(lead.name)}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
@@ -394,6 +402,34 @@ function openLeadDrawer(id) {
 
   document.getElementById('lead-drawer').classList.add('show');
   document.getElementById('lead-drawer-backdrop').classList.add('show');
+}
+
+/* -------------------- Copiar o conteúdo de um campo -------------------- */
+
+function wireCopyField(input) {
+  if (!input || input.parentElement.classList.contains('field-copy-wrap')) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'field-copy-wrap';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'field-copy-btn';
+  btn.title = 'Copiar';
+  btn.setAttribute('aria-label', 'Copiar');
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
+  btn.addEventListener('click', async () => {
+    const texto = input.value.trim();
+    if (!texto) { showToast('Nada para copiar.', true); return; }
+    try {
+      await navigator.clipboard.writeText(texto);
+    } catch (e) {
+      input.select();
+      document.execCommand('copy');
+    }
+    showToast('Copiado.');
+  });
+  wrap.appendChild(btn);
 }
 
 /* -------------------- WhatsApp do lead -------------------- */

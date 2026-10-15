@@ -11653,10 +11653,40 @@ document.addEventListener('DOMContentLoaded', () => {
     return `A partir de ${formatted}`;
   }
 
+  // A vitrine mostra UM CARD POR SERVIÇO ativo (não um por fornecedor): quem
+  // oferece Bar e Bebidas e também Buffet aparece nas duas categorias, cada
+  // card com a capa, a categoria e o preço daquele serviço. Clicar abre o
+  // perfil do fornecedor com todos os serviços dele.
+  function cardsPorServico(fornecedor) {
+    return (fornecedor.services || []).map(s => {
+      const preco = Number(s.price) > 0 ? Number(s.price) : 0;
+      return {
+        ...fornecedor,
+        servicoCard: s,
+        cardImage: s.cover_image_url || fornecedor.cardImage,
+        imageServiceId: s.id,
+        description: s.description || fornecedor.description,
+        mainCategory: s.category || '',
+        categories: s.category ? [s.category] : [],
+        subcategories: [subcategoriaAtual(s.extra && s.extra.subcategory)].filter(Boolean),
+        priceNum: preco,
+        pricingType: (s.extra && s.extra.pricing && s.extra.pricing.type) || (preco ? 'VALOR_FIXO' : 'SOB_CONSULTA')
+      };
+    });
+  }
+
+  // Linha abaixo do nome da empresa no card: "Nome do serviço · Cidade (UF)".
+  function servicoELocalDoCard(item) {
+    const local = localCurto(item);
+    const servico = item.servicoCard && item.servicoCard.name ? item.servicoCard.name.trim() : '';
+    return escaparHtml([servico, local].filter(Boolean).join(' · '));
+  }
+
   // Serviço que o card do Explorar representa (vai na URL do perfil como
-  // "source"): o da categoria/subcategoria filtrada, senão o da capa que o
-  // card mostra, senão o primeiro.
+  // "source"): o do próprio card, senão o da categoria/subcategoria
+  // filtrada, senão o da capa, senão o primeiro.
   function servicoDestaque(item) {
+    if (item.servicoCard) return item.servicoCard;
     const servicos = item.services || [];
     if (b2bSelectedMainCategory) {
       const daCategoria = servicos.find(s => s.category === b2bSelectedMainCategory
@@ -11691,8 +11721,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     aplicarCidadePadraoVitrine();
 
-    let items = b2bFornecedores.map(f => ({ ...f, isFavorite: b2bFavoritosIds.has(f.id) }));
-    let categoryName = 'fornecedores';
+    let items = b2bFornecedores
+      .map(f => ({ ...f, isFavorite: b2bFavoritosIds.has(f.id) }))
+      .flatMap(cardsPorServico);
+    let categoryName = 'serviços';
 
     if (currentB2BCategory === 'favorites') {
       items = items.filter(item => item.isFavorite);
@@ -11718,7 +11750,8 @@ document.addEventListener('DOMContentLoaded', () => {
       items = items.filter(item =>
         (item.name && item.name.toLowerCase().includes(q)) ||
         (item.city && item.city.toLowerCase().includes(q)) ||
-        (item.services || []).some(s => (s.name || '').toLowerCase().includes(q)) ||
+        ((item.servicoCard && item.servicoCard.name) || '').toLowerCase().includes(q) ||
+        (item.mainCategory || '').toLowerCase().includes(q) ||
         (item.description && item.description.toLowerCase().includes(q)) ||
         (item.neighborhood && item.neighborhood.toLowerCase().includes(q))
       );
@@ -11762,7 +11795,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const card = document.createElement('div');
-      card.id = `card-${item.id}`;
+      // Primeiro card do fornecedor mantém o id antigo (mapa); os outros
+      // serviços dele ganham o id do serviço junto.
+      card.id = document.getElementById(`card-${item.id}`) ? `card-${item.id}-${item.imageServiceId}` : `card-${item.id}`;
       // Sem padding à esquerda no desktop (onde a imagem fica ao lado do
       // texto): ela fica flush com a borda do container, igual ao card do
       // grid (que não tem padding próprio) — sem isso a margem esquerda da
@@ -11794,7 +11829,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${escaparHtml(item.name)}">
                     ${escaparHtml(item.name)}
                   </h4>
-                  <p class="text-sm text-zinc-400 font-medium font-sans">${escaparHtml(localCurto(item))}</p>
+                  <p class="text-sm text-zinc-400 font-medium font-sans truncate">${servicoELocalDoCard(item)}</p>
                 </div>
               </div>
 
@@ -11876,7 +11911,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const capacityLabel = item.guests ? `Até ${item.guests} pessoas` : '';
 
     const card = document.createElement('div');
-    card.id = `grid-card-${item.id}`;
+    card.id = `grid-card-${item.id}-${item.imageServiceId}`;
     card.className = 'b2b-grid-card group border border-zinc-200 rounded-xl overflow-hidden bg-[#FFFFFF] cursor-pointer flex flex-col';
 
     card.innerHTML = `
@@ -11902,7 +11937,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${b2bRatingBadgeHTML(item, true)}
           <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
           <span class="text-zinc-400">·</span>` : ''}
-          <span class="truncate">${escaparHtml(localCurto(item))}</span>
+          <span class="truncate">${servicoELocalDoCard(item)}</span>
         </div>
 
         <div class="flex items-center gap-3 text-sm text-zinc-600 flex-wrap">

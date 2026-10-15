@@ -6771,7 +6771,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </td>
           <td>
-            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? escaparHtml(formatGuestTitleLabel(guest)) : escaparHtml(`(+1) / ${(guest.name || '').trim().split(/\s+/)[0] || 'convidado'}`)}</span>
+            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? escaparHtml(formatGuestTitleLabel(guest)) : escaparHtml(`+1 / ${(guest.name || '').trim().split(/\s+/)[0] || 'convidado'}`)}</span>
           </td>
           <td>
             <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${mesaDaPessoa(attendee.seatName, guest)}</span>

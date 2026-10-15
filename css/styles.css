@@ -7414,3 +7414,6 @@ html body .convite-tela .convite-tela-titulo { font-family: 'Inter', -apple-syst
 .convite-tela-branca .convite-form textarea:focus { border-color: var(--bx-primary, #537bae); box-shadow: 0 0 0 3px rgba(83,123,174,0.15); }
 .convite-tela-branca .convite-form .convite-pagamento-opcao.is-ativo { border-color: var(--bx-primary, #537bae); }
 .convite-tela-branca .convite-carrinho-total { border-top-color: #EEEEF0; }
+
+/* Organizador sem acesso a uma área: o ícone some do rail. */
+.rail-icon-btn.love-sem-acesso { display: none !important; }

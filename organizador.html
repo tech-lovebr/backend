@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convite para organizar — Love</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
+  <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-init.js?v=20261015_organizador"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .campo { width: 100%; font-size: .875rem; padding: .75rem; border-radius: 12px; border: 1px solid #E2E8F0; background: #F8FAFC; color: #1E293B; }
+    .campo:focus { outline: none; background: #fff; border-color: #181D24; }
+    .botao { width: 100%; padding: .8rem 1rem; border-radius: 12px; background: #183b54; color: #fff; font-weight: 700; font-size: .875rem; border: 0; cursor: pointer; }
+    .botao:hover { background: #122c3f; }
+    .botao:disabled { opacity: .6; cursor: default; }
+    .painel { max-width: 400px; }
+  </style>
+</head>
+<body class="bg-white">
+
+  <div class="w-full min-h-screen flex">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
+      <div class="w-full painel mx-auto">
+        <a href="/"><img src="assets/logo.png?v=2" alt="Love" class="h-9 w-auto mb-6 object-contain"></a>
+
+        <!-- Carregando -->
+        <div id="org-loading">
+          <h3 class="text-2xl font-extrabold text-slate-900">Abrindo seu convite…</h3>
+          <p class="text-sm text-slate-500 mt-2">Só um instante.</p>
+        </div>
+
+        <!-- Convite inválido -->
+        <div id="org-invalido" class="hidden">
+          <h3 class="text-2xl font-extrabold text-slate-900">Convite não encontrado</h3>
+          <p class="text-sm text-slate-500 mt-2">Este link não existe mais ou foi cancelado. Peça um novo convite a quem organiza o evento.</p>
+          <a href="/" class="inline-block mt-6 text-sm font-bold text-[#183b54] hover:underline">Ir para a Love</a>
+        </div>
+
+        <!-- Convite -->
+        <div id="org-convite" class="hidden">
+          <h3 class="text-2xl font-extrabold text-slate-900">Você foi convidado(a) para organizar</h3>
+          <p class="text-sm text-slate-600 mt-3 leading-relaxed">
+            <strong id="org-anfitriao"></strong> convidou você para ajudar em
+            <strong id="org-evento"></strong> como <strong id="org-papel"></strong>.
+          </p>
+          <p class="text-xs text-slate-500 mt-2">Convite para <span id="org-email" class="font-semibold text-slate-700"></span>.</p>
+
+          <!-- Já logado com o e-mail certo -->
+          <div id="org-aceitar" class="hidden mt-6">
+            <button type="button" id="btn-org-aceitar" class="botao">Aceitar convite</button>
+          </div>
+
+          <!-- Logado com outro e-mail -->
+          <div id="org-outro-email" class="hidden mt-6">
+            <p class="text-sm text-red-600">Você está logado como <span id="org-email-logado" class="font-semibold"></span>, mas o convite é para outro e-mail.</p>
+            <button type="button" id="btn-org-sair" class="botao mt-4">Sair e entrar com o e-mail do convite</button>
+          </div>
+
+          <!-- Sem sessão: entrar -->
+          <div id="org-entrar" class="hidden mt-6 space-y-4">
+            <p class="text-sm text-slate-600">Entre com a sua conta da Love (de anfitrião ou de fornecedor) para aceitar.</p>
+            <form id="org-form-login" class="space-y-3" novalidate>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
+                <input type="email" id="org-login-email" class="campo" autocomplete="username email" placeholder="seu.email@exemplo.com">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
+                <input type="password" id="org-login-senha" class="campo" autocomplete="current-password" placeholder="Sua senha">
+              </div>
+              <p id="org-login-erro" class="text-xs text-red-600 hidden"></p>
+              <button type="submit" class="botao">Entrar e aceitar</button>
+            </form>
+            <div class="flex items-center gap-3 text-[11px] text-slate-400 uppercase tracking-wide"><span class="flex-1 border-t border-slate-200"></span>ou<span class="flex-1 border-t border-slate-200"></span></div>
+            <button type="button" id="btn-org-google" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800">Continuar com o Google</button>
+            <p id="org-sem-conta" class="hidden text-xs text-slate-500 leading-relaxed">Esse e-mail ainda não tem conta na Love. <a href="/cadastro" class="font-bold text-[#183b54] hover:underline">Crie uma conta de anfitrião</a> com ele e volte a este link para aceitar.</p>
+          </div>
+
+          <p id="org-erro" class="text-sm text-red-600 mt-4 hidden"></p>
+        </div>
+
+        <!-- Aceito -->
+        <div id="org-aceito" class="hidden">
+          <h3 class="text-2xl font-extrabold text-slate-900">Convite aceito!</h3>
+          <p class="text-sm text-slate-600 mt-2">Agora <strong id="org-evento-aceito"></strong> aparece na sua conta da Love, com as áreas liberadas para você.</p>
+          <a href="/" class="botao inline-block text-center mt-6">Abrir a plataforma</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Direita: imagem -->
+    <div class="hidden lg:block lg:w-1/2 bg-cover bg-center" style="background-image:url('assets/theme_coastal.jpg');"></div>
+  </div>
+
+  <script>
+    (function () {
+      const PAPEIS = { anfitriao: 'Anfitrião', designer: 'Designer', assessoria: 'Assessoria', personalizado: 'Colaborador' };
+      const token = new URLSearchParams(window.location.search).get('token') || '';
+      const mostrar = (id, sim = true) => document.getElementById(id).classList.toggle('hidden', !sim);
+      const erroEl = document.getElementById('org-erro');
+      const mostrarErro = (msg) => { erroEl.textContent = msg; erroEl.classList.remove('hidden'); };
+      let convite = null;
+
+      // Guardado para o caso de a pessoa entrar/criar conta pela plataforma e
+      // voltar: a plataforma aceita sozinha ao abrir (ver initClienteSession).
+      try { if (token) localStorage.setItem('love-organizador-token', token); } catch (e) {}
+
+      async function aceitar() {
+        erroEl.classList.add('hidden');
+        const { data, error } = await supabaseClient.rpc('aceitar_convite_organizador', { p_token: token });
+        if (error || !data || !data.ok) {
+          const codigo = data && data.erro;
+          if (codigo === 'email_diferente') {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            document.getElementById('org-email-logado').textContent = (session && session.user.email) || '';
+            mostrar('org-aceitar', false); mostrar('org-entrar', false); mostrar('org-outro-email', true);
+            return;
+          }
+          mostrarErro(codigo === 'convite_cancelado' ? 'Este convite foi cancelado.' : 'Não foi possível aceitar agora. Tente de novo.');
+          return;
+        }
+        try { localStorage.removeItem('love-organizador-token'); } catch (e) {}
+        document.getElementById('org-evento-aceito').textContent = convite.evento;
+        mostrar('org-convite', false); mostrar('org-aceito', true);
+      }
+
+      async function decidirTela() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        mostrar('org-aceitar', false); mostrar('org-outro-email', false); mostrar('org-entrar', false);
+        if (!session) {
+          mostrar('org-entrar', true);
+          document.getElementById('org-login-email').value = convite.email;
+          mostrar('org-sem-conta', !convite.tem_conta);
+          return;
+        }
+        if ((session.user.email || '').toLowerCase() !== String(convite.email).toLowerCase()) {
+          document.getElementById('org-email-logado').textContent = session.user.email || '';
+          mostrar('org-outro-email', true);
+          return;
+        }
+        mostrar('org-aceitar', true);
+      }
+
+      async function iniciar() {
+        if (!token) { mostrar('org-loading', false); mostrar('org-invalido', true); return; }
+        const { data, error } = await supabaseClient.rpc('convite_organizador', { p_token: token });
+        mostrar('org-loading', false);
+        if (error || !data || !data.ok) { mostrar('org-invalido', true); return; }
+        convite = data;
+        document.getElementById('org-anfitriao').textContent = data.anfitriao || 'Um anfitrião';
+        document.getElementById('org-evento').textContent = data.evento || 'um evento';
+        document.getElementById('org-papel').textContent = PAPEIS[data.papel] || 'Colaborador';
+        document.getElementById('org-email').textContent = data.email || '';
+        mostrar('org-convite', true);
+        if (data.status === 'aceito') {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && (session.user.email || '').toLowerCase() === String(data.email).toLowerCase()) {
+            document.getElementById('org-evento-aceito').textContent = data.evento;
+            mostrar('org-convite', false); mostrar('org-aceito', true);
+            return;
+          }
+        }
+        await decidirTela();
+      }
+
+      document.getElementById('btn-org-aceitar').addEventListener('click', aceitar);
+
+      document.getElementById('btn-org-sair').addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        await decidirTela();
+      });
+
+      document.getElementById('org-form-login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const erro = document.getElementById('org-login-erro');
+        erro.classList.add('hidden');
+        const email = document.getElementById('org-login-email').value.trim();
+        const senha = document.getElementById('org-login-senha').value;
+        if (!email || !senha) { erro.textContent = 'Preencha e-mail e senha.'; erro.classList.remove('hidden'); return; }
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+        if (error) { erro.textContent = /banned/i.test(error.message || '') ? 'Este usuário está bloqueado.' : 'E-mail ou senha inválidos.'; erro.classList.remove('hidden'); return; }
+        await aceitar();
+      });
+
+      // Google: qualquer conta da Love (anfitrião ou fornecedor) pode aceitar.
+      if (typeof botaoOficialDoGoogle === 'function') {
+        botaoOficialDoGoogle(document.getElementById('btn-org-google'), {
+          texto: 'continue_with',
+          qualquerConta: true,
+          aoEntrar: () => aceitar(),
+          aoFalhar: () => mostrarErro('Não foi possível entrar com o Google. Tente de novo.')
+        });
+      }
+
+      iniciar();
+    })();
+  </script>
+</body>
+</html>

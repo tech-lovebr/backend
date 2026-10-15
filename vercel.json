@@ -7,12 +7,14 @@
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/cadastro.html", "destination": "/cadastro", "permanent": true },
     { "source": "/resetar-senha.html", "destination": "/resetar-senha", "permanent": true },
-    { "source": "/convite-preview.html", "destination": "/convite-preview", "permanent": true }
+    { "source": "/convite-preview.html", "destination": "/convite-preview", "permanent": true },
+    { "source": "/organizador.html", "destination": "/organizador", "permanent": true }
   ],
   "rewrites": [
     { "source": "/cadastro", "destination": "/cadastro.html" },
     { "source": "/resetar-senha", "destination": "/resetar-senha.html" },
     { "source": "/convite-preview", "destination": "/convite-preview.html" },
+    { "source": "/organizador", "destination": "/organizador.html" },
     { "source": "/login", "destination": "/" },
     { "source": "/termos", "destination": "/api/documento-legal?slug=termos" },
     { "source": "/politica-de-privacidade", "destination": "/api/documento-legal?slug=privacidade" },

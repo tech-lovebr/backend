@@ -245,6 +245,7 @@ let googleNonceBruto = null;
 let googleAoEntrarAtual = null;
 let googleAoFalharAtual = null;
 let googleSoEntrarAtual = false;
+let googleQualquerContaAtual = false;
 
 // 'anfitriao' | 'fornecedor' | null (não existe) | undefined (não deu para
 // conferir — segue o fluxo normal). Sem a migration 050, cai na checagem
@@ -342,7 +343,8 @@ async function iniciarGoogleIdentityUmaVez() {
       // anfitrião; no login, e-mail sem cadastro não cria conta (igual ao
       // login com e-mail e senha) — criar conta é pelo cadastro.
       const email = emailDoTokenGoogle(resposta.credential);
-      const tipoConta = await tipoDeContaDoEmail(email);
+      // /organizador: qualquer conta da Love (anfitrião ou fornecedor) entra.
+      const tipoConta = googleQualquerContaAtual ? 'anfitriao' : await tipoDeContaDoEmail(email);
       if (tipoConta === 'fornecedor') {
         if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'fornecedor', email });
         return;
@@ -371,7 +373,7 @@ async function iniciarGoogleIdentityUmaVez() {
 // (Fazer login com o Google), 'signup_with' (Inscrever-se…) ou
 // 'continue_with' (Continuar com o Google).
 // soEntrar: true = só entra quem já é anfitrião (tela de login); false = cria a conta se for nova (cadastro).
-async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = 'continue_with', soEntrar = false } = {}) {
+async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = 'continue_with', soEntrar = false, qualquerConta = false } = {}) {
   if (!botaoAntigo || botaoAntigo.dataset.googleOficial) return;
   try {
     await carregarGoogleIdentity();
@@ -406,7 +408,7 @@ async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = '
       logo_alignment: 'center',
       width: largura,
       locale: 'pt-BR',
-      click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; googleSoEntrarAtual = !!soEntrar; }
+      click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; googleSoEntrarAtual = !!soEntrar; googleQualquerContaAtual = !!qualquerConta; }
     });
   };
   desenhar();

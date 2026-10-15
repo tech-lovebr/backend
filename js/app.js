@@ -1010,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'home', label: 'Aparência' },
         { id: 'data', label: 'Informações' },
-        { id: 'about', label: 'Anfitriões' },
+        { id: 'about', label: 'Organizadores' },
         { id: 'invite-print', label: 'Produzir convite' }
       ]
     },
@@ -1221,6 +1221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function abrirSubItem(tab, subId) {
     if (!subId) return;
+    if (!areaPermitida(tab, subId)) return;
     fecharTodosOsDrawers();
     const label = (railTabsConfig[tab]?.subItems || []).find(i => i.id === subId)?.label || '';
     elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => {
@@ -1300,6 +1301,20 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModal(document.getElementById('modal-setup-budget'));
     fecharTodosOsDrawers();
 
+    // Organizador sem acesso a essa área: fica na Home. Com acesso só a
+    // alguns submenus, abre o primeiro liberado.
+    if (!areaPermitida(tabKey)) { tabKey = 'overview'; pendingSubItemId = null; }
+    else {
+      const subs = (railTabsConfig[tabKey] && railTabsConfig[tabKey].subItems) || [];
+      if (subs.length && (!pendingSubItemId || !areaPermitida(tabKey, pendingSubItemId))) {
+        const padrao = tabKey === 'edit-site' ? (state.activeSubSection || 'home') : subs[0].id;
+        if (!areaPermitida(tabKey, padrao)) {
+          const primeiro = subs.find(i => areaPermitida(tabKey, i.id));
+          if (primeiro) { pendingSubItemId = primeiro.id; if (tabKey === 'edit-site') state.activeSubSection = primeiro.id; }
+        }
+      }
+    }
+
     state.currentTab = tabKey;
 
     registrarRota(pendingSubItemId ? caminhoSubRota(tabKey, pendingSubItemId) : RAIL_TAB_ROUTES[tabKey]);
@@ -1370,7 +1385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let unreadCount = 0;
         try { unreadCount = totalNaoLidasDoChat(); } catch (e) { /* chat ainda não carregou */ }
 
-        config.subItems.forEach((item, index) => {
+        config.subItems.filter(item => areaPermitida(tabKey, item.id)).forEach((item, index) => {
           const btn = document.createElement('div');
           const isFirstActive = (tabKey === 'edit-site' && item.id === (state.activeSubSection || 'home'))
             || (pendingSubItemId && item.id === pendingSubItemId)
@@ -1623,6 +1638,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. SELETOR DE COMEMORAÇÕES (Sem Emojis, "Suas comemorações")
   // ==========================================
   function renderEventsSwitcher() {
+    aplicarPermissoesDoEventoAtivo();
     const container = elements.dashHeader.eventsItemsContainer;
     if (!container) return;
 
@@ -1867,15 +1883,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // "Lucas Mendonça") sempre fixos, mesmo numa conta nova sem nada a ver com
   // esses nomes.
   function renderHostsTeam() {
-    const hostsList = document.getElementById('hosts-team-list');
-    if (!hostsList) return;
-    const nomeConta = (window.loveClienteProfile && window.loveClienteProfile.couple_name) || 'Anfitrião';
-    const email = (window.loveClienteProfile && window.loveClienteProfile.email) || '';
-    // Nome exibido no convite: o editado neste evento (lápis) ou o da conta.
-    const ev = getActiveEvent();
-    const nomes = (ev && ev.anfitrioesNomes) || {};
-    const nome = nomes[email] || nomeConta;
-    hostsList.innerHTML = linhaDeAnfitriaoHtml(nome, email, 'Criador(a)');
+    renderOrganizadores().catch(err => console.error('Erro ao montar organizadores:', err));
   }
 
   // Uma linha da lista: nome (editável pelo lápis) e e-mail (não editável).
@@ -2323,7 +2331,8 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (subId === 'data') {
         title.textContent = 'Informações';
       } else if (subId === 'about') {
-        title.textContent = 'Anfitriões';
+        title.textContent = 'Organizadores';
+        renderHostsTeam();
       } else if (subId === 'invite-online') {
         title.textContent = 'Convite online';
         renderOnlineInvitesTable();
@@ -2566,7 +2575,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'configuracoes', 'blog', 'assets', 'css', 'js', 'lib'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -6036,40 +6045,266 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Listener para Convidar Novo Anfitrião para a Conta
+  // ==========================================
+  // ORGANIZADORES DO EVENTO (anfitriões convidados e colaboradores)
+  // Migration 054: tabela eventos_organizadores + RPCs. Quem é convidado
+  // entra na plataforma só com as áreas do papel (ou as marcadas).
+  // ==========================================
+  const AREAS_ORGANIZADOR = [
+    { id: 'aparencia', label: 'Aparência', tab: 'edit-site', sub: 'home' },
+    { id: 'informacoes', label: 'Informações', tab: 'edit-site', sub: 'data' },
+    { id: 'produzir-convite', label: 'Produzir convite', tab: 'edit-site', sub: 'invite-print' },
+    { id: 'presentes', label: 'Lista de presentes', tab: 'gifts' },
+    { id: 'convidados', label: 'Meus convidados', tab: 'rsvp', sub: 'all' },
+    { id: 'mesas', label: 'Mapear mesas', tab: 'rsvp', sub: 'tables' },
+    { id: 'checklist', label: 'Checklist', tab: 'rsvp', sub: 'checklist' },
+    { id: 'fornecedores', label: 'Fornecedores', tab: 'b2b' },
+    { id: 'carteira', label: 'Carteira (sem saque)', tab: 'wallet' }
+  ];
+  const PAPEIS_ORGANIZADOR = {
+    anfitriao: { label: 'Anfitrião', areas: AREAS_ORGANIZADOR.map(a => a.id) },
+    designer: { label: 'Designer', areas: ['aparencia', 'informacoes', 'produzir-convite'] },
+    assessoria: { label: 'Assessoria', areas: ['convidados', 'mesas', 'checklist'] },
+    personalizado: { label: 'Personalizado', areas: null }
+  };
+
+  // null = acesso total (criador do evento); Set = áreas liberadas.
+  function permissoesDoEvento(ev) {
+    if (!ev || !ev.souOrganizador) return null;
+    const preset = PAPEIS_ORGANIZADOR[ev.papelOrganizador];
+    const areas = preset && preset.areas ? preset.areas : (Array.isArray(ev.permissoesOrganizador) ? ev.permissoesOrganizador : []);
+    return new Set(areas);
+  }
+
+  // Pode abrir essa aba (e, se informado, esse submenu) no evento ativo?
+  function areaPermitida(tab, sub) {
+    const ev = getActiveEvent();
+    const perm = permissoesDoEvento(ev);
+    if (!perm) return true;
+    if (tab === 'overview') return true;
+    if (tab === 'edit-site' && sub === 'about') return ev.papelOrganizador === 'anfitriao';
+    const areas = AREAS_ORGANIZADOR.filter(a => a.tab === tab && (!sub || !a.sub || a.sub === sub));
+    if (!areas.length) return tab === 'edit-site' && !sub && ev.papelOrganizador === 'anfitriao';
+    return areas.some(a => perm.has(a.id)) || (tab === 'edit-site' && !sub && ev.papelOrganizador === 'anfitriao');
+  }
+
+  // Esconde no rail o que o organizador não pode abrir; saque e convites
+  // de organizador são só do criador; criar evento exige conta de anfitrião.
+  function aplicarPermissoesDoEventoAtivo() {
+    const ev = getActiveEvent();
+    const souOrganizador = !!(ev && ev.souOrganizador);
+    (elements.railIconBtns || []).forEach(btn => {
+      const tab = btn.getAttribute('data-rail-tab');
+      btn.classList.toggle('love-sem-acesso', !areaPermitida(tab));
+    });
+    document.querySelectorAll('.btn-trigger-withdraw-pix').forEach(b => b.classList.toggle('hidden', souOrganizador));
+    const blocoConvite = document.getElementById('organizadores-convidar');
+    if (blocoConvite) blocoConvite.classList.toggle('hidden', souOrganizador);
+    const semCadastro = !!(window.loveClienteProfile && window.loveClienteProfile.colaboradorSemCadastro);
+    const btnNovoEvento = document.getElementById('btn-dropdown-create-new-event');
+    if (btnNovoEvento) btnNovoEvento.classList.toggle('hidden', semCadastro);
+  }
+
+  // Convite aberto em /organizador antes de entrar ou criar a conta: aceita
+  // agora, com a sessão já válida.
+  async function aceitarConvitePendenteDeOrganizador() {
+    let token = null;
+    try { token = localStorage.getItem('love-organizador-token'); } catch (e) { return; }
+    if (!token) return;
+    const { data, error } = await supabaseClient.rpc('aceitar_convite_organizador', { p_token: token });
+    if (error) { console.error('Erro ao aceitar convite de organizador:', error); return; }
+    if (data && (data.ok || data.erro !== 'nao_logado')) {
+      try { localStorage.removeItem('love-organizador-token'); } catch (e) {}
+    }
+  }
+
+  // Eventos em que esta conta foi aceita como organizadora.
+  async function carregarEventosOrganizados() {
+    const { data, error } = await supabaseClient.rpc('meus_eventos_organizados');
+    if (error) {
+      if (!/function|schema cache/i.test(error.message || '')) console.error('Erro ao carregar eventos organizados:', error);
+      return [];
+    }
+    return (Array.isArray(data) ? data : []).map(item => Object.assign(mapEventoRowToEvent(item.evento || {}), {
+      souOrganizador: true,
+      papelOrganizador: item.papel,
+      permissoesOrganizador: Array.isArray(item.permissoes) ? item.permissoes : []
+    }));
+  }
+
+  // Perfil mínimo para quem entra só como organizador (sem cadastro de anfitrião).
+  function perfilDeColaborador(session) {
+    const meta = (session && session.user && session.user.user_metadata) || {};
+    const nome = String(meta.full_name || meta.name || '').trim() || String(session.user.email || '').split('@')[0];
+    const partes = nome.split(/\s+/);
+    return {
+      id: session.user.id,
+      email: session.user.email || '',
+      first_name: partes[0] || '',
+      last_name: partes.slice(1).join(' '),
+      full_name: nome,
+      couple_name: nome,
+      avatar_url: meta.avatar_url || meta.picture || null,
+      colaboradorSemCadastro: true
+    };
+  }
+
+  function rotuloDoPapel(papel) {
+    return (PAPEIS_ORGANIZADOR[papel] && PAPEIS_ORGANIZADOR[papel].label) || 'Colaborador';
+  }
+
+  function linhaDeOrganizadorHtml(o, ehDono) {
+    const nome = (o.nome || '').trim() || String(o.email || '').split('@')[0];
+    const aceito = o.status === 'aceito';
+    const areas = o.papel === 'personalizado'
+      ? AREAS_ORGANIZADOR.filter(a => (o.permissoes || []).includes(a.id)).map(a => a.label).join(', ')
+      : '';
+    const link = `${window.location.origin}/organizador?token=${encodeURIComponent(o.token || '')}`;
+    return `
+      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3" data-organizador-id="${escaparHtml(o.id)}">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-bold text-zinc-900 flex items-center gap-1.5 flex-wrap">
+            <span>${escaparHtml(nome)}</span>
+            <span class="host-role-badge text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">${escaparHtml(rotuloDoPapel(o.papel))}</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md border ${aceito ? 'text-emerald-700 bg-emerald-50 border-emerald-100' : 'text-amber-700 bg-amber-50 border-amber-100'}">${aceito ? 'Aceito' : 'Pendente'}</span>
+          </p>
+          <p class="text-[11px] text-zinc-500 truncate">${escaparHtml(o.email)}${areas ? ` · ${escaparHtml(areas)}` : ''}</p>
+        </div>
+        ${ehDono ? `
+        <div class="flex items-center gap-1.5 shrink-0">
+          ${aceito ? '' : `<button type="button" class="btn-org-copiar text-[11px] font-semibold text-zinc-600 hover:text-[#181D24] px-2 py-1 rounded-md border border-zinc-200 bg-white cursor-pointer" data-link="${escaparHtml(link)}" title="Copiar link do convite">Copiar link</button>`}
+          <button type="button" class="btn-org-remover w-8 h-8 rounded-lg border border-zinc-200 bg-white hover:border-red-300 text-zinc-400 hover:text-red-600 flex items-center justify-center cursor-pointer" title="Remover" aria-label="Remover">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>` : ''}
+      </div>`;
+  }
+
+  // Lista "Quem organiza este evento": criador + organizadores do banco.
+  async function renderOrganizadores() {
+    const hostsList = document.getElementById('hosts-team-list');
+    const ev = getActiveEvent();
+    if (!hostsList || !ev) return;
+    const ehDono = !ev.souOrganizador;
+    const perfil = window.loveClienteProfile || {};
+    const nomes = ev.anfitrioesNomes || {};
+    let criadorHtml;
+    if (ehDono) {
+      const email = perfil.email || '';
+      criadorHtml = linhaDeAnfitriaoHtml(nomes[email] || perfil.couple_name || 'Anfitrião', email, 'Criador(a)');
+    } else {
+      criadorHtml = `
+        <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80 flex items-center justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-bold text-zinc-900">${escaparHtml(ev.hostName || 'Anfitrião')} <span class="host-role-badge text-[10px] font-semibold text-[#537bae] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 ml-1">Criador(a)</span></p>
+          </div>
+        </div>`;
+    }
+    hostsList.innerHTML = criadorHtml;
+    if (!ehUuid(ev.id)) return;
+    const { data, error } = await supabaseClient
+      .from('eventos_organizadores')
+      .select('id, email, nome, papel, permissoes, status, token')
+      .eq('evento_id', ev.id)
+      .neq('status', 'removido')
+      .order('created_at', { ascending: true });
+    if (error) {
+      if (!/relation|schema cache/i.test(error.message || '')) console.error('Erro ao carregar organizadores:', error);
+      return;
+    }
+    hostsList.insertAdjacentHTML('beforeend', (data || []).map(o => linhaDeOrganizadorHtml(o, ehDono)).join(''));
+  }
+
+  // Copiar link / remover (delegação: a lista é redesenhada).
+  document.addEventListener('click', async (e) => {
+    const copiar = e.target.closest('.btn-org-copiar');
+    if (copiar) {
+      try { await navigator.clipboard.writeText(copiar.dataset.link); copiar.textContent = 'Copiado!'; setTimeout(() => { copiar.textContent = 'Copiar link'; }, 2000); }
+      catch (err) { window.prompt('Copie o link do convite:', copiar.dataset.link); }
+      return;
+    }
+    const remover = e.target.closest('.btn-org-remover');
+    if (remover) {
+      const linha = remover.closest('[data-organizador-id]');
+      const id = linha && linha.dataset.organizadorId;
+      if (!id) return;
+      const ok = await confirmarNaLove({ titulo: 'Remover este organizador?', texto: 'A pessoa deixa de ver o evento na conta dela.', botao: 'Remover' , aoConfirmar: async () => {
+        const { error } = await supabaseClient.from('eventos_organizadores').update({ status: 'removido' }).eq('id', id);
+        return error ? 'Não foi possível remover agora. Tente de novo.' : null;
+      } });
+      if (ok) renderOrganizadores();
+    }
+  });
+
+  // Formulário "Convidar": e-mail + papel (+ áreas, no personalizado).
   const formInviteHost = document.getElementById('form-invite-host');
   if (formInviteHost) {
-    formInviteHost.addEventListener('submit', (e) => {
+    const selectPapel = document.getElementById('select-host-invite-papel');
+    const areasBox = document.getElementById('host-invite-areas');
+    const feedback = document.getElementById('host-invite-feedback');
+    const renderAreas = () => {
+      if (!areasBox) return;
+      if (!areasBox.children.length) {
+        areasBox.innerHTML = AREAS_ORGANIZADOR.map(a => `
+          <label class="flex items-center gap-2 text-xs text-zinc-700 cursor-pointer select-none">
+            <input type="checkbox" value="${a.id}" class="gifts-select-all-check host-invite-area">
+            <span>${a.label}</span>
+          </label>`).join('');
+      }
+      areasBox.classList.toggle('hidden', !selectPapel || selectPapel.value !== 'personalizado');
+    };
+    selectPapel?.addEventListener('change', renderAreas);
+    renderAreas();
+
+    const avisar = (html, erro = false) => {
+      if (!feedback) return;
+      feedback.innerHTML = html;
+      feedback.className = `text-xs leading-relaxed ${erro ? 'text-red-600' : 'text-zinc-600'}`;
+      feedback.classList.remove('hidden');
+    };
+
+    formInviteHost.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const ev = getActiveEvent();
       const inputEmail = document.getElementById('input-host-invite-email');
       const email = inputEmail ? inputEmail.value.trim() : '';
+      const papel = selectPapel ? selectPapel.value : 'anfitriao';
+      const permissoes = papel === 'personalizado'
+        ? Array.from(document.querySelectorAll('.host-invite-area:checked')).map(c => c.value)
+        : [];
       if (!email) return;
+      if (!ev || !ehUuid(ev.id)) return avisar('Salve o evento antes de convidar organizadores.', true);
+      if (papel === 'personalizado' && !permissoes.length) return avisar('Marque pelo menos uma área para o acesso personalizado.', true);
 
-      const hostsList = document.getElementById('hosts-team-list');
-      if (hostsList) {
-        hostsList.insertAdjacentHTML('beforeend', linhaDeAnfitriaoHtml(email.split('@')[0], email, 'Anfitrião Convidado'));
-        const hostCard = document.createElement('div');
-        hostCard.className = 'hidden';
-        hostCard.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center shadow-sm flex-shrink-0">
-              ${initials}
-            </div>
-            <div>
-              <p class="text-xs font-bold text-slate-900">${email.split('@')[0]} <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 ml-1">Anfitrião Convidado</span></p>
-              <p class="text-[11px] text-slate-500">${email}</p>
-            </div>
-          </div>
-          <span class="text-[11px] font-semibold text-emerald-600 self-start sm:self-auto bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-100">
-            ● Acesso Total & Saques PIX
-          </span>
-        `;
+      const btn = document.getElementById('btn-submit-host-invite');
+      if (btn) btn.disabled = true;
+      avisar('Enviando convite…');
+      const { data, error } = await supabaseClient.rpc('convidar_organizador', {
+        p_evento_id: ev.id, p_email: email, p_papel: papel, p_permissoes: permissoes, p_nome: null
+      });
+      if (btn) btn.disabled = false;
+      if (error || !data || !data.ok) {
+        if (error) console.error('Erro ao convidar organizador:', error);
+        const codigo = data && data.erro;
+        const msgs = { proprio_email: 'Esse é o seu próprio e-mail.', email_invalido: 'Digite um e-mail válido.', sem_permissao: 'Só o criador do evento pode convidar organizadores.' };
+        return avisar(msgs[codigo] || 'Não foi possível enviar o convite agora. Tente de novo.', true);
       }
 
-      showToast(`Convite de co-gestão enviado para ${email}! O anfitrião terá acesso total e poderá realizar saques.`, '📩');
-      triggerConfetti();
+      const link = `${window.location.origin}/organizador?token=${encodeURIComponent(data.token)}`;
+      let enviado = false;
+      try {
+        const r = await fetch('/api/convidar-organizador', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: data.token }) });
+        const j = await r.json().catch(() => ({}));
+        enviado = !!(j && j.enviado);
+      } catch (err) { enviado = false; }
+
+      const conta = data.conta === 'fornecedor' ? ' Esse e-mail tem conta de fornecedor na Love: a pessoa entra com ela e vê só as áreas liberadas.'
+        : data.conta === 'anfitriao' ? '' : ' Esse e-mail ainda não tem conta na Love; pelo link a pessoa pode criar uma e aceitar.';
+      if (data.status === 'aceito') avisar(`${escaparHtml(email)} já organiza este evento — o papel foi atualizado para ${rotuloDoPapel(papel)}.`);
+      else if (enviado) avisar(`Convite enviado para <strong>${escaparHtml(email)}</strong> como ${rotuloDoPapel(papel)}.${conta}`);
+      else avisar(`Convite criado para <strong>${escaparHtml(email)}</strong>, mas o e-mail não pôde ser enviado. Copie o link e mande para a pessoa: <a href="${escaparHtml(link)}" class="font-semibold text-[#537bae] break-all">${escaparHtml(link)}</a>${conta}`);
       if (inputEmail) inputEmail.value = '';
-      updateHostsPreview();
+      renderOrganizadores();
     });
   }
 
@@ -14844,11 +15079,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Convite de organizador aberto antes de entrar/criar a conta: aceita agora.
+    await aceitarConvitePendenteDeOrganizador();
+    const eventosOrganizados = await carregarEventosOrganizados();
+    // Conta sem cadastro de anfitrião (ex.: fornecedor do Hub) convidada como
+    // organizadora de um evento: entra só com as áreas liberadas.
+    const colaboradorSemCadastro = !cliente && eventosOrganizados.length > 0;
+
     // Essa plataforma é só pra quem tem cadastro de anfitrião. Login/B2B/Admin
     // compartilham o mesmo Supabase Auth — sem essa checagem, uma conta de
     // fornecedor (B2B) ou uma conta excluída aqui (mas com sessão ainda válida
     // no navegador) continuaria entrando normalmente.
-    if (!cliente) {
+    if (!cliente && !colaboradorSemCadastro) {
       await supabaseClient.auth.signOut();
       // Os avisos flutuantes estão desligados: a explicação vai para a tela
       // de login (antes voltava calado para a página inicial).
@@ -14857,7 +15099,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (cliente.status === 'bloqueado') {
+    if (cliente && cliente.status === 'bloqueado') {
       await supabaseClient.auth.signOut();
       showToast('Este usuário está bloqueado.', '⛔');
       switchView('public');
@@ -14873,10 +15115,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.loveClienteSession = session;
-    window.loveClienteProfile = cliente;
+    window.loveClienteProfile = cliente || perfilDeColaborador(session);
     atualizarAvatarDoCabecalho();
     const dropdownUsername = document.getElementById('account-dropdown-username');
-    if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
+    if (dropdownUsername) dropdownUsername.textContent = window.loveClienteProfile.couple_name;
 
     // Veio da página /cadastro, que já perguntou o tipo de evento no onboarding
     // — pula os eventos de demonstração e leva direto pro formulário de criar
@@ -14884,7 +15126,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let pendingType = localStorage.getItem('love-pending-event-type');
     const pendingTypeLabel = localStorage.getItem('love-pending-event-type-label');
 
-    const events = await loadEventsFromSupabase(session.user.id);
+    // Eventos próprios + os em que esta conta é organizadora.
+    const events = (cliente ? await loadEventsFromSupabase(session.user.id) : []).concat(eventosOrganizados);
 
     // Quem já tem evento entra sempre no painel. Um tipo pendente que sobrou
     // do /cadastro (ex.: cadastro pelo Google, ou um evento criado por outro

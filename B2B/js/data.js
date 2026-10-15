@@ -4,24 +4,25 @@
    ========================================================================== */
 
 const B2B_DATA = {
+  // Perfil vazio: tudo vem do cadastro do fornecedor no banco (shell.js).
   professional: {
-    name: 'Sophia Ramos',
-    email: 'sophia@sophiaeventos.com.br',
-    role: 'Fornecedora de Eventos',
-    company: 'Sophia Eventos & Decoração',
-    phone: '(19) 99876-5432',
-    birthDate: '1990-04-12',
+    name: '',
+    email: '',
+    role: '',
+    company: '',
+    phone: '',
+    birthDate: '',
     documentType: 'cnpj',
-    documentNumber: '12.345.678/0001-90',
-    address: 'Rua das Palmeiras, 250',
-    city: 'Indaiatuba',
+    documentNumber: '',
+    address: '',
+    city: '',
     state: 'SP',
-    description: 'Assessoria completa para casamentos e eventos de alto padrão em Indaiatuba e região.',
+    description: '',
     logo: null,
     logoScale: 1,
     logoOffsetX: 0,
     logoOffsetY: 0,
-    avatar: 'assets/advisor_sophia.jpg',
+    avatar: null,
     plan: 'Gratuito',
     businessEmail: null,
     twoFactorEnabled: false,
@@ -92,38 +93,10 @@ const B2B_DATA = {
     }
   },
 
-  team: [
-    {
-      id: 'u1',
-      name: 'Sophia Ramos',
-      email: 'sophia@sophiaeventos.com.br',
-      avatar: 'assets/advisor_sophia.jpg',
-      role: 'Administrador',
-      status: 'ativo',
-      owner: true,
-      modules: ['dashboard', 'mensagens', 'crm', 'contratos', 'produtos', 'agenda', 'financeiro', 'vitrine', 'funcoes', 'configuracoes']
-    },
-    {
-      id: 'u2',
-      name: 'Marcos Vinícius',
-      email: 'marcos@sophiaeventos.com.br',
-      avatar: 'assets/advisor_marcos.jpg',
-      role: 'Operacional',
-      status: 'ativo',
-      owner: false,
-      modules: ['dashboard', 'mensagens', 'crm', 'contratos', 'produtos', 'agenda']
-    },
-    {
-      id: 'u3',
-      name: 'Claudia Nunes',
-      email: 'claudia@sophiaeventos.com.br',
-      avatar: 'assets/advisor_claudia.jpg',
-      role: 'Financeiro',
-      status: 'pendente',
-      owner: false,
-      modules: ['dashboard', 'contratos', 'financeiro']
-    }
-  ],
+  // Equipe real da conta: por enquanto só o responsável principal, montado
+  // pelo shell.js a partir do cadastro do fornecedor (sem colaboradores de
+  // demonstração).
+  team: [],
 
   alertas: [],
 

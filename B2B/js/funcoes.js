@@ -12,7 +12,9 @@ function equipeFiltrada() {
     tabelaBateBusca(est, [m.name, m.email, m.role]));
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // A equipe (o responsável principal) vem do cadastro: espera o login.
+  await window.b2bAuthReady;
   // Barra da tabela: busca, Filtrar por (função e status) e Exportar.
   equipeTabelaEstado = montarBarraTabela(document.getElementById('team-table-card'), {
     placeholder: 'Buscar colaborador ou e-mail...',

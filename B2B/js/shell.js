@@ -258,6 +258,21 @@ async function initAuthGuard() {
     Object.entries(doBanco).forEach(([chave, valor]) => {
       if (valor) B2B_DATA.professional[chave] = valor;
     });
+    // Sem nome do responsável no cadastro: usa o da empresa (nunca o nome de
+    // demonstração do data.js).
+    if (!fornecedor.contact_name) B2B_DATA.professional.name = fornecedor.company_name || B2B_DATA.professional.company || '';
+
+    // Equipe: o responsável principal é o único colaborador da conta.
+    B2B_DATA.team = [{
+      id: 'owner',
+      name: B2B_DATA.professional.name,
+      email: fornecedor.email || B2B_DATA.professional.email || '',
+      avatar: B2B_DATA.professional.profilePhoto || null,
+      role: 'Administrador',
+      status: 'ativo',
+      owner: true,
+      modules: Object.keys(B2B_DATA.modules || {})
+    }];
 
     /* Campos de "Minha Empresa": aqui o valor do banco vence mesmo quando for
        "falsy" (false, 0, array vazio) — para esses campos isso é um valor

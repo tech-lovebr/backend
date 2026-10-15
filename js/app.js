@@ -13723,6 +13723,23 @@ document.addEventListener('DOMContentLoaded', () => {
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   }
 
+  // "+ Nova conversa": favoritados (algum serviço no coração) que ainda não
+  // têm conversa vêm primeiro; depois, do mais bem avaliado para o menos
+  // (média, depois quantidade de avaliações, depois nome).
+  function ordenarFornecedoresParaNovaConversa(lista, favoritosIds, conversas) {
+    const comConversa = new Set((conversas || []).map(c => c.fornecedorId));
+    const nota = f => Number(f.avaliacaoMedia) || 0;
+    const qtd = f => Number(f.avaliacaoTotal) || 0;
+    return (lista || []).map(f => ({
+      ...f,
+      favoritoSemConversa: (f.services || []).some(s => favoritosIds && favoritosIds.has(s.id)) && !comConversa.has(f.id)
+    })).sort((a, b) =>
+      (b.favoritoSemConversa - a.favoritoSemConversa)
+      || (nota(b) - nota(a))
+      || (qtd(b) - qtd(a))
+      || String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR'));
+  }
+
   // Várias telas pedem as conversas quase ao mesmo tempo (abrir o Chat,
   // abrir a conversa, redesenhar): uma busca em andamento é reaproveitada
   // em vez de repetir a mesma consulta pesada várias vezes seguidas.
@@ -14669,20 +14686,26 @@ document.addEventListener('DOMContentLoaded', () => {
         newConvPicker.innerHTML = '<div class="p-4 text-center text-xs text-zinc-400">Carregando fornecedores...</div>';
         newConvPicker.classList.remove('hidden');
 
-        const { data: fornecedores, error } = await supabaseClient
-          .from('fornecedores')
-          .select('id, company_name, avatar_url')
-          .order('company_name');
-
-        if (error || !fornecedores || !fornecedores.length) {
+        // Fornecedores da vitrine (com serviços, favoritos e avaliações):
+        // primeiro os favoritados que ainda não têm conversa, depois os mais
+        // bem avaliados.
+        let fornecedores = [];
+        try {
+          fornecedores = await carregarFornecedoresVitrine();
+        } catch (err) { console.error('[chat] fornecedores:', err); }
+        if (!fornecedores || !fornecedores.length) {
           newConvPicker.innerHTML = '<div class="p-4 text-center text-xs text-zinc-400">Nenhum fornecedor cadastrado ainda.</div>';
           return;
         }
+        const ordenados = ordenarFornecedoresParaNovaConversa(fornecedores, b2bFavoritosIds, b2bConversationsData);
 
-        newConvPicker.innerHTML = fornecedores.map(f => `
+        newConvPicker.innerHTML = ordenados.map(f => `
           <button type="button" data-fornecedor-id="${f.id}" class="w-full flex items-center gap-2.5 p-3 hover:bg-zinc-50 text-left border-b border-zinc-100 last:border-0">
-            <img src="${f.avatar_url || avatarComIniciais(f.company_name)}" class="w-8 h-8 rounded-lg chat-avatar-quadrado object-cover border border-zinc-200" alt="">
-            <span class="text-xs font-medium text-zinc-800 truncate">${f.company_name}</span>
+            <img src="${escaparHtml(f.avatar || avatarComIniciais(f.name))}" class="w-8 h-8 rounded-lg chat-avatar-quadrado object-cover border border-zinc-200" alt="">
+            <span class="min-w-0 flex-1">
+              <span class="text-xs font-medium text-zinc-800 truncate block">${escaparHtml(f.name)}</span>
+              <span class="text-[10px] text-zinc-400 block">${f.favoritoSemConversa ? '♥ Favorito' : (f.avaliacaoTotal ? `★ ${Number(f.avaliacaoMedia).toFixed(1)} (${f.avaliacaoTotal})` : '')}</span>
+            </span>
           </button>
         `).join('');
 

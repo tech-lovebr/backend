@@ -8756,6 +8756,110 @@ document.addEventListener('DOMContentLoaded', () => {
     renderWalletTransactions();
   }
 
+  // ==========================================
+  // Carteira › Dados de saque (acordeão): Pix (tipo + chave) ou TED.
+  // Salvo em clientes.dados_saque (migration 048). Não há "alterar chave":
+  // a pessoa muda o campo e salva.
+  // ==========================================
+  let metodoDeSaque = 'pix';
+  const so_digitos = v => String(v || '').replace(/\D/g, '');
+  function mascaraCpf(v) {
+    const d = so_digitos(v).slice(0, 11);
+    return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  }
+
+  function mostrarMetodoDeSaque(metodo) {
+    metodoDeSaque = metodo === 'ted' ? 'ted' : 'pix';
+    document.querySelectorAll('[data-saque-metodo]').forEach(b => b.classList.toggle('active', b.dataset.saqueMetodo === metodoDeSaque));
+    document.querySelectorAll('[data-saque-painel]').forEach(p => p.classList.toggle('hidden', p.dataset.saquePainel !== metodoDeSaque));
+  }
+
+  function resumoDosDadosDeSaque(d) {
+    if (d && d.metodo === 'pix' && d.pix && d.pix.chave) {
+      const nomes = { cpf: 'CPF', email: 'E-mail', telefone: 'Telefone', aleatoria: 'Chave aleatória' };
+      return `Pix · ${nomes[d.pix.tipo] || 'Chave'}: ${d.pix.chave}`;
+    }
+    if (d && d.metodo === 'ted' && d.ted && d.ted.conta) {
+      return `TED · ${d.ted.banco || 'Banco'} · Ag. ${d.ted.agencia || '—'} · Conta ${d.ted.conta}`;
+    }
+    return 'Cadastre a chave Pix ou a conta para receber seus saques.';
+  }
+
+  function preencherDadosDeSaque() {
+    const d = (window.loveClienteProfile && window.loveClienteProfile.dados_saque) || {};
+    const set = (id, v) => { const el = document.getElementById(id); if (el && document.activeElement !== el) el.value = v || ''; };
+    set('saque-pix-tipo', (d.pix && d.pix.tipo) || 'cpf');
+    set('saque-pix-chave', d.pix && d.pix.chave);
+    set('saque-ted-banco', d.ted && d.ted.banco);
+    set('saque-ted-agencia', d.ted && d.ted.agencia);
+    set('saque-ted-conta', d.ted && d.ted.conta);
+    set('saque-ted-titular', d.ted && d.ted.titular);
+    set('saque-ted-cpf', d.ted && d.ted.cpf);
+    mostrarMetodoDeSaque(d.metodo || 'pix');
+    const resumo = document.getElementById('wallet-saque-resumo');
+    if (resumo) resumo.textContent = resumoDosDadosDeSaque(d);
+    // Modal de saque: já vem com a chave Pix salva.
+    const destinoSaque = document.querySelector('#form-withdraw-pix input[type="text"]');
+    if (destinoSaque && !destinoSaque.value && d.metodo === 'pix' && d.pix && d.pix.chave) destinoSaque.value = d.pix.chave;
+  }
+
+  function avisoDadosDeSaque(texto, erro) {
+    const el = document.getElementById('wallet-saque-status');
+    if (!el) return;
+    el.textContent = texto || '';
+    el.classList.toggle('hidden', !texto);
+    el.classList.toggle('text-rose-600', !!erro);
+    el.classList.toggle('text-emerald-600', !erro);
+  }
+
+  document.querySelectorAll('[data-saque-metodo]').forEach(b => b.addEventListener('click', () => mostrarMetodoDeSaque(b.dataset.saqueMetodo)));
+  // Máscaras: CPF (Pix tipo CPF e TED) e telefone (Pix tipo Telefone).
+  document.getElementById('saque-ted-cpf')?.addEventListener('input', (e) => { e.target.value = mascaraCpf(e.target.value); });
+  document.getElementById('saque-pix-chave')?.addEventListener('input', (e) => {
+    const tipo = document.getElementById('saque-pix-tipo')?.value;
+    if (tipo === 'cpf') e.target.value = mascaraCpf(e.target.value);
+    if (tipo === 'telefone' && typeof maskBrazilPhone === 'function') e.target.value = maskBrazilPhone(e.target.value);
+  });
+  document.getElementById('saque-pix-tipo')?.addEventListener('change', () => {
+    const chave = document.getElementById('saque-pix-chave');
+    if (chave) { chave.value = ''; chave.focus(); }
+  });
+
+  document.getElementById('btn-salvar-dados-saque')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-salvar-dados-saque');
+    const v = id => (document.getElementById(id)?.value || '').trim();
+    let dados;
+    if (metodoDeSaque === 'pix') {
+      const tipo = v('saque-pix-tipo') || 'cpf';
+      const chave = v('saque-pix-chave');
+      if (!chave) return avisoDadosDeSaque('Informe a chave Pix.', true);
+      if (tipo === 'cpf' && so_digitos(chave).length !== 11) return avisoDadosDeSaque('CPF incompleto.', true);
+      if (tipo === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(chave)) return avisoDadosDeSaque('E-mail inválido.', true);
+      if (tipo === 'telefone' && so_digitos(chave).length < 10) return avisoDadosDeSaque('Telefone incompleto.', true);
+      dados = { metodo: 'pix', pix: { tipo, chave } };
+    } else {
+      const ted = { banco: v('saque-ted-banco'), agencia: v('saque-ted-agencia'), conta: v('saque-ted-conta'), titular: v('saque-ted-titular'), cpf: v('saque-ted-cpf') };
+      if (!ted.banco || !ted.agencia || !ted.conta || !ted.titular || !ted.cpf) return avisoDadosDeSaque('Preencha todos os dados bancários.', true);
+      if (so_digitos(ted.cpf).length !== 11) return avisoDadosDeSaque('CPF do titular incompleto.', true);
+      dados = { metodo: 'ted', ted };
+    }
+    const userId = window.loveClienteSession && window.loveClienteSession.user && window.loveClienteSession.user.id;
+    if (!userId) return avisoDadosDeSaque('Sessão expirada. Entre de novo.', true);
+    if (btn) { btn.disabled = true; btn.textContent = 'Salvando…'; }
+    avisoDadosDeSaque('');
+    const { error } = await supabaseClient.from('clientes').update({ dados_saque: dados }).eq('id', userId);
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar'; }
+    if (error) {
+      console.error('Erro ao salvar dados de saque:', error);
+      return avisoDadosDeSaque('Não foi possível salvar. Tente de novo.', true);
+    }
+    if (window.loveClienteProfile) window.loveClienteProfile.dados_saque = dados;
+    avisoDadosDeSaque('Salvo');
+    const resumo = document.getElementById('wallet-saque-resumo');
+    if (resumo) resumo.textContent = resumoDosDadosDeSaque(dados);
+    setTimeout(() => avisoDadosDeSaque(''), 2500);
+  });
+
   function renderWalletTransactions() {
     const listEl = document.getElementById('wallet-transactions-list');
     const balanceDisponivel = document.getElementById('wallet-balance-disponivel');
@@ -8767,6 +8871,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (balanceDisponivel) balanceDisponivel.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (balanceArrecadado) balanceArrecadado.textContent = `R$ ${(activeEvent.wallet.saldoDisponivel + activeEvent.wallet.totalSacado).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (balanceSacado) balanceSacado.textContent = `R$ ${activeEvent.wallet.totalSacado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    preencherDadosDeSaque();
 
     if (!listEl) return;
     listEl.innerHTML = '';

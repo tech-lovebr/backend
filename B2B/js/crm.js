@@ -403,7 +403,7 @@ function atualizarLinkWhatsAppDoLead() {
   const input = document.getElementById('lead-whatsapp');
   const link = document.getElementById('lead-whatsapp-link');
   if (!input || !link) return;
-  const digitos = input.value.replace(/D/g, '');
+  const digitos = input.value.replace(/\D/g, '');
   if (digitos.length >= 10) {
     link.href = 'https://wa.me/55' + digitos;
     link.classList.add('is-ativo');

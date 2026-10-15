@@ -412,7 +412,10 @@ function renderAttachFormList(onPick) {
         <p class="chat-attach-form-item-meta">${form.fields.length} ${form.fields.length === 1 ? 'pergunta' : 'perguntas'}</p>
       </div>
     `).join('')
-    : `<p class="chat-attach-form-empty">Você ainda não criou nenhum formulário.</p>`;
+    : `<div class="chat-attach-form-empty">
+        <p>Você ainda não criou nenhum formulário.</p>
+        <a href="paginas-site?tab=formularios&novo=1" class="btn-primary chat-attach-form-create">Criar formulário</a>
+      </div>`;
 
   list.querySelectorAll('[data-pick-form]').forEach(item => {
     item.addEventListener('click', () => {

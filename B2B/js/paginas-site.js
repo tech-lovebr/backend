@@ -15,6 +15,11 @@ const FIELD_TYPE_LABELS = {
 
 let siteForms = B2B_DATA.siteForms;
 
+function persistSiteForms() {
+  try { localStorage.setItem('b2b-site-forms', JSON.stringify(siteForms)); }
+  catch (e) { console.warn('Não foi possível salvar os formulários neste navegador.', e); }
+}
+
 let editingFormId = null;
 let drawerFields = [];
 let fieldIdCounter = 0;
@@ -28,7 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
   initFormsList();
   initFormDrawer();
   initResponsesDrawer();
+  openFromLink();
 });
+
+// Link do chat ("Criar formulário"): paginas-site?tab=formularios&novo=1
+// abre a aba Formulários já com o drawer de criar aberto.
+function openFromLink() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('tab') !== 'formularios') return;
+  document.querySelector('#site-tabs [data-tab="formularios"]')?.click();
+  if (params.get('novo') === '1') openFormDrawer(null);
+  history.replaceState(null, '', location.pathname);
+}
 
 /* -------------------- Abas: Editar site / Formulários -------------------- */
 
@@ -110,6 +126,7 @@ function renderFormsList() {
   list.querySelectorAll('[data-delete-form]').forEach(btn => {
     btn.addEventListener('click', () => {
       siteForms = B2B_DATA.siteForms = siteForms.filter(f => f.id !== btn.dataset.deleteForm);
+      persistSiteForms();
       delete responsesCache[btn.dataset.deleteForm];
       renderFormsList();
       showToast('Formulário excluído.');
@@ -480,6 +497,7 @@ function saveDrawerForm() {
     });
   }
 
+  persistSiteForms();
   renderFormsList();
   closeFormDrawer();
   showToast(editingFormId ? 'Formulário atualizado!' : 'Formulário criado!');

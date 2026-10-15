@@ -127,25 +127,10 @@ const B2B_DATA = {
 
   alertas: [],
 
-  siteForms: [
-    {
-      id: 'form1',
-      title: 'Formulário de orçamento',
-      responses: 18,
-      fields: [
-        { id: 'f1a', type: 'curta', question: 'Nome completo' },
-        { id: 'f1b', type: 'multipla', question: 'Tipo de evento', options: ['Casamento', 'Debutante', 'Aniversário', 'Corporativo'] },
-        { id: 'f1c', type: 'longa', question: 'Conte um pouco sobre o evento que você está planejando' }
-      ]
-    },
-    {
-      id: 'form2',
-      title: 'Pesquisa de satisfação',
-      responses: 34,
-      fields: [
-        { id: 'f2a', type: 'multipla', question: 'Como você avalia o nosso atendimento?', options: ['Ótimo', 'Bom', 'Regular', 'Ruim'] },
-        { id: 'f2b', type: 'longa', question: 'O que podemos melhorar?' }
-      ]
-    }
-  ]
+  // Formulários do Editor de Site: sem os de demonstração — só os que o
+  // fornecedor criou, guardados no navegador (b2b-site-forms; ainda não há
+  // tabela no banco). Excluir um some de vez.
+  siteForms: (() => {
+    try { return JSON.parse(localStorage.getItem('b2b-site-forms') || '[]'); } catch (e) { return []; }
+  })()
 };

@@ -82,15 +82,26 @@ function formatNotaFiscalDate(iso) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 }
 
+let notasFiscaisEstado = null;
+
+function mesDaNota(n) {
+  const d = new Date(n.created_at);
+  return isNaN(d) ? '' : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function notasFiscaisFiltradas() {
+  const est = notasFiscaisEstado || { busca: '', filtros: {} };
+  return bNotasFiscais.filter(n =>
+    (!est.filtros.mes || mesDaNota(n) === est.filtros.mes) &&
+    tabelaBateBusca(est, [n.client, n.number, '#' + n.number]));
+}
+
 function renderNotasFiscais() {
   const body = document.getElementById('notas-fiscais-body');
   if (!body) return;
 
-  const search = (document.getElementById('notas-fiscais-search-input').value || '').trim().toLowerCase();
   const all = bNotasFiscais;
-  const rows = search
-    ? all.filter(n => (n.client || '').toLowerCase().includes(search) || String(n.number).includes(search))
-    : all;
+  const rows = notasFiscaisFiltradas();
 
   const empty = document.getElementById('notas-fiscais-empty');
   const table = body.closest('.overflow-x-auto');
@@ -117,11 +128,21 @@ function renderNotasFiscais() {
 }
 
 function initNotasFiscaisActions() {
-  const searchInput = document.getElementById('notas-fiscais-search-input');
-  if (searchInput) searchInput.addEventListener('input', renderNotasFiscais);
-
-  const printBtn = document.getElementById('notas-fiscais-print-btn');
-  if (printBtn) printBtn.addEventListener('click', () => window.print());
+  // Barra da tabela: busca, Filtrar por (mês) e Exportar.
+  notasFiscaisEstado = montarBarraTabela(document.getElementById('notas-fiscais-card'), {
+    placeholder: 'Buscar cliente ou nº da nota...',
+    filtros: [{ chave: 'mes', rotulo: 'Mês', opcoes: () => [...new Set(bNotasFiscais.map(mesDaNota).filter(Boolean))].sort().reverse()
+      .map(m => { const [y, mm] = m.split('-'); return [m, `${capitalize(new Date(+y, +mm - 1, 1).toLocaleDateString('pt-BR', { month: 'long' }))} de ${y}`]; }) }],
+    exportar: () => tabelaExportarCSV('notas-fiscais', [
+      { titulo: 'Nº', valor: n => n.number },
+      { titulo: 'Cliente', valor: n => n.client },
+      { titulo: 'Data', valor: n => formatNotaFiscalDate(n.created_at) },
+      { titulo: 'Valor', valor: n => n.value },
+      { titulo: 'Status', valor: () => 'Emitida' }
+    ], notasFiscaisFiltradas()),
+    aoMudar: () => renderNotasFiscais()
+  });
+  renderNotasFiscais();
 
   document.querySelectorAll('[data-notas-action]').forEach(btn => {
     btn.addEventListener('click', () => {

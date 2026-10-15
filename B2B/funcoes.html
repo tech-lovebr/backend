@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=544">
+  <link rel="stylesheet" href="css/styles.css?v=545">
 </head>
 <body class="font-sans" data-page="funcoes">
 
@@ -49,11 +49,11 @@
         </div>
         <p class="text-sm text-zinc-500 mb-5">Adicione pessoas da sua equipe para acessar a gestão da sua conta e defina o que cada uma pode ver ou editar.</p>
 
-        <div class="dash-card">
+        <div class="dash-card" id="team-table-card">
           <div class="overflow-x-auto leads-table-wrap">
             <table class="leads-table w-full">
               <thead>
-                <tr><th>Colaborador</th><th>Função</th><th>Acesso</th><th>Status</th><th></th></tr>
+                <tr><th>Colaborador</th><th>E-mail</th><th>Função</th><th>Acesso</th><th>Status</th><th class="tabela-col-acoes"></th></tr>
               </thead>
               <tbody id="team-table-body"></tbody>
             </table>
@@ -112,10 +112,10 @@
   </aside>
 
   <script src="js/data.js?v=16"></script>
-  <script src="js/utils.js?v=23"></script>
+  <script src="js/utils.js?v=24"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=37"></script>
-  <script src="js/funcoes.js?v=3"></script>
+  <script src="js/funcoes.js?v=4"></script>
 </body>
 </html>

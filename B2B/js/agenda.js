@@ -1410,12 +1410,21 @@ function findContrato(id) {
 
 let contratosStatusFilter = 'todos';
 let contratosStatusFilterOpen = false;
+let contratosTabelaEstado = null;
+
+// Contratos que passam na busca e nos filtros da barra da tabela.
+function contratosClientesFiltrados() {
+  const est = contratosTabelaEstado || { busca: '', filtros: {} };
+  return (bContratosAbertos || []).filter(c => !!c.evento).filter(c =>
+    (!est.filtros.status || c.status === est.filtros.status) &&
+    (!est.filtros.categoria || (c.categoria || '') === est.filtros.categoria) &&
+    tabelaBateBusca(est, [c.client, c.categoria]));
+}
 
 function renderContratosClientes() {
   const body = document.getElementById('contratos-clientes-body');
   if (!body) return;
-  let rows = (bContratosAbertos || []).filter(c => !!c.evento);
-  if (contratosStatusFilter !== 'todos') rows = rows.filter(c => c.status === contratosStatusFilter);
+  let rows = contratosClientesFiltrados();
   rows = rows.slice().sort((a, b) => (a.status === 'quitado' ? 1 : 0) - (b.status === 'quitado' ? 1 : 0));
 
   const filterDropdown = document.getElementById('contratos-status-filter-dropdown');
@@ -1430,17 +1439,19 @@ function renderContratosClientes() {
     ? rows.map(c => {
       const info = CONTRATO_STATUS_LABELS[c.status] || CONTRATO_STATUS_LABELS.em_dia;
       return `
-      <tr class="contratos-cliente-row${c.id === selectedContratoId ? ' is-selected' : ''}" data-contrato-select="${c.id}">
+      <tr class="contratos-cliente-row${c.id === selectedContratoId ? ' is-selected' : ''}">
         <td class="contratos-cliente-name-cell col-principal">${escapeHtml(c.client)}</td>
         <td>${escapeHtml(c.categoria || '—')}</td>
         <td><span class="${info.className}">${info.label}</span></td>
+        ${tabelaVerMaisHtml('data-contrato-select', c.id)}
       </tr>
     `;
     }).join('')
-    : `<tr><td colspan="3" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Nenhum contrato fechado no momento.</td></tr>`;
+    : `<tr><td colspan="4" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Nenhum contrato fechado no momento.</td></tr>`;
 
-  body.querySelectorAll('[data-contrato-select]').forEach(row => {
-    row.addEventListener('click', () => selectContrato(row.dataset.contratoSelect));
+  // Só o "ver mais" abre o contrato; a linha fica livre para selecionar texto.
+  body.querySelectorAll('[data-contrato-select]').forEach(btn => {
+    btn.addEventListener('click', () => selectContrato(btn.dataset.contratoSelect));
   });
 }
 
@@ -1487,7 +1498,7 @@ function renderContratoConvidados(contrato) {
         <td><span class="${info.className}">${info.label}</span></td>
         <td>${g.mesa ? escapeHtml(g.mesa) : '—'}</td>
         <td>${g.whatsapp ? escapeHtml(g.whatsapp) : '—'}</td>
-        <td><button type="button" class="contratos-eye-btn" data-convidado-select="${g.id}" title="Ver mais">${CONTRATOS_EYE_ICON_SVG}</button></td>
+        ${tabelaVerMaisHtml('data-convidado-select', g.id)}
       </tr>
     `;
     }).join('')
@@ -1668,6 +1679,22 @@ function openContratoDrawer() {
 
 async function initContratosTab() {
   await loadContratosAbertos();
+  // Barra da tabela: busca, Filtrar por (status e categoria) e Exportar.
+  contratosTabelaEstado = montarBarraTabela(document.getElementById('contratos-clientes-card'), {
+    placeholder: 'Buscar cliente...',
+    filtros: [
+      { chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(CONTRATO_STATUS_LABELS).map(([k, v]) => [k, v.label]) },
+      { chave: 'categoria', rotulo: 'Categoria', opcoes: () => [...new Set((bContratosAbertos || []).map(c => c.categoria).filter(Boolean))].sort().map(v => [v, v]) }
+    ],
+    exportar: () => tabelaExportarCSV('contratos', [
+      { titulo: 'Cliente', valor: c => c.client },
+      { titulo: 'Categoria', valor: c => c.categoria },
+      { titulo: 'Status', valor: c => (CONTRATO_STATUS_LABELS[c.status] || CONTRATO_STATUS_LABELS.em_dia).label },
+      { titulo: 'Evento', valor: c => c.evento && c.evento.nome },
+      { titulo: 'Data do evento', valor: c => c.evento && c.evento.data }
+    ], contratosClientesFiltrados()),
+    aoMudar: () => renderContratosClientes()
+  });
   renderContratosClientes();
   renderContratoEventoPanel();
 

@@ -4,6 +4,8 @@
 
 let bPaymentLinks = [];
 let bContracts = [];
+let financeContratosEstado = null;
+let paymentLinksEstado = null;
 let bWalletTransactions = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,6 +13,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadContratosData();
   initPaymentsViewTabs();
   renderFinanceStats();
+  // Barras das tabelas (busca, Filtrar por, Exportar) — padrão do Admin.
+  financeContratosEstado = montarBarraTabela(document.getElementById('finance-contratos-card'), {
+    placeholder: 'Buscar cliente...',
+    filtros: [{ chave: 'status', rotulo: 'Quitação', opcoes: () => Object.entries(CONTRATO_STATUS_INFO).map(([k, v]) => [k, v.label]) }],
+    exportar: () => tabelaExportarCSV('gestao-de-pagamentos', [
+      { titulo: 'Cliente', valor: r => r.client_name },
+      { titulo: 'Valor total', valor: r => r.valor_total },
+      { titulo: 'Pago', valor: r => r.valor_pago },
+      { titulo: 'Parcelas', valor: r => `${r.parcelas_pagas}/${r.parcelas_total}` },
+      { titulo: 'Próxima parcela', valor: r => r.proxima_parcela || '' },
+      { titulo: 'Quitação', valor: r => (CONTRATO_STATUS_INFO[r.status] || CONTRATO_STATUS_INFO.em_dia).label }
+    ], contratosAbertosFiltrados()),
+    aoMudar: () => renderContratosAbertos()
+  });
+  paymentLinksEstado = montarBarraTabela(document.getElementById('payment-links-card'), {
+    placeholder: 'Buscar por valor ou data...',
+    filtros: [{ chave: 'situacao', rotulo: 'Situação', opcoes: () => [['pago', 'Pago'], ['pendente', 'Aguardando pagamento']] }],
+    exportar: () => tabelaExportarCSV('links-de-cobranca', [
+      { titulo: 'Criado em', valor: l => formatLinkDate(l.created_at) },
+      { titulo: 'Valor', valor: l => l.amount },
+      { titulo: 'Parcelas', valor: l => l.installments },
+      { titulo: 'Situação', valor: l => (l.status === 'pago' ? 'Pago' : 'Aguardando pagamento') },
+      { titulo: 'Link', valor: l => buildPaymentLinkUrl(l.id) }
+    ], paymentLinksFiltrados()),
+    aoMudar: () => renderPaymentLinksList()
+  });
   renderContratosAbertos();
   renderPaymentLinksList();
   initPaymentLinkModal();
@@ -338,10 +366,24 @@ const CONTRATO_STATUS_INFO = {
   atrasado: { label: 'Atrasado', color: 'status-recusado' }
 };
 
+function contratosAbertosFiltrados() {
+  const est = financeContratosEstado || { busca: '', filtros: {} };
+  return (bContracts || []).filter(r =>
+    (!est.filtros.status || r.status === est.filtros.status) &&
+    tabelaBateBusca(est, [r.client_name]));
+}
+
+function paymentLinksFiltrados() {
+  const est = paymentLinksEstado || { busca: '', filtros: {} };
+  return bPaymentLinks.filter(l =>
+    (!est.filtros.situacao || (est.filtros.situacao === 'pago' ? l.status === 'pago' : l.status !== 'pago')) &&
+    tabelaBateBusca(est, [formatLinkDate(l.created_at), formatCurrency(l.amount), l.amount]));
+}
+
 function renderContratosAbertos() {
   const body = document.getElementById('finance-contratos-body');
   if (!body) return;
-  const rows = bContracts || [];
+  const rows = contratosAbertosFiltrados();
   body.innerHTML = rows.length
     ? rows.map(row => {
       const info = CONTRATO_STATUS_INFO[row.status] || CONTRATO_STATUS_INFO.em_dia;
@@ -369,7 +411,7 @@ function renderPaymentLinksList() {
   const body = document.getElementById('payment-links-body');
   const empty = document.getElementById('payment-links-empty');
   if (!body) return;
-  const links = bPaymentLinks.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const links = paymentLinksFiltrados().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   if (!links.length) {
     body.innerHTML = '';
@@ -379,7 +421,7 @@ function renderPaymentLinksList() {
   if (empty) empty.style.display = 'none';
 
   body.innerHTML = links.map(link => `
-    <tr class="payment-link-row" data-link-row="${link.id}">
+    <tr class="payment-link-row">
       <td>${formatLinkDate(link.created_at)}</td>
       <td class="col-principal">${formatCurrency(link.amount)}</td>
       <td>${link.installments}x${link.installments === 1 ? ' (à vista)' : ''}</td>
@@ -389,6 +431,7 @@ function renderPaymentLinksList() {
           ? `<span class="payment-link-row-paid">Link pago</span>`
           : `<button type="button" class="payment-link-row-copy" data-copy-link="${link.id}">Copiar link</button>`}
       </td>
+      ${tabelaVerMaisHtml('data-link-row', link.id)}
     </tr>
   `).join('');
 
@@ -401,8 +444,9 @@ function renderPaymentLinksList() {
     });
   });
 
-  body.querySelectorAll('[data-link-row]').forEach(row => {
-    row.addEventListener('click', () => openChargeDrawer(row.dataset.linkRow));
+  // Só o "ver mais" abre os dados da cobrança.
+  body.querySelectorAll('[data-link-row]').forEach(btn => {
+    btn.addEventListener('click', () => openChargeDrawer(btn.dataset.linkRow));
   });
 }
 

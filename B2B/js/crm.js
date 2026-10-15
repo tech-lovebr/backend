@@ -6,6 +6,7 @@ const LEAD_STATUS_ORDER = ['novo', 'conversa', 'proposta', 'fechado'];
 
 let activeLeadStatus = 'todos';
 let leadSearchQuery = '';
+let leadsTabelaEstado = null;
 let crmLeads = [];
 let crmProducts = [];
 let leadMatchedClienteId = null;
@@ -19,9 +20,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   initLeadEmailAutocomplete();
   initLeadImport();
 
-  document.getElementById('lead-search-input')?.addEventListener('input', (e) => {
-    leadSearchQuery = e.target.value.trim();
-    renderLeadsTable();
+  // Barra da tabela: busca, Filtrar por (produto/serviço e estado),
+  // Importar e Exportar (o que está filtrado/buscado no momento).
+  leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
+    placeholder: 'Buscar lead, e-mail ou CPF...',
+    filtros: [
+      { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },
+      { chave: 'estado', rotulo: 'Estado', opcoes: () => [...new Set(crmLeads.map(l => l.estado).filter(Boolean))].sort().map(v => [v, v]) }
+    ],
+    importar: () => window.abrirImportacaoLeads?.(),
+    exportar: () => tabelaExportarCSV('leads', [
+      { titulo: 'ID', valor: l => l.numeroExibido },
+      { titulo: 'Nome', valor: l => l.name },
+      { titulo: 'E-mail', valor: l => l.email },
+      { titulo: 'CPF', valor: l => l.cpf },
+      { titulo: 'WhatsApp', valor: l => l.whatsapp },
+      { titulo: 'Endereço', valor: l => l.endereco },
+      { titulo: 'Estado', valor: l => l.estado },
+      { titulo: 'Cidade', valor: l => l.cidade },
+      { titulo: 'Produto/serviço', valor: l => l.event_name },
+      { titulo: 'Data do orçamento', valor: l => l.data_orcamento },
+      { titulo: 'Data do evento', valor: l => l.event_date },
+      { titulo: 'Orçamento', valor: l => (Number(l.value) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }
+    ], leadsFiltrados()),
+    aoMudar: () => renderLeadsTable()
   });
 
   // Ao voltar de "Cadastrar serviço" (aberto em outra aba), atualiza a lista
@@ -201,39 +223,42 @@ function renderLeadStatusTabs() {
 
 /* -------------------- Tabela de leads -------------------- */
 
+// Leads que passam na busca e nos filtros da barra da tabela.
+function leadsFiltrados() {
+  const est = leadsTabelaEstado || { busca: '', filtros: {} };
+  return crmLeads.filter(l =>
+    (!est.filtros.produto || l.event_name === est.filtros.produto) &&
+    (!est.filtros.estado || l.estado === est.filtros.estado) &&
+    tabelaBateBusca(est, [l.name, l.event_name, l.email, l.cpf, l.whatsapp, l.cidade, l.numeroExibido]));
+}
+
 function renderLeadsTable() {
   const tbody = document.getElementById('leads-table-body');
   if (!tbody) return;
 
-  let items = activeLeadStatus === 'todos'
-    ? crmLeads
-    : crmLeads.filter(l => l.status === activeLeadStatus);
-
-  if (leadSearchQuery) {
-    const q = leadSearchQuery.toLowerCase();
-    items = items.filter(l => [l.name, l.event_name, l.email, l.cpf, l.whatsapp, l.cidade]
-      .some(v => String(v || '').toLowerCase().includes(q)));
-  }
+  const items = leadsFiltrados();
 
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = items.map(lead => `
-    <tr data-open-lead="${lead.id}" style="cursor:pointer;">
+    <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
       <td class="col-principal">${escapeHtml(lead.name)}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
       <td>${formatCurrency(lead.value || 0)}</td>
+      ${tabelaVerMaisHtml('data-open-lead', lead.id)}
     </tr>
   `).join('');
 
-  tbody.querySelectorAll('[data-open-lead]').forEach(row => {
-    row.addEventListener('click', () => openLeadDrawer(row.dataset.openLead));
+  // Só o "ver mais" abre o lead; a linha fica livre para selecionar texto.
+  tbody.querySelectorAll('[data-open-lead]').forEach(btn => {
+    btn.addEventListener('click', () => openLeadDrawer(btn.dataset.openLead));
   });
 }
 
@@ -533,6 +558,7 @@ function initLeadImport() {
   const fechar = () => modal.classList.remove('show');
 
   document.getElementById('lead-import-btn')?.addEventListener('click', abrir);
+  window.abrirImportacaoLeads = abrir;
   document.getElementById('lead-import-close')?.addEventListener('click', fechar);
   modal.addEventListener('click', e => { if (e.target === modal) fechar(); });
   document.getElementById('lead-import-choose')?.addEventListener('click', () => fileInput.click());

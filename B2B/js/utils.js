@@ -926,3 +926,141 @@ function showToast(message, isError = false) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
+
+/* ==========================================================================
+   Tabelas do Hub — barra no topo da caixa da tabela (padrão do Admin)
+   Esquerda: busca. Direita: "Filtrar por" (com contador de filtros ativos),
+   "Importar" (se houver) e "Exportar". A última coluna das tabelas tem o
+   botão "ver mais" (três bolinhas), que abre o detalhe; a linha em si não
+   abre nada, para dar para selecionar e copiar texto.
+   ========================================================================== */
+
+const TABELA_ICONE_FUNIL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5Z"/></svg>';
+const TABELA_ICONE_EXPORTAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 0-4.5 4.5M12 3l4.5 4.5"/><path d="M3 15v3.75A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V15"/></svg>';
+const TABELA_ICONE_IMPORTAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M3 15v3.75A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V15"/></svg>';
+const TABELA_ICONE_BUSCA = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>';
+const TABELA_ICONE_VER_MAIS = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
+const TABELA_ICONE_COPIAR = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
+
+/* Botão "ver mais" da última coluna. attr: nome do data-atributo (ex.:
+   'data-open-lead'), valor: o id da linha. */
+function tabelaVerMaisHtml(attr, valor) {
+  return `<td class="tabela-col-acoes"><button type="button" class="tabela-ver-mais" ${attr}="${escapeHtml(String(valor))}" title="Ver mais" aria-label="Ver mais">${TABELA_ICONE_VER_MAIS}</button></td>`;
+}
+
+/* E-mail com o botão de copiar logo à direita. */
+function tabelaEmailHtml(email) {
+  if (!email) return '—';
+  return `<span class="tabela-email">${escapeHtml(email)}<button type="button" class="tabela-copiar-email" data-copiar-email="${escapeHtml(email)}" title="Copiar e-mail" aria-label="Copiar e-mail">${TABELA_ICONE_COPIAR}</button></span>`;
+}
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('[data-copiar-email]');
+  if (!btn) return;
+  e.stopPropagation();
+  try { await navigator.clipboard.writeText(btn.dataset.copiarEmail); } catch (err) { /* sem permissão */ }
+  if (typeof showToast === 'function') showToast('E-mail copiado.');
+});
+
+/* CSV com ; e BOM (o Excel em português abre direto). */
+function tabelaExportarCSV(nomeArquivo, colunas, linhas) {
+  const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const conteudo = [
+    colunas.map(c => esc(c.titulo)).join(';'),
+    ...linhas.map(l => colunas.map(c => esc(c.valor(l))).join(';'))
+  ].join('\r\n');
+  const blob = new Blob(['﻿' + conteudo], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${nomeArquivo}-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  if (typeof showToast === 'function') showToast(`${linhas.length} ${linhas.length === 1 ? 'linha exportada' : 'linhas exportadas'}.`);
+}
+
+/* Monta a barra no topo da caixa (card) da tabela.
+   opts: {
+     placeholder: 'Buscar ...',
+     filtros: [{ chave, rotulo, opcoes: () => [[valor, texto], ...] }],
+     importar: () => {} (opcional),
+     exportar: () => {},
+     aoMudar: (estado) => {}  — estado = { busca, filtros: { chave: valor } }
+   }
+   Devolve o estado (sempre atualizado). */
+function montarBarraTabela(card, opts) {
+  if (!card || card.querySelector(':scope > .tabela-barra')) return null;
+  const estado = { busca: '', filtros: {} };
+  const barra = document.createElement('div');
+  barra.className = 'tabela-barra';
+  const temFiltros = (opts.filtros || []).length > 0;
+  barra.innerHTML = `
+    <label class="tabela-busca">${TABELA_ICONE_BUSCA}<input type="search" placeholder="${escapeHtml(opts.placeholder || 'Buscar...')}" autocomplete="off"></label>
+    <div class="tabela-barra-acoes">
+      ${temFiltros ? `<div class="tabela-filtro-wrap">
+        <button type="button" class="tabela-barra-btn" data-tabela-filtrar>${TABELA_ICONE_FUNIL}<span>Filtrar por</span><span class="tabela-filtro-contador" hidden></span></button>
+        <div class="tabela-filtro-menu" hidden></div>
+      </div>` : ''}
+      ${opts.importar ? `<button type="button" class="tabela-barra-btn" data-tabela-importar>${TABELA_ICONE_IMPORTAR}<span>Importar</span></button>` : ''}
+      ${opts.exportar ? `<button type="button" class="tabela-barra-btn" data-tabela-exportar>${TABELA_ICONE_EXPORTAR}<span>Exportar</span></button>` : ''}
+    </div>`;
+  card.classList.add('tem-tabela-barra');
+  card.insertBefore(barra, card.firstChild);
+
+  const avisar = () => { if (opts.aoMudar) opts.aoMudar(estado); };
+  barra.querySelector('.tabela-busca input').addEventListener('input', (e) => {
+    estado.busca = e.target.value.trim().toLowerCase();
+    avisar();
+  });
+  barra.querySelector('[data-tabela-importar]')?.addEventListener('click', () => opts.importar());
+  barra.querySelector('[data-tabela-exportar]')?.addEventListener('click', () => opts.exportar(estado));
+
+  if (temFiltros) {
+    const btn = barra.querySelector('[data-tabela-filtrar]');
+    const menu = barra.querySelector('.tabela-filtro-menu');
+    const contador = barra.querySelector('.tabela-filtro-contador');
+    const atualizarContador = () => {
+      const n = Object.values(estado.filtros).filter(Boolean).length;
+      contador.textContent = String(n);
+      contador.hidden = n === 0;
+      btn.classList.toggle('is-ativo', n > 0);
+    };
+    const montarMenu = () => {
+      menu.innerHTML = opts.filtros.map(f => `
+        <label class="tabela-filtro-campo">
+          <span>${escapeHtml(f.rotulo)}</span>
+          <select class="field-select" data-filtro="${escapeHtml(f.chave)}">
+            <option value="">Todos</option>
+            ${(f.opcoes() || []).map(([v, t]) => `<option value="${escapeHtml(String(v))}"${estado.filtros[f.chave] === String(v) ? ' selected' : ''}>${escapeHtml(t)}</option>`).join('')}
+          </select>
+        </label>`).join('') + `<button type="button" class="tabela-filtro-limpar" data-filtro-limpar>Limpar filtros</button>`;
+      menu.querySelectorAll('[data-filtro]').forEach(sel => sel.addEventListener('change', () => {
+        estado.filtros[sel.dataset.filtro] = sel.value;
+        atualizarContador();
+        avisar();
+      }));
+      menu.querySelector('[data-filtro-limpar]').addEventListener('click', () => {
+        estado.filtros = {};
+        atualizarContador();
+        montarMenu();
+        avisar();
+      });
+    };
+    const fechar = () => { menu.hidden = true; document.removeEventListener('click', foraDoMenu); };
+    const foraDoMenu = (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) fechar(); };
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (menu.hidden) { montarMenu(); menu.hidden = false; document.addEventListener('click', foraDoMenu); }
+      else fechar();
+    });
+  }
+  return estado;
+}
+
+/* Texto da linha bate com a busca? (campos: lista de valores da linha) */
+function tabelaBateBusca(estado, campos) {
+  if (!estado || !estado.busca) return true;
+  return campos.some(v => String(v ?? '').toLowerCase().includes(estado.busca));
+}

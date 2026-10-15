@@ -2,7 +2,33 @@
    LOVE B2B — Funções (equipe e permissões)
    ========================================================================== */
 
+let equipeTabelaEstado = null;
+
+function equipeFiltrada() {
+  const est = equipeTabelaEstado || { busca: '', filtros: {} };
+  return B2B_DATA.team.filter(m =>
+    (!est.filtros.funcao || m.role === est.filtros.funcao) &&
+    (!est.filtros.status || m.status === est.filtros.status) &&
+    tabelaBateBusca(est, [m.name, m.email, m.role]));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Barra da tabela: busca, Filtrar por (função e status) e Exportar.
+  equipeTabelaEstado = montarBarraTabela(document.getElementById('team-table-card'), {
+    placeholder: 'Buscar colaborador ou e-mail...',
+    filtros: [
+      { chave: 'funcao', rotulo: 'Função', opcoes: () => [...new Set(B2B_DATA.team.map(m => m.role).filter(Boolean))].sort().map(v => [v, v]) },
+      { chave: 'status', rotulo: 'Status', opcoes: () => [...new Set(B2B_DATA.team.map(m => m.status).filter(Boolean))].map(v => [v, statusLabel(v)]) }
+    ],
+    exportar: () => tabelaExportarCSV('equipe', [
+      { titulo: 'Colaborador', valor: m => m.name },
+      { titulo: 'E-mail', valor: m => m.email },
+      { titulo: 'Função', valor: m => m.role },
+      { titulo: 'Acesso', valor: m => `${m.modules.length} de ${Object.keys(B2B_DATA.modules).length} áreas` },
+      { titulo: 'Status', valor: m => statusLabel(m.status) }
+    ], equipeFiltrada()),
+    aoMudar: () => renderTeam()
+  });
   renderTeam();
   initMemberDrawer();
   window.b2bPageReady?.();
@@ -12,25 +38,17 @@ function renderTeam() {
   const tbody = document.getElementById('team-table-body');
   if (!tbody) return;
 
-  tbody.innerHTML = B2B_DATA.team.map(m => `
+  const lista = equipeFiltrada();
+  tbody.innerHTML = lista.length ? lista.map(m => `
     <tr>
-      <td class="col-principal">
-        <div class="min-w-0">
-          <p class="truncate">${m.name} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</p>
-          <p class="text-xs text-zinc-500 font-normal truncate">${m.email}</p>
-        </div>
-      </td>
-      <td>${m.role}</td>
+      <td class="col-principal">${escapeHtml(m.name)} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</td>
+      <td>${tabelaEmailHtml(m.email)}</td>
+      <td>${escapeHtml(m.role)}</td>
       <td><span class="modules-summary">${m.modules.length} de ${Object.keys(B2B_DATA.modules).length} áreas</span></td>
       <td>${statusLabel(m.status)}</td>
-      <td>
-        ${m.owner ? '' : `
-          <div class="flex items-center justify-end">
-            <button type="button" class="btn-secondary text-xs py-1.5 px-2.5" data-edit-member="${m.id}">Editar</button>
-          </div>`}
-      </td>
+      ${m.owner ? '<td class="tabela-col-acoes"></td>' : tabelaVerMaisHtml('data-edit-member', m.id)}
     </tr>
-  `).join('');
+  `).join('') : '<tr><td colspan="6" class="text-sm text-zinc-500 py-6 text-center">Nenhum colaborador encontrado.</td></tr>';
 
   tbody.querySelectorAll('[data-edit-member]').forEach(btn => {
     btn.addEventListener('click', () => openMemberDrawer(btn.dataset.editMember));

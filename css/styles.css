@@ -7360,3 +7360,13 @@ html body .table-drawer > div:first-child > button:not(#love-h-a):hover { backgr
 .convite-presente-detalhe-sobre { margin-top: 1.25rem; }
 .convite-presente-detalhe-sobre h3 { font-size: 1.0625rem; font-weight: 700 !important; margin: 0 0 .4rem; }
 .convite-presente-detalhe-sobre p { color: #52525B; font-size: .9rem; line-height: 1.65; margin: 0; white-space: pre-line; }
+
+/* Lista de presentes do convite: texto centralizado, valor maior e botão
+   "Presentear" abaixo do valor. */
+.convite-presente-texto { text-align: center; padding: .85rem .75rem .9rem; }
+.convite-presente-nome { font-size: .875rem; font-weight: 500 !important; color: #3F3F46; margin: 0 0 .5rem; min-height: 2.4em; display: flex; align-items: center; justify-content: center; }
+.convite-presente-valor { font-size: 1.25rem; font-weight: 700 !important; color: #18181B; margin: 0 0 .75rem; letter-spacing: -0.01em; }
+.convite-presente.is-recebido .convite-presente-valor { font-size: .875rem; font-weight: 600 !important; color: #71717A; margin-bottom: 0; }
+.convite-presente-mini-barra { margin: -.35rem 0 .75rem; }
+.convite-presente-botao { display: block; width: 100%; padding: .7rem .5rem; border: 0; border-radius: 10px; background: var(--bx-primary, #537bae); color: #FFFFFF; font: inherit; font-size: .9375rem; font-weight: 700; cursor: pointer; }
+.convite-presente-botao:hover { filter: brightness(.95); }

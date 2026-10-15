@@ -3125,16 +3125,16 @@ async function initPublicPreview() {
     }
     // Card da lista de presentes: comum vai direto ao checkout; vaquinha
     // abre a tela do presente (com a barra do arrecadado).
-    const cardPresente = e.target.closest('[data-presente-abrir]');
-    if (cardPresente) {
-      abriuPeloConvite = true;
-      window.location.hash = 'presente=' + cardPresente.dataset.presenteAbrir;
-      return;
-    }
     const ir = e.target.closest('[data-convite-ir]');
     if (ir) {
       abriuPeloConvite = true;
       window.location.hash = ir.dataset.conviteIr.replace(/^#/, '');
+      return;
+    }
+    const cardPresente = e.target.closest('[data-presente-abrir]');
+    if (cardPresente) {
+      abriuPeloConvite = true;
+      window.location.hash = 'presente=' + cardPresente.dataset.presenteAbrir;
       return;
     }
     const voltarEspecifico = e.target.closest('[data-convite-voltar-para]');
@@ -3332,6 +3332,7 @@ function renderPresentesPublicos(root) {
             <p class="convite-presente-nome">${escaparPublico(p.nome)}</p>
             <p class="convite-presente-valor">${p.recebido ? 'Já presenteado' : brl(p.valor)}</p>
             ${(!p.recebido && p.vaquinha) ? `<div class="convite-presente-mini-barra"><div style="width:${progressoDoPresente(p).pct}%"></div></div>` : ''}
+            ${p.recebido ? '' : `<button type="button" class="convite-presente-botao" data-convite-ir="#checkout=${escaparPublico(p.id)}">Presentear</button>`}
           </div>
         </div>
       `).join('')}

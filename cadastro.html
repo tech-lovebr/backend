@@ -54,7 +54,7 @@
     .password-strength-checklist li.is-met .password-strength-check { color: #16A34A; }
     /* Etapa 3 (e-mail, senha, Criar conta, Google e Apple): mesma largura do
        botão do Google, que vai no máximo a 400px. */
-    .onboard-step[data-step="3"] { max-width: 400px; }
+    .onboard-step[data-step="3"] { max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; }
   </style>
 </head>
 <body class="bg-white">
@@ -122,7 +122,7 @@
 
         <!-- Etapa 2: dados pessoais e do evento -->
         <div class="onboard-step" data-step="2">
-          <button type="button" class="btn-onboard-back text-xs font-normal text-zinc-500 hover:text-zinc-800 mb-6 transition-colors">← Voltar</button>
+          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline">Voltar</button></p>
 
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Conte um pouco sobre você.</h1>
           <p class="text-zinc-500 text-sm mb-7">Isso nos ajuda a personalizar sua experiência.</p>
@@ -161,7 +161,7 @@
 
         <!-- Etapa 3: e-mail e senha -->
         <div class="onboard-step" data-step="3">
-          <button type="button" class="btn-onboard-back text-xs font-normal text-zinc-500 hover:text-zinc-800 mb-6 transition-colors">← Voltar</button>
+          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline">Voltar</button></p>
 
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Finalize seu cadastro.</h1>
           <p class="text-zinc-500 text-sm mb-7">Só falta criar seu acesso à plataforma.</p>

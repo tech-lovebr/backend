@@ -2336,6 +2336,28 @@ body[data-theme="dark"] .conv-item.active span:not(.badge-b2b-unread-dot) {
   color: #A1A1AA;
 }
 
+/* Escopo (incluso / não incluso): campo + "Adicionar"; os itens viram
+   caixinhas com o texto e a lixeira. */
+.scope-add-row { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.scope-add-row .field-input { flex: 1; min-width: 0; }
+.scope-add-btn { flex: 0 0 auto; }
+.scope-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.scope-list:empty { display: none; }
+.scope-item {
+  display: flex; align-items: center; gap: 0.5rem;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #fff;
+  padding: 0.5rem 0.5rem 0.5rem 0.875rem;
+}
+.scope-item-text { flex: 1; min-width: 0; font-size: 0.875rem; color: #18181B; overflow-wrap: anywhere; }
+.scope-item-remove {
+  flex: 0 0 auto; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  color: #A1A1AA; background: none; border: none; cursor: pointer; border-radius: 6px;
+}
+.scope-item-remove svg { width: 14px; height: 14px; }
+.scope-item-remove:hover { background: #FEE2E2; color: #B91C1C; }
+body[data-theme="dark"] .scope-item { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .scope-item-text { color: #FFFFFF !important; }
+
 .field-with-inline-link { position: relative; }
 .field-with-inline-link .field-input { padding-right: 7.5rem; }
 

@@ -890,13 +890,29 @@ function scopeState(kind) {
   return kind === 'included' ? currentScopeIncluded : currentScopeExcluded;
 }
 
+// Escreve no campo e aperta Enter (ou "Adicionar"): o item vira uma
+// caixinha na lista abaixo, com a lixeira ao lado.
+function addScopeItemFromInput(kind) {
+  const input = document.getElementById(`product-scope-${kind}-input`);
+  if (!input) return false;
+  const text = input.value.trim();
+  if (!text) return false;
+  scopeState(kind).push({ id: (kind === 'included' ? 'si' : 'se') + Date.now() + '-' + Math.round(Math.random() * 999), text });
+  input.value = '';
+  renderScopeList(kind);
+  return true;
+}
+
 function renderScopeList(kind) {
   const wrap = document.getElementById(`product-scope-${kind}-list`);
   if (!wrap) return;
-  wrap.innerHTML = scopeState(kind).map(item => `
-    <div class="field-with-inline-icon">
-      <input type="text" class="field-input" data-scope-text="${item.id}" data-scope-kind="${kind}" value="${escapeHtml(item.text || '')}" placeholder="Ex: Gelo e insumos">
-      <button type="button" class="field-inline-remove-btn" data-remove-scope="${item.id}" data-scope-kind="${kind}">${PI_TRASH}</button>
+  // Itens vazios (de versões antigas, que criavam a linha antes do texto) somem.
+  const arr = scopeState(kind);
+  for (let i = arr.length - 1; i >= 0; i--) if (!String(arr[i].text || '').trim()) arr.splice(i, 1);
+  wrap.innerHTML = arr.map(item => `
+    <div class="scope-item">
+      <span class="scope-item-text">${escapeHtml(item.text)}</span>
+      <button type="button" class="scope-item-remove" data-remove-scope="${item.id}" data-scope-kind="${kind}" aria-label="Remover">${PI_TRASH}</button>
     </div>
   `).join('');
 
@@ -1051,6 +1067,7 @@ function initProductDrawer() {
     updateCategoryTriggerLabel();
     renderScopeList('included');
     renderScopeList('excluded');
+    ['included', 'excluded'].forEach(k => { const el = document.getElementById(`product-scope-${k}-input`); if (el) el.value = ''; });
     renderPricingTypeFields();
     updateCategoryFieldsVisibility();
     document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
@@ -1142,13 +1159,16 @@ function initProductDrawer() {
     });
   });
 
-  document.getElementById('product-scope-included-add-btn').addEventListener('click', () => {
-    currentScopeIncluded.push({ id: 'si' + Date.now() + '-' + Math.round(Math.random() * 999), text: '' });
-    renderScopeList('included');
-  });
-  document.getElementById('product-scope-excluded-add-btn').addEventListener('click', () => {
-    currentScopeExcluded.push({ id: 'se' + Date.now() + '-' + Math.round(Math.random() * 999), text: '' });
-    renderScopeList('excluded');
+  ['included', 'excluded'].forEach(kind => {
+    const input = document.getElementById(`product-scope-${kind}-input`);
+    document.getElementById(`product-scope-${kind}-add-btn`).addEventListener('click', () => {
+      addScopeItemFromInput(kind);
+      input.focus();
+    });
+    // Enter adiciona o item (e não envia o formulário).
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addScopeItemFromInput(kind); }
+    });
   });
 
   document.getElementById('product-wizard-back-btn').addEventListener('click', () => {
@@ -1176,6 +1196,9 @@ function initProductDrawer() {
       // Clique repetido (ou Enter) enquanto o primeiro envio ainda está
       // salvando criava o mesmo item várias vezes.
       if (form.dataset.saving) return;
+      // Texto escrito no escopo sem apertar Enter também entra na lista.
+      addScopeItemFromInput('included');
+      addScopeItemFromInput('excluded');
       const name = document.getElementById('product-name').value.trim();
       const category = document.getElementById('product-category').value;
       const description = document.getElementById('product-description').value.trim();
@@ -1421,6 +1444,7 @@ function openProductDrawer(id) {
   document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
   renderScopeList('included');
   renderScopeList('excluded');
+  ['included', 'excluded'].forEach(k => { const el = document.getElementById(`product-scope-${k}-input`); if (el) el.value = ''; });
   renderPricingTypeFields();
   updateCategoryFieldsVisibility();
 

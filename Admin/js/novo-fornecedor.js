@@ -36,16 +36,16 @@ const NovoFornecedor = (() => {
           <div>
             <p class="drawer-section-title">Imagem de perfil</p>
             <label class="foto-perfil" id="previa-avatar">
-              <span class="foto-perfil-mais">+</span>
-              <span class="foto-perfil-texto">Adicione uma foto</span>
+              <span class="foto-perfil-mais" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+              <span class="foto-perfil-texto" aria-label="Adicionar imagem de perfil"></span>
               <input type="file" id="arquivo-avatar" accept="image/*" class="foto-perfil-input">
             </label>
           </div>
           <div class="imagens-empresa-capa">
             <p class="drawer-section-title">Imagem de capa</p>
             <label class="foto-perfil foto-capa" id="previa-capa">
-              <span class="foto-perfil-mais">+</span>
-              <span class="foto-perfil-texto">Adicione a capa</span>
+              <span class="foto-perfil-mais" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+              <span class="foto-perfil-texto" aria-label="Adicionar imagem de capa"></span>
               <input type="file" id="arquivo-capa" accept="image/*" class="foto-perfil-input">
             </label>
           </div>

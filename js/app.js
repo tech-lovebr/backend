@@ -5891,13 +5891,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cont = document.getElementById('gifts-selected-count');
     if (cont) cont.textContent = String(qtd);
 
-    // "N selecionados" ao lado da caixinha de selecionar tudo.
-    const label = document.getElementById('gifts-selected-label');
-    if (label) {
-      label.textContent = qtd === 1 ? '1 selecionado' : `${qtd} selecionados`;
-      label.classList.toggle('hidden', qtd === 0);
-    }
-
     // Caixinha "Selecionar tudo": marcada quando todos os presentes da lista
     // estão marcados; meio marcada quando só alguns.
     const checks = [...document.querySelectorAll('#host-gifts-list-container .gift-select-check, .gift-select-check')];

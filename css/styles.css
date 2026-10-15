@@ -7583,3 +7583,8 @@ html body button.chat-msg-mais:not(#love-h-a) { color: #181D24; opacity: .6; }
 html body button.chat-msg-mais:not(#love-h-a):hover,
 html body button.chat-msg-mais:not(#love-h-a):focus-visible { background: transparent; color: #181D24; opacity: 1; animation: love-pulso .35s ease; outline: none; }
 .chat-msg-acoes { align-self: center; margin-top: 0; }
+
+/* Chat: nome da empresa no cabeçalho é um link para a página dela */
+.b2b-chat-nome-link { cursor: pointer; }
+.b2b-chat-nome-link:hover { text-decoration: underline; text-underline-offset: 3px; color: #181D24; }
+.b2b-chat-nome-link:focus-visible { outline: none; text-decoration: underline; }

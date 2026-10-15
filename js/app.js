@@ -14516,6 +14516,23 @@ document.addEventListener('DOMContentLoaded', () => {
     container.scrollTop = container.scrollHeight;
   }
 
+  // Nome da empresa no cabeçalho do chat: abre a página da empresa (Explorar).
+  (function ligarNomeDaEmpresaNoChat() {
+    const nameEl = document.getElementById('b2b-chat-active-name');
+    if (!nameEl) return;
+    const abrir = async () => {
+      const conv = b2bConversationsData.find(c => c.id === activeB2BConversationId);
+      if (!conv || !conv.fornecedorId) return;
+      try { if (!b2bFornecedoresCarregados) await carregarFornecedoresVitrine(); } catch (e) { console.error('[chat] vitrine:', e); }
+      const item = encontrarFornecedorExplorar(conv.fornecedorId);
+      if (!item) return;
+      switchB2BView('explore');
+      openB2BVendorProfile(item, null);
+    };
+    nameEl.addEventListener('click', abrir);
+    nameEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+  })();
+
   // ⋯ da mensagem: Editar (só as minhas) e Copiar. Editar troca o texto da
   // bolha por um campo; Salvar grava em messages (edited_at) e redesenha.
   (function ligarMenuDasMensagens() {

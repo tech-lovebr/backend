@@ -3125,6 +3125,12 @@ async function initPublicPreview() {
     }
     // Card da lista de presentes: comum vai direto ao checkout; vaquinha
     // abre a tela do presente (com a barra do arrecadado).
+    const check = e.target.closest('[data-carrinho-check]');
+    if (check) {
+      carrinhoAlternar(check.dataset.carrinhoCheck);
+      atualizarCarrinhoNaLista(root);
+      return;
+    }
     const ir = e.target.closest('[data-convite-ir]');
     if (ir) {
       abriuPeloConvite = true;
@@ -3321,12 +3327,15 @@ function renderPresentesPublicos(root) {
   const presentes = conviteDadosPublicos.presentes || [];
   const brl = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+  const noCarrinho = carrinhoIds();
   const conteudo = presentes.length ? `
+    ${barraDoCarrinhoHtml()}
     <div class="convite-presentes">
       ${presentes.map(p => `
-        <div class="convite-presente${p.recebido ? ' is-recebido' : ''}"${p.recebido ? '' : ` data-presente-abrir="${escaparPublico(p.id)}" data-presente-vaquinha="${p.vaquinha ? '1' : ''}" role="button" tabindex="0"`}>
+        <div class="convite-presente${p.recebido ? ' is-recebido' : ''}${noCarrinho.has(String(p.id)) ? ' is-no-carrinho' : ''}"${p.recebido ? '' : ` data-presente-abrir="${escaparPublico(p.id)}" data-presente-vaquinha="${p.vaquinha ? '1' : ''}" role="button" tabindex="0"`}>
           <div class="convite-presente-foto">
             ${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="${escaparPublico(p.nome)}" loading="lazy">` : ''}
+            ${p.recebido ? '' : `<button type="button" class="convite-presente-check" data-carrinho-check="${escaparPublico(p.id)}" aria-pressed="${noCarrinho.has(String(p.id)) ? 'true' : 'false'}" aria-label="Colocar no carrinho" title="Colocar no carrinho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>`}
           </div>
           <div class="convite-presente-texto">
             <p class="convite-presente-nome">${escaparPublico(p.nome)}</p>
@@ -3469,6 +3478,7 @@ function renderPresentePublico(root, id) {
 }
 
 function renderCheckoutPublico(root, id) {
+  if (id === 'carrinho') return renderCheckoutCarrinho(root);
   const p = presentePublicoPorId(id);
   if (!p) return renderPresentesPublicos(root);
   const { meta, pct, falta } = progressoDoPresente(p);
@@ -3595,6 +3605,200 @@ function renderCheckoutPublico(root, id) {
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presente registrado!</p>
         <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear <strong>${escaparPublico(p.nome)}</strong> com <strong>${brlPublico(Number(data.valor) || valor)}</strong> por ${escaparPublico(nomeMetodo)}.</p>
+        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>
+        <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
+      </div>`);
+    voltarPara(root, '#presentes');
+  });
+}
+
+
+/* ==========================================================================
+   Carrinho da lista de presentes (site publicado): caixinha no canto da
+   foto de cada card, "Ver carrinho (N)" acima da lista e um checkout só
+   com todos os presentes escolhidos. Guardado por convite no sessionStorage,
+   para sobreviver à troca de tela (#hash) e ao recarregar.
+   ========================================================================== */
+
+function chaveDoCarrinho() { return `love-carrinho-${conviteSlugPublico || 'previa'}`; }
+
+function carrinhoIds() {
+  try { return new Set(JSON.parse(sessionStorage.getItem(chaveDoCarrinho()) || '[]')); } catch (e) { return new Set(); }
+}
+
+function salvarCarrinho(ids) {
+  try { sessionStorage.setItem(chaveDoCarrinho(), JSON.stringify([...ids])); } catch (e) { /* sem storage */ }
+}
+
+function carrinhoAlternar(id) {
+  const ids = carrinhoIds();
+  if (ids.has(id)) ids.delete(id); else ids.add(id);
+  salvarCarrinho(ids);
+  return ids;
+}
+
+// Presentes do carrinho que ainda existem e continuam abertos.
+function presentesDoCarrinho() {
+  const ids = carrinhoIds();
+  return ((conviteDadosPublicos && conviteDadosPublicos.presentes) || []).filter(p => ids.has(String(p.id)) && !p.recebido);
+}
+
+// Valor cobrado de cada presente no carrinho: o do presente, ou o que falta
+// para completar numa vaquinha.
+function valorNoCarrinho(p) {
+  return p.vaquinha ? progressoDoPresente(p).falta : (Number(p.valor) || 0);
+}
+
+function barraDoCarrinhoHtml() {
+  const qtd = presentesDoCarrinho().length;
+  if (!qtd) return '';
+  return `
+    <div class="convite-carrinho-barra">
+      <button type="button" class="convite-carrinho-botao" data-convite-ir="#checkout=carrinho">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg>
+        <span>Ver carrinho (${qtd})</span>
+      </button>
+    </div>`;
+}
+
+// Depois de marcar/desmarcar: acerta as caixinhas e a barra sem redesenhar
+// a lista inteira (a rolagem fica onde está).
+function atualizarCarrinhoNaLista(root) {
+  const ids = carrinhoIds();
+  root.querySelectorAll('[data-carrinho-check]').forEach(btn => {
+    const marcado = ids.has(btn.dataset.carrinhoCheck);
+    btn.setAttribute('aria-pressed', String(marcado));
+    btn.closest('.convite-presente')?.classList.toggle('is-no-carrinho', marcado);
+  });
+  const atual = root.querySelector('.convite-carrinho-barra');
+  const nova = barraDoCarrinhoHtml();
+  if (atual && !nova) atual.remove();
+  else if (atual && nova) atual.outerHTML = nova;
+  else if (!atual && nova) root.querySelector('.convite-presentes')?.insertAdjacentHTML('beforebegin', nova);
+}
+
+function renderCheckoutCarrinho(root) {
+  const itens = presentesDoCarrinho();
+  if (!itens.length) {
+    root.innerHTML = telaPublicaHtml('Carrinho', `
+      <p class="convite-vazio">Seu carrinho está vazio. Marque a caixinha dos presentes que quer dar e volte aqui.</p>
+      <button type="button" class="convite-botao" data-convite-ir="#presentes">Ver a lista de presentes</button>`);
+    voltarPara(root, '#presentes');
+    return;
+  }
+  const total = itens.reduce((s, p) => s + valorNoCarrinho(p), 0);
+
+  const conteudo = `
+    <div class="convite-carrinho-itens">
+      ${itens.map(p => `
+        <div class="convite-checkout-resumo convite-carrinho-item">
+          <div class="convite-checkout-resumo-foto">${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="">` : ''}</div>
+          <div class="convite-carrinho-item-texto">
+            <p class="convite-checkout-resumo-nome">${escaparPublico(p.nome)}</p>
+            <p class="convite-checkout-resumo-valor">${brlPublico(valorNoCarrinho(p))}${p.vaquinha ? ' · o que falta na vaquinha' : ''}</p>
+          </div>
+          <button type="button" class="convite-carrinho-remover" data-carrinho-remover="${escaparPublico(p.id)}" aria-label="Tirar do carrinho" title="Tirar do carrinho">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>`).join('')}
+      <div class="convite-carrinho-total"><span>Total (${itens.length} ${itens.length === 1 ? 'presente' : 'presentes'})</span><strong>${brlPublico(total)}</strong></div>
+    </div>
+    <form class="convite-form" data-convite-checkout novalidate>
+      <label>Seu nome completo
+        <input type="text" name="nome" required maxlength="120" autocomplete="name" placeholder="Como está no convite">
+      </label>
+      <label>E-mail
+        <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="seu@email.com">
+      </label>
+      <label>Telefone <span>(opcional)</span>
+        <input type="tel" name="telefone" maxlength="40" autocomplete="tel" placeholder="(11) 99999-9999">
+      </label>
+      <label>Mensagem para os anfitriões <span>(opcional)</span>
+        <textarea name="mensagem" maxlength="300" rows="3" placeholder="Deixe um recado carinhoso"></textarea>
+      </label>
+      <fieldset class="convite-pagamento">
+        <legend>Forma de pagamento</legend>
+        <label class="convite-pagamento-opcao is-ativo"><input type="radio" name="metodo" value="pix" checked><span>Pix</span></label>
+        <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="cartao"><span>Cartão de crédito</span></label>
+        <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="apple_pay"><span>Apple Pay</span></label>
+      </fieldset>
+      <p class="convite-erro" hidden></p>
+      <button type="submit" class="convite-botao">Pagar ${brlPublico(total)}</button>
+    </form>`;
+  root.innerHTML = telaPublicaHtml('Carrinho', conteudo);
+  voltarPara(root, '#presentes');
+
+  root.querySelectorAll('[data-carrinho-remover]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      carrinhoAlternar(btn.dataset.carrinhoRemover);
+      renderCheckoutCarrinho(root);
+    });
+  });
+
+  const form = root.querySelector('[data-convite-checkout]');
+  const erroEl = form.querySelector('.convite-erro');
+  const botao = form.querySelector('button[type="submit"]');
+  form.querySelectorAll('input[name="metodo"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      form.querySelectorAll('.convite-pagamento-opcao').forEach(o => o.classList.toggle('is-ativo', o.contains(radio)));
+    });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erroEl.hidden = true;
+    const nome = form.nome.value.trim();
+    const email = form.email.value.trim();
+    if (nome.length < 2) { erroEl.textContent = 'Digite seu nome completo.'; erroEl.hidden = false; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroEl.textContent = 'Digite um e-mail válido.'; erroEl.hidden = false; return; }
+    const metodo = form.querySelector('input[name="metodo"]:checked')?.value || 'pix';
+
+    botao.disabled = true;
+    botao.textContent = 'Registrando…';
+    // Um registro por presente (mesma função do checkout de um presente só).
+    const registrados = [];
+    let falhou = null;
+    for (const p of itens) {
+      const { data, error } = await supabaseClient.rpc('presentear_pelo_convite', {
+        p_slug: conviteSlugPublico,
+        p_presente_id: p.id,
+        p_valor: valorNoCarrinho(p),
+        p_nome: nome,
+        p_email: email,
+        p_telefone: form.telefone.value.trim() || null,
+        p_mensagem: form.mensagem.value.trim() || null,
+        p_metodo: metodo
+      });
+      if (error || !data || !data.ok) {
+        if (error) console.error('Erro ao presentear:', error);
+        falhou = p;
+        break;
+      }
+      registrados.push({ p, valor: Number(data.valor) || valorNoCarrinho(p) });
+    }
+
+    // Os que deram certo saem do carrinho; o que falhou fica para tentar de novo.
+    const ids = carrinhoIds();
+    registrados.forEach(r => ids.delete(String(r.p.id)));
+    salvarCarrinho(ids);
+
+    if (falhou) {
+      botao.disabled = false;
+      botao.textContent = `Pagar ${brlPublico(total)}`;
+      erroEl.textContent = registrados.length
+        ? `Registramos ${registrados.length} ${registrados.length === 1 ? 'presente' : 'presentes'}, mas "${falhou.nome}" não pôde ser registrado agora. Tente de novo.`
+        : 'Não foi possível registrar agora. Tente de novo em instantes.';
+      erroEl.hidden = false;
+      if (registrados.length) renderCheckoutCarrinho(root);
+      return;
+    }
+
+    const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
+    const somaFinal = registrados.reduce((s, r) => s + r.valor, 0);
+    root.innerHTML = telaPublicaHtml('Carrinho', `
+      <div class="convite-sucesso">
+        <p class="convite-sucesso-titulo">Presentes registrados!</p>
+        <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear ${registrados.length} ${registrados.length === 1 ? 'presente' : 'presentes'}, no total de <strong>${brlPublico(somaFinal)}</strong>, por ${escaparPublico(nomeMetodo)}.</p>
         <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>
         <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
       </div>`);

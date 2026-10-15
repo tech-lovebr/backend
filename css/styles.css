@@ -7370,3 +7370,23 @@ html body .table-drawer > div:first-child > button:not(#love-h-a):hover { backgr
 .convite-presente-mini-barra { margin: -.35rem 0 .75rem; }
 .convite-presente-botao { display: block; width: 100%; padding: .7rem .5rem; border: 0; border-radius: 10px; background: var(--bx-primary, #537bae); color: #FFFFFF; font: inherit; font-size: .9375rem; font-weight: 700; cursor: pointer; }
 .convite-presente-botao:hover { filter: brightness(.95); }
+
+/* Convite: carrinho de presentes (caixinha no card + "Ver carrinho") */
+.convite-presente-foto { position: relative; }
+.convite-presente-check { position: absolute; top: .5rem; right: .5rem; z-index: 2; width: 26px; height: 26px; padding: 0; border: 1.5px solid #D4D4D8; border-radius: 7px; background: #FFFFFF; color: transparent; box-shadow: 0 1px 3px rgba(0,0,0,.15); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.convite-presente-check svg { width: 16px; height: 16px; }
+.convite-presente-check:hover { border-color: #18181B; }
+.convite-presente-check[aria-pressed="true"] { background: var(--bx-primary, #537bae); border-color: var(--bx-primary, #537bae); color: #FFFFFF; }
+.convite-presente.is-no-carrinho { box-shadow: 0 0 0 2px var(--bx-primary, #537bae), 0 2px 8px rgba(0,0,0,0.06); }
+.convite-carrinho-barra { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+.convite-carrinho-botao { display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1rem; border: 0; border-radius: 10px; background: var(--bx-primary, #537bae); color: #FFFFFF; font: inherit; font-size: .9375rem; font-weight: 700; cursor: pointer; }
+.convite-carrinho-botao svg { width: 18px; height: 18px; }
+.convite-carrinho-botao:hover { filter: brightness(.95); }
+.convite-carrinho-itens { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.25rem; }
+.convite-carrinho-item { margin-bottom: 0; }
+.convite-carrinho-item-texto { flex: 1; min-width: 0; }
+.convite-carrinho-remover { flex-shrink: 0; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: #A1A1AA; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.convite-carrinho-remover svg { width: 16px; height: 16px; }
+.convite-carrinho-remover:hover { background: #F4F4F5; color: #18181B; }
+.convite-carrinho-total { display: flex; justify-content: space-between; align-items: center; padding: .85rem .25rem 0; font-size: .9375rem; color: #3F3F46; border-top: 1px solid #E4E4E7; }
+.convite-carrinho-total strong { font-size: 1.25rem; font-weight: 700; color: #18181B; }

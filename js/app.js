@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openFaqPage(opts = {}) {
-    abrirPaginaDaConta('tab-faq', '/duvidas', 'Dúvidas', opts);
+    abrirPaginaDaConta('tab-faq', '/duvidas', 'Dúvidas frequentes', opts);
     loadFaqPage();
   }
 

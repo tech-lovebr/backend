@@ -3016,8 +3016,8 @@ table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4
 .sidebar-busca:hover { border-color: #181D24; color: #181D24; }
 
 /* ------------------------------------------------ Submenu em árvore
-   Uma linha vertical desce do grupo e cada subitem sai dela por um galho reto
-   (├ / └, em ângulo reto). A linha continua até o próximo irmão; no último,
+   Uma linha vertical desce do grupo e cada subitem sai dela por um galho com leve curva
+   (├ / └, com uma leve curva). A linha continua até o próximo irmão; no último,
    para no galho. */
 
 .admin-nav-children { position: relative; }
@@ -3037,6 +3037,9 @@ table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4
   height: calc(50% + .25rem);
   border-left: 1.5px solid #D4D4D8;
   border-bottom: 1.5px solid #D4D4D8;
+  /* Leve curva no galho, igual ao conector de acompanhantes em Meus
+     Convidados (.guest-sub-conector). */
+  border-bottom-left-radius: 4px;
   pointer-events: none;
 }
 

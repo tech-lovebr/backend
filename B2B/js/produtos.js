@@ -691,8 +691,8 @@ function renderDishes() {
       </div>
       <div class="product-dish-row">
         <div>
-          <label class="field-label">Valor (R$)</label>
-          <input type="number" min="0" step="1" class="field-input" data-dish-price="${d.id}" value="${d.price || ''}" placeholder="0,00">
+          <label class="field-label">Valor</label>
+          <input type="text" inputmode="numeric" class="field-input" data-dish-price="${d.id}" value="${d.price > 0 ? Number(d.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ''}">
         </div>
         <div>
           <label class="field-label">Quantidade</label>
@@ -715,9 +715,12 @@ function renderDishes() {
     });
   });
   wrap.querySelectorAll('[data-dish-price]').forEach(input => {
+    // Mesmo campo de dinheiro dos preços: "R$" fixo e vírgula automática.
+    wireCurrencyMaskInput(input);
+    wireMoneyPrefix(input);
     input.addEventListener('input', () => {
       const d = currentDishes.find(x => x.id === input.dataset.dishPrice);
-      if (d) d.price = Number(input.value) || 0;
+      if (d) d.price = currencyMaskValue(input);
     });
   });
   wrap.querySelectorAll('[data-dish-qty]').forEach(input => {

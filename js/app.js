@@ -6736,7 +6736,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Um convidado com acompanhantes nunca aparece com nomes concatenados
     // ("Fulano & Beltrano") numa única linha — cada pessoa ganha sua própria
     // linha, sempre com um nome único, compartilhando status e mesa da mesma reserva.
-    pageGuests.forEach(guest => {
+    pageGuests.forEach((guest, indiceGrupo) => {
       const gifts = guest.giftsBought || [];
       const giftsTotal = gifts.reduce((acc, g) => acc + (g.amount || 0), 0);
       const giftLabel = giftsTotal > 0
@@ -6759,10 +6759,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       attendees.forEach(attendee => {
         const row = document.createElement('tr');
-        row.className = 'cursor-pointer group';
+        // Mesma cor para o convidado e seus acompanhantes (o grupo alterna,
+        // não cada linha); o acompanhante aparece como subitem do convidado.
+        row.className = `cursor-pointer group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
         row.innerHTML = `
           <td>
             <div class="flex items-center gap-2 min-w-0">
+              ${attendee.isPrimary ? '' : '<span class="guest-sub-conector" aria-hidden="true"></span>'}
               <span class="guest-tipo-badge ${attendee.isPrimary ? 'is-convidado' : 'is-acompanhante'}" title="${attendee.isPrimary ? 'Convidado' : 'Acompanhante'}">${attendee.isPrimary ? 'C' : 'A'}</span>
               <span class="font-semibold text-zinc-900 block truncate">${attendee.name}</span>
             </div>

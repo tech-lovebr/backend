@@ -6857,3 +6857,23 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 
 /* Etiqueta da categoria do fornecedor: só contorno cinza, fundo transparente. */
 .b2b-categoria-tag { background: transparent !important; border: 1px solid #D4D4D8; }
+
+
+/* Meus convidados: o convidado e seus acompanhantes formam um grupo com a
+   mesma cor (o grupo alterna, não cada linha). O acompanhante fica recuado,
+   com um traço de ligação, como subitem do convidado logo acima. */
+#tab-rsvp .guests-table tbody tr.grupo-impar td { background: #FFFFFF; }
+#tab-rsvp .guests-table tbody tr.grupo-par td { background: #FAFAFA; }
+#tab-rsvp .guests-table tbody tr.grupo-impar:hover td,
+#tab-rsvp .guests-table tbody tr.grupo-par:hover td { background: #EBF4FF; }
+#tab-rsvp .guests-table tbody tr.is-acompanhante-row td { border-top-color: transparent; }
+#tab-rsvp .guests-table tbody tr.is-acompanhante-row td:first-child { padding-left: 2.25rem; }
+.guest-sub-conector {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 12px;
+  margin-top: -8px;
+  border-left: 1.5px solid #D4D4D8;
+  border-bottom: 1.5px solid #D4D4D8;
+  border-bottom-left-radius: 4px;
+}

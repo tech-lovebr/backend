@@ -14502,10 +14502,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Veio da página /cadastro, que já perguntou o tipo de evento no onboarding
     // — pula os eventos de demonstração e leva direto pro formulário de criar
     // o primeiro evento de verdade, com o tipo já escolhido.
-    const pendingType = localStorage.getItem('love-pending-event-type');
+    let pendingType = localStorage.getItem('love-pending-event-type');
     const pendingTypeLabel = localStorage.getItem('love-pending-event-type-label');
 
     const events = await loadEventsFromSupabase(session.user.id);
+
+    // Quem já tem evento entra sempre no painel. Um tipo pendente que sobrou
+    // do /cadastro (ex.: cadastro pelo Google, ou um evento criado por outro
+    // caminho) não pode mandar de novo para "criar evento" a cada recarga.
+    if (events.length && pendingType) {
+      ['love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-name', 'love-pending-event-date']
+        .forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+      pendingType = null;
+    }
 
     // Conta nova nasce vazia. Antes daqui saíam dois eventos de demonstração
     // gravados como linhas reais no banco — o que fazia o Admin mostrar

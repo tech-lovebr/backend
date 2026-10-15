@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 9);
+  renderLoading(tbody, 8);
 
   const [fornecedores, carteira, conversas, leads, produtos, contratos, links] = await Promise.all([
     safeSelect('fornecedores', '*'),
@@ -262,7 +262,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 9, 'Nenhum fornecedor encontrado',
+    renderEmpty(tbody, 8, 'Nenhum fornecedor encontrado',
       FORNECEDORES.length ? 'Ajuste a busca ou os filtros acima.' : 'Nenhuma conta B2B foi criada ainda.');
     return;
   }
@@ -270,7 +270,6 @@ function render() {
   // A lista mostra só o essencial — e-mail, telefone, endereço, status e as
   // demais métricas ficam no painel de detalhe, ao clicar na linha.
   tbody.innerHTML = lista.map(f => {
-    const m = metricas(f.id);
     const marcada = SELECIONADAS.has(f.id);
     return `
     <tr data-id="${f.id}" class="${marcada ? 'is-selecionada' : ''}">
@@ -283,7 +282,6 @@ function render() {
       <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${dash(f.cnpj)}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
-      <td>${formatNumber(m.contratosAtivos)} <span class="cell-muted">de ${formatNumber(m.contratos)}</span></td>
       <td class="col-numero ${f.score ? 'cell-strong' : 'cell-muted'}">${f.score ? formatNumber(f.score) : '—'}</td>
       <td class="col-acoes">${botaoVerMais(f.id)}</td>
     </tr>`;

@@ -6903,3 +6903,13 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 /* Botão de perfil com as iniciais: mesmo estilo do Hub B2B e do chat
    (quadrado arredondado, fundo azul-claro, letras azul-escuras). */
 .header-user-avatar { border-radius: 8px !important; background: #EBF4FF !important; color: #183b54 !important; }
+
+
+/* Com as iniciais/foto, a caixa inteira do botão de perfil fica azul-clara
+   (o avatar ocupa o botão todo, do mesmo tamanho dos botões de chat/sino). */
+#btn-user-account-menu:has(.header-user-avatar:not(.hidden)) { padding: 0 !important; }
+.header-user-avatar { width: 39px !important; height: 39px !important; border-radius: 12px !important; font-size: 13px; }
+
+/* A caixa toda do botão de perfil (48px, com borda) fica azul-clara: o avatar ocupa 100% dela. */
+#btn-user-account-menu:has(.header-user-avatar:not(.hidden)) { background: #EBF4FF !important; border-color: #D6E6FA !important; overflow: hidden; }
+#btn-user-account-menu .header-user-avatar { width: 100% !important; height: 100% !important; border-radius: inherit !important; }

@@ -64,10 +64,9 @@ async function loadLeads() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { crmLeads = []; return; }
 
-  // Quem conversa com você no chat já é lead: garante um lead para cada
-  // conversa e completa data/tipo do evento (migration 057). Sem a
-  // migration, segue só com os leads que existem.
-  try { await supabaseClient.rpc('sincronizar_leads_do_chat'); } catch (e) { /* sem a function */ }
+  // Conversar no chat NÃO cria lead sozinho (LGPD: o cliente não consentiu
+  // em entrar na base do fornecedor). Lead só entra adicionado ou importado
+  // pelo fornecedor. Ver migration 058.
 
   const [leadsRes, convosRes] = await Promise.all([
     supabaseClient.from('leads').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),

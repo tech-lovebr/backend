@@ -11675,11 +11675,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Linha abaixo do nome da empresa no card: "Nome do serviço · Cidade (UF)".
-  function servicoELocalDoCard(item) {
-    const local = localCurto(item);
+  // Título do card = nome do serviço criado no Hub (ex.: "Buffet Brasileiro");
+  // sem nome, o da empresa.
+  function tituloDoCard(item) {
     const servico = item.servicoCard && item.servicoCard.name ? item.servicoCard.name.trim() : '';
-    return escaparHtml([servico, local].filter(Boolean).join(' · '));
+    return servico || item.name || '';
+  }
+
+  // Cidade do card (onde antes ficava a categoria): "Indaiatuba (SP)".
+  function cidadeDoCardHtml(item) {
+    const local = localCurto(item);
+    if (!local) return '';
+    return `<span class="b2b-cidade-card" title="${escaparHtml(local)}"><svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg><span>${escaparHtml(local)}</span></span>`;
+  }
+
+  // Categoria do serviço no canto superior esquerdo da imagem.
+  function categoriaNaImagemHtml(item) {
+    const categoria = (item && (item.mainCategory || (item.categories || [])[0])) || '';
+    if (!categoria) return '';
+    return `<span class="b2b-categoria-imagem">${escaparHtml(categoria)}</span>`;
   }
 
   // Serviço que o card do Explorar representa (vai na URL do perfil como
@@ -11814,6 +11828,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${(item.cardImage || item.image)
             ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
+          ${categoriaNaImagemHtml(item)}
           <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
             <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -11826,10 +11841,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-start justify-between gap-3 flex-nowrap">
               <div class="min-w-0 flex-1">
                 <div class="min-w-0">
-                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${escaparHtml(item.name)}">
-                    ${escaparHtml(item.name)}
+                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${escaparHtml(tituloDoCard(item))}">
+                    ${escaparHtml(tituloDoCard(item))}
                   </h4>
-                  <p class="text-sm text-zinc-400 font-medium font-sans truncate">${servicoELocalDoCard(item)}</p>
+                  <p class="text-sm text-zinc-400 font-medium font-sans truncate">Oferecido por ${escaparHtml(item.name)}</p>
                 </div>
               </div>
 
@@ -11860,7 +11875,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${b2bRatingBadgeHTML(item)}
                 <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
               </div>` : ''}
-              ${categoriaDoFornecedorHtml(item)}
+              ${cidadeDoCardHtml(item)}
             </div>
           </div>
         </div>
@@ -11919,6 +11934,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ${(item.cardImage || item.image)
           ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
           : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
+        ${categoriaNaImagemHtml(item)}
         <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
           <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -11928,8 +11944,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
         <div class="flex items-start justify-between gap-2 min-w-0">
-          <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight min-w-0" title="${escaparHtml(item.name)}">${escaparHtml(item.name)}</h4>
-          ${categoriaDoFornecedorHtml(item)}
+          <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight min-w-0" title="${escaparHtml(tituloDoCard(item))}">${escaparHtml(tituloDoCard(item))}</h4>
+          ${cidadeDoCardHtml(item)}
         </div>
 
         <div class="flex items-center gap-1.5 text-sm text-zinc-600">
@@ -11937,7 +11953,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${b2bRatingBadgeHTML(item, true)}
           <span class="text-zinc-400">(${item.reviewsCount || 0})</span>
           <span class="text-zinc-400">·</span>` : ''}
-          <span class="truncate">${servicoELocalDoCard(item)}</span>
+          <span class="truncate">Oferecido por ${escaparHtml(item.name)}</span>
         </div>
 
         <div class="flex items-center gap-3 text-sm text-zinc-600 flex-wrap">

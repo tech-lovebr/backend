@@ -7141,3 +7141,8 @@ body[data-theme="dark"] .profile-logo-picker:not(.has-image):hover { background:
   .profile-avatar-picker .image-upload-zone-plus,
   .profile-logo-picker .image-upload-zone-plus { animation: none !important; }
 }
+
+/* Configurações › Imagem de Capa: a imagem preenche a caixa inteira (cover),
+   em vez de aparecer inteira com sobras dos lados. */
+.profile-logo-picker .logo-crop-img { object-fit: cover; }
+.profile-logo-picker.has-image { background: #FAFAFA; }

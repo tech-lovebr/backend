@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=541">
+  <link rel="stylesheet" href="css/styles.css?v=542">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -178,12 +178,10 @@
                 </div>
               </div>
 
-              <!-- Metade da largura, como o Sinal mínimo (grade de 2 colunas). -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label for="company-delivery-time" class="field-label">Prazo médio de entrega</label>
-                  <input id="company-delivery-time" type="text" class="field-input" placeholder="Ex: 15 dias antes do evento">
-                </div>
+              <!-- Prazo médio de entrega saiu da tela (fica escondido só para não
+                   perder o que já foi salvo). -->
+              <div hidden>
+                <input id="company-delivery-time" type="text" class="field-input">
               </div>
 
               <div class="form-section-header">
@@ -222,10 +220,10 @@
                 </div>
               </div>
 
-              <div>
-                <label for="company-cancellation-policy" class="field-label">Política de cancelamento e remarcação</label>
-                <p class="text-xs text-zinc-500 mb-2">Regra para devolução do sinal em caso de alteração da data do evento.</p>
-                <textarea id="company-cancellation-policy" class="field-textarea" style="min-height:100px;" placeholder="Ex: Em caso de remarcação com aviso de até 60 dias, o sinal é mantido para a nova data. Cancelamentos têm direito a 50% de devolução."></textarea>
+              <!-- Política de cancelamento e remarcação saiu da tela (escondida
+                   só para não perder o que já foi salvo). -->
+              <div hidden>
+                <textarea id="company-cancellation-policy" class="field-textarea"></textarea>
               </div>
 
             </form>

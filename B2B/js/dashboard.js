@@ -772,8 +772,9 @@ function formatShortDate(iso) {
 
 /* -------------------- Eventos e notícias -------------------- */
 
-// Notícias e workshops publicados no Admin (HUB/B2B → Conteúdo). Sem
-// resposta do banco, fica a lista fixa de data.js.
+// Notícias = artigos publicados na categoria Notícias do blog; workshops =
+// HUB/B2B › Dashboard › Conteúdo no Admin. Sem resposta do banco, fica a
+// lista fixa de data.js.
 async function renderNewsList() {
   const wrap = document.getElementById('dash-news-list');
   if (!wrap) return;
@@ -787,14 +788,26 @@ async function renderNewsList() {
   desenhar(B2B_DATA.news);
 
   try {
-    const { data, error } = await supabaseClient
-      .from('hub_conteudo')
-      .select('titulo, link_url, tipo, ordem')
-      .in('tipo', ['noticia', 'workshop'])
-      .eq('ativo', true)
-      .order('ordem', { ascending: true })
-      .limit(6);
-    if (error || !Array.isArray(data) || !data.length) return;
-    desenhar(data.map(i => ({ title: i.titulo, url: i.link_url || '#' })));
+    const [blog, workshops] = await Promise.all([
+      supabaseClient
+        .from('artigos')
+        .select('titulo, slug, publicado_em, artigo_categoria!inner(artigo_categorias!inner(slug))')
+        .eq('status', 'publicado')
+        .eq('artigo_categoria.artigo_categorias.slug', 'noticias')
+        .order('publicado_em', { ascending: false })
+        .limit(5),
+      supabaseClient
+        .from('hub_conteudo')
+        .select('titulo, link_url, ordem')
+        .eq('tipo', 'workshop')
+        .eq('ativo', true)
+        .order('ordem', { ascending: true })
+        .limit(3)
+    ]);
+
+    const noticias = (blog.data || []).map(a => ({ title: a.titulo, url: a.slug ? `https://love.com.br/blog/${a.slug}` : 'https://blog.love.com.br' }));
+    const eventos = (workshops.data || []).map(i => ({ title: i.titulo, url: i.link_url || '#' }));
+    const lista = [...noticias, ...eventos].slice(0, 6);
+    if (lista.length) desenhar(lista);
   } catch (e) { /* mantém a lista fixa */ }
 }

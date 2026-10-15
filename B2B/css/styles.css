@@ -6811,3 +6811,12 @@ body[data-theme="dark"] .profile-dropdown .topbar-dropdown-divider { background:
 @media (max-width: 767px) {
   .profile-dropdown .topbar-dropdown-divider { margin: 0.375rem -1rem; }
 }
+
+/* Etiqueta Ativo / Inativo: verde mais sóbrio (família do verde da marca,
+   #67974E) com borda fina, em vez do verde-claro padrão do Tailwind. */
+.status-badge.status-ativo { background: #F2F7EF; color: #3F6A2C; border: 1px solid #D3E3CA; }
+.status-badge.status-ativo::before { background: #67974E; }
+.status-badge.status-inativo { background: #FFFFFF; color: #71717A; border: 1px solid #E4E4E7; }
+.status-badge.status-inativo::before { background: #A1A1AA; }
+body[data-theme="dark"] .status-badge.status-ativo { background: rgba(103, 151, 78, 0.16) !important; color: #B7D3A8 !important; border-color: rgba(103, 151, 78, 0.4) !important; }
+body[data-theme="dark"] .status-badge.status-inativo { background: transparent !important; color: #A1A1AA !important; border-color: #404040 !important; }

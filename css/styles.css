@@ -7574,3 +7574,12 @@ html body button.chat-msg-mais:not(#love-h-a) { opacity: .55; }
 #b2b-chat-messages-container > div[data-msg-id] > img, #b2b-chat-messages-container > div[data-msg-id] > .love-avatar-box, #b2b-chat-messages-container > div[data-msg-id] > .chat-avatar-quadrado { align-self: flex-end; }
 .chat-msg-acoes { align-self: center; }
 html body button.chat-msg-copiar-direto:not(#love-h-a) svg { width: 16px; height: 16px; }
+
+/* Chat: ⋮ e copiar sem caixinha no hover — só um pulso e a cor do sidebar;
+   centralizados na altura da bolha (ficam na mesma linha dela). */
+@keyframes love-pulso { 0% { transform: scale(1); } 50% { transform: scale(1.22); } 100% { transform: scale(1); } }
+#b2b-chat-messages-container > div[data-msg-id] { align-items: flex-end; }
+html body button.chat-msg-mais:not(#love-h-a) { color: #181D24; opacity: .6; }
+html body button.chat-msg-mais:not(#love-h-a):hover,
+html body button.chat-msg-mais:not(#love-h-a):focus-visible { background: transparent; color: #181D24; opacity: 1; animation: love-pulso .35s ease; outline: none; }
+.chat-msg-acoes { align-self: center; margin-top: 0; }

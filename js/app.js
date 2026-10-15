@@ -14478,11 +14478,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (isMe) {
         row.innerHTML = `
-          ${menuHtml}
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
-            <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
-              ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
-              ${attachmentHTML}
+            <div class="flex items-center justify-end gap-2">
+              ${menuHtml}
+              <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left min-w-0">
+                ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
+                ${attachmentHTML}
+              </div>
             </div>
             <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
               ${msg.editedAt ? '<span>(editado)</span>' : ''}
@@ -14496,13 +14498,15 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
-            <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
-              ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
-              ${attachmentHTML}
+            <div class="flex items-center gap-2">
+              <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs min-w-0">
+                ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
+                ${attachmentHTML}
+              </div>
+              ${menuHtml}
             </div>
             <span class="text-[10px] text-zinc-400 pl-1 block">${msg.editedAt ? '(editado) ' : ''}${msg.time || 'Agora'}</span>
           </div>
-          ${menuHtml}
         `;
       }
 

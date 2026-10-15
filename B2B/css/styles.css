@@ -7025,32 +7025,3 @@ body[data-theme="dark"] .dash-range-cal .mini-cal-day.is-in-range { background: 
 .dashboard-panel-section > .dash-card { border-radius: 0 0 var(--radius-card) var(--radius-card); }
 .dash-analytics-header { position: relative; z-index: 5; }
 .dash-range-cal .mini-cal-month-label { text-transform: none; }
-
-/* Título de todos os drawers (Novo contato, Adicionar produto ou serviço,
-   compromisso, tarefa, formulário, comandos…): o mesmo do drawer
-   "Adicionar presente" do love.com.br — 24px (30px a partir de 640px),
-   negrito, #18181B, letras um pouco mais juntas. */
-.form-drawer .task-drawer-title,
-.form-drawer .task-drawer-title-input,
-.form-drawer .event-drawer-title-input,
-.form-drawer .form-drawer-title-input,
-.form-drawer .responses-drawer-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #18181B;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
-}
-@media (min-width: 640px) {
-  .form-drawer .task-drawer-title,
-  .form-drawer .task-drawer-title-input,
-  .form-drawer .event-drawer-title-input,
-  .form-drawer .form-drawer-title-input,
-  .form-drawer .responses-drawer-title { font-size: 1.875rem; }
-}
-body[data-theme="dark"] .form-drawer .task-drawer-title,
-body[data-theme="dark"] .form-drawer .task-drawer-title-input,
-body[data-theme="dark"] .form-drawer .event-drawer-title-input,
-body[data-theme="dark"] .form-drawer .form-drawer-title-input,
-body[data-theme="dark"] .form-drawer .responses-drawer-title { color: #FFFFFF !important; }

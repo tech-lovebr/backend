@@ -7395,3 +7395,11 @@ html body .table-drawer > div:first-child > button:not(#love-h-a):hover { backgr
    Presentes, Confirmar presença, Sobre, Presente, Carrinho) sempre em Inter,
    mesmo quando o convite usa outra fonte. */
 html body .convite-tela .convite-tela-titulo { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; font-weight: 700 !important; }
+
+/* Lista de presentes do convite: cards da mesma linha com a mesma altura e o
+   botão "Presentear" sempre colado embaixo — com ou sem a barrinha da
+   vaquinha, os botões ficam nivelados. Barrinha um pouco mais grossa. */
+.convite-presente { display: flex; flex-direction: column; }
+.convite-presente-texto { display: flex; flex-direction: column; flex: 1 1 auto; }
+.convite-presente-botao { margin-top: auto; }
+.convite-presente-mini-barra { height: 8px; margin: -.25rem 0 .75rem; }

@@ -7304,3 +7304,9 @@ body[data-theme="dark"] .hub-confirmar-titulo { color: #FFFFFF !important; }
 /* Leads › WhatsApp: o ícone fica por cima da caixa (o campo com botão de
    copiar passou a cobri-lo). */
 .lead-whatsapp-field .lead-whatsapp-icon { z-index: 2; }
+
+/* Leads: caixinha no meio-termo entre o ID e o nome (24px de cada lado).
+   A coluna ID encolhe para o tamanho do número. */
+#leads-table-card .leads-table th.col-id,
+#leads-table-card .leads-table td.col-id { width: 1%; white-space: nowrap; padding-right: 8px; }
+#leads-table-card .lead-nome-cel { gap: 24px; }

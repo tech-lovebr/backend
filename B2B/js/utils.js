@@ -102,6 +102,9 @@ function formatDateDigits(digits) {
 }
 
 function wireDateMaskInput(input) {
+  // Vazio, mostra só as barrinhas com espaço ("   /   /") para indicar
+  // dia, mês e ano. Espaços não separáveis para o navegador não juntá-los.
+  if (!input.placeholder) input.placeholder = '    /    /';
   input.addEventListener('input', (e) => {
     const digits = input.value.replace(/\D/g, '').slice(0, 8);
     const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;

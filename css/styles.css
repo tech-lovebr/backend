@@ -7189,7 +7189,7 @@ html body #btn-gifts-delete-selected:hover { border-color: #181D24; color: #181D
    ========================================================================== */
 html body #btn-host-add-gift:not(#love-h-a),
 html body #btn-host-add-random-gift:not(#love-h-a),
-html body #btn-gifts-delete-selected:not(#love-h-a),
+html body #btn-gifts-delete-selected:not(#love-h-a):not(.hidden),
 html body #builder-save:not(#love-h-a),
 html body #builder-publish:not(#love-h-a),
 html body #builder-undo:not(#love-h-a),

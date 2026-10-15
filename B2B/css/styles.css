@@ -7017,3 +7017,11 @@ body[data-theme="dark"] .dash-range-cal .mini-cal-day.is-in-range { background: 
 .dash-analytics-period-popover .dash-range-cal .mini-cal-day,
 .dash-analytics-period-popover .dash-range-cal .mini-cal-nav-btn { padding: 0; text-align: center; justify-content: center; }
 .dash-range-cal .mini-cal-day { aspect-ratio: auto; }
+
+/* O menu de período do Analytics precisa sair do card: sem cortar o que
+   passa da borda (os cantos arredondados ficam no cabeçalho e no corpo). */
+.dashboard-panel-section { overflow: visible; }
+.dashboard-panel-section > .dashboard-panel-header { border-radius: var(--radius-card) var(--radius-card) 0 0; }
+.dashboard-panel-section > .dash-card { border-radius: 0 0 var(--radius-card) var(--radius-card); }
+.dash-analytics-header { position: relative; z-index: 5; }
+.dash-range-cal .mini-cal-month-label { text-transform: none; }

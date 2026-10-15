@@ -116,7 +116,7 @@ const ContaDrawer = (() => {
           safeSelect('eventos', '*'),
           safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
           safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at'),
-          safeSelect('convidados', 'evento_id, cliente_id, status'),
+          safeSelect('convidados', 'evento_id, cliente_id, status, extra'),
           safeSelect('presentes', 'evento_id, cliente_id, valor, status'),
           safeSelect('products', '*')
         ]);
@@ -738,7 +738,8 @@ const ContaDrawer = (() => {
     const presentes = (DADOS.presentes || []).filter(p => p.evento_id === evento.id);
     const recebidos = presentes.filter(p => p.status === 'recebido');
 
-    const porStatus = st => convidados.filter(g => g.status === st).length;
+    const somarPessoas = lista => lista.reduce((t, g) => t + pessoasDoConvidado(g), 0);
+    const porStatus = st => somarPessoas(convidados.filter(g => g.status === st));
     const somar = lista => lista.reduce((t, p) => t + (Number(p.valor) || 0), 0);
 
     const convite = evento.slug ? `https://love.com.br/${evento.slug}` : null;
@@ -762,7 +763,7 @@ const ContaDrawer = (() => {
       body: `
         <div class="lista-dados">
           ${dado('Data do evento', escapeHtml(formatDate(evento.data_evento) || '—'))}
-          ${dado('Convidados', formatNumber(convidados.length))}
+          ${dado('Convidados', formatNumber(somarPessoas(convidados)))}
         </div>
 
         <div class="stat-row stat-row--convidados stat-row--compacto">

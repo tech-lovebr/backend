@@ -14,6 +14,27 @@ function formatNumber(value) {
   return new Intl.NumberFormat('pt-BR').format(Number(value) || 0);
 }
 
+/* ------------------------------------------------------------ Convidados
+   Uma linha de `convidados` é uma reserva: o convidado e os acompanhantes
+   dele, guardados em `extra` pela plataforma. Conta-se pessoas, não
+   linhas — a mesma regra de pessoasDaReserva em js/app.js (1 + 1 = 2). */
+
+function pessoasDoConvidado(g) {
+  const extra = (g && g.extra) || {};
+  const nomes = (extra.companionsNames || []).filter(n => String(n || '').trim()).length;
+  const detalhados = (extra.companionsDetailed || []).length;
+  return 1 + Math.max(nomes, detalhados, parseInt(extra.companions, 10) || 0);
+}
+
+/** Crianças na reserva: o próprio convidado, se for criança, e os acompanhantes criança/bebê. */
+function criancasDoConvidado(g) {
+  const extra = (g && g.extra) || {};
+  const acompanhantes = Number.isFinite(extra.children)
+    ? extra.children
+    : (extra.companionsDetailed || []).filter(c => c.ageGroup === 'child' || c.ageGroup === 'baby').length;
+  return acompanhantes + (g.tipo === 'crianca' ? 1 : 0);
+}
+
 function formatDate(value) {
   if (!value) return '—';
   // Datas puras (YYYY-MM-DD) são interpretadas como UTC pelo Date e podem

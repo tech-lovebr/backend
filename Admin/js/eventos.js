@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const [eventos, clientes, convidados, presentes] = await Promise.all([
     safeSelect('eventos', '*'),
     safeSelect('clientes', 'id, couple_name, email'),
-    safeSelect('convidados', 'evento_id, status, tipo'),
+    safeSelect('convidados', 'evento_id, status, tipo, extra'),
     safeSelect('presentes', 'evento_id, valor, status')
   ]);
 
@@ -51,11 +51,14 @@ function montarMetricas(convidados, presentes) {
 
   convidados.forEach(g => {
     const b = bucket(g.evento_id);
-    b.convidados += 1;
-    if (g.status === 'confirmado') b.confirmados += 1;
-    else if (g.status === 'recusado') b.recusados += 1;
-    else b.pendentes += 1;
-    if (g.tipo === 'crianca') b.criancas += 1; else b.adultos += 1;
+    const pessoas = pessoasDoConvidado(g);
+    const criancas = Math.min(criancasDoConvidado(g), pessoas);
+    b.convidados += pessoas;
+    if (g.status === 'confirmado') b.confirmados += pessoas;
+    else if (g.status === 'recusado') b.recusados += pessoas;
+    else b.pendentes += pessoas;
+    b.criancas += criancas;
+    b.adultos += pessoas - criancas;
   });
 
   presentes.forEach(p => {

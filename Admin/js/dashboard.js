@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     safeSelect('eventos', '*'),
     safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
     safeSelect('contracts', 'fornecedor_id, valor_total, status, created_at'),
-    safeSelect('convidados', 'evento_id, cliente_id, status'),
+    safeSelect('convidados', 'evento_id, cliente_id, status, extra'),
     safeSelect('presentes', 'evento_id, cliente_id, valor, status'),
     // Só o drawer usa: é ele quem lista os produtos do fornecedor.
     safeSelect('products', '*')

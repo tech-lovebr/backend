@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const [clientes, eventos, convidados, presentes, carteira, conversas, contas] = await Promise.all([
     safeSelect('clientes', '*'),
     safeSelect('eventos', 'id, cliente_id, titulo, tipo, data_evento, status, slug'),
-    safeSelect('convidados', 'cliente_id, status'),
+    safeSelect('convidados', 'cliente_id, status, extra'),
     safeSelect('presentes', 'cliente_id, valor, status'),
     safeSelect('cliente_wallet_transactions', 'cliente_id, type, amount'),
     safeSelect('conversations', 'cliente_id'),
@@ -106,8 +106,9 @@ function montarMetricas({ eventos, convidados, presentes, carteira, conversas })
 
   convidados.forEach(g => {
     const b = bucket(g.cliente_id);
-    b.convidados += 1;
-    if (g.status === 'confirmado') b.confirmados += 1;
+    const pessoas = pessoasDoConvidado(g);
+    b.convidados += pessoas;
+    if (g.status === 'confirmado') b.confirmados += pessoas;
   });
 
   presentes.forEach(p => {

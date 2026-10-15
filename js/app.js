@@ -13761,8 +13761,10 @@ document.addEventListener('DOMContentLoaded', () => {
         lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
         time: last ? formatB2BChatTime(last.created_at) : '',
         messages: msgs.map(m => ({
+          id: m.id,
           sender: m.sender_role === 'cliente' ? 'me' : 'them',
           text: m.text,
+          editedAt: m.edited_at || null,
           time: formatB2BChatTime(m.created_at),
           attachment: m.attachment_url ? { type: m.attachment_type || 'doc', url: m.attachment_url, name: 'Anexo' } : null
         }))
@@ -14439,14 +14441,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      const menuHtml = msg.id ? `
+          <div class="chat-msg-acoes${isMe ? ' is-minha' : ''}">
+            <button type="button" class="chat-msg-mais" title="Mais opções" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+            <div class="chat-msg-menu hidden">
+              ${isMe && msg.text ? '<button type="button" class="chat-msg-opcao chat-msg-editar">Editar</button>' : ''}
+              ${msg.text ? '<button type="button" class="chat-msg-opcao chat-msg-copiar">Copiar</button>' : ''}
+            </div>
+          </div>` : '';
+      row.dataset.msgId = msg.id || '';
+
       if (isMe) {
         row.innerHTML = `
+          ${menuHtml}
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
             <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
-              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
+              ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
               ${attachmentHTML}
             </div>
             <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
+              ${msg.editedAt ? '<span>(editado)</span>' : ''}
               <span>${msg.time || 'Agora'}</span>
               <span class="text-[#537bae] font-bold">✓✓</span>
             </div>
@@ -14458,11 +14472,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
             <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
-              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
+              ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
               ${attachmentHTML}
             </div>
-            <span class="text-[10px] text-zinc-400 pl-1 block">${msg.time || 'Agora'}</span>
+            <span class="text-[10px] text-zinc-400 pl-1 block">${msg.editedAt ? '(editado) ' : ''}${msg.time || 'Agora'}</span>
           </div>
+          ${menuHtml}
         `;
       }
 
@@ -14471,6 +14486,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
     container.scrollTop = container.scrollHeight;
   }
+
+  // ⋯ da mensagem: Editar (só as minhas) e Copiar. Editar troca o texto da
+  // bolha por um campo; Salvar grava em messages (edited_at) e redesenha.
+  (function ligarMenuDasMensagens() {
+    const container = document.getElementById('b2b-chat-messages-container');
+    if (!container) return;
+    const fecharMenus = () => container.querySelectorAll('.chat-msg-menu').forEach(m => m.classList.add('hidden'));
+    document.addEventListener('click', (e) => { if (!e.target.closest('.chat-msg-acoes')) fecharMenus(); });
+
+    container.addEventListener('click', async (e) => {
+      const mais = e.target.closest('.chat-msg-mais');
+      if (mais) {
+        const menu = mais.nextElementSibling;
+        const aberto = !menu.classList.contains('hidden');
+        fecharMenus();
+        if (!aberto) menu.classList.remove('hidden');
+        return;
+      }
+      const row = e.target.closest('[data-msg-id]');
+      if (!row) return;
+      const conv = b2bConversationsData.find(c => c.id === activeB2BConversationId);
+      const msg = conv && conv.messages.find(m => m.id === row.dataset.msgId);
+      if (!msg) return;
+
+      if (e.target.closest('.chat-msg-copiar')) {
+        fecharMenus();
+        try { await navigator.clipboard.writeText(msg.text || ''); } catch (err) { window.prompt('Copie a mensagem:', msg.text || ''); }
+        return;
+      }
+
+      if (e.target.closest('.chat-msg-editar')) {
+        fecharMenus();
+        const p = row.querySelector('.chat-msg-texto');
+        if (!p || row.querySelector('.chat-msg-editor')) return;
+        const editor = document.createElement('div');
+        editor.className = 'chat-msg-editor';
+        editor.innerHTML = `
+          <textarea class="chat-msg-editor-campo" rows="3"></textarea>
+          <div class="chat-msg-editor-botoes">
+            <button type="button" class="chat-msg-editor-salvar">Salvar</button>
+            <button type="button" class="chat-msg-editor-cancelar">Cancelar</button>
+          </div>
+          <p class="chat-msg-editor-erro hidden"></p>`;
+        editor.querySelector('textarea').value = msg.text || '';
+        p.replaceWith(editor);
+        const campo = editor.querySelector('textarea');
+        campo.focus();
+        campo.setSelectionRange(campo.value.length, campo.value.length);
+        campo.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Escape') { ev.preventDefault(); renderB2BChatMessages(); }
+          if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); editor.querySelector('.chat-msg-editor-salvar').click(); }
+        });
+        return;
+      }
+
+      if (e.target.closest('.chat-msg-editor-cancelar')) { renderB2BChatMessages(); return; }
+
+      const salvar = e.target.closest('.chat-msg-editor-salvar');
+      if (salvar) {
+        const editor = row.querySelector('.chat-msg-editor');
+        const campo = editor.querySelector('textarea');
+        const erro = editor.querySelector('.chat-msg-editor-erro');
+        const novo = campo.value.trim();
+        if (!novo) { erro.textContent = 'A mensagem não pode ficar vazia.'; erro.classList.remove('hidden'); return; }
+        if (novo === (msg.text || '').trim()) { renderB2BChatMessages(); return; }
+        salvar.disabled = true;
+        const quando = new Date().toISOString();
+        const { error } = await supabaseClient.from('messages').update({ text: novo, edited_at: quando }).eq('id', msg.id);
+        salvar.disabled = false;
+        if (error) {
+          console.error('[chat] editar mensagem:', error);
+          erro.textContent = /column|edited_at|policy|permission/i.test(error.message || '') ? 'Edição ainda não liberada no banco (migration 057).' : 'Não foi possível salvar agora. Tente de novo.';
+          erro.classList.remove('hidden');
+          return;
+        }
+        msg.text = novo;
+        msg.editedAt = quando;
+        if (conv.messages[conv.messages.length - 1] === msg) conv.lastMessage = novo;
+        renderB2BChatMessages();
+      }
+    });
+  })();
 
   // Avatar das minhas mensagens no chat: a foto da conta ou as iniciais do
   // nome (ex.: VM) no mesmo estilo do Hub B2B (quadrado, azul-claro).

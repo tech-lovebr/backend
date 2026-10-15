@@ -7300,3 +7300,7 @@ body[data-theme="dark"] .gifts-select-all-check { background: #252525; border-co
 .hub-confirmar-acoes { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.25rem; }
 .hub-confirmar-acoes .btn-primary, .hub-confirmar-acoes .btn-secondary { height: 36px; padding: 0 1.1rem; }
 body[data-theme="dark"] .hub-confirmar-titulo { color: #FFFFFF !important; }
+
+/* Leads › WhatsApp: o ícone fica por cima da caixa (o campo com botão de
+   copiar passou a cobri-lo). */
+.lead-whatsapp-field .lead-whatsapp-icon { z-index: 2; }

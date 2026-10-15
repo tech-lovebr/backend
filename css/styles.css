@@ -7390,3 +7390,8 @@ html body .table-drawer > div:first-child > button:not(#love-h-a):hover { backgr
 .convite-carrinho-remover:hover { background: #F4F4F5; color: #18181B; }
 .convite-carrinho-total { display: flex; justify-content: space-between; align-items: center; padding: .85rem .25rem 0; font-size: .9375rem; color: #3F3F46; border-top: 1px solid #E4E4E7; }
 .convite-carrinho-total strong { font-size: 1.25rem; font-weight: 700; color: #18181B; }
+
+/* Convite publicado: título das telas internas (Informações, Lista de
+   Presentes, Confirmar presença, Sobre, Presente, Carrinho) sempre em Inter,
+   mesmo quando o convite usa outra fonte. */
+html body .convite-tela .convite-tela-titulo { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; font-weight: 700 !important; }

@@ -9769,34 +9769,6 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 
   // ==========================================
-  // Configurações › Nome e Sobrenome: primeira letra de cada palavra em
-  // maiúscula também no computador (no celular o teclado já faz isso).
-  // "de/da/do/dos/das/e" ficam minúsculas fora do começo. Não mexe nas
-  // outras letras e mantém o cursor no lugar.
-  // ==========================================
-  const PARTICULAS_DE_NOME = ['da', 'de', 'do', 'das', 'dos', 'e'];
-  function maiusculaNoNome(texto) {
-    let palavra = 0;
-    return String(texto || '').replace(/(^|\s)(\S)(\S*)/g, (m, espaco, primeira, resto) => {
-      const inteira = (primeira + resto);
-      const ehParticula = palavra > 0 && PARTICULAS_DE_NOME.includes(inteira.toLowerCase());
-      palavra++;
-      return espaco + (ehParticula ? primeira.toLowerCase() : primeira.toLocaleUpperCase('pt-BR')) + resto;
-    });
-  }
-  ['settings-user-first-name', 'settings-user-last-name'].forEach(id => {
-    const campo = document.getElementById(id);
-    if (!campo) return;
-    campo.addEventListener('input', () => {
-      const novo = maiusculaNoNome(campo.value);
-      if (novo === campo.value) return;
-      const ini = campo.selectionStart, fim = campo.selectionEnd;
-      campo.value = novo;
-      try { campo.setSelectionRange(ini, fim); } catch (e) {}
-    });
-  });
-
-  // ==========================================
   // Informações › música de fundo (link do YouTube)
   // ==========================================
   // Aceita youtube.com/watch?v=, youtu.be/, /shorts/, /embed/ e music.youtube.com.

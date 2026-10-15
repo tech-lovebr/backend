@@ -132,3 +132,35 @@ function dadosDoDispositivo() {
 
   return { dispositivo: aparelho, navegador };
 }
+
+// ==========================================
+// Nomes de pessoas com a primeira letra de cada palavra em maiúscula,
+// também no computador (no celular o teclado já faz isso): cadastro,
+// Configurações da conta e convidados/acompanhantes. "de/da/do/dos/das/e"
+// ficam minúsculas fora do começo; as outras letras ficam como digitadas
+// e o cursor não sai do lugar.
+// ==========================================
+const PARTICULAS_DE_NOME = ['da', 'de', 'do', 'das', 'dos', 'e'];
+function maiusculaNoNome(texto) {
+  let palavra = 0;
+  return String(texto || '').replace(/(^|\s)(\S)(\S*)/g, (m, espaco, primeira, resto) => {
+    const ehParticula = palavra > 0 && PARTICULAS_DE_NOME.includes((primeira + resto).toLowerCase());
+    palavra++;
+    return espaco + (ehParticula ? primeira.toLowerCase() : primeira.toLocaleUpperCase('pt-BR')) + resto;
+  });
+}
+const CAMPOS_DE_NOME_PROPRIO = [
+  '#settings-user-first-name', '#settings-user-last-name',
+  '#onboard-firstname-input', '#onboard-lastname-input',
+  '#guest-name-input', '.guest-companion-name-input',
+  '[data-nome-proprio]'
+].join(', ');
+document.addEventListener('input', (e) => {
+  const campo = e.target;
+  if (!campo || !campo.matches || !campo.matches(CAMPOS_DE_NOME_PROPRIO)) return;
+  const novo = maiusculaNoNome(campo.value);
+  if (novo === campo.value) return;
+  const ini = campo.selectionStart, fim = campo.selectionEnd;
+  campo.value = novo;
+  try { campo.setSelectionRange(ini, fim); } catch (err) {}
+});

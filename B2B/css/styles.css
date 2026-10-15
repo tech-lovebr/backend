@@ -7146,3 +7146,8 @@ body[data-theme="dark"] .profile-logo-picker:not(.has-image):hover { background:
    em vez de aparecer inteira com sobras dos lados. */
 .profile-logo-picker .logo-crop-img { object-fit: cover; }
 .profile-logo-picker.has-image { background: #FAFAFA; }
+
+/* Janela "Ajustar imagem de capa": mesmo formato (320 × 130) e mesma regra
+   de preenchimento (cover) da caixa da capa — o que se vê aqui é o que fica. */
+.profile-logo-adjust-frame { aspect-ratio: 320 / 130; background: #FAFAFA; }
+.profile-logo-adjust-frame .logo-crop-img { object-fit: cover; }

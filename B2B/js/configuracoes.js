@@ -5,7 +5,9 @@
 const PROFILE_LOGO_PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>';
 const PROFILE_LOGO_IMAGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>';
 const PROFILE_LOGO_CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
-const PROFILE_LOGO_ASPECT_RATIO = 8 / 5;
+// Mesmo formato da caixa "Imagem de Capa" (320 × 130px): o que se ajusta
+// na janela de enquadramento é exatamente o que aparece na caixa.
+const PROFILE_LOGO_ASPECT_RATIO = 320 / 130;
 const PROFILE_AVATAR_ASPECT_RATIO = 1;
 const PROFILE_STORAGE_KEY = 'b2b-professional-profile';
 
@@ -780,12 +782,9 @@ function renderProfileLogoPicker() {
   const applyFile = (file) => readFileAsDataUrl(file, (dataUrl) => {
     const img = new Image();
     img.onload = () => {
-      let scale = 1, offsetX = 0, offsetY = 0;
-      const bbox = detectImageContentBBox(img);
-      if (bbox) {
-        const auto = computeAutoFillCrop(bbox, PROFILE_LOGO_ASPECT_RATIO);
-        if (auto) { scale = auto.scale; offsetX = auto.offsetX; offsetY = auto.offsetY; }
-      }
+      // Capa preenche a caixa (cover): começa centralizada, sem zoom; a
+      // pessoa ajusta na janela de enquadramento.
+      const scale = 1, offsetX = 0, offsetY = 0;
       p.logo = dataUrl;
       p.logoScale = scale;
       p.logoOffsetX = offsetX;

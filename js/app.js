@@ -5905,6 +5905,9 @@ document.addEventListener('DOMContentLoaded', () => {
       wrap.classList.toggle('hidden', checks.length === 0);
       wrap.classList.toggle('flex', checks.length > 0);
     }
+    // Sem card na tela (lista vazia ou busca sem resultado), a faixa some
+    // inteira para não deixar um espaço em branco acima da lista.
+    document.getElementById('gifts-select-bar')?.classList.toggle('hidden', checks.length === 0);
     if (todos) {
       const marcados = checks.filter(c => c.checked).length;
       todos.checked = checks.length > 0 && marcados === checks.length;

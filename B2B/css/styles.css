@@ -7378,3 +7378,38 @@ body[data-theme="dark"] .chat-msg-edicao-campo { background: #252525 !important;
 }
 @keyframes chat-acao-pulso { 0% { transform: scale(1); } 50% { transform: scale(1.22); } 100% { transform: scale(1); } }
 body[data-theme="dark"] .chat-msg-acao-btn { color: #FFFFFF !important; background: transparent !important; }
+
+/* ==========================================================================
+   Configurações: caixa única (modelo enviado) — abas no topo da caixa, em
+   texto com sublinhado na ativa, e o conteúdo da aba logo abaixo. As caixas
+   de dentro viram seções separadas por uma linha, sem caixa dentro de caixa.
+   ========================================================================== */
+.settings-shell {
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px;
+}
+.settings-shell > .category-tabs-bar {
+  margin: 0; padding: 0 1.5rem; gap: 2rem;
+  border-bottom: 1px solid #E4E4E7;
+}
+.settings-shell > .category-tabs-bar .category-tab {
+  font-size: 0.9375rem; font-weight: 600; color: #52525B;
+  padding: 1rem 0 0.85rem; border-bottom-width: 2px;
+}
+.settings-shell > .category-tabs-bar .category-tab:hover { color: #181D24; }
+.settings-shell > .category-tabs-bar .category-tab.active { color: #183B54; border-bottom-color: #183B54; }
+.settings-shell [data-settings-panel] { padding: 1.5rem; }
+.settings-shell [data-settings-panel] > .dash-card {
+  background: transparent; border: none !important; box-shadow: none; border-radius: 0;
+  padding: 0; margin: 0;
+}
+.settings-shell [data-settings-panel] > .dash-card + .dash-card {
+  border-top: 1px solid #E4E4E7 !important; padding-top: 1.5rem; margin-top: 1.5rem;
+}
+.settings-secao-titulo { font-size: 1.125rem; font-weight: 700; color: #181D24; margin: 0; }
+.settings-secao-titulo--painel { margin-bottom: 1.25rem; }
+.settings-secao-nota { font-size: 0.75rem; color: #71717A; margin: 0.2rem 0 1.25rem; }
+body[data-theme="dark"] .settings-shell { background: #181D24 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .settings-shell > .category-tabs-bar { border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .settings-shell [data-settings-panel] > .dash-card { background: transparent !important; }
+body[data-theme="dark"] .settings-shell [data-settings-panel] > .dash-card + .dash-card { border-top-color: #404040 !important; }
+body[data-theme="dark"] .settings-secao-titulo { color: #FFFFFF !important; }

@@ -167,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // dava pra ver esse "pulo" pela Visão Geral antes da página certa aparecer.
   let pendingInitialDashboardRoute = null;
 
+  // Presentes marcados na caixinha do card (Meus presentes) — exclusão em massa.
+  const presentesSelecionados = new Set();
+
   // Navegação programática (ex.: botão "Checklist do Evento" no dashboard)
   // que precisa abrir já num sub-item específico de uma aba, sem precisar
   // clicar nele — setado antes de switchRailTab(), consumido e zerado logo
@@ -5824,6 +5827,44 @@ document.addEventListener('DOMContentLoaded', () => {
     return { error: null };
   }
 
+  function atualizarLixeiraDePresentes() {
+    const btn = document.getElementById('btn-gifts-delete-selected');
+    if (!btn) return;
+    const qtd = presentesSelecionados.size;
+    btn.classList.toggle('hidden', qtd === 0);
+    btn.classList.toggle('flex', qtd > 0);
+    const cont = document.getElementById('gifts-selected-count');
+    if (cont) cont.textContent = String(qtd);
+    btn.title = qtd === 1 ? 'Excluir 1 presente selecionado' : `Excluir ${qtd} presentes selecionados`;
+  }
+
+  document.getElementById('btn-gifts-delete-selected')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    const evento = getActiveEvent();
+    const ids = [...presentesSelecionados];
+    if (!evento || !ids.length || btn.disabled) return;
+    const pergunta = ids.length === 1 ? 'Excluir o presente selecionado?' : `Excluir os ${ids.length} presentes selecionados?`;
+    if (!confirm(pergunta)) return;
+
+    btn.disabled = true;
+    const doBanco = ids.filter(ehUuid);
+    let erro = null;
+    if (doBanco.length) {
+      const { error } = await supabaseClient.from('presentes').delete().in('id', doBanco);
+      if (error) { console.error('Erro ao excluir presentes:', error); erro = error; }
+    }
+    btn.disabled = false;
+    if (erro) {
+      alert('Não foi possível excluir os presentes agora. Tente de novo.');
+      return;
+    }
+    const apagados = new Set(ids);
+    evento.giftList = (evento.giftList || []).filter(g => !apagados.has(g.id));
+    presentesSelecionados.clear();
+    const searchInput = document.getElementById('gifts-search-input');
+    renderHostGifts(searchInput ? searchInput.value : '');
+  });
+
   async function excluirPresenteNoBanco(giftId) {
     if (!ehUuid(giftId)) return { error: null };
     const { error } = await supabaseClient.from('presentes').delete().eq('id', giftId);
@@ -6215,6 +6256,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
     if (totalValueEl) totalValueEl.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+    // Seleção só de presentes que ainda existem neste evento.
+    const idsDaLista = new Set(giftList.map(g => g.id));
+    [...presentesSelecionados].forEach(id => { if (!idsDaLista.has(id)) presentesSelecionados.delete(id); });
+    atualizarLixeiraDePresentes();
+
     // Filtra presentes caso haja busca ativa
     let filteredGifts = giftList;
     if (searchQuery && searchQuery.trim()) {
@@ -6260,6 +6306,10 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <!-- Topo do Card: Imagem com Proporção Ampla e Background Suave -->
         <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden">
+          <label class="gift-select-box" title="Selecionar presente">
+            <input type="checkbox" class="gift-select-check" ${presentesSelecionados.has(gift.id) ? 'checked' : ''} aria-label="Selecionar ${escaparHtml(gift.title || 'presente')}">
+            <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+          </label>
           ${gift.image
             ? `<img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full flex items-center justify-center bg-zinc-100 text-zinc-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div>'}
@@ -6298,10 +6348,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <button type="button" class="btn-edit-gift flex-1 py-2 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-all font-sans cursor-pointer text-center">
                 Editar
               </button>
-              <button type="button" class="btn-delete-gift p-2 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 transition-all cursor-pointer shrink-0 flex items-center justify-center" title="Excluir presente" data-gift-id="${gift.id}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/>
-                </svg>
-              </button>
             </div>
           ` : `
             <div class="pt-1 mt-auto">
@@ -6322,21 +6368,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
-      // Evento de exclusão do presente
-      const btnDelete = card.querySelector('.btn-delete-gift');
-      if (btnDelete) {
-        btnDelete.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          if (btnDelete.disabled) return;
-          btnDelete.disabled = true;
-          const { error } = await excluirPresenteNoBanco(gift.id).catch(err => ({ error: err }));
-          btnDelete.disabled = false;
-          if (error) return;
-          activeEvent.giftList = activeEvent.giftList.filter(g => g.id !== gift.id);
-          const searchInput = document.getElementById('gifts-search-input');
-          renderHostGifts(searchInput ? searchInput.value : '');
-          showToast(`Presente "${gift.title}" excluído da lista.`, '🗑️');
+      // Caixinha de seleção (exclusão em massa pela lixeira do topo)
+      const checkSelecao = card.querySelector('.gift-select-check');
+      if (checkSelecao) {
+        checkSelecao.closest('.gift-select-box').addEventListener('click', (e) => e.stopPropagation());
+        checkSelecao.addEventListener('change', () => {
+          if (checkSelecao.checked) presentesSelecionados.add(gift.id);
+          else presentesSelecionados.delete(gift.id);
+          card.classList.toggle('gift-card-selecionado', checkSelecao.checked);
+          atualizarLixeiraDePresentes();
         });
+        card.classList.toggle('gift-card-selecionado', checkSelecao.checked);
       }
 
 

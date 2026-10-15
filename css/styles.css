@@ -7170,3 +7170,13 @@ html body button.faq-categoria-btn.ativa:not(#love-faq-a):not(#love-faq-b) { bor
 html body button.love-tab-item.love-tab-item:not(#love-tab-a):not(#love-tab-b):not(#love-tab-c) {
   border-radius: 0 !important;
 }
+
+/* Meus presentes: caixinha de seleção no canto superior direito da imagem */
+.gift-select-box { position: absolute; top: .625rem; right: .625rem; z-index: 20; display: inline-flex; cursor: pointer; }
+.gift-select-box input { position: absolute; opacity: 0; width: 0; height: 0; }
+.gift-select-box span { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 1.5px solid #D4D4D8; border-radius: 6px; color: transparent; box-shadow: 0 1px 3px rgba(0,0,0,.12); transition: border-color .15s, background-color .15s; }
+.gift-select-box span svg { width: 14px; height: 14px; }
+.gift-select-box:hover span { border-color: #181D24; }
+.gift-select-box input:checked + span { background: #183b54; border-color: #183b54; color: #fff; }
+.gift-select-box input:focus-visible + span { border-color: #181D24; }
+html body #btn-gifts-delete-selected:hover { border-color: #181D24; color: #181D24; background: #fff; }

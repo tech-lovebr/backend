@@ -10306,6 +10306,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Botão de perfil do cabeçalho: a foto da conta (avatar_url) ou, sem foto,
+  // as iniciais do nome + sobrenome (ex.: Victor Maranhão → VM). Vale para
+  // toda conta; sem sessão continua o ícone de pessoa.
+  function iniciaisDaConta(perfil) {
+    const p = perfil || {};
+    let primeiro = String(p.first_name || '').trim();
+    let sobrenome = String(p.last_name || '').trim();
+    if (!primeiro) {
+      const partes = String(p.full_name || p.couple_name || '').trim().split(/\s+/).filter(Boolean);
+      primeiro = partes[0] || '';
+      sobrenome = partes[1] || '';
+    } else if (sobrenome) {
+      const partes = sobrenome.split(/\s+/).filter(Boolean);
+      sobrenome = partes[0] || '';
+    }
+    const letra = t => (String(t).match(/[\p{L}\p{N}]/u) || [''])[0];
+    return (letra(primeiro) + letra(sobrenome)).toLocaleUpperCase('pt-BR');
+  }
+
+  function atualizarAvatarDoCabecalho() {
+    const alvo = document.getElementById('header-user-avatar');
+    const icone = document.getElementById('header-user-icon');
+    if (!alvo) return;
+    const perfil = window.loveClienteProfile;
+    const foto = perfil && perfil.avatar_url;
+    const iniciais = iniciaisDaConta(perfil);
+    if (!perfil || (!foto && !iniciais)) {
+      alvo.classList.add('hidden');
+      if (icone) icone.classList.remove('hidden');
+      return;
+    }
+    alvo.innerHTML = foto
+      ? `<img src="${escaparHtml(foto)}" alt="">`
+      : escaparHtml(iniciais);
+    alvo.classList.remove('hidden');
+    if (icone) icone.classList.add('hidden');
+  }
+
   // 10.1a Verificação em duas etapas (TOTP) no login
   async function precisaCodigoMfa() {
     const { data, error } = await supabaseClient.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -13508,6 +13546,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.loveClienteProfile) {
         Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name });
       }
+      atualizarAvatarDoCabecalho();
       const dropdownUsername = document.getElementById('account-dropdown-username');
       if (dropdownUsername) dropdownUsername.textContent = name;
 
@@ -14049,6 +14088,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.loveClienteSession = session;
     window.loveClienteProfile = cliente;
+    atualizarAvatarDoCabecalho();
     const dropdownUsername = document.getElementById('account-dropdown-username');
     if (dropdownUsername) dropdownUsername.textContent = cliente.couple_name;
 

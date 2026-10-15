@@ -6877,3 +6877,24 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
   border-bottom: 1.5px solid #D4D4D8;
   border-bottom-left-radius: 4px;
 }
+
+
+/* Botão de perfil do cabeçalho: foto da conta ou iniciais do nome. */
+.header-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: #183b54;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.header-user-avatar.hidden { display: none !important; }
+.header-user-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#header-user-icon.hidden { display: none !important; }

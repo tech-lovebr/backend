@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
     placeholder: 'Buscar lead, e-mail ou CPF...',
     filtros: [
+      { chave: 'tipo', rotulo: 'Tipo do evento', opcoes: () => [...new Set(crmLeads.map(l => l.tipo_evento).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'estado', rotulo: 'Estado', opcoes: () => [...new Set(crmLeads.map(l => l.estado).filter(Boolean))].sort().map(v => [v, v]) }
     ],
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       { titulo: 'Endereço', valor: l => l.endereco },
       { titulo: 'Estado', valor: l => l.estado },
       { titulo: 'Cidade', valor: l => l.cidade },
+      { titulo: 'Tipo do evento', valor: l => l.tipo_evento },
       { titulo: 'Produto/serviço', valor: l => l.event_name },
       { titulo: 'Data do orçamento', valor: l => l.data_orcamento },
       { titulo: 'Data do evento', valor: l => l.event_date },
@@ -58,6 +60,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadLeads() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { crmLeads = []; return; }
+
+  // Quem conversa com você no chat já é lead: garante um lead para cada
+  // conversa e completa data/tipo do evento (migration 057). Sem a
+  // migration, segue só com os leads que existem.
+  try { await supabaseClient.rpc('sincronizar_leads_do_chat'); } catch (e) { /* sem a function */ }
 
   const [leadsRes, convosRes] = await Promise.all([
     supabaseClient.from('leads').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
@@ -227,9 +234,10 @@ function renderLeadStatusTabs() {
 function leadsFiltrados() {
   const est = leadsTabelaEstado || { busca: '', filtros: {} };
   return crmLeads.filter(l =>
+    (!est.filtros.tipo || l.tipo_evento === est.filtros.tipo) &&
     (!est.filtros.produto || l.event_name === est.filtros.produto) &&
     (!est.filtros.estado || l.estado === est.filtros.estado) &&
-    tabelaBateBusca(est, [l.name, l.event_name, l.email, l.cpf, l.whatsapp, l.cidade, l.numeroExibido]));
+    tabelaBateBusca(est, [l.name, l.tipo_evento, l.event_name, l.email, l.cpf, l.whatsapp, l.cidade, l.numeroExibido]));
 }
 
 function renderLeadsTable() {
@@ -241,7 +249,7 @@ function renderLeadsTable() {
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
     return;
   }
 
@@ -249,6 +257,7 @@ function renderLeadsTable() {
     <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
       <td class="col-principal">${escapeHtml(lead.name)}</td>
+      <td>${escapeHtml(lead.tipo_evento || '—')}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
       <td>${formatCurrency(lead.value || 0)}</td>

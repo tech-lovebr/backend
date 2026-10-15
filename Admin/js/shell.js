@@ -183,7 +183,7 @@ function renderSidebar() {
       <span>Buscar</span>
       <kbd>⌘K</kbd>
     </button>
-    $1`;
+    <nav class="admin-nav">${sections}</nav>`;
 
 
 

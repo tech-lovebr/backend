@@ -6859,3 +6859,53 @@ body[data-theme="dark"] .upgrade-card-face--free .upgrade-card-btn:hover {
 body[data-theme="dark"] .status-badge.status-ativo,
 body[data-theme="dark"] .status-badge.status-inativo { border: none !important; border-radius: 0 !important; }
 body[data-theme="dark"] .status-badge.status-inativo { background: rgba(255, 255, 255, 0.06) !important; }
+
+/* ==========================================================================
+   Painel (Sua agenda, Precisa de ajuda?, Analytics, Notícias e eventos) no
+   estilo das tabelas (Contatos): um card só, com a faixa de cabeçalho em
+   cima (título em maiúsculas, pequeno e em negrito, linha embaixo) e o
+   conteúdo logo abaixo, em vez do título solto com a barrinha azul.
+   ========================================================================== */
+.dashboard-panel-section,
+.dashboard-help-section {
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+.dashboard-panel-section > .dashboard-panel-header,
+.dashboard-help-section > .dashboard-help-header {
+  border-left: none;
+  margin: 0;
+  padding: 0.875rem 1.5rem;
+  min-height: 46px;
+  border-bottom: 1px solid #E4E4E7;
+  background: #FFFFFF;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+.dashboard-panel-header .dashboard-help-title,
+.dashboard-help-header .dashboard-help-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #333333;
+}
+.dashboard-panel-header .dashboard-help-subtitle,
+.dashboard-help-header .dashboard-help-subtitle { font-size: 0.75rem; margin-top: 0.15rem; }
+.dashboard-help-header { flex-wrap: wrap; }
+.dashboard-help-header > .dashboard-help-subtitle { margin: 0; }
+/* Conteúdo: o card de dentro vira o corpo da "tabela" (sem borda própria). */
+.dashboard-panel-section > .dash-card {
+  border: none !important;
+  border-radius: 0;
+  flex: 1;
+}
+.dashboard-help-section > .dashboard-help-grid { padding: 1.5rem; background: #FBFBFB; }
+.dash-analytics-header.dashboard-panel-header { align-items: center; }
+
+body[data-theme="dark"] .dashboard-panel-section,
+body[data-theme="dark"] .dashboard-help-section { background: #181D24 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .dashboard-panel-section > .dashboard-panel-header,
+body[data-theme="dark"] .dashboard-help-section > .dashboard-help-header { background: #181D24 !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .dashboard-help-section > .dashboard-help-grid { background: transparent !important; }

@@ -12137,10 +12137,49 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`).join('');
   }
 
-  // "por Empresa" na página do serviço abre a página da empresa (sem serviço).
+  // "por Empresa" na página do serviço abre a página da empresa (sem serviço),
+  // lembrando o serviço de origem para o caminho do topo.
   document.addEventListener('click', (e) => {
     const link = e.target.closest('.b2b-profile-empresa-link');
-    if (link && activeB2BProfileItem) openB2BVendorProfile(activeB2BProfileItem, null);
+    if (link && activeB2BProfileItem) openB2BVendorProfile(activeB2BProfileItem, null, activeB2BProfileServico);
+  });
+
+  // Caminho do topo da página: Explorar › Serviço (quando houver) › Empresa.
+  // A última parte é a página atual; as anteriores são links.
+  function renderB2BProfileBreadcrumb(item, servicoAtual) {
+    const nav = document.getElementById('b2b-profile-breadcrumb');
+    if (!nav) return;
+    const rotuloLista = currentB2BView === 'favorites' ? 'Favoritos' : 'Explorar';
+    const partes = [{ texto: rotuloLista, acao: 'lista' }];
+    if (servicoAtual) {
+      partes.push({ texto: (servicoAtual.name || 'Serviço').trim() });
+    } else {
+      const origem = b2bServicoDeOrigem && (item.services || []).some(s => s.id === b2bServicoDeOrigem.id) ? b2bServicoDeOrigem : null;
+      if (origem) partes.push({ texto: (origem.name || 'Serviço').trim(), acao: 'servico' });
+      partes.push({ texto: item.name || 'Empresa' });
+    }
+    nav.innerHTML = partes.map((p, i) => {
+      const ultima = i === partes.length - 1;
+      const sep = i > 0 ? '<span class="b2b-breadcrumb-sep" aria-hidden="true">›</span>' : '';
+      return sep + (ultima
+        ? `<span class="b2b-breadcrumb-atual" aria-current="page">${escaparHtml(p.texto)}</span>`
+        : `<button type="button" class="b2b-breadcrumb-link" data-breadcrumb="${p.acao}">${escaparHtml(p.texto)}</button>`);
+    }).join('');
+  }
+
+  document.getElementById('b2b-profile-breadcrumb')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-breadcrumb]');
+    if (!btn) return;
+    if (btn.dataset.breadcrumb === 'servico') {
+      // Empresa aberta a partir do serviço nesta sessão: volta pelo histórico.
+      if (history.state?.voltarComHistorico && b2bServicoDeOrigem) { history.back(); return; }
+      if (activeB2BProfileItem && b2bServicoDeOrigem) openB2BVendorProfile(activeB2BProfileItem, b2bServicoDeOrigem);
+      return;
+    }
+    // Explorar (ou Favoritos): volta para a lista.
+    closeB2BVendorProfile();
+    const lista = caminhoSubRota('b2b', currentB2BView);
+    history.pushState({ loveRoute: lista }, '', lista);
   });
 
   function b2bRatingBadgeHTML(item, compact) {
@@ -12917,6 +12956,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Serviço pelo qual o perfil foi aberto (card do Explorar): o topo do
   // perfil mostra o nome dele, "por <empresa>" e a categoria na capa.
   let activeB2BProfileServico = null;
+  // Serviço de onde a página da empresa foi aberta ("por Empresa"): entra
+  // no caminho Explorar › Serviço › Empresa do topo.
+  let b2bServicoDeOrigem = null;
 
   function renderB2BVendorProfile(item) {
     const servicoAtual = activeB2BProfileServico && (item.services || []).some(s => s.id === activeB2BProfileServico.id)
@@ -12967,12 +13009,14 @@ document.addEventListener('DOMContentLoaded', () => {
         roleEl.innerHTML = `por <button type="button" class="b2b-profile-empresa-link" title="Ver a página de ${escaparHtml(item.name)}">${escaparHtml(item.name)}</button>`;
         roleEl.classList.remove('hidden');
       } else {
-        const roleText = (item.categories || []).join(' · ') || item.role || item.company || '';
-        roleEl.textContent = roleText;
-        roleEl.classList.toggle('hidden', !roleText);
+        // Página da empresa: só o nome e o endereço (a empresa pode ter
+        // serviços de várias categorias).
+        roleEl.textContent = '';
+        roleEl.classList.add('hidden');
       }
     }
     if (locationTextEl) locationTextEl.textContent = enderecoCompleto(item);
+    renderB2BProfileBreadcrumb(item, servicoAtual);
 
     // "Acessar site" só aparece se o fornecedor publicou um site próprio
     // pelo construtor do Love (B2B/js/site-builder.js).
@@ -13109,10 +13153,14 @@ document.addEventListener('DOMContentLoaded', () => {
     supabaseClient.from('produto_cliques').insert({ produto_id: id }).then(() => {}, () => {});
   }
 
-  function openB2BVendorProfile(item, servico) {
+  function openB2BVendorProfile(item, servico, servicoDeOrigem) {
     registrarCliqueNoServico(item, servico);
     activeB2BProfileItem = item;
     activeB2BProfileServico = servico || null;
+    // Na página de um serviço não há origem; na da empresa, guarda de qual
+    // serviço veio (ou mantém, ao reabrir a mesma empresa pelo histórico).
+    if (servico) b2bServicoDeOrigem = null;
+    else if (servicoDeOrigem) b2bServicoDeOrigem = servicoDeOrigem;
     registrarRota(rotaPerfilFornecedor(item, servico), { voltarComHistorico: true });
     renderB2BVendorProfile(item);
 
@@ -13129,6 +13177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function closeB2BVendorProfile() {
     activeB2BProfileItem = null;
     activeB2BProfileServico = null;
+    b2bServicoDeOrigem = null;
     const exploreView = document.getElementById('b2b-explore-view');
     const profileView = document.getElementById('b2b-vendor-profile-view');
     const searchBar = document.getElementById('b2b-top-search-bar');
@@ -13139,6 +13188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderB2BExplore();
   }
 
+  // (Antigo botão "Voltar para Explorar" — hoje o caminho do topo faz isso.)
   document.getElementById('btn-b2b-profile-back')?.addEventListener('click', () => {
     // Aberta a partir da lista nesta sessão: volta pelo histórico (o popstate
     // remonta a lista certa — Explorar ou Favoritos).

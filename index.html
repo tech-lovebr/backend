@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261015_perfilcolunas">
+  <link rel="stylesheet" href="css/styles.css?v=20261015_trilha">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3313,10 +3313,9 @@
 
             <!-- Topo: voltar + ações -->
             <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
-              <button type="button" id="btn-b2b-profile-back" class="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-zinc-900 transition-colors cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                <span>Voltar para Explorar</span>
-              </button>
+              <!-- Caminho percorrido: Explorar › Serviço › Empresa (cada parte
+                   anterior é clicável e volta para ela). -->
+              <nav id="b2b-profile-breadcrumb" class="b2b-breadcrumb" aria-label="Caminho"></nav>
               <div class="flex items-center gap-2 flex-shrink-0">
                 <button type="button" id="btn-b2b-profile-share" title="Compartilhar" class="w-10 h-10 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
@@ -3347,8 +3346,7 @@
                 <div class="min-w-0 pt-1">
                   <h2 id="b2b-profile-name" class="text-xl sm:text-2xl font-bold text-zinc-900 font-sans tracking-tight"></h2>
                   <p id="b2b-profile-role" class="text-sm text-zinc-500 font-sans"></p>
-                  <p id="b2b-profile-location" class="text-sm text-zinc-500 font-sans flex items-start gap-1 mt-1">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                  <p id="b2b-profile-location" class="text-sm text-zinc-500 font-sans mt-1">
                     <span id="b2b-profile-location-text"></span>
                   </p>
                 </div>
@@ -5412,7 +5410,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_capaempresa"></script>
+  <script src="js/app.js?v=20261015_trilha"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_checkoutbranco"></script>
 </body>

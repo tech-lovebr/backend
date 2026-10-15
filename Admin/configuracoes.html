@@ -56,33 +56,6 @@
                   <input class="field-input" name="email" type="email" disabled>
                 </label>
 
-                <!-- Só o super admin vê: o JS revela depois de conferir o papel. -->
-                <div class="field" id="senha-linha" hidden>
-                  <span class="field-label">Senha</span>
-                  <button type="button" class="btn btn-ghost" id="btn-abrir-senha" aria-expanded="false" aria-controls="campos-senha">Alterar senha</button>
-                </div>
-
-                <div id="campos-senha" hidden>
-                  <label class="field">
-                    <span class="field-label">Senha atual</span>
-                    <input class="field-input" name="atual" type="password" autocomplete="current-password">
-                  </label>
-                  <div class="field senha-nova">
-                    <label class="field-label" for="senha-nova">Nova senha</label>
-                    <input class="field-input" id="senha-nova" name="nova" type="password" autocomplete="new-password"
-                           aria-describedby="senha-regras">
-                    <ul class="senha-regras" id="senha-regras" hidden>
-                      <li data-regra="tamanho">Mínimo de 8 caracteres</li>
-                      <li data-regra="numero">Pelo menos 1 número</li>
-                      <li data-regra="simbolo">Pelo menos 1 símbolo</li>
-                    </ul>
-                  </div>
-                  <label class="field">
-                    <span class="field-label">Confirmar nova senha</span>
-                    <input class="field-input" name="confirmacao" type="password" autocomplete="new-password">
-                  </label>
-                </div>
-
                 <button type="button" class="btn btn-primary" id="btn-salvar-perfil">Salvar</button>
               </form>
             </div>
@@ -105,6 +78,40 @@
                   <p class="value" style="font-size:.9375rem">admin.love.com.br</p>
                 </div>
               </div>
+            </div>
+          </div>
+
+
+          <!-- Só o super admin vê: o JS revela depois de conferir o papel. -->
+          <div class="card" id="card-seguranca" style="grid-column:1 / -1" hidden>
+            <div class="card-head"><div><h2>Segurança</h2></div></div>
+            <div class="card-body">
+              <button type="button" class="btn btn-ghost" id="btn-abrir-senha" aria-expanded="false" aria-controls="form-senha">Alterar senha</button>
+
+              <form id="form-senha" autocomplete="off" hidden style="max-width:420px">
+                <label class="field">
+                  <span class="field-label">Senha atual</span>
+                  <input class="field-input" name="atual" type="password" autocomplete="current-password">
+                </label>
+                <div class="field senha-nova">
+                  <label class="field-label" for="senha-nova">Nova senha</label>
+                  <input class="field-input" id="senha-nova" name="nova" type="password" autocomplete="new-password"
+                         aria-describedby="senha-regras">
+                  <ul class="senha-regras" id="senha-regras" hidden>
+                    <li data-regra="tamanho">Mínimo de 8 caracteres</li>
+                    <li data-regra="numero">Pelo menos 1 número</li>
+                    <li data-regra="simbolo">Pelo menos 1 símbolo</li>
+                  </ul>
+                </div>
+                <label class="field">
+                  <span class="field-label">Confirmar nova senha</span>
+                  <input class="field-input" name="confirmacao" type="password" autocomplete="new-password">
+                </label>
+                <div style="display:flex;gap:.5rem">
+                  <button type="button" class="btn btn-ghost" id="btn-cancelar-senha">Cancelar</button>
+                  <button type="button" class="btn btn-primary" id="btn-salvar-senha">Salvar senha</button>
+                </div>
+              </form>
             </div>
           </div>
 

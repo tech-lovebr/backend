@@ -10612,10 +10612,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 10.2 / 10.2b / 10.3 / 10.3b — Login e Cadastro social (Google/Apple):
-  // login social real não está configurado ainda (precisa habilitar os
-  // provedores no painel do Supabase Auth). Por ora, orienta a usar e-mail/senha.
-  ['btn-google-login', 'btn-apple-login', 'btn-google-register', 'btn-apple-register'].forEach(id => {
+  // 10.2 / 10.3 — Entrar / criar conta com o Google (Supabase Auth). Volta
+  // para a raiz do site; initClienteSession cria o cadastro de anfitrião na
+  // primeira vez (função garantir_cliente_google — migration 049).
+  ['btn-google-login', 'btn-google-register'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/`, queryParams: { prompt: 'select_account' } }
+      });
+      if (error) {
+        btn.disabled = false;
+        console.error('Erro ao entrar com o Google:', error);
+        if (typeof showLoginError === 'function') showLoginError('Não foi possível entrar com o Google. Tente de novo.');
+      }
+    });
+  });
+
+  // Apple: ainda não configurado.
+  ['btn-apple-login', 'btn-apple-register'].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) {
       btn.addEventListener('click', () => {
@@ -14217,11 +14236,23 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const { data: cliente } = await supabaseClient
+    let { data: cliente } = await supabaseClient
       .from('clientes')
       .select('*') // inclui first_name/last_name/full_name sem quebrar se a migration 034 ainda não rodou
       .eq('id', session.user.id)
       .maybeSingle();
+
+    // Primeira entrada pelo Google: o usuário existe no Auth, mas ainda não
+    // tem cadastro de anfitrião. Cria (nome/e-mail/foto do Google) e segue.
+    const veioDoGoogle = (session.user.app_metadata && (session.user.app_metadata.provider === 'google' ||
+      (session.user.app_metadata.providers || []).includes('google')));
+    if (!cliente && veioDoGoogle) {
+      const { data: criado, error: erroCriar } = await supabaseClient.rpc('garantir_cliente_google');
+      if (erroCriar) console.error('Erro ao criar cadastro pelo Google:', erroCriar);
+      if (criado) {
+        ({ data: cliente } = await supabaseClient.from('clientes').select('*').eq('id', session.user.id).maybeSingle());
+      }
+    }
 
     // Essa plataforma é só pra quem tem cadastro de anfitrião. Login/B2B/Admin
     // compartilham o mesmo Supabase Auth — sem essa checagem, uma conta de

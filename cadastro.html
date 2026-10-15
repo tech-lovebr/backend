@@ -356,13 +356,30 @@
     passwordInput.addEventListener('blur', () => passwordPanel.classList.remove('is-visible'));
     updatePasswordStrength();
 
-    // Cadastro social ainda não está configurado no Supabase Auth (precisa
-    // habilitar os provedores no painel) — por ora orienta a usar e-mail/senha,
-    // mesmo comportamento já usado no popup de login.
-    ['btn-onboard-google', 'btn-onboard-apple'].forEach(id => {
-      document.getElementById(id).addEventListener('click', () => {
-        alert('Cadastro social ainda não disponível. Use e-mail e senha por enquanto.');
+    // "Continuar com o Google": guarda o tipo de evento escolhido (a
+    // plataforma abre direto no "criar evento") e vai para o Google; na volta
+    // o cadastro de anfitrião é criado (garantir_cliente_google — migration 049).
+    document.getElementById('btn-onboard-google').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      if (btn.disabled) return;
+      btn.disabled = true;
+      if (onboardType) {
+        localStorage.setItem('love-pending-event-type', onboardType);
+        localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
+      }
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/`, queryParams: { prompt: 'select_account' } }
       });
+      if (error) {
+        btn.disabled = false;
+        console.error('Erro ao continuar com o Google:', error);
+        alert('Não foi possível continuar com o Google. Tente de novo.');
+      }
+    });
+    // Apple: ainda não configurado.
+    document.getElementById('btn-onboard-apple').addEventListener('click', () => {
+      alert('Cadastro com a Apple ainda não disponível. Use o Google ou e-mail e senha.');
     });
 
     document.getElementById('form-onboard-register').addEventListener('submit', async (e) => {

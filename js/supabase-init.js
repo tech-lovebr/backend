@@ -261,7 +261,7 @@ async function tipoDeContaDoEmail(email) {
 // Texto do aviso quando o Google não pode seguir.
 function mensagemErroGoogle(motivo) {
   if (motivo && motivo.codigo === 'fornecedor') {
-    return 'Esse e-mail já está cadastrado na Love como fornecedor (Hub B2B). Para a área de anfitrião, use outro e-mail do Google ou entre com e-mail e senha de uma conta de anfitrião.';
+    return 'Esse e-mail já está cadastrado na Love como fornecedor. Para a área de anfitrião, use outro e-mail.';
   }
   if (motivo && motivo.codigo === 'nao-cadastrado') {
     return 'Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" style="font-weight:700;color:#537bae;">Cadastre-se</a>';

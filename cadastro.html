@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261015_tipoconta"></script>
+  <script src="js/supabase-init.js?v=20261015_textoforn"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -52,6 +52,9 @@
     .password-strength-checklist li.is-met { color: #18181B; }
     .password-strength-check { font-size: 0.8rem; line-height: 1; color: #D4D4D8; transition: color .15s ease; }
     .password-strength-checklist li.is-met .password-strength-check { color: #16A34A; }
+    /* Etapa 3 (e-mail, senha, Criar conta, Google e Apple): mesma largura do
+       botão do Google, que vai no máximo a 400px. */
+    .onboard-step[data-step="3"] { max-width: 400px; }
   </style>
 </head>
 <body class="bg-white">

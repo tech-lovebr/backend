@@ -7180,3 +7180,47 @@ html body button.love-tab-item.love-tab-item:not(#love-tab-a):not(#love-tab-b):n
 .gift-select-box input:checked + span { background: #183b54; border-color: #183b54; color: #fff; }
 .gift-select-box input:focus-visible + span { border-color: #181D24; }
 html body #btn-gifts-delete-selected:hover { border-color: #181D24; color: #181D24; background: #fff; }
+
+/* ==========================================================================
+   Altura única dos controles das barras de título (34px, a do botão
+   "presente aleatório"): Meus presentes, Personalizar (Salvar/Publicar e
+   ferramentas), Convidados, Mapear mesas, Explorar, Carteira, Notificações
+   e Configurações. A Home (dashboard) fica de fora de propósito.
+   ========================================================================== */
+html body #btn-host-add-gift:not(#love-h-a),
+html body #btn-host-add-random-gift:not(#love-h-a),
+html body #btn-gifts-delete-selected:not(#love-h-a),
+html body #builder-save:not(#love-h-a),
+html body #builder-publish:not(#love-h-a),
+html body #builder-undo:not(#love-h-a),
+html body #builder-redo:not(#love-h-a),
+html body #builder-preview-link:not(#love-h-a),
+html body #btn-host-add-guest:not(#love-h-a),
+html body #floorplan-filter-btn:not(#love-h-a),
+html body #btn-open-add-table-modal:not(#love-h-a),
+html body #btn-wallet-export:not(#love-h-a),
+html body #btn-notifications-mark-all-read:not(#love-h-a),
+html body #btn-save-user-settings:not(#love-h-a) {
+  height: 34px !important;
+  min-height: 34px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+html body #builder-undo:not(#love-h-a),
+html body #builder-redo:not(#love-h-a),
+html body #builder-preview-link:not(#love-h-a) { width: 34px !important; min-width: 34px !important; padding-left: 0 !important; padding-right: 0 !important; }
+html body #gifts-search-input:not(#love-h-a),
+html body #rsvp-search-input:not(#love-h-a),
+html body #b2b-search-input:not(#love-h-a),
+html body #b2b-location-input:not(#love-h-a) {
+  height: 34px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+}
+html body #b2b-view-toggle:not(#love-h-a) { height: 34px !important; box-sizing: border-box !important; }

@@ -62,18 +62,13 @@ function formatDateDigits(digits) {
 }
 
 function wireDateMaskInput(input) {
-  let prev = '';
   input.addEventListener('input', (e) => {
-    let digits = input.value.replace(/\D/g, '').slice(0, 8);
+    const digits = input.value.replace(/\D/g, '').slice(0, 8);
     const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;
-    if (isDeleting && digits.length === prev.replace(/\D/g, '').length && digits.length > 0) {
-      digits = digits.slice(0, -1);
-    }
-    // Apagando: não recoloca a barra que a pessoa acabou de tirar.
+    // Apagando: tira só a barra (não recoloca), sem levar o dígito junto.
     let formatted = formatDateDigits(digits);
     if (isDeleting && formatted.endsWith('/')) formatted = formatted.slice(0, -1);
     input.value = formatted;
-    prev = formatted;
   });
 }
 

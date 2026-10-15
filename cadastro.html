@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" href="assets/fav-love.png?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261014_popup"></script>
+  <script src="js/supabase-init.js?v=20261014_gis2"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -375,6 +375,20 @@
         alert('Não foi possível continuar com o Google. Tente de novo.');
       }
     });
+    // Botão oficial do Google (a tela do Google mostra love.com.br). Ao
+    // entrar, guarda o tipo de evento escolhido e segue para a plataforma.
+    botaoOficialDoGoogle(document.getElementById('btn-onboard-google'), {
+      texto: 'continue_with',
+      aoEntrar: () => {
+        if (onboardType) {
+          localStorage.setItem('love-pending-event-type', onboardType);
+          localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
+        }
+        window.location.replace('/');
+      },
+      aoFalhar: () => alert('Não foi possível continuar com o Google. Tente de novo.')
+    });
+
     // Apple: ainda não configurado.
     document.getElementById('btn-onboard-apple').addEventListener('click', () => {
       alert('Cadastro com a Apple ainda não disponível. Use o Google ou e-mail e senha.');

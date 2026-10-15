@@ -228,3 +228,108 @@ async function entrarComGoogle({ aoEntrar, aoFalhar } = {}) {
     }, 600);
   });
 }
+
+// ==========================================
+// Botão oficial do Google (Google Identity Services) + Supabase
+// signInWithIdToken. Com ele a tela do Google mostra o domínio do site
+// (love.com.br) — e não o endereço do Supabase, como no redirecionamento
+// OAuth. O botão antigo fica escondido e só volta se o script do Google
+// não carregar (ex.: bloqueador), usando o caminho antigo (entrarComGoogle).
+// ==========================================
+const GOOGLE_CLIENT_ID = '436005219765-ikpkl2u4sie9gb4s7k5fqjiu4gq5s21u.apps.googleusercontent.com';
+let googleIdentityPromessa = null;
+let googleIdentityPronto = false;
+let googleNonceBruto = null;
+let googleAoEntrarAtual = null;
+let googleAoFalharAtual = null;
+
+function carregarGoogleIdentity() {
+  if (window.google && google.accounts && google.accounts.id) return Promise.resolve();
+  if (googleIdentityPromessa) return googleIdentityPromessa;
+  googleIdentityPromessa = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.defer = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('Não carregou o Google Identity'));
+    document.head.appendChild(s);
+    setTimeout(() => reject(new Error('Google Identity demorou demais')), 8000);
+  });
+  return googleIdentityPromessa;
+}
+
+async function sha256Hex(texto) {
+  const dados = new TextEncoder().encode(texto);
+  const hash = await crypto.subtle.digest('SHA-256', dados);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Uma inicialização só por página (vários botões chamam ao mesmo tempo).
+let googleInicioPromessa = null;
+function iniciarGoogleIdentity() {
+  if (!googleInicioPromessa) googleInicioPromessa = iniciarGoogleIdentityUmaVez();
+  return googleInicioPromessa;
+}
+
+async function iniciarGoogleIdentityUmaVez() {
+  if (googleIdentityPronto) return;
+  const aleatorio = new Uint8Array(16);
+  crypto.getRandomValues(aleatorio);
+  googleNonceBruto = Array.from(aleatorio).map(b => b.toString(16).padStart(2, '0')).join('');
+  const nonceHash = await sha256Hex(googleNonceBruto);
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    nonce: nonceHash,
+    ux_mode: 'popup',
+    auto_select: false,
+    cancel_on_tap_outside: true,
+    callback: async (resposta) => {
+      const { error } = await supabaseClient.auth.signInWithIdToken({
+        provider: 'google',
+        token: resposta.credential,
+        nonce: googleNonceBruto
+      });
+      if (error) {
+        console.error('Erro ao entrar com o Google:', error);
+        if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual(error);
+        return;
+      }
+      if (typeof googleAoEntrarAtual === 'function') googleAoEntrarAtual();
+    }
+  });
+  googleIdentityPronto = true;
+}
+
+// Troca botaoAntigo pelo botão oficial do Google. texto: 'signin_with'
+// (Fazer login com o Google), 'signup_with' (Inscrever-se…) ou
+// 'continue_with' (Continuar com o Google).
+async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = 'continue_with' } = {}) {
+  if (!botaoAntigo || botaoAntigo.dataset.googleOficial) return;
+  try {
+    await carregarGoogleIdentity();
+    await iniciarGoogleIdentity();
+  } catch (e) {
+    console.warn('Botão oficial do Google indisponível; usando o botão antigo.', e);
+    return;
+  }
+  botaoAntigo.dataset.googleOficial = '1';
+  const caixa = document.createElement('div');
+  caixa.className = 'google-botao-oficial';
+  caixa.style.cssText = 'display:flex;justify-content:center;width:100%;min-height:44px;';
+  botaoAntigo.insertAdjacentElement('afterend', caixa);
+  botaoAntigo.style.display = 'none';
+  const larguraBase = botaoAntigo.parentElement ? botaoAntigo.parentElement.getBoundingClientRect().width : 0;
+  const largura = Math.max(240, Math.min(400, Math.round(larguraBase || 360)));
+  google.accounts.id.renderButton(caixa, {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: texto,
+    shape: 'rectangular',
+    logo_alignment: 'center',
+    width: largura,
+    locale: 'pt-BR',
+    click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; }
+  });
+}

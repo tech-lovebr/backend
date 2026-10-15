@@ -10631,6 +10631,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Botão oficial do Google por cima dos botões acima (a tela do Google
+  // mostra love.com.br). Sem o script do Google, os botões acima seguem.
+  botaoOficialDoGoogle(document.getElementById('btn-google-login'), {
+    texto: 'signin_with',
+    aoEntrar: () => window.location.reload(),
+    aoFalhar: () => { if (typeof showLoginError === 'function') showLoginError('Não foi possível entrar com o Google. Tente de novo.'); }
+  });
+  botaoOficialDoGoogle(document.getElementById('btn-google-register'), {
+    texto: 'signup_with',
+    aoEntrar: () => window.location.reload(),
+    aoFalhar: () => alert('Não foi possível continuar com o Google. Tente de novo.')
+  });
+
   // Apple: ainda não configurado.
   ['btn-apple-login', 'btn-apple-register'].forEach(id => {
     const btn = document.getElementById(id);

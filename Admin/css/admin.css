@@ -2941,3 +2941,8 @@ table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4
 
 .btn-icone-linha svg { width: 16px; height: 16px; }
 .btn-icone-linha:hover { color: #181D24; border-color: #E4E4E7; background: #fff; }
+
+/* Três bolinhas do "ver mais": maiores e mais escuras que o ícone de copiar,
+   para não sumirem no fim da linha. */
+.btn-ver-mais { width: 32px; height: 32px; color: var(--text-muted); }
+.btn-ver-mais svg { width: 22px; height: 22px; }

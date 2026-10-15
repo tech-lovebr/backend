@@ -692,7 +692,7 @@ function blocoPublicacao(posicao, ativo, rotuloPosicao = 'Posição') {
    drawer abre pelo ícone de três bolinhas no fim da linha. */
 
 const ICONE_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2 2 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>';
-const ICONE_VER_MAIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="16" cy="12" r="1.6" fill="currentColor" stroke="none" /></svg>';
+const ICONE_VER_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.25" /><circle cx="12" cy="12" r="2.25" /><circle cx="19" cy="12" r="2.25" /></svg>';
 
 function celulaEmail(email) {
   if (!email) return '—';
@@ -700,7 +700,7 @@ function celulaEmail(email) {
 }
 
 function botaoVerMais(id) {
-  return `<button type="button" class="btn-icone-linha" data-ver="${escapeHtml(id)}" title="Ver mais" aria-label="Ver mais">${ICONE_VER_MAIS}</button>`;
+  return `<button type="button" class="btn-icone-linha btn-ver-mais" data-ver="${escapeHtml(id)}" title="Ver mais" aria-label="Ver mais">${ICONE_VER_MAIS}</button>`;
 }
 
 function ligarAcoesDaLinha(host, abrir) {

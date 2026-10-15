@@ -1049,7 +1049,7 @@ function montarBarraTabela(card, opts) {
       });
     };
     const fechar = () => { menu.hidden = true; document.removeEventListener('click', foraDoMenu); };
-    const foraDoMenu = (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) fechar(); };
+    const foraDoMenu = (e) => { if (e.target.isConnected && !menu.contains(e.target) && !btn.contains(e.target)) fechar(); };
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (menu.hidden) { montarMenu(); menu.hidden = false; document.addEventListener('click', foraDoMenu); }

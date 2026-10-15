@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" href="assets/fav-love.png?v=2">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261014_nomes"></script>
+  <script src="js/supabase-init.js?v=20261014_popup"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -367,12 +367,10 @@
         localStorage.setItem('love-pending-event-type', onboardType);
         localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
       }
-      const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: `${window.location.origin}/`, queryParams: { prompt: 'select_account' } }
-      });
-      if (error) {
-        btn.disabled = false;
+      // No computador abre em pop-up; ao entrar, segue para a plataforma.
+      const { error } = await entrarComGoogle({ aoEntrar: () => window.location.replace('/') });
+      btn.disabled = false;
+      if (error && !/não concluído/.test(error.message || '')) {
         console.error('Erro ao continuar com o Google:', error);
         alert('Não foi possível continuar com o Google. Tente de novo.');
       }

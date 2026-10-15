@@ -164,3 +164,67 @@ document.addEventListener('input', (e) => {
   campo.value = novo;
   try { campo.setSelectionRange(ini, fim); } catch (err) {}
 });
+
+// ==========================================
+// Entrar com o Google. No computador abre uma janelinha (pop-up) por cima
+// da página; ao terminar, auth-popup.html avisa esta página e fecha, e
+// aoEntrar() roda (ex.: recarregar a plataforma). No celular — ou se o
+// navegador bloquear o pop-up — vai para a página do Google e volta para a
+// raiz do site. Devolve { error } se o Supabase recusar.
+// ==========================================
+async function entrarComGoogle({ aoEntrar, aoFalhar } = {}) {
+  const ehCelular = window.matchMedia('(max-width: 767px)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (ehCelular) {
+    return supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/`, queryParams: { prompt: 'select_account' } }
+    });
+  }
+
+  const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth-popup.html`,
+      queryParams: { prompt: 'select_account' },
+      skipBrowserRedirect: true
+    }
+  });
+  if (error || !data || !data.url) return { error: error || new Error('Sem URL do Google') };
+
+  const largura = 500, altura = 640;
+  const esquerda = Math.round(window.screenX + (window.outerWidth - largura) / 2);
+  const topo = Math.round(window.screenY + (window.outerHeight - altura) / 2.5);
+  const janela = window.open(data.url, 'love-google-login', `width=${largura},height=${altura},left=${esquerda},top=${topo},menubar=no,toolbar=no,location=yes,status=no`);
+  if (!janela) {
+    // Pop-up bloqueado: segue na mesma aba (volta para a raiz do site).
+    return supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/`, queryParams: { prompt: 'select_account' } }
+    });
+  }
+  janela.focus();
+
+  return new Promise(resolve => {
+    let terminou = false;
+    const terminar = (ok) => {
+      if (terminou) return;
+      terminou = true;
+      window.removeEventListener('message', aoReceber);
+      clearInterval(vigia);
+      if (ok) { if (typeof aoEntrar === 'function') aoEntrar(); }
+      else if (typeof aoFalhar === 'function') aoFalhar();
+      resolve({ error: ok ? null : new Error('Login com o Google não concluído') });
+    };
+    const aoReceber = (e) => {
+      if (e.origin !== window.location.origin || !e.data || e.data.tipo !== 'love-google-login') return;
+      terminar(e.data.resultado === 'ok');
+    };
+    window.addEventListener('message', aoReceber);
+    // Janela fechada sem concluir: confere se a sessão existe mesmo assim.
+    const vigia = setInterval(async () => {
+      if (!janela.closed) return;
+      const { data: s } = await supabaseClient.auth.getSession();
+      terminar(!!(s && s.session));
+    }, 600);
+  });
+}

@@ -10621,12 +10621,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', async () => {
       if (btn.disabled) return;
       btn.disabled = true;
-      const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: `${window.location.origin}/`, queryParams: { prompt: 'select_account' } }
-      });
-      if (error) {
-        btn.disabled = false;
+      // No computador abre em pop-up; ao entrar, recarrega e cai no painel.
+      const { error } = await entrarComGoogle({ aoEntrar: () => window.location.reload() });
+      btn.disabled = false;
+      if (error && !/não concluído/.test(error.message || '')) {
         console.error('Erro ao entrar com o Google:', error);
         if (typeof showLoginError === 'function') showLoginError('Não foi possível entrar com o Google. Tente de novo.');
       }

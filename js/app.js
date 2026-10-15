@@ -10637,16 +10637,12 @@ document.addEventListener('DOMContentLoaded', () => {
     texto: 'signin_with',
     soEntrar: true,
     aoEntrar: () => window.location.reload(),
-    aoFalhar: (motivo) => {
-      if (typeof showLoginError !== 'function') return;
-      if (motivo && motivo.codigo === 'nao-cadastrado') showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
-      else showLoginError('Não foi possível entrar com o Google. Tente de novo.');
-    }
+    aoFalhar: (motivo) => { if (typeof showLoginError === 'function') showLoginError(mensagemErroGoogle(motivo)); }
   });
   botaoOficialDoGoogle(document.getElementById('btn-google-register'), {
     texto: 'signup_with',
     aoEntrar: () => window.location.reload(),
-    aoFalhar: () => alert('Não foi possível continuar com o Google. Tente de novo.')
+    aoFalhar: (motivo) => avisoAbaixoDoBotaoGoogle(document.getElementById('btn-google-register'), mensagemErroGoogle(motivo))
   });
 
   // Apple: ainda não configurado.

@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261015_soentrar"></script>
+  <script src="js/supabase-init.js?v=20261015_tipoconta"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -387,7 +387,7 @@
         }
         window.location.replace('/');
       },
-      aoFalhar: () => alert('Não foi possível continuar com o Google. Tente de novo.')
+      aoFalhar: (motivo) => avisoAbaixoDoBotaoGoogle(document.getElementById('btn-onboard-google'), mensagemErroGoogle(motivo))
     });
 
     // Apple: ainda não configurado.

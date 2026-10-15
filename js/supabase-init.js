@@ -246,6 +246,44 @@ let googleAoEntrarAtual = null;
 let googleAoFalharAtual = null;
 let googleSoEntrarAtual = false;
 
+// 'anfitriao' | 'fornecedor' | null (não existe) | undefined (não deu para
+// conferir — segue o fluxo normal). Sem a migration 050, cai na checagem
+// antiga só de anfitrião (027).
+async function tipoDeContaDoEmail(email) {
+  if (!email) return undefined;
+  const r = await supabaseClient.rpc('verificar_email_cadastrado', { p_email: email });
+  if (!r.error) return r.data || null;
+  const antiga = await supabaseClient.rpc('verificar_email_anfitriao', { p_email: email });
+  if (antiga.error) return undefined;
+  return antiga.data ? 'anfitriao' : null;
+}
+
+// Texto do aviso quando o Google não pode seguir.
+function mensagemErroGoogle(motivo) {
+  if (motivo && motivo.codigo === 'fornecedor') {
+    return 'Esse e-mail já está cadastrado na Love como fornecedor (Hub B2B). Para a área de anfitrião, use outro e-mail do Google ou entre com e-mail e senha de uma conta de anfitrião.';
+  }
+  if (motivo && motivo.codigo === 'nao-cadastrado') {
+    return 'Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" style="font-weight:700;color:#537bae;">Cadastre-se</a>';
+  }
+  return 'Não foi possível continuar com o Google. Tente de novo.';
+}
+
+// Aviso logo abaixo do botão do Google (cadastro e "Criar conta").
+function avisoAbaixoDoBotaoGoogle(botaoAntigo, html) {
+  if (!botaoAntigo) return;
+  const ancora = (botaoAntigo.nextElementSibling && botaoAntigo.nextElementSibling.classList.contains('google-botao-oficial'))
+    ? botaoAntigo.nextElementSibling : botaoAntigo;
+  let p = ancora.nextElementSibling && ancora.nextElementSibling.classList.contains('google-aviso') ? ancora.nextElementSibling : null;
+  if (!p) {
+    p = document.createElement('p');
+    p.className = 'google-aviso';
+    p.style.cssText = 'margin:0.5rem 0 0;font-size:0.75rem;line-height:1.45;color:#DC2626;text-align:center;';
+    ancora.insertAdjacentElement('afterend', p);
+  }
+  p.innerHTML = html;
+}
+
 // E-mail de dentro do token do Google (JWT), sem validar — só para conferir
 // o cadastro antes de entrar; quem valida o token de verdade é o Supabase.
 function emailDoTokenGoogle(token) {
@@ -299,18 +337,19 @@ async function iniciarGoogleIdentityUmaVez() {
     auto_select: false,
     cancel_on_tap_outside: true,
     callback: async (resposta) => {
-      // "Fazer login com o Google" (tela de login): só entra quem já tem
-      // cadastro de anfitrião — e-mail novo não cria conta aqui, igual ao
-      // login com e-mail e senha. Criar conta é pelo cadastro.
-      if (googleSoEntrarAtual) {
-        const email = emailDoTokenGoogle(resposta.credential);
-        const { data: cadastrado, error: erroCheck } = email
-          ? await supabaseClient.rpc('verificar_email_anfitriao', { p_email: email })
-          : { data: false, error: null };
-        if (!erroCheck && !cadastrado) {
-          if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'nao-cadastrado', email });
-          return;
-        }
+      // ANTES de entrar, confere no banco de que tipo é a conta desse e-mail
+      // (migration 050): e-mail de fornecedor do Hub B2B não entra nem vira
+      // anfitrião; no login, e-mail sem cadastro não cria conta (igual ao
+      // login com e-mail e senha) — criar conta é pelo cadastro.
+      const email = emailDoTokenGoogle(resposta.credential);
+      const tipoConta = await tipoDeContaDoEmail(email);
+      if (tipoConta === 'fornecedor') {
+        if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'fornecedor', email });
+        return;
+      }
+      if (googleSoEntrarAtual && tipoConta === null) {
+        if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'nao-cadastrado', email });
+        return;
       }
       const { error } = await supabaseClient.auth.signInWithIdToken({
         provider: 'google',

@@ -1409,6 +1409,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Atualização dos Convites Enviados — total de convidados da lista
     // (nunca um número de mentira: um evento novo de verdade tem zero).
+    // Convidados e Confirmados contam também os acompanhantes.
+    if (Array.isArray(activeEvent.guests)) {
+      activeEvent.totalConvidados = pessoasNaLista(activeEvent.guests);
+      activeEvent.convidadosConfirmados = pessoasNaLista(activeEvent.guests.filter(g => g.status === 'confirmed'));
+      if (kpiGuestsAdded) kpiGuestsAdded.textContent = `${activeEvent.convidadosConfirmados}`;
+    }
     if (kpiInvites) kpiInvites.textContent = `${activeEvent.totalConvidados ?? 0}`;
 
     if (kpiArrecadado) kpiArrecadado.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
@@ -7921,6 +7927,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Pessoas que ocupam assento: cada convidado e cada acompanhante dele
   // (com o status da reserva). Acompanhante sem nome vira
   // "Acompanhante de <primeiro nome>", para não repetir o mesmo nome.
+  // Quantas pessoas há numa lista de convidados: cada convidado conta 1 e
+  // cada acompanhante dele também conta 1 (a lista mostra os dois).
+  function pessoasNaLista(guests) {
+    return (guests || []).reduce((s, g) => s + 1 + ((g && g.companionsNames) || []).filter(c => (c || '').trim()).length, 0);
+  }
+
   function pessoasParaMesas() {
     const activeEvent = getActiveEvent();
     const guests = (activeEvent && activeEvent.guests) || [];
@@ -14107,10 +14119,10 @@ document.addEventListener('DOMContentLoaded', () => {
       coverImage: row.cover_image_url,
       status: row.status,
       ...(row.extra || {}),
-      convidadosConfirmados: confirmed.length,
+      convidadosConfirmados: pessoasNaLista(confirmed),
       convidadosRecusados: declined.length,
       convidadosPendentes: pending.length,
-      totalConvidados: guests.length,
+      totalConvidados: pessoasNaLista(guests),
       adultosConfirmados: confirmed.reduce((s, g) => s + (g.adults || 0), 0),
       criancasConfirmadas: confirmed.reduce((s, g) => s + (g.children || 0), 0),
       presentesRecebidos: giftList.filter(g => (g.received || 0) > 0).length,

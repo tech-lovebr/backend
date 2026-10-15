@@ -120,18 +120,58 @@ async function copiarTexto(texto) {
   showToast('Mensagem copiada.');
 }
 
-/* ---------------- Drawer "Modelo de mensagem" ---------------- */
+/* ---------------- Drawer "Meus comandos" ----------------
+   Duas telas no mesmo drawer: a lista (aberta pelo botão "Meus comandos"
+   do cabeçalho) e o formulário (aberto por "Adicionar comando" ou pelo
+   "Salvar comando" do ⋮ de uma mensagem, já com o texto dela). */
 
-function abrirDrawerModelo(texto) {
-  const drawer = document.getElementById('template-drawer');
-  if (!drawer) return;
+// De onde o formulário foi aberto: 'lista' volta pra lista ao salvar/cancelar;
+// 'mensagem' (⋮) fecha o drawer.
+let origemFormularioComando = 'lista';
+
+function mostrarDrawerComandos() {
+  document.getElementById('template-drawer')?.classList.add('show');
+  document.getElementById('template-drawer-backdrop')?.classList.add('show');
+}
+
+function mostrarListaComandos() {
+  document.getElementById('template-drawer-title').textContent = 'Meus comandos';
+  document.getElementById('template-list-view').hidden = false;
+  document.getElementById('template-form-view').hidden = true;
+  document.getElementById('template-add-btn').hidden = false;
+  document.getElementById('template-save-btn').hidden = true;
+  document.getElementById('template-drawer-cancel').textContent = 'Fechar';
+  renderListaModelosDrawer();
+}
+
+function mostrarFormularioComando(texto, origem) {
+  origemFormularioComando = origem;
+  document.getElementById('template-drawer-title').textContent = 'Adicionar comando';
+  document.getElementById('template-list-view').hidden = true;
+  document.getElementById('template-form-view').hidden = false;
+  document.getElementById('template-add-btn').hidden = true;
+  document.getElementById('template-save-btn').hidden = false;
+  document.getElementById('template-drawer-cancel').textContent = origem === 'lista' ? 'Voltar' : 'Cancelar';
   document.getElementById('template-text').value = texto || '';
   document.getElementById('template-command').value = '';
   document.getElementById('template-error').hidden = true;
-  renderListaModelosDrawer();
-  drawer.classList.add('show');
-  document.getElementById('template-drawer-backdrop')?.classList.add('show');
-  setTimeout(() => document.getElementById('template-command')?.focus(), 50);
+  setTimeout(() => document.getElementById(texto ? 'template-command' : 'template-text')?.focus(), 50);
+}
+
+function abrirMeusComandos() {
+  mostrarListaComandos();
+  mostrarDrawerComandos();
+}
+
+function abrirDrawerModelo(texto) {
+  mostrarFormularioComando(texto, 'mensagem');
+  mostrarDrawerComandos();
+}
+
+function cancelarDrawerComandos() {
+  const noFormulario = !document.getElementById('template-form-view').hidden;
+  if (noFormulario && origemFormularioComando === 'lista') { mostrarListaComandos(); return; }
+  fecharDrawerModelo();
 }
 
 function fecharDrawerModelo() {
@@ -141,16 +181,16 @@ function fecharDrawerModelo() {
 
 function renderListaModelosDrawer() {
   const lista = document.getElementById('template-list');
-  const wrap = document.getElementById('template-list-wrap');
-  if (!lista || !wrap) return;
-  wrap.hidden = chatModelos.length === 0;
+  const vazio = document.getElementById('template-list-empty');
+  if (!lista) return;
+  if (vazio) vazio.hidden = chatModelos.length > 0;
   lista.innerHTML = chatModelos.map(m => `
     <div class="chat-template-item">
       <div class="min-w-0">
         <p class="chat-template-command">/${escapeHtml(m.comando)}</p>
         <p class="chat-template-preview">${escapeHtml(m.texto)}</p>
       </div>
-      <button type="button" class="chat-template-remove" data-remove-template="${escapeHtml(m.id)}" title="Excluir modelo">✕</button>
+      <button type="button" class="chat-template-remove" data-remove-template="${escapeHtml(m.id)}" title="Excluir comando">✕</button>
     </div>
   `).join('');
   lista.querySelectorAll('[data-remove-template]').forEach(btn => {
@@ -166,15 +206,16 @@ async function enviarFormularioModelo() {
   const comando = slugComando(document.getElementById('template-command').value);
   const erro = document.getElementById('template-error');
   const mostrarErro = (msg) => { erro.textContent = msg; erro.hidden = false; };
-  if (!texto) return mostrarErro('Escreva a mensagem do modelo.');
-  if (!comando) return mostrarErro('Dê um nome ao comando (ex.: orcamento).');
+  if (!texto) return mostrarErro('Escreva a mensagem.');
+  if (!comando) return mostrarErro('Dê um nome ao comando.');
   const btn = document.getElementById('template-save-btn');
   btn.disabled = true;
   const ok = await salvarModelo(comando, texto);
   btn.disabled = false;
-  if (!ok) return mostrarErro('Não foi possível salvar o modelo.');
-  showToast(`Modelo salvo. Digite /${comando} no chat para usar.`);
-  fecharDrawerModelo();
+  if (!ok) return mostrarErro('Não foi possível salvar o comando.');
+  showToast(`Comando salvo. Digite /${comando} no chat para usar.`);
+  if (origemFormularioComando === 'lista') mostrarListaComandos();
+  else fecharDrawerModelo();
 }
 
 /* ---------------- Comandos "/" na caixa de mensagem ---------------- */
@@ -206,7 +247,7 @@ function renderMenuComandos() {
       `).join('')
     : `<p class="chat-command-empty">${chatModelos.length
         ? 'Nenhum comando com esse nome.'
-        : 'Você ainda não tem modelos. Use o ⋮ numa mensagem sua e "Salvar modelo".'}</p>`;
+        : 'Você ainda não tem comandos. Crie em "Meus comandos", no topo do chat.'}</p>`;
   menu.querySelectorAll('[data-command-index]').forEach(btn => {
     btn.addEventListener('mousedown', (e) => e.preventDefault()); // não tira o foco do campo
     btn.addEventListener('click', () => usarComando(Number(btn.dataset.commandIndex)));
@@ -245,7 +286,9 @@ async function initChatModelos() {
 
   // Drawer
   document.getElementById('template-drawer-close')?.addEventListener('click', fecharDrawerModelo);
-  document.getElementById('template-drawer-cancel')?.addEventListener('click', fecharDrawerModelo);
+  document.getElementById('template-drawer-cancel')?.addEventListener('click', cancelarDrawerComandos);
+  document.getElementById('template-add-btn')?.addEventListener('click', () => mostrarFormularioComando('', 'lista'));
+  document.getElementById('chat-commands-btn')?.addEventListener('click', abrirMeusComandos);
   document.getElementById('template-drawer-backdrop')?.addEventListener('click', fecharDrawerModelo);
   document.getElementById('template-save-btn')?.addEventListener('click', enviarFormularioModelo);
   const comandoInput = document.getElementById('template-command');

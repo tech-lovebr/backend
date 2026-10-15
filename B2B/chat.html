@@ -42,6 +42,9 @@
       <main class="b2b-content">
         <div class="b2b-header-bar">
           <h2 class="text-xl font-bold text-zinc-900">Chat</h2>
+          <button type="button" id="chat-commands-btn" class="btn-secondary builder-toolbar-btn">
+            <span>Meus comandos</span>
+          </button>
         </div>
         <div class="chat-shell w-full flex-1 min-h-0 bg-white flex flex-col md:flex-row overflow-hidden border-t border-zinc-200">
           
@@ -144,50 +147,54 @@
   <!-- Menu ⋮ das mensagens do fornecedor -->
   <div id="chat-msg-menu" class="chat-msg-menu" role="menu">
     <button type="button" id="chat-msg-menu-copy" role="menuitem">Copiar</button>
-    <button type="button" id="chat-msg-menu-template" role="menuitem">Salvar modelo</button>
+    <button type="button" id="chat-msg-menu-template" role="menuitem">Salvar comando</button>
   </div>
 
-  <!-- Drawer: modelo de mensagem (comando "/") -->
+  <!-- Drawer: Meus comandos (lista) / Adicionar comando (formulário) -->
   <div class="drawer-backdrop" id="template-drawer-backdrop"></div>
-  <aside class="form-drawer" id="template-drawer" aria-label="Modelo de mensagem">
+  <aside class="form-drawer" id="template-drawer" aria-label="Meus comandos">
     <div class="form-drawer-header">
       <div class="form-drawer-header-main">
         <p class="task-drawer-list-label">Chat</p>
-        <h2 class="task-drawer-title">Modelo de mensagem</h2>
+        <h2 class="task-drawer-title" id="template-drawer-title">Meus comandos</h2>
       </div>
       <button type="button" class="form-drawer-close" id="template-drawer-close" aria-label="Fechar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
       </button>
     </div>
     <div class="form-drawer-body">
-      <p class="text-sm text-zinc-500 -mt-2 mb-4">Salve a mensagem com um comando. No chat, digite <strong>/</strong> e escolha o comando pra mandar a mensagem na hora.</p>
-      <div class="flex flex-col gap-4">
+      <p class="text-sm text-zinc-500 -mt-2 mb-4">No chat, digite <strong>/</strong> e escolha o comando pra mandar a mensagem na hora.</p>
+
+      <!-- Lista -->
+      <div id="template-list-view">
+        <div id="template-list" class="flex flex-col gap-2"></div>
+        <p id="template-list-empty" class="text-sm text-zinc-400 py-6 text-center" hidden>Você ainda não tem comandos.</p>
+      </div>
+
+      <!-- Formulário -->
+      <div id="template-form-view" class="flex flex-col gap-4" hidden>
         <div>
           <label for="template-text" class="field-label">Mensagem</label>
           <textarea id="template-text" class="field-textarea" style="min-height:140px;" maxlength="4000"></textarea>
         </div>
         <div>
-          <label for="template-command" class="field-label">Comando</label>
+          <label for="template-command" class="field-label">Nome do comando</label>
           <div class="chat-template-command-field">
             <span>/</span>
-            <input id="template-command" type="text" class="field-input" placeholder="orcamento" maxlength="40" autocomplete="off" spellcheck="false">
+            <input id="template-command" type="text" class="field-input" maxlength="40" autocomplete="off" spellcheck="false">
           </div>
-          <p class="text-xs text-zinc-400 mt-1">Só letras, números e hífen. Ex.: orcamento, bem-vindo.</p>
           <p id="template-error" class="text-xs text-rose-600 mt-1" hidden></p>
-        </div>
-        <div id="template-list-wrap" hidden>
-          <p class="field-label">Seus modelos</p>
-          <div id="template-list" class="flex flex-col gap-2"></div>
         </div>
       </div>
     </div>
     <div class="form-drawer-footer">
       <button type="button" id="template-drawer-cancel" class="btn-secondary">Cancelar</button>
-      <button type="button" id="template-save-btn" class="btn-primary">Salvar modelo</button>
+      <button type="button" id="template-add-btn" class="btn-primary">Adicionar comando</button>
+      <button type="button" id="template-save-btn" class="btn-primary" hidden>Salvar comando</button>
     </div>
   </aside>
 
   <script src="js/mensagens.js?v=10"></script>
-  <script src="js/chat-modelos.js?v=1"></script>
+  <script src="js/chat-modelos.js?v=2"></script>
 </body>
 </html>

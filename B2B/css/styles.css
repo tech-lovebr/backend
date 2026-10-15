@@ -7054,3 +7054,23 @@ body[data-theme="dark"] .b2b-header-bar .btn-secondary.header-btn-light { backgr
 }
 .lead-whatsapp-icon.is-ativo { pointer-events: auto; cursor: pointer; }
 .lead-whatsapp-icon.is-ativo:hover { color: #1DA851; }
+
+/* Leads › Importar: passo a passo numerado e os dois botões dividindo a
+   largura toda (50% cada). */
+.lead-import-steps { list-style: none; margin: 0 0 1.25rem; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+.lead-import-steps li { display: flex; gap: 0.75rem; align-items: flex-start; }
+.lead-import-step-num {
+  flex: 0 0 24px; width: 24px; height: 24px; border-radius: 999px;
+  background: #F4F4F5; color: #181D24; font-size: 0.75rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.lead-import-steps strong { display: block; font-size: 0.875rem; color: #18181B; }
+.lead-import-steps p { font-size: 0.8125rem; color: #71717A; margin: 0.15rem 0 0; line-height: 1.45; }
+.lead-import-steps p.lead-import-cols { margin-top: 0.4rem; }
+.lead-import-cols span { color: #3F3F46; font-weight: 600; }
+.lead-import-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.lead-import-actions .btn-primary,
+.lead-import-actions .btn-secondary { width: 100%; justify-content: center; height: 40px; }
+body[data-theme="dark"] .lead-import-step-num { background: #333333 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .lead-import-steps strong { color: #FFFFFF !important; }
+body[data-theme="dark"] .lead-import-cols span { color: #E4E4E7 !important; }

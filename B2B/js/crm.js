@@ -102,7 +102,8 @@ function initLeadEmailAutocomplete() {
   const dateInput = document.getElementById('lead-date');
   if (dateInput) wireDateMaskInput(dateInput);
   const valueInput = document.getElementById('lead-value');
-  if (valueInput) wireBRLMaskInput(valueInput);
+  // "R$" fixo dentro da caixa (igual aos preços do catálogo); só o número é digitado.
+  if (valueInput) { wireCurrencyMaskInput(valueInput); wireMoneyPrefix(valueInput); }
 
   let timer = null;
   let lastMatches = [];
@@ -313,7 +314,7 @@ function openLeadDrawer(id) {
   document.getElementById('lead-name').value = lead.name;
   document.getElementById('lead-email').value = lead.email || '';
   document.getElementById('lead-date').value = lead.event_date || '';
-  document.getElementById('lead-value').value = formatBRLValue(lead.value);
+  document.getElementById('lead-value').value = formatBRLValue(lead.value).replace(/^R\$\s*/, '');
 
   leadMatchedClienteId = lead.cliente_id || null;
   const emailHint = document.getElementById('lead-email-match-hint');

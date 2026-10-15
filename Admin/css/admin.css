@@ -554,13 +554,15 @@ table.data .badge { white-space: nowrap; }
 
 /* Copiado da .guests-table (css/styles.css) da plataforma dos noivos:
    cabeçalho sem preenchimento, só o texto sobre a linha divisória. */
+/* Cabeçalho igual ao do Hub (.leads-table): texto como escrito, sem caixa
+   alta forçada, 13px em negrito. */
 table.data th {
   text-align: left;
-  font-size: .6875rem;
+  font-size: .8125rem;
   font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: #52525B;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #181D24;
   background: #F7F7F8;
   padding: .75rem 1rem;
   border-top: 1px solid var(--border);
@@ -3047,3 +3049,18 @@ table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4
   border-left: 1.5px solid #D4D4D8;
   pointer-events: none;
 }
+
+/* Padrão do Hub: só o cabeçalho é negrito; toda célula de dados, inclusive a
+   coluna principal, fica em peso normal. */
+table.data th,
+table.data th .btn,
+table.data th button {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: .8125rem;
+  font-weight: 700;
+  color: #181D24;
+}
+table.data tbody td,
+table.data tbody td *:not(svg):not(path) { font-weight: 400 !important; }
+body[data-theme="dark"] table.data th { color: #FFFFFF !important; }

@@ -172,7 +172,9 @@ document.addEventListener('input', (e) => {
 // navegador bloquear o pop-up — vai para a página do Google e volta para a
 // raiz do site. Devolve { error } se o Supabase recusar.
 // ==========================================
-async function entrarComGoogle({ aoEntrar, aoFalhar } = {}) {
+async function entrarComGoogle({ aoEntrar, aoFalhar, soEntrar = false } = {}) {
+  // Na volta do Google a plataforma lê esse modo (só entrar x cadastrar).
+  try { localStorage.setItem('love-google-modo', soEntrar ? 'entrar' : 'cadastrar'); } catch (e) {}
   const ehCelular = window.matchMedia('(max-width: 767px)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   if (ehCelular) {
     return supabaseClient.auth.signInWithOAuth({
@@ -242,6 +244,18 @@ let googleIdentityPronto = false;
 let googleNonceBruto = null;
 let googleAoEntrarAtual = null;
 let googleAoFalharAtual = null;
+let googleSoEntrarAtual = false;
+
+// E-mail de dentro do token do Google (JWT), sem validar — só para conferir
+// o cadastro antes de entrar; quem valida o token de verdade é o Supabase.
+function emailDoTokenGoogle(token) {
+  try {
+    const meio = String(token || '').split('.')[1] || '';
+    const json = decodeURIComponent(atob(meio.replace(/-/g, '+').replace(/_/g, '/'))
+      .split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    return (JSON.parse(json).email || '').trim();
+  } catch (e) { return ''; }
+}
 
 function carregarGoogleIdentity() {
   if (window.google && google.accounts && google.accounts.id) return Promise.resolve();
@@ -285,6 +299,19 @@ async function iniciarGoogleIdentityUmaVez() {
     auto_select: false,
     cancel_on_tap_outside: true,
     callback: async (resposta) => {
+      // "Fazer login com o Google" (tela de login): só entra quem já tem
+      // cadastro de anfitrião — e-mail novo não cria conta aqui, igual ao
+      // login com e-mail e senha. Criar conta é pelo cadastro.
+      if (googleSoEntrarAtual) {
+        const email = emailDoTokenGoogle(resposta.credential);
+        const { data: cadastrado, error: erroCheck } = email
+          ? await supabaseClient.rpc('verificar_email_anfitriao', { p_email: email })
+          : { data: false, error: null };
+        if (!erroCheck && !cadastrado) {
+          if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'nao-cadastrado', email });
+          return;
+        }
+      }
       const { error } = await supabaseClient.auth.signInWithIdToken({
         provider: 'google',
         token: resposta.credential,
@@ -304,7 +331,8 @@ async function iniciarGoogleIdentityUmaVez() {
 // Troca botaoAntigo pelo botão oficial do Google. texto: 'signin_with'
 // (Fazer login com o Google), 'signup_with' (Inscrever-se…) ou
 // 'continue_with' (Continuar com o Google).
-async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = 'continue_with' } = {}) {
+// soEntrar: true = só entra quem já é anfitrião (tela de login); false = cria a conta se for nova (cadastro).
+async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = 'continue_with', soEntrar = false } = {}) {
   if (!botaoAntigo || botaoAntigo.dataset.googleOficial) return;
   try {
     await carregarGoogleIdentity();
@@ -339,7 +367,7 @@ async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = '
       logo_alignment: 'center',
       width: largura,
       locale: 'pt-BR',
-      click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; }
+      click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; googleSoEntrarAtual = !!soEntrar; }
     });
   };
   desenhar();

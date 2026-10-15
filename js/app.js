@@ -10622,7 +10622,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btn.disabled) return;
       btn.disabled = true;
       // No computador abre em pop-up; ao entrar, recarrega e cai no painel.
-      const { error } = await entrarComGoogle({ aoEntrar: () => window.location.reload() });
+      const { error } = await entrarComGoogle({ aoEntrar: () => window.location.reload(), soEntrar: id === 'btn-google-login' });
       btn.disabled = false;
       if (error && !/não concluído/.test(error.message || '')) {
         console.error('Erro ao entrar com o Google:', error);
@@ -10635,8 +10635,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // mostra love.com.br). Sem o script do Google, os botões acima seguem.
   botaoOficialDoGoogle(document.getElementById('btn-google-login'), {
     texto: 'signin_with',
+    soEntrar: true,
     aoEntrar: () => window.location.reload(),
-    aoFalhar: () => { if (typeof showLoginError === 'function') showLoginError('Não foi possível entrar com o Google. Tente de novo.'); }
+    aoFalhar: (motivo) => {
+      if (typeof showLoginError !== 'function') return;
+      if (motivo && motivo.codigo === 'nao-cadastrado') showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
+      else showLoginError('Não foi possível entrar com o Google. Tente de novo.');
+    }
   });
   botaoOficialDoGoogle(document.getElementById('btn-google-register'), {
     texto: 'signup_with',
@@ -14257,6 +14262,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // tem cadastro de anfitrião. Cria (nome/e-mail/foto do Google) e segue.
     const veioDoGoogle = (session.user.app_metadata && (session.user.app_metadata.provider === 'google' ||
       (session.user.app_metadata.providers || []).includes('google')));
+    let modoGoogle = null;
+    try { modoGoogle = localStorage.getItem('love-google-modo'); localStorage.removeItem('love-google-modo'); } catch (e) {}
+    if (!cliente && veioDoGoogle && modoGoogle === 'entrar') {
+      // Veio de "Fazer login com o Google" com um e-mail sem cadastro: não
+      // cria conta (igual ao login com e-mail) — avisa na tela de login.
+      await supabaseClient.auth.signOut();
+      switchView('login');
+      showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
+      return;
+    }
     if (!cliente && veioDoGoogle) {
       const { data: criado, error: erroCriar } = await supabaseClient.rpc('garantir_cliente_google');
       if (erroCriar) console.error('Erro ao criar cadastro pelo Google:', erroCriar);

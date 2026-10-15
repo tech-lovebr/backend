@@ -11744,7 +11744,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // 1400×500) — mostrada no mesmo formato, fica idêntica ao que o
       // fornecedor enquadrou. Sem capa: a primeira foto do portfólio.
       cardImage: (servicos.map(s => s.cover_image_url).find(Boolean)) || fotos[0] || '',
-      avatar: f.avatar_url || f.logo_url || '',
+      avatar: f.avatar_url || '', // capa (logo_url) não serve de avatar: sem foto, ficam as iniciais
       portfolioPhotos: fotos,
       services: servicos,
       // Categoria do fornecedor = categorias dos serviços que ele cadastrou

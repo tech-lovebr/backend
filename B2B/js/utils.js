@@ -491,6 +491,75 @@ async function syncFornecedorAvatar(p) {
   }
 }
 
+/* Formulários do Editor de Site — tabela site_formularios (migration 047).
+   O navegador (b2b-site-forms) fica como cache; se a tabela ainda não
+   existir, é o único lugar, como antes. Na primeira carga com a tabela
+   vazia, os formulários que já estavam no navegador sobem pro banco com o
+   mesmo id (blocos do site que apontam pra eles continuam funcionando). */
+const SITE_FORMS_LOCAL_KEY = 'b2b-site-forms';
+let siteFormsNoBanco = true;
+
+function siteFormsLocais() {
+  try { return JSON.parse(localStorage.getItem(SITE_FORMS_LOCAL_KEY) || '[]'); } catch (e) { return []; }
+}
+function gravarSiteFormsLocais(forms) {
+  try { localStorage.setItem(SITE_FORMS_LOCAL_KEY, JSON.stringify(forms)); } catch (e) { /* cheio/bloqueado */ }
+}
+function siteFormDaLinha(r) {
+  return { id: r.id, title: r.titulo, description: r.descricao || '', responses: 0, fields: r.campos || [], bgColor: r.bg_color || '', bgImage: r.bg_image || '' };
+}
+function siteFormParaLinha(f, fornecedorId) {
+  return {
+    id: f.id, fornecedor_id: fornecedorId, titulo: f.title || 'Formulário sem título',
+    descricao: f.description || null, campos: f.fields || [],
+    bg_color: f.bgColor || null, bg_image: f.bgImage || null, updated_at: new Date().toISOString()
+  };
+}
+async function sessaoFornecedorId() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  return session ? session.user.id : null;
+}
+
+async function loadSiteForms() {
+  const locais = siteFormsLocais();
+  const uid = await sessaoFornecedorId();
+  if (!uid) return locais;
+  const { data, error } = await supabaseClient
+    .from('site_formularios')
+    .select('id, titulo, descricao, campos, bg_color, bg_image')
+    .eq('fornecedor_id', uid)
+    .order('created_at');
+  if (error) { siteFormsNoBanco = false; return locais; }
+  siteFormsNoBanco = true;
+
+  if (!data.length && locais.length) {
+    const { error: upErr } = await supabaseClient
+      .from('site_formularios')
+      .upsert(locais.map(f => siteFormParaLinha(f, uid)), { onConflict: 'id' });
+    if (upErr) console.warn('Não foi possível subir os formulários do navegador pro banco.', upErr);
+    return locais;
+  }
+
+  const forms = data.map(siteFormDaLinha);
+  gravarSiteFormsLocais(forms);
+  if (typeof B2B_DATA !== 'undefined') B2B_DATA.siteForms = forms;
+  return forms;
+}
+
+async function saveSiteFormRemote(form) {
+  if (!siteFormsNoBanco || !form) return;
+  const uid = await sessaoFornecedorId();
+  if (!uid) return;
+  const { error } = await supabaseClient.from('site_formularios').upsert(siteFormParaLinha(form, uid), { onConflict: 'id' });
+  if (error) console.error('Não foi possível salvar o formulário no banco.', error);
+}
+
+async function deleteSiteFormRemote(id) {
+  if (!siteFormsNoBanco || !id) return;
+  const { error } = await supabaseClient.from('site_formularios').delete().eq('id', id);
+  if (error) console.error('Não foi possível excluir o formulário no banco.', error);
+}
+
 function initials(name) {
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }

@@ -34,7 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
   initFormDrawer();
   initResponsesDrawer();
   openFromLink();
+  carregarFormulariosDoBanco();
 });
+
+// Lista real (site_formularios) chega depois da sessão; até lá vale o cache
+// do navegador, que já aparece na hora.
+async function carregarFormulariosDoBanco() {
+  if (!(await window.b2bAuthReady)) return;
+  siteForms = B2B_DATA.siteForms = await loadSiteForms();
+  renderFormsList();
+}
 
 // Link do chat ("Criar formulário"): paginas-site?tab=formularios&novo=1
 // abre a aba Formulários já com o drawer de criar aberto.
@@ -125,8 +134,10 @@ function renderFormsList() {
   });
   list.querySelectorAll('[data-delete-form]').forEach(btn => {
     btn.addEventListener('click', () => {
-      siteForms = B2B_DATA.siteForms = siteForms.filter(f => f.id !== btn.dataset.deleteForm);
+      const removidoId = btn.dataset.deleteForm;
+      siteForms = B2B_DATA.siteForms = siteForms.filter(f => f.id !== removidoId);
       persistSiteForms();
+      deleteSiteFormRemote(removidoId);
       delete responsesCache[btn.dataset.deleteForm];
       renderFormsList();
       showToast('Formulário excluído.');
@@ -476,6 +487,7 @@ function saveDrawerForm() {
     return;
   }
 
+  let salvo = null;
   if (editingFormId) {
     const form = siteForms.find(f => f.id === editingFormId);
     if (form) {
@@ -484,9 +496,10 @@ function saveDrawerForm() {
       form.fields = drawerFields;
       form.bgColor = drawerBgColor;
       form.bgImage = drawerBgImage;
+      salvo = form;
     }
   } else {
-    siteForms.push({
+    salvo = {
       id: 'form-' + Date.now(),
       title,
       description,
@@ -494,10 +507,12 @@ function saveDrawerForm() {
       fields: drawerFields,
       bgColor: drawerBgColor,
       bgImage: drawerBgImage
-    });
+    };
+    siteForms.push(salvo);
   }
 
   persistSiteForms();
+  saveSiteFormRemote(salvo);
   renderFormsList();
   closeFormDrawer();
   showToast(editingFormId ? 'Formulário atualizado!' : 'Formulário criado!');

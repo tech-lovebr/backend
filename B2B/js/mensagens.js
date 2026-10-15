@@ -18,6 +18,8 @@ async function initB2BMensagens() {
   renderContactsList();
   renderActiveChat();
   markActiveConversationRead();
+  // Formulários (+ › Formulário) vêm do banco — site_formularios.
+  if (typeof loadSiteForms === 'function') loadSiteForms();
   setupChatEvents();
   subscribeToB2BMessages();
   window.b2bPageReady?.();

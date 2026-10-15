@@ -5864,8 +5864,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const evt = getActiveEvent();
     if (!guest || !evt || !ehUuid(evt.id)) return { error: null };
     const { data: sessao } = await supabaseClient.auth.getSession();
-    const clienteId = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
-    if (!clienteId) return { error: new Error('Sessão expirada') };
+    const usuarioId = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
+    if (!usuarioId) return { error: new Error('Sessão expirada') };
+    // Organizador convidado grava no nome do criador do evento.
+    const clienteId = evt.clienteId || usuarioId;
     const linha = mapGuestToConvidadoRow(guest, evt.id, clienteId);
     if (ehUuid(guest.id)) {
       const { error } = await supabaseClient.from('convidados').update(linha).eq('id', guest.id);
@@ -5896,8 +5898,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const evt = getActiveEvent();
     if (!gift || !evt || !ehUuid(evt.id)) return { error: null };
     const { data: sessao } = await supabaseClient.auth.getSession();
-    const clienteId = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
-    if (!clienteId) return { error: new Error('Sessão expirada') };
+    const usuarioId = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
+    if (!usuarioId) return { error: new Error('Sessão expirada') };
+    // Organizador convidado grava no nome do criador do evento.
+    const clienteId = evt.clienteId || usuarioId;
     const linha = mapGiftToPresenteRow(gift, evt.id, clienteId);
     if (ehUuid(gift.id)) {
       const { error } = await supabaseClient.from('presentes').update(linha).eq('id', gift.id);
@@ -10976,6 +10980,7 @@ document.addEventListener('DOMContentLoaded', () => {
       newEvt.messages = [];
       newEvt.convidadosConfirmados = 0;
       newEvt.totalConvidados = 0;
+      newEvt.clienteId = clienteId;
       newEvt.presentesRecebidos = 0;
       newEvt.totalArrecadado = 0;
 
@@ -14889,6 +14894,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pending = guests.filter(g => g.status === 'pending');
     return {
       id: row.id,
+      clienteId: row.cliente_id,
       type: row.tipo,
       title: row.titulo,
       hostName: row.host_name,

@@ -931,11 +931,19 @@ function goToStep(n) {
     el.setAttribute('aria-selected', active ? 'true' : 'false');
   });
 
-  // Com as abas clicáveis, Salvar fica disponível em qualquer uma (o
-  // submit valida Categoria e Preço e leva pra aba que faltar).
-  setPanelHidden('product-wizard-back-btn', n === 1);
-  setPanelHidden('product-wizard-next-btn', n === 4);
+  // Rodapé: nas etapas 1–3, "Salvar item" (branco) à esquerda e "Avançar"
+  // à direita. Na 4 (Mídia), "Voltar" à esquerda e "Salvar item" (principal)
+  // à direita. Salvar fica disponível em qualquer aba (o submit valida
+  // Categoria e Preço e leva pra aba que faltar).
+  const ultima = n === 4;
+  setPanelHidden('product-wizard-back-btn', !ultima);
+  setPanelHidden('product-wizard-next-btn', ultima);
   setPanelHidden('product-wizard-submit-btn', false);
+  const salvarBtn = document.getElementById('product-wizard-submit-btn');
+  if (salvarBtn) {
+    salvarBtn.classList.toggle('btn-primary', ultima);
+    salvarBtn.classList.toggle('btn-secondary', !ultima);
+  }
   updateWizardNextButtonState();
 }
 

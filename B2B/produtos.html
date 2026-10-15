@@ -61,7 +61,6 @@
   <aside class="form-drawer" id="product-drawer" aria-label="Produto ou serviço">
     <div class="form-drawer-header">
       <div class="form-drawer-header-main">
-        <p class="task-drawer-list-label">Catálogo</p>
         <h2 class="task-drawer-title" id="product-drawer-title">Adicionar produto ou serviço</h2>
         <!-- Abas clicáveis (não mais etapas): dá pra ir direto em Mídia, por
              exemplo, sem passar pelas outras. Salvar valida Categoria e Preço
@@ -504,10 +503,9 @@
         <button type="button" id="product-drawer-delete-btn" class="btn-secondary" aria-label="Remover" title="Remover" hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M9.5 7V5.5A1.5 1.5 0 0 1 11 4h2a1.5 1.5 0 0 1 1.5 1.5V7m2 0-.6 12.1a2 2 0 0 1-2 1.9H8.1a2 2 0 0 1-2-1.9L5.5 7" /></svg>
         </button>
-        <button type="button" id="product-drawer-cancel" class="btn-secondary">Cancelar</button>
         <button type="button" id="product-wizard-back-btn" class="btn-secondary" hidden>Voltar</button>
+        <button type="submit" form="product-form" id="product-wizard-submit-btn" class="btn-secondary">Salvar item</button>
         <button type="button" id="product-wizard-next-btn" class="btn-primary">Avançar</button>
-        <button type="submit" form="product-form" id="product-wizard-submit-btn" class="btn-primary" hidden>Salvar item</button>
       </div>
       <div id="product-wizard-footer-confirm-delete" class="product-wizard-footer-row" hidden>
         <span class="product-wizard-confirm-text">Tem certeza que deseja excluir?</span>
@@ -556,6 +554,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/produtos.js?v=20"></script>
+  <script src="js/produtos.js?v=21"></script>
 </body>
 </html>

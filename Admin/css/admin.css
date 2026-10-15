@@ -128,7 +128,9 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   display: flex;
   flex-direction: column;
   gap: .2rem;
-  padding: .75rem;
+  /* Sem respiro lateral: o fundo do item ativo vai de uma borda à outra do
+     menu, em linha reta. O recuo do texto fica no padding de cada item. */
+  padding: .75rem 0;
 
   /* A rolagem continua existindo para telas baixas, mas sem a barra à vista:
      ela cortava a borda do sidebar e não tem o que indicar num menu curto. */
@@ -144,7 +146,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   letter-spacing: .06em;
   text-transform: uppercase;
   color: #7b8798;
-  padding: .75rem .5rem .25rem;
+  padding: .75rem 1.25rem .25rem;
   margin: 0;
 }
 
@@ -154,10 +156,10 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   align-items: center;
   gap: .6rem;
   width: 100%;
-  padding: .3125rem .5rem;
+  padding: .3125rem 1.25rem;
   border: none;
   background: transparent;
-  border-radius: var(--radius-control);
+  border-radius: 0;
   font-family: inherit;
   /* Mesmo corpo dos subitens: o menu inteiro numa escala só, e cada linha
      ocupa metade da altura que a caixa de 48px exigia. */
@@ -226,7 +228,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 .admin-nav-grupo-linha {
   display: flex;
   align-items: center;
-  border-radius: var(--radius-control);
+  border-radius: 0;
 }
 
 .admin-nav-grupo-linha:hover { background: #F5F5F6; }
@@ -244,7 +246,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin-right: .25rem;
+  margin-right: 1rem;
   padding: 0;
   border: 0;
   border-radius: 7px;
@@ -258,19 +260,19 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 .admin-nav-seta .sidebar-chevron { margin-left: 0; }
 .admin-nav-seta.is-open .sidebar-chevron { transform: rotate(180deg); }
 
-/* Filhos do grupo — escondidos até o grupo ser aberto. */
+/* Filhos do grupo — escondidos até o grupo ser aberto. Sem a linha vertical:
+   cada subitem ocupa a largura inteira do menu, e o texto começa alinhado
+   ao nome do grupo (recuo = ícone de 30px + o espaço entre ícone e texto). */
 .admin-nav-children {
   display: flex;
   flex-direction: column;
   gap: .125rem;
-  margin: .125rem 0 .25rem 1.4rem;
-  padding-left: .75rem;
-  border-left: 1px solid var(--sidebar-borda);
+  margin: .125rem 0 .25rem;
 }
 
 .admin-nav-subitem {
-  padding: .4375rem .625rem;
-  border-radius: var(--radius-control);
+  padding: .4375rem 1.25rem .4375rem calc(1.25rem + 30px + .6rem);
+  border-radius: 0;
   color: var(--sidebar-item);
   font-size: .8125rem;
   font-weight: 600;

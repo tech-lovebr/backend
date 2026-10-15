@@ -14,10 +14,12 @@
 
   /* Mesmos fundos do B2B: conteúdo branco, cabeçalho #F3F3F3. */
   /* O conteúdo é o plano de fundo; os cards ficam por cima dele, em branco. */
-  --bg-app: #F9F9F9;
+  --bg-app: #FFFFFF;
   /* Faixa superior inteira — marca, busca e perfil. */
   --topbar-bg: #F3F3F3;
-  --header-bar-bg: #F9F9F9;
+  --header-bar-bg: #FFFFFF;
+  /* Sombra leve das caixas (tabelas, cards, indicadores) sobre o fundo branco. */
+  --sombra-caixa: 0 1px 3px rgba(16, 24, 40, .06), 0 1px 2px rgba(16, 24, 40, .04);
   --topbar-border: #E4E4E4;
   --bg-surface: #ffffff;
   --bg-muted: #f1f3f6;
@@ -101,6 +103,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   height: var(--topbar-h);
   display: flex;
   align-items: center;
+  justify-content: space-between; /* logotipo na esquerda, ADM na direita */
   gap: .5rem;
   padding: 0 1.25rem;
   background: var(--bg-surface);
@@ -489,6 +492,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
+  box-shadow: var(--sombra-caixa);
 }
 
 .card-head {
@@ -514,6 +518,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
+  box-shadow: var(--sombra-caixa);
   padding: 1.125rem 1.25rem;
 }
 

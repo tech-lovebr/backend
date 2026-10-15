@@ -176,8 +176,8 @@ function renderSidebar() {
 
   host.innerHTML = `
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
-      <span class="marca-admin">Admin</span>
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
+      <span class="marca-admin">ADM</span>
     </a>
     <nav class="admin-nav">${sections}</nav>`;
 

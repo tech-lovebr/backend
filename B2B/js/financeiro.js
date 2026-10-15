@@ -479,7 +479,7 @@ async function preencherPropostaDoPedido() {
   if (vendedor && meuNome) {
     if (vendedor.tagName === 'SELECT') {
       if ([...vendedor.options].some(o => o.value === meuNome)) vendedor.value = meuNome;
-    } else if (!vendedor.value) {
+    } else {
       vendedor.value = meuNome;
     }
   }

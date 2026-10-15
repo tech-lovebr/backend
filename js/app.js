@@ -1244,7 +1244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const fid = String(f.id).toLowerCase();
       return fid === alvo || (alvo.length === 8 && fid.startsWith(alvo));
     });
-    return item ? { ...item, isFavorite: b2bFavoritosIds.has(item.id) } : null;
+    return item ? { ...item } : null;
   }
 
   // inicial: abertura pela URL (F5/link). state.currentTab já nasce como
@@ -11660,7 +11660,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let b2bFornecedores = [];
   let b2bFornecedoresCarregados = false;
   let b2bFornecedoresPromise = null;
-  let b2bFavoritosIds = new Set();
+  let b2bFavoritosIds = new Set(); // ids de serviços (products) favoritados
+  let b2bAvaliacoesResumo = new Map(); // fornecedor_id -> { media, total }
 
   // Texto digitado pelo fornecedor no B2B vai pra dentro de innerHTML aqui —
   // sempre escapado.
@@ -11688,7 +11689,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(palavra => (palavra.match(/[\p{L}\p{N}]/u) || [''])[0])
       .filter(Boolean).slice(0, 2).join('').toUpperCase() || '?';
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">' +
-      '<rect width="96" height="96" fill="#ebf4ff"/>' +
+      '<rect width="96" height="96" fill="#FFFFFF"/>' +
       '<text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="Inter, sans-serif" font-size="36" font-weight="700" fill="#183b54">' +
       escaparHtml(iniciais) + '</text></svg>';
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
@@ -11753,7 +11754,12 @@ document.addEventListener('DOMContentLoaded', () => {
       subcategories: [...new Set(servicos.map(s => subcategoriaAtual(s.extra?.subcategory)).filter(Boolean))],
       priceNum: maisBarato ? Number(maisBarato.price) : 0,
       pricingType: maisBarato?.extra?.pricing?.type || (maisBarato ? 'VALOR_FIXO' : 'SOB_CONSULTA'),
-      isFavorite: b2bFavoritosIds.has(f.id)
+      // Favorito é por serviço (ver cardsPorServico); a empresa em si não é favoritada.
+      isFavorite: false,
+      // Capa e foto da empresa (Configurações › Minha Empresa no Hub).
+      capaEmpresa: f.logo_url || '',
+      avaliacaoMedia: (b2bAvaliacoesResumo.get(f.id) || {}).media || 0,
+      avaliacaoTotal: (b2bAvaliacoesResumo.get(f.id) || {}).total || 0
     };
   }
 
@@ -11767,20 +11773,33 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bFornecedoresCarregadosEm = Date.now();
 
     b2bFornecedoresPromise = (async () => {
-      const [fornecedoresRes, favoritosRes] = await Promise.all([
+      const [fornecedoresRes, favoritosRes, avaliacoesRes] = await Promise.all([
         supabaseClient
           .from('fornecedores')
           .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
           .neq('status', 'bloqueado')
           .order('company_name'),
         supabaseClient
-          .from('fornecedores_favoritos')
-          .select('fornecedor_id')
-          .eq('cliente_id', userId)
+          .from('servicos_favoritos')
+          .select('produto_id')
+          .eq('cliente_id', userId),
+        supabaseClient
+          .from('fornecedores_avaliacoes')
+          .select('fornecedor_id, nota')
       ]);
 
       if (favoritosRes.error) console.error('[vitrine] favoritos:', favoritosRes.error);
-      b2bFavoritosIds = new Set((favoritosRes.data || []).map(r => r.fornecedor_id));
+      b2bFavoritosIds = new Set((favoritosRes.data || []).map(r => r.produto_id));
+      // Média e quantidade de avaliações por fornecedor (estrelas do perfil).
+      b2bAvaliacoesResumo = new Map();
+      if (!avaliacoesRes.error) {
+        (avaliacoesRes.data || []).forEach(a => {
+          const r = b2bAvaliacoesResumo.get(a.fornecedor_id) || { soma: 0, total: 0 };
+          r.soma += Number(a.nota) || 0; r.total += 1;
+          b2bAvaliacoesResumo.set(a.fornecedor_id, r);
+        });
+        b2bAvaliacoesResumo.forEach(r => { r.media = r.total ? r.soma / r.total : 0; });
+      }
 
       if (fornecedoresRes.error) {
         console.error('[vitrine] fornecedores:', fornecedoresRes.error);
@@ -12084,6 +12103,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Selo de avaliação (anel + ícone) do card, em nota de 0 a 10 — usado na
   // lista e no grid. Ícone e anel em amarelo (mesma cor da estrela).
+  // "★★★★☆ (12)" — média de 1 a 5; sem avaliação, cinco estrelas vazias e (0).
+  function estrelasHtml(media, total) {
+    const m = Math.max(0, Math.min(5, Number(media) || 0));
+    const cheias = Math.round(m);
+    const estrela = cheia => `<svg viewBox="0 0 20 20" class="${cheia ? 'b2b-estrela-cheia' : 'b2b-estrela-vazia'}" aria-hidden="true"><path fill="currentColor" d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L10 14.9l-5.3 2.8 1.1-5.9L1.5 7.7l5.9-.8L10 1.5z"/></svg>`;
+    let html = '<span class="b2b-estrelas" title="' + (total ? `${m.toFixed(1)} de 5` : 'Sem avaliações') + '">';
+    for (let i = 1; i <= 5; i++) html += estrela(i <= cheias);
+    html += `</span><span class="text-zinc-500 text-sm">(${Number(total) || 0})</span>`;
+    return html;
+  }
+
+  // Lista de avaliações do fornecedor (RPC avaliacoes_do_fornecedor).
+  async function carregarAvaliacoesDoPerfil(item) {
+    const lista = document.getElementById('b2b-profile-reviews-list');
+    if (!lista || !item || !ehUuid(item.id)) { if (lista) lista.innerHTML = '<p class="text-sm text-zinc-400">Ainda sem avaliações.</p>'; return; }
+    lista.innerHTML = '<p class="text-sm text-zinc-400">Carregando…</p>';
+    const { data, error } = await supabaseClient.rpc('avaliacoes_do_fornecedor', { p_fornecedor_id: item.id });
+    if (!activeB2BProfileItem || activeB2BProfileItem.id !== item.id) return;
+    if (error || !Array.isArray(data) || !data.length) {
+      if (error && !/function|schema cache/i.test(error.message || '')) console.error('[perfil] avaliações:', error);
+      lista.innerHTML = '<p class="text-sm text-zinc-400">Ainda sem avaliações.</p>';
+      return;
+    }
+    lista.innerHTML = data.map(a => `
+      <div class="b2b-avaliacao">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <p class="text-sm font-semibold text-zinc-900">${escaparHtml(a.autor || 'Anfitrião')}</p>
+          ${estrelasHtml(a.nota, 0).replace(/<span class="text-zinc-500 text-sm">\(0\)<\/span>/, '')}
+        </div>
+        ${a.comentario ? `<p class="text-sm text-zinc-600 mt-1.5 leading-relaxed">${escaparHtml(a.comentario)}</p>` : ''}
+        <p class="text-[11px] text-zinc-400 mt-1.5">${escaparHtml(new Date(a.created_at).toLocaleDateString('pt-BR'))}</p>
+      </div>`).join('');
+  }
+
+  // "por Empresa" na página do serviço abre a página da empresa (sem serviço).
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('.b2b-profile-empresa-link');
+    if (link && activeB2BProfileItem) openB2BVendorProfile(activeB2BProfileItem, null);
+  });
+
   function b2bRatingBadgeHTML(item, compact) {
     const recommendPct = Math.round(((item.rating || 4.9) / 5) * 100);
     const ratingScore = (recommendPct / 10).toFixed(1);
@@ -12127,6 +12186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return {
         ...fornecedor,
         servicoCard: s,
+        isFavorite: b2bFavoritosIds.has(s.id),
         cardImage: s.cover_image_url || fornecedor.cardImage,
         imageServiceId: s.id,
         description: s.description || fornecedor.description,
@@ -12199,9 +12259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     aplicarCidadePadraoVitrine();
 
-    let items = b2bFornecedores
-      .map(f => ({ ...f, isFavorite: b2bFavoritosIds.has(f.id) }))
-      .flatMap(cardsPorServico);
+    let items = b2bFornecedores.flatMap(cardsPorServico);
     let categoryName = 'serviços';
 
     if (currentB2BCategory === 'favorites') {
@@ -12292,7 +12350,6 @@ document.addEventListener('DOMContentLoaded', () => {
           ${(item.cardImage || item.image)
             ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
-          ${categoriaNaImagemHtml(item)}
           <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
             <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -12398,7 +12455,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ${(item.cardImage || item.image)
           ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
           : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
-        ${categoriaNaImagemHtml(item)}
         <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
           <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
@@ -12649,25 +12705,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // aqui e na página de perfil.
   // Favoritos ficam salvos em fornecedores_favoritos (migration 037). Muda
   // na tela na hora e desfaz se o banco recusar.
-  function toggleB2BFavorite(item) {
+  // Favorito é do SERVIÇO (card do Explorar ou serviço aberto no perfil),
+  // não da empresa: gostar do bar não marca o buffet do mesmo fornecedor.
+  function toggleB2BFavorite(item, servico) {
     const userId = window.loveClienteSession?.user?.id;
-    if (!userId || !item?.id) return item?.isFavorite;
+    const svc = servico || (item && item.servicoCard) || activeB2BProfileServico || null;
+    const servicoId = svc && svc.id;
+    if (!userId || !servicoId) return item?.isFavorite;
 
-    const virouFavorito = !b2bFavoritosIds.has(item.id);
-    if (virouFavorito) b2bFavoritosIds.add(item.id); else b2bFavoritosIds.delete(item.id);
-    item.isFavorite = virouFavorito;
+    const virouFavorito = !b2bFavoritosIds.has(servicoId);
+    if (virouFavorito) b2bFavoritosIds.add(servicoId); else b2bFavoritosIds.delete(servicoId);
+    if (item) item.isFavorite = virouFavorito;
 
     const pedido = virouFavorito
-      ? supabaseClient.from('fornecedores_favoritos').insert({ cliente_id: userId, fornecedor_id: item.id })
-      : supabaseClient.from('fornecedores_favoritos').delete().eq('cliente_id', userId).eq('fornecedor_id', item.id);
+      ? supabaseClient.from('servicos_favoritos').insert({ cliente_id: userId, produto_id: servicoId })
+      : supabaseClient.from('servicos_favoritos').delete().eq('cliente_id', userId).eq('produto_id', servicoId);
 
     pedido.then(({ error }) => {
       if (!error) return;
       console.error('[vitrine] favorito:', error);
-      if (virouFavorito) b2bFavoritosIds.delete(item.id); else b2bFavoritosIds.add(item.id);
-      item.isFavorite = !virouFavorito;
+      if (virouFavorito) b2bFavoritosIds.delete(servicoId); else b2bFavoritosIds.add(servicoId);
+      if (item) item.isFavorite = !virouFavorito;
       renderB2BExplore();
-      if (activeB2BProfileItem && activeB2BProfileItem.id === item.id) renderB2BVendorProfile(item);
+      if (activeB2BProfileItem && item && activeB2BProfileItem.id === item.id) renderB2BVendorProfile(activeB2BProfileItem);
     });
 
     return virouFavorito;
@@ -12883,7 +12943,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const capaServico = servicoAtual ? ((capaMeta && capaMeta.originalUrl) || servicoAtual.cover_image_url || '') : '';
     const focoServico = capaMeta && capaMeta.focus && Number.isFinite(capaMeta.focus.x) && Number.isFinite(capaMeta.focus.y)
       ? `${capaMeta.focus.x}% ${capaMeta.focus.y}%` : '50% 50%';
-    const capa = capaServico || portfolioPhotos[0] || item.image || '';
+    const capa = capaServico || item.capaEmpresa || portfolioPhotos[0] || item.image || '';
 
     // Sem foto: fica o degradê do container da capa.
     if (coverImg) {
@@ -12894,7 +12954,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Categoria no canto inferior direito da capa.
       const caixaCapa = coverImg.parentElement;
       caixaCapa.querySelector('.b2b-categoria-capa')?.remove();
-      const categoriaCapa = (servicoAtual && servicoAtual.category) || item.mainCategory || (item.categories || [])[0] || '';
+      const categoriaCapa = servicoAtual ? (servicoAtual.category || '') : '';
       if (categoriaCapa) caixaCapa.insertAdjacentHTML('beforeend', `<span class="b2b-categoria-capa">${escaparHtml(categoriaCapa)}</span>`);
     }
     if (avatarImg) avatarImg.src = item.avatar || avatarComIniciais(item.name);
@@ -12903,9 +12963,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const nomeServico = servicoAtual && servicoAtual.name ? servicoAtual.name.trim() : '';
     if (nameEl) nameEl.textContent = nomeServico || item.name;
     if (roleEl) {
-      const roleText = nomeServico ? `por ${item.name}` : (item.role || item.company || '');
-      roleEl.textContent = roleText;
-      roleEl.classList.toggle('hidden', !roleText);
+      if (nomeServico) {
+        roleEl.innerHTML = `por <button type="button" class="b2b-profile-empresa-link" title="Ver a página de ${escaparHtml(item.name)}">${escaparHtml(item.name)}</button>`;
+        roleEl.classList.remove('hidden');
+      } else {
+        const roleText = (item.categories || []).join(' · ') || item.role || item.company || '';
+        roleEl.textContent = roleText;
+        roleEl.classList.toggle('hidden', !roleText);
+      }
     }
     if (locationTextEl) locationTextEl.textContent = enderecoCompleto(item);
 
@@ -12918,12 +12983,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mesmo selo (anel + ícone, nota de 0 a 10) usado no card da lista/grid
     // do Explorar — a nota aqui é exatamente a mesma daquele card.
+    // Estrelas (média de 1 a 5) e quantidade de avaliações, sempre visíveis.
     if (ratingWrap) {
-      ratingWrap.classList.toggle('hidden', !item.rating);
-      if (item.rating) {
-        ratingWrap.innerHTML = `${b2bRatingBadgeHTML(item)}<span class="text-zinc-400">(${item.reviewsCount || 0})</span>`;
-      }
+      ratingWrap.classList.remove('hidden');
+      ratingWrap.innerHTML = estrelasHtml(item.avaliacaoMedia, item.avaliacaoTotal);
     }
+    carregarAvaliacoesDoPerfil(item);
 
     if (aboutEl) aboutEl.textContent = item.about || item.description || '';
 
@@ -13007,11 +13072,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (portfolioSection) portfolioSection.classList.toggle('hidden', portfolioPhotos.length === 0);
 
+    // Coração do perfil: só na página do serviço (favorito é do serviço).
+    const favBtn = document.getElementById('btn-b2b-profile-favorite');
+    const favoritado = !!(servicoAtual && b2bFavoritosIds.has(servicoAtual.id));
+    if (favBtn) favBtn.classList.toggle('hidden', !servicoAtual);
     if (favIcon) {
-      favIcon.classList.toggle('fill-[#c7305b]', !!item.isFavorite);
-      favIcon.classList.toggle('text-[#c7305b]', !!item.isFavorite);
-      favIcon.classList.toggle('fill-none', !item.isFavorite);
-      favIcon.classList.toggle('text-zinc-300', !item.isFavorite);
+      favIcon.classList.toggle('fill-[#c7305b]', favoritado);
+      favIcon.classList.toggle('text-[#c7305b]', favoritado);
+      favIcon.classList.toggle('fill-none', !favoritado);
+      favIcon.classList.toggle('text-zinc-300', !favoritado);
     }
   }
 
@@ -13094,7 +13163,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-b2b-profile-favorite')?.addEventListener('click', () => {
     if (!activeB2BProfileItem) return;
-    toggleB2BFavorite(activeB2BProfileItem);
+    toggleB2BFavorite(activeB2BProfileItem, activeB2BProfileServico);
     renderB2BVendorProfile(activeB2BProfileItem);
   });
 

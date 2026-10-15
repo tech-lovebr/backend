@@ -7529,3 +7529,16 @@ html body .sub-drawer-item:not(#love-h-a) { font-size: 0.8125rem !important; fon
 html body .sub-drawer-item.active:not(#love-h-a) { font-weight: 700 !important; }
 html body .love-tab-item:not(#love-h-a), html body button.love-tab-item:not(#love-h-a) { font-size: 0.8125rem !important; font-weight: 600 !important; }
 html body .love-tab-item.active:not(#love-h-a), html body button.love-tab-item.active:not(#love-h-a) { font-weight: 700 !important; }
+
+/* Drawer do convidado: "Remover convidado" vira "Tem certeza? Sim / Não" */
+.guest-remove-confirm { display: flex; align-items: center; justify-content: center; gap: .75rem; padding: .6rem .75rem; border: 1px solid var(--border-card); border-radius: 10px; background: #FAFAFA; font-size: .8125rem; font-weight: 600; color: #3F3F46; }
+html body button.guest-remove-sim:not(#love-h-a), html body button.guest-remove-nao:not(#love-h-a) { height: 30px; padding: 0 .9rem; border-radius: 8px !important; font-size: .8125rem; font-weight: 700; cursor: pointer; background: #fff; }
+html body button.guest-remove-sim:not(#love-h-a) { border: 1px solid #FCA5A5; color: #DC2626; }
+html body button.guest-remove-sim:not(#love-h-a):hover { border-color: #DC2626; background: #fff; }
+html body button.guest-remove-nao:not(#love-h-a) { border: 1px solid #E4E4E7; color: #3F3F46; }
+html body button.guest-remove-nao:not(#love-h-a):hover { border-color: #181D24; color: #181D24; background: #fff; }
+/* Tabela de convidados: caixinha à esquerda do nome; lixeira na barra */
+.guest-select-check { flex-shrink: 0; }
+.guest-select-espaco { display: inline-block; width: 18px; flex-shrink: 0; }
+html body #view-event-os-dashboard .love-tabela-lixeira:not(#love-h-a) .love-tabela-filtro-contador { background: #DC2626; }
+html body #view-event-os-dashboard .love-tabela-lixeira:not(#love-h-a):hover { border-color: #DC2626; color: #DC2626; }

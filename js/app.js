@@ -223,6 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Presentes marcados na caixinha do card (Meus presentes) — exclusão em massa.
   const presentesSelecionados = new Set();
+  // Convidados marcados na caixinha da tabela (Meus convidados) — exclusão em massa.
+  const convidadosSelecionados = new Set();
 
   // Navegação programática (ex.: botão "Checklist do Evento" no dashboard)
   // que precisa abrir já num sub-item específico de uma aba, sem precisar
@@ -7779,6 +7781,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <td>
             <div class="flex items-center gap-2 min-w-0">
+              ${attendee.isPrimary ? `<input type="checkbox" class="gifts-select-all-check guest-select-check" data-guest-id="${escaparHtml(guest.id)}"${convidadosSelecionados.has(guest.id) ? ' checked' : ''} aria-label="Selecionar ${escaparHtml(guest.name || 'convidado')}">` : '<span class="guest-select-espaco" aria-hidden="true"></span>'}
               ${attendee.isPrimary ? '' : '<span class="guest-sub-conector" aria-hidden="true"></span>'}
               <span class="guest-tipo-badge ${attendee.isPrimary ? 'is-convidado' : 'is-acompanhante'}" title="${attendee.isPrimary ? 'Convidado' : 'Acompanhante'}">${attendee.isPrimary ? 'C' : 'A'}</span>
               <span class="font-semibold text-zinc-900 block truncate">${attendee.name}</span>
@@ -7810,7 +7813,84 @@ document.addEventListener('DOMContentLoaded', () => {
         listEl.appendChild(row);
       });
     });
+    atualizarLixeiraDeConvidados();
   }
+
+  // Lixeira ao lado do "Filtrar por" (barra da tabela): aparece com algum
+  // convidado marcado, com a quantidade; "Selecionar tudo" marca os visíveis.
+  function atualizarLixeiraDeConvidados() {
+    const ev = getActiveEvent();
+    const ids = new Set(((ev && ev.guests) || []).map(g => g.id));
+    [...convidadosSelecionados].forEach(id => { if (!ids.has(id)) convidadosSelecionados.delete(id); });
+    const btn = document.getElementById('btn-rsvp-delete-selected');
+    if (btn) {
+      const qtd = convidadosSelecionados.size;
+      btn.classList.toggle('hidden', qtd === 0);
+      btn.querySelector('.love-tabela-filtro-contador').textContent = String(qtd);
+      btn.title = qtd === 1 ? 'Excluir 1 convidado selecionado' : `Excluir ${qtd} convidados selecionados`;
+    }
+    const checks = Array.from(document.querySelectorAll('#rsvp-guests-table-body .guest-select-check'));
+    const todos = document.getElementById('rsvp-select-all');
+    if (todos) {
+      const marcados = checks.filter(c => c.checked).length;
+      todos.checked = checks.length > 0 && marcados === checks.length;
+      todos.indeterminate = marcados > 0 && marcados < checks.length;
+    }
+  }
+
+  document.addEventListener('change', (e) => {
+    const check = e.target.closest('.guest-select-check');
+    if (check) {
+      if (check.checked) convidadosSelecionados.add(check.dataset.guestId); else convidadosSelecionados.delete(check.dataset.guestId);
+      atualizarLixeiraDeConvidados();
+      return;
+    }
+    if (e.target.id === 'rsvp-select-all') {
+      const marcar = e.target.checked;
+      document.querySelectorAll('#rsvp-guests-table-body .guest-select-check').forEach(c => {
+        c.checked = marcar;
+        if (marcar) convidadosSelecionados.add(c.dataset.guestId); else convidadosSelecionados.delete(c.dataset.guestId);
+      });
+      atualizarLixeiraDeConvidados();
+    }
+  });
+
+  // Botão da lixeira: entra na barra da tabela, antes do "Filtrar por".
+  (function montarLixeiraDeConvidados() {
+    const tabela = document.getElementById('rsvp-guests-table-body')?.closest('table');
+    const dir = tabela && tabela.closest('.love-tabela-caixa')?.querySelector('.love-tabela-barra-dir');
+    if (!dir) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'btn-rsvp-delete-selected';
+    btn.className = 'love-tabela-botao love-tabela-lixeira hidden';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg><span class="love-tabela-filtro-contador">0</span>';
+    dir.prepend(btn);
+    btn.addEventListener('click', async () => {
+      const ev = getActiveEvent();
+      const ids = [...convidadosSelecionados];
+      if (!ev || !ids.length || btn.disabled) return;
+      const excluiu = await confirmarNaLove({
+        titulo: ids.length === 1 ? 'Deseja excluir 1 convidado selecionado?' : `Deseja excluir ${ids.length} convidados selecionados?`,
+        texto: 'Os acompanhantes dele(s) também saem da lista. Essa ação não pode ser desfeita.',
+        botao: 'Excluir',
+        aoConfirmar: async () => {
+          for (const id of ids) {
+            const { error } = await excluirConvidadoNoBanco(id).catch(err => ({ error: err }));
+            if (error) return 'Não foi possível excluir todos agora. Tente de novo.';
+            const idx = ev.guests.findIndex(g => g.id === id);
+            if (idx !== -1) ev.guests.splice(idx, 1);
+            convidadosSelecionados.delete(id);
+          }
+          return null;
+        }
+      });
+      if (!excluiu && !convidadosSelecionados.size) { /* nada */ }
+      renderGuestsTable();
+      renderFloorPlanGuestCards();
+      updateAllCelebrationData();
+    });
+  })();
 
   // Configurações da Lista de Convidados: cada fornecedor contratado tem um
   // conjunto próprio de permissões (o que pode ver, e ações extras como
@@ -8180,8 +8260,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderGuestComments(guest);
 
-    const removeBtn = document.getElementById('btn-remove-guest');
-    if (removeBtn) removeBtn.hidden = !guestId;
+    const removeWrap = document.getElementById('guest-remove-wrap');
+    if (removeWrap) removeWrap.hidden = !guestId;
+    document.getElementById('btn-remove-guest')?.classList.remove('hidden');
+    document.getElementById('guest-remove-confirm')?.classList.add('hidden');
 
     backdrop.classList.remove('hidden');
     backdrop.style.setProperty('display', 'block', 'important');
@@ -8231,27 +8313,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Remover convidado (drawer): o botão vira "Tem certeza? Sim / Não" no
+  // mesmo lugar; só o Sim remove.
   const btnRemoveGuest = document.getElementById('btn-remove-guest');
-  if (btnRemoveGuest) {
-    btnRemoveGuest.addEventListener('click', async () => {
-      if (!activeDrawerGuestId || btnRemoveGuest.disabled) return;
+  const guestRemoveConfirm = document.getElementById('guest-remove-confirm');
+  const btnRemoveGuestSim = document.getElementById('btn-remove-guest-sim');
+  const btnRemoveGuestNao = document.getElementById('btn-remove-guest-nao');
+  if (btnRemoveGuest && guestRemoveConfirm) {
+    btnRemoveGuest.addEventListener('click', () => {
+      if (!activeDrawerGuestId) return;
+      btnRemoveGuest.classList.add('hidden');
+      guestRemoveConfirm.classList.remove('hidden');
+      btnRemoveGuestSim?.focus();
+    });
+    btnRemoveGuestNao?.addEventListener('click', () => {
+      guestRemoveConfirm.classList.add('hidden');
+      btnRemoveGuest.classList.remove('hidden');
+    });
+    btnRemoveGuestSim?.addEventListener('click', async () => {
+      if (!activeDrawerGuestId || btnRemoveGuestSim.disabled) return;
       const activeEvent = getActiveEvent();
       const idx = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
       if (idx === -1) return;
       const name = activeEvent.guests[idx].name;
-      const textoRemover = btnRemoveGuest.textContent;
-      btnRemoveGuest.disabled = true;
-      btnRemoveGuest.textContent = 'Removendo…';
+      btnRemoveGuestSim.disabled = true;
+      btnRemoveGuestSim.textContent = 'Removendo…';
       const { error } = await excluirConvidadoNoBanco(activeDrawerGuestId).catch(err => ({ error: err }));
+      btnRemoveGuestSim.disabled = false;
+      btnRemoveGuestSim.textContent = 'Sim';
       if (error) {
-        btnRemoveGuest.textContent = 'Erro ao remover';
-        setTimeout(() => { btnRemoveGuest.textContent = textoRemover; btnRemoveGuest.disabled = false; }, 1800);
+        guestRemoveConfirm.querySelector('span').textContent = 'Não foi possível remover. Tentar de novo?';
         return;
       }
-      btnRemoveGuest.textContent = textoRemover;
-      btnRemoveGuest.disabled = false;
+      guestRemoveConfirm.querySelector('span').textContent = 'Tem certeza?';
       const idxAtual = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
       if (idxAtual !== -1) activeEvent.guests.splice(idxAtual, 1);
+      convidadosSelecionados.delete(activeDrawerGuestId);
       isNewGuestDraft = false;
       closeAddGuestDrawer();
       renderGuestsTable();

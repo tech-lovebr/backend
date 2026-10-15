@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261015_fontes">
+  <link rel="stylesheet" href="css/styles.css?v=20261015_convidadosmassa">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2176,7 +2176,7 @@
               <table class="guests-table w-full">
                 <thead>
                   <tr>
-                    <th>Convidados <span class="guests-footer-count" id="rsvp-footer-count"></span></th>
+                    <th><span class="inline-flex items-center gap-2.5"><input type="checkbox" id="rsvp-select-all" class="gifts-select-all-check" aria-label="Selecionar todos os convidados"><span>Convidados <span class="guests-footer-count" id="rsvp-footer-count"></span></span></span></th>
                     <th>Título</th>
                     <th>Mesa</th>
                     <th>Presente</th>
@@ -5347,7 +5347,14 @@
         <div class="guest-drawer-comments-list mt-3" id="guest-drawer-comments-list"></div>
       </div>
 
-      <button type="button" id="btn-remove-guest" class="guest-remove-btn" hidden>Remover convidado</button>
+      <div id="guest-remove-wrap" hidden>
+        <button type="button" id="btn-remove-guest" class="guest-remove-btn">Remover convidado</button>
+        <div id="guest-remove-confirm" class="guest-remove-confirm hidden">
+          <span>Tem certeza?</span>
+          <button type="button" id="btn-remove-guest-sim" class="guest-remove-sim">Sim</button>
+          <button type="button" id="btn-remove-guest-nao" class="guest-remove-nao">Não</button>
+        </div>
+      </div>
     </div>
 
     <div class="p-5 sm:p-6 border-t border-zinc-100 flex-shrink-0">
@@ -5411,7 +5418,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_tabelasadmin2"></script>
+  <script src="js/app.js?v=20261015_convidadosmassa"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_checkoutbranco"></script>
 </body>

@@ -6337,26 +6337,21 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`"${randomItem.title}" adicionado à lista!`, '🎁');
   }
 
-  // Presente com vaquinha/cotas: barra de progresso abaixo do valor
-  // (porcentagem, quanto já foi arrecadado e quantas cotas foram vendidas).
+  // Presente com vaquinha: barra de progresso abaixo do valor
+  // (porcentagem e quanto já foi arrecadado).
   function barraDaVaquinhaHtml(gift) {
     if (!gift || !gift.isCrowdfunding) return '';
     const meta = parseFloat(gift.price) || 0;
     const arrecadado = Math.max(0, parseFloat(gift.received) || 0);
     const pct = meta > 0 ? Math.min(100, Math.round((arrecadado / meta) * 100)) : 0;
-    const cfg = gift.crowdfundingConfig || {};
-    const totalCotas = Math.max(0, parseInt(cfg.totalQuotas, 10) || 0);
-    const valorCota = totalCotas > 0 ? (parseFloat(cfg.quotaValue) || meta / totalCotas) : 0;
-    const cotasVendidas = valorCota > 0 ? Math.min(totalCotas, Math.floor(arrecadado / valorCota + 1e-9)) : 0;
     const brl = v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const cotas = totalCotas > 0 ? ` · ${cotasVendidas} de ${totalCotas} cotas` : '';
     return `
       <div class="gift-vaquinha" title="Vaquinha: ${pct}% arrecadado">
         <div class="gift-vaquinha-linha">
           <span class="gift-vaquinha-pct">${pct}%</span>
           <div class="gift-vaquinha-trilho"><div class="gift-vaquinha-barra" style="width:${pct}%"></div></div>
         </div>
-        <p class="gift-vaquinha-info">Arrecadado <strong>${brl(arrecadado)}</strong>${escaparHtml(cotas)}</p>
+        <p class="gift-vaquinha-info">Arrecadado <strong>${brl(arrecadado)}</strong></p>
       </div>`;
   }
 
@@ -6832,14 +6827,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Presente Coletivo / Cotas — ver interface GiftItemPayload
       const isCrowdfunding = !!document.getElementById('gift-crowdfunding-toggle')?.checked;
       let crowdfundingConfig = null;
-      if (isCrowdfunding) {
-        const totalQuotas = Math.max(2, parseInt(document.getElementById('gift-quota-count-input')?.value, 10) || 5);
-        crowdfundingConfig = {
-          totalQuotas,
-          quotaValue: totalQuotas > 0 ? price / totalQuotas : 0,
-          allowCustomQuotas: !!document.getElementById('gift-quota-allow-custom-input')?.checked
-        };
-      }
+      // Vaquinha livre: sem cotas — o convidado escolhe o valor que quer dar.
+      if (isCrowdfunding) crowdfundingConfig = { valorLivre: true };
       const categoryTag = document.getElementById('gift-category-tag-input')?.value || null;
 
       if (editingGiftId) {

@@ -218,7 +218,7 @@ function renderLeadsTable() {
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
     return;
   }
 
@@ -229,7 +229,6 @@ function renderLeadsTable() {
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
       <td>${formatCurrency(lead.value || 0)}</td>
-      <td><span class="text-sm text-zinc-700">${statusLabel(lead.status)}</span></td>
     </tr>
   `).join('');
 

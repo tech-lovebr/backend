@@ -280,7 +280,7 @@ function render() {
       <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(f.id))}</td>
       <td>${dash(f.company_name)}</td>
       <td class="cell-muted">${celulaEmail(f.email)}</td>
-      <td class="cell-muted">${dash(f.cnpj)}</td>
+      <td class="cell-muted">${celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ')}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
       <td class="col-numero ${f.score ? 'cell-strong' : 'cell-muted'}">${f.score ? formatNumber(f.score) : '—'}</td>
       <td class="col-acoes">${botaoVerMais(f.id)}</td>

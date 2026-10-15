@@ -731,9 +731,14 @@ function blocoPublicacao(posicao, ativo, rotuloPosicao = 'Posição') {
 const ICONE_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2 2 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>';
 const ICONE_VER_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.25" /><circle cx="12" cy="12" r="2.25" /><circle cx="19" cy="12" r="2.25" /></svg>';
 
+/** Valor com botão de copiar à esquerda (e-mail, CNPJ…). */
+function celulaCopiavel(valor, rotulo = 'E-mail') {
+  if (!valor) return '—';
+  return `<span class="email-copiavel"><button type="button" class="btn-icone-linha" data-copiar="${escapeHtml(valor)}" data-copiar-rotulo="${escapeHtml(rotulo)}" title="Copiar ${escapeHtml(rotulo)}" aria-label="Copiar ${escapeHtml(rotulo)}">${ICONE_COPIAR}</button><span>${escapeHtml(valor)}</span></span>`;
+}
+
 function celulaEmail(email) {
-  if (!email) return '—';
-  return `<span class="email-copiavel"><button type="button" class="btn-icone-linha" data-copiar="${escapeHtml(email)}" title="Copiar e-mail" aria-label="Copiar e-mail">${ICONE_COPIAR}</button><span>${escapeHtml(email)}</span></span>`;
+  return celulaCopiavel(email, 'E-mail');
 }
 
 function botaoVerMais(id) {
@@ -745,7 +750,7 @@ function ligarAcoesDaLinha(host, abrir) {
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copiar);
-        toast('E-mail copiado.');
+        toast(`${btn.dataset.copiarRotulo || 'E-mail'} copiado.`);
       } catch {
         toast('Não foi possível copiar.');
       }

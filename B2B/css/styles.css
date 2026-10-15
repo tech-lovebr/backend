@@ -762,14 +762,17 @@ body[data-theme="dark"] .form-list-item-create:hover { background: #333333 !impo
 }
 .form-drawer.show { transform: translateX(0); }
 
-body[data-page="produtos"] .form-drawer,
-body[data-page="produtos"] .form-drawer-body { background-color: #FFFFFF; }
-
-body[data-page="produtos"] .form-drawer-header { background-color: #FAFAFA; }
-
-body[data-page="agenda"] .form-drawer,
-body[data-page="agenda"] .form-drawer-body,
-body[data-page="agenda"] .form-drawer-header { background-color: #FAFAFA; }
+/* Padrão de todos os drawers (modelo: Adicionar produto ou serviço):
+   cabeçalho cinza bem claro, corpo e rodapé brancos. */
+.form-drawer,
+.form-drawer-body,
+.form-drawer-add-field-wrap,
+.form-drawer-footer { background-color: #FFFFFF; }
+.form-drawer-header { background-color: #FAFAFA; }
+/* Drawer com imagem/cor de fundo própria (editor de formulário): o
+   cabeçalho fica transparente pra mostrar o fundo. */
+.form-drawer.has-custom-bg .form-drawer-header,
+.form-drawer.has-custom-bg .form-drawer-footer { background-color: transparent; }
 
 .form-drawer-header {
   position: relative;
@@ -913,10 +916,10 @@ body[data-theme="dark"] .form-drawer-bg-tab.active { background: #333333 !import
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background: var(--bg-light);
+  background: #FFFFFF;
 }
 
-.form-drawer-add-field-wrap { padding: 0 1.5rem 1.5rem; background: var(--bg-light); flex-shrink: 0; }
+.form-drawer-add-field-wrap { padding: 0 1.5rem 1.5rem; background: #FFFFFF; flex-shrink: 0; }
 
 .form-drawer-footer {
   padding: 1.25rem 1.5rem;
@@ -1214,6 +1217,8 @@ body[data-theme="dark"] .form-drawer-description-input { color: #A1A1AA !importa
 body[data-theme="dark"] .form-drawer-body,
 body[data-theme="dark"] .form-drawer-add-field-wrap { background: #1c1c1c !important; }
 body[data-theme="dark"] .form-drawer-footer { border-top-color: #404040 !important; }
+body[data-theme="dark"] .form-drawer:not(.has-custom-bg) .form-drawer-header,
+body[data-theme="dark"] .form-drawer:not(.has-custom-bg) .form-drawer-footer { background-color: #252525 !important; }
 body[data-theme="dark"] .form-field-card { background: #333333 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .form-field-question-input { color: #FFFFFF !important; border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .form-field-type-select { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

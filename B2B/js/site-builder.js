@@ -1402,7 +1402,7 @@ function renderEstiloTab(body) {
   const isPro = typeof isProPlan === 'function' && isProPlan();
 
   body.innerHTML = `
-    <div class="builder-el-group-title">${BI.style} URL e identificação do site</div>
+    <div class="builder-el-group-title">URL e identificação do site</div>
     <div class="inspector-field">
       <span class="inspector-field-label">
         URL personalizada

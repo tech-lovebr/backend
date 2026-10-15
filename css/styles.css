@@ -6913,3 +6913,34 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 /* A caixa toda do botão de perfil (48px, com borda) fica azul-clara: o avatar ocupa 100% dela. */
 #btn-user-account-menu:has(.header-user-avatar:not(.hidden)) { background: #EBF4FF !important; border-color: #D6E6FA !important; overflow: hidden; }
 #btn-user-account-menu .header-user-avatar { width: 100% !important; height: 100% !important; border-radius: inherit !important; }
+
+
+/* Chat: iniciais da minha conta no avatar das minhas mensagens (estilo do Hub). */
+.chat-avatar-iniciais {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: #EBF4FF; color: #183B54;
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.02em; line-height: 1;
+}
+
+/* Botão de perfil do cabeçalho com o MESMO tamanho do Hub B2B: caixa de
+   34×34, cantos de 10px, borda cinza fina; iniciais azul-escuras em fundo
+   azul-claro (ou a foto). */
+#btn-user-account-menu:has(.header-user-avatar:not(.hidden)) {
+  width: 34px !important; height: 34px !important;
+  min-width: 34px !important; min-height: 34px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  border: 1px solid #E4E4E4 !important;
+  background: #EBF4FF !important;
+  overflow: hidden;
+}
+#btn-user-account-menu .header-user-avatar {
+  width: 100% !important; height: 100% !important;
+  border-radius: 10px !important;
+  font-size: 0.8125rem !important;
+  background: #EBF4FF !important; color: #183B54 !important;
+}
+
+/* Mais específico que a regra geral de botões (que força 12px de raio). */
+button#btn-user-account-menu.header-icon-btn:has(.header-user-avatar:not(.hidden)) { border-radius: 10px !important; }

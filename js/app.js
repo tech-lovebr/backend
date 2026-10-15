@@ -12891,7 +12891,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
             <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
-              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${msg.text}</p>` : ''}
+              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
               ${attachmentHTML}
             </div>
             <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
@@ -12899,16 +12899,14 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="text-[#537bae] font-bold">✓✓</span>
             </div>
           </div>
-          <div class="w-7 h-7 rounded-full bg-zinc-800 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-2xs">
-            BL
-          </div>
+          ${meuAvatarDoChatHtml()}
         `;
       } else {
         row.innerHTML = `
           <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
           <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
             <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
-              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${msg.text}</p>` : ''}
+              ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
               ${attachmentHTML}
             </div>
             <span class="text-[10px] text-zinc-400 pl-1 block">${msg.time || 'Agora'}</span>
@@ -12920,6 +12918,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     container.scrollTop = container.scrollHeight;
+  }
+
+  // Avatar das minhas mensagens no chat: a foto da conta ou as iniciais do
+  // nome (ex.: VM) no mesmo estilo do Hub B2B (quadrado, azul-claro).
+  function meuAvatarDoChatHtml() {
+    const perfil = window.loveClienteProfile || {};
+    const foto = perfil.avatar_url;
+    const conteudo = foto
+      ? `<img src="${escaparHtml(foto)}" alt="" class="w-full h-full object-cover">`
+      : `<span class="chat-avatar-iniciais">${escaparHtml(iniciaisDaConta(perfil) || '?')}</span>`;
+    return `<span class="w-7 h-7 rounded-lg chat-avatar-quadrado flex-shrink-0 border border-zinc-200 overflow-hidden mb-4 inline-flex">${conteudo}</span>`;
   }
 
   function initB2BChatHandlers() {

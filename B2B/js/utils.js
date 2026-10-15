@@ -47,6 +47,111 @@ function formatPhoneDigits(digits) {
   return formatted;
 }
 
+/* Data DD/MM/AAAA: a barra entra sozinha depois do dia e do mês; dia acima
+   de 31 vira 31 e mês acima de 12 vira 12. Apagar a barra apaga o dígito
+   antes dela (mesmo truque da máscara de telefone). */
+function formatDateDigits(digits) {
+  let d = digits.slice(0, 8);
+  if (d.length >= 2 && Number(d.slice(0, 2)) > 31) d = '31' + d.slice(2);
+  if (d.length >= 4 && Number(d.slice(2, 4)) > 12) d = d.slice(0, 2) + '12' + d.slice(4);
+  if (d.length < 2) return d;
+  if (d.length === 2) return d + '/';
+  if (d.length < 4) return `${d.slice(0, 2)}/${d.slice(2)}`;
+  if (d.length === 4) return `${d.slice(0, 2)}/${d.slice(2, 4)}/`;
+  return `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`;
+}
+
+function wireDateMaskInput(input) {
+  let prev = '';
+  input.addEventListener('input', (e) => {
+    let digits = input.value.replace(/\D/g, '').slice(0, 8);
+    const isDeleting = e.inputType && e.inputType.indexOf('delete') === 0;
+    if (isDeleting && digits.length === prev.replace(/\D/g, '').length && digits.length > 0) {
+      digits = digits.slice(0, -1);
+    }
+    // Apagando: não recoloca a barra que a pessoa acabou de tirar.
+    let formatted = formatDateDigits(digits);
+    if (isDeleting && formatted.endsWith('/')) formatted = formatted.slice(0, -1);
+    input.value = formatted;
+    prev = formatted;
+  });
+}
+
+/* Valor em reais: "R$ 1.234,56" enquanto digita (centavos primeiro: 1 →
+   R$ 0,01 … 100000 → R$ 1.000,00). Ler o número com currencyMaskValue. */
+function formatBRLFromDigits(digits) {
+  const clean = String(digits || '').replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+  if (!clean) return '';
+  return 'R$ ' + (parseInt(clean, 10) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function formatBRLValue(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) return '';
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function wireBRLMaskInput(input) {
+  input.addEventListener('input', () => {
+    input.value = formatBRLFromDigits(input.value);
+  });
+}
+
+/* E-mail: ao digitar "@", sugere os provedores mais usados logo abaixo do
+   campo (gmail, icloud, outlook…), filtrando pelo que já foi digitado
+   depois do @. Clicar (ou Enter/Tab) completa o e-mail. */
+const EMAIL_DOMAINS = ['gmail.com', 'icloud.com', 'outlook.com', 'hotmail.com', 'yahoo.com.br', 'yahoo.com', 'live.com', 'uol.com.br', 'bol.com.br', 'terra.com.br'];
+
+function wireEmailDomainSuggestions(input) {
+  const box = document.createElement('div');
+  box.className = 'email-suggest';
+  box.hidden = true;
+  input.insertAdjacentElement('afterend', box);
+  if (getComputedStyle(input.parentElement).position === 'static') input.parentElement.style.position = 'relative';
+  let opcoes = [];
+  let ativo = 0;
+
+  const fechar = () => { box.hidden = true; opcoes = []; };
+  const aplicar = (i) => {
+    const escolhido = opcoes[i];
+    if (!escolhido) return;
+    input.value = escolhido;
+    fechar();
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  const render = () => {
+    const v = input.value.trim();
+    const at = v.indexOf('@');
+    if (at < 1) return fechar();
+    const local = v.slice(0, at);
+    const dominio = v.slice(at + 1).toLowerCase();
+    opcoes = EMAIL_DOMAINS.filter(d => d.startsWith(dominio) && d !== dominio).map(d => `${local}@${d}`);
+    if (!opcoes.length) return fechar();
+    if (ativo >= opcoes.length) ativo = 0;
+    box.innerHTML = opcoes.map((o, i) => `<button type="button" class="email-suggest-option ${i === ativo ? 'is-active' : ''}" data-i="${i}">${escapeHtml(o)}</button>`).join('');
+    box.hidden = false;
+    box.querySelectorAll('[data-i]').forEach(btn => {
+      btn.addEventListener('mousedown', (e) => e.preventDefault());
+      btn.addEventListener('click', () => aplicar(Number(btn.dataset.i)));
+    });
+  };
+
+  input.addEventListener('input', () => { ativo = 0; render(); });
+  input.addEventListener('keydown', (e) => {
+    if (box.hidden || !opcoes.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      ativo = (ativo + (e.key === 'ArrowDown' ? 1 : -1) + opcoes.length) % opcoes.length;
+      render();
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      aplicar(ativo);
+    } else if (e.key === 'Escape') {
+      fechar();
+    }
+  });
+  input.addEventListener('blur', () => setTimeout(fechar, 120));
+}
+
 /* Porcentagem: o "%" entra sozinho ao digitar e não dá pra apagar — só os
    dígitos. Mesmo truque da máscara de telefone: um backspace que só tirou
    o "%" (contagem de dígitos igual) apaga o último dígito de verdade. */

@@ -92,8 +92,15 @@ function renderLeadProductOptions() {
 function initLeadEmailAutocomplete() {
   const input = document.getElementById('lead-email');
   const hint = document.getElementById('lead-email-match-hint');
-  const options = document.getElementById('lead-email-options');
+  const options = document.getElementById('lead-email-options') || document.createElement('datalist');
   if (!input) return;
+
+  // Sugestões de provedor ao digitar "@"; máscaras de data e de valor.
+  wireEmailDomainSuggestions(input);
+  const dateInput = document.getElementById('lead-date');
+  if (dateInput) wireDateMaskInput(dateInput);
+  const valueInput = document.getElementById('lead-value');
+  if (valueInput) wireBRLMaskInput(valueInput);
 
   let timer = null;
   let lastMatches = [];
@@ -246,7 +253,7 @@ function initLeadDrawer() {
     const email = document.getElementById('lead-email').value.trim();
     const productId = document.getElementById('lead-product').value || null;
     const event_date = document.getElementById('lead-date').value.trim();
-    const value = Number(document.getElementById('lead-value').value) || 0;
+    const value = currencyMaskValue(document.getElementById('lead-value')) || 0;
 
     if (!name) {
       showToast('Preencha o nome do contato.', true);
@@ -304,7 +311,7 @@ function openLeadDrawer(id) {
   document.getElementById('lead-name').value = lead.name;
   document.getElementById('lead-email').value = lead.email || '';
   document.getElementById('lead-date').value = lead.event_date || '';
-  document.getElementById('lead-value').value = lead.value || 0;
+  document.getElementById('lead-value').value = formatBRLValue(lead.value);
 
   leadMatchedClienteId = lead.cliente_id || null;
   const emailHint = document.getElementById('lead-email-match-hint');

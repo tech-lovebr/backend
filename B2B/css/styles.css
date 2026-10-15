@@ -5410,6 +5410,22 @@ body[data-theme="dark"] .chat-template-command { color: #FFFFFF !important; }
 body[data-theme="dark"] .chat-composer-icon-btn { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 body[data-theme="dark"] .chat-composer-icon-btn:hover { border-color: #FFFFFF !important; color: #FFFFFF !important; }
 
+/* Sugestões de provedor de e-mail (abaixo do campo, ao digitar "@"). */
+.email-suggest {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30;
+  padding: 0.25rem; background: #fff; border: 1px solid #E4E4E7; border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08); max-height: 220px; overflow-y: auto;
+}
+.email-suggest-option {
+  display: block; width: 100%; text-align: left; border: none; background: transparent; cursor: pointer;
+  padding: 0.45rem 0.6rem; border-radius: 6px; font-size: 0.8125rem; color: #18181B;
+}
+.email-suggest-option:hover, .email-suggest-option.is-active { background: #F4F4F5; }
+body[data-theme="dark"] .email-suggest { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .email-suggest-option { color: #FFFFFF !important; }
+body[data-theme="dark"] .email-suggest-option:hover,
+body[data-theme="dark"] .email-suggest-option.is-active { background: #333333 !important; }
+
 /* Número de não lidas na lista de conversas do chat. */
 .chat-unread-count {
   min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9999px;

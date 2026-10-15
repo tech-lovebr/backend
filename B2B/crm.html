@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=508">
+  <link rel="stylesheet" href="css/styles.css?v=509">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -68,7 +68,6 @@
   <aside class="form-drawer" id="lead-drawer" aria-label="Contato">
     <div class="form-drawer-header">
       <div class="form-drawer-header-main">
-        <p class="task-drawer-list-label">Contatos</p>
         <h2 class="task-drawer-title" id="lead-drawer-title">Novo contato</h2>
       </div>
       <button type="button" class="form-drawer-close" id="lead-drawer-close" aria-label="Fechar">
@@ -81,12 +80,12 @@
       <form id="lead-form" class="flex flex-col gap-4">
         <div>
           <label for="lead-name" class="field-label">Nome</label>
-          <input id="lead-name" type="text" class="field-input" placeholder="Ex: Marcela Oliveira">
+          <input id="lead-name" type="text" class="field-input">
         </div>
 
         <div>
           <label for="lead-email" class="field-label">E-mail</label>
-          <input id="lead-email" type="email" class="field-input" list="lead-email-options" placeholder="cliente@email.com" autocomplete="off">
+          <input id="lead-email" type="email" class="field-input" autocomplete="off">
           <datalist id="lead-email-options"></datalist>
           <p class="text-xs text-zinc-400 mt-1" id="lead-email-match-hint" hidden>✓ Vinculado à conta deste cliente na Love</p>
         </div>
@@ -100,11 +99,11 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label for="lead-date" class="field-label">Data do evento</label>
-            <input id="lead-date" type="text" class="field-input" placeholder="Ex: 18 Out 2026">
+            <input id="lead-date" type="text" class="field-input" inputmode="numeric" maxlength="10">
           </div>
           <div>
-            <label for="lead-value" class="field-label">Valor estimado (R$)</label>
-            <input id="lead-value" type="number" min="0" step="100" class="field-input" placeholder="0,00">
+            <label for="lead-value" class="field-label">Valor estimado</label>
+            <input id="lead-value" type="text" class="field-input" inputmode="numeric">
           </div>
         </div>
 
@@ -134,10 +133,10 @@
   </aside>
 
   <script src="js/data.js?v=16"></script>
-  <script src="js/utils.js?v=17"></script>
+  <script src="js/utils.js?v=18"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=1"></script>
   <script src="js/shell.js?v=36"></script>
-  <script src="js/crm.js?v=8"></script>
+  <script src="js/crm.js?v=9"></script>
 </body>
 </html>

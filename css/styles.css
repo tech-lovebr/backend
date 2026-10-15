@@ -7568,3 +7568,9 @@ html body button.chat-msg-editor-cancelar:not(#love-h-a):hover { border-color: #
 .chat-msg-editor-erro { margin: 6px 0 0; font-size: 12px; color: #DC2626; }
 html body button.chat-msg-mais:not(#love-h-a) { opacity: .55; }
 #b2b-chat-messages-container > div:hover .chat-msg-mais { opacity: 1; }
+
+/* Chat: ⋮ e copiar centralizados na altura da bolha */
+#b2b-chat-messages-container > div[data-msg-id] { align-items: center; }
+#b2b-chat-messages-container > div[data-msg-id] > img, #b2b-chat-messages-container > div[data-msg-id] > .love-avatar-box, #b2b-chat-messages-container > div[data-msg-id] > .chat-avatar-quadrado { align-self: flex-end; }
+.chat-msg-acoes { align-self: center; }
+html body button.chat-msg-copiar-direto:not(#love-h-a) svg { width: 16px; height: 16px; }

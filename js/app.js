@@ -14441,14 +14441,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      const menuHtml = msg.id ? `
-          <div class="chat-msg-acoes${isMe ? ' is-minha' : ''}">
-            <button type="button" class="chat-msg-mais" title="Mais opções" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+      // Minhas mensagens: ⋮ (na vertical) com Editar e Copiar. As do
+      // fornecedor: só o ícone de copiar. Os dois centralizados na bolha.
+      let menuHtml = '';
+      if (msg.id && msg.text && isMe) {
+        menuHtml = `
+          <div class="chat-msg-acoes is-minha">
+            <button type="button" class="chat-msg-mais" title="Mais opções" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
             <div class="chat-msg-menu hidden">
-              ${isMe && msg.text ? '<button type="button" class="chat-msg-opcao chat-msg-editar">Editar</button>' : ''}
-              ${msg.text ? '<button type="button" class="chat-msg-opcao chat-msg-copiar">Copiar</button>' : ''}
+              <button type="button" class="chat-msg-opcao chat-msg-editar">Editar</button>
+              <button type="button" class="chat-msg-opcao chat-msg-copiar">Copiar</button>
             </div>
-          </div>` : '';
+          </div>`;
+      } else if (msg.id && msg.text) {
+        menuHtml = `
+          <div class="chat-msg-acoes">
+            <button type="button" class="chat-msg-mais chat-msg-copiar-direto" title="Copiar mensagem" aria-label="Copiar mensagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
+          </div>`;
+      }
       row.dataset.msgId = msg.id || '';
 
       if (isMe) {
@@ -14496,6 +14506,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => { if (!e.target.closest('.chat-msg-acoes')) fecharMenus(); });
 
     container.addEventListener('click', async (e) => {
+      const copiarDireto = e.target.closest('.chat-msg-copiar-direto');
+      if (copiarDireto) {
+        const rowC = copiarDireto.closest('[data-msg-id]');
+        const convC = b2bConversationsData.find(c => c.id === activeB2BConversationId);
+        const msgC = convC && rowC && convC.messages.find(m => m.id === rowC.dataset.msgId);
+        const textoC = (msgC && msgC.text) || rowC?.querySelector('.chat-msg-texto')?.textContent || '';
+        try { await navigator.clipboard.writeText(textoC); } catch (err) { window.prompt('Copie a mensagem:', textoC); }
+        return;
+      }
       const mais = e.target.closest('.chat-msg-mais');
       if (mais) {
         const menu = mais.nextElementSibling;

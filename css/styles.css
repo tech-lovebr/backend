@@ -7522,3 +7522,10 @@ html body button.love-copiar-email:not(#love-h-a):hover { color: #181D24; backgr
 .love-copiar-email-ok { font-size: 11px; color: #15803D; margin-left: 4px; }
 @media (max-width: 640px) { .love-tabela-busca, #view-event-os-dashboard .love-tabela-busca.relative { width: 100% !important; } .love-tabela-barra-dir { margin-left: 0; width: 100%; } }
 html body #view-event-os-dashboard .love-tabela-caixa { border: 1px solid #E4E4E7 !important; }
+
+/* Mesma fonte nos submenus do sidebar, nas abas de status e nos cabeçalhos
+   de tabela: 13px; 600 no normal, 700 no ativo (e no cabeçalho). */
+html body .sub-drawer-item:not(#love-h-a) { font-size: 0.8125rem !important; font-weight: 600 !important; }
+html body .sub-drawer-item.active:not(#love-h-a) { font-weight: 700 !important; }
+html body .love-tab-item:not(#love-h-a), html body button.love-tab-item:not(#love-h-a) { font-size: 0.8125rem !important; font-weight: 600 !important; }
+html body .love-tab-item.active:not(#love-h-a), html body button.love-tab-item.active:not(#love-h-a) { font-weight: 700 !important; }

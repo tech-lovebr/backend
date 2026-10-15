@@ -36,7 +36,9 @@ const CATEGORIAS_FAQ = {
 };
 
 const GRUPOS = [
-  { key: 'informacoes', label: 'Informações', botao: null },
+  // No Hub a primeira aba reúne banners, notícias e workshops; nos anfitriões
+  // é só o carrossel.
+  { key: 'informacoes', label: PLATAFORMA === 'fornecedor' ? 'Conteúdo' : 'Informações', botao: null },
   { key: 'faq', label: 'FAQ', botao: 'Adicionar pergunta' },
   ...(PLATAFORMA === 'cliente' ? [{ key: 'servicos', label: 'Serviços', botao: 'Adicionar' }] : [])
 ];
@@ -47,6 +49,7 @@ let BANNERS = [];
 let FAQ = [];
 let PASSOS = [];
 let SERVICOS = [];
+let HUB = [];
 let BOTAO_ADICIONAR = null;
 let GRUPO_ATUAL = GRUPOS[0].key;
 
@@ -69,12 +72,15 @@ async function carregar() {
   const lista = document.getElementById('conteudo-lista');
   lista.innerHTML = `<div class="card"><div class="card-body"><div class="skeleton" style="width:55%"></div></div></div>`;
 
-  const [banners, faq, passos, servicos] = await Promise.all([
+  const [banners, faq, passos, servicos, hub] = await Promise.all([
     safeSelect('conteudo_plataforma', '*', q => q.eq('plataforma', PLATAFORMA).eq('secao', 'banner').order('posicao')),
     safeSelect('faq', '*', q => q.eq('plataforma', PLATAFORMA).order('ordem')),
     safeSelect('primeiros_passos', '*', q => q.eq('plataforma', PLATAFORMA).order('ordem')),
     PLATAFORMA === 'cliente'
       ? safeSelect('servicos_beneficios', '*', q => q.order('posicao'))
+      : Promise.resolve({ data: [], error: null }),
+    PLATAFORMA === 'fornecedor'
+      ? safeSelect('hub_conteudo', '*', q => q.in('tipo', ['noticia', 'workshop']).order('ordem'))
       : Promise.resolve({ data: [], error: null })
   ]);
 
@@ -92,6 +98,7 @@ async function carregar() {
   FAQ = faq.data;
   PASSOS = passos.data;
   SERVICOS = servicos.data;
+  HUB = hub.data;
   render();
 }
 
@@ -203,7 +210,10 @@ function renderBanners() {
         <div class="banner-carrossel">${slots}${vazios}</div>
         ${vagas ? '' : `<p class="cell-muted" style="font-size:.75rem;margin:1rem 0 0">Limite de ${MAX_BANNERS} imagens atingido. Exclua uma para adicionar outra.</p>`}
       </div>
-    </div>`;
+    </div>
+    ${PLATAFORMA === 'fornecedor' ? blocoHub('noticia') + blocoHub('workshop') : ''}`;
+
+  if (PLATAFORMA === 'fornecedor') ligarBlocosHub(lista);
 
   lista.querySelectorAll('[data-editar-banner]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioBanner(BANNERS.find(b => b.id === btn.dataset.editarBanner)));
@@ -261,6 +271,108 @@ function abrirFormularioBanner(item) {
     };
     if (!payload.titulo) return toast('O título é obrigatório.');
     await gravar('conteudo_plataforma', item?.id, payload);
+  });
+}
+
+/* ------------------------------------- Notícias e workshops (só no Hub)
+   Tabela hub_conteudo. Os dois aparecem na lista de notícias do dashboard
+   do Hub; os workshops também vão para a página /workshop. */
+
+const TIPOS_HUB = {
+  noticia: { label: 'Notícias', singular: 'notícia', descricao: 'Links da lista de notícias no dashboard do Hub.' },
+  workshop: { label: 'Workshops', singular: 'workshop', descricao: 'Workshops da página hub.love.com.br/workshop. Também entram na lista de notícias do dashboard.' }
+};
+
+function blocoHub(tipo) {
+  const t = TIPOS_HUB[tipo];
+  const itens = HUB.filter(i => i.tipo === tipo).sort((a, b) => a.ordem - b.ordem);
+
+  return `
+    <div class="card bloco">
+      <div class="card-head" style="justify-content:space-between">
+        <div><h2>${t.label}</h2><p>${t.descricao}</p></div>
+        <button type="button" class="btn btn-ghost btn-sm" data-novo-hub="${tipo}">+ Adicionar ${t.singular}</button>
+      </div>
+      ${itens.length ? itens.map(i => `
+        <div class="hub-item ${i.ativo ? '' : 'is-inativo'}">
+          ${i.imagem_url ? `<div class="servico-thumb" style="background-image:url('${escapeHtml(i.imagem_url)}')"></div>` : ''}
+          <div style="flex:1;min-width:0">
+            <p class="nome">${escapeHtml(i.titulo)}</p>
+            ${i.descricao ? `<p class="desc">${escapeHtml(i.descricao)}</p>` : ''}
+            <p class="meta">${i.data_evento ? `${escapeHtml(formatDate(i.data_evento))} · ` : ''}${i.link_url ? escapeHtml(i.link_url) : 'sem link'}</p>
+          </div>
+          ${i.ativo ? '' : badge('rascunho', 'badge-warning')}
+          <button type="button" class="btn btn-ghost btn-sm" data-editar-hub="${i.id}">Editar</button>
+          <button type="button" class="btn btn-danger btn-sm" data-excluir-hub="${i.id}">Excluir</button>
+        </div>`).join('')
+      : `<div class="card-body"><p class="cell-muted" style="font-size:.8125rem;margin:0">Nada publicado ainda.</p></div>`}
+    </div>`;
+}
+
+function ligarBlocosHub(host) {
+  host.querySelectorAll('[data-novo-hub]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioHub({ tipo: btn.dataset.novoHub }));
+  });
+  host.querySelectorAll('[data-editar-hub]').forEach(btn => {
+    btn.addEventListener('click', () => abrirFormularioHub(HUB.find(i => i.id === btn.dataset.editarHub)));
+  });
+  host.querySelectorAll('[data-excluir-hub]').forEach(btn => {
+    btn.addEventListener('click', () => excluir('hub_conteudo', btn.dataset.excluirHub, HUB.find(i => i.id === btn.dataset.excluirHub)?.titulo));
+  });
+}
+
+function abrirFormularioHub(item) {
+  const editando = Boolean(item && item.id);
+  const tipo = item.tipo;
+  const t = TIPOS_HUB[tipo];
+
+  Drawer.open({
+    title: editando ? `Editar ${t.singular}` : (tipo === 'noticia' ? 'Nova notícia' : 'Novo workshop'),
+    subtitle: NOME_PLATAFORMA,
+    body: `
+      <form id="form-conteudo">
+        <label class="field">
+          <span class="field-label">Título <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" name="titulo" type="text" maxlength="140" value="${escapeHtml(item?.titulo || '')}">
+        </label>
+        <label class="field">
+          <span class="field-label">Descrição</span>
+          <textarea class="field-textarea" name="descricao">${escapeHtml(item?.descricao || '')}</textarea>
+        </label>
+        ${campoImagem('imagem_url', 'Imagem', item?.imagem_url)}
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Link</span>
+            <input class="field-input" name="link_url" type="url" placeholder="https://" value="${escapeHtml(item?.link_url || '')}">
+          </label>
+          <label class="field" style="flex:0 0 160px">
+            <span class="field-label">Data${tipo === 'workshop' ? ' do workshop' : ''}</span>
+            <input class="field-input" name="data_evento" type="date" value="${escapeHtml(item?.data_evento || '')}">
+          </label>
+        </div>
+        ${blocoPublicacao(item?.ordem ?? proximaPosicao(HUB.filter(i => i.tipo === tipo), 'ordem'), !editando || item.ativo)}
+      </form>`,
+    footer: `
+      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
+  });
+
+  const form = document.getElementById('form-conteudo');
+  ligarCamposDeImagem(form, 'hub');
+  document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-salvar').addEventListener('click', async () => {
+    const d = Object.fromEntries(new FormData(form).entries());
+    if (!d.titulo.trim()) return toast('O título é obrigatório.');
+    await gravar('hub_conteudo', item?.id, {
+      tipo,
+      titulo: d.titulo.trim(),
+      descricao: d.descricao.trim() || null,
+      imagem_url: d.imagem_url.trim() || null,
+      link_url: d.link_url.trim() || null,
+      data_evento: d.data_evento || null,
+      ordem: Number(d.posicao) || 0,
+      ativo: d.ativo === 'true'
+    });
   });
 }
 

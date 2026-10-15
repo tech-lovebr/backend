@@ -12769,9 +12769,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
           </div>
-          <p class="text-xs text-zinc-500 truncate leading-tight">${conv.lastMessage}</p>
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-xs ${conv.unread > 0 ? 'text-zinc-900 font-semibold' : 'text-zinc-500'} truncate leading-tight">${conv.lastMessage}</p>
+            ${conv.unread > 0 ? `<span class="flex-shrink-0 min-w-[18px] h-[18px] px-[5px] rounded-full text-[10px] font-bold leading-[18px] text-center font-sans" style="background-color: #c7305b; color: #FFFFFF;">${conv.unread > 99 ? '99+' : conv.unread}</span>` : ''}
+          </div>
         </div>
-        ${conv.unread > 0 ? `<span class="w-2.5 h-2.5 rounded-full flex-shrink-0 mt-2 ring-2 ring-white shadow-2xs" style="background-color: #27394f;"></span>` : ''}
       `;
 
       item.addEventListener('click', () => {

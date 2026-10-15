@@ -6898,3 +6898,8 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .header-user-avatar.hidden { display: none !important; }
 .header-user-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 #header-user-icon.hidden { display: none !important; }
+
+
+/* Botão de perfil com as iniciais: mesmo estilo do Hub B2B e do chat
+   (quadrado arredondado, fundo azul-claro, letras azul-escuras). */
+.header-user-avatar { border-radius: 8px !important; background: #EBF4FF !important; color: #183b54 !important; }

@@ -13006,7 +13006,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         newConvPicker.innerHTML = fornecedores.map(f => `
           <button type="button" data-fornecedor-id="${f.id}" class="w-full flex items-center gap-2.5 p-3 hover:bg-zinc-50 text-left border-b border-zinc-100 last:border-0">
-            <img src="${f.avatar_url || avatarComIniciais(f.company_name)}" class="w-8 h-8 rounded-full object-cover border border-zinc-200" alt="">
+            <img src="${f.avatar_url || avatarComIniciais(f.company_name)}" class="w-8 h-8 rounded-lg chat-avatar-quadrado object-cover border border-zinc-200" alt="">
             <span class="text-xs font-medium text-zinc-800 truncate">${f.company_name}</span>
           </button>
         `).join('');

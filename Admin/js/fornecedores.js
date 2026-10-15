@@ -278,7 +278,7 @@ function render() {
                aria-label="Selecionar ${escapeHtml(f.company_name || f.email || '')}">
       </td>
       <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(f.id))}</td>
-      <td class="cell-strong">${dash(f.company_name)}</td>
+      <td>${dash(f.company_name)}</td>
       <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${dash(f.cnpj)}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>

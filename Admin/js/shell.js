@@ -178,9 +178,16 @@ function renderSidebar() {
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
     </a>
-    <nav class="admin-nav">${sections}</nav>`;
+    <button type="button" class="sidebar-busca" id="sidebar-busca">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+      <span>Buscar</span>
+      <kbd>⌘K</kbd>
+    </button>
+    $1`;
 
 
+
+  host.querySelector('#sidebar-busca').addEventListener('click', () => Busca.abrir());
 
   host.querySelectorAll('[data-grupo]').forEach(botao => {
     botao.addEventListener('click', () => {

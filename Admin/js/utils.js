@@ -323,8 +323,28 @@ function exportarCSV(nomeArquivo, colunas, linhas) {
 }
 
 /** Cria o botão de ação no cabeçalho da página (ao lado do título). */
+/**
+ * Barra no topo da caixa da tabela (busca à esquerda; filtros e Exportar à
+ * direita). Criada na primeira vez que alguém pede; null se a página não
+ * tem tabela.
+ */
+function barraDaTabela() {
+  const card = document.querySelector('.admin-content .table-card');
+  if (!card) return null;
+  let barra = card.querySelector(':scope > .table-toolbar');
+  if (!barra) {
+    barra = document.createElement('div');
+    barra.className = 'table-toolbar';
+    barra.innerHTML = '<div class="table-toolbar-esq"></div><div class="table-toolbar-dir"></div>';
+    card.prepend(barra);
+  }
+  return barra;
+}
+
 function addHeaderAction(texto, aoClicar, { icone } = {}) {
-  const host = document.getElementById('header-actions');
+  // Exportar é ação da tabela, não da página: vai para a barra da tabela.
+  const barra = texto === 'Exportar' ? barraDaTabela() : null;
+  const host = barra ? barra.lastElementChild : document.getElementById('header-actions');
   if (!host) return null;
 
   const botao = document.createElement('button');
@@ -338,6 +358,7 @@ function addHeaderAction(texto, aoClicar, { icone } = {}) {
     ${icone === null ? '' : (icone || padrao)}
     <span>${escapeHtml(texto)}</span>`;
   botao.addEventListener('click', aoClicar);
+  if (barra) botao.dataset.exportar = '';
   host.appendChild(botao);
   return botao;
 }
@@ -574,8 +595,24 @@ function aplicarBuscaDaUrl(input) {
  */
 function moverControlesParaHeader(seletor = '#page-controls') {
   const controles = document.querySelector(seletor);
+  if (!controles) return;
+
+  // Página com tabela: busca e filtros vão para a barra no topo da caixa da
+  // tabela; o cabeçalho fica só com a ação principal (Adicionar).
+  const barra = barraDaTabela();
+  if (barra) {
+    const [esquerda, direita] = barra.children;
+    const exportar = direita.querySelector('[data-exportar]');
+    [...controles.children].forEach(filho => {
+      if (filho.classList.contains('search-input')) esquerda.appendChild(filho);
+      else direita.insertBefore(filho, exportar);
+    });
+    controles.remove();
+    return;
+  }
+
   const host = document.getElementById('header-actions');
-  if (!controles || !host) return;
+  if (!host) return;
 
   // O primeiro botão de ação marca onde os controles entram — inserir antes
   // dele, na ordem original, mantém busca e filtros à esquerda do Exportar.

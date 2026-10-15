@@ -560,9 +560,10 @@ table.data th {
   font-weight: 700;
   letter-spacing: .04em;
   text-transform: uppercase;
-  color: #333333;
-  background: transparent;
-  padding: 0 1rem .75rem;
+  color: #52525B;
+  background: #F7F7F8;
+  padding: .75rem 1rem;
+  border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
 
@@ -577,12 +578,11 @@ table.data tbody tr:first-child td { border-top: none; }
 table.data tbody tr { cursor: pointer; }
 table.data tbody tr td { transition: background .12s ease; }
 
-/* Faixas alternadas, começando pela cinza. Numa tabela larga elas ajudam o
-   olho a seguir a linha mais do que a divisória sozinha. */
-table.data tbody tr:nth-child(odd) td { background: #F9F9F9; }
-table.data tbody tr:nth-child(even) td { background: #FFFFFF; }
+/* Linhas todas brancas, separadas só pela divisória; o hover é um cinza
+   quase imperceptível. */
+table.data tbody tr td { background: #FFFFFF; }
 
-table.data tbody tr:hover td { background: var(--azul-claro); }
+table.data tbody tr:hover td { background: #FAFAFA; }
 table.data tbody tr.is-selecionada td { background: #f4f4f5; }
 
 table.data tbody tr.no-hover { cursor: default; }
@@ -1584,10 +1584,10 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 /* Sem preenchimento lateral: é o que faz a faixa zebrada e a linha
    divisória irem de uma borda à outra do card, em vez de pararem antes.
    O respiro do texto vem do padding das próprias células. */
-.card > .table-wrap { padding: 1.25rem 0 0; }
+.card > .table-wrap { padding: 0; }
 
 /* Logo abaixo de um cabeçalho, o respiro de cima já foi dado por ele. */
-.card > .card-head + .table-wrap { padding-top: 1rem; }
+.card > .card-head + .table-wrap { padding-top: 0; }
 
 /* ------------------------------------------- Ações do cabeçalho da página */
 
@@ -2919,8 +2919,7 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 /* Listas de cadastros: a linha não é clicável nem muda de cor no hover —
    mantém só as faixas alternadas. O drawer abre pelo ícone de três bolinhas (.col-acoes). */
 table.data.linhas-estaticas tbody tr { cursor: default; }
-table.data.linhas-estaticas tbody tr:nth-child(odd):hover td { background: #F9F9F9; }
-table.data.linhas-estaticas tbody tr:nth-child(even):hover td { background: #FFFFFF; }
+table.data.linhas-estaticas tbody tr:hover td { background: #FFFFFF; }
 table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4f5; }
 
 .col-acoes { width: 1%; white-space: nowrap; text-align: right; }
@@ -2956,4 +2955,95 @@ table.data.linhas-estaticas tbody tr.is-selecionada:hover td { background: #f4f4
   font-weight: 600;
   color: var(--text);
   letter-spacing: -.01em;
+}
+
+/* ------------------------------------------------ Barra da tabela
+   Busca à esquerda; filtros e Exportar à direita — dentro da caixa da
+   tabela, acima do cabeçalho cinza. Com a barra, a caixa deixa de cortar
+   o conteúdo para o menu de filtros poder abrir por cima da tabela. */
+
+.table-card:has(> .table-toolbar) { overflow: visible; }
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding: .875rem 1rem;
+}
+
+.table-toolbar-esq,
+.table-toolbar-dir { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+
+.table-toolbar .field-select { width: auto; }
+.table-toolbar .search-input { width: 280px; }
+
+/* Primeira e última célula do cabeçalho acompanham o canto da caixa quando
+   não há barra acima. */
+.table-card:not(:has(> .table-toolbar)) table.data thead th { border-top: 0; }
+
+/* ------------------------------------------------ Busca na sidebar */
+
+.sidebar-busca {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0 .75rem .5rem;
+  padding: .5rem .625rem;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: var(--radius-control);
+  font-family: inherit;
+  font-size: .8125rem;
+  color: var(--text-soft);
+  cursor: pointer;
+  text-align: left;
+}
+
+.sidebar-busca svg { width: 16px; height: 16px; flex-shrink: 0; }
+.sidebar-busca span { flex: 1; }
+.sidebar-busca kbd {
+  font-family: inherit;
+  font-size: .6875rem;
+  color: var(--text-soft);
+  border: 1px solid #E4E4E7;
+  border-radius: 4px;
+  padding: 0 .3125rem;
+}
+.sidebar-busca:hover { border-color: #181D24; color: #181D24; }
+
+/* ------------------------------------------------ Submenu em árvore
+   Uma linha vertical desce do grupo e cada subitem sai dela por uma curva
+   (└). A linha continua até o próximo irmão; no último, para na curva. */
+
+.admin-nav-children { position: relative; }
+
+.admin-nav-subitem {
+  position: relative;
+  margin-left: calc(.5rem + 30px);
+  padding-left: .625rem !important;
+}
+
+.admin-nav-subitem::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: -.25rem;
+  width: 12px;
+  height: calc(50% + .25rem);
+  border-left: 1.5px solid #D4D4D8;
+  border-bottom: 1.5px solid #D4D4D8;
+  border-bottom-left-radius: 7px;
+  pointer-events: none;
+}
+
+.admin-nav-subitem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 0;
+  height: calc(100% + .125rem);
+  border-left: 1.5px solid #D4D4D8;
+  pointer-events: none;
 }

@@ -6768,7 +6768,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </td>
           <td>
-            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? formatGuestTitleLabel(guest) : '—'}</span>
+            <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${attendee.isPrimary ? escaparHtml(formatGuestTitleLabel(guest)) : escaparHtml(`Acompanhante / ${(guest.name || '').trim().split(/\s+/)[0] || 'convidado'}`)}</span>
           </td>
           <td>
             <span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${mesaDaPessoa(attendee.seatName, guest)}</span>
@@ -6952,12 +6952,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Rótulo da coluna/campo "Título" na lista de convidados: "Pai/Beatriz",
   // ou só "Pai" quando não há anfitrião associado (ou só um anfitrião no evento).
+  // "Irmão / Victor": título + primeiro nome de quem convidou (sempre que houver).
   function formatGuestTitleLabel(guest) {
     if (!guest.relationshipTitle) return '—';
-    if (guest.relationshipHost && getEventHostNames().length > 1) {
-      return `${guest.relationshipTitle}/${guest.relationshipHost}`;
-    }
-    return guest.relationshipTitle;
+    const quemConvidou = String(guest.relationshipHost || '').trim().split(/\s+/)[0];
+    return quemConvidou ? `${guest.relationshipTitle} / ${quemConvidou}` : guest.relationshipTitle;
   }
 
   // ==========================================

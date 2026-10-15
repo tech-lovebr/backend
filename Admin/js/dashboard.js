@@ -10,9 +10,188 @@ const CORES_CATEGORIA = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4'];
 
 let DADOS = null;
 
+/* ============================================================ Período ==
+   Filtro do cabeçalho: uma data específica ou um intervalo. Vale para os
+   KPIs, o ranking, a rosca e a tabela de cadastros — cada um pela data em
+   que o registro nasceu. Sem período, tudo. O drawer de conta continua
+   com o histórico inteiro: ele é sobre a pessoa, não sobre o recorte.
+   ====================================================================== */
+
+let PERIODO = { de: null, ate: null };
+
+/** "AAAA-MM-DD" → início ou fim daquele dia no fuso de quem está vendo. */
+function diaLocal(valor, fimDoDia) {
+  if (!valor) return null;
+  const [a, m, d] = valor.split('-').map(Number);
+  return fimDoDia ? new Date(a, m - 1, d, 23, 59, 59, 999) : new Date(a, m - 1, d);
+}
+
+function noPeriodo(data) {
+  if (!PERIODO.de && !PERIODO.ate) return true;
+  if (!data) return false;
+  const t = new Date(data).getTime();
+  return (!PERIODO.de || t >= PERIODO.de.getTime()) && (!PERIODO.ate || t <= PERIODO.ate.getTime());
+}
+
+const comPeriodo = () => Boolean(PERIODO.de || PERIODO.ate);
+
+/** Os dados gerais recortados pelo período. */
+function recorte() {
+  const por = (lista, campo = 'created_at') => (lista || []).filter(x => noPeriodo(x[campo]));
+  return {
+    ...DADOS,
+    fornecedores: por(DADOS.fornecedores),
+    clientes: por(DADOS.clientes),
+    eventos: por(DADOS.eventos),
+    carteira: por(DADOS.carteira),
+    contratos: por(DADOS.contratos)
+  };
+}
+
+const formatarDia = d => d.toLocaleDateString('pt-BR');
+
+function rotuloDoPeriodo() {
+  const { de, ate } = PERIODO;
+  if (!de && !ate) return 'Todo o período';
+  if (de && ate && formatarDia(de) === formatarDia(ate)) return formatarDia(de);
+  if (de && ate) return `${formatarDia(de)} – ${formatarDia(ate)}`;
+  return de ? `A partir de ${formatarDia(de)}` : `Até ${formatarDia(ate)}`;
+}
+
+/** "AAAA-MM-DD" de um Date, sem passar por UTC. */
+function isoLocal(d) {
+  const dois = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${dois(d.getMonth() + 1)}-${dois(d.getDate())}`;
+}
+
+function montarFiltroDePeriodo() {
+  const host = document.getElementById('header-actions');
+  if (!host) return;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'filtro-wrap';
+  wrap.innerHTML = `
+    <button type="button" class="btn btn-ghost" id="btn-periodo" aria-expanded="false" aria-controls="periodo-menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>
+      <span id="periodo-rotulo">Todo o período</span>
+    </button>
+
+    <div class="filtro-menu periodo-menu" id="periodo-menu" hidden>
+      <label class="field">
+        <span class="field-label">Período</span>
+        <select class="field-select" id="periodo-tipo">
+          <option value="tudo">Todo o período</option>
+          <option value="hoje">Hoje</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="30">Últimos 30 dias</option>
+          <option value="mes">Este mês</option>
+          <option value="dia">Data específica</option>
+          <option value="intervalo">De uma data até outra</option>
+        </select>
+      </label>
+
+      <label class="field" id="periodo-campo-dia" hidden>
+        <span class="field-label">Data</span>
+        <input class="field-input" type="date" id="periodo-dia">
+      </label>
+
+      <div class="field-row" id="periodo-campo-intervalo" hidden>
+        <label class="field">
+          <span class="field-label">De</span>
+          <input class="field-input" type="date" id="periodo-de">
+        </label>
+        <label class="field">
+          <span class="field-label">Até</span>
+          <input class="field-input" type="date" id="periodo-ate">
+        </label>
+      </div>
+
+      <button type="button" class="btn btn-primary periodo-aplicar" id="periodo-aplicar">Aplicar</button>
+      <button type="button" class="filtro-limpar" id="periodo-limpar">Limpar período</button>
+    </div>`;
+  host.prepend(wrap);
+
+  const botao = wrap.querySelector('#btn-periodo');
+  const menu = wrap.querySelector('#periodo-menu');
+  const tipo = wrap.querySelector('#periodo-tipo');
+  const campoDia = wrap.querySelector('#periodo-campo-dia');
+  const campoIntervalo = wrap.querySelector('#periodo-campo-intervalo');
+  const inputDia = wrap.querySelector('#periodo-dia');
+  const hoje = isoLocal(new Date());
+  wrap.querySelectorAll('input[type="date"]').forEach(i => { i.max = hoje; });
+
+  const fechar = () => { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
+
+  botao.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    botao.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+
+  tipo.addEventListener('change', () => {
+    campoDia.hidden = tipo.value !== 'dia';
+    campoIntervalo.hidden = tipo.value !== 'intervalo';
+    if (tipo.value === 'dia' && !inputDia.value) inputDia.value = hoje;
+  });
+
+  wrap.querySelector('#periodo-aplicar').addEventListener('click', () => {
+    const agora = new Date();
+    const diasAtras = n => new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - n);
+    const fimDeHoje = diaLocal(hoje, true);
+
+    switch (tipo.value) {
+      case 'hoje': PERIODO = { de: diaLocal(hoje), ate: fimDeHoje }; break;
+      case '7': PERIODO = { de: diasAtras(6), ate: fimDeHoje }; break;
+      case '30': PERIODO = { de: diasAtras(29), ate: fimDeHoje }; break;
+      case 'mes': PERIODO = { de: new Date(agora.getFullYear(), agora.getMonth(), 1), ate: fimDeHoje }; break;
+      case 'dia': {
+        if (!inputDia.value) { toast('Escolha a data.'); return; }
+        PERIODO = { de: diaLocal(inputDia.value), ate: diaLocal(inputDia.value, true) };
+        break;
+      }
+      case 'intervalo': {
+        const de = wrap.querySelector('#periodo-de').value;
+        const ate = wrap.querySelector('#periodo-ate').value;
+        if (!de && !ate) { toast('Escolha ao menos uma das datas.'); return; }
+        if (de && ate && de > ate) { toast('A data inicial é depois da final.'); return; }
+        PERIODO = { de: diaLocal(de), ate: diaLocal(ate, true) };
+        break;
+      }
+      default: PERIODO = { de: null, ate: null };
+    }
+
+    aplicarPeriodo();
+    fechar();
+  });
+
+  wrap.querySelector('#periodo-limpar').addEventListener('click', () => {
+    tipo.value = 'tudo';
+    tipo.dispatchEvent(new Event('change'));
+    PERIODO = { de: null, ate: null };
+    aplicarPeriodo();
+    fechar();
+  });
+}
+
+function aplicarPeriodo() {
+  document.getElementById('periodo-rotulo').textContent = rotuloDoPeriodo();
+  document.getElementById('btn-periodo').classList.toggle('is-ativo', comPeriodo());
+  if (DADOS) {
+    renderKpis();
+    renderTopFornecedores();
+    renderCategorias();
+  }
+  PAGINA_CONTAS = 1;
+  if (CONTAS.length) renderContas();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
+  montarFiltroDePeriodo();
   renderKpiSkeleton();
 
   const [fornecedores, clientes, eventos, carteira, contratos, convidados, presentes, produtos] = await Promise.all([
@@ -57,11 +236,14 @@ function renderKpiSkeleton() {
 }
 
 function renderKpis() {
-  const volume = DADOS.carteira
+  const D = recorte();
+  const sufixo = comPeriodo() ? ' no período' : '';
+
+  const volume = D.carteira
     .filter(t => t.type === 'credit')
     .reduce((s, t) => s + (Number(t.amount) || 0), 0);
 
-  const faturamento = DADOS.contratos.reduce((s, c) => s + (Number(c.valor_total) || 0), 0);
+  const faturamento = D.contratos.reduce((s, c) => s + (Number(c.valor_total) || 0), 0);
 
   const tile = (label, value, sub) => `
     <div class="kpi">
@@ -71,10 +253,10 @@ function renderKpis() {
     </div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('Volume B2B', formatCurrency(volume), 'Entradas na carteira dos fornecedores'),
-    tile('Faturamento bruto', formatCurrency(faturamento), 'Valor total dos contratos'),
-    tile('Fornecedores', formatNumber(DADOS.fornecedores.length), 'Contas B2B criadas'),
-    tile('Anfitriões', formatNumber(DADOS.clientes.length), 'Contas na plataforma')
+    tile('Volume B2B', formatCurrency(volume), `Entradas na carteira dos fornecedores${sufixo}`),
+    tile('Faturamento bruto', formatCurrency(faturamento), `Valor total dos contratos${sufixo}`),
+    tile('Fornecedores', formatNumber(D.fornecedores.length), comPeriodo() ? 'Contas B2B criadas no período' : 'Contas B2B criadas'),
+    tile('Anfitriões', formatNumber(D.clientes.length), comPeriodo() ? 'Contas criadas no período' : 'Contas na plataforma')
   ].join('');
 }
 
@@ -82,9 +264,10 @@ function renderKpis() {
 
 function renderTopFornecedores() {
   const host = document.getElementById('top-fornecedores');
+  const D = recorte();
 
   const porFornecedor = new Map();
-  DADOS.contratos.forEach(c => {
+  D.contratos.forEach(c => {
     if (c.status === 'quitado') return;
     const atual = porFornecedor.get(c.fornecedor_id) || { ativos: 0, valor: 0 };
     atual.ativos += 1;
@@ -99,8 +282,11 @@ function renderTopFornecedores() {
     .slice(0, 6);
 
   if (!lista.length) {
-    host.innerHTML = `<div class="empty-state"><strong>Nenhum contrato ativo</strong>
-      <p>Os fornecedores aparecem aqui conforme fecham contratos.</p></div>`;
+    host.innerHTML = comPeriodo()
+      ? `<div class="empty-state"><strong>Nenhum contrato ativo no período</strong>
+          <p>Escolha outro período no cabeçalho.</p></div>`
+      : `<div class="empty-state"><strong>Nenhum contrato ativo</strong>
+          <p>Os fornecedores aparecem aqui conforme fecham contratos.</p></div>`;
     return;
   }
 
@@ -123,15 +309,19 @@ function renderTopFornecedores() {
 
 function renderCategorias() {
   const host = document.getElementById('grafico-categorias');
-  const total = DADOS.eventos.length;
+  const eventos = recorte().eventos;
+  const total = eventos.length;
 
   if (!total) {
-    host.innerHTML = `<div class="empty-state"><strong>Nenhum evento criado</strong>
-      <p>As comemorações aparecem aqui assim que os clientes começarem a criá-las.</p></div>`;
+    host.innerHTML = comPeriodo()
+      ? `<div class="empty-state"><strong>Nenhum evento criado no período</strong>
+          <p>Escolha outro período no cabeçalho.</p></div>`
+      : `<div class="empty-state"><strong>Nenhum evento criado</strong>
+          <p>As comemorações aparecem aqui assim que os clientes começarem a criá-las.</p></div>`;
     return;
   }
 
-  const fatias = [...groupBy(DADOS.eventos, 'tipo').entries()]
+  const fatias = [...groupBy(eventos, 'tipo').entries()]
     .map(([tipo, lista]) => ({
       rotulo: EVENT_TYPE_LABELS[tipo] || tipo,
       qtd: lista.length,
@@ -231,6 +421,7 @@ function filtrarContas() {
 
   return CONTAS.filter(c => {
     if (origem && c.origem !== origem) return false;
+    if (!noPeriodo(c.criado_em)) return false;
     if (!termo) return true;
     return [c.email, c.nome].some(v => String(v || '').toLowerCase().includes(termo));
   });
@@ -244,7 +435,7 @@ function renderContas() {
   if (!lista.length) {
     paginacao.hidden = true;
     renderEmpty(tbody, 5, 'Nenhuma conta encontrada',
-      CONTAS.length ? 'Ajuste a busca ou o filtro de origem.' : 'Nenhuma conta foi criada ainda.');
+      CONTAS.length ? 'Ajuste a busca, o canal ou o período.' : 'Nenhuma conta foi criada ainda.');
     return;
   }
 

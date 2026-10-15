@@ -2786,3 +2786,10 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 .config-grid .card-body { flex: 1; display: flex; flex-direction: column; }
 .config-grid .card-body > form { flex: 1; display: flex; flex-direction: column; }
 .config-grid .card-body > form > .btn { margin-top: auto; align-self: flex-start; }
+
+/* Dashboard: filtro de período no cabeçalho. Ativo, o botão fica com a
+   borda da cor primária para lembrar que os números estão recortados. */
+.periodo-menu { width: 280px; }
+.periodo-menu .field-row { gap: .5rem; }
+.periodo-aplicar { width: 100%; margin-top: .25rem; justify-content: center; }
+#btn-periodo.is-ativo { border-color: var(--primary-color); color: var(--primary-color); }

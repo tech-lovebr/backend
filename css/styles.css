@@ -7164,3 +7164,9 @@ html body button.faq-categoria-btn.ativa:not(#love-faq-a):not(#love-faq-b) { bor
 .b2b-cidade-card svg { width: 15px; height: 15px; flex-shrink: 0; color: #A1A1AA; }
 .b2b-cidade-card span { overflow: hidden; text-overflow: ellipsis; }
 .b2b-categoria-capa { position: absolute; right: 1rem; bottom: 1rem; z-index: 5; max-width: calc(100% - 2rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: .3rem .65rem; border-radius: 6px; background: rgba(255,255,255,.94); color: #18181B; font-size: .8125rem; font-weight: 600; line-height: 1.3; pointer-events: none; }
+
+/* Abas de submenu (love-tab-item) em qualquer tela: linha de baixo reta,
+   sem curva nas pontas — vence o arredondamento global dos botões. */
+html body button.love-tab-item.love-tab-item:not(#love-tab-a):not(#love-tab-b):not(#love-tab-c) {
+  border-radius: 0 !important;
+}

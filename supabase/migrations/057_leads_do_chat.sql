@@ -21,8 +21,7 @@
 alter table leads add column if not exists tipo_evento text;
 
 -- Evento do cliente que vale para o lead: o próximo (data de hoje em
--- diante); sem próximo, o mais recente; sem evento, o que ele informou no
--- cadastro (intended_event_*).
+-- diante); sem próximo, o mais recente. Sem evento criado, fica vazio.
 create or replace function evento_do_cliente_para_lead(p_cliente uuid)
 returns table (tipo_label text, data_texto text)
 language sql
@@ -48,11 +47,7 @@ as $$
              e.created_at desc
     limit 1
   )
-  select
-    coalesce((select tipo_label from ev), nullif(c.intended_event_type_label, '')),
-    to_char(coalesce((select data_evento from ev), c.intended_event_date), 'DD/MM/YYYY')
-  from clientes c
-  where c.id = p_cliente;
+  select ev.tipo_label, to_char(ev.data_evento, 'DD/MM/YYYY') from ev;
 $$;
 
 create or replace function garantir_lead_do_chat(p_fornecedor uuid, p_cliente uuid)

@@ -7027,7 +7027,7 @@ html body .dash-card,
 html body .ticket-card,
 html body .dashboard-tab-content .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
 html body .dashboard-main-area .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th) {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
   transition: box-shadow .2s ease !important;
 }
 html body .card-luxury,
@@ -7048,7 +7048,7 @@ html body .metric-card:hover,
 html body .dashboard-card:hover,
 html body .dashboard-tab-content .bg-white.group:hover:not(.b2b-item-card),
 html body .dashboard-main-area .bg-white.group:hover:not(.b2b-item-card) {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   border-color: #EEEEF0 !important;
 }
 
@@ -7059,7 +7059,7 @@ html body #tab-gifts .bg-white:not(button):not(input):not(select):not(textarea):
 html body #tab-wallet .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
 html body #tab-edit-site .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
 html body #tab-b2b .bg-white:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th) {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
 }
 html body #tab-overview .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
 html body #tab-rsvp .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
@@ -7067,6 +7067,17 @@ html body #tab-gifts .bg-white.group:hover:not(button):not(input):not(select):no
 html body #tab-wallet .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
 html body #tab-edit-site .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th),
 html body #tab-b2b .bg-white.group:hover:not(button):not(input):not(select):not(textarea):not(.quick-start-item):not(.b2b-item-card):not(tr):not(td):not(th) {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04) !important;
   border-color: #EEEEF0 !important;
 }
+
+
+/* Início (dashboard): a borda bem clara também nas caixas gerais — regras
+   antigas com #tab-overview deixavam a borda transparente. Inclui o
+   carrossel de promoções e os atalhos de "Mais recursos". */
+html body #tab-overview .bg-white[class*="rounded"]:not(button):not(input):not(select):not(textarea):not(.rounded-full):not([class*="rounded-full"]),
+html body #tab-overview .dashboard-promo-carousel,
+html body #tab-overview .mais-recursos-btn {
+  border: 1px solid #EEEEF0 !important;
+}
+html body #tab-overview .mais-recursos-btn { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03) !important; }

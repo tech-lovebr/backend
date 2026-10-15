@@ -1379,11 +1379,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const overviewUrl = document.getElementById('overview-public-url');
 
     if (hubTitle) {
-      const rawName = activeEvent.hostName || activeEvent.title || 'Beatriz';
-      // Remove o tipo e, se tiver, o "de" que vem logo depois — "Casamento de
-      // Victor" precisa virar "Victor", não "de Victor".
-      const firstName = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê|Bodas)\s+(de\s+)?/i, '');
-      hubTitle.innerHTML = `Olá, <span id="dash-hub-user-first-name">${firstName}</span>!`;
+      // Primeiro nome da CONTA (o mesmo de Configurações), com maiúscula —
+      // antes vinha do nome dos anfitriões do evento, que podia estar em
+      // minúscula ("victor").
+      const perfilConta = window.loveClienteProfile || {};
+      const nomeConta = String(perfilConta.first_name || perfilConta.full_name || perfilConta.couple_name || '').trim().split(/\s+/)[0];
+      const rawName = activeEvent.hostName || activeEvent.title || '';
+      const nomeDoEvento = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê|Bodas)\s+(d[eo]\s+)?/i, '').split(/\s+/)[0];
+      const firstNameBruto = nomeConta || nomeDoEvento || '';
+      const firstName = typeof maiusculaNoNome === 'function' ? maiusculaNoNome(firstNameBruto) : firstNameBruto;
+      hubTitle.innerHTML = firstName
+        ? `Olá, <span id="dash-hub-user-first-name">${escaparHtml(firstName)}</span>!`
+        : 'Olá!';
     }
     const hubCoupleName = document.getElementById('dash-hub-couple-name');
     if (hubCoupleName) {

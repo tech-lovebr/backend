@@ -177,7 +177,6 @@ function renderSidebar() {
   host.innerHTML = `
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
-      <span class="marca-admin">ADM</span>
     </a>
     <nav class="admin-nav">${sections}</nav>`;
 
@@ -252,11 +251,7 @@ function renderTopbar(admin) {
       ${icon('menu')}
     </button>
 
-    <button type="button" class="topbar-search-trigger" id="abrir-busca">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
-      <span>Buscar fornecedor, cliente ou evento…</span>
-      <kbd>⌘K</kbd>
-    </button>
+    <h1 class="topbar-titulo">Admin</h1>
     <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>
 
     <div class="admin-user">
@@ -278,7 +273,6 @@ function renderTopbar(admin) {
       </div>
     </div>`;
 
-  host.querySelector('#abrir-busca').addEventListener('click', () => Busca.abrir());
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
     e.stopPropagation();

@@ -6757,3 +6757,8 @@ a.dash-card:hover,
 
 /* Etiquetas de status: retângulo de cantos curtos, não pílula. */
 .status-badge { border-radius: 6px; }
+
+/* Mídia do drawer de produto: "Imagem de capa" e "Carrossel de imagens"
+   como títulos de seção; a primeira sem a linha de cima (é o topo da aba). */
+.product-media-title { margin-bottom: 0.6rem; }
+.product-wizard-panel[data-step="4"] > div:first-of-type > .product-media-title { border-top: none; padding-top: 0; }

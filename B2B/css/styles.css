@@ -6944,3 +6944,32 @@ body[data-theme="dark"] .dash-card.faq-table-card,
 body[data-theme="dark"] .faq-table-card > .dash-card-header { background: #181D24 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .faq-table-card > .faq-list { background: transparent !important; }
 body[data-theme="dark"] .faq-table-title { color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Altura única dos botões de ação (34px), a mesma do love.com.br (botão
+   "presente aleatório" e barras de título de lá), com o mesmo espaçamento
+   lateral do botão principal de lá (1.25rem). Vale para: botões e busca do
+   cabeçalho das páginas (Adicionar produto ou serviço, Compartilhar agenda,
+   Ver minha página…), Adicionar da Agenda, Adicionar tarefa, Salvar e
+   Publicar do editor, Desfazer/Refazer e Desktop/Tablet/Mobile.
+   ========================================================================== */
+.b2b-header-bar .btn-primary,
+.b2b-header-bar .btn-secondary,
+#agenda-add-event-btn.btn-secondary,
+.btn-secondary.kanban-add-task-confirm,
+#builder-save,
+#builder-publish {
+  height: 34px;
+  min-height: 34px;
+  padding: 0 1.25rem;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+.b2b-header-bar .field-input { height: 34px; padding-top: 0; padding-bottom: 0; box-sizing: border-box; }
+.builder-tool-btn { width: 34px; height: 34px; }
+.builder-device-toggle { padding: 3px; height: 34px; box-sizing: border-box; }
+.builder-device-btn { height: 28px; }

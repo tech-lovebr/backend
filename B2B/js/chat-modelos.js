@@ -112,11 +112,9 @@ async function copiarTexto(texto) {
   try {
     await navigator.clipboard.writeText(texto);
   } catch (e) {
-    const ta = document.createElement('textarea');
-    ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch (err) { /* sem clipboard */ }
-    ta.remove();
+    // Sem permissão de área de transferência: mostra o texto para copiar à mão.
+    window.prompt('Copie a mensagem:', texto);
+    return;
   }
   showToast('Mensagem copiada.');
 }
@@ -275,6 +273,15 @@ async function initChatModelos() {
   const authed = await window.b2bAuthReady;
   if (!authed) return;
   await carregarModelos();
+
+  // Copiar da mensagem do anfitrião: copia na hora, sem menu.
+  document.getElementById('chat-messages')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-msg-copiar]');
+    if (!btn) return;
+    const conv = b2bConversations.find(c => c.id === activeConvId);
+    const msg = conv && conv.messages[Number(btn.dataset.msgCopiar)];
+    if (msg && msg.text) copiarTexto(msg.text);
+  });
 
   // ⋮ das mensagens (delegação: o chat redesenha as mensagens o tempo todo)
   document.getElementById('chat-messages')?.addEventListener('click', (e) => {

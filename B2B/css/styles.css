@@ -7355,3 +7355,26 @@ body[data-theme="dark"] .lead-origem-valor { color: #FFFFFF !important; }
 .chat-bubble-user-glass .chat-msg-edicao-acoes .btn-primary { color: #FFFFFF !important; }
 .chat-msg-editado { font-style: italic; }
 body[data-theme="dark"] .chat-msg-edicao-campo { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Chat: ações da mensagem (⋮ nas minhas, copiar nas do anfitrião) na mesma
+   linha da bolha, centralizadas na altura dela; a hora fica embaixo.
+   Sem borda nem fundo; no hover só um pulso (igual ao love.com.br). */
+.chat-msg-linha { display: flex; align-items: center; gap: 8px; }
+.chat-msg-linha--minha { justify-content: flex-end; }
+.chat-msg-linha > .chat-bubble-user-glass,
+.chat-msg-linha > div:not(.chat-msg-acao-btn) { min-width: 0; }
+.chat-msg-acao-btn,
+.chat-msg-acao-btn.chat-msg-menu-btn {
+  width: 28px; height: 28px; flex-shrink: 0; padding: 0; margin: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; background: transparent; border-radius: 8px; cursor: pointer;
+  color: #181D24; opacity: .6;
+}
+.chat-msg-acao-btn svg { width: 16px; height: 16px; }
+.chat-msg-acao-btn:hover, .chat-msg-acao-btn:focus-visible,
+.chat-msg-acao-btn.chat-msg-menu-btn:hover {
+  opacity: 1; background: transparent; outline: none;
+  animation: chat-acao-pulso .35s ease-out;
+}
+@keyframes chat-acao-pulso { 0% { transform: scale(1); } 50% { transform: scale(1.22); } 100% { transform: scale(1); } }
+body[data-theme="dark"] .chat-msg-acao-btn { color: #FFFFFF !important; background: transparent !important; }

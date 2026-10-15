@@ -245,11 +245,12 @@ function renderActiveChat() {
 
     if (isMe) {
       const myPhoto = typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.profilePhoto;
-      // ⋮ ao lado de cada mensagem do fornecedor com texto: Copiar / Salvar
-      // modelo (js/chat-modelos.js).
+      // ⋮ (vertical) à esquerda da bolha, na mesma linha dela: Editar /
+      // Copiar / Salvar comando (js/chat-modelos.js). A hora fica embaixo.
       row.innerHTML = `
-        ${msg.text ? `<button type="button" class="chat-msg-menu-btn mb-5" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
+          <div class="chat-msg-linha chat-msg-linha--minha">
+          ${msg.text ? `<button type="button" class="chat-msg-acao-btn chat-msg-menu-btn" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
           <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
             ${msg.id && msg.id === mensagemEmEdicaoId
               ? `<div class="chat-msg-edicao">
@@ -261,6 +262,7 @@ function renderActiveChat() {
                 </div>`
               : (msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : '')}
             ${attachmentHTML}
+          </div>
           </div>
           <div class="flex items-center justify-end gap-1 text-[10px] text-zinc-400 pr-1">
             ${msg.editedAt ? '<span class="chat-msg-editado">(editado)</span>' : ''}
@@ -276,10 +278,13 @@ function renderActiveChat() {
       row.innerHTML = `
         <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
+          <div class="chat-msg-linha">
           ${pedido ? pedidoOrcamentoCardHtml(pedido, `data-criar-orcamento="${msgIndex}"`) : `<div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>`}
+          ${msg.text ? `<button type="button" class="chat-msg-acao-btn" data-msg-copiar="${msgIndex}" title="Copiar" aria-label="Copiar mensagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>` : ''}
+          </div>
           <span class="text-[10px] text-zinc-400 pl-1 block">${msg.editedAt ? '(editado) ' : ''}${msg.time || 'Agora'}</span>
         </div>
       `;

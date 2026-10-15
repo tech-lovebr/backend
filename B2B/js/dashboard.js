@@ -392,7 +392,7 @@ async function renderSiteSessions() {
     .gte('criado_em', analyticsRange.start.toISOString())
     .lte('criado_em', analyticsRange.end.toISOString());
   // Sem a tabela (migration 053 ainda não rodada) mostra zero.
-  setText('analytics-sessions', padTwoDigits(error ? 0 : (count || 0)));
+  setText('analytics-sessions', (error ? 0 : (count || 0)).toLocaleString('pt-BR'));
 }
 
 async function renderAnalyticsCard() {
@@ -405,7 +405,7 @@ async function renderAnalyticsCard() {
   const allLeads = leads || [];
 
   const leadsAtivos = allLeads.filter(l => l.status !== 'fechado').length;
-  setText('analytics-leads', padTwoDigits(leadsAtivos));
+  setText('analytics-leads', leadsAtivos.toLocaleString('pt-BR'));
 
   const totalLeads = allLeads.length;
   const closedLeads = allLeads.filter(l => l.status === 'fechado').length;

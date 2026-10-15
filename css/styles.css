@@ -7310,3 +7310,40 @@ html body .table-drawer > div:first-child > button:not(#love-h-a):hover { backgr
 .gift-vaquinha-barra { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #4ADE80, #16A34A); transition: width .3s ease; }
 .gift-vaquinha-info { margin: .4rem 0 0; font-size: .6875rem; color: #71717A; }
 .gift-vaquinha-info strong { color: #18181B; font-weight: 700; }
+
+/* ==========================================================================
+   Convite publicado: presente em tela cheia (vaquinha) e checkout
+   ========================================================================== */
+.convite-presente[data-presente-abrir] { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+.convite-presente[data-presente-abrir]:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+.convite-presente-mini-barra { height: 4px; border-radius: 999px; background: #E4E4E7; overflow: hidden; margin-top: .45rem; }
+.convite-presente-mini-barra > div { height: 100%; border-radius: 999px; background: var(--bx-primary, #537bae); }
+
+.convite-presente-detalhe { display: flex; flex-direction: column; gap: .6rem; }
+.convite-presente-detalhe-foto { margin: 0 -1.5rem .5rem; height: 260px; background: linear-gradient(135deg, #EFF6FF, #FAFAFA, #FFF7ED); overflow: hidden; }
+.convite-presente-detalhe-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.convite-presente-detalhe-nome { font-size: 1.375rem; font-weight: 700 !important; line-height: 1.25; margin: 0; }
+.convite-presente-detalhe-desc { color: #52525B; font-size: .9rem; line-height: 1.6; margin: 0; }
+.convite-presente-detalhe-arrecadado { font-size: 1rem; color: #3F3F46; margin: .5rem 0 0; }
+.convite-presente-detalhe-arrecadado strong { font-size: 1.35rem; font-weight: 700; color: #18181B; margin-left: .25rem; }
+.convite-presente-detalhe-meta { display: flex; justify-content: space-between; gap: 1rem; font-size: .8125rem; color: #71717A; margin: 0; }
+.convite-vaquinha-trilho { height: 8px; border-radius: 999px; background: #E4E4E7; overflow: hidden; }
+.convite-vaquinha-barra { height: 100%; border-radius: 999px; background: var(--bx-primary, #537bae); transition: width .3s ease; }
+.convite-presente-detalhe .convite-botao { margin-top: 1rem; }
+
+.convite-checkout-resumo { display: flex; align-items: center; gap: .75rem; padding: .75rem; margin-bottom: 1.25rem; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; }
+.convite-checkout-resumo-foto { width: 64px; height: 64px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: linear-gradient(135deg, #EFF6FF, #FAFAFA, #FFF7ED); }
+.convite-checkout-resumo-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.convite-checkout-resumo-nome { font-size: .9375rem; font-weight: 700 !important; margin: 0 0 .15rem; }
+.convite-checkout-resumo-valor { font-size: .8125rem; color: #71717A; margin: 0; }
+.convite-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-direction: column; gap: .6rem; }
+.convite-form legend { font-size: .8125rem; font-weight: 600; padding: 0; margin-bottom: .4rem; }
+.convite-form textarea { font: inherit; font-weight: 400; font-size: .9375rem; padding: .8rem .9rem; border-radius: 12px; border: 1px solid #E4E4E7; background: #FFFFFF; color: #18181B; resize: vertical; }
+.convite-form textarea:focus { outline: none; border-color: var(--bx-primary, #537bae); box-shadow: 0 0 0 3px rgba(83,123,174,0.15); }
+.convite-valor-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.convite-valor-chip { padding: .55rem .9rem; border-radius: 999px; border: 1px solid #E4E4E7; background: #FFFFFF; color: #3F3F46; font: inherit; font-size: .875rem; font-weight: 600; cursor: pointer; }
+.convite-valor-chip.is-ativo { border-color: var(--bx-primary, #537bae); color: var(--bx-primary, #537bae); background: #FFFFFF; }
+.convite-form .convite-pagamento-opcao { flex-direction: row; align-items: center; gap: .65rem; padding: .8rem .9rem; border: 1px solid #E4E4E7; border-radius: 12px; background: #FFFFFF; font-size: .9rem; font-weight: 600; cursor: pointer; }
+.convite-form .convite-pagamento-opcao.is-ativo { border-color: var(--bx-primary, #537bae); }
+.convite-form .convite-pagamento-opcao input { width: 16px; height: 16px; margin: 0; accent-color: var(--bx-primary, #537bae); }
+.convite-sucesso .convite-botao { margin-top: 1.25rem; width: 100%; }

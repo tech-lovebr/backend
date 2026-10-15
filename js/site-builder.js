@@ -3123,6 +3123,25 @@ async function initPublicPreview() {
       window.location.hash = destinoDoBotao[botao.dataset.quicknavBtnId];
       return;
     }
+    // Card da lista de presentes: comum vai direto ao checkout; vaquinha
+    // abre a tela do presente (com a barra do arrecadado).
+    const cardPresente = e.target.closest('[data-presente-abrir]');
+    if (cardPresente) {
+      abriuPeloConvite = true;
+      window.location.hash = (cardPresente.dataset.presenteVaquinha ? 'presente=' : 'checkout=') + cardPresente.dataset.presenteAbrir;
+      return;
+    }
+    const ir = e.target.closest('[data-convite-ir]');
+    if (ir) {
+      abriuPeloConvite = true;
+      window.location.hash = ir.dataset.conviteIr.replace(/^#/, '');
+      return;
+    }
+    const voltarEspecifico = e.target.closest('[data-convite-voltar-para]');
+    if (voltarEspecifico) {
+      window.location.hash = voltarEspecifico.dataset.conviteVoltarPara.replace(/^#/, '');
+      return;
+    }
     if (e.target.closest('[data-convite-voltar]')) {
       if (abriuPeloConvite) {
         abriuPeloConvite = false;
@@ -3131,6 +3150,12 @@ async function initPublicPreview() {
         window.history.replaceState(null, '', window.location.pathname);
         renderTelaPublica(root);
       }
+    }
+  });
+  root.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-presente-abrir]')) {
+      e.preventDefault();
+      e.target.click();
     }
   });
   window.addEventListener('hashchange', () => renderTelaPublica(root));
@@ -3142,6 +3167,8 @@ function renderTelaPublica(root) {
   window.scrollTo(0, 0);
   if (tela === 'informacoes') return renderInformacoesPublicas(root);
   if (tela === 'presentes') return renderPresentesPublicos(root);
+  if (tela.startsWith('presente=')) return renderPresentePublico(root, decodeURIComponent(tela.slice('presente='.length)));
+  if (tela.startsWith('checkout=')) return renderCheckoutPublico(root, decodeURIComponent(tela.slice('checkout='.length)));
   if (tela === 'confirmar') return renderConfirmarPresencaPublica(root);
   if (tela === 'sobre') return renderSobrePublico(root);
   renderConvitePublico(root);
@@ -3297,13 +3324,14 @@ function renderPresentesPublicos(root) {
   const conteudo = presentes.length ? `
     <div class="convite-presentes">
       ${presentes.map(p => `
-        <div class="convite-presente${p.recebido ? ' is-recebido' : ''}">
+        <div class="convite-presente${p.recebido ? ' is-recebido' : ''}"${p.recebido ? '' : ` data-presente-abrir="${escaparPublico(p.id)}" data-presente-vaquinha="${p.vaquinha ? '1' : ''}" role="button" tabindex="0"`}>
           <div class="convite-presente-foto">
             ${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="${escaparPublico(p.nome)}" loading="lazy">` : ''}
           </div>
           <div class="convite-presente-texto">
             <p class="convite-presente-nome">${escaparPublico(p.nome)}</p>
             <p class="convite-presente-valor">${p.recebido ? 'Já presenteado' : brl(p.valor)}</p>
+            ${(!p.recebido && p.vaquinha) ? `<div class="convite-presente-mini-barra"><div style="width:${progressoDoPresente(p).pct}%"></div></div>` : ''}
           </div>
         </div>
       `).join('')}
@@ -3368,6 +3396,196 @@ function renderConfirmarPresencaPublica(root) {
         <p class="convite-sucesso-titulo">Presença confirmada!</p>
         <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Sua presença já aparece na lista dos anfitriões.</p>
       </div>`;
+  });
+}
+
+
+/* ==========================================================================
+   Presente em tela cheia + checkout (site publicado)
+   - Presente comum: clicar no card já abre o checkout (#checkout=<id>).
+   - Presente com vaquinha: abre a tela do presente (#presente=<id>) com a
+     barra do que já foi arrecadado; "Presentear" leva ao checkout, onde o
+     convidado escolhe quanto dar.
+   O "Pagar" registra a escolha (presentear_pelo_convite); o pagamento em
+   si entra com a integração do gateway.
+   ========================================================================== */
+
+const brlPublico = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+function presentePublicoPorId(id) {
+  const lista = (conviteDadosPublicos && conviteDadosPublicos.presentes) || [];
+  return lista.find(p => String(p.id) === String(id)) || null;
+}
+
+// Voltar da tela do presente/checkout vai para a lista (não para o convite).
+function voltarPara(root, hash) {
+  root.querySelector('[data-convite-voltar]')?.setAttribute('data-convite-voltar-para', hash);
+}
+
+function progressoDoPresente(p) {
+  const meta = Number(p.valor) || 0;
+  const arrecadado = Math.max(0, Number(p.arrecadado) || 0);
+  const pct = meta > 0 ? Math.min(100, Math.round((arrecadado / meta) * 100)) : 0;
+  const falta = Math.max(0, Math.round((meta - arrecadado) * 100) / 100);
+  return { meta, arrecadado, pct, falta };
+}
+
+function renderPresentePublico(root, id) {
+  const p = presentePublicoPorId(id);
+  if (!p) return renderPresentesPublicos(root);
+  if (!p.vaquinha) return renderCheckoutPublico(root, id);
+
+  const { meta, arrecadado, pct, falta } = progressoDoPresente(p);
+  const fechado = p.recebido || falta <= 0;
+  const conteudo = `
+    <div class="convite-presente-detalhe">
+      <div class="convite-presente-detalhe-foto">
+        ${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="${escaparPublico(p.nome)}">` : ''}
+      </div>
+      <h2 class="convite-presente-detalhe-nome">${escaparPublico(p.nome)}</h2>
+      ${p.descricao ? `<p class="convite-presente-detalhe-desc">${escaparPublico(p.descricao)}</p>` : ''}
+      <p class="convite-presente-detalhe-arrecadado">Arrecadado <strong>${brlPublico(arrecadado)}</strong></p>
+      <div class="convite-presente-detalhe-meta"><span>Meta: ${brlPublico(meta)}</span><span>${pct}% da meta</span></div>
+      <div class="convite-vaquinha-trilho"><div class="convite-vaquinha-barra" style="width:${pct}%"></div></div>
+      ${fechado
+        ? '<p class="convite-vazio">Este presente já foi completado. Obrigado a todos!</p>'
+        : `<button type="button" class="convite-botao" data-convite-ir="#checkout=${escaparPublico(p.id)}">Presentear</button>`}
+    </div>`;
+  root.innerHTML = telaPublicaHtml('Vaquinha', conteudo);
+  voltarPara(root, '#presentes');
+}
+
+function renderCheckoutPublico(root, id) {
+  const p = presentePublicoPorId(id);
+  if (!p) return renderPresentesPublicos(root);
+  const { meta, pct, falta } = progressoDoPresente(p);
+  const vaquinha = !!p.vaquinha;
+
+  if (p.recebido || (vaquinha && falta <= 0)) {
+    root.innerHTML = telaPublicaHtml('Presentear', '<p class="convite-vazio">Este presente já foi presenteado. Escolha outro da lista.</p>');
+    voltarPara(root, '#presentes');
+    return;
+  }
+
+  // Vaquinha: sugestões de valor (um quarto, metade, o que falta) + outro valor.
+  const sugestoes = vaquinha
+    ? [...new Set([Math.round(falta * 0.25), Math.round(falta * 0.5), Math.round(falta * 100) / 100].filter(v => v >= 1))]
+    : [];
+  const valorInicial = vaquinha ? (sugestoes[0] || falta) : meta;
+
+  const conteudo = `
+    <div class="convite-checkout-resumo">
+      <div class="convite-checkout-resumo-foto">${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="">` : ''}</div>
+      <div>
+        <p class="convite-checkout-resumo-nome">${escaparPublico(p.nome)}</p>
+        <p class="convite-checkout-resumo-valor">${vaquinha ? `Faltam ${brlPublico(falta)} para completar · ${pct}% arrecadado` : brlPublico(meta)}</p>
+      </div>
+    </div>
+    <form class="convite-form" data-convite-checkout novalidate>
+      ${vaquinha ? `
+      <fieldset class="convite-valor">
+        <legend>Quanto você quer dar?</legend>
+        <div class="convite-valor-chips">
+          ${sugestoes.map((v, i) => `<button type="button" class="convite-valor-chip${i === 0 ? ' is-ativo' : ''}" data-valor="${v}">${brlPublico(v)}</button>`).join('')}
+        </div>
+        <label>Outro valor <span>(até ${brlPublico(falta)})</span>
+          <input type="number" name="valor" min="1" max="${falta}" step="0.01" inputmode="decimal" value="${valorInicial}" placeholder="R$">
+        </label>
+      </fieldset>` : ''}
+      <label>Seu nome completo
+        <input type="text" name="nome" required maxlength="120" autocomplete="name" placeholder="Como está no convite">
+      </label>
+      <label>E-mail
+        <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="seu@email.com">
+      </label>
+      <label>Telefone <span>(opcional)</span>
+        <input type="tel" name="telefone" maxlength="40" autocomplete="tel" placeholder="(11) 99999-9999">
+      </label>
+      <label>Mensagem para os anfitriões <span>(opcional)</span>
+        <textarea name="mensagem" maxlength="300" rows="3" placeholder="Deixe um recado carinhoso"></textarea>
+      </label>
+      <fieldset class="convite-pagamento">
+        <legend>Forma de pagamento</legend>
+        <label class="convite-pagamento-opcao is-ativo"><input type="radio" name="metodo" value="pix" checked><span>Pix</span></label>
+        <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="cartao"><span>Cartão de crédito</span></label>
+        <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="apple_pay"><span>Apple Pay</span></label>
+      </fieldset>
+      <p class="convite-erro" hidden></p>
+      <button type="submit" class="convite-botao">Pagar ${brlPublico(valorInicial)}</button>
+    </form>`;
+  root.innerHTML = telaPublicaHtml('Presentear', conteudo);
+  voltarPara(root, vaquinha ? `#presente=${p.id}` : '#presentes');
+
+  const form = root.querySelector('[data-convite-checkout]');
+  const erroEl = form.querySelector('.convite-erro');
+  const botao = form.querySelector('button[type="submit"]');
+  const valorInput = form.querySelector('input[name="valor"]');
+
+  const valorEscolhido = () => vaquinha ? Math.min(falta, Math.max(0, parseFloat(valorInput.value) || 0)) : meta;
+  const atualizarBotao = () => { botao.textContent = `Pagar ${brlPublico(valorEscolhido())}`; };
+
+  form.querySelectorAll('.convite-valor-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      valorInput.value = chip.dataset.valor;
+      form.querySelectorAll('.convite-valor-chip').forEach(c => c.classList.toggle('is-ativo', c === chip));
+      atualizarBotao();
+    });
+  });
+  valorInput?.addEventListener('input', () => {
+    form.querySelectorAll('.convite-valor-chip').forEach(c => c.classList.toggle('is-ativo', parseFloat(c.dataset.valor) === parseFloat(valorInput.value)));
+    atualizarBotao();
+  });
+  form.querySelectorAll('input[name="metodo"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      form.querySelectorAll('.convite-pagamento-opcao').forEach(o => o.classList.toggle('is-ativo', o.contains(radio)));
+    });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erroEl.hidden = true;
+    const nome = form.nome.value.trim();
+    const email = form.email.value.trim();
+    const valor = valorEscolhido();
+    if (nome.length < 2) { erroEl.textContent = 'Digite seu nome completo.'; erroEl.hidden = false; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroEl.textContent = 'Digite um e-mail válido.'; erroEl.hidden = false; return; }
+    if (vaquinha && valor < 1) { erroEl.textContent = 'Escolha um valor de pelo menos R$ 1,00.'; erroEl.hidden = false; return; }
+    const metodo = form.querySelector('input[name="metodo"]:checked')?.value || 'pix';
+
+    botao.disabled = true;
+    botao.textContent = 'Registrando…';
+    const { data, error } = await supabaseClient.rpc('presentear_pelo_convite', {
+      p_slug: conviteSlugPublico,
+      p_presente_id: p.id,
+      p_valor: valor,
+      p_nome: nome,
+      p_email: email,
+      p_telefone: form.telefone.value.trim() || null,
+      p_mensagem: form.mensagem.value.trim() || null,
+      p_metodo: metodo
+    });
+
+    if (error || !data || !data.ok) {
+      if (error) console.error('Erro ao presentear:', error);
+      botao.disabled = false;
+      atualizarBotao();
+      const codigo = data && data.erro;
+      erroEl.textContent = codigo === 'ja_presenteado'
+        ? 'Esse presente acabou de ser completado por outro convidado. Escolha outro da lista.'
+        : 'Não foi possível registrar agora. Tente de novo em instantes.';
+      erroEl.hidden = false;
+      return;
+    }
+
+    const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
+    root.innerHTML = telaPublicaHtml('Presentear', `
+      <div class="convite-sucesso">
+        <p class="convite-sucesso-titulo">Presente registrado!</p>
+        <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear <strong>${escaparPublico(p.nome)}</strong> com <strong>${brlPublico(Number(data.valor) || valor)}</strong> por ${escaparPublico(nomeMetodo)}.</p>
+        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>
+        <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
+      </div>`);
+    voltarPara(root, '#presentes');
   });
 }
 

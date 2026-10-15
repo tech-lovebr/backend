@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261015_faqcolunas">
+  <link rel="stylesheet" href="css/styles.css?v=20261015_faqhtml">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2664,8 +2664,9 @@
                   <p class="text-xs sm:text-sm text-zinc-500 font-sans">Aproveite os benefícios com descontos e serviços disponíveis</p>
                 </div>
 
-                <!-- Grid de 4 Cards de Benefícios -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
+                <!-- Grid de cards de benefícios: vem do Admin (servicos_beneficios, tipo desconto).
+                     Os cards abaixo ficam só enquanto a consulta não responde. -->
+                <div id="home-beneficios-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
                   
                   <!-- Card 1: FotoRegistro -->
                   <div class="bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between cursor-pointer group" onclick="showToast('Cupom LOVE75 ativado para FotoRegistro! Até 75% OFF em álbuns e revelações.', '🏷️')">
@@ -3542,6 +3543,9 @@
             <div class="px-6 sm:px-8 py-6 space-y-8">
 
 
+            <!-- Grupos de serviços: vêm do Admin (servicos_beneficios, tipo servico).
+                 O bloco fixo abaixo fica só enquanto a consulta não responde. -->
+            <div id="beneficios-love-grupos" class="space-y-8">
             <!-- Título da Categoria -->
             <div class="space-y-4">
               <h3 class="text-sm sm:text-base font-semibold text-zinc-800 tracking-tight">Para os casais</h3>
@@ -3633,6 +3637,8 @@
                 </div>
 
               </div>
+            </div>
+
             </div>
 
             <!-- Disclaimer Legal Rodapé -->
@@ -5430,7 +5436,7 @@
   <script src="js/supabase-init.js?v=20261015_textoforn"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261015_faqcats"></script>
+  <script src="js/app.js?v=20261015_beneficios"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_lixeira"></script>
 </body>

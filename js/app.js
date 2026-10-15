@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Dúvidas (FAQ) ----
   // Ordem fixa das categorias pedidas; outras criadas no Admin vêm depois, em
   // ordem alfabética.
-  const FAQ_CATEGORIAS_ORDEM = ['Convidados', 'Presentes', 'Convite digital', 'Fornecedores', 'Financeiro', 'Benefícios e serviços'];
+  const FAQ_CATEGORIAS_ORDEM = ['Fornecedores', 'Carteira digital', 'Lista de convidados', 'Meus presentes', 'Editar meu site', 'Convite digital', 'Benefícios', 'Serviços'];
 
   // Usada só quando a tabela `faq` não existe ou está vazia.
   const FAQ_PADRAO = [
@@ -643,6 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data, error } = await supabaseClient
         .from('faq')
         .select('id, categoria, pergunta, resposta, ordem')
+        .eq('plataforma', 'cliente')
         .eq('ativo', true)
         .order('ordem', { ascending: true })
         .order('created_at', { ascending: true });
@@ -651,6 +652,114 @@ document.addEventListener('DOMContentLoaded', () => {
     faqItensCache = itens.length ? itens : FAQ_PADRAO;
     renderFaqPage(faqItensCache);
   }
+
+  // A resposta vem do Admin: HTML (negrito, listas, link, vídeo em <iframe>)
+  // ou texto puro das perguntas antigas. Só o texto puro precisa de escape.
+  function faqRespostaHtml(resposta) {
+    const r = String(resposta || '');
+    return /<[a-z][\s\S]*>/i.test(r) ? r : escaparHtml(r).replace(/\r?\n/g, '<br>');
+  }
+
+  // ---- Benefícios & Serviços (home) e Benefícios Love ----
+  // Os cards vêm de servicos_beneficios, editados no Admin em Anfitriões →
+  // Serviços. Se a consulta falhar, o HTML fixo da página continua no lugar.
+  const TAG_ICONE = '<svg class="w-3.5 h-3.5 text-sky-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/></svg>';
+
+  function precoBeneficio(s) {
+    const valor = Number(s.preco) || 0;
+    return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: valor % 1 ? 2 : 0, maximumFractionDigits: 2 });
+  }
+
+  async function carregarBeneficiosDoAdmin() {
+    const home = document.getElementById('home-beneficios-grid');
+    const love = document.getElementById('beneficios-love-grupos');
+    if (!home && !love) return;
+
+    let itens = [];
+    try {
+      const { data, error } = await supabaseClient
+        .from('servicos_beneficios')
+        .select('id, tipo, nome, parceiro, titulo, descricao, imagem_url, link_url, desconto_texto, cupom, grupo, preco, preco_tipo, preco_sufixo, posicao')
+        .eq('ativo', true)
+        .order('posicao', { ascending: true });
+      if (error || !Array.isArray(data)) return;
+      itens = data;
+    } catch (e) { return; }
+
+    const descontos = itens.filter(i => i.tipo === 'desconto');
+    const servicos = itens.filter(i => i.tipo !== 'desconto');
+
+    if (home && descontos.length) {
+      home.innerHTML = descontos.map(s => `
+        <div class="bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 overflow-hidden shadow-2xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between cursor-pointer group" data-beneficio="${escaparHtml(s.id)}">
+          <div class="h-36 sm:h-40 flex items-center justify-center p-6 bg-white group-hover:scale-105 transition-transform duration-300">
+            ${s.imagem_url
+              ? `<img src="${escaparHtml(s.imagem_url)}" alt="${escaparHtml(s.nome || '')}" class="max-h-full max-w-full object-contain">`
+              : `<span class="text-2xl sm:text-[26px] font-black tracking-tight text-zinc-900 font-sans text-center" style="letter-spacing:-0.03em">${escaparHtml(s.nome || '')}</span>`}
+          </div>
+          <div class="px-4 py-3.5 border-t border-[#EAEAEA] bg-[#FAFAFA] flex flex-col gap-0.5">
+            <span class="text-xs text-zinc-500 font-sans font-medium">${escaparHtml(s.nome || '')}</span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="text-xs sm:text-sm font-bold text-zinc-900 font-sans">${escaparHtml(s.desconto_texto || '')}</span>
+              ${TAG_ICONE}
+            </div>
+          </div>
+        </div>`).join('');
+
+      home.querySelectorAll('[data-beneficio]').forEach(card => {
+        const s = descontos.find(i => i.id === card.dataset.beneficio);
+        if (!s) return;
+        card.addEventListener('click', async () => {
+          if (s.cupom) {
+            try { await navigator.clipboard.writeText(s.cupom); } catch (e) { /* sem permissão: só avisa */ }
+            showToast(s.descricao ? `Cupom ${s.cupom} copiado! ${s.descricao}` : `Cupom ${s.cupom} copiado!`, '🏷️');
+            return;
+          }
+          if (s.link_url) window.open(s.link_url, '_blank', 'noopener');
+        });
+      });
+    }
+
+    if (love && servicos.length) {
+      const grupos = [];
+      servicos.forEach(s => {
+        const g = (s.grupo || '').trim() || 'Para os casais';
+        if (!grupos.includes(g)) grupos.push(g);
+      });
+
+      love.innerHTML = grupos.map(g => `
+        <div class="space-y-4">
+          <h3 class="text-sm sm:text-base font-semibold text-zinc-800 tracking-tight">${escaparHtml(g)}</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            ${servicos.filter(s => ((s.grupo || '').trim() || 'Para os casais') === g).map(s => `
+              <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer border border-transparent" data-servico="${escaparHtml(s.id)}">
+                <div>
+                  <div class="relative h-48 w-full overflow-hidden bg-zinc-100">
+                    ${s.imagem_url ? `<img src="${escaparHtml(s.imagem_url)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : ''}
+                    <div class="absolute bottom-3 left-4 text-white font-bold text-base tracking-tight drop-shadow-md">${escaparHtml(s.parceiro || s.nome || '')}</div>
+                  </div>
+                  <div class="p-5 space-y-2">
+                    <h4 class="font-semibold text-zinc-900 text-base">${escaparHtml(s.titulo || s.nome || '')}</h4>
+                    ${s.descricao ? `<p class="text-xs text-zinc-500 leading-relaxed">${escaparHtml(s.descricao)}</p>` : ''}
+                  </div>
+                </div>
+                ${Number(s.preco) > 0 ? `
+                  <div class="p-5 pt-0">
+                    ${s.preco_tipo === 'fixo' ? '' : '<span class="text-[11px] text-zinc-400 block font-normal">A partir de</span>'}
+                    <span class="text-base sm:text-lg font-bold text-[#537bae]">${precoBeneficio(s)}${s.preco_sufixo ? ` <span class="text-xs font-normal text-zinc-500">${escaparHtml(s.preco_sufixo)}</span>` : ''}</span>
+                  </div>` : ''}
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+
+      love.querySelectorAll('[data-servico]').forEach(card => {
+        const s = servicos.find(i => i.id === card.dataset.servico);
+        if (s && s.link_url) card.addEventListener('click', () => window.open(s.link_url, '_blank', 'noopener'));
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', carregarBeneficiosDoAdmin);
 
   function renderFaqPage(itens) {
     const cont = document.getElementById('faq-page-container');
@@ -690,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>${escaparHtml(item.pergunta || '')}</span>
                 ${seta}
               </button>
-              <div class="faq-resposta">${escaparHtml(item.resposta || '').replace(/\r?\n/g, '<br>')}</div>
+              <div class="faq-resposta">${faqRespostaHtml(item.resposta)}</div>
             </div>`).join('')}
         </div>
       </div>`;

@@ -7134,3 +7134,12 @@ html body button.faq-categoria-btn.ativa:not(#love-faq-a):not(#love-faq-b) { bor
   html body button.faq-categoria-btn:not(#love-faq-a):not(#love-faq-b) { width: auto; white-space: nowrap; padding: .5rem 0; border-left: 0; border-bottom: 2px solid transparent; }
   html body button.faq-categoria-btn.ativa:not(#love-faq-a):not(#love-faq-b) { border-bottom-color: #183b54; }
 }
+
+/* Resposta do FAQ escrita no Admin: parágrafos, listas, links e vídeo. */
+.faq-resposta p + p, .faq-resposta p + ul, .faq-resposta p + ol { margin-top: .5rem; }
+.faq-resposta ul { list-style: disc; padding-left: 1.25rem; margin: .5rem 0; }
+.faq-resposta ol { list-style: decimal; padding-left: 1.25rem; margin: .5rem 0; }
+.faq-resposta a { color: #183b54; text-decoration: underline; }
+.faq-resposta h2, .faq-resposta h3 { font-weight: 700; color: #18181B; margin: .75rem 0 .25rem; }
+.faq-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: .75rem 0; border-radius: 10px; overflow: hidden; background: #000; }
+.faq-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }

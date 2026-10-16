@@ -43,7 +43,7 @@ const NAV_SECTIONS = [
   {
     label: 'Vendas',
     items: [
-      { page: 'servicos', href: 'servicos.html', text: 'Serviços', icon: 'shield' },
+      { page: 'servicos', href: 'servicos.html', text: 'Benefícios Love', icon: 'shield' },
       { page: 'viagens', href: 'viagens.html', text: 'Love Viagens', icon: 'plane' }
     ]
   },

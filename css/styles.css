@@ -7646,3 +7646,46 @@ html body button.orcamento-add-fornecedor:not(#love-h-a):hover { text-decoration
 .comprovante-upload img { max-height: 180px; max-width: 100%; border-radius: 8px; object-fit: contain; }
 html body #btn-open-add-expense:not(#love-h-a):not(.hidden),
 html body #btn-add-comprovante:not(#love-h-a):not(.hidden) { height: 34px !important; min-height: 34px !important; padding-top: 0 !important; padding-bottom: 0 !important; display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; line-height: 1 !important; }
+
+/* ==========================================================================
+   Modal "Solicitar orçamento" (Explorar › Contratar) — identidade da Love:
+   borda fina, cantos 10px (8px nos campos), sombra só no overlay, foco sem
+   anel (só a borda escurece), primária #183b54.
+   ========================================================================== */
+#modal-b2b-orcamento .orc-modal { border-radius: 14px 14px 0 0; box-shadow: 0 8px 24px rgba(0,0,0,0.08); overflow: hidden; font-family: 'Inter', sans-serif; }
+@media (min-width: 640px) { #modal-b2b-orcamento .orc-modal { border-radius: 10px; } }
+.orc-topo { display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px; background: #FAFAFA; border-bottom: 1px solid #E4E4E7; }
+.orc-servico { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+.orc-servico-foto { width: 56px; height: 56px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #E4E4E7; }
+.orc-servico-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.orc-servico-nome { margin: 0; font-size: 16px; font-weight: 700; color: #18181B; line-height: 1.3; }
+.orc-servico-empresa { margin: 2px 0 0; font-size: 13px; color: #52525B; }
+.orc-servico-info { margin: 2px 0 0; font-size: 12px; color: #71717A; }
+html body button.orc-fechar:not(#love-h-a) { width: 32px; height: 32px; padding: 0; border: 0; border-radius: 999px !important; background: rgba(24,29,36,0.06); color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+html body button.orc-fechar:not(#love-h-a) svg { width: 16px; height: 16px; }
+html body button.orc-fechar:not(#love-h-a):hover { background: rgba(24,29,36,0.12); color: #181D24; }
+.orc-corpo { padding: 18px 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.orc-label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; font-weight: 600; color: #181D24; margin-bottom: 6px; }
+.orc-selo { font-size: 11px; font-weight: 600; color: #183b54; background: #EEF2F6; border-radius: 6px; padding: 2px 6px; }
+html body .orc-input:not(#love-h-a) { width: 100%; height: 40px; padding: 0 12px; border: 1px solid #E4E4E7; border-radius: 8px !important; background: #FFFFFF; font: inherit; font-size: 14px; color: #18181B; box-shadow: none; outline: none; }
+html body .orc-input:not(#love-h-a):focus, html body .orc-input:not(#love-h-a):focus-visible { border-color: #181D24; box-shadow: none; }
+html body .orc-textarea:not(#love-h-a) { height: auto; min-height: 84px; padding: 10px 12px; line-height: 1.5; resize: vertical; }
+.orc-campo-icone { position: relative; }
+.orc-campo-icone > svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #A1A1AA; pointer-events: none; }
+html body .orc-campo-icone .orc-input:not(#love-h-a) { padding-left: 36px; }
+.orc-contador { display: flex; align-items: center; gap: 6px; }
+html body .orc-contador-input:not(#love-h-a) { text-align: center; -moz-appearance: textfield; }
+.orc-contador-input::-webkit-outer-spin-button, .orc-contador-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+html body button.orc-contador-btn:not(#love-h-a) { width: 40px; height: 40px; flex-shrink: 0; padding: 0; border: 1px solid #E4E4E7; border-radius: 8px !important; background: #fff; color: #3F3F46; font-size: 18px; line-height: 1; cursor: pointer; box-shadow: none; }
+html body button.orc-contador-btn:not(#love-h-a):hover { border-color: #181D24; color: #181D24; background: #fff; }
+.orc-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+html body button.orc-pill:not(#love-h-a) { height: 34px; padding: 0 12px; border: 1px solid #E4E4E7; border-radius: 8px !important; background: #FFFFFF; color: #3F3F46; font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: none; transition: border-color .15s, color .15s; }
+html body button.orc-pill:not(#love-h-a):hover { border-color: #181D24; color: #181D24; background: #fff; }
+html body button.orc-pill.is-ativa:not(#love-h-a) { border-color: #183b54; color: #183b54; font-weight: 700; box-shadow: inset 0 0 0 1px #183b54; }
+.orc-rodape { padding: 14px 20px 18px; border-top: 1px solid #E4E4E7; background: #fff; }
+.orc-confianca { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; font-size: 12px; line-height: 1.5; color: #52525B; }
+.orc-confianca svg { width: 16px; height: 16px; flex-shrink: 0; color: #183b54; margin-top: 1px; }
+html body button.orc-enviar:not(#love-h-a) { width: 100%; height: 44px; border: 0; border-radius: 8px !important; background: #183b54; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: none; transition: background-color .15s, transform .1s; }
+html body button.orc-enviar:not(#love-h-a):hover { background: #122c3f; }
+html body button.orc-enviar:not(#love-h-a):active { transform: scale(.99); }
+html body button.orc-enviar:not(#love-h-a):disabled { opacity: .6; cursor: default; }

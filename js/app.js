@@ -13449,6 +13449,49 @@ document.addEventListener('DOMContentLoaded', () => {
     return iso ? (formatEventDateLong(iso) || String(iso)) : '';
   }
 
+  // Exemplo no campo de detalhes, de acordo com a categoria do serviço.
+  function exemploDeBriefing(categoria) {
+    const c = String(categoria || '').toLowerCase();
+    if (/m[uú]sica|banda|dj|som/.test(c)) return 'Ex.: 4 horas de apresentação, repertório de MPB e pop acústico na recepção e pista animada depois do jantar.';
+    if (/buffet|gastronomia|alimenta/.test(c)) return 'Ex.: jantar completo com entrada, dois pratos principais e opção vegetariana; serviço à francesa.';
+    if (/bar|bebida|drink/.test(c)) return 'Ex.: open bar de 5 horas com drinks clássicos, opções sem álcool e bartender na recepção.';
+    if (/foto|v[ií]deo|filmagem/.test(c)) return 'Ex.: cobertura do making of à festa, ensaio no dia e vídeo de até 5 minutos com os melhores momentos.';
+    if (/decora|flor/.test(c)) return 'Ex.: decoração em tons claros com flores naturais, mesa principal e arranjos nas mesas dos convidados.';
+    return 'Ex.: conte o que você imagina para o serviço, horários, estilo e qualquer detalhe importante.';
+  }
+
+  (function ligarModalDeOrcamento() {
+    const modal = document.getElementById('modal-b2b-orcamento');
+    if (!modal) return;
+    modal.addEventListener('click', (e) => {
+      const pill = e.target.closest('.orc-pill');
+      if (pill) {
+        const grupo = pill.closest('.orc-pills');
+        const jaAtiva = pill.classList.contains('is-ativa');
+        grupo.querySelectorAll('.orc-pill').forEach(p => { p.classList.remove('is-ativa'); p.setAttribute('aria-checked', 'false'); });
+        if (!jaAtiva) { pill.classList.add('is-ativa'); pill.setAttribute('aria-checked', 'true'); }
+        return;
+      }
+      const passo = e.target.closest('[data-convidados]');
+      if (passo) {
+        const campo = document.getElementById('orcamento-convidados');
+        const atual = parseInt(campo.value, 10) || 0;
+        campo.value = Math.max(1, atual + Number(passo.dataset.convidados));
+        return;
+      }
+      // Clique no fundo escuro fecha.
+      if (e.target === modal) closeModal(modal);
+    });
+    document.getElementById('orcamento-data')?.addEventListener('input', () => document.getElementById('orcamento-data-selo')?.classList.add('hidden'));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(modal);
+    });
+  })();
+
+  function valorDaPill(grupo) {
+    return document.querySelector(`#modal-b2b-orcamento .orc-pills[data-grupo="${grupo}"] .orc-pill.is-ativa`)?.dataset.valor || '';
+  }
+
   function abrirPedidoOrcamento(item, servico) {
     const modal = document.getElementById('modal-b2b-orcamento');
     if (!modal) { abrirChatComTextoPronto(item); return; }
@@ -13467,10 +13510,34 @@ document.addEventListener('DOMContentLoaded', () => {
         : '<option value="">Serviço a combinar</option>';
       if (servico && servico.id) select.value = servico.id;
     }
-    const nomeEl = document.getElementById('orcamento-fornecedor-nome');
-    if (nomeEl) nomeEl.textContent = item.name;
+    // A. Card do serviço: foto, nome, empresa, categoria e "a partir de".
+    const svc = servico || servicos[0] || null;
+    const foto = document.getElementById('orcamento-servico-foto');
+    const capa = (svc && svc.cover_image_url) || item.cardImage || item.avatar || '';
+    if (foto) { if (capa) { foto.src = capa; foto.classList.remove('hidden'); } else { foto.removeAttribute('src'); foto.classList.add('hidden'); } }
+    const tituloEl = document.getElementById('orcamento-titulo');
+    if (tituloEl) tituloEl.textContent = (svc && svc.name) || item.name || 'Solicitar orçamento';
+    const empresaEl = document.getElementById('orcamento-servico-empresa');
+    if (empresaEl) empresaEl.textContent = svc && svc.name ? `por ${item.name}` : '';
+    const infoEl = document.getElementById('orcamento-servico-info');
+    if (infoEl) {
+      const preco = svc ? rotuloPrecoServico(svc) : '';
+      infoEl.textContent = [svc && svc.category, preco ? `A partir de ${preco.replace(/^A partir de /, '')}` : ''].filter(Boolean).join(' • ');
+    }
+    // B. Data: a do evento ativo já vem preenchida, com o selo.
     const dataEl = document.getElementById('orcamento-data');
-    if (dataEl) dataEl.value = dataEventoAtivoTexto();
+    const dataISO = ev ? String((ev.eventDetails && ev.eventDetails.date) || ev.date || '').slice(0, 10) : '';
+    if (dataEl) dataEl.value = /^\d{4}-\d{2}-\d{2}$/.test(dataISO) ? dataISO : '';
+    document.getElementById('orcamento-data-selo')?.classList.toggle('hidden', !(dataEl && dataEl.value));
+    // Tipo de celebração vindo do evento; ambiente e faixa começam em branco.
+    const tipoDoEvento = { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo' }[ev && ev.type] || (ev ? 'Outro' : '');
+    modal.querySelectorAll('.orc-pills').forEach(g => {
+      const inicial = g.dataset.grupo === 'tipo' ? tipoDoEvento : '';
+      g.querySelectorAll('.orc-pill').forEach(p => { const on = p.dataset.valor === inicial; p.classList.toggle('is-ativa', on); p.setAttribute('aria-checked', String(on)); });
+    });
+    // E. Exemplo de briefing de acordo com a categoria do serviço.
+    const msgPh = document.getElementById('orcamento-mensagem');
+    if (msgPh) msgPh.placeholder = exemploDeBriefing(svc && svc.category);
     const convEl = document.getElementById('orcamento-convidados');
     if (convEl) convEl.value = (ev && Array.isArray(ev.guests) && ev.guests.length) ? ev.guests.length : '';
     // Local: o endereço salvo em Informações já vem escolhido; "Outro
@@ -13502,15 +13569,18 @@ document.addEventListener('DOMContentLoaded', () => {
     openModal(modal);
   }
 
-  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local) {
+  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local, extras = {}) {
     const ev = getActiveEvent();
     return [
       'Pedido de orçamento' + (servico ? ` — ${servico.name}` : ''),
       ev && ev.title ? `Evento: ${ev.title}` : '',
+      extras.tipo ? `Tipo: ${extras.tipo}` : '',
       data ? `Data: ${data}` : '',
       convidados ? `Convidados: ${convidados}` : '',
       local ? `Local: ${local}` : '',
-      mensagem ? `Mensagem: ${mensagem}` : ''
+      extras.ambiente ? `Ambiente: ${extras.ambiente}` : '',
+      extras.faixa ? `Investimento: ${extras.faixa}` : '',
+      mensagem ? `Detalhes: ${mensagem}` : ''
     ].filter(Boolean).join('\n');
   }
 
@@ -13526,8 +13596,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const select = document.getElementById('orcamento-servico');
     const servico = (item.services || []).find(s => s.id === (select && select.value)) || null;
-    const data = (document.getElementById('orcamento-data')?.value || '').trim();
+    const dataISO = (document.getElementById('orcamento-data')?.value || '').trim();
+    const data = dataISO ? (formatEventDateLong(dataISO) || dataISO) : '';
     const convidados = parseInt(document.getElementById('orcamento-convidados')?.value, 10) || null;
+    const extras = { tipo: valorDaPill('tipo'), ambiente: valorDaPill('ambiente'), faixa: valorDaPill('faixa') };
     const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();
     const localSel = document.getElementById('orcamento-local');
     const local = localSel && localSel.value === '__outro'
@@ -13535,7 +13607,7 @@ document.addEventListener('DOMContentLoaded', () => {
       : ((localSel && localSel.value) || '');
     const nome = getGuestCommentAuthorName();
     const email = (window.loveClienteProfile && window.loveClienteProfile.email) || window.loveClienteSession.user.email || '';
-    const texto = textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local);
+    const texto = textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local, extras);
 
     const { error } = await supabaseClient.rpc('solicitar_orcamento', {
       p_fornecedor_id: item.id,

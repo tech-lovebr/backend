@@ -299,7 +299,7 @@ function montarLixeiraDeLeads() {
   btn.id = 'leads-lixeira-btn';
   btn.className = 'tabela-barra-btn tabela-lixeira-btn';
   btn.hidden = true;
-  btn.innerHTML = LEADS_ICONE_LIXEIRA;
+  btn.innerHTML = LEADS_ICONE_LIXEIRA + '<span class="tabela-lixeira-qtd" id="leads-lixeira-qtd"></span>';
   acoes.insertBefore(btn, acoes.firstChild);
   btn.addEventListener('click', excluirLeadsSelecionados);
 
@@ -316,6 +316,8 @@ function atualizarLixeiraDeLeads() {
   const btn = document.getElementById('leads-lixeira-btn');
   if (btn) {
     btn.hidden = n === 0;
+    const qtd = document.getElementById('leads-lixeira-qtd');
+    if (qtd) qtd.textContent = `(${n})`;
     const texto = `Excluir ${n} ${n === 1 ? 'lead selecionado' : 'leads selecionados'}`;
     btn.title = texto;
     btn.setAttribute('aria-label', texto);

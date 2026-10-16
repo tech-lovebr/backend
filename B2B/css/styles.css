@@ -7436,3 +7436,7 @@ body[data-theme="dark"] .builder-el-group-title { color: #FFFFFF !important; }
 .profile-avatar-picker:hover .profile-imagem-editar,
 .profile-logo-picker:hover .profile-imagem-editar { border-color: #181D24; }
 body[data-theme="dark"] .profile-imagem-editar { background: #252525 !important; color: #FFFFFF !important; border-color: #404040 !important; }
+
+/* Leads: quantidade marcada ao lado da lixeira, ex.: (3). */
+.tabela-lixeira-btn { gap: 0.35rem; }
+.tabela-lixeira-qtd { font-size: 0.8125rem; font-weight: 600; }

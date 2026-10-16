@@ -13753,11 +13753,14 @@ document.addEventListener('DOMContentLoaded', () => {
   async function carregarConversasDoBanco() {
     if (!window.loveClienteSession) { b2bConversationsData = []; return; }
 
-    const { data: rows, error } = await supabaseClient
+    const buscar = (comEditado) => supabaseClient
       .from('conversations')
-      .select('id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url, products(category, active)), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at)')
+      .select(`id, last_message_at, fornecedor:fornecedores(id, company_name, avatar_url, products(category, active)), messages(id, text, created_at, sender_role, attachment_url, attachment_type, read_at${comEditado ? ', edited_at' : ''})`)
       .eq('cliente_id', window.loveClienteSession.user.id)
       .order('last_message_at', { ascending: false });
+    let { data: rows, error } = await buscar(true);
+    // Sem a migration 057 (coluna edited_at) ainda: busca de novo sem ela.
+    if (error && /edited_at/i.test(error.message || '')) ({ data: rows, error } = await buscar(false));
 
     if (error || !rows) { b2bConversationsData = []; return; }
 
@@ -13921,13 +13924,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!nova || !nova.id) return;
         const conv = b2bConversationsData.find(c => c.id === nova.conversation_id);
         const msg = conv && conv.messages.find(m => m.id === nova.id);
-        if (msg) {
-          msg.text = nova.text;
-          msg.editedAt = nova.edited_at || null;
-          if (conv.messages[conv.messages.length - 1] === msg) conv.lastMessage = nova.text || (nova.attachment_url ? '[Anexo]' : '');
-        }
-        if (chatEstaVisivel()) { await renderB2BChat(); return; }
-        if (!msg) await loadB2BConversationsData();
+        if (!msg) return;
+        // Só marcação de lida (read_at): texto e edição iguais, nada a redesenhar.
+        const textoIgual = (msg.text || '') === (nova.text || '');
+        const edicaoIgual = (msg.editedAt || null) === (nova.edited_at || null);
+        if (textoIgual && edicaoIgual) return;
+        msg.text = nova.text;
+        msg.editedAt = nova.edited_at || null;
+        if (conv.messages[conv.messages.length - 1] === msg) conv.lastMessage = nova.text || (nova.attachment_url ? '[Anexo]' : '');
+        // Não apaga o que a pessoa está digitando numa edição em andamento.
+        const editando = !!document.querySelector('#b2b-chat-messages-container .chat-msg-editor');
+        if (chatEstaVisivel() && !editando) await renderB2BChat();
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, async () => {
         if (chatEstaVisivel()) { await renderB2BChat(); return; }

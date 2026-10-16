@@ -6297,7 +6297,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filtro: { coluna: 2 },
         exportar: document.getElementById('btn-wallet-export')
       });
-      document.getElementById('wallet-header-actions')?.classList.add('hidden');
     }
 
     // Orçamento
@@ -9869,9 +9868,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const desc = document.getElementById('wallet-header-desc');
     const headerActions = document.getElementById('wallet-header-actions');
 
-    // Ações do cabeçalho (Exportar) só fazem sentido no Extrato.
+    // Cabeçalho: "Adicionar despesa" no Orçamento, "Adicionar comprovante" no Extrato.
     if (headerActions) {
-      headerActions.classList.toggle('hidden', subId !== 'wallet-statement');
+      headerActions.classList.toggle('hidden', subId !== 'wallet-statement' && subId !== 'wallet-budget');
+      document.getElementById('btn-open-add-expense')?.classList.toggle('hidden', subId !== 'wallet-budget');
+      document.getElementById('btn-add-comprovante')?.classList.toggle('hidden', subId !== 'wallet-statement');
     }
 
     if (title) {
@@ -10032,7 +10033,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!listEl) return;
     listEl.innerHTML = '';
 
-    const transactions = activeEvent.wallet.transactions || [];
+    // Pagamentos (comprovantes e pagamentos do orçamento) entram como saída.
+    const pagamentos = getPagamentos().slice().sort((a, b) => String(b.pagoEm || '').localeCompare(String(a.pagoEm || '')));
+    const transactions = pagamentos.map(p => ({
+      title: p.descricao && p.descricao !== p.fornecedor ? `${p.fornecedor} — ${p.descricao}` : p.fornecedor,
+      guest: p.vencimento ? `Vencimento ${dataISOParaBR(p.vencimento)}` : '',
+      method: p.origem === 'orcamento' ? 'Orçamento' : 'Comprovante',
+      date: dataISOParaBR(p.pagoEm),
+      status: 'Pago',
+      amount: -(Number(p.valor) || 0),
+      comprovante: p.comprovante || null
+    })).concat(activeEvent.wallet.transactions || []);
     if (!transactions.length) {
       listEl.innerHTML = '<tr class="linha-vazia"><td colspan="4" class="text-center text-sm text-zinc-500 py-12">Nenhuma movimentação por enquanto.</td></tr>';
       return;
@@ -10047,6 +10058,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>
           <span class="font-semibold text-zinc-900 block truncate">${escaparHtml(tx.title)}</span>
           <span class="text-[0.75rem] text-[#667085] block truncate">${escaparHtml([tx.guest, tx.method].filter(Boolean).join(' • '))}</span>
+          ${tx.comprovante && tx.comprovante.url ? `<a href="${escaparHtml(tx.comprovante.url)}" target="_blank" rel="noopener" download="${escaparHtml(tx.comprovante.nome || 'comprovante')}" class="extrato-comprovante-link">Ver comprovante</a>` : (tx.comprovante ? `<span class="text-[0.75rem] text-[#667085]">${escaparHtml(tx.comprovante.nome || 'Comprovante')}</span>` : '')}
         </td>
         <td><span class="text-[0.8125rem] font-normal text-[#667085] whitespace-nowrap">${escaparHtml(tx.date)}</span></td>
         <td>
@@ -10055,7 +10067,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </span>
         </td>
         <td class="text-right font-semibold whitespace-nowrap ${isNegative ? 'text-zinc-800' : 'text-emerald-600'}">
-          ${isNegative ? '-' : '+'} R$ ${Math.abs(tx.amount).toFixed(2).replace('.', ',')}
+          ${isNegative ? '-' : '+'} R$ ${Math.abs(tx.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </td>
       `;
       listEl.appendChild(row);
@@ -10066,7 +10078,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // em CSV (separador ";" e BOM, pra abrir certo no Excel em português).
   function exportarExtratoCsv() {
     const evento = getActiveEvent();
-    const transacoes = (evento && evento.wallet && evento.wallet.transactions) || [];
+    const transacoes = getPagamentos().map(p => ({ title: p.descricao ? `${p.fornecedor} — ${p.descricao}` : p.fornecedor, guest: '', method: p.origem === 'orcamento' ? 'Orçamento' : 'Comprovante', date: dataISOParaBR(p.pagoEm), status: 'Pago', amount: -(Number(p.valor) || 0) }))
+      .concat((evento && evento.wallet && evento.wallet.transactions) || []);
     const campo = valor => `"${String(valor ?? '').replace(/"/g, '""')}"`;
     const linhas = [
       ['Descrição', 'Convidado', 'Forma', 'Data', 'Status', 'Valor líquido (R$)'],
@@ -10584,109 +10597,208 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!tbody) return;
 
     const expenses = getBudgetExpenses();
+    const brl = v => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     let totalEstimated = 0;
     let totalActual = 0;
     let totalPaid = 0;
 
-    tbody.innerHTML = expenses.map((exp) => {
+    tbody.innerHTML = expenses.length ? expenses.map((exp) => {
       const estimatedNum = Number(exp.estimated) || 0;
       const actualNum = Number(exp.actual) || 0;
       const paidNum = Number(exp.paid) || 0;
-
+      const falta = Math.max(0, actualNum - paidNum);
+      const pct = actualNum > 0 ? Math.min(100, Math.round((paidNum / actualNum) * 100)) : 0;
       totalEstimated += estimatedNum;
       totalActual += actualNum;
       totalPaid += paidNum;
-
-      const hasVendor = exp.vendor && exp.vendor.trim() !== '';
+      const temFornecedor = exp.vendor && exp.vendor.trim() !== '';
 
       return `
-        <tr class="hover:bg-zinc-50/70 transition-colors group">
-          <!-- Item -->
-          <td class="py-3.5 pl-6 sm:pl-8 pr-4">
-            <div class="font-bold text-zinc-900 font-sans">${exp.item}</div>
-            <div class="text-[10px] text-zinc-400 font-normal uppercase tracking-wider mt-0.5 font-sans">${exp.category || 'Geral'}</div>
+        <tr data-despesa-id="${escaparHtml(exp.id)}">
+          <td>
+            <span class="block text-zinc-900">${escaparHtml(exp.item)}</span>
+            <span class="block text-xs text-zinc-500">${escaparHtml(exp.category || 'Geral')}</span>
           </td>
-
-          <!-- Fornecedor -->
-          <td class="py-3.5 px-4 text-xs font-sans">
-            ${hasVendor 
-              ? `<div class="font-semibold text-zinc-800 flex items-center gap-1.5">
-                   <span>${exp.vendor}</span>
-                   <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/60">Contrato</span>
-                 </div>`
-              : `<button type="button" onclick="openAddExpenseModalWithItem('${exp.id}', '${encodeURIComponent(exp.item)}', '${encodeURIComponent(exp.category || 'Local')}')" class="text-xs font-semibold text-zinc-700 hover:text-[#537bae] underline decoration-zinc-300 underline-offset-4 cursor-pointer transition-colors font-sans">
-                   + Adicionar fornecedor
-                 </button>`
-            }
+          <td>
+            ${temFornecedor
+              ? `<span class="text-zinc-900">${escaparHtml(exp.vendor)}</span>`
+              : `<button type="button" class="orcamento-add-fornecedor" data-despesa-fornecedor="${escaparHtml(exp.id)}">+ Adicionar fornecedor</button>`}
           </td>
-
-          <!-- Estimado -->
-          <td class="py-3.5 px-4 font-semibold text-zinc-600 font-sans">
-            ${estimatedNum > 0 ? `R$ ${estimatedNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—'}
+          <td class="whitespace-nowrap">${actualNum > 0 ? brl(actualNum) : '—'}</td>
+          <td class="whitespace-nowrap">${paidNum > 0 ? brl(paidNum) : '—'}</td>
+          <td class="whitespace-nowrap">
+            <span class="block">${actualNum > 0 ? brl(falta) : '—'}</span>
+            ${actualNum > 0 ? `<div class="orcamento-barra orcamento-barra--linha" title="${pct}% pago"><div style="width:${pct}%"></div></div>` : ''}
           </td>
+          <td class="love-tabela-col-mais">${botaoVerMaisHtml('Ver despesa')}</td>
+        </tr>`;
+    }).join('') : '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-12">Nenhuma despesa ainda. Use "Adicionar despesa" no topo.</td></tr>';
 
-          <!-- Valor Real -->
-          <td class="py-3.5 px-4 font-bold ${actualNum > 0 ? 'text-zinc-900' : 'text-zinc-400'} font-sans">
-            ${actualNum > 0 ? `R$ ${actualNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—'}
-          </td>
+    // Ver mais (⋯) e "+ Adicionar fornecedor" abrem o drawer da despesa.
+    tbody.querySelectorAll('[data-despesa-id]').forEach(tr => {
+      tr.querySelector('.love-tabela-mais')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirDespesaNoDrawer(tr.dataset.despesaId);
+      });
+    });
+    tbody.querySelectorAll('[data-despesa-fornecedor]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirDespesaNoDrawer(btn.dataset.despesaFornecedor, { focoFornecedor: true });
+      });
+    });
 
-          <!-- Valor Pago -->
-          <td class="py-3.5 px-4 font-sans">
-            ${paidNum > 0 
-              ? `<span class="font-bold text-emerald-700 bg-emerald-50/80 px-2.5 py-1 rounded-lg border border-emerald-200/60 inline-block text-xs">
-                   R$ ${paidNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                 </span>`
-              : `<span class="text-zinc-400 text-xs font-normal">—</span>`
-            }
-          </td>
-
-          <!-- Ações -->
-          <td class="py-3.5 pl-4 pr-6 sm:pr-8 text-right">
-            <div class="inline-flex items-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
-              <button type="button" onclick="showToast('Lembrete configurado para ${exp.item}!', '🔔')" class="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer" title="Lembrete">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
-              </button>
-              <button type="button" hidden onclick="deleteBudgetExpense('${exp.id}')" class="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Excluir item">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    // Atualiza footer da tabela (TFoot)
-    const tfootCount = document.getElementById('budget-tfoot-count');
-    const tfootEstimated = document.getElementById('budget-tfoot-estimated');
-    const tfootActual = document.getElementById('budget-tfoot-actual');
-    const tfootPaid = document.getElementById('budget-tfoot-paid');
-    const tfootDue = document.getElementById('budget-tfoot-due');
-
-    if (tfootCount) tfootCount.textContent = `${expenses.length} ${expenses.length === 1 ? 'item' : 'itens'}`;
-    if (tfootEstimated) tfootEstimated.textContent = `R$ ${totalEstimated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    if (tfootActual) tfootActual.textContent = `R$ ${totalActual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    if (tfootPaid) tfootPaid.textContent = `R$ ${totalPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    
-    const due = Math.max(0, totalActual - totalPaid);
-    if (tfootDue) tfootDue.textContent = `R$ ${due.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} a vencer`;
-
-    // Atualiza KPIs do topo
+    // Resumo do topo: orçamento, custo real, saldo pago, saldo a pagar + barra.
     const activeEv = getActiveEvent();
     let savedTotal = activeEv && activeEv.budgetTotal;
     if (!savedTotal && activeEv) {
       const stored = localStorage.getItem(`love_budget_total_${activeEv.id}`);
       if (stored) savedTotal = parseInt(stored, 10);
     }
-    if (!savedTotal) savedTotal = totalEstimated || 85000;
-
-    const kpiTotal = document.getElementById('kpi-budget-total');
-    const kpiSpent = document.getElementById('kpi-budget-spent');
-    const kpiPaidTotal = document.getElementById('kpi-budget-paid-total');
-
-    if (kpiTotal) kpiTotal.textContent = `R$ ${savedTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    if (kpiSpent) kpiSpent.textContent = `R$ ${totalActual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    if (kpiPaidTotal) kpiPaidTotal.textContent = `R$ ${totalPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    if (!savedTotal) savedTotal = totalEstimated || 0;
+    const due = Math.max(0, totalActual - totalPaid);
+    const pctTotal = totalActual > 0 ? Math.min(100, Math.round((totalPaid / totalActual) * 100)) : 0;
+    const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    set('kpi-budget-total', brl(savedTotal));
+    set('kpi-budget-spent', brl(totalActual));
+    set('kpi-budget-paid-total', brl(totalPaid));
+    set('kpi-budget-due', brl(due));
+    set('kpi-budget-pct', `${pctTotal}% pago`);
+    const barra = document.getElementById('kpi-budget-barra');
+    if (barra) barra.style.width = `${pctTotal}%`;
   }
+
+  // ---- Pagamentos (Extrato): tudo que foi pago — comprovantes enviados e
+  // pagamentos lançados no orçamento. Guardado por evento no navegador. ----
+  function chavePagamentos() { const ev = getActiveEvent(); return ev ? `love_pagamentos_${ev.id}` : null; }
+  function getPagamentos() {
+    const k = chavePagamentos();
+    if (!k) return [];
+    try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch (e) { return []; }
+  }
+  function savePagamentos(lista) {
+    const k = chavePagamentos();
+    if (!k) return true;
+    try { localStorage.setItem(k, JSON.stringify(lista)); return true; } catch (e) { return false; }
+  }
+  function registrarPagamento(p) {
+    const lista = getPagamentos();
+    lista.unshift(Object.assign({ id: `pag-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, criadoEm: new Date().toISOString() }, p));
+    return savePagamentos(lista);
+  }
+  function hojeISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+  function dataISOParaBR(iso) {
+    if (!iso) return '';
+    const d = /^\d{4}-\d{2}-\d{2}$/.test(String(iso)) ? new Date(`${iso}T12:00:00`) : new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleDateString('pt-BR');
+  }
+
+  // Drawer da despesa: abre a despesa (ver/editar). Itens que vêm de um
+  // contrato são só leitura.
+  function abrirDespesaNoDrawer(id, opts = {}) {
+    const exp = getBudgetExpenses().find(e => e.id === id);
+    if (!exp || typeof window.__abrirDrawerDespesa !== 'function') return;
+    window.__abrirDrawerDespesa(exp, opts);
+  }
+
+  // ---- Drawer "Adicionar comprovante" (Extrato) ----
+  (function initComprovante() {
+    const drawer = document.getElementById('drawer-add-comprovante');
+    const backdrop = document.getElementById('comprovante-drawer-backdrop');
+    const form = document.getElementById('form-add-comprovante');
+    if (!drawer || !form) return;
+    const arquivo = document.getElementById('comprovante-arquivo');
+    const preview = document.getElementById('comprovante-preview');
+    const textoUpload = document.getElementById('comprovante-upload-texto');
+    const valor = document.getElementById('comprovante-valor');
+    const fornecedor = document.getElementById('comprovante-fornecedor');
+    const vencimento = document.getElementById('comprovante-vencimento');
+    const pagoEm = document.getElementById('comprovante-pago-em');
+    const erro = document.getElementById('comprovante-erro');
+    let comprovante = null;
+
+    const fechar = () => {
+      drawer.classList.remove('open'); drawer.style.setProperty('display', 'none', 'important'); drawer.classList.add('hidden');
+      backdrop?.classList.remove('open'); backdrop?.style.setProperty('display', 'none', 'important'); backdrop?.classList.add('hidden');
+    };
+    const abrir = () => {
+      form.reset(); comprovante = null; erro.classList.add('hidden');
+      preview.classList.add('hidden'); preview.removeAttribute('src');
+      textoUpload.textContent = 'Clique para enviar a imagem ou o PDF';
+      pagoEm.value = hojeISO();
+      const nomes = [...new Set(getBudgetExpenses().map(e => (e.vendor || '').trim()).filter(Boolean))];
+      document.getElementById('comprovante-fornecedores-lista').innerHTML = nomes.map(n => `<option value="${escaparHtml(n)}"></option>`).join('');
+      backdrop?.classList.remove('hidden'); backdrop?.style.setProperty('display', 'block', 'important'); backdrop?.classList.add('open');
+      drawer.classList.remove('hidden'); drawer.style.setProperty('display', 'flex', 'important'); drawer.classList.add('open');
+    };
+    window.__abrirDrawerComprovante = abrir;
+    document.getElementById('btn-add-comprovante')?.addEventListener('click', abrir);
+    document.getElementById('btn-close-comprovante-drawer')?.addEventListener('click', fechar);
+    backdrop?.addEventListener('click', fechar);
+
+    valor.addEventListener('input', (e) => {
+      const v = e.target.value.replace(/\D/g, '');
+      e.target.value = v ? (parseFloat(v) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+    });
+
+    // Imagem: reduzida para caber no navegador (até 1200px, JPEG). PDF: guarda
+    // o arquivo se for pequeno; senão só o nome.
+    arquivo.addEventListener('change', () => {
+      const f = arquivo.files && arquivo.files[0];
+      if (!f) return;
+      textoUpload.textContent = f.name;
+      const leitor = new FileReader();
+      if (f.type.startsWith('image/')) {
+        leitor.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const escala = Math.min(1, 1200 / Math.max(img.width, img.height));
+            const c = document.createElement('canvas');
+            c.width = Math.round(img.width * escala); c.height = Math.round(img.height * escala);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            comprovante = { nome: f.name, tipo: 'imagem', url: c.toDataURL('image/jpeg', 0.72) };
+            preview.src = comprovante.url; preview.classList.remove('hidden');
+          };
+          img.src = leitor.result;
+        };
+        leitor.readAsDataURL(f);
+      } else {
+        if (f.size > 1.5 * 1024 * 1024) { comprovante = { nome: f.name, tipo: 'pdf', url: null }; return; }
+        leitor.onload = () => { comprovante = { nome: f.name, tipo: 'pdf', url: leitor.result }; };
+        leitor.readAsDataURL(f);
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      erro.classList.add('hidden');
+      const num = parseFloat((valor.value || '').replace(/\./g, '').replace(',', '.')) || 0;
+      const quem = (fornecedor.value || '').trim();
+      const mostrarErro = (m) => { erro.textContent = m; erro.classList.remove('hidden'); };
+      if (num <= 0) return mostrarErro('Informe o valor pago.');
+      if (!quem) return mostrarErro('Informe o fornecedor ou uma descrição (ex.: Uber).');
+      if (!pagoEm.value) return mostrarErro('Informe a data do pagamento.');
+
+      // Fornecedor do orçamento: abate do saldo a pagar do primeiro item dele em aberto.
+      const proprias = getBudgetExpensesProprias();
+      const alvo = proprias.find(x => (x.vendor || '').trim().toLowerCase() === quem.toLowerCase() && (Number(x.actual) || 0) > (Number(x.paid) || 0))
+        || proprias.find(x => (x.vendor || '').trim().toLowerCase() === quem.toLowerCase());
+      if (alvo) { alvo.paid = (Number(alvo.paid) || 0) + num; saveBudgetExpenses(proprias); }
+
+      const ok = registrarPagamento({
+        valor: num, fornecedor: quem, descricao: alvo ? alvo.item : '',
+        vencimento: vencimento.value || null, pagoEm: pagoEm.value,
+        comprovante, origem: 'comprovante', despesaId: alvo ? alvo.id : null
+      });
+      if (!ok) {
+        // Sem espaço no navegador: salva sem o arquivo.
+        registrarPagamento({ valor: num, fornecedor: quem, descricao: alvo ? alvo.item : '', vencimento: vencimento.value || null, pagoEm: pagoEm.value, comprovante: comprovante ? { nome: comprovante.nome, tipo: comprovante.tipo, url: null } : null, origem: 'comprovante', despesaId: alvo ? alvo.id : null });
+      }
+      fechar();
+      renderBudgetExpensesTable();
+      if (typeof renderWalletTransactions === 'function') renderWalletTransactions();
+    });
+  })();
 
   // Cronograma: o que falta pagar de cada item (contratos primeiro), com as
   // datas de vencimento quando o contrato tem parcelas.
@@ -10760,9 +10872,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const suggestionsBox = document.getElementById('expense-vendor-suggestions');
     const selectCat = document.getElementById('expense-category-select');
 
-    const openDrawer = () => {
+    const openDrawer = (exp, opts = {}) => {
       if (form) form.reset();
       if (suggestionsBox) suggestionsBox.classList.add('hidden');
+      // exp = despesa existente (ver/editar) | nada = nova despesa.
+      const editando = exp && exp.id;
+      const soLeitura = !!(editando && exp.doContrato);
+      if (form) form.dataset.editId = editando ? exp.id : '';
+      const fmt = v => (Number(v) || 0) ? Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+      const titulo = document.getElementById('despesa-drawer-titulo');
+      const sub = document.getElementById('despesa-drawer-sub');
+      const textoBtn = document.getElementById('btn-submit-add-expense-texto');
+      if (titulo) titulo.textContent = editando ? (exp.item || 'Despesa') : 'Adicionar despesa';
+      if (sub) sub.textContent = soLeitura ? 'Este item vem de um contrato fechado com o fornecedor.' : (editando ? 'Veja e atualize esta despesa. Um aumento no saldo pago entra no extrato.' : 'Cadastre um item para acompanhar no seu orçamento.');
+      if (textoBtn) textoBtn.textContent = editando ? 'Salvar alterações' : 'Adicionar despesa';
+      if (editando) {
+        document.getElementById('expense-item-name').value = exp.item || '';
+        if (inputVendor) inputVendor.value = exp.vendor || '';
+        if (selectCat && exp.category) selectCat.value = exp.category;
+        document.getElementById('expense-estimated-input').value = fmt(exp.estimated);
+        document.getElementById('expense-actual-input').value = fmt(exp.actual);
+        document.getElementById('expense-paid-input').value = fmt(exp.paid);
+      }
+      form?.querySelectorAll('input, select').forEach(el => { el.disabled = soLeitura; });
+      document.getElementById('btn-submit-add-expense')?.classList.toggle('hidden', soLeitura);
+      if (opts.focoFornecedor) setTimeout(() => inputVendor?.focus(), 50);
       if (backdrop) {
         backdrop.classList.remove('hidden');
         backdrop.style.setProperty('display', 'block', 'important');
@@ -10789,7 +10923,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (suggestionsBox) suggestionsBox.classList.add('hidden');
     };
 
-    if (btnOpen) btnOpen.addEventListener('click', openDrawer);
+    if (btnOpen) btnOpen.addEventListener('click', () => openDrawer());
+    window.__abrirDrawerDespesa = openDrawer;
     if (btnClose) btnClose.addEventListener('click', closeDrawer);
     if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
@@ -10883,8 +11018,9 @@ document.addEventListener('DOMContentLoaded', () => {
           return isNaN(val) ? 0 : val;
         };
 
+        const editId = form.dataset.editId || '';
         const newItem = {
-          id: `exp-${Date.now()}`,
+          id: editId || `exp-${Date.now()}`,
           item: itemName,
           vendor: inputVendor ? inputVendor.value.trim() : '',
           category: selectCat ? selectCat.value : 'Local',
@@ -10893,14 +11029,24 @@ document.addEventListener('DOMContentLoaded', () => {
           paid: parseMoney(inputPaid)
         };
 
-        const expenses = getBudgetExpenses();
-        expenses.unshift(newItem);
+        const expenses = getBudgetExpensesProprias();
+        const idx = editId ? expenses.findIndex(x => x.id === editId) : -1;
+        const pagoAntes = idx >= 0 ? (Number(expenses[idx].paid) || 0) : 0;
+        if (idx >= 0) expenses[idx] = Object.assign({}, expenses[idx], newItem);
+        else expenses.unshift(newItem);
         saveBudgetExpenses(expenses);
+        // Pagamento lançado no orçamento também entra no extrato.
+        const pagoAgora = Number(newItem.paid) || 0;
+        if (pagoAgora > pagoAntes) {
+          registrarPagamento({ valor: pagoAgora - pagoAntes, fornecedor: newItem.vendor || newItem.item, descricao: newItem.item, vencimento: null, pagoEm: hojeISO(), comprovante: null, origem: 'orcamento', despesaId: newItem.id });
+          if (typeof renderWalletTransactions === 'function') renderWalletTransactions();
+        }
 
         renderBudgetExpensesTable();
         closeDrawer();
         form.reset();
-        showToast(`Despesa "${newItem.item}" adicionada com sucesso!`, '💰');
+        form.dataset.editId = '';
+        showToast(`Despesa "${newItem.item}" salva!`, '💰');
       });
     }
   }

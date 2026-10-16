@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261016_orcamento">
+  <link rel="stylesheet" href="css/styles.css?v=20261016_orcamento3">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2297,7 +2297,15 @@
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes) -->
           <div class="builder-toolbar">
             <h2 id="wallet-header-title" class="floorplan-page-name" style="margin:0;">Carteira Digital</h2>
-            <div id="wallet-header-actions" class="hidden flex-shrink-0">
+            <div id="wallet-header-actions" class="hidden flex items-center gap-2.5 flex-shrink-0">
+              <button type="button" id="btn-open-add-expense" class="btn-primary flex-shrink-0 hidden">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span>Adicionar despesa</span>
+              </button>
+              <button type="button" id="btn-add-comprovante" class="btn-primary flex-shrink-0 hidden">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                <span>Adicionar comprovante</span>
+              </button>
               <button type="button" id="btn-wallet-export" class="btn-secondary">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                 <span>Exportar</span>
@@ -2413,34 +2421,26 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
               
               <!-- Card 1: Métricas de Orçamento -->
-              <div class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-2xs space-y-3 flex flex-col justify-between">
-                <!-- Total Budget -->
-                <div class="flex items-center justify-between">
-                  <button type="button" onclick="checkAndPromptBudgetSetup(true)" class="text-xs font-bold text-zinc-700 underline decoration-zinc-300 underline-offset-4 hover:text-[#537bae] transition-colors cursor-pointer text-left font-sans">
-                    Orçamento total
-                  </button>
-                  <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 font-extrabold px-3 py-1 rounded-lg text-xs sm:text-sm border border-emerald-200/60 font-sans">
-                    <span id="kpi-budget-total">R$ 85.000,00</span>
-                    <button type="button" onclick="checkAndPromptBudgetSetup(true)" class="text-[11px] font-semibold text-emerald-700 hover:underline cursor-pointer font-sans">Estimativas →</button>
-                  </div>
+              <div class="orcamento-resumo bg-white p-5 rounded-[10px] flex flex-col justify-between gap-3">
+                <div class="flex items-center justify-between gap-3">
+                  <button type="button" onclick="checkAndPromptBudgetSetup(true)" class="orcamento-resumo-link" title="Definir orçamento">Orçamento total</button>
+                  <span id="kpi-budget-total" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
                 </div>
-
-                <!-- Total actual cost -->
-                <div class="flex items-center justify-between pt-1">
-                  <div class="flex items-center gap-2.5">
-                    <span class="w-1.5 h-6 rounded-full bg-emerald-500 flex-shrink-0"></span>
-                    <span class="text-xs font-medium text-zinc-600 font-sans">Custo total real</span>
-                  </div>
-                  <span id="kpi-budget-spent" class="text-sm font-black text-zinc-900 font-sans">R$ 42.300,00</span>
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-sm text-zinc-600 font-sans">Custo total real</span>
+                  <span id="kpi-budget-spent" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
                 </div>
-
-                <!-- Total paid -->
-                <div class="flex items-center justify-between pt-0.5">
-                  <div class="flex items-center gap-2.5">
-                    <span class="w-1.5 h-6 rounded-full bg-emerald-600 flex-shrink-0"></span>
-                    <span class="text-xs font-medium text-zinc-600 font-sans">Custo total pago</span>
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-sm text-zinc-600 font-sans">Saldo pago</span>
+                  <span id="kpi-budget-paid-total" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-zinc-600 font-sans">Saldo a pagar</span>
+                    <span id="kpi-budget-due" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
                   </div>
-                  <span id="kpi-budget-paid-total" class="text-sm font-black text-zinc-900 font-sans">R$ 28.500,00</span>
+                  <div class="orcamento-barra mt-2" title="Quanto já foi pago do custo total"><div id="kpi-budget-barra" style="width:0%"></div></div>
+                  <p id="kpi-budget-pct" class="text-[11px] text-zinc-500 mt-1 font-sans">0% pago</p>
                 </div>
               </div>
 
@@ -2457,50 +2457,23 @@
 
             </div>
 
-            <!-- Barra de Ações Superior da Tabela (Alinhada à direita como na referência) -->
-            <div class="flex items-center justify-end gap-4 pt-1">
-              <button type="button" id="btn-open-add-expense" class="btn-primary flex-shrink-0">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>Adicionar despesa</span>
-              </button>
-            </div>
 
             <!-- TABELA 100% FULL-WIDTH SEM CAIXA OU PADDINGS EXTERNOS (Preenchimento Total) -->
             <div class="w-full overflow-x-auto budget-table-full-bleed">
               <table class="w-full text-left border-collapse font-sans">
                 <thead>
-                  <tr class="bg-zinc-100/70 border-y border-zinc-200 text-[13px] font-bold text-zinc-900">
-                    <th class="py-3.5 pl-6 sm:pl-8 pr-4 font-bold">Item</th>
-                    <th class="py-3.5 px-4 font-bold">Fornecedor</th>
-                    <th class="py-3.5 px-4 font-bold">
-                      <span class="inline-flex items-center gap-1">
-                        <span>Estimado</span>
-                        <span class="text-zinc-400 cursor-help" title="Valor orçado inicialmente">ⓘ</span>
-                      </span>
-                    </th>
-                    <th class="py-3.5 px-4 font-bold">Valor real</th>
-                    <th class="py-3.5 px-4 font-bold">Valor pago</th>
-                    <th class="py-3.5 pl-4 pr-6 sm:pr-8 text-right love-tabela-col-acoes"></th>
+                  <tr>
+                    <th>Item</th>
+                    <th>Fornecedor</th>
+                    <th>Valor real</th>
+                    <th>Saldo pago</th>
+                    <th>Saldo a pagar</th>
+                    <th class="love-tabela-col-acoes love-tabela-col-mais"></th>
                   </tr>
                 </thead>
-                <tbody id="budget-expenses-tbody" class="divide-y divide-zinc-200/80 text-xs sm:text-sm">
+                <tbody id="budget-expenses-tbody">
                   <!-- Linhas renderizadas dinamicamente via JS -->
                 </tbody>
-                <tfoot class="border-t-2 border-zinc-900 font-bold text-xs sm:text-sm text-zinc-900 bg-zinc-50/40">
-                  <tr>
-                    <td class="py-4 pl-6 sm:pl-8 pr-4 font-black text-sm sm:text-base">Total geral</td>
-                    <td class="py-4 px-4 text-zinc-500 font-normal text-xs" id="budget-tfoot-count">—</td>
-                    <td class="py-4 px-4 font-black text-zinc-900" id="budget-tfoot-estimated">R$ 0,00</td>
-                    <td class="py-4 px-4 font-black text-zinc-900" id="budget-tfoot-actual">R$ 0,00</td>
-                    <td class="py-4 px-4">
-                      <div class="flex flex-col">
-                        <span id="budget-tfoot-paid" class="font-black text-emerald-700">R$ 0,00</span>
-                        <span id="budget-tfoot-due" class="text-[10px] text-zinc-400 font-normal">R$ 0,00 a vencer</span>
-                      </div>
-                    </td>
-                    <td class="py-4 pl-4 pr-6 sm:pr-8"></td>
-                  </tr>
-                </tfoot>
               </table>
             </div>
 
@@ -4802,8 +4775,8 @@
     <!-- Header do Drawer: Mesmo padrão de título das páginas com linha horizontal cortando -->
     <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
       <div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Despesa</h2>
-        <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre um novo item ou contrato para acompanhar no seu orçamento.</p>
+        <h2 id="despesa-drawer-titulo" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar despesa</h2>
+        <p id="despesa-drawer-sub" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre um item para acompanhar no seu orçamento.</p>
       </div>
       <button id="btn-close-add-expense-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -4858,7 +4831,7 @@
         <!-- Valores: Estimado, Real e Pago em Grid de 3 Colunas -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           <!-- Valor Estimado -->
-          <div class="space-y-1.5">
+          <div class="space-y-1.5 hidden">
             <label for="expense-estimated-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Estimado</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
@@ -4868,7 +4841,7 @@
 
           <!-- Valor Real -->
           <div class="space-y-1.5">
-            <label for="expense-actual-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor Real</label>
+            <label for="expense-actual-input" class="block text-xs font-bold text-zinc-700 font-sans">Valor real</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
               <input type="text" id="expense-actual-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
@@ -4877,7 +4850,7 @@
 
           <!-- Valor Pago -->
           <div class="space-y-1.5">
-            <label for="expense-paid-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Valor Pago</label>
+            <label for="expense-paid-input" class="block text-xs font-bold text-zinc-700 font-sans">Saldo pago</label>
             <div class="relative">
               <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
               <input type="text" id="expense-paid-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-emerald-700 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
@@ -4889,10 +4862,66 @@
         <div class="pt-4 border-t border-zinc-200/80">
           <button type="submit" id="btn-submit-add-expense" class="btn-primary w-full justify-center">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            <span>Adicionar Despesa</span>
+            <span id="btn-submit-add-expense-texto">Adicionar despesa</span>
           </button>
         </div>
 
+      </form>
+    </div>
+  </aside>
+
+
+  <!-- =======================================================================
+       DRAWER: ADICIONAR COMPROVANTE (Financeiro › Extrato)
+       ======================================================================= -->
+  <div id="comprovante-drawer-backdrop" class="budget-expense-drawer-backdrop hidden" style="display: none !important;"></div>
+  <aside id="drawer-add-comprovante" class="budget-expense-drawer hidden" style="display: none !important;" aria-label="Adicionar comprovante">
+    <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar comprovante</h2>
+        <p class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Registre um pagamento: ele entra no extrato e, se for de um item do orçamento, abate do saldo a pagar.</p>
+      </div>
+      <button id="btn-close-comprovante-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-6 sm:px-8 py-6 font-sans">
+      <form id="form-add-comprovante" class="space-y-5 text-left" novalidate>
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-zinc-700 font-sans">Comprovante</label>
+          <label id="comprovante-upload" class="comprovante-upload">
+            <input type="file" id="comprovante-arquivo" accept="image/*,application/pdf" class="hidden">
+            <img id="comprovante-preview" alt="" class="hidden">
+            <span id="comprovante-upload-texto">Clique para enviar a imagem ou o PDF</span>
+          </label>
+        </div>
+        <div class="space-y-1.5">
+          <label for="comprovante-valor" class="block text-xs font-bold text-zinc-700 font-sans">Valor pago <span class="text-rose-500">*</span></label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
+            <input type="text" id="comprovante-valor" inputmode="decimal" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[8px] border border-zinc-300 text-sm text-zinc-900 focus:outline-none">
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <label for="comprovante-fornecedor" class="block text-xs font-bold text-zinc-700 font-sans">Fornecedor ou descrição <span class="text-rose-500">*</span></label>
+          <input type="text" id="comprovante-fornecedor" list="comprovante-fornecedores-lista" autocomplete="off" placeholder="Ex.: Victor Drinks, Uber, gráfica..." class="w-full px-3.5 py-3 rounded-[8px] border border-zinc-300 text-sm text-zinc-900 focus:outline-none">
+          <datalist id="comprovante-fornecedores-lista"></datalist>
+          <p class="text-[11px] text-zinc-500">Se for um fornecedor do orçamento, o valor abate do saldo a pagar dele.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1.5">
+            <label for="comprovante-vencimento" class="block text-xs font-bold text-zinc-700 font-sans">Data do vencimento</label>
+            <input type="date" id="comprovante-vencimento" class="w-full px-3 py-3 rounded-[8px] border border-zinc-300 text-sm text-zinc-900 focus:outline-none">
+          </div>
+          <div class="space-y-1.5">
+            <label for="comprovante-pago-em" class="block text-xs font-bold text-zinc-700 font-sans">Data do pagamento <span class="text-rose-500">*</span></label>
+            <input type="date" id="comprovante-pago-em" class="w-full px-3 py-3 rounded-[8px] border border-zinc-300 text-sm text-zinc-900 focus:outline-none">
+          </div>
+        </div>
+        <p id="comprovante-erro" class="hidden text-xs text-red-600"></p>
+        <div class="pt-4 border-t border-zinc-200/80">
+          <button type="submit" id="btn-salvar-comprovante" class="btn-primary w-full justify-center">Salvar comprovante</button>
+        </div>
       </form>
     </div>
   </aside>
@@ -5422,7 +5451,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261016_orcamento"></script>
+  <script src="js/app.js?v=20261016_orcamento3"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_checkoutbranco"></script>
 </body>

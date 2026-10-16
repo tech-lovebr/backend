@@ -7484,3 +7484,10 @@ body[data-theme="dark"] .dashboard-suspensos-aviso { background: #252525 !import
 body[data-theme="dark"] .dashboard-suspensos-aviso strong,
 body[data-theme="dark"] .dashboard-suspensos-link,
 body[data-theme="dark"] .produto-suspenso-aviso strong { color: #FFFFFF !important; }
+
+/* Configurações › Portfólio: cada foto com "Comentários sobre este serviço"
+   logo abaixo (vai para o carrossel do portfólio na página da empresa). */
+.portfolio-item { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.portfolio-item-rotulo { font-size: 0.75rem; font-weight: 600; color: #52525B; margin-top: 2px; }
+.portfolio-item-comentario { min-height: 72px; font-size: 0.8125rem; resize: vertical; }
+body[data-theme="dark"] .portfolio-item-rotulo { color: #D4D4D8 !important; }

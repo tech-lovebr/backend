@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initBankDetailsForm();
   initAccordionCards();
   initRequestChangeLinks();
-  initPortfolioTexto();
   window.b2bPageReady?.();
 });
 
@@ -433,17 +432,26 @@ async function initPortfolioTexto() {
 
 /* -------------------- Portfólio: fotos (upload real no Storage) -------------------- */
 
+let portfolioComentarioEspera = null;
+
 function renderPortfolioImages() {
   const grid = document.getElementById('company-portfolio-grid');
   if (!grid) return;
-  const images = B2B_DATA.professional.portfolioImages || [];
+  // Fotos antigas guardadas só como texto (URL) viram { url } para ganhar comentário.
+  B2B_DATA.professional.portfolioImages = (B2B_DATA.professional.portfolioImages || [])
+    .map(x => (typeof x === 'string' ? { url: x } : x)).filter(x => x && x.url);
+  const images = B2B_DATA.professional.portfolioImages;
 
   grid.innerHTML = images.map((img, i) => `
-    <div class="header-logo-picker-wrap">
-      <div class="image-upload-zone has-image" style="cursor:default;">
-        <img src="${img.url}" class="image-upload-zone-preview" alt="">
+    <div class="portfolio-item">
+      <div class="header-logo-picker-wrap">
+        <div class="image-upload-zone has-image" style="cursor:default;">
+          <img src="${img.url}" class="image-upload-zone-preview" alt="">
+        </div>
+        <button type="button" class="header-logo-picker-remove" data-remove-portfolio-image="${i}" title="Remover foto">${PROFILE_LOGO_CLOSE_ICON}</button>
       </div>
-      <button type="button" class="header-logo-picker-remove" data-remove-portfolio-image="${i}" title="Remover foto">${PROFILE_LOGO_CLOSE_ICON}</button>
+      <label class="portfolio-item-rotulo" for="portfolio-comentario-${i}">Comentários sobre este serviço</label>
+      <textarea id="portfolio-comentario-${i}" class="field-textarea portfolio-item-comentario" data-portfolio-comentario="${i}" maxlength="600" rows="3">${escapeHtml(img.comentario || '')}</textarea>
     </div>
   `).join('') + `
     <label class="image-upload-zone" id="company-portfolio-add-zone">
@@ -455,6 +463,19 @@ function renderPortfolioImages() {
 
   grid.querySelectorAll('[data-remove-portfolio-image]').forEach(btn => {
     btn.addEventListener('click', () => removePortfolioImage(Number(btn.dataset.removePortfolioImage)));
+  });
+
+  // Comentário de cada foto: salva sozinho ao parar de digitar.
+  grid.querySelectorAll('[data-portfolio-comentario]').forEach(campo => {
+    campo.addEventListener('input', () => {
+      const item = (B2B_DATA.professional.portfolioImages || [])[Number(campo.dataset.portfolioComentario)];
+      if (!item) return;
+      item.comentario = campo.value;
+      clearTimeout(portfolioComentarioEspera);
+      portfolioComentarioEspera = setTimeout(() => {
+        persistPortfolioImages().then(ok => showToast(ok ? 'Comentário salvo.' : 'Não foi possível salvar o comentário.', !ok));
+      }, 900);
+    });
   });
 
   const input = document.getElementById('company-portfolio-input');
@@ -525,6 +546,7 @@ async function persistPortfolioImages() {
     .update({ portfolio_images: B2B_DATA.professional.portfolioImages || [] })
     .eq('id', session.user.id);
   if (error) console.error('Não foi possível sincronizar o portfólio com o banco.', error);
+  return !error;
 }
 
 /* -------------------- Portfólio: depoimentos --------------------

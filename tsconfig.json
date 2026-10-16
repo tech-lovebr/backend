@@ -2,7 +2,7 @@
   // Verificação de tipos do JavaScript da plataforma (love.com.br), sem
   // converter nada: o TypeScript só lê os .js e aponta erros. Nada aqui muda
   // o site — o navegador continua recebendo os mesmos arquivos.
-  // Rodar: npm run checar
+  // Rodar: npm run checar  (scripts/checar-tipos.js confere as três plataformas, página por página)
   "compilerOptions": {
     "allowJs": true,
     "checkJs": true,

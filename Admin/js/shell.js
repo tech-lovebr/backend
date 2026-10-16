@@ -27,7 +27,8 @@ const NAV_SECTIONS = [
         grupo: 'clientes', text: 'Anfitriões', icon: 'users',
         page: 'clientes-dashboard', href: 'clientes-dashboard.html',
         children: [
-          { page: 'clientes', href: 'clientes.html', text: 'Cadastros' }
+          { page: 'clientes', href: 'clientes.html', text: 'Cadastros' },
+          { page: 'eventos', href: 'eventos.html', text: 'Eventos' }
         ]
       }
     ]
@@ -35,7 +36,6 @@ const NAV_SECTIONS = [
   {
     label: 'Operação',
     items: [
-      { page: 'eventos', href: 'eventos.html', text: 'Eventos', icon: 'calendar' },
       { page: 'financeiro', href: 'financeiro.html', text: 'Financeiro', icon: 'wallet' },
       { page: 'atendimento', href: 'atendimento.html', text: 'Atendimento', icon: 'chat', badge: 'tickets-abertos' }
     ]

@@ -430,7 +430,14 @@ const Modal = {
       const botao = document.createElement('button');
       botao.type = 'button';
       botao.className = `btn ${acao.classe || 'btn-ghost'}`;
-      botao.textContent = acao.rotulo;
+      // Ação só com ícone (ex.: lixeira): o rótulo vira o nome acessível.
+      if (acao.icone) {
+        botao.innerHTML = acao.icone;
+        botao.setAttribute('aria-label', acao.rotulo);
+        botao.title = acao.rotulo;
+      } else {
+        botao.textContent = acao.rotulo;
+      }
       botao.addEventListener('click', () => acao.aoClicar?.(botao));
       host.appendChild(botao);
     });

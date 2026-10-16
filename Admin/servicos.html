@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=60">
+  <link rel="stylesheet" href="css/admin.css?v=61">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -47,11 +47,18 @@
           <select class="field-select" id="filtro-categoria"><option value="">Todas as categorias</option></select>
         </div>
 
+        <div class="barra-selecao" id="barra-selecao" hidden>
+          <span class="barra-selecao-contagem" id="selecao-contagem"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-limpar-selecao">Limpar seleção</button>
+          <button type="button" class="btn btn-danger btn-sm" id="btn-excluir-selecao">Excluir</button>
+        </div>
+
         <section class="card table-card">
           <div class="table-wrap">
-            <table class="data">
+            <table class="data linhas-estaticas">
               <thead><tr>
-                <th>Serviço</th><th>Categoria</th><th>Parceiro</th><th>Preço</th><th>Cobrança</th><th>Status</th>
+                <th class="col-selecao"><input type="checkbox" id="selecionar-todos" aria-label="Selecionar todos"></th>
+                <th>Serviço</th><th>Categoria</th><th>Parceiro</th><th>Cupom</th><th>Status</th><th class="col-acoes"></th>
               </tr></thead>
               <tbody id="tbody"></tbody>
             </table>
@@ -61,6 +68,6 @@
     </div>
   </div>
 
-  <script src="js/servicos.js"></script>
+  <script src="js/servicos.js?v=2"></script>
 </body>
 </html>

@@ -1,398 +1,546 @@
 /* ==========================================================================
-   LOVE ADMIN — Atendimento
-   Caixa de entrada única: chamados abertos no site público, por clientes
-   da plataforma e por fornecedores do B2B.
+   LOVE ADMIN — Atendimento (inbox)
+
+   Etapa 1 do atendimento automatizado: uma caixa única para conversas de
+   anfitriões, empresas e do site, em duas colunas (lista + conversa). A
+   resposta sai de verdade: o servidor (api/atendimento-responder no
+   love.com.br) grava, manda por e-mail ao solicitante e avisa na plataforma.
+
+   Respostas prontas: biblioteca de "e-mails transacionais" com variáveis.
+   O admin escolhe a que melhor responde, personaliza e envia. Nas próximas
+   etapas o e-mail passa a chegar sozinho (Gmail) e a IA escolhe/redige.
    ========================================================================== */
 
+const API_RESPONDER = 'https://love.com.br/api/atendimento-responder';
+
+const ABAS = {
+  pendentes: t => ['aberto', 'em_andamento'].includes(t.status),
+  aguardando_cliente: t => t.status === 'aguardando_cliente',
+  resolvidos: t => ['resolvido', 'fechado'].includes(t.status),
+  spam: t => t.status === 'spam',
+  todos: t => t.status !== 'spam'
+};
+
+const CANAL_LABELS = { formulario: 'Formulário', email: 'E-mail', chat: 'Chat', whatsapp: 'WhatsApp' };
+const ORIGEM_CURTA = { cliente: 'Anfitrião', fornecedor: 'Empresa', site: 'Site' };
+
 let TICKETS = [];
+let RESPOSTAS = [];
+let ABA_ATUAL = 'pendentes';
+let ATUAL = null;      // id da conversa aberta
+let EDITOR = null;
+let RESPOSTA_ESCOLHIDA = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
-  const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 5);
+  document.getElementById('inbox-itens').innerHTML = '<div class="inbox-carregando"><div class="skeleton" style="width:70%"></div></div>';
 
-  const { data, error } = await safeSelect('tickets', '*');
-  if (error) return renderError(tbody, 5, error);
+  const [tickets, respostas] = await Promise.all([
+    safeSelect('tickets', '*'),
+    safeSelect('respostas_prontas', '*', q => q.order('categoria').order('titulo'))
+  ]);
 
-  TICKETS = data;
-  render();
-  renderContagemAbas();
+  if (tickets.error) {
+    document.getElementById('inbox-itens').innerHTML =
+      `<div class="empty-state"><strong>Não foi possível carregar</strong><p>${escapeHtml(tickets.error.message || '')}</p></div>`;
+    return;
+  }
 
-  document.getElementById('busca').addEventListener('input', render);
-  document.getElementById('filtro-status').addEventListener('change', render);
-  ligarAbasDeOrigem();
+  TICKETS = tickets.data;
+  RESPOSTAS = respostas.error ? [] : respostas.data;
+  if (respostas.error) console.warn('[atendimento] rode supabase/migrations/060_atendimento_inbox.sql');
 
-  moverControlesParaHeader();
+  ligarAbas();
+  document.getElementById('busca').addEventListener('input', renderLista);
+  document.getElementById('filtro-origem').addEventListener('change', renderLista);
   aplicarBuscaDaUrl(document.getElementById('busca'));
+
+  addHeaderAction('Respostas prontas', abrirBiblioteca, {
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>'
+  });
+
+  renderContagens();
+  renderLista();
+
+  // Link direto para uma conversa: atendimento?id=<uuid>
+  const id = new URLSearchParams(location.search).get('id');
+  if (id && TICKETS.some(t => t.id === id)) abrirConversa(id);
 });
 
-/* A origem virou aba em vez de select: são três destinos fixos e o admin
-   alterna entre eles o tempo todo — um clique vale mais que abrir uma lista. */
-let ORIGEM_ATUAL = 'cliente';
+/* ------------------------------------------------------------- Lista */
 
-/* Quantos chamados aguardam resposta em cada aba. Conta só os abertos — é o
-   mesmo recorte do filtro padrão, então o número da aba e o da tabela
-   concordam em vez de se contradizerem na mesma tela. Aba sem nenhum fica
-   sem parênteses: zero entre parênteses é ruído. */
-function renderContagemAbas() {
-  document.querySelectorAll('#abas-origem [data-contagem]').forEach(span => {
-    const abertos = TICKETS.filter(t => t.origem === span.dataset.contagem && t.status === 'aberto').length;
-    span.textContent = abertos ? ` (${formatNumber(abertos)})` : '';
+const quando = t => t.last_message_at || t.updated_at || t.created_at;
+
+function ligarAbas() {
+  document.querySelectorAll('#abas-status [data-aba]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      ABA_ATUAL = btn.dataset.aba;
+      document.querySelectorAll('#abas-status [data-aba]').forEach(b => b.classList.toggle('is-active', b === btn));
+      renderLista();
+    });
   });
 }
 
-function ligarAbasDeOrigem() {
-  document.querySelectorAll('#abas-origem [data-origem]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      ORIGEM_ATUAL = btn.dataset.origem;
-      document.querySelectorAll('#abas-origem [data-origem]')
-        .forEach(b => b.classList.toggle('is-active', b === btn));
-      render();
-    });
+function renderContagens() {
+  document.querySelectorAll('#abas-status [data-contagem]').forEach(span => {
+    const n = TICKETS.filter(ABAS[span.dataset.contagem]).length;
+    span.textContent = n ? ` (${formatNumber(n)})` : '';
   });
 }
 
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
-  const status = document.getElementById('filtro-status').value;
+  const origem = document.getElementById('filtro-origem').value;
 
   return TICKETS.filter(t => {
-    if (status && t.status !== status) return false;
-    if (ORIGEM_ATUAL && t.origem !== ORIGEM_ATUAL) return false;
+    if (!ABAS[ABA_ATUAL](t)) return false;
+    if (origem && t.origem !== origem) return false;
     if (!termo) return true;
-    return [t.protocolo, t.nome, t.email, t.assunto, t.telefone, t.categoria]
+    return [t.protocolo, t.nome, t.email, t.assunto, t.telefone, t.categoria, t.mensagem]
       .some(v => String(v || '').toLowerCase().includes(termo));
-  });
+  }).sort((a, b) => new Date(quando(b) || 0) - new Date(quando(a) || 0));
 }
 
-function render() {
-  const tbody = document.getElementById('tbody');
-  const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
+function renderLista() {
+  const host = document.getElementById('inbox-itens');
+  const lista = filtrar();
 
   if (!lista.length) {
-    renderContagem(0);
-    renderEmpty(tbody, 5, 'Nenhum chamado encontrado',
-      TICKETS.length
-        ? 'Ajuste a busca ou os filtros acima.'
-        : 'O canal de atendimento ainda não recebeu mensagens. Ele recebe tanto do site público quanto da plataforma e do B2B.');
+    host.innerHTML = `<div class="empty-state"><strong>Nenhuma conversa aqui</strong>
+      <p>${TICKETS.length ? 'Troque a aba, a busca ou a origem.' : 'Quando alguém escrever para a Love, a conversa aparece aqui.'}</p></div>`;
     return;
   }
 
-  renderContagem(lista.length);
+  host.innerHTML = lista.map(t => `
+    <button type="button" class="inbox-item ${t.id === ATUAL ? 'is-ativo' : ''} ${t.nao_lido !== false && ABAS.pendentes(t) ? 'is-nao-lido' : ''}" data-id="${t.id}">
+      <span class="inbox-item-topo">
+        <span class="inbox-item-nome">${escapeHtml(t.nome || t.email || 'Sem nome')}</span>
+        <span class="inbox-item-quando">${escapeHtml(formatRelative(quando(t)))}</span>
+      </span>
+      <span class="inbox-item-assunto">${escapeHtml(t.assunto || '(sem assunto)')}</span>
+      <span class="inbox-item-trecho">${escapeHtml(t.resumo || resumoDe(t.mensagem))}</span>
+      <span class="inbox-item-selos">
+        ${badge(ORIGEM_CURTA[t.origem] || t.origem, '')}
+        ${t.canal && t.canal !== 'formulario' ? badge(CANAL_LABELS[t.canal] || t.canal, '') : ''}
+        ${t.prioridade === 'alta' ? badge('Alta', 'badge-danger') : ''}
+        ${ABA_ATUAL === 'todos' ? badge(TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status]) : ''}
+      </span>
+    </button>`).join('');
 
-  tbody.innerHTML = lista.map(t => `
-    <tr data-id="${t.id}">
-      <td class="cell-strong">${dash(t.protocolo)}</td>
-      <td>
-        <span class="cell-strong">${dash(t.nome)}</span><br>
-        <span class="cell-muted">${dash(t.email)}</span>
-      </td>
-      <td>${dash(t.assunto)}</td>
-      <td>${badge(TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status])}</td>
-      <td class="cell-muted">${escapeHtml(formatRelative(t.created_at))}</td>
-    </tr>`).join('');
-
-  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => abrirChamado(tr.dataset.id));
-  });
+  host.querySelectorAll('[data-id]').forEach(btn => btn.addEventListener('click', () => abrirConversa(btn.dataset.id)));
 }
 
-/* "2 chamados abertos" diz mais que um número solto: a contagem muda de
-   nome junto com o filtro, então o que está na tela nunca fica ambíguo. */
-const CONTAGEM_POR_STATUS = {
-  aberto:       ['chamado aberto', 'chamados abertos'],
-  em_andamento: ['chamado em andamento', 'chamados em andamento'],
-  resolvido:    ['chamado resolvido', 'chamados resolvidos'],
-  fechado:      ['chamado fechado', 'chamados fechados'],
-  '':           ['chamado', 'chamados']
-};
-
-function renderContagem(total) {
-  const status = document.getElementById('filtro-status').value;
-  const [singular, plural] = CONTAGEM_POR_STATUS[status] || CONTAGEM_POR_STATUS[''];
-  document.getElementById('contagem-chamados').textContent =
-    `${formatNumber(total)} ${total === 1 ? singular : plural}`;
+function resumoDe(texto, limite = 110) {
+  const t = String(texto || '').replace(/\s+/g, ' ').trim();
+  return t.length > limite ? `${t.slice(0, limite).trimEnd()}…` : t;
 }
 
-async function abrirChamado(id) {
+/* ---------------------------------------------------------- Conversa */
+
+async function abrirConversa(id) {
   const t = TICKETS.find(x => x.id === id);
   if (!t) return;
 
-  Drawer.open({
-    title: t.assunto || 'Chamado',
-    subtitle: `${t.protocolo || ''} · ${t.nome || ''}`,
-    body: `<div id="chamado-conteudo"><div class="skeleton" style="width:70%"></div></div>`,
-    footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
-  });
+  ATUAL = id;
+  RESPOSTA_ESCOLHIDA = null;
+  renderLista();
 
-  document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
+  const painel = document.getElementById('inbox-conversa');
+  painel.innerHTML = '<div class="inbox-carregando"><div class="skeleton" style="width:60%"></div></div>';
+  painel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
-  const { data: mensagens } = await safeSelect(
-    'ticket_messages',
-    '*',
-    q => q.eq('ticket_id', id).order('created_at', { ascending: true })
-  );
+  // Abrir marca como lida.
+  if (t.nao_lido !== false) {
+    t.nao_lido = false;
+    supabaseClient.from('tickets').update({ nao_lido: false }).eq('id', id).then(() => {}, () => {});
+  }
 
-  // A mensagem que abriu o chamado fica na própria linha do ticket
-  // (`tickets.mensagem`) — só as respostas seguintes vão em ticket_messages.
+  const { data: mensagens } = await safeSelect('ticket_messages', '*',
+    q => q.eq('ticket_id', id).order('created_at', { ascending: true }));
+
+  if (ATUAL !== id) return; // trocou de conversa enquanto carregava
+
   const conversa = [
-    ...(t.mensagem
-      ? [{ author_role: 'usuario', author_name: t.nome, body: t.mensagem, created_at: t.created_at }]
-      : []),
+    ...(t.mensagem ? [{ author_role: 'usuario', author_name: t.nome, body: t.mensagem, created_at: t.created_at }] : []),
     ...mensagens
   ];
 
-  const thread = conversa.length
-    ? `<div class="thread">${conversa.map(m => `
-        <div class="thread-msg ${m.author_role === 'admin' ? 'from-admin' : 'from-user'}">
-          <div class="bubble">${escapeHtml(m.body)}</div>
-          <p class="meta">${escapeHtml(m.author_name || (m.author_role === 'admin' ? 'Equipe Love' : t.nome))} · ${escapeHtml(formatDateTime(m.created_at))}</p>
-        </div>`).join('')}</div>`
-    : `<p class="cell-muted" style="font-size:.8125rem">Este chamado foi aberto sem mensagem inicial.</p>`;
-
-  const dado = (rotulo, valor) => `
-    <div class="dados-linha">
-      <span class="rotulo">${escapeHtml(rotulo)}</span>
-      <span class="valor">${valor}</span>
-    </div>`;
-
-  const identificacao = `
-    <div class="lista-dados">
-      ${dado('Origem', escapeHtml(ORIGEM_LABELS[t.origem] || t.origem || '—'))}
-      ${dado('Aberto em', escapeHtml(formatDateTime(t.created_at)))}
-      ${dado('Status', badge(TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status]))}
-      ${dado('Solicitante', escapeHtml(t.nome || '—'))}
-      ${dado('E-mail', escapeHtml(t.email || '—'))}
-      ${t.telefone ? dado('Telefone', escapeHtml(t.telefone)) : ''}
-      ${t.categoria ? dado('Categoria', escapeHtml(t.categoria)) : ''}
-    </div>`;
-
-  document.getElementById('chamado-conteudo').innerHTML = ehPedidoDeAlteracao(t)
-    ? identificacao + corpoDaPendencia(t)
-    : identificacao + `
-      <p class="drawer-section-title">Conversa</p>
-      ${thread}
-
-      <p class="drawer-section-title">Responder</p>
-      <textarea class="field-textarea" id="resposta" placeholder="Escreva a resposta que será enviada ao solicitante..."></textarea>
-      <button type="button" class="btn btn-primary" id="btn-responder" style="margin-top:.625rem">Enviar resposta</button>
-
-      <p class="drawer-section-title">Gerenciar chamado</p>
-      <div class="field-row">
-        <label class="field">
-          <span class="field-label">Status</span>
-          <select class="field-select" id="campo-status">
-            ${Object.entries(TICKET_STATUS_LABELS)
-              .map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}
-          </select>
-        </label>
-        <label class="field">
-          <span class="field-label">Prioridade</span>
-          <select class="field-select" id="campo-prioridade">
-            ${['baixa', 'normal', 'alta']
-              .map(v => `<option value="${v}" ${(t.prioridade || 'normal') === v ? 'selected' : ''}>${v[0].toUpperCase() + v.slice(1)}</option>`).join('')}
-          </select>
-        </label>
+  painel.innerHTML = `
+    <header class="conversa-topo">
+      <div class="conversa-titulo">
+        <h2>${escapeHtml(t.assunto || 'Conversa')}</h2>
+        <p>
+          ${escapeHtml(t.protocolo || '')} ·
+          ${escapeHtml(t.nome || '')}
+          ${t.email ? ` · ${celulaCopiavel(t.email, 'E-mail')}` : ''}
+          ${t.telefone ? ` · ${escapeHtml(t.telefone)}` : ''}
+        </p>
+        <div class="conversa-selos">
+          ${badge(ORIGEM_LABELS[t.origem] || t.origem, '')}
+          ${badge(CANAL_LABELS[t.canal] || 'Formulário', '')}
+          ${t.categoria ? badge(t.categoria, '') : ''}
+        </div>
       </div>
-      <button type="button" class="btn btn-ghost" id="btn-atualizar">Atualizar chamado</button>`;
+      <div class="conversa-controles">
+        <select class="field-select" id="conversa-status" aria-label="Status">
+          ${Object.entries(TICKET_STATUS_LABELS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+        <select class="field-select" id="conversa-prioridade" aria-label="Prioridade">
+          ${['baixa', 'normal', 'alta'].map(v => `<option value="${v}" ${(t.prioridade || 'normal') === v ? 'selected' : ''}>Prioridade ${v}</option>`).join('')}
+        </select>
+      </div>
+    </header>
 
-  document.getElementById('btn-responder')?.addEventListener('click', () => responder(id));
-  document.getElementById('btn-atualizar')?.addEventListener('click', () => atualizar(id));
+    <div class="conversa-thread" id="conversa-thread">
+      ${conversa.length ? conversa.map(m => bolha(m, t)).join('') : '<p class="cell-muted" style="font-size:.8125rem">Conversa sem mensagens.</p>'}
+    </div>
+
+    ${ehPedidoDeAlteracao(t) ? corpoDaPendencia(t) : ''}
+
+    <div class="conversa-composer">
+      <div class="composer-linha">
+        <select class="field-select" id="composer-resposta" aria-label="Resposta pronta">
+          <option value="">Usar uma resposta pronta…</option>
+          ${opcoesDeResposta(t)}
+        </select>
+        <input class="field-input" id="composer-assunto" type="text" placeholder="Assunto do e-mail (opcional)">
+      </div>
+      <div id="composer-editor"></div>
+      <div class="composer-acoes">
+        <span class="cell-muted composer-dica">Ctrl+Enter envia. A pessoa recebe por e-mail${t.user_id ? ' e na plataforma' : ''}.</span>
+        <button type="button" class="btn btn-ghost" id="btn-enviar-resolver">Enviar e resolver</button>
+        <button type="button" class="btn btn-primary" id="btn-enviar">Enviar</button>
+      </div>
+    </div>`;
+
+  const thread = document.getElementById('conversa-thread');
+  thread.scrollTop = thread.scrollHeight;
+
+  EDITOR = EditorRico.montar(document.getElementById('composer-editor'), { placeholder: 'Escreva a resposta…' });
+
+  ligarAcoesDaLinha(painel, () => {});
+  document.getElementById('conversa-status').addEventListener('change', e => salvarCampo(t, { status: e.target.value }));
+  document.getElementById('conversa-prioridade').addEventListener('change', e => salvarCampo(t, { prioridade: e.target.value }));
+  document.getElementById('composer-resposta').addEventListener('change', e => aplicarResposta(t, e.target.value));
+  document.getElementById('btn-enviar').addEventListener('click', () => enviar(t, 'aguardando_cliente'));
+  document.getElementById('btn-enviar-resolver').addEventListener('click', () => enviar(t, 'resolvido'));
+  document.getElementById('composer-editor').addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); enviar(t, 'aguardando_cliente'); }
+  });
   document.getElementById('btn-liberar')?.addEventListener('click', () => liberarAlteracao(t));
   document.getElementById('btn-cancelar-pedido')?.addEventListener('click', () => recusarAlteracao(t));
 }
 
-/* --------------------------------------------- Pedido de alteração de dado
+function bolha(m, t) {
+  const daEquipe = m.author_role !== 'usuario';
+  const autor = m.author_name || (daEquipe ? 'Equipe Love' : t.nome);
+  const corpo = m.body_html ? m.body_html : escapeHtml(m.body || '');
+  const entrega = daEquipe && m.author_role === 'admin'
+    ? (m.enviado_por_email ? ' · enviado por e-mail' : m.email_status ? ` · e-mail não enviado (${escapeHtml(m.email_status)})` : '')
+    : '';
+  return `
+    <div class="thread-msg ${daEquipe ? 'from-admin' : 'from-user'}">
+      <div class="bubble ${m.body_html ? 'bubble-html' : ''}">${corpo}</div>
+      <p class="meta">${escapeHtml(autor)} · ${escapeHtml(formatDateTime(m.created_at))}${entrega}</p>
+    </div>`;
+}
 
-   O fornecedor não consegue mudar nome da empresa nem CNPJ sozinho: os dois
-   travam no B2B depois de preenchidos. Quando ele pede a mudança, o chamado
-   não é uma conversa — é uma decisão de uma linha. Por isso este drawer
-   troca "Conversa" e "Responder" por "Pendência" com duas saídas.
-   ------------------------------------------------------------------------ */
+async function salvarCampo(t, campos) {
+  const { error } = await supabaseClient.from('tickets').update({ ...campos, updated_at: new Date().toISOString() }).eq('id', t.id);
+  if (error) return toast(`Não foi possível salvar: ${error.message}`);
+  Object.assign(t, campos);
+  renderContagens();
+  renderLista();
+  toast('Conversa atualizada.');
+}
+
+/* ---------------------------------------------------- Respostas prontas */
+
+function publicoServe(r, t) {
+  return r.publico === 'todos' || r.publico === t.origem || (t.origem === 'site' && r.publico === 'cliente');
+}
+
+function opcoesDeResposta(t) {
+  const lista = RESPOSTAS.filter(r => r.ativo !== false && publicoServe(r, t));
+  const grupos = [...new Set(lista.map(r => r.categoria || 'Geral'))];
+  return grupos.map(g => `
+    <optgroup label="${escapeHtml(g)}">
+      ${lista.filter(r => (r.categoria || 'Geral') === g)
+        .map(r => `<option value="${r.id}">${escapeHtml(r.titulo)}</option>`).join('')}
+    </optgroup>`).join('');
+}
+
+function preencherVariaveis(texto, t) {
+  const nome = (t.nome || '').trim();
+  const valores = {
+    nome: nome || 'tudo bem',
+    primeiro_nome: nome.split(/\s+/)[0] || 'tudo bem',
+    protocolo: t.protocolo || '',
+    assunto: t.assunto || ''
+  };
+  return String(texto || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (m, chave) =>
+    chave in valores ? escapeHtml(valores[chave]) : m);
+}
+
+function aplicarResposta(t, id) {
+  const r = RESPOSTAS.find(x => x.id === id);
+  RESPOSTA_ESCOLHIDA = r ? r.id : null;
+  if (!r) return;
+  EDITOR.definir(preencherVariaveis(r.corpo_html, t));
+  if (r.assunto) document.getElementById('composer-assunto').value = preencherVariaveis(r.assunto, t).replace(/&amp;/g, '&');
+  EDITOR.focar();
+}
+
+/* ------------------------------------------------------------ Enviar */
+
+async function enviar(t, status) {
+  const html = EDITOR.html();
+  if (!EDITOR.texto().trim()) return toast('Escreva a resposta antes de enviar.');
+
+  const botoes = ['btn-enviar', 'btn-enviar-resolver'].map(id => document.getElementById(id));
+  botoes.forEach(b => { b.disabled = true; });
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const r = await fetch(API_RESPONDER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
+      body: JSON.stringify({
+        ticket_id: t.id,
+        body_html: html,
+        assunto: document.getElementById('composer-assunto').value.trim() || null,
+        resposta_pronta_id: RESPOSTA_ESCOLHIDA,
+        status
+      })
+    });
+    const resultado = await r.json().catch(() => ({}));
+
+    if (!r.ok || !resultado.ok) {
+      botoes.forEach(b => { b.disabled = false; });
+      return toast(`Não foi possível enviar: ${resultado.erro || r.status}`);
+    }
+
+    t.status = resultado.status;
+    t.nao_lido = false;
+    t.last_message_at = new Date().toISOString();
+
+    const avisos = [];
+    avisos.push(resultado.email?.enviado ? 'enviado por e-mail' : `e-mail não saiu (${resultado.email?.motivo || 'erro'})`);
+    if (resultado.notificado) avisos.push('avisado na plataforma');
+    toast(`Resposta registrada: ${avisos.join(', ')}.`);
+
+    renderContagens();
+    abrirConversa(t.id);
+  } catch (e) {
+    botoes.forEach(b => { b.disabled = false; });
+    toast('Não foi possível falar com o servidor. Tente de novo.');
+  }
+}
+
+/* ------------------------------------------- Biblioteca de respostas prontas */
+
+function abrirBiblioteca() {
+  const grupos = [...new Set(RESPOSTAS.map(r => r.categoria || 'Geral'))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const PUBLICO = { todos: 'Todos', cliente: 'Anfitriões', fornecedor: 'Empresas' };
+
+  Drawer.open({
+    title: 'Respostas prontas',
+    subtitle: 'Os e-mails que a equipe (e depois a IA) usa para responder',
+    body: RESPOSTAS.length ? grupos.map(g => `
+      <p class="drawer-section-title">${escapeHtml(g)}</p>
+      ${RESPOSTAS.filter(r => (r.categoria || 'Geral') === g).map(r => `
+        <div class="pergunta-item ${r.ativo === false ? 'is-inativo' : ''}">
+          <div style="flex:1;min-width:0">
+            <p class="pergunta">${escapeHtml(r.titulo)}</p>
+            <p class="resposta">${escapeHtml(PUBLICO[r.publico] || r.publico)} · usada ${formatNumber(r.usos || 0)}x</p>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" data-editar-resposta="${r.id}">Editar</button>
+        </div>`).join('')}`).join('')
+      : `<div class="empty-state"><strong>Nenhuma resposta pronta</strong><p>Crie a primeira — ela aparece no seletor de cada conversa.</p></div>`,
+    footer: `
+      <button type="button" class="btn btn-ghost" id="btn-fechar-biblioteca">Fechar</button>
+      <button type="button" class="btn btn-primary" id="btn-nova-resposta">Nova resposta</button>`
+  });
+
+  document.getElementById('btn-fechar-biblioteca').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-nova-resposta').addEventListener('click', () => editarResposta(null));
+  document.querySelectorAll('[data-editar-resposta]').forEach(btn =>
+    btn.addEventListener('click', () => editarResposta(RESPOSTAS.find(r => r.id === btn.dataset.editarResposta))));
+}
+
+function editarResposta(r) {
+  const categorias = [...new Set(RESPOSTAS.map(x => x.categoria).filter(Boolean))];
+
+  Drawer.open({
+    title: r ? 'Editar resposta pronta' : 'Nova resposta pronta',
+    subtitle: 'Variáveis: {{nome}}, {{primeiro_nome}}, {{protocolo}}, {{assunto}}',
+    back: abrirBiblioteca,
+    body: `
+      <form id="form-resposta">
+        <label class="field">
+          <span class="field-label">Título <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" name="titulo" type="text" maxlength="120" value="${escapeHtml(r?.titulo || '')}">
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Categoria</span>
+            <input class="field-input" name="categoria" type="text" list="categorias-resposta" value="${escapeHtml(r?.categoria || 'Geral')}">
+            <datalist id="categorias-resposta">${categorias.map(c => `<option value="${escapeHtml(c)}">`).join('')}</datalist>
+          </label>
+          <label class="field">
+            <span class="field-label">Para quem</span>
+            <select class="field-select" name="publico">
+              ${[['todos', 'Todos'], ['cliente', 'Anfitriões'], ['fornecedor', 'Empresas']]
+                .map(([v, l]) => `<option value="${v}" ${(r?.publico || 'todos') === v ? 'selected' : ''}>${l}</option>`).join('')}
+            </select>
+          </label>
+        </div>
+        <label class="field">
+          <span class="field-label">Assunto do e-mail</span>
+          <input class="field-input" name="assunto" type="text" value="${escapeHtml(r?.assunto || '')}">
+        </label>
+        <div class="field">
+          <span class="field-label">Texto <span class="campo-obrigatorio">*</span></span>
+          <div id="resposta-editor"></div>
+        </div>
+        <label class="field">
+          <span class="field-label">Palavras-chave (separadas por vírgula)</span>
+          <input class="field-input" name="palavras" type="text" placeholder="saque, pix, carteira" value="${escapeHtml((r?.palavras_chave || []).join(', '))}">
+          <span class="cell-muted" style="font-size:.75rem;display:block;margin-top:.25rem">Ajudam a IA a escolher esta resposta (etapa 3).</span>
+        </label>
+        <label class="field">
+          <span class="field-label">Status</span>
+          <select class="field-select" name="ativo">
+            <option value="true" ${r?.ativo === false ? '' : 'selected'}>Ativa</option>
+            <option value="false" ${r?.ativo === false ? 'selected' : ''}>Desativada</option>
+          </select>
+        </label>
+      </form>`,
+    footer: `
+      ${r ? '<button type="button" class="btn btn-danger" id="btn-excluir-resposta">Excluir</button>' : ''}
+      <button type="button" class="btn btn-ghost" id="btn-cancelar-resposta">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btn-salvar-resposta">Salvar</button>`
+  });
+
+  const editor = EditorRico.montar(document.getElementById('resposta-editor'), { placeholder: 'Olá, {{primeiro_nome}}! …' });
+  editor.definir(r?.corpo_html || '');
+
+  document.getElementById('btn-cancelar-resposta').addEventListener('click', abrirBiblioteca);
+  document.getElementById('btn-excluir-resposta')?.addEventListener('click', async () => {
+    if (!window.confirm(`Excluir "${r.titulo}"?`)) return;
+    const { error } = await supabaseClient.from('respostas_prontas').delete().eq('id', r.id);
+    if (error) return toast(`Não foi possível excluir: ${error.message}`);
+    RESPOSTAS = RESPOSTAS.filter(x => x.id !== r.id);
+    toast('Resposta excluída.');
+    abrirBiblioteca();
+  });
+
+  document.getElementById('btn-salvar-resposta').addEventListener('click', async () => {
+    const d = Object.fromEntries(new FormData(document.getElementById('form-resposta')).entries());
+    if (!d.titulo.trim()) return toast('Dê um título à resposta.');
+    if (!editor.texto().trim()) return toast('Escreva o texto da resposta.');
+
+    const payload = {
+      titulo: d.titulo.trim(),
+      categoria: d.categoria.trim() || 'Geral',
+      publico: d.publico,
+      assunto: d.assunto.trim() || null,
+      corpo_html: editor.html(),
+      palavras_chave: d.palavras.split(',').map(p => p.trim().toLowerCase()).filter(Boolean),
+      ativo: d.ativo === 'true'
+    };
+
+    Drawer.setFooterBusy(true);
+    const consulta = r
+      ? supabaseClient.from('respostas_prontas').update(payload).eq('id', r.id).select().single()
+      : supabaseClient.from('respostas_prontas').insert({ ...payload, criado_por: window.adminUser.id }).select().single();
+    const { data, error } = await consulta;
+    Drawer.setFooterBusy(false);
+
+    if (error) {
+      return toast(/respostas_prontas|does not exist|schema cache/i.test(error.message || '')
+        ? 'Rode supabase/migrations/060_atendimento_inbox.sql no Supabase.'
+        : `Não foi possível salvar: ${error.message}`);
+    }
+
+    RESPOSTAS = r ? RESPOSTAS.map(x => (x.id === r.id ? data : x)) : [...RESPOSTAS, data];
+    toast('Resposta salva.');
+    abrirBiblioteca();
+    if (ATUAL) {
+      const select = document.getElementById('composer-resposta');
+      const t = TICKETS.find(x => x.id === ATUAL);
+      if (select && t) select.innerHTML = '<option value="">Usar uma resposta pronta…</option>' + opcoesDeResposta(t);
+    }
+  });
+}
+
+/* --------------------------------------------- Pedido de alteração de dado
+   Fluxo antigo do Hub (nome da empresa / CNPJ travados). Continua
+   funcionando até ser substituído; aparece acima do editor. */
 
 const CAMPOS_LIBERAVEIS = { company: 'Nome da empresa', documento: 'CNPJ / CPF' };
 
 function ehPedidoDeAlteracao(t) {
-  // Os chamados abertos antes da troca de rótulo estão no singular; aceitar as
-  // duas formas evita que eles percam o botão de liberar.
   const assunto = (t.assunto || '').trim().toLowerCase();
-  return t.origem === 'fornecedor'
-    && (assunto === 'alteração de dados' || assunto === 'alteração de dado');
+  return t.origem === 'fornecedor' && (assunto === 'alteração de dados' || assunto === 'alteração de dado');
 }
 
-/**
- * O campo e o valor atual vêm de `tickets.extra`. Chamados abertos antes de
- * isso existir só têm a frase da mensagem — daí o resgate pelo texto, para
- * que pedidos antigos não fiquem sem botão.
- */
 function pedidoDoChamado(t) {
   const extra = t.extra || {};
   if (extra.campo) {
-    return {
-      campo: extra.campo,
-      label: extra.campo_label || CAMPOS_LIBERAVEIS[extra.campo] || extra.campo,
-      valorAtual: extra.valor_atual || null
-    };
+    return { campo: extra.campo, label: extra.campo_label || CAMPOS_LIBERAVEIS[extra.campo] || extra.campo, valorAtual: extra.valor_atual || null };
   }
-
   const texto = t.mensagem || '';
   const nome = texto.match(/campo "([^"]+)"/i)?.[1] || null;
   const valor = texto.match(/valor atual:\s*([^)]+)\)/i)?.[1]?.trim() || null;
-
-  return {
-    campo: /cnpj|cpf|documento/i.test(nome || '') ? 'documento' : 'company',
-    label: nome || 'Nome da empresa',
-    valorAtual: valor
-  };
+  return { campo: /cnpj|cpf|documento/i.test(nome || '') ? 'documento' : 'company', label: nome || 'Nome da empresa', valorAtual: valor };
 }
 
 function corpoDaPendencia(t) {
   const pedido = pedidoDoChamado(t);
-  const resolvido = t.status === 'resolvido' || t.status === 'fechado';
-
-  const dado = (rotulo, valor) => `
-    <div class="dados-linha">
-      <span class="rotulo">${escapeHtml(rotulo)}</span>
-      <span class="valor">${valor}</span>
-    </div>`;
-
+  const resolvido = ['resolvido', 'fechado'].includes(t.status);
   return `
-    <p class="drawer-section-title">Pendência</p>
-    <div class="lista-dados">
-      ${dado('Solicitação de alteração no campo', escapeHtml(pedido.label))}
-      ${dado('Valor atual', pedido.valorAtual
-        ? escapeHtml(pedido.valorAtual)
-        : '<span class="cell-muted">não informado</span>')}
-    </div>
-
-    ${resolvido
-      ? `<p class="cell-muted" style="font-size:.8125rem;margin:1rem 0 0">
-           Esta pendência já foi tratada. O chamado está ${escapeHtml((TICKET_STATUS_LABELS[t.status] || t.status).toLowerCase())}.
-         </p>`
-      : `<div class="drawer-acoes-botoes" style="justify-content:flex-start;margin-top:1rem">
-           <button type="button" class="btn btn-primary" id="btn-liberar">Liberar alteração</button>
-           <button type="button" class="btn btn-ghost" id="btn-cancelar-pedido">Cancelar</button>
-         </div>
-         <p class="cell-muted" style="font-size:.75rem;line-height:1.6;margin:.75rem 0 0">
-           Liberar destrava o campo no B2B para uma edição e conclui o chamado.
-           Cancelar recusa o pedido e também conclui — o campo segue travado.
-         </p>`}`;
+    <div class="conversa-pendencia">
+      <p class="drawer-section-title" style="margin-top:0">Pendência: alteração de ${escapeHtml(pedido.label)}</p>
+      <p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Valor atual: ${pedido.valorAtual ? escapeHtml(pedido.valorAtual) : 'não informado'}</p>
+      ${resolvido
+        ? '<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta pendência já foi tratada.</p>'
+        : `<div style="display:flex;gap:.5rem">
+             <button type="button" class="btn btn-primary btn-sm" id="btn-liberar">Liberar alteração</button>
+             <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-pedido">Recusar</button>
+           </div>`}
+    </div>`;
 }
 
 async function liberarAlteracao(t) {
   const pedido = pedidoDoChamado(t);
-  const botao = document.getElementById('btn-liberar');
-  botao.disabled = true;
-
+  document.getElementById('btn-liberar').disabled = true;
   const { error } = await supabaseClient.from('campos_liberados').insert({
-    fornecedor_id: t.user_id,
-    campo: pedido.campo,
-    ticket_id: t.id,
-    liberado_por: window.adminUser.id
+    fornecedor_id: t.user_id, campo: pedido.campo, ticket_id: t.id, liberado_por: window.adminUser.id
   });
-
   if (error) {
-    botao.disabled = false;
-    const faltaTabela = /campos_liberados|does not exist|schema cache/i.test(error.message || '');
-    toast(faltaTabela
-      ? 'Rode supabase/migrations/022_liberar_campo_cadastral.sql no Supabase.'
-      : `Não foi possível liberar: ${error.message}`);
-    return;
+    document.getElementById('btn-liberar').disabled = false;
+    return toast(`Não foi possível liberar: ${error.message}`);
   }
-
-  await concluir(t, `Alteração de "${pedido.label}" liberada. O campo está editável no seu painel por uma vez.`);
+  await concluirPendencia(t, `Alteração de "${pedido.label}" liberada. O campo está editável no seu painel por uma vez.`);
   toast('Alteração liberada.');
 }
 
 async function recusarAlteracao(t) {
   const pedido = pedidoDoChamado(t);
   document.getElementById('btn-cancelar-pedido').disabled = true;
-  await concluir(t, `A alteração de "${pedido.label}" não foi liberada. Fale com o suporte se precisar reabrir o pedido.`);
+  await concluirPendencia(t, `A alteração de "${pedido.label}" não foi liberada. Fale com o suporte se precisar reabrir o pedido.`);
   toast('Pedido recusado.');
 }
 
-/** Registra a decisão na conversa e fecha o chamado. */
-async function concluir(t, mensagem) {
+async function concluirPendencia(t, mensagem) {
   await supabaseClient.from('ticket_messages').insert({
-    ticket_id: t.id,
-    author_role: 'admin',
-    author_id: window.adminUser.id,
-    author_name: window.adminUser.name || 'Equipe Love',
-    body: mensagem
+    ticket_id: t.id, author_role: 'admin', author_id: window.adminUser.id,
+    author_name: window.adminUser.name || 'Equipe Love', body: mensagem
   });
-
-  await supabaseClient.from('tickets')
-    .update({ status: 'resolvido', updated_at: new Date().toISOString() })
-    .eq('id', t.id);
-
+  await supabaseClient.from('tickets').update({ status: 'resolvido', updated_at: new Date().toISOString() }).eq('id', t.id);
   t.status = 'resolvido';
-  render();
-  renderContagemAbas();
-  Drawer.close();
-}
-
-async function responder(id) {
-  const campo = document.getElementById('resposta');
-  const body = campo.value.trim();
-  const botao = document.getElementById('btn-responder');
-
-  if (!body) {
-    toast('Escreva a resposta antes de enviar.');
-    return;
-  }
-
-  botao.disabled = true;
-
-  const { error } = await supabaseClient.from('ticket_messages').insert({
-    ticket_id: id,
-    author_role: 'admin',
-    author_id: window.adminUser.id,
-    author_name: window.adminUser.name || 'Equipe Love',
-    body
-  });
-
-  if (error) {
-    botao.disabled = false;
-    toast(`Não foi possível enviar: ${error.message}`);
-    return;
-  }
-
-  // Responder um chamado aberto passa ele automaticamente para "em andamento".
-  const ticket = TICKETS.find(t => t.id === id);
-  if (ticket && ticket.status === 'aberto') {
-    await supabaseClient.from('tickets')
-      .update({ status: 'em_andamento', updated_at: new Date().toISOString() })
-      .eq('id', id);
-    ticket.status = 'em_andamento';
-    render();
-    renderContagemAbas();
-  }
-
-  toast('Resposta enviada.');
-  abrirChamado(id);
-}
-
-async function atualizar(id) {
-  const status = document.getElementById('campo-status').value;
-  const prioridade = document.getElementById('campo-prioridade').value;
-  const botao = document.getElementById('btn-atualizar');
-
-  botao.disabled = true;
-  const { error } = await supabaseClient.from('tickets')
-    .update({ status, prioridade, updated_at: new Date().toISOString() })
-    .eq('id', id);
-  botao.disabled = false;
-
-  if (error) {
-    toast(`Não foi possível atualizar: ${error.message}`);
-    return;
-  }
-
-  Object.assign(TICKETS.find(t => t.id === id), { status, prioridade });
-  render();
-  renderContagemAbas();
-  Drawer.close();
-  toast('Chamado atualizado.');
+  renderContagens();
+  abrirConversa(t.id);
 }

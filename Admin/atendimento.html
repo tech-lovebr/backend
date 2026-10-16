@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=54">
+  <link rel="stylesheet" href="css/admin.css?v=55">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -41,40 +41,41 @@
       <header class="admin-topbar" id="admin-topbar"></header>
       <main class="admin-content">
 
-        <nav class="conteudo-tabs" id="abas-origem" aria-label="Filtrar por origem">
-          <button type="button" class="conteudo-tab is-active" data-origem="cliente">
-            Anfitriões<span class="aba-contagem" data-contagem="cliente"></span>
-          </button>
-          <button type="button" class="conteudo-tab" data-origem="fornecedor">
-            B2B<span class="aba-contagem" data-contagem="fornecedor"></span>
-          </button>
+        <!-- Abas por situação; a busca e a origem ficam no topo da lista. -->
+        <nav class="conteudo-tabs" id="abas-status" aria-label="Situação">
+          <button type="button" class="conteudo-tab is-active" data-aba="pendentes">Pendentes<span class="aba-contagem" data-contagem="pendentes"></span></button>
+          <button type="button" class="conteudo-tab" data-aba="aguardando_cliente">Aguardando cliente<span class="aba-contagem" data-contagem="aguardando_cliente"></span></button>
+          <button type="button" class="conteudo-tab" data-aba="resolvidos">Resolvidos</button>
+          <button type="button" class="conteudo-tab" data-aba="spam">Spam</button>
+          <button type="button" class="conteudo-tab" data-aba="todos">Todos</button>
         </nav>
 
-        <div id="page-controls" hidden>
-          <input type="search" class="search-input" id="busca" placeholder="Buscar protocolo ou nome...">
-          <select class="field-select" id="filtro-status">
-            <option value="aberto" selected>Aberto</option>
-            <option value="em_andamento">Em andamento</option>
-            <option value="resolvido">Resolvido</option>
-            <option value="fechado">Fechado</option>
-            <option value="">Todos os status</option>
-          </select>
+        <div class="inbox">
+          <section class="card inbox-lista">
+            <div class="inbox-lista-topo">
+              <input type="search" class="search-input" id="busca" placeholder="Buscar nome, e-mail, protocolo...">
+              <select class="field-select" id="filtro-origem" aria-label="Origem">
+                <option value="">Todas as origens</option>
+                <option value="cliente">Anfitriões</option>
+                <option value="fornecedor">Empresas</option>
+                <option value="site">Site</option>
+              </select>
+            </div>
+            <div class="inbox-itens" id="inbox-itens"></div>
+          </section>
+
+          <section class="card inbox-conversa" id="inbox-conversa">
+            <div class="inbox-vazio">
+              <strong>Escolha uma conversa</strong>
+              <p>As mensagens de anfitriões, empresas e do site chegam aqui. Responda com uma resposta pronta ou escreva a sua — a pessoa recebe por e-mail e na plataforma.</p>
+            </div>
+          </section>
         </div>
-
-        <p class="contagem-chamados" id="contagem-chamados"></p>
-
-        <section class="card table-card">
-          <div class="table-wrap">
-            <table class="data">
-              <thead><tr><th>Protocolo</th><th>Solicitante</th><th>Assunto</th><th>Status</th><th>Aberto em</th></tr></thead>
-              <tbody id="tbody"></tbody>
-            </table>
-          </div>
-        </section>
       </main>
     </div>
   </div>
 
+  <script src="js/editor-rico.js"></script>
   <script src="js/atendimento.js"></script>
 </body>
 </html>

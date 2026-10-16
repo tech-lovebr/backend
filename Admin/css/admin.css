@@ -198,22 +198,24 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
 .admin-nav-item:hover { background: #EEEEF0; color: var(--text); }
 .admin-nav-item:hover svg:not(.sidebar-chevron) { color: var(--text); }
 
-.admin-nav-item.is-active {
-  background: transparent;
+/* Item ativo: o mesmo fundo cinza das linhas de grupo e subitens ativos, sem
+   a caixinha azul no ícone. Texto e ícone no tom escuro — é ele que marca
+   onde você está, junto com o fundo. */
+.admin-nav-item.is-active,
+.admin-nav-item.is-active:hover {
+  background: #E8E8EB;
   color: var(--text);
   border: none;
   box-shadow: none;
 }
 
-/* Sobre o cinza claro, um azul pálido quase não se via. A caixa do item ativo
-   inverte: fundo na cor da marca, ícone branco — 11,7:1 e inconfundível. */
-.admin-nav-item.is-active .admin-nav-icon-box {
-  background: var(--primary-color);
-  border: 1px solid transparent;
-  box-shadow: none;
-}
+.admin-nav-item.is-active .admin-nav-icon-box { background: transparent; border: 0; box-shadow: none; }
+.admin-nav-item.is-active svg:not(.sidebar-chevron) { color: var(--text); stroke-width: 2.1px; }
 
-.admin-nav-item.is-active svg:not(.sidebar-chevron) { color: #fff; stroke-width: 2.1px; }
+/* Grupo ativo (Empresas, Anfitriões): o link dentro da linha cinza também
+   fica com texto e ícone escuros. */
+.admin-nav-grupo-linha.is-active .admin-nav-item { background: transparent; color: var(--text); }
+.admin-nav-grupo-linha.is-active .admin-nav-item svg:not(.sidebar-chevron) { color: var(--text); stroke-width: 2.1px; }
 
 .sidebar-chevron {
   width: 15px;

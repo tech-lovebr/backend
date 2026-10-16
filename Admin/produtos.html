@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=56">
+  <link rel="stylesheet" href="css/admin.css?v=57">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -44,11 +44,47 @@
 
         <div id="page-controls" hidden>
           <input type="search" class="search-input" id="busca" placeholder="Buscar produto, serviço ou empresa...">
-          <button type="button" class="btn btn-ghost" id="btn-filtros">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
-            <span>Filtros</span>
-            <span class="filtro-badge" id="filtro-badge" hidden></span>
-          </button>
+          <div class="filtro-wrap">
+            <button type="button" class="btn btn-ghost" id="btn-filtros" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z" /></svg>
+              <span>Filtrar por</span>
+              <span class="filtro-badge" id="filtro-badge" hidden></span>
+            </button>
+
+            <div class="filtro-menu filtro-menu-largo" id="filtro-menu" hidden>
+              <label class="field">
+                <span class="field-label">Categoria</span>
+                <select class="field-select" id="filtro-categoria"><option value="">Todas as categorias</option></select>
+              </label>
+              <label class="field">
+                <span class="field-label">Status</span>
+                <select class="field-select" id="filtro-status"><option value="">Todos os status</option></select>
+              </label>
+              <label class="field">
+                <span class="field-label">UC — unidade de cobrança</span>
+                <select class="field-select" id="filtro-uc"><option value="">Todas as unidades</option></select>
+              </label>
+              <label class="field">
+                <span class="field-label">Período dos cliques</span>
+                <select class="field-select" id="filtro-periodo"></select>
+              </label>
+              <label class="field" id="campo-periodo-dia" hidden>
+                <span class="field-label">Data</span>
+                <input class="field-input" type="date" id="filtro-dia">
+              </label>
+              <div class="field-row" id="campo-periodo-intervalo" hidden>
+                <label class="field">
+                  <span class="field-label">De</span>
+                  <input class="field-input" type="date" id="filtro-inicio">
+                </label>
+                <label class="field">
+                  <span class="field-label">Até</span>
+                  <input class="field-input" type="date" id="filtro-fim">
+                </label>
+              </div>
+              <button type="button" class="filtro-limpar" id="limpar-filtros">Limpar filtros</button>
+            </div>
+          </div>
         </div>
 
         <div class="barra-selecao" id="barra-selecao" hidden>
@@ -73,6 +109,6 @@
     </div>
   </div>
 
-  <script src="js/produtos.js?v=3"></script>
+  <script src="js/produtos.js?v=4"></script>
 </body>
 </html>

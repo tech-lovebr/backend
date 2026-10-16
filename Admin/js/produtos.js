@@ -5,8 +5,8 @@
    quantos cliques cada um recebeu na vitrine dos anfitriões
    (produto_cliques, migration 054).
 
-   Categoria, UC, status e período ficam num drawer só, aberto pelo botão
-   Filtros. O período recorta a contagem de cliques.
+   Categoria, UC, status e período ficam no dropdown "Filtrar por", igual ao
+   de Cadastro de empresas. O período recorta a contagem de cliques.
 
    Seleção em massa (igual a Empresas › Cadastros): marcar linhas e
    Suspender, Reativar ou Excluir. Suspender usa admin_suspender_servicos
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ligarSelecao();
 
   document.getElementById('busca').addEventListener('input', render);
-  document.getElementById('btn-filtros').addEventListener('click', abrirFiltros);
+  montarMenuDeFiltros();
 
   addHeaderAction('Exportar', () => exportarCSV('servicos-produtos', [
     { titulo: 'Produto/Serviço', valor: i => i.titulo },
@@ -212,112 +212,78 @@ function rotuloDoPeriodo() {
   return PERIODOS[FILTROS.periodo];
 }
 
-/* ------------------------------------------------------- Drawer de filtros */
+/* --------------------------------------------- Menu de filtros (dropdown)
+   Mesmo dropdown de "Filtrar por" de Cadastro de empresas: abre embaixo do
+   botão, aplica na hora a cada mudança e fecha ao clicar fora ou no Esc. */
 
-function abrirFiltros() {
-  const categorias = [...new Set(ITENS.map(i => i.categoria).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  const ucs = Object.entries(COBRANCA).filter(([tipo]) => ITENS.some(i => i.tipo === tipo));
+function montarMenuDeFiltros() {
+  const botao = document.getElementById('btn-filtros');
+  const menu = document.getElementById('filtro-menu');
+  const $ = id => document.getElementById(id);
+
+  const preencher = (id, pares) => {
+    const select = $(id);
+    pares.forEach(([valor, texto]) => {
+      const opt = document.createElement('option');
+      opt.value = valor;
+      opt.textContent = texto;
+      select.appendChild(opt);
+    });
+  };
+
+  preencher('filtro-categoria',
+    [...new Set(ITENS.map(i => i.categoria).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR')).map(c => [c, c]));
+  preencher('filtro-status', Object.entries(STATUS_SERVICO));
+  preencher('filtro-uc', Object.entries(COBRANCA).filter(([tipo]) => ITENS.some(i => i.tipo === tipo)));
+  preencher('filtro-periodo', Object.entries(PERIODOS));
+
   const hoje = isoLocal(new Date());
-  const opcao = (valor, texto, atual) => `<option value="${escapeHtml(valor)}" ${valor === atual ? 'selected' : ''}>${escapeHtml(texto)}</option>`;
+  ['filtro-dia', 'filtro-inicio', 'filtro-fim'].forEach(id => { $(id).max = hoje; });
 
-  Drawer.open({
-    title: 'Filtros',
-    subtitle: 'Serviços/Produtos do Hub',
-    body: `
-      <form id="form-filtros">
-        <label class="field">
-          <span class="field-label">Categoria</span>
-          <select class="field-select" name="categoria">
-            ${opcao('', 'Todas as categorias', FILTROS.categoria)}
-            ${categorias.map(c => opcao(c, c, FILTROS.categoria)).join('')}
-          </select>
-        </label>
+  const fechar = () => { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
 
-        <label class="field">
-          <span class="field-label">Status</span>
-          <select class="field-select" name="status">
-            ${opcao('', 'Todos os status', FILTROS.status)}
-            ${Object.entries(STATUS_SERVICO).map(([v, t]) => opcao(v, t, FILTROS.status)).join('')}
-          </select>
-        </label>
-
-        <label class="field">
-          <span class="field-label">UC — unidade de cobrança</span>
-          <select class="field-select" name="uc">
-            ${opcao('', 'Todas as unidades', FILTROS.uc)}
-            ${ucs.map(([v, t]) => opcao(v, t, FILTROS.uc)).join('')}
-          </select>
-        </label>
-
-        <p class="drawer-section-title">Período dos cliques</p>
-        <label class="field">
-          <span class="field-label">Período</span>
-          <select class="field-select" name="periodo" id="filtro-periodo">
-            ${Object.entries(PERIODOS).map(([v, t]) => opcao(v, t, FILTROS.periodo)).join('')}
-          </select>
-        </label>
-
-        <label class="field" data-periodo="dia" ${FILTROS.periodo === 'dia' ? '' : 'hidden'}>
-          <span class="field-label">Data</span>
-          <input class="field-input" type="date" name="dia" max="${hoje}" value="${escapeHtml(FILTROS.dia || hoje)}">
-        </label>
-
-        <div class="field-row" data-periodo="intervalo" ${FILTROS.periodo === 'intervalo' ? '' : 'hidden'}>
-          <label class="field">
-            <span class="field-label">De</span>
-            <input class="field-input" type="date" name="inicio" max="${hoje}" value="${escapeHtml(FILTROS.inicio)}">
-          </label>
-          <label class="field">
-            <span class="field-label">Até</span>
-            <input class="field-input" type="date" name="fim" max="${hoje}" value="${escapeHtml(FILTROS.fim)}">
-          </label>
-        </div>
-
-        ${CLIQUES_OK ? '' : `
-          <p class="cell-muted" style="font-size:.75rem;line-height:1.6">
-            A contagem de cliques ainda não existe no banco. Rode
-            supabase/migrations/054_produto_cliques.sql no Supabase.
-          </p>`}
-      </form>`,
-    footer: `
-      <button type="button" class="btn btn-ghost" id="btn-limpar-filtros">Limpar</button>
-      <button type="button" class="btn btn-primary" id="btn-aplicar-filtros">Aplicar</button>`
+  botao.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    botao.setAttribute('aria-expanded', String(!menu.hidden));
   });
+  menu.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 
-  const form = document.getElementById('form-filtros');
+  const aplicar = () => {
+    const periodo = $('filtro-periodo').value;
+    $('campo-periodo-dia').hidden = periodo !== 'dia';
+    $('campo-periodo-intervalo').hidden = periodo !== 'intervalo';
+    if (periodo === 'dia' && !$('filtro-dia').value) $('filtro-dia').value = hoje;
 
-  document.getElementById('filtro-periodo').addEventListener('change', e => {
-    form.querySelectorAll('[data-periodo]').forEach(el => { el.hidden = el.dataset.periodo !== e.target.value; });
-  });
-
-  document.getElementById('btn-limpar-filtros').addEventListener('click', () => {
-    Object.assign(FILTROS, { categoria: '', uc: '', status: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null });
-    Drawer.close();
-    render();
-  });
-
-  document.getElementById('btn-aplicar-filtros').addEventListener('click', () => {
-    const d = Object.fromEntries(new FormData(form).entries());
-
-    if (d.periodo === 'dia' && !d.dia) return toast('Escolha a data.');
-    if (d.periodo === 'intervalo') {
-      if (!d.inicio && !d.fim) return toast('Escolha ao menos uma das datas.');
-      if (d.inicio && d.fim && d.inicio > d.fim) return toast('A data inicial é depois da final.');
-    }
+    let inicio = $('filtro-inicio').value;
+    let fimData = $('filtro-fim').value;
+    if (inicio && fimData && inicio > fimData) [inicio, fimData] = [fimData, inicio];
 
     Object.assign(FILTROS, {
-      categoria: d.categoria,
-      uc: d.uc,
-      status: d.status,
-      periodo: d.periodo,
-      dia: d.dia || '',
-      inicio: d.inicio || '',
-      fim: d.fim || ''
+      categoria: $('filtro-categoria').value,
+      status: $('filtro-status').value,
+      uc: $('filtro-uc').value,
+      periodo,
+      dia: $('filtro-dia').value,
+      inicio,
+      fim: fimData
     });
-    Object.assign(FILTROS, intervaloDoPeriodo(FILTROS));
-
-    Drawer.close();
+    // Intervalo sem nenhuma data ainda conta como "todo o período".
+    const intervaloVazio = periodo === 'intervalo' && !inicio && !fimData;
+    Object.assign(FILTROS, intervaloVazio ? { de: null, ate: null } : intervaloDoPeriodo(FILTROS));
     render();
+  };
+
+  ['filtro-categoria', 'filtro-status', 'filtro-uc', 'filtro-periodo', 'filtro-dia', 'filtro-inicio', 'filtro-fim']
+    .forEach(id => $(id).addEventListener('change', aplicar));
+
+  $('limpar-filtros').addEventListener('click', () => {
+    ['filtro-categoria', 'filtro-status', 'filtro-uc', 'filtro-dia', 'filtro-inicio', 'filtro-fim'].forEach(id => { $(id).value = ''; });
+    $('filtro-periodo').value = 'tudo';
+    aplicar();
+    fechar();
   });
 }
 

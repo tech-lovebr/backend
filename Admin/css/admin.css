@@ -3214,3 +3214,7 @@ body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
 /* Drawer do serviço: miniaturas da galeria. */
 .produto-galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: .5rem; }
 .produto-galeria img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-control); border: 1px solid #E4E4E7; display: block; }
+
+/* Dropdown de filtros com mais campos (Serviços/Produtos). */
+.filtro-menu-largo { width: 300px; }
+.filtro-menu-largo .field-row { gap: .5rem; }

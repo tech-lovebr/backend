@@ -93,11 +93,35 @@ function subscribeToB2BMessages() {
   if (b2bMessagesChannel) supabaseClient.removeChannel(b2bMessagesChannel);
   b2bMessagesChannel = supabaseClient
     .channel('b2b-mensagens')
-    // Mensagem editada (aqui ou pelo anfitrião): redesenha com o texto novo.
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, async () => {
-      if (mensagemEmEdicaoId) return;
+    // Mensagem editada (aqui ou pelo anfitrião em love.com.br): troca o texto
+    // e o "(editado)" na memória com o que veio no evento (payload.new), sem
+    // recarregar tudo. UPDATE só de read_at (mensagem lida) não muda nada.
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, (payload) => {
+      const nova = payload && payload.new;
+      if (!nova || !nova.id) return;
+      const conv = b2bConversations.find(c => c.id === nova.conversation_id);
+      const idx = conv ? conv.messages.findIndex(m => m.id === nova.id) : -1;
+      if (idx < 0) return;
+      const msg = conv.messages[idx];
+      const texto = nova.text ?? null;
+      const editado = nova.edited_at || null;
+      if (texto === (msg.text ?? null) && editado === (msg.editedAt || null)) return;
+      msg.text = texto;
+      msg.editedAt = editado;
+      // É a última da conversa: a prévia na lista também muda.
+      if (idx === conv.messages.length - 1) conv.lastMessage = texto || (nova.attachment_url ? '[Anexo]' : '');
+      const searchInput = document.getElementById('chat-search-input');
+      renderContactsList(searchInput ? searchInput.value : '');
+      // Conversa aberta: redesenha (menos enquanto você edita uma mensagem,
+      // para não apagar o que está digitando).
+      if (conv.id === activeConvId && !mensagemEmEdicaoId) renderActiveChat();
+    })
+    // Mensagem apagada: recarrega as conversas.
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, async () => {
+      const searchInput = document.getElementById('chat-search-input');
       await loadB2BConversations();
-      renderActiveChat();
+      renderContactsList(searchInput ? searchInput.value : '');
+      if (!mensagemEmEdicaoId) renderActiveChat();
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
       const searchInput = document.getElementById('chat-search-input');

@@ -13914,6 +13914,26 @@ document.addEventListener('DOMContentLoaded', () => {
         await loadB2BConversationsData();
         atualizarContadoresDoChat();
       })
+      // Mensagem editada do outro lado (Hub) ou apagada: atualiza na hora,
+      // sem F5. Com a tela do chat aberta, redesenha; senão, só a cache.
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, async (payload) => {
+        const nova = payload && payload.new;
+        if (!nova || !nova.id) return;
+        const conv = b2bConversationsData.find(c => c.id === nova.conversation_id);
+        const msg = conv && conv.messages.find(m => m.id === nova.id);
+        if (msg) {
+          msg.text = nova.text;
+          msg.editedAt = nova.edited_at || null;
+          if (conv.messages[conv.messages.length - 1] === msg) conv.lastMessage = nova.text || (nova.attachment_url ? '[Anexo]' : '');
+        }
+        if (chatEstaVisivel()) { await renderB2BChat(); return; }
+        if (!msg) await loadB2BConversationsData();
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, async () => {
+        if (chatEstaVisivel()) { await renderB2BChat(); return; }
+        await loadB2BConversationsData();
+        atualizarContadoresDoChat();
+      })
       .subscribe();
   }
 

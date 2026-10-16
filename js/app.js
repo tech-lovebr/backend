@@ -1806,7 +1806,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const hubLocText = document.getElementById('dash-hub-event-location-text');
     const hasLocation = activeEvent.location && activeEvent.location.trim() !== '' && activeEvent.location !== 'Adicionar Local';
     if (hubDateText) hubDateText.textContent = formatEventDateLong(activeEvent.date) || '18 de Outubro de 2025';
-    if (hubLocText) hubLocText.textContent = hasLocation ? activeEvent.location : 'Local do evento';
+    // Mostra o endereço (Informações); só sem endereço cai no nome do espaço.
+    if (hubLocText) hubLocText.textContent = enderecoDoEventoAtivo() || (hasLocation ? activeEvent.location : 'Local do evento');
 
     // Atualização dos Convites Enviados — total de convidados da lista
     // (nunca um número de mentira: um evento novo de verdade tem zero).
@@ -13152,7 +13153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const ev = getActiveEvent();
       const convidados = ev ? (ev.totalConvidados || (ev.guests || []).length || null) : null;
       const data = dataEventoAtivoTexto();
-      const texto = textoDoPedidoOrcamento(item, servico, data, convidados, '');
+      const texto = textoDoPedidoOrcamento(item, servico, data, convidados, '', enderecoDoEventoAtivo());
       const nome = getGuestCommentAuthorName();
       const email = (window.loveClienteProfile && window.loveClienteProfile.email) || window.loveClienteSession.user.email || '';
 
@@ -13190,6 +13191,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Endereço do evento ativo (Informações): "Rua X, 250, Indaiatuba - SP".
+  // É o que vai para o fornecedor — o nome do espaço ("churrasqueira do
+  // prédio") sozinho não diz onde é.
+  function enderecoDoEventoAtivo() {
+    const ev = getActiveEvent();
+    const d = (ev && ev.eventDetails) || {};
+    const rua = String(d.address || '').trim();
+    const cidade = [String(d.city || '').trim(), String(d.state || '').trim()].filter(Boolean).join(' - ');
+    return [rua, cidade].filter(Boolean).join(', ');
+  }
+
   function dataEventoAtivoTexto() {
     const ev = getActiveEvent();
     const iso = ev && ((ev.eventDetails && ev.eventDetails.date) || ev.date);
@@ -13220,6 +13232,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dataEl) dataEl.value = dataEventoAtivoTexto();
     const convEl = document.getElementById('orcamento-convidados');
     if (convEl) convEl.value = (ev && Array.isArray(ev.guests) && ev.guests.length) ? ev.guests.length : '';
+    // Local: o endereço salvo em Informações já vem escolhido; "Outro
+    // endereço…" abre um campo para digitar.
+    const localSel = document.getElementById('orcamento-local');
+    const localOutro = document.getElementById('orcamento-local-outro');
+    if (localSel) {
+      const endereco = enderecoDoEventoAtivo();
+      localSel.innerHTML = (endereco ? `<option value="${escaparHtml(endereco)}">${escaparHtml(endereco)}</option>` : '')
+        + '<option value="__outro">Outro endereço…</option>';
+      localSel.value = endereco || '__outro';
+      if (localOutro) { localOutro.value = ''; localOutro.classList.toggle('hidden', !!endereco); }
+      if (!localSel.dataset.bound) {
+        localSel.dataset.bound = '1';
+        localSel.addEventListener('change', () => {
+          const outro = localSel.value === '__outro';
+          localOutro?.classList.toggle('hidden', !outro);
+          if (outro) localOutro?.focus();
+        });
+      }
+    }
     const msgEl = document.getElementById('orcamento-mensagem');
     if (msgEl) msgEl.value = '';
     document.getElementById('orcamento-form')?.classList.remove('hidden');
@@ -13230,13 +13261,14 @@ document.addEventListener('DOMContentLoaded', () => {
     openModal(modal);
   }
 
-  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem) {
+  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local) {
     const ev = getActiveEvent();
     return [
       'Pedido de orçamento' + (servico ? ` — ${servico.name}` : ''),
       ev && ev.title ? `Evento: ${ev.title}` : '',
       data ? `Data: ${data}` : '',
       convidados ? `Convidados: ${convidados}` : '',
+      local ? `Local: ${local}` : '',
       mensagem ? `Mensagem: ${mensagem}` : ''
     ].filter(Boolean).join('\n');
   }
@@ -13256,9 +13288,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = (document.getElementById('orcamento-data')?.value || '').trim();
     const convidados = parseInt(document.getElementById('orcamento-convidados')?.value, 10) || null;
     const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();
+    const localSel = document.getElementById('orcamento-local');
+    const local = localSel && localSel.value === '__outro'
+      ? (document.getElementById('orcamento-local-outro')?.value || '').trim()
+      : ((localSel && localSel.value) || '');
     const nome = getGuestCommentAuthorName();
     const email = (window.loveClienteProfile && window.loveClienteProfile.email) || window.loveClienteSession.user.email || '';
-    const texto = textoDoPedidoOrcamento(item, servico, data, convidados, mensagem);
+    const texto = textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local);
 
     const { error } = await supabaseClient.rpc('solicitar_orcamento', {
       p_fornecedor_id: item.id,

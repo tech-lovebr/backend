@@ -1005,7 +1005,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       if (logoLight) logoLight.classList.remove('hidden');
       if (logoDark) logoDark.classList.add('hidden');
-      if (iconLight) iconLight.classList.hidden = false;
       if (logoLight) logoLight.style.display = '';
       if (logoDark) logoDark.classList.add('hidden');
       if (iconLight) iconLight.classList.remove('hidden');
@@ -5619,7 +5618,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (inp.value && inp.value.trim()) newPrefaces.push(inp.value.trim());
         });
         builderState.prefaces = newPrefaces;
-        renderPrefacesList();
       }
 
       updateLiveSitePreview();
@@ -15244,10 +15242,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btnInfoOpenPublic.addEventListener('click', (e) => {
       e.preventDefault();
       const activeEvent = getActiveEvent();
-      state.selectedPublicWedding = activeEvent.slug;
-      switchView('public');
-      renderPublicWeddingPage(activeEvent.slug);
-      showToast(`Visualizando site público de "${activeEvent.title}"`, '🌐');
+      if (!activeEvent || !activeEvent.slug) return;
+      window.open(activeEvent.publicUrl || `/${encodeURIComponent(activeEvent.slug)}`, '_blank', 'noopener');
     });
   }
 

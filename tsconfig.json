@@ -1,0 +1,24 @@
+{
+  // Verificação de tipos do JavaScript da plataforma (love.com.br), sem
+  // converter nada: o TypeScript só lê os .js e aponta erros. Nada aqui muda
+  // o site — o navegador continua recebendo os mesmos arquivos.
+  // Rodar: npm run checar
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": false,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": [
+    "types/*.d.ts",
+    "js/app.js",
+    "js/site-builder.js",
+    "js/supabase-init.js"
+  ]
+}

@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "checar": "tsc -p tsconfig.json"
   },
   "keywords": [
     "love",
@@ -17,5 +18,8 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1138.0",
     "@supabase/supabase-js": "^2.116.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
   }
 }

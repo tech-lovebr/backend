@@ -3218,3 +3218,8 @@ body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
 /* Dropdown de filtros com mais campos (Serviços/Produtos). */
 .filtro-menu-largo { width: 300px; }
 .filtro-menu-largo .field-row { gap: .5rem; }
+
+/* Filtro de local: estado e cidade lado a lado dentro do dropdown. */
+.filtro-local { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: .5rem; }
+.filtro-local .field-select,
+.filtro-local .field-input { width: 100%; min-width: 0; }

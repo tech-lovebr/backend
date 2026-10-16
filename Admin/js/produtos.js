@@ -5,8 +5,9 @@
    quantos cliques cada um recebeu na vitrine dos anfitriões
    (produto_cliques, migration 054).
 
-   Categoria, UC, status e período ficam no dropdown "Filtrar por", igual ao
-   de Cadastro de empresas. O período recorta a contagem de cliques.
+   Categoria, status, estado e cidade ficam no dropdown "Filtrar por", igual
+   ao de Cadastro de empresas. A cidade é buscada sem diferença de acento
+   nem de maiúscula ("sao paulo" acha "São Paulo"). O período recorta a contagem de cliques.
 
    Seleção em massa (igual a Empresas › Cadastros): marcar linhas e
    Suspender, Reativar ou Excluir. Suspender usa admin_suspender_servicos
@@ -41,7 +42,7 @@ const EXTRAS = { leads: [], favoritos: [], sites: new Map() };
 let CLIQUES_OK = true;
 
 /** Filtros aplicados. `de`/`ate` são Date (início e fim do dia) ou null. */
-const FILTROS = { categoria: '', uc: '', status: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null };
+const FILTROS = { categoria: '', uc: '', status: '', estado: '', cidade: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null };
 
 const STATUS_SERVICO = { ativo: 'Ativo', inativo: 'Inativo', suspenso: 'Suspenso' };
 const statusDe = i => (i.suspenso ? 'suspenso' : i.ativo ? 'ativo' : 'inativo');
@@ -143,6 +144,8 @@ function montarItem(p, fornecedor) {
     empresa: (fornecedor && fornecedor.company_name) || '',
     fornecedorId: p.fornecedor_id,
     local: [cidade, estado].filter(Boolean).join(' / '),
+    cidade,
+    estado: String(estado || '').trim().toUpperCase(),
     tipo: tipo || '',
     cobranca: COBRANCA[tipo] || '',
     ativo: p.active !== false,
@@ -234,11 +237,8 @@ function montarMenuDeFiltros() {
   preencher('filtro-categoria',
     [...new Set(ITENS.map(i => i.categoria).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR')).map(c => [c, c]));
   preencher('filtro-status', Object.entries(STATUS_SERVICO));
-  preencher('filtro-uc', Object.entries(COBRANCA).filter(([tipo]) => ITENS.some(i => i.tipo === tipo)));
-  preencher('filtro-periodo', Object.entries(PERIODOS));
-
-  const hoje = isoLocal(new Date());
-  ['filtro-dia', 'filtro-inicio', 'filtro-fim'].forEach(id => { $(id).max = hoje; });
+  preencher('filtro-estado',
+    [...new Set(ITENS.map(i => i.estado).filter(Boolean))].sort().map(uf => [uf, uf]));
 
   const fechar = () => { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
 
@@ -252,43 +252,32 @@ function montarMenuDeFiltros() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 
   const aplicar = () => {
-    const periodo = $('filtro-periodo').value;
-    $('campo-periodo-dia').hidden = periodo !== 'dia';
-    $('campo-periodo-intervalo').hidden = periodo !== 'intervalo';
-    if (periodo === 'dia' && !$('filtro-dia').value) $('filtro-dia').value = hoje;
-
-    let inicio = $('filtro-inicio').value;
-    let fimData = $('filtro-fim').value;
-    if (inicio && fimData && inicio > fimData) [inicio, fimData] = [fimData, inicio];
-
     Object.assign(FILTROS, {
       categoria: $('filtro-categoria').value,
       status: $('filtro-status').value,
-      uc: $('filtro-uc').value,
-      periodo,
-      dia: $('filtro-dia').value,
-      inicio,
-      fim: fimData
+      estado: $('filtro-estado').value,
+      cidade: semAcento($('filtro-cidade').value.trim())
     });
-    // Intervalo sem nenhuma data ainda conta como "todo o período".
-    const intervaloVazio = periodo === 'intervalo' && !inicio && !fimData;
-    Object.assign(FILTROS, intervaloVazio ? { de: null, ate: null } : intervaloDoPeriodo(FILTROS));
     render();
   };
 
-  ['filtro-categoria', 'filtro-status', 'filtro-uc', 'filtro-periodo', 'filtro-dia', 'filtro-inicio', 'filtro-fim']
-    .forEach(id => $(id).addEventListener('change', aplicar));
+  ['filtro-categoria', 'filtro-status', 'filtro-estado'].forEach(id => $(id).addEventListener('change', aplicar));
+  $('filtro-cidade').addEventListener('input', aplicar);
 
   $('limpar-filtros').addEventListener('click', () => {
-    ['filtro-categoria', 'filtro-status', 'filtro-uc', 'filtro-dia', 'filtro-inicio', 'filtro-fim'].forEach(id => { $(id).value = ''; });
-    $('filtro-periodo').value = 'tudo';
+    ['filtro-categoria', 'filtro-status', 'filtro-estado', 'filtro-cidade'].forEach(id => { $(id).value = ''; });
     aplicar();
     fechar();
   });
 }
 
+/** Minúsculas e sem acento, para comparar "São Paulo" com "sao paulo". */
+function semAcento(texto) {
+  return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
 function atualizarBotaoDeFiltros() {
-  const ativos = [FILTROS.categoria, FILTROS.uc, FILTROS.status, FILTROS.periodo !== 'tudo'].filter(Boolean).length;
+  const ativos = [FILTROS.categoria, FILTROS.status, FILTROS.estado, FILTROS.cidade].filter(Boolean).length;
   const badgeEl = document.getElementById('filtro-badge');
   badgeEl.textContent = ativos;
   badgeEl.hidden = !ativos;
@@ -315,8 +304,9 @@ function filtrar() {
 
   return ITENS.filter(i => {
     if (FILTROS.categoria && i.categoria !== FILTROS.categoria) return false;
-    if (FILTROS.uc && i.tipo !== FILTROS.uc) return false;
     if (FILTROS.status && statusDe(i) !== FILTROS.status) return false;
+    if (FILTROS.estado && i.estado !== FILTROS.estado) return false;
+    if (FILTROS.cidade && !semAcento(i.cidade).includes(FILTROS.cidade)) return false;
     if (!termo) return true;
     return [i.titulo, i.empresa, i.categoria, i.subcategoria, i.local]
       .some(v => String(v || '').toLowerCase().includes(termo));

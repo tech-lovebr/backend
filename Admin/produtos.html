@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=57">
+  <link rel="stylesheet" href="css/admin.css?v=58">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -60,27 +60,12 @@
                 <span class="field-label">Status</span>
                 <select class="field-select" id="filtro-status"><option value="">Todos os status</option></select>
               </label>
-              <label class="field">
-                <span class="field-label">UC — unidade de cobrança</span>
-                <select class="field-select" id="filtro-uc"><option value="">Todas as unidades</option></select>
-              </label>
-              <label class="field">
-                <span class="field-label">Período dos cliques</span>
-                <select class="field-select" id="filtro-periodo"></select>
-              </label>
-              <label class="field" id="campo-periodo-dia" hidden>
-                <span class="field-label">Data</span>
-                <input class="field-input" type="date" id="filtro-dia">
-              </label>
-              <div class="field-row" id="campo-periodo-intervalo" hidden>
-                <label class="field">
-                  <span class="field-label">De</span>
-                  <input class="field-input" type="date" id="filtro-inicio">
-                </label>
-                <label class="field">
-                  <span class="field-label">Até</span>
-                  <input class="field-input" type="date" id="filtro-fim">
-                </label>
+              <div class="field">
+                <span class="field-label">Local</span>
+                <div class="filtro-local">
+                  <select class="field-select" id="filtro-estado" aria-label="Estado"><option value="">Estado</option></select>
+                  <input class="field-input" type="search" id="filtro-cidade" placeholder="Cidade" aria-label="Cidade" autocomplete="off">
+                </div>
               </div>
               <button type="button" class="filtro-limpar" id="limpar-filtros">Limpar filtros</button>
             </div>
@@ -109,6 +94,6 @@
     </div>
   </div>
 
-  <script src="js/produtos.js?v=4"></script>
+  <script src="js/produtos.js?v=5"></script>
 </body>
 </html>

@@ -7702,9 +7702,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return matchesFilter && matchesSearch;
     }).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }));
 
+    // O parêntese ao lado de "Convidados" mostra só quantos estão marcados
+    // (ver atualizarLixeiraDeConvidados); o total já aparece nas abas acima.
     const footerCountEl = document.getElementById('rsvp-footer-count');
     if (footerCountEl) {
-      footerCountEl.textContent = `(${somaPessoas(filteredGuests)})`;
+      footerCountEl.textContent = '';
     }
 
     if (filteredGuests.length === 0) {
@@ -7829,6 +7831,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.title = qtd === 1 ? 'Excluir 1 convidado selecionado' : `Excluir ${qtd} convidados selecionados`;
     }
     const checks = Array.from(document.querySelectorAll('#rsvp-guests-table-body .guest-select-check'));
+    const contagem = document.getElementById('rsvp-footer-count');
+    if (contagem) contagem.textContent = convidadosSelecionados.size ? `(${convidadosSelecionados.size})` : '';
     const todos = document.getElementById('rsvp-select-all');
     if (todos) {
       const marcados = checks.filter(c => c.checked).length;

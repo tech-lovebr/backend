@@ -7499,3 +7499,35 @@ body[data-theme="dark"] .portfolio-item-rotulo { color: #D4D4D8 !important; }
 .settings-seguranca-linhas .settings-switch-row:last-child { border-bottom: none; padding-bottom: 0; }
 body[data-theme="dark"] .settings-seguranca-linhas { border-top-color: #404040 !important; }
 body[data-theme="dark"] .settings-seguranca-linhas .settings-switch-row { border-bottom-color: #333333 !important; }
+
+/* ===== Vendas › Orçamentos: lista + proposta ===== */
+.status-badge.status-orc-pendente,
+.status-badge.status-orc-analise,
+.status-badge.status-orc-aceito { border: none; border-radius: 0; }
+.status-badge.status-orc-pendente { background: #FEF7E6; color: #92580B; }
+.status-badge.status-orc-analise { background: #EEF3F8; color: #183b54; }
+.status-badge.status-orc-aceito { background: #F2F7EF; color: #3F6A2C; }
+.b2b-breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8125rem; color: #71717A; }
+.b2b-breadcrumb-link { background: none; border: 0; padding: 0; color: #71717A; font: inherit; cursor: pointer; }
+.b2b-breadcrumb-link:hover { color: #181D24; text-decoration: underline; }
+.b2b-breadcrumb-atual { color: #181D24; font-weight: 500; }
+.proposal-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.field-input.proposal-campo-fixo,
+.proposal-fieldset:disabled .field-input,
+.proposal-fieldset:disabled .field-select { background: #F4F4F5 !important; color: #52525B; cursor: default; }
+.proposal-fieldset:disabled .proposal-cell-input { background: transparent; color: #3F3F46; }
+.proposal-fieldset:disabled [data-remove-item] { display: none; }
+.proposal-condicoes { border: 1px solid #E4E4E7; border-radius: 10px; padding: 0.875rem 1rem; background: #FAFAFA; }
+.proposal-condicoes-titulo { font-size: 0.8125rem; font-weight: 600; color: #181D24; margin: 0 0 0.5rem; }
+.proposal-condicoes-linha { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.8125rem; color: #52525B; padding: 0.25rem 0; border-top: 1px solid #EFEFF1; }
+.proposal-condicoes-linha:first-of-type { border-top: 0; }
+.proposal-condicoes-linha strong { color: #181D24; font-weight: 600; }
+.proposal-rodape { display: flex; align-items: center; justify-content: flex-end; gap: 1.25rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #E4E4E7; }
+.proposal-total { font-size: 0.9375rem; color: #52525B; margin: 0; }
+.proposal-total strong { color: #181D24; font-size: 1.0625rem; }
+.proposal-rodape[hidden], #orcamentos-form-view[hidden], #orcamentos-lista-view[hidden] { display: none !important; }
+body[data-theme="dark"] .proposal-condicoes { background: #1F1F1F; border-color: #333; }
+body[data-theme="dark"] .proposal-condicoes-titulo,
+body[data-theme="dark"] .proposal-condicoes-linha strong,
+body[data-theme="dark"] .proposal-total strong,
+body[data-theme="dark"] .b2b-breadcrumb-atual { color: #F4F4F5; }

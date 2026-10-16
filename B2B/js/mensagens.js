@@ -526,7 +526,7 @@ document.addEventListener('click', async (e) => {
 
   window.location.href = urlCriarOrcamento({
     leadId, clienteId: conv.clienteId, servico: pedido.servico,
-    data: pedido.data, convidados: pedido.convidados, evento: pedido.evento
+    data: pedido.data, convidados: pedido.convidados, evento: pedido.evento, local: pedido.local
   });
 });
 

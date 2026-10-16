@@ -1147,12 +1147,13 @@ function lerPedidoOrcamento(texto) {
     evento: campo('Evento'),
     data,
     convidados: parseInt(campo('Convidados'), 10) || null,
+    local: campo('Local') || campo('Endereço'),
     mensagem: campo('Mensagem')
   };
 }
 
 /* Endereço da Proposta (Vendas) já preenchida com o pedido. */
-function urlCriarOrcamento({ leadId, clienteId, servico, data, convidados, evento } = {}) {
+function urlCriarOrcamento({ leadId, clienteId, servico, data, convidados, evento, local } = {}) {
   const q = new URLSearchParams({ criar: 'orcamento' });
   if (leadId) q.set('lead', leadId);
   if (clienteId) q.set('cliente', clienteId);
@@ -1160,6 +1161,7 @@ function urlCriarOrcamento({ leadId, clienteId, servico, data, convidados, event
   if (data) q.set('data', data);
   if (convidados) q.set('convidados', String(convidados));
   if (evento) q.set('evento', evento);
+  if (local) q.set('local', local);
   return 'vendas?' + q.toString();
 }
 

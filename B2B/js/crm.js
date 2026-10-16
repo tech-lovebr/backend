@@ -498,7 +498,8 @@ function openLeadDrawer(id) {
         servico: (pedido && pedido.servico) || lead.event_name || '',
         data: (pedido && pedido.data) || lead.event_date || '',
         convidados: pedido && pedido.convidados,
-        evento: pedido && pedido.evento
+        evento: pedido && pedido.evento,
+        local: pedido && pedido.local
       });
     };
   }

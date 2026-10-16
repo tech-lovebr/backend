@@ -8,9 +8,10 @@ let bFinProducts = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
-  await Promise.all([loadNotasFiscais(), loadFinLeadsAndProducts()]);
+  await Promise.all([loadNotasFiscais(), loadFinLeadsAndProducts(), loadOrcamentos()]);
   initSalesViewTabs();
   await initProposalForm();
+  initOrcamentosLista();
   await preencherPropostaDoPedido();
   renderNotasFiscais();
   initNotasFiscaisActions();
@@ -35,8 +36,8 @@ async function loadFinLeadsAndProducts() {
   if (!session) { bFinLeads = []; bFinProducts = []; return; }
 
   const [leadsRes, productsRes] = await Promise.all([
-    supabaseClient.from('leads').select('id, name').eq('fornecedor_id', session.user.id),
-    supabaseClient.from('products').select('id, name, price, category, extra').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('leads').select('id, name, email, cliente_id, comentarios, event_name, event_date').eq('fornecedor_id', session.user.id),
+    supabaseClient.from('products').select('id, name, price, category, extra, description').eq('fornecedor_id', session.user.id)
   ]);
 
   bFinLeads = leadsRes.data || [];
@@ -172,10 +173,7 @@ async function initProposalForm() {
   }
 
   const dateInput = document.getElementById('proposal-date');
-  if (dateInput) proposalDatePicker = initDatePicker(dateInput, todayIso());
-
-  const nextContactInput = document.getElementById('proposal-next-contact');
-  if (nextContactInput) proposalNextContactPicker = initDatePicker(nextContactInput, '');
+  if (dateInput) dateInput.value = new Date().toLocaleDateString('pt-BR');
 
   addProposalItemRow();
 
@@ -253,11 +251,7 @@ function populateProposalProductPicker() {
   select.onchange = () => {
     const product = bFinProducts.find(p => p.id === select.value);
     if (!product) return;
-    const row = addProposalItemRow();
-    const nameInput = row.querySelector('[data-item-name]');
-    nameInput.value = product.name;
-    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
-    select.value = '';
+    aplicarProdutoNaProposta(product);
   };
 }
 
@@ -337,6 +331,360 @@ async function searchProposalClients(q) {
   dropdown.hidden = false;
 }
 
+/* -------------------- Lista de orçamentos (padrão das tabelas) --------------------
+   Propostas enviadas (orcamentos) e pedidos de orçamento ainda sem proposta
+   (leads que vieram do "Solicitar orçamento" do love.com.br).
+   Status: Pendente (pedido sem proposta) · Em análise (enviada) · Aceito. */
+
+let bOrcamentos = [];
+let bOrcamentosPagos = new Set();
+let orcamentosTabelaEstado = null;
+let propostaModo = 'novo';            // 'novo' | 'pedido' | 'ver'
+let propostaProdutoId = null;
+
+const ORCAMENTO_STATUS = {
+  pendente: { label: 'Pendente', classe: 'status-orc-pendente' },
+  em_analise: { label: 'Em análise', classe: 'status-orc-analise' },
+  aceito: { label: 'Aceito', classe: 'status-orc-aceito' }
+};
+
+async function loadOrcamentos() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { bOrcamentos = []; return; }
+  const [orcRes, linksRes] = await Promise.all([
+    supabaseClient.from('orcamentos').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
+    supabaseClient.from('payment_links').select('orcamento_id, status').eq('fornecedor_id', session.user.id)
+  ]);
+  bOrcamentos = orcRes.data || [];
+  bOrcamentosPagos = new Set((linksRes.data || []).filter(l => l.status === 'pago' && l.orcamento_id).map(l => l.orcamento_id));
+}
+
+function formatarDataBR(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? String(iso) : d.toLocaleDateString('pt-BR');
+}
+
+// Linhas da tabela: orçamentos + pedidos pendentes (lead com pedido e sem orçamento).
+function linhasDeOrcamentos() {
+  const comOrcamento = new Set(bOrcamentos.map(o => o.lead_id).filter(Boolean));
+  const linhas = bOrcamentos.map(o => {
+    const aceito = o.status === 'aceito' || o.status === 'pago' || bOrcamentosPagos.has(o.id);
+    const produto = (o.produto_id && bFinProducts.find(p => p.id === o.produto_id)) || null;
+    const primeiroItem = Array.isArray(o.itens) && o.itens[0] ? o.itens[0].name : '';
+    return {
+      tipo: 'orcamento', id: o.id, numero: o.numero || null, cliente: o.cliente_nome,
+      produto: (produto && produto.name) || primeiroItem || '',
+      data: formatarDataBR(o.created_at), dataEvento: o.data_evento || '',
+      valor: Number(o.valor_total) || 0, status: aceito ? 'aceito' : 'em_analise', registro: o
+    };
+  });
+  bFinLeads.forEach(l => {
+    const pedido = typeof pedidoDoLead === 'function' ? pedidoDoLead(l) : null;
+    if (!pedido || comOrcamento.has(l.id)) return;
+    const comentarios = Array.isArray(l.comentarios) ? l.comentarios : [];
+    const ultimo = comentarios.filter(c => String(c.id || '').startsWith('pedido-')).pop();
+    linhas.push({
+      tipo: 'pedido', id: l.id, numero: null, cliente: l.name,
+      produto: pedido.servico || l.event_name || '', data: formatarDataBR(ultimo && ultimo.at),
+      dataEvento: pedido.data || l.event_date || '', valor: null, status: 'pendente', lead: l, pedido
+    });
+  });
+  // Pendentes primeiro.
+  return linhas.sort((a, b) => (a.status === 'pendente' ? 0 : 1) - (b.status === 'pendente' ? 0 : 1));
+}
+
+function orcamentosFiltrados() {
+  const est = orcamentosTabelaEstado || { busca: '', filtros: {} };
+  return linhasDeOrcamentos().filter(r =>
+    (!est.filtros.status || r.status === est.filtros.status) &&
+    tabelaBateBusca(est, [r.cliente, r.produto, r.numero, r.dataEvento]));
+}
+
+function renderOrcamentos() {
+  const body = document.getElementById('orcamentos-body');
+  if (!body) return;
+  const linhas = orcamentosFiltrados();
+  if (!linhas.length) {
+    body.innerHTML = `<tr><td colspan="8" class="text-sm text-zinc-500 py-6 text-center">Nenhum orçamento ainda. Clique em "Novo orçamento" para criar o primeiro.</td></tr>`;
+    return;
+  }
+  body.innerHTML = linhas.map((r, i) => {
+    const st = ORCAMENTO_STATUS[r.status];
+    return `
+      <tr>
+        <td class="col-id">${r.numero || '—'}</td>
+        <td class="col-principal">${escapeHtml(r.cliente || '')}</td>
+        <td>${escapeHtml(r.produto || '—')}</td>
+        <td>${escapeHtml(r.data || '—')}</td>
+        <td>${escapeHtml(r.dataEvento || '—')}</td>
+        <td>${r.valor == null ? '—' : formatCurrency(r.valor)}</td>
+        <td><span class="status-badge ${st.classe}">${st.label}</span></td>
+        ${tabelaVerMaisHtml('data-orcamento-linha', i)}
+      </tr>`;
+  }).join('');
+  body.querySelectorAll('[data-orcamento-linha]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = linhas[Number(btn.dataset.orcamentoLinha)];
+      if (!r) return;
+      if (r.tipo === 'pedido') abrirPropostaDoPedido({ lead: r.lead, pedido: r.pedido });
+      else abrirPropostaParaVer(r.registro, r.status);
+    });
+  });
+}
+
+function initOrcamentosLista() {
+  orcamentosTabelaEstado = montarBarraTabela(document.getElementById('orcamentos-table-card'), {
+    placeholder: 'Buscar cliente ou serviço...',
+    filtros: [{ chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(ORCAMENTO_STATUS).map(([k, v]) => [k, v.label]) }],
+    exportar: () => tabelaExportarCSV('orcamentos', [
+      { titulo: 'Nº', valor: r => r.numero || '' },
+      { titulo: 'Cliente', valor: r => r.cliente },
+      { titulo: 'Produto/serviço', valor: r => r.produto },
+      { titulo: 'Data', valor: r => r.data },
+      { titulo: 'Data do evento', valor: r => r.dataEvento },
+      { titulo: 'Valor', valor: r => (r.valor == null ? '' : r.valor) },
+      { titulo: 'Status', valor: r => ORCAMENTO_STATUS[r.status].label }
+    ], orcamentosFiltrados()),
+    aoMudar: () => renderOrcamentos()
+  });
+  document.getElementById('orcamento-novo-btn')?.addEventListener('click', () => abrirPropostaNova());
+  document.getElementById('proposal-voltar')?.addEventListener('click', () => mostrarListaOrcamentos());
+  document.getElementById('proposal-send-btn')?.addEventListener('click', () => saveProposal());
+  renderOrcamentos();
+}
+
+/* -------------------- Telas: lista × proposta -------------------- */
+
+function mostrarListaOrcamentos() {
+  document.getElementById('orcamentos-form-view').hidden = true;
+  document.getElementById('orcamentos-lista-view').hidden = false;
+  renderOrcamentos();
+}
+
+function mostrarFormularioProposta(titulo) {
+  const aba = document.querySelector('#sales-view-tabs [data-view="orcamentos"]');
+  if (aba && !aba.classList.contains('active')) aba.click();
+  document.getElementById('orcamentos-lista-view').hidden = true;
+  document.getElementById('orcamentos-form-view').hidden = false;
+  document.getElementById('proposal-titulo').textContent = titulo;
+  document.getElementById('proposal-titulo-atual').textContent = titulo;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hojeBR() {
+  return new Date().toLocaleDateString('pt-BR');
+}
+
+async function prepararFormularioVazio(modo) {
+  propostaModo = modo;
+  propostaProdutoId = null;
+  proposalSelectedLeadId = null;
+  proposalSelectedClienteId = null;
+  document.getElementById('proposal-fieldset').disabled = modo === 'ver';
+  document.getElementById('proposal-rodape').hidden = modo === 'ver';
+  document.getElementById('proposal-status-badge').hidden = true;
+  document.getElementById('proposal-client').value = '';
+  document.getElementById('proposal-intro').value = '';
+  document.getElementById('proposal-event-date').value = '';
+  document.getElementById('proposal-address').value = '';
+  const guests = document.getElementById('proposal-guests');
+  guests.value = '';
+  guests.readOnly = false;
+  guests.classList.remove('proposal-campo-fixo');
+  document.getElementById('proposal-date').value = hojeBR();
+  document.getElementById('proposal-extra-items').innerHTML = '';
+  document.getElementById('proposal-items-body').innerHTML = '';
+  document.getElementById('proposal-condicoes').hidden = true;
+  const cat = document.getElementById('proposal-category');
+  if (cat) { cat.value = ''; populateProposalProductPicker(); }
+  renderProposalSellerField();
+  renderProposalCompanyAndCnpj();
+  addProposalItemRow();
+  await refreshProposalNumber();
+  atualizarTotalProposta();
+}
+
+async function abrirPropostaNova() {
+  await prepararFormularioVazio('novo');
+  mostrarFormularioProposta('Nova proposta');
+}
+
+/* Pedido de orçamento (chat do love.com.br): cliente, data do evento,
+   convidados (travado), endereço, categoria, serviço e introdução já vêm
+   preenchidos. */
+async function abrirPropostaDoPedido({ lead, pedido, clienteId, servico, data, convidados, evento, endereco }) {
+  await prepararFormularioVazio('pedido');
+  pedido = pedido || {};
+  const nomeServico = (pedido.servico || servico || (lead && lead.event_name) || '').trim();
+  const dataEvento = pedido.data || data || (lead && lead.event_date) || '';
+  const qtd = pedido.convidados || convidados || null;
+  const local = pedido.local || endereco || '';
+
+  if (lead) {
+    document.getElementById('proposal-client').value = lead.name || '';
+    proposalSelectedLeadId = lead.id;
+  } else if (clienteId) {
+    const { data: c } = await supabaseClient.from('clientes').select('id, couple_name, email').eq('id', clienteId).maybeSingle();
+    if (c) { document.getElementById('proposal-client').value = c.couple_name || c.email; proposalSelectedClienteId = c.id; }
+  }
+  document.getElementById('proposal-event-date').value = dataEvento;
+  document.getElementById('proposal-address').value = local;
+  if (qtd) {
+    const guests = document.getElementById('proposal-guests');
+    guests.value = String(qtd);
+    guests.readOnly = true;            // o anfitrião já informou no pedido
+    guests.classList.add('proposal-campo-fixo');
+  }
+  const produto = nomeServico && bFinProducts.find(p => (p.name || '').trim().toLowerCase() === nomeServico.toLowerCase());
+  if (produto) aplicarProdutoNaProposta(produto);
+  else if (evento) document.getElementById('proposal-intro').value = 'Proposta para ' + evento + '.';
+  mostrarFormularioProposta('Proposta do pedido');
+}
+
+/* Orçamento já enviado: abre só para ver (sem editar nem reenviar). */
+async function abrirPropostaParaVer(o, status) {
+  await prepararFormularioVazio('ver');
+  document.getElementById('proposal-client').value = o.cliente_nome || '';
+  document.getElementById('proposal-date').value = formatarDataBR(o.created_at);
+  document.getElementById('proposal-event-date').value = o.data_evento || '';
+  document.getElementById('proposal-guests').value = o.convidados || '';
+  document.getElementById('proposal-address').value = o.endereco_evento || '';
+  document.getElementById('proposal-intro').value = o.introducao || '';
+  if (o.numero) document.getElementById('proposal-number').value = String(o.numero);
+  const body = document.getElementById('proposal-items-body');
+  body.innerHTML = '';
+  (Array.isArray(o.itens) ? o.itens : []).forEach(it => {
+    const row = addProposalItemRow();
+    row.querySelector('[data-item-name]').value = it.name || '';
+    row.querySelector('[data-item-unit]').value = it.unit || '';
+    row.querySelector('[data-item-qty]').value = it.qty ?? '';
+    row.querySelector('[data-item-discount]').value = it.discount ?? 0;
+    row.querySelector('[data-item-unit-price]').value = it.unitPrice ?? 0;
+    row.querySelector('[data-item-total]').textContent = formatCurrency(it.total || 0);
+  });
+  if (!body.children.length) addProposalItemRow();
+  atualizarTotalProposta(Number(o.valor_total) || 0);
+  const badge = document.getElementById('proposal-status-badge');
+  const st = ORCAMENTO_STATUS[status];
+  badge.className = 'status-badge ' + st.classe;
+  badge.textContent = st.label;
+  badge.hidden = false;
+  mostrarFormularioProposta('Proposta nº ' + (o.numero || '—'));
+}
+
+/* -------------------- Serviço escolhido: cobrança e itens -------------------- */
+
+function textoCobrancaDoProduto(p) {
+  const pr = (p.extra && p.extra.pricing) || null;
+  const linhas = [];
+  if (pr && pr.type === 'POR_PESSOA' && pr.perPerson) {
+    linhas.push(['Unidade de cobrança', 'Por pessoa']);
+    linhas.push(['Valor por pessoa', formatCurrency(pr.perPerson.pricePerPerson || 0)]);
+    if (pr.perPerson.minPeople) linhas.push(['Mínimo de pessoas', String(pr.perPerson.minPeople)]);
+    if (pr.perPerson.maxPeople) linhas.push(['Máximo de pessoas', String(pr.perPerson.maxPeople)]);
+  } else if (pr && pr.type === 'POR_HORA' && pr.perHour) {
+    linhas.push(['Unidade de cobrança', 'Por hora']);
+    linhas.push(['Valor da hora', formatCurrency(pr.perHour.pricePerHour || 0)]);
+    if (pr.perHour.minHours) linhas.push(['Mínimo de horas', String(pr.perHour.minHours)]);
+    if (pr.perHour.extraHourPrice) linhas.push(['Hora adicional', formatCurrency(pr.perHour.extraHourPrice)]);
+  } else if (pr && pr.type === 'VALOR_FIXO' && pr.fixed) {
+    linhas.push(['Unidade de cobrança', 'Valor fixo']);
+    linhas.push(['Valor total do pacote', formatCurrency(pr.fixed.price || 0)]);
+    if (pr.fixed.durationValue) linhas.push(['Duração/permanência', `${pr.fixed.durationValue} ${pr.fixed.durationUnit || 'horas'}`]);
+  } else if (pr && pr.type === 'SOB_CONSULTA') {
+    linhas.push(['Unidade de cobrança', 'Sob consulta']);
+    const inicial = pr.onRequest && pr.onRequest.startingPrice;
+    if (inicial) linhas.push(['A partir de', formatCurrency(inicial)]);
+  } else if (Number(p.price) > 0) {
+    linhas.push(['Valor', formatCurrency(p.price)]);
+  }
+  const log = (p.extra && p.extra.logistics) || {};
+  const raio = log.serviceRadiusKm || (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.serviceRadiusKm) || null;
+  if (raio) linhas.push(['Atendimento sem taxa até', `${raio} km`]);
+  if (log.extraKmFee) linhas.push(['Valor por km adicional', formatCurrency(log.extraKmFee)]);
+  return linhas;
+}
+
+function preencherItem(row, { name, unit, qty, unitPrice }) {
+  const nameInput = row.querySelector('[data-item-name]');
+  nameInput.value = name;
+  nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+  row.querySelector('[data-item-unit]').value = unit || '';
+  const qtyInput = row.querySelector('[data-item-qty]');
+  qtyInput.value = String(qty ?? 1);
+  const preco = row.querySelector('[data-item-unit-price]');
+  preco.value = String(Number(unitPrice) || 0);
+  const lista = row.querySelector('[data-item-list-price]');
+  if (lista) lista.value = formatCurrency(Number(unitPrice) || 0);
+  qtyInput.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function aplicarProdutoNaProposta(p) {
+  propostaProdutoId = p.id;
+  const cat = document.getElementById('proposal-category');
+  if (cat && p.category) {
+    if (![...cat.options].some(o => o.value === p.category)) cat.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(p.category)}">${escapeHtml(p.category)}</option>`);
+    cat.value = p.category;
+    populateProposalProductPicker();
+  }
+  const sel = document.getElementById('proposal-product-picker');
+  if (sel) sel.value = p.id;
+
+  // Introdução = descrição do serviço (só se ainda estiver vazia).
+  const intro = document.getElementById('proposal-intro');
+  if (intro && !intro.value.trim() && p.description) intro.value = p.description;
+
+  // Condições do serviço.
+  const box = document.getElementById('proposal-condicoes');
+  const linhas = textoCobrancaDoProduto(p);
+  if (box) {
+    box.innerHTML = `<p class="proposal-condicoes-titulo">Como "${escapeHtml(p.name)}" é cobrado</p>` +
+      linhas.map(([k, v]) => `<div class="proposal-condicoes-linha"><span>${escapeHtml(k)}</span><strong>${escapeHtml(v)}</strong></div>`).join('');
+    box.hidden = !linhas.length;
+  }
+
+  // Itens conforme a unidade de cobrança.
+  const body = document.getElementById('proposal-items-body');
+  const primeira = body.firstElementChild;
+  const vazia = body.children.length === 1 && !primeira.querySelector('[data-item-name]').value;
+  const novaLinha = () => (vazia && !body.dataset.usouPrimeira ? (body.dataset.usouPrimeira = '1', primeira) : addProposalItemRow());
+  body.dataset.usouPrimeira = '';
+  const convidados = parseInt(document.getElementById('proposal-guests').value, 10) || 0;
+  const pr = (p.extra && p.extra.pricing) || null;
+  if (pr && pr.type === 'POR_PESSOA' && pr.perPerson) {
+    preencherItem(novaLinha(), { name: p.name, unit: 'pessoa', qty: convidados || pr.perPerson.minPeople || 1, unitPrice: pr.perPerson.pricePerPerson });
+  } else if (pr && pr.type === 'POR_HORA' && pr.perHour) {
+    preencherItem(novaLinha(), { name: p.name, unit: 'hora', qty: pr.perHour.minHours || 1, unitPrice: pr.perHour.pricePerHour });
+    if (pr.perHour.extraHourPrice) preencherItem(addProposalItemRow(), { name: 'Hora adicional', unit: 'hora', qty: 0, unitPrice: pr.perHour.extraHourPrice });
+  } else if (pr && pr.type === 'VALOR_FIXO' && pr.fixed) {
+    preencherItem(novaLinha(), { name: p.name, unit: 'serviço', qty: 1, unitPrice: pr.fixed.price });
+  } else if (pr && pr.type === 'SOB_CONSULTA') {
+    preencherItem(novaLinha(), { name: p.name, unit: 'serviço', qty: 1, unitPrice: (pr.onRequest && pr.onRequest.startingPrice) || 0 });
+  } else {
+    preencherItem(novaLinha(), { name: p.name, unit: 'serviço', qty: 1, unitPrice: p.price || 0 });
+  }
+  const log = (p.extra && p.extra.logistics) || {};
+  if (log.extraKmFee) preencherItem(addProposalItemRow(), { name: 'Deslocamento (km adicional)', unit: 'km', qty: 0, unitPrice: log.extraKmFee });
+  atualizarTotalProposta();
+}
+
+function atualizarTotalProposta(valorFixo) {
+  const el = document.getElementById('proposal-total');
+  if (!el) return;
+  if (typeof valorFixo === 'number') { el.textContent = formatCurrency(valorFixo); return; }
+  let total = 0;
+  document.querySelectorAll('#proposal-items-body tr').forEach(row => {
+    const qty = Number(row.querySelector('[data-item-qty]')?.value) || 0;
+    const unit = Number(row.querySelector('[data-item-unit-price]')?.value) || 0;
+    const desc = Number(row.querySelector('[data-item-discount]')?.value) || 0;
+    total += qty * unit * (1 - desc / 100);
+  });
+  el.textContent = formatCurrency(total);
+}
+
+/* -------------------- Enviar proposta -------------------- */
+
 async function saveProposal() {
   const clientInput = document.getElementById('proposal-client');
   const client = clientInput.value.trim();
@@ -355,20 +703,17 @@ async function saveProposal() {
     const name = row.querySelector('[data-item-name]')?.value.trim();
     if (!name) return;
     const qty = Number(row.querySelector('[data-item-qty]')?.value) || 0;
+    const unit = row.querySelector('[data-item-unit]')?.value.trim() || '';
     const unitPrice = Number(row.querySelector('[data-item-unit-price]')?.value) || 0;
     const discount = Number(row.querySelector('[data-item-discount]')?.value) || 0;
     const total = qty * unitPrice * (1 - discount / 100);
     valor_total += total;
-    itens.push({ name, qty, unitPrice, discount, total });
+    itens.push({ name, unit, qty, unitPrice, discount, total });
   });
 
-  // Vincula a proposta a um contato real do CRM — direto (contato já
-  // escolhido na busca), criando um contato novo (cliente da plataforma
-  // escolhido que ainda não tinha lead), ou por nome exato como último
-  // recurso — é isso que faz o status do lead avançar sozinho e permite
-  // gerar o link de pagamento do orçamento.
+  // Vincula a proposta a um lead real (o escolhido, um novo para o cliente
+  // da plataforma, ou por nome exato) — é o que avança o status do lead.
   let leadId = proposalSelectedLeadId;
-
   if (!leadId && proposalSelectedClienteId) {
     const { data: clienteRow } = await supabaseClient.from('clientes').select('email').eq('id', proposalSelectedClienteId).maybeSingle();
     const { data: newLead } = await supabaseClient
@@ -378,30 +723,38 @@ async function saveProposal() {
       .single();
     leadId = newLead ? newLead.id : null;
   }
-
   if (!leadId) {
-    const fallbackLead = bFinLeads.find(l => l.name.trim().toLowerCase() === client.toLowerCase());
+    const fallbackLead = bFinLeads.find(l => (l.name || '').trim().toLowerCase() === client.toLowerCase());
     leadId = fallbackLead ? fallbackLead.id : null;
   }
 
-  const dadosOrcamento = {
+  const vendedorEl = document.getElementById('proposal-seller-field');
+  const dados = {
     fornecedor_id: session.user.id,
     lead_id: leadId,
     cliente_nome: client,
     valor_total,
     itens,
+    status: 'enviado',
     data_evento: (document.getElementById('proposal-event-date')?.value || '').trim() || null,
-    convidados: parseInt(document.getElementById('proposal-guests')?.value, 10) || null
+    convidados: parseInt(document.getElementById('proposal-guests')?.value, 10) || null,
+    numero: parseInt(document.getElementById('proposal-number')?.value, 10) || null,
+    introducao: document.getElementById('proposal-intro')?.value.trim() || null,
+    vendedor: vendedorEl ? (vendedorEl.value || '').trim() || null : null,
+    endereco_evento: (document.getElementById('proposal-address')?.value || '').trim() || null,
+    produto_id: propostaProdutoId
   };
-  let { data: orcamento, error } = await supabaseClient
-    .from('orcamentos').insert(dadosOrcamento).select('id').single();
-  // Sem a migration 059 (data_evento/convidados): salva sem esses dois.
+  // Sem as migrations 059/062, salva sem as colunas novas.
+  let { data: orcamento, error } = await supabaseClient.from('orcamentos').insert(dados).select('id').single();
   if (error && /column|schema cache/i.test(error.message || '')) {
-    const { data_evento, convidados, ...semNovos } = dadosOrcamento;
-    ({ data: orcamento, error } = await supabaseClient.from('orcamentos').insert(semNovos).select('id').single());
+    const { numero, introducao, vendedor, endereco_evento, produto_id, ...sem062 } = dados;
+    ({ data: orcamento, error } = await supabaseClient.from('orcamentos').insert(sem062).select('id').single());
+    if (error && /column|schema cache/i.test(error.message || '')) {
+      const { data_evento, convidados, ...basico } = sem062;
+      ({ data: orcamento, error } = await supabaseClient.from('orcamentos').insert(basico).select('id').single());
+    }
   }
-
-  if (error) { showToast('Não foi possível salvar a proposta.', true); return; }
+  if (error) { showToast('Não foi possível enviar a proposta.', true); return; }
 
   if (leadId) {
     await supabaseClient.from('leads').update({ status: 'proposta' }).eq('id', leadId).in('status', ['novo', 'conversa']);
@@ -421,124 +774,43 @@ async function saveProposal() {
       })
       .select('id')
       .single();
-
     if (link) {
       const url = new URL(`site-preview?page=checkout&link=${link.id}`, location.href).toString();
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).catch(() => {});
-      showToast('Proposta salva! Link de pagamento copiado para a área de transferência.');
+      showToast('Proposta enviada! Link de pagamento copiado.');
     } else {
-      showToast('Proposta salva!');
+      showToast('Proposta enviada!');
     }
   } else {
-    showToast('Proposta salva!');
+    showToast('Proposta enviada!');
   }
 
-  await loadFinLeadsAndProducts();
-  await resetProposalForm();
+  await Promise.all([loadFinLeadsAndProducts(), loadOrcamentos()]);
+  mostrarListaOrcamentos();
 }
 
-/* -------------------- Proposta vinda de um pedido de orçamento -------------------- */
-
-// vendas?criar=orcamento&lead=…&cliente=…&servico=…&data=…&convidados=…&evento=…
-// (botão "Criar orçamento" do chat e de Contatos). Preenche cliente,
-// vendedor, serviço, data do evento e convidados.
+/* Vindo do botão "Criar orçamento" (chat / Leads): vendas?criar=orcamento&… */
 async function preencherPropostaDoPedido() {
   const q = new URLSearchParams(location.search);
   if (q.get('criar') !== 'orcamento') return;
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) return;
-
-  const aba = document.querySelector('#sales-view-tabs [data-view="orcamentos"]');
-  if (aba) aba.click();
-
-  // Cliente: o lead indicado; senão o lead desse anfitrião; senão o próprio
-  // cadastro do anfitrião (a proposta cria o lead ao salvar).
   let lead = null;
-  if (q.get('lead')) {
-    const { data } = await supabaseClient.from('leads').select('id, name, email').eq('id', q.get('lead')).maybeSingle();
-    lead = data;
-  }
-  if (!lead && q.get('cliente')) {
-    const { data } = await supabaseClient.from('leads').select('id, name, email')
-      .eq('fornecedor_id', session.user.id).eq('cliente_id', q.get('cliente'))
-      .order('created_at', { ascending: false }).limit(1);
-    lead = (data || [])[0] || null;
-  }
-  const clientInput = document.getElementById('proposal-client');
-  if (lead) {
-    clientInput.value = lead.name;
-    proposalSelectedLeadId = lead.id;
-  } else if (q.get('cliente')) {
-    const { data: c } = await supabaseClient.from('clientes').select('id, couple_name, email').eq('id', q.get('cliente')).maybeSingle();
-    if (c) { clientInput.value = c.couple_name || c.email; proposalSelectedClienteId = c.id; }
-  }
-
-  // Vendedor: quem está logado no Hub.
-  const vendedor = document.getElementById('proposal-seller-field');
-  const meuNome = typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.name;
-  if (vendedor && meuNome) {
-    if (vendedor.tagName === 'SELECT') {
-      if ([...vendedor.options].some(o => o.value === meuNome)) vendedor.value = meuNome;
-    } else {
-      vendedor.value = meuNome;
-    }
-  }
-
-  // Data do evento e convidados.
-  if (q.get('data')) document.getElementById('proposal-event-date').value = q.get('data');
-  const convidados = parseInt(q.get('convidados'), 10) || null;
-  if (convidados) document.getElementById('proposal-guests').value = String(convidados);
-
-  // Serviço do pedido vira o primeiro item (por pessoa: quantidade = convidados).
-  const nomeServico = (q.get('servico') || '').trim().toLowerCase();
-  const produto = nomeServico && bFinProducts.find(p => (p.name || '').trim().toLowerCase() === nomeServico);
-  if (produto) {
-    const body = document.getElementById('proposal-items-body');
-    const primeira = body && body.firstElementChild;
-    const vazio = body && body.children.length === 1 && !primeira.querySelector('[data-item-name]').value;
-    const row = vazio ? primeira : addProposalItemRow();
-    const nameInput = row.querySelector('[data-item-name]');
-    nameInput.value = produto.name;
-    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
-    const porPessoa = produto.extra && produto.extra.pricing && produto.extra.pricing.type === 'POR_PESSOA';
-    if (porPessoa && convidados) {
-      const qty = row.querySelector('[data-item-qty]');
-      qty.value = String(convidados);
-      qty.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  }
-
-  // Introdução com o resumo do pedido (só se estiver vazia).
-  const intro = document.getElementById('proposal-intro');
-  if (intro && !intro.value.trim()) {
-    const partes = [
-      q.get('evento') ? 'Evento: ' + q.get('evento') : '',
-      q.get('data') ? 'Data: ' + q.get('data') : '',
-      convidados ? 'Convidados: ' + convidados : ''
-    ].filter(Boolean);
-    if (partes.length) intro.value = 'Proposta referente ao pedido de orçamento recebido pelo chat.\n' + partes.join('\n');
-  }
-
-  // Tira os parâmetros da URL (recarregar não preenche de novo).
+  if (q.get('lead')) lead = bFinLeads.find(l => l.id === q.get('lead')) || null;
+  if (!lead && q.get('cliente')) lead = bFinLeads.find(l => l.cliente_id === q.get('cliente')) || null;
+  await abrirPropostaDoPedido({
+    lead,
+    pedido: lead ? pedidoDoLead(lead) : null,
+    clienteId: q.get('cliente'),
+    servico: q.get('servico') || '',
+    data: q.get('data') || '',
+    convidados: parseInt(q.get('convidados'), 10) || null,
+    evento: q.get('evento') || '',
+    endereco: q.get('local') || ''
+  });
   history.replaceState(null, '', location.pathname);
-  showToast('Proposta preenchida com o pedido de orçamento.');
 }
 
 async function resetProposalForm() {
-  document.getElementById('proposal-client').value = '';
-  proposalSelectedLeadId = null;
-  proposalSelectedClienteId = null;
-  document.getElementById('proposal-intro').value = '';
-  const eventDate = document.getElementById('proposal-event-date');
-  if (eventDate) eventDate.value = '';
-  const guests = document.getElementById('proposal-guests');
-  if (guests) guests.value = '';
-  if (proposalDatePicker) proposalDatePicker.setValue(todayIso());
-  if (proposalNextContactPicker) proposalNextContactPicker.setValue('');
-  document.getElementById('proposal-extra-items').innerHTML = '';
-  document.getElementById('proposal-items-body').innerHTML = '';
-  addProposalItemRow();
-  await refreshProposalNumber();
+  await prepararFormularioVazio('novo');
 }
 
 function addProposalItemRow() {
@@ -590,6 +862,7 @@ function wireProposalItemRow(row) {
     const discount = Number(discountInput.value) || 0;
     const total = qty * unitPrice * (1 - discount / 100);
     totalEl.textContent = formatCurrency(total);
+    if (typeof atualizarTotalProposta === 'function') atualizarTotalProposta();
   };
 
   nameInput.addEventListener('input', () => {
@@ -608,6 +881,7 @@ function wireProposalItemRow(row) {
     row.remove();
     body.querySelectorAll('.proposal-item-index').forEach((el, i) => { el.textContent = i + 1; });
     if (!body.children.length) addProposalItemRow();
+    if (typeof atualizarTotalProposta === 'function') atualizarTotalProposta();
   });
 
   recalcTotal();

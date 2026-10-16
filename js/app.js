@@ -10478,7 +10478,33 @@ document.addEventListener('DOMContentLoaded', () => {
     return list;
   }
 
+  // Contratos fechados com fornecedores (Meus contratos) viram itens do
+  // orçamento automaticamente: valor do contrato = custo real, já pago =
+  // pago. Não dá para apagar daqui — eles vêm do contrato.
+  function itensDeContratosParaOrcamento() {
+    const lista = (window.LOVE_DATA && Array.isArray(window.LOVE_DATA.contractedVendors)) ? window.LOVE_DATA.contractedVendors : [];
+    return lista.map(v => ({
+      id: `contrato-${v.id}`,
+      item: v.service || v.name || 'Contrato',
+      vendor: v.name || '',
+      category: v.category || 'Contrato',
+      estimated: Number(v.negotiatedValueNum) || 0,
+      actual: Number(v.negotiatedValueNum) || 0,
+      paid: Number(v.paidValueNum) || 0,
+      vencimentos: Array.isArray(v.parcelas) ? v.parcelas : (Array.isArray(v.installments) ? v.installments : []),
+      proximoVencimento: v.proximoVencimento || v.dueDate || null,
+      doContrato: true
+    }));
+  }
+
   function getBudgetExpenses() {
+    const proprias = getBudgetExpensesProprias();
+    const contratos = itensDeContratosParaOrcamento()
+      .filter(c => !proprias.some(p => (p.vendor || '').toLowerCase() === (c.vendor || '').toLowerCase() && (p.item || '').toLowerCase() === (c.item || '').toLowerCase()));
+    return contratos.concat(proprias);
+  }
+
+  function getBudgetExpensesProprias() {
     const activeEv = getActiveEvent();
     if (!activeEv) return [];
 
@@ -10549,7 +10575,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeEv = getActiveEvent();
     if (!activeEv) return;
     try {
-      localStorage.setItem(`love_budget_expenses_${activeEv.id}`, JSON.stringify(expenses));
+      localStorage.setItem(`love_budget_expenses_${activeEv.id}`, JSON.stringify((expenses || []).filter(e => !e.doContrato)));
     } catch (e) {}
   }
 
@@ -10620,7 +10646,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button type="button" onclick="showToast('Lembrete configurado para ${exp.item}!', '🔔')" class="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer" title="Lembrete">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
               </button>
-              <button type="button" onclick="deleteBudgetExpense('${exp.id}')" class="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Excluir item">
+              <button type="button" hidden onclick="deleteBudgetExpense('${exp.id}')" class="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Excluir item">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>
               </button>
             </div>
@@ -10661,6 +10687,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (kpiSpent) kpiSpent.textContent = `R$ ${totalActual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     if (kpiPaidTotal) kpiPaidTotal.textContent = `R$ ${totalPaid.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
   }
+
+  // Cronograma: o que falta pagar de cada item (contratos primeiro), com as
+  // datas de vencimento quando o contrato tem parcelas.
+  function abrirCronogramaDePagamentos() {
+    const modal = document.getElementById('modal-cronograma-pagamentos');
+    const lista = document.getElementById('cronograma-pagamentos-lista');
+    if (!modal || !lista) return;
+    const brl = v => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    // "2026-11-10" é dia, não instante: lê no fuso local (senão vira dia 9).
+    const paraData = d => (/^\d{4}-\d{2}-\d{2}$/.test(String(d)) ? new Date(String(d) + 'T12:00:00') : new Date(d));
+    const dataBR = d => { const x = paraData(d); return isNaN(x) ? String(d) : x.toLocaleDateString('pt-BR'); };
+    const linhas = [];
+    getBudgetExpenses().forEach(exp => {
+      const falta = Math.max(0, (Number(exp.actual) || 0) - (Number(exp.paid) || 0));
+      if (falta <= 0) return;
+      const parcelas = (exp.vencimentos || []).filter(p => p && !p.pago && (p.vencimento || p.data || p.dueDate));
+      if (parcelas.length) {
+        parcelas.forEach(p => linhas.push({ quando: p.vencimento || p.data || p.dueDate, nome: exp.vendor || exp.item, item: exp.item, valor: Number(p.valor || p.value) || 0 }));
+      } else {
+        linhas.push({ quando: exp.proximoVencimento || null, nome: exp.vendor || exp.item, item: exp.item, valor: falta });
+      }
+    });
+    linhas.sort((a, b) => (a.quando ? paraData(a.quando).getTime() : Infinity) - (b.quando ? paraData(b.quando).getTime() : Infinity));
+    lista.innerHTML = linhas.length ? linhas.map(l => `
+      <div class="cronograma-linha">
+        <div class="cronograma-data">${l.quando ? escaparHtml(dataBR(l.quando)) : 'A combinar'}</div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-zinc-900 truncate">${escaparHtml(l.nome)}</p>
+          ${l.item && l.item !== l.nome ? `<p class="text-xs text-zinc-500 truncate">${escaparHtml(l.item)}</p>` : ''}
+        </div>
+        <div class="text-sm font-bold text-zinc-900 whitespace-nowrap">${brl(l.valor)}</div>
+      </div>`).join('')
+      : '<p class="text-sm text-zinc-500">Nenhum pagamento em aberto. Tudo quitado!</p>';
+    openModal(modal);
+  }
+  const btnCronograma = document.getElementById('btn-cronograma-pagamentos');
+  btnCronograma?.addEventListener('click', abrirCronogramaDePagamentos);
+  btnCronograma?.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirCronogramaDePagamentos(); } });
 
   window.deleteBudgetExpense = function(expId) {
     let expenses = getBudgetExpenses();

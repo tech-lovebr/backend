@@ -14491,7 +14491,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="chat-msg-acoes is-minha">
             <button type="button" class="chat-msg-mais" title="Mais opções" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
             <div class="chat-msg-menu hidden">
-              <button type="button" class="chat-msg-opcao chat-msg-editar">Editar</button>
+              ${msg.editedAt ? '' : '<button type="button" class="chat-msg-opcao chat-msg-editar">Editar</button>'}
               <button type="button" class="chat-msg-opcao chat-msg-copiar">Copiar</button>
             </div>
           </div>`;
@@ -14600,6 +14600,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (e.target.closest('.chat-msg-editar')) {
         fecharMenus();
+        // Só uma edição por mensagem.
+        if (msg.editedAt) return;
         const p = row.querySelector('.chat-msg-texto');
         if (!p || row.querySelector('.chat-msg-editor')) return;
         const editor = document.createElement('div');
@@ -14639,7 +14641,8 @@ document.addEventListener('DOMContentLoaded', () => {
         salvar.disabled = false;
         if (error) {
           console.error('[chat] editar mensagem:', error);
-          erro.textContent = /column|edited_at|policy|permission/i.test(error.message || '') ? 'Edição ainda não liberada no banco (migration 057).' : 'Não foi possível salvar agora. Tente de novo.';
+          erro.textContent = /já foi editada/i.test(error.message || '') ? 'Esta mensagem já foi editada uma vez e não pode ser editada de novo.'
+            : /column|edited_at|policy|permission/i.test(error.message || '') ? 'Edição ainda não liberada no banco (migration 057).' : 'Não foi possível salvar agora. Tente de novo.';
           erro.classList.remove('hidden');
           return;
         }

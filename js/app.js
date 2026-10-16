@@ -782,18 +782,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (love && servicos.length) {
+      // Categorias (coluna "grupo" no Admin): Seguros, Mídia e entretenimento…
+      // Sem grupo, entra em Seguros.
+      const grupoDe = s => (s.grupo || '').trim() || 'Seguros';
       const grupos = [];
-      servicos.forEach(s => {
-        const g = (s.grupo || '').trim() || 'Para os casais';
-        if (!grupos.includes(g)) grupos.push(g);
-      });
+      servicos.forEach(s => { const g = grupoDe(s); if (!grupos.includes(g)) grupos.push(g); });
 
       love.innerHTML = grupos.map(g => `
-        <div class="space-y-4">
-          <h3 class="text-sm sm:text-base font-semibold text-zinc-800 tracking-tight">${escaparHtml(g)}</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            ${servicos.filter(s => ((s.grupo || '').trim() || 'Para os casais') === g).map(s => `
-              <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer border border-transparent" data-servico="${escaparHtml(s.id)}">
+        <div class="space-y-4" data-beneficios-grupo>
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-sm sm:text-base font-semibold text-zinc-800 tracking-tight">${escaparHtml(g)}</h3>
+            <div class="beneficios-setas">
+              <button type="button" class="beneficios-seta" data-seta="-1" aria-label="Anteriores" title="Anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
+              <button type="button" class="beneficios-seta" data-seta="1" aria-label="Próximos" title="Próximos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></button>
+            </div>
+          </div>
+          <div class="beneficios-carrossel" data-carrossel>
+            ${servicos.filter(s => grupoDe(s) === g).map(s => `
+              <div class="beneficios-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer border border-transparent" data-servico="${escaparHtml(s.id)}">
                 <div>
                   <div class="relative h-48 w-full overflow-hidden bg-zinc-100">
                     ${s.imagem_url ? `<img src="${escaparHtml(s.imagem_url)}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : ''}
@@ -816,6 +822,31 @@ document.addEventListener('DOMContentLoaded', () => {
       love.querySelectorAll('[data-servico]').forEach(card => {
         const s = servicos.find(i => i.id === card.dataset.servico);
         if (s && s.link_url) card.addEventListener('click', () => window.open(s.link_url, '_blank', 'noopener'));
+      });
+
+      // Setas: rolam uma "página" (3 cards no desktop); somem quando tudo
+      // cabe na tela e desligam nas pontas.
+      love.querySelectorAll('[data-beneficios-grupo]').forEach(grupo => {
+        const trilho = grupo.querySelector('[data-carrossel]');
+        const setas = grupo.querySelector('.beneficios-setas');
+        const ant = grupo.querySelector('[data-seta="-1"]');
+        const prox = grupo.querySelector('[data-seta="1"]');
+        if (!trilho || !setas) return;
+        const atualizar = () => {
+          const cabe = trilho.scrollWidth <= trilho.clientWidth + 2;
+          setas.classList.toggle('hidden', cabe);
+          if (ant) ant.disabled = trilho.scrollLeft <= 2;
+          if (prox) prox.disabled = trilho.scrollLeft + trilho.clientWidth >= trilho.scrollWidth - 2;
+        };
+        grupo.querySelectorAll('[data-seta]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            trilho.scrollBy({ left: Number(btn.dataset.seta) * trilho.clientWidth, behavior: 'smooth' });
+          });
+        });
+        trilho.addEventListener('scroll', atualizar, { passive: true });
+        window.addEventListener('resize', atualizar);
+        atualizar();
+        setTimeout(atualizar, 300);
       });
     }
   }

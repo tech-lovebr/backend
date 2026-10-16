@@ -7612,3 +7612,16 @@ html body button.chat-msg-mais:not(#love-h-a):focus-visible { background: transp
 /* Página da empresa: portfólio em largura total (antes das avaliações), com o
    carrossel e o texto limitados a ~720px para a foto não ficar enorme. */
 .b2b-portfolio-largura { max-width: 720px; }
+
+/* Benefícios Love: cada categoria é um carrossel (3 por vez no desktop, 2 no
+   tablet, 1 no celular) com setas ao lado do título. */
+.beneficios-carrossel { display: flex; gap: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 4px; }
+.beneficios-carrossel::-webkit-scrollbar { display: none; }
+.beneficios-carrossel > .beneficios-card { flex: 0 0 calc((100% - 3rem) / 3); min-width: 0; scroll-snap-align: start; }
+@media (max-width: 1023px) { .beneficios-carrossel > .beneficios-card { flex-basis: calc((100% - 1.5rem) / 2); } }
+@media (max-width: 639px) { .beneficios-carrossel > .beneficios-card { flex-basis: 100%; } }
+.beneficios-setas { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+html body button.beneficios-seta:not(#love-h-a) { width: 32px; height: 32px; padding: 0; border: 1px solid #E4E4E7; border-radius: 999px !important; background: #FFFFFF; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; transition: border-color .15s, color .15s, opacity .15s; }
+html body button.beneficios-seta:not(#love-h-a) svg { width: 15px; height: 15px; }
+html body button.beneficios-seta:not(#love-h-a):hover { background: #FFFFFF; border-color: #181D24; color: #181D24; }
+html body button.beneficios-seta:not(#love-h-a):disabled { opacity: .35; cursor: default; border-color: #E4E4E7; color: #3F3F46; }

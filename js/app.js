@@ -12051,9 +12051,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const servicos = (f.products || []).filter(p => p.active !== false);
     // "Minha empresa" pode ter endereço comercial próprio (032_empresa_config).
     const usaPerfil = f.usa_endereco_perfil !== false;
-    const fotos = (Array.isArray(f.portfolio_images) ? f.portfolio_images : [])
-      .map(foto => (typeof foto === 'string' ? foto : foto && foto.url))
+    // Portfólio do Hub: cada foto é { url, comentario, uploadedAt } (as antigas
+    // podem ser só a URL em texto) — vira sempre { url, comentario }.
+    const portfolioItens = (Array.isArray(f.portfolio_images) ? f.portfolio_images : [])
+      .map(foto => (typeof foto === 'string'
+        ? { url: foto, comentario: '' }
+        : (foto && foto.url ? { url: foto.url, comentario: String(foto.comentario || '').trim() } : null)))
       .filter(Boolean);
+    const fotos = portfolioItens.map(p => p.url);
     const capasServicos = servicos.map(s => s.cover_image_url).filter(Boolean);
     // Imagem do card (lista 5:3, grid 4:3, capa do perfil): a original da
     // capa com o ponto de foco que o fornecedor escolheu no recorte
@@ -12090,7 +12095,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cardImage: (servicos.map(s => s.cover_image_url).find(Boolean)) || fotos[0] || '',
       avatar: f.avatar_url || '', // capa (logo_url) não serve de avatar: sem foto, ficam as iniciais
       portfolioPhotos: fotos,
-      portfolioTexto: (f.portfolio_texto || '').trim(),
+      portfolioItens,
       services: servicos,
       // Categoria do fornecedor = categorias dos serviços que ele cadastrou
       // (o B2B não tem categoria no nível do fornecedor).
@@ -12118,13 +12123,13 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bFornecedoresCarregadosEm = Date.now();
 
     b2bFornecedoresPromise = (async () => {
-      const buscarFornecedores = (comTextoPortfolio) => supabaseClient
+      const buscarFornecedores = () => supabaseClient
         .from('fornecedores')
-        .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, ' + (comTextoPortfolio ? 'portfolio_texto, ' : '') + 'status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
+        .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
         .neq('status', 'bloqueado')
         .order('company_name');
-      const [fornecedoresResComTexto, favoritosRes, avaliacoesRes] = await Promise.all([
-        buscarFornecedores(true),
+      const [fornecedoresRes, favoritosRes, avaliacoesRes] = await Promise.all([
+        buscarFornecedores(),
         supabaseClient
           .from('servicos_favoritos')
           .select('produto_id')
@@ -12134,10 +12139,6 @@ document.addEventListener('DOMContentLoaded', () => {
           .select('fornecedor_id, nota')
       ]);
 
-      // Sem a coluna portfolio_texto (migration 061 não rodada): busca sem ela.
-      const fornecedoresRes = fornecedoresResComTexto.error && /portfolio_texto/i.test(fornecedoresResComTexto.error.message || '')
-        ? await buscarFornecedores(false)
-        : fornecedoresResComTexto;
       if (favoritosRes.error) console.error('[vitrine] favoritos:', favoritosRes.error);
       b2bFavoritosIds = new Set((favoritosRes.data || []).map(r => r.produto_id));
       // Média e quantidade de avaliações por fornecedor (estrelas do perfil).
@@ -13498,6 +13499,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Portfólio: só na página da empresa (não na do serviço) e só se o
     // fornecedor configurou fotos no Hub. Carrossel em cima, texto embaixo.
     const mostrarPortfolio = !servicoAtual && portfolioPhotos.length > 0;
+    const portfolioItens = Array.isArray(item.portfolioItens) && item.portfolioItens.length
+      ? item.portfolioItens
+      : portfolioPhotos.map(url => ({ url, comentario: '' }));
+    // Comentário da foto que está na tela (troca junto com a foto); sem
+    // comentário, nada aparece embaixo.
+    const mostrarComentarioDaFoto = (i) => {
+      const el = document.getElementById('b2b-profile-portfolio-texto');
+      if (!el) return;
+      const c = (i >= 0 && portfolioItens[i] && portfolioItens[i].comentario) || '';
+      el.textContent = c;
+      el.classList.toggle('hidden', !c);
+    };
     if (portfolioGrid) {
       portfolioGrid.innerHTML = mostrarPortfolio ? `
         <div class="b2b-portfolio-slides">
@@ -13516,6 +13529,7 @@ document.addEventListener('DOMContentLoaded', () => {
         atual = (n + total) % total;
         portfolioGrid.querySelectorAll('.b2b-portfolio-slide').forEach((el, i) => el.classList.toggle('is-ativo', i === atual));
         portfolioGrid.querySelectorAll('.b2b-portfolio-pontos span').forEach((el, i) => el.classList.toggle('is-ativo', i === atual));
+        mostrarComentarioDaFoto(atual);
       };
       portfolioGrid.querySelectorAll('[data-portfolio-seta]').forEach(btn => {
         btn.addEventListener('click', (e) => { e.stopPropagation(); ir(atual + Number(btn.dataset.portfolioSeta)); });
@@ -13528,11 +13542,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     }
-    const portfolioTextoEl = document.getElementById('b2b-profile-portfolio-texto');
-    if (portfolioTextoEl) {
-      portfolioTextoEl.textContent = item.portfolioTexto || '';
-      portfolioTextoEl.classList.toggle('hidden', !mostrarPortfolio || !item.portfolioTexto);
-    }
+    mostrarComentarioDaFoto(mostrarPortfolio ? 0 : -1);
     if (portfolioSection) portfolioSection.classList.toggle('hidden', !mostrarPortfolio);
 
     // Coração do perfil: só na página do serviço (favorito é do serviço).

@@ -40,7 +40,7 @@ const GRUPOS = [
   // categoria Notícias); nos anfitriões
   // é só o carrossel.
   { key: 'informacoes', label: PLATAFORMA === 'fornecedor' ? 'Conteúdo' : 'Informações', botao: null },
-  { key: 'faq', label: 'FAQ', botao: 'Adicionar pergunta' },
+  { key: 'faq', label: PLATAFORMA === 'cliente' ? 'Ajuda' : 'FAQ', botao: 'Adicionar pergunta' },
   ...(PLATAFORMA === 'cliente' ? [{ key: 'servicos', label: 'Serviços', botao: 'Adicionar' }] : [])
 ];
 
@@ -442,8 +442,7 @@ function renderFaq() {
                   </div>
                   ${/<iframe/i.test(q.resposta || '') ? badge('vídeo', 'badge-info') : ''}
                   ${q.ativo ? '' : badge('rascunho', 'badge-warning')}
-                  <button type="button" class="btn btn-ghost btn-sm" data-editar-pergunta="${q.id}">Editar</button>
-                  <button type="button" class="btn btn-danger btn-sm" data-excluir-pergunta="${q.id}">Excluir</button>
+                  <button type="button" class="btn-icone-linha" data-editar-pergunta="${q.id}" title="Editar" aria-label="Editar pergunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg></button>
                 </div>`).join('')}
             </div>
           </div>`;
@@ -453,9 +452,9 @@ function renderFaq() {
         <p>Clique em "Adicionar pergunta" no cabeçalho. Cada pergunta entra numa categoria e aparece na plataforma com a resposta escrita aqui.</p>
       </div></div>`;
 
-  lista.innerHTML = blocoPassos + blocoFaq;
+  lista.innerHTML = (PLATAFORMA === 'cliente' ? '' : blocoPassos) + blocoFaq;
 
-  document.getElementById('btn-novo-passo').addEventListener('click', () => abrirFormularioPasso(null));
+  document.getElementById('btn-novo-passo')?.addEventListener('click', () => abrirFormularioPasso(null));
   lista.querySelectorAll('[data-editar-passo]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioPasso(PASSOS.find(p => p.id === btn.dataset.editarPasso)));
   });
@@ -467,9 +466,6 @@ function renderFaq() {
   });
   lista.querySelectorAll('[data-editar-pergunta]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioPergunta(FAQ.find(q => q.id === btn.dataset.editarPergunta)));
-  });
-  lista.querySelectorAll('[data-excluir-pergunta]').forEach(btn => {
-    btn.addEventListener('click', () => excluir('faq', btn.dataset.excluirPergunta, FAQ.find(q => q.id === btn.dataset.excluirPergunta)?.pergunta));
   });
 }
 
@@ -518,8 +514,14 @@ function abrirFormularioPergunta(item, categoriaInicial) {
         ${blocoPublicacao(item?.ordem ?? proximaPosicao(irmas, 'ordem'), !item || item.ativo, 'Ordem na categoria')}
       </form>`,
     footer: `
+      ${editando ? '<button type="button" class="btn-icone-linha btn-lixeira" id="btn-excluir-pergunta" title="Excluir pergunta" aria-label="Excluir pergunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg></button>' : ''}
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
       <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
+  });
+
+  document.getElementById('btn-excluir-pergunta')?.addEventListener('click', async () => {
+    const apagou = await excluir('faq', item.id, item.pergunta);
+    if (apagou) Drawer.close();
   });
 
   const form = document.getElementById('form-conteudo');
@@ -886,15 +888,16 @@ async function gravar(tabela, id, payload) {
 }
 
 async function excluir(tabela, id, nome) {
-  if (!window.confirm(`Excluir "${nome || 'este item'}"? Esta ação não pode ser desfeita.`)) return;
+  if (!window.confirm(`Excluir "${nome || 'este item'}"? Esta ação não pode ser desfeita.`)) return false;
 
   const { error } = await supabaseClient.from(tabela).delete().eq('id', id);
 
   if (error) {
     toast(`Não foi possível excluir: ${error.message}`);
-    return;
+    return false;
   }
 
   toast('Item excluído.');
   await carregar();
+  return true;
 }

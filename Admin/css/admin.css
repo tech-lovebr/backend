@@ -3223,3 +3223,8 @@ body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
 .filtro-local { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: .5rem; }
 .filtro-local .field-select,
 .filtro-local .field-input { width: 100%; min-width: 0; }
+
+/* Lixeira do drawer: ícone sozinho, colado à esquerda do Cancelar; fica vermelha no hover. */
+.btn-lixeira { width: 36px; height: 36px; }
+.btn-lixeira svg { width: 18px; height: 18px; }
+.btn-lixeira:hover { color: var(--danger); border-color: #F3C7C3; }

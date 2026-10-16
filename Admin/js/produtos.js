@@ -36,6 +36,8 @@ const PERIODOS = {
 let ITENS = [];
 let CLIQUES = [];
 let SELECIONADAS = new Set();
+let FORNECEDORES = new Map();
+const EXTRAS = { leads: [], favoritos: [], sites: new Map() };
 let CLIQUES_OK = true;
 
 /** Filtros aplicados. `de`/`ate` são Date (início e fim do dia) ou null. */
@@ -48,20 +50,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 7);
+  renderLoading(tbody, 8);
 
   const [produtos, fornecedores, cliques] = await Promise.all([
     safeSelect('products', '*', q => q.order('created_at', { ascending: false })),
-    safeSelect('fornecedores', 'id, company_name, city, state'),
+    safeSelect('fornecedores', 'id, company_name, city, state, cnpj, document_type, email, phone, plan, contact_name'),
     carregarCliques()
   ]);
-  if (produtos.error) return renderError(tbody, 7, produtos.error);
+  if (produtos.error) return renderError(tbody, 8, produtos.error);
 
   CLIQUES = cliques.data;
+
+  // Dados só do drawer: pedidos de orçamento e contratações (leads ligados ao
+  // serviço), favoritos e o endereço do site da empresa. Falhar não trava a lista.
+  Promise.all([
+    safeSelect('leads', 'product_id, status'),
+    safeSelect('servicos_favoritos', 'produto_id'),
+    safeSelect('site_pages', 'fornecedor_id, slug')
+  ]).then(([leads, favoritos, sites]) => {
+    EXTRAS.leads = leads.data.filter(l => l.product_id);
+    EXTRAS.favoritos = favoritos.data;
+    EXTRAS.sites = new Map(sites.data.map(s => [s.fornecedor_id, s.slug]));
+  });
   CLIQUES_OK = !cliques.error;
 
   const porId = new Map(fornecedores.data.map(f => [f.id, f]));
   ITENS = produtos.data.map(p => montarItem(p, porId.get(p.fornecedor_id)));
+  FORNECEDORES = porId;
 
   render();
   ligarSelecao();
@@ -131,7 +146,8 @@ function montarItem(p, fornecedor) {
     tipo: tipo || '',
     cobranca: COBRANCA[tipo] || '',
     ativo: p.active !== false,
-    suspenso: p.suspenso === true
+    suspenso: p.suspenso === true,
+    raw: p
   };
 }
 
@@ -352,7 +368,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 7, 'Nenhum produto ou serviço encontrado',
+    renderEmpty(tbody, 8, 'Nenhum produto ou serviço encontrado',
       ITENS.length
         ? 'Ajuste a busca ou os filtros.'
         : 'Quando os fornecedores cadastrarem itens no Catálogo de serviços do Hub, eles aparecem aqui.');
@@ -377,8 +393,11 @@ function render() {
       <td class="cell-muted">${dash(i.cobranca)}</td>
       <td class="col-numero ${cliques ? 'cell-strong' : 'cell-muted'}">${CLIQUES_OK ? formatNumber(cliques) : '—'}</td>
       <td>${badge(STATUS_SERVICO[status], status === 'ativo' ? 'badge-success' : status === 'inativo' ? 'badge-warning' : '')}</td>
+      <td class="col-acoes">${botaoVerMais(i.id)}</td>
     </tr>`;
   }).join('');
+
+  ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
     caixa.addEventListener('change', () => {
@@ -498,4 +517,178 @@ async function excluir(ids) {
   toast(apagados.size < ids.length
     ? `${qtdServicos(apagados.size)} excluído(s); ${formatNumber(ids.length - apagados.size)} não puderam ser excluídos.`
     : `${qtdServicos(apagados.size)} ${apagados.size === 1 ? 'excluído' : 'excluídos'}.`);
+}
+
+/* ------------------------------------------------------- Drawer do serviço
+   Tudo o que o fornecedor preencheu no cadastro do Hub (products + extra),
+   a empresa dona, os números (cliques, orçamentos, contratações,
+   favoritos) e os links da página na Love e do site da empresa. */
+
+const DIAS_SEMANA = { seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom' };
+
+function slugify(texto) {
+  return String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+/* Mesmo endereço que a plataforma monta (rotaPerfilFornecedor em js/app.js). */
+function linkNaLove(item) {
+  const id8 = v => String(v || '').slice(0, 8);
+  return `https://love.com.br/fornecedores/${slugify(item.empresa) || 'fornecedor'}-${id8(item.fornecedorId)}/${slugify(item.titulo) || 'servico'}-${id8(item.id)}`;
+}
+
+/* Pro publica em <slug>.love.com.br; Gratuito em hub.love.com.br/<slug>. */
+function linkDoSite(fornecedor, slug) {
+  if (!slug) return null;
+  return fornecedor && fornecedor.plan === 'Pro' ? `https://${slug}.love.com.br` : `https://hub.love.com.br/${slug}`;
+}
+
+const moeda = v => (Number(v) > 0 ? formatCurrency(v) : null);
+const simNao = v => (v === true ? 'Sim' : v === false ? 'Não' : null);
+
+function linhasDoPreco(pricing, venue, price) {
+  const l = [];
+  const add = (r, v) => { if (v !== null && v !== undefined && v !== '') l.push([r, v]); };
+  if (pricing && pricing.type === 'POR_PESSOA' && pricing.perPerson) {
+    add('Preço por pessoa', moeda(pricing.perPerson.pricePerPerson));
+    add('Mínimo de pessoas', pricing.perPerson.minPeople);
+    add('Máximo de pessoas', pricing.perPerson.maxPeople);
+  } else if (pricing && pricing.type === 'POR_HORA' && pricing.perHour) {
+    add('Preço por hora', moeda(pricing.perHour.pricePerHour));
+    add('Mínimo de horas', pricing.perHour.minHours);
+    add('Hora extra', moeda(pricing.perHour.extraHourPrice));
+  } else if (pricing && pricing.type === 'VALOR_FIXO' && pricing.fixed) {
+    add('Valor', moeda(pricing.fixed.price));
+    if (pricing.fixed.durationValue) add('Duração', `${pricing.fixed.durationValue} ${pricing.fixed.durationUnit || ''}`.trim());
+  } else if (pricing && pricing.type === 'SOB_CONSULTA') {
+    add('A partir de', moeda(pricing.onRequest && pricing.onRequest.startingPrice) || 'Sob consulta');
+  }
+  if (venue) {
+    add('Diária (seg a sex)', moeda(venue.priceWeekday));
+    add('Diária sábado', moeda(venue.priceSaturday));
+    add('Diária domingo', moeda(venue.priceSunday));
+    add('Diária feriado', moeda(venue.priceHoliday));
+    add('Taxa de limpeza', moeda(venue.cleaningFee));
+  }
+  if (!l.length) add('Preço', moeda(price));
+  return l;
+}
+
+function linhasDoEspaco(v) {
+  if (!v) return [];
+  const l = [];
+  const add = (r, x) => { if (x !== null && x !== undefined && x !== '' && !(Array.isArray(x) && !x.length)) l.push([r, x]); };
+  add('Endereço', [[v.street || v.address, v.number].filter(Boolean).join(', '), v.complement, [v.city, v.state].filter(Boolean).join(' / ')].filter(Boolean).join(' · '));
+  add('Tamanho', v.size ? `${v.size} m²` : null);
+  add('Capacidade sentados', v.capacitySeated);
+  add('Capacidade em pé', v.capacityStanding);
+  add('Dias', Array.isArray(v.days) ? v.days.map(d => DIAS_SEMANA[d] || d).join(', ') : v.days);
+  add('Horário', v.hoursOpen || v.hoursClose ? `${v.hoursOpen || '?'} às ${v.hoursClose || '?'}` : null);
+  add('Áreas comuns', Array.isArray(v.commonAreas) ? v.commonAreas.join(', ') : v.commonAreas);
+  add('Acessível (PcD)', simNao(v.isPcdAccessible));
+  add('Gerador', simNao(v.hasGenerator));
+  add('Restrição de barulho', typeof v.noiseRestriction === 'boolean' ? simNao(v.noiseRestriction) : v.noiseRestriction);
+  return l;
+}
+
+/* Campos de extra que não têm lugar próprio no drawer, em texto simples. */
+const EXTRA_COM_LUGAR = ['pricing', 'venue', 'subcategory', 'cover', 'videoUrl'];
+const ROTULOS_EXTRA = {
+  attributes: 'Atributos', cancellationPolicy: 'Política de cancelamento', dishes: 'Pratos',
+  equipmentType: 'Tipo de equipamento', logistics: 'Logística', offerType: 'Tipo de oferta', scope: 'Escopo'
+};
+
+function textoDeValor(v) {
+  if (v === null || v === undefined || v === '') return null;
+  if (typeof v === 'boolean') return v ? 'Sim' : 'Não';
+  if (Array.isArray(v)) return v.map(textoDeValor).filter(Boolean).join(', ') || null;
+  if (typeof v === 'object') {
+    return Object.entries(v).map(([k, x]) => { const t = textoDeValor(x); return t ? `${k}: ${t}` : null; }).filter(Boolean).join(' · ') || null;
+  }
+  return String(v);
+}
+
+function abrirDetalhe(id) {
+  const item = ITENS.find(i => i.id === id);
+  if (!item) return;
+  const p = item.raw || {};
+  const extra = p.extra || {};
+  const f = FORNECEDORES.get(item.fornecedorId) || {};
+
+  const leads = EXTRAS.leads.filter(l => l.product_id === id);
+  const contratacoes = leads.filter(l => l.status === 'fechado').length;
+  const favoritos = EXTRAS.favoritos.filter(x => x.produto_id === id).length;
+  const cliquesTotal = CLIQUES.filter(c => c.produto_id === id).length;
+  const site = linkDoSite(f, EXTRAS.sites.get(item.fornecedorId));
+  const status = statusDe(item);
+
+  const linha = (rotulo, valor) => (valor === null || valor === undefined || valor === '') ? '' : `
+    <div class="dados-linha"><span class="rotulo">${escapeHtml(rotulo)}</span><span class="valor">${valor}</span></div>`;
+  const bloco = (titulo, pares) => pares.length ? `
+    <p class="drawer-section-title">${escapeHtml(titulo)}</p>
+    <div class="lista-dados">${pares.map(([r, v]) => linha(r, escapeHtml(String(v)))).join('')}</div>` : '';
+  const link = (url, texto) => url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="link-convite">${escapeHtml(texto || url)}</a>` : null;
+
+  const capa = (extra.cover && extra.cover.originalUrl) || p.cover_image_url;
+  const galeria = (Array.isArray(p.gallery) ? p.gallery : []).map(g => (typeof g === 'string' ? g : g && g.url)).filter(Boolean);
+  const outros = Object.entries(extra)
+    .filter(([k]) => !EXTRA_COM_LUGAR.includes(k))
+    .map(([k, v]) => [ROTULOS_EXTRA[k] || k, textoDeValor(v)])
+    .filter(([, v]) => v);
+
+  Drawer.open({
+    title: item.titulo,
+    subtitle: item.empresa || '',
+    body: `
+      ${capa ? `<img src="${escapeHtml(capa)}" alt="" class="produto-capa">` : ''}
+
+      <div class="lista-dados">
+        ${linha('Status', badge(STATUS_SERVICO[status], status === 'ativo' ? 'badge-success' : status === 'inativo' ? 'badge-warning' : ''))}
+        ${linha('Categoria', escapeHtml([item.categoria, item.subcategoria].filter(Boolean).join(' · ') || '—'))}
+        ${linha('Unidade de cobrança (UC)', escapeHtml(item.cobranca || '—'))}
+        ${linha('Cadastrado em', escapeHtml(formatDateTime(p.created_at)))}
+        ${item.suspenso && p.suspenso_em ? linha('Suspenso em', escapeHtml(formatDateTime(p.suspenso_em))) : ''}
+      </div>
+
+      <p class="drawer-section-title">Números</p>
+      <div class="lista-dados">
+        ${linha('Cliques', CLIQUES_OK ? escapeHtml(`${formatNumber(cliquesTotal)} no total · ${formatNumber(cliquesDe(id))} em ${rotuloDoPeriodo().toLowerCase()}`) : '—')}
+        ${linha('Pedidos de orçamento e contatos', escapeHtml(formatNumber(leads.length)))}
+        ${linha('Contratações', escapeHtml(formatNumber(contratacoes)))}
+        ${linha('Favoritado por', escapeHtml(`${formatNumber(favoritos)} ${favoritos === 1 ? 'anfitrião' : 'anfitriões'}`))}
+        ${linha('Chats abertos por este serviço', '<span class="cell-muted">ainda não medido</span>')}
+      </div>
+
+      <p class="drawer-section-title">Empresa</p>
+      <div class="lista-dados">
+        ${linha('Empresa', escapeHtml(f.company_name || '—'))}
+        ${linha(f.document_type === 'cpf' ? 'CPF' : 'CNPJ', f.cnpj ? celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ') : '—')}
+        ${linha('Responsável', escapeHtml(f.contact_name || ''))}
+        ${linha('E-mail', f.email ? celulaCopiavel(f.email, 'E-mail') : '')}
+        ${linha('Telefone', escapeHtml(f.phone || ''))}
+        ${linha('Plano', escapeHtml(f.plan || 'Gratuito'))}
+        ${linha('Local', escapeHtml(item.local || ''))}
+      </div>
+
+      <p class="drawer-section-title">Links</p>
+      <div class="lista-dados">
+        ${linha('Página na Love', link(linkNaLove(item), 'Abrir no love.com.br'))}
+        ${linha('Site da empresa', link(site, site ? site.replace(/^https:\/\//, '') : null) || '<span class="cell-muted">não publicado</span>')}
+        ${linha('Vídeo', link(extra.videoUrl, 'Abrir vídeo'))}
+      </div>
+
+      ${bloco('Preço', linhasDoPreco(extra.pricing, extra.venue, p.price))}
+      ${bloco('Espaço', linhasDoEspaco(extra.venue))}
+
+      ${p.description ? `<p class="drawer-section-title">Descrição</p><p class="texto-corrido">${escapeHtml(p.description)}</p>` : ''}
+
+      ${galeria.length ? `<p class="drawer-section-title">Galeria</p>
+        <div class="produto-galeria">${galeria.map(u => `<a href="${escapeHtml(u)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(u)}" alt=""></a>`).join('')}</div>` : ''}
+
+      ${bloco('Outros campos do cadastro', outros)}`,
+    footer: `<button type="button" class="btn btn-ghost" id="btn-fechar-servico">Fechar</button>`
+  });
+
+  document.getElementById('btn-fechar-servico').addEventListener('click', () => Drawer.close());
+  ligarAcoesDaLinha(document.getElementById('drawer-body'), () => {});
 }

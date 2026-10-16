@@ -13534,8 +13534,6 @@ document.addEventListener('DOMContentLoaded', () => {
       portfolioTextoEl.classList.toggle('hidden', !mostrarPortfolio || !item.portfolioTexto);
     }
     if (portfolioSection) portfolioSection.classList.toggle('hidden', !mostrarPortfolio);
-    // Sem portfólio à direita, os serviços ocupam a largura toda (até 3 por linha).
-    document.getElementById('b2b-perfil-colunas')?.classList.toggle('sem-portfolio', !mostrarPortfolio);
 
     // Coração do perfil: só na página do serviço (favorito é do serviço).
     const favBtn = document.getElementById('btn-b2b-profile-favorite');

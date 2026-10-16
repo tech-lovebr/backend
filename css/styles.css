@@ -7434,8 +7434,6 @@ html body button.b2b-profile-empresa-link:not(#love-h-a):hover { color: #416799;
 .b2b-avaliacao { padding: .85rem 1rem; border: 1px solid #EEEEF0; border-radius: 10px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
 
 /* Perfil do fornecedor: duas colunas (serviços/avaliações | caixa do portfólio) */
-.b2b-perfil-colunas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; }
-@media (min-width: 1024px) { .b2b-perfil-colunas { grid-template-columns: minmax(0, 1fr) 320px; } }
 .b2b-perfil-caixa { background: #fff; border: 1px solid #EEEEF0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); position: sticky; top: 1rem; }
 .b2b-perfil-portfolio-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
 html body .b2b-perfil-portfolio-grade .b2b-profile-portfolio-photo-btn { width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: 8px !important; }
@@ -7593,10 +7591,6 @@ html body button.chat-msg-mais:not(#love-h-a):focus-visible { background: transp
 /* Página do serviço / da empresa (Explorar): sem portfólio à direita, a grade
    "Todos os serviços" ocupa a largura toda com até 3 por linha; com portfólio
    (página da empresa), 2 por linha e o portfólio em carrossel com texto. */
-.b2b-perfil-colunas.sem-portfolio { grid-template-columns: minmax(0, 1fr) !important; }
-@media (min-width: 1024px) {
-  .b2b-perfil-colunas.sem-portfolio #b2b-profile-services-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
 .b2b-portfolio-carrossel { display: block; }
 .b2b-portfolio-slides { position: relative; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; background: #F4F4F5; }
 .b2b-portfolio-slide { position: absolute; inset: 0; border: none; padding: 0; margin: 0; background: none; cursor: zoom-in; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
@@ -7614,3 +7608,7 @@ html body button.chat-msg-mais:not(#love-h-a):focus-visible { background: transp
 .b2b-portfolio-pontos span { width: 6px; height: 6px; border-radius: 999px; background: #D4D4D8; }
 .b2b-portfolio-pontos span.is-ativo { background: #181D24; }
 .b2b-portfolio-texto { font-size: 0.875rem; color: #52525B; line-height: 1.6; margin: 12px 0 0; white-space: pre-line; }
+
+/* Página da empresa: portfólio em largura total (antes das avaliações), com o
+   carrossel e o texto limitados a ~720px para a foto não ficar enorme. */
+.b2b-portfolio-largura { max-width: 720px; }

@@ -51,12 +51,19 @@
           </button>
         </div>
 
+        <div class="barra-selecao" id="barra-selecao" hidden>
+          <span class="barra-selecao-contagem" id="selecao-contagem"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-limpar-selecao">Limpar seleção</button>
+          <button type="button" class="btn btn-neutro btn-sm" id="btn-suspender-selecao">Suspender</button>
+        </div>
+
         <!-- Tudo o que os fornecedores cadastraram no Catálogo de serviços do Hub. -->
         <section class="card table-card">
           <div class="table-wrap">
-            <table class="data">
+            <table class="data linhas-estaticas">
               <thead><tr>
-                <th>Produto/serviço</th><th>Empresa</th><th>Local</th><th title="Unidade de cobrança">UC</th><th class="col-numero">Cliques</th>
+                <th class="col-selecao"><input type="checkbox" id="selecionar-todos" aria-label="Selecionar todos"></th>
+                <th>Produto/serviço</th><th>Empresa</th><th>Local</th><th title="Unidade de cobrança">UC</th><th class="col-numero">Cliques</th><th>Status</th>
               </tr></thead>
               <tbody id="tbody"></tbody>
             </table>
@@ -66,6 +73,6 @@
     </div>
   </div>
 
-  <script src="js/produtos.js"></script>
+  <script src="js/produtos.js?v=2"></script>
 </body>
 </html>

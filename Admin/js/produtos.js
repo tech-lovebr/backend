@@ -5,8 +5,13 @@
    quantos cliques cada um recebeu na vitrine dos anfitriões
    (produto_cliques, migration 054).
 
-   Categoria, UC e período ficam num drawer só, aberto pelo botão Filtros.
-   O período recorta a contagem de cliques.
+   Categoria, UC, status e período ficam num drawer só, aberto pelo botão
+   Filtros. O período recorta a contagem de cliques.
+
+   Seleção em massa (igual a Empresas › Cadastros): marcar linhas e
+   Suspender, Reativar ou Excluir. Suspender usa admin_suspender_servicos
+   (migration 059): o serviço some do Explorar e o fornecedor não consegue
+   reativar sozinho.
    ========================================================================== */
 
 // Unidade de cobrança gravada pelo Hub em products.extra.pricing.type.
@@ -30,23 +35,27 @@ const PERIODOS = {
 
 let ITENS = [];
 let CLIQUES = [];
+let SELECIONADAS = new Set();
 let CLIQUES_OK = true;
 
 /** Filtros aplicados. `de`/`ate` são Date (início e fim do dia) ou null. */
-const FILTROS = { categoria: '', uc: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null };
+const FILTROS = { categoria: '', uc: '', status: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null };
+
+const STATUS_SERVICO = { ativo: 'Ativo', inativo: 'Inativo', suspenso: 'Suspenso' };
+const statusDe = i => (i.suspenso ? 'suspenso' : i.ativo ? 'ativo' : 'inativo');
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 5);
+  renderLoading(tbody, 7);
 
   const [produtos, fornecedores, cliques] = await Promise.all([
     safeSelect('products', '*', q => q.order('created_at', { ascending: false })),
     safeSelect('fornecedores', 'id, company_name, city, state'),
     carregarCliques()
   ]);
-  if (produtos.error) return renderError(tbody, 5, produtos.error);
+  if (produtos.error) return renderError(tbody, 7, produtos.error);
 
   CLIQUES = cliques.data;
   CLIQUES_OK = !cliques.error;
@@ -55,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ITENS = produtos.data.map(p => montarItem(p, porId.get(p.fornecedor_id)));
 
   render();
+  ligarSelecao();
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('btn-filtros').addEventListener('click', abrirFiltros);
@@ -66,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     { titulo: 'Local', valor: i => i.local },
     { titulo: 'UC', valor: i => i.cobranca },
     { titulo: 'Cliques', valor: i => cliquesDe(i.id) },
-    { titulo: 'Status', valor: i => (i.ativo ? 'Ativo' : 'Inativo') }
+    { titulo: 'Status', valor: i => STATUS_SERVICO[statusDe(i)] }
   ], filtrar()));
   moverControlesParaHeader();
   aplicarBuscaDaUrl(document.getElementById('busca'));
@@ -120,7 +130,8 @@ function montarItem(p, fornecedor) {
     local: [cidade, estado].filter(Boolean).join(' / '),
     tipo: tipo || '',
     cobranca: COBRANCA[tipo] || '',
-    ativo: p.active !== false
+    ativo: p.active !== false,
+    suspenso: p.suspenso === true
   };
 }
 
@@ -207,6 +218,14 @@ function abrirFiltros() {
         </label>
 
         <label class="field">
+          <span class="field-label">Status</span>
+          <select class="field-select" name="status">
+            ${opcao('', 'Todos os status', FILTROS.status)}
+            ${Object.entries(STATUS_SERVICO).map(([v, t]) => opcao(v, t, FILTROS.status)).join('')}
+          </select>
+        </label>
+
+        <label class="field">
           <span class="field-label">UC — unidade de cobrança</span>
           <select class="field-select" name="uc">
             ${opcao('', 'Todas as unidades', FILTROS.uc)}
@@ -256,7 +275,7 @@ function abrirFiltros() {
   });
 
   document.getElementById('btn-limpar-filtros').addEventListener('click', () => {
-    Object.assign(FILTROS, { categoria: '', uc: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null });
+    Object.assign(FILTROS, { categoria: '', uc: '', status: '', periodo: 'tudo', dia: '', inicio: '', fim: '', de: null, ate: null });
     Drawer.close();
     render();
   });
@@ -273,6 +292,7 @@ function abrirFiltros() {
     Object.assign(FILTROS, {
       categoria: d.categoria,
       uc: d.uc,
+      status: d.status,
       periodo: d.periodo,
       dia: d.dia || '',
       inicio: d.inicio || '',
@@ -286,7 +306,7 @@ function abrirFiltros() {
 }
 
 function atualizarBotaoDeFiltros() {
-  const ativos = [FILTROS.categoria, FILTROS.uc, FILTROS.periodo !== 'tudo'].filter(Boolean).length;
+  const ativos = [FILTROS.categoria, FILTROS.uc, FILTROS.status, FILTROS.periodo !== 'tudo'].filter(Boolean).length;
   const badgeEl = document.getElementById('filtro-badge');
   badgeEl.textContent = ativos;
   badgeEl.hidden = !ativos;
@@ -314,6 +334,7 @@ function filtrar() {
   return ITENS.filter(i => {
     if (FILTROS.categoria && i.categoria !== FILTROS.categoria) return false;
     if (FILTROS.uc && i.tipo !== FILTROS.uc) return false;
+    if (FILTROS.status && statusDe(i) !== FILTROS.status) return false;
     if (!termo) return true;
     return [i.titulo, i.empresa, i.categoria, i.subcategoria, i.local]
       .some(v => String(v || '').toLowerCase().includes(termo));
@@ -330,7 +351,8 @@ function render() {
   renderKpis(lista);
 
   if (!lista.length) {
-    renderEmpty(tbody, 5, 'Nenhum produto ou serviço encontrado',
+    renderBarraDeSelecao();
+    renderEmpty(tbody, 7, 'Nenhum produto ou serviço encontrado',
       ITENS.length
         ? 'Ajuste a busca ou os filtros.'
         : 'Quando os fornecedores cadastrarem itens no Catálogo de serviços do Hub, eles aparecem aqui.');
@@ -339,17 +361,141 @@ function render() {
 
   tbody.innerHTML = lista.map(i => {
     const cliques = cliquesDe(i.id);
+    const marcada = SELECIONADAS.has(i.id);
+    const status = statusDe(i);
     return `
-    <tr data-id="${i.id}">
+    <tr data-id="${i.id}" class="${marcada ? 'is-selecionada' : ''}">
+      <td class="col-selecao">
+        <input type="checkbox" data-selecionar="${i.id}" ${marcada ? 'checked' : ''} aria-label="Selecionar ${escapeHtml(i.titulo)}">
+      </td>
       <td>
         <span class="cell-strong">${escapeHtml(i.titulo)}</span>
-        ${i.ativo ? '' : badge('Inativo', 'badge-warning')}
         ${i.categoria ? `<br><span class="cell-muted">${escapeHtml(i.categoria)}${i.subcategoria ? ' · ' + escapeHtml(i.subcategoria) : ''}</span>` : ''}
       </td>
       <td>${dash(i.empresa)}</td>
       <td class="cell-muted">${dash(i.local)}</td>
       <td class="cell-muted">${dash(i.cobranca)}</td>
       <td class="col-numero ${cliques ? 'cell-strong' : 'cell-muted'}">${CLIQUES_OK ? formatNumber(cliques) : '—'}</td>
+      <td>${badge(STATUS_SERVICO[status], status === 'ativo' ? 'badge-success' : status === 'inativo' ? 'badge-warning' : '')}</td>
     </tr>`;
   }).join('');
+
+  tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
+    caixa.addEventListener('change', () => {
+      if (caixa.checked) SELECIONADAS.add(caixa.dataset.selecionar);
+      else SELECIONADAS.delete(caixa.dataset.selecionar);
+      caixa.closest('tr').classList.toggle('is-selecionada', caixa.checked);
+      renderBarraDeSelecao();
+    });
+  });
+
+  renderBarraDeSelecao();
+}
+
+/* ------------------------------------------------------ Seleção em massa */
+
+function ligarSelecao() {
+  document.getElementById('selecionar-todos').addEventListener('change', (e) => {
+    // Só o que está na tela (filtro e busca aplicados).
+    const visiveis = filtrar().map(i => i.id);
+    if (e.target.checked) visiveis.forEach(id => SELECIONADAS.add(id));
+    else visiveis.forEach(id => SELECIONADAS.delete(id));
+    render();
+  });
+
+  document.getElementById('btn-limpar-selecao').addEventListener('click', () => {
+    SELECIONADAS.clear();
+    render();
+  });
+
+  document.getElementById('btn-suspender-selecao').addEventListener('click', perguntarAcaoEmMassa);
+}
+
+function renderBarraDeSelecao() {
+  const total = SELECIONADAS.size;
+  document.getElementById('barra-selecao').hidden = total === 0;
+  document.getElementById('selecao-contagem').textContent =
+    `${formatNumber(total)} ${total === 1 ? 'selecionado' : 'selecionados'}`;
+
+  const visiveis = filtrar().map(i => i.id);
+  const todos = document.getElementById('selecionar-todos');
+  todos.checked = visiveis.length > 0 && visiveis.every(id => SELECIONADAS.has(id));
+  todos.indeterminate = !todos.checked && visiveis.some(id => SELECIONADAS.has(id));
+}
+
+const qtdServicos = n => `${formatNumber(n)} ${n === 1 ? 'serviço' : 'serviços'}`;
+
+function perguntarAcaoEmMassa() {
+  const ids = [...SELECIONADAS];
+  const selecionados = ITENS.filter(i => SELECIONADAS.has(i.id));
+  const suspensos = selecionados.filter(i => i.suspenso).map(i => i.id);
+  const naoSuspensos = selecionados.filter(i => !i.suspenso).map(i => i.id);
+
+  const acoes = [
+    { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => confirmarExclusao(ids) }
+  ];
+  if (suspensos.length) {
+    acoes.push({ rotulo: 'Reativar', classe: 'btn-neutro', aoClicar: () => suspender(suspensos, false) });
+  }
+  if (naoSuspensos.length) {
+    acoes.push({ rotulo: 'Suspender', classe: 'btn-neutro', aoClicar: () => suspender(naoSuspensos, true) });
+  }
+  acoes.push({ rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() });
+
+  Modal.abrir({
+    titulo: `Deseja suspender ou excluir ${qtdServicos(ids.length)}?`,
+    texto: 'Suspender tira o serviço do Explorar e o fornecedor não consegue reativar sozinho; dá para desfazer em Reativar. '
+         + 'Excluir apaga o serviço do catálogo do fornecedor.'
+         + (suspensos.length ? ` ${qtdServicos(suspensos.length)} da seleção já ${suspensos.length === 1 ? 'está suspenso' : 'estão suspensos'}.` : ''),
+    acoes
+  });
+}
+
+function confirmarExclusao(ids) {
+  Modal.abrir({
+    titulo: 'Tem certeza?',
+    texto: `${qtdServicos(ids.length)} ${ids.length === 1 ? 'será apagado' : 'serão apagados'} do catálogo do fornecedor. Esta ação não pode ser desfeita.`,
+    acoes: [
+      { rotulo: 'Sim', classe: 'btn-danger', aoClicar: () => excluir(ids) },
+      { rotulo: 'Não', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
+    ]
+  });
+}
+
+async function suspender(ids, suspenderServicos) {
+  Modal.ocupado(true);
+  const { data, error } = await supabaseClient.rpc('admin_suspender_servicos', { p_ids: ids, p_suspender: suspenderServicos });
+  Modal.ocupado(false);
+  Modal.fechar();
+
+  if (error) {
+    return toast(/admin_suspender_servicos|does not exist|schema cache/i.test(error.message || '')
+      ? 'Rode supabase/migrations/059_servico_suspenso_pelo_admin.sql no Supabase.'
+      : `Não foi possível ${suspenderServicos ? 'suspender' : 'reativar'}: ${error.message}`);
+  }
+
+  const feitos = Number(data) || ids.length;
+  ITENS.forEach(i => { if (ids.includes(i.id)) i.suspenso = suspenderServicos; });
+  SELECIONADAS.clear();
+  render();
+  toast(`${qtdServicos(feitos)} ${suspenderServicos ? (feitos === 1 ? 'suspenso' : 'suspensos') : (feitos === 1 ? 'reativado' : 'reativados')}.`);
+}
+
+async function excluir(ids) {
+  Modal.ocupado(true);
+  const { data, error } = await supabaseClient.from('products').delete().in('id', ids).select('id');
+  Modal.ocupado(false);
+  Modal.fechar();
+
+  if (error) return toast(`Não foi possível excluir: ${error.message}`);
+
+  const apagados = new Set((data || []).map(r => r.id));
+  if (!apagados.size) return toast('Nenhum serviço foi excluído.');
+
+  ITENS = ITENS.filter(i => !apagados.has(i.id));
+  SELECIONADAS.clear();
+  render();
+  toast(apagados.size < ids.length
+    ? `${qtdServicos(apagados.size)} excluído(s); ${formatNumber(ids.length - apagados.size)} não puderam ser excluídos.`
+    : `${qtdServicos(apagados.size)} ${apagados.size === 1 ? 'excluído' : 'excluídos'}.`);
 }

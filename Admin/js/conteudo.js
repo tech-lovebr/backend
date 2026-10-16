@@ -423,28 +423,50 @@ function renderFaq() {
     .filter(q => (q.categoria || '').trim().toLowerCase() === cat.toLowerCase())
     .sort((a, b) => a.ordem - b.ordem);
 
+  // ID de cada pergunta: a posição dela na lista, de cima para baixo.
+  let numero = 0;
+
   const blocoFaq = FAQ.length
-    ? categorias.map(cat => {
+    ? `
+      <div class="barra-selecao" id="barra-selecao-faq" hidden>
+        <span class="barra-selecao-contagem" id="selecao-contagem-faq"></span>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-limpar-selecao-faq">Limpar seleção</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-excluir-selecao-faq">Excluir</button>
+      </div>` + categorias.map(cat => {
         const perguntas = perguntasDe(cat);
         if (!perguntas.length) return '';
+        const aberta = !CATEGORIAS_FECHADAS.has(cat.toLowerCase());
+        const ids = perguntas.map(q => q.id);
+        const marcadas = ids.filter(id => SEL_FAQ.has(id)).length;
         return `
-          <div class="card faq-categoria-card">
-            <div class="card-head" style="justify-content:space-between">
-              <div><h2>${escapeHtml(cat)}</h2><p>${formatNumber(perguntas.length)} ${perguntas.length === 1 ? 'pergunta' : 'perguntas'}</p></div>
-              <button type="button" class="btn btn-ghost btn-sm" data-nova-pergunta="${escapeHtml(cat)}">+ Pergunta</button>
+          <div class="card faq-categoria-card ${aberta ? 'is-open' : ''}" data-categoria="${escapeHtml(cat)}">
+            <div class="faq-cat-head">
+              <input type="checkbox" class="faq-check" data-selecionar-categoria="${escapeHtml(cat)}"
+                     ${marcadas === ids.length ? 'checked' : ''} aria-label="Selecionar as perguntas de ${escapeHtml(cat)}">
+              <button type="button" class="faq-cat-toggle" data-alternar-categoria="${escapeHtml(cat)}" aria-expanded="${aberta}">
+                <svg class="faq-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+                <span class="faq-cat-nome">${escapeHtml(cat)}</span>
+              </button>
+              <button type="button" class="btn-icone-linha btn-editar-faq" data-renomear-categoria="${escapeHtml(cat)}" title="Renomear categoria" aria-label="Renomear categoria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg></button>
+              <button type="button" class="btn btn-ghost btn-sm faq-cat-nova" data-nova-pergunta="${escapeHtml(cat)}">+ Pergunta</button>
             </div>
-            <div class="card-body">
-              ${perguntas.map(q => `
-                <div class="pergunta-item ${q.ativo ? '' : 'is-inativo'}">
+            ${aberta ? `<div class="faq-cat-corpo">
+              ${perguntas.map(q => {
+                numero += 1;
+                return `
+                <div class="pergunta-item ${q.ativo ? '' : 'is-inativo'} ${SEL_FAQ.has(q.id) ? 'is-selecionada' : ''}">
+                  <input type="checkbox" class="faq-check" data-selecionar-pergunta="${q.id}" ${SEL_FAQ.has(q.id) ? 'checked' : ''} aria-label="Selecionar pergunta ${numero}">
+                  <span class="faq-id">${numero}</span>
                   <div style="flex:1;min-width:0">
                     <p class="pergunta">${escapeHtml(q.pergunta)}</p>
                     <p class="resposta">${escapeHtml(textoDe(q.resposta))}</p>
                   </div>
                   ${/<iframe/i.test(q.resposta || '') ? badge('vídeo', 'badge-info') : ''}
                   ${q.ativo ? '' : badge('rascunho', 'badge-warning')}
-                  <button type="button" class="btn-icone-linha" data-editar-pergunta="${q.id}" title="Editar" aria-label="Editar pergunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg></button>
-                </div>`).join('')}
-            </div>
+                  <button type="button" class="btn-icone-linha btn-editar-faq" data-editar-pergunta="${q.id}" title="Editar" aria-label="Editar pergunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg></button>
+                </div>`;
+              }).join('')}
+            </div>` : (() => { numero += perguntas.length; return ''; })()}
           </div>`;
       }).join('')
     : `<div class="card"><div class="empty-state">
@@ -467,6 +489,133 @@ function renderFaq() {
   lista.querySelectorAll('[data-editar-pergunta]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioPergunta(FAQ.find(q => q.id === btn.dataset.editarPergunta)));
   });
+
+  // Acordeão: abrir e fechar a categoria (lembrado neste navegador).
+  lista.querySelectorAll('[data-alternar-categoria]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chave = btn.dataset.alternarCategoria.toLowerCase();
+      if (CATEGORIAS_FECHADAS.has(chave)) CATEGORIAS_FECHADAS.delete(chave);
+      else CATEGORIAS_FECHADAS.add(chave);
+      guardarCategoriasFechadas();
+      renderFaq();
+    });
+  });
+
+  lista.querySelectorAll('[data-renomear-categoria]').forEach(btn => {
+    btn.addEventListener('click', () => renomearCategoria(btn.dataset.renomearCategoria));
+  });
+
+  // Seleção em massa: pergunta a pergunta ou a categoria inteira.
+  lista.querySelectorAll('[data-selecionar-pergunta]').forEach(caixa => {
+    caixa.addEventListener('change', () => {
+      if (caixa.checked) SEL_FAQ.add(caixa.dataset.selecionarPergunta);
+      else SEL_FAQ.delete(caixa.dataset.selecionarPergunta);
+      renderFaq();
+    });
+  });
+  lista.querySelectorAll('[data-selecionar-categoria]').forEach(caixa => {
+    const ids = perguntasDe(caixa.dataset.selecionarCategoria).map(q => q.id);
+    const marcadas = ids.filter(id => SEL_FAQ.has(id)).length;
+    caixa.indeterminate = marcadas > 0 && marcadas < ids.length;
+    caixa.addEventListener('change', () => {
+      ids.forEach(id => (caixa.checked ? SEL_FAQ.add(id) : SEL_FAQ.delete(id)));
+      renderFaq();
+    });
+  });
+
+  const barra = document.getElementById('barra-selecao-faq');
+  if (barra) {
+    const total = SEL_FAQ.size;
+    barra.hidden = total === 0;
+    document.getElementById('selecao-contagem-faq').textContent =
+      `${formatNumber(total)} ${total === 1 ? 'pergunta selecionada' : 'perguntas selecionadas'}`;
+    document.getElementById('btn-limpar-selecao-faq').addEventListener('click', () => { SEL_FAQ.clear(); renderFaq(); });
+    document.getElementById('btn-excluir-selecao-faq').addEventListener('click', perguntarExclusaoFaq);
+  }
+}
+
+/* --------------------------------------------- Ajuda/FAQ: estado da tela */
+
+const SEL_FAQ = new Set();
+const CHAVE_FECHADAS = `love-admin-faq-fechadas-${PLATAFORMA}`;
+const CATEGORIAS_FECHADAS = (() => {
+  try { return new Set(JSON.parse(localStorage.getItem(CHAVE_FECHADAS) || '[]')); } catch { return new Set(); }
+})();
+
+function guardarCategoriasFechadas() {
+  try { localStorage.setItem(CHAVE_FECHADAS, JSON.stringify([...CATEGORIAS_FECHADAS])); } catch { /* sem armazenamento: só não lembra */ }
+}
+
+/* Troca o nome da categoria no próprio cabeçalho; vale para todas as
+   perguntas dela, e é esse nome que aparece na página Ajuda. */
+function renomearCategoria(atual) {
+  const card = [...document.querySelectorAll('.faq-categoria-card')].find(c => c.dataset.categoria === atual);
+  const nomeEl = card && card.querySelector('.faq-cat-nome');
+  if (!nomeEl || card.querySelector('.faq-cat-input')) return;
+
+  const campo = document.createElement('input');
+  campo.type = 'text';
+  campo.className = 'faq-cat-input';
+  campo.value = atual;
+  card.querySelector('.faq-cat-toggle').replaceWith(campo);
+  campo.focus();
+  campo.select();
+
+  let encerrado = false;
+  const encerrar = async (salvando) => {
+    if (encerrado) return;
+    encerrado = true;
+    const novo = campo.value.trim();
+    if (!salvando || !novo || novo === atual) {
+      if (salvando && !novo) toast('O nome da categoria não pode ficar vazio.');
+      return renderFaq();
+    }
+
+    const ids = FAQ.filter(q => (q.categoria || '').trim().toLowerCase() === atual.toLowerCase()).map(q => q.id);
+    const { error } = await supabaseClient.from('faq').update({ categoria: novo }).in('id', ids);
+    if (error) {
+      toast(`Não foi possível renomear: ${error.message}`);
+      return renderFaq();
+    }
+
+    FAQ.forEach(q => { if (ids.includes(q.id)) q.categoria = novo; });
+    if (CATEGORIAS_FECHADAS.delete(atual.toLowerCase())) { CATEGORIAS_FECHADAS.add(novo.toLowerCase()); guardarCategoriasFechadas(); }
+    renderFaq();
+    toast('Categoria renomeada.');
+  };
+
+  campo.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); encerrar(true); }
+    if (e.key === 'Escape') { e.preventDefault(); encerrar(false); }
+  });
+  campo.addEventListener('blur', () => encerrar(true));
+}
+
+function perguntarExclusaoFaq() {
+  const ids = [...SEL_FAQ];
+  const qtd = `${formatNumber(ids.length)} ${ids.length === 1 ? 'pergunta' : 'perguntas'}`;
+  Modal.abrir({
+    titulo: `Deseja excluir ${qtd}?`,
+    texto: `${ids.length === 1 ? 'Ela sai' : 'Elas saem'} da página de ajuda na hora. Esta ação não pode ser desfeita.`,
+    acoes: [
+      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => excluirPerguntas(ids) },
+      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
+    ]
+  });
+}
+
+async function excluirPerguntas(ids) {
+  Modal.ocupado(true);
+  const { data, error } = await supabaseClient.from('faq').delete().in('id', ids).select('id');
+  Modal.ocupado(false);
+  Modal.fechar();
+
+  if (error) return toast(`Não foi possível excluir: ${error.message}`);
+
+  const apagadas = (data || []).length;
+  SEL_FAQ.clear();
+  toast(`${formatNumber(apagadas)} ${apagadas === 1 ? 'pergunta excluída' : 'perguntas excluídas'}.`);
+  await carregar();
 }
 
 function abrirFormularioPergunta(item, categoriaInicial) {

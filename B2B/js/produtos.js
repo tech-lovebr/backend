@@ -164,6 +164,11 @@ async function loadProducts() {
     price: p.price,
     description: p.description,
     active: p.active,
+    // Suspenso pelo Admin (migration 059): some do Explorar e o fornecedor
+    // não consegue reativar. select('*') traz as colunas quando existem.
+    suspenso: p.suspenso === true,
+    suspensoEm: p.suspenso_em || null,
+    suspensoMotivo: p.suspenso_motivo || '',
     coverImage: p.cover_image_url,
     cover: (p.extra && p.extra.cover) || null,
     gallery: p.gallery || [],
@@ -284,9 +289,12 @@ function renderProducts() {
       <div class="p-4 flex flex-col gap-2 flex-1">
         <div class="flex items-start justify-between gap-2">
           <p class="text-sm font-semibold text-zinc-900 leading-snug">${p.name}</p>
-          <span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>
+          ${p.suspenso
+            ? '<span class="status-badge status-suspenso">Suspenso</span>'
+            : `<span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>`}
         </div>
         <p class="text-xs text-zinc-500">${p.category}</p>
+        ${p.suspenso ? `<p class="produto-suspenso-aviso"><strong>Suspenso pela Love</strong>${p.suspensoMotivo ? ' — ' + escapeHtml(p.suspensoMotivo) : ''}</p>` : ''}
         <p class="text-base font-bold text-zinc-900 mt-auto">${productPriceLabel(p)}</p>
         <div class="flex items-center gap-2 mt-1">
           <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">Editar</button>
@@ -1095,6 +1103,8 @@ function initProductDrawer() {
     form.reset();
     delete form.dataset.editId;
     document.getElementById('product-drawer-title').textContent = 'Adicionar produto ou serviço';
+    const avisoSuspensoNovo = document.getElementById('product-suspenso-aviso');
+    if (avisoSuspensoNovo) avisoSuspensoNovo.hidden = true;
     resetDrawerState();
     open();
   });
@@ -1367,6 +1377,16 @@ function openProductDrawer(id) {
   const p = bProducts.find(x => x.id === id);
   if (!p) return;
   document.getElementById('product-drawer-title').textContent = 'Editar produto ou serviço';
+  // Serviço suspenso pela Love: aviso no topo do drawer.
+  const avisoSuspenso = document.getElementById('product-suspenso-aviso');
+  if (avisoSuspenso) {
+    const prod = bProducts.find(x => x.id === id);
+    avisoSuspenso.hidden = !(prod && prod.suspenso);
+    if (prod && prod.suspenso) {
+      avisoSuspenso.innerHTML = '<strong>Suspenso pela Love.</strong> Este serviço não aparece no Explorar enquanto estiver suspenso.'
+        + (prod.suspensoMotivo ? '<br>Motivo: ' + escapeHtml(prod.suspensoMotivo) : '');
+    }
+  }
   document.getElementById('product-name').value = p.name;
   document.getElementById('product-category').value = p.category;
   document.getElementById('product-description').value = p.description || '';

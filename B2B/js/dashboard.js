@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   renderGreeting();
+  renderAvisoServicosSuspensos();
   await renderMetricsOverview();
   initWalletTabs();
   initWalletEyeToggle();
@@ -570,6 +571,22 @@ async function carregarPrimeirosPassos(modal) {
       <li><span>${escapeHtml(p.icone || '•')}</span> <strong>${escapeHtml(p.titulo)}</strong>${p.descricao ? ' — ' + escapeHtml(p.descricao) : ''}</li>
     `).join('');
   } catch (e) { /* mantém os fixos */ }
+}
+
+// Aviso "N serviços suspensos pela Love" (products.suspenso, migration 059).
+async function renderAvisoServicosSuspensos() {
+  const aviso = document.getElementById('dashboard-suspensos-aviso');
+  if (!aviso) return;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const { count, error } = await supabaseClient
+    .from('products')
+    .select('id', { count: 'exact', head: true })
+    .eq('fornecedor_id', session.user.id)
+    .eq('suspenso', true);
+  if (error || !count) { aviso.hidden = true; return; }
+  aviso.innerHTML = `<span><strong>${count} ${count === 1 ? 'serviço suspenso' : 'serviços suspensos'} pela Love.</strong> ${count === 1 ? 'Ele não aparece' : 'Eles não aparecem'} no Explorar.</span><span class="dashboard-suspensos-link">Ver serviços →</span>`;
+  aviso.hidden = false;
 }
 
 function renderGreeting() {

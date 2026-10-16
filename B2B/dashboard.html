@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=557">
+  <link rel="stylesheet" href="css/styles.css?v=558">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -40,6 +40,9 @@
       <div id="shell-topbar"></div>
 
       <main class="b2b-content">
+
+        <!-- Serviços suspensos pela Love (Admin): aviso com link para a lista. -->
+        <a href="produtos" class="dashboard-suspensos-aviso" id="dashboard-suspensos-aviso" hidden></a>
 
         <div class="dashboard-greeting">
           <div class="dashboard-greeting-mobile-avatar" id="dashboard-greeting-avatar-slot"></div>
@@ -376,6 +379,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/dashboard.js?v=55"></script>
+  <script src="js/dashboard.js?v=56"></script>
 </body>
 </html>

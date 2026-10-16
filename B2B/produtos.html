@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=557">
+  <link rel="stylesheet" href="css/styles.css?v=558">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -78,6 +78,8 @@
     </div>
 
     <div class="form-drawer-body">
+      <!-- Serviço suspenso pelo Admin (migration 059). -->
+      <div class="produto-suspenso-drawer" id="product-suspenso-aviso" hidden></div>
       <form id="product-form" class="flex flex-col gap-4">
 
         <!-- ETAPA 1: Identificação & Taxonomia -->
@@ -557,6 +559,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=24"></script>
+  <script src="js/produtos.js?v=25"></script>
 </body>
 </html>

@@ -3,6 +3,7 @@
    ========================================================================== */
 
 let EVENTOS = [];
+let SELECIONADAS = new Set();
 let CLIENTES = new Map();
 let METRICAS = new Map();
 
@@ -10,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 9);
+  renderLoading(tbody, 11);
 
   const [eventos, clientes, convidados, presentes] = await Promise.all([
     safeSelect('eventos', '*'),
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     safeSelect('presentes', 'evento_id, valor, status')
   ]);
 
-  if (eventos.error) return renderError(tbody, 9, eventos.error);
+  if (eventos.error) return renderError(tbody, 11, eventos.error);
 
   EVENTOS = eventos.data;
   CLIENTES = new Map(clientes.data.map(c => [c.id, c]));
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderKpis();
   render();
+  ligarSelecao();
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-tipo').addEventListener('change', render);
@@ -116,7 +118,8 @@ function render() {
 
 
   if (!lista.length) {
-    renderEmpty(tbody, 9, 'Nenhum evento encontrado',
+    renderBarraDeSelecao();
+    renderEmpty(tbody, 11, 'Nenhum evento encontrado',
       EVENTOS.length
         ? 'Ajuste a busca ou o filtro de categoria.'
         : 'Nenhuma comemoração foi criada ainda. Os eventos aparecem aqui assim que a plataforma dos noivos começar a gravá-los no banco.');
@@ -126,8 +129,12 @@ function render() {
   tbody.innerHTML = lista.map(e => {
     const m = metricas(e.id);
     const cliente = CLIENTES.get(e.cliente_id);
+    const marcada = SELECIONADAS.has(e.id);
     return `
-      <tr data-id="${e.id}">
+      <tr data-id="${e.id}" class="${marcada ? 'is-selecionada' : ''}">
+        <td class="col-selecao">
+          <input type="checkbox" data-selecionar="${e.id}" ${marcada ? 'checked' : ''} aria-label="Selecionar ${escapeHtml(e.titulo || 'evento')}">
+        </td>
         <td class="cell-strong">${dash(e.titulo)}</td>
         <td>${badge(EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—', e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}</td>
         <td class="cell-muted">${dash(cliente?.couple_name || e.host_name)}</td>
@@ -137,12 +144,24 @@ function render() {
         <td>${formatNumber(m.recebidos)}/${formatNumber(m.presentes)}</td>
         <td class="cell-strong">${formatCurrency(m.arrecadado)}</td>
         <td>${badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning')}</td>
+        <td class="col-acoes">${botaoVerMais(e.id)}</td>
       </tr>`;
   }).join('');
 
-  tbody.querySelectorAll('tr[data-id]').forEach(tr => {
-    tr.addEventListener('click', () => abrirDetalhe(tr.dataset.id));
+  // A linha não abre o drawer (dá para marcar as caixinhas); quem abre são
+  // as três bolinhas no fim.
+  ligarAcoesDaLinha(tbody, abrirDetalhe);
+
+  tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
+    caixa.addEventListener('change', () => {
+      if (caixa.checked) SELECIONADAS.add(caixa.dataset.selecionar);
+      else SELECIONADAS.delete(caixa.dataset.selecionar);
+      caixa.closest('tr').classList.toggle('is-selecionada', caixa.checked);
+      renderBarraDeSelecao();
+    });
   });
+
+  renderBarraDeSelecao();
 }
 
 function abrirDetalhe(id) {
@@ -241,4 +260,81 @@ async function salvar(id) {
   renderKpis();
   Drawer.close();
   toast('Evento atualizado.');
+}
+
+/* ------------------------------------------------------ Seleção em massa
+   Igual a Anfitriões › Cadastros: marcar e excluir de uma vez. Excluir um
+   evento apaga junto convidados e presentes dele (cascade no banco). */
+
+function ligarSelecao() {
+  document.getElementById('selecionar-todos').addEventListener('change', (e) => {
+    const visiveis = filtrar().map(ev => ev.id);
+    if (e.target.checked) visiveis.forEach(id => SELECIONADAS.add(id));
+    else visiveis.forEach(id => SELECIONADAS.delete(id));
+    render();
+  });
+
+  document.getElementById('btn-limpar-selecao').addEventListener('click', () => {
+    SELECIONADAS.clear();
+    render();
+  });
+
+  document.getElementById('btn-excluir-selecao').addEventListener('click', perguntarExclusao);
+}
+
+function renderBarraDeSelecao() {
+  const total = SELECIONADAS.size;
+  document.getElementById('barra-selecao').hidden = total === 0;
+  document.getElementById('selecao-contagem').textContent =
+    `${formatNumber(total)} ${total === 1 ? 'evento selecionado' : 'eventos selecionados'}`;
+
+  const visiveis = filtrar().map(ev => ev.id);
+  const todos = document.getElementById('selecionar-todos');
+  todos.checked = visiveis.length > 0 && visiveis.every(id => SELECIONADAS.has(id));
+  todos.indeterminate = !todos.checked && visiveis.some(id => SELECIONADAS.has(id));
+}
+
+const qtdEventos = n => `${formatNumber(n)} ${n === 1 ? 'evento' : 'eventos'}`;
+
+function perguntarExclusao() {
+  const ids = [...SELECIONADAS];
+  Modal.abrir({
+    titulo: `Deseja excluir ${qtdEventos(ids.length)}?`,
+    texto: `${ids.length === 1 ? 'O evento' : 'Os eventos'} e tudo que está dentro — convidados, presentes e o site do convite — serão apagados. Esta ação não pode ser desfeita.`,
+    acoes: [
+      { rotulo: 'Excluir', classe: 'btn-danger', aoClicar: () => confirmarExclusao(ids) },
+      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
+    ]
+  });
+}
+
+function confirmarExclusao(ids) {
+  Modal.abrir({
+    titulo: 'Tem certeza?',
+    texto: `${qtdEventos(ids.length)} ${ids.length === 1 ? 'será apagado' : 'serão apagados'} para sempre.`,
+    acoes: [
+      { rotulo: 'Sim', classe: 'btn-danger', aoClicar: () => excluirEventos(ids) },
+      { rotulo: 'Não', classe: 'btn-ghost', aoClicar: () => Modal.fechar() }
+    ]
+  });
+}
+
+async function excluirEventos(ids) {
+  Modal.ocupado(true);
+  const { data, error } = await supabaseClient.from('eventos').delete().in('id', ids).select('id');
+  Modal.ocupado(false);
+  Modal.fechar();
+
+  if (error) return toast(`Não foi possível excluir: ${error.message}`);
+
+  const apagados = new Set((data || []).map(r => r.id));
+  if (!apagados.size) return toast('Nenhum evento foi excluído.');
+
+  EVENTOS = EVENTOS.filter(ev => !apagados.has(ev.id));
+  SELECIONADAS.clear();
+  renderKpis();
+  render();
+  toast(apagados.size < ids.length
+    ? `${qtdEventos(apagados.size)} excluído(s); ${formatNumber(ids.length - apagados.size)} não puderam ser excluídos.`
+    : `${qtdEventos(apagados.size)} ${apagados.size === 1 ? 'excluído' : 'excluídos'}.`);
 }

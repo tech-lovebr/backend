@@ -279,6 +279,7 @@ function renderActiveChat() {
             ${msg.id && msg.id === mensagemEmEdicaoId
               ? `<div class="chat-msg-edicao">
                   <textarea class="chat-msg-edicao-campo" data-edicao-campo rows="2">${escapeMsg(msg.text || '')}</textarea>
+                  <p class="chat-msg-edicao-erro" data-edicao-erro hidden></p>
                   <div class="chat-msg-edicao-acoes">
                     <button type="button" class="btn-secondary" data-edicao-cancelar>Cancelar</button>
                     <button type="button" class="btn-primary" data-edicao-salvar="${msgIndex}">Salvar</button>
@@ -539,6 +540,7 @@ window.iniciarEdicaoMensagem = function (msgIndex) {
   const conv = b2bConversations.find(c => c.id === activeConvId);
   const msg = conv && conv.messages[msgIndex];
   if (!msg || !msg.id || msg.sender !== 'me') return;
+  if (msg.editedAt) return; // já foi editada: só pode uma vez
   mensagemEmEdicaoId = msg.id;
   renderActiveChat();
   const campo = document.querySelector('[data-edicao-campo]');
@@ -569,7 +571,14 @@ async function salvarEdicaoMensagem(msgIndex) {
     .eq('id', msg.id)
     .select('id');
   if (error || !data || !data.length) {
-    showToast('Não foi possível editar a mensagem.', true);
+    // O banco (migration 058) recusa a segunda edição: avisa dentro do editor.
+    const jaEditada = error && /já foi editada/i.test(error.message || '');
+    const aviso = document.querySelector('[data-edicao-erro]');
+    const texto = jaEditada
+      ? 'Esta mensagem já foi editada uma vez e não pode ser editada de novo.'
+      : 'Não foi possível editar a mensagem.';
+    if (aviso) { aviso.textContent = texto; aviso.hidden = false; }
+    else showToast(texto, true);
     return;
   }
   msg.text = texto;

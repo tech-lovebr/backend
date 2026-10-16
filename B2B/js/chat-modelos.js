@@ -291,6 +291,9 @@ async function initChatModelos() {
     const conv = b2bConversations.find(c => c.id === activeConvId);
     const msg = conv && conv.messages[Number(btn.dataset.msgMenu)];
     menuMensagemIndice = Number(btn.dataset.msgMenu);
+    // Editar só uma vez: mensagem já editada fica só com Copiar (e Salvar comando).
+    const editar = document.getElementById('chat-msg-menu-edit');
+    if (editar) editar.hidden = !!(msg && msg.editedAt);
     if (msg && msg.text) abrirMenuMensagem(btn, msg.text);
   });
   document.getElementById('chat-msg-menu-edit')?.addEventListener('click', () => { fecharMenuMensagem(); window.iniciarEdicaoMensagem?.(menuMensagemIndice); });

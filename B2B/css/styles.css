@@ -7450,3 +7450,8 @@ body[data-theme="dark"] .profile-imagem-editar { background: #252525 !important;
 .b2b-header-bar [hidden],
 .tabela-barra [hidden],
 .modal-card [hidden] { display: none !important; }
+
+/* Chat: "Editar" some do menu ⋮ em mensagem já editada (só uma vez). */
+.chat-msg-menu [hidden] { display: none !important; }
+.chat-msg-edicao-erro { font-size: 0.75rem; color: #DC2626 !important; margin: 0; text-align: left; }
+.chat-msg-edicao-erro[hidden] { display: none; }

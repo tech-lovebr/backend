@@ -13393,7 +13393,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const servico = servicos.length === 1 ? servicos[0] : null;
       const ev = getActiveEvent();
       const convidados = ev ? (ev.totalConvidados || (ev.guests || []).length || null) : null;
-      const data = dataEventoAtivoTexto();
+      const evAtivo = getActiveEvent();
+      const data = dataDDMMAAAA(evAtivo && ((evAtivo.eventDetails && evAtivo.eventDetails.date) || evAtivo.date));
       const texto = textoDoPedidoOrcamento(item, servico, data, convidados, '', enderecoDoEventoAtivo());
       const nome = getGuestCommentAuthorName();
       const email = (window.loveClienteProfile && window.loveClienteProfile.email) || window.loveClienteSession.user.email || '';
@@ -13439,7 +13440,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ev = getActiveEvent();
     const d = (ev && ev.eventDetails) || {};
     const rua = String(d.address || '').trim();
-    const cidade = [String(d.city || '').trim(), String(d.state || '').trim()].filter(Boolean).join(' - ');
+    const cidade = [String(d.city || '').trim(), String(d.state || '').trim().toUpperCase()].filter(Boolean).join('/');
     return [rua, cidade].filter(Boolean).join(', ');
   }
 
@@ -13569,18 +13570,44 @@ document.addEventListener('DOMContentLoaded', () => {
     openModal(modal);
   }
 
-  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local, extras = {}) {
+  // Tipo de celebração do evento ativo (para a linha "Evento:").
+  function tipoDeCelebracaoDoEvento() {
     const ev = getActiveEvent();
+    if (!ev) return '';
+    return { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo', baby: 'Chá de bebê' }[ev.type] || 'Outro';
+  }
+
+  // "2026-11-20" (ou Date) → "20/11/2026".
+  function dataDDMMAAAA(valor) {
+    if (!valor) return '';
+    const s = String(valor);
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+    if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+    const d = new Date(s);
+    return isNaN(d) ? s : d.toLocaleDateString('pt-BR');
+  }
+
+  // Texto do pedido no formato fixo que o Hub lê:
+  //   Pedido de orçamento — <serviço (products.name)>
+  //   Evento: <tipo de celebração>
+  //   Data: <DD/MM/AAAA>
+  //   Convidados: <número>
+  //   Local: <endereço completo>
+  //   Mensagem: <briefing>
+  // Ambiente e faixa de investimento vão dentro da mensagem.
+  function textoDoPedidoOrcamento(item, servico, data, convidados, mensagem, local, extras = {}) {
+    const msg = [
+      mensagem,
+      extras.ambiente ? `Ambiente: ${extras.ambiente}` : '',
+      extras.faixa ? `Investimento: ${extras.faixa}` : ''
+    ].filter(Boolean).join(' — ');
     return [
-      'Pedido de orçamento' + (servico ? ` — ${servico.name}` : ''),
-      ev && ev.title ? `Evento: ${ev.title}` : '',
-      extras.tipo ? `Tipo: ${extras.tipo}` : '',
+      'Pedido de orçamento' + (servico && servico.name ? ` — ${servico.name}` : ''),
+      `Evento: ${extras.tipo || tipoDeCelebracaoDoEvento() || 'Outro'}`,
       data ? `Data: ${data}` : '',
       convidados ? `Convidados: ${convidados}` : '',
       local ? `Local: ${local}` : '',
-      extras.ambiente ? `Ambiente: ${extras.ambiente}` : '',
-      extras.faixa ? `Investimento: ${extras.faixa}` : '',
-      mensagem ? `Detalhes: ${mensagem}` : ''
+      msg ? `Mensagem: ${msg}` : ''
     ].filter(Boolean).join('\n');
   }
 
@@ -13597,7 +13624,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const select = document.getElementById('orcamento-servico');
     const servico = (item.services || []).find(s => s.id === (select && select.value)) || null;
     const dataISO = (document.getElementById('orcamento-data')?.value || '').trim();
-    const data = dataISO ? (formatEventDateLong(dataISO) || dataISO) : '';
+    const data = dataDDMMAAAA(dataISO);
     const convidados = parseInt(document.getElementById('orcamento-convidados')?.value, 10) || null;
     const extras = { tipo: valorDaPill('tipo'), ambiente: valorDaPill('ambiente'), faixa: valorDaPill('faixa') };
     const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();

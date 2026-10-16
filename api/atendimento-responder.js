@@ -89,6 +89,15 @@ function layoutDoEmail({ corpoHtml, protocolo, suporte }) {
 }
 
 module.exports = async (req, res) => {
+  try {
+    return await responder(req, res);
+  } catch (e) {
+    console.error("Atendimento: erro inesperado", e);
+    return res.status(500).json({ ok: false, erro: "erro_inesperado", detalhe: String((e && e.message) || e) });
+  }
+};
+
+async function responder(req, res) {
   cors(req, res);
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ ok: false, erro: "metodo_nao_permitido" });
@@ -96,7 +105,11 @@ module.exports = async (req, res) => {
   const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return res.status(401).json({ ok: false, erro: "sem_sessao" });
 
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  if (!url || !chave) return res.status(500).json({ ok: false, erro: "servidor_nao_configurado" });
+
+  const supabase = createClient(url, chave, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
@@ -209,4 +222,4 @@ module.exports = async (req, res) => {
   }
 
   return res.status(200).json({ ok: true, mensagem_id: msg.id, status: novoStatus, email, notificado });
-};
+}

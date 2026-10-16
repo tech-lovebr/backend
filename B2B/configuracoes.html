@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=559">
+  <link rel="stylesheet" href="css/styles.css?v=560">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -45,7 +45,7 @@
         <div class="category-tabs-bar" id="settings-tabs">
           <button type="button" class="category-tab active" data-settings-tab="perfil">Perfil</button>
           <button type="button" class="category-tab" data-settings-tab="empresa">Minha Empresa</button>
-          <button type="button" class="category-tab" data-settings-tab="preferencias">Preferências</button>
+          <button type="button" class="category-tab" data-settings-tab="preferencias">Segurança</button>
         </div>
 
         <div data-settings-panel="perfil">
@@ -250,7 +250,7 @@
         </div>
 
         <div data-settings-panel="preferencias" style="display:none;">
-          <h3 class="settings-secao-titulo settings-secao-titulo--painel">Preferências da conta</h3>
+          <h3 class="settings-secao-titulo settings-secao-titulo--painel">Segurança da conta</h3>
           <div class="dash-card mb-6">
             <div class="dash-card-header">
               <div class="dash-card-header-left">
@@ -276,49 +276,43 @@
                 <button type="submit" class="btn-secondary">Atualizar senha</button>
               </div>
             </form>
-          </div>
 
-          <div class="dash-card mb-6 accordion-card" data-accordion-card>
-            <div class="dash-card-header accordion-card-header" data-accordion-toggle>
-              <div class="dash-card-header-left">
-                <h2 class="text-base font-bold text-zinc-900">Segurança</h2>
+            <!-- Autenticação de dois fatores, verificação e assinatura logo
+                 abaixo da senha (sem acordeão). -->
+            <div class="settings-seguranca-linhas">
+            <div class="settings-switch-row">
+              <div>
+                <p class="settings-switch-label">Autenticação de dois fatores</p>
+                <p class="settings-switch-desc">Peça um código extra ao entrar na sua conta em um novo dispositivo.</p>
               </div>
-              <span class="accordion-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19 9-7 7-7-7" /></svg></span>
+              <label class="settings-switch">
+                <input type="checkbox" id="profile-2fa-toggle">
+                <span class="settings-switch-track"></span>
+              </label>
             </div>
 
-            <div class="accordion-card-body" data-accordion-body>
-              <div class="settings-switch-row">
-                <div>
-                  <p class="settings-switch-label">Autenticação de dois fatores</p>
-                  <p class="settings-switch-desc">Peça um código extra ao entrar na sua conta em um novo dispositivo.</p>
-                </div>
-                <label class="settings-switch">
-                  <input type="checkbox" id="profile-2fa-toggle">
-                  <span class="settings-switch-track"></span>
-                </label>
+            <div class="settings-switch-row">
+              <div>
+                <p class="settings-switch-label">Verificação de conta</p>
+                <p class="settings-switch-desc" id="profile-selfie-desc">Confirme sua identidade para aumentar a confiança dos seus clientes.</p>
               </div>
-
-              <div class="settings-switch-row">
-                <div>
-                  <p class="settings-switch-label">Verificação de conta</p>
-                  <p class="settings-switch-desc" id="profile-selfie-desc">Confirme sua identidade para aumentar a confiança dos seus clientes.</p>
-                </div>
-                <div>
-                  <input type="file" accept="image/*" id="profile-selfie-input" hidden>
-                  <button type="button" class="btn-secondary profile-security-action-btn" id="profile-selfie-btn">Verificar</button>
-                  <span class="status-badge status-ativo" id="profile-selfie-badge" hidden>Conta verificada</span>
-                </div>
-              </div>
-
-              <div class="settings-switch-row">
-                <div>
-                  <p class="settings-switch-label">Assinatura</p>
-                  <p class="settings-switch-desc" id="profile-plan-desc">Plano atual: Gratuito</p>
-                </div>
-                <button type="button" class="btn-secondary profile-security-action-btn" id="subscription-open-btn">Ver assinatura</button>
+              <div>
+                <input type="file" accept="image/*" id="profile-selfie-input" hidden>
+                <button type="button" class="btn-secondary profile-security-action-btn" id="profile-selfie-btn">Verificar</button>
+                <span class="status-badge status-ativo" id="profile-selfie-badge" hidden>Conta verificada</span>
               </div>
             </div>
+
+            <div class="settings-switch-row">
+              <div>
+                <p class="settings-switch-label">Assinatura</p>
+                <p class="settings-switch-desc" id="profile-plan-desc">Plano atual: Gratuito</p>
+              </div>
+              <button type="button" class="btn-secondary profile-security-action-btn" id="subscription-open-btn">Ver assinatura</button>
+            </div>
+            </div>
           </div>
+
 
           <div class="dash-card mb-6 accordion-card" data-accordion-card>
             <div class="dash-card-header accordion-card-header" data-accordion-toggle>

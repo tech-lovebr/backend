@@ -7491,3 +7491,11 @@ body[data-theme="dark"] .produto-suspenso-aviso strong { color: #FFFFFF !importa
 .portfolio-item-rotulo { font-size: 0.75rem; font-weight: 600; color: #52525B; margin-top: 2px; }
 .portfolio-item-comentario { min-height: 72px; font-size: 0.8125rem; resize: vertical; }
 body[data-theme="dark"] .portfolio-item-rotulo { color: #D4D4D8 !important; }
+
+/* Configurações › Segurança: dois fatores, verificação e assinatura logo
+   abaixo da senha, separados por uma linha (sem acordeão). */
+.settings-seguranca-linhas { margin-top: 1.5rem; border-top: 1px solid #E4E4E7; }
+.settings-seguranca-linhas .settings-switch-row { padding: 1rem 0; border-bottom: 1px solid #F2F3F6; }
+.settings-seguranca-linhas .settings-switch-row:last-child { border-bottom: none; padding-bottom: 0; }
+body[data-theme="dark"] .settings-seguranca-linhas { border-top-color: #404040 !important; }
+body[data-theme="dark"] .settings-seguranca-linhas .settings-switch-row { border-bottom-color: #333333 !important; }

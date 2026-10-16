@@ -243,6 +243,14 @@
                 <label class="field-label">Fotos de trabalhos já realizados</label>
                 <div id="company-portfolio-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
               </div>
+
+              <!-- Texto que aparece embaixo do carrossel do portfólio na página
+                   da empresa (love.com.br). Salva sozinho. -->
+              <div id="company-portfolio-texto-wrap">
+                <label for="company-portfolio-texto" class="field-label">Sobre os trabalhos realizados</label>
+                <textarea id="company-portfolio-texto" class="field-textarea" style="min-height:110px;" maxlength="1500"></textarea>
+                <p class="text-xs text-zinc-500 mt-1" id="company-portfolio-texto-status"></p>
+              </div>
             </div>
           </div>
         </div>
@@ -417,6 +425,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/configuracoes.js?v=37"></script>
+  <script src="js/configuracoes.js?v=38"></script>
 </body>
 </html>

@@ -12090,6 +12090,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cardImage: (servicos.map(s => s.cover_image_url).find(Boolean)) || fotos[0] || '',
       avatar: f.avatar_url || '', // capa (logo_url) não serve de avatar: sem foto, ficam as iniciais
       portfolioPhotos: fotos,
+      portfolioTexto: (f.portfolio_texto || '').trim(),
       services: servicos,
       // Categoria do fornecedor = categorias dos serviços que ele cadastrou
       // (o B2B não tem categoria no nível do fornecedor).
@@ -12117,12 +12118,13 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bFornecedoresCarregadosEm = Date.now();
 
     b2bFornecedoresPromise = (async () => {
-      const [fornecedoresRes, favoritosRes, avaliacoesRes] = await Promise.all([
-        supabaseClient
-          .from('fornecedores')
-          .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
-          .neq('status', 'bloqueado')
-          .order('company_name'),
+      const buscarFornecedores = (comTextoPortfolio) => supabaseClient
+        .from('fornecedores')
+        .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, ' + (comTextoPortfolio ? 'portfolio_texto, ' : '') + 'status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
+        .neq('status', 'bloqueado')
+        .order('company_name');
+      const [fornecedoresResComTexto, favoritosRes, avaliacoesRes] = await Promise.all([
+        buscarFornecedores(true),
         supabaseClient
           .from('servicos_favoritos')
           .select('produto_id')
@@ -12132,6 +12134,10 @@ document.addEventListener('DOMContentLoaded', () => {
           .select('fornecedor_id, nota')
       ]);
 
+      // Sem a coluna portfolio_texto (migration 061 não rodada): busca sem ela.
+      const fornecedoresRes = fornecedoresResComTexto.error && /portfolio_texto/i.test(fornecedoresResComTexto.error.message || '')
+        ? await buscarFornecedores(false)
+        : fornecedoresResComTexto;
       if (favoritosRes.error) console.error('[vitrine] favoritos:', favoritosRes.error);
       b2bFavoritosIds = new Set((favoritosRes.data || []).map(r => r.produto_id));
       // Média e quantidade de avaliações por fornecedor (estrelas do perfil).
@@ -13489,22 +13495,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0);
 
+    // Portfólio: só na página da empresa (não na do serviço) e só se o
+    // fornecedor configurou fotos no Hub. Carrossel em cima, texto embaixo.
+    const mostrarPortfolio = !servicoAtual && portfolioPhotos.length > 0;
     if (portfolioGrid) {
-      portfolioGrid.innerHTML = portfolioPhotos.map((photo, i) => `
-        <button type="button" class="b2b-profile-portfolio-photo-btn relative w-40 h-40 sm:w-48 sm:h-48 rounded-xl overflow-hidden bg-zinc-100 cursor-pointer group shrink-0" data-index="${i}">
-          <img src="${photo}" alt="Portfólio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-        </button>
-      `).join('');
-      portfolioGrid.querySelectorAll('.b2b-profile-portfolio-photo-btn').forEach(btn => {
+      portfolioGrid.innerHTML = mostrarPortfolio ? `
+        <div class="b2b-portfolio-slides">
+          ${portfolioPhotos.map((photo, i) => `
+            <button type="button" class="b2b-portfolio-slide${i === 0 ? ' is-ativo' : ''}" data-index="${i}" aria-label="Ampliar foto ${i + 1}">
+              <img src="${photo}" alt="Portfólio" loading="lazy">
+            </button>`).join('')}
+          ${portfolioPhotos.length > 1 ? `
+            <button type="button" class="b2b-portfolio-seta b2b-portfolio-seta--ant" data-portfolio-seta="-1" aria-label="Foto anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
+            <button type="button" class="b2b-portfolio-seta b2b-portfolio-seta--prox" data-portfolio-seta="1" aria-label="Próxima foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>` : ''}
+        </div>
+        ${portfolioPhotos.length > 1 ? `<div class="b2b-portfolio-pontos">${portfolioPhotos.map((_, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>` : ''}` : '';
+      let atual = 0;
+      const ir = (n) => {
+        const total = portfolioPhotos.length;
+        atual = (n + total) % total;
+        portfolioGrid.querySelectorAll('.b2b-portfolio-slide').forEach((el, i) => el.classList.toggle('is-ativo', i === atual));
+        portfolioGrid.querySelectorAll('.b2b-portfolio-pontos span').forEach((el, i) => el.classList.toggle('is-ativo', i === atual));
+      };
+      portfolioGrid.querySelectorAll('[data-portfolio-seta]').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.stopPropagation(); ir(atual + Number(btn.dataset.portfolioSeta)); });
+      });
+      portfolioGrid.querySelectorAll('.b2b-portfolio-slide').forEach(btn => {
         btn.addEventListener('click', () => {
           openSupplierGalleryModal(item);
           supplierGalleryIndex = parseInt(btn.getAttribute('data-index'), 10) || 0;
           renderSupplierGalleryImage();
         });
       });
-      updateB2BProfilePortfolioArrows();
     }
-    if (portfolioSection) portfolioSection.classList.toggle('hidden', portfolioPhotos.length === 0);
+    const portfolioTextoEl = document.getElementById('b2b-profile-portfolio-texto');
+    if (portfolioTextoEl) {
+      portfolioTextoEl.textContent = item.portfolioTexto || '';
+      portfolioTextoEl.classList.toggle('hidden', !mostrarPortfolio || !item.portfolioTexto);
+    }
+    if (portfolioSection) portfolioSection.classList.toggle('hidden', !mostrarPortfolio);
+    // Sem portfólio à direita, os serviços ocupam a largura toda (até 3 por linha).
+    document.getElementById('b2b-perfil-colunas')?.classList.toggle('sem-portfolio', !mostrarPortfolio);
 
     // Coração do perfil: só na página do serviço (favorito é do serviço).
     const favBtn = document.getElementById('btn-b2b-profile-favorite');

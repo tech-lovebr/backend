@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initBankDetailsForm();
   initAccordionCards();
   initRequestChangeLinks();
+  initPortfolioTexto();
   window.b2bPageReady?.();
 });
 
@@ -402,6 +403,32 @@ async function salvarEmpresaNoBanco(p) {
     .eq('id', session.user.id);
 
   if (error) console.error('Não foi possível sincronizar as informações da empresa com o banco.', error);
+}
+
+/* -------------------- Portfólio: texto (fornecedores.portfolio_texto, migration 061) -------------------- */
+
+// Aparece embaixo do carrossel do portfólio na página da empresa. Salva
+// sozinho ao parar de digitar. Sem a coluna no banco, o campo some.
+async function initPortfolioTexto() {
+  const campo = document.getElementById('company-portfolio-texto');
+  const wrap = document.getElementById('company-portfolio-texto-wrap');
+  const status = document.getElementById('company-portfolio-texto-status');
+  if (!campo) return;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const { data, error } = await supabaseClient.from('fornecedores').select('portfolio_texto').eq('id', session.user.id).maybeSingle();
+  if (error) { if (wrap) wrap.hidden = true; return; }
+  campo.value = (data && data.portfolio_texto) || '';
+  let espera = null;
+  campo.addEventListener('input', () => {
+    if (status) status.textContent = 'Salvando…';
+    clearTimeout(espera);
+    espera = setTimeout(async () => {
+      const { error: erroSalvar } = await supabaseClient.from('fornecedores')
+        .update({ portfolio_texto: campo.value.trim() || null }).eq('id', session.user.id);
+      if (status) status.textContent = erroSalvar ? 'Não foi possível salvar. Tente de novo.' : 'Salvo.';
+    }, 800);
+  });
 }
 
 /* -------------------- Portfólio: fotos (upload real no Storage) -------------------- */

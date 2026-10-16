@@ -7440,3 +7440,13 @@ body[data-theme="dark"] .profile-imagem-editar { background: #252525 !important;
 /* Leads: quantidade marcada ao lado da lixeira, ex.: (3). */
 .tabela-lixeira-btn { gap: 0.35rem; }
 .tabela-lixeira-qtd { font-size: 0.8125rem; font-weight: 600; }
+
+/* Botões com o atributo hidden ficam escondidos mesmo com as regras de
+   altura/estilo dos botões de drawers, cabeçalhos e barras de tabela (que
+   usam display:inline-flex e venciam o [hidden]). Ex.: no drawer "Meus
+   comandos", a lista mostra só Fechar + Adicionar comando; o formulário,
+   só Cancelar/Voltar + Salvar comando. */
+.form-drawer [hidden],
+.b2b-header-bar [hidden],
+.tabela-barra [hidden],
+.modal-card [hidden] { display: none !important; }

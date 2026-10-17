@@ -7723,3 +7723,30 @@ body[data-theme="dark"] .chat-digitando { background: #252525 !important; border
 /* Lista de conversas: "Digitando…" enquanto o anfitrião digita. */
 .chat-previa-digitando { font-style: italic; color: #183b54; }
 body[data-theme="dark"] .chat-previa-digitando { color: #9CC3E4 !important; }
+
+/* Chat › ⋮ › Salvar comando: pop-up pequeno, com Cancelar | Salvar comando
+   divididos ao meio por uma linha. */
+.modal-card.comando-popup { max-width: 360px; width: calc(100% - 32px); padding: 0; overflow: hidden; border-radius: var(--radius-card); }
+.comando-popup-corpo { padding: 1.25rem 1.25rem 1rem; }
+.comando-popup-titulo { font-size: 1rem; font-weight: 700; color: #18181B; margin: 0 0 0.9rem; text-align: center; }
+.comando-popup-rotulo { display: block; font-size: 0.75rem; font-weight: 600; color: #52525B; margin: 0 0 0.35rem; }
+.comando-popup-mensagem {
+  font-size: 0.8125rem; color: #3F3F46; background: #FAFAFA; border: 1px solid #E4E4E7; border-radius: 8px;
+  padding: 0.6rem 0.75rem; margin: 0 0 0.9rem; max-height: 110px; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.comando-popup-campo { position: relative; }
+.comando-popup-campo > span { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: #A1A1AA; font-size: 0.875rem; pointer-events: none; }
+.comando-popup-campo .field-input { padding-left: 1.4rem; }
+.comando-popup-erro { font-size: 0.75rem; color: #DC2626; margin: 0.5rem 0 0; }
+.comando-popup-acoes { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #E4E4E7; }
+.comando-popup-acoes button {
+  height: 46px; background: #FFFFFF; border: none; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; font-family: inherit;
+}
+.comando-popup-acoes button + button { border-left: 1px solid #E4E4E7; color: #183b54; }
+.comando-popup-acoes button:hover { color: #181D24; background: #FAFAFA; }
+.comando-popup-acoes button:disabled { opacity: .6; cursor: default; }
+body[data-theme="dark"] .comando-popup-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .comando-popup-mensagem { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .comando-popup-acoes { border-top-color: #404040; }
+body[data-theme="dark"] .comando-popup-acoes button { background: #1F1F1F !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .comando-popup-acoes button + button { border-left-color: #404040; color: #9CC3E4 !important; }

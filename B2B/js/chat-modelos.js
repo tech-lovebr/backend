@@ -222,6 +222,56 @@ async function enviarFormularioModelo() {
   else fecharDrawerModelo();
 }
 
+/* ---------------- "Salvar comando" do ⋮: pop-up pequeno ----------------
+   Em vez do drawer: "Adicionar comando", a mensagem, o nome do comando e,
+   embaixo, Cancelar | Salvar comando divididos ao meio. */
+function abrirPopupSalvarComando(texto) {
+  if (!texto) return;
+  document.querySelector('.comando-popup-fundo')?.remove();
+  const fundo = document.createElement('div');
+  fundo.className = 'modal-backdrop show hub-confirmar comando-popup-fundo';
+  fundo.innerHTML = `
+    <div class="modal-card comando-popup" role="dialog" aria-modal="true" aria-labelledby="comando-popup-titulo">
+      <div class="comando-popup-corpo">
+        <h3 class="comando-popup-titulo" id="comando-popup-titulo">Adicionar comando</h3>
+        <p class="comando-popup-rotulo">Mensagem</p>
+        <p class="comando-popup-mensagem">${escapeHtml(texto)}</p>
+        <label class="comando-popup-rotulo" for="comando-popup-nome">Nome do comando</label>
+        <div class="comando-popup-campo">
+          <span aria-hidden="true">/</span>
+          <input id="comando-popup-nome" type="text" class="field-input" maxlength="40" autocomplete="off" spellcheck="false">
+        </div>
+        <p class="comando-popup-erro" hidden></p>
+      </div>
+      <div class="comando-popup-acoes">
+        <button type="button" data-comando-cancelar>Cancelar</button>
+        <button type="button" data-comando-salvar>Salvar comando</button>
+      </div>
+    </div>`;
+  document.body.appendChild(fundo);
+  const input = fundo.querySelector('#comando-popup-nome');
+  const erro = fundo.querySelector('.comando-popup-erro');
+  const salvarBtn = fundo.querySelector('[data-comando-salvar]');
+  const fechar = () => { fundo.remove(); document.removeEventListener('keydown', aoTeclar); };
+  const salvar = async () => {
+    const comando = slugComando(input.value);
+    if (!comando) { erro.textContent = 'Dê um nome ao comando.'; erro.hidden = false; input.focus(); return; }
+    salvarBtn.disabled = true;
+    const ok = await salvarModelo(comando, texto);
+    salvarBtn.disabled = false;
+    if (!ok) { erro.textContent = 'Não foi possível salvar o comando.'; erro.hidden = false; return; }
+    fechar();
+    showToast(`Comando salvo. Digite /${comando} no chat para usar.`);
+  };
+  const aoTeclar = (e) => { if (e.key === 'Escape') fechar(); };
+  document.addEventListener('keydown', aoTeclar);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); salvar(); } });
+  fundo.querySelector('[data-comando-cancelar]').addEventListener('click', fechar);
+  salvarBtn.addEventListener('click', salvar);
+  fundo.addEventListener('click', (e) => { if (e.target === fundo) fechar(); });
+  setTimeout(() => input.focus(), 30);
+}
+
 /* ---------------- Comandos "/" na caixa de mensagem ---------------- */
 
 let comandoSelecionado = 0;
@@ -298,7 +348,7 @@ async function initChatModelos() {
   });
   document.getElementById('chat-msg-menu-edit')?.addEventListener('click', () => { fecharMenuMensagem(); window.iniciarEdicaoMensagem?.(menuMensagemIndice); });
   document.getElementById('chat-msg-menu-copy')?.addEventListener('click', () => { fecharMenuMensagem(); copiarTexto(menuMensagemTexto); });
-  document.getElementById('chat-msg-menu-template')?.addEventListener('click', () => { fecharMenuMensagem(); abrirDrawerModelo(menuMensagemTexto); });
+  document.getElementById('chat-msg-menu-template')?.addEventListener('click', () => { fecharMenuMensagem(); abrirPopupSalvarComando(menuMensagemTexto); });
   document.addEventListener('click', (e) => { if (!e.target.closest('#chat-msg-menu')) fecharMenuMensagem(); });
   document.getElementById('chat-messages')?.addEventListener('scroll', fecharMenuMensagem);
 

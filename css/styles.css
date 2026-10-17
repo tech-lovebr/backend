@@ -7866,3 +7866,6 @@ html body .btn-primary.btn-comentar:not(#love-h-a) {
 }
 html body .btn-primary.btn-comentar:not(#love-h-a):hover { background: #ECECEE !important; border-color: #D4D4D8 !important; }
 body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+/* Editor do convite (Aparência): fundo atrás do convite no mesmo azul
+   clarinho da planta de mesas (#FAFCFF), em vez do cinza. */
+html body .builder-canvas-viewport:not(#love-h-a) { background: #FAFCFF; }

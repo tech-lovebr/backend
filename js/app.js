@@ -14318,8 +14318,80 @@ document.addEventListener('DOMContentLoaded', () => {
     return b2bConversasCarregando;
   }
 
+  /* ---------------- Suporte Love (conversa fixa no topo do Chat) ----------------
+     É um chamado do Atendimento (tickets, canal "chat"; o Admin responde em
+     Atendimento): a 1ª mensagem abre o chamado e as seguintes entram em
+     ticket_messages. Sempre aparece, mesmo sem nenhuma mensagem ainda. */
+  const SUPORTE_CONV_ID = 'suporte-love';
+  const SUPORTE_BOAS_VINDAS = 'Olá! Aqui é o suporte da Love. Conte como podemos ajudar.';
+  let suporteTicketId = null;
+
+  function textoDoHtmlSuporte(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html || '';
+    return (div.innerText || div.textContent || '').trim();
+  }
+
+  async function conversaSuporteLove() {
+    const conv = {
+      id: SUPORTE_CONV_ID, isSuporte: true, fornecedorId: null, name: 'Suporte Love', category: 'suporte',
+      avatar: LOVE_AVATAR_PADRAO, online: false, unread: 0, lastMessage: SUPORTE_BOAS_VINDAS, time: '',
+      messages: [{ id: null, sender: 'them', text: SUPORTE_BOAS_VINDAS, editedAt: null, time: '', attachment: null }]
+    };
+    try {
+      const { data: tickets } = await supabaseClient.from('tickets')
+        .select('id, mensagem, created_at')
+        .eq('user_id', window.loveClienteSession.user.id).eq('canal', 'chat')
+        .order('created_at', { ascending: false }).limit(1);
+      const t = tickets && tickets[0];
+      if (!t) return conv;
+      suporteTicketId = t.id;
+      const { data: msgs } = await supabaseClient.from('ticket_messages')
+        .select('id, author_role, body, body_html, created_at')
+        .eq('ticket_id', t.id).order('created_at', { ascending: true });
+      const lista = [
+        ...(t.mensagem ? [{ author_role: 'usuario', body: t.mensagem, created_at: t.created_at }] : []),
+        ...(msgs || [])
+      ];
+      lista.forEach(x => conv.messages.push({
+        id: null, sender: x.author_role === 'usuario' ? 'me' : 'them',
+        text: x.body_html ? textoDoHtmlSuporte(x.body_html) : (x.body || ''),
+        editedAt: null, time: formatB2BChatTime(x.created_at), attachment: null
+      }));
+      const ultima = lista[lista.length - 1];
+      if (ultima) {
+        conv.lastMessage = ultima.body_html ? textoDoHtmlSuporte(ultima.body_html) : (ultima.body || '');
+        conv.time = formatB2BChatTime(ultima.created_at);
+      }
+    } catch (e) { /* sem acesso aos chamados: fica só a boas-vindas */ }
+    return conv;
+  }
+
+  async function enviarParaSuporte(text) {
+    const sessao = window.loveClienteSession;
+    if (!sessao || !text) return false;
+    const meta = sessao.user.user_metadata || {};
+    const nome = meta.couple_name || meta.full_name || sessao.user.email;
+    if (!suporteTicketId) {
+      const { data, error } = await supabaseClient.from('tickets').insert({
+        origem: 'cliente', user_id: sessao.user.id, nome, email: sessao.user.email,
+        assunto: 'Chat com o suporte', mensagem: text, canal: 'chat'
+      }).select('id').single();
+      if (error) { console.error('Suporte: não foi possível abrir o chamado.', error); return false; }
+      suporteTicketId = data.id;
+      return true;
+    }
+    const { error } = await supabaseClient.from('ticket_messages').insert({
+      ticket_id: suporteTicketId, author_role: 'usuario', author_id: sessao.user.id,
+      author_name: nome, body: text, canal: 'chat'
+    });
+    if (error) { console.error('Suporte: não foi possível enviar.', error); return false; }
+    return true;
+  }
+
   async function carregarConversasDoBanco() {
     if (!window.loveClienteSession) { b2bConversationsData = []; return; }
+    const suporte = await conversaSuporteLove();
 
     const buscar = (comEditado) => supabaseClient
       .from('conversations')
@@ -14330,7 +14402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sem a migration 057 (coluna edited_at) ainda: busca de novo sem ela.
     if (error && /edited_at/i.test(error.message || '')) ({ data: rows, error } = await buscar(false));
 
-    if (error || !rows) { b2bConversationsData = []; return; }
+    if (error || !rows) { b2bConversationsData = [suporte]; return; }
 
     b2bConversationsData = rows.map(row => {
       const msgs = (row.messages || []).slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -14358,6 +14430,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }))
       };
     });
+    b2bConversationsData.unshift(suporte);
   }
 
   // Cria (ou reaproveita) a conversa com um fornecedor real e a torna a ativa.
@@ -14458,6 +14531,14 @@ document.addEventListener('DOMContentLoaded', () => {
     sendMessage: async (convId, text, sender, attachment = null) => {
       if (!window.loveClienteSession || !convId) return null;
 
+      if (convId === SUPORTE_CONV_ID) {
+        if (!text || attachment) { showToast('No suporte, envie a mensagem em texto.', '⚠️'); return null; }
+        if (!(await enviarParaSuporte(text))) { showToast('Não foi possível enviar ao suporte.', '⚠️'); return null; }
+        await loadB2BConversationsData();
+        renderB2BChat();
+        return true;
+      }
+
       const { error } = await supabaseClient.from('messages').insert({
         conversation_id: convId,
         sender_id: window.loveClienteSession.user.id,
@@ -14480,6 +14561,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (b2bMessagesRealtimeChannel) supabaseClient.removeChannel(b2bMessagesRealtimeChannel);
     b2bMessagesRealtimeChannel = supabaseClient
       .channel('love-b2b-mensagens')
+      // Resposta do suporte (Admin › Atendimento) no chamado do chat.
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ticket_messages' }, async (payload) => {
+        if (!payload.new || payload.new.ticket_id !== suporteTicketId) return;
+        if (chatEstaVisivel()) { await renderB2BChat(); return; }
+        await loadB2BConversationsData();
+      })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
         if (chatEstaVisivel()) { await renderB2BChat(); return; }
         await loadB2BConversationsData();
@@ -14914,7 +15001,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function desenharChatComOQueTem() {
     if (!b2bConversationsData.some(c => c.id === activeB2BConversationId)) {
-      activeB2BConversationId = b2bConversationsData[0] ? b2bConversationsData[0].id : null;
+      const primeira = b2bConversationsData.find(c => !c.isSuporte) || b2bConversationsData[0];
+      activeB2BConversationId = primeira ? primeira.id : null;
     }
     renderB2BChatContacts();
     renderB2BChatMessages();
@@ -15009,7 +15097,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Só o nome da empresa (sem a categoria ao lado).
       nameEl.textContent = activeConv.name;
     }
-    if (statusEl) statusEl.textContent = activeConv.online ? 'Online agora' : '';
+    if (statusEl) statusEl.textContent = activeConv.isSuporte ? 'Respondemos o quanto antes' : (activeConv.online ? 'Online agora' : '');
     if (avatarEl) {
       avatarEl.src = activeConv.avatar;
       const padrao = activeConv.avatar === LOVE_AVATAR_PADRAO;

@@ -6,6 +6,80 @@ let b2bConversations = [];
 let activeConvId = null;
 let b2bMessagesChannel = null;
 
+/* ---------------- Suporte Love (conversa fixa) ----------------
+   Sempre no topo da lista. É um chamado do Atendimento (tickets, canal
+   "chat"; Admin › Atendimento responde): a 1ª mensagem abre o chamado e as
+   seguintes entram em ticket_messages. */
+const SUPORTE_CONV_ID = 'suporte-love';
+const SUPORTE_AVATAR = 'assets/love-logo-google-120.png';
+const SUPORTE_BOAS_VINDAS = 'Olá! Aqui é o suporte da Love. Conte como podemos ajudar.';
+let suporteTicketId = null;
+
+function textoDoHtml(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html || '';
+  return (div.innerText || div.textContent || '').trim();
+}
+
+async function conversaSuporteLove(session) {
+  const conv = {
+    id: SUPORTE_CONV_ID, isSuporte: true, clienteId: null, name: 'Suporte Love', category: 'suporte',
+    avatar: SUPORTE_AVATAR, online: false, lastMessage: SUPORTE_BOAS_VINDAS, time: '', unread: 0,
+    messages: [{ id: null, sender: 'them', text: SUPORTE_BOAS_VINDAS, time: '' }]
+  };
+  try {
+    const { data: tickets } = await supabaseClient.from('tickets')
+      .select('id, mensagem, created_at')
+      .eq('user_id', session.user.id).eq('canal', 'chat')
+      .order('created_at', { ascending: false }).limit(1);
+    const t = tickets && tickets[0];
+    if (!t) return conv;
+    suporteTicketId = t.id;
+    const { data: msgs } = await supabaseClient.from('ticket_messages')
+      .select('id, author_role, body, body_html, created_at')
+      .eq('ticket_id', t.id).order('created_at', { ascending: true });
+    const lista = [
+      ...(t.mensagem ? [{ id: null, author_role: 'usuario', body: t.mensagem, created_at: t.created_at }] : []),
+      ...(msgs || [])
+    ];
+    lista.forEach(x => conv.messages.push({
+      id: null,
+      sender: x.author_role === 'usuario' ? 'me' : 'them',
+      text: x.body_html ? textoDoHtml(x.body_html) : (x.body || ''),
+      time: formatB2BMsgTime(x.created_at)
+    }));
+    const ultima = lista[lista.length - 1];
+    if (ultima) {
+      conv.lastMessage = ultima.body_html ? textoDoHtml(ultima.body_html) : (ultima.body || '');
+      conv.time = formatB2BMsgTime(ultima.created_at);
+    }
+  } catch (e) { /* sem acesso aos chamados: fica só a boas-vindas */ }
+  return conv;
+}
+
+async function enviarParaSuporte(text) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session || !text) return false;
+  const prof = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
+  const nome = prof.company || prof.name || session.user.email;
+  if (!suporteTicketId) {
+    const chamado = {
+      origem: 'fornecedor', user_id: session.user.id, nome, email: session.user.email,
+      assunto: 'Chat com o suporte', mensagem: text, canal: 'chat'
+    };
+    let { data, error } = await supabaseClient.from('tickets').insert(chamado).select('id').single();
+    if (error) { console.error('Suporte: não foi possível abrir o chamado.', error); return false; }
+    suporteTicketId = data.id;
+    return true;
+  }
+  const { error } = await supabaseClient.from('ticket_messages').insert({
+    ticket_id: suporteTicketId, author_role: 'usuario', author_id: session.user.id,
+    author_name: nome, body: text, canal: 'chat'
+  });
+  if (error) { console.error('Suporte: não foi possível enviar.', error); return false; }
+  return true;
+}
+
 document.addEventListener('DOMContentLoaded', initB2BMensagens);
 
 async function initB2BMensagens() {
@@ -13,7 +87,12 @@ async function initB2BMensagens() {
   if (!session) return; // shell.js já redireciona pro login nesse caso
 
   await loadB2BConversations();
-  if (b2bConversations.length) activeConvId = b2bConversations[0].id;
+  // "Acessar chat" do painel (chat?suporte=1) abre direto o Suporte Love;
+  // senão, a primeira conversa com cliente (ou o suporte, se não houver).
+  const abrirSuporte = new URLSearchParams(location.search).has('suporte');
+  const primeira = b2bConversations.find(c => !c.isSuporte) || b2bConversations[0];
+  activeConvId = abrirSuporte ? SUPORTE_CONV_ID : (primeira ? primeira.id : null);
+  if (abrirSuporte) history.replaceState(null, '', location.pathname);
 
   renderContactsList();
   renderActiveChat();
@@ -38,7 +117,8 @@ async function loadB2BConversations() {
   let { data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at, edited_at');
   if (error) ({ data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at'));
 
-  if (error || !rows) { b2bConversations = []; return; }
+  const suporte = await conversaSuporteLove(session);
+  if (error || !rows) { b2bConversations = [suporte]; return; }
 
   b2bConversations = rows.map(row => {
     const msgs = (row.messages || []).slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -63,6 +143,7 @@ async function loadB2BConversations() {
       }))
     };
   });
+  b2bConversations.unshift(suporte);
 }
 
 // Conversa aberta = mensagens do cliente lidas (marcar_conversa_lida,
@@ -122,6 +203,13 @@ function subscribeToB2BMessages() {
       await loadB2BConversations();
       renderContactsList(searchInput ? searchInput.value : '');
       if (!mensagemEmEdicaoId) renderActiveChat();
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ticket_messages' }, async (payload) => {
+      if (!payload.new || payload.new.ticket_id !== suporteTicketId) return;
+      const searchInput = document.getElementById('chat-search-input');
+      await loadB2BConversations();
+      renderContactsList(searchInput ? searchInput.value : '');
+      if (activeConvId === SUPORTE_CONV_ID) renderActiveChat();
     })
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
       const searchInput = document.getElementById('chat-search-input');
@@ -225,8 +313,13 @@ function renderActiveChat() {
 
   if (nameEl) nameEl.textContent = activeConv.name;
   if (statusEl) {
-    statusEl.innerHTML = `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
+    statusEl.innerHTML = activeConv.isSuporte
+      ? '<span class="text-zinc-400">Respondemos o quanto antes</span>'
+      : `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
   }
+  const chatInput = document.getElementById('chat-input');
+  if (chatInput) chatInput.placeholder = activeConv.isSuporte ? 'Escreva uma mensagem para o suporte...' : 'Escreva uma mensagem para o cliente...';
+  document.getElementById('chat-form')?.classList.toggle('chat-form--suporte', !!activeConv.isSuporte);
   if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(activeConv.avatar, activeConv.name);
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';
 
@@ -274,7 +367,7 @@ function renderActiveChat() {
       row.innerHTML = `
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
           <div class="chat-msg-linha chat-msg-linha--minha">
-          ${msg.text ? `<button type="button" class="chat-msg-acao-btn chat-msg-menu-btn" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
+          ${msg.text && !activeConv.isSuporte ? `<button type="button" class="chat-msg-acao-btn chat-msg-menu-btn" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
           <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
             ${msg.id && msg.id === mensagemEmEdicaoId
               ? `<div class="chat-msg-edicao">
@@ -337,6 +430,16 @@ function setupChatEvents() {
   async function sendMessage(text, attachment = null) {
     if (!text && !attachment) return;
     if (!activeConvId) return;
+
+    if (activeConvId === SUPORTE_CONV_ID) {
+      if (!text) { if (typeof showToast === 'function') showToast('No suporte, envie a mensagem em texto.', true); return; }
+      if (!(await enviarParaSuporte(text))) { if (typeof showToast === 'function') showToast('Não foi possível enviar ao suporte.', true); return; }
+      if (input) input.value = '';
+      await loadB2BConversations();
+      renderContactsList(searchInput ? searchInput.value : '');
+      renderActiveChat();
+      return;
+    }
 
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return;

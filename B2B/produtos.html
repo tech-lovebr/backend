@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=564">
+  <link rel="stylesheet" href="css/styles.css?v=565">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -211,59 +211,64 @@
           <div id="product-venue-details" class="mb-6" hidden>
             <label class="field-label product-title-label">Detalhes do local</label>
             <div class="flex flex-col gap-4">
-              <div class="grid grid-cols-[2fr_1fr_1.3fr] gap-3">
-                <div>
-                  <label for="product-venue-street" class="field-label">Rua</label>
-                  <input id="product-venue-street" type="text" class="field-input">
-                </div>
-                <div>
+              <div>
+                <label for="product-venue-street" class="field-label">Endereço</label>
+                <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
+              </div>
+
+              <div class="local-linha-curta">
+                <div class="local-campo-numero">
                   <label for="product-venue-number" class="field-label">Número</label>
-                  <input id="product-venue-number" type="text" class="field-input">
+                  <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
                 </div>
-                <div>
+                <div class="local-campo-complemento">
                   <label for="product-venue-complement" class="field-label">Complemento (opcional)</label>
-                  <input id="product-venue-complement" type="text" class="field-input">
+                  <input id="product-venue-complement" type="text" class="field-input" autocomplete="off">
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <div>
+              <div class="local-linha-cidade">
+                <div class="local-campo-uf">
                   <label for="product-venue-state" class="field-label">Estado</label>
                   <select id="product-venue-state" class="field-select">
-                    <option value="">Selecione</option>
+                    <option value="">UF</option>
                   </select>
                 </div>
-                <div>
+                <div class="local-campo-cidade">
                   <label for="product-venue-city" class="field-label">Cidade</label>
-                  <input id="product-venue-city" type="text" class="field-input" list="product-venue-city-options" placeholder="Selecione o estado primeiro" disabled autocomplete="off">
-                  <datalist id="product-venue-city-options"></datalist>
+                  <input id="product-venue-city" type="text" class="field-input" placeholder="Selecione o estado primeiro" disabled autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false">
+                  <div class="cidade-sugestoes" id="product-venue-city-sugestoes" role="listbox" hidden></div>
                 </div>
               </div>
 
-              <div>
-                <label for="product-venue-size" class="field-label">Metragem (m²)</label>
-                <input id="product-venue-size" type="number" min="0" step="1" class="field-input">
+              <div class="local-campo-area">
+                <label for="product-venue-size" class="field-label">Área útil</label>
+                <div class="campo-com-unidade">
+                  <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" autocomplete="off">
+                  <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
+                </div>
+                <p class="field-hint">Só a área que o evento usa, em metros quadrados.</p>
               </div>
             </div>
           </div>
 
           <div id="pricing-venue-section" hidden>
-            <label class="field-label product-title-label">Valor por dia</label>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label for="product-venue-price-weekday" class="field-label">Dia de semana</label>
+            <label class="field-label product-title-label">Valores</label>
+            <div class="local-valores">
+              <div class="local-valor-linha">
+                <label for="product-venue-price-weekday">Segunda a sexta</label>
                 <input id="product-venue-price-weekday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
-              <div>
-                <label for="product-venue-price-saturday" class="field-label">Sábado</label>
+              <div class="local-valor-linha">
+                <label for="product-venue-price-saturday">Sábado</label>
                 <input id="product-venue-price-saturday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
-              <div>
-                <label for="product-venue-price-sunday" class="field-label">Domingo</label>
+              <div class="local-valor-linha">
+                <label for="product-venue-price-sunday">Domingo</label>
                 <input id="product-venue-price-sunday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
-              <div>
-                <label for="product-venue-price-holiday" class="field-label">Feriado</label>
+              <div class="local-valor-linha">
+                <label for="product-venue-price-holiday">Feriado</label>
                 <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
               </div>
             </div>
@@ -561,6 +566,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=26"></script>
+  <script src="js/produtos.js?v=27"></script>
 </body>
 </html>

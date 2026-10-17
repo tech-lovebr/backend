@@ -647,21 +647,96 @@ function populateVenueStateOptions() {
   BR_ESTADOS.forEach(({ uf, nome }) => {
     const opt = document.createElement('option');
     opt.value = uf;
-    opt.textContent = `${uf} — ${nome}`;
+    opt.textContent = uf;
+    opt.title = nome;
     select.appendChild(opt);
   });
 }
 
+/* Cidade: busca sem acento (digitar "sao paulo" acha "São Paulo"); ao
+   escolher, entra o nome certo, com acento. */
+const semAcento = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+let venueCidades = [];
+
 function populateVenueCityOptions(uf) {
   const cityInput = document.getElementById('product-venue-city');
-  const datalist = document.getElementById('product-venue-city-options');
-  if (!cityInput || !datalist) return;
-
-  const cidades = (typeof BR_CIDADES_POR_UF !== 'undefined' && BR_CIDADES_POR_UF[uf]) || [];
-  datalist.innerHTML = cidades.map(c => `<option value="${escapeHtml(c)}">`).join('');
+  if (!cityInput) return;
+  venueCidades = (typeof BR_CIDADES_POR_UF !== 'undefined' && BR_CIDADES_POR_UF[uf]) || [];
   cityInput.disabled = !uf;
-  cityInput.placeholder = uf ? 'Selecione ou digite a cidade' : 'Selecione o estado primeiro';
+  cityInput.placeholder = uf ? 'Digite a cidade' : 'Selecione o estado primeiro';
   if (!uf) cityInput.value = '';
+  fecharSugestoesCidade();
+}
+
+function fecharSugestoesCidade() {
+  const box = document.getElementById('product-venue-city-sugestoes');
+  const input = document.getElementById('product-venue-city');
+  if (box) box.hidden = true;
+  if (input) input.setAttribute('aria-expanded', 'false');
+}
+
+function initVenueCityBusca() {
+  const input = document.getElementById('product-venue-city');
+  const box = document.getElementById('product-venue-city-sugestoes');
+  if (!input || !box) return;
+  let ativo = -1;
+  const escolher = (nome) => { input.value = nome; fecharSugestoesCidade(); };
+  const mostrar = () => {
+    const termo = semAcento(input.value);
+    const achadas = termo
+      ? venueCidades.filter(c => semAcento(c).startsWith(termo))
+          .concat(venueCidades.filter(c => !semAcento(c).startsWith(termo) && semAcento(c).includes(termo)))
+          .slice(0, 8)
+      : [];
+    ativo = -1;
+    if (!achadas.length) { fecharSugestoesCidade(); return; }
+    box.innerHTML = achadas.map(c => `<button type="button" class="cidade-sugestao" role="option">${escapeHtml(c)}</button>`).join('');
+    box.querySelectorAll('.cidade-sugestao').forEach((b, i) => {
+      b.addEventListener('mousedown', (e) => { e.preventDefault(); escolher(achadas[i]); });
+    });
+    box.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  };
+  input.addEventListener('input', mostrar);
+  input.addEventListener('keydown', (e) => {
+    const itens = [...box.querySelectorAll('.cidade-sugestao')];
+    if (box.hidden || !itens.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      ativo = (ativo + (e.key === 'ArrowDown' ? 1 : -1) + itens.length) % itens.length;
+      itens.forEach((b, i) => b.classList.toggle('is-ativo', i === ativo));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      escolher(itens[Math.max(ativo, 0)].textContent);
+    } else if (e.key === 'Escape') {
+      fecharSugestoesCidade();
+    }
+  });
+  // Ao sair: se o texto bate com uma cidade (ignorando acento), corrige o nome.
+  input.addEventListener('blur', () => {
+    const exata = venueCidades.find(c => semAcento(c) === semAcento(input.value));
+    if (exata) input.value = exata;
+    fecharSugestoesCidade();
+  });
+}
+
+/* Área útil: só números, e o "m²" aparece logo depois do número digitado. */
+function atualizarUnidadeArea() {
+  const input = document.getElementById('product-venue-size');
+  const eco = input && input.parentElement.querySelector('.campo-unidade-eco');
+  if (!eco) return;
+  eco.textContent = input.value;
+  input.parentElement.classList.toggle('tem-valor', !!input.value);
+}
+
+function initVenueArea() {
+  const input = document.getElementById('product-venue-size');
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const limpo = input.value.replace(/\D/g, '');
+    if (limpo !== input.value) input.value = limpo;
+    atualizarUnidadeArea();
+  });
 }
 
 /* -------------------- Dias de funcionamento (local) -------------------- */
@@ -1050,6 +1125,8 @@ function initProductDrawer() {
   });
 
   populateVenueStateOptions();
+  initVenueCityBusca();
+  initVenueArea();
   document.getElementById('product-venue-state').addEventListener('change', (e) => {
     populateVenueCityOptions(e.target.value);
   });
@@ -1075,6 +1152,7 @@ function initProductDrawer() {
     renderVenueCommonAreas();
     document.getElementById('product-venue-state').value = '';
     populateVenueCityOptions('');
+    atualizarUnidadeArea();
     closeCategoryPanel();
     updateCategoryTriggerLabel();
     renderScopeList('included');
@@ -1412,7 +1490,8 @@ function openProductDrawer(id) {
   document.getElementById('product-venue-state').value = venueState;
   populateVenueCityOptions(venueState);
   document.getElementById('product-venue-city').value = (p.venue && p.venue.city) || '';
-  document.getElementById('product-venue-size').value = (p.venue && p.venue.size) || '';
+  document.getElementById('product-venue-size').value = String((p.venue && p.venue.size) || '').replace(/\D/g, '');
+  atualizarUnidadeArea();
   document.getElementById('product-venue-capacity-seated').value = (p.venue && p.venue.capacitySeated) || '';
   document.getElementById('product-venue-capacity-standing').value = (p.venue && p.venue.capacityStanding) || '';
   document.getElementById('product-venue-has-generator').checked = !!(p.venue && p.venue.hasGenerator);

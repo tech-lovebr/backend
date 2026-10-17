@@ -1047,13 +1047,16 @@ function renderLeftPanel() {
     return;
   }
 
+  // Save the Date: "Modelos" (clicáveis, trocam o texto todo) no lugar de "Elementos".
+  const ehSaveTheDate = currentPageKey === 'savethedate';
   panel.innerHTML = `
     <div class="builder-panel-tabs">
-      <span class="builder-panel-tab builder-panel-tab-rotulo active" style="cursor:default;">Elementos</span>
+      <span class="builder-panel-tab builder-panel-tab-rotulo active" style="cursor:default;">${ehSaveTheDate ? 'Modelos' : 'Elementos'}</span>
     </div>
     <div class="builder-panel-tab-body" id="builder-panel-tab-body"></div>
   `;
-  renderElementosTab(document.getElementById('builder-panel-tab-body'));
+  if (ehSaveTheDate) renderModelosSaveTheDate(document.getElementById('builder-panel-tab-body'));
+  else renderElementosTab(document.getElementById('builder-panel-tab-body'));
 
   const canvas = document.getElementById('builder-canvas');
   if (canvas) initSortables(canvas);
@@ -1064,6 +1067,82 @@ const ELEMENT_GROUPS_SAVETHEDATE = [
   { title: 'Básicos', types: ['titulo', 'texto', 'imagem', 'separador'] },
   { title: 'Avançado', types: ['contagem', 'data'] }
 ];
+
+/* -------------------- Save the Date › Modelos -------------------- */
+// Cada modelo é o texto pronto do Save the Date (com os dados do evento). Não
+// são arrastáveis: clicar troca o texto todo; a capa (imagem) continua.
+// [texto, negrito?] por linha; 'contagem' = contagem regressiva até a data.
+const MODELOS_SAVE_THE_DATE = [
+  { id: 'classico', nome: 'Clássico', linhas: d => [['Save the Date', true], [d.titulo, true], [d.data], ['Reserve a data! O convite chega em breve.']] },
+  { id: 'guarde', nome: 'Guarde a data', linhas: d => [['Guarde esta data 💛', true], [d.titulo, true], [d.dataSemana], ['Em breve, o convite oficial com todos os detalhes.']] },
+  { id: 'anota', nome: 'Anota aí', linhas: d => [['Anota aí! 📅', true], [d.data, true], [d.titulo], ['Não marque nada para esse dia: você é nosso convidado.']] },
+  { id: 'contagem', nome: 'Contagem', linhas: d => [['Save the Date', true], [d.titulo, true], [d.data], ['contagem'], ['Falta pouco!']] },
+  { id: 'local', nome: 'Com a cidade', linhas: d => [['Reserve a data', true], [d.titulo, true], [d.data], [d.cidade], ['O convite chega em breve.']] },
+  { id: 'minimalista', nome: 'Minimalista', linhas: d => [[d.titulo, true], [d.data], ['Save the Date']] }
+];
+
+function dadosDoEventoParaModelo() {
+  const ev = getActiveEventForBuilder() || {};
+  const det = ev.eventDetails || {};
+  const iso = det.date || ev.date || '';
+  const dt = iso ? new Date(String(iso).slice(0, 10) + 'T12:00:00') : null;
+  const ok = dt && !isNaN(dt.getTime());
+  const dataSemana = ok ? dt.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  return {
+    titulo: ev.title || 'Nosso evento',
+    data: dataDoEventoPorExtenso(ev) || 'Data do evento',
+    dataSemana: dataSemana ? dataSemana.charAt(0).toUpperCase() + dataSemana.slice(1) : 'Data do evento',
+    cidade: [String(det.city || '').trim(), String(det.state || '').trim().toUpperCase()].filter(Boolean).join(' - ') || 'Cidade do evento',
+    iso: ok ? String(iso).slice(0, 10) : '',
+    hora: det.time || ''
+  };
+}
+
+function aplicarModeloSaveTheDate(modelo) {
+  const d = dadosDoEventoParaModelo();
+  const elementos = modelo.linhas(d).map(([texto, negrito], i) => {
+    if (texto === 'contagem') {
+      const c = createElement('contagem');
+      c.targetDate = d.iso;
+      if (d.hora) c.targetTime = d.hora;
+      return c;
+    }
+    const el = createElement(i === 0 ? 'titulo' : 'texto');
+    el.content = texto;
+    textoNoFormatoWhatsapp(el);
+    el.styles.desktop.fontWeight = negrito ? '700' : '400';
+    return el;
+  });
+  // Mantém a capa (primeira seção) e troca o resto pelo texto do modelo.
+  const capa = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const conteudo = createSection();
+  conteudo.columns[0].elements = elementos;
+  builderState.sections = [capa, conteudo].filter(Boolean);
+  builderState.modelo = modelo.id;
+  selectedId = null;
+  pushHistory();
+  renderCanvas();
+  renderLeftPanel();
+}
+
+function renderModelosSaveTheDate(body) {
+  const d = dadosDoEventoParaModelo();
+  body.innerHTML = `
+    <div class="std-modelos">
+      ${MODELOS_SAVE_THE_DATE.map(m => `
+        <button type="button" class="std-modelo ${builderState.modelo === m.id ? 'is-ativo' : ''}" data-modelo="${m.id}">
+          <span class="std-modelo-nome">${escapeHtml(m.nome)}</span>
+          <span class="std-modelo-previa">${m.linhas(d).filter(([t]) => t !== 'contagem').slice(0, 3)
+            .map(([t, b]) => `<span class="${b ? 'is-negrito' : ''}">${escapeHtml(t)}</span>`).join('')}</span>
+        </button>`).join('')}
+    </div>`;
+  body.querySelectorAll('[data-modelo]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modelo = MODELOS_SAVE_THE_DATE.find(m => m.id === btn.dataset.modelo);
+      if (modelo) aplicarModeloSaveTheDate(modelo);
+    });
+  });
+}
 
 function renderElementosTab(body) {
   const grupos = currentPageKey === 'savethedate' ? ELEMENT_GROUPS_SAVETHEDATE : ELEMENT_GROUPS;

@@ -7915,3 +7915,27 @@ body[data-theme="dark"] .std-compartilhar-menu button[data-compartilhar="email"]
 /* Save the Date › Texto: caixa grande de uma vez (sem a alça de aumentar),
    para mostrar que dá para escrever bastante. */
 html body textarea.std-texto-grande:not(#love-h-a) { min-height: 260px !important; resize: none !important; line-height: 1.5; }
+
+/* Aparência: o rótulo "Elementos"/"Modelos" vira um botão cinza-claro (cor do
+   cabeçalho), sem o azul clarinho; não é clicável. */
+html body #builder-elements-panel .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) {
+  background: #FAFAFA !important; border: 1px solid #E4E4E7; color: #181D24; border-radius: 8px;
+}
+html body #builder-elements-panel .builder-panel-tabs:not(#love-h-a) { background: transparent; border: none; padding: 0; }
+body[data-theme="dark"] #builder-elements-panel .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #252525 !important; border-color: #404040; color: #FFFFFF; }
+
+/* Save the Date › Modelos: cartões clicáveis (não arrastáveis) com a prévia do texto. */
+.std-modelos { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+.std-modelo {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; text-align: left;
+  padding: 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; cursor: pointer;
+  font-family: inherit; transition: border-color .15s;
+}
+.std-modelo:hover { border-color: #181D24; }
+.std-modelo.is-ativo { border-color: #181D24; box-shadow: inset 0 0 0 1px #181D24; }
+.std-modelo-nome { font-size: 13px; font-weight: 700; color: #181D24; }
+.std-modelo-previa { display: flex; flex-direction: column; gap: 1px; font-size: 12px; color: #71717A; line-height: 1.4; min-width: 0; width: 100%; }
+.std-modelo-previa span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.std-modelo-previa .is-negrito { font-weight: 600; color: #3F3F46; }
+body[data-theme="dark"] .std-modelo { background: #252525; border-color: #404040; }
+body[data-theme="dark"] .std-modelo-nome { color: #FFFFFF; }

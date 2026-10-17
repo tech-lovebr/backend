@@ -161,7 +161,7 @@ async function loadProducts() {
   const { data, error } = await supabaseClient
     .from('products')
     .select('*')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('created_at', { ascending: false });
 
   bProducts = error || !data ? [] : data.map(p => ({
@@ -352,7 +352,7 @@ async function duplicarProduto(id) {
   extra.sku = '';
   (extra.packages || []).forEach(k => { k.sku = ''; });
   const copia = {
-    fornecedor_id: session.user.id,
+    fornecedor_id: empresaId(session),
     name: `${(orig.name || '').trim()} (Cópia)`,
     category: orig.category,
     price: orig.price,
@@ -1671,7 +1671,7 @@ function initProductDrawer() {
           if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
           showToast('Produto atualizado.');
         } else {
-          const { error } = await supabaseClient.from('products').insert({ fornecedor_id: session.user.id, ...row });
+          const { error } = await supabaseClient.from('products').insert({ fornecedor_id: empresaId(session), ...row });
           if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
           showToast('Produto adicionado à vitrine.');
         }

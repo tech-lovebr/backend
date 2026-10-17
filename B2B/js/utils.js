@@ -2,6 +2,15 @@
    LOVE B2B — Utilitários compartilhados entre páginas
    ========================================================================== */
 
+/* Empresa ativa do Hub. Um login pode ter várias empresas (migration 066):
+   a principal tem o mesmo id do login; as outras têm id próprio. Tudo que é
+   da empresa (serviços, leads, chat, orçamentos, site…) usa este id; o que é
+   do login (notificações, chamados, plano, arquivos) continua no id do login.
+   shell.js confere a escolha guardada e grava em window.b2bEmpresaId. */
+function empresaId(session) {
+  return window.b2bEmpresaId || (session && session.user && session.user.id) || null;
+}
+
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
@@ -591,7 +600,7 @@ async function syncFornecedorAvatar(p) {
   const userId = session.user.id;
 
   if (!p.profilePhoto) {
-    await supabaseClient.from('fornecedores').update({ avatar_url: null }).eq('id', userId);
+    await supabaseClient.from('fornecedores').update({ avatar_url: null }).eq('id', empresaId(session));
     return null;
   }
   // Já é a URL publicada (veio do banco) e sem ajuste novo: nada a fazer.
@@ -625,7 +634,7 @@ async function syncFornecedorAvatar(p) {
       .upload(caminho, blob, { cacheControl: '31536000', contentType: 'image/jpeg' });
     if (upErr) { console.warn('Foto de perfil não subiu pro Storage.', upErr); return null; }
     const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
-    const { error } = await supabaseClient.from('fornecedores').update({ avatar_url: url }).eq('id', userId);
+    const { error } = await supabaseClient.from('fornecedores').update({ avatar_url: url }).eq('id', empresaId(session));
     if (error) { console.warn('Não foi possível gravar avatar_url.', error); return null; }
     return url;
   } catch (err) {
@@ -646,7 +655,7 @@ async function syncFornecedorCapa(p) {
   const userId = session.user.id;
 
   if (!p.logo) {
-    await supabaseClient.from('fornecedores').update({ logo_url: null }).eq('id', userId);
+    await supabaseClient.from('fornecedores').update({ logo_url: null }).eq('id', empresaId(session));
     return null;
   }
   if (/^https?:\/\//.test(p.logo) && (p.logoScale || 1) === 1 && !p.logoOffsetX && !p.logoOffsetY) {
@@ -679,7 +688,7 @@ async function syncFornecedorCapa(p) {
       .upload(caminho, blob, { cacheControl: '31536000', contentType: 'image/jpeg' });
     if (upErr) { console.warn('Capa não subiu pro Storage.', upErr); return null; }
     const url = supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
-    const { error } = await supabaseClient.from('fornecedores').update({ logo_url: url }).eq('id', userId);
+    const { error } = await supabaseClient.from('fornecedores').update({ logo_url: url }).eq('id', empresaId(session));
     if (error) { console.warn('Não foi possível gravar logo_url.', error); return null; }
     return url;
   } catch (err) {
@@ -714,7 +723,7 @@ function siteFormParaLinha(f, fornecedorId) {
 }
 async function sessaoFornecedorId() {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
-  return session ? session.user.id : null;
+  return session ? empresaId(session) : null;
 }
 
 async function loadSiteForms() {

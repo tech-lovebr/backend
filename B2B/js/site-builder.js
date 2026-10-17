@@ -705,7 +705,7 @@ async function publishBuilderState() {
 
   if (isCheckout) {
     await supabaseClient.from('checkout_pages').upsert({
-      fornecedor_id: session.user.id,
+      fornecedor_id: empresaId(session),
       state: builderState,
       updated_at: new Date().toISOString()
     });
@@ -718,7 +718,7 @@ async function publishBuilderState() {
     return 'erro';
   }
   const { error } = await supabaseClient.from('site_pages').upsert({
-    fornecedor_id: session.user.id,
+    fornecedor_id: empresaId(session),
     slug,
     state: builderState,
     updated_at: new Date().toISOString()
@@ -1504,7 +1504,7 @@ function renderEstiloTab(body) {
       if (!session) { markSlugStatus(false); return; }
       const { data: available } = await supabaseClient.rpc('verificar_site_slug_disponivel', {
         p_slug: val,
-        p_fornecedor_id: session.user.id
+        p_fornecedor_id: empresaId(session)
       });
       if (token !== slugCheckToken) return; // resposta de uma checagem antiga — ignora
       markSlugStatus(available === false);

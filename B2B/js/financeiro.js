@@ -25,7 +25,7 @@ async function loadNotasFiscais() {
   const { data, error } = await supabaseClient
     .from('notas_fiscais')
     .select('*')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('created_at', { ascending: false });
 
   bNotasFiscais = error || !data ? [] : data;
@@ -36,8 +36,8 @@ async function loadFinLeadsAndProducts() {
   if (!session) { bFinLeads = []; bFinProducts = []; return; }
 
   const [leadsRes, productsRes] = await Promise.all([
-    supabaseClient.from('leads').select('id, name, email, cliente_id, comentarios, event_name, event_date').eq('fornecedor_id', session.user.id),
-    supabaseClient.from('products').select('id, name, price, category, extra, description').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('leads').select('id, name, email, cliente_id, comentarios, event_name, event_date').eq('fornecedor_id', empresaId(session)),
+    supabaseClient.from('products').select('id, name, price, category, extra, description').eq('fornecedor_id', empresaId(session))
   ]);
 
   bFinLeads = leadsRes.data || [];
@@ -50,7 +50,7 @@ async function countOrcamentos() {
   const { count } = await supabaseClient
     .from('orcamentos')
     .select('id', { count: 'exact', head: true })
-    .eq('fornecedor_id', session.user.id);
+    .eq('fornecedor_id', empresaId(session));
   return count || 0;
 }
 
@@ -291,7 +291,7 @@ async function searchProposalClients(q) {
   if (!session) return;
 
   const [leadsRes, clientesRes] = await Promise.all([
-    supabaseClient.from('leads').select('id, name, email').eq('fornecedor_id', session.user.id).ilike('name', `%${q}%`).limit(6),
+    supabaseClient.from('leads').select('id, name, email').eq('fornecedor_id', empresaId(session)).ilike('name', `%${q}%`).limit(6),
     supabaseClient.from('clientes').select('id, couple_name, email').or(`couple_name.ilike.%${q}%,email.ilike.%${q}%`).limit(6)
   ]);
 
@@ -351,8 +351,8 @@ async function loadOrcamentos() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { bOrcamentos = []; return; }
   const [orcRes, linksRes] = await Promise.all([
-    supabaseClient.from('orcamentos').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
-    supabaseClient.from('payment_links').select('orcamento_id, status').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('orcamentos').select('*').eq('fornecedor_id', empresaId(session)).order('created_at', { ascending: false }),
+    supabaseClient.from('payment_links').select('orcamento_id, status').eq('fornecedor_id', empresaId(session))
   ]);
   bOrcamentos = orcRes.data || [];
   bOrcamentosPagos = new Set((linksRes.data || []).filter(l => l.status === 'pago' && l.orcamento_id).map(l => l.orcamento_id));
@@ -697,7 +697,7 @@ async function saveProposal() {
     const { data: clienteRow } = await supabaseClient.from('clientes').select('email').eq('id', proposalSelectedClienteId).maybeSingle();
     const { data: newLead } = await supabaseClient
       .from('leads')
-      .insert({ fornecedor_id: session.user.id, name: client, email: clienteRow?.email || null, cliente_id: proposalSelectedClienteId })
+      .insert({ fornecedor_id: empresaId(session), name: client, email: clienteRow?.email || null, cliente_id: proposalSelectedClienteId })
       .select('id')
       .single();
     leadId = newLead ? newLead.id : null;
@@ -709,7 +709,7 @@ async function saveProposal() {
 
   const vendedorEl = document.getElementById('proposal-seller-field');
   const dados = {
-    fornecedor_id: session.user.id,
+    fornecedor_id: empresaId(session),
     lead_id: leadId,
     cliente_nome: client,
     valor_total,
@@ -743,7 +743,7 @@ async function saveProposal() {
     const { data: link } = await supabaseClient
       .from('payment_links')
       .insert({
-        fornecedor_id: session.user.id,
+        fornecedor_id: empresaId(session),
         orcamento_id: orcamento.id,
         amount: valor_total,
         installments: 1,

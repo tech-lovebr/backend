@@ -38,7 +38,7 @@ async function carregarModelos() {
   const { data, error } = await supabaseClient
     .from('mensagem_modelos')
     .select('id, comando, texto')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('comando');
   if (error) {
     modelosNoBanco = false;
@@ -55,7 +55,7 @@ async function salvarModelo(comando, texto) {
   if (modelosNoBanco) {
     const { data, error } = await supabaseClient
       .from('mensagem_modelos')
-      .upsert({ fornecedor_id: session.user.id, comando, texto }, { onConflict: 'fornecedor_id,comando' })
+      .upsert({ fornecedor_id: empresaId(session), comando, texto }, { onConflict: 'fornecedor_id,comando' })
       .select('id, comando, texto')
       .single();
     if (!error && data) {

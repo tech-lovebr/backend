@@ -125,7 +125,7 @@ async function initFirstProductModal() {
   const { count } = await supabaseClient
     .from('products')
     .select('id', { count: 'exact', head: true })
-    .eq('fornecedor_id', session.user.id);
+    .eq('fornecedor_id', empresaId(session));
 
   if (count) return;
 
@@ -225,7 +225,7 @@ function initDashboardPaymentLinkModal() {
     const { data: created, error } = await supabaseClient
       .from('payment_links')
       .insert({
-        fornecedor_id: session.user.id,
+        fornecedor_id: empresaId(session),
         amount,
         installments,
         pass_fee_to_client: passFeeToClient,
@@ -389,7 +389,7 @@ async function renderSiteSessions() {
   const { count, error } = await supabaseClient
     .from('site_visitas')
     .select('id', { count: 'exact', head: true })
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .gte('criado_em', analyticsRange.start.toISOString())
     .lte('criado_em', analyticsRange.end.toISOString());
   // Sem a tabela (migration 053 ainda não rodada) mostra zero.
@@ -401,7 +401,7 @@ async function renderAnalyticsCard() {
 
   const { data: { session } } = await supabaseClient.auth.getSession();
   const { data: leads } = session
-    ? await supabaseClient.from('leads').select('status').eq('fornecedor_id', session.user.id)
+    ? await supabaseClient.from('leads').select('status').eq('fornecedor_id', empresaId(session))
     : { data: [] };
   const allLeads = leads || [];
 
@@ -582,7 +582,7 @@ async function renderAvisoServicosSuspensos() {
   const { count, error } = await supabaseClient
     .from('products')
     .select('id', { count: 'exact', head: true })
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .eq('suspenso', true);
   if (error || !count) { aviso.hidden = true; return; }
   aviso.innerHTML = `<span><strong>${count} ${count === 1 ? 'serviço suspenso' : 'serviços suspensos'} pela Love.</strong> ${count === 1 ? 'Ele não aparece' : 'Eles não aparecem'} no Explorar.</span><span class="dashboard-suspensos-link">Ver serviços →</span>`;
@@ -620,8 +620,8 @@ async function renderMetricsOverview() {
 
   if (session) {
     const [txRes, linksRes] = await Promise.all([
-      supabaseClient.from('wallet_transactions').select('type, amount, created_at').eq('fornecedor_id', session.user.id),
-      supabaseClient.from('payment_links').select('amount, status').eq('fornecedor_id', session.user.id).eq('status', 'pendente')
+      supabaseClient.from('wallet_transactions').select('type, amount, created_at').eq('fornecedor_id', empresaId(session)),
+      supabaseClient.from('payment_links').select('amount, status').eq('fornecedor_id', empresaId(session)).eq('status', 'pendente')
     ]);
     transactions = txRes.data || [];
     pendingLinksTotal = (linksRes.data || []).reduce((sum, l) => sum + Number(l.amount), 0);
@@ -738,7 +738,7 @@ async function renderAgenda() {
     const { data } = await supabaseClient
       .from('agenda_events')
       .select('*')
-      .eq('fornecedor_id', session.user.id)
+      .eq('fornecedor_id', empresaId(session))
       .gte('date', dashDateKey(today))
       .lte('date', dashDateKey(rangeEnd))
       .order('date', { ascending: true });

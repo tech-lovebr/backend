@@ -52,9 +52,9 @@ async function loadContratosData() {
   if (!session) return;
 
   const [linksRes, contractsRes, txRes] = await Promise.all([
-    supabaseClient.from('payment_links').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
-    supabaseClient.from('contracts').select('*, contract_guests(*)').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
-    supabaseClient.from('wallet_transactions').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false })
+    supabaseClient.from('payment_links').select('*').eq('fornecedor_id', empresaId(session)).order('created_at', { ascending: false }),
+    supabaseClient.from('contracts').select('*, contract_guests(*)').eq('fornecedor_id', empresaId(session)).order('created_at', { ascending: false }),
+    supabaseClient.from('wallet_transactions').select('*').eq('fornecedor_id', empresaId(session)).order('created_at', { ascending: false })
   ]);
 
   bPaymentLinks = linksRes.data || [];
@@ -306,7 +306,7 @@ function initWithdrawalModal() {
 
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
-      await supabaseClient.from('fornecedores').update({ pix_key: p.pixKey, pix_key_type: p.pixKeyType }).eq('id', session.user.id);
+      await supabaseClient.from('fornecedores').update({ pix_key: p.pixKey, pix_key_type: p.pixKeyType }).eq('id', empresaId(session));
     }
 
     renderWithdrawalAmountStep();
@@ -338,7 +338,7 @@ function initWithdrawalModal() {
     if (!session) return;
 
     const { error } = await supabaseClient.from('wallet_transactions').insert({
-      fornecedor_id: session.user.id,
+      fornecedor_id: empresaId(session),
       type: 'debit',
       amount,
       description: 'Saque via Pix'
@@ -586,7 +586,7 @@ function initPaymentLinkModal() {
     const { data: created, error } = await supabaseClient
       .from('payment_links')
       .insert({
-        fornecedor_id: session.user.id,
+        fornecedor_id: empresaId(session),
         amount,
         installments,
         pass_fee_to_client: passFeeToClient,

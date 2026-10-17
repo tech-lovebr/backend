@@ -36,6 +36,14 @@ try {
   }
 } catch (e) { /* Navigation Timing indisponível — mantém o ícone de loading padrão */ }
 
+// Empresa ativa (um login pode ter várias — migration 066). A escolha fica
+// guardada e é conferida no initAuthGuard; já vale desde o carregamento para
+// as páginas que consultam antes do login terminar.
+window.b2bEmpresaId = localStorage.getItem('b2b-empresa-ativa') || null;
+// Cópia do perfil "em branco" (data.js), para trocar de empresa sem levar os
+// dados da outra que ficaram no cache do navegador.
+const B2B_PERFIL_PADRAO = typeof B2B_DATA !== 'undefined' ? JSON.parse(JSON.stringify(B2B_DATA.professional)) : {};
+
 // Perfil da empresa (mock local — sem backend) salvo em Editar Perfil.
 const savedProfile = localStorage.getItem('b2b-professional-profile');
 if (savedProfile && typeof B2B_DATA !== 'undefined') {
@@ -166,11 +174,54 @@ async function initAuthGuard() {
 
   window.b2bSession = session;
 
+  // Empresas deste login (a principal tem o id do login). Sem a coluna
+  // dono_id (migration 066 ainda não rodada), só a principal.
+  const uid = session.user.id;
+  const { data: listaEmpresas, error: erroEmpresas } = await supabaseClient
+    .from('fornecedores').select('id, company_name, avatar_url').eq('dono_id', uid);
+  const empresas = (!erroEmpresas && listaEmpresas) ? listaEmpresas.slice() : [];
+  empresas.sort((a, b) => (a.id === uid ? -1 : b.id === uid ? 1 : String(a.company_name || '').localeCompare(String(b.company_name || ''), 'pt-BR')));
+  const escolhida = window.b2bEmpresaId;
+  const escolhaValida = !escolhida || escolhida === uid || empresas.some(e => e.id === escolhida);
+  if (!escolhaValida) {
+    // Empresa de outro login (ou excluída): volta para a principal.
+    localStorage.removeItem('b2b-empresa-ativa');
+    window.b2bEmpresaId = null;
+    window.location.reload();
+    return false;
+  }
+  const empresaAtivaId = escolhida || uid;
+  window.b2bEmpresaId = empresaAtivaId;
+  window.b2bEmpresas = empresas;
+
+  // Cache do perfil é de uma empresa só: trocou de empresa, começa limpo.
+  if (typeof B2B_DATA !== 'undefined') {
+    const idDoCache = B2B_DATA.professional.id || uid;
+    if (idDoCache !== empresaAtivaId) {
+      Object.keys(B2B_DATA.professional).forEach(k => { delete B2B_DATA.professional[k]; });
+      Object.assign(B2B_DATA.professional, JSON.parse(JSON.stringify(B2B_PERFIL_PADRAO)));
+      localStorage.removeItem('b2b-professional-profile');
+    }
+  }
+
   let { data: fornecedor } = await supabaseClient
     .from('fornecedores')
     .select('id, company_name, email, avatar_url, logo_url, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos')
-    .eq('id', session.user.id)
+    .eq('id', empresaAtivaId)
     .maybeSingle();
+
+  // O plano é do login (empresa principal): Gratuito = 1 empresa, Pro = até 3.
+  if (fornecedor && empresaAtivaId !== uid) {
+    const { data: principal } = await supabaseClient
+      .from('fornecedores').select('plan, plan_origem, plan_expira_em').eq('id', uid).maybeSingle();
+    if (principal) Object.assign(fornecedor, principal);
+  }
+
+  if (!fornecedor && empresaAtivaId !== uid) {
+    localStorage.removeItem('b2b-empresa-ativa');
+    window.location.reload();
+    return false;
+  }
 
   if (!fornecedor) {
     // Login/B2B/Admin compartilham o mesmo Supabase Auth. Antes de criar uma
@@ -444,11 +495,43 @@ function initUserCard() {
   renderAvatarInto(document.getElementById('topbar-user-avatar'), p.profilePhoto, p.company || p.name);
   renderAvatarInto(document.getElementById('profile-dropdown-avatar'), p.profilePhoto, p.company || p.name);
 
-  setText('profile-dropdown-name', p.company);
+  // No menu do perfil, o nome do responsável; no canto do topo, a empresa.
+  setText('profile-dropdown-name', p.name || p.company);
   setText('topbar-account-name', p.company);
+  renderEmpresasNoMenu();
   setText('profile-dropdown-email', p.email);
   setText('upgrade-current-plan', p.plan);
 }
+
+/* Empresas do login no menu do perfil: clicar troca a empresa ativa. Só
+   aparece quando há mais de uma. */
+function renderEmpresasNoMenu() {
+  const wrap = document.getElementById('profile-empresas');
+  if (!wrap) return;
+  const empresas = window.b2bEmpresas || [];
+  if (empresas.length < 2) { wrap.hidden = true; wrap.innerHTML = ''; return; }
+  const ativa = window.b2bEmpresaId;
+  wrap.hidden = false;
+  wrap.innerHTML = `<p class="profile-empresas-titulo">Empresas</p>` + empresas.map(e => `
+    <button type="button" class="profile-empresa-item${e.id === ativa ? ' is-ativa' : ''}" data-empresa-id="${escapeHtml(e.id)}">
+      <span class="profile-empresa-avatar">${e.avatar_url ? `<img src="${escapeHtml(e.avatar_url)}" alt="">` : (typeof initialsAvatarHtml === 'function' ? initialsAvatarHtml(e.company_name) : '')}</span>
+      <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
+      ${e.id === ativa ? '<svg class="profile-empresa-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></svg>' : ''}
+    </button>`).join('') + '<div class="topbar-dropdown-divider"></div>';
+  wrap.querySelectorAll('[data-empresa-id]').forEach(btn => {
+    btn.addEventListener('click', () => trocarEmpresa(btn.dataset.empresaId));
+  });
+}
+
+function trocarEmpresa(id) {
+  if (!id || id === window.b2bEmpresaId) return;
+  const uid = window.b2bSession && window.b2bSession.user.id;
+  if (id === uid) localStorage.removeItem('b2b-empresa-ativa');
+  else localStorage.setItem('b2b-empresa-ativa', id);
+  localStorage.removeItem('b2b-professional-profile');
+  window.location.href = 'dashboard';
+}
+window.trocarEmpresa = trocarEmpresa;
 
 function isProPlan() {
   return typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.plan === 'Pro';
@@ -603,7 +686,7 @@ async function initNotifications(unreadSnapshot) {
 // fornecedor. Quem marca como lidas é o chat (marcar_conversa_lida,
 // migration 045) ao abrir a conversa.
 async function countChatUnread() {
-  const userId = window.b2bSession && window.b2bSession.user.id;
+  const userId = window.b2bSession && empresaId(window.b2bSession);
   if (!userId) return 0;
   const { data: convs, error: convErr } = await supabaseClient
     .from('conversations')
@@ -656,9 +739,9 @@ async function loadCommandPaletteData() {
   if (!session) return;
 
   const [leadsRes, productsRes, contractsRes] = await Promise.all([
-    supabaseClient.from('leads').select('id, name, event_name').eq('fornecedor_id', session.user.id),
-    supabaseClient.from('products').select('id, name, category').eq('fornecedor_id', session.user.id),
-    supabaseClient.from('contracts').select('id, client_name, evento').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('leads').select('id, name, event_name').eq('fornecedor_id', empresaId(session)),
+    supabaseClient.from('products').select('id, name, category').eq('fornecedor_id', empresaId(session)),
+    supabaseClient.from('contracts').select('id, client_name, evento').eq('fornecedor_id', empresaId(session))
   ]);
 
   commandPaletteData = {

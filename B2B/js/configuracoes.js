@@ -169,7 +169,7 @@ async function salvarPerfilNoBanco(p) {
       state: p.state || null,
       description: p.description || null
     })
-    .eq('id', session.user.id);
+    .eq('id', empresaId(session));
 
   // Falhar aqui não pode travar o fluxo: o perfil local já foi salvo.
   if (error) console.error('Não foi possível sincronizar o perfil com o banco.', error);
@@ -192,7 +192,7 @@ async function carregarLiberacoes() {
   const { data, error } = await supabaseClient
     .from('campos_liberados')
     .select('id, campo')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .is('usado_em', null);
 
   if (error) {
@@ -253,7 +253,7 @@ async function carregarDatasDeAlteracao() {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
   const { data, error } = await supabaseClient.from('fornecedores')
-    .select('company_alterado_em, documento_alterado_em').eq('id', session.user.id).maybeSingle();
+    .select('company_alterado_em, documento_alterado_em').eq('id', empresaId(session)).maybeSingle();
   if (error || !data) return;
   ALTERADO_EM.company = data.company_alterado_em || null;
   ALTERADO_EM.documento = data.documento_alterado_em || null;
@@ -423,7 +423,7 @@ async function salvarEmpresaNoBanco(p) {
       requires_full_payment_by_event: !!p.requiresFullPaymentByEvent,
       cancellation_policy: p.cancellationPolicy || null
     })
-    .eq('id', session.user.id);
+    .eq('id', empresaId(session));
 
   if (error) console.error('Não foi possível sincronizar as informações da empresa com o banco.', error);
 }
@@ -439,7 +439,7 @@ async function initPortfolioTexto() {
   if (!campo) return;
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) return;
-  const { data, error } = await supabaseClient.from('fornecedores').select('portfolio_texto').eq('id', session.user.id).maybeSingle();
+  const { data, error } = await supabaseClient.from('fornecedores').select('portfolio_texto').eq('id', empresaId(session)).maybeSingle();
   if (error) { if (wrap) wrap.hidden = true; return; }
   campo.value = (data && data.portfolio_texto) || '';
   let espera = null;
@@ -448,7 +448,7 @@ async function initPortfolioTexto() {
     clearTimeout(espera);
     espera = setTimeout(async () => {
       const { error: erroSalvar } = await supabaseClient.from('fornecedores')
-        .update({ portfolio_texto: campo.value.trim() || null }).eq('id', session.user.id);
+        .update({ portfolio_texto: campo.value.trim() || null }).eq('id', empresaId(session));
       if (status) status.textContent = erroSalvar ? 'Não foi possível salvar. Tente de novo.' : 'Salvo.';
     }, 800);
   });
@@ -568,7 +568,7 @@ async function persistPortfolioImages() {
   const { error } = await supabaseClient
     .from('fornecedores')
     .update({ portfolio_images: B2B_DATA.professional.portfolioImages || [] })
-    .eq('id', session.user.id);
+    .eq('id', empresaId(session));
   if (error) console.error('Não foi possível sincronizar o portfólio com o banco.', error);
   return !error;
 }
@@ -628,7 +628,7 @@ async function persistTestimonials() {
   const { error } = await supabaseClient
     .from('fornecedores')
     .update({ depoimentos: B2B_DATA.professional.depoimentos || [] })
-    .eq('id', session.user.id);
+    .eq('id', empresaId(session));
   if (error) console.error('Não foi possível sincronizar os depoimentos com o banco.', error);
 }
 

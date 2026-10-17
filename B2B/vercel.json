@@ -128,6 +128,11 @@
       "source": "/notificacoes.html",
       "destination": "/notificacoes",
       "permanent": true
+    },
+    {
+      "source": "/nova-empresa.html",
+      "destination": "/nova-empresa",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -226,6 +231,10 @@
     {
       "source": "/:slug([a-z0-9-]+)",
       "destination": "/site-preview.html"
+    },
+    {
+      "source": "/nova-empresa",
+      "destination": "/nova-empresa.html"
     }
   ]
 }

@@ -69,8 +69,8 @@ async function loadLeads() {
   // pelo fornecedor. Ver migration 058.
 
   const [leadsRes, convosRes] = await Promise.all([
-    supabaseClient.from('leads').select('*').eq('fornecedor_id', session.user.id).order('created_at', { ascending: false }),
-    supabaseClient.from('conversations').select('cliente_id').eq('fornecedor_id', session.user.id)
+    supabaseClient.from('leads').select('*').eq('fornecedor_id', empresaId(session)).order('created_at', { ascending: false }),
+    supabaseClient.from('conversations').select('cliente_id').eq('fornecedor_id', empresaId(session))
   ]);
 
   crmLeads = leadsRes.error || !leadsRes.data ? [] : leadsRes.data;
@@ -97,7 +97,7 @@ async function loadCrmProducts() {
   const { data } = await supabaseClient
     .from('products')
     .select('id, name')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('name');
 
   crmProducts = data || [];
@@ -451,7 +451,7 @@ function initLeadDrawer() {
     // Sem a migration 054 o banco não tem as colunas novas: salva o resto e avisa.
     const gravar = async (dados) => form.dataset.editId
       ? supabaseClient.from('leads').update(dados).eq('id', form.dataset.editId)
-      : supabaseClient.from('leads').insert(Object.assign({ fornecedor_id: session.user.id }, dados));
+      : supabaseClient.from('leads').insert(Object.assign({ fornecedor_id: empresaId(session) }, dados));
     let { error } = await gravar(payload);
     if (error && /column|schema cache/i.test(error.message || '')) {
       const semNovos = { ...payload };
@@ -704,7 +704,7 @@ function initLeadImport() {
     if (!session) return;
 
     const leads = linhas.slice(1).map(cols => {
-      const lead = { fornecedor_id: session.user.id, status: 'novo' };
+      const lead = { fornecedor_id: empresaId(session), status: 'novo' };
       campos.forEach((campo, i) => {
         if (!campo) return;
         const v = String(cols[i] || '').trim();

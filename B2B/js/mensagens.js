@@ -158,7 +158,7 @@ async function loadB2BConversations() {
   const consultar = (campos) => supabaseClient
     .from('conversations')
     .select(`id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(${campos})`)
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('last_message_at', { ascending: false });
   let { data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at, edited_at');
   if (error) ({ data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at'));
@@ -261,7 +261,7 @@ function avisarQueEstouDigitando() {
    lista e volta sozinha se chegar mensagem nova. Não apaga nada do outro
    lado. Fica guardado neste navegador, por conta. */
 function chaveConversas(tipo) {
-  const uid = (window.b2bSession && window.b2bSession.user && window.b2bSession.user.id) || 'anon';
+  const uid = empresaId(window.b2bSession) || 'anon';
   return `b2b-conversas-${tipo}-${uid}`;
 }
 function lerLista(tipo, padrao) {
@@ -831,7 +831,7 @@ document.addEventListener('click', async (e) => {
     if (session && conv.clienteId) {
       const { data } = await supabaseClient.from('leads')
         .select('id, event_name')
-        .eq('fornecedor_id', session.user.id)
+        .eq('fornecedor_id', empresaId(session))
         .eq('cliente_id', conv.clienteId)
         .order('created_at', { ascending: false });
       const leads = data || [];

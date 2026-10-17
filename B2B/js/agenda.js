@@ -115,7 +115,7 @@ async function loadKanbanBoard() {
   const { data: lists, error } = await supabaseClient
     .from('agenda_lists')
     .select('id, title, color, position, agenda_tasks(id, text, done, due_date, position, agenda_task_activity(type, user_name, extra, created_at))')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('position', { ascending: true });
 
   if (error || !lists || !lists.length) return defaultKanbanBoard();
@@ -150,7 +150,7 @@ async function loadKanbanBoard() {
 async function saveKanbanBoard() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) return;
-  const fornecedorId = session.user.id;
+  const fornecedorId = empresaId(session);
 
   const { data: oldLists } = await supabaseClient.from('agenda_lists').select('id').eq('fornecedor_id', fornecedorId);
   if (oldLists && oldLists.length) {
@@ -906,7 +906,7 @@ async function loadAgendaEvents() {
   const { data, error } = await supabaseClient
     .from('agenda_events')
     .select('*')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('date', { ascending: true });
 
   if (error || !data) return [];
@@ -963,7 +963,7 @@ let bAgendaLeads = [];
 async function loadAgendaLeads() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) { bAgendaLeads = []; return; }
-  const { data, error } = await supabaseClient.from('leads').select('name, birthday').eq('fornecedor_id', session.user.id);
+  const { data, error } = await supabaseClient.from('leads').select('name, birthday').eq('fornecedor_id', empresaId(session));
   bAgendaLeads = error || !data ? [] : data;
 }
 
@@ -1303,7 +1303,7 @@ async function submitEventForm(e) {
     showToast('Evento atualizado.');
   } else {
     const { error } = await supabaseClient.from('agenda_events').insert({
-      fornecedor_id: session.user.id,
+      fornecedor_id: empresaId(session),
       date: formatDateKey(selectedAgendaDate),
       title, type, type_custom: typeCustom, start_time: startTime, end_time: endTime, link, local, description, guests,
       created_by: currentUserName()
@@ -1379,7 +1379,7 @@ async function loadContratosAbertos() {
   const { data, error } = await supabaseClient
     .from('contracts')
     .select('*, contract_guests(*)')
-    .eq('fornecedor_id', session.user.id)
+    .eq('fornecedor_id', empresaId(session))
     .order('created_at', { ascending: false });
 
   bContratosAbertos = error || !data ? [] : data.map(c => ({

@@ -2218,6 +2218,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ? ''
         : (task.id === 'budget'
             ? 'onclick="navigateToBudget()"'
+            : task.id === 'website'
+            ? 'onclick="navigateToConviteDigital()"'
             : task.id === 'savethedate'
             ? 'onclick="navigateToSaveTheDate()"'
             : `onclick="switchRailTab('${task.tab}')"`);
@@ -10302,6 +10304,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Home (Mais recursos › Save the Date e o passo "Escolher Save the Date" do
   // guia): abre Personalizar evento › Aparência já na página Save the Date.
+  // Guia › "Personalizar site do evento": Aparência já no Convite Digital.
+  window.navigateToConviteDigital = function() {
+    state.activeSubSection = 'home';
+    pendingSubItemId = 'home';
+    switchRailTab('edit-site');
+    setTimeout(() => {
+      if (typeof window.switchBuilderPage === 'function') window.switchBuilderPage('convite');
+    }, 150);
+  };
+
   window.navigateToSaveTheDate = function() {
     state.activeSubSection = 'home';
     pendingSubItemId = 'home';

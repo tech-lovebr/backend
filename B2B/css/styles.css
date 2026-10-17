@@ -6768,7 +6768,7 @@ a.dash-card:hover,
 /* Mídia do drawer de produto: "Imagem de capa" e "Carrossel de imagens"
    como títulos de seção; a primeira sem a linha de cima (é o topo da aba). */
 .product-media-title { margin-bottom: 0.6rem; }
-.product-wizard-panel[data-step="4"] > div:first-of-type > .product-media-title { border-top: none; padding-top: 0; }
+.product-wizard-panel[data-step="3"] > div:first-of-type > .product-media-title { border-top: none; padding-top: 0; }
 
 /* Drawer de produto: rótulos principais (Categoria principal, Título do
    anúncio, Unidade de cobrança, Descrição) no mesmo texto dos títulos
@@ -7612,3 +7612,8 @@ body[data-theme="dark"] .product-pacote-item { background: #252525 !important; b
 /* Selo "Ativo": só a bolinha e o texto, sem a caixinha de fundo. */
 .status-badge.status-ativo { background: transparent; border: none; padding-left: 0; padding-right: 0; }
 body[data-theme="dark"] .status-badge.status-ativo { background: transparent !important; }
+
+/* Ícone de informação do Código (SKU): branco com contorno preto. */
+.product-info-icone { color: #181D24; width: 16px; height: 16px; }
+.product-info-icone svg { width: 16px; height: 16px; }
+.product-info-icone:hover, .product-info-icone:focus-visible { color: #181D24; }

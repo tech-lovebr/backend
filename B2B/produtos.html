@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=573">
+  <link rel="stylesheet" href="css/styles.css?v=574">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -72,8 +72,7 @@
         <div class="product-wizard-tabs" id="product-wizard-steps" role="tablist">
           <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="1">1. Categoria</button>
           <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="2">2. Detalhes</button>
-          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="3">3. Escopo</button>
-          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="4">4. Mídia</button>
+          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="3">3. Mídia</button>
         </div>
       </div>
       <button type="button" class="form-drawer-close" id="product-drawer-close" aria-label="Fechar">
@@ -125,10 +124,8 @@
             <p class="field-hint">Use um título específico para cada nicho que você atende: o cliente encontra a sua oferta mais rápido.</p>
             <input id="product-name" type="text" class="field-input">
           </div>
-        </div>
 
-        <!-- ETAPA 2: Motor de Precificação -->
-        <div class="product-wizard-panel" data-step="2">
+          <!-- Preço (antiga aba "Detalhes"): SKU, unidade de cobrança e valores. -->
 
           <!-- Código (SKU) — interno do fornecedor, nunca aparece na vitrine — e
                a unidade de cobrança (drop-down) lado a lado. -->
@@ -136,7 +133,7 @@
             <div>
               <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
                 <span class="info-tooltip-wrap info-tooltip-wrap--esq">
-                  <button type="button" class="info-tooltip-trigger product-info-azul" tabindex="0" aria-label="Mais informações"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"/></svg></button>
+                  <button type="button" class="info-tooltip-trigger product-info-icone" tabindex="0" aria-label="Mais informações"><svg viewBox="0 0 24 24" fill="#FFFFFF" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5"/><circle cx="12" cy="7.75" r="0.6" fill="currentColor"/></svg></button>
                   <span class="info-tooltip-bubble">Código interno de referência</span>
                 </span>
               </label>
@@ -288,8 +285,8 @@
           </div>
         </div>
 
-        <!-- ETAPA 3: Escopo do Serviço & Atributos -->
-        <div class="product-wizard-panel" data-step="3">
+        <!-- ETAPA 2: Detalhes (escopo do serviço & atributos) -->
+        <div class="product-wizard-panel" data-step="2">
 
           <!-- Incluso / não incluso: some em Espaços para locação (lá o escopo
                começa direto pelas áreas comuns). -->
@@ -456,8 +453,8 @@
           </div>
         </div>
 
-        <!-- ETAPA 4: Mídia -->
-        <div class="product-wizard-panel" data-step="4">
+        <!-- ETAPA 3: Mídia -->
+        <div class="product-wizard-panel" data-step="3">
 
           <!-- Títulos "Imagem de capa" e "Adicionar imagens" no tamanho de
                seção (sem ícone), cada um com o conteúdo logo abaixo. -->
@@ -602,6 +599,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=34"></script>
+  <script src="js/produtos.js?v=35"></script>
 </body>
 </html>

@@ -331,7 +331,7 @@ function renderProducts() {
   grid.querySelectorAll('[data-add-image]').forEach(btn => {
     btn.addEventListener('click', () => {
       openProductDrawer(btn.dataset.addImage);
-      goToStep(4);
+      goToStep(3);
     });
   });
 }
@@ -1185,10 +1185,10 @@ function goToStep(n) {
   });
 
   // Rodapé: nas etapas 1–3, "Salvar item" (branco) à esquerda e "Próximo"
-  // à direita. Na 4 (Mídia), "Voltar" à esquerda e "Salvar item" (principal)
+  // à direita. Na 3 (Mídia), "Voltar" à esquerda e "Salvar item" (principal)
   // à direita. Salvar fica disponível em qualquer aba (o submit valida
   // Categoria e Preço e leva pra aba que faltar).
-  const ultima = n === 4;
+  const ultima = n === 3;
   setPanelHidden('product-wizard-back-btn', !ultima);
   setPanelHidden('product-wizard-next-btn', ultima);
   setPanelHidden('product-wizard-submit-btn', false);
@@ -1445,10 +1445,11 @@ function initProductDrawer() {
     tab.addEventListener('click', () => goToStep(Number(tab.dataset.stepIndicator)));
   });
   document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
-    const validators = { 1: validateStep1, 2: validateStep2, 3: validateStep3 };
+    // Aba 1 (Categoria) também tem a unidade de cobrança.
+    const validators = { 1: () => validateStep1() && validateStep2(), 2: validateStep3 };
     const validate = validators[currentStep];
     if (validate && !validate()) return;
-    if (currentStep < 4) goToStep(currentStep + 1);
+    if (currentStep < 3) goToStep(currentStep + 1);
   });
 
 
@@ -1474,7 +1475,7 @@ function initProductDrawer() {
       const active = true;
 
       if (!validateStep1()) { goToStep(1); return; }
-      if (!validateStep2()) { goToStep(2); return; }
+      if (!validateStep2()) { goToStep(1); return; }
 
       const { isVenue, isEquipment, isFood, isStaff, isAV } = categoryGroups(category);
 

@@ -7725,3 +7725,6 @@ html body button.informacoes-salvar-rodape:not(#love-h-a):hover { background: #F
 html body button.informacoes-salvar-rodape:not(#love-h-a):disabled { opacity: .6; cursor: default; }
 /* Informações: sem a folga grande embaixo — o "Salvar alterações" fica no fim. */
 html body #editor-form-column:has(#editor-form-data:not(.hidden)) { padding-bottom: 1rem !important; }
+/* Aparência: o rótulo "Elementos" com a mesma tipografia de "Básicos" e
+   "Avançado" (maiusculinho, 11px, 700, espaçado) — a cor continua a da aba. */
+html body #builder-elements-panel .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; line-height: 16.5px; text-transform: uppercase; }

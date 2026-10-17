@@ -953,7 +953,7 @@ function renderLeftPanel() {
 
   panel.innerHTML = `
     <div class="builder-panel-tabs">
-      <span class="builder-panel-tab active" style="cursor:default;">Elementos</span>
+      <span class="builder-panel-tab builder-panel-tab-rotulo active" style="cursor:default;">Elementos</span>
     </div>
     <div class="builder-panel-tab-body" id="builder-panel-tab-body"></div>
   `;

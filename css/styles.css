@@ -7924,3 +7924,11 @@ html body #builder-elements-panel .builder-panel-tab.builder-panel-tab-rotulo:no
 html body #builder-elements-panel .builder-panel-tabs:not(#love-h-a) { background: transparent; border: none; padding: 0; }
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #252525 !important; border-color: #404040; color: #FFFFFF; }
 
+
+/* Convite Digital › elemento Redes sociais (igual ao editor de site do Hub). */
+.be-social { display: flex; gap: 0.6rem; flex-wrap: wrap; width: 100%; }
+.be-social a {
+  width: 34px; height: 34px; border-radius: 999px; background: #18181B; color: #fff;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.be-social svg { width: 15px; height: 15px; }

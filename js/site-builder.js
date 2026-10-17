@@ -49,6 +49,7 @@ function showToast(message) {
 /* -------------------- Ícones -------------------- */
 
 const BI = {
+  social: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path stroke-linecap="round" d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg>',
   text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>',
   heading: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M6 4v16M18 4v16M6 12h12"/></svg>',
   image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>',
@@ -240,8 +241,25 @@ const VIDEO_ASPECT_RATIO_OPTIONS = [
 
 const ELEMENT_GROUPS = [
   { title: 'Básicos', types: ['titulo', 'texto', 'imagem', 'botao', 'video', 'separador', 'espacamento', 'secao'] },
-  { title: 'Avançado', types: ['galeria', 'carrossel', 'mapa', 'contagem', 'data'] }
+  { title: 'Avançado', types: ['galeria', 'carrossel', 'mapa', 'contagem', 'data', 'redes'] }
 ];
+
+// Redes sociais: as mesmas plataformas e cores do editor de site do Hub.
+const SOCIAL_PLATFORMS = {
+  instagram: { label: 'Instagram', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324Zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"/></svg>' },
+  whatsapp: { label: 'WhatsApp', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01a9.82 9.82 0 0 0-7.02-2.91zm0 18.15h-.01c-1.48 0-2.93-.4-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.26 8.26 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 0 1 2.41 5.83c.02 4.54-3.68 8.23-8.23 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43s.17-.25.25-.41c.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07s.89 2.4 1.01 2.56c.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29z"/></svg>' },
+  facebook: { label: 'Facebook', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.5-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46H15.2c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z"/></svg>' },
+  tiktok: { label: 'TikTok', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.02 2.98.02 5.96-.02 8.94-.03 1.53-.45 3.08-1.28 4.38-1.12 1.77-2.97 3.04-5.04 3.49-1.71.38-3.55.19-5.14-.54-1.68-.78-3.05-2.14-3.86-3.8-1.07-2.18-.94-4.88.35-6.94 1.05-1.67 2.75-2.86 4.67-3.29.93-.21 1.9-.22 2.85-.04v4.18c-.7-.22-1.49-.24-2.19-.04-.84.23-1.57.81-1.95 1.59-.51 1.03-.38 2.3.33 3.2.66.84 1.72 1.34 2.8 1.34 1.14 0 2.21-.56 2.85-1.51.37-.55.57-1.22.57-1.89V.02z"/></svg>' },
+  linkedin: { label: 'LinkedIn', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>' },
+  youtube: { label: 'YouTube', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' },
+  twitter: { label: 'Twitter (X)', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117Z"/></svg>' },
+  pinterest: { label: 'Pinterest', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.017 0C5.396 0 0 5.396 0 12.017c0 5.077 3.169 9.417 7.627 11.164-.105-.949-.199-2.405.041-3.441.219-.937 1.406-5.965 1.406-5.965s-.359-.72-.359-1.781c0-1.663.967-2.911 2.171-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.995-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.86-2.056-4.861-4.991-4.861-3.398 0-5.393 2.549-5.393 5.184 0 1.027.395 2.127.889 2.726a.36.36 0 0 1 .083.343c-.091.378-.293 1.189-.332 1.355-.053.218-.174.265-.402.159-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378 0 0-.602 2.291-.748 2.853-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.396 11.99-12.017C24.007 5.396 18.641 0 12.017 0Z"/></svg>' }
+};
+
+const SOCIAL_PLATFORM_COLORS = {
+  instagram: '#E1306C', whatsapp: '#25D366', facebook: '#1877F2', tiktok: '#000000',
+  linkedin: '#0A66C2', youtube: '#FF0000', twitter: '#000000', pinterest: '#E60023'
+};
 
 const ELEMENT_META = {
   titulo: { label: 'Título', icon: BI.heading },
@@ -256,6 +274,7 @@ const ELEMENT_META = {
   mapa: { label: 'Mapa', icon: BI.map },
   contagem: { label: 'Contagem regressiva', icon: BI.clock },
   data: { label: 'Data', icon: BI.calendar },
+  redes: { label: 'Redes sociais', icon: BI.social },
   secao: { label: 'Nova seção', icon: BI.section }
 };
 
@@ -869,6 +888,8 @@ function createElement(type) {
       return Object.assign(base, { scrollMode: 'slider', images: [{ src: '', alt: '' }, { src: '', alt: '' }, { src: '', alt: '' }] });
     case 'mapa':
       return Object.assign(base, { embedUrl: '', address: '' });
+    case 'redes':
+      return Object.assign(base, { profiles: [{ platform: 'instagram', url: 'https://instagram.com' }, { platform: 'whatsapp', url: 'https://wa.me/5511999999999' }], colorMode: 'custom', customColor: '', iconRadius: 50 });
     case 'contagem':
       return Object.assign(base, { label: 'Contagem Regressiva', targetDate: '', targetTime: '18:00', fontFamily: '', textColor: '', boxBgColor: '', sizeScale: 100 });
     case 'data':
@@ -1841,6 +1862,18 @@ function renderElementContent(el, device, mode) {
     case 'espacamento':
       return `<div class="be-spacer" style="height:${el.height}px;${style}"></div>`;
 
+    case 'redes': {
+      const socialAlign = styleValue(el, 'textAlign', device);
+      const justify = socialAlign === 'left' ? 'flex-start' : socialAlign === 'right' ? 'flex-end' : 'center';
+      return `<div class="be-social" style="${style}justify-content:${justify};">${(el.profiles || []).map(p => {
+        const platform = SOCIAL_PLATFORMS[p.platform];
+        if (!platform) return '';
+        const bg = el.colorMode === 'original' ? (SOCIAL_PLATFORM_COLORS[p.platform] || '#18181B') : (el.customColor || '#18181B');
+        const iconRadius = el.iconRadius != null ? el.iconRadius : 50;
+        return `<a href="${escapeHtml(p.url || '#')}" target="_blank" rel="noopener" ${linkGuard} title="${platform.label}" style="background-color:${bg};border-radius:${iconRadius}%;">${platform.svg}</a>`;
+      }).join('')}</div>`;
+    }
+
     case 'galeria': {
       const galleryImgRadius = styleValue(el, 'borderRadius', device);
       const galleryImgStyle = galleryImgRadius !== undefined ? ` style="border-radius:${galleryImgRadius};"` : '';
@@ -2479,6 +2512,27 @@ function wireContentTab(el, body) {
     });
   }
 
+  if (el.type === 'redes') {
+    body.querySelectorAll('[data-remove-social]').forEach(btn => {
+      btn.addEventListener('click', () => { el.profiles.splice(Number(btn.dataset.removeSocial), 1); pushHistory(); renderCanvasOnly(); renderLeftPanel(); });
+    });
+    body.querySelectorAll('[data-social-platform]').forEach(sel => {
+      sel.addEventListener('change', () => { el.profiles[Number(sel.dataset.socialPlatform)].platform = sel.value; pushHistory(); renderCanvasOnly(); });
+    });
+    body.querySelectorAll('[data-social-url]').forEach(input => {
+      input.addEventListener('input', () => { el.profiles[Number(input.dataset.socialUrl)].url = input.value; renderCanvasOnly(); });
+      input.addEventListener('blur', () => pushHistory());
+    });
+    body.querySelector('[data-add-social]')?.addEventListener('click', () => {
+      if (!Array.isArray(el.profiles)) el.profiles = [];
+      el.profiles.push({ platform: 'instagram', url: '' }); pushHistory(); renderCanvasOnly(); renderLeftPanel();
+    });
+    // Original × Personalizada: mostra/esconde a cor dos ícones.
+    body.querySelectorAll('[data-segmented="prop:colorMode"] button').forEach(btn => {
+      btn.addEventListener('click', () => setTimeout(renderLeftPanel, 0));
+    });
+  }
+
   if (el.type === 'galeria' || el.type === 'carrossel') {
     body.querySelectorAll('[data-remove-image]').forEach(btn => {
       btn.addEventListener('click', () => { el.images.splice(Number(btn.dataset.removeImage), 1); pushHistory(); renderCanvasOnly(); renderLeftPanel(); });
@@ -2803,6 +2857,37 @@ function renderLayoutTab(el, flat) {
 
 function renderContentTab(el) {
   switch (el.type) {
+    case 'redes':
+      return `
+        <div id="social-editor">
+          ${(el.profiles || []).map((p, i) => `
+            <div class="inspector-list-item">
+              <div class="inspector-list-item-row">
+                <select class="inspector-select" data-social-platform="${i}">
+                  ${Object.keys(SOCIAL_PLATFORMS).map(k => `<option value="${k}" ${p.platform === k ? 'selected' : ''}>${SOCIAL_PLATFORMS[k].label}</option>`).join('')}
+                </select>
+                <button type="button" class="inspector-list-item-remove-inline" data-remove-social="${i}" title="Remover">${BI.trash}</button>
+              </div>
+              <input type="text" class="inspector-input" data-social-url="${i}" value="${escapeHtml(p.url || '')}" placeholder="https://">
+            </div>
+          `).join('')}
+        </div>
+        <button type="button" class="inspector-add-btn" data-add-social>${BI.plus} Adicionar rede</button>
+        ${segRow('Cores', 'prop:colorMode', [
+          { value: 'original', title: 'Cores originais de cada rede', html: 'Original' },
+          { value: 'custom', title: 'Uma cor para todos os ícones', html: 'Personalizada' }
+        ], el.colorMode || 'custom')}
+        ${el.colorMode === 'original' ? '' : `
+        <div class="inspector-field inspector-field-row">
+          <span class="inspector-field-label">Cor dos ícones</span>
+          ${colorSwatchPopoverHtml(el.customColor || '#18181B', 'data-bind="prop:customColor"')}
+        </div>`}
+        <div class="inspector-field">
+          <span class="inspector-field-label">Arredondamento do ícone <span data-range-out="prop:iconRadius">${el.iconRadius != null ? el.iconRadius : 50}%</span></span>
+          <input type="range" min="0" max="50" value="${el.iconRadius != null ? el.iconRadius : 50}" data-bind="prop:iconRadius" data-unit="%" data-cast="number">
+        </div>
+      `;
+
     case 'texto':
       return fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain" data-bind="prop:content">${escapeHtml(el.content || '')}</textarea>`);
 

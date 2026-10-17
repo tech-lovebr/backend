@@ -15700,17 +15700,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chatInput.value.trim() && activeB2BConversationId !== SUPORTE_CONV_ID) avisarQueEstouDigitando();
       });
 
-      chatForm.addEventListener('submit', (e) => {
+      // Envio único: vários Enter seguidos mandam a mensagem uma vez só. O
+      // campo esvazia na hora e fica travado até o envio terminar; se der
+      // erro, o texto volta para o campo.
+      let enviandoMensagem = false;
+      chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!chatInput) return;
+        if (!chatInput || enviandoMensagem) return;
         const text = chatInput.value.trim();
         if (!text) return;
 
         const convId = activeB2BConversationId || (b2bConversationsData[0] && b2bConversationsData[0].id);
         if (!convId) return;
 
-        window.LoveChatService.sendMessage(convId, text);
+        enviandoMensagem = true;
         chatInput.value = '';
+        try {
+          const ok = await window.LoveChatService.sendMessage(convId, text);
+          if (!ok && !chatInput.value) chatInput.value = text;
+        } finally {
+          enviandoMensagem = false;
+        }
       });
     }
 

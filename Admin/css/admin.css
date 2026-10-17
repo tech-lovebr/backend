@@ -3417,3 +3417,8 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .np-galeria-item button { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border: 0; border-radius: 6px; background: rgba(255,255,255,.92); cursor: pointer; line-height: 1; }
 .np-galeria-add { position: relative; margin-bottom: 1rem; cursor: pointer; }
 @media (max-width: 640px) { [data-cobranca].field-row, #np-espaco .field-row:has(> :nth-child(3)) { grid-template-columns: 1fr; } }
+
+/* Ação principal do cabeçalho (Adicionar, Banner da home, Workshops…):
+   sombra curta e concentrada, só para destacar do fundo. */
+.btn-principal { box-shadow: 0 1px 2px rgba(24, 29, 36, .14), 0 2px 4px -1px rgba(24, 29, 36, .08); }
+.btn-principal:hover { box-shadow: 0 1px 2px rgba(24, 29, 36, .18), 0 3px 6px -2px rgba(24, 29, 36, .12); }

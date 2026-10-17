@@ -637,22 +637,23 @@ function setupChatEvents() {
   const attachBtn = document.getElementById('chat-attach-btn');
   const fileInput = document.getElementById('chat-file-input');
 
+  /* Envia e devolve true (enviou) ou false (erro). Quem chama pelo campo
+     usa enviarDoCampo(), que trava Enter repetido. */
   async function sendMessage(text, attachment = null) {
-    if (!text && !attachment) return;
-    if (!activeConvId) return;
+    if (!text && !attachment) return false;
+    if (!activeConvId) return false;
 
     if (activeConvId === SUPORTE_CONV_ID) {
-      if (!text) { if (typeof showToast === 'function') showToast('No suporte, envie a mensagem em texto.', true); return; }
-      if (!(await enviarParaSuporte(text))) { if (typeof showToast === 'function') showToast('Não foi possível enviar ao suporte.', true); return; }
-      if (input) input.value = '';
+      if (!text) { if (typeof showToast === 'function') showToast('No suporte, envie a mensagem em texto.', true); return false; }
+      if (!(await enviarParaSuporte(text))) { if (typeof showToast === 'function') showToast('Não foi possível enviar ao suporte.', true); return false; }
       await loadB2BConversations();
       renderContactsList(searchInput ? searchInput.value : '');
       renderActiveChat();
-      return;
+      return true;
     }
 
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;
+    if (!session) return false;
 
     const { error } = await supabaseClient.from('messages').insert({
       conversation_id: activeConvId,
@@ -663,25 +664,42 @@ function setupChatEvents() {
       attachment_type: attachment ? attachment.type : null
     });
 
-    if (error) { console.error('Erro ao enviar mensagem:', error); return; }
+    if (error) { console.error('Erro ao enviar mensagem:', error); return false; }
 
     await supabaseClient.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', activeConvId);
 
     await loadB2BConversations();
     renderContactsList(searchInput ? searchInput.value : '');
     renderActiveChat();
-
-    if (input) input.value = '';
+    return true;
   }
 
+  /* Trava de envio: Enter várias vezes rápido mandava a mesma mensagem de
+     novo, porque o campo só esvaziava depois dos await. Agora esvazia na
+     hora e ignora novos envios até o atual terminar. */
+  let enviandoMensagem = false;
+  async function enviarComTrava(text, doCampo) {
+    if (enviandoMensagem || !text) return false;
+    enviandoMensagem = true;
+    if (doCampo && input) input.value = '';
+    try {
+      const ok = await sendMessage(text);
+      // Deu erro: devolve o texto ao campo (se a pessoa não começou outro).
+      if (!ok && doCampo && input && !input.value) input.value = text;
+      return ok;
+    } finally {
+      enviandoMensagem = false;
+    }
+  }
+  const enviarDoCampo = () => { if (input) enviarComTrava(input.value.trim(), true); };
+
   // Usado pelos comandos de modelo (js/chat-modelos.js) pra mandar o texto salvo.
-  window.b2bChatSend = (text) => sendMessage(text);
+  window.b2bChatSend = (text) => enviarComTrava(text, false);
 
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!input) return;
-      sendMessage(input.value.trim());
+      enviarDoCampo();
     });
   }
 
@@ -692,7 +710,7 @@ function setupChatEvents() {
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        sendMessage(input.value.trim());
+        enviarDoCampo();
       }
     });
   }

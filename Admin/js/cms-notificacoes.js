@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 6);
+  renderLoading(tbody, 5);
 
   const [notificacoes, leituras, contas] = await Promise.all([
     safeSelect('notificacoes', '*'),
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     supabaseClient.rpc('admin_listar_contas')
   ]);
 
-  if (notificacoes.error) return renderError(tbody, 6, notificacoes.error);
+  if (notificacoes.error) return renderError(tbody, 5, notificacoes.error);
 
   NOTIFICACOES = notificacoes.data;
   LEITURAS = leituras.data || [];
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   addHeaderAction('Nova notificação', abrirComposicao, {
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>'
-  }).className = 'btn btn-primary';
+  }).className = 'btn btn-neutro';
 
   moverControlesParaHeader();
 });
@@ -153,11 +153,8 @@ function render() {
     (b.fixada === true) - (a.fixada === true) ||
     new Date(b.created_at) - new Date(a.created_at));
 
-  document.getElementById('contagem-notificacoes').textContent =
-    `${formatNumber(lista.length)} ${lista.length === 1 ? 'notificação' : 'notificações'}`;
-
   if (!lista.length) {
-    renderEmpty(tbody, 6, 'Nenhuma notificação encontrada',
+    renderEmpty(tbody, 5, 'Nenhuma notificação encontrada',
       NOTIFICACOES.length
         ? 'Ajuste a busca ou o filtro acima.'
         : 'Clique em "Nova notificação" no cabeçalho para enviar a primeira.');
@@ -166,9 +163,6 @@ function render() {
 
   tbody.innerHTML = lista.map(n => {
     const views = LEITURAS.filter(l => l.notificacao_id === n.id).length;
-    const perfil = n.destino === 'individual'
-      ? `Individual <span class="cell-muted">· ${escapeHtml(nomeDaConta(n.destinatario_id))}</span>`
-      : escapeHtml(PUBLICOS[n.destino] || n.destino);
 
     return `
       <tr data-id="${n.id}">
@@ -178,7 +172,6 @@ function render() {
           ${TIPOS[n.tipo] ? `<span class="artigo-situacao">— ${escapeHtml(TIPOS[n.tipo])}</span>` : ''}
         </td>
         <td class="cell-muted">${escapeHtml(resumo(n.mensagem))}</td>
-        <td class="cell-muted">${perfil}</td>
         <td class="cell-muted">${agendada(n)
           ? `${badge('Agendada', 'badge-warning')} ${escapeHtml(formatDateTime(n.created_at))}`
           : escapeHtml(formatDate(n.created_at))}</td>

@@ -7687,3 +7687,12 @@ body[data-theme="dark"] .dashboard-help-header .dashboard-help-title { color: #F
 .dashboard-help-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 768px) { .dashboard-help-grid { grid-template-columns: 1fr; } }
 a.guide-link { display: block; text-decoration: none; }
+
+/* Lápis da imagem de perfil/capa: fundo branco translúcido (com um leve
+   desfoque) e traço mais grosso. */
+.profile-imagem-editar {
+  background: rgba(255, 255, 255, 0.72); border-color: rgba(228, 228, 231, 0.7);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.profile-imagem-editar svg { width: 16px; height: 16px; }
+body[data-theme="dark"] .profile-imagem-editar { background: rgba(37, 37, 37, 0.7) !important; }

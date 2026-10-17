@@ -8055,3 +8055,12 @@ body[data-theme="dark"] #products-grid .product-card,
 body[data-theme="dark"] #leads-table-card,
 body[data-theme="dark"] .dashboard-panel-section > .dash-card,
 body[data-theme="dark"] .dashboard-help-card { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important; }
+
+/* Com a sombra, o contorno dessas caixas fica mais claro. */
+html body .agenda-timeline-panel:not(#love-h-a),
+html body .agenda-mini-calendar:not(#love-h-a),
+html body .agenda-notifications-card:not(#love-h-a),
+html body #products-grid .product-card:not(#love-h-a),
+html body #leads-table-card:not(#love-h-a),
+html body .dashboard-panel-section > .dash-card:not(#love-h-a),
+html body .dashboard-help-card:not(#love-h-a) { border-color: #F0F0F2 !important; }

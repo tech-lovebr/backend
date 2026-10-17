@@ -11207,42 +11207,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 9.4 Autocomplete de Locais Parceiros Admin — reaproveitado também na
   // sub-seção "Informações" (editor-data-location), por isso em função.
+  // A lista mostra só os espaços cadastrados no Hub (serviços da categoria
+  // Espaços para Locação). Sem nenhum, a lista não abre e o nome digitado
+  // fica como um local qualquer (a Home mostra o endereço).
   function wirePartnerVenueAutocomplete(input, dropdown, opts = {}) {
     const { addressInput, numberInput, complementInput } = opts;
     if (!input || !dropdown) return;
+    let espacos = [];
 
-    input.addEventListener('focus', () => {
-      dropdown.classList.remove('hidden');
-    });
+    const desenhar = () => {
+      const termo = normalizarTexto(input.value);
+      const filtrados = espacos.filter(({ empresa, servico }) => !termo
+        || normalizarTexto(empresa.name).includes(termo) || normalizarTexto(servico.name).includes(termo));
+      dropdown.innerHTML = filtrados.slice(0, 8).map(({ empresa, servico }, i) => {
+        const v = (servico.extra && servico.extra.venue) || {};
+        const linha2 = [[v.street, v.number].filter(Boolean).join(', '), v.city].filter(Boolean).join(' - ');
+        const titulo = normalizarTexto(servico.name) === normalizarTexto(empresa.name) ? empresa.name : `${empresa.name} — ${servico.name}`;
+        return `
+          <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-indice="${i}">
+            <div>
+              <p class="font-bold text-zinc-800">${escaparHtml(titulo)}</p>
+              ${linha2 ? `<p class="text-[11px] text-zinc-400">${escaparHtml(linha2)}</p>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+      dropdown.classList.toggle('hidden', !filtrados.length);
+      dropdown.querySelectorAll('.venue-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          const { empresa, servico } = filtrados[Number(opt.dataset.indice)];
+          const v = (servico.extra && servico.extra.venue) || {};
+          input.value = empresa.name;
+          if (addressInput) addressInput.value = v.street || '';
+          if (numberInput) numberInput.value = v.number || '';
+          if (complementInput) complementInput.value = v.complement || '';
+          dropdown.classList.add('hidden');
+          [addressInput, numberInput, complementInput].forEach(el => el && el.dispatchEvent(new Event('input', { bubbles: true })));
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          dropdown.classList.add('hidden');
+        });
+      });
+    };
 
+    const carregarEDesenhar = async () => {
+      let pronta = false;
+      try { pronta = b2bFornecedoresCarregados; } catch (e) { pronta = false; }
+      if (!pronta && window.loveClienteSession) {
+        try { await carregarFornecedoresVitrine(); } catch (e) { /* sem vitrine: lista vazia */ }
+      }
+      espacos = espacosCadastradosNoHub();
+      if (document.activeElement === input) desenhar();
+    };
+
+    input.addEventListener('focus', carregarEDesenhar);
     input.addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      const options = dropdown.querySelectorAll('.venue-option');
-      let hasMatch = false;
-      options.forEach(opt => {
-        const matches = opt.textContent.toLowerCase().includes(term);
-        opt.style.display = matches ? 'flex' : 'none';
-        if (matches) hasMatch = true;
-      });
-      dropdown.classList.toggle('hidden', !hasMatch && term.length > 0);
-    });
-
-    dropdown.querySelectorAll('.venue-option').forEach(opt => {
-      opt.addEventListener('click', () => {
-        const venue = opt.getAttribute('data-venue');
-        const addr = opt.getAttribute('data-addr');
-        const num = opt.getAttribute('data-num');
-        const comp = opt.getAttribute('data-comp');
-
-        input.value = venue || addr;
-        if (addressInput) addressInput.value = addr || '';
-        if (numberInput) numberInput.value = num || '';
-        if (complementInput) complementInput.value = comp || '';
-
-        dropdown.classList.add('hidden');
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        showToast(`Espaço parceiro selecionado: ${venue}`, '📍');
-      });
+      if (!e.isTrusted) return; // eventos disparados ao escolher uma opção
+      desenhar();
     });
 
     document.addEventListener('click', (e) => {
@@ -13463,6 +13482,22 @@ document.addEventListener('DOMContentLoaded', () => {
    *    endereço sem cidade/UF ("Avenida X, 1200, Jardim Y").
    * @returns {string}
    */
+  // Categorias de espaço no Hub (o nome atual e os antigos, que o Hub
+  // converte para "Espaços para Locação" — B2B/js/produtos.js).
+  const CATEGORIAS_DE_ESPACO = ['espacos para locacao', 'locacao de espaco', 'espacos & locacoes', 'espaco de locacao'];
+
+  /** Serviços da vitrine que são espaços para locação, com a empresa dona.
+   * @returns {{ empresa: any, servico: any }[]} */
+  function espacosCadastradosNoHub() {
+    let lista = [];
+    try { if (b2bFornecedoresCarregados) lista = b2bFornecedores || []; } catch (e) { lista = []; }
+    const out = [];
+    lista.forEach(f => (f.services || []).forEach(s => {
+      if (s && CATEGORIAS_DE_ESPACO.includes(normalizarTexto(s.category))) out.push({ empresa: f, servico: s });
+    }));
+    return out;
+  }
+
   function localDoEventoParaHome() {
     const ev = getActiveEvent();
     if (!ev) return '';
@@ -13472,20 +13507,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const nomeN = normalizarTexto(nome);
     const ruaN = normalizarTexto(d.street || endereco.split(',')[0]);
     const numeroN = normalizarTexto(d.number);
-    let fornecedores = [];
-    // A vitrine é declarada mais abaixo no arquivo: durante a carga inicial ela
-    // ainda não existe (ler antes dá erro) — aí só usa o endereço.
-    try { if (b2bFornecedoresCarregados) fornecedores = b2bFornecedores || []; } catch (e) { fornecedores = []; }
-    for (const f of fornecedores) {
-      const espacos = (f.services || []).filter(s => s && s.extra && s.extra.venue);
-      if (!espacos.length) continue; // só fornecedor que cadastrou um espaço
-      if (nomeN && normalizarTexto(f.name) === nomeN) return f.name;
-      for (const s of espacos) {
-        if (nomeN && normalizarTexto(s.name) === nomeN) return s.name;
-        const v = s.extra.venue;
-        const vRua = normalizarTexto(v.street);
-        if (ruaN && vRua && ruaN === vRua && (!numeroN || !v.number || normalizarTexto(v.number) === numeroN)) return f.name;
-      }
+    // Só conta como lugar "oficial" um serviço da categoria Espaços para
+    // Locação no Hub: pelo nome (da empresa ou do serviço) ou pelo endereço.
+    for (const { empresa, servico } of espacosCadastradosNoHub()) {
+      if (nomeN && (normalizarTexto(empresa.name) === nomeN || normalizarTexto(servico.name) === nomeN)) return empresa.name;
+      const v = (servico.extra && servico.extra.venue) || {};
+      const vRua = normalizarTexto(v.street);
+      if (ruaN && vRua && ruaN === vRua && (!numeroN || !v.number || normalizarTexto(v.number) === numeroN)) return empresa.name;
     }
     return endereco || nome;
   }

@@ -1312,25 +1312,7 @@
                       <input type="text" id="editor-data-location" autocomplete="off" placeholder="Buscar espaço" class="w-full text-sm p-3.5 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 font-bold">
 
                       <!-- Dropdown de Sugestões de Espaços Salvos -->
-                      <div id="editor-data-location-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1">
-                        <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-venue="Villa Bisutti - Espaço Jardim" data-addr="Av. Cidade Jardim, 1200 - São Paulo">
-                          <div>
-                            <p class="font-bold text-zinc-800">Villa Bisutti - Espaço Jardim</p>
-                            <p class="text-[11px] text-zinc-400">Av. Cidade Jardim, 1200 - São Paulo</p>
-                          </div>
-                        </div>
-                        <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-venue="Palácio dos Cedros" data-addr="Rua Bom Pastor, 798 - São Paulo">
-                          <div>
-                            <p class="font-bold text-zinc-800">Palácio dos Cedros</p>
-                            <p class="text-[11px] text-zinc-400">Rua Bom Pastor, 798 - São Paulo</p>
-                          </div>
-                        </div>
-                        <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-venue="Casa Quintal" data-addr="Av. Angélica, 2435 - São Paulo">
-                          <div>
-                            <p class="font-bold text-zinc-800">Casa Quintal</p>
-                            <p class="text-[11px] text-zinc-400">Av. Angélica, 2435 - São Paulo</p>
-                          </div>
-                        </div>
+                      <div id="editor-data-location-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1"><!-- Montado pelo app.js: só espaços da categoria "Espaços para Locação" cadastrados no Hub -->
                       </div>
                     </div>
 
@@ -2957,28 +2939,10 @@
                   </label>
 
                   <div class="relative">
-                    <input type="text" id="page-new-event-location-name" placeholder="Buscar espaço (ex: Villa Bisutti) ou digite o endereço" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium">
+                    <input type="text" id="page-new-event-location-name" placeholder="Buscar espaço ou digite o nome do local" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium">
 
                     <!-- Dropdown de Sugestões de Espaços Salvos -->
-                    <div id="dropdown-partner-venues" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1">
-                      <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-venue="Villa Bisutti - Espaço Jardim" data-addr="Av. Cidade Jardim, 1200" data-num="1200" data-comp="Jardim Europa">
-                        <div>
-                          <p class="font-bold text-zinc-800">Villa Bisutti - Espaço Jardim</p>
-                          <p class="text-[11px] text-zinc-400">Av. Cidade Jardim, 1200 - São Paulo</p>
-                        </div>
-                      </div>
-                      <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-venue="Palácio dos Cedros" data-addr="Rua Bom Pastor, 798" data-num="798" data-comp="Ipiranga">
-                        <div>
-                          <p class="font-bold text-zinc-800">Palácio dos Cedros</p>
-                          <p class="text-[11px] text-zinc-400">Rua Bom Pastor, 798 - São Paulo</p>
-                        </div>
-                      </div>
-                      <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-venue="Casa Quintal" data-addr="Av. Angélica, 2435" data-num="2435" data-comp="Higienópolis">
-                        <div>
-                          <p class="font-bold text-zinc-800">Casa Quintal</p>
-                          <p class="text-[11px] text-zinc-400">Av. Angélica, 2435 - São Paulo</p>
-                        </div>
-                      </div>
+                    <div id="dropdown-partner-venues" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1"><!-- Montado pelo app.js: só espaços da categoria "Espaços para Locação" cadastrados no Hub -->
                     </div>
                   </div>
 
@@ -4607,7 +4571,7 @@
           <div class="p-[1.5px] rounded-2xl bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 shadow-xs focus-within:shadow-md transition-all">
             <div class="bg-white rounded-[14px] px-4 py-3 text-left">
               <label for="modal-venue-input" class="block text-[11px] font-bold text-zinc-800 tracking-tight">Local do Evento ou Destino</label>
-              <input type="text" id="modal-venue-input" placeholder="Ex: Villa Bisutti, São Paulo - SP" class="w-full text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none bg-transparent font-medium mt-0.5">
+              <input type="text" id="modal-venue-input" placeholder="Ex.: nome do espaço, cidade - UF" class="w-full text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none bg-transparent font-medium mt-0.5">
             </div>
           </div>
 
@@ -5518,7 +5482,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261016_localhome"></script>
+  <script src="js/app.js?v=20261016_espacoshub"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261015_checkoutbranco"></script>
 </body>

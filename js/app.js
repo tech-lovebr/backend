@@ -2135,10 +2135,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (saved.includes(taskId)) return true;
     } catch (e) {}
 
-    // Avaliação automática de marcos alcançados pela plataforma no evento
+    // Passos fixos (não vêm mais do Admin): cada um é riscado sozinho quando
+    // a pessoa faz a ação na plataforma — além do registro acima, confere os
+    // dados do próprio evento.
     switch (taskId) {
-      case 'vendors':
-        return Boolean(activeEvent.vendorsFavorited || (activeEvent.fornecedores && activeEvent.fornecedores.length > 0));
+      case 'vendors': {
+        // Primeiro serviço favoritado no Explorar.
+        let favoritos = 0;
+        try { favoritos = b2bFavoritosIds.size; } catch (e) { favoritos = 0; } // ainda não carregou
+        return favoritos > 0;
+      }
       case 'budget':
         return Boolean(
           activeEvent.budgetConfigured || 
@@ -2148,11 +2154,15 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'savethedate':
         return Boolean(activeEvent.saveTheDateChosen || activeEvent.hasSaveTheDate);
       case 'registry':
-        return Boolean(activeEvent.registryCompleted || activeEvent.presentesRecebidos > 50);
+        // Primeiro presente na lista de presentes.
+        return (activeEvent.giftList || []).length > 0;
       case 'website':
-        return Boolean(activeEvent.sitePersonalizado || activeEvent.isPublished);
+        // Primeira edição em Aparência (construtor do convite) — registrada
+        // pelo site-builder.js ao mexer no convite.
+        return Boolean(activeEvent.sitePersonalizado);
       case 'guests':
-        return Boolean(activeEvent.guestsImported || activeEvent.convidadosConfirmados > 200);
+        // Primeiro convidado cadastrado.
+        return (activeEvent.guests || []).length > 0;
       default:
         return false;
     }
@@ -2164,10 +2174,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const key = `love_quick_start_achieved_${activeEvent.id}`;
       const saved = JSON.parse(localStorage.getItem(key) || '[]');
-      if (!saved.includes(taskId)) {
-        saved.push(taskId);
-        localStorage.setItem(key, JSON.stringify(saved));
-      }
+      if (saved.includes(taskId)) return; // já riscado
+      saved.push(taskId);
+      localStorage.setItem(key, JSON.stringify(saved));
     } catch (e) {}
     renderQuickStartChecklist();
   };
@@ -6002,6 +6011,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const { data, error } = await supabaseClient.from('convidados').insert(linha).select('id').single();
     if (error) { console.error('Erro ao criar convidado:', error); return { error }; }
+    window.markPlatformTaskAchieved?.('guests');
     if (activeDrawerGuestId === guest.id) activeDrawerGuestId = data.id;
     guest.id = data.id;
     return { error: null };
@@ -6036,6 +6046,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const { data, error } = await supabaseClient.from('presentes').insert(linha).select('id').single();
     if (error) { console.error('Erro ao criar presente:', error); return { error }; }
+    window.markPlatformTaskAchieved?.('registry');
     if (editingGiftId === gift.id) editingGiftId = data.id;
     gift.id = data.id;
     return { error: null };
@@ -13494,6 +13505,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const virouFavorito = !b2bFavoritosIds.has(servicoId);
     if (virouFavorito) b2bFavoritosIds.add(servicoId); else b2bFavoritosIds.delete(servicoId);
+    // Guia de primeiros passos: o primeiro favorito risca "Favoritar primeiros fornecedores".
+    if (virouFavorito) window.markPlatformTaskAchieved?.('vendors');
     if (item) item.isFavorite = virouFavorito;
 
     const pedido = virouFavorito

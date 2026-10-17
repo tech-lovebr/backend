@@ -702,6 +702,9 @@ function pushHistory() {
   historyIndex = historyStack.length - 1;
   hasUnsavedChanges = true;
   updateHistoryButtons();
+  // Guia de primeiros passos (plataforma): a primeira edição em Aparência
+  // risca "Personalizar site do evento".
+  if (typeof window.markPlatformTaskAchieved === 'function') window.markPlatformTaskAchieved('website');
 }
 
 function undo() {

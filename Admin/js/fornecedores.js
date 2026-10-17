@@ -8,6 +8,7 @@ let METRICAS = new Map();
 
 /** Contas marcadas na tabela, para as ações em massa. */
 let SELECIONADAS = new Set();
+let ORDEM_CONTRATOS = null; // null | 'desc' | 'asc'
 
 let ORDEM_CADASTRO = null;
 
@@ -27,9 +28,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     safeSelect('fornecedores', '*'),
     safeSelect('wallet_transactions', 'fornecedor_id, type, amount'),
     safeSelect('conversations', 'fornecedor_id, cliente_id, last_message_at'),
-    safeSelect('leads', 'fornecedor_id, status, value'),
+    safeSelect('leads', 'id, fornecedor_id, status, value, cliente_id'),
     safeSelect('products', 'fornecedor_id, active'),
-    safeSelect('contracts', 'fornecedor_id, valor_total, valor_pago, status'),
+    safeSelect('contracts', 'fornecedor_id, valor_total, valor_pago, status, lead_id'),
     safeSelect('payment_links', 'fornecedor_id, amount, status')
   ]);
 
@@ -50,6 +51,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   ligarSelecao();
   render();
 
+  document.getElementById('ordenar-contratos')?.addEventListener('click', () => {
+    ORDEM_CONTRATOS = ORDEM_CONTRATOS === 'desc' ? 'asc' : 'desc';
+    render();
+  });
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-plano').addEventListener('change', render);
   document.getElementById('filtro-categoria').addEventListener('change', render);
@@ -141,7 +146,7 @@ function montarMetricas({ carteira, conversas, leads, produtos, contratos, links
     if (!porFornecedor.has(id)) {
       porFornecedor.set(id, {
         entradas: 0, saidas: 0, contatos: 0, leads: 0, leadsFechados: 0,
-        produtos: 0, produtosAtivos: 0, contratos: 0, contratosAtivos: 0,
+        produtos: 0, produtosAtivos: 0, contratos: 0, contratosAtivos: 0, contratosPlataforma: 0,
         valorContratos: 0, valorContratosAtivos: 0, valorRecebido: 0, tpv: 0
       });
     }
@@ -168,6 +173,10 @@ function montarMetricas({ carteira, conversas, leads, produtos, contratos, links
     if (p.active) b.produtosAtivos += 1;
   });
 
+  // Cliente da plataforma = o contrato nasceu de um contato (lead) ligado a
+  // uma conta de anfitrião.
+  const leadDaPlataforma = new Set((leads || []).filter(l => l.cliente_id).map(l => l.id));
+
   contratos.forEach(c => {
     const b = bucket(c.fornecedor_id);
     const total = Number(c.valor_total) || 0;
@@ -178,6 +187,7 @@ function montarMetricas({ carteira, conversas, leads, produtos, contratos, links
     if (c.status !== 'quitado') {
       b.contratosAtivos += 1;
       b.valorContratosAtivos += total;
+      if (c.lead_id && leadDaPlataforma.has(c.lead_id)) b.contratosPlataforma += 1;
     }
   });
 
@@ -256,8 +266,15 @@ function filtrar() {
 function render() {
   atualizarBadgeDeFiltros();
   const tbody = document.getElementById('tbody');
-  const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
+  // Clique em "Contratos": maior para menor; de novo, menor para maior;
+  // sem ordenação, os mais recentes primeiro.
+  const contratosDe = f => metricas(f.id).contratosPlataforma;
+  const lista = filtrar().sort((a, b) =>
+    (ORDEM_CONTRATOS === 'desc' ? contratosDe(b) - contratosDe(a)
+      : ORDEM_CONTRATOS === 'asc' ? contratosDe(a) - contratosDe(b) : 0) ||
+    new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  const th = document.getElementById('ordenar-contratos');
+  if (th) th.dataset.ordem = ORDEM_CONTRATOS || '';
 
   if (!lista.length) {
     renderBarraDeSelecao();
@@ -281,7 +298,7 @@ function render() {
       <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ')}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
-      <td class="col-numero ${f.score ? 'cell-strong' : 'cell-muted'}">${f.score ? formatNumber(f.score) : '—'}</td>
+      <td class="col-numero">${formatNumber(metricas(f.id).contratosPlataforma)}</td>
       <td class="col-acoes">${botaoVerMais(f.id)}</td>
     </tr>`;
   }).join('');

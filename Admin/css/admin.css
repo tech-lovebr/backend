@@ -3390,3 +3390,10 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 /* Três indicadores ocupando a largura toda. */
 .kpi-grid--tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 760px) { .kpi-grid--tres { grid-template-columns: 1fr; } }
+
+/* Cabeçalho de coluna que ordena ao clicar (a seta mostra o sentido). */
+.th-ordenar { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: .25rem; }
+.th-ordenar:hover { color: var(--primary-color); }
+.th-seta::after { content: '↕'; font-size: .75rem; color: var(--text-soft); }
+.th-ordenar[data-ordem="desc"] .th-seta::after { content: '↓'; color: var(--text); }
+.th-ordenar[data-ordem="asc"] .th-seta::after { content: '↑'; color: var(--text); }

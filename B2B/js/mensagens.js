@@ -130,12 +130,13 @@ document.addEventListener('DOMContentLoaded', initB2BMensagens);
 async function initB2BMensagens() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) return; // shell.js já redireciona pro login nesse caso
+  window.b2bSession = window.b2bSession || session;
 
   await loadB2BConversations();
   // "Acessar chat" do painel (chat?suporte=1) abre direto o Suporte Love;
   // senão, a primeira conversa com cliente (ou o suporte, se não houver).
   const abrirSuporte = new URLSearchParams(location.search).has('suporte');
-  const primeira = b2bConversations.find(c => !c.isSuporte) || b2bConversations[0];
+  const primeira = b2bConversations.find(c => !c.isSuporte && conversaVisivel(c)) || b2bConversations[0];
   activeConvId = abrirSuporte ? SUPORTE_CONV_ID : (primeira ? primeira.id : null);
   if (abrirSuporte) history.replaceState(null, '', location.pathname);
 
@@ -176,6 +177,7 @@ async function loadB2BConversations() {
       category: '',
       avatar: (row.cliente && row.cliente.avatar_url) || null,
       online: false,
+      lastAt: (last && last.created_at) || row.last_message_at || null,
       lastMessage: last ? (last.text || (last.attachment_url ? '[Anexo]' : '')) : 'Nova conversa',
       time: last ? formatB2BMsgTime(last.created_at) : '',
       unread: msgs.filter(m => m.sender_role === 'cliente' && !m.read_at).length,
@@ -254,6 +256,87 @@ function avisarQueEstouDigitando() {
   canal.send({ type: 'broadcast', event: 'digitando', payload: { papel: 'fornecedor' } });
 }
 
+/* ---------------- Fixar / excluir conversa (menu ⋯ da lista) ----------------
+   Fixada: fica no topo (logo abaixo do Suporte Love). Excluída: some da sua
+   lista e volta sozinha se chegar mensagem nova. Não apaga nada do outro
+   lado. Fica guardado neste navegador, por conta. */
+function chaveConversas(tipo) {
+  const uid = (window.b2bSession && window.b2bSession.user && window.b2bSession.user.id) || 'anon';
+  return `b2b-conversas-${tipo}-${uid}`;
+}
+function lerLista(tipo, padrao) {
+  try { return JSON.parse(localStorage.getItem(chaveConversas(tipo)) || 'null') || padrao; } catch (e) { return padrao; }
+}
+function gravarLista(tipo, valor) {
+  try { localStorage.setItem(chaveConversas(tipo), JSON.stringify(valor)); } catch (e) { /* sem armazenamento */ }
+}
+const conversasFixadas = () => lerLista('fixadas', []);
+const conversasExcluidas = () => lerLista('excluidas', {});
+
+function conversaVisivel(conv) {
+  const excluidaEm = conversasExcluidas()[conv.id];
+  return !excluidaEm || (conv.lastAt && new Date(conv.lastAt) > new Date(excluidaEm));
+}
+
+function alternarFixada(convId) {
+  const fixadas = conversasFixadas();
+  const i = fixadas.indexOf(convId);
+  if (i > -1) fixadas.splice(i, 1); else fixadas.unshift(convId);
+  gravarLista('fixadas', fixadas);
+  renderContactsList(document.getElementById('chat-search-input')?.value || '');
+}
+
+function excluirConversaDaLista(convId) {
+  const excluidas = conversasExcluidas();
+  excluidas[convId] = new Date().toISOString();
+  gravarLista('excluidas', excluidas);
+  gravarLista('fixadas', conversasFixadas().filter(id => id !== convId));
+  if (activeConvId === convId) {
+    const proxima = b2bConversations.find(c => c.id !== convId && (c.isSuporte || conversaVisivel(c)) && !c.isSuporte)
+      || b2bConversations.find(c => c.isSuporte);
+    activeConvId = proxima ? proxima.id : null;
+    renderActiveChat();
+  }
+  renderContactsList(document.getElementById('chat-search-input')?.value || '');
+}
+
+function fecharMenuConversa() {
+  document.querySelector('.conv-menu')?.remove();
+  document.querySelectorAll('.conv-item.menu-aberto').forEach(el => el.classList.remove('menu-aberto'));
+}
+
+function abrirMenuConversa(btn, conv) {
+  fecharMenuConversa();
+  const fixada = conversasFixadas().includes(conv.id);
+  const menu = document.createElement('div');
+  menu.className = 'conv-menu';
+  menu.setAttribute('role', 'menu');
+  menu.innerHTML = `
+    <button type="button" role="menuitem" data-conv-fixar>${fixada ? 'Desafixar' : 'Fixar'}</button>
+    <button type="button" role="menuitem" data-conv-excluir class="conv-menu-perigo">Excluir</button>`;
+  document.body.appendChild(menu);
+  const r = btn.getBoundingClientRect();
+  menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
+  menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
+  btn.closest('.conv-item')?.classList.add('menu-aberto');
+  menu.querySelector('[data-conv-fixar]').addEventListener('click', () => { fecharMenuConversa(); alternarFixada(conv.id); });
+  menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
+    fecharMenuConversa();
+    const excluir = () => excluirConversaDaLista(conv.id);
+    if (typeof confirmarNoHub === 'function') {
+      confirmarNoHub({
+        titulo: 'Excluir conversa?',
+        texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
+        botao: 'Excluir', perigo: true, aoConfirmar: excluir
+      });
+    } else excluir();
+  });
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.conv-menu') && !e.target.closest('[data-conv-menu]')) fecharMenuConversa();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
+
 function formatB2BMsgTime(iso) {
   const d = new Date(iso);
   const now = new Date();
@@ -263,7 +346,7 @@ function formatB2BMsgTime(iso) {
   const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   if (isToday) return hhmm;
   if (isYesterday) return `Ontem ${hhmm}`;
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }); // ex.: 18/05
 }
 
 function subscribeToB2BMessages() {
@@ -346,7 +429,14 @@ function renderContactsList(searchQuery = '') {
   }
 
   const q = searchQuery.toLowerCase().trim();
-  const filtered = b2bConversations.filter(c =>
+  const fixadas = conversasFixadas();
+  const ordem = c => (c.isSuporte ? -2 : (fixadas.includes(c.id) ? -1 : 0));
+  const filtered = b2bConversations
+    .filter(c => c.isSuporte || conversaVisivel(c))
+    .map((c, i) => ({ c, i }))
+    .sort((a, b) => (ordem(a.c) - ordem(b.c)) || (ordem(a.c) === -1 ? fixadas.indexOf(a.c.id) - fixadas.indexOf(b.c.id) : a.i - b.i))
+    .map(x => x.c)
+    .filter(c =>
     c.name.toLowerCase().includes(q) ||
     c.category.toLowerCase().includes(q) ||
     c.lastMessage.toLowerCase().includes(q)
@@ -372,7 +462,11 @@ function renderContactsList(searchQuery = '') {
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-1 mb-0.5">
           <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
-          <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
+          <span class="conv-item-canto">
+            ${fixadas.includes(conv.id) ? '<svg class="conv-item-fixada" viewBox="0 0 24 24" fill="currentColor" aria-label="Fixada"><path d="M15 3.5a1 1 0 0 1 1.7-.7l4.5 4.5a1 1 0 0 1-.7 1.7h-1.3l-3.6 3.6.4 3.6a1 1 0 0 1-1.7.8L11 13.7 5.7 19 5 19l0-.7L10.3 13 6.9 9.6a1 1 0 0 1 .8-1.7l3.6.4L15 4.7V3.5Z"/></svg>' : ''}
+            <span class="conv-item-hora text-[10px] text-zinc-400">${conv.time}</span>
+            ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu title="Mais opções" aria-label="Mais opções da conversa"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>`}
+          </span>
         </div>
         <div class="flex items-center justify-between gap-2">
           ${outroEstaDigitando(conv)
@@ -382,6 +476,12 @@ function renderContactsList(searchQuery = '') {
         </div>
       </div>
     `;
+
+    item.querySelector('[data-conv-menu]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (document.querySelector('.conv-menu') && item.classList.contains('menu-aberto')) { fecharMenuConversa(); return; }
+      abrirMenuConversa(e.currentTarget, conv);
+    });
 
     item.addEventListener('click', () => {
       activeConvId = conv.id;

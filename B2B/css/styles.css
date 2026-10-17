@@ -8086,3 +8086,8 @@ html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#lo
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs { background: #1F1F1F !important; border-bottom-color: #404040 !important; }
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab { background: #1F1F1F !important; color: #A1A1AA !important; border-color: #404040 !important; }
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active { background: #2A2A2A !important; color: #FFFFFF !important; }
+
+/* Editor de site: sombra um pouco mais forte em volta do site editado,
+   para ele se destacar do fundo. */
+html body .builder-canvas-frame:not(#love-h-a) { box-shadow: 0 2px 6px rgba(16, 24, 40, 0.10), 0 8px 24px rgba(16, 24, 40, 0.08); }
+body[data-theme="dark"] .builder-canvas-frame { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.35) !important; }

@@ -7888,3 +7888,7 @@ html body .btn-primary.btn-comentar:not(#love-h-a) {
 }
 html body .btn-primary.btn-comentar:not(#love-h-a):hover { background: #ECECEE !important; border-color: #D4D4D8 !important; }
 body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Leads: quantidade selecionada ao lado de "Nome" no cabeçalho. */
+.leads-qtd-selecionados { font-weight: 600; color: #181D24; white-space: pre; }
+.tabela-lixeira-qtd:empty { display: none; }

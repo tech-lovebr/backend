@@ -314,10 +314,13 @@ function montarLixeiraDeLeads() {
 function atualizarLixeiraDeLeads() {
   const n = leadsSelecionados.size;
   const btn = document.getElementById('leads-lixeira-btn');
+  const qtdNome = document.getElementById('leads-qtd-selecionados');
+  if (qtdNome) qtdNome.textContent = n ? ` (${n})` : '';
   if (btn) {
     btn.hidden = n === 0;
+    // A quantidade selecionada fica ao lado de "Nome", não na lixeira.
     const qtd = document.getElementById('leads-lixeira-qtd');
-    if (qtd) qtd.textContent = `(${n})`;
+    if (qtd) qtd.textContent = '';
     const texto = `Excluir ${n} ${n === 1 ? 'lead selecionado' : 'leads selecionados'}`;
     btn.title = texto;
     btn.setAttribute('aria-label', texto);

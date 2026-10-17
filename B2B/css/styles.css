@@ -7608,3 +7608,7 @@ body[data-theme="dark"] .product-pacote-item { background: #252525 !important; b
 .info-tooltip-wrap--esq .info-tooltip-bubble { right: auto; left: -6px; width: auto; white-space: nowrap; }
 .info-tooltip-wrap--esq .info-tooltip-bubble::after { right: auto; left: 10px; }
 .product-sku-input { font-family: inherit; }
+
+/* Selo "Ativo": só a bolinha e o texto, sem a caixinha de fundo. */
+.status-badge.status-ativo { background: transparent; border: none; padding-left: 0; padding-right: 0; }
+body[data-theme="dark"] .status-badge.status-ativo { background: transparent !important; }

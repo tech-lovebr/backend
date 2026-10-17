@@ -7731,3 +7731,5 @@ html body #builder-elements-panel .builder-panel-tab.builder-panel-tab-rotulo:no
 /* Aparência › Elementos: as caixas com o mesmo respiro dos dois lados,
    alinhadas com a caixa "Elementos" de cima (0,65rem à esquerda e à direita). */
 html body #builder-elements-panel .builder-panel-tab-body:not(#love-h-a) { padding-left: 0.65rem; padding-right: 0.65rem; scrollbar-width: thin; }
+/* Orçamento: respiro padrão (1,5rem) entre as duas caixas de cima e a tabela. */
+html body #wallet-sub-budget > .budget-table-full-bleed:not(#love-h-a) { margin-top: 1.5rem !important; }

@@ -4216,6 +4216,8 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
   text-align: center;
   font-size: 0.75rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: #71717A;
   background: none;
   border: none;

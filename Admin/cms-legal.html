@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=69">
+  <link rel="stylesheet" href="css/admin.css?v=70">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -41,10 +41,14 @@
       <header class="admin-topbar" id="admin-topbar"></header>
       <main class="admin-content">
 
-        <nav class="conteudo-tabs" id="abas-documento" aria-label="Documento">
-          <button type="button" class="conteudo-tab is-active" data-doc="termos">Termos de uso</button>
-          <button type="button" class="conteudo-tab" data-doc="privacidade">Política de privacidade</button>
-        </nav>
+        <!-- Abas e o Salvar na mesma linha, com o botão à direita. -->
+        <div class="legal-abas">
+          <nav class="conteudo-tabs" id="abas-documento" aria-label="Documento">
+            <button type="button" class="conteudo-tab is-active" data-doc="termos">Termos de uso</button>
+            <button type="button" class="conteudo-tab" data-doc="privacidade">Política de privacidade</button>
+          </nav>
+          <button type="button" class="btn btn-neutro btn-sm" data-salvar-legal>Salvar alterações</button>
+        </div>
 
         <p class="legal-ultima-edicao">
           Última edição: <strong id="doc-atualizado">—</strong>
@@ -52,11 +56,15 @@
 
         <section class="card editor-card" id="editor-host"></section>
 
+        <div class="legal-rodape">
+          <button type="button" class="btn btn-primary" data-salvar-legal>Salvar alterações</button>
+        </div>
+
       </main>
     </div>
   </div>
 
   <script src="js/editor-rico.js"></script>
-  <script src="js/cms-legal.js"></script>
+  <script src="js/cms-legal.js?v=2"></script>
 </body>
 </html>

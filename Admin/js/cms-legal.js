@@ -9,7 +9,7 @@
 let DOCUMENTOS = new Map();
 let ATUAL = 'termos';
 let EDITOR = null;
-let BOTAO_SALVAR = null;
+let BOTOES_SALVAR = [];
 
 /* O que o editor mostrava quando o documento acabou de carregar. A
    comparação é contra isto, e não contra o HTML gravado: o editor
@@ -38,10 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   ligarAbas();
 
-  /* O cabeçalho da página mostra o nome do documento aberto, então é dele
-     que o Salvar faz parte — e não da linha das abas, que é só o seletor. */
-  BOTAO_SALVAR = addHeaderAction('Atualizar', salvar, { icone: null });
-  BOTAO_SALVAR.className = 'btn btn-primary';
+  // Dois "Salvar alterações": na linha das abas (à direita) e no fim do
+  // editor, para não precisar rolar de volta ao topo num documento longo.
+  BOTOES_SALVAR = [...document.querySelectorAll('[data-salvar-legal]')];
+  BOTOES_SALVAR.forEach(b => b.addEventListener('click', salvar));
 
   mostrar('termos');
 });
@@ -79,8 +79,7 @@ function mostrar(slug) {
 }
 
 async function salvar() {
-  const botao = BOTAO_SALVAR;
-  botao.disabled = true;
+  BOTOES_SALVAR.forEach(b => { b.disabled = true; });
 
   const linha = {
     conteudo: EDITOR.html(),
@@ -94,7 +93,7 @@ async function salvar() {
     .select()
     .single();
 
-  botao.disabled = false;
+  BOTOES_SALVAR.forEach(b => { b.disabled = false; });
 
   if (error) {
     toast(`Não foi possível salvar: ${error.message}`);

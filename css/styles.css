@@ -7700,3 +7700,14 @@ html body button.meus-eventos-excluir:not(#love-h-a):hover { border-color: #DC26
    code, informações gerais). field-sizing faz isso sozinho nos navegadores
    novos; nos demais, o app.js ajusta a altura. */
 textarea.love-textarea-auto { resize: none !important; overflow: hidden; field-sizing: content; min-height: 4.5rem; }
+
+/* Prévia: botão de música exatamente como o do convite publicado — círculo
+   de 40px, contorno 1,5px preto, fundo branco (uma regra geral achatava a
+   altura e deixava o botão oval). */
+html body #live-preview-floating-music.musica-botao-previa:not(#love-h-a) {
+  width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important;
+  padding: 0 !important; box-sizing: border-box !important; flex: none !important;
+  border-radius: 50% !important; border: 1.5px solid #000000 !important; background: #FFFFFF !important; color: #000000 !important;
+}
+html body #live-preview-floating-music.hidden { display: none !important; }
+#live-preview-floating-music svg { stroke: #000000 !important; }

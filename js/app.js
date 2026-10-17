@@ -2859,26 +2859,14 @@ document.addEventListener('DOMContentLoaded', () => {
     widget.title = isMusicPlaying ? 'Pausar música' : 'Tocar música';
   }
 
+  // Prévia do editor: o botão de música só alterna o visual (tocando ×
+  // pausado), igual ao do convite publicado. Não toca som aqui dentro da
+  // plataforma — a música toca só no site publicado, no navegador do convidado.
   function toggleLiveMusic() {
-    const link = linkDaMusicaDaPrevia();
-    if (!link) return;
-
+    if (!linkDaMusicaDaPrevia()) return;
+    isMusicPlaying = !isMusicPlaying;
     const iframe = document.getElementById('youtube-audio-iframe');
-    const videoId = idDoVideoYoutube(link);
-
-    if (!isMusicPlaying) {
-      isMusicPlaying = true;
-      if (iframe && videoId) {
-        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&loop=1&playlist=${videoId}`;
-      }
-      showToast('Reproduzindo música do convite... 🎶', '✨');
-    } else {
-      isMusicPlaying = false;
-      if (iframe) {
-        iframe.src = '';
-      }
-      showToast('Música pausada.', '⏸️');
-    }
+    if (iframe && iframe.src) iframe.src = '';
     updateFloatingMusicWidget();
   }
 

@@ -7835,3 +7835,6 @@ html body #conv-list .conv-item.border-transparent { border-left: 4px solid #E4E
 html body #conv-list .conv-item.active { border-left-color: #181D24 !important; }
 body[data-theme="dark"] #conv-list .conv-item { border-left-color: #404040; }
 body[data-theme="dark"] #conv-list .conv-item.active { border-left-color: #FFFFFF !important; }
+
+/* Chat › lista de conversas: horário/data um pouco maior (12px), igual ao love.com.br. */
+html body #conv-list .conv-item-hora:not(#love-h-a) { font-size: 12px; }

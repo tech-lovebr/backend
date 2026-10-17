@@ -7842,3 +7842,7 @@ html body #conv-list .conv-item-hora:not(#love-h-a) { font-size: 12px; }
 /* Pop-up "Adicionar comando": "Salvar comando" já na cor da sidebar. */
 .comando-popup-acoes button + button { color: #181D24; }
 body[data-theme="dark"] .comando-popup-acoes button + button { color: #FFFFFF !important; }
+
+/* Drawer "Comandos rápidos": título fixo (sem o pontilhado de "editar" no hover). */
+#template-drawer-title { cursor: default; }
+#template-drawer-title:hover { text-decoration: none; }

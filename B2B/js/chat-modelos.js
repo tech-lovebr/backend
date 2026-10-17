@@ -134,7 +134,7 @@ function mostrarDrawerComandos() {
 }
 
 function mostrarListaComandos() {
-  document.getElementById('template-drawer-title').textContent = 'Meus comandos';
+  document.getElementById('template-drawer-title').textContent = 'Comandos rápidos';
   document.getElementById('template-list-view').hidden = false;
   document.getElementById('template-form-view').hidden = true;
   // Sem nenhum comando, o "Adicionar comando" fica no meio da tela (logo
@@ -150,7 +150,7 @@ function mostrarFormularioComando(texto, origem) {
   // Primeiro comando (lista vazia): continua "Meus comandos", só aparecem os
   // campos abaixo do aviso.
   const primeiroComando = origem === 'lista' && chatModelos.length === 0;
-  document.getElementById('template-drawer-title').textContent = primeiroComando ? 'Meus comandos' : 'Adicionar comando';
+  document.getElementById('template-drawer-title').textContent = primeiroComando ? 'Comandos rápidos' : 'Adicionar comando';
   document.getElementById('template-list-view').hidden = true;
   document.getElementById('template-form-view').hidden = false;
   document.getElementById('template-add-btn').hidden = true;
@@ -301,7 +301,7 @@ function renderMenuComandos() {
       `).join('')
     : `<p class="chat-command-empty">${chatModelos.length
         ? 'Nenhum comando com esse nome.'
-        : 'Você ainda não tem comandos. Crie em "Meus comandos", no topo do chat.'}</p>`;
+        : 'Você ainda não tem comandos. Crie em "Comandos rápidos", no raio ao lado da caixa de mensagem.'}</p>`;
   menu.querySelectorAll('[data-command-index]').forEach(btn => {
     btn.addEventListener('mousedown', (e) => e.preventDefault()); // não tira o foco do campo
     btn.addEventListener('click', () => usarComando(Number(btn.dataset.commandIndex)));

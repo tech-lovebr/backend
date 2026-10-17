@@ -518,7 +518,7 @@ function renderActiveChat() {
       : `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
   }
   const chatInput = document.getElementById('chat-input');
-  if (chatInput) chatInput.placeholder = activeConv.isSuporte ? 'Escreva uma mensagem para o suporte...' : 'Escreva uma mensagem para o cliente...';
+  if (chatInput) chatInput.placeholder = activeConv.isSuporte ? 'Escreva uma mensagem para o suporte...' : 'Digite / para ver comandos rápidos';
   document.getElementById('chat-form')?.classList.toggle('chat-form--suporte', !!activeConv.isSuporte);
   if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(activeConv.avatar, activeConv.name);
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';

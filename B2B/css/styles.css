@@ -7852,3 +7852,17 @@ html body .comando-popup-acoes button + button,
 html body .comando-popup-acoes button + button:hover { background: #181D24; color: #FFFFFF; border-left-color: #181D24; }
 html body .comando-popup-acoes button + button:hover { background: #10141A; }
 body[data-theme="dark"] .comando-popup-acoes button + button { background: #181D24 !important; color: #FFFFFF !important; }
+
+/* Comandos rápidos sem nenhum comando: caixa no meio com o aviso e o botão. */
+.comandos-vazio {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  margin: 2.5rem auto 0; max-width: 340px; padding: 2rem 1.5rem;
+  border: 1px solid #E4E4E7; border-radius: 10px; background: #FAFAFA;
+}
+.comandos-vazio[hidden] { display: none !important; }
+.comandos-vazio-icone { width: 40px; height: 40px; border-radius: 10px; background: #FFFFFF; border: 1px solid #E4E4E7; color: #52525B; display: flex; align-items: center; justify-content: center; }
+.comandos-vazio-icone svg { width: 18px; height: 18px; }
+.comandos-vazio-texto { font-size: 0.875rem; color: #71717A; margin: 0.9rem 0 1.25rem; }
+#template-drawer-footer[hidden], #template-drawer-cancel[hidden] { display: none !important; }
+body[data-theme="dark"] .comandos-vazio { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .comandos-vazio-icone { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }

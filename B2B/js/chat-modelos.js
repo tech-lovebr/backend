@@ -141,7 +141,9 @@ function mostrarListaComandos() {
   // abaixo do aviso), não no rodapé.
   document.getElementById('template-add-btn').hidden = chatModelos.length === 0;
   document.getElementById('template-save-btn').hidden = true;
-  document.getElementById('template-drawer-cancel').textContent = 'Fechar';
+  // Na lista não tem "Fechar" (já tem o X); sem comandos, o rodapé some.
+  document.getElementById('template-drawer-cancel').hidden = true;
+  document.getElementById('template-drawer-footer').hidden = chatModelos.length === 0;
   renderListaModelosDrawer();
 }
 
@@ -156,6 +158,8 @@ function mostrarFormularioComando(texto, origem) {
   document.getElementById('template-add-btn').hidden = true;
   document.getElementById('template-save-btn').hidden = false;
   document.getElementById('template-drawer-cancel').textContent = origem === 'lista' ? 'Voltar' : 'Cancelar';
+  document.getElementById('template-drawer-cancel').hidden = false;
+  document.getElementById('template-drawer-footer').hidden = false;
   document.getElementById('template-text').value = texto || '';
   document.getElementById('template-command').value = '';
   document.getElementById('template-error').hidden = true;
@@ -200,7 +204,7 @@ function renderListaModelosDrawer() {
   lista.querySelectorAll('[data-remove-template]').forEach(btn => {
     btn.addEventListener('click', async () => {
       await excluirModelo(btn.dataset.removeTemplate);
-      renderListaModelosDrawer();
+      mostrarListaComandos();
     });
   });
 }

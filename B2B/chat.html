@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=591">
+  <link rel="stylesheet" href="css/styles.css?v=592">
 </head>
 <body class="font-sans" data-page="chat">
 
@@ -172,8 +172,9 @@
         <div id="template-list" class="flex flex-col gap-2"></div>
         <!-- Primeira vez (nenhum comando): o botão fica aqui, e o formulário
              aparece abaixo ao clicar. -->
-        <div id="template-list-empty" class="py-6 flex flex-col items-center gap-3" hidden>
-          <p class="text-sm text-zinc-400">Você ainda não tem comandos.</p>
+        <div id="template-list-empty" class="comandos-vazio" hidden>
+          <span class="comandos-vazio-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H12L11 22l8.5-11.5H12L13 2Z"/></svg></span>
+          <p class="comandos-vazio-texto">Você ainda não tem comandos.</p>
           <button type="button" id="template-empty-add-btn" class="btn-primary">Adicionar comando</button>
         </div>
       </div>
@@ -194,7 +195,7 @@
         </div>
       </div>
     </div>
-    <div class="form-drawer-footer">
+    <div class="form-drawer-footer" id="template-drawer-footer">
       <button type="button" id="template-drawer-cancel" class="btn-secondary">Cancelar</button>
       <button type="button" id="template-add-btn" class="btn-primary">Adicionar comando</button>
       <button type="button" id="template-save-btn" class="btn-primary" hidden>Salvar comando</button>
@@ -202,6 +203,6 @@
   </aside>
 
   <script src="js/mensagens.js?v=28"></script>
-  <script src="js/chat-modelos.js?v=9"></script>
+  <script src="js/chat-modelos.js?v=10"></script>
 </body>
 </html>

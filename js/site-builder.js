@@ -4314,7 +4314,8 @@ function compartilharNoWhatsappDoComputador(avisar) {
       copiou = navigator.clipboard.write([new ClipboardItem({ 'image/png': imagem })]).then(() => true, () => false);
     } catch (e) { copiou = Promise.resolve(false); }
   }
-  window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+  // WhatsApp Web da própria pessoa, com a mensagem já escrita.
+  window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(texto), '_blank', 'noopener');
   avisar('Preparando a imagem…');
   return copiou.then(async (ok) => {
     if (ok) { avisar('Imagem copiada. Na conversa do WhatsApp, cole com Ctrl+V — o texto já está lá.'); return true; }

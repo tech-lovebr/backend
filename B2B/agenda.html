@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=600">
+  <link rel="stylesheet" href="css/styles.css?v=601">
 </head>
 <body class="font-sans" data-page="agenda">
   <div class="b2b-shell">
@@ -80,11 +80,12 @@
 
             <div class="agenda-timeline-panel dash-card">
               <div class="agenda-timeline-header">
-                <h3 id="agenda-timeline-date-label">—</h3>
-                <button type="button" class="btn-secondary builder-toolbar-btn" id="agenda-add-event-btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                  Adicionar
-                </button>
+                <div class="agenda-dia-nav">
+                  <button type="button" class="btn-secondary builder-toolbar-btn" id="agenda-hoje-btn">Hoje</button>
+                  <button type="button" class="agenda-dia-seta" id="agenda-dia-anterior" aria-label="Dia anterior" title="Dia anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6"/></svg></button>
+                  <button type="button" class="agenda-dia-seta" id="agenda-dia-proximo" aria-label="Próximo dia" title="Próximo dia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg></button>
+                  <h3 id="agenda-timeline-date-label">—</h3>
+                </div>
               </div>
               <div class="agenda-timeline-scroll">
                 <div class="agenda-timeline-grid" id="agenda-timeline-grid"></div>
@@ -240,80 +241,74 @@
   </div>
 
   <!-- Drawer evento da agenda -->
-  <div class="drawer-backdrop" id="event-drawer-backdrop"></div>
-  <aside class="form-drawer" id="event-drawer" aria-label="Evento da agenda">
-    <div class="form-drawer-header">
-      <div class="form-drawer-header-main">
-        <p class="task-drawer-list-label" id="event-drawer-date-label">—</p>
-        <input type="text" id="event-title" class="event-drawer-title-input" placeholder="Adicionar título">
-      </div>
-      <button type="button" class="form-drawer-close" id="event-drawer-close" aria-label="Fechar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+  <!-- Evento da agenda: pop-up (clicar num horário da linha do tempo abre
+       aqui, já com o horário). Mesmos ids do drawer antigo. -->
+  <div class="agenda-evento-fundo" id="event-drawer-backdrop"></div>
+  <div class="agenda-evento-popup" id="event-drawer" role="dialog" aria-modal="true" aria-label="Evento da agenda">
+    <div class="agenda-evento-topo">
+      <span class="agenda-evento-alca" aria-hidden="true"></span>
+      <button type="button" class="agenda-evento-fechar" id="event-drawer-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
       </button>
     </div>
 
-    <div class="form-drawer-body">
-      <form id="event-form" class="flex flex-col gap-4">
-        <div>
-          <label for="event-type" class="field-label">Tipo</label>
-          <select id="event-type" class="field-select">
-            <option value="reuniao">Reunião</option>
-            <option value="entrega">Entrega</option>
-            <option value="visita">Visita técnica</option>
-            <option value="outro">Outro</option>
-          </select>
-        </div>
+    <form id="event-form" class="agenda-evento-form">
+      <input type="text" id="event-title" class="agenda-evento-titulo" placeholder="Adicionar título" autocomplete="off">
 
-        <div id="event-type-custom-wrap" hidden>
-          <label for="event-type-custom" class="field-label">Qual o tipo?</label>
-          <input id="event-type-custom" type="text" class="field-input" placeholder="Descreva o tipo do compromisso">
-        </div>
+      <!-- Tipo continua salvo (padrão: Reunião), mas sai da tela. -->
+      <div hidden>
+        <select id="event-type">
+          <option value="reuniao">Reunião</option>
+          <option value="entrega">Entrega</option>
+          <option value="visita">Visita técnica</option>
+          <option value="outro">Outro</option>
+        </select>
+        <div id="event-type-custom-wrap" hidden><input id="event-type-custom" type="text"></div>
+        <div id="event-desc-toolbar"></div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="event-start" class="field-label">Início</label>
-            <input id="event-start" type="time" class="field-input">
-          </div>
-          <div>
-            <label for="event-end" class="field-label">Fim</label>
-            <input id="event-end" type="time" class="field-input">
+      <div class="agenda-evento-linha">
+        <span class="agenda-evento-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>
+        <div class="agenda-evento-quando">
+          <p id="event-drawer-date-label">—</p>
+          <div class="agenda-evento-horas">
+            <input id="event-start" type="time" class="field-input" aria-label="Início">
+            <span>–</span>
+            <input id="event-end" type="time" class="field-input" aria-label="Fim">
           </div>
         </div>
+      </div>
 
-        <div>
-          <label for="event-link" class="field-label">Adicionar link</label>
-          <input id="event-link" type="url" class="field-input" placeholder="Ex: link do Google Meet ou Zoom">
-        </div>
+      <div class="agenda-evento-linha">
+        <span class="agenda-evento-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg></span>
+        <input id="event-link" type="url" class="agenda-evento-campo" placeholder="Adicionar link" autocomplete="off">
+      </div>
 
-        <div>
-          <label for="event-local" class="field-label">Adicionar local</label>
-          <input id="event-local" type="text" class="field-input" placeholder="Ex: Espaço Villa Real, Indaiatuba">
-        </div>
+      <div class="agenda-evento-linha">
+        <span class="agenda-evento-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11.5a7 7 0 1 0-14 0C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+        <input id="event-local" type="text" class="agenda-evento-campo" placeholder="Adicionar local" autocomplete="off">
+      </div>
 
-        <div>
-          <label class="field-label">Descrição</label>
-          <div class="event-desc-toolbar" id="event-desc-toolbar">
-            <button type="button" data-desc-cmd="bold" title="Negrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4.5h6.5a3.5 3.5 0 0 1 0 7H6zm0 7h7a3.5 3.5 0 0 1 0 7H6z"/></svg></button>
-            <button type="button" data-desc-cmd="italic" title="Itálico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M10 4.5h7M7 19.5h7M13.5 4.5l-3 15"/></svg></button>
-            <button type="button" data-desc-cmd="underline" title="Sublinhado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 4v7a6 6 0 0 0 12 0V4M5 20h14"/></svg></button>
-          </div>
-          <div id="event-description" class="event-desc-editable" contenteditable="true" data-placeholder="Detalhes do compromisso…"></div>
-        </div>
+      <div class="agenda-evento-linha">
+        <span class="agenda-evento-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span>
+        <div id="event-description" class="agenda-evento-campo agenda-evento-descricao" contenteditable="true" data-placeholder="Adicionar descrição"></div>
+      </div>
 
-        <div>
-          <label for="event-guest-input" class="field-label">Convidar pessoas</label>
-          <input id="event-guest-input" type="email" class="field-input" placeholder="E-mail da pessoa">
+      <div class="agenda-evento-linha">
+        <span class="agenda-evento-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5a6.5 6.5 0 0 1 13 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M18.5 19.5a6.5 6.5 0 0 0-3-5.5"/></svg></span>
+        <div class="agenda-evento-convidados">
+          <input id="event-guest-input" type="email" class="agenda-evento-campo" placeholder="Convidar pessoas" autocomplete="off">
           <div class="event-guest-chips" id="event-guest-chips"></div>
         </div>
+      </div>
 
-        <div class="flex items-center gap-3 pt-2">
-          <button type="submit" class="btn-primary">Salvar</button>
-          <button type="button" id="event-drawer-cancel" class="btn-secondary">Cancelar</button>
-          <button type="button" id="event-delete-btn" class="agenda-event-delete-btn" hidden>Excluir</button>
-        </div>
-      </form>
-    </div>
-  </aside>
+      <div class="agenda-evento-rodape">
+        <button type="button" id="event-drawer-cancel" class="btn-secondary">Cancelar</button>
+        <button type="button" id="event-delete-btn" class="agenda-event-delete-btn" hidden>Excluir</button>
+        <button type="submit" class="btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
 
   <!-- Modal: avisar convidados -->
   <div class="modal-backdrop" id="event-guest-notify-modal">
@@ -361,6 +356,6 @@
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=39"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/agenda.js?v=34"></script>
+  <script src="js/agenda.js?v=35"></script>
 </body>
 </html>

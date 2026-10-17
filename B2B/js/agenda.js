@@ -1041,7 +1041,24 @@ async function initAgendaCalendar() {
     renderAgendaTimeline();
   });
 
-  document.getElementById('agenda-add-event-btn').addEventListener('click', () => openEventDrawer(null));
+  // Navegação de dias (Hoje / ‹ / ›) no topo da linha do tempo.
+  const irParaDia = (data) => {
+    selectedAgendaDate = data;
+    calendarViewDate = new Date(data.getFullYear(), data.getMonth(), 1);
+    renderMiniCalendar();
+    renderAgendaTimeline();
+  };
+  const somarDias = (n) => {
+    const d = new Date(selectedAgendaDate);
+    d.setDate(d.getDate() + n);
+    irParaDia(d);
+  };
+  document.getElementById('agenda-hoje-btn')?.addEventListener('click', () => irParaDia(new Date()));
+  document.getElementById('agenda-dia-anterior')?.addEventListener('click', () => somarDias(-1));
+  document.getElementById('agenda-dia-proximo')?.addEventListener('click', () => somarDias(1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('event-drawer')?.classList.contains('show')) closeEventDrawer();
+  });
 
   document.getElementById('event-drawer-close').addEventListener('click', closeEventDrawer);
   document.getElementById('event-drawer-cancel').addEventListener('click', closeEventDrawer);
@@ -1262,6 +1279,7 @@ function openEventDrawer(eventId, presetHour) {
 
   document.getElementById('event-drawer').classList.add('show');
   document.getElementById('event-drawer-backdrop').classList.add('show');
+  setTimeout(() => document.getElementById('event-title')?.focus(), 30);
 }
 
 function closeEventDrawer() {

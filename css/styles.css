@@ -7911,3 +7911,7 @@ html body #site-builder-root #builder-preview-link.hidden:not(#love-h-a) { displ
 .std-compartilhar-menu button[data-compartilhar] { display: flex; align-items: center; gap: 0.6rem; }
 .std-compartilhar-menu button[data-compartilhar] svg { width: 18px; height: 18px; flex-shrink: 0; }
 body[data-theme="dark"] .std-compartilhar-menu button[data-compartilhar="email"] svg { stroke: #F4F4F5; }
+
+/* Save the Date › Texto: caixa grande de uma vez (sem a alça de aumentar),
+   para mostrar que dá para escrever bastante. */
+html body textarea.std-texto-grande:not(#love-h-a) { min-height: 260px !important; resize: none !important; line-height: 1.5; }

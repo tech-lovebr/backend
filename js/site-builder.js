@@ -2521,7 +2521,7 @@ function renderTextoSaveTheDateInspector(el, body) {
   const negrito = peso === 'bold' || Number(peso) >= 600;
   const campo = el.type === 'titulo'
     ? fieldRow('Texto do título', `<input type="text" class="inspector-input" data-bind="prop:content" value="${escapeHtml(el.content || '')}">`)
-    : fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain" data-bind="prop:content">${escapeHtml(el.content || '')}</textarea>`);
+    : fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain std-texto-grande" rows="12" data-bind="prop:content">${escapeHtml(el.content || '')}</textarea>`);
   body.innerHTML = `
     ${campo}
     <div class="inspector-field">
@@ -4256,7 +4256,11 @@ function textoDoSaveTheDate() {
     if ((el.type === 'titulo' || el.type === 'texto') && el.content) {
       div.innerHTML = el.content;
       const t = (div.innerText || div.textContent || '').trim();
-      if (t) partes.push(t);
+      if (!t) return;
+      // Negrito no WhatsApp = *texto* (linha a linha, para não quebrar).
+      const peso = String((el.styles && el.styles.desktop && el.styles.desktop.fontWeight) || '');
+      const negrito = peso === 'bold' || Number(peso) >= 600;
+      partes.push(negrito ? t.split('\n').map(l => (l.trim() ? `*${l.trim()}*` : l)).join('\n') : t);
     }
   })));
   return partes.join('\n');
@@ -4290,10 +4294,43 @@ function baixarImagem(blob, nome) {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
 
+/** O navegador consegue mandar arquivo pelo compartilhar do sistema (celular)? */
+function podeCompartilharArquivo() {
+  try {
+    return !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'x.png', { type: 'image/png' })] }));
+  } catch (e) { return false; }
+}
+
+// WhatsApp no computador: o WhatsApp não aceita imagem por link — então o
+// texto já vai preenchido na conversa e a imagem fica copiada; é só colar
+// (Ctrl+V) na conversa escolhida. Tudo começa no próprio clique (o navegador
+// só deixa abrir janela e copiar imagem durante o clique).
+function compartilharNoWhatsappDoComputador(avisar) {
+  const texto = textoDoSaveTheDate();
+  const imagem = imagemDoSaveTheDate();
+  let copiou = Promise.resolve(false);
+  if (navigator.clipboard && window.ClipboardItem) {
+    try {
+      copiou = navigator.clipboard.write([new ClipboardItem({ 'image/png': imagem })]).then(() => true, () => false);
+    } catch (e) { copiou = Promise.resolve(false); }
+  }
+  window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+  avisar('Preparando a imagem…');
+  return copiou.then(async (ok) => {
+    if (ok) { avisar('Imagem copiada. Na conversa do WhatsApp, cole com Ctrl+V — o texto já está lá.'); return true; }
+    const blob = await imagem.catch(() => null);
+    if (!blob) { avisar('Não foi possível gerar a imagem. Tente de novo.'); return false; }
+    baixarImagem(blob, 'save-the-date.png');
+    avisar('Imagem baixada. Anexe na conversa do WhatsApp — o texto já está lá.');
+    return true;
+  });
+}
+
 async function compartilharSaveTheDate(canal, status) {
   const avisar = (t) => { if (!status) return; status.textContent = t; status.classList.toggle('hidden', !t); };
-  avisar('Preparando a imagem…');
   persistBuilderState(true);
+  if (canal === 'whatsapp' && !podeCompartilharArquivo()) return compartilharNoWhatsappDoComputador(avisar);
+  avisar('Preparando a imagem…');
   const texto = textoDoSaveTheDate();
   let blob;
   try { blob = await imagemDoSaveTheDate(); } catch (e) { console.error('Save the Date: imagem', e); }

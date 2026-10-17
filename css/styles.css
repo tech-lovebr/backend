@@ -7839,3 +7839,7 @@ html body .conv-item.menu-aberto .conv-item-mais:not(#love-h-a) { background: #F
 body[data-theme="dark"] .conv-item-mais:not(#love-h-a):hover { background: #333333 !important; }
 /* Chat › conversa selecionada: linha vertical à esquerda na cor da sidebar. */
 html body .conv-item.is-ativa:not(#love-h-a) { border-left: 4px solid #181D24 !important; }
+/* Chat › lista: toda conversa (inclusive o Suporte Love) tem a linha
+   vertical cinza-clarinha à esquerda; a ativa troca para a cor da sidebar. */
+html body #b2b-chat-contacts-list .conv-item:not(#love-h-a) { border-left: 4px solid #E4E4E7 !important; }
+html body #b2b-chat-contacts-list .conv-item.is-ativa:not(#love-h-a) { border-left-color: #181D24 !important; }

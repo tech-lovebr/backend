@@ -7617,3 +7617,8 @@ body[data-theme="dark"] .status-badge.status-ativo { background: transparent !im
 .product-info-icone { color: #181D24; width: 16px; height: 16px; }
 .product-info-icone svg { width: 16px; height: 16px; }
 .product-info-icone:hover, .product-info-icone:focus-visible { color: #181D24; }
+/* Selo "Ativo" no azul da plataforma (cor primária), no lugar do verde. */
+.status-badge.status-ativo { color: #183b54; }
+.status-badge.status-ativo::before { background: #183b54; }
+body[data-theme="dark"] .status-badge.status-ativo { color: #9CC3E4 !important; }
+body[data-theme="dark"] .status-badge.status-ativo::before { background: #9CC3E4 !important; }

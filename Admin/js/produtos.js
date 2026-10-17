@@ -94,6 +94,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     { titulo: 'Cliques', valor: i => cliquesDe(i.id) },
     { titulo: 'Status', valor: i => STATUS_SERVICO[statusDe(i)] }
   ], filtrar()));
+  addHeaderAction('Adicionar produto/serviço', () => NovoProduto.abrir([...FORNECEDORES.values()], novo => {
+    ITENS.unshift(montarItem(novo, FORNECEDORES.get(novo.fornecedor_id)));
+    render();
+  }), {
+    principal: true,
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+  });
   moverControlesParaHeader();
   aplicarBuscaDaUrl(document.getElementById('busca'));
 });

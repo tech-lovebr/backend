@@ -3403,3 +3403,17 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .btn-salvar-legal { background: #F4F4F5; color: #181D24; border: 1px solid #D4D4D8; font-weight: 600; font-size: .875rem; padding: .5625rem 1.125rem; }
 .btn-salvar-legal:hover:not(:disabled) { background: #F4F4F5; border-color: #181D24; color: #181D24; }
 .legal-abas .btn-salvar-legal { margin-bottom: .375rem; }
+
+/* Adicionar produto/serviço: passos do cadastro (como no Hub). */
+.np-passos { display: flex; gap: 1.25rem; border-bottom: 1px solid var(--border); margin: -.25rem 0 1.25rem; }
+.np-passo { border: 0; background: none; padding: .5rem 0; font: inherit; font-size: .875rem; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
+.np-passo.is-ativo { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: 600; }
+[data-cobranca].field-row, #np-espaco .field-row:has(> :nth-child(3)) { grid-template-columns: repeat(3, 1fr); }
+.np-capa { width: 100%; height: 150px; border-radius: 10px; }
+.np-galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: .5rem; margin-bottom: .5rem; }
+.np-galeria:empty { display: none; }
+.np-galeria-item { position: relative; aspect-ratio: 1; border: 1px solid #E4E4E7; border-radius: 8px; overflow: hidden; }
+.np-galeria-item img { width: 100%; height: 100%; object-fit: cover; }
+.np-galeria-item button { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border: 0; border-radius: 6px; background: rgba(255,255,255,.92); cursor: pointer; line-height: 1; }
+.np-galeria-add { position: relative; margin-bottom: 1rem; cursor: pointer; }
+@media (max-width: 640px) { [data-cobranca].field-row, #np-espaco .field-row:has(> :nth-child(3)) { grid-template-columns: 1fr; } }

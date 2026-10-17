@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=577">
+  <link rel="stylesheet" href="css/styles.css?v=578">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -217,24 +217,23 @@
           <div id="product-venue-details" class="mb-6" hidden>
             <label class="field-label product-title-label">Detalhes do local</label>
             <div class="flex flex-col gap-4">
-              <div>
-                <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
-                <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
-              </div>
-
-              <div class="local-linha-curta">
-                <div class="local-campo-numero">
+              <div class="local-linha-endereco">
+                <div>
+                  <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
+                  <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
+                </div>
+                <div>
                   <label for="product-venue-number" class="field-label">Número</label>
                   <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
                 </div>
-                <div class="local-campo-complemento">
+              </div>
+
+              <div class="local-linha-complemento">
+                <div>
                   <label for="product-venue-complement" class="field-label">Complemento</label>
                   <input id="product-venue-complement" type="text" class="field-input" autocomplete="off">
                 </div>
-              </div>
-
-              <div class="local-linha-cidade">
-                <div class="local-campo-uf">
+                <div>
                   <label for="product-venue-state" class="field-label">Estado</label>
                   <select id="product-venue-state" class="field-select">
                     <option value="">UF</option>

@@ -7677,3 +7677,8 @@ body[data-theme="dark"] .dashboard-help-header::after { background: #404040; }
 body[data-theme="dark"] .dashboard-panel-section > .dash-card { border-color: #404040 !important; }
 body[data-theme="dark"] .dashboard-panel-header .dashboard-help-title,
 body[data-theme="dark"] .dashboard-help-header .dashboard-help-title { color: #FFFFFF !important; }
+
+/* Detalhes do local: Endereço + Número (pequeno) na 1ª linha; Complemento,
+   UF e Cidade na 2ª. */
+.local-linha-endereco { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 0.75rem; }
+.local-linha-complemento { display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1.3fr); gap: 0.75rem; }

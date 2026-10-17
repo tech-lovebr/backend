@@ -7565,3 +7565,19 @@ body[data-theme="dark"] .cidade-sugestoes { background: #252525 !important; bord
 body[data-theme="dark"] .cidade-sugestao { color: #F4F4F5 !important; }
 body[data-theme="dark"] .cidade-sugestao:hover, body[data-theme="dark"] .cidade-sugestao.is-ativo { background: #333333 !important; }
 body[data-theme="dark"] .local-valor-linha > label { color: #D4D4D8 !important; }
+
+/* Drawer de produto › lista de categorias: a escolhida ganha uma caixinha
+   cinza clara (mesma cor do cabeçalho do drawer) com cantos arredondados,
+   em vez de pintar a linha toda de azul. */
+.category-tree-row, .category-tree-subrow { position: relative; isolation: isolate; }
+.category-tree-row:hover, .category-tree-subrow:hover,
+.category-tree-row.active, .category-tree-subrow.active { background: transparent; }
+.category-tree-row:hover, .category-tree-subrow:hover { color: #18181B; }
+.category-tree-row.active::before, .category-tree-subrow.active::before {
+  content: ''; position: absolute; inset: 4px 6px; z-index: -1;
+  background: #FAFAFA; border: 1px solid #E4E4E7; border-radius: 8px;
+}
+.category-tree-row.active, .category-tree-subrow.active { color: #18181B; font-weight: 600; }
+body[data-theme="dark"] .category-tree-row:hover, body[data-theme="dark"] .category-tree-subrow:hover,
+body[data-theme="dark"] .category-tree-row.active, body[data-theme="dark"] .category-tree-subrow.active { background: transparent !important; }
+body[data-theme="dark"] .category-tree-row.active::before, body[data-theme="dark"] .category-tree-subrow.active::before { background: #333333; border-color: #404040; }

@@ -7790,3 +7790,6 @@ html body .conta-avatar-picker:hover .conta-avatar-lapis:not(#love-h-a) { border
 }
 @media (prefers-reduced-motion: reduce) { .chat-digitando span { animation: none; opacity: .7; } }
 body[data-theme="dark"] .chat-digitando { background: #252525 !important; border-color: #404040 !important; }
+
+/* Chat: prévia "Digitando…" do fornecedor na lista de conversas. */
+html body .chat-previa-digitando:not(#love-h-a) { color: #183b54; font-style: italic; font-weight: 500; }

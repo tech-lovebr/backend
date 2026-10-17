@@ -14694,7 +14694,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chatEstaVisivel()) { await renderB2BChat(); return; }
         await loadB2BConversationsData();
       })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+        const nova = payload && payload.new;
+        if (nova && nova.conversation_id) delete digitandoAte[nova.conversation_id];
         if (chatEstaVisivel()) { await renderB2BChat(); return; }
         await loadB2BConversationsData();
         atualizarContadoresDoChat();
@@ -15126,7 +15128,63 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => setContractedVendorSubtab(btn.dataset.subtab));
   });
 
+  // ---------------- "Digitando…" entre anfitrião e fornecedor ----------------
+  // Realtime Broadcast do Supabase (não grava nada no banco): canal
+  // "digitando:<id da conversa>", evento "digitando", payload { papel }.
+  // O Hub (B2B/js/mensagens.js) usa o mesmo canal com papel "fornecedor".
+  // Quem digita avisa no máximo a cada 2 s; do outro lado as bolinhas ficam
+  // 4,5 s depois do último aviso, ou até a mensagem chegar.
+  /** @type {Map<string, any>} */
+  const canaisDigitando = new Map();
+  /** @type {Record<string, number>} */
+  const digitandoAte = {};
+  let ultimoAvisoDigitando = 0;
+
+  /** @param {any} conv @returns {boolean} */
+  function outroEstaDigitando(conv) {
+    return !!conv && !conv.isSuporte && (digitandoAte[conv.id] || 0) > Date.now();
+  }
+
+  function redesenharDigitando() {
+    if (!chatEstaVisivel()) return;
+    if (document.querySelector('#b2b-chat-messages-container .chat-msg-editor')) return; // edição em andamento
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-search-input'));
+    renderB2BChatContacts(busca ? busca.value : '');
+    renderB2BChatMessages();
+  }
+
+  // Um canal por conversa com fornecedor (as 30 mais recentes).
+  function assinarCanaisDigitando() {
+    if (!window.loveClienteSession) return;
+    const ids = new Set(b2bConversationsData.filter(c => !c.isSuporte).slice(0, 30).map(c => c.id));
+    canaisDigitando.forEach((canal, id) => {
+      if (!ids.has(id)) { supabaseClient.removeChannel(canal); canaisDigitando.delete(id); }
+    });
+    ids.forEach(id => {
+      if (canaisDigitando.has(id)) return;
+      const canal = supabaseClient.channel(`digitando:${id}`, { config: { broadcast: { self: false } } })
+        .on('broadcast', { event: 'digitando' }, ({ payload }) => {
+          if (!payload || payload.papel !== 'fornecedor') return;
+          const tinha = (digitandoAte[id] || 0) > Date.now();
+          digitandoAte[id] = Date.now() + 4500;
+          if (!tinha) redesenharDigitando();
+          setTimeout(() => { if ((digitandoAte[id] || 0) <= Date.now()) redesenharDigitando(); }, 4600);
+        })
+        .subscribe();
+      canaisDigitando.set(id, canal);
+    });
+  }
+
+  /** Avisa o fornecedor que o anfitrião está digitando (no máximo a cada 2 s). */
+  function avisarQueEstouDigitando() {
+    const canal = canaisDigitando.get(activeB2BConversationId);
+    if (!canal || Date.now() - ultimoAvisoDigitando < 2000) return;
+    ultimoAvisoDigitando = Date.now();
+    canal.send({ type: 'broadcast', event: 'digitando', payload: { papel: 'cliente' } });
+  }
+
   function desenharChatComOQueTem() {
+    assinarCanaisDigitando();
     if (!b2bConversationsData.some(c => c.id === activeB2BConversationId)) {
       const primeira = b2bConversationsData.find(c => !c.isSuporte) || b2bConversationsData[0];
       activeB2BConversationId = primeira ? primeira.id : null;
@@ -15188,7 +15246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
           </div>
           <div class="flex items-center justify-between gap-2">
-            <p class="text-xs ${conv.unread > 0 ? 'text-zinc-900 font-bold' : 'text-zinc-500'} truncate leading-tight">${escaparHtml(conv.lastMessage)}</p>
+            <p class="text-xs ${conv.unread > 0 ? 'text-zinc-900 font-bold' : 'text-zinc-500'} truncate leading-tight ${outroEstaDigitando(conv) ? 'chat-previa-digitando' : ''}">${escaparHtml(outroEstaDigitando(conv) ? 'Digitando…' : conv.lastMessage)}</p>
             ${conv.unread > 0 ? `<span class="chat-unread-count" aria-label="${conv.unread} não lidas">${conv.unread > 99 ? '99+' : conv.unread}</span>` : ''}
           </div>
         </div>
@@ -15324,12 +15382,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Suporte Love "digitando…": três bolinhas na vez dele.
-    if (activeConv.digitando) {
+    if (activeConv.digitando || outroEstaDigitando(activeConv)) {
       const row = document.createElement('div');
       row.className = 'flex items-end gap-2.5 justify-start';
       row.innerHTML = `
         <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200">
-        <div class="chat-digitando" role="status" aria-label="Suporte Love está digitando"><span></span><span></span><span></span></div>`;
+        <div class="chat-digitando" role="status" aria-label="${escaparHtml(activeConv.name)} está digitando"><span></span><span></span><span></span></div>`;
       container.appendChild(row);
     }
 
@@ -15504,6 +15562,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (chatForm && !chatForm.dataset.bound) {
       chatForm.dataset.bound = "true";
+
+      // Digitando numa conversa com fornecedor: avisa o outro lado (Hub).
+      chatInput?.addEventListener('input', () => {
+        if (chatInput.value.trim() && activeB2BConversationId !== SUPORTE_CONV_ID) avisarQueEstouDigitando();
+      });
 
       chatForm.addEventListener('submit', (e) => {
         e.preventDefault();

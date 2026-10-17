@@ -106,6 +106,7 @@ const TICKET_STATUS_LABELS = {
   aberto: 'Aberto',
   em_andamento: 'Em andamento',
   aguardando_cliente: 'Aguardando cliente',
+  respondida_bot: 'Respondida pelo robô',
   resolvido: 'Resolvido',
   fechado: 'Fechado',
   spam: 'Spam'
@@ -115,6 +116,7 @@ const TICKET_STATUS_BADGE = {
   aberto: 'badge-warning',
   em_andamento: 'badge-info',
   aguardando_cliente: 'badge-info',
+  respondida_bot: 'badge-info',
   resolvido: 'badge-success',
   fechado: 'badge',
   spam: 'badge-danger'

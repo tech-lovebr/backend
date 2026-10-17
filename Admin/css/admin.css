@@ -3324,3 +3324,8 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .drawer-titulo-link:hover { color: var(--primary-color); }
 .stat-row--tres { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: .75rem 0 0; }
 .stat-row--tres .stat-box { flex-direction: column; align-items: flex-start; }
+
+/* Mensagens do robô e avisos automáticos: tom mais claro que as da equipe. */
+.thread-msg.from-robo .bubble { background: #E8EEF4; color: var(--text); }
+.thread-msg.from-robo .bubble-html a { color: var(--primary-color); }
+.inbox-lista-topo { flex-direction: column; }

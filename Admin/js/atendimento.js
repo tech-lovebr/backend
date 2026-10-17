@@ -16,6 +16,7 @@ const API_RESPONDER = 'https://love.com.br/api/atendimento-responder';
 const ABAS = {
   pendentes: t => ['aberto', 'em_andamento'].includes(t.status),
   aguardando_cliente: t => t.status === 'aguardando_cliente',
+  robo: t => t.status === 'respondida_bot',
   resolvidos: t => ['resolvido', 'fechado'].includes(t.status),
   spam: t => t.status === 'spam',
   todos: t => t.status !== 'spam'
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ligarAbas();
   document.getElementById('busca').addEventListener('input', renderLista);
   document.getElementById('filtro-origem').addEventListener('change', renderLista);
+  document.getElementById('filtro-canal').addEventListener('change', renderLista);
   aplicarBuscaDaUrl(document.getElementById('busca'));
 
   addHeaderAction('Respostas prontas', abrirBiblioteca, {
@@ -92,10 +94,12 @@ function renderContagens() {
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
   const origem = document.getElementById('filtro-origem').value;
+  const canal = document.getElementById('filtro-canal').value;
 
   return TICKETS.filter(t => {
     if (!ABAS[ABA_ATUAL](t)) return false;
     if (origem && t.origem !== origem) return false;
+    if (canal && (t.canal || 'formulario') !== canal) return false;
     if (!termo) return true;
     return [t.protocolo, t.nome, t.email, t.assunto, t.telefone, t.categoria, t.mensagem]
       .some(v => String(v || '').toLowerCase().includes(termo));
@@ -208,7 +212,9 @@ async function abrirConversa(id) {
       </div>
       <div id="composer-editor"></div>
       <div class="composer-acoes">
-        <span class="cell-muted composer-dica">Ctrl+Enter envia. A pessoa recebe por e-mail${t.user_id ? ' e na plataforma' : ''}.</span>
+        <span class="cell-muted composer-dica">Ctrl+Enter envia. ${t.canal === 'chat'
+          ? 'A resposta aparece na hora na conversa Suporte Love da pessoa.'
+          : `A pessoa recebe por e-mail${t.user_id ? ' e na plataforma' : ''}.`}</span>
         <button type="button" class="btn btn-ghost" id="btn-enviar-resolver">Enviar e resolver</button>
         <button type="button" class="btn btn-primary" id="btn-enviar">Enviar</button>
       </div>
@@ -234,13 +240,15 @@ async function abrirConversa(id) {
 
 function bolha(m, t) {
   const daEquipe = m.author_role !== 'usuario';
-  const autor = m.author_name || (daEquipe ? 'Equipe Love' : t.nome);
+  const autor = m.author_role === 'ia' ? 'Robô Love'
+    : m.author_role === 'sistema' ? 'Aviso automático'
+    : (m.author_name || (daEquipe ? 'Equipe Love' : t.nome));
   const corpo = m.body_html ? m.body_html : escapeHtml(m.body || '');
   const entrega = daEquipe && m.author_role === 'admin'
     ? (m.enviado_por_email ? ' · enviado por e-mail' : m.email_status ? ` · e-mail não enviado (${escapeHtml(m.email_status)})` : '')
     : '';
   return `
-    <div class="thread-msg ${daEquipe ? 'from-admin' : 'from-user'}">
+    <div class="thread-msg ${daEquipe ? 'from-admin' : 'from-user'} ${m.author_role === 'ia' || m.author_role === 'sistema' ? 'from-robo' : ''}">
       <div class="bubble ${m.body_html ? 'bubble-html' : ''}">${corpo}</div>
       <p class="meta">${escapeHtml(autor)} · ${escapeHtml(formatDateTime(m.created_at))}${entrega}</p>
     </div>`;
@@ -301,6 +309,8 @@ async function enviar(t, status) {
   const botoes = ['btn-enviar', 'btn-enviar-resolver'].map(id => document.getElementById(id));
   botoes.forEach(b => { b.disabled = true; });
 
+  if (t.canal === 'chat') return responderNoChat(t, html, status, botoes);
+
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
     const r = await fetch(API_RESPONDER, {
@@ -338,6 +348,44 @@ async function enviar(t, status) {
   }
 }
 
+/* Conversa do chat Suporte Love: grava a resposta, que chega em tempo real
+   no chat da pessoa (love.com.br ou Hub). */
+async function responderNoChat(t, html, status, botoes) {
+  const texto = EDITOR.texto().trim();
+  const { error } = await supabaseClient.from('ticket_messages').insert({
+    ticket_id: t.id,
+    author_role: 'admin',
+    author_id: window.adminUser.id,
+    author_name: window.adminUser.name || 'Equipe Love',
+    body: texto,
+    body_html: html,
+    canal: 'chat',
+    resposta_pronta_id: RESPOSTA_ESCOLHIDA
+  });
+
+  if (error) {
+    botoes.forEach(b => { b.disabled = false; });
+    return toast(`Não foi possível enviar: ${error.message}`);
+  }
+
+  await supabaseClient.from('tickets')
+    .update({ status, nao_lido: false, updated_at: new Date().toISOString() })
+    .eq('id', t.id);
+
+  if (RESPOSTA_ESCOLHIDA) {
+    const r = RESPOSTAS.find(x => x.id === RESPOSTA_ESCOLHIDA);
+    if (r) {
+      r.usos = (r.usos || 0) + 1;
+      supabaseClient.from('respostas_prontas').update({ usos: r.usos }).eq('id', r.id).then(() => {}, () => {});
+    }
+  }
+
+  Object.assign(t, { status, nao_lido: false, last_message_at: new Date().toISOString() });
+  toast('Resposta enviada no chat.');
+  renderContagens();
+  abrirConversa(t.id);
+}
+
 /* ------------------------------------------- Biblioteca de respostas prontas */
 
 function abrirBiblioteca() {
@@ -353,7 +401,7 @@ function abrirBiblioteca() {
         <div class="pergunta-item ${r.ativo === false ? 'is-inativo' : ''}">
           <div style="flex:1;min-width:0">
             <p class="pergunta">${escapeHtml(r.titulo)}</p>
-            <p class="resposta">${escapeHtml(PUBLICO[r.publico] || r.publico)} · usada ${formatNumber(r.usos || 0)}x</p>
+            <p class="resposta">${escapeHtml(PUBLICO[r.publico] || r.publico)} · usada ${formatNumber(r.usos || 0)}x${r.envio_automatico ? ' · robô responde sozinho' : ''}</p>
           </div>
           <button type="button" class="btn btn-ghost btn-sm" data-editar-resposta="${r.id}">Editar</button>
         </div>`).join('')}`).join('')
@@ -410,6 +458,14 @@ function editarResposta(r) {
           <span class="cell-muted" style="font-size:.75rem;display:block;margin-top:.25rem">Ajudam a IA a escolher esta resposta (etapa 3).</span>
         </label>
         <label class="field">
+          <span class="field-label">Robô do chat</span>
+          <select class="field-select" name="envio_automatico">
+            <option value="false" ${r?.envio_automatico ? '' : 'selected'}>Só a equipe usa</option>
+            <option value="true" ${r?.envio_automatico ? 'selected' : ''}>O robô pode responder sozinho com esta resposta</option>
+          </select>
+          <span class="cell-muted" style="font-size:.75rem;display:block;margin-top:.25rem">No chat Suporte Love, o robô envia esta resposta quando a mensagem tiver uma das palavras-chave.</span>
+        </label>
+        <label class="field">
           <span class="field-label">Status</span>
           <select class="field-select" name="ativo">
             <option value="true" ${r?.ativo === false ? '' : 'selected'}>Ativa</option>
@@ -448,6 +504,7 @@ function editarResposta(r) {
       assunto: d.assunto.trim() || null,
       corpo_html: editor.html(),
       palavras_chave: d.palavras.split(',').map(p => p.trim().toLowerCase()).filter(Boolean),
+      envio_automatico: d.envio_automatico === 'true',
       ativo: d.ativo === 'true'
     };
 

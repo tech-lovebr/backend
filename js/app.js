@@ -3115,7 +3115,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Fim: usa o que já foi salvo, ou cai no mesmo dia do início — nunca uma data aleatória.
       if (inputDataEndDate) inputDataEndDate.value = activeEvent.eventDetails.endDate || activeEvent.eventDetails.date || activeEvent.date || '';
       if (inputDataEndTime) inputDataEndTime.value = activeEvent.eventDetails.endTime || '23:30';
-      if (inputDataLocation) inputDataLocation.value = activeEvent.eventDetails.locationName || activeEvent.location || '';
+      // locationName vazio = a pessoa apagou o nome; não cai no nome antigo.
+      if (inputDataLocation) {
+        const salvo = activeEvent.eventDetails.locationName;
+        inputDataLocation.value = typeof salvo === 'string' ? salvo
+          : (activeEvent.location && activeEvent.location !== 'Adicionar Local' ? activeEvent.location : '');
+      }
       // Endereço: CEP + rua/número/complemento/bairro (e cidade/UF do CEP).
       preencherEnderecoInformacoes(activeEvent.eventDetails);
       if (inputDataReference) inputDataReference.value = activeEvent.eventDetails.referencePoint || '';
@@ -4081,9 +4086,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputDataTime && inputDataTime.value) activeEvent.eventDetails.time = inputDataTime.value;
     if (inputDataEndDate && inputDataEndDate.value) activeEvent.eventDetails.endDate = inputDataEndDate.value;
     if (inputDataEndTime && inputDataEndTime.value) activeEvent.eventDetails.endTime = inputDataEndTime.value;
-    if (inputDataLocation && inputDataLocation.value) {
-      activeEvent.eventDetails.locationName = inputDataLocation.value;
-      activeEvent.location = inputDataLocation.value;
+    if (inputDataLocation) {
+      const nomeDoLocal = inputDataLocation.value.trim();
+      activeEvent.eventDetails.locationName = nomeDoLocal;
+      activeEvent.location = nomeDoLocal;
     }
     montarEnderecoInformacoes();
     if (inputDataAddress) activeEvent.eventDetails.address = inputDataAddress.value;
@@ -11259,7 +11265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdown.innerHTML = filtrados.slice(0, 8).map(({ empresa, servico }, i) => {
         const v = (servico.extra && servico.extra.venue) || {};
         const linha2 = [[v.street, v.number].filter(Boolean).join(', '), v.city].filter(Boolean).join(' - ');
-        const titulo = normalizarTexto(servico.name) === normalizarTexto(empresa.name) ? empresa.name : `${empresa.name} — ${servico.name}`;
+        const titulo = normalizarTexto(servico.name) === normalizarTexto(empresa.name) ? servico.name : `${servico.name} — ${empresa.name}`;
         return `
           <div class="venue-option p-2 rounded-xl hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs" data-indice="${i}">
             <div>
@@ -11273,7 +11279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opt.addEventListener('click', () => {
           const { empresa, servico } = filtrados[Number(opt.dataset.indice)];
           const v = (servico.extra && servico.extra.venue) || {};
-          input.value = empresa.name;
+          input.value = servico.name || empresa.name;
           if (addressInput) addressInput.value = v.street || '';
           if (numberInput) numberInput.value = v.number || '';
           if (complementInput) complementInput.value = v.complement || '';
@@ -13514,9 +13520,9 @@ document.addEventListener('DOMContentLoaded', () => {
    * Local que a Home mostra no evento:
    *  - se o espaço é de um fornecedor da Love (nome do evento = nome da
    *    empresa ou de um serviço de espaço, ou o endereço bate com o do espaço
-   *    cadastrado), mostra o nome do lugar ("Villa Bisutti");
+   *    cadastrado), mostra o nome do lugar (o serviço), não o da empresa;
    *  - senão (churrasqueira do prédio, espaço contratado por fora…), mostra o
-   *    endereço sem cidade/UF ("Avenida X, 1200, Jardim Y").
+   *    rua e o número, sem bairro nem cidade ("Av. Duquesa de Goiás, 1200").
    * @returns {string}
    */
   // Categorias de espaço no Hub (o nome atual e os antigos, que o Hub
@@ -13535,11 +13541,17 @@ document.addEventListener('DOMContentLoaded', () => {
     return out;
   }
 
+  /** Rua para a Home: "Avenida" vira "Av.".
+   * @param {unknown} rua @returns {string} */
+  function ruaAbreviada(rua) {
+    return String(rua || '').trim().replace(/^avenida\b\.?\s*/i, 'Av. ');
+  }
+
   function localDoEventoParaHome() {
     const ev = getActiveEvent();
     if (!ev) return '';
     const d = ev.eventDetails || {};
-    const nome = String(d.locationName || (ev.location !== 'Adicionar Local' ? ev.location : '') || '').trim();
+    const nome = String((typeof d.locationName === 'string' ? d.locationName : (ev.location !== 'Adicionar Local' ? ev.location : '')) || '').trim();
     const endereco = String(d.address || '').trim();
     const nomeN = normalizarTexto(nome);
     const ruaN = normalizarTexto(d.street || endereco.split(',')[0]);
@@ -13547,12 +13559,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Só conta como lugar "oficial" um serviço da categoria Espaços para
     // Locação no Hub: pelo nome (da empresa ou do serviço) ou pelo endereço.
     for (const { empresa, servico } of espacosCadastradosNoHub()) {
-      if (nomeN && (normalizarTexto(empresa.name) === nomeN || normalizarTexto(servico.name) === nomeN)) return empresa.name;
+      const nomeDoLugar = servico.name || empresa.name;
+      if (nomeN && (normalizarTexto(empresa.name) === nomeN || normalizarTexto(servico.name) === nomeN)) return nomeDoLugar;
       const v = (servico.extra && servico.extra.venue) || {};
       const vRua = normalizarTexto(v.street);
-      if (ruaN && vRua && ruaN === vRua && (!numeroN || !v.number || normalizarTexto(v.number) === numeroN)) return empresa.name;
+      if (ruaN && vRua && ruaN === vRua && (!numeroN || !v.number || normalizarTexto(v.number) === numeroN)) return nomeDoLugar;
     }
-    return endereco || nome;
+    // Fora do Hub: só a rua (Avenida → Av.) e o número, sem bairro nem cidade.
+    const rua = ruaAbreviada(d.street || endereco.split(',')[0]);
+    const numero = String(d.number || '').trim();
+    if (rua) return numero ? `${rua}, ${numero}` : rua;
+    return nome;
   }
 
   function atualizarLocalDaHome() {

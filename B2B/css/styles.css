@@ -8035,3 +8035,23 @@ body[data-theme="dark"] .agenda-dia-inteiro { color: #F4F4F5; }
 body[data-theme="dark"] .agenda-hora-lista { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .agenda-hora-lista button { color: #F4F4F5 !important; }
 body[data-theme="dark"] .agenda-hora-lista button:hover, body[data-theme="dark"] .agenda-hora-lista button.is-atual { background: #333333 !important; }
+
+/* Sombra leve e concentrada (só para dar volume) nas caixas da Agenda
+   (linha do tempo, calendário e avisos), nos cards do Catálogo, na tabela de
+   Leads e nas caixas do painel (Sua agenda, Analytics, Notícias, Ajuda). */
+html body .agenda-timeline-panel:not(#love-h-a),
+html body .agenda-mini-calendar:not(#love-h-a),
+html body .agenda-notifications-card:not(#love-h-a),
+html body #products-grid .product-card:not(#love-h-a),
+html body #leads-table-card:not(#love-h-a),
+html body .dashboard-panel-section > .dash-card:not(#love-h-a),
+html body .dashboard-help-card:not(#love-h-a) {
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+body[data-theme="dark"] .agenda-timeline-panel,
+body[data-theme="dark"] .agenda-mini-calendar,
+body[data-theme="dark"] .agenda-notifications-card,
+body[data-theme="dark"] #products-grid .product-card,
+body[data-theme="dark"] #leads-table-card,
+body[data-theme="dark"] .dashboard-panel-section > .dash-card,
+body[data-theme="dark"] .dashboard-help-card { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important; }

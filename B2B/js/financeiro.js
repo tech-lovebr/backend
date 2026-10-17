@@ -371,9 +371,10 @@ function linhasDeOrcamentos() {
     const aceito = o.status === 'aceito' || o.status === 'pago' || bOrcamentosPagos.has(o.id);
     const produto = (o.produto_id && bFinProducts.find(p => p.id === o.produto_id)) || null;
     const primeiroItem = Array.isArray(o.itens) && o.itens[0] ? o.itens[0].name : '';
+    const sku = (produto && produto.extra && produto.extra.sku) || (Array.isArray(o.itens) && o.itens[0] && o.itens[0].code) || '';
     return {
       tipo: 'orcamento', id: o.id, numero: o.numero || null, cliente: o.cliente_nome,
-      produto: (produto && produto.name) || primeiroItem || '',
+      produto: (produto && produto.name) || primeiroItem || '', sku,
       data: formatarDataBR(o.created_at), dataEvento: o.data_evento || '',
       valor: Number(o.valor_total) || 0, status: aceito ? 'aceito' : 'em_analise', registro: o
     };
@@ -381,11 +382,12 @@ function linhasDeOrcamentos() {
   bFinLeads.forEach(l => {
     const pedido = typeof pedidoDoLead === 'function' ? pedidoDoLead(l) : null;
     if (!pedido || comOrcamento.has(l.id)) return;
+    const prodPedido = pedido.servico && bFinProducts.find(p => (p.name || '').trim().toLowerCase() === pedido.servico.trim().toLowerCase());
     const comentarios = Array.isArray(l.comentarios) ? l.comentarios : [];
     const ultimo = comentarios.filter(c => String(c.id || '').startsWith('pedido-')).pop();
     linhas.push({
       tipo: 'pedido', id: l.id, numero: null, cliente: l.name,
-      produto: pedido.servico || l.event_name || '', data: formatarDataBR(ultimo && ultimo.at),
+      produto: pedido.servico || l.event_name || '', sku: (prodPedido && prodPedido.extra && prodPedido.extra.sku) || '', data: formatarDataBR(ultimo && ultimo.at),
       dataEvento: pedido.data || l.event_date || '', valor: null, status: 'pendente', lead: l, pedido
     });
   });
@@ -397,7 +399,7 @@ function orcamentosFiltrados() {
   const est = orcamentosTabelaEstado || { busca: '', filtros: {} };
   return linhasDeOrcamentos().filter(r =>
     (!est.filtros.status || r.status === est.filtros.status) &&
-    tabelaBateBusca(est, [r.cliente, r.produto, r.numero, r.dataEvento]));
+    tabelaBateBusca(est, [r.cliente, r.produto, r.sku, r.numero, r.dataEvento]));
 }
 
 function renderOrcamentos() {
@@ -414,7 +416,7 @@ function renderOrcamentos() {
       <tr>
         <td class="col-id">${r.numero || '—'}</td>
         <td class="col-principal">${escapeHtml(r.cliente || '')}</td>
-        <td>${escapeHtml(r.produto || '—')}</td>
+        <td>${escapeHtml(r.produto || '—')}${r.sku ? `<span class="produto-sku">${escapeHtml(r.sku)}</span>` : ''}</td>
         <td>${escapeHtml(r.data || '—')}</td>
         <td>${escapeHtml(r.dataEvento || '—')}</td>
         <td>${r.valor == null ? '—' : formatCurrency(r.valor)}</td>
@@ -568,6 +570,7 @@ async function abrirPropostaParaVer(o, status) {
     const row = addProposalItemRow();
     row.querySelector('[data-item-name]').value = it.name || '';
     row.querySelector('[data-item-unit]').value = it.unit || '';
+    row.querySelector('[data-item-code]').value = it.code || '';
     row.querySelector('[data-item-qty]').value = it.qty ?? '';
     row.querySelector('[data-item-discount]').value = it.discount ?? 0;
     row.querySelector('[data-item-unit-price]').value = it.unitPrice ?? 0;
@@ -586,10 +589,12 @@ async function abrirPropostaParaVer(o, status) {
 
 /* -------------------- Serviço escolhido: itens -------------------- */
 
-function preencherItem(row, { name, unit, qty, unitPrice }) {
+function preencherItem(row, { name, unit, qty, unitPrice, code }) {
   const nameInput = row.querySelector('[data-item-name]');
   nameInput.value = name;
   nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+  const codeInput = row.querySelector('[data-item-code]');
+  if (codeInput && code) codeInput.value = code;
   row.querySelector('[data-item-unit]').value = unit || '';
   const qtyInput = row.querySelector('[data-item-qty]');
   qtyInput.value = String(qty ?? 1);
@@ -615,6 +620,8 @@ function aplicarProdutoNaProposta(p) {
   const intro = document.getElementById('proposal-intro');
   if (intro && !intro.value.trim() && p.description) intro.value = p.description;
 
+  // SKU interno do serviço vai na coluna Código dos itens.
+  const sku = (p.extra && p.extra.sku) || '';
   // Itens conforme a unidade de cobrança.
   const body = document.getElementById('proposal-items-body');
   const primeira = body.firstElementChild;
@@ -624,16 +631,16 @@ function aplicarProdutoNaProposta(p) {
   const convidados = parseInt(document.getElementById('proposal-guests').value, 10) || 0;
   const pr = (p.extra && p.extra.pricing) || null;
   if (pr && pr.type === 'POR_PESSOA' && pr.perPerson) {
-    preencherItem(novaLinha(), { name: p.name, unit: 'pessoa', qty: convidados || pr.perPerson.minPeople || 1, unitPrice: pr.perPerson.pricePerPerson });
+    preencherItem(novaLinha(), { name: p.name, code: sku, unit: 'pessoa', qty: convidados || pr.perPerson.minPeople || 1, unitPrice: pr.perPerson.pricePerPerson });
   } else if (pr && pr.type === 'POR_HORA' && pr.perHour) {
-    preencherItem(novaLinha(), { name: p.name, unit: 'hora', qty: pr.perHour.minHours || 1, unitPrice: pr.perHour.pricePerHour });
+    preencherItem(novaLinha(), { name: p.name, code: sku, unit: 'hora', qty: pr.perHour.minHours || 1, unitPrice: pr.perHour.pricePerHour });
     if (pr.perHour.extraHourPrice) preencherItem(addProposalItemRow(), { name: 'Hora adicional', unit: 'hora', qty: 0, unitPrice: pr.perHour.extraHourPrice });
   } else if (pr && pr.type === 'VALOR_FIXO' && pr.fixed) {
-    preencherItem(novaLinha(), { name: p.name, unit: 'serviço', qty: 1, unitPrice: pr.fixed.price });
+    preencherItem(novaLinha(), { name: p.name, code: sku, unit: 'serviço', qty: 1, unitPrice: pr.fixed.price });
   } else if (pr && pr.type === 'SOB_CONSULTA') {
-    preencherItem(novaLinha(), { name: p.name, unit: 'serviço', qty: 1, unitPrice: (pr.onRequest && pr.onRequest.startingPrice) || 0 });
+    preencherItem(novaLinha(), { name: p.name, code: sku, unit: 'serviço', qty: 1, unitPrice: (pr.onRequest && pr.onRequest.startingPrice) || 0 });
   } else {
-    preencherItem(novaLinha(), { name: p.name, unit: 'serviço', qty: 1, unitPrice: p.price || 0 });
+    preencherItem(novaLinha(), { name: p.name, code: sku, unit: 'serviço', qty: 1, unitPrice: p.price || 0 });
   }
   const log = (p.extra && p.extra.logistics) || {};
   if (log.extraKmFee) preencherItem(addProposalItemRow(), { name: 'Deslocamento (km adicional)', unit: 'km', qty: 0, unitPrice: log.extraKmFee });
@@ -675,11 +682,12 @@ async function saveProposal() {
     if (!name) return;
     const qty = Number(row.querySelector('[data-item-qty]')?.value) || 0;
     const unit = row.querySelector('[data-item-unit]')?.value.trim() || '';
+    const code = row.querySelector('[data-item-code]')?.value.trim() || '';
     const unitPrice = Number(row.querySelector('[data-item-unit-price]')?.value) || 0;
     const discount = Number(row.querySelector('[data-item-discount]')?.value) || 0;
     const total = qty * unitPrice * (1 - discount / 100);
     valor_total += total;
-    itens.push({ name, unit, qty, unitPrice, discount, total });
+    itens.push({ name, code, unit, qty, unitPrice, discount, total });
   });
 
   // Vincula a proposta a um lead real (o escolhido, um novo para o cliente

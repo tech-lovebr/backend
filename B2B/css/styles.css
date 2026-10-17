@@ -7591,3 +7591,11 @@ body[data-theme="dark"] .product-pacote-item { background: #252525 !important; b
 
 /* Proposta › cabeçalho "Preço UC": o UC mostra "Unidade de cobrança" ao passar o mouse. */
 .proposal-abbr { text-decoration: none; cursor: help; }
+
+/* SKU / código interno (só no Hub; nunca na vitrine). */
+.field-label-opcional { font-weight: 400; color: #A1A1AA; font-size: 0.8125rem; margin-left: 0.25rem; }
+.product-sku-input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.produto-sku { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; color: #71717A; margin-top: 0.1rem; }
+.product-pacote-linha--extra { grid-template-columns: minmax(0, 1fr) 150px 28px; }
+.product-pacote-linha--extra::after { content: ''; }
+.produtos-busca { width: 280px; margin-bottom: 1rem; }

@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=570">
+  <link rel="stylesheet" href="css/styles.css?v=571">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -50,6 +50,10 @@
         <p class="text-sm text-zinc-500 mb-5">Gerencie o que aparece na sua vitrine dentro dos eventos.</p>
 
         <div class="category-tabs-bar" id="category-tabs"></div>
+        <label class="tabela-busca produtos-busca">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
+          <input type="search" id="products-search" placeholder="Buscar por nome ou SKU..." autocomplete="off">
+        </label>
 
         <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
       </main>
@@ -125,6 +129,13 @@
 
         <!-- ETAPA 2: Motor de Precificação -->
         <div class="product-wizard-panel" data-step="2">
+
+          <!-- SKU: código interno do fornecedor. Nunca aparece na vitrine. -->
+          <div class="mb-6">
+            <label for="product-sku" class="field-label product-title-label">SKU / Código de referência <span class="field-label-opcional">(Opcional)</span></label>
+            <input id="product-sku" type="text" class="field-input product-sku-input" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Ex: CEN-INF-01, LOC-MESA-04">
+            <p class="field-hint mt-1.5">Código interno da sua empresa para identificar este produto ou serviço no seu estoque, agenda ou ERP.</p>
+          </div>
 
           <div id="pricing-standard-section">
             <label class="field-label product-title-label">Unidade de cobrança</label>
@@ -593,6 +604,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=32"></script>
+  <script src="js/produtos.js?v=33"></script>
 </body>
 </html>

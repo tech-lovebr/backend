@@ -3,6 +3,10 @@
    ========================================================================== */
 
 let activeCategory = 'Todos';
+let produtosBusca = '';
+
+// SKU: letras, números, hífen e sublinhado (o resto sai ao digitar).
+const limparSku = v => String(v || '').replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 40);
 
 // Arrays (não mais string única) pra categorias antigas e novas continuarem
 // abrindo os mesmos blocos condicionais — ver DECISÃO em "categorias" no
@@ -182,6 +186,7 @@ async function loadProducts() {
     subcategory: normalizeSubcategory((p.extra && p.extra.subcategory) || null),
     pricing: (p.extra && p.extra.pricing) || null,
     scope: (p.extra && p.extra.scope) || { included: [], excluded: [] },
+    sku: (p.extra && p.extra.sku) || '',
     packages: Array.isArray(p.extra && p.extra.packages) ? p.extra.packages : [],
     addons: Array.isArray(p.extra && p.extra.addons) ? p.extra.addons : [],
     rascunho: !!(p.extra && p.extra.rascunho),
@@ -270,9 +275,11 @@ function renderProducts() {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
 
-  const items = activeCategory === 'Todos'
+  const termo = produtosBusca.trim().toLowerCase();
+  const items = (activeCategory === 'Todos'
     ? bProducts
-    : bProducts.filter(p => p.category === activeCategory);
+    : bProducts.filter(p => p.category === activeCategory))
+    .filter(p => !termo || [p.name, p.sku, ...(p.packages || []).map(k => k.sku)].some(v => String(v || '').toLowerCase().includes(termo)));
 
   if (!items.length) {
     grid.innerHTML = `
@@ -280,7 +287,7 @@ function renderProducts() {
         <div class="empty-state-icon">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5 12 2.25 3 7.5m18 0-9 5.25M21 7.5v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
         </div>
-        <p class="text-sm font-medium text-zinc-700">Nenhum item nessa categoria ainda.</p>
+        <p class="text-sm font-medium text-zinc-700">${termo ? 'Nenhum item encontrado.' : 'Nenhum item nessa categoria ainda.'}</p>
       </div>`;
     return;
   }
@@ -301,6 +308,7 @@ function renderProducts() {
               ? '<span class="status-badge status-inativo">Rascunho</span>'
               : `<span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>`}
         </div>
+        ${p.sku ? `<p class="produto-sku">${escapeHtml(p.sku)}</p>` : ''}
         <p class="text-xs text-zinc-500">${p.category}</p>
         ${p.suspenso ? `<p class="produto-suspenso-aviso"><strong>Suspenso pela Love</strong>${p.suspensoMotivo ? ' — ' + escapeHtml(p.suspensoMotivo) : ''}</p>` : ''}
         <p class="text-base font-bold text-zinc-900 mt-auto">${productPriceLabel(p)}</p>
@@ -340,6 +348,8 @@ async function duplicarProduto(id) {
   if (erroLer || !orig) { showToast('Não foi possível duplicar o anúncio.', true); return; }
   const extra = JSON.parse(JSON.stringify(orig.extra || {}));
   extra.rascunho = true;
+  extra.sku = '';
+  (extra.packages || []).forEach(k => { k.sku = ''; });
   const copia = {
     fornecedor_id: session.user.id,
     name: `${(orig.name || '').trim()} (Cópia)`,
@@ -377,7 +387,10 @@ function renderPacotesLista(tipo) {
         <input type="text" inputmode="numeric" class="field-input" data-campo="price" value="${valorMascarado(item.price)}" placeholder="0,00" autocomplete="off">
         <button type="button" class="scope-item-remove" data-remover title="Remover" aria-label="Remover">${PI_TRASH}</button>
       </div>
-      ${tipo === 'packages' ? `<input type="text" class="field-input" data-campo="description" maxlength="160" value="${escapeHtml(item.description || '')}" placeholder="O que inclui (opcional)" autocomplete="off">` : ''}
+      ${tipo === 'packages' ? `<div class="product-pacote-linha product-pacote-linha--extra">
+        <input type="text" class="field-input" data-campo="description" maxlength="160" value="${escapeHtml(item.description || '')}" placeholder="O que inclui (opcional)" autocomplete="off">
+        <input type="text" class="field-input product-sku-input" data-campo="sku" maxlength="40" value="${escapeHtml(item.sku || '')}" placeholder="${escapeHtml(limparSku(document.getElementById('product-sku')?.value) || 'SKU (opcional)')}" autocomplete="off" spellcheck="false" title="SKU do pacote (vazio usa o SKU principal)">
+      </div>` : ''}
     </div>`).join('');
 
   wrap.querySelectorAll('.product-pacote-item').forEach(el => {
@@ -388,6 +401,11 @@ function renderPacotesLista(tipo) {
     preco.addEventListener('input', () => { item.price = currencyMaskValue(preco); });
     el.querySelector('[data-campo="name"]').addEventListener('input', e => { item.name = e.target.value; });
     el.querySelector('[data-campo="description"]')?.addEventListener('input', e => { item.description = e.target.value; });
+    el.querySelector('[data-campo="sku"]')?.addEventListener('input', e => {
+      const limpo = limparSku(e.target.value);
+      if (limpo !== e.target.value) e.target.value = limpo;
+      item.sku = limpo;
+    });
     el.querySelector('[data-remover]').addEventListener('click', () => {
       lista.splice(Number(el.dataset.index), 1);
       renderPacotesLista(tipo);
@@ -408,7 +426,7 @@ function initPacotes() {
 }
 
 const pacotesParaSalvar = (lista, comDescricao) => lista
-  .map(i => ({ id: i.id, name: String(i.name || '').trim(), price: Number(i.price) || 0, ...(comDescricao ? { description: String(i.description || '').trim() } : {}) }))
+  .map(i => ({ id: i.id, name: String(i.name || '').trim(), price: Number(i.price) || 0, ...(comDescricao ? { description: String(i.description || '').trim(), sku: limparSku(i.sku) } : {}) }))
   .filter(i => i.name);
 
 /* -------------------- Upload de imagens -------------------- */
@@ -1258,6 +1276,16 @@ function initProductDrawer() {
 
   populateVenueStateOptions();
   initPacotes();
+  const skuInput = document.getElementById('product-sku');
+  skuInput?.addEventListener('input', () => {
+    const limpo = limparSku(skuInput.value);
+    if (limpo !== skuInput.value) skuInput.value = limpo;
+    document.querySelectorAll('#product-packages-list [data-campo="sku"]').forEach(el => { el.placeholder = limpo || 'SKU (opcional)'; });
+  });
+  document.getElementById('products-search')?.addEventListener('input', (e) => {
+    produtosBusca = e.target.value;
+    renderProducts();
+  });
   initVenueCommonAreaOutro();
   initVenueCityBusca();
   initVenueArea();
@@ -1556,6 +1584,7 @@ function initProductDrawer() {
           // original + foco do recorte da capa (null sem capa) — ver currentCoverMeta
           cover: currentCoverImage ? currentCoverMeta : null,
           subcategory: currentSubcategory,
+          sku: limparSku(document.getElementById('product-sku').value.trim()) || null,
           pricing,
           scope: {
             included: currentScopeIncluded.map(i => i.text).filter(Boolean),
@@ -1633,7 +1662,8 @@ function openProductDrawer(id) {
   currentServiceAreaType = (p.logistics && p.logistics.serviceAreaType) || 'city_only';
   currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));
   currentScopeExcluded = ((p.scope && p.scope.excluded) || []).map((text, i) => ({ id: 'se' + i, text }));
-  currentPackages = (p.packages || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0, description: i.description || '' }));
+  currentPackages = (p.packages || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0, description: i.description || '', sku: i.sku || '' }));
+  document.getElementById('product-sku').value = p.sku || '';
   currentAddons = (p.addons || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0 }));
 
   document.getElementById('product-venue-street').value = (p.venue && (p.venue.street !== undefined ? p.venue.street : p.venue.address)) || '';

@@ -1139,7 +1139,6 @@ function renderEditorDeTextoSaveTheDate(body) {
     <div class="std-editor">
       <div class="std-editor-barra">
         <button type="button" class="std-editor-negrito" data-std-negrito title="Negrito (selecione o trecho)" aria-label="Negrito">${BI.bold}</button>
-        <span class="std-editor-dica">Selecione o trecho e clique em <strong>B</strong> para negrito.</span>
       </div>
       <textarea class="inspector-textarea std-texto-grande std-editor-texto" id="std-editor-texto" rows="14" placeholder="Escreva o Save the Date…">${escapeHtml(builderState.mensagem || '')}</textarea>
     </div>`;

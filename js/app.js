@@ -16053,17 +16053,57 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnNoVenueYet = document.getElementById('btn-modal-no-venue-yet');
   const inputVenue = document.getElementById('modal-venue-input');
 
+  // Local já definido: o que vai no mapa (nome do lugar + endereço + cidade/UF).
+  function buscaDoLocalNoMapa(ev) {
+    const d = (ev && ev.eventDetails) || {};
+    const nome = String((typeof d.locationName === 'string' ? d.locationName : (ev && ev.location !== 'Adicionar Local' ? ev.location : '')) || '').trim();
+    const cidade = [String(d.city || '').trim(), String(d.state || '').trim().toUpperCase()].filter(Boolean).join(' - ');
+    return [nome, String(d.address || '').trim(), cidade].filter(Boolean).join(', ');
+  }
+
+  /** @param {string} busca */
+  function mostrarMapaDoLocal(busca) {
+    const mapa = /** @type {HTMLIFrameElement|null} */ (document.getElementById('modal-venue-mapa'));
+    if (!mapa) return;
+    if (!busca) { mapa.classList.add('hidden'); mapa.removeAttribute('src'); return; }
+    const src = `https://maps.google.com/maps?q=${encodeURIComponent(busca)}&z=15&output=embed`;
+    if (mapa.getAttribute('src') !== src) mapa.setAttribute('src', src);
+    mapa.classList.remove('hidden');
+  }
+
   if (btnOpenVenueModal && modalAddVenue) {
     btnOpenVenueModal.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Abre o popup de local direto na home, sem sair do dashboard
+      // Abre o popup de local direto na home, sem sair do dashboard.
+      // Sem local: "Adicione o local". Com local: "Alterar o local", com o
+      // mapa já mostrando o lugar e sem o "Ainda não tenho um local".
       const activeEv = getActiveEvent();
-      if (inputVenue) {
-        inputVenue.value = (activeEv.location && activeEv.location !== 'Adicionar Local') ? activeEv.location : '';
-      }
+      const d = (activeEv && activeEv.eventDetails) || {};
+      const nome = String((typeof d.locationName === 'string' ? d.locationName : (activeEv.location !== 'Adicionar Local' ? activeEv.location : '')) || '').trim();
+      const temLocal = !!(nome || String(d.address || '').trim());
+      if (inputVenue) inputVenue.value = nome || localDoEventoParaHome() || '';
+      const titulo = document.getElementById('modal-venue-titulo');
+      if (titulo) titulo.textContent = temLocal ? 'Alterar o local' : 'Adicione o local';
+      const subtitulo = document.getElementById('modal-venue-subtitulo');
+      if (subtitulo) subtitulo.textContent = temLocal
+        ? 'Deseja alterar o local do evento? Digite o novo local e salve.'
+        : 'Usaremos essa informação para personalizar o site dos seus convidados com mapas, rotas, dicas e hotéis próximos.';
+      document.getElementById('modal-venue-sem-local')?.classList.toggle('hidden', temLocal);
+      if (btnSaveVenue) btnSaveVenue.textContent = temLocal ? 'Salvar novo local' : 'Salvar Local';
+      mostrarMapaDoLocal(temLocal ? buscaDoLocalNoMapa(activeEv) : '');
       openModal(modalAddVenue);
     });
   }
+
+  // Digitando o novo local: o mapa acompanha (com uma pausa, para não
+  // recarregar a cada letra).
+  let mapaDoLocalTimer = null;
+  inputVenue?.addEventListener('input', () => {
+    const mapa = document.getElementById('modal-venue-mapa');
+    if (!mapa || mapa.classList.contains('hidden')) return;
+    clearTimeout(mapaDoLocalTimer);
+    mapaDoLocalTimer = setTimeout(() => { if (inputVenue.value.trim()) mostrarMapaDoLocal(inputVenue.value.trim()); }, 700);
+  });
 
   if (btnSaveVenue && modalAddVenue) {
     btnSaveVenue.addEventListener('click', () => {
@@ -16071,9 +16111,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const newLoc = inputVenue ? inputVenue.value.trim() : '';
       if (newLoc) {
         activeEv.location = newLoc;
+        // O nome do local é o que a Home e Informações leem.
+        if (!activeEv.eventDetails) activeEv.eventDetails = {};
+        activeEv.eventDetails.locationName = newLoc;
+        const campoInformacoes = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-data-location'));
+        if (campoInformacoes) campoInformacoes.value = newLoc;
         atualizarLocalDaHome();
         const fieldLoc = document.getElementById('field-event-location');
         if (fieldLoc) fieldLoc.value = newLoc;
+        try { persistirEventoAtivo(); } catch (err) { console.error('Local do evento:', err); }
       }
       closeModal(modalAddVenue);
     });

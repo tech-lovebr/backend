@@ -79,9 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filtro-origem').addEventListener('change', renderLista);
   aplicarBuscaDaUrl(document.getElementById('busca'));
 
-  addHeaderAction('Respostas prontas', abrirBiblioteca, {
-    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg>'
-  });
+  addHeaderAction('Comandos', abrirBiblioteca, { icone: null });
 
   renderContagens();
   renderLista();
@@ -228,7 +226,7 @@ async function abrirConversa(id) {
     <div class="conversa-composer">
       <div class="composer-linha">
         <select class="field-select" id="composer-resposta" aria-label="Resposta pronta">
-          <option value="">Usar uma resposta pronta…</option>
+          <option value="">Usar um comando…</option>
           ${opcoesDeResposta(t)}
         </select>
         <input class="field-input" id="composer-assunto" type="text" placeholder="Assunto do e-mail (opcional)">
@@ -421,7 +419,7 @@ function abrirBiblioteca() {
   const lista = RESPOSTAS.slice().sort((a, b) => String(a.titulo).localeCompare(String(b.titulo), 'pt-BR'));
 
   Drawer.open({
-    title: 'Respostas prontas',
+    title: 'Comandos rápidos',
     body: lista.length
       ? `<div class="respostas-lista">${lista.map(r => `
           <div class="resposta-linha ${r.ativo === false ? 'is-inativo' : ''}">
@@ -431,7 +429,7 @@ function abrirBiblioteca() {
       : `<div class="empty-state"><strong>Nenhuma resposta pronta</strong><p>Crie a primeira — ela aparece no seletor de cada conversa.</p></div>`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-fechar-biblioteca">Fechar</button>
-      <button type="button" class="btn btn-primary" id="btn-nova-resposta">Nova resposta</button>`
+      <button type="button" class="btn btn-primary" id="btn-nova-resposta">Novo comando</button>`
   });
 
   document.getElementById('btn-fechar-biblioteca').addEventListener('click', () => Drawer.close());
@@ -444,7 +442,7 @@ function editarResposta(r) {
   const categorias = [...new Set(RESPOSTAS.map(x => x.categoria).filter(Boolean))];
 
   Drawer.open({
-    title: r ? 'Editar resposta pronta' : 'Nova resposta pronta',
+    title: r ? 'Editar comando' : 'Novo comando',
     subtitle: 'Variáveis: {{nome}}, {{primeiro_nome}}, {{protocolo}}, {{assunto}}',
     back: abrirBiblioteca,
     body: `
@@ -550,7 +548,7 @@ function editarResposta(r) {
     if (ATUAL) {
       const select = document.getElementById('composer-resposta');
       const t = TICKETS.find(x => x.id === ATUAL);
-      if (select && t) select.innerHTML = '<option value="">Usar uma resposta pronta…</option>' + opcoesDeResposta(t);
+      if (select && t) select.innerHTML = '<option value="">Usar um comando…</option>' + opcoesDeResposta(t);
     }
   });
 }

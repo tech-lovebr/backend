@@ -564,6 +564,16 @@ function textoDeValor(v) {
   return String(v);
 }
 
+/* Unidade de cobrança com o preço ao lado: "Por pessoa · R$ 50,00". */
+function resumoDaCobranca(item, pricing, venue, price) {
+  const linhas = linhasDoPreco(pricing, venue, price);
+  const principal = linhas[0];
+  const titulo = item.cobranca
+    ? (principal && principal[1] ? `${item.cobranca} · ${principal[1]}` : item.cobranca)
+    : (principal ? `${principal[0]} · ${principal[1]}` : null);
+  return { titulo, detalhes: linhas.slice(1) };
+}
+
 function abrirDetalhe(id) {
   const item = ITENS.find(i => i.id === id);
   if (!item) return;
@@ -573,10 +583,10 @@ function abrirDetalhe(id) {
 
   const leads = EXTRAS.leads.filter(l => l.product_id === id);
   const contratacoes = leads.filter(l => l.status === 'fechado').length;
-  const favoritos = EXTRAS.favoritos.filter(x => x.produto_id === id).length;
   const cliquesTotal = CLIQUES.filter(c => c.produto_id === id).length;
   const site = linkDoSite(f, EXTRAS.sites.get(item.fornecedorId));
   const status = statusDe(item);
+  const cobranca = resumoDaCobranca(item, extra.pricing, extra.venue, p.price);
 
   const linha = (rotulo, valor) => (valor === null || valor === undefined || valor === '') ? '' : `
     <div class="dados-linha"><span class="rotulo">${escapeHtml(rotulo)}</span><span class="valor">${valor}</span></div>`;
@@ -584,6 +594,8 @@ function abrirDetalhe(id) {
     <p class="drawer-section-title">${escapeHtml(titulo)}</p>
     <div class="lista-dados">${pares.map(([r, v]) => linha(r, escapeHtml(String(v)))).join('')}</div>` : '';
   const link = (url, texto) => url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="link-convite">${escapeHtml(texto || url)}</a>` : null;
+  const caixa = (rotulo, valor) => `
+    <div class="stat-box"><span class="label">${escapeHtml(rotulo)}</span><span class="value">${valor}</span></div>`;
 
   const capa = (extra.cover && extra.cover.originalUrl) || p.cover_image_url;
   const galeria = (Array.isArray(p.gallery) ? p.gallery : []).map(g => (typeof g === 'string' ? g : g && g.url)).filter(Boolean);
@@ -593,38 +605,30 @@ function abrirDetalhe(id) {
     .filter(([, v]) => v);
 
   Drawer.open({
-    title: item.titulo,
-    subtitle: item.empresa || '',
+    title: item.empresa || 'Empresa',
+    subtitle: item.titulo,
     body: `
       ${capa ? `<img src="${escapeHtml(capa)}" alt="" class="produto-capa">` : ''}
 
       <div class="lista-dados">
-        ${linha('Status', badge(STATUS_SERVICO[status], status === 'ativo' ? 'badge-success' : status === 'inativo' ? 'badge-warning' : ''))}
         ${linha('Categoria', escapeHtml([item.categoria, item.subcategoria].filter(Boolean).join(' · ') || '—'))}
-        ${linha('Unidade de cobrança (UC)', escapeHtml(item.cobranca || '—'))}
         ${linha('Cadastrado em', escapeHtml(formatDateTime(p.created_at)))}
         ${item.suspenso && p.suspenso_em ? linha('Suspenso em', escapeHtml(formatDateTime(p.suspenso_em))) : ''}
       </div>
 
-      <p class="drawer-section-title">Números</p>
-      <div class="lista-dados">
-        ${linha('Cliques', CLIQUES_OK ? escapeHtml(`${formatNumber(cliquesTotal)} no total · ${formatNumber(cliquesDe(id))} em ${rotuloDoPeriodo().toLowerCase()}`) : '—')}
-        ${linha('Pedidos de orçamento e contatos', escapeHtml(formatNumber(leads.length)))}
-        ${linha('Contratações', escapeHtml(formatNumber(contratacoes)))}
-        ${linha('Favoritado por', escapeHtml(`${formatNumber(favoritos)} ${favoritos === 1 ? 'anfitrião' : 'anfitriões'}`))}
-        ${linha('Chats abertos por este serviço', '<span class="cell-muted">ainda não medido</span>')}
+      <div class="stat-row stat-row--compacto stat-row--tres">
+        ${caixa('Cliques', CLIQUES_OK ? formatNumber(cliquesTotal) : '—')}
+        ${caixa('Solicitações e orçamentos', formatNumber(leads.length))}
+        ${caixa('Contratações', formatNumber(contratacoes))}
       </div>
 
-      <p class="drawer-section-title">Empresa</p>
+      <p class="drawer-section-title">Preço</p>
       <div class="lista-dados">
-        ${linha('Empresa', escapeHtml(f.company_name || '—'))}
-        ${linha(f.document_type === 'cpf' ? 'CPF' : 'CNPJ', f.cnpj ? celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ') : '—')}
-        ${linha('Responsável', escapeHtml(f.contact_name || ''))}
-        ${linha('E-mail', f.email ? celulaCopiavel(f.email, 'E-mail') : '')}
-        ${linha('Telefone', escapeHtml(f.phone || ''))}
-        ${linha('Plano', escapeHtml(f.plan || 'Gratuito'))}
-        ${linha('Local', escapeHtml(item.local || ''))}
+        ${linha('Unidade de cobrança', escapeHtml(cobranca.titulo || '—'))}
+        ${cobranca.detalhes.map(([r, v]) => linha(r, escapeHtml(String(v)))).join('')}
       </div>
+
+      ${bloco('Espaço', linhasDoEspaco(extra.venue))}
 
       <p class="drawer-section-title">Links</p>
       <div class="lista-dados">
@@ -632,9 +636,6 @@ function abrirDetalhe(id) {
         ${linha('Site da empresa', link(site, site ? site.replace(/^https:\/\//, '') : null) || '<span class="cell-muted">não publicado</span>')}
         ${linha('Vídeo', link(extra.videoUrl, 'Abrir vídeo'))}
       </div>
-
-      ${bloco('Preço', linhasDoPreco(extra.pricing, extra.venue, p.price))}
-      ${bloco('Espaço', linhasDoEspaco(extra.venue))}
 
       ${p.description ? `<p class="drawer-section-title">Descrição</p><p class="texto-corrido">${escapeHtml(p.description)}</p>` : ''}
 
@@ -645,6 +646,17 @@ function abrirDetalhe(id) {
     footer: `<button type="button" class="btn btn-ghost" id="btn-fechar-servico">Fechar</button>`
   });
 
+  // Cabeçalho: status (etiqueta) à esquerda do nome da empresa, que é
+  // clicável e abre o drawer da empresa; embaixo, o nome do serviço.
+  const titulo = document.getElementById('drawer-title');
+  titulo.innerHTML = `
+    <span class="drawer-titulo-linha">
+      ${badge(STATUS_SERVICO[status], status === 'ativo' ? 'badge-success' : status === 'inativo' ? 'badge-warning' : '')}
+      <button type="button" class="link-parceiro drawer-titulo-link" id="abrir-empresa">${escapeHtml(item.empresa || 'Empresa')}</button>
+    </span>`;
+  document.getElementById('abrir-empresa').addEventListener('click', () => {
+    if (typeof ContaDrawer !== 'undefined') ContaDrawer.abrir(item.fornecedorId);
+  });
+
   document.getElementById('btn-fechar-servico').addEventListener('click', () => Drawer.close());
-  ligarAcoesDaLinha(document.getElementById('drawer-body'), () => {});
 }

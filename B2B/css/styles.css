@@ -7838,3 +7838,7 @@ body[data-theme="dark"] #conv-list .conv-item.active { border-left-color: #FFFFF
 
 /* Chat › lista de conversas: horário/data um pouco maior (12px), igual ao love.com.br. */
 html body #conv-list .conv-item-hora:not(#love-h-a) { font-size: 12px; }
+
+/* Pop-up "Adicionar comando": "Salvar comando" já na cor da sidebar. */
+.comando-popup-acoes button + button { color: #181D24; }
+body[data-theme="dark"] .comando-popup-acoes button + button { color: #FFFFFF !important; }

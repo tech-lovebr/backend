@@ -15150,7 +15150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function redesenharDigitando() {
     if (!chatEstaVisivel()) return;
     if (document.querySelector('#b2b-chat-messages-container .chat-msg-editor')) return; // edição em andamento
-    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-search-input'));
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-chat-search'));
     renderB2BChatContacts(busca ? busca.value : '');
     renderB2BChatMessages();
   }
@@ -15237,7 +15237,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function filtroDaListaDoChat() {
-    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-search-input'));
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-chat-search'));
     return busca ? busca.value : '';
   }
 
@@ -15303,14 +15303,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const ICONE_CONVERSA_FIXADA = '<svg class="conv-item-fixada" viewBox="0 0 24 24" fill="currentColor" aria-label="Fixada"><path d="M15 3.5a1 1 0 0 1 1.7-.7l4.5 4.5a1 1 0 0 1-.7 1.7h-1.3l-3.6 3.6.4 3.6a1 1 0 0 1-1.7.8L11 13.7 5.7 19 5 19l0-.7L10.3 13 6.9 9.6a1 1 0 0 1 .8-1.7l3.6.4L15 4.7V3.5Z"/></svg>';
   const ICONE_CONVERSA_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
 
-  function renderB2BChatContacts(filterQuery = '') {
+  /** Texto da busca da lista de conversas. */
+  function buscaDoChat() {
+    const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-chat-search'));
+    return campo ? campo.value : '';
+  }
+
+  function renderB2BChatContacts(filterQuery = buscaDoChat()) {
     const list = document.getElementById('b2b-chat-contacts-list');
     if (!list) return;
 
     list.innerHTML = '';
 
     if (!b2bConversationsData.length) {
-      list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Clique em "+ Nova conversa" para falar com um fornecedor.</div>';
+      list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Fale com um fornecedor pelo Explorar.</div>';
       return;
     }
 
@@ -15323,11 +15329,15 @@ document.addEventListener('DOMContentLoaded', () => {
       .map((c, i) => ({ c, i }))
       .sort((a, b) => (ordem(a.c) - ordem(b.c)) || (ordem(a.c) === -1 ? fixadas.indexOf(a.c.id) - fixadas.indexOf(b.c.id) : a.i - b.i))
       .map(x => x.c)
-      .filter(c =>
-      c.name.toLowerCase().includes(filterQuery.toLowerCase()) || 
-      c.category.toLowerCase().includes(filterQuery.toLowerCase()) ||
-      c.lastMessage.toLowerCase().includes(filterQuery.toLowerCase())
-    );
+      .filter(c => {
+        // Busca pelo nome da empresa, pela categoria ou por qualquer mensagem.
+        const q = normalizarTexto(filterQuery);
+        if (!q) return true;
+        return normalizarTexto(c.name).includes(q)
+          || normalizarTexto(c.category).includes(q)
+          || normalizarTexto(c.lastMessage).includes(q)
+          || (c.messages || []).some(m => normalizarTexto(m.text).includes(q));
+      });
 
     if (filtered.length === 0) {
       list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa encontrada.</div>';
@@ -15633,6 +15643,10 @@ document.addEventListener('DOMContentLoaded', () => {
       : `<span class="chat-avatar-iniciais">${escaparHtml(iniciaisDaConta(perfil))}</span>`;
     return `<span class="w-7 h-7 rounded-lg chat-avatar-quadrado flex-shrink-0 border border-zinc-200 overflow-hidden mb-4 inline-flex">${conteudo}</span>`;
   }
+
+  document.getElementById('b2b-chat-search')?.addEventListener('input', (e) => {
+    renderB2BChatContacts(/** @type {HTMLInputElement} */ (e.target).value);
+  });
 
   function initB2BChatHandlers() {
     const chatForm = document.getElementById('b2b-chat-form');

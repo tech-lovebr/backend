@@ -7843,3 +7843,7 @@ html body .conv-item.is-ativa:not(#love-h-a) { border-left: 4px solid #181D24 !i
    vertical cinza-clarinha à esquerda; a ativa troca para a cor da sidebar. */
 html body #b2b-chat-contacts-list .conv-item:not(#love-h-a) { border-left: 4px solid #E4E4E7 !important; }
 html body #b2b-chat-contacts-list .conv-item.is-ativa:not(#love-h-a) { border-left-color: #181D24 !important; }
+
+/* Chat › lista: horário/data um pouco maiores; busca no topo da lista. */
+html body #b2b-chat-contacts-list .conv-item-hora:not(#love-h-a) { font-size: 12px; }
+html body #b2b-chat-search:not(#love-h-a):focus { border-color: #181D24; box-shadow: none; }

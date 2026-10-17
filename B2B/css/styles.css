@@ -7622,3 +7622,27 @@ body[data-theme="dark"] .status-badge.status-ativo { background: transparent !im
 .status-badge.status-ativo::before { background: #183b54; }
 body[data-theme="dark"] .status-badge.status-ativo { color: #9CC3E4 !important; }
 body[data-theme="dark"] .status-badge.status-ativo::before { background: #9CC3E4 !important; }
+
+/* Drawer de produto › local: campos mais curtos, endereço obrigatório. */
+.campo-obrigatorio { color: #B91C1C; font-weight: 600; }
+.local-linha-curta { grid-template-columns: 96px 180px; }
+.local-linha-cidade { grid-template-columns: 80px minmax(0, 240px); }
+.local-campo-area { max-width: 160px; }
+/* Dias de funcionamento ocupando a largura toda (7 colunas iguais). */
+#product-weekday-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.4rem; }
+#product-weekday-row .weekday-toggle-chip { min-width: 0; width: 100%; }
+/* Mídia: fotos maiores. */
+.product-gallery-tile, .product-gallery-add { width: 120px; height: 120px; }
+/* Redes sociais. */
+.produto-redes { display: flex; gap: 0.5rem; }
+.produto-rede-btn {
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; color: #52525B; cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+.produto-rede-btn svg { width: 18px; height: 18px; }
+.produto-rede-btn:hover, .produto-rede-btn.is-ativo { border-color: #181D24; color: #181D24; }
+.produto-redes-campos { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem; }
+.produto-redes-campos:not(:has(.produto-rede-campo:not([hidden]))) { margin-top: 0; }
+.produto-rede-campo[hidden] { display: none !important; }
+body[data-theme="dark"] .produto-rede-btn { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }

@@ -187,6 +187,7 @@ async function loadProducts() {
     pricing: (p.extra && p.extra.pricing) || null,
     scope: (p.extra && p.extra.scope) || { included: [], excluded: [] },
     sku: (p.extra && p.extra.sku) || '',
+    social: (p.extra && p.extra.social) || {},
     packages: Array.isArray(p.extra && p.extra.packages) ? p.extra.packages : [],
     addons: Array.isArray(p.extra && p.extra.addons) ? p.extra.addons : [],
     rascunho: !!(p.extra && p.extra.rascunho),
@@ -428,6 +429,49 @@ function initPacotes() {
 const pacotesParaSalvar = (lista, comDescricao) => lista
   .map(i => ({ id: i.id, name: String(i.name || '').trim(), price: Number(i.price) || 0, ...(comDescricao ? { description: String(i.description || '').trim(), sku: limparSku(i.sku) } : {}) }))
   .filter(i => i.name);
+
+/* -------------------- Redes sociais (Mídia) --------------------
+   Clicar no ícone mostra (ou esconde, se vazio) o campo do link da rede. */
+
+const REDES_SOCIAIS = ['instagram', 'tiktok', 'facebook'];
+
+function mostrarCampoRede(rede, mostrar) {
+  const campo = document.querySelector(`[data-rede-campo="${rede}"]`);
+  const btn = document.querySelector(`[data-rede="${rede}"]`);
+  if (campo) campo.hidden = !mostrar;
+  if (btn) btn.classList.toggle('is-ativo', mostrar);
+}
+
+function initRedesSociais() {
+  document.querySelectorAll('#product-social-icons [data-rede]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rede = btn.dataset.rede;
+      const input = document.getElementById(`product-social-${rede}`);
+      const aberto = !document.querySelector(`[data-rede-campo="${rede}"]`).hidden;
+      if (aberto && !input.value.trim()) { mostrarCampoRede(rede, false); return; }
+      mostrarCampoRede(rede, true);
+      input.focus();
+    });
+  });
+}
+
+function preencherRedesSociais(social) {
+  REDES_SOCIAIS.forEach(rede => {
+    const input = document.getElementById(`product-social-${rede}`);
+    if (!input) return;
+    input.value = (social && social[rede]) || '';
+    mostrarCampoRede(rede, !!input.value);
+  });
+}
+
+function lerRedesSociais() {
+  const social = {};
+  REDES_SOCIAIS.forEach(rede => {
+    const v = (document.getElementById(`product-social-${rede}`)?.value || '').trim();
+    if (v) social[rede] = v;
+  });
+  return social;
+}
 
 /* -------------------- Upload de imagens -------------------- */
 
@@ -990,6 +1034,8 @@ function updateCategoryFieldsVisibility() {
   setPanelHidden('pricing-venue-section', !isVenue);
   setPanelHidden('pricing-standard-section', isVenue);
   setPanelHidden('pricing-type-wrap', isVenue);
+  setPanelHidden('product-sku-linha', isVenue);
+  setPanelHidden('product-addons-bloco', isVenue);
 }
 
 /* -------------------- Etapa 1: seletor de categoria + chips de subcategoria -------------------- */
@@ -1226,7 +1272,15 @@ function validateStep1() {
 
 function validateStep2() {
   const category = document.getElementById('product-category').value;
-  if (categoryGroups(category).isVenue) return true;
+  if (categoryGroups(category).isVenue) {
+    const endereco = document.getElementById('product-venue-street');
+    if (!endereco.value.trim()) {
+      showToast('Preencha o endereço do local.', true);
+      endereco.focus();
+      return false;
+    }
+    return true;
+  }
   if (!currentPricingType) {
     showToast('Selecione a unidade de cobrança.', true);
     return false;
@@ -1276,6 +1330,7 @@ function initProductDrawer() {
 
   populateVenueStateOptions();
   initPacotes();
+  initRedesSociais();
   const skuInput = document.getElementById('product-sku');
   skuInput?.addEventListener('input', () => {
     const limpo = limparSku(skuInput.value);
@@ -1310,6 +1365,7 @@ function initProductDrawer() {
     currentScopeExcluded = [];
     currentPackages = [];
     currentAddons = [];
+    preencherRedesSociais({});
     renderPacotesLista('packages');
     renderPacotesLista('addons');
 
@@ -1583,7 +1639,8 @@ function initProductDrawer() {
           // original + foco do recorte da capa (null sem capa) — ver currentCoverMeta
           cover: currentCoverImage ? currentCoverMeta : null,
           subcategory: currentSubcategory,
-          sku: limparSku(document.getElementById('product-sku').value.trim()) || null,
+          sku: isVenue ? null : (limparSku(document.getElementById('product-sku').value.trim()) || null),
+          social: lerRedesSociais(),
           pricing,
           scope: {
             included: currentScopeIncluded.map(i => i.text).filter(Boolean),
@@ -1663,6 +1720,7 @@ function openProductDrawer(id) {
   currentScopeExcluded = ((p.scope && p.scope.excluded) || []).map((text, i) => ({ id: 'se' + i, text }));
   currentPackages = (p.packages || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0, description: i.description || '', sku: i.sku || '' }));
   document.getElementById('product-sku').value = p.sku || '';
+  preencherRedesSociais(p.social || {});
   currentAddons = (p.addons || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0 }));
 
   document.getElementById('product-venue-street').value = (p.venue && (p.venue.street !== undefined ? p.venue.street : p.venue.address)) || '';

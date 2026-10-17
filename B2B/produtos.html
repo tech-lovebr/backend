@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=575">
+  <link rel="stylesheet" href="css/styles.css?v=576">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -129,7 +129,7 @@
 
           <!-- Código (SKU) — interno do fornecedor, nunca aparece na vitrine — e
                a unidade de cobrança (drop-down) lado a lado. -->
-          <div class="grid grid-cols-2 gap-4 mb-2">
+          <div class="grid grid-cols-2 gap-4 mb-2" id="product-sku-linha">
             <div>
               <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
                 <span class="info-tooltip-wrap info-tooltip-wrap--esq">
@@ -218,7 +218,7 @@
             <label class="field-label product-title-label">Detalhes do local</label>
             <div class="flex flex-col gap-4">
               <div>
-                <label for="product-venue-street" class="field-label">Endereço</label>
+                <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
                 <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
               </div>
 
@@ -228,7 +228,7 @@
                   <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
                 </div>
                 <div class="local-campo-complemento">
-                  <label for="product-venue-complement" class="field-label">Complemento (opcional)</label>
+                  <label for="product-venue-complement" class="field-label">Complemento</label>
                   <input id="product-venue-complement" type="text" class="field-input" autocomplete="off">
                 </div>
               </div>
@@ -253,36 +253,10 @@
                   <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" autocomplete="off">
                   <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
                 </div>
-                <p class="field-hint">Só a área que o evento usa, em metros quadrados.</p>
               </div>
             </div>
           </div>
 
-          <div id="pricing-venue-section" hidden>
-            <label class="field-label product-title-label">Valores</label>
-            <div class="local-valores">
-              <div class="local-valor-linha">
-                <label for="product-venue-price-weekday">Segunda a sexta</label>
-                <input id="product-venue-price-weekday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-              <div class="local-valor-linha">
-                <label for="product-venue-price-saturday">Sábado</label>
-                <input id="product-venue-price-saturday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-              <div class="local-valor-linha">
-                <label for="product-venue-price-sunday">Domingo</label>
-                <input id="product-venue-price-sunday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-              <div class="local-valor-linha">
-                <label for="product-venue-price-holiday">Feriado</label>
-                <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-            </div>
-            <div class="mt-4">
-              <label for="product-venue-cleaning-fee" class="field-label">Taxa de limpeza/caução (opcional)</label>
-              <input id="product-venue-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-            </div>
-          </div>
         </div>
 
         <!-- ETAPA 2: Detalhes (escopo do serviço & atributos) -->
@@ -347,6 +321,32 @@
                   <input id="product-venue-hours-open" type="time" class="field-input">
                   <span>até</span>
                   <input id="product-venue-hours-close" type="time" class="field-input">
+                </div>
+              </div>
+
+              <div id="pricing-venue-section">
+                <label class="field-label">Valores</label>
+                <div class="local-valores">
+                  <div class="local-valor-linha">
+                    <label for="product-venue-price-weekday">Segunda a sexta</label>
+                    <input id="product-venue-price-weekday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                  </div>
+                  <div class="local-valor-linha">
+                    <label for="product-venue-price-saturday">Sábado</label>
+                    <input id="product-venue-price-saturday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                  </div>
+                  <div class="local-valor-linha">
+                    <label for="product-venue-price-sunday">Domingo</label>
+                    <input id="product-venue-price-sunday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                  </div>
+                  <div class="local-valor-linha">
+                    <label for="product-venue-price-holiday">Feriado</label>
+                    <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <label for="product-venue-cleaning-fee" class="field-label">Taxa de limpeza/caução</label>
+                  <input id="product-venue-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
                 </div>
               </div>
 
@@ -440,7 +440,7 @@
             <button type="button" id="product-package-add-btn" class="btn-secondary product-pacotes-add">Adicionar pacote</button>
           </div>
 
-          <div class="product-pacotes">
+          <div class="product-pacotes" id="product-addons-bloco">
             <label class="field-label product-title-label">Adicionais</label>
             <p class="field-hint">Itens opcionais que o cliente pode somar ao valor.</p>
             <div id="product-addons-list" class="product-pacotes-lista"></div>
@@ -482,8 +482,34 @@
             <div class="form-section-header product-media-title">
               <label for="product-video-url">Vídeo</label>
             </div>
-            <p class="field-hint">YouTube, Vimeo</p>
-            <input id="product-video-url" type="url" class="field-input" placeholder="https://youtube.com/...">
+            <p class="field-hint">YouTube ou Vimeo</p>
+            <input id="product-video-url" type="url" class="field-input" autocomplete="off">
+          </div>
+
+          <!-- Redes sociais: clicar no ícone abre o campo do link daquela rede. -->
+          <div>
+            <div class="form-section-header product-media-title">
+              <span>Redes sociais</span>
+            </div>
+            <div class="produto-redes" id="product-social-icons">
+              <button type="button" class="produto-rede-btn" data-rede="instagram" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></button>
+              <button type="button" class="produto-rede-btn" data-rede="tiktok" title="TikTok" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 3.36-2.49V9.66a5.71 5.71 0 0 0-.76-.05A5.69 5.69 0 0 0 4.17 15.3 5.69 5.69 0 0 0 9.86 21a5.69 5.69 0 0 0 5.68-5.7V9.01a7.35 7.35 0 0 0 4.29 1.37V7.29s-1.88.09-3.23-1.47Z"/></svg></button>
+              <button type="button" class="produto-rede-btn" data-rede="facebook" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.53l.38-2.94H13.5V8.69c0-.85.24-1.43 1.46-1.43h1.55V4.63A20.6 20.6 0 0 0 14.25 4.5c-2.24 0-3.78 1.37-3.78 3.88v2.18H7.94v2.94h2.53V21h3.03Z"/></svg></button>
+            </div>
+            <div class="produto-redes-campos">
+              <div class="produto-rede-campo" data-rede-campo="instagram" hidden>
+                <label for="product-social-instagram" class="field-label">Instagram</label>
+                <input id="product-social-instagram" type="url" class="field-input" autocomplete="off">
+              </div>
+              <div class="produto-rede-campo" data-rede-campo="tiktok" hidden>
+                <label for="product-social-tiktok" class="field-label">TikTok</label>
+                <input id="product-social-tiktok" type="url" class="field-input" autocomplete="off">
+              </div>
+              <div class="produto-rede-campo" data-rede-campo="facebook" hidden>
+                <label for="product-social-facebook" class="field-label">Facebook</label>
+                <input id="product-social-facebook" type="url" class="field-input" autocomplete="off">
+              </div>
+            </div>
           </div>
 
           <!-- Logística (cidade sede / raio, montagem) e Política de cancelamento
@@ -599,6 +625,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=35"></script>
+  <script src="js/produtos.js?v=36"></script>
 </body>
 </html>

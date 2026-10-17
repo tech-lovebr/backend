@@ -7872,3 +7872,11 @@ body[data-theme="dark"] .comandos-vazio-icone { background: #1F1F1F !important; 
 .local-campo-area { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1.3fr); column-gap: 0.75rem; }
 .local-campo-area > * { grid-column: 1; }
 #product-venue-size::placeholder, #product-venue-complement::placeholder { color: #A1A1AA; opacity: 1; }
+
+/* Catálogo de serviços: "Ativo" em verde (texto e bolinha); "Rascunho" sem fundo. */
+#products-grid .status-badge.status-ativo { color: #3F6A2C; }
+#products-grid .status-badge.status-ativo::before { background: #67974E; }
+#products-grid .status-badge.status-rascunho { background: transparent; border: none; padding-left: 0; padding-right: 0; }
+body[data-theme="dark"] #products-grid .status-badge.status-ativo { color: #B7D3A8 !important; }
+body[data-theme="dark"] #products-grid .status-badge.status-ativo::before { background: #8DBF73 !important; }
+body[data-theme="dark"] #products-grid .status-badge.status-rascunho { background: transparent !important; }

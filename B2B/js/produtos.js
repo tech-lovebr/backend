@@ -306,7 +306,7 @@ function renderProducts() {
           ${p.suspenso
             ? '<span class="status-badge status-suspenso">Suspenso</span>'
             : (p.rascunho && !p.active)
-              ? '<span class="status-badge status-inativo">Rascunho</span>'
+              ? '<span class="status-badge status-inativo status-rascunho">Rascunho</span>'
               : `<span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>`}
         </div>
         ${p.sku ? `<p class="produto-sku">${escapeHtml(p.sku)}</p>` : ''}

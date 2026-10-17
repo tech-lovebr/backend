@@ -1015,11 +1015,11 @@ function updateCategoryTriggerLabel() {
   // Só o nome mais específico: "Churrasco" (não "Buffet e Gastronomia · Churrasco").
   const nome = select.value ? (currentSubcategory || select.value) : '';
   label.textContent = nome || 'Selecione a categoria...';
-  // Mídia: "Adicione mais imagens sobre o seu serviço de churrasco."
+  // Mídia: sempre a categoria principal (Sítio/Chácara → espaços para locação).
   const hint = document.getElementById('product-gallery-hint');
-  if (hint) hint.textContent = nome
-    ? `Adicione mais imagens sobre o seu serviço de ${nome.toLowerCase()}.`
-    : 'Adicione mais imagens sobre o seu serviço.';
+  if (hint) hint.textContent = select.value
+    ? `Adicione imagens sobre o seu serviço de ${select.value.toLowerCase()}.`
+    : 'Adicione imagens sobre o seu serviço.';
 }
 
 // Acordeão dentro do painel: clicar numa categoria com subcategorias expande

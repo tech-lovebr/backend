@@ -53,8 +53,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-categoria').addEventListener('change', render);
 
-  addHeaderAction('Novo parceiro', () => abrirParceiro(null), { icone: ICONE_MAIS });
-  addHeaderAction('Novo serviço', () => abrirFormulario(null), { icone: ICONE_MAIS }).className = 'btn btn-primary';
+  addHeaderAction('Novo parceiro', () => abrirParceiro(null), { icone: ICONE_MAIS, principal: true });
+  addHeaderAction('Novo serviço', () => abrirFormulario(null), { icone: ICONE_MAIS, principal: true });
   moverControlesParaHeader();
   aplicarBuscaDaUrl(document.getElementById('busca'));
 });

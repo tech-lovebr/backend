@@ -57,15 +57,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Uma aba só: a barra de abas não diz nada e some.
   document.getElementById('conteudo-tabs').hidden = true;
 
-  addHeaderAction('Banner da home', () => abrirDrawerConteudo('banner'), { icone: null }).className = 'btn btn-neutro';
+  addHeaderAction('Banner da home', () => abrirDrawerConteudo('banner'), { icone: null, principal: true });
   if (PLATAFORMA === 'fornecedor') {
-    addHeaderAction('Workshops', () => abrirDrawerConteudo('workshop'), { icone: null }).className = 'btn btn-neutro';
+    addHeaderAction('Workshops', () => abrirDrawerConteudo('workshop'), { icone: null, principal: true });
   }
 
   BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
     if (GRUPO_ATUAL === 'faq') abrirFormularioPergunta(null);
     if (GRUPO_ATUAL === 'servicos') abrirFormularioServico(null);
   }, {
+    principal: true,
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
   });
 

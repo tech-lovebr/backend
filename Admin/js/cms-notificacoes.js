@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filtro-status').addEventListener('change', render);
 
   addHeaderAction('Nova notificação', abrirComposicao, {
-    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>'
-  }).className = 'btn btn-neutro';
+    principal: true,
+$1  });
 
   moverControlesParaHeader();
 });

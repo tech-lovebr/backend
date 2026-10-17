@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filtro-origem').addEventListener('change', renderLista);
   aplicarBuscaDaUrl(document.getElementById('busca'));
 
-  addHeaderAction('Comandos', abrirBiblioteca, { icone: null });
+  addHeaderAction('Comandos', abrirBiblioteca, { icone: null, principal: true });
 
   renderContagens();
   renderLista();

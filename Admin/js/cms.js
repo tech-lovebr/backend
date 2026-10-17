@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filtro-categoria').addEventListener('change', render);
 
   addHeaderAction('Adicionar novo', () => { window.location.href = 'cms-artigo.html'; }, {
+    principal: true,
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>'
   });
   moverControlesParaHeader();

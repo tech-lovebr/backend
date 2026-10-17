@@ -4266,7 +4266,7 @@ function textoDoSaveTheDate() {
   return partes.join('\n');
 }
 
-async function imagemDoSaveTheDate() {
+async function imagemDoSaveTheDate(tipo = 'image/png') {
   const html2canvas = await carregarHtml2canvas();
   const caixa = document.createElement('div');
   caixa.className = 'std-captura';
@@ -4280,7 +4280,7 @@ async function imagemDoSaveTheDate() {
   try {
     await Promise.all([...caixa.querySelectorAll('img')].map(img => (img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))));
     const canvas = await html2canvas(caixa, { useCORS: true, backgroundColor: '#FFFFFF', scale: 2 });
-    return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    return await new Promise(resolve => canvas.toBlob(resolve, tipo, tipo === 'image/jpeg' ? 0.86 : undefined));
   } finally {
     caixa.remove();
   }
@@ -4315,25 +4315,80 @@ function podeCompartilharArquivo() {
 // texto já vai preenchido na conversa e a imagem fica copiada; é só colar
 // (Ctrl+V) na conversa escolhida. Tudo começa no próprio clique (o navegador
 // só deixa abrir janela e copiar imagem durante o clique).
-function compartilharNoWhatsappDoComputador(avisar) {
-  const texto = textoDoSaveTheDate();
-  const imagem = imagemDoSaveTheDate();
-  let copiou = Promise.resolve(false);
-  if (navigator.clipboard && window.ClipboardItem) {
-    try {
-      copiou = navigator.clipboard.write([new ClipboardItem({ 'image/png': imagem })]).then(() => true, () => false);
-    } catch (e) { copiou = Promise.resolve(false); }
+/* Save the Date por link: a imagem sobe para o Storage (bucket clientes,
+   savethedate/<id de quem compartilha>/<id do evento>.jpg — um arquivo por
+   evento, regravado) e a cópia publicada vai para convite_digital_pages com
+   { compartilhamento: { imagem, texto } } (migration 068). O link
+   love.com.br/<slug>/save-the-date (api/save-the-date.js) mostra a imagem e o
+   texto — e é ele que faz o WhatsApp exibir a imagem na conversa. */
+async function publicarSaveTheDateParaLink() {
+  const eventoId = getActiveEventUuid();
+  if (!eventoId || typeof supabaseClient === 'undefined') return null;
+  const { data: sessao } = await supabaseClient.auth.getSession();
+  const uid = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
+  if (!uid) return null;
+  // O link usa o endereço do evento (eventos.slug): garante que está salvo.
+  if (typeof window.persistirEventoAtivo === 'function') {
+    try { await window.persistirEventoAtivo(); } catch (e) { /* segue com o slug que já existe */ }
   }
-  // WhatsApp Web da própria pessoa, com a mensagem já escrita.
-  window.open('https://web.whatsapp.com/send?text=' + encodeURIComponent(texto), '_blank', 'noopener');
-  avisar('Preparando a imagem…');
-  return copiou.then(async (ok) => {
-    if (ok) { avisar('Imagem copiada. Na conversa do WhatsApp, cole com Ctrl+V — o texto já está lá.'); return true; }
-    const blob = await imagem.catch(() => null);
-    if (!blob) { avisar('Não foi possível gerar a imagem. Tente de novo.'); return false; }
-    baixarImagem(blob, 'save-the-date.png');
-    avisar('Imagem baixada. Anexe na conversa do WhatsApp — o texto já está lá.');
-    return true;
+  const ev = getActiveEventForBuilder();
+  const slug = ev && ev.slug;
+  if (!slug) return null;
+
+  const blob = await imagemDoSaveTheDate('image/jpeg');
+  if (!blob) return null;
+  const caminho = `savethedate/${uid}/${eventoId}.jpg`;
+  const { error: erroUpload } = await supabaseClient.storage.from('clientes')
+    .upload(caminho, blob, { upsert: true, cacheControl: '300', contentType: 'image/jpeg' });
+  if (erroUpload) { console.error('Save the Date: imagem no Storage', erroUpload); return null; }
+  const versao = Date.now().toString(36);
+  const imagem = supabaseClient.storage.from('clientes').getPublicUrl(caminho).data.publicUrl + '?v=' + versao;
+  const texto = textoDoSaveTheDate();
+  const agora = new Date().toISOString();
+  const { error } = await supabaseClient.from('convite_digital_pages').upsert({
+    evento_id: eventoId, page_key: 'savethedate', state: builderState,
+    published_state: Object.assign({}, builderState, { compartilhamento: { imagem, texto } }),
+    published_at: agora, updated_at: agora
+  }, { onConflict: 'evento_id,page_key' });
+  if (error) { console.error('Save the Date: publicar', error); return null; }
+  // ?v= muda a cada compartilhamento: o WhatsApp não reaproveita a prévia antiga.
+  return { link: `https://love.com.br/${slug}/save-the-date?v=${versao}`, texto };
+}
+
+// WhatsApp no computador: abre o WhatsApp Web da pessoa com o texto + o link
+// do Save the Date — o WhatsApp mostra a imagem na conversa pelo link. A
+// janela abre já no clique (senão o navegador bloqueia) e recebe o endereço
+// do WhatsApp quando a imagem termina de subir.
+function compartilharNoWhatsappDoComputador(avisar) {
+  const janela = window.open('', '_blank');
+  if (janela) {
+    try {
+      janela.document.write('<title>Save the Date</title><p style="font-family:Inter,Segoe UI,sans-serif;color:#52525B;padding:24px">Preparando o Save the Date…</p>');
+    } catch (e) { /* janela em outro endereço */ }
+  }
+  avisar('Preparando o Save the Date…');
+  const abrirWhatsapp = (mensagem) => {
+    const url = 'https://web.whatsapp.com/send?text=' + encodeURIComponent(mensagem);
+    if (janela && !janela.closed) janela.location.href = url;
+    else window.open(url, '_blank');
+  };
+  return publicarSaveTheDateParaLink().then(async (pronto) => {
+    if (pronto) {
+      abrirWhatsapp(`${pronto.texto}\n\n${pronto.link}`);
+      avisar('Pronto! O WhatsApp Web abriu com a mensagem — a imagem aparece pelo link.');
+      return true;
+    }
+    // Sem como publicar (sem login/evento salvo): só o texto e a imagem baixada.
+    abrirWhatsapp(textoDoSaveTheDate());
+    const blob = await imagemDoSaveTheDate().catch(() => null);
+    if (blob) baixarImagem(blob, 'save-the-date.png');
+    avisar('Não foi possível criar o link. A imagem foi baixada — anexe na conversa.');
+    return !!blob;
+  }).catch((e) => {
+    console.error('Save the Date: compartilhar', e);
+    if (janela && !janela.closed) janela.close();
+    avisar('Não foi possível compartilhar agora. Tente de novo.');
+    return false;
   });
 }
 
@@ -4366,8 +4421,10 @@ async function compartilharSaveTheDate(canal, status) {
   } else if (canal === 'instagram') {
     avisar('Imagem baixada. Publique no Instagram pelo celular.');
   } else {
-    window.location.href = 'mailto:?subject=' + encodeURIComponent('Save the Date') + '&body=' + encodeURIComponent(texto);
-    avisar('Imagem baixada. Anexe ao e-mail.');
+    const pronto = await publicarSaveTheDateParaLink().catch(() => null);
+    const corpo = pronto ? `${pronto.texto}\n\n${pronto.link}` : texto;
+    window.location.href = 'mailto:?subject=' + encodeURIComponent('Save the Date') + '&body=' + encodeURIComponent(corpo);
+    avisar(pronto ? 'O e-mail abriu com o texto e o link do Save the Date (a imagem também foi baixada).' : 'Imagem baixada. Anexe ao e-mail.');
   }
   return true;
 }

@@ -451,6 +451,50 @@ function textoNoFormatoWhatsapp(el) {
   return el;
 }
 
+/* Save the Date = capa + UMA mensagem (o texto que vai no WhatsApp, com
+   *negrito*). A mensagem fica em state.mensagem; a seção de texto do canvas
+   é gerada a partir dela (um único bloco, sem mover/duplicar/excluir). */
+function mensagemEmHtml(mensagem) {
+  return escapeHtml(mensagem || '')
+    .replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+// Estado antigo (vários títulos/textos): junta tudo numa mensagem só.
+function mensagemDosElementos(state) {
+  const div = document.createElement('div');
+  const partes = [];
+  (state.sections || []).filter(s => !s.hidden).forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(el => {
+    if ((el.type === 'titulo' || el.type === 'texto') && el.content) {
+      div.innerHTML = String(el.content).replace(/<br\s*\/?>/gi, '\n');
+      const t = (div.innerText || div.textContent || '').trim();
+      if (!t) return;
+      const peso = String((el.styles && el.styles.desktop && el.styles.desktop.fontWeight) || (el.type === 'titulo' ? '700' : ''));
+      const negrito = peso === 'bold' || Number(peso) >= 600;
+      partes.push(negrito ? t.split('\n').map(l => (l.trim() ? `*${l.trim()}*` : l)).join('\n') : t);
+    }
+  })));
+  return partes.join('\n');
+}
+
+// Deixa o Save the Date no formato: [capa, bloco da mensagem].
+function normalizarSaveTheDate(state) {
+  if (!state) return state;
+  state.sections = (state.sections || []).filter(s => !s.isQuickNav && !s.isGiftsBlock);
+  if (typeof state.mensagem !== 'string') state.mensagem = mensagemDosElementos(state);
+  const capa = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) || createSection();
+  (capa.columns || []).forEach(col => { col.elements = []; });
+  const texto = createElement('texto');
+  texto.id = 'std-mensagem';
+  texto.content = mensagemEmHtml(state.mensagem);
+  textoNoFormatoWhatsapp(texto);
+  texto.styles.desktop.fontWeight = '400';
+  const secao = state.sections.find(s => s !== capa && s.id === 'std-texto') || { id: 'std-texto', hidden: false, columns: [{ id: 'std-texto-col', width: 100, elements: [] }] };
+  secao.columns = [{ id: 'std-texto-col', width: 100, elements: [texto] }];
+  state.sections = [capa, secao];
+  return state;
+}
+
 function defaultSaveTheDateState() {
   const ev = getActiveEventForBuilder();
   // Mesma capa e cor do Convite Digital.
@@ -471,14 +515,14 @@ function defaultSaveTheDateState() {
   const aviso = createElement('texto');
   aviso.content = 'Reserve a data! O convite chega em breve.';
   [titulo, nomes, data, aviso].forEach(textoNoFormatoWhatsapp);
-  return {
+  return normalizarSaveTheDate({
     name: 'Save the Date',
     globalStyle: { primaryColor: cor, radius: 16, sectionSpacing: 32 },
     sections: [
       { id: uid('sec'), hidden: false, bgImage: capaImg, columns: [{ id: uid('col'), width: 100, elements: [] }] },
       { id: uid('sec'), hidden: false, columns: [{ id: uid('col'), width: 100, elements: [titulo, nomes, data, aviso] }] }
     ]
-  };
+  });
 }
 
 function loadSaveTheDateState() {
@@ -488,12 +532,10 @@ function loadSaveTheDateState() {
       const parsed = JSON.parse(raw);
       if (!parsed.globalStyle) parsed.globalStyle = { primaryColor: '#537bae', radius: 16, sectionSpacing: 32 };
       if (!Array.isArray(parsed.sections) || !parsed.sections.length) return defaultSaveTheDateState();
-      // Save the Date não tem botões.
-      parsed.sections = parsed.sections.filter(s => !s.isQuickNav && !s.isGiftsBlock);
+      // Save the Date não tem botões; o texto é uma mensagem única.
       tirarElementosDaCapa(parsed);
       migrateElementDefaults(parsed);
-      parsed.sections.forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(textoNoFormatoWhatsapp)));
-      return parsed;
+      return normalizarSaveTheDate(parsed);
     }
   } catch (e) { /* ignora estado corrompido */ }
   return defaultSaveTheDateState();
@@ -658,7 +700,7 @@ async function syncBuilderStateFromSupabase(pageKey) {
     localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(row.state));
     if (pageKey === currentPageKey) {
       builderState = row.state;
-      if (pageKey === 'savethedate') builderState.sections = (builderState.sections || []).filter(s => !s.isQuickNav && !s.isGiftsBlock);
+      if (pageKey === 'savethedate') normalizarSaveTheDate(builderState);
       else migrateQuickNavSection(builderState);
       tirarElementosDaCapa(builderState);
       migrateElementDefaults(builderState);
@@ -716,6 +758,8 @@ function switchBuilderPage(pageKey) {
 // Convite Digital: Salvar + Publicar. Save the Date: Salvar + Compartilhar.
 function atualizarBotoesDaPagina() {
   const ehSaveTheDate = currentPageKey === 'savethedate';
+  const raiz = document.getElementById('site-builder-root');
+  if (raiz) raiz.dataset.pagina = currentPageKey;
   document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate);
   document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
   document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
@@ -1060,7 +1104,8 @@ function renderLeftPanel() {
   const panel = document.getElementById('builder-elements-panel');
   if (!panel) return;
 
-  const sel = findSelected();
+  // Save the Date: o painel é sempre o "Editar texto" (nada no canvas abre outro painel).
+  const sel = currentPageKey === 'savethedate' ? null : findSelected();
   if (sel) {
     renderElementEditorPanel(panel, sel);
     const canvas = document.getElementById('builder-canvas');
@@ -1068,13 +1113,15 @@ function renderLeftPanel() {
     return;
   }
 
+  const ehSaveTheDate = currentPageKey === 'savethedate';
   panel.innerHTML = `
     <div class="builder-panel-tabs">
-      <span class="builder-panel-tab builder-panel-tab-rotulo active" style="cursor:default;">Elementos</span>
+      <span class="builder-panel-tab builder-panel-tab-rotulo active" style="cursor:default;">${ehSaveTheDate ? 'Editar texto' : 'Elementos'}</span>
     </div>
     <div class="builder-panel-tab-body" id="builder-panel-tab-body"></div>
   `;
-  renderElementosTab(document.getElementById('builder-panel-tab-body'));
+  if (ehSaveTheDate) renderEditorDeTextoSaveTheDate(document.getElementById('builder-panel-tab-body'));
+  else renderElementosTab(document.getElementById('builder-panel-tab-body'));
 
   const canvas = document.getElementById('builder-canvas');
   if (canvas) initSortables(canvas);
@@ -1084,6 +1131,52 @@ function renderLeftPanel() {
 const ELEMENT_GROUPS_SAVETHEDATE = [
   { title: 'Básicos', types: ['titulo', 'texto'] }
 ];
+
+// Save the Date › Editar texto: uma caixa só com a mensagem e o Negrito
+// (no WhatsApp, negrito = *texto*). Selecione o trecho e clique em Negrito.
+function renderEditorDeTextoSaveTheDate(body) {
+  body.innerHTML = `
+    <div class="std-editor">
+      <div class="std-editor-barra">
+        <button type="button" class="std-editor-negrito" data-std-negrito title="Negrito (selecione o trecho)" aria-label="Negrito">${BI.bold}</button>
+        <span class="std-editor-dica">Selecione o trecho e clique em <strong>B</strong> para negrito.</span>
+      </div>
+      <textarea class="inspector-textarea std-texto-grande std-editor-texto" id="std-editor-texto" rows="14" placeholder="Escreva o Save the Date…">${escapeHtml(builderState.mensagem || '')}</textarea>
+    </div>`;
+  const campo = /** @type {HTMLTextAreaElement} */ (body.querySelector('#std-editor-texto'));
+  let historicoTimer = null;
+  const aplicar = () => {
+    builderState.mensagem = campo.value;
+    normalizarSaveTheDate(builderState);
+    hasUnsavedChanges = true;
+    renderCanvasOnly();
+    clearTimeout(historicoTimer);
+    historicoTimer = setTimeout(pushHistory, 600);
+  };
+  campo.addEventListener('input', aplicar);
+  body.querySelector('[data-std-negrito]').addEventListener('mousedown', (e) => e.preventDefault()); // mantém a seleção
+  body.querySelector('[data-std-negrito]').addEventListener('click', () => {
+    const ini = campo.selectionStart, fim = campo.selectionEnd;
+    const v = campo.value;
+    if (ini === fim) { campo.focus(); return; }
+    const trecho = v.slice(ini, fim);
+    // Já está em negrito (*trecho* ou com os * logo fora da seleção)? Tira.
+    if (/^\*[^*]+\*$/.test(trecho)) {
+      campo.value = v.slice(0, ini) + trecho.slice(1, -1) + v.slice(fim);
+      campo.setSelectionRange(ini, fim - 2);
+    } else if (v[ini - 1] === '*' && v[fim] === '*') {
+      campo.value = v.slice(0, ini - 1) + trecho + v.slice(fim + 1);
+      campo.setSelectionRange(ini - 1, fim - 1);
+    } else {
+      // Negrito linha a linha (o WhatsApp não junta * entre linhas).
+      const novo = trecho.split('\n').map(l => (l.trim() ? `*${l}*` : l)).join('\n');
+      campo.value = v.slice(0, ini) + novo + v.slice(fim);
+      campo.setSelectionRange(ini, ini + novo.length);
+    }
+    campo.focus();
+    aplicar();
+  });
+}
 
 function renderElementosTab(body) {
   const grupos = currentPageKey === 'savethedate' ? ELEMENT_GROUPS_SAVETHEDATE : ELEMENT_GROUPS;
@@ -1975,6 +2068,11 @@ function renderElementBlockHtml(el, mode, device) {
   mode = mode || 'edit';
   device = device || currentDevice;
   const align = styleValue(el, 'textAlign', device);
+
+  // Save the Date: a mensagem é um bloco só, editado no painel "Editar texto".
+  if (mode !== 'preview' && currentPageKey === 'savethedate') {
+    return `<div class="builder-element std-mensagem-bloco"${align ? ` style="text-align:${align};"` : ''}>${renderElementContent(el, device, 'preview')}</div>`;
+  }
 
   if (mode === 'preview') {
     return `<div class="builder-element" data-element-id="${el.id}" data-element-type="${el.type}"${align ? ` style="text-align:${align};"` : ''}>${renderElementContent(el, device, 'preview')}</div>`;
@@ -4334,6 +4432,7 @@ function carregarHtml2canvas() {
 }
 
 function textoDoSaveTheDate() {
+  if (currentPageKey === 'savethedate' && typeof builderState.mensagem === 'string') return builderState.mensagem.trim();
   const div = document.createElement('div');
   const partes = [];
   (builderState.sections || []).filter(s => !s.hidden).forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(el => {

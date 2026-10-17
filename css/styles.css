@@ -7932,3 +7932,23 @@ body[data-theme="dark"] #builder-elements-panel .builder-panel-tab.builder-panel
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .be-social svg { width: 15px; height: 15px; }
+
+/* Save the Date › Editar texto: barra com o Negrito + caixa única. */
+.std-editor { display: flex; flex-direction: column; gap: 8px; }
+.std-editor-barra { display: flex; align-items: center; gap: 8px; }
+.std-editor-negrito {
+  width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; color: #181D24; cursor: pointer;
+}
+.std-editor-negrito:hover { border-color: #181D24; }
+.std-editor-negrito svg { width: 15px; height: 15px; }
+.std-editor-dica { font-size: 11.5px; color: #71717A; line-height: 1.35; }
+html body textarea.std-editor-texto:not(#love-h-a) { min-height: 320px !important; font-size: 13.5px; }
+/* Bloco da mensagem no canvas: não é selecionável nem arrastável. */
+#builder-canvas .std-mensagem-bloco { cursor: default; }
+body[data-theme="dark"] .std-editor-negrito { background: #252525; border-color: #404040; color: #FFFFFF; }
+html body textarea.std-editor-texto:not(#love-h-a) { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+/* Save the Date: sem barras de seção nem "arraste uma seção aqui" (só a capa e a mensagem). */
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-block-toolbar,
+#site-builder-root[data-pagina="savethedate"] #builder-canvas-end-dropzone,
+#site-builder-root[data-pagina="savethedate"] [data-new-section-dropzone] { display: none !important; }

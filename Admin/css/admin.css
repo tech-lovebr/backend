@@ -1093,8 +1093,14 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
   gap: .25rem;
   border-bottom: 1px solid var(--border);
   margin-bottom: 1.25rem;
+  /* Rola de lado em tela estreita, mas nunca na vertical: a linha da aba
+     ativa passa 1px para baixo e fazia aparecer uma barra com setinhas. */
   overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
+
+.conteudo-tabs::-webkit-scrollbar { display: none; }
 
 .conteudo-tab {
   border: 0;

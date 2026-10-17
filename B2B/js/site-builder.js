@@ -123,7 +123,7 @@ const LAYOUT_PRESETS = [
 
 const ELEMENT_GROUPS = [
   { title: 'Básicos', types: ['texto', 'titulo', 'imagem', 'botao', 'video', 'icone', 'separador', 'espacamento', 'link', 'lista'] },
-  { title: 'Avançado', types: ['galeria', 'carrossel', 'depoimentos', 'mapa', 'redes'] }
+  { title: 'Avançado', types: ['galeria', 'carrossel', 'mapa', 'redes'] }
 ];
 
 function blockPreviewHtml(widths) {

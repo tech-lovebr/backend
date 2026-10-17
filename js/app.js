@@ -15354,7 +15354,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="conv-item-canto">
               ${fixadas.includes(conv.id) ? ICONE_CONVERSA_FIXADA : ''}
               <span class="conv-item-hora text-[10px] text-zinc-400">${conv.time}</span>
-              ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu title="Mais opções" aria-label="Mais opções da conversa">${ICONE_CONVERSA_MAIS}</button>`}
+              ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu aria-label="Mais opções da conversa">${ICONE_CONVERSA_MAIS}</button>`}
             </span>
           </div>
           <div class="flex items-center justify-between gap-2">

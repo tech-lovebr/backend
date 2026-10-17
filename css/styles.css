@@ -7822,3 +7822,11 @@ body[data-theme="dark"] .conv-menu button { color: #F4F4F5 !important; }
 body[data-theme="dark"] .conv-menu button:hover { background: #333333 !important; }
 body[data-theme="dark"] .conv-menu .conv-menu-perigo { color: #F87171 !important; }
 body[data-theme="dark"] .conv-item-mais { color: #D4D4D8; }
+/* Chat › ⋯ da conversa: sem fundo nem efeito no hover — cinza médio, e
+   preto quando o mouse passa por cima. */
+html body .conv-item-mais:not(#love-h-a),
+html body .conv-item-mais:not(#love-h-a):hover,
+html body .conv-item-mais:not(#love-h-a):focus,
+html body .conv-item-mais:not(#love-h-a):active { background: none !important; box-shadow: none !important; transform: none !important; animation: none !important; color: #71717A; transition: color .15s; }
+html body .conv-item-mais:not(#love-h-a):hover,
+html body .conv-item.menu-aberto .conv-item-mais:not(#love-h-a) { color: #181D24; }

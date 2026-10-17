@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // bucket clientes (avatar/<id>/…, migration 065) e vira clientes.avatar_url
   // — a mesma do cabeçalho, do menu do perfil e do chat.
   const ICONE_MAIS_FOTO = '<span class="conta-avatar-mais" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>';
-  const ICONE_LAPIS_FOTO = '<span class="conta-avatar-lapis" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/></svg></span>';
+  const ICONE_LAPIS_FOTO = '<span class="conta-avatar-lapis" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/><path d="M14.5 6.85l2.65 2.65"/></svg></span>';
 
   function desenharFotoDaConta() {
     const caixa = document.getElementById('conta-avatar-picker');

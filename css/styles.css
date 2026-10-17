@@ -7767,3 +7767,8 @@ html body #wallet-sub-budget > .budget-table-full-bleed:not(#love-h-a) { margin-
 @media (max-width: 639px) { .conta-perfil-topo { flex-direction: column; gap: 1rem; } }
 body[data-theme="dark"] .conta-avatar-picker { background: #1c1c1c !important; border-color: #404040 !important; }
 body[data-theme="dark"] .conta-avatar-mais, body[data-theme="dark"] .conta-avatar-lapis { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+/* Lápis da foto de perfil: mesmo estilo do Hub — bolinha translúcida com
+   desfoque também no modo escuro, lápis #181D24 no claro. */
+html body .conta-avatar-lapis:not(#love-h-a) { color: #181D24; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(228, 228, 231, 0.7); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+html body[data-theme="dark"] .conta-avatar-lapis:not(#love-h-a) { background: rgba(37, 37, 37, 0.7) !important; }
+html body .conta-avatar-picker:hover .conta-avatar-lapis:not(#love-h-a) { border-color: #181D24; }

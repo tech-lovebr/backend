@@ -11345,7 +11345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const link = input.value.trim();
     if (!link) { status.textContent = ''; status.classList.add('hidden'); return; }
     const ok = !!idDoVideoYoutube(link);
-    status.textContent = ok ? 'Música do YouTube encontrada. Ela toca de fundo no convite publicado.' : 'Esse link não é de um vídeo do YouTube. Confira e cole de novo.';
+    status.textContent = ok ? 'Música que irá tocar no convite publicado.' : 'Esse link não é de um vídeo do YouTube. Confira e cole de novo.';
     status.classList.remove('hidden');
     status.classList.toggle('text-emerald-600', ok);
     status.classList.toggle('text-rose-600', !ok);

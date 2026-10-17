@@ -507,7 +507,6 @@ async function prepararFormularioVazio(modo) {
   document.getElementById('proposal-date').value = hojeBR();
   document.getElementById('proposal-extra-items').innerHTML = '';
   document.getElementById('proposal-items-body').innerHTML = '';
-  document.getElementById('proposal-condicoes').hidden = true;
   const cat = document.getElementById('proposal-category');
   if (cat) { cat.value = ''; populateProposalProductPicker(); }
   renderProposalSellerField();
@@ -585,38 +584,7 @@ async function abrirPropostaParaVer(o, status) {
   mostrarFormularioProposta('Proposta nº ' + (o.numero || '—'));
 }
 
-/* -------------------- Serviço escolhido: cobrança e itens -------------------- */
-
-function textoCobrancaDoProduto(p) {
-  const pr = (p.extra && p.extra.pricing) || null;
-  const linhas = [];
-  if (pr && pr.type === 'POR_PESSOA' && pr.perPerson) {
-    linhas.push(['Unidade de cobrança', 'Por pessoa']);
-    linhas.push(['Valor por pessoa', formatCurrency(pr.perPerson.pricePerPerson || 0)]);
-    if (pr.perPerson.minPeople) linhas.push(['Mínimo de pessoas', String(pr.perPerson.minPeople)]);
-    if (pr.perPerson.maxPeople) linhas.push(['Máximo de pessoas', String(pr.perPerson.maxPeople)]);
-  } else if (pr && pr.type === 'POR_HORA' && pr.perHour) {
-    linhas.push(['Unidade de cobrança', 'Por hora']);
-    linhas.push(['Valor da hora', formatCurrency(pr.perHour.pricePerHour || 0)]);
-    if (pr.perHour.minHours) linhas.push(['Mínimo de horas', String(pr.perHour.minHours)]);
-    if (pr.perHour.extraHourPrice) linhas.push(['Hora adicional', formatCurrency(pr.perHour.extraHourPrice)]);
-  } else if (pr && pr.type === 'VALOR_FIXO' && pr.fixed) {
-    linhas.push(['Unidade de cobrança', 'Valor fixo']);
-    linhas.push(['Valor total do pacote', formatCurrency(pr.fixed.price || 0)]);
-    if (pr.fixed.durationValue) linhas.push(['Duração/permanência', `${pr.fixed.durationValue} ${pr.fixed.durationUnit || 'horas'}`]);
-  } else if (pr && pr.type === 'SOB_CONSULTA') {
-    linhas.push(['Unidade de cobrança', 'Sob consulta']);
-    const inicial = pr.onRequest && pr.onRequest.startingPrice;
-    if (inicial) linhas.push(['A partir de', formatCurrency(inicial)]);
-  } else if (Number(p.price) > 0) {
-    linhas.push(['Valor', formatCurrency(p.price)]);
-  }
-  const log = (p.extra && p.extra.logistics) || {};
-  const raio = log.serviceRadiusKm || (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.serviceRadiusKm) || null;
-  if (raio) linhas.push(['Atendimento sem taxa até', `${raio} km`]);
-  if (log.extraKmFee) linhas.push(['Valor por km adicional', formatCurrency(log.extraKmFee)]);
-  return linhas;
-}
+/* -------------------- Serviço escolhido: itens -------------------- */
 
 function preencherItem(row, { name, unit, qty, unitPrice }) {
   const nameInput = row.querySelector('[data-item-name]');
@@ -646,15 +614,6 @@ function aplicarProdutoNaProposta(p) {
   // Introdução = descrição do serviço (só se ainda estiver vazia).
   const intro = document.getElementById('proposal-intro');
   if (intro && !intro.value.trim() && p.description) intro.value = p.description;
-
-  // Condições do serviço.
-  const box = document.getElementById('proposal-condicoes');
-  const linhas = textoCobrancaDoProduto(p);
-  if (box) {
-    box.innerHTML = `<p class="proposal-condicoes-titulo">Como "${escapeHtml(p.name)}" é cobrado</p>` +
-      linhas.map(([k, v]) => `<div class="proposal-condicoes-linha"><span>${escapeHtml(k)}</span><strong>${escapeHtml(v)}</strong></div>`).join('');
-    box.hidden = !linhas.length;
-  }
 
   // Itens conforme a unidade de cobrança.
   const body = document.getElementById('proposal-items-body');

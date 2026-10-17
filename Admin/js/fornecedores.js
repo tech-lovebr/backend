@@ -205,21 +205,20 @@ function renderKpis() {
   // Faturamento bruto: tudo que os fornecedores fecharam em contrato, pago ou não.
   const tpv = soma('tpv');
   const faturamentoBruto = soma('valorContratos');
-  const contratosAtivos = soma('contratosAtivos');
-  const valorAtivo = soma('valorContratosAtivos');
 
-  const tile = (label, value, sub) => `
+  // Três caixas, só título e número.
+  const tile = (label, value) => `
     <div class="kpi">
       <p class="kpi-label">${label}</p>
       <p class="kpi-value">${value}</p>
-      <p class="kpi-sub">${sub}</p>
     </div>`;
 
-  document.getElementById('kpi-grid').innerHTML = [
-    tile('Fornecedores', formatNumber(FORNECEDORES.length), `${FORNECEDORES.filter(f => f.status !== 'suspenso').length} ativos`),
-    tile('TPV', formatCurrency(tpv), 'Pago via links de pagamento'),
-    tile('Faturamento bruto', formatCurrency(faturamentoBruto), 'Valor total dos contratos'),
-    tile('Contratos ativos', formatNumber(contratosAtivos), `${formatCurrency(valorAtivo)} em aberto`)
+  const grade = document.getElementById('kpi-grid');
+  grade.classList.add('kpi-grid--tres');
+  grade.innerHTML = [
+    tile('Total de fornecedores', formatNumber(FORNECEDORES.length)),
+    tile('TPV', formatCurrency(tpv)),
+    tile('Faturamento bruto', formatCurrency(faturamentoBruto))
   ].join('');
 }
 

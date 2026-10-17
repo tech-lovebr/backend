@@ -3386,3 +3386,7 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .admin-nav-grupo-toggle { border: 0; font-family: inherit; }
 .admin-nav-grupo-toggle .sidebar-chevron { margin-left: auto; transition: transform .2s ease; }
 .admin-nav-grupo-toggle.is-open .sidebar-chevron { transform: rotate(180deg); }
+
+/* Três indicadores ocupando a largura toda. */
+.kpi-grid--tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 760px) { .kpi-grid--tres { grid-template-columns: 1fr; } }

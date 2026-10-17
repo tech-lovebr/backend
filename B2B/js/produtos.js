@@ -879,7 +879,7 @@ function updateCategoryFieldsVisibility() {
 
 /* -------------------- Etapa 1: seletor de categoria + chips de subcategoria -------------------- */
 
-// Seletor fechado por padrão ("Selecione a categoria principal..."); clicar
+// Seletor fechado por padrão ("Selecione a categoria..."); clicar
 // abre um painel com busca + lista simples (sem acordeão — subcategoria
 // agora é uma linha de chips separada, logo abaixo do seletor). O
 // <select id="product-category"> continua existindo (só escondido) pra
@@ -916,8 +916,14 @@ function updateCategoryTriggerLabel() {
   const select = document.getElementById('product-category');
   const label = document.getElementById('product-category-trigger-label');
   if (!select || !label) return;
-  if (!select.value) { label.textContent = 'Selecione a categoria principal...'; return; }
-  label.textContent = currentSubcategory ? `${select.value} · ${currentSubcategory}` : select.value;
+  // Só o nome mais específico: "Churrasco" (não "Buffet e Gastronomia · Churrasco").
+  const nome = select.value ? (currentSubcategory || select.value) : '';
+  label.textContent = nome || 'Selecione a categoria...';
+  // Mídia: "Adicione mais imagens sobre o seu serviço de churrasco."
+  const hint = document.getElementById('product-gallery-hint');
+  if (hint) hint.textContent = nome
+    ? `Adicione mais imagens sobre o seu serviço de ${nome.toLowerCase()}.`
+    : 'Adicione mais imagens sobre o seu serviço.';
 }
 
 // Acordeão dentro do painel: clicar numa categoria com subcategorias expande

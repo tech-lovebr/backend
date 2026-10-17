@@ -85,10 +85,10 @@
         <!-- ETAPA 1: Identificação & Taxonomia -->
         <div class="product-wizard-panel product-wizard-panel-spaced" data-step="1">
           <div>
-            <label class="field-label product-title-label">Categoria principal</label>
+            <label class="field-label product-title-label">Categoria</label>
             <div class="category-select" id="product-category-select">
               <button type="button" class="category-select-trigger" id="product-category-trigger">
-                <span id="product-category-trigger-label">Selecione a categoria principal...</span>
+                <span id="product-category-trigger-label">Selecione a categoria...</span>
                 <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
               </button>
               <div class="category-select-panel" id="product-category-panel" hidden>
@@ -433,7 +433,7 @@
         <!-- ETAPA 4: Mídia -->
         <div class="product-wizard-panel" data-step="4">
 
-          <!-- Títulos "Imagem de capa" e "Carrossel de imagens" no tamanho de
+          <!-- Títulos "Imagem de capa" e "Adicione mais imagens" no tamanho de
                seção (sem ícone), cada um com o conteúdo logo abaixo. -->
           <div>
             <div class="form-section-header product-media-title">
@@ -445,9 +445,10 @@
 
           <div>
             <div class="form-section-header product-media-title">
-              <span>Carrossel de imagens</span>
+              <span>Adicione mais imagens</span>
               <span class="text-xs text-zinc-400 ml-auto font-normal" id="product-gallery-count"></span>
             </div>
+            <p class="field-hint" id="product-gallery-hint">Adicione mais imagens sobre o seu serviço.</p>
             <!-- Carrossel de quadradinhos (até 6), do jeito que aparecem na
                  galeria do fornecedor — ver renderGalleryImages em
                  js/produtos.js. -->
@@ -574,6 +575,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=28"></script>
+  <script src="js/produtos.js?v=29"></script>
 </body>
 </html>

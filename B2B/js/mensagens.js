@@ -307,19 +307,16 @@ function fecharMenuConversa() {
 
 function abrirMenuConversa(btn, conv) {
   fecharMenuConversa();
-  const fixada = conversasFixadas().includes(conv.id);
   const menu = document.createElement('div');
   menu.className = 'conv-menu';
   menu.setAttribute('role', 'menu');
   menu.innerHTML = `
-    <button type="button" role="menuitem" data-conv-fixar>${fixada ? 'Desafixar' : 'Fixar'}</button>
-    <button type="button" role="menuitem" data-conv-excluir>Excluir chat</button>`;
+    <button type="button" role="menuitem" data-conv-excluir>Excluir</button>`;
   document.body.appendChild(menu);
   const r = btn.getBoundingClientRect();
   menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
   menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
   btn.closest('.conv-item')?.classList.add('menu-aberto');
-  menu.querySelector('[data-conv-fixar]').addEventListener('click', () => { fecharMenuConversa(); alternarFixada(conv.id); });
   menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
     fecharMenuConversa();
     const excluir = () => excluirConversaDaLista(conv.id);
@@ -429,7 +426,7 @@ function renderContactsList(searchQuery = '') {
   }
 
   const q = searchQuery.toLowerCase().trim();
-  const fixadas = conversasFixadas();
+  const fixadas = []; // "Fixar" saiu do menu
   const ordem = c => (c.isSuporte ? -2 : (fixadas.includes(c.id) ? -1 : 0));
   const filtered = b2bConversations
     .filter(c => c.isSuporte || conversaVisivel(c))

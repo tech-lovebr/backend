@@ -59,7 +59,7 @@ const B2B_DATA = {
 
   modules: {
     dashboard: 'Dashboard',
-    mensagens: 'Chat',
+    mensagens: 'Mensagens',
     crm: 'CRM',
     contratos: 'Contratos',
     produtos: 'Produtos & Serviços',

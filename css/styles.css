@@ -7793,3 +7793,32 @@ body[data-theme="dark"] .chat-digitando { background: #252525 !important; border
 
 /* Chat: prévia "Digitando…" do fornecedor na lista de conversas. */
 html body .chat-previa-digitando:not(#love-h-a) { color: #183b54; font-style: italic; font-weight: 500; }
+
+/* Chat › lista de conversas: o horário vira ⋯ no hover (mesmo lugar); o ⋯
+   abre Fixar / Excluir (mesmo modelo do chat do Hub). */
+.conv-item-canto { position: relative; display: inline-flex; align-items: center; justify-content: flex-end; gap: 0.25rem; flex-shrink: 0; min-width: 28px; height: 18px; }
+.conv-item-fixada { width: 11px; height: 11px; color: #A1A1AA; }
+.conv-item-mais {
+  display: none; width: 26px; height: 18px; align-items: center; justify-content: center;
+  border: none; background: none; color: #52525B; cursor: pointer; border-radius: 6px; padding: 0;
+}
+.conv-item-mais svg { width: 16px; height: 16px; }
+.conv-item-mais:hover { color: #181D24; background: rgba(0,0,0,0.05); }
+.conv-item:hover .conv-item-hora, .conv-item.menu-aberto .conv-item-hora { display: none; }
+.conv-item:hover .conv-item-mais, .conv-item.menu-aberto .conv-item-mais { display: inline-flex; }
+@media (hover: none) { .conv-item-mais { display: inline-flex; } .conv-item-hora { display: none; } }
+.conv-menu {
+  position: absolute; z-index: 300; min-width: 140px; padding: 4px;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.conv-menu button {
+  display: block; width: 100%; text-align: left; padding: 0.5rem 0.65rem; border: none; background: none;
+  border-radius: 6px; font-size: 0.8125rem; color: #18181B; cursor: pointer; font-family: inherit;
+}
+.conv-menu button:hover { background: #F4F4F5; }
+.conv-menu .conv-menu-perigo { color: #B91C1C; }
+body[data-theme="dark"] .conv-menu { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .conv-menu button { color: #F4F4F5 !important; }
+body[data-theme="dark"] .conv-menu button:hover { background: #333333 !important; }
+body[data-theme="dark"] .conv-menu .conv-menu-perigo { color: #F87171 !important; }
+body[data-theme="dark"] .conv-item-mais { color: #D4D4D8; }

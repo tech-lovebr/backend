@@ -14369,7 +14369,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     if (isToday) return hhmm;
     if (isYesterday) return `Ontem ${hhmm}`;
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
   }
 
   // "+ Nova conversa": favoritados (algum serviço no coração) que ainda não
@@ -14537,6 +14537,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return {
         id: row.id,
         fornecedorId: row.fornecedor && row.fornecedor.id,
+        // Data da última mensagem (ou da conversa): traz de volta uma conversa excluída da lista.
+        lastAt: (last && last.created_at) || row.last_message_at || null,
         name: (row.fornecedor && row.fornecedor.company_name) || 'Fornecedor',
         // Categoria do fornecedor = a do primeiro serviço ativo com categoria (ex.: "Bar e Bebidas").
         category: ((row.fornecedor && row.fornecedor.products) || []).filter(p => p && p.active !== false && p.category).map(p => p.category)[0] || '',
@@ -15204,6 +15206,103 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarContadoresDoChat();
   }
 
+  /* ---------------- Fixar / excluir conversa (menu ⋯ da lista) ----------------
+     Mesmo modelo do chat do Hub (B2B/js/mensagens.js). Fixada: vai para o
+     topo, logo abaixo do Suporte Love (a última fixada primeiro). Excluída:
+     some só da lista desta pessoa e volta sozinha se chegar mensagem nova —
+     nada é apagado no banco nem do lado do fornecedor. Fica no localStorage,
+     por usuário. */
+  /** @param {'fixadas'|'excluidas'} tipo */
+  function chaveConversas(tipo) {
+    const uid = (window.loveClienteSession && window.loveClienteSession.user && window.loveClienteSession.user.id) || 'anon';
+    return `love-conversas-${tipo}-${uid}`;
+  }
+  /** @param {'fixadas'|'excluidas'} tipo @param {any} padrao */
+  function lerConversas(tipo, padrao) {
+    try { return JSON.parse(localStorage.getItem(chaveConversas(tipo)) || 'null') || padrao; } catch (e) { return padrao; }
+  }
+  /** @param {'fixadas'|'excluidas'} tipo @param {any} valor */
+  function gravarConversas(tipo, valor) {
+    try { localStorage.setItem(chaveConversas(tipo), JSON.stringify(valor)); } catch (e) { /* sem armazenamento */ }
+  }
+  /** @returns {string[]} */
+  const conversasFixadas = () => lerConversas('fixadas', []);
+  /** @returns {Record<string, string>} */
+  const conversasExcluidas = () => lerConversas('excluidas', {});
+
+  function conversaVisivelNaLista(conv) {
+    if (conv.isSuporte) return true;
+    const excluidaEm = conversasExcluidas()[conv.id];
+    return !excluidaEm || (!!conv.lastAt && new Date(conv.lastAt) > new Date(excluidaEm));
+  }
+
+  function filtroDaListaDoChat() {
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-search-input'));
+    return busca ? busca.value : '';
+  }
+
+  function alternarConversaFixada(convId) {
+    const fixadas = conversasFixadas();
+    const i = fixadas.indexOf(convId);
+    if (i > -1) fixadas.splice(i, 1); else fixadas.unshift(convId);
+    gravarConversas('fixadas', fixadas);
+    renderB2BChatContacts(filtroDaListaDoChat());
+  }
+
+  function excluirConversaDaLista(convId) {
+    const excluidas = conversasExcluidas();
+    excluidas[convId] = new Date().toISOString();
+    gravarConversas('excluidas', excluidas);
+    gravarConversas('fixadas', conversasFixadas().filter(id => id !== convId));
+    if (activeB2BConversationId === convId) {
+      const proxima = b2bConversationsData.find(c => c.id !== convId && !c.isSuporte && conversaVisivelNaLista(c))
+        || b2bConversationsData.find(c => c.isSuporte);
+      activeB2BConversationId = proxima ? proxima.id : null;
+      renderB2BChatMessages();
+    }
+    renderB2BChatContacts(filtroDaListaDoChat());
+  }
+
+  function fecharMenuConversa() {
+    document.querySelector('.conv-menu')?.remove();
+    document.querySelectorAll('.conv-item.menu-aberto').forEach(el => el.classList.remove('menu-aberto'));
+  }
+
+  /** @param {HTMLElement} btn @param {any} conv */
+  function abrirMenuConversa(btn, conv) {
+    fecharMenuConversa();
+    const fixada = conversasFixadas().includes(conv.id);
+    const menu = document.createElement('div');
+    menu.className = 'conv-menu';
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = `
+      <button type="button" role="menuitem" data-conv-fixar>${fixada ? 'Desafixar' : 'Fixar'}</button>
+      <button type="button" role="menuitem" data-conv-excluir class="conv-menu-perigo">Excluir</button>`;
+    document.body.appendChild(menu);
+    const r = btn.getBoundingClientRect();
+    menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
+    menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
+    btn.closest('.conv-item')?.classList.add('menu-aberto');
+    menu.querySelector('[data-conv-fixar]').addEventListener('click', () => { fecharMenuConversa(); alternarConversaFixada(conv.id); });
+    menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
+      fecharMenuConversa();
+      confirmarNaLove({
+        titulo: 'Excluir conversa?',
+        texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
+        botao: 'Excluir',
+        aoConfirmar: () => excluirConversaDaLista(conv.id)
+      });
+    });
+  }
+  document.addEventListener('click', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (!alvo.closest || (!alvo.closest('.conv-menu') && !alvo.closest('[data-conv-menu]'))) fecharMenuConversa();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
+
+  const ICONE_CONVERSA_FIXADA = '<svg class="conv-item-fixada" viewBox="0 0 24 24" fill="currentColor" aria-label="Fixada"><path d="M15 3.5a1 1 0 0 1 1.7-.7l4.5 4.5a1 1 0 0 1-.7 1.7h-1.3l-3.6 3.6.4 3.6a1 1 0 0 1-1.7.8L11 13.7 5.7 19 5 19l0-.7L10.3 13 6.9 9.6a1 1 0 0 1 .8-1.7l3.6.4L15 4.7V3.5Z"/></svg>';
+  const ICONE_CONVERSA_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
+
   function renderB2BChatContacts(filterQuery = '') {
     const list = document.getElementById('b2b-chat-contacts-list');
     if (!list) return;
@@ -15215,7 +15314,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const filtered = b2bConversationsData.filter(c =>
+    // Suporte Love no topo; depois as fixadas (a última fixada primeiro); as
+    // excluídas da lista só voltam com mensagem nova.
+    const fixadas = conversasFixadas();
+    const ordem = c => (c.isSuporte ? -2 : (fixadas.includes(c.id) ? -1 : 0));
+    const filtered = b2bConversationsData
+      .filter(conversaVisivelNaLista)
+      .map((c, i) => ({ c, i }))
+      .sort((a, b) => (ordem(a.c) - ordem(b.c)) || (ordem(a.c) === -1 ? fixadas.indexOf(a.c.id) - fixadas.indexOf(b.c.id) : a.i - b.i))
+      .map(x => x.c)
+      .filter(c =>
       c.name.toLowerCase().includes(filterQuery.toLowerCase()) || 
       c.category.toLowerCase().includes(filterQuery.toLowerCase()) ||
       c.lastMessage.toLowerCase().includes(filterQuery.toLowerCase())
@@ -15229,7 +15337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filtered.forEach(conv => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');
-      item.className = `p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
+      item.className = `conv-item p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
         isActive ? 'bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
       }`;
 
@@ -15243,7 +15351,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-center gap-1.5 min-w-0">
               <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
             </div>
-            <span class="text-[10px] text-zinc-400 flex-shrink-0">${conv.time}</span>
+            <span class="conv-item-canto">
+              ${fixadas.includes(conv.id) ? ICONE_CONVERSA_FIXADA : ''}
+              <span class="conv-item-hora text-[10px] text-zinc-400">${conv.time}</span>
+              ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu title="Mais opções" aria-label="Mais opções da conversa">${ICONE_CONVERSA_MAIS}</button>`}
+            </span>
           </div>
           <div class="flex items-center justify-between gap-2">
             <p class="text-xs ${conv.unread > 0 ? 'text-zinc-900 font-bold' : 'text-zinc-500'} truncate leading-tight ${outroEstaDigitando(conv) ? 'chat-previa-digitando' : ''}">${escaparHtml(outroEstaDigitando(conv) ? 'Digitando…' : conv.lastMessage)}</p>
@@ -15251,6 +15363,12 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `;
+
+      item.querySelector('[data-conv-menu]')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (document.querySelector('.conv-menu') && item.classList.contains('menu-aberto')) { fecharMenuConversa(); return; }
+        abrirMenuConversa(/** @type {HTMLElement} */ (e.currentTarget), conv);
+      });
 
       item.addEventListener('click', () => {
         activeB2BConversationId = conv.id;

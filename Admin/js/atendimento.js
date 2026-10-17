@@ -13,13 +13,35 @@
 
 const API_RESPONDER = 'https://love.com.br/api/atendimento-responder';
 
+/* Abas: Pendentes (o que precisa de alguém da equipe), os dois canais e
+   o histórico. Spam fica fora de todas, menos de Todos. */
+const PENDENTE = t => ['aberto', 'em_andamento'].includes(t.status);
+const ehEmail = t => ['email', 'formulario'].includes(t.canal || 'formulario');
+
 const ABAS = {
-  pendentes: t => ['aberto', 'em_andamento'].includes(t.status),
-  aguardando_cliente: t => t.status === 'aguardando_cliente',
-  robo: t => t.status === 'respondida_bot',
-  resolvidos: t => ['resolvido', 'fechado'].includes(t.status),
-  spam: t => t.status === 'spam',
-  todos: t => t.status !== 'spam'
+  pendentes: PENDENTE,
+  chat: t => t.canal === 'chat' && t.status !== 'spam',
+  email: t => ehEmail(t) && t.status !== 'spam',
+  todos: () => true,
+  resolvidos: t => ['resolvido', 'fechado'].includes(t.status)
+};
+
+/* Contagem das abas de canal = quantas pendentes há nelas. */
+const CONTAGEM_DA_ABA = {
+  pendentes: t => PENDENTE(t),
+  chat: t => t.canal === 'chat' && PENDENTE(t),
+  email: t => ehEmail(t) && PENDENTE(t)
+};
+
+/* Ordem da lista: primeiro o que espera a equipe, depois o que espera a
+   pessoa ou foi respondido pelo robô, por último o encerrado. Dentro de cada
+   grupo, a mais recente em cima — respondida, a conversa desce. */
+const PESO_STATUS = { aberto: 0, em_andamento: 0, aguardando_cliente: 1, respondida_bot: 1, resolvido: 2, fechado: 2, spam: 3 };
+
+/* Status no card da lista: curto, para caber embaixo do horário. */
+const TICKET_STATUS_CURTO = {
+  aberto: 'Pendente', em_andamento: 'Pendente', aguardando_cliente: 'Aguardando',
+  respondida_bot: 'Robô respondeu', resolvido: 'Resolvido', fechado: 'Resolvido', spam: 'Spam'
 };
 
 const CANAL_LABELS = { formulario: 'Formulário', email: 'E-mail', chat: 'Chat', whatsapp: 'WhatsApp' };
@@ -55,7 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   ligarAbas();
   document.getElementById('busca').addEventListener('input', renderLista);
   document.getElementById('filtro-origem').addEventListener('change', renderLista);
-  document.getElementById('filtro-canal').addEventListener('change', renderLista);
   aplicarBuscaDaUrl(document.getElementById('busca'));
 
   addHeaderAction('Respostas prontas', abrirBiblioteca, {
@@ -86,7 +107,7 @@ function ligarAbas() {
 
 function renderContagens() {
   document.querySelectorAll('#abas-status [data-contagem]').forEach(span => {
-    const n = TICKETS.filter(ABAS[span.dataset.contagem]).length;
+    const n = TICKETS.filter(CONTAGEM_DA_ABA[span.dataset.contagem]).length;
     span.textContent = n ? ` (${formatNumber(n)})` : '';
   });
 }
@@ -94,16 +115,16 @@ function renderContagens() {
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
   const origem = document.getElementById('filtro-origem').value;
-  const canal = document.getElementById('filtro-canal').value;
 
   return TICKETS.filter(t => {
     if (!ABAS[ABA_ATUAL](t)) return false;
     if (origem && t.origem !== origem) return false;
-    if (canal && (t.canal || 'formulario') !== canal) return false;
     if (!termo) return true;
     return [t.protocolo, t.nome, t.email, t.assunto, t.telefone, t.categoria, t.mensagem]
       .some(v => String(v || '').toLowerCase().includes(termo));
-  }).sort((a, b) => new Date(quando(b) || 0) - new Date(quando(a) || 0));
+  }).sort((a, b) =>
+    (PESO_STATUS[a.status] ?? 1) - (PESO_STATUS[b.status] ?? 1) ||
+    new Date(quando(b) || 0) - new Date(quando(a) || 0));
 }
 
 function renderLista() {
@@ -120,15 +141,17 @@ function renderLista() {
     <button type="button" class="inbox-item ${t.id === ATUAL ? 'is-ativo' : ''} ${t.nao_lido !== false && ABAS.pendentes(t) ? 'is-nao-lido' : ''}" data-id="${t.id}">
       <span class="inbox-item-topo">
         <span class="inbox-item-nome">${escapeHtml(t.nome || t.email || 'Sem nome')}</span>
-        <span class="inbox-item-quando">${escapeHtml(formatRelative(quando(t)))}</span>
+        <span class="inbox-item-lado">
+          <span class="inbox-item-quando">${escapeHtml(formatRelative(quando(t)))}</span>
+          ${badge(TICKET_STATUS_CURTO[t.status] || TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status])}
+        </span>
       </span>
       <span class="inbox-item-assunto">${escapeHtml(t.assunto || '(sem assunto)')}</span>
       <span class="inbox-item-trecho">${escapeHtml(t.resumo || resumoDe(t.mensagem))}</span>
       <span class="inbox-item-selos">
         ${badge(ORIGEM_CURTA[t.origem] || t.origem, '')}
-        ${t.canal && t.canal !== 'formulario' ? badge(CANAL_LABELS[t.canal] || t.canal, '') : ''}
+        ${badge(CANAL_LABELS[t.canal] || 'Formulário', '')}
         ${t.prioridade === 'alta' ? badge('Alta', 'badge-danger') : ''}
-        ${ABA_ATUAL === 'todos' ? badge(TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status]) : ''}
       </span>
     </button>`).join('');
 

@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=67">
+  <link rel="stylesheet" href="css/admin.css?v=68">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -42,13 +42,12 @@
       <main class="admin-content">
 
         <!-- Abas por situação; a busca e a origem ficam no topo da lista. -->
-        <nav class="conteudo-tabs" id="abas-status" aria-label="Situação">
+        <nav class="conteudo-tabs" id="abas-status" aria-label="Conversas">
           <button type="button" class="conteudo-tab is-active" data-aba="pendentes">Pendentes<span class="aba-contagem" data-contagem="pendentes"></span></button>
-          <button type="button" class="conteudo-tab" data-aba="aguardando_cliente">Aguardando cliente<span class="aba-contagem" data-contagem="aguardando_cliente"></span></button>
-          <button type="button" class="conteudo-tab" data-aba="robo">Respondidas pelo robô<span class="aba-contagem" data-contagem="robo"></span></button>
-          <button type="button" class="conteudo-tab" data-aba="resolvidos">Resolvidos</button>
-          <button type="button" class="conteudo-tab" data-aba="spam">Spam</button>
+          <button type="button" class="conteudo-tab" data-aba="chat">Chat<span class="aba-contagem" data-contagem="chat"></span></button>
+          <button type="button" class="conteudo-tab" data-aba="email">E-mail<span class="aba-contagem" data-contagem="email"></span></button>
           <button type="button" class="conteudo-tab" data-aba="todos">Todos</button>
+          <button type="button" class="conteudo-tab" data-aba="resolvidos">Resolvidos</button>
         </nav>
 
         <div class="inbox">
@@ -60,12 +59,6 @@
                 <option value="cliente">Anfitriões</option>
                 <option value="fornecedor">Empresas</option>
                 <option value="site">Site</option>
-              </select>
-              <select class="field-select" id="filtro-canal" aria-label="Canal">
-                <option value="">Todos os canais</option>
-                <option value="chat">Chat</option>
-                <option value="email">E-mail</option>
-                <option value="formulario">Formulário</option>
               </select>
             </div>
             <div class="inbox-itens" id="inbox-itens"></div>
@@ -83,6 +76,6 @@
   </div>
 
   <script src="js/editor-rico.js"></script>
-  <script src="js/atendimento.js?v=2"></script>
+  <script src="js/atendimento.js?v=3"></script>
 </body>
 </html>

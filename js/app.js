@@ -1167,7 +1167,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'explore', label: 'Explorar' },
-        { id: 'messages', label: 'Chat' },
+        { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Meus contratos' },
         { id: 'insurance', label: 'Benefícios' },
         { id: 'favorites', label: 'Favoritos' }
@@ -8027,7 +8027,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.type = 'button';
     btn.id = 'btn-rsvp-delete-selected';
     btn.className = 'love-tabela-botao love-tabela-lixeira hidden';
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>';
+    btn.innerHTML = '<svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
     dir.prepend(btn);
     btn.addEventListener('click', async () => {
       const ev = getActiveEvent();
@@ -8801,7 +8801,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </span>
             </div>
             <button type="button" class="btn-delete-table p-1.5 text-zinc-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer" data-table-id="${tbl.id}" title="Excluir mesa">
-              <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 7l1 12.1A2 2 0 0 0 9 21h6a2 2 0 0 0 2-1.9L18 7"/><path stroke-linecap="round" stroke-linejoin="round" d="M10 11v6M14 11v6"/></svg>
+              <svg stroke-linejoin="round" stroke-linecap="round" class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
             </button>
           </div>
 
@@ -13152,7 +13152,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="flex items-center gap-2.5 shrink-0">
                 <button type="button" class="btn-message-supplier btn-secondary">
                   <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-                  <span>Chat</span>
+                  <span>Mensagens</span>
                 </button>
                 <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
                   Contratar
@@ -13271,7 +13271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-center gap-2 mt-auto pt-2">
           <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
             <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-            <span>Chat</span>
+            <span>Mensagens</span>
           </button>
           <button type="button" class="btn-hire-supplier flex-1 px-3 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer">
             Contratar
@@ -14781,7 +14781,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
-        'messages': 'Chat',
+        'messages': 'Mensagens',
         'contracted': 'Meus contratos',
         'insurance': 'Benefícios',
         'favorites': 'Favoritos'
@@ -14800,7 +14800,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (viewId === 'messages') {
       document.body.classList.add('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
-      if (toolbarTitle) toolbarTitle.textContent = 'Chat';
+      if (toolbarTitle) toolbarTitle.textContent = 'Mensagens';
       if (searchInput) searchInput.placeholder = 'Buscar nas conversas...';
       if (exploreView) exploreView.classList.add('hidden');
       if (contractedView) contractedView.classList.add('hidden');
@@ -14925,7 +14925,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-center gap-2.5">
               <button type="button" class="btn-contracted-chat btn-secondary">
                 <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-                <span>Chat</span>
+                <span>Mensagens</span>
               </button>
               <button type="button" class="btn-contracted-actions px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
                 Meu contrato
@@ -15206,27 +15206,23 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarContadoresDoChat();
   }
 
-  /* ---------------- Fixar / excluir conversa (menu ⋯ da lista) ----------------
-     Mesmo modelo do chat do Hub (B2B/js/mensagens.js). Fixada: vai para o
-     topo, logo abaixo do Suporte Love (a última fixada primeiro). Excluída:
-     some só da lista desta pessoa e volta sozinha se chegar mensagem nova —
+  /* ---------------- Excluir conversa (menu ⋯ da lista) ----------------
+     Mesmo modelo do chat do Hub (B2B/js/mensagens.js). Excluída: some só da lista desta pessoa e volta sozinha se chegar mensagem nova —
      nada é apagado no banco nem do lado do fornecedor. Fica no localStorage,
      por usuário. */
-  /** @param {'fixadas'|'excluidas'} tipo */
+  /** @param {'excluidas'} tipo */
   function chaveConversas(tipo) {
     const uid = (window.loveClienteSession && window.loveClienteSession.user && window.loveClienteSession.user.id) || 'anon';
     return `love-conversas-${tipo}-${uid}`;
   }
-  /** @param {'fixadas'|'excluidas'} tipo @param {any} padrao */
+  /** @param {'excluidas'} tipo @param {any} padrao */
   function lerConversas(tipo, padrao) {
     try { return JSON.parse(localStorage.getItem(chaveConversas(tipo)) || 'null') || padrao; } catch (e) { return padrao; }
   }
-  /** @param {'fixadas'|'excluidas'} tipo @param {any} valor */
+  /** @param {'excluidas'} tipo @param {any} valor */
   function gravarConversas(tipo, valor) {
     try { localStorage.setItem(chaveConversas(tipo), JSON.stringify(valor)); } catch (e) { /* sem armazenamento */ }
   }
-  /** @returns {string[]} */
-  const conversasFixadas = () => lerConversas('fixadas', []);
   /** @returns {Record<string, string>} */
   const conversasExcluidas = () => lerConversas('excluidas', {});
 
@@ -15241,19 +15237,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return busca ? busca.value : '';
   }
 
-  function alternarConversaFixada(convId) {
-    const fixadas = conversasFixadas();
-    const i = fixadas.indexOf(convId);
-    if (i > -1) fixadas.splice(i, 1); else fixadas.unshift(convId);
-    gravarConversas('fixadas', fixadas);
-    renderB2BChatContacts(filtroDaListaDoChat());
-  }
-
   function excluirConversaDaLista(convId) {
     const excluidas = conversasExcluidas();
     excluidas[convId] = new Date().toISOString();
     gravarConversas('excluidas', excluidas);
-    gravarConversas('fixadas', conversasFixadas().filter(id => id !== convId));
     if (activeB2BConversationId === convId) {
       const proxima = b2bConversationsData.find(c => c.id !== convId && !c.isSuporte && conversaVisivelNaLista(c))
         || b2bConversationsData.find(c => c.isSuporte);
@@ -15271,19 +15258,16 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @param {HTMLElement} btn @param {any} conv */
   function abrirMenuConversa(btn, conv) {
     fecharMenuConversa();
-    const fixada = conversasFixadas().includes(conv.id);
     const menu = document.createElement('div');
     menu.className = 'conv-menu';
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
-      <button type="button" role="menuitem" data-conv-fixar>${fixada ? 'Desafixar' : 'Fixar'}</button>
-      <button type="button" role="menuitem" data-conv-excluir>Excluir chat</button>`;
+      <button type="button" role="menuitem" data-conv-excluir>Excluir</button>`;
     document.body.appendChild(menu);
     const r = btn.getBoundingClientRect();
     menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
     menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
     btn.closest('.conv-item')?.classList.add('menu-aberto');
-    menu.querySelector('[data-conv-fixar]').addEventListener('click', () => { fecharMenuConversa(); alternarConversaFixada(conv.id); });
     menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
       fecharMenuConversa();
       confirmarNaLove({
@@ -15300,7 +15284,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
 
-  const ICONE_CONVERSA_FIXADA = '<svg class="conv-item-fixada" viewBox="0 0 24 24" fill="currentColor" aria-label="Fixada"><path d="M15 3.5a1 1 0 0 1 1.7-.7l4.5 4.5a1 1 0 0 1-.7 1.7h-1.3l-3.6 3.6.4 3.6a1 1 0 0 1-1.7.8L11 13.7 5.7 19 5 19l0-.7L10.3 13 6.9 9.6a1 1 0 0 1 .8-1.7l3.6.4L15 4.7V3.5Z"/></svg>';
   const ICONE_CONVERSA_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
 
   /** Texto da busca da lista de conversas. */
@@ -15320,14 +15303,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Suporte Love no topo; depois as fixadas (a última fixada primeiro); as
-    // excluídas da lista só voltam com mensagem nova.
-    const fixadas = conversasFixadas();
-    const ordem = c => (c.isSuporte ? -2 : (fixadas.includes(c.id) ? -1 : 0));
+    // Suporte Love no topo; as excluídas da lista só voltam com mensagem nova.
     const filtered = b2bConversationsData
       .filter(conversaVisivelNaLista)
       .map((c, i) => ({ c, i }))
-      .sort((a, b) => (ordem(a.c) - ordem(b.c)) || (ordem(a.c) === -1 ? fixadas.indexOf(a.c.id) - fixadas.indexOf(b.c.id) : a.i - b.i))
+      .sort((a, b) => ((a.c.isSuporte ? -1 : 0) - (b.c.isSuporte ? -1 : 0)) || (a.i - b.i))
       .map(x => x.c)
       .filter(c => {
         // Busca pelo nome da empresa, pela categoria ou por qualquer mensagem.
@@ -15362,7 +15342,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'text-[#416799] font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
             </div>
             <span class="conv-item-canto">
-              ${fixadas.includes(conv.id) ? ICONE_CONVERSA_FIXADA : ''}
               <span class="conv-item-hora text-[10px] text-zinc-400">${conv.time}</span>
               ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu aria-label="Mais opções da conversa">${ICONE_CONVERSA_MAIS}</button>`}
             </span>

@@ -14617,7 +14617,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (total > 0) {
         if (!badge) {
           badge = document.createElement('span');
-          badge.className = 'badge-recados-count px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm ml-auto';
+          badge.className = 'badge-recados-count chat-unread-count ml-auto';
           badge.style.cssText = 'background-color: #c7305b !important; color: #FFFFFF !important;';
           itemChat.appendChild(badge);
         }

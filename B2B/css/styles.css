@@ -7532,18 +7532,3 @@ html body .builder-panel-tabs .builder-panel-tab:not(#love-h-a) {
   font-size: 11px; font-weight: 700; letter-spacing: 0.04em; line-height: 16.5px;
   text-transform: uppercase; height: auto; min-height: 0;
 }
-
-/* Drawer de produto › abas CATEGORIA / DETALHES / ESCOPO / MÍDIA: igual às
-   abas ELEMENTOS / URL do Editor de site (11px, caixa alta, cinza; a
-   selecionada com fundo azul clarinho e texto escuro). */
-html body .product-wizard-tabs .product-wizard-tab:not(#love-h-a) {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; line-height: 16.5px;
-  text-transform: uppercase; height: auto; min-height: 0;
-  padding: 0.5rem; border: none; border-radius: 7px; background: none; color: #71717A;
-}
-html body .product-wizard-tabs .product-wizard-tab:not(#love-h-a):hover { background: none; color: #3F3F46; }
-html body .product-wizard-tabs .product-wizard-tab.is-active:not(#love-h-a),
-html body .product-wizard-tabs .product-wizard-tab.is-active:not(#love-h-a):hover { background: #ebf4ff; color: #18181B; }
-body[data-theme="dark"] .product-wizard-tabs .product-wizard-tab:not(#love-h-a) { background: none !important; color: #A1A1AA !important; }
-body[data-theme="dark"] .product-wizard-tabs .product-wizard-tab.is-active:not(#love-h-a) { background: #ebf4ff !important; color: #18181B !important; }

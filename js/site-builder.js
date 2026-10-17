@@ -418,6 +418,20 @@ function dataDoEventoPorExtenso(ev) {
   return isNaN(d.getTime()) ? '' : d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+// Save the Date vai como texto no WhatsApp: sem alinhamento (sempre à
+// esquerda), sem fonte, sem cor e sem nível de título — só negrito ou não.
+function textoNoFormatoWhatsapp(el) {
+  if (!el || (el.type !== 'titulo' && el.type !== 'texto')) return el;
+  if (!el.styles) el.styles = { desktop: {}, tablet: {}, mobile: {} };
+  ['desktop', 'tablet', 'mobile'].forEach(dev => {
+    const st = el.styles[dev] || (el.styles[dev] = {});
+    delete st.fontFamily; delete st.color; delete st.textAlign;
+  });
+  el.styles.desktop.textAlign = 'left';
+  delete el.color;
+  return el;
+}
+
 function defaultSaveTheDateState() {
   const ev = getActiveEventForBuilder();
   // Mesma capa e cor do Convite Digital.
@@ -437,6 +451,7 @@ function defaultSaveTheDateState() {
   data.content = dataDoEventoPorExtenso(ev) || 'Data do evento';
   const aviso = createElement('texto');
   aviso.content = 'Reserve a data! O convite chega em breve.';
+  [titulo, nomes, data, aviso].forEach(textoNoFormatoWhatsapp);
   return {
     name: 'Save the Date',
     globalStyle: { primaryColor: cor, radius: 16, sectionSpacing: 32 },
@@ -458,6 +473,7 @@ function loadSaveTheDateState() {
       parsed.sections = parsed.sections.filter(s => !s.isQuickNav && !s.isGiftsBlock);
       tirarElementosDaCapa(parsed);
       migrateElementDefaults(parsed);
+      parsed.sections.forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(textoNoFormatoWhatsapp)));
       return parsed;
     }
   } catch (e) { /* ignora estado corrompido */ }
@@ -917,6 +933,7 @@ function insertElementAt(columnId, index, type) {
   const { column } = findColumnAndSection(columnId);
   if (!column) return null;
   const el = createElement(type);
+  if (currentPageKey === 'savethedate') textoNoFormatoWhatsapp(el);
   const safeIndex = Math.max(0, Math.min(index, column.elements.length));
   column.elements.splice(safeIndex, 0, el);
   return el;
@@ -1065,8 +1082,9 @@ function renderElementosTab(body) {
 
 function renderElementEditorPanel(panel, sel) {
   const titleMap = { section: 'Página', column: 'Coluna', quicknav: 'Botões de navegação', giftsblock: 'Meus Presentes', element: (ELEMENT_META[sel.obj.type] || {}).label || 'Elemento' };
-  const showTabs = sel.kind === 'element';
   const isTextLike = sel.kind === 'element' && (sel.obj.type === 'titulo' || sel.obj.type === 'texto');
+  const textoDoSaveTheDate = isTextLike && currentPageKey === 'savethedate';
+  const showTabs = sel.kind === 'element' && !textoDoSaveTheDate;
   const layoutTabLabel = isTextLike ? 'Aparência' : 'Layout';
 
   panel.innerHTML = `
@@ -1095,6 +1113,7 @@ function renderElementEditorPanel(panel, sel) {
   else if (sel.kind === 'column') { body.innerHTML = renderColumnInspector(sel.obj); wireColumnInspector(sel.obj, body); }
   else if (sel.kind === 'quicknav') { body.innerHTML = renderQuickNavInspector(sel.obj); wireQuickNavInspector(sel.obj, body); }
   else if (sel.kind === 'giftsblock') { body.innerHTML = renderGiftsBlockInspector(sel.obj); wireGiftsBlockInspector(sel.obj, body); }
+  else if (textoDoSaveTheDate) { renderTextoSaveTheDateInspector(sel.obj, body); }
   else { renderElementInspector(sel.obj, body); }
   wireColorSwatchPopovers(body);
 }
@@ -2494,6 +2513,25 @@ function renderElementInspector(el, body) {
     wireContentTab(el, body);
     if (isTextLike) wireTypographyToggles(body, el);
   }
+}
+
+// Save the Date: título e texto só com o texto e Negrito (o que existe no WhatsApp).
+function renderTextoSaveTheDateInspector(el, body) {
+  const peso = String(cascadedStyleValue(el, 'fontWeight') || '');
+  const negrito = peso === 'bold' || Number(peso) >= 600;
+  const campo = el.type === 'titulo'
+    ? fieldRow('Texto do título', `<input type="text" class="inspector-input" data-bind="prop:content" value="${escapeHtml(el.content || '')}">`)
+    : fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain" data-bind="prop:content">${escapeHtml(el.content || '')}</textarea>`);
+  body.innerHTML = `
+    ${campo}
+    <div class="inspector-field">
+      <span class="inspector-field-label">Estilo</span>
+      <div class="inspector-segmented">
+        <button type="button" data-typography-toggle="bold" class="${negrito ? 'active' : ''}" title="Negrito">${BI.bold}</button>
+      </div>
+    </div>`;
+  wireContentTab(el, body);
+  wireTypographyToggles(body, el);
 }
 
 function wireTypographyToggles(body, el) {

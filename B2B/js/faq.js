@@ -1,9 +1,9 @@
 /* ==========================================================================
-   LOVE B2B — Ajuda (FAQ por categoria, no mesmo padrão de Guias de início)
+   LOVE B2B — Central de ajuda (FAQ por categoria, no mesmo padrão de Guias de início)
    ========================================================================== */
 
 function initFaqPage() {
-  const buttons = document.querySelectorAll('#faq-categories .guide-link');
+  const buttons = document.querySelectorAll('#faq-categories button.guide-link');
   const panels = document.querySelectorAll('[data-category-panel]');
   const titleEl = document.getElementById('faq-category-title');
   if (!buttons.length || !panels.length) return;

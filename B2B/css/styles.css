@@ -7682,3 +7682,8 @@ body[data-theme="dark"] .dashboard-help-header .dashboard-help-title { color: #F
    UF e Cidade na 2ª. */
 .local-linha-endereco { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 0.75rem; }
 .local-linha-complemento { display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1.3fr); gap: 0.75rem; }
+
+/* Painel › Precisa de ajuda?: duas caixas (Canais de suporte e Central de ajuda). */
+.dashboard-help-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 768px) { .dashboard-help-grid { grid-template-columns: 1fr; } }
+a.guide-link { display: block; text-decoration: none; }

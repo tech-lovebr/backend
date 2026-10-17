@@ -313,7 +313,7 @@ function abrirMenuConversa(btn, conv) {
   menu.setAttribute('role', 'menu');
   menu.innerHTML = `
     <button type="button" role="menuitem" data-conv-fixar>${fixada ? 'Desafixar' : 'Fixar'}</button>
-    <button type="button" role="menuitem" data-conv-excluir class="conv-menu-perigo">Excluir</button>`;
+    <button type="button" role="menuitem" data-conv-excluir>Excluir chat</button>`;
   document.body.appendChild(menu);
   const r = btn.getBoundingClientRect();
   menu.style.top = `${r.bottom + 4 + window.scrollY}px`;

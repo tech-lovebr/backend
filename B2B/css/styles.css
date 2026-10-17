@@ -7903,3 +7903,6 @@ body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #
    mesas do love.com.br (#FAFCFF), em vez do cinza. */
 html body .builder-canvas-viewport:not(#love-h-a) { background: #FAFCFF; }
 body[data-theme="dark"] .builder-canvas-viewport:not(#love-h-a) { background: #1c1c1c !important; }
+
+/* Agenda: calendário com fundo branco. */
+html body .agenda-mini-calendar:not(#love-h-a) { background-color: #FFFFFF; }

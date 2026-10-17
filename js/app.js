@@ -2381,6 +2381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title.textContent = 'Aparência';
       } else if (subId === 'data') {
         title.textContent = 'Informações';
+        setTimeout(() => ajustarTextosAutomaticos(document.getElementById('editor-form-data') || document), 0);
       } else if (subId === 'about') {
         title.textContent = 'Organizadores';
         renderHostsTeam();
@@ -6072,6 +6073,27 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = false;
     }, 1800);
   }
+
+  // Caixas de texto que crescem junto com o texto (.love-textarea-auto): sem
+  // alça de arrastar; a altura acompanha o conteúdo enquanto a pessoa digita
+  // e quando o texto salvo é carregado.
+  /** @param {any} el textarea .love-textarea-auto */
+  function ajustarAlturaDoTexto(el) {
+    if (!el || !el.isConnected) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight + 2}px`;
+  }
+  /** @param {Document | HTMLElement} [raiz] */
+  function ajustarTextosAutomaticos(raiz = document) {
+    raiz.querySelectorAll('textarea.love-textarea-auto').forEach(ajustarAlturaDoTexto);
+  }
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.matches && e.target.matches('textarea.love-textarea-auto')) ajustarAlturaDoTexto(e.target);
+  });
+  document.addEventListener('focusin', (e) => {
+    if (e.target && e.target.matches && e.target.matches('textarea.love-textarea-auto')) ajustarAlturaDoTexto(e.target);
+  });
+  window.addEventListener('resize', () => ajustarTextosAutomaticos());
 
   // "Salvar alterações" no fim de Informações: o mesmo salvar do topo, com o
   // retorno ("Salvando…/Salvo") no próprio botão.

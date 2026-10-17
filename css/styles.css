@@ -7695,3 +7695,8 @@ html body button.orc-enviar:not(#love-h-a):disabled { opacity: .6; cursor: defau
 .meus-eventos-atual { margin-left: 6px; font-size: 11px; font-weight: 600; color: #183b54; background: #EEF2F6; border-radius: 6px; padding: 2px 6px; }
 html body button.meus-eventos-excluir:not(#love-h-a) { flex-shrink: 0; height: 34px; padding: 0 12px; border: 1px solid #E4E4E7; border-radius: 8px !important; background: #fff; color: #3F3F46; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: none; }
 html body button.meus-eventos-excluir:not(#love-h-a):hover { border-color: #DC2626; color: #DC2626; background: #fff; }
+
+/* Caixa de texto que cresce com o conteúdo (Informações: referência, dress
+   code, informações gerais). field-sizing faz isso sozinho nos navegadores
+   novos; nos demais, o app.js ajusta a altura. */
+textarea.love-textarea-auto { resize: none !important; overflow: hidden; field-sizing: content; min-height: 4.5rem; }

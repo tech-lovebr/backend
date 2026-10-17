@@ -7994,3 +7994,14 @@ body[data-theme="dark"] .agenda-evento-titulo, body[data-theme="dark"] .agenda-e
 body[data-theme="dark"] .agenda-evento-campo:hover { background: #2A2A2A; }
 body[data-theme="dark"] .agenda-evento-campo:focus { background: #252525; border-color: #A1A1AA; }
 body[data-theme="dark"] .agenda-evento-icone, body[data-theme="dark"] .agenda-evento-fechar { color: #D4D4D8; }
+
+/* Topo: nome da empresa e busca no mesmo tamanho da busca do Catálogo
+   ("Buscar por nome ou SKU..."): texto de 14px, lupa de 15px, 38px de
+   altura e cantos de 8px; o nome da empresa em peso 600, como os botões. */
+html body .topbar-account-name:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #181D24; max-width: 220px; }
+html body .topbar-search-trigger:not(#love-h-a) {
+  height: 38px; box-sizing: border-box; padding: 0 12px; gap: 0.55rem;
+  font-size: 0.875rem; border: 1px solid #E4E4E7; border-radius: 8px;
+}
+html body .topbar-search-trigger:not(#love-h-a) > svg { width: 15px; height: 15px; flex-shrink: 0; color: #A1A1AA; stroke-width: 2; }
+body[data-theme="dark"] .topbar-account-name:not(#love-h-a) { color: #FFFFFF !important; }

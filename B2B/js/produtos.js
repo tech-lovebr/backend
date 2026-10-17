@@ -54,11 +54,11 @@ function normalizeSubcategory(sub) {
 
 const SUBCATEGORY_MAP = {
   'Buffet e Gastronomia': ['Buffet Completo', 'Finger Food', 'Bolo & Doces', 'Churrasco', 'Café da Manhã', 'Carrinhos / Food Truck', 'Cardápio Vegano', 'Tábua de Frios', 'Buffet Infantil'],
-  'Bar e Bebidas': ['Bar Completo / Open Bar', 'Sommelier', 'Café/Chá', 'Aluguel de Cervejeira', 'Consignação de Bebidas', 'Bar Infantil'],
+  'Bar e Bebidas': ['Bar Completo / Open Bar', 'Sommelier', 'Aluguel de Cervejeira', 'Consignação de Bebidas', 'Bar Infantil'],
   'Espaços para Locação': ['Salão de Festas', 'Sítio/Chácara', 'Rooftop', 'Igreja/Capela', 'Praia', 'Hotel', 'Espaços Exclusivos'],
   'Staff e Mão de Obra': ['Garçom', 'Bartender', 'Segurança', 'Recepcionista', 'Limpeza', 'Manobrista', 'Montadores', 'Carregadores'],
-  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Barra de Imagem', 'Álbum de Fotos'],
-  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Atrações infantis', 'Animação de Festa', 'Recreação Infantil', 'Orquestra', 'Personagens Vivos', 'Mágicos', 'Efeitos Especiais'],
+  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de Fotos', 'Edição de Vídeo', 'Álbum de Fotos'],
+  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Aluguel de Brinquedos', 'Animação de Festa', 'Recreação Infantil', 'Orquestra', 'Personagens Vivos', 'Mágicos', 'Efeitos Especiais'],
   'Decoração': ['Florais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Esculturas em Balões', 'Lembrancinhas', 'Papelaria'],
   'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator', 'Celebrante'],
   'Trajes, Beleza e Estilo': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa', 'Moda Infantil', 'Dia da Noiva', 'Maquiagem', 'Camarim']

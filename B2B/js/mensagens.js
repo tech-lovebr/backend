@@ -465,7 +465,7 @@ function renderContactsList(searchQuery = '') {
           <span class="conv-item-canto">
             ${fixadas.includes(conv.id) ? '<svg class="conv-item-fixada" viewBox="0 0 24 24" fill="currentColor" aria-label="Fixada"><path d="M15 3.5a1 1 0 0 1 1.7-.7l4.5 4.5a1 1 0 0 1-.7 1.7h-1.3l-3.6 3.6.4 3.6a1 1 0 0 1-1.7.8L11 13.7 5.7 19 5 19l0-.7L10.3 13 6.9 9.6a1 1 0 0 1 .8-1.7l3.6.4L15 4.7V3.5Z"/></svg>' : ''}
             <span class="conv-item-hora text-[10px] text-zinc-400">${conv.time}</span>
-            ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu title="Mais opções" aria-label="Mais opções da conversa"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>`}
+            ${conv.isSuporte ? '' : `<button type="button" class="conv-item-mais" data-conv-menu aria-label="Mais opções da conversa"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>`}
           </span>
         </div>
         <div class="flex items-center justify-between gap-2">

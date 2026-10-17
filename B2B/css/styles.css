@@ -7815,3 +7815,23 @@ body[data-theme="dark"] .profile-empresa-item:hover { background: #333333 !impor
 .nova-empresa-limite-btn { display: inline-flex; }
 @media (max-width: 640px) { .nova-empresa-imagens { grid-template-columns: 1fr; } }
 body[data-theme="dark"] .nova-empresa-upload { background: #252525 !important; border-color: #404040 !important; }
+
+/* Chat › lista de conversas igual ao love.com.br:
+   ⋯ num círculo de 24px (cinza; no hover/menu aberto, fundo #F4F4F5 e
+   bolinhas pretas) e a linha vertical à esquerda de cada conversa (cinza;
+   na ativa, a cor da sidebar). */
+html body #conv-list .conv-item-mais {
+  width: 24px; height: 24px; border-radius: 50%; margin: -3px -4px -3px 0; padding: 0;
+  color: #71717A; background: transparent; box-shadow: none; transform: none; animation: none;
+  transition: color .15s;
+}
+html body #conv-list .conv-item-mais svg { width: 18px; height: 18px; }
+html body #conv-list .conv-item-mais:hover,
+html body #conv-list .conv-item.menu-aberto .conv-item-mais { background: #F4F4F5; color: #181D24; }
+body[data-theme="dark"] #conv-list .conv-item-mais:hover,
+body[data-theme="dark"] #conv-list .conv-item.menu-aberto .conv-item-mais { background: #333333 !important; color: #FFFFFF !important; }
+html body #conv-list .conv-item,
+html body #conv-list .conv-item.border-transparent { border-left: 4px solid #E4E4E7; }
+html body #conv-list .conv-item.active { border-left-color: #181D24 !important; }
+body[data-theme="dark"] #conv-list .conv-item { border-left-color: #404040; }
+body[data-theme="dark"] #conv-list .conv-item.active { border-left-color: #FFFFFF !important; }

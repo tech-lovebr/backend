@@ -1837,7 +1837,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const hasLocation = activeEvent.location && activeEvent.location.trim() !== '' && activeEvent.location !== 'Adicionar Local';
     if (hubDateText) hubDateText.textContent = formatEventDateLong(activeEvent.date) || '18 de Outubro de 2025';
     // Mostra o endereço (Informações); só sem endereço cai no nome do espaço.
-    if (hubLocText) hubLocText.textContent = enderecoDoEventoAtivo() || (hasLocation ? activeEvent.location : 'Local do evento');
+    if (hubLocText) hubLocText.textContent = localDoEventoParaHome() || (hasLocation ? activeEvent.location : 'Local do evento');
+    // Para saber se o lugar é de um fornecedor da Love, a vitrine precisa
+    // estar carregada: carrega (uma vez) e confere de novo.
+    let vitrinePronta = true;
+    try { vitrinePronta = b2bFornecedoresCarregados; } catch (e) { vitrinePronta = true; }
+    if (hubLocText && window.loveClienteSession && !vitrinePronta) {
+      carregarFornecedoresVitrine().then(atualizarLocalDaHome).catch(() => {});
+    }
 
     // Atualização dos Convites Enviados — total de convidados da lista
     // (nunca um número de mentira: um evento novo de verdade tem zero).
@@ -10441,8 +10448,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (inputLoc && inputLoc.value.trim()) {
           activeEv.location = inputLoc.value.trim();
-          const hubLocText = document.getElementById('dash-hub-event-location-text');
-          if (hubLocText) hubLocText.textContent = activeEv.location;
+          atualizarLocalDaHome();
           const fieldLoc = document.getElementById('field-event-location');
           if (fieldLoc) fieldLoc.value = activeEv.location;
         }
@@ -13442,6 +13448,53 @@ document.addEventListener('DOMContentLoaded', () => {
     return [rua, cidade].filter(Boolean).join(', ');
   }
 
+  /** Texto sem acento, minúsculo e sem espaços sobrando, para comparar nomes.
+   * @param {unknown} v @returns {string} */
+  function normalizarTexto(v) {
+    return String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  /**
+   * Local que a Home mostra no evento:
+   *  - se o espaço é de um fornecedor da Love (nome do evento = nome da
+   *    empresa ou de um serviço de espaço, ou o endereço bate com o do espaço
+   *    cadastrado), mostra o nome do lugar ("Villa Bisutti");
+   *  - senão (churrasqueira do prédio, espaço contratado por fora…), mostra o
+   *    endereço sem cidade/UF ("Avenida X, 1200, Jardim Y").
+   * @returns {string}
+   */
+  function localDoEventoParaHome() {
+    const ev = getActiveEvent();
+    if (!ev) return '';
+    const d = ev.eventDetails || {};
+    const nome = String(d.locationName || (ev.location !== 'Adicionar Local' ? ev.location : '') || '').trim();
+    const endereco = String(d.address || '').trim();
+    const nomeN = normalizarTexto(nome);
+    const ruaN = normalizarTexto(d.street || endereco.split(',')[0]);
+    const numeroN = normalizarTexto(d.number);
+    let fornecedores = [];
+    // A vitrine é declarada mais abaixo no arquivo: durante a carga inicial ela
+    // ainda não existe (ler antes dá erro) — aí só usa o endereço.
+    try { if (b2bFornecedoresCarregados) fornecedores = b2bFornecedores || []; } catch (e) { fornecedores = []; }
+    for (const f of fornecedores) {
+      const espacos = (f.services || []).filter(s => s && s.extra && s.extra.venue);
+      if (!espacos.length) continue; // só fornecedor que cadastrou um espaço
+      if (nomeN && normalizarTexto(f.name) === nomeN) return f.name;
+      for (const s of espacos) {
+        if (nomeN && normalizarTexto(s.name) === nomeN) return s.name;
+        const v = s.extra.venue;
+        const vRua = normalizarTexto(v.street);
+        if (ruaN && vRua && ruaN === vRua && (!numeroN || !v.number || normalizarTexto(v.number) === numeroN)) return f.name;
+      }
+    }
+    return endereco || nome;
+  }
+
+  function atualizarLocalDaHome() {
+    const el = document.getElementById('dash-hub-event-location-text');
+    if (el) el.textContent = localDoEventoParaHome() || 'Local do evento';
+  }
+
   function dataEventoAtivoTexto() {
     const ev = getActiveEvent();
     const iso = ev && ((ev.eventDetails && ev.eventDetails.date) || ev.date);
@@ -15459,8 +15512,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const newLoc = inputVenue ? inputVenue.value.trim() : '';
       if (newLoc) {
         activeEv.location = newLoc;
-        const hubLocText = document.getElementById('dash-hub-event-location-text');
-        if (hubLocText) hubLocText.textContent = newLoc;
+        atualizarLocalDaHome();
         const fieldLoc = document.getElementById('field-event-location');
         if (fieldLoc) fieldLoc.value = newLoc;
       }

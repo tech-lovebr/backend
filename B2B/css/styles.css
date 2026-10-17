@@ -7892,3 +7892,9 @@ body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #
 /* Leads: quantidade selecionada ao lado de "Nome" no cabeçalho. */
 .leads-qtd-selecionados { font-weight: 600; color: #181D24; white-space: pre; }
 .tabela-lixeira-qtd:empty { display: none; }
+
+/* Catálogo de serviços: busca ao lado do "Adicionar serviço", na mesma altura. */
+.produtos-header-acoes { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
+.produtos-header-acoes .produtos-busca { width: 260px; margin-bottom: 0; }
+.produtos-header-acoes .tabela-busca input { height: 34px; }
+@media (max-width: 640px) { .produtos-header-acoes { width: 100%; } .produtos-header-acoes .produtos-busca { flex: 1 1 auto; width: auto; } }

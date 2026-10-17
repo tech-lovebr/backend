@@ -15682,7 +15682,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnContactSupport) {
     btnContactSupport.addEventListener('click', () => {
       dropdownUserAccount?.classList.add('hidden');
-      showToast('Suporte Love: (11) 98765-4321 • Atendimento prioritário 24/7.', '💬');
+      // Abre o Chat já na conversa fixa Suporte Love.
+      activeB2BConversationId = SUPORTE_CONV_ID;
+      pendingSubItemId = 'messages';
+      switchRailTab('b2b'); // sai de páginas como Central de ajuda/Configurações
+      activeB2BConversationId = SUPORTE_CONV_ID;
+      switchB2BView('messages');
+      renderB2BChat();
+      setTimeout(() => document.getElementById('b2b-chat-input')?.focus(), 300);
     });
   }
 

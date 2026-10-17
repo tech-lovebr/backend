@@ -369,9 +369,9 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
    dois não disputarem atenção. */
 .admin-header-bar h1 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.125rem;
   line-height: 1.75rem;
-  font-weight: 400;
+  font-weight: 700;
   color: #18181B;
 }
 
@@ -3375,7 +3375,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .legal-abas { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
 .legal-abas .conteudo-tabs { border-bottom: 0; margin-bottom: 0; flex: 1; min-width: 0; }
 .legal-abas .btn { flex-shrink: 0; margin-bottom: .375rem; }
-.legal-rodape { display: flex; justify-content: flex-end; margin-top: 1rem; }
+.legal-rodape { display: flex; justify-content: flex-start; margin-top: 1rem; }
 
 /* Legal: sem a barra de título — as abas (Termos de uso / Política de
    privacidade) já dizem qual documento está aberto. */
@@ -3397,3 +3397,9 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .th-seta::after { content: '↕'; font-size: .75rem; color: var(--text-soft); }
 .th-ordenar[data-ordem="desc"] .th-seta::after { content: '↓'; color: var(--text); }
 .th-ordenar[data-ordem="asc"] .th-seta::after { content: '↑'; color: var(--text); }
+
+/* Legal: os dois "Salvar alterações" iguais — cinza claro, texto escuro,
+   borda e um pouco maiores que o botão padrão. */
+.btn-salvar-legal { background: #F4F4F5; color: #181D24; border: 1px solid #D4D4D8; font-weight: 600; font-size: .875rem; padding: .5625rem 1.125rem; }
+.btn-salvar-legal:hover:not(:disabled) { background: #F4F4F5; border-color: #181D24; color: #181D24; }
+.legal-abas .btn-salvar-legal { margin-bottom: .375rem; }

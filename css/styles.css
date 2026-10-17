@@ -7907,3 +7907,7 @@ html body .builder-toolbar-right .hidden:not(#love-h-a) { display: none !importa
 html body #site-builder-root .builder-toolbar-right > .hidden:not(#love-h-a),
 html body #site-builder-root #builder-publish.hidden:not(#love-h-a),
 html body #site-builder-root #builder-preview-link.hidden:not(#love-h-a) { display: none !important; }
+/* Compartilhar do Save the Date: ícone de cada canal ao lado do nome. */
+.std-compartilhar-menu button[data-compartilhar] { display: flex; align-items: center; gap: 0.6rem; }
+.std-compartilhar-menu button[data-compartilhar] svg { width: 18px; height: 18px; flex-shrink: 0; }
+body[data-theme="dark"] .std-compartilhar-menu button[data-compartilhar="email"] svg { stroke: #F4F4F5; }

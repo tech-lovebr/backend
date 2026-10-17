@@ -1560,11 +1560,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Listener para o badge de data na Home (redireciona para Informações)
+  // Data na Home: abre Personalizar evento › Informações, já no campo da data.
   const homeEventDateBadge = document.getElementById('dash-hub-event-date-badge');
   if (homeEventDateBadge) {
     homeEventDateBadge.addEventListener('click', () => {
-      switchRailTab('info-event');
+      pendingSubItemId = 'data';
+      state.activeSubSection = 'data';
+      switchRailTab('edit-site');
+      setTimeout(() => {
+        const campo = document.getElementById('editor-data-date');
+        if (campo) { campo.scrollIntoView({ behavior: 'smooth', block: 'center' }); campo.focus(); }
+      }, 300);
     });
   }
 
@@ -6065,6 +6071,22 @@ document.addEventListener('DOMContentLoaded', () => {
       label.textContent = textoOriginal;
       btn.disabled = false;
     }, 1800);
+  }
+
+  // "Salvar alterações" no fim de Informações: o mesmo salvar do topo, com o
+  // retorno ("Salvando…/Salvo") no próprio botão.
+  const btnSaveInformacoesRodape = document.getElementById('btn-save-informacoes-rodape');
+  if (btnSaveInformacoesRodape) {
+    btnSaveInformacoesRodape.addEventListener('click', () => {
+      salvarComRetornoNoBotao(btnSaveInformacoesRodape, () => {
+        try {
+          saveEditorChanges();
+        } catch (e) {
+          console.error('Erro ao aplicar alterações na tela (o evento será salvo mesmo assim):', e);
+        }
+        return persistirEventoAtivo();
+      });
+    });
   }
 
   const btnSaveHeaderEdit = document.getElementById('btn-save-header-edit');
@@ -16020,8 +16042,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnFooterHelp) {
     btnFooterHelp.addEventListener('click', () => {
       switchView('dashboard');
-      switchRailTab('info-event');
-      switchInfoSubSection('faq', 'Dúvidas');
+      openFaqPage();
     });
   }
 

@@ -7898,3 +7898,8 @@ body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #
 .produtos-header-acoes .produtos-busca { width: 260px; margin-bottom: 0; }
 .produtos-header-acoes .tabela-busca input { height: 34px; }
 @media (max-width: 640px) { .produtos-header-acoes { width: 100%; } .produtos-header-acoes .produtos-busca { flex: 1 1 auto; width: auto; } }
+
+/* Editor de site: fundo atrás do site no mesmo azul clarinho da planta de
+   mesas do love.com.br (#FAFCFF), em vez do cinza. */
+html body .builder-canvas-viewport:not(#love-h-a) { background: #FAFCFF; }
+body[data-theme="dark"] .builder-canvas-viewport:not(#love-h-a) { background: #1c1c1c !important; }

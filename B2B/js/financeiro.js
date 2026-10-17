@@ -189,7 +189,6 @@ async function initProposalForm() {
   const eventDateInput = document.getElementById('proposal-event-date');
   if (eventDateInput) wireDateMaskInput(eventDateInput);
 
-  initProposalExtraToolbar();
   initProposalClientAutocomplete();
   renderProposalSellerField();
   renderProposalCompanyAndCnpj();
@@ -505,7 +504,7 @@ async function prepararFormularioVazio(modo) {
   guests.readOnly = false;
   guests.classList.remove('proposal-campo-fixo');
   document.getElementById('proposal-date').value = hojeBR();
-  document.getElementById('proposal-extra-items').innerHTML = '';
+  document.getElementById('proposal-extra-items').value = '';
   document.getElementById('proposal-items-body').innerHTML = '';
   const cat = document.getElementById('proposal-category');
   if (cat) { cat.value = ''; populateProposalProductPicker(); }
@@ -868,11 +867,3 @@ function wireProposalItemRow(row) {
   recalcTotal();
 }
 
-function initProposalExtraToolbar() {
-  document.querySelectorAll('#proposal-extra-toolbar [data-desc-cmd]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.getElementById('proposal-extra-items').focus();
-      document.execCommand(btn.dataset.descCmd, false, null);
-    });
-  });
-}

@@ -171,14 +171,7 @@
 
             <h3 class="text-sm font-bold text-zinc-900 mt-6 mb-1">Outros itens ou serviços</h3>
             <p class="text-xs text-zinc-500 mb-3">Produtos e serviços eventuais ou não cadastrados</p>
-            <div class="event-desc-toolbar" id="proposal-extra-toolbar">
-              <button type="button" data-desc-cmd="bold" title="Negrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4.5h6.5a3.5 3.5 0 0 1 0 7H6zm0 7h7a3.5 3.5 0 0 1 0 7H6z"/></svg></button>
-              <button type="button" data-desc-cmd="italic" title="Itálico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M10 4.5h7M7 19.5h7M13.5 4.5l-3 15"/></svg></button>
-              <button type="button" data-desc-cmd="underline" title="Sublinhado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 4v7a6 6 0 0 0 12 0V4M5 20h14"/></svg></button>
-              <button type="button" data-desc-cmd="justifyLeft" title="Alinhar à esquerda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h14"/></svg></button>
-              <button type="button" data-desc-cmd="justifyCenter" title="Centralizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M7 12h10M5 18h14"/></svg></button>
-            </div>
-            <div id="proposal-extra-items" class="event-desc-editable" contenteditable="true" data-placeholder="Descreva produtos ou serviços que não estão cadastrados no sistema…"></div>
+            <textarea id="proposal-extra-items" class="field-textarea" style="min-height:110px;" placeholder="Descreva produtos ou serviços que não estão cadastrados no sistema…"></textarea>
             </fieldset>
 
             <div class="proposal-rodape" id="proposal-rodape">
@@ -257,6 +250,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/financeiro.js?v=16"></script>
+  <script src="js/financeiro.js?v=17"></script>
 </body>
 </html>

@@ -125,14 +125,14 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     const erroBanco = await salvarPerfilNoBanco(p);
-    // Nome da empresa / documento alterados há menos de 2 dias: o banco
+    // Nome da empresa / documento alterados há menos de 7 dias: o banco
     // recusa (migration 064) e o valor anterior volta.
     if (erroBanco && /ALTERACAO_BLOQUEADA/.test(erroBanco.message || '')) {
       Object.assign(p, antes);
       document.getElementById('profile-company').value = p.company || '';
       document.getElementById('profile-document').value = p.documentNumber || '';
       lockConfiguredFields(p);
-      showToast('Nome da empresa e documento só podem ser alterados a cada 2 dias.', true);
+      showToast('Por segurança, só é possível alterar o nome e o documento a cada 7 dias.', true);
       return;
     }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
@@ -223,22 +223,18 @@ async function consumirLiberacoes(campos) {
 function lockConfiguredFields(p) {
   const companyInput = document.getElementById('profile-company');
   const documentInput = document.getElementById('profile-document');
-  const companyLock = document.getElementById('profile-company-lock');
-  const documentLock = document.getElementById('profile-document-lock');
   const companyRequestChange = document.getElementById('profile-company-request-change');
   const documentRequestChange = document.getElementById('profile-document-request-change');
 
   if (p.company && !liberado('company')) {
     companyInput.readOnly = true;
     companyInput.classList.add('field-locked');
-    companyLock.hidden = false;
     companyRequestChange.hidden = false;
   }
 
   if (p.documentNumber && !liberado('documento')) {
     documentInput.readOnly = true;
     documentInput.classList.add('field-locked');
-    documentLock.hidden = false;
     documentRequestChange.hidden = false;
     document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
       btn.disabled = true;
@@ -248,9 +244,9 @@ function lockConfiguredFields(p) {
 
 /* "Alterar" (nome da empresa e CNPJ/CPF): libera o campo na hora, sem
    passar pelo Admin. Regra: depois de uma alteração, só dá para mudar de
-   novo 2 dias depois (garantida no banco — migration 064). Antes disso,
+   novo 7 dias depois (garantida no banco — migration 064). Antes disso,
    clicar em "Alterar" mostra o aviso logo acima da caixa. */
-const PRAZO_ALTERACAO_MS = 2 * 24 * 60 * 60 * 1000;
+const PRAZO_ALTERACAO_MS = 7 * 24 * 60 * 60 * 1000;
 const ALTERADO_EM = { company: null, documento: null };
 
 async function carregarDatasDeAlteracao() {
@@ -272,11 +268,11 @@ function diasParaAlterarDeNovo(campo) {
 
 function initRequestChangeLinks() {
   const campos = [
-    { campo: 'company', link: 'profile-company-request-change', input: 'profile-company', lock: 'profile-company-lock' },
-    { campo: 'documento', link: 'profile-document-request-change', input: 'profile-document', lock: 'profile-document-lock' }
+    { campo: 'company', link: 'profile-company-request-change', input: 'profile-company' },
+    { campo: 'documento', link: 'profile-document-request-change', input: 'profile-document' }
   ];
 
-  campos.forEach(({ campo, link, input, lock }) => {
+  campos.forEach(({ campo, link, input }) => {
     const el = document.getElementById(link);
     if (!el) return;
     el.addEventListener('click', (e) => {
@@ -286,14 +282,14 @@ function initRequestChangeLinks() {
 
       const dias = diasParaAlterarDeNovo(campo);
       if (dias > 0) {
-        caixa.insertAdjacentHTML('beforebegin', `<p class="campo-aviso-alteracao">Altere de novo daqui a ${dias} ${dias === 1 ? 'dia' : 'dias'}.</p>`);
+        const oQue = campo === 'company' ? 'o nome' : (B2B_DATA.professional.documentType === 'cpf' ? 'o CPF' : 'o CNPJ');
+        caixa.insertAdjacentHTML('beforebegin', `<p class="campo-aviso-alteracao">Por segurança, só é possível alterar ${oQue} a cada 7 dias.</p>`);
         return;
       }
 
       const campoInput = document.getElementById(input);
       campoInput.readOnly = false;
       campoInput.classList.remove('field-locked');
-      document.getElementById(lock).hidden = true;
       el.hidden = true;
       if (campo === 'documento') {
         document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => { btn.disabled = false; });

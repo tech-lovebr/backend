@@ -1042,9 +1042,10 @@ function renderLeftPanel() {
   if (canvas) initSortables(canvas);
 }
 
-// Save the Date: só texto (sem botões, mapa, vídeo…).
+// Save the Date: texto, imagem, galeria, contagem regressiva e data (sem botões, mapa, vídeo…).
 const ELEMENT_GROUPS_SAVETHEDATE = [
-  { title: 'Básicos', types: ['titulo', 'texto', 'separador', 'espacamento'] }
+  { title: 'Básicos', types: ['titulo', 'texto', 'imagem', 'separador', 'espacamento'] },
+  { title: 'Avançado', types: ['galeria', 'contagem', 'data'] }
 ];
 
 function renderElementosTab(body) {

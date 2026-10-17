@@ -26,3 +26,10 @@ interface EventTarget {
 interface Event {
   [chave: string]: any;
 }
+
+// Lista de formulários do Hub: só existe na página Páginas do site; o
+// construtor do site lê com "typeof siteForms !== 'undefined'".
+declare var siteForms: any[];
+
+// Criada em js/app.js como window.navigateToStationery = function () {…}.
+declare function navigateToStationery(): void;

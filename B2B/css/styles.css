@@ -7906,3 +7906,26 @@ body[data-theme="dark"] .builder-canvas-viewport:not(#love-h-a) { background: #1
 
 /* Agenda: calendário com fundo branco. */
 html body .agenda-mini-calendar:not(#love-h-a) { background-color: #FFFFFF; }
+
+/* ==========================================================================
+   Padrão de tamanho: botões de cabeçalho (Adicionar, Compartilhar, Nova
+   tarefa…), "Filtrar por"/"Exportar" e barras de busca com a mesma
+   proporção — 38px de altura, 14px de texto em peso 600, 14px de respiro
+   lateral e cantos de 8px.
+   ========================================================================== */
+html body .b2b-header-bar .btn-primary:not(#love-h-a),
+html body .b2b-header-bar .btn-secondary:not(#love-h-a),
+html body #agenda-add-event-btn.btn-secondary:not(#love-h-a),
+html body .btn-secondary.kanban-add-task-confirm:not(#love-h-a),
+html body #builder-save:not(#love-h-a),
+html body #builder-publish:not(#love-h-a),
+html body .tabela-barra-btn:not(#love-h-a) {
+  height: 38px; min-height: 38px; box-sizing: border-box;
+  padding: 0 14px; font-size: 0.875rem; font-weight: 600; line-height: 1;
+  border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+}
+html body .b2b-header-bar .btn-primary svg:not(#love-h-a),
+html body .b2b-header-bar .btn-secondary svg:not(#love-h-a) { width: 16px; height: 16px; flex-shrink: 0; }
+html body .b2b-header-bar .field-input:not(#love-h-a),
+html body .tabela-busca input:not(#love-h-a),
+html body .produtos-header-acoes .tabela-busca input:not(#love-h-a) { height: 38px; font-size: 0.875rem; border-radius: 8px; box-sizing: border-box; }

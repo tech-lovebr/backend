@@ -57,9 +57,54 @@ async function conversaSuporteLove(session) {
   return conv;
 }
 
+/* "Digitando…" no Suporte Love (igual ao love.com.br): a resposta do suporte
+   não aparece na hora — primeiro as três bolinhas, por um tempo que cresce
+   com o tamanho do texto; várias chegam uma de cada vez. Ao abrir, o
+   histórico aparece todo. Depois de enviar, as bolinhas aparecem enquanto a
+   resposta não chega (até 9 s). */
+let suporteReveladas = null;   // quantas mensagens já foram mostradas (null = ainda não abriu)
+let suporteTimer = null;
+let suporteAguardandoAte = 0;
+
+function aplicarDigitandoNoSuporte(conv) {
+  const todas = conv.todasMensagens || conv.messages;
+  conv.todasMensagens = todas;
+  if (suporteReveladas === null) suporteReveladas = todas.length; // histórico: tudo de uma vez
+  // As mensagens do próprio fornecedor aparecem na hora.
+  while (suporteReveladas < todas.length && todas[suporteReveladas].sender === 'me') suporteReveladas++;
+  conv.messages = todas.slice(0, suporteReveladas);
+  const pendente = todas[suporteReveladas];
+  if (pendente) {
+    suporteAguardandoAte = 0;
+    if (!suporteTimer) {
+      const espera = Math.min(6500, 1800 + String(pendente.text || '').length * 28);
+      suporteTimer = setTimeout(() => {
+        suporteTimer = null;
+        suporteReveladas = (suporteReveladas || 0) + 1;
+        redesenharSuporte();
+      }, espera);
+    }
+  }
+  conv.digitando = !!pendente || Date.now() < suporteAguardandoAte;
+  const ultima = conv.messages[conv.messages.length - 1];
+  conv.lastMessage = conv.digitando ? 'Digitando…' : ((ultima && ultima.text) || SUPORTE_BOAS_VINDAS);
+  conv.time = (ultima && ultima.time) || '';
+}
+
+function redesenharSuporte() {
+  const conv = b2bConversations.find(c => c.isSuporte);
+  if (!conv) return;
+  aplicarDigitandoNoSuporte(conv);
+  renderContactsList(document.getElementById('chat-search-input')?.value || '');
+  if (activeConvId === SUPORTE_CONV_ID && !mensagemEmEdicaoId) renderActiveChat();
+}
+
 async function enviarParaSuporte(text) {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session || !text) return false;
+  // Bolinhas enquanto a resposta não chega (somem sozinhas depois de 9 s).
+  suporteAguardandoAte = Date.now() + 9000;
+  setTimeout(redesenharSuporte, 9100);
   const prof = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
   const nome = prof.company || prof.name || session.user.email;
   if (!suporteTicketId) {
@@ -118,6 +163,7 @@ async function loadB2BConversations() {
   if (error) ({ data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at'));
 
   const suporte = await conversaSuporteLove(session);
+  aplicarDigitandoNoSuporte(suporte);
   if (error || !rows) { b2bConversations = [suporte]; return; }
 
   b2bConversations = rows.map(row => {
@@ -410,6 +456,16 @@ function renderActiveChat() {
 
     container.appendChild(row);
   });
+
+  // Suporte Love "digitando…": três bolinhas na vez dele.
+  if (activeConv.isSuporte && activeConv.digitando) {
+    const row = document.createElement('div');
+    row.className = 'flex items-end gap-2.5 justify-start';
+    row.innerHTML = `
+      <span class="w-7 h-7 b2b-avatar-square border border-zinc-200">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
+      <div class="chat-digitando" role="status" aria-label="Suporte Love está digitando"><span></span><span></span><span></span></div>`;
+    container.appendChild(row);
+  }
 
   container.scrollTop = container.scrollHeight;
 }

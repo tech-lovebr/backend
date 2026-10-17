@@ -389,7 +389,7 @@ function renderPacotesLista(tipo) {
       </div>
       ${tipo === 'packages' ? `<div class="product-pacote-linha product-pacote-linha--extra">
         <input type="text" class="field-input" data-campo="description" maxlength="160" value="${escapeHtml(item.description || '')}" placeholder="O que inclui (opcional)" autocomplete="off">
-        <input type="text" class="field-input product-sku-input" data-campo="sku" maxlength="40" value="${escapeHtml(item.sku || '')}" placeholder="${escapeHtml(limparSku(document.getElementById('product-sku')?.value) || 'SKU (opcional)')}" autocomplete="off" spellcheck="false" title="SKU do pacote (vazio usa o SKU principal)">
+        <input type="text" class="field-input product-sku-input" data-campo="sku" maxlength="40" value="${escapeHtml(item.sku || '')}" placeholder="${escapeHtml(limparSku(document.getElementById('product-sku')?.value) || '')}" autocomplete="off" spellcheck="false" title="SKU do pacote (vazio usa o SKU principal)">
       </div>` : ''}
     </div>`).join('');
 
@@ -989,6 +989,7 @@ function updateCategoryFieldsVisibility() {
   // em vez do motor de precificação novo (decisão confirmada com o usuário).
   setPanelHidden('pricing-venue-section', !isVenue);
   setPanelHidden('pricing-standard-section', isVenue);
+  setPanelHidden('pricing-type-wrap', isVenue);
 }
 
 /* -------------------- Etapa 1: seletor de categoria + chips de subcategoria -------------------- */
@@ -1112,9 +1113,8 @@ function renderCategoryTree(filterText) {
 /* -------------------- Etapa 2: motor de precificação -------------------- */
 
 function renderPricingTypeFields() {
-  document.querySelectorAll('#pricing-type-grid [data-pricing-type]').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.pricingType === currentPricingType);
-  });
+  const tipoSelect = document.getElementById('pricing-type-select');
+  if (tipoSelect) tipoSelect.value = currentPricingType || '';
   setPanelHidden('pricing-per-person-fields', currentPricingType !== 'POR_PESSOA');
   setPanelHidden('pricing-per-hour-fields', currentPricingType !== 'POR_HORA');
   setPanelHidden('pricing-fixed-fields', currentPricingType !== 'VALOR_FIXO');
@@ -1280,7 +1280,7 @@ function initProductDrawer() {
   skuInput?.addEventListener('input', () => {
     const limpo = limparSku(skuInput.value);
     if (limpo !== skuInput.value) skuInput.value = limpo;
-    document.querySelectorAll('#product-packages-list [data-campo="sku"]').forEach(el => { el.placeholder = limpo || 'SKU (opcional)'; });
+    document.querySelectorAll('#product-packages-list [data-campo="sku"]').forEach(el => { el.placeholder = limpo || ''; });
   });
   document.getElementById('products-search')?.addEventListener('input', (e) => {
     produtosBusca = e.target.value;
@@ -1413,11 +1413,9 @@ function initProductDrawer() {
 
   document.getElementById('product-name').addEventListener('input', updateWizardNextButtonState);
 
-  document.getElementById('pricing-type-grid').querySelectorAll('[data-pricing-type]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentPricingType = btn.dataset.pricingType;
-      renderPricingTypeFields();
-    });
+  document.getElementById('pricing-type-select')?.addEventListener('change', (e) => {
+    currentPricingType = e.target.value || null;
+    renderPricingTypeFields();
   });
 
   document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(btn => {

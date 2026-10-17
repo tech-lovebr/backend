@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=571">
+  <link rel="stylesheet" href="css/styles.css?v=572">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -130,33 +130,31 @@
         <!-- ETAPA 2: Motor de Precificação -->
         <div class="product-wizard-panel" data-step="2">
 
-          <!-- SKU: código interno do fornecedor. Nunca aparece na vitrine. -->
-          <div class="mb-6">
-            <label for="product-sku" class="field-label product-title-label">SKU / Código de referência <span class="field-label-opcional">(Opcional)</span></label>
-            <input id="product-sku" type="text" class="field-input product-sku-input" maxlength="40" autocomplete="off" spellcheck="false" placeholder="Ex: CEN-INF-01, LOC-MESA-04">
-            <p class="field-hint mt-1.5">Código interno da sua empresa para identificar este produto ou serviço no seu estoque, agenda ou ERP.</p>
+          <!-- Código (SKU) — interno do fornecedor, nunca aparece na vitrine — e
+               a unidade de cobrança (drop-down) lado a lado. -->
+          <div class="grid grid-cols-2 gap-4 mb-2">
+            <div>
+              <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
+                <span class="info-tooltip-wrap info-tooltip-wrap--esq">
+                  <button type="button" class="info-tooltip-trigger product-info-azul" tabindex="0" aria-label="Mais informações"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"/></svg></button>
+                  <span class="info-tooltip-bubble">Código interno de referência</span>
+                </span>
+              </label>
+              <input id="product-sku" type="text" class="field-input product-sku-input" maxlength="40" autocomplete="off" spellcheck="false">
+            </div>
+            <div id="pricing-type-wrap">
+              <label for="pricing-type-select" class="field-label product-title-label">Unidade de cobrança</label>
+              <select id="pricing-type-select" class="field-select">
+                <option value="">Selecione</option>
+                <option value="POR_PESSOA">Por pessoa</option>
+                <option value="POR_HORA">Por hora</option>
+                <option value="VALOR_FIXO">Valor fixo</option>
+                <option value="SOB_CONSULTA">Sob consulta</option>
+              </select>
+            </div>
           </div>
 
           <div id="pricing-standard-section">
-            <label class="field-label product-title-label">Unidade de cobrança</label>
-            <div class="pricing-type-grid" id="pricing-type-grid">
-              <button type="button" class="pricing-type-card" data-pricing-type="POR_PESSOA">
-                <p class="pricing-type-card-title">Por pessoa</p>
-                <p class="pricing-type-card-desc">Por convidado/cabeça</p>
-              </button>
-              <button type="button" class="pricing-type-card" data-pricing-type="POR_HORA">
-                <p class="pricing-type-card-title">Por hora</p>
-                <p class="pricing-type-card-desc">Por hora trabalhada</p>
-              </button>
-              <button type="button" class="pricing-type-card" data-pricing-type="VALOR_FIXO">
-                <p class="pricing-type-card-title">Valor fixo</p>
-                <p class="pricing-type-card-desc">Pacote fechado/diária</p>
-              </button>
-              <button type="button" class="pricing-type-card" data-pricing-type="SOB_CONSULTA">
-                <p class="pricing-type-card-title">Sob consulta</p>
-                <p class="pricing-type-card-desc">A partir de / orçamento</p>
-              </button>
-            </div>
 
             <div id="pricing-per-person-fields" class="flex flex-col gap-4 mt-4" hidden>
               <div>
@@ -604,6 +602,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=33"></script>
+  <script src="js/produtos.js?v=34"></script>
 </body>
 </html>

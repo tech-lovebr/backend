@@ -7599,3 +7599,12 @@ body[data-theme="dark"] .product-pacote-item { background: #252525 !important; b
 .product-pacote-linha--extra { grid-template-columns: minmax(0, 1fr) 150px 28px; }
 .product-pacote-linha--extra::after { content: ''; }
 .produtos-busca { width: 280px; margin-bottom: 1rem; }
+
+/* Código (SKU): ícone de informação azul ao lado do rótulo; o balão abre
+   para a direita (o campo fica na borda esquerda do drawer). */
+.product-label-com-info { display: flex; align-items: center; gap: 0.35rem; }
+.product-info-azul { color: #3B82F6; }
+.product-info-azul:hover, .product-info-azul:focus-visible { color: #2563EB; }
+.info-tooltip-wrap--esq .info-tooltip-bubble { right: auto; left: -6px; width: auto; white-space: nowrap; }
+.info-tooltip-wrap--esq .info-tooltip-bubble::after { right: auto; left: 10px; }
+.product-sku-input { font-family: inherit; }

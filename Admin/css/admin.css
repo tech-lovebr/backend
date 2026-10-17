@@ -3376,3 +3376,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 .legal-abas .conteudo-tabs { border-bottom: 0; margin-bottom: 0; flex: 1; min-width: 0; }
 .legal-abas .btn { flex-shrink: 0; margin-bottom: .375rem; }
 .legal-rodape { display: flex; justify-content: flex-end; margin-top: 1rem; }
+
+/* Legal: sem a barra de título — as abas (Termos de uso / Política de
+   privacidade) já dizem qual documento está aberto. */
+body[data-page="cms-legal"] .admin-header-bar { display: none; }

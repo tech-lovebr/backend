@@ -71,11 +71,6 @@ function mostrar(slug) {
   BASE = EDITOR.html();
   document.getElementById('doc-atualizado').textContent =
     doc.updated_at ? formatDateTime(doc.updated_at) : '—';
-
-  // O cabeçalho acompanha a aba: "Legal" sozinho não diz qual documento
-  // está aberto quando a página é compartilhada por captura de tela.
-  const titulo = document.querySelector('.admin-header-bar .header-bar-titulo h1');
-  if (titulo) titulo.textContent = doc.titulo || 'Legal';
 }
 
 async function salvar() {

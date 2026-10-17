@@ -7830,3 +7830,10 @@ html body .conv-item-mais:not(#love-h-a):focus,
 html body .conv-item-mais:not(#love-h-a):active { background: none !important; box-shadow: none !important; transform: none !important; animation: none !important; color: #71717A; transition: color .15s; }
 html body .conv-item-mais:not(#love-h-a):hover,
 html body .conv-item.menu-aberto .conv-item-mais:not(#love-h-a) { color: #181D24; }
+/* ⋯ da conversa: bolinhas um pouco maiores e, no hover (ou com o menu
+   aberto), um círculo cinza-claro em volta. */
+html body .conv-item-mais:not(#love-h-a) { width: 24px; height: 24px; margin: -3px -4px -3px 0; border-radius: 50% !important; }
+html body .conv-item-mais:not(#love-h-a) svg { width: 18px; height: 18px; }
+html body .conv-item-mais:not(#love-h-a):hover,
+html body .conv-item.menu-aberto .conv-item-mais:not(#love-h-a) { background: #F4F4F5 !important; color: #181D24; }
+body[data-theme="dark"] .conv-item-mais:not(#love-h-a):hover { background: #333333 !important; }

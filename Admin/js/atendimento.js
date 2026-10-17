@@ -411,23 +411,23 @@ async function responderNoChat(t, html, status, botoes) {
 
 /* ------------------------------------------- Biblioteca de respostas prontas */
 
+/* Mesmo lápis da foto de perfil/capa do love.com.br e do Hub: bolinha
+   translúcida com desfoque e traço 2.4. */
+const ICONE_LAPIS_EDITAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/><path d="M14.5 6.85l2.65 2.65"/></svg>';
+
+/* Lista enxuta: cada resposta é uma caixinha própria, só com o título e o
+   lápis — o resto está dentro dela. */
 function abrirBiblioteca() {
-  const grupos = [...new Set(RESPOSTAS.map(r => r.categoria || 'Geral'))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  const PUBLICO = { todos: 'Todos', cliente: 'Anfitriões', fornecedor: 'Empresas' };
+  const lista = RESPOSTAS.slice().sort((a, b) => String(a.titulo).localeCompare(String(b.titulo), 'pt-BR'));
 
   Drawer.open({
     title: 'Respostas prontas',
-    subtitle: 'Os e-mails que a equipe (e depois a IA) usa para responder',
-    body: RESPOSTAS.length ? grupos.map(g => `
-      <p class="drawer-section-title">${escapeHtml(g)}</p>
-      ${RESPOSTAS.filter(r => (r.categoria || 'Geral') === g).map(r => `
-        <div class="pergunta-item ${r.ativo === false ? 'is-inativo' : ''}">
-          <div style="flex:1;min-width:0">
-            <p class="pergunta">${escapeHtml(r.titulo)}</p>
-            <p class="resposta">${escapeHtml(PUBLICO[r.publico] || r.publico)} · usada ${formatNumber(r.usos || 0)}x${r.envio_automatico ? ' · robô responde sozinho' : ''}</p>
-          </div>
-          <button type="button" class="btn btn-ghost btn-sm" data-editar-resposta="${r.id}">Editar</button>
-        </div>`).join('')}`).join('')
+    body: lista.length
+      ? `<div class="respostas-lista">${lista.map(r => `
+          <div class="resposta-linha ${r.ativo === false ? 'is-inativo' : ''}">
+            <span class="resposta-linha-titulo">${escapeHtml(r.titulo)}</span>
+            <button type="button" class="lapis-redondo" data-editar-resposta="${r.id}" title="Editar" aria-label="Editar ${escapeHtml(r.titulo)}">${ICONE_LAPIS_EDITAR}</button>
+          </div>`).join('')}</div>`
       : `<div class="empty-state"><strong>Nenhuma resposta pronta</strong><p>Crie a primeira — ela aparece no seletor de cada conversa.</p></div>`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-fechar-biblioteca">Fechar</button>

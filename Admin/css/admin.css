@@ -3305,3 +3305,8 @@ body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
 /* Evento excluído pelo criador: aviso no topo do drawer. */
 .aviso-excluido { margin: 0 0 1rem; padding: .625rem .75rem; border-radius: var(--radius-card); background: var(--danger-bg); color: #7a2018; font-size: .8125rem; line-height: 1.6; }
 .col-acoes .btn-sm { margin-right: .25rem; vertical-align: middle; }
+
+/* Campos numéricos sem as setinhas de subir/descer do navegador. */
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }

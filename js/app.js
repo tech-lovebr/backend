@@ -14448,9 +14448,54 @@ document.addEventListener('DOMContentLoaded', () => {
     return conv;
   }
 
+  // "Digitando…" no Suporte Love: a resposta (robô ou atendente) não aparece
+  // na hora — primeiro as três bolinhas, por um tempo que cresce com o
+  // tamanho do texto, como no WhatsApp. Depois de a pessoa enviar, as
+  // bolinhas já aparecem enquanto a resposta não chega.
+  /** Quantas mensagens do suporte já foram mostradas (null = ainda não abriu). @type {number|null} */
+  let suporteReveladas = null;
+  let suporteTimer = null;
+  let suporteAguardandoAte = 0;
+
+  /** Esconde as respostas ainda "sendo digitadas" e marca conv.digitando. */
+  function aplicarDigitandoNoSuporte(conv) {
+    const todas = conv.todasMensagens || conv.messages;
+    conv.todasMensagens = todas;
+    if (suporteReveladas === null) suporteReveladas = todas.length; // histórico: tudo de uma vez
+    // As mensagens da própria pessoa aparecem na hora.
+    while (suporteReveladas < todas.length && todas[suporteReveladas].sender === 'me') suporteReveladas++;
+    conv.messages = todas.slice(0, suporteReveladas);
+    const pendente = todas[suporteReveladas];
+    if (pendente) {
+      suporteAguardandoAte = 0;
+      if (!suporteTimer) {
+        const espera = Math.min(6500, 1800 + String(pendente.text || '').length * 28);
+        suporteTimer = setTimeout(() => {
+          suporteTimer = null;
+          suporteReveladas = (suporteReveladas || 0) + 1;
+          redesenharSuporte();
+        }, espera);
+      }
+    }
+    conv.digitando = !!pendente || Date.now() < suporteAguardandoAte;
+    const ultima = conv.messages[conv.messages.length - 1];
+    conv.lastMessage = conv.digitando ? 'Digitando…' : ((ultima && ultima.text) || SUPORTE_BOAS_VINDAS);
+    conv.time = (ultima && ultima.time) || '';
+  }
+
+  function redesenharSuporte() {
+    const conv = b2bConversationsData.find(c => c.isSuporte);
+    if (!conv) return;
+    aplicarDigitandoNoSuporte(conv);
+    if (chatEstaVisivel()) desenharChatComOQueTem();
+  }
+
   async function enviarParaSuporte(text) {
     const sessao = window.loveClienteSession;
     if (!sessao || !text) return false;
+    // Bolinhas enquanto a resposta não chega (some sozinha depois de 9 s).
+    suporteAguardandoAte = Date.now() + 9000;
+    setTimeout(redesenharSuporte, 9100);
     const meta = sessao.user.user_metadata || {};
     const nome = meta.couple_name || meta.full_name || sessao.user.email;
     if (!suporteTicketId) {
@@ -14473,6 +14518,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function carregarConversasDoBanco() {
     if (!window.loveClienteSession) { b2bConversationsData = []; return; }
     const suporte = await conversaSuporteLove();
+    aplicarDigitandoNoSuporte(suporte);
 
     const buscar = (comEditado) => supabaseClient
       .from('conversations')
@@ -15276,6 +15322,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       container.appendChild(row);
     });
+
+    // Suporte Love "digitando…": três bolinhas na vez dele.
+    if (activeConv.digitando) {
+      const row = document.createElement('div');
+      row.className = 'flex items-end gap-2.5 justify-start';
+      row.innerHTML = `
+        <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200">
+        <div class="chat-digitando" role="status" aria-label="Suporte Love está digitando"><span></span><span></span><span></span></div>`;
+      container.appendChild(row);
+    }
 
     container.scrollTop = container.scrollHeight;
   }

@@ -8068,3 +8068,21 @@ html body .dashboard-help-card:not(#love-h-a) { border-color: #F0F0F2 !important
 /* Editor de site: a página editada ganha a mesma sombra leve das caixas. */
 html body .builder-canvas-frame:not(#love-h-a) { box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04); }
 body[data-theme="dark"] .builder-canvas-frame { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important; }
+
+/* Editor de site (Site Principal e Meu Checkout) › abas ELEMENTOS / URL:
+   ocupam 100% da largura no topo do painel, sem margem branca, divididas
+   ao meio; a aba escolhida fica cinza-clarinha (#FAFAFA, como no Save the
+   Date / Convite Digital) e a outra branca. */
+html body #builder-elements-panel .builder-panel-tabs:not(#love-h-a) {
+  margin: 0; padding: 0; gap: 0; border: none; border-bottom: 1px solid #E4E4E7; border-radius: 0; background: #FFFFFF;
+}
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a) {
+  flex: 1 1 50%; height: 44px; border-radius: 0; background: #FFFFFF; color: #71717A;
+}
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab + .builder-panel-tab:not(#love-h-a) { border-left: 1px solid #E4E4E7; }
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a):hover { background: #FAFAFA; color: #181D24; }
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a):hover { color: #181D24; }
+body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs { background: #1F1F1F !important; border-bottom-color: #404040 !important; }
+body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab { background: #1F1F1F !important; color: #A1A1AA !important; border-color: #404040 !important; }
+body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active { background: #2A2A2A !important; color: #FFFFFF !important; }

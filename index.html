@@ -3320,12 +3320,19 @@
                  seção de largura total antes das avaliações — carrossel de
                  fotos em cima e o texto sobre os trabalhos embaixo. -->
             <div id="b2b-profile-portfolio-section" class="mt-8 pt-6 border-t border-zinc-100">
-              <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Portfólio</h3>
+              <h3 id="b2b-profile-portfolio-titulo" class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Portfólio</h3>
               <div class="b2b-portfolio-largura">
                 <button type="button" id="btn-b2b-profile-portfolio-prev" class="hidden" aria-hidden="true"></button>
                 <div id="b2b-profile-portfolio-grid" class="b2b-portfolio-carrossel"></div>
                 <button type="button" id="btn-b2b-profile-portfolio-next" class="hidden" aria-hidden="true"></button>
                 <p id="b2b-profile-portfolio-texto" class="b2b-portfolio-texto hidden"></p>
+              </div>
+              <!-- Página do serviço: leva para a página da empresa, com todos os serviços. -->
+              <div id="b2b-profile-ver-mais-servicos-wrap" class="flex justify-end pt-3 hidden">
+                <button type="button" id="b2b-profile-ver-mais-servicos" class="text-xs sm:text-sm font-semibold text-[#333333] hover:text-[#000000] flex items-center gap-1 transition-colors cursor-pointer font-sans group">
+                  <span>Ver mais serviços</span>
+                  <svg class="w-4 h-4 text-[#333333] group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                </button>
               </div>
             </div>
 
@@ -5503,7 +5510,7 @@
   <script src="js/supabase-init.js?v=20261015_organizador"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261016_localhome"></script>
+  <script src="js/app.js?v=20261016_servicoimagens"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261016_rotuloelementos"></script>
 </body>

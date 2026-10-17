@@ -12799,7 +12799,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // "por Empresa" na página do serviço abre a página da empresa (sem serviço),
   // lembrando o serviço de origem para o caminho do topo.
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.b2b-profile-empresa-link');
+    const link = e.target.closest('.b2b-profile-empresa-link, #b2b-profile-ver-mais-servicos');
     if (link && activeB2BProfileItem) openB2BVendorProfile(activeB2BProfileItem, null, activeB2BProfileServico);
   });
 
@@ -14003,14 +14003,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     }
-    if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0);
+    if (servicesSection) servicesSection.classList.toggle('hidden', services.length === 0 || !!servicoAtual);
 
     // Portfólio: só na página da empresa (não na do serviço) e só se o
     // fornecedor configurou fotos no Hub. Carrossel em cima, texto embaixo.
-    const mostrarPortfolio = !servicoAtual && portfolioPhotos.length > 0;
-    const portfolioItens = Array.isArray(item.portfolioItens) && item.portfolioItens.length
-      ? item.portfolioItens
-      : portfolioPhotos.map(url => ({ url, comentario: '' }));
+    // Página do serviço: no lugar dele, o carrossel com as imagens daquele
+    // serviço (carrossel de imagens do Hub) e "Ver mais serviços" embaixo.
+    const fotosServico = servicoAtual
+      ? (Array.isArray(servicoAtual.gallery) ? servicoAtual.gallery : []).filter(f => typeof f === 'string' && f)
+      : [];
+    const fotosCarrossel = servicoAtual ? fotosServico : portfolioPhotos;
+    const mostrarPortfolio = fotosCarrossel.length > 0;
+    const portfolioItens = servicoAtual
+      ? fotosServico.map(url => ({ url, comentario: '' }))
+      : (Array.isArray(item.portfolioItens) && item.portfolioItens.length
+        ? item.portfolioItens
+        : portfolioPhotos.map(url => ({ url, comentario: '' })));
+    const tituloCarrossel = document.getElementById('b2b-profile-portfolio-titulo');
+    if (tituloCarrossel) {
+      tituloCarrossel.textContent = servicoAtual ? 'Imagens' : 'Portfólio';
+      tituloCarrossel.classList.toggle('hidden', !mostrarPortfolio);
+    }
+    const verMaisServicos = document.getElementById('b2b-profile-ver-mais-servicos-wrap');
+    if (verMaisServicos) verMaisServicos.classList.toggle('hidden', !servicoAtual);
     // Comentário da foto que está na tela (troca junto com a foto); sem
     // comentário, nada aparece embaixo.
     const mostrarComentarioDaFoto = (i) => {
@@ -14023,18 +14038,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (portfolioGrid) {
       portfolioGrid.innerHTML = mostrarPortfolio ? `
         <div class="b2b-portfolio-slides">
-          ${portfolioPhotos.map((photo, i) => `
+          ${fotosCarrossel.map((photo, i) => `
             <button type="button" class="b2b-portfolio-slide${i === 0 ? ' is-ativo' : ''}" data-index="${i}" aria-label="Ampliar foto ${i + 1}">
-              <img src="${photo}" alt="Portfólio" loading="lazy">
+              <img src="${escaparHtml(photo)}" alt="${servicoAtual ? escaparHtml(servicoAtual.name || '') : 'Portfólio'}" loading="lazy">
             </button>`).join('')}
-          ${portfolioPhotos.length > 1 ? `
+          ${fotosCarrossel.length > 1 ? `
             <button type="button" class="b2b-portfolio-seta b2b-portfolio-seta--ant" data-portfolio-seta="-1" aria-label="Foto anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
             <button type="button" class="b2b-portfolio-seta b2b-portfolio-seta--prox" data-portfolio-seta="1" aria-label="Próxima foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>` : ''}
         </div>
-        ${portfolioPhotos.length > 1 ? `<div class="b2b-portfolio-pontos">${portfolioPhotos.map((_, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>` : ''}` : '';
+        ${fotosCarrossel.length > 1 ? `<div class="b2b-portfolio-pontos">${fotosCarrossel.map((_, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>` : ''}` : '';
       let atual = 0;
       const ir = (n) => {
-        const total = portfolioPhotos.length;
+        const total = fotosCarrossel.length;
         atual = (n + total) % total;
         portfolioGrid.querySelectorAll('.b2b-portfolio-slide').forEach((el, i) => el.classList.toggle('is-ativo', i === atual));
         portfolioGrid.querySelectorAll('.b2b-portfolio-pontos span').forEach((el, i) => el.classList.toggle('is-ativo', i === atual));
@@ -14045,14 +14060,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       portfolioGrid.querySelectorAll('.b2b-portfolio-slide').forEach(btn => {
         btn.addEventListener('click', () => {
-          openSupplierGalleryModal(item);
+          if (servicoAtual) openSupplierGalleryModal(item, fotosCarrossel);
+          else openSupplierGalleryModal(item);
           supplierGalleryIndex = parseInt(btn.getAttribute('data-index'), 10) || 0;
           renderSupplierGalleryImage();
         });
       });
     }
     mostrarComentarioDaFoto(mostrarPortfolio ? 0 : -1);
-    if (portfolioSection) portfolioSection.classList.toggle('hidden', !mostrarPortfolio);
+    if (portfolioSection) portfolioSection.classList.toggle('hidden', !mostrarPortfolio && !servicoAtual);
 
     // Coração do perfil: só na página do serviço (favorito é do serviço).
     const favBtn = document.getElementById('btn-b2b-profile-favorite');

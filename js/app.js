@@ -672,7 +672,88 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirmInput) confirmInput.value = '';
     resetSettingsSecurity();
     refreshMfaStatus();
+    desenharFotoDaConta();
   }
+
+  // ---- Foto de perfil (Configurações › Minha conta) ----
+  // Mesmo modelo do Hub: caixa vazia só com o "+"; com foto, um lápis no
+  // canto para trocar. A foto é recortada no centro (400 × 400), sobe para o
+  // bucket clientes (avatar/<id>/…, migration 065) e vira clientes.avatar_url
+  // — a mesma do cabeçalho, do menu do perfil e do chat.
+  const ICONE_MAIS_FOTO = '<span class="conta-avatar-mais" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></span>';
+  const ICONE_LAPIS_FOTO = '<span class="conta-avatar-lapis" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/></svg></span>';
+
+  function desenharFotoDaConta() {
+    const caixa = document.getElementById('conta-avatar-picker');
+    const conteudo = document.getElementById('conta-avatar-conteudo');
+    if (!caixa || !conteudo) return;
+    const foto = window.loveClienteProfile && window.loveClienteProfile.avatar_url;
+    caixa.classList.toggle('tem-foto', !!foto);
+    caixa.title = foto ? 'Alterar foto' : 'Adicionar foto';
+    conteudo.innerHTML = foto ? `<img src="${escaparHtml(foto)}" alt="">${ICONE_LAPIS_FOTO}` : ICONE_MAIS_FOTO;
+  }
+
+  /** Recorta a imagem no centro, em JPEG 400 × 400.
+   * @param {File} arquivo @returns {Promise<Blob>} */
+  function fotoQuadrada(arquivo) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(arquivo);
+      const img = new Image();
+      img.onload = () => {
+        const N = 400;
+        const lado = Math.min(img.naturalWidth, img.naturalHeight);
+        const canvas = document.createElement('canvas');
+        canvas.width = N; canvas.height = N;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, N, N);
+        ctx.drawImage(img, (img.naturalWidth - lado) / 2, (img.naturalHeight - lado) / 2, lado, lado, 0, 0, N, N);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(b => (b ? resolve(b) : reject(new Error('sem imagem'))), 'image/jpeg', 0.9);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('imagem inválida')); };
+      img.src = url;
+    });
+  }
+
+  document.getElementById('conta-avatar-input')?.addEventListener('change', async (e) => {
+    const input = /** @type {HTMLInputElement} */ (e.target);
+    const arquivo = input.files && input.files[0];
+    input.value = '';
+    const status = document.getElementById('conta-avatar-status');
+    const avisar = (texto, erro) => {
+      if (!status) return;
+      status.textContent = texto;
+      status.classList.toggle('hidden', !texto);
+      status.classList.toggle('is-erro', !!erro);
+    };
+    const session = window.loveClienteSession;
+    if (!arquivo || !session) return;
+    if (!/^image\//.test(arquivo.type)) { avisar('Escolha um arquivo de imagem.', true); return; }
+    const caixa = document.getElementById('conta-avatar-picker');
+    caixa?.classList.add('is-enviando');
+    avisar('Enviando foto…');
+    try {
+      const blob = await fotoQuadrada(arquivo);
+      const caminho = `avatar/${session.user.id}/${Date.now()}.jpg`;
+      const { error: upErr } = await supabaseClient.storage.from('clientes')
+        .upload(caminho, blob, { cacheControl: '31536000', contentType: 'image/jpeg' });
+      if (upErr) throw upErr;
+      const url = supabaseClient.storage.from('clientes').getPublicUrl(caminho).data.publicUrl;
+      const { error } = await supabaseClient.from('clientes').update({ avatar_url: url }).eq('id', session.user.id);
+      if (error) throw error;
+      if (window.loveClienteProfile) window.loveClienteProfile.avatar_url = url;
+      desenharFotoDaConta();
+      atualizarAvatarDoCabecalho();
+      avisar('Foto atualizada.');
+      setTimeout(() => avisar(''), 3000);
+    } catch (err) {
+      console.error('Foto de perfil:', err);
+      avisar('Não foi possível enviar a foto. Tente de novo.', true);
+    } finally {
+      caixa?.classList.remove('is-enviando');
+    }
+  });
 
   // ---- Dúvidas (FAQ) ----
   // Ordem fixa das categorias pedidas; outras criadas no Admin vêm depois, em

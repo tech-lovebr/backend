@@ -572,6 +572,7 @@ async function abrirPropostaParaVer(o, status) {
     row.querySelector('[data-item-qty]').value = it.qty ?? '';
     row.querySelector('[data-item-discount]').value = it.discount ?? 0;
     row.querySelector('[data-item-unit-price]').value = it.unitPrice ?? 0;
+    row.querySelector('[data-item-list-price]').value = precoNaCelula(it.unitPrice);
     row.querySelector('[data-item-total]').textContent = formatCurrency(it.total || 0);
   });
   if (!body.children.length) addProposalItemRow();
@@ -596,7 +597,7 @@ function preencherItem(row, { name, unit, qty, unitPrice }) {
   const preco = row.querySelector('[data-item-unit-price]');
   preco.value = String(Number(unitPrice) || 0);
   const lista = row.querySelector('[data-item-list-price]');
-  if (lista) lista.value = formatCurrency(Number(unitPrice) || 0);
+  if (lista) lista.value = precoNaCelula(unitPrice);
   qtyInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
@@ -786,6 +787,8 @@ async function resetProposalForm() {
   await prepararFormularioVazio('novo');
 }
 
+const precoNaCelula = v => (Number(v) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 function addProposalItemRow() {
   const body = document.getElementById('proposal-items-body');
   if (!body) return;
@@ -800,9 +803,8 @@ function addProposalItemRow() {
     <td><input type="text" class="proposal-cell-input" data-item-code style="width:80px;"></td>
     <td><input type="text" class="proposal-cell-input" data-item-unit style="width:50px;"></td>
     <td><input type="number" min="0" class="proposal-cell-input" data-item-qty style="width:60px;" value="1"></td>
-    <td><input type="text" class="proposal-cell-input proposal-cell-readonly" data-item-list-price style="width:90px;" readonly></td>
+    <td><input type="text" inputmode="numeric" class="proposal-cell-input" data-item-list-price style="width:100px;" placeholder="0,00"><input type="hidden" data-item-unit-price value="0"></td>
     <td><input type="number" min="0" max="100" class="proposal-cell-input" data-item-discount style="width:60px;" value="0"></td>
-    <td><input type="number" min="0" step="0.01" class="proposal-cell-input" data-item-unit-price style="width:90px;" value="0"></td>
     <td><span class="proposal-cell-total" data-item-total>R$ 0</span></td>
     <td>
       <button type="button" class="proposal-item-icon-btn" title="Detalhes do item">
@@ -841,13 +843,19 @@ function wireProposalItemRow(row) {
   nameInput.addEventListener('input', () => {
     const product = bFinProducts.find(p => p.name === nameInput.value);
     if (product) {
-      listPriceInput.value = formatCurrency(product.price);
+      listPriceInput.value = precoNaCelula(product.price);
       unitPriceInput.value = product.price;
       recalcTotal();
     }
   });
 
-  [qtyInput, discountInput, unitPriceInput].forEach(input => input.addEventListener('input', recalcTotal));
+  // Preço editável direto na coluna "Preço lista" (sem a coluna "Preço un").
+  wireCurrencyMaskInput(listPriceInput);
+  listPriceInput.addEventListener('input', () => {
+    unitPriceInput.value = String(currencyMaskValue(listPriceInput));
+    recalcTotal();
+  });
+  [qtyInput, discountInput].forEach(input => input.addEventListener('input', recalcTotal));
 
   removeBtn.addEventListener('click', () => {
     const body = document.getElementById('proposal-items-body');

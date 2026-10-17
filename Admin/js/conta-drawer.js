@@ -782,10 +782,14 @@ const ContaDrawer = (() => {
             ? `<a href="${escapeHtml(convite)}" target="_blank" rel="noopener" class="link-convite">love.com.br/${escapeHtml(evento.slug)}</a>`
             : '<span class="cell-muted">sem endereço definido</span>')}
         </div>`,
-      footer: `<button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
+      footer: `
+        ${evento.deleted_at ? '<button type="button" class="btn btn-primary" id="btn-restaurar-evento">Restaurar evento</button>' : ''}
+        <button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>`
     });
 
     document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
+    document.getElementById('btn-restaurar-evento')?.addEventListener('click', () =>
+      restaurarEvento(evento, () => abrirEvento(evento, conta)));
   }
 
   const STATUS_EVENTO = { rascunho: 'Rascunho', ativo: 'Ativo', encerrado: 'Encerrado' };
@@ -793,7 +797,7 @@ const ContaDrawer = (() => {
   function statusDoEvento(evento) {
     if (evento.deleted_at) {
       const quando = dataHoraCompleta(evento.deleted_at);
-      return `<span class="valor-bloqueado">Excluído${quando ? ` em ${escapeHtml(quando)}` : ''}</span>`;
+      return `<span class="valor-bloqueado">Excluído pelo criador${quando ? ` em ${escapeHtml(quando)}` : ''}</span>`;
     }
     return escapeHtml(STATUS_EVENTO[evento.status] || evento.status || '—');
   }

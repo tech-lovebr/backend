@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-tipo').addEventListener('change', render);
+  document.getElementById('filtro-situacao').addEventListener('change', render);
 
   moverControlesParaHeader();
   aplicarBuscaDaUrl(document.getElementById('busca'));
@@ -102,9 +103,12 @@ function renderKpis() {
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
   const tipo = document.getElementById('filtro-tipo').value;
+  const situacao = document.getElementById('filtro-situacao').value;
 
   return EVENTOS.filter(e => {
     if (tipo && e.tipo !== tipo) return false;
+    if (situacao === 'excluidos' && !e.deleted_at) return false;
+    if (situacao === 'ativos' && e.deleted_at) return false;
     if (!termo) return true;
     const cliente = CLIENTES.get(e.cliente_id);
     return [e.titulo, e.host_name, e.slug, e.theme, cliente?.couple_name, cliente?.email]
@@ -143,14 +147,23 @@ function render() {
         <td>${formatNumber(m.confirmados)}</td>
         <td>${formatNumber(m.recebidos)}/${formatNumber(m.presentes)}</td>
         <td class="cell-strong">${formatCurrency(m.arrecadado)}</td>
-        <td>${badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning')}</td>
-        <td class="col-acoes">${botaoVerMais(e.id)}</td>
+        <td>${e.deleted_at
+          ? `<span class="valor-bloqueado">${escapeHtml(rotuloEventoExcluido(e))}</span>`
+          : badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning')}</td>
+        <td class="col-acoes">
+          ${e.deleted_at ? `<button type="button" class="btn btn-ghost btn-sm" data-restaurar="${e.id}">Restaurar</button>` : ''}
+          ${botaoVerMais(e.id)}
+        </td>
       </tr>`;
   }).join('');
 
   // A linha não abre o drawer (dá para marcar as caixinhas); quem abre são
   // as três bolinhas no fim.
   ligarAcoesDaLinha(tbody, abrirDetalhe);
+
+  tbody.querySelectorAll('[data-restaurar]').forEach(btn => {
+    btn.addEventListener('click', () => restaurarEvento(EVENTOS.find(ev => ev.id === btn.dataset.restaurar), render));
+  });
 
   tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
     caixa.addEventListener('change', () => {
@@ -180,6 +193,7 @@ function abrirDetalhe(id) {
     title: e.titulo || 'Evento',
     subtitle: cliente ? `${cliente.couple_name} · ${cliente.email}` : (e.host_name || ''),
     body: `
+      ${e.deleted_at ? `<p class="aviso-excluido">${escapeHtml(rotuloEventoExcluido(e))}. Restaure para o evento voltar à conta do anfitrião e o site voltar ao ar.</p>` : ''}
       <div class="stat-row">
         <div class="stat-box"><p class="label">Convidados</p><p class="value">${formatNumber(m.convidados)}</p></div>
         <div class="stat-box"><p class="label">Confirmados</p><p class="value">${formatNumber(m.confirmados)}</p></div>
@@ -227,11 +241,14 @@ function abrirDetalhe(id) {
         </p>
       </form>`,
     footer: `
+      ${e.deleted_at ? '<button type="button" class="btn btn-neutro" id="btn-restaurar">Restaurar evento</button>' : ''}
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Fechar</button>
       <button type="button" class="btn btn-primary" id="btn-salvar">Salvar alterações</button>`
   });
 
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-restaurar')?.addEventListener('click', () =>
+    restaurarEvento(e, () => { render(); abrirDetalhe(id); }));
   document.getElementById('btn-salvar').addEventListener('click', () => salvar(id));
 }
 

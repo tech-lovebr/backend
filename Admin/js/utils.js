@@ -771,3 +771,40 @@ function ligarAcoesDaLinha(host, abrir) {
     btn.addEventListener('click', () => abrir(btn.dataset.ver));
   });
 }
+
+
+/* ------------------------------------------- Evento excluído pelo criador
+   O anfitrião exclui um evento em love.com.br › Configurações › Meus eventos
+   só marcando eventos.deleted_at — nada é apagado. O Admin pode restaurar
+   (deleted_at = null): o evento volta para a conta e o site volta ao ar. */
+
+function rotuloEventoExcluido(evento) {
+  if (!evento || !evento.deleted_at) return '';
+  return `Excluído pelo criador em ${formatDateTime(evento.deleted_at)}`;
+}
+
+function restaurarEvento(evento, depois) {
+  Modal.abrir({
+    titulo: 'Restaurar este evento?',
+    texto: `"${evento.titulo || 'Evento'}" volta a aparecer na conta do anfitrião e o site publicado volta ao ar.`,
+    acoes: [
+      { rotulo: 'Cancelar', classe: 'btn-ghost', aoClicar: () => Modal.fechar() },
+      {
+        rotulo: 'Restaurar evento',
+        classe: 'btn-primary',
+        aoClicar: async () => {
+          Modal.ocupado(true);
+          const { data, error } = await supabaseClient.from('eventos')
+            .update({ deleted_at: null }).eq('id', evento.id).select('id');
+          Modal.ocupado(false);
+          Modal.fechar();
+          if (error) return toast(`Não foi possível restaurar: ${error.message}`);
+          if (!data || !data.length) return toast('O evento não foi restaurado (sem permissão ou não encontrado).');
+          evento.deleted_at = null;
+          toast('Evento restaurado.');
+          if (depois) depois();
+        }
+      }
+    ]
+  });
+}

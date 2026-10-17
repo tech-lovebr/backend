@@ -3301,3 +3301,7 @@ body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
 .btn-lixeira-modal { width: 36px; padding: 0; justify-content: center; margin-right: auto; }
 .btn-lixeira-modal svg { width: 17px; height: 17px; }
 .btn-lixeira-modal:hover { color: var(--danger); }
+
+/* Evento excluído pelo criador: aviso no topo do drawer. */
+.aviso-excluido { margin: 0 0 1rem; padding: .625rem .75rem; border-radius: var(--radius-card); background: var(--danger-bg); color: #7a2018; font-size: .8125rem; line-height: 1.6; }
+.col-acoes .btn-sm { margin-right: .25rem; vertical-align: middle; }

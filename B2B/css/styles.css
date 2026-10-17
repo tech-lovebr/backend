@@ -7846,3 +7846,9 @@ body[data-theme="dark"] .comando-popup-acoes button + button { color: #FFFFFF !i
 /* Drawer "Comandos rápidos": título fixo (sem o pontilhado de "editar" no hover). */
 #template-drawer-title { cursor: default; }
 #template-drawer-title:hover { text-decoration: none; }
+
+/* Pop-up "Adicionar comando": "Salvar comando" com o fundo da sidebar e texto branco. */
+html body .comando-popup-acoes button + button,
+html body .comando-popup-acoes button + button:hover { background: #181D24; color: #FFFFFF; border-left-color: #181D24; }
+html body .comando-popup-acoes button + button:hover { background: #10141A; }
+body[data-theme="dark"] .comando-popup-acoes button + button { background: #181D24 !important; color: #FFFFFF !important; }

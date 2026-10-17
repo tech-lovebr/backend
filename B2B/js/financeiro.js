@@ -449,7 +449,11 @@ function initOrcamentosLista() {
     aoMudar: () => renderOrcamentos()
   });
   document.getElementById('orcamento-novo-btn')?.addEventListener('click', () => abrirPropostaNova());
-  document.getElementById('proposal-voltar')?.addEventListener('click', () => mostrarListaOrcamentos());
+  document.getElementById('proposal-voltar')?.addEventListener('click', () => voltarParaListaOrcamentos());
+  // Voltar do navegador com a proposta aberta: volta para a lista (como o caminho do topo).
+  window.addEventListener('popstate', () => {
+    if (!document.getElementById('orcamentos-form-view').hidden) mostrarListaOrcamentos();
+  });
   document.getElementById('proposal-send-btn')?.addEventListener('click', () => saveProposal());
   renderOrcamentos();
 }
@@ -462,7 +466,15 @@ function mostrarListaOrcamentos() {
   renderOrcamentos();
 }
 
+/* A proposta aberta ganha uma entrada no histórico: o Voltar do navegador
+   (e o "Orçamentos" do caminho do topo) volta para a lista. */
+function voltarParaListaOrcamentos() {
+  if (history.state && history.state.propostaAberta) history.back();
+  else mostrarListaOrcamentos();
+}
+
 function mostrarFormularioProposta(titulo) {
+  if (!(history.state && history.state.propostaAberta)) history.pushState({ propostaAberta: true }, '', location.pathname);
   const aba = document.querySelector('#sales-view-tabs [data-view="orcamentos"]');
   if (aba && !aba.classList.contains('active')) aba.click();
   document.getElementById('orcamentos-lista-view').hidden = true;
@@ -786,13 +798,16 @@ async function saveProposal() {
   }
 
   await Promise.all([loadFinLeadsAndProducts(), loadOrcamentos()]);
-  mostrarListaOrcamentos();
+  voltarParaListaOrcamentos();
 }
 
 /* Vindo do botão "Criar orçamento" (chat / Leads): vendas?criar=orcamento&… */
 async function preencherPropostaDoPedido() {
   const q = new URLSearchParams(location.search);
   if (q.get('criar') !== 'orcamento') return;
+  // Tira os parâmetros antes de abrir (recarregar não preenche de novo; o
+  // Voltar com a proposta aberta cai na lista).
+  history.replaceState(null, '', location.pathname);
   let lead = null;
   if (q.get('lead')) lead = bFinLeads.find(l => l.id === q.get('lead')) || null;
   if (!lead && q.get('cliente')) lead = bFinLeads.find(l => l.cliente_id === q.get('cliente')) || null;
@@ -806,7 +821,6 @@ async function preencherPropostaDoPedido() {
     evento: q.get('evento') || '',
     endereco: q.get('local') || ''
   });
-  history.replaceState(null, '', location.pathname);
 }
 
 async function resetProposalForm() {

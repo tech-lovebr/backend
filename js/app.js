@@ -15338,7 +15338,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');
       item.className = `conv-item p-3.5 flex items-start gap-3 cursor-pointer transition-colors ${
-        isActive ? 'bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
+        isActive ? 'is-ativa bg-[#EBF4FF] border-l-4 border-[#537bae]' : 'hover:bg-zinc-200/50 border-l-4 border-transparent'
       }`;
 
       item.innerHTML = `

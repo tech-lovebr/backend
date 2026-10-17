@@ -7837,3 +7837,5 @@ html body .conv-item-mais:not(#love-h-a) svg { width: 18px; height: 18px; }
 html body .conv-item-mais:not(#love-h-a):hover,
 html body .conv-item.menu-aberto .conv-item-mais:not(#love-h-a) { background: #F4F4F5 !important; color: #181D24; }
 body[data-theme="dark"] .conv-item-mais:not(#love-h-a):hover { background: #333333 !important; }
+/* Chat › conversa selecionada: linha vertical à esquerda na cor da sidebar. */
+html body .conv-item.is-ativa:not(#love-h-a) { border-left: 4px solid #181D24 !important; }

@@ -759,6 +759,7 @@ function updateCategoryFieldsVisibility() {
 
   // Etapa 3: bloco de atributos específico por categoria.
   setPanelHidden('product-venue-fields', !isVenue);
+  setPanelHidden('product-venue-details', !isVenue);
   setPanelHidden('product-food-fields', !isFood);
   setPanelHidden('product-tasting-field', !(isFood || categoryGroups(category).isBar));
   setPanelHidden('product-staff-fields', !isStaff);

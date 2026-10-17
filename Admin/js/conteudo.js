@@ -35,13 +35,10 @@ const CATEGORIAS_FAQ = {
   ]
 };
 
+/* Configurações: a página é a Ajuda (anfitriões) ou o FAQ (empresas). Banner
+   da home e, no Hub, Workshops abrem num drawer pelo botão do cabeçalho. */
 const GRUPOS = [
-  // No Hub a primeira aba reúne banners e workshops (as notícias vêm do blog,
-  // categoria Notícias); nos anfitriões
-  // é só o carrossel.
-  { key: 'informacoes', label: PLATAFORMA === 'fornecedor' ? 'Conteúdo' : 'Informações', botao: null },
-  { key: 'faq', label: PLATAFORMA === 'cliente' ? 'Ajuda' : 'FAQ', botao: 'Adicionar pergunta' },
-  ...(PLATAFORMA === 'cliente' ? [{ key: 'servicos', label: 'Serviços', botao: 'Adicionar' }] : [])
+  { key: 'faq', label: PLATAFORMA === 'cliente' ? 'Ajuda' : 'FAQ', botao: 'Adicionar pergunta' }
 ];
 
 const NOME_PLATAFORMA = PLATAFORMA === 'fornecedor' ? 'Plataforma B2B' : 'Plataforma dos anfitriões';
@@ -57,7 +54,13 @@ let GRUPO_ATUAL = GRUPOS[0].key;
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
-  renderTabs();
+  // Uma aba só: a barra de abas não diz nada e some.
+  document.getElementById('conteudo-tabs').hidden = true;
+
+  addHeaderAction('Banner da home', () => abrirDrawerConteudo('banner'), { icone: null }).className = 'btn btn-neutro';
+  if (PLATAFORMA === 'fornecedor') {
+    addHeaderAction('Workshops', () => abrirDrawerConteudo('workshop'), { icone: null }).className = 'btn btn-neutro';
+  }
 
   BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
     if (GRUPO_ATUAL === 'faq') abrirFormularioPergunta(null);
@@ -170,8 +173,30 @@ const proximaPosicao = (lista, campo = 'posicao') =>
 
 /* ------------------------------------------------ Informações (carrossel) */
 
-function renderBanners() {
-  const lista = document.getElementById('conteudo-lista');
+/* Banner da home e Workshops: abrem num drawer próprio; editar um item abre
+   o formulário com a seta de voltar para a lista, e salvar volta para ela. */
+function abrirDrawerConteudo(tipo) {
+  Drawer.open({
+    title: tipo === 'workshop' ? 'Workshops' : 'Banner da home',
+    subtitle: NOME_PLATAFORMA,
+    body: '<div id="drawer-conteudo-host"></div>',
+    footer: '<button type="button" class="btn btn-ghost" id="btn-fechar-conteudo">Fechar</button>'
+  });
+  document.getElementById('btn-fechar-conteudo').addEventListener('click', () => Drawer.close());
+  const host = document.getElementById('drawer-conteudo-host');
+  if (tipo === 'workshop') {
+    host.innerHTML = blocoHub('workshop');
+    ligarBlocosHub(host);
+  } else {
+    renderBanners(host);
+  }
+}
+
+/* Qual drawer de conteúdo reabrir depois de salvar ou excluir. */
+const DRAWER_DA_TABELA = { conteudo_plataforma: 'banner', hub_conteudo: 'workshop' };
+
+function renderBanners(host) {
+  const lista = host || document.getElementById('conteudo-lista');
   const banners = BANNERS.slice(0, MAX_BANNERS);
   const vagas = MAX_BANNERS - banners.length;
 
@@ -212,9 +237,9 @@ function renderBanners() {
         ${vagas ? '' : `<p class="cell-muted" style="font-size:.75rem;margin:1rem 0 0">Limite de ${MAX_BANNERS} imagens atingido. Exclua uma para adicionar outra.</p>`}
       </div>
     </div>
-    ${PLATAFORMA === 'fornecedor' ? blocoHub('workshop') : ''}`;
+    ${!host && PLATAFORMA === 'fornecedor' ? blocoHub('workshop') : ''}`;
 
-  if (PLATAFORMA === 'fornecedor') ligarBlocosHub(lista);
+  if (!host && PLATAFORMA === 'fornecedor') ligarBlocosHub(lista);
 
   lista.querySelectorAll('[data-editar-banner]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioBanner(BANNERS.find(b => b.id === btn.dataset.editarBanner)));
@@ -231,6 +256,7 @@ function abrirFormularioBanner(item) {
   const editando = Boolean(item && item.id);
 
   Drawer.open({
+    back: () => abrirDrawerConteudo('banner'),
     title: editando ? 'Editar imagem do carrossel' : 'Nova imagem do carrossel',
     subtitle: NOME_PLATAFORMA,
     body: `
@@ -327,6 +353,7 @@ function abrirFormularioHub(item) {
   const t = TIPOS_HUB[tipo];
 
   Drawer.open({
+    back: () => abrirDrawerConteudo('workshop'),
     title: editando ? `Editar ${t.singular}` : 'Novo workshop',
     subtitle: NOME_PLATAFORMA,
     body: `
@@ -1034,6 +1061,7 @@ async function gravar(tabela, id, payload) {
   Drawer.close();
   toast(id ? 'Item atualizado.' : 'Item publicado.');
   await carregar();
+  if (DRAWER_DA_TABELA[tabela]) abrirDrawerConteudo(DRAWER_DA_TABELA[tabela]);
 }
 
 async function excluir(tabela, id, nome) {
@@ -1048,5 +1076,6 @@ async function excluir(tabela, id, nome) {
 
   toast('Item excluído.');
   await carregar();
+  if (DRAWER_DA_TABELA[tabela]) abrirDrawerConteudo(DRAWER_DA_TABELA[tabela]);
   return true;
 }

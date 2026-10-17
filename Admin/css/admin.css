@@ -3380,3 +3380,9 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 /* Legal: sem a barra de título — as abas (Termos de uso / Política de
    privacidade) já dizem qual documento está aberto. */
 body[data-page="cms-legal"] .admin-header-bar { display: none; }
+
+/* Grupo do menu (Empresas, Anfitriões): a linha inteira é um botão que abre
+   e fecha os subitens; a setinha gira quando aberto. */
+.admin-nav-grupo-toggle { border: 0; font-family: inherit; }
+.admin-nav-grupo-toggle .sidebar-chevron { margin-left: auto; transition: transform .2s ease; }
+.admin-nav-grupo-toggle.is-open .sidebar-chevron { transform: rotate(180deg); }

@@ -14,21 +14,21 @@ const NAV_SECTIONS = [
     label: 'Contas',
     items: [
       {
-        // O grupo leva ao próprio dashboard; a seta ao lado abre os filhos.
+        // O grupo só abre e fecha os filhos; não leva a nenhuma página.
         grupo: 'fornecedores', text: 'Empresas', icon: 'store',
-        page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
           { page: 'produtos', href: 'produtos.html', text: 'Serviços/Produtos' },
-          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' }
+          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' },
+          { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Configurações' }
         ]
       },
       {
         grupo: 'clientes', text: 'Anfitriões', icon: 'users',
-        page: 'clientes-dashboard', href: 'clientes-dashboard.html',
         children: [
           { page: 'clientes', href: 'clientes.html', text: 'Cadastros' },
-          { page: 'eventos', href: 'eventos.html', text: 'Eventos' }
+          { page: 'eventos', href: 'eventos.html', text: 'Eventos' },
+          { page: 'clientes-dashboard', href: 'clientes-dashboard.html', text: 'Configurações' }
         ]
       }
     ]
@@ -148,17 +148,13 @@ function renderSidebar() {
     // Já nasce aberto quando a página atual é uma das filhas — senão você
     // estaria numa tela sem nada no menu indicando onde está.
     const aberto = dados.children.some(f => f.page === current);
-    const ativo = dados.page === current;
-
+    // A linha inteira abre e fecha os filhos.
     return `
-      <div class="admin-nav-grupo-linha ${ativo ? 'is-active' : ''}">
-        <a class="admin-nav-item admin-nav-grupo-link" href="${dados.href}" title="${dados.text}">
+      <div class="admin-nav-grupo-linha">
+        <button type="button" class="admin-nav-item admin-nav-grupo-link admin-nav-grupo-toggle ${aberto ? 'is-open' : ''}"
+                data-grupo="${dados.grupo}" aria-expanded="${aberto}" title="${dados.text}">
           <span class="admin-nav-icon-box">${icon(dados.icon)}</span>
           <span class="admin-nav-text">${dados.text}</span>
-        </a>
-        <button type="button" class="admin-nav-seta ${aberto ? 'is-open' : ''}"
-                data-grupo="${dados.grupo}" aria-expanded="${aberto}"
-                aria-label="Mostrar itens de ${dados.text}">
           ${CHEVRON}
         </button>
       </div>

@@ -18,7 +18,10 @@ const PRESENTES_PUBLISHED_STATE_KEY = 'love-site-builder-presentes-published-sta
 const DRESSCODE_STORAGE_KEY = 'love-site-builder-dresscode';
 const DRESSCODE_PUBLISHED_KEY = 'love-site-builder-dresscode-published';
 const DRESSCODE_PUBLISHED_STATE_KEY = 'love-site-builder-dresscode-published-state';
-const BUILDER_PAGE_LABELS = { convite: 'Convite Digital', presentes: 'Lista de Presentes', dresscode: 'Dress code' };
+// Save the Date: capa (mesma imagem do convite) + textos, sem botões. Não é
+// publicado — é compartilhado como imagem + texto (WhatsApp, Instagram, e-mail).
+const SAVETHEDATE_STORAGE_KEY = 'love-site-builder-savethedate';
+const BUILDER_PAGE_LABELS = { convite: 'Convite Digital', presentes: 'Lista de Presentes', dresscode: 'Dress code', savethedate: 'Save the Date' };
 let currentPageKey = 'convite';
 
 function escapeHtml(str) {
@@ -407,7 +410,62 @@ function loadDresscodeState() {
   return defaultDresscodePageState();
 }
 
+/** Data do evento por extenso ("17 de outubro de 2026"). */
+function dataDoEventoPorExtenso(ev) {
+  const iso = ev && ((ev.eventDetails && ev.eventDetails.date) || ev.date);
+  if (!iso) return '';
+  const d = new Date(String(iso).slice(0, 10) + 'T12:00:00');
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function defaultSaveTheDateState() {
+  const ev = getActiveEventForBuilder();
+  // Mesma capa e cor do Convite Digital.
+  let capaImg = '', cor = '#537bae';
+  try {
+    const convite = JSON.parse(localStorage.getItem(pageStorageKey('convite')) || 'null') || loadBuilderState();
+    const capa = (convite.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock);
+    capaImg = (capa && capa.bgImage) || '';
+    cor = (convite.globalStyle && convite.globalStyle.primaryColor) || cor;
+  } catch (e) { /* sem convite salvo */ }
+  const titulo = createElement('titulo');
+  titulo.content = 'Save the Date';
+  const nomes = createElement('texto');
+  nomes.content = (ev && ev.title) || 'Nosso evento';
+  nomes.styles.desktop.fontWeight = '600';
+  const data = createElement('texto');
+  data.content = dataDoEventoPorExtenso(ev) || 'Data do evento';
+  const aviso = createElement('texto');
+  aviso.content = 'Reserve a data! O convite chega em breve.';
+  return {
+    name: 'Save the Date',
+    globalStyle: { primaryColor: cor, radius: 16, sectionSpacing: 32 },
+    sections: [
+      { id: uid('sec'), hidden: false, bgImage: capaImg, columns: [{ id: uid('col'), width: 100, elements: [] }] },
+      { id: uid('sec'), hidden: false, columns: [{ id: uid('col'), width: 100, elements: [titulo, nomes, data, aviso] }] }
+    ]
+  };
+}
+
+function loadSaveTheDateState() {
+  try {
+    const raw = localStorage.getItem(pageStorageKey('savethedate'));
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (!parsed.globalStyle) parsed.globalStyle = { primaryColor: '#537bae', radius: 16, sectionSpacing: 32 };
+      if (!Array.isArray(parsed.sections) || !parsed.sections.length) return defaultSaveTheDateState();
+      // Save the Date não tem botões.
+      parsed.sections = parsed.sections.filter(s => !s.isQuickNav && !s.isGiftsBlock);
+      tirarElementosDaCapa(parsed);
+      migrateElementDefaults(parsed);
+      return parsed;
+    }
+  } catch (e) { /* ignora estado corrompido */ }
+  return defaultSaveTheDateState();
+}
+
 function loadPageState(pageKey) {
+  if (pageKey === 'savethedate') return loadSaveTheDateState();
   if (pageKey === 'presentes') return loadPresentesState();
   if (pageKey === 'dresscode') return loadDresscodeState();
   return loadBuilderState();
@@ -435,6 +493,7 @@ function pageStorageKey(pageKey) {
   const suffix = activeEventStorageSuffix();
   if (pageKey === 'presentes') return PRESENTES_STORAGE_KEY + suffix;
   if (pageKey === 'dresscode') return DRESSCODE_STORAGE_KEY + suffix;
+  if (pageKey === 'savethedate') return SAVETHEDATE_STORAGE_KEY + suffix;
   return BUILDER_STORAGE_KEY + suffix;
 }
 
@@ -472,6 +531,10 @@ function persistBuilderState(silent) {
   hasUnsavedChanges = false;
   persistBuilderStateRemote(currentPageKey, builderState);
   if (!silent) showToast('Alterações salvas!');
+  // Guia de primeiros passos: salvar o Save the Date risca "Escolher Save the Date".
+  if (!silent && currentPageKey === 'savethedate' && typeof window.markPlatformTaskAchieved === 'function') {
+    window.markPlatformTaskAchieved('savethedate');
+  }
 }
 
 // Grava o estado atual na tabela `convite_digital_pages` (Supabase), por
@@ -560,7 +623,8 @@ async function syncBuilderStateFromSupabase(pageKey) {
     localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(row.state));
     if (pageKey === currentPageKey) {
       builderState = row.state;
-      migrateQuickNavSection(builderState);
+      if (pageKey === 'savethedate') builderState.sections = (builderState.sections || []).filter(s => !s.isQuickNav && !s.isGiftsBlock);
+      else migrateQuickNavSection(builderState);
       tirarElementosDaCapa(builderState);
       migrateElementDefaults(builderState);
       historyStack = [snapshotState()];
@@ -589,6 +653,8 @@ async function syncBuilderStateFromSupabase(pageKey) {
 window.reloadBuilderStateForActiveEvent = function () {
   currentPageKey = 'convite';
   builderState = loadPageState('convite');
+  updatePageSwitcherUI();
+  atualizarBotoesDaPagina();
   syncBuilderStateFromSupabase('convite');
 };
 
@@ -608,7 +674,17 @@ function switchBuilderPage(pageKey) {
   applyGlobalStyleVars();
   updateHistoryButtons();
   updatePageSwitcherUI();
+  atualizarBotoesDaPagina();
   syncBuilderStateFromSupabase(pageKey);
+}
+
+// Convite Digital: Salvar + Publicar. Save the Date: Salvar + Compartilhar.
+function atualizarBotoesDaPagina() {
+  const ehSaveTheDate = currentPageKey === 'savethedate';
+  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate);
+  document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
+  document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
+  document.getElementById('builder-share-menu')?.classList.add('hidden');
 }
 
 function updatePageSwitcherUI() {
@@ -704,7 +780,7 @@ function pushHistory() {
   updateHistoryButtons();
   // Guia de primeiros passos (plataforma): a primeira edição em Aparência
   // risca "Personalizar site do evento".
-  if (typeof window.markPlatformTaskAchieved === 'function') window.markPlatformTaskAchieved('website');
+  if (currentPageKey === 'convite' && typeof window.markPlatformTaskAchieved === 'function') window.markPlatformTaskAchieved('website');
 }
 
 function undo() {
@@ -966,8 +1042,14 @@ function renderLeftPanel() {
   if (canvas) initSortables(canvas);
 }
 
+// Save the Date: só texto (sem botões, mapa, vídeo…).
+const ELEMENT_GROUPS_SAVETHEDATE = [
+  { title: 'Básicos', types: ['titulo', 'texto', 'separador', 'espacamento'] }
+];
+
 function renderElementosTab(body) {
-  body.innerHTML = ELEMENT_GROUPS.map(group => `
+  const grupos = currentPageKey === 'savethedate' ? ELEMENT_GROUPS_SAVETHEDATE : ELEMENT_GROUPS;
+  body.innerHTML = grupos.map(group => `
     <div class="builder-el-group-title">${escapeHtml(group.title)}</div>
     <div class="builder-el-grid">
       ${group.types.map(type => `
@@ -2866,6 +2948,8 @@ function initSiteBuilder() {
     await publicarConviteNoAr(publishBtn);
   });
 
+  initCompartilharSaveTheDate();
+
   const previewBtn = document.getElementById('builder-preview-link');
   if (previewBtn) previewBtn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -4104,3 +4188,130 @@ document.addEventListener('change', (e) => {
   clearTimeout(infoPreviewTimer);
   infoPreviewTimer = setTimeout(renderInformacoesPreview, 150);
 });
+
+/* -------------------- Save the Date › Compartilhar -------------------- */
+// Sem link: vira uma imagem (capa + textos, como aparece na prévia de
+// celular) + um texto curto. No celular usa o compartilhar do sistema (que
+// manda a imagem junto para o WhatsApp/Instagram); no computador baixa a
+// imagem e abre o WhatsApp Web / o e-mail com o texto.
+const HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+let html2canvasCarregando = null;
+function carregarHtml2canvas() {
+  if (window.html2canvas) return Promise.resolve(window.html2canvas);
+  if (!html2canvasCarregando) {
+    html2canvasCarregando = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = HTML2CANVAS_URL;
+      s.onload = () => resolve(window.html2canvas);
+      s.onerror = () => { html2canvasCarregando = null; reject(new Error('html2canvas')); };
+      document.head.appendChild(s);
+    });
+  }
+  return html2canvasCarregando;
+}
+
+function textoDoSaveTheDate() {
+  const div = document.createElement('div');
+  const partes = [];
+  (builderState.sections || []).filter(s => !s.hidden).forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(el => {
+    if ((el.type === 'titulo' || el.type === 'texto') && el.content) {
+      div.innerHTML = el.content;
+      const t = (div.innerText || div.textContent || '').trim();
+      if (t) partes.push(t);
+    }
+  })));
+  return partes.join('\n');
+}
+
+async function imagemDoSaveTheDate() {
+  const html2canvas = await carregarHtml2canvas();
+  const caixa = document.createElement('div');
+  caixa.className = 'std-captura';
+  const gs = builderState.globalStyle || {};
+  caixa.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
+  caixa.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
+  caixa.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
+  caixa.innerHTML = (builderState.sections || []).filter(s => !s.hidden)
+    .map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('');
+  document.body.appendChild(caixa);
+  try {
+    await Promise.all([...caixa.querySelectorAll('img')].map(img => (img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))));
+    const canvas = await html2canvas(caixa, { useCORS: true, backgroundColor: '#FFFFFF', scale: 2 });
+    return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  } finally {
+    caixa.remove();
+  }
+}
+
+function baixarImagem(blob, nome) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+async function compartilharSaveTheDate(canal, status) {
+  const avisar = (t) => { if (!status) return; status.textContent = t; status.classList.toggle('hidden', !t); };
+  avisar('Preparando a imagem…');
+  persistBuilderState(true);
+  const texto = textoDoSaveTheDate();
+  let blob;
+  try { blob = await imagemDoSaveTheDate(); } catch (e) { console.error('Save the Date: imagem', e); }
+  if (!blob) { avisar('Não foi possível gerar a imagem. Tente de novo.'); return false; }
+  const arquivo = new File([blob], 'save-the-date.png', { type: 'image/png' });
+
+  // Celular: o compartilhar do sistema manda imagem + texto direto no app.
+  if (canal !== 'email' && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+    try {
+      await navigator.share({ files: [arquivo], text: texto, title: 'Save the Date' });
+      avisar('');
+      return true;
+    } catch (e) {
+      if (e && e.name === 'AbortError') { avisar(''); return false; }
+    }
+  }
+
+  baixarImagem(blob, 'save-the-date.png');
+  if (canal === 'whatsapp') {
+    window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+    avisar('Imagem baixada. Anexe no WhatsApp junto com o texto.');
+  } else if (canal === 'instagram') {
+    avisar('Imagem baixada. Publique no Instagram pelo celular.');
+  } else {
+    window.location.href = 'mailto:?subject=' + encodeURIComponent('Save the Date') + '&body=' + encodeURIComponent(texto);
+    avisar('Imagem baixada. Anexe ao e-mail.');
+  }
+  return true;
+}
+
+function initCompartilharSaveTheDate() {
+  const wrap = document.getElementById('builder-share-wrap');
+  const btn = document.getElementById('builder-share');
+  const menu = document.getElementById('builder-share-menu');
+  const status = document.getElementById('builder-share-status');
+  if (!wrap || !btn || !menu || wrap.dataset.ligado) return;
+  wrap.dataset.ligado = '1';
+  const fechar = () => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const abrir = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !abrir);
+    btn.setAttribute('aria-expanded', String(abrir));
+    if (abrir && status) { status.textContent = ''; status.classList.add('hidden'); }
+  });
+  menu.addEventListener('click', (e) => e.stopPropagation());
+  menu.querySelectorAll('[data-compartilhar]').forEach(item => {
+    item.addEventListener('click', async () => {
+      menu.querySelectorAll('[data-compartilhar]').forEach(b => { b.disabled = true; });
+      try {
+        const ok = await compartilharSaveTheDate(item.dataset.compartilhar, status);
+        if (ok && typeof window.markPlatformTaskAchieved === 'function') window.markPlatformTaskAchieved('savethedate');
+      } finally {
+        menu.querySelectorAll('[data-compartilhar]').forEach(b => { b.disabled = false; });
+      }
+    });
+  });
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+}

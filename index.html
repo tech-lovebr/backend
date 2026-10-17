@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261017_comentarconvidado">
+  <link rel="stylesheet" href="css/styles.css?v=20261017_savethedate3">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1882,8 +1882,7 @@
                   </button>
                   <div class="kanban-list-dropdown builder-page-dropdown" id="builder-page-dropdown">
                     <button type="button" class="kanban-list-dropdown-item" data-page-option="convite">Convite Digital</button>
-                    <button type="button" class="kanban-list-dropdown-item" data-page-option="presentes">Lista de Presentes</button>
-                    <button type="button" class="kanban-list-dropdown-item" data-page-option="dresscode">Dress code</button>
+                    <button type="button" class="kanban-list-dropdown-item" data-page-option="savethedate">Save the Date</button>
                   </div>
                 </div>
               </div>
@@ -1911,6 +1910,16 @@
                 </button>
                 <button type="button" class="btn-secondary builder-toolbar-btn" id="builder-save">Salvar</button>
                 <button type="button" class="btn-primary builder-toolbar-btn" id="builder-publish">Publicar</button>
+                <!-- Save the Date: no lugar do Publicar, Compartilhar (imagem + texto por WhatsApp, Instagram ou e-mail) -->
+                <div class="std-compartilhar hidden" id="builder-share-wrap">
+                  <button type="button" class="btn-primary builder-toolbar-btn" id="builder-share" aria-haspopup="true" aria-expanded="false">Compartilhar</button>
+                  <div class="std-compartilhar-menu hidden" id="builder-share-menu" role="menu">
+                    <button type="button" role="menuitem" data-compartilhar="whatsapp">WhatsApp</button>
+                    <button type="button" role="menuitem" data-compartilhar="instagram">Instagram</button>
+                    <button type="button" role="menuitem" data-compartilhar="email">E-mail</button>
+                    <p class="std-compartilhar-status hidden" id="builder-share-status"></p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -5519,6 +5528,6 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/app.js?v=20261017_guiapassos"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261017_guiapassos"></script>
+  <script src="js/site-builder.js?v=20261017_savethedate"></script>
 </body>
 </html>

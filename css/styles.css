@@ -7881,3 +7881,29 @@ html body button.btn-comentar-convidado:not(#love-h-a) {
 html body button.btn-comentar-convidado:not(#love-h-a):hover { background: #FAFAFA; border-color: #181D24; box-shadow: 0 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05); }
 html body button.btn-comentar-convidado:not(#love-h-a):disabled { opacity: .6; cursor: default; }
 body[data-theme="dark"] button.btn-comentar-convidado:not(#love-h-a) { background: #333333; border-color: #404040; color: #FFFFFF; }
+
+/* Aparência › Save the Date: Compartilhar (no lugar do Publicar) com menu
+   WhatsApp / Instagram / E-mail; e a caixa fora da tela usada para gerar
+   a imagem. */
+.std-compartilhar { position: relative; }
+.std-compartilhar-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 300; min-width: 200px; padding: 4px;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.std-compartilhar-menu button {
+  display: block; width: 100%; text-align: left; padding: 0.5rem 0.65rem; border: none; background: none;
+  border-radius: 6px; font-size: 0.8125rem; color: #18181B; cursor: pointer; font-family: inherit;
+}
+.std-compartilhar-menu button:hover { background: #F4F4F5; }
+.std-compartilhar-menu button:disabled { opacity: .6; cursor: default; }
+.std-compartilhar-status { margin: 4px 0.65rem 6px; font-size: 12px; color: #71717A; line-height: 1.4; }
+.std-captura { position: fixed; left: -10000px; top: 0; width: 390px; background: #FFFFFF; }
+body[data-theme="dark"] .std-compartilhar-menu { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .std-compartilhar-menu button { color: #F4F4F5 !important; }
+body[data-theme="dark"] .std-compartilhar-menu button:hover { background: #333333 !important; }
+/* Barra do construtor: botões escondidos (Publicar/Ver página no Save the
+   Date, Compartilhar no Convite) somem mesmo com as regras de botão. */
+html body .builder-toolbar-right .hidden:not(#love-h-a) { display: none !important; }
+html body #site-builder-root .builder-toolbar-right > .hidden:not(#love-h-a),
+html body #site-builder-root #builder-publish.hidden:not(#love-h-a),
+html body #site-builder-root #builder-preview-link.hidden:not(#love-h-a) { display: none !important; }

@@ -7711,3 +7711,17 @@ html body #live-preview-floating-music.musica-botao-previa:not(#love-h-a) {
 }
 html body #live-preview-floating-music.hidden { display: none !important; }
 #live-preview-floating-music svg { stroke: #000000 !important; }
+
+/* Informações: "Salvar alterações" do fim da página — cinza claro do
+   cabeçalho, borda fina e sombra leve (ação secundária ao salvar do topo). */
+html body button.informacoes-salvar-rodape:not(#love-h-a) {
+  width: 100%; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid #E4E4E7; border-radius: 8px !important; background: #FAFAFA; color: #181D24;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  transition: border-color .15s, box-shadow .15s;
+}
+html body button.informacoes-salvar-rodape:not(#love-h-a):hover { background: #FAFAFA; border-color: #181D24; box-shadow: 0 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05); }
+html body button.informacoes-salvar-rodape:not(#love-h-a):disabled { opacity: .6; cursor: default; }
+/* Informações: sem a folga grande embaixo — o "Salvar alterações" fica no fim. */
+html body #editor-form-column:has(#editor-form-data:not(.hidden)) { padding-bottom: 1rem !important; }

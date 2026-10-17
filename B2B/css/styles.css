@@ -8005,3 +8005,33 @@ html body .topbar-search-trigger:not(#love-h-a) {
 }
 html body .topbar-search-trigger:not(#love-h-a) > svg { width: 15px; height: 15px; flex-shrink: 0; color: #A1A1AA; stroke-width: 2; }
 body[data-theme="dark"] .topbar-account-name:not(#love-h-a) { color: #FFFFFF !important; }
+
+/* Agenda › pop-up: horários em lista de 15 em 15 minutos + "Dia inteiro". */
+.agenda-evento-horas { flex-wrap: wrap; gap: 0.75rem; }
+.agenda-hora-wrap { display: inline-flex; align-items: center; gap: 0.5rem; }
+.agenda-hora-wrap[hidden] { display: none; }
+.agenda-hora-btn {
+  width: 76px; height: 36px; padding: 0 0.6rem; text-align: center; cursor: pointer;
+  border: 1px solid transparent; border-radius: 8px; background: #F4F4F5; color: #18181B;
+  font-size: 0.875rem; font-family: inherit; outline: none;
+}
+.agenda-hora-btn:hover { border-color: #D4D4D8; }
+.agenda-hora-btn:focus { border-color: #181D24; }
+.agenda-hora-ate { font-size: 0.875rem; color: #52525B; }
+.agenda-dia-inteiro { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.875rem; color: #18181B; cursor: pointer; }
+.agenda-dia-inteiro input { width: 16px; height: 16px; accent-color: #181D24; }
+.agenda-hora-lista {
+  position: absolute; z-index: 400; width: 140px; max-height: 220px; overflow-y: auto; padding: 4px;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.agenda-hora-lista button {
+  display: block; width: 100%; text-align: left; padding: 0.5rem 0.75rem; border: none; background: none;
+  border-radius: 6px; font-size: 0.875rem; color: #18181B; cursor: pointer; font-family: inherit;
+}
+.agenda-hora-lista button:hover { background: #F4F4F5; }
+.agenda-hora-lista button.is-atual { background: #E4E4E7; font-weight: 600; }
+body[data-theme="dark"] .agenda-hora-btn { background: #2A2A2A; color: #F4F4F5; }
+body[data-theme="dark"] .agenda-dia-inteiro { color: #F4F4F5; }
+body[data-theme="dark"] .agenda-hora-lista { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .agenda-hora-lista button { color: #F4F4F5 !important; }
+body[data-theme="dark"] .agenda-hora-lista button:hover, body[data-theme="dark"] .agenda-hora-lista button.is-atual { background: #333333 !important; }

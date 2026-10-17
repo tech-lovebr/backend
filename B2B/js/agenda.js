@@ -1054,6 +1054,7 @@ async function initAgendaCalendar() {
     irParaDia(d);
   };
   document.getElementById('agenda-hoje-btn')?.addEventListener('click', () => irParaDia(new Date()));
+  initSeletorHorarios();
   document.getElementById('agenda-dia-anterior')?.addEventListener('click', () => somarDias(-1));
   document.getElementById('agenda-dia-proximo')?.addEventListener('click', () => somarDias(1));
   document.addEventListener('keydown', (e) => {
@@ -1202,8 +1203,9 @@ function renderAgendaTimeline() {
   const eventsHtml = dayEvents.map(ev => {
     const [sh, sm] = ev.startTime.split(':').map(Number);
     const [eh, em] = ev.endTime.split(':').map(Number);
-    const startMinutes = sh * 60 + sm;
-    const endMinutes = Math.max(eh * 60 + em, startMinutes + 15);
+    // Dia inteiro (00:00–23:59) ou fora da faixa: corta no começo/fim da linha do tempo.
+    const startMinutes = Math.max(sh * 60 + sm, startHour * 60);
+    const endMinutes = Math.min(Math.max(eh * 60 + em, startMinutes + 15), (endHour + 1) * 60);
     const top = ((startMinutes - startHour * 60) / 60) * hourHeight;
     const height = Math.max(((endMinutes - startMinutes) / 60) * hourHeight, 24);
     const meta = AGENDA_TYPE_META[ev.type] || AGENDA_TYPE_META.outro;
@@ -1241,6 +1243,74 @@ function renderAgendaTimeline() {
   });
 }
 
+/* Horários do pop-up: lista de 15 em 15 minutos (00:00 a 23:45), como no
+   Google Agenda; "Dia inteiro" guarda 00:00–23:59. */
+const HORARIOS_15_MIN = Array.from({ length: 96 }, (_, i) => `${String(Math.floor(i / 4)).padStart(2, '0')}:${String((i % 4) * 15).padStart(2, '0')}`);
+const DIA_INTEIRO = { inicio: '00:00', fim: '23:59' };
+
+function somarMinutos(hhmm, min) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const t = Math.min(h * 60 + m + min, 23 * 60 + 45);
+  return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+}
+
+function fecharListaHorarios() {
+  document.querySelector('.agenda-hora-lista')?.remove();
+}
+
+function abrirListaHorarios(input) {
+  fecharListaHorarios();
+  const lista = document.createElement('div');
+  lista.className = 'agenda-hora-lista';
+  lista.setAttribute('role', 'listbox');
+  lista.innerHTML = HORARIOS_15_MIN.map(hr => `<button type="button" role="option" data-hora="${hr}" class="${hr === input.value ? 'is-atual' : ''}">${hr}</button>`).join('');
+  document.body.appendChild(lista);
+  const r = input.getBoundingClientRect();
+  lista.style.left = `${r.left + window.scrollX}px`;
+  lista.style.top = `${r.bottom + 4 + window.scrollY}px`;
+  const atual = lista.querySelector('.is-atual') || lista.querySelector(`[data-hora="${HORARIOS_15_MIN.find(hr => hr >= (input.value || '08:00')) || '08:00'}"]`);
+  if (atual) lista.scrollTop = atual.offsetTop - lista.clientHeight / 2 + atual.offsetHeight / 2;
+  lista.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-hora]');
+    if (!btn) return;
+    input.value = btn.dataset.hora;
+    // Início depois do fim: o fim vai junto (1 hora depois).
+    const ini = document.getElementById('event-start');
+    const fim = document.getElementById('event-end');
+    if (input === ini && fim.value <= ini.value) fim.value = somarMinutos(ini.value, 60);
+    if (input === fim && fim.value <= ini.value) ini.value = somarMinutos(fim.value, -60);
+    fecharListaHorarios();
+  });
+}
+
+function aplicarDiaInteiro(ligado) {
+  document.getElementById('event-horas-campos').hidden = ligado;
+  if (ligado) {
+    document.getElementById('event-start').value = DIA_INTEIRO.inicio;
+    document.getElementById('event-end').value = DIA_INTEIRO.fim;
+  } else if (document.getElementById('event-end').value === DIA_INTEIRO.fim) {
+    document.getElementById('event-start').value = '09:00';
+    document.getElementById('event-end').value = '10:00';
+  }
+}
+
+function initSeletorHorarios() {
+  ['event-start', 'event-end'].forEach(id => {
+    const input = document.getElementById(id);
+    input.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (document.querySelector('.agenda-hora-lista') && document.activeElement === input && input.dataset.aberto) {
+        delete input.dataset.aberto; fecharListaHorarios(); return;
+      }
+      input.dataset.aberto = '1';
+      abrirListaHorarios(input);
+    });
+  });
+  document.getElementById('event-dia-inteiro').addEventListener('change', (e) => aplicarDiaInteiro(e.target.checked));
+  document.addEventListener('click', (e) => { if (!e.target.closest('.agenda-hora-lista')) fecharListaHorarios(); });
+  document.getElementById('event-drawer').addEventListener('scroll', fecharListaHorarios);
+}
+
 function openEventDrawer(eventId, presetHour) {
   editingEventId = eventId || null;
   const form = document.getElementById('event-form');
@@ -1274,6 +1344,10 @@ function openEventDrawer(eventId, presetHour) {
     deleteBtn.hidden = true;
   }
 
+  const diaInteiro = document.getElementById('event-start').value === DIA_INTEIRO.inicio && document.getElementById('event-end').value === DIA_INTEIRO.fim;
+  document.getElementById('event-dia-inteiro').checked = diaInteiro;
+  document.getElementById('event-horas-campos').hidden = diaInteiro;
+  fecharListaHorarios();
   updateEventTypeCustomVisibility();
   renderEventGuestChips();
 
@@ -1284,6 +1358,7 @@ function openEventDrawer(eventId, presetHour) {
 
 function closeEventDrawer() {
   editingEventId = null;
+  fecharListaHorarios();
   document.getElementById('event-drawer').classList.remove('show');
   document.getElementById('event-drawer-backdrop').classList.remove('show');
 }

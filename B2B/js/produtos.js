@@ -1070,7 +1070,7 @@ function goToStep(n) {
     el.setAttribute('aria-selected', active ? 'true' : 'false');
   });
 
-  // Rodapé: nas etapas 1–3, "Salvar item" (branco) à esquerda e "Avançar"
+  // Rodapé: nas etapas 1–3, "Salvar item" (branco) à esquerda e "Próximo"
   // à direita. Na 4 (Mídia), "Voltar" à esquerda e "Salvar item" (principal)
   // à direita. Salvar fica disponível em qualquer aba (o submit valida
   // Categoria e Preço e leva pra aba que faltar).
@@ -1086,7 +1086,7 @@ function goToStep(n) {
   updateWizardNextButtonState();
 }
 
-// Etapa 1: o botão Avançar só libera quando categoria e título estão
+// Etapa 1: o botão Próximo só libera quando categoria e título estão
 // preenchidos (em vez de deixar clicar e mostrar um toast de erro).
 function updateWizardNextButtonState() {
   const nextBtn = document.getElementById('product-wizard-next-btn');

@@ -2218,6 +2218,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ? ''
         : (task.id === 'budget'
             ? 'onclick="navigateToBudget()"'
+            : task.id === 'savethedate'
+            ? 'onclick="navigateToSaveTheDate()"'
             : `onclick="switchRailTab('${task.tab}')"`);
       return `
         <div class="group py-4 px-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${clickAction} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
@@ -10296,6 +10298,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     switchWalletSubSection('wallet-budget', 'Orçamento');
+  };
+
+  // Home (Mais recursos › Save the Date e o passo "Escolher Save the Date" do
+  // guia): abre Personalizar evento › Aparência já na página Save the Date.
+  window.navigateToSaveTheDate = function() {
+    state.activeSubSection = 'home';
+    pendingSubItemId = 'home';
+    switchRailTab('edit-site');
+    setTimeout(() => {
+      if (typeof window.switchBuilderPage === 'function') window.switchBuilderPage('savethedate');
+    }, 150);
   };
 
   window.navigateToTables = function() {

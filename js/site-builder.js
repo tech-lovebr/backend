@@ -4316,3 +4316,4 @@ function initCompartilharSaveTheDate() {
   document.addEventListener('click', fechar);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 }
+window.switchBuilderPage = switchBuilderPage;

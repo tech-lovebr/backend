@@ -4295,7 +4295,17 @@ function baixarImagem(blob, nome) {
 }
 
 /** O navegador consegue mandar arquivo pelo compartilhar do sistema (celular)? */
+// Só no celular: no computador (Windows/Mac) o compartilhar do sistema
+// oferece o aplicativo do WhatsApp (e pede para instalar) — lá a pessoa
+// compartilha pelo WhatsApp Web, no navegador.
+function ehCelular() {
+  const uaData = /** @type {any} */ (navigator).userAgentData;
+  if (uaData && typeof uaData.mobile === 'boolean') return uaData.mobile;
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+}
+
 function podeCompartilharArquivo() {
+  if (!ehCelular()) return false;
   try {
     return !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'x.png', { type: 'image/png' })] }));
   } catch (e) { return false; }
@@ -4339,7 +4349,7 @@ async function compartilharSaveTheDate(canal, status) {
   const arquivo = new File([blob], 'save-the-date.png', { type: 'image/png' });
 
   // Celular: o compartilhar do sistema manda imagem + texto direto no app.
-  if (canal !== 'email' && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+  if (canal !== 'email' && ehCelular() && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
     try {
       await navigator.share({ files: [arquivo], text: texto, title: 'Save the Date' });
       avisar('');

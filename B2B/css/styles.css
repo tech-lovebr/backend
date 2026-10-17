@@ -7588,3 +7588,6 @@ body[data-theme="dark"] .category-tree-row.active, body[data-theme="dark"] .cate
 .product-pacotes-add { align-self: flex-start; margin-top: 0.6rem; }
 .product-duplicar-btn { flex: 0 0 auto; width: 36px; justify-content: center; padding-left: 0; padding-right: 0; }
 body[data-theme="dark"] .product-pacote-item { background: #252525 !important; border-color: #404040 !important; }
+
+/* Proposta › cabeçalho "Preço UC": o UC mostra "Unidade de cobrança" ao passar o mouse. */
+.proposal-abbr { text-decoration: none; cursor: help; }

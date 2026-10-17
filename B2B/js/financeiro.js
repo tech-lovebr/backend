@@ -849,7 +849,7 @@ function wireProposalItemRow(row) {
     }
   });
 
-  // Preço editável direto na coluna "Preço lista" (sem a coluna "Preço un").
+  // Preço editável direto na coluna "Preço UC" (sem a coluna "Preço un").
   wireCurrencyMaskInput(listPriceInput);
   listPriceInput.addEventListener('input', () => {
     unitPriceInput.value = String(currencyMaskValue(listPriceInput));

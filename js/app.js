@@ -99,6 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // aoConfirmar (opcional, async): roda com o pop-up aberto e o botão
   // travado; se devolver um texto, ele aparece como erro e o pop-up fica.
   // Resolve true se confirmou (e deu certo), false se cancelou.
+  /**
+   * @param {{ titulo?: string, texto?: string, botao?: string, aoConfirmar?: (null | (() => any)) }} [opcoes]
+   * @returns {Promise<boolean>}
+   */
   function confirmarNaLove({ titulo, texto = '', botao = 'Excluir', aoConfirmar = null } = {}) {
     const modal = document.getElementById('modal-love-confirmar');
     if (!modal) return Promise.resolve(window.confirm(titulo));
@@ -644,6 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openAccountSettingsPage(opts = {}) {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
+    mostrarAbaDeConfiguracoes(opts.aba || 'conta');
     preencherConfiguracoesDaConta();
   }
 
@@ -15345,6 +15350,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /**
+   * Exclui um evento criado por esta conta: marca eventos.deleted_at (o
+   * evento some para o anfitrião e do site, mas o Admin continua vendo —
+   * "Excluído pelo criador" — e pode restaurar). Sem nenhum evento sobrando,
+   * volta para "Crie seu primeiro evento" com o menu lateral travado.
+   * @param {string} id
+   * @returns {Promise<string|null>} mensagem de erro ou null
+   */
+  async function excluirEventoDoCriador(id) {
+    if (ehUuid(id)) {
+      const { error } = await supabaseClient.from('eventos').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+      if (error) { console.error('Erro ao excluir evento:', error); return 'Não foi possível excluir o evento agora. Tente de novo.'; }
+    }
+    state.events = state.events.filter(e => e.id !== id);
+    const proprios = state.events.filter(e => !e.souOrganizador);
+    if (!state.events.length) {
+      state.activeEventId = null;
+      setSidebarLocked(true);
+      renderEventsSwitcher();
+      // Topo sem o nome do evento que acabou de sair.
+      if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = 'Nenhum evento';
+      if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = '';
+      if (window.location.pathname !== '/') history.replaceState({}, '', '/');
+      document.title = 'Love - Event OS & Lista de Presentes';
+      openCreateEventPage(true, false);
+      return null;
+    }
+    if (state.activeEventId === id || !state.events.some(e => e.id === state.activeEventId)) {
+      state.activeEventId = (proprios[0] || state.events[0]).id;
+      if (typeof window.reloadBuilderStateForActiveEvent === 'function') window.reloadBuilderStateForActiveEvent();
+    }
+    updateAllCelebrationData();
+    renderEventsSwitcher();
+    return null;
+  }
+
+  // Configurações › abas "Minha conta" / "Meus eventos".
+  function mostrarAbaDeConfiguracoes(aba) {
+    document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.classList.toggle('active', b.dataset.configAba === aba));
+    document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
+    document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
+    document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
+    if (aba === 'eventos') renderMeusEventos();
+  }
+  document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
+
+  const TIPOS_DE_EVENTO = { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo', baby: 'Chá de bebê', other: 'Outro' };
+  function renderMeusEventos() {
+    const lista = document.getElementById('config-lista-eventos');
+    if (!lista) return;
+    const meus = state.events.filter(e => !e.souOrganizador && e.id !== 'nova-comemoracao');
+    if (!meus.length) { lista.innerHTML = '<p class="text-sm text-zinc-500 py-2">Você ainda não tem eventos.</p>'; return; }
+    lista.innerHTML = meus.map(e => {
+      const data = e.date ? (formatEventDateLong(e.date) || e.date) : 'Data a definir';
+      return `
+        <div class="meus-eventos-linha" data-evento-id="${escaparHtml(e.id)}">
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-semibold text-zinc-900 truncate">${escaparHtml(e.title || 'Evento')}${e.id === state.activeEventId ? ' <span class="meus-eventos-atual">Evento aberto</span>' : ''}</p>
+            <p class="text-xs text-zinc-500 truncate">${escaparHtml([TIPOS_DE_EVENTO[e.type] || 'Evento', data].join(' • '))}</p>
+          </div>
+          <button type="button" class="meus-eventos-excluir">Excluir evento</button>
+        </div>`;
+    }).join('');
+    lista.querySelectorAll('.meus-eventos-excluir').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.closest('[data-evento-id]').dataset.eventoId;
+        const ev = state.events.find(e => e.id === id);
+        const ok = await confirmarNaLove({
+          titulo: `Excluir "${ev ? ev.title : 'este evento'}"?`,
+          texto: 'O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.',
+          botao: 'Excluir evento',
+          aoConfirmar: () => excluirEventoDoCriador(id)
+        });
+        if (!ok) return;
+        if (state.events.length) renderMeusEventos();
+      });
+    });
+  }
+
   // Confirmar Exclusão do Evento
   const btnConfirmDelete = document.getElementById('btn-confirm-delete-event');
   if (btnConfirmDelete) {
@@ -15352,57 +15436,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const deletedId = state.activeEventId;
       const deletedEvent = getActiveEvent();
 
-      // Marca no banco em vez de só sumir da tela: sem isto o evento voltava
-      // no próximo login e o Admin seguia mostrando como ativo para sempre.
-      // Marcar, e não apagar, preserva convidados, presentes e o histórico
-      // financeiro — que o cascade levaria junto.
-      if (ehUuid(deletedId)) {
-        const { error } = await supabaseClient
-          .from('eventos')
-          .update({ deleted_at: new Date().toISOString() })
-          .eq('id', deletedId);
-        if (error) {
-          console.error('Erro ao excluir evento:', error);
-          showToast('Não foi possível excluir o evento. Tente de novo.', '⚠️');
-          return;
-        }
-      }
-
-      // Remove da lista
-      state.events = state.events.filter(e => e.id !== deletedId);
-
-      // Se não houver mais eventos, cria um padrão
-      if (state.events.length === 0) {
-        state.events.push({
-          id: 'nova-comemoracao',
-          title: 'Minha Nova Celebração',
-          type: 'wedding',
-          hostName: 'Anfitrião',
-          date: '2026-12-31',
-          slug: 'minha-nova-celebracao',
-          publicUrl: 'https://love.com.br/minha-nova-celebracao',
-          coverImage: 'assets/wedding_hero_banner.jpg',
-          totalArrecadado: 0,
-          convidadosConfirmados: 0,
-          totalConvidados: 100,
-          presentesRecebidos: 0,
-          adultosConfirmados: 0,
-          criancasConfirmadas: 0,
-          convidadosRecusados: 0,
-          convidadosPendentes: 0,
-          wallet: { saldoDisponivel: 0, saldoFuturo: 0, totalSacado: 0, chavePix: 'anfitriao@love.com', transacoes: [] },
-          siteSections: { heroHeadline: 'Bem-vindos à nossa celebração', heroSubtitle: 'Confirme sua presença e veja nossa lista de presentes.', aboutText: '', inviteText: '' },
-          giftList: [],
-          guestList: [],
-          messages: []
-        });
-      }
-
-      state.activeEventId = state.events[0].id;
+      const erro = await excluirEventoDoCriador(deletedId);
+      if (erro) { showToast(erro, '⚠️'); return; }
       closeModal(elements.modals.deleteEvent);
-      updateAllCelebrationData();
-      renderEventsSwitcher();
-      switchRailTab('edit-site');
+      if (state.events.length) switchRailTab('edit-site');
       showToast(`O evento "${deletedEvent.title}" foi cancelado e excluído com sucesso.`, '🗑️');
     });
   }

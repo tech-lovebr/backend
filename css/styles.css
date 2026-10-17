@@ -7689,3 +7689,9 @@ html body button.orc-enviar:not(#love-h-a) { width: 100%; height: 44px; border: 
 html body button.orc-enviar:not(#love-h-a):hover { background: #122c3f; }
 html body button.orc-enviar:not(#love-h-a):active { transform: scale(.99); }
 html body button.orc-enviar:not(#love-h-a):disabled { opacity: .6; cursor: default; }
+
+/* Configurações › Meus eventos */
+.meus-eventos-linha { display: flex; align-items: center; gap: 12px; padding: 14px 0; }
+.meus-eventos-atual { margin-left: 6px; font-size: 11px; font-weight: 600; color: #183b54; background: #EEF2F6; border-radius: 6px; padding: 2px 6px; }
+html body button.meus-eventos-excluir:not(#love-h-a) { flex-shrink: 0; height: 34px; padding: 0 12px; border: 1px solid #E4E4E7; border-radius: 8px !important; background: #fff; color: #3F3F46; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: none; }
+html body button.meus-eventos-excluir:not(#love-h-a):hover { border-color: #DC2626; color: #DC2626; background: #fff; }

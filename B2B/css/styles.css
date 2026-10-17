@@ -7866,3 +7866,9 @@ body[data-theme="dark"] .comando-popup-acoes button + button { background: #181D
 #template-drawer-footer[hidden], #template-drawer-cancel[hidden] { display: none !important; }
 body[data-theme="dark"] .comandos-vazio { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .comandos-vazio-icone { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+
+/* Detalhes do local: Área útil com a mesma largura do Complemento (mesma
+   grade da linha de cima); "m²" e "Opcional" em cinza clarinho. */
+.local-campo-area { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1.3fr); column-gap: 0.75rem; }
+.local-campo-area > * { grid-column: 1; }
+#product-venue-size::placeholder, #product-venue-complement::placeholder { color: #A1A1AA; opacity: 1; }

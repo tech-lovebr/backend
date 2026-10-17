@@ -7646,3 +7646,34 @@ body[data-theme="dark"] .status-badge.status-ativo::before { background: #9CC3E4
 .produto-redes-campos:not(:has(.produto-rede-campo:not([hidden]))) { margin-top: 0; }
 .produto-rede-campo[hidden] { display: none !important; }
 body[data-theme="dark"] .produto-rede-btn { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+
+/* Painel (home do Hub): títulos das seções (Sua agenda, Precisa de ajuda?,
+   Analytics, Notícias e eventos) no padrão do index — "Benefícios &
+   Serviços" / "Mais Recursos": título 16px em negrito fora da caixa, com
+   uma linha horizontal fina até o fim; a caixa fica só no conteúdo. */
+html body .dashboard-panel-section,
+html body .dashboard-help-section { background: transparent; border: none; border-radius: 0; overflow: visible; }
+html body .dashboard-panel-section > .dashboard-panel-header,
+html body .dashboard-help-section > .dashboard-help-header {
+  background: transparent; border: none; border-radius: 0; padding: 0; min-height: 0;
+  margin: 0 0 0.75rem; display: flex; align-items: center; justify-content: flex-start; gap: 0.75rem; flex-wrap: nowrap;
+}
+.dashboard-panel-header::after,
+.dashboard-help-header::after { content: ''; flex: 1 1 auto; height: 1px; background: #E4E4E7; order: 1; }
+.dash-analytics-header > div:first-child { order: 0; }
+.dash-analytics-header > .dash-analytics-period-wrap { order: 2; }
+html body .dashboard-panel-header .dashboard-help-title,
+html body .dashboard-help-header .dashboard-help-title {
+  font-size: 1rem; font-weight: 700; color: #18181B; white-space: nowrap; text-transform: none; letter-spacing: 0;
+}
+html body .dashboard-panel-section > .dash-card { border: 1px solid #E4E4E7 !important; border-radius: var(--radius-card) !important; }
+html body .dashboard-help-section > .dashboard-help-grid { padding: 0; background: transparent; }
+body[data-theme="dark"] .dashboard-panel-section,
+body[data-theme="dark"] .dashboard-help-section,
+body[data-theme="dark"] .dashboard-panel-section > .dashboard-panel-header,
+body[data-theme="dark"] .dashboard-help-section > .dashboard-help-header { background: transparent !important; border: none !important; }
+body[data-theme="dark"] .dashboard-panel-header::after,
+body[data-theme="dark"] .dashboard-help-header::after { background: #404040; }
+body[data-theme="dark"] .dashboard-panel-section > .dash-card { border-color: #404040 !important; }
+body[data-theme="dark"] .dashboard-panel-header .dashboard-help-title,
+body[data-theme="dark"] .dashboard-help-header .dashboard-help-title { color: #FFFFFF !important; }

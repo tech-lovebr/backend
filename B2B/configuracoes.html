@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=580">
+  <link rel="stylesheet" href="css/styles.css?v=581">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -70,10 +70,10 @@
 
                 <div class="profile-form-top-fields">
                   <div>
-                    <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span> <span class="field-lock-icon" id="profile-company-lock" hidden title="Não pode ser alterado depois de configurado"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4.5" y="10.5" width="15" height="9" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span></label>
+                    <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span> <span class="field-lock-icon" id="profile-company-lock" hidden title="Pode ser alterado a cada 2 dias"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4.5" y="10.5" width="15" height="9" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span></label>
                     <div class="field-with-inline-link">
                       <input id="profile-company" type="text" class="field-input">
-                      <a href="#" class="field-request-change-link" id="profile-company-request-change" hidden>Solicitar alteração</a>
+                      <a href="#" class="field-request-change-link" id="profile-company-request-change" hidden>Alterar</a>
                     </div>
                   </div>
 
@@ -106,10 +106,10 @@
                   </div>
 
                   <div>
-                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span> <span class="field-lock-icon" id="profile-document-lock" hidden title="Não pode ser alterado depois de configurado"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4.5" y="10.5" width="15" height="9" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span></label>
+                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span> <span class="field-lock-icon" id="profile-document-lock" hidden title="Pode ser alterado a cada 2 dias"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4.5" y="10.5" width="15" height="9" rx="1.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span></label>
                     <div class="field-with-inline-link">
                       <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
-                      <a href="#" class="field-request-change-link" id="profile-document-request-change" hidden>Solicitar alteração</a>
+                      <a href="#" class="field-request-change-link" id="profile-document-request-change" hidden>Alterar</a>
                     </div>
                   </div>
 
@@ -413,6 +413,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/configuracoes.js?v=40"></script>
+  <script src="js/configuracoes.js?v=41"></script>
 </body>
 </html>

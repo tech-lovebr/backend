@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   initSettingsTabs();
   await carregarLiberacoes();
+  await carregarDatasDeAlteracao();
   initProfileForm();
   initCompanyForm();
   initPasswordForm();
@@ -100,8 +101,9 @@ function initProfileForm() {
     btn.addEventListener('click', () => setProfileDocType(btn.dataset.docType));
   });
 
-  document.getElementById('profile-form').addEventListener('submit', (e) => {
+  document.getElementById('profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const antes = { company: p.company, documentNumber: p.documentNumber, documentType: p.documentType };
     const company = document.getElementById('profile-company').value.trim();
     const name = document.getElementById('profile-name').value.trim();
     const phone = document.getElementById('profile-phone').value.trim();
@@ -122,8 +124,21 @@ function initProfileForm() {
     p.state = document.getElementById('profile-state').value;
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
+    const erroBanco = await salvarPerfilNoBanco(p);
+    // Nome da empresa / documento alterados há menos de 2 dias: o banco
+    // recusa (migration 064) e o valor anterior volta.
+    if (erroBanco && /ALTERACAO_BLOQUEADA/.test(erroBanco.message || '')) {
+      Object.assign(p, antes);
+      document.getElementById('profile-company').value = p.company || '';
+      document.getElementById('profile-document').value = p.documentNumber || '';
+      lockConfiguredFields(p);
+      showToast('Nome da empresa e documento só podem ser alterados a cada 2 dias.', true);
+      return;
+    }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
-    salvarPerfilNoBanco(p);
+    const agora = new Date().toISOString();
+    if (antes.company && antes.company !== p.company) ALTERADO_EM.company = agora;
+    if (antes.documentNumber && (antes.documentNumber !== p.documentNumber || antes.documentType !== p.documentType)) ALTERADO_EM.documento = agora;
 
     // Liberação concedida pelo Admin vale uma edição: gastou, trava de novo.
     consumirLiberacoes(['company', 'documento']).then(() => lockConfiguredFields(p));
@@ -158,6 +173,7 @@ async function salvarPerfilNoBanco(p) {
 
   // Falhar aqui não pode travar o fluxo: o perfil local já foi salvo.
   if (error) console.error('Não foi possível sincronizar o perfil com o banco.', error);
+  return error || null;
 }
 
 // Nome da empresa e documento (CNPJ/CPF) travam para edição assim que
@@ -230,48 +246,60 @@ function lockConfiguredFields(p) {
   }
 }
 
-// Abre um chamado em Atendimento (Admin) pedindo a alteração do nome da
-// empresa ou do CNPJ/CPF — esses campos travam depois de preenchidos, então
-// a mudança só acontece via suporte.
+/* "Alterar" (nome da empresa e CNPJ/CPF): libera o campo na hora, sem
+   passar pelo Admin. Regra: depois de uma alteração, só dá para mudar de
+   novo 2 dias depois (garantida no banco — migration 064). Antes disso,
+   clicar em "Alterar" mostra o aviso logo acima da caixa. */
+const PRAZO_ALTERACAO_MS = 2 * 24 * 60 * 60 * 1000;
+const ALTERADO_EM = { company: null, documento: null };
+
+async function carregarDatasDeAlteracao() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { data, error } = await supabaseClient.from('fornecedores')
+    .select('company_alterado_em, documento_alterado_em').eq('id', session.user.id).maybeSingle();
+  if (error || !data) return;
+  ALTERADO_EM.company = data.company_alterado_em || null;
+  ALTERADO_EM.documento = data.documento_alterado_em || null;
+}
+
+function diasParaAlterarDeNovo(campo) {
+  const quando = ALTERADO_EM[campo];
+  if (!quando) return 0;
+  const falta = new Date(quando).getTime() + PRAZO_ALTERACAO_MS - Date.now();
+  return falta > 0 ? Math.ceil(falta / (24 * 60 * 60 * 1000)) : 0;
+}
+
 function initRequestChangeLinks() {
-  const links = [
-    { el: document.getElementById('profile-company-request-change'), campo: 'Nome da empresa', valor: () => B2B_DATA.professional.company },
-    { el: document.getElementById('profile-document-request-change'), campo: () => B2B_DATA.professional.documentType === 'cpf' ? 'CPF' : 'CNPJ', valor: () => B2B_DATA.professional.documentNumber }
+  const campos = [
+    { campo: 'company', link: 'profile-company-request-change', input: 'profile-company', lock: 'profile-company-lock' },
+    { campo: 'documento', link: 'profile-document-request-change', input: 'profile-document', lock: 'profile-document-lock' }
   ];
 
-  links.forEach(({ el, campo, valor }) => {
+  campos.forEach(({ campo, link, input, lock }) => {
+    const el = document.getElementById(link);
     if (!el) return;
-    el.addEventListener('click', async (e) => {
+    el.addEventListener('click', (e) => {
       e.preventDefault();
-      if (el.dataset.sent) return;
+      const caixa = el.closest('.field-with-inline-link');
+      caixa.parentElement.querySelector('.campo-aviso-alteracao')?.remove();
 
-      const p = B2B_DATA.professional;
-      const campoNome = typeof campo === 'function' ? campo() : campo;
-      const session = window.b2bSession;
+      const dias = diasParaAlterarDeNovo(campo);
+      if (dias > 0) {
+        caixa.insertAdjacentHTML('beforebegin', `<p class="campo-aviso-alteracao">Altere de novo daqui a ${dias} ${dias === 1 ? 'dia' : 'dias'}.</p>`);
+        return;
+      }
 
-      const { error } = await supabaseClient.from('tickets').insert({
-        origem: 'fornecedor',
-        user_id: session ? session.user.id : null,
-        nome: p.name || p.company || '',
-        email: p.email || (session ? session.user.email : ''),
-        telefone: p.phone || null,
-        assunto: 'Alteração de dados',
-        categoria: 'Dados cadastrais',
-        mensagem: `Solicitação de alteração do campo "${campoNome}" (valor atual: ${valor()}).`,
-        // O Admin age a partir daqui, em vez de interpretar a frase acima.
-        extra: {
-          campo: el.id.includes('document') ? 'documento' : 'company',
-          campo_label: campoNome,
-          valor_atual: String(valor() ?? '')
-        }
-      });
-
-      if (error) return;
-
-      el.dataset.sent = 'true';
-      el.textContent = 'Solicitação enviada';
-      el.removeAttribute('href');
-      el.style.cursor = 'default';
+      const campoInput = document.getElementById(input);
+      campoInput.readOnly = false;
+      campoInput.classList.remove('field-locked');
+      document.getElementById(lock).hidden = true;
+      el.hidden = true;
+      if (campo === 'documento') {
+        document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => { btn.disabled = false; });
+      }
+      campoInput.focus();
+      campoInput.select?.();
     });
   });
 }

@@ -7696,3 +7696,8 @@ a.guide-link { display: block; text-decoration: none; }
 }
 .profile-imagem-editar svg { width: 16px; height: 16px; }
 body[data-theme="dark"] .profile-imagem-editar { background: rgba(37, 37, 37, 0.7) !important; }
+
+/* Perfil › "Alterar" bloqueado pela regra dos 2 dias: aviso pequeno acima da caixa. */
+.campo-aviso-alteracao { font-size: 0.75rem; color: #71717A; margin: -0.15rem 0 0.35rem; }
+.field-request-change-link { color: #71717A; }
+.field-request-change-link:hover { color: #181D24; }

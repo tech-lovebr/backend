@@ -282,6 +282,9 @@
         <!-- ETAPA 3: Escopo do Serviço & Atributos -->
         <div class="product-wizard-panel" data-step="3">
 
+          <!-- Incluso / não incluso: some em Espaços para locação (lá o escopo
+               começa direto pelas áreas comuns). -->
+          <div id="product-scope-lists">
           <div class="form-section-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
             <span>O que está incluso</span>
@@ -301,14 +304,19 @@
             <button type="button" id="product-scope-excluded-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item não incluso">Adicionar</button>
           </div>
           <div id="product-scope-excluded-list" class="scope-list"></div>
+          </div>
 
           <div id="product-venue-fields" hidden>
-            <div class="flex flex-col gap-4 mt-2">
+            <div class="flex flex-col gap-4">
 
               <div>
                 <label class="field-label">Áreas comuns</label>
                 <p class="field-hint">Clique pra adicionar as que o espaço tem.</p>
                 <div id="product-venue-common-areas-row" class="weekday-toggle-row"></div>
+                <div class="scope-add-row mt-2" id="product-venue-common-area-outro" hidden>
+                  <input id="product-venue-common-area-outro-input" type="text" class="field-input" maxlength="40" autocomplete="off">
+                  <button type="button" id="product-venue-common-area-outro-add" class="btn-secondary scope-add-btn">Adicionar</button>
+                </div>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
@@ -320,16 +328,6 @@
                   <label for="product-venue-capacity-standing" class="field-label">Capacidade em pé</label>
                   <input id="product-venue-capacity-standing" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
                 </div>
-              </div>
-
-              <div class="flex items-center gap-5">
-                <label class="checkbox-row"><input type="checkbox" id="product-venue-has-generator"> Possui gerador</label>
-                <label class="checkbox-row"><input type="checkbox" id="product-venue-is-pcd-accessible"> Acessível PCD</label>
-              </div>
-
-              <div>
-                <label for="product-venue-noise-restriction" class="field-label">Restrição de ruído/horário</label>
-                <input id="product-venue-noise-restriction" type="text" class="field-input" placeholder="Ex: Som até 22h">
               </div>
 
               <div>
@@ -344,6 +342,16 @@
                   <span>até</span>
                   <input id="product-venue-hours-close" type="time" class="field-input">
                 </div>
+              </div>
+
+              <div class="flex items-center gap-5">
+                <label class="checkbox-row"><input type="checkbox" id="product-venue-has-generator"> Possui gerador</label>
+                <label class="checkbox-row"><input type="checkbox" id="product-venue-is-pcd-accessible"> Acessível PCD</label>
+              </div>
+
+              <div>
+                <label for="product-venue-noise-restriction" class="field-label">Restrição de ruído/horário</label>
+                <input id="product-venue-noise-restriction" type="text" class="field-input" placeholder="Ex: Som até 22h">
               </div>
             </div>
           </div>
@@ -566,6 +574,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=38"></script>
-  <script src="js/produtos.js?v=27"></script>
+  <script src="js/produtos.js?v=28"></script>
 </body>
 </html>

@@ -619,13 +619,42 @@ function addGalleryFiles(files) {
 
 /* -------------------- Detalhes do local (Espaços para Locação) -------------------- */
 
+function initVenueCommonAreaOutro() {
+  const input = document.getElementById('product-venue-common-area-outro-input');
+  const add = document.getElementById('product-venue-common-area-outro-add');
+  if (!input || !add) return;
+  const adicionar = () => {
+    const nome = input.value.trim().replace(/\s+/g, ' ');
+    if (!nome) { input.focus(); return; }
+    const existente = currentVenueCommonAreas.concat(VENUE_COMMON_AREA_OPTIONS).find(a => a.toLowerCase() === nome.toLowerCase());
+    const area = existente || (nome.charAt(0).toUpperCase() + nome.slice(1));
+    if (!currentVenueCommonAreas.includes(area)) currentVenueCommonAreas.push(area);
+    input.value = '';
+    renderVenueCommonAreas();
+    input.focus();
+  };
+  add.addEventListener('click', adicionar);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); adicionar(); } });
+}
+
 function renderVenueCommonAreas() {
   const wrap = document.getElementById('product-venue-common-areas-row');
   if (!wrap) return;
 
-  wrap.innerHTML = VENUE_COMMON_AREA_OPTIONS.map(area => `
+  // As áreas digitadas em "Outro" entram como chips próprios (clicar tira).
+  const extras = currentVenueCommonAreas.filter(a => !VENUE_COMMON_AREA_OPTIONS.includes(a));
+  const outroAberto = !document.getElementById('product-venue-common-area-outro')?.hidden;
+  wrap.innerHTML = VENUE_COMMON_AREA_OPTIONS.concat(extras).map(area => `
     <button type="button" class="weekday-toggle-chip ${currentVenueCommonAreas.includes(area) ? 'active' : ''}" data-common-area="${escapeHtml(area)}">${escapeHtml(area)}</button>
-  `).join('');
+  `).join('') + `<button type="button" class="weekday-toggle-chip ${outroAberto ? 'active' : ''}" data-common-area-outro>Outro</button>`;
+
+  wrap.querySelector('[data-common-area-outro]').addEventListener('click', () => {
+    const box = document.getElementById('product-venue-common-area-outro');
+    if (!box) return;
+    box.hidden = !box.hidden;
+    renderVenueCommonAreas();
+    if (!box.hidden) document.getElementById('product-venue-common-area-outro-input')?.focus();
+  });
 
   wrap.querySelectorAll('[data-common-area]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -834,6 +863,7 @@ function updateCategoryFieldsVisibility() {
 
   // Etapa 3: bloco de atributos específico por categoria.
   setPanelHidden('product-venue-fields', !isVenue);
+  setPanelHidden('product-scope-lists', isVenue);
   setPanelHidden('product-venue-details', !isVenue);
   setPanelHidden('product-food-fields', !isFood);
   setPanelHidden('product-tasting-field', !(isFood || categoryGroups(category).isBar));
@@ -1125,6 +1155,7 @@ function initProductDrawer() {
   });
 
   populateVenueStateOptions();
+  initVenueCommonAreaOutro();
   initVenueCityBusca();
   initVenueArea();
   document.getElementById('product-venue-state').addEventListener('change', (e) => {
@@ -1138,6 +1169,8 @@ function initProductDrawer() {
     currentOpenDays = defaultOpenDays();
     currentDishes = [];
     currentVenueCommonAreas = [];
+    const outroBox = document.getElementById('product-venue-common-area-outro');
+    if (outroBox) outroBox.hidden = true;
     currentSubcategory = null;
     currentCategoryExpanded = null;
     currentPricingType = null;

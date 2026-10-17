@@ -131,6 +131,9 @@ let currentPricingType = null;
 let currentServiceAreaType = 'city_only';
 let currentScopeIncluded = [];
 let currentScopeExcluded = [];
+// Pacotes ({ id, name, price, description }) e adicionais ({ id, name, price }).
+let currentPackages = [];
+let currentAddons = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
@@ -179,6 +182,9 @@ async function loadProducts() {
     subcategory: normalizeSubcategory((p.extra && p.extra.subcategory) || null),
     pricing: (p.extra && p.extra.pricing) || null,
     scope: (p.extra && p.extra.scope) || { included: [], excluded: [] },
+    packages: Array.isArray(p.extra && p.extra.packages) ? p.extra.packages : [],
+    addons: Array.isArray(p.extra && p.extra.addons) ? p.extra.addons : [],
+    rascunho: !!(p.extra && p.extra.rascunho),
     attributes: (p.extra && p.extra.attributes) || {},
     videoUrl: (p.extra && p.extra.videoUrl) || null,
     logistics: (p.extra && p.extra.logistics) || null,
@@ -291,13 +297,16 @@ function renderProducts() {
           <p class="text-sm font-semibold text-zinc-900 leading-snug">${p.name}</p>
           ${p.suspenso
             ? '<span class="status-badge status-suspenso">Suspenso</span>'
-            : `<span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>`}
+            : (p.rascunho && !p.active)
+              ? '<span class="status-badge status-inativo">Rascunho</span>'
+              : `<span class="status-badge ${p.active ? 'status-ativo' : 'status-inativo'}">${p.active ? 'Ativo' : 'Inativo'}</span>`}
         </div>
         <p class="text-xs text-zinc-500">${p.category}</p>
         ${p.suspenso ? `<p class="produto-suspenso-aviso"><strong>Suspenso pela Love</strong>${p.suspensoMotivo ? ' — ' + escapeHtml(p.suspensoMotivo) : ''}</p>` : ''}
         <p class="text-base font-bold text-zinc-900 mt-auto">${productPriceLabel(p)}</p>
         <div class="flex items-center gap-2 mt-1">
           <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">Editar</button>
+          <button type="button" class="btn-secondary product-duplicar-btn" data-duplicate-product="${p.id}" title="Duplicar anúncio" aria-label="Duplicar anúncio"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
         </div>
       </div>
     </div>
@@ -307,6 +316,10 @@ function renderProducts() {
     btn.addEventListener('click', () => openProductDrawer(btn.dataset.editProduct));
   });
 
+  grid.querySelectorAll('[data-duplicate-product]').forEach(btn => {
+    btn.addEventListener('click', () => duplicarProduto(btn.dataset.duplicateProduct));
+  });
+
   grid.querySelectorAll('[data-add-image]').forEach(btn => {
     btn.addEventListener('click', () => {
       openProductDrawer(btn.dataset.addImage);
@@ -314,6 +327,89 @@ function renderProducts() {
     });
   });
 }
+
+/* -------------------- Duplicar anúncio --------------------
+   Copia tudo do anúncio salvo (categoria/subcategoria, preços, escopo,
+   pacotes, atendimento, capa e fotos) num novo, "Título (Cópia)", como
+   Rascunho (fora do Explorar até salvar), e já abre para editar. */
+
+async function duplicarProduto(id) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const { data: orig, error: erroLer } = await supabaseClient.from('products').select('*').eq('id', id).maybeSingle();
+  if (erroLer || !orig) { showToast('Não foi possível duplicar o anúncio.', true); return; }
+  const extra = JSON.parse(JSON.stringify(orig.extra || {}));
+  extra.rascunho = true;
+  const copia = {
+    fornecedor_id: session.user.id,
+    name: `${(orig.name || '').trim()} (Cópia)`,
+    category: orig.category,
+    price: orig.price,
+    description: orig.description,
+    cover_image_url: orig.cover_image_url,
+    gallery: Array.isArray(orig.gallery) ? orig.gallery.slice() : [],
+    extra,
+    active: false
+  };
+  const { data: nova, error } = await supabaseClient.from('products').insert(copia).select('id').single();
+  if (error || !nova) { showToast('Não foi possível duplicar o anúncio.', true); return; }
+  await loadProducts();
+  renderCategoryTabs();
+  renderProducts();
+  populateProductCategoryOptions();
+  openProductDrawer(nova.id);
+  showToast('Anúncio duplicado. Troque o título, as fotos e os preços e salve.');
+}
+
+/* -------------------- Pacotes e adicionais (Escopo) -------------------- */
+
+const novoIdPacote = () => 'pk' + Date.now().toString(36) + Math.round(Math.random() * 1e4);
+const valorMascarado = v => (Number(v) > 0 ? Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '');
+
+function renderPacotesLista(tipo) {
+  const lista = tipo === 'packages' ? currentPackages : currentAddons;
+  const wrap = document.getElementById(tipo === 'packages' ? 'product-packages-list' : 'product-addons-list');
+  if (!wrap) return;
+  wrap.innerHTML = lista.map((item, i) => `
+    <div class="product-pacote-item" data-index="${i}">
+      <div class="product-pacote-linha">
+        <input type="text" class="field-input" data-campo="name" maxlength="60" value="${escapeHtml(item.name || '')}" placeholder="${tipo === 'packages' ? 'Nome do pacote' : 'Nome do item'}" autocomplete="off">
+        <input type="text" inputmode="numeric" class="field-input" data-campo="price" value="${valorMascarado(item.price)}" placeholder="0,00" autocomplete="off">
+        <button type="button" class="scope-item-remove" data-remover title="Remover" aria-label="Remover">${PI_TRASH}</button>
+      </div>
+      ${tipo === 'packages' ? `<input type="text" class="field-input" data-campo="description" maxlength="160" value="${escapeHtml(item.description || '')}" placeholder="O que inclui (opcional)" autocomplete="off">` : ''}
+    </div>`).join('');
+
+  wrap.querySelectorAll('.product-pacote-item').forEach(el => {
+    const item = lista[Number(el.dataset.index)];
+    const preco = el.querySelector('[data-campo="price"]');
+    wireCurrencyMaskInput(preco);
+    wireMoneyPrefix(preco);
+    preco.addEventListener('input', () => { item.price = currencyMaskValue(preco); });
+    el.querySelector('[data-campo="name"]').addEventListener('input', e => { item.name = e.target.value; });
+    el.querySelector('[data-campo="description"]')?.addEventListener('input', e => { item.description = e.target.value; });
+    el.querySelector('[data-remover]').addEventListener('click', () => {
+      lista.splice(Number(el.dataset.index), 1);
+      renderPacotesLista(tipo);
+    });
+  });
+}
+
+function initPacotes() {
+  const adicionar = (tipo) => {
+    const lista = tipo === 'packages' ? currentPackages : currentAddons;
+    lista.push(tipo === 'packages' ? { id: novoIdPacote(), name: '', price: 0, description: '' } : { id: novoIdPacote(), name: '', price: 0 });
+    renderPacotesLista(tipo);
+    const wrap = document.getElementById(tipo === 'packages' ? 'product-packages-list' : 'product-addons-list');
+    wrap?.lastElementChild?.querySelector('[data-campo="name"]')?.focus();
+  };
+  document.getElementById('product-package-add-btn')?.addEventListener('click', () => adicionar('packages'));
+  document.getElementById('product-addon-add-btn')?.addEventListener('click', () => adicionar('addons'));
+}
+
+const pacotesParaSalvar = (lista, comDescricao) => lista
+  .map(i => ({ id: i.id, name: String(i.name || '').trim(), price: Number(i.price) || 0, ...(comDescricao ? { description: String(i.description || '').trim() } : {}) }))
+  .filter(i => i.name);
 
 /* -------------------- Upload de imagens -------------------- */
 
@@ -1161,6 +1257,7 @@ function initProductDrawer() {
   });
 
   populateVenueStateOptions();
+  initPacotes();
   initVenueCommonAreaOutro();
   initVenueCityBusca();
   initVenueArea();
@@ -1183,6 +1280,10 @@ function initProductDrawer() {
     currentServiceAreaType = 'city_only';
     currentScopeIncluded = [];
     currentScopeExcluded = [];
+    currentPackages = [];
+    currentAddons = [];
+    renderPacotesLista('packages');
+    renderPacotesLista('addons');
 
     renderCoverImagePicker();
     renderGalleryImages();
@@ -1208,6 +1309,7 @@ function initProductDrawer() {
     document.getElementById('product-setup-minutes').value = '';
     document.getElementById('product-teardown-minutes').value = '';
     setPanelHidden('product-drawer-delete-btn', true);
+    setPanelHidden('product-drawer-duplicate-btn', true);
     showDeleteConfirm(false);
 
     goToStep(1);
@@ -1232,6 +1334,14 @@ function initProductDrawer() {
 
   const deleteBtn = document.getElementById('product-drawer-delete-btn');
   if (deleteBtn) deleteBtn.addEventListener('click', () => showDeleteConfirm(true));
+
+  document.getElementById('product-drawer-duplicate-btn')?.addEventListener('click', async (e) => {
+    const id = form.dataset.editId;
+    if (!id) return;
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    try { await duplicarProduto(id); } finally { btn.disabled = false; }
+  });
 
   const deleteNoBtn = document.getElementById('product-drawer-delete-no-btn');
   if (deleteNoBtn) deleteNoBtn.addEventListener('click', () => showDeleteConfirm(false));
@@ -1451,6 +1561,8 @@ function initProductDrawer() {
             included: currentScopeIncluded.map(i => i.text).filter(Boolean),
             excluded: currentScopeExcluded.map(i => i.text).filter(Boolean)
           },
+          packages: pacotesParaSalvar(currentPackages, true),
+          addons: pacotesParaSalvar(currentAddons, false),
           attributes,
           videoUrl: document.getElementById('product-video-url').value.trim() || null,
           logistics,
@@ -1521,6 +1633,8 @@ function openProductDrawer(id) {
   currentServiceAreaType = (p.logistics && p.logistics.serviceAreaType) || 'city_only';
   currentScopeIncluded = ((p.scope && p.scope.included) || []).map((text, i) => ({ id: 'si' + i, text }));
   currentScopeExcluded = ((p.scope && p.scope.excluded) || []).map((text, i) => ({ id: 'se' + i, text }));
+  currentPackages = (p.packages || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0, description: i.description || '' }));
+  currentAddons = (p.addons || []).map(i => ({ id: i.id || novoIdPacote(), name: i.name || '', price: Number(i.price) || 0 }));
 
   document.getElementById('product-venue-street').value = (p.venue && (p.venue.street !== undefined ? p.venue.street : p.venue.address)) || '';
   document.getElementById('product-venue-number').value = (p.venue && p.venue.number) || '';
@@ -1593,6 +1707,8 @@ function openProductDrawer(id) {
   document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
   renderScopeList('included');
   renderScopeList('excluded');
+  renderPacotesLista('packages');
+  renderPacotesLista('addons');
   ['included', 'excluded'].forEach(k => { const el = document.getElementById(`product-scope-${k}-input`); if (el) el.value = ''; });
   renderPricingTypeFields();
   updateCategoryFieldsVisibility();
@@ -1600,6 +1716,7 @@ function openProductDrawer(id) {
   const form = document.getElementById('product-form');
   form.dataset.editId = p.id;
   setPanelHidden('product-drawer-delete-btn', false);
+  setPanelHidden('product-drawer-duplicate-btn', false);
   setPanelHidden('product-wizard-footer-default', false);
   setPanelHidden('product-wizard-footer-confirm-delete', true);
   goToStep(1);

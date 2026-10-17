@@ -7414,15 +7414,6 @@ body[data-theme="dark"] .settings-shell [data-settings-panel] > .dash-card { bac
 body[data-theme="dark"] .settings-shell [data-settings-panel] > .dash-card + .dash-card { border-top-color: #404040 !important; }
 body[data-theme="dark"] .settings-secao-titulo { color: #FFFFFF !important; }
 
-/* Editor de site: títulos dos grupos (Básicos, Colunas, Avançado, URL e
-   identificação do site) no mesmo texto das abas "Editar meu site" /
-   "Formulários" — sem caixa alta, 13px, peso 600. */
-.builder-el-group-title {
-  font-size: 0.8125rem; font-weight: 600; text-transform: none; letter-spacing: 0;
-  color: #181D24; padding: 0.6rem 0.4rem 0.45rem;
-}
-body[data-theme="dark"] .builder-el-group-title { color: #FFFFFF !important; }
-
 /* Configurações › Imagem de perfil e Capa com imagem: só um lápis branco no
    canto de baixo (clicar troca a imagem); sem o X de excluir. */
 .profile-imagem-editar {

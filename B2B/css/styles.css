@@ -7880,3 +7880,11 @@ body[data-theme="dark"] .comandos-vazio-icone { background: #1F1F1F !important; 
 body[data-theme="dark"] #products-grid .status-badge.status-ativo { color: #B7D3A8 !important; }
 body[data-theme="dark"] #products-grid .status-badge.status-ativo::before { background: #8DBF73 !important; }
 body[data-theme="dark"] #products-grid .status-badge.status-rascunho { background: transparent !important; }
+
+/* Botão "Comentar" (drawers de convidado, tarefa e lead): cinza, para não
+   confundir com o Salvar. */
+html body .btn-primary.btn-comentar:not(#love-h-a) {
+  background: #F4F4F5 !important; border: 1px solid #E4E4E7 !important; color: #181D24 !important; box-shadow: none !important;
+}
+html body .btn-primary.btn-comentar:not(#love-h-a):hover { background: #ECECEE !important; border-color: #D4D4D8 !important; }
+body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }

@@ -1570,7 +1570,7 @@ function renderConvidadoDrawer() {
       <div class="task-drawer-comment-box">
         <textarea class="task-drawer-comment-input" id="convidado-comment-input" placeholder="Escrever um comentário..." rows="1"></textarea>
         <div class="task-drawer-comment-actions">
-          <button type="button" class="btn-primary" id="convidado-comment-submit">Comentar</button>
+          <button type="button" class="btn-primary btn-comentar" id="convidado-comment-submit">Comentar</button>
         </div>
       </div>
     </div>

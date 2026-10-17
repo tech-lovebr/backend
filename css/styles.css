@@ -7858,3 +7858,11 @@ html body .badge-recados-count.chat-unread-count:not(#love-h-a) {
    botões do Explorar ("Buscar fornecedores", "Encontrar fornecedor"). */
 html body input#b2b-chat-search:not(#love-h-a) { height: 34px !important; min-height: 34px !important; padding-top: 0 !important; padding-bottom: 0 !important; font-size: 14px; line-height: 34px; -webkit-appearance: none; appearance: none; }
 html body input#b2b-chat-search:not(#love-h-a)::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+
+/* Botão "Comentar" (drawers de convidado, tarefa e lead): cinza, para não
+   confundir com o Salvar. */
+html body .btn-primary.btn-comentar:not(#love-h-a) {
+  background: #F4F4F5 !important; border: 1px solid #E4E4E7 !important; color: #181D24 !important; box-shadow: none !important;
+}
+html body .btn-primary.btn-comentar:not(#love-h-a):hover { background: #ECECEE !important; border-color: #D4D4D8 !important; }
+body[data-theme="dark"] .btn-primary.btn-comentar:not(#love-h-a) { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }

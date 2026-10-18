@@ -1262,3 +1262,14 @@ async function atualizarUrlDoSitePeloNome(nome) {
   });
   return slug;
 }
+
+/* Caixas de texto (textarea) de toda a plataforma: sem a alça de arrastar;
+   crescem sozinhas conforme a pessoa escreve (respeitando o min-height). */
+function ajustarAlturaDoTexto(campo) {
+  if (!campo || campo.tagName !== 'TEXTAREA') return;
+  if (CSS.supports && CSS.supports('field-sizing', 'content')) return; // o navegador já cresce sozinho
+  campo.style.height = 'auto';
+  campo.style.height = `${campo.scrollHeight + (campo.offsetHeight - campo.clientHeight)}px`;
+}
+document.addEventListener('input', (e) => ajustarAlturaDoTexto(e.target));
+document.addEventListener('focusin', (e) => ajustarAlturaDoTexto(e.target));

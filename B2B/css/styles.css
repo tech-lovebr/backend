@@ -8178,3 +8178,34 @@ html body .assinatura-voltar-btn:not(#love-h-a) { background: #FAFAFA; border: 1
 html body .assinatura-voltar-btn:not(#love-h-a):hover { background: #FAFAFA; border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .assinatura-voltar-btn { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 .settings-switch-desc:empty { display: none; }
+
+/* Configurações › Segurança › Verificação de conta: caixa ao lado. */
+html body .settings-shell [data-settings-panel="preferencias"].verificacao-aberta:not(#love-h-a) {
+  max-width: 1160px; display: grid; grid-template-columns: minmax(0, 48rem) minmax(0, 1fr); column-gap: 1.5rem; row-gap: 1.5rem; align-items: start;
+}
+.verificacao-aberta > * { grid-column: 1; }
+.verificacao-aberta > .settings-secao-titulo { grid-column: 1 / -1; }
+.verificacao-aberta > #verificacao-conta-card { grid-column: 2; grid-row: 2 / span 3; }
+@media (max-width: 1180px) {
+  html body .settings-shell [data-settings-panel="preferencias"].verificacao-aberta:not(#love-h-a) { display: flex; max-width: 48rem; }
+}
+html body .settings-shell [data-settings-panel] > #verificacao-conta-card[hidden]:not(#love-h-a) { display: none !important; }
+.verif-card { display: flex; flex-direction: column; gap: 0.9rem; }
+.verif-intro { font-size: 0.875rem; color: #3F3F46; line-height: 1.5; margin: 0; padding: 0.75rem 0.9rem; background: #FAFAFA; border: 1px solid #E4E4E7; border-radius: 8px; }
+.verif-doc { display: flex; flex-direction: column; gap: 0.35rem; }
+.verif-doc-rotulo { font-size: 0.8125rem; font-weight: 600; color: #18181B; margin: 0; }
+.verif-doc-opcional { font-weight: 400; color: #A1A1AA; }
+.verif-doc-botao {
+  display: flex; align-items: center; gap: 0.6rem; height: 42px; padding: 0 0.85rem; cursor: pointer;
+  border: 1px dashed #D4D4D8; border-radius: 8px; background: #FFFFFF; color: #52525B; font-size: 0.8125rem;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.verif-doc-botao svg { width: 16px; height: 16px; flex-shrink: 0; }
+.verif-doc-botao:hover { border-color: #181D24; color: #181D24; }
+.verif-doc.tem-arquivo .verif-doc-botao { border-style: solid; color: #181D24; }
+.verif-doc-botao [data-verif-nome] { overflow: hidden; text-overflow: ellipsis; }
+.verif-nota { font-size: 0.75rem; color: #A1A1AA; margin: 0; }
+.verif-erro { font-size: 0.8125rem; color: #DC2626; margin: 0; }
+.verif-acoes { display: flex; justify-content: space-between; gap: 0.6rem; margin-top: 0.25rem; }
+body[data-theme="dark"] .verif-intro { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .verif-doc-botao { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }

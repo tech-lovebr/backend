@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=617">
+  <link rel="stylesheet" href="css/styles.css?v=618">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -306,8 +306,8 @@
                 <p class="settings-switch-desc" id="profile-selfie-desc"></p>
               </div>
               <div>
-                <input type="file" accept="image/*" id="profile-selfie-input" hidden>
                 <button type="button" class="btn-secondary profile-security-action-btn" id="profile-selfie-btn">Verificar</button>
+                <span class="status-badge status-pendente verif-em-analise" id="profile-verif-analise" hidden>Em análise</span>
                 <span class="status-badge status-ativo" id="profile-selfie-badge" hidden>Conta verificada</span>
               </div>
             </div>
@@ -322,6 +322,45 @@
             </div>
           </div>
 
+
+          <!-- Verificação de conta: abre ao lado ao clicar em "Verificar". -->
+          <div class="dash-card verif-card" id="verificacao-conta-card" hidden>
+            <h3 class="settings-secao-titulo">Verificação de conta</h3>
+            <p class="verif-intro">Contas verificadas aumentam a reputação com os clientes e ficam mais bem posicionadas na vitrine.</p>
+
+            <div class="verif-doc">
+              <p class="verif-doc-rotulo">Cartão CNPJ <span class="campo-obrigatorio">*</span></p>
+              <label class="verif-doc-botao" for="verif-cnpj">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                <span data-verif-nome>Enviar arquivo</span>
+              </label>
+              <input type="file" id="verif-cnpj" accept="image/*,application/pdf" hidden>
+            </div>
+
+            <div class="verif-doc">
+              <p class="verif-doc-rotulo">CNH ou RG do sócio <span class="campo-obrigatorio">*</span></p>
+              <label class="verif-doc-botao" for="verif-socio">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                <span data-verif-nome>Enviar arquivo</span>
+              </label>
+              <input type="file" id="verif-socio" accept="image/*,application/pdf" hidden>
+            </div>
+
+            <div class="verif-doc">
+              <p class="verif-doc-rotulo">Inscrição municipal <span class="verif-doc-opcional">(opcional)</span></p>
+              <label class="verif-doc-botao" for="verif-inscricao">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                <span data-verif-nome>Enviar arquivo</span>
+              </label>
+              <input type="file" id="verif-inscricao" accept="image/*,application/pdf" hidden>
+            </div>
+            <p class="verif-nota">Os documentos são usados só para verificar a conta e ficam guardados com segurança.</p>
+            <p class="verif-erro" id="verif-erro" hidden></p>
+            <div class="verif-acoes">
+              <button type="button" class="btn-secondary" id="verif-cancelar">Cancelar</button>
+              <button type="button" class="btn-primary" id="verif-enviar">Enviar para verificação</button>
+            </div>
+          </div>
 
           <div class="dash-card mb-6 accordion-card" data-accordion-card>
             <div class="dash-card-header accordion-card-header" data-accordion-toggle>
@@ -422,7 +461,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=39"></script>
-  <script src="js/configuracoes.js?v=48"></script>
+  <script src="js/configuracoes.js?v=49"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

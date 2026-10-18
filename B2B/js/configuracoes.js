@@ -1037,16 +1037,94 @@ function initSecurityRows() {
   });
 
   renderSelfieStatus();
-  document.getElementById('profile-selfie-btn').addEventListener('click', () => {
-    document.getElementById('profile-selfie-input').click();
+  initVerificacaoDeConta();
+}
+
+/* -------------------- Verificação de conta (migration 070) --------------------
+   "Verificar" abre, ao lado, a caixa para enviar o Cartão CNPJ e a CNH/RG
+   do sócio (obrigatórios) e a inscrição municipal (opcional). Os arquivos
+   vão para o bucket privado "verificacao"; o Admin analisa. */
+let verificacaoStatus = null; // null | 'em_analise' | 'aprovada' | 'recusada'
+
+async function carregarVerificacao() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { data, error } = await supabaseClient.from('verificacoes_conta')
+    .select('status, motivo').eq('fornecedor_id', empresaId(session))
+    .order('created_at', { ascending: false }).limit(1);
+  if (error) return; // migration 070 ainda não rodada
+  const ultima = data && data[0];
+  verificacaoStatus = ultima ? ultima.status : null;
+  if (verificacaoStatus === 'aprovada') B2B_DATA.professional.selfieVerified = true;
+  renderSelfieStatus(ultima && ultima.status === 'recusada' ? (ultima.motivo || 'Documentos recusados. Envie de novo.') : null);
+}
+
+function abrirCaixaVerificacao(abrir) {
+  const card = document.getElementById('verificacao-conta-card');
+  const painel = document.querySelector('[data-settings-panel="preferencias"]');
+  if (!card || !painel) return;
+  card.hidden = !abrir;
+  painel.classList.toggle('verificacao-aberta', abrir);
+  if (abrir) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function initVerificacaoDeConta() {
+  const arquivos = {};
+  [['verif-cnpj', 'cnpj'], ['verif-socio', 'socio'], ['verif-inscricao', 'inscricao_municipal']].forEach(([id, chave]) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.addEventListener('change', () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      if (f.size > 10 * 1024 * 1024) { showToast('Arquivo muito grande (máximo 10 MB).', true); input.value = ''; return; }
+      arquivos[chave] = f;
+      const nome = input.closest('.verif-doc').querySelector('[data-verif-nome]');
+      nome.textContent = f.name;
+      input.closest('.verif-doc').classList.add('tem-arquivo');
+    });
   });
-  document.getElementById('profile-selfie-input').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    p.selfieVerified = true;
-    renderSelfieStatus();
-    showToast('Selfie enviada. Identidade verificada.');
+
+  document.getElementById('profile-selfie-btn')?.addEventListener('click', () => abrirCaixaVerificacao(true));
+  document.getElementById('verif-cancelar')?.addEventListener('click', () => abrirCaixaVerificacao(false));
+
+  const erro = document.getElementById('verif-erro');
+  document.getElementById('verif-enviar')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    erro.hidden = true;
+    if (!arquivos.cnpj || !arquivos.socio) {
+      erro.textContent = 'Envie o Cartão CNPJ e a CNH ou RG do sócio.';
+      erro.hidden = false;
+      return;
+    }
+    const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+    if (!session) return;
+    btn.disabled = true;
+    try {
+      const fid = empresaId(session);
+      const documentos = {};
+      for (const [chave, f] of Object.entries(arquivos)) {
+        const ext = (f.name.split('.').pop() || 'pdf').toLowerCase().replace(/[^a-z0-9]/g, '') || 'pdf';
+        const caminho = `${session.user.id}/${fid}/${chave}-${Date.now()}.${ext}`;
+        const { error: upErr } = await supabaseClient.storage.from('verificacao').upload(caminho, f, { contentType: f.type || undefined });
+        if (upErr) throw upErr;
+        documentos[chave] = caminho;
+      }
+      const { error: insErr } = await supabaseClient.from('verificacoes_conta').insert({ fornecedor_id: fid, documentos });
+      if (insErr) throw insErr;
+      verificacaoStatus = 'em_analise';
+      abrirCaixaVerificacao(false);
+      renderSelfieStatus();
+      showToast('Documentos enviados. Avisaremos quando a verificação terminar.');
+    } catch (err) {
+      console.error('Verificação de conta:', err);
+      erro.textContent = 'Não foi possível enviar os documentos. Tente de novo.';
+      erro.hidden = false;
+    } finally {
+      btn.disabled = false;
+    }
   });
+
+  carregarVerificacao();
 }
 
 /* -------------------- Dados bancários (chave Pix) -------------------- */
@@ -1092,13 +1170,16 @@ function initBankDetailsForm() {
   });
 }
 
-function renderSelfieStatus() {
+function renderSelfieStatus(avisoRecusa) {
   const verified = !!B2B_DATA.professional.selfieVerified;
-  document.getElementById('profile-selfie-btn').hidden = verified;
+  const emAnalise = !verified && typeof verificacaoStatus !== 'undefined' && verificacaoStatus === 'em_analise';
+  document.getElementById('profile-selfie-btn').hidden = verified || emAnalise;
   document.getElementById('profile-selfie-badge').hidden = !verified;
+  const analise = document.getElementById('profile-verif-analise');
+  if (analise) analise.hidden = !emAnalise;
   setText('profile-selfie-desc', verified
     ? 'Sua identidade já foi verificada.'
-    : '');
+    : (emAnalise ? 'Seus documentos estão em análise.' : (avisoRecusa || '')));
 }
 
 /* -------------------- Assinatura -------------------- */

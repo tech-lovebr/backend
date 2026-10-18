@@ -1158,7 +1158,7 @@ function renderSubscriptionCancelConfirm() {
     <p class="text-sm text-zinc-600 mb-5">Você pode continuar usando os recursos Pro até <strong>${endOfMonthLabel()}</strong>. Depois disso, sua conta volta para o plano gratuito.</p>
     <div class="flex gap-3">
       <button type="button" class="btn-secondary flex-1 justify-center" id="subscription-cancel-back-btn">Voltar</button>
-      <button type="button" class="btn-primary flex-1 justify-center" style="background:#B91C1C; box-shadow:none;" id="subscription-cancel-confirm-btn">Confirmar cancelamento</button>
+      <button type="button" class="btn-primary flex-1 justify-center" style="background:#B91C1C; box-shadow:none;" id="subscription-cancel-confirm-btn">Confirmar</button>
     </div>
   `;
 

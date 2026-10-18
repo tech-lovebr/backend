@@ -8087,3 +8087,18 @@ html body .std-celular-conversa:not(#love-h-a) { background: #FFFFFF; }
 html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section:not(#love-h-a),
 html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column:not(#love-h-a) { border: 0 !important; outline: 0 !important; }
 html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-element.std-celular:not(#love-h-a) { min-height: 600px !important; }
+/* Aparência (Convite Digital e Save the Date): o convite usa a altura toda —
+   sem margem em cima e embaixo; o rodapé "Feito com Love" encosta no fim. As
+   margens laterais continuam. */
+html body #site-builder-root .builder-canvas-viewport:not(#love-h-a) { padding-top: 0 !important; padding-bottom: 0 !important; }
+html body #site-builder-root #builder-canvas-frame:not(#love-h-a),
+html body #site-builder-root #builder-canvas:not(#love-h-a) { margin-top: 0 !important; margin-bottom: 0 !important; }
+/* Save the Date: o celular estica até o rodapé encostar no fim da tela. */
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas:not(#love-h-a) { min-height: 100% !important; display: flex !important; flex-direction: column !important; }
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-sections-list:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-columns-row:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column > *:not(#love-h-a) { flex: 1 1 auto !important; display: flex !important; flex-direction: column !important; }
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-element.std-celular:not(#love-h-a) { flex: 1 1 auto !important; }
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-fixed-footer:not(#love-h-a) { flex: 0 0 auto; }

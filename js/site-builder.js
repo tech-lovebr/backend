@@ -2137,7 +2137,10 @@ function renderElementBlockHtml(el, mode, device) {
 
   // Save the Date: a mensagem é um bloco só, editado no painel "Editar texto".
   if (mode !== 'preview' && currentPageKey === 'savethedate') {
-    return `<div class="builder-element std-mensagem-bloco"${align ? ` style="text-align:${align};"` : ''}>${renderElementContent(el, device, 'preview')}</div>`;
+    // Aparece como uma mensagem enviada no WhatsApp (balão verde com a hora).
+    const agora = new Date();
+    const hora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+    return `<div class="builder-element std-mensagem-bloco"><div class="std-bolha">${renderElementContent(el, device, 'preview')}<span class="std-bolha-hora">${hora} <span class="std-bolha-lido">✓✓</span></span></div></div>`;
   }
 
   if (mode === 'preview') {

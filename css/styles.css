@@ -8020,3 +8020,27 @@ html body button.login-ver-senha:not(#love-h-a):hover { color: #71717A; backgrou
 .std-codigo { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #F4F4F5; border: 1px solid #E4E4E7; border-radius: 4px; padding: 0 4px; font-size: 0.92em; }
 .std-citacao { border-left: 3px solid #D4D4D8; padding-left: 8px; color: #52525B; }
 .std-item { padding-left: 4px; }
+/* Save the Date: a prévia é uma conversa do WhatsApp — fundo de papel de
+   parede do WhatsApp e a mensagem num balão verde de "enviada", com a hora. */
+#site-builder-root[data-pagina="savethedate"] #builder-canvas {
+  background: #EFEAE2 url('../assets/whatsapp-fundo.webp') center top / 420px auto repeat !important;
+  min-height: 560px;
+}
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section,
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column,
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-columns-row { background: transparent !important; box-shadow: none !important; border-color: transparent !important; }
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-fixed-footer { display: none !important; }
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section { padding: 20px 12px !important; }
+.std-mensagem-bloco { display: flex; justify-content: flex-end; }
+.std-bolha {
+  position: relative; max-width: 88%; padding: 6px 8px 8px 9px; background: #D9FDD3; color: #111B21;
+  border-radius: 8px; border-top-right-radius: 0; box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  font-family: 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14.2px; line-height: 19px; text-align: left;
+}
+.std-bolha::after {
+  content: ''; position: absolute; top: 0; right: -8px; width: 8px; height: 13px;
+  background: #D9FDD3; clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+html body .std-bolha .be-text:not(#love-h-a) { font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; color: inherit !important; margin: 0 !important; }
+.std-bolha-hora { float: right; margin: 8px 0 -4px 10px; font-size: 11px; line-height: 15px; color: #667781; white-space: nowrap; }
+.std-bolha-lido { color: #53BDEB; letter-spacing: -3px; margin-left: 2px; }

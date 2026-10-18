@@ -1328,6 +1328,10 @@ function renderEditorDeTextoSaveTheDate(body) {
     botaoEmoji.setAttribute('aria-expanded', String(abrir));
     botaoEmoji.classList.toggle('is-ativo', abrir);
   });
+  // Fecha ao clicar fora ou com Esc.
+  const fecharEmojis = () => { painelEmojis.classList.add('hidden'); botaoEmoji.setAttribute('aria-expanded', 'false'); botaoEmoji.classList.remove('is-ativo'); };
+  document.addEventListener('mousedown', (e) => { if (!painelEmojis.contains(/** @type {Node} */ (e.target)) && e.target !== botaoEmoji && !botaoEmoji.contains(/** @type {Node} */ (e.target))) fecharEmojis(); });
+  campo.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharEmojis(); });
   painelEmojis.querySelectorAll('[data-emoji]').forEach(b => {
     b.addEventListener('mousedown', (e) => e.preventDefault()); // mantém o cursor na caixa
     b.addEventListener('click', () => {

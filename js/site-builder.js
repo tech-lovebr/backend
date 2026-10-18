@@ -454,10 +454,26 @@ function textoNoFormatoWhatsapp(el) {
 /* Save the Date = capa + UMA mensagem (o texto que vai no WhatsApp, com
    *negrito*). A mensagem fica em state.mensagem; a seção de texto do canvas
    é gerada a partir dela (um único bloco, sem mover/duplicar/excluir). */
-function mensagemEmHtml(mensagem) {
-  return escapeHtml(mensagem || '')
+// Formatação do WhatsApp na prévia: *negrito*, _itálico_, ~tachado~,
+// ```monoespaçado```, `código`, "> " citação, "- "/"* " lista com marcadores
+// e "1. " lista numerada.
+function formatarLinhaWhatsapp(texto) {
+  return texto
+    .replace(/```([^`]+)```/g, '<span class="std-mono">$1</span>')
+    .replace(/`([^`\n]+)`/g, '<code class="std-codigo">$1</code>')
     .replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br>');
+    .replace(/(^|[\s(])_([^_\n]+)_(?=$|[\s).,!?:;])/g, '$1<em>$2</em>')
+    .replace(/~([^~\n]+)~/g, '<s>$1</s>');
+}
+
+function mensagemEmHtml(mensagem) {
+  return escapeHtml(mensagem || '').split('\n').map(linha => {
+    let m;
+    if ((m = linha.match(/^&gt; ?(.*)$/))) return `<div class="std-citacao">${formatarLinhaWhatsapp(m[1]) || '&nbsp;'}</div>`;
+    if ((m = linha.match(/^[-*] (.*)$/))) return `<div class="std-item">• ${formatarLinhaWhatsapp(m[1])}</div>`;
+    if ((m = linha.match(/^(\d+)\. (.*)$/))) return `<div class="std-item">${m[1]}. ${formatarLinhaWhatsapp(m[2])}</div>`;
+    return `<div>${formatarLinhaWhatsapp(linha) || '&nbsp;'}</div>`;
+  }).join('');
 }
 
 // Estado antigo (vários títulos/textos): junta tudo numa mensagem só.
@@ -477,21 +493,19 @@ function mensagemDosElementos(state) {
   return partes.join('\n');
 }
 
-// Deixa o Save the Date no formato: [capa, bloco da mensagem].
+// Save the Date = só a mensagem (sem imagem): um bloco de texto.
 function normalizarSaveTheDate(state) {
   if (!state) return state;
   state.sections = (state.sections || []).filter(s => !s.isQuickNav && !s.isGiftsBlock);
   if (typeof state.mensagem !== 'string') state.mensagem = mensagemDosElementos(state);
-  const capa = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) || createSection();
-  (capa.columns || []).forEach(col => { col.elements = []; });
   const texto = createElement('texto');
   texto.id = 'std-mensagem';
   texto.content = mensagemEmHtml(state.mensagem);
   textoNoFormatoWhatsapp(texto);
   texto.styles.desktop.fontWeight = '400';
-  const secao = state.sections.find(s => s !== capa && s.id === 'std-texto') || { id: 'std-texto', hidden: false, columns: [{ id: 'std-texto-col', width: 100, elements: [] }] };
+  const secao = state.sections.find(s => s.id === 'std-texto') || { id: 'std-texto', hidden: false, columns: [{ id: 'std-texto-col', width: 100, elements: [] }] };
   secao.columns = [{ id: 'std-texto-col', width: 100, elements: [texto] }];
-  state.sections = [capa, secao];
+  state.sections = [secao];
   return state;
 }
 
@@ -986,6 +1000,7 @@ function removeSectionById(sectionId) {
 
 // A primeira seção de conteúdo é a capa: só imagem — não recebe elementos.
 function secaoDeCapa() {
+  if (currentPageKey === 'savethedate') return null; // Save the Date: só texto, sem capa
   return builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) || null;
 }
 
@@ -1132,13 +1147,32 @@ const ELEMENT_GROUPS_SAVETHEDATE = [
   { title: 'Básicos', types: ['titulo', 'texto'] }
 ];
 
-// Save the Date › Editar texto: uma caixa só com a mensagem e o Negrito
-// (no WhatsApp, negrito = *texto*). Selecione o trecho e clique em Negrito.
+// Save the Date › Editar texto: uma caixa só com a mensagem e a barra de
+// formatação do WhatsApp. Selecione o trecho (ou as linhas) e clique.
+const STD_ICONES = {
+  tachado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/><path d="M16.5 7.5c-.6-1.8-2.3-3-4.5-3-2.6 0-4.5 1.5-4.5 3.4 0 1.4.9 2.4 2.6 3.1M8 16.5c.6 1.8 2.3 3 4.5 3 2.6 0 4.5-1.5 4.5-3.4 0-.6-.1-1.1-.4-1.6"/></svg>',
+  mono: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6 3 12l5 6M16 6l5 6-5 6"/></svg>',
+  codigo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="m9 10-2 2 2 2M15 10l2 2-2 2"/></svg>',
+  numerada: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>',
+  marcadores: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>',
+  citacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5v14"/><path d="M10 8h10M10 12h10M10 16h7"/></svg>'
+};
+const STD_FORMATOS = [
+  { id: 'negrito', titulo: 'Negrito', marca: '*', icone: () => BI.bold },
+  { id: 'italico', titulo: 'Itálico', marca: '_', icone: () => BI.italic },
+  { id: 'tachado', titulo: 'Tachado', marca: '~', icone: () => STD_ICONES.tachado },
+  { id: 'mono', titulo: 'Monoespaçado', marca: '```', icone: () => STD_ICONES.mono },
+  { id: 'codigo', titulo: 'Código em linha', marca: '`', icone: () => STD_ICONES.codigo },
+  { id: 'numerada', titulo: 'Lista numerada', linha: 'numerada', icone: () => STD_ICONES.numerada },
+  { id: 'marcadores', titulo: 'Lista com marcadores', linha: '- ', icone: () => STD_ICONES.marcadores },
+  { id: 'citacao', titulo: 'Citação', linha: '> ', icone: () => STD_ICONES.citacao }
+];
+
 function renderEditorDeTextoSaveTheDate(body) {
   body.innerHTML = `
     <div class="std-editor">
-      <div class="std-editor-barra">
-        <button type="button" class="std-editor-negrito" data-std-negrito title="Negrito (selecione o trecho)" aria-label="Negrito">${BI.bold}</button>
+      <div class="std-editor-barra" role="toolbar" aria-label="Formatação do WhatsApp">
+        ${STD_FORMATOS.map(f => `<button type="button" class="std-editor-negrito" data-std-formato="${f.id}" title="${f.titulo}" aria-label="${f.titulo}">${f.icone()}</button>`).join('')}
       </div>
       <textarea class="inspector-textarea std-texto-grande std-editor-texto" id="std-editor-texto" rows="14" placeholder="Escreva o Save the Date…">${escapeHtml(builderState.mensagem || '')}</textarea>
     </div>`;
@@ -1153,27 +1187,60 @@ function renderEditorDeTextoSaveTheDate(body) {
     historicoTimer = setTimeout(pushHistory, 600);
   };
   campo.addEventListener('input', aplicar);
-  body.querySelector('[data-std-negrito]').addEventListener('mousedown', (e) => e.preventDefault()); // mantém a seleção
-  body.querySelector('[data-std-negrito]').addEventListener('click', () => {
-    const ini = campo.selectionStart, fim = campo.selectionEnd;
-    const v = campo.value;
-    if (ini === fim) { campo.focus(); return; }
-    const trecho = v.slice(ini, fim);
-    // Já está em negrito (*trecho* ou com os * logo fora da seleção)? Tira.
-    if (/^\*[^*]+\*$/.test(trecho)) {
-      campo.value = v.slice(0, ini) + trecho.slice(1, -1) + v.slice(fim);
-      campo.setSelectionRange(ini, fim - 2);
-    } else if (v[ini - 1] === '*' && v[fim] === '*') {
-      campo.value = v.slice(0, ini - 1) + trecho + v.slice(fim + 1);
-      campo.setSelectionRange(ini - 1, fim - 1);
+
+  // Marca em volta do trecho (negrito, itálico…): liga/desliga, linha a linha.
+  const alternarMarca = (marca) => {
+    const ini = campo.selectionStart, fim = campo.selectionEnd, v = campo.value;
+    if (ini === fim) return;
+    const trecho = v.slice(ini, fim), n = marca.length;
+    if (trecho.length > 2 * n && trecho.startsWith(marca) && trecho.endsWith(marca)) {
+      const sem = trecho.slice(n, -n);
+      campo.value = v.slice(0, ini) + sem + v.slice(fim);
+      campo.setSelectionRange(ini, ini + sem.length);
+    } else if (v.slice(ini - n, ini) === marca && v.slice(fim, fim + n) === marca) {
+      campo.value = v.slice(0, ini - n) + trecho + v.slice(fim + n);
+      campo.setSelectionRange(ini - n, fim - n);
     } else {
-      // Negrito linha a linha (o WhatsApp não junta * entre linhas).
-      const novo = trecho.split('\n').map(l => (l.trim() ? `*${l}*` : l)).join('\n');
+      // O WhatsApp não junta a marca entre linhas: aplica em cada linha.
+      const novo = marca === '```' ? `${marca}${trecho}${marca}` : trecho.split('\n').map(l => (l.trim() ? `${marca}${l}${marca}` : l)).join('\n');
       campo.value = v.slice(0, ini) + novo + v.slice(fim);
       campo.setSelectionRange(ini, ini + novo.length);
     }
-    campo.focus();
-    aplicar();
+  };
+
+  // Começo de linha (listas, citação): nas linhas selecionadas ou na do cursor.
+  const alternarLinhas = (tipo) => {
+    const v = campo.value;
+    const ini = v.lastIndexOf('\n', campo.selectionStart - 1) + 1;
+    let fim = v.indexOf('\n', Math.max(campo.selectionEnd - (campo.selectionEnd > campo.selectionStart ? 1 : 0), campo.selectionStart));
+    if (fim < 0) fim = v.length;
+    const linhas = v.slice(ini, fim).split('\n');
+    const prefixo = (l) => (tipo === 'numerada' ? /^\d+\. / : new RegExp('^' + tipo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))).exec(l);
+    const todas = linhas.filter(l => l.trim()).every(l => prefixo(l));
+    let n = 0;
+    const novas = linhas.map(l => {
+      if (!l.trim()) return l;
+      const p = prefixo(l);
+      const limpa = p ? l.slice(p[0].length) : l.replace(/^(\d+\. |[-*] |> )/, '');
+      if (todas) return limpa;
+      n += 1;
+      return (tipo === 'numerada' ? `${n}. ` : tipo) + limpa;
+    });
+    const novo = novas.join('\n');
+    campo.value = v.slice(0, ini) + novo + v.slice(fim);
+    campo.setSelectionRange(ini, ini + novo.length);
+  };
+
+  body.querySelectorAll('[data-std-formato]').forEach(btn => {
+    btn.addEventListener('mousedown', (e) => e.preventDefault()); // mantém a seleção
+    btn.addEventListener('click', () => {
+      const formato = STD_FORMATOS.find(f => f.id === btn.dataset.stdFormato);
+      if (!formato) return;
+      if (formato.marca) alternarMarca(formato.marca);
+      else alternarLinhas(formato.linha);
+      campo.focus();
+      aplicar();
+    });
   });
 }
 
@@ -1431,7 +1498,7 @@ function renderSectionHtml(section, mode, device) {
   // A primeira seção "de conteúdo" (ignorando blocos fixos como botões/presentes)
   // é a capa do convite: mostra um botão dedicado de Adicionar/Alterar imagem de
   // fundo, sem depender de arrastar um elemento pra dentro da coluna.
-  const isFirstContentSection = mode === 'edit' && builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) === section;
+  const isFirstContentSection = mode === 'edit' && currentPageKey !== 'savethedate' && builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock) === section;
   const bgImages = section.bgImage ? [section.bgImage, ...(section.bgImages || [])].filter(Boolean).slice(0, 3) : [];
   const bgFitStyle = bgImageFitStyle(section.bgFit);
   const bgImageDiv = bgImages.length
@@ -4410,219 +4477,44 @@ document.addEventListener('change', (e) => {
 });
 
 /* -------------------- Save the Date › Compartilhar -------------------- */
-// Sem link: vira uma imagem (capa + textos, como aparece na prévia de
-// celular) + um texto curto. No celular usa o compartilhar do sistema (que
-// manda a imagem junto para o WhatsApp/Instagram); no computador baixa a
-// imagem e abre o WhatsApp Web / o e-mail com o texto.
-const HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-let html2canvasCarregando = null;
-function carregarHtml2canvas() {
-  if (window.html2canvas) return Promise.resolve(window.html2canvas);
-  if (!html2canvasCarregando) {
-    html2canvasCarregando = new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = HTML2CANVAS_URL;
-      s.onload = () => resolve(window.html2canvas);
-      s.onerror = () => { html2canvasCarregando = null; reject(new Error('html2canvas')); };
-      document.head.appendChild(s);
-    });
-  }
-  return html2canvasCarregando;
-}
-
+// O Save the Date é só texto (com a formatação do WhatsApp): vai direto
+// para o WhatsApp da pessoa, para o e-mail ou copiado para o Instagram.
 function textoDoSaveTheDate() {
-  if (currentPageKey === 'savethedate' && typeof builderState.mensagem === 'string') return builderState.mensagem.trim();
-  const div = document.createElement('div');
-  const partes = [];
-  (builderState.sections || []).filter(s => !s.hidden).forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(el => {
-    if ((el.type === 'titulo' || el.type === 'texto') && el.content) {
-      div.innerHTML = el.content;
-      const t = (div.innerText || div.textContent || '').trim();
-      if (!t) return;
-      // Negrito no WhatsApp = *texto* (linha a linha, para não quebrar).
-      const peso = String((el.styles && el.styles.desktop && el.styles.desktop.fontWeight) || '');
-      const negrito = peso === 'bold' || Number(peso) >= 600;
-      partes.push(negrito ? t.split('\n').map(l => (l.trim() ? `*${l.trim()}*` : l)).join('\n') : t);
-    }
-  })));
-  return partes.join('\n');
+  if (typeof builderState.mensagem === 'string') return builderState.mensagem.trim();
+  return mensagemDosElementos(builderState);
 }
 
-async function imagemDoSaveTheDate(tipo = 'image/png') {
-  const html2canvas = await carregarHtml2canvas();
-  const caixa = document.createElement('div');
-  caixa.className = 'std-captura';
-  const gs = builderState.globalStyle || {};
-  caixa.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
-  caixa.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
-  caixa.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
-  caixa.innerHTML = (builderState.sections || []).filter(s => !s.hidden)
-    .map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('');
-  document.body.appendChild(caixa);
-  try {
-    await Promise.all([...caixa.querySelectorAll('img')].map(img => (img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))));
-    const canvas = await html2canvas(caixa, { useCORS: true, backgroundColor: '#FFFFFF', scale: 2 });
-    return await new Promise(resolve => canvas.toBlob(resolve, tipo, tipo === 'image/jpeg' ? 0.86 : undefined));
-  } finally {
-    caixa.remove();
-  }
-}
-
-function baixarImagem(blob, nome) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = nome;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 4000);
-}
-
-/** O navegador consegue mandar arquivo pelo compartilhar do sistema (celular)? */
-// Só no celular: no computador (Windows/Mac) o compartilhar do sistema
-// oferece o aplicativo do WhatsApp (e pede para instalar) — lá a pessoa
-// compartilha pelo WhatsApp Web, no navegador.
+// Só no celular o WhatsApp abre pelo app; no computador, pelo WhatsApp Web.
 function ehCelular() {
   const uaData = /** @type {any} */ (navigator).userAgentData;
   if (uaData && typeof uaData.mobile === 'boolean') return uaData.mobile;
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
 }
 
-function podeCompartilharArquivo() {
-  if (!ehCelular()) return false;
-  try {
-    return !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'x.png', { type: 'image/png' })] }));
-  } catch (e) { return false; }
-}
-
-// WhatsApp no computador: o WhatsApp não aceita imagem por link — então o
-// texto já vai preenchido na conversa e a imagem fica copiada; é só colar
-// (Ctrl+V) na conversa escolhida. Tudo começa no próprio clique (o navegador
-// só deixa abrir janela e copiar imagem durante o clique).
-/* Save the Date por link: a imagem sobe para o Storage (bucket clientes,
-   savethedate/<id de quem compartilha>/<id do evento>.jpg — um arquivo por
-   evento, regravado) e a cópia publicada vai para convite_digital_pages com
-   { compartilhamento: { imagem, texto } } (migration 068). O link
-   love.com.br/<slug>/save-the-date (api/save-the-date.js) mostra a imagem e o
-   texto — e é ele que faz o WhatsApp exibir a imagem na conversa. */
-// Motivo da última falha ao criar o link (mostrado no menu Compartilhar).
-let motivoFalhaDoLink = '';
-
-async function publicarSaveTheDateParaLink() {
-  motivoFalhaDoLink = '';
-  const eventoId = getActiveEventUuid();
-  if (!eventoId || typeof supabaseClient === 'undefined') { motivoFalhaDoLink = 'o evento ainda não está salvo'; return null; }
-  const { data: sessao } = await supabaseClient.auth.getSession();
-  const uid = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
-  if (!uid) { motivoFalhaDoLink = 'sua sessão expirou — entre de novo'; return null; }
-  // O link usa o endereço do evento (eventos.slug): garante que está salvo.
-  if (typeof window.persistirEventoAtivo === 'function') {
-    try { await window.persistirEventoAtivo(); } catch (e) { /* segue com o slug que já existe */ }
-  }
-  const ev = getActiveEventForBuilder();
-  const slug = ev && ev.slug;
-  if (!slug) { motivoFalhaDoLink = 'o evento ainda não tem endereço (link) — defina em Informações'; return null; }
-
-  const blob = await imagemDoSaveTheDate('image/jpeg');
-  if (!blob) return null;
-  const caminho = `savethedate/${uid}/${eventoId}.jpg`;
-  const { error: erroUpload } = await supabaseClient.storage.from('clientes')
-    .upload(caminho, blob, { upsert: true, cacheControl: '300', contentType: 'image/jpeg' });
-  if (erroUpload) {
-    console.error('Save the Date: imagem no Storage', erroUpload);
-    motivoFalhaDoLink = 'a imagem não subiu (' + (erroUpload.message || 'Storage') + ')';
-    return null;
-  }
-  const versao = Date.now().toString(36);
-  const imagem = supabaseClient.storage.from('clientes').getPublicUrl(caminho).data.publicUrl + '?v=' + versao;
-  const texto = textoDoSaveTheDate();
-  const agora = new Date().toISOString();
-  const { error } = await supabaseClient.from('convite_digital_pages').upsert({
-    evento_id: eventoId, page_key: 'savethedate', state: builderState,
-    published_state: Object.assign({}, builderState, { compartilhamento: { imagem, texto } }),
-    published_at: agora, updated_at: agora
-  }, { onConflict: 'evento_id,page_key' });
-  if (error) {
-    console.error('Save the Date: publicar', error);
-    // 23514 = o banco ainda não aceita a página "savethedate" (migration 067).
-    motivoFalhaDoLink = error.code === '23514'
-      ? 'o banco ainda não aceita o Save the Date (falta rodar a migration 067)'
-      : 'não foi possível salvar o Save the Date (' + (error.message || error.code || 'erro') + ')';
-    return null;
-  }
-  // ?v= muda a cada compartilhamento: o WhatsApp não reaproveita a prévia antiga.
-  return { link: `https://love.com.br/${slug}/save-the-date?v=${versao}`, texto };
-}
-
-// WhatsApp no computador: abre o WhatsApp Web da pessoa com o texto + o link
-// do Save the Date — o WhatsApp mostra a imagem na conversa pelo link. A
-// janela abre já no clique (senão o navegador bloqueia) e recebe o endereço
-// do WhatsApp quando a imagem termina de subir.
-function compartilharNoWhatsappDoComputador(avisar) {
-  const janela = window.open('', '_blank');
-  if (janela) {
-    try {
-      janela.document.write('<title>Save the Date</title><p style="font-family:Inter,Segoe UI,sans-serif;color:#52525B;padding:24px">Preparando o Save the Date…</p>');
-    } catch (e) { /* janela em outro endereço */ }
-  }
-  avisar('Preparando o Save the Date…');
-  const abrirWhatsapp = (mensagem) => {
-    const url = 'https://web.whatsapp.com/send?text=' + encodeURIComponent(mensagem);
-    if (janela && !janela.closed) janela.location.href = url;
-    else window.open(url, '_blank');
-  };
-  return publicarSaveTheDateParaLink().then(async (pronto) => {
-    if (pronto) {
-      abrirWhatsapp(`${pronto.texto}\n\n${pronto.link}`);
-      avisar('Pronto! O WhatsApp Web abriu com a mensagem — a imagem aparece pelo link.');
-      return true;
-    }
-    // Sem como publicar (sem login/evento salvo): só o texto e a imagem baixada.
-    abrirWhatsapp(textoDoSaveTheDate());
-    const blob = await imagemDoSaveTheDate().catch(() => null);
-    if (blob) baixarImagem(blob, 'save-the-date.png');
-    avisar('Não foi possível criar o link' + (motivoFalhaDoLink ? ': ' + motivoFalhaDoLink : '') + '. A imagem foi baixada — anexe na conversa.');
-    return !!blob;
-  }).catch((e) => {
-    console.error('Save the Date: compartilhar', e);
-    if (janela && !janela.closed) janela.close();
-    avisar('Não foi possível compartilhar agora. Tente de novo.');
-    return false;
-  });
+async function copiarTexto(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch (e) { return false; }
 }
 
 async function compartilharSaveTheDate(canal, status) {
   const avisar = (t) => { if (!status) return; status.textContent = t; status.classList.toggle('hidden', !t); };
   persistBuilderState(true);
-  if (canal === 'whatsapp' && !podeCompartilharArquivo()) return compartilharNoWhatsappDoComputador(avisar);
-  avisar('Preparando a imagem…');
   const texto = textoDoSaveTheDate();
-  let blob;
-  try { blob = await imagemDoSaveTheDate(); } catch (e) { console.error('Save the Date: imagem', e); }
-  if (!blob) { avisar('Não foi possível gerar a imagem. Tente de novo.'); return false; }
-  const arquivo = new File([blob], 'save-the-date.png', { type: 'image/png' });
-
-  // Celular: o compartilhar do sistema manda imagem + texto direto no app.
-  if (canal !== 'email' && ehCelular() && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
-    try {
-      await navigator.share({ files: [arquivo], text: texto, title: 'Save the Date' });
-      avisar('');
-      return true;
-    } catch (e) {
-      if (e && e.name === 'AbortError') { avisar(''); return false; }
-    }
-  }
-
-  baixarImagem(blob, 'save-the-date.png');
+  if (!texto) { avisar('Escreva o texto do Save the Date antes de compartilhar.'); return false; }
   if (canal === 'whatsapp') {
-    window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank', 'noopener');
-    avisar('Imagem baixada. Anexe no WhatsApp junto com o texto.');
-  } else if (canal === 'instagram') {
-    avisar('Imagem baixada. Publique no Instagram pelo celular.');
-  } else {
-    const pronto = await publicarSaveTheDateParaLink().catch(() => null);
-    const corpo = pronto ? `${pronto.texto}\n\n${pronto.link}` : texto;
-    window.location.href = 'mailto:?subject=' + encodeURIComponent('Save the Date') + '&body=' + encodeURIComponent(corpo);
-    avisar(pronto ? 'O e-mail abriu com o texto e o link do Save the Date (a imagem também foi baixada).' : 'Imagem baixada. Anexe ao e-mail.');
+    const url = (ehCelular() ? 'https://wa.me/?text=' : 'https://web.whatsapp.com/send?text=') + encodeURIComponent(texto);
+    window.open(url, '_blank');
+    avisar('');
+    return true;
   }
+  if (canal === 'email') {
+    window.location.href = 'mailto:?subject=' + encodeURIComponent('Save the Date') + '&body=' + encodeURIComponent(texto);
+    avisar('');
+    return true;
+  }
+  // Instagram não recebe texto por link: copia para colar na conversa.
+  const copiou = await copiarTexto(texto);
+  window.open(ehCelular() ? 'https://www.instagram.com/direct/inbox/' : 'https://www.instagram.com/direct/inbox/', '_blank');
+  avisar(copiou ? 'Texto copiado. Cole na conversa do Instagram.' : 'Copie o texto e cole na conversa do Instagram.');
   return true;
 }
 

@@ -8303,3 +8303,19 @@ html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder
    presentes só aparece com algum presente selecionado. */
 html body .builder-toolbar .hidden:not(#love-h-a),
 html body #view-event-os-dashboard .love-tabela-barra .hidden:not(#love-h-a) { display: none !important; }
+/* Aparência › faixa "Elementos"/"Editar texto": caixa retangular branca com
+   bordas arredondadas, como as caixinhas dos elementos — com o mesmo respiro
+   lateral da grade, sem a linha de baixo. */
+html body #builder-elements-panel .builder-panel-tabs:not(#love-h-a) {
+  margin: 0.65rem 0.65rem 0; width: auto; padding: 0;
+  border: 1px solid #E4E4E7; border-bottom: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; overflow: hidden;
+}
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a),
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a) { height: 40px; border: none; }
+/* Elementos (Convite Digital): no hover só o fundo fica cinza bem claro (cor do
+   cabeçalho), sem contorno azul nem subir. */
+html body .builder-el-item:not(#love-h-a):hover { background: #FAFAFA; border-color: #E4E4E7; transform: none; }
+body[data-theme="dark"] .builder-el-item:not(#love-h-a):hover { background: #333333 !important; border-color: #404040 !important; }
+body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs:not(#love-h-a) { background: #1F1F1F !important; border-color: #404040 !important; }
+html body #builder-elements-panel .builder-el-item:not(#love-h-a):hover { background: #FAFAFA !important; border-color: #E4E4E7 !important; }
+body[data-theme="dark"] #builder-elements-panel .builder-el-item:not(#love-h-a):hover { background: #333333 !important; }

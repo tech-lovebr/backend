@@ -8209,3 +8209,107 @@ html body .settings-shell [data-settings-panel] > #verificacao-conta-card[hidden
 .verif-acoes { display: flex; justify-content: space-between; gap: 0.6rem; margin-top: 0.25rem; }
 body[data-theme="dark"] .verif-intro { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 body[data-theme="dark"] .verif-doc-botao { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+
+/* ==========================================================================
+   DESIGN SYSTEM v2 — refinamento "anti-vibe-code" (diretriz global)
+   1. Contornos com transparência (preto 6% / branco 8% no escuro) + anel
+      quase invisível, no lugar do cinza #E4E4E7 chapado.
+   2. Cantos em hierarquia: 16px modais · 12px cards/painéis/tabelas ·
+      8px campos e botões · 6px etiquetas.
+   3. Sombras difusas em camadas (nada de shadow-md seco); hover aprofunda.
+   4. Títulos com tracking-tight; microtextos 11px; SKU e valores em mono.
+   5. Switch preto neutro (sem o azul de biblioteca).
+   ========================================================================== */
+:root {
+  --ds-borda: rgba(0, 0, 0, 0.06);
+  --ds-borda-campo: rgba(0, 0, 0, 0.10);
+  --ds-divisoria: rgba(0, 0, 0, 0.04);
+  --ds-anel: 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --ds-sombra: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 16px -2px rgba(0, 0, 0, 0.05);
+  --ds-sombra-hover: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+  --border-card: var(--ds-borda);
+  --border-light: var(--ds-divisoria);
+}
+body[data-theme="dark"] {
+  --ds-borda: rgba(255, 255, 255, 0.08);
+  --ds-borda-campo: rgba(255, 255, 255, 0.12);
+  --ds-divisoria: rgba(255, 255, 255, 0.04);
+  --ds-anel: 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --ds-sombra: 0 1px 2px rgba(0, 0, 0, 0.30), 0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  --ds-sombra-hover: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+/* 1–3. Cards, painéis e tabelas: 12px, contorno transparente, anel + sombra difusa. */
+html body .dash-card:not(#love-h-a),
+html body .product-card:not(#love-h-a),
+html body .settings-shell [data-settings-panel] > .dash-card:not(#love-h-a),
+html body .agenda-timeline-panel:not(#love-h-a),
+html body .agenda-mini-calendar:not(#love-h-a),
+html body .agenda-notifications-card:not(#love-h-a),
+html body .dashboard-help-card:not(#love-h-a),
+html body .comandos-vazio:not(#love-h-a),
+html body .nova-empresa-card:not(#love-h-a),
+html body .product-pacote-item:not(#love-h-a) {
+  border: 1px solid var(--ds-borda) !important;
+  border-radius: 12px;
+  box-shadow: var(--ds-anel), var(--ds-sombra) !important;
+}
+/* Cards clicáveis: o hover aprofunda a sombra (sem zoom). */
+html body #products-grid .product-card:not(#love-h-a) { transition: box-shadow .15s ease-out; }
+html body #products-grid .product-card:not(#love-h-a):hover { box-shadow: var(--ds-anel), var(--ds-sombra-hover) !important; }
+
+/* Modais e pop-ups principais: 16px. */
+html body .modal-card:not(#love-h-a),
+html body .agenda-evento-popup:not(#love-h-a),
+html body .modal-card.comando-popup:not(#love-h-a) { border-radius: 16px; border: 1px solid var(--ds-borda); }
+
+/* Menus e listas flutuantes: contorno transparente. */
+html body .conv-menu:not(#love-h-a),
+html body .agenda-hora-lista:not(#love-h-a),
+html body .cidade-sugestoes:not(#love-h-a),
+html body .topbar-dropdown:not(#love-h-a),
+html body .tabela-filtro-menu:not(#love-h-a) { border-color: var(--ds-borda); }
+
+/* Campos: 8px, contorno um pouco mais forte para dar leitura; foco escurece. */
+html body .field-input:not(#love-h-a),
+html body .field-select:not(#love-h-a),
+html body .field-textarea:not(#love-h-a),
+html body .tabela-busca input:not(#love-h-a),
+html body .category-select-trigger:not(#love-h-a) { border-color: var(--ds-borda-campo); border-radius: 8px; }
+html body .field-input:not(#love-h-a):focus,
+html body .field-select:not(#love-h-a):focus,
+html body .field-textarea:not(#love-h-a):focus,
+html body .tabela-busca input:not(#love-h-a):focus { border-color: #181D24; }
+
+/* Tabelas e listas divididas: divisórias bem suaves. */
+html body .leads-table td:not(#love-h-a),
+html body .leads-table th:not(#love-h-a) { border-color: var(--ds-divisoria) !important; font-variant-numeric: tabular-nums; }
+
+/* Etiquetas de status: 6px (nunca pílula). */
+html body .status-badge:not(#love-h-a) { border-radius: 6px; }
+
+/* 4. Tipografia: títulos com tracking-tight; microtextos 11px. */
+html body h1:not(#love-h-a), html body h2:not(#love-h-a), html body h3:not(#love-h-a),
+html body .settings-secao-titulo:not(#love-h-a),
+html body .dashboard-help-title:not(#love-h-a),
+html body .product-title-label:not(#love-h-a),
+html body .comando-popup-titulo:not(#love-h-a),
+html body .agenda-dia-nav h3:not(#love-h-a) { letter-spacing: -0.025em; }
+html body .field-hint:not(#love-h-a),
+html body .profile-logo-hint:not(#love-h-a),
+html body .inspector-hint:not(#love-h-a) { font-size: 11px; font-weight: 500; color: #A1A1AA; }
+body[data-theme="dark"] .field-hint, body[data-theme="dark"] .profile-logo-hint, body[data-theme="dark"] .inspector-hint { color: #71717A !important; }
+/* SKU, códigos e valores em mono (alinhamento tabular). */
+html body .produto-sku:not(#love-h-a),
+html body #products-grid .product-card .text-base.font-bold:not(#love-h-a),
+html body #proposal-total:not(#love-h-a),
+html body .proposal-cell-total:not(#love-h-a),
+html body .dash-analytics-metric-value:not(#love-h-a),
+html body [data-item-code]:not(#love-h-a) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+
+/* 5. Switch preto neutro (o do painel do editor continua o dele). */
+html body .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #18181B; border-color: #18181B; }
+body[data-theme="dark"] .settings-switch input:checked ~ .settings-switch-track { background: #FAFAFA !important; }
+body[data-theme="dark"] .settings-switch input:checked ~ .settings-switch-track::before { background: #18181B !important; }
+/* Switch do painel do Editor de site continua azul clarinho. */
+html body #builder-elements-panel .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #ebf4ff; border-color: #ebf4ff; }

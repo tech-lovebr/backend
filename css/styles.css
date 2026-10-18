@@ -8204,3 +8204,15 @@ html body #view-event-os-dashboard #config-eventos-tabela thead th:not(#love-h-a
 /* Configurações › Meus eventos: o "Salvar alterações" some mesmo (a regra
    geral de botões vencia o .hidden). */
 html body #btn-save-user-settings.hidden:not(#love-h-a) { display: none !important; }
+
+/* Cabeçalho de Informações/Organizadores: o Salvar na mesma altura (34px) do
+   Salvar/Publicar do Convite Digital. */
+html body #classic-editor-toolbar .builder-toolbar-btn:not(#love-h-a) { height: 34px; padding: 0 20px; display: inline-flex; align-items: center; }
+/* Organizadores: cabeçalho só com o título (sem Salvar, desfazer e refazer). */
+body.organizadores-sem-previa #classic-editor-toolbar .builder-tool-btn,
+body.organizadores-sem-previa #editor-header-save-container { display: none !important; }
+/* Organizadores: e-mail + Convidar na barra da tabela; funções abaixo da barra. */
+#organizadores-caixa .org-convite-linha { max-width: none; flex: 1 1 320px; }
+html body #editor-form-about input.org-convite-email:not(#love-h-a) { width: 100%; max-width: 420px; }
+#organizadores-caixa .org-passo2 { padding: 0 16px 16px; border-bottom: 1px solid #E4E4E7; }
+#organizadores-caixa .org-feedback { padding: 0 16px 14px; }

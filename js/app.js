@@ -6642,8 +6642,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const perfil = window.loveClienteProfile || {};
     const nomeCriador = ehDono ? (perfil.couple_name || 'Anfitrião') : (ev.hostName || 'Anfitrião');
     const emailCriador = ehDono ? (perfil.email || '') : '';
-    const tabela = document.getElementById('organizadores-tabela');
-    if (tabela) montarBarraDaTabela(tabela, { caixa: document.getElementById('organizadores-caixa'), placeholder: 'Buscar organizador...', nome: 'organizadores' });
     hostsList.innerHTML = `
       <tr class="org-linha-criador">
         <td class="font-semibold text-zinc-900">${escaparHtml(nomeCriador)}</td>
@@ -6774,7 +6772,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const avisar = (html, erro = false) => {
       if (!feedback) return;
       feedback.innerHTML = html;
-      feedback.className = `text-xs leading-relaxed ${erro ? 'text-red-600' : 'text-zinc-600'}`;
+      feedback.className = `org-feedback text-xs leading-relaxed ${erro ? 'text-red-600' : 'text-zinc-600'}`;
       feedback.classList.remove('hidden');
     };
     const limparPasso2 = () => {

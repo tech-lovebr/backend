@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261018_configtabela2">
+  <link rel="stylesheet" href="css/styles.css?v=20261018_orgbarra">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1411,21 +1411,26 @@
               </div>
 
 <!-- Sub-seção 3: Anfitriões -->
-              <div id="editor-form-about" class="editor-sub-panel hidden space-y-6 pb-16 sm:pb-24">
+              <div id="editor-form-about" class="editor-sub-panel hidden space-y-4 pb-16 sm:pb-24">
 
-                <!-- 1. CONVIDAR ORGANIZADOR: e-mail → Continuar → funções → Enviar convite -->
-                <div id="organizadores-convidar" class="space-y-3">
-                  <div>
-                    <h4 class="font-bold text-zinc-900 text-sm font-sans">Convidar organizador</h4>
-                    <p class="text-xs text-zinc-500 mt-0.5">A pessoa entra como anfitriã deste evento, só nas funções que você liberar. Digite o e-mail e clique em Continuar.</p>
-                  </div>
+                <!-- Convidar organizador: título em cima; o e-mail e o "Convidar" ficam
+                     na barra da tabela; as funções abrem logo abaixo da barra. -->
+                <div id="organizadores-convidar">
+                  <h4 class="font-bold text-zinc-900 text-sm font-sans">Convidar organizador</h4>
+                  <p class="text-xs text-zinc-500 mt-0.5">A pessoa entra como anfitriã deste evento, só nas funções que você liberar.</p>
+                </div>
 
-                  <form id="form-invite-host" class="space-y-3" autocomplete="off">
-                    <div class="org-convite-linha">
-                      <input type="email" id="input-host-invite-email" required placeholder="E-mail da pessoa" class="org-convite-email w-full text-xs sm:text-sm rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                      <button type="button" id="btn-continuar-host-invite" class="org-continuar">Continuar</button>
+                <div id="organizadores-caixa" class="dash-card love-tabela-caixa">
+                  <form id="form-invite-host" autocomplete="off">
+                    <div class="love-tabela-barra">
+                      <div class="love-tabela-barra-esq org-convite-linha">
+                        <input type="email" id="input-host-invite-email" required placeholder="E-mail da pessoa" class="org-convite-email w-full text-xs sm:text-sm rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
+                      </div>
+                      <div class="love-tabela-barra-dir">
+                        <button type="button" id="btn-continuar-host-invite" class="org-continuar">Convidar</button>
+                      </div>
                     </div>
-                    <div id="host-invite-passo2" class="hidden space-y-3">
+                    <div id="host-invite-passo2" class="hidden org-passo2 space-y-3">
                       <p class="text-xs font-semibold text-zinc-800">Funções que <span id="host-invite-email-label"></span> pode acessar</p>
                       <div id="host-invite-areas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
                       <div class="flex items-center gap-3">
@@ -1433,15 +1438,10 @@
                         <button type="button" id="btn-cancel-host-invite" class="text-xs text-zinc-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
                       </div>
                     </div>
-                    <p id="host-invite-feedback" class="hidden"></p>
+                    <p id="host-invite-feedback" class="hidden org-feedback"></p>
                   </form>
-                  <p class="text-[11px] text-zinc-500 leading-relaxed">O saque dos presentes é só da conta criadora do evento.</p>
-                </div>
-
-                <!-- 2. TABELA DE ORGANIZADORES (criador + convidados), no padrão das tabelas da plataforma -->
-                <div id="organizadores-caixa" class="dash-card">
                   <div class="w-full overflow-x-auto">
-                    <table id="organizadores-tabela" class="w-full text-left border-collapse font-sans">
+                    <table id="organizadores-tabela" class="love-tabela w-full text-left border-collapse font-sans">
                       <thead>
                         <tr>
                           <th>Nome</th>
@@ -5558,7 +5558,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261018_configtabela"></script>
+  <script src="js/app.js?v=20261018_orgbarra"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261018_semnomes2"></script>
 </body>

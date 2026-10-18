@@ -1140,8 +1140,8 @@ function renderSubscriptionModal() {
     <p class="text-sm text-zinc-600 mb-1">Você está no plano <strong>Pro</strong>.</p>
     <p class="text-xs text-zinc-500 mb-5">Próxima cobrança em ${endOfMonthLabel()}.</p>
     <div class="flex gap-3">
-      <button type="button" class="btn-secondary flex-1 justify-center" id="subscription-cancel-btn">Cancelar</button>
-      <button type="button" class="btn-primary flex-1 justify-center" style="background:#18181B; box-shadow:none;" id="subscription-exit-btn">Sair</button>
+      <button type="button" class="btn-secondary flex-1 justify-center" id="subscription-cancel-btn">Cancelar plano</button>
+      <button type="button" class="btn-primary flex-1 justify-center" style="background:#18181B; box-shadow:none;" id="subscription-exit-btn">Voltar</button>
     </div>
   `;
 

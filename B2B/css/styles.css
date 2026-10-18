@@ -8101,3 +8101,9 @@ html body #builder-elements-panel .builder-el-group-title:not(#love-h-a) {
 }
 html body #builder-elements-panel .builder-el-group-title:not(#love-h-a) { color: #71717A; }
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active[data-panel-tab="elementos"]:not(#love-h-a) { color: #181D24; }
+
+/* Aba "Ajustes" (antes "URL"): mesmo texto da aba Elementos, sem caixa alta. */
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab[data-panel-tab="estilo"]:not(#love-h-a) {
+  text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600;
+}
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active[data-panel-tab="estilo"]:not(#love-h-a) { color: #181D24; }

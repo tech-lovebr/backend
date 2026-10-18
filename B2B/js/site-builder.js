@@ -1259,7 +1259,7 @@ function renderLeftPanel() {
   panel.innerHTML = `
     <div class="builder-panel-tabs">
       <button type="button" class="builder-panel-tab ${leftTab === 'elementos' ? 'active' : ''}" data-panel-tab="elementos">Elementos</button>
-      <button type="button" class="builder-panel-tab ${leftTab === 'estilo' ? 'active' : ''}" data-panel-tab="estilo">URL</button>
+      <button type="button" class="builder-panel-tab ${leftTab === 'estilo' ? 'active' : ''}" data-panel-tab="estilo">Ajustes</button>
     </div>
     <div class="builder-panel-tab-body${leftTab === 'estilo' ? ' builder-panel-tab-body-estilo' : ''}" id="builder-panel-tab-body"></div>
   `;

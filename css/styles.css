@@ -8126,3 +8126,18 @@ html body button.std-gerar-ia:not(#love-h-a):disabled { cursor: default; opacity
 .std-gerar-ia.is-gerando svg { animation: std-ia-pulso 0.9s ease-in-out infinite; }
 @keyframes std-ia-pulso { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: .6; } }
 body[data-theme="dark"] button.std-gerar-ia { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Save the Date: 7 formatos + emoji na largura da caixa; painel de emojis. */
+html body .std-editor-barra:not(#love-h-a) { grid-template-columns: repeat(8, 1fr); }
+html body .std-editor-barra .std-editor-negrito.is-ativo:not(#love-h-a) { border-color: #181D24; }
+.std-emojis {
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 6px; max-height: 196px; overflow-y: auto;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+}
+.std-emojis.hidden { display: none; }
+html body button.std-emoji:not(#love-h-a) {
+  height: 32px; border: none; background: none; border-radius: 6px !important; font-size: 19px; line-height: 1; cursor: pointer; padding: 0; box-shadow: none;
+}
+html body button.std-emoji:not(#love-h-a):hover { background: #F4F4F5; }
+body[data-theme="dark"] .std-emojis { background: #252525; border-color: #404040; }
+body[data-theme="dark"] button.std-emoji:hover { background: #333333 !important; }

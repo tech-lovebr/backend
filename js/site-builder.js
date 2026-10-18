@@ -1172,13 +1172,16 @@ const STD_ICONES = {
   codigo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="m9 10-2 2 2 2M15 10l2 2-2 2"/></svg>',
   numerada: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>',
   marcadores: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>',
-  citacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5v14"/><path d="M10 8h10M10 12h10M10 16h7"/></svg>'
+  citacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5v14"/><path d="M10 8h10M10 12h10M10 16h7"/></svg>',
+  emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4 4 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>'
 };
+// Emojis do Save the Date: só os de amor, festa, brinde, flores e carinhas felizes.
+const STD_EMOJIS = ['❤️','🧡','💛','💚','💙','💜','🤍','💕','💞','💓','💗','💖','💘','💝','💌','🫶','😍','🥰','😘','😊','😄','😁','🤩','🥳','😇','🤗','🙌','👏','🙏','💍','💒','👰','🤵','💐','🌹','🌸','🌷','🌺','🌻','🌼','🕊️','🦋','✨','💫','⭐','🌟','🎉','🎊','🎈','🎁','🎀','🎂','🍰','🧁','🥂','🍾','🍷','🍸','🍹','🍻','🥃','☕','🍽️','🎵','🎶','🎤','💃','🕺','🪩','📸','📅','🗓️','📍','⏰','🏡','👶','🍼','🧸','💎','👑','🌈','☀️','🌙'];
+
 const STD_FORMATOS = [
   { id: 'negrito', titulo: 'Negrito', marca: '*', icone: () => BI.bold },
   { id: 'italico', titulo: 'Itálico', marca: '_', icone: () => BI.italic },
   { id: 'tachado', titulo: 'Tachado', marca: '~', icone: () => STD_ICONES.tachado },
-  { id: 'mono', titulo: 'Monoespaçado', marca: '```', icone: () => STD_ICONES.mono },
   { id: 'codigo', titulo: 'Código em linha', marca: '`', icone: () => STD_ICONES.codigo },
   { id: 'numerada', titulo: 'Lista numerada', linha: 'numerada', icone: () => STD_ICONES.numerada },
   { id: 'marcadores', titulo: 'Lista com marcadores', linha: '- ', icone: () => STD_ICONES.marcadores },
@@ -1241,6 +1244,10 @@ function renderEditorDeTextoSaveTheDate(body) {
     <div class="std-editor">
       <div class="std-editor-barra" role="toolbar" aria-label="Formatação do WhatsApp">
         ${STD_FORMATOS.map(f => `<button type="button" class="std-editor-negrito" data-std-formato="${f.id}" title="${f.titulo}" aria-label="${f.titulo}">${f.icone()}</button>`).join('')}
+        <button type="button" class="std-editor-negrito" data-std-emoji title="Emojis" aria-label="Emojis" aria-expanded="false">${STD_ICONES.emoji}</button>
+      </div>
+      <div class="std-emojis hidden" id="std-emojis" role="listbox" aria-label="Emojis">
+        ${STD_EMOJIS.map(e => `<button type="button" class="std-emoji" data-emoji="${e}">${e}</button>`).join('')}
       </div>
       <textarea class="inspector-textarea std-texto-grande std-editor-texto" id="std-editor-texto" rows="14" placeholder="Escreva o Save the Date…">${escapeHtml(builderState.mensagem || '')}</textarea>
       <div class="std-editor-ia">
@@ -1260,23 +1267,32 @@ function renderEditorDeTextoSaveTheDate(body) {
   campo.addEventListener('input', aplicar);
 
   // Marca em volta do trecho (negrito, itálico…): liga/desliga, linha a linha.
+  // Liga/desliga: se o trecho (ou cada linha dele) já tem a marca, tira;
+  // senão, põe uma vez só — nunca empilha marcas repetidas.
   const alternarMarca = (marca) => {
-    const ini = campo.selectionStart, fim = campo.selectionEnd, v = campo.value;
+    let ini = campo.selectionStart, fim = campo.selectionEnd;
+    const v = campo.value, n = marca.length;
     if (ini === fim) return;
-    const trecho = v.slice(ini, fim), n = marca.length;
-    if (trecho.length > 2 * n && trecho.startsWith(marca) && trecho.endsWith(marca)) {
-      const sem = trecho.slice(n, -n);
-      campo.value = v.slice(0, ini) + sem + v.slice(fim);
-      campo.setSelectionRange(ini, ini + sem.length);
-    } else if (v.slice(ini - n, ini) === marca && v.slice(fim, fim + n) === marca) {
-      campo.value = v.slice(0, ini - n) + trecho + v.slice(fim + n);
-      campo.setSelectionRange(ini - n, fim - n);
-    } else {
-      // O WhatsApp não junta a marca entre linhas: aplica em cada linha.
-      const novo = marca === '```' ? `${marca}${trecho}${marca}` : trecho.split('\n').map(l => (l.trim() ? `${marca}${l}${marca}` : l)).join('\n');
-      campo.value = v.slice(0, ini) + novo + v.slice(fim);
-      campo.setSelectionRange(ini, ini + novo.length);
-    }
+    // Marca logo fora da seleção (selecionou só o texto de dentro): conta junto.
+    if (v.slice(ini - n, ini) === marca && v.slice(fim, fim + n) === marca) { ini -= n; fim += n; }
+    const linhas = v.slice(ini, fim).split('\n');
+    const temMarca = (l) => { const t = l.trim(); return t.length > 2 * n && t.startsWith(marca) && t.endsWith(marca); };
+    const semMarca = (l) => {
+      const ant = l.match(/^\s*/)[0], dep = l.match(/\s*$/)[0];
+      let meio = l.trim();
+      while (meio.length > 2 * n && meio.startsWith(marca) && meio.endsWith(marca)) meio = meio.slice(n, -n);
+      return { ant, meio, dep };
+    };
+    const comTexto = linhas.filter(l => l.trim());
+    const tirar = comTexto.length > 0 && comTexto.every(temMarca);
+    // O WhatsApp não junta a marca entre linhas: vale linha a linha.
+    const novo = linhas.map(l => {
+      if (!l.trim()) return l;
+      const { ant, meio, dep } = semMarca(l);
+      return tirar ? ant + meio + dep : `${ant}${marca}${meio}${marca}${dep}`;
+    }).join('\n');
+    campo.value = v.slice(0, ini) + novo + v.slice(fim);
+    campo.setSelectionRange(ini, ini + novo.length);
   };
 
   // Começo de linha (listas, citação): nas linhas selecionadas ou na do cursor.
@@ -1301,6 +1317,28 @@ function renderEditorDeTextoSaveTheDate(body) {
     campo.value = v.slice(0, ini) + novo + v.slice(fim);
     campo.setSelectionRange(ini, ini + novo.length);
   };
+
+  // Emojis: abre o painel; clicar num emoji coloca onde está o cursor.
+  const botaoEmoji = /** @type {HTMLButtonElement} */ (body.querySelector('[data-std-emoji]'));
+  const painelEmojis = /** @type {HTMLElement} */ (body.querySelector('#std-emojis'));
+  botaoEmoji.addEventListener('mousedown', (e) => e.preventDefault());
+  botaoEmoji.addEventListener('click', () => {
+    const abrir = painelEmojis.classList.contains('hidden');
+    painelEmojis.classList.toggle('hidden', !abrir);
+    botaoEmoji.setAttribute('aria-expanded', String(abrir));
+    botaoEmoji.classList.toggle('is-ativo', abrir);
+  });
+  painelEmojis.querySelectorAll('[data-emoji]').forEach(b => {
+    b.addEventListener('mousedown', (e) => e.preventDefault()); // mantém o cursor na caixa
+    b.addEventListener('click', () => {
+      const emoji = b.dataset.emoji || '';
+      const ini = campo.selectionStart, fim = campo.selectionEnd;
+      campo.value = campo.value.slice(0, ini) + emoji + campo.value.slice(fim);
+      campo.setSelectionRange(ini + emoji.length, ini + emoji.length);
+      campo.focus();
+      aplicar();
+    });
+  });
 
   // "Gerar com IA": "pensa" um instante e escreve o texto aos poucos.
   const botaoIa = /** @type {HTMLButtonElement} */ (body.querySelector('[data-std-gerar-ia]'));

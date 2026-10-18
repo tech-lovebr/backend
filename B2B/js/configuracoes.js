@@ -137,7 +137,13 @@ function initProfileForm() {
     }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
     const agora = new Date().toISOString();
-    if (antes.company && antes.company !== p.company) ALTERADO_EM.company = agora;
+    if (antes.company && antes.company !== p.company) {
+      ALTERADO_EM.company = agora;
+      // A URL do site acompanha o nome da empresa.
+      if (typeof atualizarUrlDoSitePeloNome === 'function') {
+        atualizarUrlDoSitePeloNome(p.company).then(slug => { if (slug) showToast(`URL do site atualizada: ${slug}`); });
+      }
+    }
     if (antes.documentNumber && (antes.documentNumber !== p.documentNumber || antes.documentType !== p.documentType)) ALTERADO_EM.documento = agora;
 
     // Liberação concedida pelo Admin vale uma edição: gastou, trava de novo.

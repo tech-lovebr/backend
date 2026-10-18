@@ -1198,3 +1198,58 @@ function pedidoDoLead(lead) {
   if (!pedidos.length) return null;
   return lerPedidoOrcamento(pedidos[pedidos.length - 1].text) || {};
 }
+
+/* ==========================================================================
+   URL do site acompanha o nome da empresa
+   Mudou o nome da empresa (Configurações › Perfil): a URL personalizada
+   vira o novo nome ("Super Drinks" → super-drinks). Se já estiver em uso
+   por outra empresa, ganha um número no fim (super-drinks-2…). Atualiza o
+   site publicado (site_pages) e o rascunho do editor guardado no navegador.
+   ========================================================================== */
+const SLUGS_RESERVADOS_SITE = ['hub', 'www', 'admin', 'api', 'app', 'love'];
+
+function slugDoNome(nome) {
+  return String(nome || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 50);
+}
+
+async function urlDisponivel(slug, fornecedorId) {
+  if (SLUGS_RESERVADOS_SITE.includes(slug)) return false;
+  const { data, error } = await supabaseClient.rpc('verificar_site_slug_disponivel', { p_slug: slug, p_fornecedor_id: fornecedorId });
+  return !error && data !== false;
+}
+
+async function atualizarUrlDoSitePeloNome(nome) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return null;
+  const fid = empresaId(session);
+  const base = slugDoNome(nome);
+  if (!base) return null;
+
+  let slug = base;
+  for (let n = 2; n < 50 && !(await urlDisponivel(slug, fid)); n++) slug = `${base}-${n}`;
+
+  // Site já publicado: troca a URL e o slug guardado no estado.
+  const { data: pagina } = await supabaseClient.from('site_pages').select('slug, state').eq('fornecedor_id', fid).maybeSingle();
+  if (pagina && pagina.slug !== slug) {
+    const state = pagina.state || {};
+    state.siteSettings = Object.assign({}, state.siteSettings, { slug });
+    const { error } = await supabaseClient.from('site_pages')
+      .update({ slug, state, updated_at: new Date().toISOString() }).eq('fornecedor_id', fid);
+    if (error) { console.warn('Não foi possível trocar a URL do site.', error); return null; }
+  }
+
+  // Rascunho do editor neste navegador (senão a próxima publicação voltaria a URL antiga).
+  ['b2b-site-builder-page', 'b2b-site-builder-published-state'].forEach(chave => {
+    try {
+      const salvo = JSON.parse(localStorage.getItem(chave) || 'null');
+      if (salvo && salvo.siteSettings) {
+        salvo.siteSettings.slug = slug;
+        localStorage.setItem(chave, JSON.stringify(salvo));
+      }
+    } catch (e) { /* rascunho inválido: o editor sugere a URL pelo nome */ }
+  });
+  return slug;
+}

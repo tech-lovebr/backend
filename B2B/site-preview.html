@@ -27,7 +27,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=610">
+  <link rel="stylesheet" href="css/styles.css?v=611">
   <style>
     html, body { background: #fff; overflow-x: hidden; max-width: 100%; }
     .site-preview-empty { padding: 6rem 1.5rem; text-align: center; color: #71717A; font-size: 0.9375rem; }
@@ -40,11 +40,11 @@
   <div class="builder-mobile-menu-root" id="builder-mobile-menu-root"></div>
 
   <script src="js/data.js?v=18"></script>
-  <script src="js/utils.js?v=30"></script>
+  <script src="js/utils.js?v=31"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=39"></script>
-  <script src="js/site-builder.js?v=288"></script>
+  <script src="js/site-builder.js?v=289"></script>
   <script>
     (async function () {
       const canvas = document.getElementById('builder-canvas');
@@ -61,7 +61,8 @@
       const hostSlug = location.hostname.endsWith(SITE_DOMAIN_SUFFIX)
         ? location.hostname.slice(0, -SITE_DOMAIN_SUFFIX.length)
         : '';
-      const pathSlug = location.pathname.replace(/^\/+|\/+$/g, '');
+      // Gratuito: hub.love.com.br/site/<slug> (o antigo hub.love.com.br/<slug> continua abrindo).
+      const pathSlug = location.pathname.replace(/^\/+|\/+$/g, '').replace(/^site\//, '');
       const viaSubdomain = !!hostSlug && hostSlug !== 'hub' && hostSlug !== 'www' && !hostSlug.includes('.');
       const viaHubPath = !viaSubdomain && /^[a-z0-9-]+$/.test(pathSlug) && pathSlug !== 'site-preview';
       const publicSlug = viaSubdomain ? hostSlug : viaHubPath ? pathSlug : params.get('site');
@@ -118,11 +119,16 @@
         // Subdomínio é só do Pro; o Gratuito fica em hub.love.com.br/<slug>.
         // Cada um que chegar pelo endereço do outro plano é levado pro certo.
         if (viaSubdomain && donoPro === false) {
-          location.replace(`https://hub.love.com.br/${publicSlug}`);
+          location.replace(`https://hub.love.com.br/site/${publicSlug}`);
           return;
         }
         if (viaHubPath && donoPro === true) {
           location.replace(`https://${publicSlug}${SITE_DOMAIN_SUFFIX}/`);
+          return;
+        }
+        // Endereço antigo do Gratuito (hub.love.com.br/<slug>): vai para /site/<slug>.
+        if (viaHubPath && donoPro === false && !location.pathname.startsWith('/site/')) {
+          location.replace(`https://hub.love.com.br/site/${publicSlug}`);
           return;
         }
 

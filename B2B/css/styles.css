@@ -8107,3 +8107,10 @@ html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab[data-pa
   text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600;
 }
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active[data-panel-tab="estilo"]:not(#love-h-a) { color: #181D24; }
+
+/* Editor de site › Ajustes › URL do site. */
+.url-slug-field--fixo { background: #F4F4F5; }
+.url-slug-field--fixo .url-slug-input { background: transparent; color: #52525B; cursor: default; }
+.url-slug-acao { margin-top: 0.6rem; height: 34px; padding: 0 0.9rem; font-size: 0.8125rem; }
+#site-slug-aviso { margin: 0 0 0.4rem; }
+body[data-theme="dark"] .url-slug-field--fixo { background: #2A2A2A !important; }

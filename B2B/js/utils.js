@@ -1221,15 +1221,24 @@ async function urlDisponivel(slug, fornecedorId) {
   return !error && data !== false;
 }
 
+/* Primeira URL livre a partir do nome: super-drinks, super-drinks-2, -3… */
+async function sugerirUrlDisponivel(nome, fornecedorId) {
+  const base = slugDoNome(nome);
+  if (!base) return '';
+  let slug = base;
+  for (let n = 2; n < 50 && !(await urlDisponivel(slug, fornecedorId)); n++) slug = `${base}-${n}`;
+  return slug;
+}
+
 async function atualizarUrlDoSitePeloNome(nome) {
+  // Só no Gratuito: no Pro o subdomínio é escolhido pela pessoa (Ajustes do
+  // editor), com troca a cada 14 dias.
+  if (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.plan === 'Pro') return null;
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return null;
   const fid = empresaId(session);
-  const base = slugDoNome(nome);
-  if (!base) return null;
-
-  let slug = base;
-  for (let n = 2; n < 50 && !(await urlDisponivel(slug, fid)); n++) slug = `${base}-${n}`;
+  const slug = await sugerirUrlDisponivel(nome, fid);
+  if (!slug) return null;
 
   // Site já publicado: troca a URL e o slug guardado no estado.
   const { data: pagina } = await supabaseClient.from('site_pages').select('slug, state').eq('fornecedor_id', fid).maybeSingle();

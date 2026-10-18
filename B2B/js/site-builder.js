@@ -724,9 +724,12 @@ async function publishBuilderState() {
     updated_at: new Date().toISOString()
   });
   if (error) {
-    showToast(error.code === '23505' ? 'Essa URL já está em uso por outro fornecedor.' : 'Não foi possível publicar o site.', true);
+    showToast(/ALTERACAO_BLOQUEADA/.test(error.message || '')
+      ? 'Por segurança, só é possível alterar a URL a cada 14 dias.'
+      : (error.code === '23505' ? 'Essa URL já está em uso por outro fornecedor.' : 'Não foi possível publicar o site.'), true);
     return 'erro';
   }
+  if (typeof isProPlan === 'function' && isProPlan() && builderState.siteSettings) builderState.siteSettings.slugConfirmado = true;
   return 'ok';
 }
 
@@ -1387,6 +1390,110 @@ function renderElementosTab(body) {
   `).join('');
 }
 
+/* -------------------- URL do site (Ajustes) -------------------- */
+
+const PRAZO_URL_MS = 14 * 24 * 60 * 60 * 1000;
+
+async function ligarUrlDoSite(body, slugInput, siteSettings, companyName, isPro, urlConfirmada) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  const fid = session ? empresaId(session) : null;
+  const slugStatus = body.querySelector('#site-slug-status');
+  const slugError = body.querySelector('#site-slug-error');
+  const aviso = body.querySelector('#site-slug-aviso');
+
+  // Sugestão pelo nome já ocupada por outra empresa: vai para o próximo número.
+  const sugestao = slugify(companyName);
+  if (fid && companyName && (!isPro || !urlConfirmada) && siteSettings.slug === sugestao && typeof sugerirUrlDisponivel === 'function') {
+    const livre = await sugerirUrlDisponivel(companyName, fid);
+    if (livre && livre !== siteSettings.slug && document.body.contains(slugInput)) {
+      siteSettings.slug = livre;
+      slugInput.value = livre;
+    }
+  }
+  if (!isPro) return;
+
+  const marcar = (ocupada) => {
+    if (!slugStatus) return;
+    slugStatus.classList.toggle('is-taken', ocupada);
+    slugStatus.classList.toggle('is-available', !ocupada);
+    slugStatus.innerHTML = ocupada ? BI.close : BI.check;
+    if (slugError) slugError.hidden = !ocupada;
+  };
+  const verificar = async (val) => {
+    if (!val) return false;
+    if (RESERVED_SLUGS.includes(val)) return false;
+    if (!fid) return true;
+    const { data } = await supabaseClient.rpc('verificar_site_slug_disponivel', { p_slug: val, p_fornecedor_id: fid });
+    return data !== false;
+  };
+
+  if (urlConfirmada) {
+    // "Alterar URL": libera de novo, se já passou o prazo de 14 dias.
+    body.querySelector('#site-slug-alterar')?.addEventListener('click', async () => {
+      aviso.hidden = true;
+      let ultima = null;
+      if (fid) {
+        const { data } = await supabaseClient.from('fornecedores').select('site_slug_alterado_em').eq('id', fid).maybeSingle();
+        ultima = data && data.site_slug_alterado_em;
+      }
+      if (ultima && Date.now() - new Date(ultima).getTime() < PRAZO_URL_MS) {
+        aviso.textContent = 'Por segurança, só é possível alterar a URL a cada 14 dias.';
+        aviso.hidden = false;
+        return;
+      }
+      siteSettings.slugConfirmado = false;
+      renderLeftPanel();
+    });
+    return;
+  }
+
+  let timer = null;
+  let token = 0;
+  const checar = async () => {
+    const t = ++token;
+    const livre = await verificar(slugInput.value);
+    if (t === token) marcar(!livre);
+  };
+  slugInput.addEventListener('input', () => {
+    const fimDoTexto = slugInput.selectionStart === slugInput.value.length;
+    const limpo = slugify(slugInput.value);
+    slugInput.value = limpo;
+    siteSettings.slug = limpo;
+    if (fimDoTexto) slugInput.setSelectionRange(limpo.length, limpo.length);
+    clearTimeout(timer);
+    timer = setTimeout(checar, 300);
+  });
+  slugInput.addEventListener('blur', () => pushHistory());
+  checar();
+
+  // "Confirmar URL": grava na hora (se o site já foi publicado) e trava.
+  body.querySelector('#site-slug-confirmar')?.addEventListener('click', async () => {
+    aviso.hidden = true;
+    const slug = slugInput.value;
+    if (!(await verificar(slug))) { marcar(true); return; }
+    if (fid) {
+      const { data: pagina } = await supabaseClient.from('site_pages').select('slug, state').eq('fornecedor_id', fid).maybeSingle();
+      if (pagina && pagina.slug !== slug) {
+        const state = pagina.state || {};
+        state.siteSettings = Object.assign({}, state.siteSettings, { slug, slugConfirmado: true });
+        const { error } = await supabaseClient.from('site_pages').update({ slug, state, updated_at: new Date().toISOString() }).eq('fornecedor_id', fid);
+        if (error) {
+          aviso.textContent = /ALTERACAO_BLOQUEADA/.test(error.message || '')
+            ? 'Por segurança, só é possível alterar a URL a cada 14 dias.'
+            : (error.code === '23505' ? 'Essa URL já está em uso por outra empresa.' : 'Não foi possível salvar a URL.');
+          aviso.hidden = false;
+          return;
+        }
+      }
+    }
+    siteSettings.slug = slug;
+    siteSettings.slugConfirmado = true;
+    pushHistory();
+    showToast(`URL confirmada: ${slug}.love.com.br`);
+    renderLeftPanel();
+  });
+}
+
 function renderEstiloTab(body) {
   if (!builderState.siteSettings) builderState.siteSettings = defaultSiteSettings();
   if (!builderState.siteSettings.seo) builderState.siteSettings.seo = defaultSeoSettings();
@@ -1397,30 +1504,44 @@ function renderEstiloTab(body) {
   // ficar vazio ou com texto de exemplo) — só preenche campo que a pessoa
   // ainda não mexeu; uma vez editado ou salvo, para de sugerir.
   const companyName = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.company) || '';
-  if (!siteSettings.slug && companyName) siteSettings.slug = slugify(companyName);
-  if (!seo.metaTitle && companyName) seo.metaTitle = companyName;
   const isPro = typeof isProPlan === 'function' && isProPlan();
+  // URL do site:
+  // - Gratuito: hub.love.com.br/site/<nome-da-empresa>, fixa (acompanha o nome).
+  // - Pro: <nome>.love.com.br. Ao virar Pro, a sugestão já é o nome da
+  //   empresa; a pessoa pode confirmar (ou publicar) e depois só troca a
+  //   cada 14 dias (migration 069).
+  if (!isPro && companyName) siteSettings.slug = siteSettings.slug || slugify(companyName);
+  if (isPro && !siteSettings.slugConfirmado && !siteSettings.slugProSugerido && companyName) {
+    siteSettings.slug = slugify(companyName);
+    siteSettings.slugProSugerido = true;
+  }
+  const urlConfirmada = isPro && !!siteSettings.slugConfirmado;
+  if (!seo.metaTitle && companyName) seo.metaTitle = companyName;
 
   body.innerHTML = `
     <div class="builder-el-group-title">URL e identificação do site</div>
+    ${isPro ? `
     <div class="inspector-field">
-      <span class="inspector-field-label">
-        URL personalizada
-        ${isPro ? '' : `
-        <span class="info-tooltip-wrap">
-          <button type="button" class="info-tooltip-trigger" tabindex="0" aria-label="Mais informações">${BI.info}</button>
-          <span class="info-tooltip-bubble">Para ter um subdomínio personalizado, <a href="planos" class="info-tooltip-link">faça o upgrade para o plano Pro</a>.</span>
-        </span>
-        `}
-      </span>
-      <div class="url-slug-field">
-        ${isPro ? '' : `<span class="url-slug-prefix">hub.love.com.br/</span>`}
-        <input type="text" class="url-slug-input" id="site-slug-input" value="${escapeHtml(siteSettings.slug || '')}" placeholder="sua-empresa" autocomplete="off" spellcheck="false">
-        ${isPro ? `<span class="url-slug-suffix">.love.com.br</span>` : ''}
+      <span class="inspector-field-label">URL do site</span>
+      <p class="campo-aviso-alteracao" id="site-slug-aviso" hidden></p>
+      <div class="url-slug-field${urlConfirmada ? ' url-slug-field--fixo' : ''}">
+        <input type="text" class="url-slug-input" id="site-slug-input" value="${escapeHtml(siteSettings.slug || '')}" autocomplete="off" spellcheck="false"${urlConfirmada ? ' readonly' : ''}>
+        <span class="url-slug-suffix">.love.com.br</span>
         <span class="url-slug-status" id="site-slug-status"></span>
       </div>
       <p class="inspector-hint url-slug-error" id="site-slug-error" hidden>Esta URL já está sendo usada.</p>
-    </div>
+      ${urlConfirmada
+        ? '<button type="button" class="btn-secondary url-slug-acao" id="site-slug-alterar">Alterar URL</button>'
+        : '<button type="button" class="btn-primary url-slug-acao" id="site-slug-confirmar">Confirmar URL</button>'}
+    </div>` : `
+    <div class="inspector-field">
+      <span class="inspector-field-label">URL do site</span>
+      <div class="url-slug-field url-slug-field--fixo">
+        <span class="url-slug-prefix">hub.love.com.br/site/</span>
+        <input type="text" class="url-slug-input" id="site-slug-input" value="${escapeHtml(siteSettings.slug || '')}" readonly tabindex="-1">
+      </div>
+      <p class="inspector-hint">Endereço padrão do plano Gratuito, com o nome da sua empresa. No <a href="planos" class="info-tooltip-link">plano Pro</a>, você ganha o seu subdomínio: <strong>suaempresa.love.com.br</strong>.</p>
+    </div>`}
     <div class="inspector-field">
       <span class="inspector-field-label">Título da Página (Meta Title)</span>
       <input type="text" class="inspector-input" id="seo-meta-title" value="${escapeHtml(seo.metaTitle || '')}" placeholder="Ex: Premium Eventos">
@@ -1472,54 +1593,7 @@ function renderEstiloTab(body) {
 
   const slugInput = body.querySelector('#site-slug-input');
   if (slugInput) {
-    const slugStatus = body.querySelector('#site-slug-status');
-    const slugError = body.querySelector('#site-slug-error');
-    const savedSlug = siteSettings.slug;
-    let slugCheckTimer = null;
-    let slugCheckToken = 0;
-    const markSlugStatus = (taken) => {
-      slugStatus.classList.toggle('is-taken', taken);
-      slugStatus.classList.toggle('is-available', !taken);
-      slugStatus.innerHTML = taken ? BI.close : BI.check;
-      slugError.hidden = !taken;
-    };
-    // Reservado (nome fixo da plataforma) é checagem instantânea, local.
-    // Em uso por outro fornecedor só dá pra saber perguntando ao banco — a
-    // RLS não deixa um fornecedor enxergar a linha de outro, por isso existe
-    // a function verificar_site_slug_disponivel (ver migration 031).
-    const checkSlug = async () => {
-      const val = slugInput.value;
-      slugStatus.classList.remove('is-available', 'is-taken');
-      slugStatus.innerHTML = '';
-      slugError.hidden = true;
-      if (!val) return;
-
-      if (RESERVED_SLUGS.includes(val) && val !== savedSlug) {
-        markSlugStatus(true);
-        return;
-      }
-
-      const token = ++slugCheckToken;
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) { markSlugStatus(false); return; }
-      const { data: available } = await supabaseClient.rpc('verificar_site_slug_disponivel', {
-        p_slug: val,
-        p_fornecedor_id: empresaId(session)
-      });
-      if (token !== slugCheckToken) return; // resposta de uma checagem antiga — ignora
-      markSlugStatus(available === false);
-    };
-    slugInput.addEventListener('input', () => {
-      const cursorAtEnd = slugInput.selectionStart === slugInput.value.length;
-      const clean = slugify(slugInput.value);
-      slugInput.value = clean;
-      siteSettings.slug = clean;
-      if (cursorAtEnd) slugInput.setSelectionRange(clean.length, clean.length);
-      clearTimeout(slugCheckTimer);
-      slugCheckTimer = setTimeout(checkSlug, 300);
-    });
-    slugInput.addEventListener('blur', () => pushHistory());
-    checkSlug();
+    ligarUrlDoSite(body, slugInput, siteSettings, companyName, isPro, urlConfirmada);
   }
 
   const metaTitleInput = body.querySelector('#seo-meta-title');

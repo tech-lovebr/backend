@@ -229,12 +229,16 @@
       "destination": "/notificacoes.html"
     },
     {
-      "source": "/:slug([a-z0-9-]+)",
+      "source": "/nova-empresa",
+      "destination": "/nova-empresa.html"
+    },
+    {
+      "source": "/site/:slug([a-z0-9-]+)",
       "destination": "/site-preview.html"
     },
     {
-      "source": "/nova-empresa",
-      "destination": "/nova-empresa.html"
+      "source": "/:slug([a-z0-9-]+)",
+      "destination": "/site-preview.html"
     }
   ]
 }

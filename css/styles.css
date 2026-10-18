@@ -8295,3 +8295,6 @@ html body input#b2b-chat-search:not(#love-h-a) { height: 38px !important; min-he
 html body #b2b-view-toggle:not(#love-h-a) { height: 38px !important; }
 html body #btn-host-add-gift:not(#love-h-a) { height: 38px !important; min-height: 38px !important; padding-left: 14px !important; padding-right: 14px !important; font-size: 0.875rem !important; font-weight: 600 !important; border-radius: 8px !important; }
 html body #btn-gifts-delete-selected:not(#love-h-a):not(.hidden) { height: 38px !important; min-height: 38px !important; }
+/* Aparência › faixa "Elementos"/"Editar texto": fundo branco, igual ao resto do painel. */
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #FFFFFF !important; }

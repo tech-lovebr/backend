@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261018_hoverazul2">
+  <link rel="stylesheet" href="css/styles.css?v=20261018_vaquinha">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4251,22 +4251,19 @@
         </div>
 
         <!-- 4.1 Vaquinha: o convidado escolhe quanto dar (o valor todo ou uma parte) -->
-        <div class="rounded-[14px] border border-zinc-200 bg-zinc-50 p-4">
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex items-start gap-2.5">
-              <!-- Ícone da vaquinha -->
-              <div class="w-8 h-8 rounded-[10px] bg-white border border-zinc-200 flex items-center justify-center flex-shrink-0 text-base leading-none" aria-hidden="true">🐮</div>
-              <div>
-                <p class="text-xs sm:text-sm font-bold text-zinc-900 font-sans">Permitir vaquinha</p>
-                <p class="text-[11px] sm:text-xs text-zinc-500 font-sans mt-0.5 leading-snug">Ideal para presentes de maior valor. Cada convidado escolhe quanto quer dar: o valor todo ou só uma parte.</p>
-              </div>
-            </div>
-            <label class="settings-switch flex-shrink-0" id="gift-crowdfunding-switch">
-              <input type="checkbox" id="gift-crowdfunding-toggle">
-              <span class="settings-switch-track"></span>
-            </label>
-          </div>
-        </div>
+        <label class="vaquinha-card" for="gift-crowdfunding-toggle">
+          <span class="vaquinha-icone" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <span class="vaquinha-texto">
+            <span class="vaquinha-titulo">Permitir vaquinha</span>
+            <span class="vaquinha-descricao">Ideal para presentes de maior valor. Cada convidado escolhe quanto quer dar: o valor todo ou só uma parte.</span>
+          </span>
+          <span class="settings-switch vaquinha-switch" id="gift-crowdfunding-switch">
+            <input type="checkbox" id="gift-crowdfunding-toggle">
+            <span class="settings-switch-track"></span>
+          </span>
+        </label>
 
         <!-- Categoria removida da gaveta (pedido do cliente); o campo oculto
              continua porque o salvar ainda lê o valor (fica vazio). -->

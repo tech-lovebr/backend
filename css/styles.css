@@ -7986,3 +7986,12 @@ html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder
 html body #builder-elements-panel .builder-el-group-title:not(#love-h-a) {
   text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600; color: #71717A;
 }
+
+/* /login: "Esqueceu a senha?" embaixo da senha, à direita, em cinza; "ou
+   continue com" minúsculo e em preto. */
+html body button.login-esqueceu-senha:not(#love-h-a) {
+  background: none; border: none; padding: 0; height: auto; box-shadow: none;
+  font-size: 13px; font-weight: 500; color: #71717A; cursor: pointer;
+}
+html body button.login-esqueceu-senha:not(#love-h-a):hover { color: #181D24; text-decoration: underline; background: none; }
+.login-ou-continue { font-size: 12px; font-weight: 500; color: #181D24; text-transform: none; }

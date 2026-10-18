@@ -1098,7 +1098,7 @@ function renderSelfieStatus() {
   document.getElementById('profile-selfie-badge').hidden = !verified;
   setText('profile-selfie-desc', verified
     ? 'Sua identidade já foi verificada.'
-    : 'Confirme sua identidade para aumentar a confiança dos seus clientes.');
+    : '');
 }
 
 /* -------------------- Assinatura -------------------- */

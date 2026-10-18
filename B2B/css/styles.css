@@ -8177,3 +8177,4 @@ html body .settings-shell [data-settings-panel] > .dash-card[hidden]:not(#love-h
 html body .assinatura-voltar-btn:not(#love-h-a) { background: #FAFAFA; border: 1px solid #E4E4E7; color: #181D24; box-shadow: none; }
 html body .assinatura-voltar-btn:not(#love-h-a):hover { background: #FAFAFA; border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .assinatura-voltar-btn { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+.settings-switch-desc:empty { display: none; }

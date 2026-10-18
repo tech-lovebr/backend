@@ -375,6 +375,12 @@ function migrateGiftsBlockSection(state) {
 }
 
 function getActiveEventForBuilder() {
+  // O evento ativo de verdade (o que está selecionado no topo); a lista de
+  // window.LOVE_DATA é só a de demonstração e não acompanha a troca.
+  if (typeof window.getLoveActiveEvent === 'function') {
+    const ativo = window.getLoveActiveEvent();
+    if (ativo) return ativo;
+  }
   const data = window.LOVE_DATA;
   if (!data || !Array.isArray(data.events)) return null;
   return data.events.find(e => e.id === data.currentEventId) || data.events[0] || null;

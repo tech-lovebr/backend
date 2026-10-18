@@ -16822,6 +16822,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Expõe o evento ativo pra outros scripts (site-builder.js) sem depender
   // de window.LOVE_DATA.currentEventId, que nunca é atualizado.
   window.getLoveActiveEventId = () => state.activeEventId;
+  // O evento ativo inteiro (tipo, data, anfitriões…) para o site-builder.js —
+  // window.LOVE_DATA.events é só a lista inicial de demonstração.
+  window.getLoveActiveEvent = () => getActiveEvent();
 
   // Início padrão na página pública — troca para o dashboard automaticamente
   // se já existir uma sessão Supabase válida (usuário já logado). Quem acessa

@@ -742,19 +742,36 @@ async function syncBuilderStateFromSupabase(pageKey) {
 // Chamado por app.js assim que o anfitrião troca de evento no dropdown —
 // recarrega o Convite Digital do evento recém-selecionado.
 window.reloadBuilderStateForActiveEvent = function () {
-  currentPageKey = 'convite';
-  builderState = loadPageState('convite');
+  // Fica na página que estava aberta (ex.: Save the Date depois do F5).
+  const guardada = paginaAbertaGuardada();
+  currentPageKey = guardada && BUILDER_PAGE_LABELS[guardada] ? guardada : 'convite';
+  builderState = loadPageState(currentPageKey);
+  historyStack = [snapshotState()];
+  historyIndex = 0;
+  selectedId = null;
   updatePageSwitcherUI();
   atualizarBotoesDaPagina();
-  syncBuilderStateFromSupabase('convite');
+  if (document.getElementById('builder-canvas')) { renderLeftPanel(); renderCanvas(); applyGlobalStyleVars(); }
+  syncBuilderStateFromSupabase(currentPageKey);
 };
 
 /* -------------------- Dropdown de páginas do site -------------------- */
+
+// Página aberta no construtor (Convite Digital / Save the Date): guardada na
+// aba do navegador para o F5 voltar nela, e não sempre no Convite Digital.
+const CHAVE_PAGINA_ABERTA = 'love-aparencia-pagina';
+function lembrarPaginaAberta(pageKey) {
+  try { sessionStorage.setItem(CHAVE_PAGINA_ABERTA, pageKey); } catch (e) { /* sem armazenamento */ }
+}
+function paginaAbertaGuardada() {
+  try { return sessionStorage.getItem(CHAVE_PAGINA_ABERTA) || ''; } catch (e) { return ''; }
+}
 
 function switchBuilderPage(pageKey) {
   if (pageKey === currentPageKey) return;
   persistBuilderState(true);
   currentPageKey = pageKey;
+  lembrarPaginaAberta(pageKey);
   builderState = loadPageState(pageKey);
   historyStack = [snapshotState()];
   historyIndex = 0;
@@ -3240,6 +3257,11 @@ function initSiteBuilder() {
   syncBuilderStateFromSupabase(currentPageKey);
 
   initPageSwitcher();
+  // F5 no Save the Date: volta direto nele (a página fica guardada na aba).
+  const paginaGuardada = paginaAbertaGuardada();
+  if (paginaGuardada && paginaGuardada !== 'convite' && document.querySelector(`#builder-page-dropdown [data-page-option="${paginaGuardada}"]`)) {
+    setTimeout(() => switchBuilderPage(paginaGuardada), 0);
+  }
 
   const deviceToggle = document.getElementById('builder-device-toggle');
   if (deviceToggle) {

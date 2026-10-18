@@ -33,7 +33,6 @@
     { "source": "/configuracoes", "destination": "/" },
     { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
     { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" },
-    { "source": "/:slug([a-z0-9-]+)/save-the-date", "destination": "/api/save-the-date?slug=:slug" },
     { "source": "/:slug([a-z0-9-]+)", "destination": "/convite-preview.html" }
   ]
 }

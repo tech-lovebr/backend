@@ -238,9 +238,11 @@ async function entrarComGoogle({ aoEntrar, aoFalhar, soEntrar = false } = {}) {
 // OAuth. O botão antigo fica escondido e só volta se o script do Google
 // não carregar (ex.: bloqueador), usando o caminho antigo (entrarComGoogle).
 // ==========================================
-// Cliente OAuth só dos anfitriões (love.com.br) — o Hub usa outro ("Login - Hub"),
+// Cliente OAuth só dos anfitriões (love.com.br), no projeto Google Cloud próprio
+// "Love Anfitrioes" — o Hub usa o "Login - Hub" de outro projeto. Projetos
+// separados para o Google não tratar os dois logins como o mesmo app,
 // para o login de um não aparecer no outro.
-const GOOGLE_CLIENT_ID = '436005219765-c250es64aojlkl78v7m9digth0p0rrt9.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '555856044590-qeug48r9i9u65q2i1bssad62anvs0jii.apps.googleusercontent.com';
 let googleIdentityPromessa = null;
 let googleIdentityPronto = false;
 let googleNonceBruto = null;

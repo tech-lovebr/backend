@@ -8044,3 +8044,30 @@ html body button.login-ver-senha:not(#love-h-a):hover { color: #71717A; backgrou
 html body .std-bolha .be-text:not(#love-h-a) { font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; color: inherit !important; margin: 0 !important; }
 .std-bolha-hora { float: right; margin: 8px 0 -4px 10px; font-size: 11px; line-height: 15px; color: #667781; white-space: nowrap; }
 .std-bolha-lido { color: #53BDEB; letter-spacing: -3px; margin-left: 2px; }
+
+/* Save the Date: fundo branco (como o painel de editar) e a prévia dentro
+   de um "celular" com a conversa do WhatsApp; o rodapé "Feito com Love"
+   continua embaixo. */
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas:not(#love-h-a) { background: #FFFFFF !important; min-height: 0; }
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-fixed-footer:not(#love-h-a) { display: block !important; }
+#site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section { padding: 16px 12px !important; }
+.std-celular {
+  display: flex; flex-direction: column; width: 100%; max-width: 380px; margin: 0 auto; min-height: 560px;
+  border: 1px solid #E4E4E7; border-radius: 22px; overflow: hidden; background: #FFFFFF;
+  font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+.std-celular-status { display: flex; align-items: center; justify-content: space-between; padding: 8px 18px 2px; font-size: 13px; font-weight: 600; color: #111B21; background: #F6F6F6; }
+.std-celular-status-icones { display: flex; align-items: center; gap: 5px; }
+.std-celular-status svg { height: 11px; width: auto; }
+.std-celular-topo { display: flex; align-items: center; gap: 8px; padding: 8px 14px 10px; background: #F6F6F6; border-bottom: 1px solid #DADADA; color: #1A6FCB; }
+.std-celular-voltar svg { width: 22px; height: 22px; display: block; }
+.std-celular-avatar { width: 32px; height: 32px; border-radius: 50%; background: #DFE5E7; color: #FFFFFF; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+.std-celular-avatar svg { width: 28px; height: 28px; }
+.std-celular-nome { flex: 1; font-size: 15px; font-weight: 600; color: #111B21; }
+.std-celular-acoes { display: flex; gap: 18px; }
+.std-celular-acoes svg { width: 24px; height: 24px; display: block; }
+.std-celular-conversa { flex: 1; padding: 14px 10px; background: #EFEAE2 url('../assets/whatsapp-fundo.webp') center top / 380px auto repeat; }
+.std-celular-rodape { display: flex; align-items: center; gap: 10px; padding: 8px 12px 14px; background: #F6F6F6; border-top: 1px solid #DADADA; color: #1A6FCB; }
+.std-celular-rodape > svg, .std-celular-mais svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
+.std-celular-campo { flex: 1; height: 32px; border: 1px solid #D1D7DB; border-radius: 18px; background: #FFFFFF; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; }
+.std-celular-campo svg { width: 20px; height: 20px; }

@@ -7977,3 +7977,12 @@ body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-pan
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab + .builder-panel-tab:not(#love-h-a) { border-left-color: #404040 !important; }
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #2A2A2A !important; color: #FFFFFF !important; }
+/* Aparência › painel: "Elementos", "Básicos" e "Avançado" escritos normal
+   (sem caixa alta), no tamanho dos textos dos submenus. */
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a),
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) {
+  text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600;
+}
+html body #builder-elements-panel .builder-el-group-title:not(#love-h-a) {
+  text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600; color: #71717A;
+}

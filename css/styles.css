@@ -8071,3 +8071,19 @@ html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder
 .std-celular-rodape > svg, .std-celular-mais svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
 .std-celular-campo { flex: 1; height: 32px; border: 1px solid #D1D7DB; border-radius: 18px; background: #FFFFFF; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; }
 .std-celular-campo svg { width: 20px; height: 20px; }
+/* Save the Date (ajuste): a área toda é o celular — sem margem em volta,
+   sem cantos arredondados, barras de cima e de baixo de ponta a ponta (como
+   o rodapé "Feito com Love") e a conversa com fundo branco. */
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-columns-row:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column-inner:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-element:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-sections-list:not(#love-h-a) {
+  padding: 0 !important; margin: 0 !important; gap: 0 !important; max-width: none !important; width: 100% !important; min-height: 0 !important;
+}
+html body .std-celular:not(#love-h-a) { max-width: none; margin: 0; border: none; border-radius: 0; min-height: 600px; }
+html body .std-celular-conversa:not(#love-h-a) { background: #FFFFFF; }
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-section:not(#love-h-a),
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-column:not(#love-h-a) { border: 0 !important; outline: 0 !important; }
+html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder-element.std-celular:not(#love-h-a) { min-height: 600px !important; }

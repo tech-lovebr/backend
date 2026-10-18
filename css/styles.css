@@ -8216,3 +8216,82 @@ body.organizadores-sem-previa #editor-header-save-container { display: none !imp
 html body #editor-form-about input.org-convite-email:not(#love-h-a) { width: 100%; max-width: 420px; }
 #organizadores-caixa .org-passo2 { padding: 0 16px 16px; border-bottom: 1px solid #E4E4E7; }
 #organizadores-caixa .org-feedback { padding: 0 16px 14px; }
+/* ==========================================================================
+   Padrão de tamanho dos botões — o mesmo do Hub B2B.
+   Cabeçalhos das páginas (Salvar, Publicar, Compartilhar, Adicionar presente,
+   Adicionar convidado, Salvar alterações…), "Filtrar por"/"Exportar"/lixeira
+   e as barras de busca: 38px de altura, texto 14px em peso 600, 14px de
+   respiro lateral, cantos de 8px e ícones de 16px.
+   ========================================================================== */
+html body .builder-toolbar .btn-primary:not(#love-h-a),
+html body .builder-toolbar .btn-secondary:not(#love-h-a),
+html body .builder-toolbar .btn-brand:not(#love-h-a),
+html body .builder-toolbar .btn-white:not(#love-h-a),
+html body .builder-toolbar .builder-toolbar-btn:not(#love-h-a),
+html body #classic-editor-toolbar .builder-toolbar-btn:not(#love-h-a),
+html body #view-event-os-dashboard .love-tabela-botao:not(#love-h-a),
+html body button.org-continuar:not(#love-h-a) {
+  height: 38px !important; min-height: 38px !important; box-sizing: border-box;
+  padding: 0 14px !important; font-size: 0.875rem !important; font-weight: 600 !important; line-height: 1;
+  border-radius: 8px !important; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+}
+html body .builder-toolbar .btn-primary svg:not(#love-h-a),
+html body .builder-toolbar .btn-secondary svg:not(#love-h-a),
+html body .builder-toolbar .btn-brand svg:not(#love-h-a),
+html body .builder-toolbar .btn-white svg:not(#love-h-a),
+html body #view-event-os-dashboard .love-tabela-botao:not(#love-h-a) svg { width: 16px !important; height: 16px !important; flex-shrink: 0; }
+/* Botão só de ícone no cabeçalho (ex.: presente aleatório): quadrado de 38px. */
+html body #btn-host-add-random-gift:not(#love-h-a) { width: 38px; padding: 0 !important; }
+/* Buscas (tabelas, Explorar, Chat, convite de organizador): 38px e 14px. */
+html body #view-event-os-dashboard .love-tabela-busca input:not(#love-h-a),
+html body #b2b-search-input:not(#love-h-a),
+html body input#b2b-chat-search:not(#love-h-a),
+html body #editor-form-about input.org-convite-email:not(#love-h-a) { height: 38px !important; min-height: 38px !important; font-size: 0.875rem; border-radius: 8px !important; box-sizing: border-box; }
+html body #view-event-os-dashboard .love-tabela-busca input:not(#love-h-a) { padding-left: 34px; }
+html body #b2b-search-input:not(#love-h-a) { padding-left: 36px; }
+
+/* Botões de ação em formulários (Configurações: Alterar senha, Ativar/
+   Desativar dois fatores, Excluir conta): o mesmo "Verificar"/"Atualizar
+   senha" do Hub — 44px, 14px em peso 600, 150px de largura, centrado. */
+html body #btn-settings-change-password:not(#love-h-a),
+html body #btn-settings-mfa-toggle:not(#love-h-a),
+html body #btn-settings-delete-account:not(#love-h-a) {
+  height: 44px; min-height: 44px; box-sizing: border-box; min-width: 150px; padding: 0 1.25rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  font-size: 0.875rem; font-weight: 600; border-radius: 8px !important;
+  background: #FFFFFF; color: #3F3F46; border: 1px solid #E4E4E7; box-shadow: none;
+}
+html body #btn-settings-change-password:not(#love-h-a):hover,
+html body #btn-settings-mfa-toggle:not(#love-h-a):hover,
+html body #btn-settings-delete-account:not(#love-h-a):hover { background: #FFFFFF; border-color: #181D24; color: #181D24; }
+html body #btn-settings-mfa-verify:not(#love-h-a) { height: 44px; min-height: 44px; font-size: 0.875rem; font-weight: 600; border-radius: 8px !important; }
+/* "Salvar alterações" no fim de Informações e "Adicionar comentário": 44px como os botões de formulário do Hub. */
+html body button.informacoes-salvar-rodape:not(#love-h-a),
+html body button.btn-comentar-convidado:not(#love-h-a) { height: 44px; font-size: 0.875rem; }
+/* Padrão do Hub (38px) também nos botões/buscas de cabeçalho fixados em 34px
+   por id mais acima. Desfazer/refazer/ver página continuam 34×34 (como o Hub). */
+html body #builder-save:not(#love-h-a),
+html body #builder-publish:not(#love-h-a),
+html body #builder-share:not(#love-h-a),
+html body #btn-host-add-guest:not(#love-h-a),
+html body .btn-host-add-gift:not(#love-h-a),
+html body #btn-host-add-random-gift:not(#love-h-a),
+html body #floorplan-filter-btn:not(#love-h-a),
+html body #btn-open-add-table-modal:not(#love-h-a),
+html body #btn-wallet-export:not(#love-h-a),
+html body #btn-add-comprovante:not(#love-h-a):not(.hidden),
+html body #btn-notifications-mark-all-read:not(#love-h-a),
+html body #btn-save-user-settings:not(#love-h-a) {
+  height: 38px !important; min-height: 38px !important;
+  padding-left: 14px !important; padding-right: 14px !important;
+  font-size: 0.875rem !important; font-weight: 600 !important; border-radius: 8px !important;
+}
+html body #btn-host-add-random-gift:not(#love-h-a) { width: 38px !important; min-width: 38px !important; padding-left: 0 !important; padding-right: 0 !important; }
+html body #gifts-search-input:not(#love-h-a),
+html body #rsvp-search-input:not(#love-h-a),
+html body #b2b-search-input:not(#love-h-a),
+html body #b2b-location-input:not(#love-h-a),
+html body input#b2b-chat-search:not(#love-h-a) { height: 38px !important; min-height: 38px !important; font-size: 0.875rem !important; line-height: normal; }
+html body #b2b-view-toggle:not(#love-h-a) { height: 38px !important; }
+html body #btn-host-add-gift:not(#love-h-a) { height: 38px !important; min-height: 38px !important; padding-left: 14px !important; padding-right: 14px !important; font-size: 0.875rem !important; font-weight: 600 !important; border-radius: 8px !important; }
+html body #btn-gifts-delete-selected:not(#love-h-a):not(.hidden) { height: 38px !important; min-height: 38px !important; }

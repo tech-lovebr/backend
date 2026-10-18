@@ -12162,6 +12162,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // /login: o olhinho mostra ou esconde a senha.
+  document.getElementById('btn-login-ver-senha')?.addEventListener('click', (e) => {
+    const btn = /** @type {HTMLButtonElement} */ (e.currentTarget);
+    const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('login-password-input'));
+    if (!campo) return;
+    const mostrar = campo.type === 'password';
+    campo.type = mostrar ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', String(mostrar));
+    btn.setAttribute('aria-label', mostrar ? 'Esconder senha' : 'Mostrar senha');
+    btn.querySelector('.login-olho-aberto')?.classList.toggle('hidden', mostrar);
+    btn.querySelector('.login-olho-fechado')?.classList.toggle('hidden', !mostrar);
+    campo.focus();
+  });
+
   // 10.2 / 10.3 — Entrar / criar conta com o Google (Supabase Auth). Volta
   // para a raiz do site; initClienteSession cria o cadastro de anfitrião na
   // primeira vez (função garantir_cliente_google — migration 049).

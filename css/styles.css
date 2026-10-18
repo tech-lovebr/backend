@@ -7995,3 +7995,19 @@ html body button.login-esqueceu-senha:not(#love-h-a) {
 }
 html body button.login-esqueceu-senha:not(#love-h-a):hover { color: #181D24; text-decoration: underline; background: none; }
 .login-ou-continue { font-size: 12px; font-weight: 500; color: #181D24; text-transform: none; }
+
+/* /login: ícone de e-mail e olhinho da senha dentro do campo, à direita, em
+   cinza-claro. */
+.login-campo-com-icone { position: relative; }
+html body .login-campo-com-icone input:not(#love-h-a) { padding-right: 2.75rem; }
+.login-campo-icone {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: #A1A1AA; pointer-events: none;
+}
+.login-campo-icone svg { width: 18px; height: 18px; }
+html body button.login-ver-senha:not(#love-h-a) {
+  pointer-events: auto; cursor: pointer; background: none; border: none; padding: 0; box-shadow: none; color: #A1A1AA;
+  width: 28px; height: 28px; right: 8px; border-radius: 6px;
+}
+html body button.login-ver-senha:not(#love-h-a):hover { color: #71717A; background: none; }
+.login-ver-senha .hidden { display: none; }

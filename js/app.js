@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('love-theme') || 'light';
       applyTheme(savedTheme);
     } else {
-      document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'first-access-locked');
+      document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'first-access-locked');
       document.body.removeAttribute('data-theme');
       document.documentElement.removeAttribute('data-theme');
       if (elements.viewDashboard) {
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
       // Mesmo encaixe das outras páginas do painel: barra de título colada
       // no header e no rail (ver body.page-mode em styles.css).
-      document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+      document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
       document.body.classList.add('page-mode');
       if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
       if (elements.mainArea) elements.mainArea.classList.add('full-width');
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
     // Mesmo encaixe das outras páginas do painel: barra de título colada
     // no header e no rail (ver body.page-mode em styles.css).
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+    document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
     document.body.classList.add('page-mode');
     if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
     if (elements.mainArea) elements.mainArea.classList.add('full-width');
@@ -627,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fecharTodosOsDrawers();
     state.currentTab = tabId;
     elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
+    document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'gifts-mode', 'wallet-mode');
     document.body.classList.add('page-mode');
     if (elements.subDrawer) elements.subDrawer.classList.add('hidden-drawer');
     if (elements.mainArea) elements.mainArea.classList.add('full-width');
@@ -1444,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Reseta todos os modos especiais do body primeiro
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode');
+    document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode');
 
     // 1. Atualiza destaque circular do ícone na Sidebar Rail
     elements.railIconBtns.forEach(btn => {
@@ -1570,7 +1570,7 @@ document.addEventListener('DOMContentLoaded', () => {
       content.classList.toggle('active', content.id === `tab-${tabKey}`);
     });
 
-    document.body.classList.remove('editor-split-mode', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode');
+    document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode');
 
     // Ativa os modos e sub-seções correspondentes
     if (tabKey === 'edit-site') {
@@ -2500,6 +2500,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (headerSaveContainer) {
       headerSaveContainer.classList.remove('hidden');
     }
+
+    // Organizadores não tem prévia ao lado: só a tabela, na largura toda.
+    document.body.classList.toggle('organizadores-sem-previa', subId === 'about');
 
     // Oculta todos os sub-formulários e exibe o selecionado
     document.querySelectorAll('.editor-sub-panel').forEach(panel => panel.classList.add('hidden'));
@@ -6589,46 +6592,47 @@ document.addEventListener('DOMContentLoaded', () => {
       </label>`).join('');
   }
 
-  const ICONE_LAPIS = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>';
-  const ICONE_X = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>';
+  function situacaoDoOrganizadorHtml(o) {
+    if (o.criador) return '<span class="org-situacao org-situacao-criador">Criador(a)</span>';
+    const aceito = o.status === 'aceito';
+    return `<span class="org-situacao ${aceito ? 'org-situacao-aceito' : 'org-situacao-pendente'}">${aceito ? 'Aceito' : 'Pendente'}</span><span class="org-copiado hidden">Link copiado.</span>`;
+  }
 
-  // Linha de um organizador convidado: nome, e-mail, situação (Pendente/Aceito)
-  // e áreas; para o criador do evento, lápis (editar as áreas) e X (remover).
+  // Linha da tabela de organizadores: nome, e-mail, funções, situação e ⋯
+  // (editar funções / copiar link do convite / remover — só para o criador).
+  // Logo abaixo, uma linha escondida com as funções para editar.
   function linhaDeOrganizadorHtml(o, ehDono) {
     const nome = (o.nome || '').trim() || String(o.email || '').split('@')[0];
     const aceito = o.status === 'aceito';
     const areas = areasDoOrganizador(o);
-    const rotulos = AREAS_ORGANIZADOR.filter(a => areas.includes(a.id)).map(a => a.label).join(', ');
+    const todas = AREAS_ORGANIZADOR.every(a => areas.includes(a.id));
+    const rotulos = todas ? 'Todas as funções' : AREAS_ORGANIZADOR.filter(a => areas.includes(a.id)).map(a => a.label).join(', ');
     const link = `${window.location.origin}/organizador?token=${encodeURIComponent(o.token || '')}`;
     return `
-      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80" data-organizador-id="${escaparHtml(o.id)}" data-permissoes="${escaparHtml(JSON.stringify(areas))}">
-        <div class="flex items-center justify-between gap-3">
-          <div class="min-w-0 flex-1">
-            <p class="text-xs font-bold text-zinc-900">${escaparHtml(nome)} <span class="font-medium ${aceito ? 'text-emerald-600' : 'text-amber-600'}">· ${aceito ? 'Aceito' : 'Pendente'}</span></p>
-            <p class="text-[11px] text-zinc-500 truncate">${escaparHtml(o.email)}</p>
-            <p class="text-[11px] text-zinc-500 mt-0.5">${rotulos ? escaparHtml(rotulos) : 'Sem áreas liberadas'}</p>
+      <tr data-organizador-id="${escaparHtml(o.id)}" data-permissoes="${escaparHtml(JSON.stringify(areas))}" data-link="${escaparHtml(link)}" data-aceito="${aceito ? '1' : ''}" data-nome="${escaparHtml(nome)}">
+        <td class="font-semibold text-zinc-900">${escaparHtml(nome)}</td>
+        <td class="text-zinc-600">${escaparHtml(o.email || '')}</td>
+        <td class="text-zinc-600">${rotulos ? escaparHtml(rotulos) : '<span class="text-zinc-400">Sem funções liberadas</span>'}</td>
+        <td>${situacaoDoOrganizadorHtml(o)}</td>
+        <td class="love-tabela-col-mais">${ehDono ? `<button type="button" class="love-tabela-mais btn-org-mais" title="Mais opções" aria-label="Mais opções">${ICONE_MAIS}</button>` : ''}</td>
+      </tr>
+      ${ehDono ? `
+      <tr class="org-editar-linha hidden" data-para="${escaparHtml(o.id)}">
+        <td colspan="5">
+          <div class="org-editar space-y-3">
+            <p class="text-xs font-semibold text-zinc-800">Funções que ${escaparHtml(nome)} pode acessar</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">${checklistDeAreasHtml('org-editar-area', areas)}</div>
+            <p class="org-editar-erro text-xs text-red-600 hidden"></p>
+            <div class="flex items-center gap-3">
+              <button type="button" class="btn-org-salvar btn-secondary">Salvar</button>
+              <button type="button" class="btn-org-cancelar text-xs text-zinc-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
+            </div>
           </div>
-          ${ehDono ? `
-          <div class="flex items-center gap-1 shrink-0">
-            ${aceito ? '' : `<button type="button" class="btn-org-copiar org-icone-btn org-icone-texto" data-link="${escaparHtml(link)}" title="Copiar link do convite">Copiar link</button>`}
-            <button type="button" class="btn-org-editar org-icone-btn" title="Editar o que a pessoa pode acessar" aria-label="Editar acesso">${ICONE_LAPIS}</button>
-            <button type="button" class="btn-org-remover org-icone-btn" title="Remover" aria-label="Remover">${ICONE_X}</button>
-          </div>` : ''}
-        </div>
-        ${ehDono ? `
-        <div class="org-editar hidden mt-3 pt-3 border-t border-zinc-200/80 space-y-3">
-          <p class="text-xs font-semibold text-zinc-800">O que ${escaparHtml(nome)} pode acessar</p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${checklistDeAreasHtml('org-editar-area', areas)}</div>
-          <p class="org-editar-erro text-xs text-red-600 hidden"></p>
-          <div class="flex items-center gap-3">
-            <button type="button" class="btn-org-salvar btn-secondary">Salvar</button>
-            <button type="button" class="btn-org-cancelar text-xs text-zinc-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
-          </div>
-        </div>` : ''}
-      </div>`;
+        </td>
+      </tr>` : ''}`;
   }
 
-  // Lista "Organizadores": criador (só leitura) + convidados do banco.
+  // Tabela "Organizadores": criador (só leitura) + convidados do banco.
   async function renderOrganizadores() {
     const hostsList = document.getElementById('hosts-team-list');
     const ev = getActiveEvent();
@@ -6637,11 +6641,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const perfil = window.loveClienteProfile || {};
     const nomeCriador = ehDono ? (perfil.couple_name || 'Anfitrião') : (ev.hostName || 'Anfitrião');
     const emailCriador = ehDono ? (perfil.email || '') : '';
+    const tabela = document.getElementById('organizadores-tabela');
+    if (tabela) montarBarraDaTabela(tabela, { caixa: document.getElementById('organizadores-caixa'), placeholder: 'Buscar organizador...', nome: 'organizadores' });
     hostsList.innerHTML = `
-      <div class="host-team-row p-3.5 rounded-lg bg-zinc-50/80 border border-zinc-200/80">
-        <p class="text-xs font-bold text-zinc-900">${escaparHtml(nomeCriador)} <span class="font-medium text-zinc-500">· Criador(a)</span></p>
-        ${emailCriador ? `<p class="text-[11px] text-zinc-500 truncate">${escaparHtml(emailCriador)}</p>` : ''}
-      </div>`;
+      <tr class="org-linha-criador">
+        <td class="font-semibold text-zinc-900">${escaparHtml(nomeCriador)}</td>
+        <td class="text-zinc-600">${escaparHtml(emailCriador)}</td>
+        <td class="text-zinc-600">Todas as funções</td>
+        <td>${situacaoDoOrganizadorHtml({ criador: true })}</td>
+        <td class="love-tabela-col-mais"></td>
+      </tr>`;
     if (!ehUuid(ev.id)) return;
     const { data, error } = await supabaseClient
       .from('eventos_organizadores')
@@ -6656,55 +6665,100 @@ document.addEventListener('DOMContentLoaded', () => {
     hostsList.insertAdjacentHTML('beforeend', (data || []).map(o => linhaDeOrganizadorHtml(o, ehDono)).join(''));
   }
 
-  // Copiar link / editar acesso / remover (delegação: a lista é redesenhada).
+  // Menu ⋯ da linha: Editar funções / Copiar link do convite / Remover.
+  function fecharMenuOrganizador() {
+    document.querySelector('.org-menu')?.remove();
+  }
+  /** @param {HTMLElement} btn @param {HTMLElement} linha */
+  function abrirMenuOrganizador(btn, linha) {
+    fecharMenuOrganizador();
+    const id = linha.dataset.organizadorId || '';
+    const menu = document.createElement('div');
+    menu.className = 'org-menu';
+    menu.dataset.para = id;
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = `
+      <button type="button" role="menuitem" data-org-acao="editar" data-organizador-id="${escaparHtml(id)}">Editar funções</button>
+      ${linha.dataset.aceito ? '' : `<button type="button" role="menuitem" data-org-acao="copiar" data-organizador-id="${escaparHtml(id)}">Copiar link do convite</button>`}
+      <button type="button" role="menuitem" data-org-acao="remover" data-organizador-id="${escaparHtml(id)}">Remover</button>`;
+    document.body.appendChild(menu);
+    const r = btn.getBoundingClientRect();
+    menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
+    menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
+  }
+  document.addEventListener('click', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (!alvo.closest || (!alvo.closest('.org-menu') && !alvo.closest('.btn-org-mais'))) fecharMenuOrganizador();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuOrganizador(); });
+
+  // Ações da tabela (delegação: a tabela é redesenhada).
   document.addEventListener('click', async (e) => {
-    const copiar = e.target.closest('.btn-org-copiar');
-    if (copiar) {
-      try { await navigator.clipboard.writeText(copiar.dataset.link); copiar.textContent = 'Copiado!'; setTimeout(() => { copiar.textContent = 'Copiar link'; }, 2000); }
-      catch (err) { window.prompt('Copie o link do convite:', copiar.dataset.link); }
+    const alvo = /** @type {Element} */ (e.target);
+    const lista = document.getElementById('hosts-team-list');
+    if (!lista || !alvo.closest) return;
+
+    const mais = alvo.closest('.btn-org-mais');
+    if (mais) {
+      e.stopPropagation();
+      const linha = /** @type {HTMLElement} */ (mais.closest('tr'));
+      const aberto = document.querySelector('.org-menu');
+      if (aberto && aberto.dataset.para === linha.dataset.organizadorId) { fecharMenuOrganizador(); return; }
+      abrirMenuOrganizador(/** @type {HTMLElement} */ (mais), linha);
       return;
     }
-    const linha = e.target.closest('[data-organizador-id]');
-    if (!linha) return;
-    const id = linha.dataset.organizadorId;
-    const editor = linha.querySelector('.org-editar');
 
-    if (e.target.closest('.btn-org-editar')) {
-      if (!editor) return;
-      const abrir = editor.classList.contains('hidden');
-      if (abrir) {
+    const acao = /** @type {HTMLElement|null} */ (alvo.closest('[data-org-acao]'));
+    if (acao) {
+      const id = acao.dataset.organizadorId || '';
+      fecharMenuOrganizador();
+      const linha = /** @type {HTMLElement|null} */ (lista.querySelector(`tr[data-organizador-id="${id}"]`));
+      const editorLinha = /** @type {HTMLElement|null} */ (lista.querySelector(`tr.org-editar-linha[data-para="${id}"]`));
+      if (!linha) return;
+      if (acao.dataset.orgAcao === 'copiar') {
+        const link = linha.dataset.link || '';
+        try { await navigator.clipboard.writeText(link); } catch (err) { window.prompt('Copie o link do convite:', link); return; }
+        const ok = linha.querySelector('.org-copiado');
+        if (ok) { ok.classList.remove('hidden'); setTimeout(() => ok.classList.add('hidden'), 2000); }
+        return;
+      }
+      if (acao.dataset.orgAcao === 'editar') {
+        if (!editorLinha) return;
+        lista.querySelectorAll('tr.org-editar-linha').forEach(l => { if (l !== editorLinha) l.classList.add('hidden'); });
         let marcadas = [];
         try { marcadas = JSON.parse(linha.dataset.permissoes || '[]'); } catch (err) { marcadas = []; }
-        editor.querySelectorAll('.org-editar-area').forEach(c => { c.checked = marcadas.includes(c.value); });
-        editor.querySelector('.org-editar-erro').classList.add('hidden');
+        editorLinha.querySelectorAll('.org-editar-area').forEach(c => { /** @type {HTMLInputElement} */ (c).checked = marcadas.includes(/** @type {HTMLInputElement} */ (c).value); });
+        editorLinha.querySelector('.org-editar-erro')?.classList.add('hidden');
+        editorLinha.classList.remove('hidden');
+        return;
       }
-      editor.classList.toggle('hidden', !abrir);
+      if (acao.dataset.orgAcao === 'remover') {
+        const nome = linha.dataset.nome || 'esta pessoa';
+        const ok = await confirmarNaLove({ titulo: `Remover ${nome}?`, texto: 'A pessoa deixa de ver o evento na conta dela.', botao: 'Remover', aoConfirmar: async () => {
+          const { error } = await supabaseClient.from('eventos_organizadores').update({ status: 'removido' }).eq('id', id);
+          return error ? 'Não foi possível remover agora. Tente de novo.' : null;
+        } });
+        if (ok) renderOrganizadores();
+      }
       return;
     }
-    if (e.target.closest('.btn-org-cancelar')) {
-      editor?.classList.add('hidden');
-      return;
-    }
-    if (e.target.closest('.btn-org-salvar')) {
-      const btn = e.target.closest('.btn-org-salvar');
-      const erro = editor.querySelector('.org-editar-erro');
-      const permissoes = Array.from(editor.querySelectorAll('.org-editar-area:checked')).map(c => c.value);
-      erro.classList.add('hidden');
-      if (!permissoes.length) { erro.textContent = 'Marque pelo menos uma área.'; erro.classList.remove('hidden'); return; }
-      btn.disabled = true;
-      const { error } = await supabaseClient.from('eventos_organizadores').update({ papel: 'personalizado', permissoes }).eq('id', id);
-      btn.disabled = false;
-      if (error) { console.error('Erro ao salvar acesso:', error); erro.textContent = 'Não foi possível salvar agora. Tente de novo.'; erro.classList.remove('hidden'); return; }
-      renderOrganizadores();
-      return;
-    }
-    if (e.target.closest('.btn-org-remover')) {
-      const ok = await confirmarNaLove({ titulo: 'Remover este organizador?', texto: 'A pessoa deixa de ver o evento na conta dela.', botao: 'Remover', aoConfirmar: async () => {
-        const { error } = await supabaseClient.from('eventos_organizadores').update({ status: 'removido' }).eq('id', id);
-        return error ? 'Não foi possível remover agora. Tente de novo.' : null;
-      } });
-      if (ok) renderOrganizadores();
-    }
+
+    const salvar = alvo.closest('.btn-org-salvar');
+    const cancelar = alvo.closest('.btn-org-cancelar');
+    if (!salvar && !cancelar) return;
+    const editorLinha = /** @type {HTMLElement} */ ((salvar || cancelar).closest('tr.org-editar-linha'));
+    if (!editorLinha) return;
+    if (cancelar) { editorLinha.classList.add('hidden'); return; }
+    const id = editorLinha.dataset.para || '';
+    const erro = /** @type {HTMLElement} */ (editorLinha.querySelector('.org-editar-erro'));
+    const permissoes = Array.from(editorLinha.querySelectorAll('.org-editar-area:checked')).map(c => /** @type {HTMLInputElement} */ (c).value);
+    erro.classList.add('hidden');
+    if (!permissoes.length) { erro.textContent = 'Marque pelo menos uma função.'; erro.classList.remove('hidden'); return; }
+    /** @type {HTMLButtonElement} */ (salvar).disabled = true;
+    const { error } = await supabaseClient.from('eventos_organizadores').update({ papel: 'personalizado', permissoes }).eq('id', id);
+    /** @type {HTMLButtonElement} */ (salvar).disabled = false;
+    if (error) { console.error('Erro ao salvar acesso:', error); erro.textContent = 'Não foi possível salvar agora. Tente de novo.'; erro.classList.remove('hidden'); return; }
+    renderOrganizadores();
   });
 
   // Convidar: e-mail → Enter → marca as áreas → Enviar convite.
@@ -6737,6 +6791,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     inputEmail.addEventListener('input', () => { if (!passo2.classList.contains('hidden')) emailLabel.textContent = inputEmail.value.trim(); });
+    // "Continuar" ao lado do e-mail: abre as funções (o mesmo que dar Enter).
+    document.getElementById('btn-continuar-host-invite')?.addEventListener('click', () => {
+      if (abrirPasso2()) passo2.querySelector('input')?.focus();
+    });
     document.getElementById('btn-cancel-host-invite')?.addEventListener('click', () => { limparPasso2(); inputEmail.value = ''; feedback?.classList.add('hidden'); });
 
     formInviteHost.addEventListener('submit', async (e) => {
@@ -6748,7 +6806,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const permissoes = Array.from(document.querySelectorAll('.host-invite-area:checked')).map(c => c.value);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('Digite um e-mail válido.', true);
       if (!ev || !ehUuid(ev.id)) return avisar('Salve o evento antes de convidar organizadores.', true);
-      if (!permissoes.length) return avisar('Marque pelo menos uma área para a pessoa acessar.', true);
+      if (!permissoes.length) return avisar('Marque pelo menos uma função para a pessoa acessar.', true);
 
       const btn = document.getElementById('btn-submit-host-invite');
       if (btn) btn.disabled = true;

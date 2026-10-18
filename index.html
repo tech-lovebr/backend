@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261018_respirotabela">
+  <link rel="stylesheet" href="css/styles.css?v=20261018_addorganizador">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1413,20 +1413,17 @@
 <!-- Sub-seção 3: Anfitriões -->
               <div id="editor-form-about" class="editor-sub-panel hidden space-y-4 pb-16 sm:pb-24">
 
-                <!-- Convidar organizador: título em cima; o e-mail e o "Convidar" ficam
-                     na barra da tabela; as funções abrem logo abaixo da barra. -->
-                <div id="organizadores-convidar">
-                  <h4 class="font-bold text-zinc-900 text-sm font-sans">Convidar organizador</h4>
-                </div>
-
+                <!-- Adicionar organizador: e-mail + botão na barra da tabela; as funções
+                     abrem logo abaixo da barra (só o criador vê o bloco). -->
                 <div id="organizadores-caixa" class="dash-card love-tabela-caixa">
+                  <div id="organizadores-convidar">
                   <form id="form-invite-host" autocomplete="off">
                     <div class="love-tabela-barra">
                       <div class="love-tabela-barra-esq org-convite-linha">
                         <input type="email" id="input-host-invite-email" required placeholder="E-mail da pessoa" class="org-convite-email w-full text-xs sm:text-sm rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
                       </div>
                       <div class="love-tabela-barra-dir">
-                        <button type="button" id="btn-continuar-host-invite" class="org-continuar">Convidar</button>
+                        <button type="button" id="btn-continuar-host-invite" class="btn-primary org-continuar"><svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg><span>Adicionar organizador</span></button>
                       </div>
                     </div>
                     <div id="host-invite-passo2" class="hidden org-passo2 space-y-3">
@@ -1439,6 +1436,7 @@
                     </div>
                     <p id="host-invite-feedback" class="hidden org-feedback"></p>
                   </form>
+                  </div>
                   <div class="w-full overflow-x-auto">
                     <table id="organizadores-tabela" class="love-tabela w-full text-left border-collapse font-sans">
                       <thead>

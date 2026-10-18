@@ -8352,3 +8352,9 @@ body[data-theme="dark"] .vaquinha-icone { background: #2A2A2A; color: #9CC3E4; }
 html body #organizadores-caixa:not(#love-h-a),
 html body #config-eventos-caixa:not(#love-h-a) { margin-top: 24px !important; }
 html body #config-painel-eventos > h3:not(#love-h-a) { margin-bottom: 0; }
+/* Organizadores: "Adicionar organizador" na cor da sidebar (como "Adicionar
+   convidado"), com o + na frente; sem título acima da caixa. */
+html body button.org-continuar:not(#love-h-a) { background: #181D24; color: #FFFFFF; border-color: #181D24; }
+html body button.org-continuar:not(#love-h-a):hover { background: #0F1216; border-color: #0F1216; color: #FFFFFF; }
+html body button.org-continuar:not(#love-h-a) svg { width: 16px; height: 16px; }
+html body #organizadores-caixa:not(#love-h-a) { margin-top: 0 !important; }

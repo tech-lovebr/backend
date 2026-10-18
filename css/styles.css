@@ -8347,3 +8347,8 @@ body[data-theme="dark"] .vaquinha-card { background: #1F1F1F; border-color: #404
 body[data-theme="dark"] .vaquinha-card:hover, body[data-theme="dark"] .vaquinha-card:has(input:checked) { background: #252525; }
 body[data-theme="dark"] .vaquinha-titulo { color: #FFFFFF; }
 body[data-theme="dark"] .vaquinha-icone { background: #2A2A2A; color: #9CC3E4; }
+/* Padrão: entre o título/abas de uma página e a caixa da tabela há 24px (o
+   mesmo de Meus convidados). Vale para Organizadores e Meus eventos. */
+html body #organizadores-caixa:not(#love-h-a),
+html body #config-eventos-caixa:not(#love-h-a) { margin-top: 24px !important; }
+html body #config-painel-eventos > h3:not(#love-h-a) { margin-bottom: 0; }

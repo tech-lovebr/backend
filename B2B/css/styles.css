@@ -8313,3 +8313,11 @@ body[data-theme="dark"] .settings-switch input:checked ~ .settings-switch-track 
 body[data-theme="dark"] .settings-switch input:checked ~ .settings-switch-track::before { background: #18181B !important; }
 /* Switch do painel do Editor de site continua azul clarinho. */
 html body #builder-elements-panel .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #ebf4ff; border-color: #ebf4ff; }
+
+/* Bolinha de recolher/expandir o menu: invisível; aparece só com o mouse
+   no meio da borda da sidebar (ou com foco pelo teclado). */
+html body .sidebar-edge-toggle:not(#love-h-a) { opacity: 0; transition: opacity .15s ease; }
+html body .sidebar-edge-toggle:not(#love-h-a)::after { content: ''; position: absolute; inset: -16px -10px; }
+html body .sidebar-edge-toggle:not(#love-h-a):hover,
+html body .sidebar-edge-toggle:not(#love-h-a):focus-visible { opacity: 1; }
+@media (hover: none) { html body .sidebar-edge-toggle:not(#love-h-a) { opacity: 1; } }

@@ -8091,3 +8091,13 @@ body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs .builder-pan
    para ele se destacar do fundo. */
 html body .builder-canvas-frame:not(#love-h-a) { box-shadow: 0 2px 6px rgba(16, 24, 40, 0.10), 0 8px 24px rgba(16, 24, 40, 0.08); }
 body[data-theme="dark"] .builder-canvas-frame { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.35) !important; }
+
+/* Editor de site › painel da esquerda sem caixa alta (igual ao love.com.br):
+   aba "Elementos" e títulos dos grupos (Básicos, Avançado…) em texto normal.
+   A aba "URL" continua em caixa alta. */
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab[data-panel-tab="elementos"]:not(#love-h-a),
+html body #builder-elements-panel .builder-el-group-title:not(#love-h-a) {
+  text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600;
+}
+html body #builder-elements-panel .builder-el-group-title:not(#love-h-a) { color: #71717A; }
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active[data-panel-tab="elementos"]:not(#love-h-a) { color: #181D24; }

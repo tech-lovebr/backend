@@ -8358,3 +8358,112 @@ html body button.org-continuar:not(#love-h-a) { background: #181D24; color: #FFF
 html body button.org-continuar:not(#love-h-a):hover { background: #0F1216; border-color: #0F1216; color: #FFFFFF; }
 html body button.org-continuar:not(#love-h-a) svg { width: 16px; height: 16px; }
 html body #organizadores-caixa:not(#love-h-a) { margin-top: 0 !important; }
+/* ==========================================================================
+   Camada anti-"vibe code" (diretriz global de refinamento visual)
+   1. Bordas translúcidas (preto a 6%) com anel quase invisível (3%) no
+      lugar do cinza chapado; divisores de tabela a 4%.
+   2. Raios: mantidos os da identidade (cards 10px, controles 8px, tags 6px).
+   3. Sombras: nada de sombra seca em cards; nos overlays (menus, drawers,
+      modais) sombra difusa em camadas.
+   4. Tipografia: títulos com tracking apertado; microtextos em 11px/500
+      cinza; valores em dinheiro com algarismos tabulares e mono.
+   5. Switches: cinza quando desligado, cor primária da marca quando ligado.
+   Tudo com variante escura.
+   ========================================================================== */
+:root {
+  --borda-suave: rgba(0, 0, 0, 0.06);
+  --anel-suave: 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --divisor-suave: rgba(0, 0, 0, 0.04);
+  --sombra-overlay: 0 1px 2px rgba(0, 0, 0, 0.03), 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  --sombra-overlay-hover: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+}
+body[data-theme="dark"] {
+  --borda-suave: rgba(255, 255, 255, 0.08);
+  --anel-suave: 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --divisor-suave: rgba(255, 255, 255, 0.04);
+  --sombra-overlay: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+}
+
+/* 1. Bordas e divisores */
+html body .dash-card:not(#love-h-a),
+html body #view-event-os-dashboard .love-tabela-caixa:not(#love-h-a),
+html body #organizadores-caixa:not(#love-h-a),
+html body #config-eventos-caixa:not(#love-h-a),
+html body .builder-el-item:not(#love-h-a),
+html body #builder-elements-panel .builder-panel-tabs:not(#love-h-a),
+html body .vaquinha-card:not(#love-h-a),
+html body .conta-avatar-picker:not(#love-h-a),
+html body .std-emojis:not(#love-h-a) { border-color: var(--borda-suave) !important; box-shadow: var(--anel-suave); }
+html body .vaquinha-card:has(input:checked):not(#love-h-a) { border-color: rgba(24, 59, 84, 0.35) !important; box-shadow: var(--anel-suave), inset 0 0 0 1px rgba(24, 59, 84, 0.12); }
+html body #view-event-os-dashboard input[type="text"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="email"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="search"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="number"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="url"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="password"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="date"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="time"]:not(#love-h-a),
+html body #view-event-os-dashboard select:not(#love-h-a),
+html body #view-event-os-dashboard textarea:not(#love-h-a) { border-color: var(--borda-suave); }
+html body #view-event-os-dashboard input:not(#love-h-a):focus,
+html body #view-event-os-dashboard select:not(#love-h-a):focus,
+html body #view-event-os-dashboard textarea:not(#love-h-a):focus { border-color: #181D24; }
+html body #view-event-os-dashboard table.love-tabela tbody td:not(#love-h-a) { border-top-color: var(--divisor-suave) !important; }
+html body #view-event-os-dashboard table.love-tabela thead th:not(#love-h-a) { border-top-color: var(--borda-suave) !important; border-bottom-color: var(--borda-suave) !important; }
+html body #view-event-os-dashboard .love-tabela-barra:not(#love-h-a) { border-bottom: 1px solid var(--divisor-suave); }
+html body .divide-y > :not([hidden]) ~ :not([hidden]):not(#love-h-a),
+html body .divide-zinc-100 > :not([hidden]) ~ :not([hidden]):not(#love-h-a) { border-color: var(--divisor-suave); }
+
+/* 3. Sombras difusas só em overlays */
+html body .org-menu:not(#love-h-a),
+html body .conv-menu:not(#love-h-a),
+html body .love-tabela-filtro-menu:not(#love-h-a),
+html body .std-compartilhar-menu:not(#love-h-a),
+html body .std-emojis:not(#love-h-a),
+html body .kanban-list-dropdown:not(#love-h-a),
+html body #dropdown-user-account:not(#love-h-a) { box-shadow: var(--sombra-overlay); border-color: var(--borda-suave); transition: box-shadow .15s ease-out; }
+
+/* 4. Tipografia */
+html body h1:not(#love-h-a), html body h2:not(#love-h-a), html body h3:not(#love-h-a),
+html body .floorplan-page-name:not(#love-h-a), html body .builder-page-name:not(#love-h-a),
+html body .vaquinha-titulo:not(#love-h-a) { letter-spacing: -0.025em; }
+html body p.text-\[11px\].text-zinc-400:not(#love-h-a), html body p.text-\[11px\].text-zinc-500:not(#love-h-a),
+html body span.text-\[11px\].text-zinc-400:not(#love-h-a), html body span.text-\[11px\].text-zinc-500:not(#love-h-a),
+html body p.text-\[11px\].text-slate-400:not(#love-h-a), html body p.text-\[11px\].text-slate-500:not(#love-h-a),
+html body .conta-avatar-status:not(#love-h-a), html body .org-editar-erro:not(.text-red-600):not(#love-h-a) { font-size: 11px; font-weight: 500; color: #A1A1AA; }
+html body #view-event-os-dashboard table.love-tabela td:not(#love-h-a) { font-variant-numeric: tabular-nums; }
+html body #kpi-budget-total:not(#love-h-a), html body #kpi-budget-spent:not(#love-h-a),
+html body #kpi-budget-paid-total:not(#love-h-a), html body #kpi-budget-due:not(#love-h-a),
+html body #budget-donut-amount:not(#love-h-a), html body .convite-carrinho-total strong:not(#love-h-a),
+html body [id^="wallet-balance"]:not(#love-h-a), html body [id^="kpi-wallet"]:not(#love-h-a) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace; font-variant-numeric: tabular-nums; letter-spacing: -0.025em;
+}
+
+/* 5. Switches: cinza desligado, primária da marca ligado (sem o azul de biblioteca) */
+html body .settings-switch .settings-switch-track:not(#love-h-a) { background: #E4E4E7; transition: background-color .2s ease; }
+html body .settings-switch .settings-switch-track:not(#love-h-a)::before { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); transition: transform .2s ease; }
+html body .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #183b54; }
+body[data-theme="dark"] .settings-switch .settings-switch-track:not(#love-h-a) { background: #4b4b4b !important; }
+body[data-theme="dark"] .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #9CC3E4 !important; }
+body[data-theme="dark"] .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a)::before { background: #181D24; }
+/* Prioridade da camada anti-"vibe code" sobre regras antigas com !important. */
+html body .dash-card:not(#love-h-a),
+html body #view-event-os-dashboard .love-tabela-caixa:not(#love-h-a) { box-shadow: var(--anel-suave) !important; }
+html body h1:not(#love-h-a), html body h2:not(#love-h-a), html body h3:not(#love-h-a),
+html body .floorplan-page-name:not(#love-h-a), html body .builder-page-name:not(#love-h-a) { letter-spacing: -0.025em !important; }
+html body #view-event-os-dashboard input[type="text"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="email"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="search"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="number"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="url"]:not(#love-h-a),
+html body #view-event-os-dashboard input[type="password"]:not(#love-h-a),
+html body #view-event-os-dashboard select:not(#love-h-a),
+html body #view-event-os-dashboard textarea:not(#love-h-a) { border-color: var(--borda-suave) !important; }
+html body #view-event-os-dashboard input:not(#love-h-a):focus,
+html body #view-event-os-dashboard select:not(#love-h-a):focus,
+html body #view-event-os-dashboard textarea:not(#love-h-a):focus { border-color: #181D24 !important; }
+html body #kpi-budget-total:not(#love-h-a), html body #kpi-budget-spent:not(#love-h-a),
+html body #kpi-budget-paid-total:not(#love-h-a), html body #kpi-budget-due:not(#love-h-a),
+html body #budget-donut-amount:not(#love-h-a), html body [id^="wallet-balance"]:not(#love-h-a), html body [id^="kpi-wallet"]:not(#love-h-a) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace !important;
+}

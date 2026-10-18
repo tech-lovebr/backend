@@ -1196,8 +1196,8 @@ const STD_FORMATOS = [
 
 // "Gerar com IA" do Save the Date: na verdade sorteia um texto pronto do tipo
 // do evento (casamento, aniversário, bodas…). {DATA} vira a data em negrito e
-// {CASAL:…} vira o nome dos anfitriões (sem nome, fica o texto entre colchetes
-// para a pessoa completar).
+// {CASAL:…} vira a assinatura entre colchetes ([Nome] & [Nome] ou [Nome]),
+// para a pessoa completar — nunca o nome cadastrado.
 const STD_TEXTOS_PRONTOS = {
   wedding: [
     "Olá! Tudo bem?\n\nCom muito carinho, queremos compartilhar com você uma notícia muito especial: vamos nos casar!\n\nGostaríamos imensamente de ter você ao nosso lado nesse momento inesquecível.\n\nPor isso, já queremos reservar a data na sua agenda para que possa se programar:\n\n{DATA}\n\nEm breve, enviaremos o convite oficial com todos os detalhes da cerimônia e da celebração.\n\nPor enquanto, pedimos uma confirmação prévia da sua presença, junto com o envio do seu nome completo (e acompanhantes, se houver) — essas informações são essenciais para o cadastro e envio do convite digital interativo.\n\nSerá uma alegria imensa ter você conosco.\n\nCom carinho,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}",
@@ -1235,10 +1235,16 @@ function textoProntoDoSaveTheDate(anterior) {
   const ev = getActiveEventForBuilder() || {};
   const lista = STD_TEXTOS_PRONTOS[ev.type] || STD_TEXTOS_PRONTOS.birthday;
   const data = dataDoEventoPorExtenso(ev) || '[Data do Evento]';
-  const nomes = String(ev.hostName || '').trim();
+  // Assinatura sempre com o espaço entre colchetes (nunca o nome cadastrado):
+  // casal = "[Nome] & [Nome]"; aniversário = um nome só, "[Nome]".
+  const assinatura = (padrao) => {
+    if (['wedding', 'bridal_shower', 'anniversary'].includes(ev.type)) return '[Nome] & [Nome]';
+    if (!ev.type || ev.type === 'birthday' || !STD_TEXTOS_PRONTOS[ev.type]) return '[Nome]';
+    return padrao;
+  };
   const montar = (modelo) => modelo
     .replace('{DATA}', `*${data}*`)
-    .replace(/\{CASAL:([^}]*)\}/g, (m, padrao) => nomes || padrao);
+    .replace(/\{CASAL:([^}]*)\}/g, (m, padrao) => assinatura(padrao));
   const opcoes = lista.map(montar).filter(t => t !== anterior);
   return opcoes[Math.floor(Math.random() * opcoes.length)] || montar(lista[0]);
 }

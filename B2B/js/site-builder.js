@@ -4128,10 +4128,27 @@ function renderContentTab(el) {
   }
 }
 
+/* Página aberta no seletor fica guardada nesta aba do navegador: o F5
+   reabre nela (Meu Checkout…). Aba nova abre no site principal. */
+const EDITOR_PAGINA_KEY = 'b2b-editor-pagina';
+
+function lembrarPaginaAberta(pageKey) {
+  try { sessionStorage.setItem(EDITOR_PAGINA_KEY, pageKey); } catch (e) { /* sem armazenamento */ }
+}
+
+function paginaAbertaGuardada() {
+  let key = null;
+  try { key = sessionStorage.getItem(EDITOR_PAGINA_KEY); } catch (e) { return null; }
+  if (!key || key === 'home') return null;
+  const existe = !!document.querySelector(`#builder-page-dropdown [data-page-option="${CSS.escape(key)}"]`);
+  return existe ? key : null;
+}
+
 function switchBuilderPage(pageKey) {
   if (pageKey === currentPageKey) return;
   persistBuilderState(true);
   currentPageKey = pageKey;
+  lembrarPaginaAberta(pageKey);
   builderState = loadPageState(pageKey);
   historyStack = [snapshotState()];
   historyIndex = 0;
@@ -4190,11 +4207,16 @@ function initSiteBuilder() {
   const root = document.getElementById('site-builder-root');
   if (!root) return;
 
+  // F5 com outra página aberta (ex.: Meu Checkout): continua nela.
+  const guardada = paginaAbertaGuardada();
+  if (guardada) currentPageKey = guardada;
+
   builderState = loadPageState(currentPageKey);
   historyStack = [snapshotState()];
   historyIndex = 0;
 
   initPageSwitcher();
+  updatePageSwitcherUI();
 
   document.getElementById('builder-device-toggle').querySelectorAll('.builder-device-btn').forEach(btn => {
     btn.addEventListener('click', () => {

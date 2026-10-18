@@ -8147,3 +8147,8 @@ html body .std-emojis:not(#love-h-a) {
   position: absolute; top: 40px; left: 0; right: 0; z-index: 30;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
+/* "Gerar com IA": mesmo visual do botão Salvar (branco, borda fina, 34px). */
+html body button.std-gerar-ia:not(#love-h-a),
+html body button.std-gerar-ia:not(#love-h-a):hover { background: #FFFFFF; }
+html body button.std-gerar-ia:not(#love-h-a) { border: 1px solid #EAEAEA; color: #3F3F46; font-size: 14px; font-weight: 600; padding: 0 16px; height: 34px; }
+html body button.std-gerar-ia:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }

@@ -8112,3 +8112,17 @@ html body .std-bolha .std-codigo:not(#love-h-a) {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace !important; font-size: 13.5px;
   background: rgba(11, 20, 26, 0.05); border: none; border-radius: 4px; padding: 1px 4px; color: inherit;
 }
+
+/* Save the Date › "Gerar com IA" no canto inferior direito da caixa de texto. */
+.std-editor-ia { display: flex; justify-content: flex-end; }
+html body button.std-gerar-ia:not(#love-h-a) {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px;
+  border: 1px solid #E4E4E7; border-radius: 8px !important; background: #FAFAFA; color: #181D24;
+  font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: none;
+}
+html body button.std-gerar-ia:not(#love-h-a):hover { border-color: #181D24; background: #FAFAFA; }
+html body button.std-gerar-ia:not(#love-h-a):disabled { cursor: default; opacity: .85; }
+.std-gerar-ia svg { width: 16px; height: 16px; color: #8B5CF6; }
+.std-gerar-ia.is-gerando svg { animation: std-ia-pulso 0.9s ease-in-out infinite; }
+@keyframes std-ia-pulso { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.18); opacity: .6; } }
+body[data-theme="dark"] button.std-gerar-ia { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

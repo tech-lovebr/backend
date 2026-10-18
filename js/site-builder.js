@@ -1185,6 +1185,57 @@ const STD_FORMATOS = [
   { id: 'citacao', titulo: 'Citação', linha: '> ', icone: () => STD_ICONES.citacao }
 ];
 
+// "Gerar com IA" do Save the Date: na verdade sorteia um texto pronto do tipo
+// do evento (casamento, aniversário, bodas…). {DATA} vira a data em negrito e
+// {CASAL:…} vira o nome dos anfitriões (sem nome, fica o texto entre colchetes
+// para a pessoa completar).
+const STD_TEXTOS_PRONTOS = {
+  wedding: [
+    "Olá! Tudo bem?\n\nCom muito carinho, queremos compartilhar com você uma notícia muito especial: vamos nos casar!\n\nGostaríamos imensamente de ter você ao nosso lado nesse momento inesquecível.\n\nPor isso, já queremos reservar a data na sua agenda para que possa se programar:\n\n{DATA}\n\nEm breve, enviaremos o convite oficial com todos os detalhes da cerimônia e da celebração.\n\nPor enquanto, pedimos uma confirmação prévia da sua presença, junto com o envio do seu nome completo (e acompanhantes, se houver) — essas informações são essenciais para o cadastro e envio do convite digital interativo.\n\nSerá uma alegria imensa ter você conosco.\n\nCom carinho,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}",
+    "Olá!\n\nUm grande capítulo da nossa história está prestes a começar: vamos oficializar a nossa união!\n\nFaremos questão de celebrar esse passo com as pessoas que mais fazem parte da nossa trajetória.\n\nSalve essa data para estar com a gente:\n\n{DATA}\n\nTodos os detalhes sobre local, horários e programação completa serão enviados no convite oficial em breve.\n\nPara organizarmos a lista e liberarmos o acesso à página do nosso convite digital, solicitamos que nos envie uma resposta prévia confirmando o seu interesse e informando o seu nome completo.\n\nEsperamos você!\n\nAbraços,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}",
+    "Oi! Tudo bem?\n\nTem notícia boa chegando por aqui: nós vamos casar! 🎉\n\nComo você é alguém fundamental na nossa caminhada, não dá para comemorar sem você.\n\nJá bloqueia a agenda para não marcar mais nada:\n\n{DATA}\n\nO convite oficial com tudo explicadinho chega em breve, mas já estamos montando a lista dos convidados. Se puder nos responder com o seu nome completo e uma prévia se conseguirá estar presente, já nos ajuda a liberar seu acesso à nossa página/convite digital.\n\nMal podemos esperar para brindar juntos!\n\nCom amor,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}"
+  ],
+  birthday: [
+    "Olá!\n\nUma nova idade está chegando e a melhor forma de comemorar esse ciclo é reunindo quem faz a diferença na minha vida!\n\nGostaria muito de contar com a sua presença para celebrar meu aniversário.\n\nJá anota na agenda para garantir o dia:\n\n{DATA}\n\nLogo enviarei o convite completo com horário, local e todos os detalhes da festa.\n\nPara organizar a lista e liberar o seu acesso ao convite digital interativo, peço a gentileza de responder confirmando previamente se vai conseguir ir e informando seu nome completo.\n\nVai ser ótimo comemorar juntos!\n\nUm abraço,\n\n{CASAL:[Nome do Aniversariante]}",
+    "Oi! Tudo bem?\n\nMais um ano de vida vem aí e eu não poderia deixar de comemorar ao lado de pessoas tão especiais.\n\nJá reserve a data para garantir que vai estar livre:\n\n{DATA}\n\nO convite oficial com o local e horários sairá em breve.\n\nPor enquanto, preciso apenas que me dê uma resposta rápida sobre sua presença e me confirme o seu nome completo para o cadastro na nossa lista de acesso e convite digital.\n\nConto com você!\n\nCom carinho,\n\n{CASAL:[Nome do Aniversariante]}",
+    "Olá!\n\nMomentos especiais merecem grandes celebrações. Estou completando mais uma etapa muito importante e quero muito a sua companhia para brindar!\n\nSalve esta data no seu calendário:\n\n{DATA}\n\nEm breve você receberá todas as informações detalhadas no convite oficial.\n\nPara organizarmos os preparativos com carinho, envie-me o seu nome completo e uma confirmação preliminar de presença para cadastro no nosso convite digital.\n\nAté breve!\n\n{CASAL:[Nome do Aniversariante]}"
+  ],
+  anniversary: [
+    "Olá!\n\nO amor se renova com o passar dos anos, e chegou o momento de celebrarmos nossas [Número] Bodas de [Material/Nome da Boda]!\n\nTer pessoas que acompanharam e apoiaram nossa trajetória conosco nesse marco é o nosso maior presente.\n\nPor isso, guarde esta data tão significativa:\n\n{DATA}\n\nEm breve enviaremos o convite oficial com todos os detalhes da renovação de votos e recepção.\n\nPedimos, por gentileza, uma confirmação prévia e o envio do seu nome completo para liberarmos o acesso ao nosso convite digital.\n\nCom imenso carinho,\n\n{CASAL:[Nome do Cônjuge 1] & [Nome do Cônjuge 2]}",
+    "Olá!\n\nEstamos comemorando [Número] anos de união e queremos brindar a essa história de amor e companheirismo ao lado de pessoas muito queridas.\n\nGostaríamos muito que já guardasse a data na agenda:\n\n{DATA}\n\nAs orientações completas sobre o evento serão enviadas no convite digital definitivo em breve.\n\nPara a montagem do cadastro de convidados e envio dos links de acesso, responda por favor com seu nome completo e uma pré-confirmação de presença.\n\nUm grande abraço,\n\n{CASAL:[Nome do Cônjuge 1] & [Nome do Cônjuge 2]}",
+    "Oi! Tudo bem?\n\nSão [Número] anos construindo uma vida a dois, superando desafios e acumulando sorrisos — motivos de sobra para festejar!\n\nFaça questão de reservar esse dia para celebrar conosco:\n\n{DATA}\n\nLogo você receberá o convite com a programação da nossa comemoração.\n\nEnquanto isso, confirme se poderemos contar com você e nos mande seu nome completo para integrarmos o seu cadastro ao nosso convite digital.\n\nCom muito afeto,\n\n{CASAL:[Nome do Cônjuge 1] & [Nome do Cônjuge 2]}"
+  ],
+  baby_shower: [
+    "Olá!\n\nO nosso maior presente está a caminho e nosso coração transborda de alegria!\n\nQueremos muito a sua presença no Chá de Bebê do(a) [Nome do Bebê], para celebrarmos essa nova fase com todo carinho.\n\nJá reserve esse dia especial na agenda:\n\n{DATA}\n\nO convite completo com horários, local e a listinha de mimos será enviado muito em breve.\n\nPor gentileza, nos envie seu nome completo e uma confirmação preliminar de presença para cadastrarmos você no nosso convite digital e organizarmos tudo com carinho.\n\nCom muito amor,\n\n{CASAL:[Nome dos Pais]}",
+    "Oi! Tudo bem?\n\nA família está crescendo e a contagem regressiva para a chegada do(a) [Nome do Bebê] já começou! 🍼\n\nEstamos preparando um Chá de Bebê muito aconchegante e queremos muito você com a gente.\n\nJá deixa essa data reservada:\n\n{DATA}\n\nTodos os detalhes sobre o evento e as sugestões de presentes serão compartilhados no convite oficial.\n\nPara adiantar a lista de convidados e liberar o link da página do evento, envie seu nome completo e nos dê uma prévia se poderá estar presente.\n\nEsperamos por você!\n\n{CASAL:[Nome dos Pais]}",
+    "Olá!\n\nUm momento tão transformador só fica completo perto de quem queremos bem. O Chá de Bebê do(a) [Nome do Bebê] já tem data marcada!\n\nGuarde esse dia para celebrarmos juntos:\n\n{DATA}\n\nLogo mais você receberá o convite digital com o endereço e a lista de sugestões.\n\nPara organizar o espaço com conforto, me mande por favor uma prévia de confirmação e seu nome completo.\n\nUm abraço carinhoso,\n\n{CASAL:[Nome da Mãe / Pais]}"
+  ],
+  gender_reveal: [
+    "Oi! Tudo bem?\n\nChegou a hora de matar a maior curiosidade das nossas vidas: vem aí um menininho ou uma menininha? 👶💙💖\n\nQueremos que você venha palpitar e viver essa emoção com a gente no nosso Chá Revelação!\n\nJá bloqueie a data no calendário:\n\n{DATA}\n\nO convite oficial com o horário e instruções sobre a brincadeira chega em breve.\n\nPor enquanto, responda se vai conseguir estar presente e envie seu nome completo para cadastrarmos na plataforma do convite digital.\n\nQual é o seu palpite?\n\n{CASAL:[Nome dos Pais]}",
+    "Olá!\n\nO amor que sentimos já é infinito, mas estamos ansiosos para finalmente descobrir quem está a caminho!\n\nFaremos nosso Chá Revelação e a sua presença tornará essa descoberta ainda mais inesquecível.\n\nAnote a data para estarmos juntos:\n\n{DATA}\n\nEm breve enviaremos o convite oficial com todos os detalhes e orientações do dia.\n\nPedimos que nos envie uma pré-confirmação de presença junto com o seu nome completo para inclusão no convite digital interativo.\n\nUm abraço cheio de expectativa,\n\n{CASAL:[Nome dos Pais]}",
+    "Olá!\n\nMenino ou menina? O grande segredo vai ser revelado e você faz parte desse momento especial!\n\nReserve essa data na sua agenda:\n\n{DATA}\n\nTodos os detalhes da comemoração e do convite interativo serão enviados logo mais.\n\nPara organizarmos o acesso e prepararmos tudo direitinho, envie por favor seu nome completo e avise se poderemos contar com a sua presença.\n\nAté breve!\n\n{CASAL:[Nome dos Pais]}"
+  ],
+  bridal_shower: [
+    "Oi! Tudo bem?\n\nO casamento está chegando e a nossa casinha já está quase pronta, mas ainda falta o melhor: comemorar o nosso Chá de Panela! 🍳🥂\n\nQueremos reunir os amigos mais próximos para dar muitas risadas antes do grande dia.\n\nJá salva a data na agenda:\n\n{DATA}\n\nEm breve mandaremos o convite com o local e a lista de presentes/utensílios.\n\nPara organizarmos o espaço e gerarmos o acesso ao seu convite digital, envie seu nome completo e uma pré-confirmação se vai conseguir ir.\n\nContamos com você!\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}",
+    "Olá!\n\nEstamos dando os retoques finais para começar a nossa vida a dois e o Chá de Panela é um momento muito aguardado por nós!\n\nVai ser uma delícia reunir as pessoas queridas para confraternizar e equipar o nosso novo lar.\n\nAnote na sua agenda:\n\n{DATA}\n\nO convite oficial com detalhes de horário, endereço e lista de sugestões será enviado muito em breve.\n\nPara facilitar nossa lista, mande por favor seu nome completo e a confirmação de que estará conosco.\n\nCom muito carinho,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}",
+    "Olá!\n\nAntes do \"sim\" no altar, vem a farra do Chá de Panela! Queremos você pertinho da gente para celebrar essa contagem regressiva.\n\nMarque esse dia no calendário:\n\n{DATA}\n\nLogo mais encaminhamos o convite completo com todos os detalhes e lista de utilidades.\n\nPor gentileza, nos responda com seu nome completo e confirme previamente sua presença para cadastro na nossa lista digital.\n\nAbraços,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}"
+  ]
+};
+
+function textoProntoDoSaveTheDate(anterior) {
+  const ev = getActiveEventForBuilder() || {};
+  const lista = STD_TEXTOS_PRONTOS[ev.type] || STD_TEXTOS_PRONTOS.birthday;
+  const data = dataDoEventoPorExtenso(ev) || '[Data do Evento]';
+  const nomes = String(ev.hostName || '').trim();
+  const montar = (modelo) => modelo
+    .replace('{DATA}', `*${data}*`)
+    .replace(/\{CASAL:([^}]*)\}/g, (m, padrao) => nomes || padrao);
+  const opcoes = lista.map(montar).filter(t => t !== anterior);
+  return opcoes[Math.floor(Math.random() * opcoes.length)] || montar(lista[0]);
+}
+
+const ICONE_IA = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 3.5 11.6 8a2 2 0 0 0 1.3 1.3L17.5 11l-4.6 1.6a2 2 0 0 0-1.3 1.3L10 18.5l-1.6-4.6a2 2 0 0 0-1.3-1.3L2.5 11l4.6-1.6A2 2 0 0 0 8.4 8Z"/><path d="M18 2.5l.7 1.8 1.8.7-1.8.7L18 7.5l-.7-1.8-1.8-.7 1.8-.7ZM18.5 15l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6Z"/></svg>';
+
 function renderEditorDeTextoSaveTheDate(body) {
   body.innerHTML = `
     <div class="std-editor">
@@ -1192,6 +1243,9 @@ function renderEditorDeTextoSaveTheDate(body) {
         ${STD_FORMATOS.map(f => `<button type="button" class="std-editor-negrito" data-std-formato="${f.id}" title="${f.titulo}" aria-label="${f.titulo}">${f.icone()}</button>`).join('')}
       </div>
       <textarea class="inspector-textarea std-texto-grande std-editor-texto" id="std-editor-texto" rows="14" placeholder="Escreva o Save the Date…">${escapeHtml(builderState.mensagem || '')}</textarea>
+      <div class="std-editor-ia">
+        <button type="button" class="std-gerar-ia" data-std-gerar-ia>${ICONE_IA}<span>Gerar com IA</span></button>
+      </div>
     </div>`;
   const campo = /** @type {HTMLTextAreaElement} */ (body.querySelector('#std-editor-texto'));
   let historicoTimer = null;
@@ -1247,6 +1301,36 @@ function renderEditorDeTextoSaveTheDate(body) {
     campo.value = v.slice(0, ini) + novo + v.slice(fim);
     campo.setSelectionRange(ini, ini + novo.length);
   };
+
+  // "Gerar com IA": "pensa" um instante e escreve o texto aos poucos.
+  const botaoIa = /** @type {HTMLButtonElement} */ (body.querySelector('[data-std-gerar-ia]'));
+  botaoIa.addEventListener('click', () => {
+    if (botaoIa.disabled) return;
+    const texto = textoProntoDoSaveTheDate(campo.value.trim());
+    const rotulo = botaoIa.querySelector('span');
+    botaoIa.disabled = true;
+    botaoIa.classList.add('is-gerando');
+    rotulo.textContent = 'Gerando…';
+    setTimeout(() => {
+      let i = 0;
+      const passo = Math.max(6, Math.ceil(texto.length / 60));
+      const escrever = () => {
+        i = Math.min(texto.length, i + passo);
+        campo.value = texto.slice(0, i);
+        campo.scrollTop = campo.scrollHeight;
+        builderState.mensagem = campo.value;
+        normalizarSaveTheDate(builderState);
+        renderCanvasOnly();
+        if (i < texto.length) { setTimeout(escrever, 16); return; }
+        botaoIa.disabled = false;
+        botaoIa.classList.remove('is-gerando');
+        rotulo.textContent = 'Gerar com IA';
+        campo.scrollTop = 0;
+        aplicar();
+      };
+      escrever();
+    }, 900);
+  });
 
   body.querySelectorAll('[data-std-formato]').forEach(btn => {
     btn.addEventListener('mousedown', (e) => e.preventDefault()); // mantém a seleção

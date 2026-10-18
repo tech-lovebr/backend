@@ -8189,3 +8189,18 @@ html body .org-menu button:not(#love-h-a) {
 html body .org-menu button:not(#love-h-a):hover { background: #F4F4F5; }
 body[data-theme="dark"] .org-menu { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .org-menu button { color: #F4F4F5 !important; }
+
+/* Configurações › Segurança: acordeão (título + seta), sem cara de botão. */
+html body button.seguranca-acordeao:not(#love-h-a) {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0; border: 0; background: none; box-shadow: none; cursor: pointer; text-align: left; height: auto;
+}
+html body button.seguranca-acordeao:not(#love-h-a):hover { background: none; }
+html body button.seguranca-acordeao:not(#love-h-a):hover svg { color: #181D24; }
+/* Configurações › Meus eventos: tabela no padrão da plataforma. */
+html body #view-event-os-dashboard #config-eventos-caixa:not(#love-h-a) { background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 10px; padding: 0 !important; box-shadow: none !important; }
+html body #view-event-os-dashboard #config-eventos-tabela thead th:not(#love-h-a) { font-size: 13px; font-weight: 700; color: #3F3F46; }
+#config-eventos-tabela .config-evento-check { margin-right: .4rem; }
+/* Configurações › Meus eventos: o "Salvar alterações" some mesmo (a regra
+   geral de botões vencia o .hidden). */
+html body #btn-save-user-settings.hidden:not(#love-h-a) { display: none !important; }

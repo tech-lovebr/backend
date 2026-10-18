@@ -1005,6 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteBox.classList.toggle('hidden');
       if (!deleteBox.classList.contains('hidden')) document.getElementById('settings-delete-confirm-input')?.focus();
     });
+    document.getElementById('settings-delete-confirm-input')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
     document.getElementById('btn-settings-delete-cancel')?.addEventListener('click', () => {
       deleteBox.classList.add('hidden');
       document.getElementById('settings-delete-confirm-input').value = '';
@@ -15982,37 +15983,98 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
 
-  const TIPOS_DE_EVENTO = { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo', baby: 'Chá de bebê', other: 'Outro' };
+  const TIPOS_DE_EVENTO = { wedding: 'Casamento', birthday: 'Aniversário', anniversary: 'Bodas', baby_shower: 'Chá de bebê', baby: 'Chá de bebê', bridal_shower: 'Chá de panela', gender_reveal: 'Chá revelação', corporate: 'Corporativo', other: 'Outro' };
+  const eventosSelecionados = new Set();
+
+  // Lixeira e contagem acompanham os checks (como em Meus convidados).
+  function atualizarLixeiraDeEventos() {
+    const checks = Array.from(document.querySelectorAll('#config-lista-eventos .config-evento-check'));
+    const ids = new Set(checks.map(c => /** @type {HTMLInputElement} */ (c).value));
+    [...eventosSelecionados].forEach(id => { if (!ids.has(id)) eventosSelecionados.delete(id); });
+    const qtd = eventosSelecionados.size;
+    const btn = document.getElementById('btn-config-eventos-excluir');
+    if (btn) {
+      btn.classList.toggle('hidden', qtd === 0);
+      btn.title = qtd === 1 ? 'Excluir 1 evento selecionado' : `Excluir ${qtd} eventos selecionados`;
+    }
+    const contagem = document.getElementById('config-eventos-count');
+    if (contagem) contagem.textContent = qtd ? `(${qtd})` : '';
+    const todos = /** @type {HTMLInputElement|null} */ (document.getElementById('config-eventos-select-all'));
+    if (todos) {
+      const marcados = checks.filter(c => /** @type {HTMLInputElement} */ (c).checked).length;
+      todos.checked = checks.length > 0 && marcados === checks.length;
+      todos.indeterminate = marcados > 0 && marcados < checks.length;
+    }
+  }
+
+  // Barra da tabela (busca + lixeira), montada uma vez.
+  function montarTabelaDeEventos() {
+    const tabela = document.getElementById('config-eventos-tabela');
+    if (!tabela || tabela.dataset.barraMontada) return;
+    const lixeira = document.createElement('button');
+    lixeira.type = 'button';
+    lixeira.id = 'btn-config-eventos-excluir';
+    lixeira.className = 'love-tabela-lixeira hidden';
+    lixeira.innerHTML = '<svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6.5h16"/><path d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
+    montarBarraDaTabela(tabela, { caixa: document.getElementById('config-eventos-caixa'), placeholder: 'Buscar evento...', nome: 'eventos', extras: [lixeira] });
+    lixeira.addEventListener('click', async () => {
+      const ids = [...eventosSelecionados];
+      if (!ids.length || lixeira.disabled) return;
+      const nomes = ids.map(id => { const e = state.events.find(x => x.id === id); return e ? `"${e.title}"` : ''; }).filter(Boolean).join(', ');
+      const ok = await confirmarNaLove({
+        titulo: ids.length === 1 ? `Excluir ${nomes}?` : `Excluir ${ids.length} eventos?`,
+        texto: 'O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.',
+        botao: ids.length === 1 ? 'Excluir evento' : 'Excluir eventos',
+        aoConfirmar: async () => {
+          for (const id of ids) {
+            const erro = await excluirEventoDoCriador(id);
+            if (erro) return erro;
+            eventosSelecionados.delete(id);
+          }
+          return null;
+        }
+      });
+      if (ok && state.events.length) renderMeusEventos();
+    });
+    document.getElementById('config-eventos-select-all')?.addEventListener('change', (e) => {
+      const marcar = /** @type {HTMLInputElement} */ (e.target).checked;
+      document.querySelectorAll('#config-lista-eventos tr:not(.hidden) .config-evento-check').forEach(c => {
+        const check = /** @type {HTMLInputElement} */ (c);
+        check.checked = marcar;
+        if (marcar) eventosSelecionados.add(check.value); else eventosSelecionados.delete(check.value);
+      });
+      atualizarLixeiraDeEventos();
+    });
+    tabela.addEventListener('change', (e) => {
+      const check = /** @type {HTMLInputElement|null} */ (/** @type {Element} */ (e.target).closest('.config-evento-check'));
+      if (!check) return;
+      if (check.checked) eventosSelecionados.add(check.value); else eventosSelecionados.delete(check.value);
+      atualizarLixeiraDeEventos();
+    });
+  }
+
   function renderMeusEventos() {
     const lista = document.getElementById('config-lista-eventos');
     if (!lista) return;
+    montarTabelaDeEventos();
     const meus = state.events.filter(e => !e.souOrganizador && e.id !== 'nova-comemoracao');
-    if (!meus.length) { lista.innerHTML = '<p class="text-sm text-zinc-500 py-2">Você ainda não tem eventos.</p>'; return; }
+    if (!meus.length) {
+      lista.innerHTML = '<tr><td colspan="4" class="text-sm text-zinc-500">Você ainda não tem eventos.</td></tr>';
+      atualizarLixeiraDeEventos();
+      return;
+    }
     lista.innerHTML = meus.map(e => {
       const data = e.date ? (formatEventDateLong(e.date) || e.date) : 'Data a definir';
+      const aberto = e.id === state.activeEventId;
       return `
-        <div class="meus-eventos-linha" data-evento-id="${escaparHtml(e.id)}">
-          <div class="min-w-0 flex-1">
-            <p class="text-sm font-semibold text-zinc-900 truncate">${escaparHtml(e.title || 'Evento')}${e.id === state.activeEventId ? ' <span class="meus-eventos-atual">Evento aberto</span>' : ''}</p>
-            <p class="text-xs text-zinc-500 truncate">${escaparHtml([TIPOS_DE_EVENTO[e.type] || 'Evento', data].join(' • '))}</p>
-          </div>
-          <button type="button" class="meus-eventos-excluir">Excluir evento</button>
-        </div>`;
+        <tr data-evento-id="${escaparHtml(e.id)}">
+          <td><span class="inline-flex items-center gap-4"><input type="checkbox" value="${escaparHtml(e.id)}" class="gifts-select-all-check config-evento-check"${eventosSelecionados.has(e.id) ? ' checked' : ''} aria-label="Selecionar ${escaparHtml(e.title || 'evento')}"><span class="font-semibold text-zinc-900">${escaparHtml(e.title || 'Evento')}</span></span></td>
+          <td class="text-zinc-600">${escaparHtml(TIPOS_DE_EVENTO[e.type] || 'Evento')}</td>
+          <td class="text-zinc-600">${escaparHtml(data)}</td>
+          <td>${aberto ? '<span class="meus-eventos-atual">Evento aberto</span>' : '<span class="text-zinc-400">—</span>'}</td>
+        </tr>`;
     }).join('');
-    lista.querySelectorAll('.meus-eventos-excluir').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.closest('[data-evento-id]').dataset.eventoId;
-        const ev = state.events.find(e => e.id === id);
-        const ok = await confirmarNaLove({
-          titulo: `Excluir "${ev ? ev.title : 'este evento'}"?`,
-          texto: 'O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.',
-          botao: 'Excluir evento',
-          aoConfirmar: () => excluirEventoDoCriador(id)
-        });
-        if (!ok) return;
-        if (state.events.length) renderMeusEventos();
-      });
-    });
+    atualizarLixeiraDeEventos();
   }
 
   // Confirmar Exclusão do Evento
@@ -16520,17 +16582,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function refreshMfaStatus() {
-    if (!mfaStatusEl) return;
+    if (!btnMfaToggle) return;
     btnMfaToggle.disabled = true;
     const { data, error } = await supabaseClient.auth.mfa.listFactors();
     if (error) {
-      mfaStatusEl.textContent = 'indisponível';
-      mfaStatusEl.className = 'font-semibold text-slate-500';
+      if (mfaStatusEl) mfaStatusEl.textContent = 'indisponível';
+      btnMfaToggle.textContent = 'Indisponível';
       return;
     }
     mfaVerifiedFactor = (data.totp || []).find(f => f.status === 'verified') || null;
-    mfaStatusEl.textContent = mfaVerifiedFactor ? 'ativada' : 'desativada';
-    mfaStatusEl.className = mfaVerifiedFactor ? 'font-semibold text-emerald-600' : 'font-semibold text-slate-500';
+    if (mfaStatusEl) mfaStatusEl.textContent = mfaVerifiedFactor ? 'ativada' : 'desativada';
+    // O botão mostra o estado: "Desativar" = está ativada; "Ativar" = está desativada.
     btnMfaToggle.textContent = mfaVerifiedFactor ? 'Desativar' : 'Ativar';
     btnMfaToggle.disabled = false;
   }

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261018_organizadores2">
+  <link rel="stylesheet" href="css/styles.css?v=20261018_configtabela2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3142,28 +3142,51 @@
                   </div>
                 </div>
 
-                <!-- Segurança -->
+                <!-- Segurança (acordeão): dois fatores e excluir a conta -->
                 <div class="dash-card">
-                  <h3 class="text-base font-bold text-zinc-900 mb-4">Segurança</h3>
-                  <div class="flex items-center justify-between gap-3">
-                    <div>
+                  <button type="button" id="btn-settings-security-toggle" class="seguranca-acordeao" aria-expanded="false" aria-controls="settings-security-body">
+                    <span class="text-base font-bold text-zinc-900">Segurança</span>
+                    <svg id="settings-security-chevron" class="w-4 h-4 text-zinc-500 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div id="settings-security-body" class="hidden mt-4 space-y-4">
+                    <div class="flex items-center justify-between gap-3">
                       <p class="text-sm font-semibold text-slate-800">Autenticação de dois fatores</p>
-                      <p class="text-xs text-slate-500 mt-0.5">Status: <span id="settings-mfa-status" class="font-semibold text-slate-500">verificando…</span></p>
+                      <button type="button" id="btn-settings-mfa-toggle" disabled class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl disabled:opacity-60">Ativar</button>
                     </div>
-                    <button type="button" id="btn-settings-mfa-toggle" disabled class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl disabled:opacity-60">Ativar</button>
-                  </div>
-                  <div id="settings-mfa-setup" class="hidden mt-4 space-y-3 max-w-sm">
-                    <p class="text-xs text-slate-500 leading-relaxed">1. Abra um app autenticador (Google Authenticator, Microsoft Authenticator, 1Password…) e escaneie o QR code.</p>
-                    <div class="flex justify-center">
-                      <img id="settings-mfa-qr" alt="QR code para o app autenticador" class="w-40 h-40 border border-slate-200 rounded-xl p-2 bg-white">
+                    <div id="settings-mfa-setup" class="hidden space-y-3 max-w-sm">
+                      <p class="text-xs text-slate-500 leading-relaxed">1. Abra um app autenticador (Google Authenticator, Microsoft Authenticator, 1Password…) e escaneie o QR code.</p>
+                      <div class="flex justify-center">
+                        <img id="settings-mfa-qr" alt="QR code para o app autenticador" class="w-40 h-40 border border-slate-200 rounded-xl p-2 bg-white">
+                      </div>
+                      <p class="text-xs text-slate-500 text-center">Ou digite a chave: <code id="settings-mfa-secret" class="font-mono text-[11px] text-slate-700 break-all select-all"></code></p>
+                      <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">2. Digite o código de 6 dígitos do app</label>
+                        <input type="text" id="settings-mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800 tracking-[0.3em] text-center font-mono">
+                      </div>
+                      <p id="settings-mfa-error" class="text-xs text-red-600 hidden"></p>
+                      <button type="button" id="btn-settings-mfa-verify" class="btn-brand w-full py-2.5 text-xs font-bold">Confirmar ativação</button>
                     </div>
-                    <p class="text-xs text-slate-500 text-center">Ou digite a chave: <code id="settings-mfa-secret" class="font-mono text-[11px] text-slate-700 break-all select-all"></code></p>
-                    <div>
-                      <label class="block text-xs font-bold text-slate-700 mb-1">2. Digite o código de 6 dígitos do app</label>
-                      <input type="text" id="settings-mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800 tracking-[0.3em] text-center font-mono">
+
+                    <div class="flex items-center justify-between gap-3 pt-4 border-t border-zinc-100">
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">Excluir minha conta</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Apaga a conta e tudo o que está nela. Não dá para desfazer.</p>
+                      </div>
+                      <button type="button" id="btn-settings-delete-account" class="btn-white flex-shrink-0 px-3 py-2 text-xs font-bold rounded-xl">Excluir conta</button>
                     </div>
-                    <p id="settings-mfa-error" class="text-xs text-red-600 hidden"></p>
-                    <button type="button" id="btn-settings-mfa-verify" class="btn-brand w-full py-2.5 text-xs font-bold">Confirmar ativação</button>
+                    <div id="settings-delete-box" class="hidden border border-red-200 rounded-[10px] p-5 space-y-3 max-w-lg">
+                      <p class="text-sm font-semibold text-slate-800">Excluir a conta é definitivo.</p>
+                      <p class="text-xs text-slate-500 leading-relaxed">Seus eventos, listas de convidados, presentes, conversas e dados de saque serão apagados e não poderão ser recuperados. Saldo ainda não sacado também é perdido — faça o saque antes.</p>
+                      <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Para confirmar, digite <span class="font-mono">EXCLUIR</span></label>
+                        <input type="text" id="settings-delete-confirm-input" autocomplete="off" placeholder="EXCLUIR" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800 uppercase">
+                      </div>
+                      <p id="settings-delete-error" class="text-xs text-red-600 hidden"></p>
+                      <div class="flex items-center gap-3">
+                        <button type="button" id="btn-settings-delete-confirm" class="px-4 py-2 text-xs font-bold rounded-xl border border-red-300 text-red-600 bg-white hover:border-red-600 cursor-pointer">Excluir definitivamente</button>
+                        <button type="button" id="btn-settings-delete-cancel" class="text-xs text-slate-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -3171,33 +3194,26 @@
                 <p id="settings-form-ok" class="text-xs text-emerald-600 hidden">Alterações salvas.</p>
               </form>
 
-              <!-- Excluir conta: discreto, mas ao alcance de quem procura. -->
-              <div class="pt-2">
-                <button type="button" id="btn-settings-delete-account" class="text-xs text-zinc-400 hover:text-red-600 hover:underline cursor-pointer bg-transparent border-0 p-0">Excluir minha conta</button>
-                <div id="settings-delete-box" class="hidden mt-3 border border-red-200 rounded-[10px] p-5 space-y-3 max-w-lg">
-                  <p class="text-sm font-semibold text-slate-800">Excluir a conta é definitivo.</p>
-                  <p class="text-xs text-slate-500 leading-relaxed">Seus eventos, listas de convidados, presentes, conversas e dados de saque serão apagados e não poderão ser recuperados. Saldo ainda não sacado também é perdido — faça o saque antes.</p>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Para confirmar, digite <span class="font-mono">EXCLUIR</span></label>
-                    <input type="text" id="settings-delete-confirm-input" autocomplete="off" placeholder="EXCLUIR" class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none text-slate-800 uppercase">
-                  </div>
-                  <p id="settings-delete-error" class="text-xs text-red-600 hidden"></p>
-                  <div class="flex items-center gap-3">
-                    <button type="button" id="btn-settings-delete-confirm" class="px-4 py-2 text-xs font-bold rounded-xl border border-red-300 text-red-600 bg-white hover:border-red-600 cursor-pointer">Excluir definitivamente</button>
-                    <button type="button" id="btn-settings-delete-cancel" class="text-xs text-slate-500 hover:underline cursor-pointer bg-transparent border-0 p-0">Cancelar</button>
-                  </div>
-                </div>
-              </div>
-
             </div>
 
             <!-- Meus eventos: os eventos que esta conta criou; excluir marca o
                  evento como excluído (o Admin continua vendo e pode restaurar). -->
             <div class="max-w-3xl hidden" id="config-painel-eventos">
-              <div class="dash-card">
-                <h3 class="text-base font-bold text-zinc-900 mb-1">Meus eventos</h3>
-                <p class="text-xs text-zinc-500 mb-4">Os eventos que você criou na Love. Excluir tira o evento da sua conta e do site publicado.</p>
-                <div id="config-lista-eventos" class="divide-y divide-zinc-100"></div>
+              <h3 class="text-base font-bold text-zinc-900 mb-4">Meus eventos</h3>
+              <div class="dash-card" id="config-eventos-caixa">
+                <div class="overflow-x-auto">
+                  <table id="config-eventos-tabela" class="w-full text-left border-collapse font-sans">
+                    <thead>
+                      <tr>
+                        <th><span class="inline-flex items-center gap-4"><input type="checkbox" id="config-eventos-select-all" class="gifts-select-all-check" aria-label="Selecionar todos os eventos"><span>Evento <span class="guests-footer-count" id="config-eventos-count"></span></span></span></th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Situação</th>
+                      </tr>
+                    </thead>
+                    <tbody id="config-lista-eventos"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -5542,7 +5558,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261018_organizadores2"></script>
+  <script src="js/app.js?v=20261018_configtabela"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261018_semnomes2"></script>
 </body>

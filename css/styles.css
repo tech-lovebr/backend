@@ -8319,3 +8319,5 @@ body[data-theme="dark"] .builder-el-item:not(#love-h-a):hover { background: #333
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs:not(#love-h-a) { background: #1F1F1F !important; border-color: #404040 !important; }
 html body #builder-elements-panel .builder-el-item:not(#love-h-a):hover { background: #FAFAFA !important; border-color: #E4E4E7 !important; }
 body[data-theme="dark"] #builder-elements-panel .builder-el-item:not(#love-h-a):hover { background: #333333 !important; }
+/* Elementos (Convite Digital): hover no azul-clarinho do ícone ativo do sidebar (#EBF4FF). */
+html body #builder-elements-panel .builder-el-item:not(#love-h-a):hover { background: #EBF4FF !important; }

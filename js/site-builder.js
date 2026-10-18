@@ -4503,26 +4503,34 @@ function podeCompartilharArquivo() {
    { compartilhamento: { imagem, texto } } (migration 068). O link
    love.com.br/<slug>/save-the-date (api/save-the-date.js) mostra a imagem e o
    texto — e é ele que faz o WhatsApp exibir a imagem na conversa. */
+// Motivo da última falha ao criar o link (mostrado no menu Compartilhar).
+let motivoFalhaDoLink = '';
+
 async function publicarSaveTheDateParaLink() {
+  motivoFalhaDoLink = '';
   const eventoId = getActiveEventUuid();
-  if (!eventoId || typeof supabaseClient === 'undefined') return null;
+  if (!eventoId || typeof supabaseClient === 'undefined') { motivoFalhaDoLink = 'o evento ainda não está salvo'; return null; }
   const { data: sessao } = await supabaseClient.auth.getSession();
   const uid = sessao && sessao.session && sessao.session.user && sessao.session.user.id;
-  if (!uid) return null;
+  if (!uid) { motivoFalhaDoLink = 'sua sessão expirou — entre de novo'; return null; }
   // O link usa o endereço do evento (eventos.slug): garante que está salvo.
   if (typeof window.persistirEventoAtivo === 'function') {
     try { await window.persistirEventoAtivo(); } catch (e) { /* segue com o slug que já existe */ }
   }
   const ev = getActiveEventForBuilder();
   const slug = ev && ev.slug;
-  if (!slug) return null;
+  if (!slug) { motivoFalhaDoLink = 'o evento ainda não tem endereço (link) — defina em Informações'; return null; }
 
   const blob = await imagemDoSaveTheDate('image/jpeg');
   if (!blob) return null;
   const caminho = `savethedate/${uid}/${eventoId}.jpg`;
   const { error: erroUpload } = await supabaseClient.storage.from('clientes')
     .upload(caminho, blob, { upsert: true, cacheControl: '300', contentType: 'image/jpeg' });
-  if (erroUpload) { console.error('Save the Date: imagem no Storage', erroUpload); return null; }
+  if (erroUpload) {
+    console.error('Save the Date: imagem no Storage', erroUpload);
+    motivoFalhaDoLink = 'a imagem não subiu (' + (erroUpload.message || 'Storage') + ')';
+    return null;
+  }
   const versao = Date.now().toString(36);
   const imagem = supabaseClient.storage.from('clientes').getPublicUrl(caminho).data.publicUrl + '?v=' + versao;
   const texto = textoDoSaveTheDate();
@@ -4532,7 +4540,14 @@ async function publicarSaveTheDateParaLink() {
     published_state: Object.assign({}, builderState, { compartilhamento: { imagem, texto } }),
     published_at: agora, updated_at: agora
   }, { onConflict: 'evento_id,page_key' });
-  if (error) { console.error('Save the Date: publicar', error); return null; }
+  if (error) {
+    console.error('Save the Date: publicar', error);
+    // 23514 = o banco ainda não aceita a página "savethedate" (migration 067).
+    motivoFalhaDoLink = error.code === '23514'
+      ? 'o banco ainda não aceita o Save the Date (falta rodar a migration 067)'
+      : 'não foi possível salvar o Save the Date (' + (error.message || error.code || 'erro') + ')';
+    return null;
+  }
   // ?v= muda a cada compartilhamento: o WhatsApp não reaproveita a prévia antiga.
   return { link: `https://love.com.br/${slug}/save-the-date?v=${versao}`, texto };
 }
@@ -4564,7 +4579,7 @@ function compartilharNoWhatsappDoComputador(avisar) {
     abrirWhatsapp(textoDoSaveTheDate());
     const blob = await imagemDoSaveTheDate().catch(() => null);
     if (blob) baixarImagem(blob, 'save-the-date.png');
-    avisar('Não foi possível criar o link. A imagem foi baixada — anexe na conversa.');
+    avisar('Não foi possível criar o link' + (motivoFalhaDoLink ? ': ' + motivoFalhaDoLink : '') + '. A imagem foi baixada — anexe na conversa.');
     return !!blob;
   }).catch((e) => {
     console.error('Save the Date: compartilhar', e);

@@ -8126,3 +8126,29 @@ html body .campo-com-ver-senha > input.campo-senha-com-olho:not(#love-h-a) { pad
 .ver-senha-btn:hover { color: #71717A; }
 .ver-senha-btn svg { width: 18px; height: 18px; }
 .ver-senha-btn svg[hidden] { display: none; }
+
+/* ==========================================================================
+   Configurações igual ao love.com.br (Configurações › Minha conta):
+   abas soltas logo abaixo do cabeçalho (texto 13px, sublinhado escuro na
+   ativa, linha fina embaixo) e o conteúdo em cards separados, mais estreitos
+   (até 768px) — os campos acompanham a largura menor.
+   ========================================================================== */
+html body .settings-shell:not(#love-h-a) { background: transparent; border: none; border-radius: 0; box-shadow: none; }
+html body .settings-shell > .category-tabs-bar:not(#love-h-a) {
+  margin: 0 0 1.5rem; padding: 0; gap: 1.5rem; border-bottom: 1px solid #EAEAEA;
+}
+html body .settings-shell > .category-tabs-bar .category-tab:not(#love-h-a) {
+  font-size: 0.8125rem; font-weight: 600; line-height: 1.25rem; color: #71717A;
+  padding: 0 0 0.625rem; border-bottom: 2px solid transparent; border-radius: 0;
+}
+html body .settings-shell > .category-tabs-bar .category-tab:not(#love-h-a):hover { color: #3F3F46; }
+html body .settings-shell > .category-tabs-bar .category-tab.active:not(#love-h-a) { color: #181D24; font-weight: 700; border-bottom-color: #181D24; }
+html body .settings-shell [data-settings-panel]:not(#love-h-a) { padding: 0; max-width: 48rem; display: flex; flex-direction: column; gap: 1.5rem; }
+html body .settings-shell [data-settings-panel] > .dash-card:not(#love-h-a) {
+  background: #FFFFFF; border: 1px solid #E4E4E7 !important; border-radius: 10px; padding: 1.5rem; margin: 0;
+}
+html body .settings-shell [data-settings-panel] > .dash-card + .dash-card:not(#love-h-a) { border-top: 1px solid #E4E4E7 !important; padding-top: 1.5rem; margin-top: 0; }
+html body .settings-shell .settings-secao-titulo:not(#love-h-a) { font-size: 1rem; font-weight: 700; color: #18181B; }
+body[data-theme="dark"] .settings-shell > .category-tabs-bar { border-bottom-color: #404040 !important; }
+body[data-theme="dark"] .settings-shell > .category-tabs-bar .category-tab.active { color: #FFFFFF !important; border-bottom-color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-shell [data-settings-panel] > .dash-card { background: #1F1F1F !important; border-color: #404040 !important; }

@@ -8298,3 +8298,8 @@ html body #btn-gifts-delete-selected:not(#love-h-a):not(.hidden) { height: 38px 
 /* Aparência › faixa "Elementos"/"Editar texto": fundo branco, igual ao resto do painel. */
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #FFFFFF !important; }
+/* Botões escondidos (classe hidden) nas barras de título somem mesmo com a
+   regra de 38px (que usa display:inline-flex) — ex.: a lixeira de Meus
+   presentes só aparece com algum presente selecionado. */
+html body .builder-toolbar .hidden:not(#love-h-a),
+html body #view-event-os-dashboard .love-tabela-barra .hidden:not(#love-h-a) { display: none !important; }

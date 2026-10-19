@@ -234,6 +234,27 @@ const FONT_OPTIONS_FORMAL = [
   { value: "'Times New Roman', Times, serif", label: 'Times New Roman' }
 ];
 
+/**
+ * Campo de horário de 15 em 15 minutos (00:00, 00:15 … 23:45). Um horário
+ * salvo antes fora dessa grade (ex.: 16:20) continua na lista para não sumir.
+ * @param {string} valor  horário atual no formato HH:MM ('' = sem horário)
+ * @param {string} rotuloVazio  texto da opção sem horário
+ * @returns {string}
+ */
+function seletorDeHorarioHtml(valor, rotuloVazio) {
+  /** @type {string[]} */
+  const horarios = [];
+  for (let m = 0; m < 24 * 60; m += 15) {
+    horarios.push(String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'));
+  }
+  const atual = (valor || '').slice(0, 5);
+  if (atual && !horarios.includes(atual)) { horarios.push(atual); horarios.sort(); }
+  return `<select class="inspector-select" data-bind="prop:targetTime">
+    <option value="" ${atual ? '' : 'selected'}>${rotuloVazio}</option>
+    ${horarios.map(h => `<option value="${h}" ${h === atual ? 'selected' : ''}>${h}</option>`).join('')}
+  </select>`;
+}
+
 const VIDEO_ASPECT_RATIOS = { '16:9': 56.25, '9:16': 177.78, '1:1': 100, '4:5': 125 };
 const VIDEO_ASPECT_RATIO_OPTIONS = [
   { value: '16:9', label: 'Paisagem (16:9)' },
@@ -3362,13 +3383,13 @@ function renderContentTab(el) {
         </div>
         <p class="inspector-hint">A cor de fundo muda apenas as caixinhas de dias/horas/min/seg.</p>
         ${fieldRow('Data alvo', `<input type="date" class="inspector-input" data-bind="prop:targetDate" value="${escapeHtml(el.targetDate || '')}">`)}
-        ${fieldRow('Horário', `<input type="time" class="inspector-input" data-bind="prop:targetTime" value="${escapeHtml(el.targetTime || '')}">`)}
+        ${fieldRow('Horário', seletorDeHorarioHtml(el.targetTime, 'Sem horário'))}
       `;
 
     case 'data':
       return `
         ${fieldRow('Data', `<input type="date" class="inspector-input" data-bind="prop:targetDate" value="${escapeHtml(el.targetDate || '')}">`)}
-        ${fieldRow('Horário (opcional)', `<input type="time" class="inspector-input" data-bind="prop:targetTime" value="${escapeHtml(el.targetTime || '')}">`)}
+        ${fieldRow('Horário (opcional)', seletorDeHorarioHtml(el.targetTime, 'Sem horário'))}
         ${fieldRow('Fonte do texto', `<select class="inspector-select" data-bind="prop:fontFamily">
           ${FONT_OPTIONS_FORMAL.map(f => `<option value="${escapeHtml(f.value)}" ${(el.fontFamily || '') === f.value ? 'selected' : ''}>${escapeHtml(f.label)}</option>`).join('')}
         </select>`)}

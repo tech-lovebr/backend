@@ -8767,3 +8767,12 @@ html body .sidebar-nav-group:not(.open) > .sidebar-subnav:not(#love-h-a) { displ
 html body .sidebar-nav-group.open > .sidebar-nav-toggle .sidebar-chevron:not(#love-h-a) { transform: rotate(180deg); }
 html body .sidebar-nav-toggle:not(#love-h-a) { width: 100%; border: none; background: transparent; cursor: pointer; text-align: left; font-family: inherit; }
 html body .sidebar-nav-group--construtor .sidebar-subnav:not(#love-h-a) { padding-left: 2.6rem; }
+
+/* Menu do perfil › empresas: sem a imagenzinha; check à esquerda, na mesma
+   coluna do "+" de Adicionar empresa; nome e, ao lado, o CNPJ. */
+html body .profile-empresas-titulo:not(#love-h-a) { margin-left: 0.625rem; margin-right: 0.625rem; }
+html body .profile-empresa-item:not(#love-h-a) { gap: 0.5rem; padding: 0.55rem 0.625rem; }
+html body .profile-empresa-marca:not(#love-h-a) { width: 16px; height: 16px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+html body .profile-empresa-marca .profile-empresa-check:not(#love-h-a) { width: 16px; height: 16px; margin: 0; }
+html body .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { flex: 0 1 auto; }
+html body .profile-empresa-item .profile-empresa-cnpj:not(#love-h-a) { font-size: 0.75rem; font-weight: 400; color: #A1A1AA; white-space: nowrap; margin-left: 0.15rem; }

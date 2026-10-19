@@ -753,13 +753,56 @@ async function publicarConviteNoAr(btn) {
 // Cria a primeira linha do Convite Digital de um evento recém-criado
 // (chamado por app.js, tanto na criação manual quanto ao semear os eventos
 // de demonstração) — já com o template de cor/imagem do tipo escolhido.
-async function seedConviteDigitalForEvent(eventoId, typeKey) {
+/**
+ * Template padrão do tipo de evento (tabela convite_templates_padrao,
+ * migration 071): o Convite digital montado num evento-modelo. null se o
+ * tipo ainda não tem template.
+ * @param {string} typeKey
+ * @returns {Promise<any|null>}
+ */
+async function templatePadraoDoTipo(typeKey) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('convite_templates_padrao')
+      .select('state')
+      .eq('tipo', typeKey)
+      .maybeSingle();
+    if (error || !data || !data.state || !Array.isArray(data.state.sections)) return null;
+    return JSON.parse(JSON.stringify(data.state));
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * No template, os elementos Data e Contagem regressiva passam a apontar para
+ * a data e o horário do evento novo.
+ * @param {any} state
+ * @param {{ data?: string, hora?: string }} [quando]
+ */
+function ajustarDatasDoTemplate(state, quando) {
+  if (!quando || !quando.data) return;
+  (state.sections || []).forEach(sec => (sec.columns || []).forEach(col => (col.elements || []).forEach(el => {
+    if (el.type === 'data' || el.type === 'contagem') {
+      el.targetDate = quando.data;
+      if (quando.hora) el.targetTime = quando.hora;
+    }
+  })));
+}
+
+async function seedConviteDigitalForEvent(eventoId, typeKey, quando) {
   if (typeof supabaseClient === 'undefined') return;
-  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
-  const state = defaultPageState();
-  state.globalStyle.primaryColor = tmpl.primaryColor;
-  const firstSection = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
-  if (firstSection) firstSection.bgImage = tmpl.coverImage;
+  // Com template padrão do tipo (ex.: casamento), o evento já nasce com ele.
+  let state = await templatePadraoDoTipo(typeKey);
+  if (state) {
+    ajustarDatasDoTemplate(state, quando);
+  } else {
+    const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
+    state = defaultPageState();
+    state.globalStyle.primaryColor = tmpl.primaryColor;
+    const firstSection = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+    if (firstSection) firstSection.bgImage = tmpl.coverImage;
+  }
   const { error } = await supabaseClient
     .from('convite_digital_pages')
     .upsert({ evento_id: eventoId, page_key: 'convite', state }, { onConflict: 'evento_id,page_key' });

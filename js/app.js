@@ -11909,7 +11909,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Convite Digital já nasce com o template (cor + imagem de capa) do tipo
       // de evento escolhido — ponto de partida editável em Aparência.
       if (typeof seedConviteDigitalForEvent === 'function') {
-        await seedConviteDigitalForEvent(newEvt.id, selectedNewType);
+        await seedConviteDigitalForEvent(newEvt.id, selectedNewType, { data: startDate, hora: startTime });
       }
       if (typeof window.reloadBuilderStateForActiveEvent === 'function') {
         window.reloadBuilderStateForActiveEvent();

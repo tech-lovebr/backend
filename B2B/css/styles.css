@@ -8646,3 +8646,8 @@ body[data-theme="dark"] :is(.dash-card, .dashboard-help-card, .product-card, .pl
 html body .builder-wrap > .builder-toolbar:not(#love-h-a) { background: #FFFFFF; }
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a):hover { background: #EBF4FF; color: #183b54; }
+
+/* Gestão de Trabalho › Agenda: "Compartilhar agenda" dentro da caixa do
+   cronograma, à direita, com o visual de Filtrar por / Exportar. */
+html body .agenda-timeline-header #share-board-btn:not(#love-h-a) { flex-shrink: 0; margin-left: auto; }
+html body .agenda-timeline-header #share-board-btn svg:not(#love-h-a) { width: 16px; height: 16px; flex-shrink: 0; }

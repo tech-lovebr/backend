@@ -59,6 +59,20 @@ function findTaskAndList(taskId) {
   return null;
 }
 
+/* Na Agenda, "Compartilhar agenda" fica dentro da caixa do cronograma, à
+   direita (mesmo visual de Filtrar por / Exportar); nas outras abas volta
+   para o cabeçalho da página. */
+function moverBotaoCompartilhar(naAgenda) {
+  const share = document.getElementById('share-board-btn');
+  const caixa = document.querySelector('.agenda-timeline-header');
+  const topo = document.querySelector('.b2b-header-bar');
+  if (!share || !caixa || !topo) return;
+  (naAgenda ? caixa : topo).appendChild(share);
+  share.classList.toggle('tabela-barra-btn', naAgenda);
+  share.classList.toggle('btn-secondary', !naAgenda);
+  share.classList.toggle('builder-toolbar-btn', !naAgenda);
+}
+
 /* -------------------- Abas: Quadro / Agenda -------------------- */
 
 function initWorkViewTabs() {
@@ -72,6 +86,7 @@ function initWorkViewTabs() {
     });
     const shareLabel = document.getElementById('share-board-btn-label');
     if (shareLabel) shareLabel.textContent = btn.dataset.view === 'agenda' ? 'Compartilhar agenda' : 'Compartilhar tarefas';
+    moverBotaoCompartilhar(btn.dataset.view === 'agenda');
   };
 
   wrap.querySelectorAll('[data-view]').forEach(btn => {
@@ -81,7 +96,7 @@ function initWorkViewTabs() {
   // Permite abrir direto numa aba específica via link (ex: dashboard > Tarefas).
   const requestedView = new URLSearchParams(location.search).get('view');
   const requestedBtn = requestedView && wrap.querySelector(`[data-view="${requestedView}"]`);
-  if (requestedBtn) activate(requestedBtn);
+  activate(requestedBtn || wrap.querySelector('[data-view].active') || wrap.querySelector('[data-view]'));
 }
 
 /* -------------------- Quadro Kanban -------------------- */

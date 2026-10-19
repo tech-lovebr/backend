@@ -8337,3 +8337,12 @@ html body .dashboard-quick-actions .dashboard-quick-action-btn:not(#love-h-a) { 
 }
 /* Painel: sem a data no canto superior direito. */
 html body .greeting-date-side:not(#love-h-a) { display: none !important; }
+
+/* Títulos em Albert Sans: o "Olá, …" do painel e os títulos de cabeçalho
+   das páginas (Leads, Produtos, Gestão de compromissos, Vendas…). */
+html body .greeting-title:not(#love-h-a),
+html body .b2b-header-bar h1:not(#love-h-a),
+html body .b2b-header-bar h2:not(#love-h-a) {
+  font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  letter-spacing: -0.02em;
+}

@@ -2945,32 +2945,60 @@ function wireImageDropZone(zoneEl, onFile) {
 }
 
 /**
- * Conteúdo do elemento Texto (HTML) → texto da caixinha do painel: cada
- * parágrafo/quebra vira uma linha. Marcações de dentro da linha (negrito etc.)
- * ficam como estão.
- * @param {string} html
+ * Caixinha de escrever do Título/Texto: aceita negrito, itálico e sombra só
+ * num trecho (selecionado), igual à edição direta no template.
+ * @param {any} el
  * @returns {string}
  */
-function htmlEmLinhas(html) {
-  return String(html || '')
-    .replace(/\r?\n/g, ' ')
-    .replace(/<br\s*\/?>\s*(<\/(p|div)>)/gi, '$1')
-    .replace(/<\/(p|div)>\s*<(p|div)(\s[^>]*)?>/gi, '\n')
-    .replace(/<(p|div)(\s[^>]*)?>/gi, '\n')
-    .replace(/<\/(p|div)>/gi, '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/^\n/, '');
+function caixaDeTextoRicaHtml(el) {
+  return `<div class="inspector-rich" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
 }
 
 /**
- * Texto da caixinha → HTML do elemento: cada Enter começa um parágrafo novo.
- * @param {string} texto
+ * Normaliza o HTML da caixinha rica. No Texto, cada Enter é um parágrafo:
+ * trechos soltos entram num <p> e <div> vira <p>. No Título não há parágrafos.
+ * @param {HTMLElement} caixa
+ * @param {string} tipo  'titulo' | 'texto'
  * @returns {string}
  */
-function linhasEmHtml(texto) {
-  const linhas = String(texto || '').split('\n');
-  if (linhas.length === 1) return linhas[0];
-  return linhas.map(l => `<p>${l.trim() ? l : '<br>'}</p>`).join('');
+function htmlDaCaixaRica(caixa, tipo) {
+  const copia = /** @type {HTMLElement} */ (caixa.cloneNode(true));
+  copia.querySelectorAll('[style]').forEach(n => {
+    if (!(n instanceof HTMLElement)) return;
+    const sombra = n.style.textShadow;
+    n.removeAttribute('style');
+    if (sombra) n.style.textShadow = sombra;
+  });
+  if (tipo !== 'texto') {
+    copia.querySelectorAll('p, div').forEach(b => {
+      const frag = document.createDocumentFragment();
+      if (b.previousSibling) frag.appendChild(document.createElement('br'));
+      while (b.firstChild) frag.appendChild(b.firstChild);
+      b.replaceWith(frag);
+    });
+    const html = copia.innerHTML.replace(/(<br\s*\/?>)+$/i, '');
+    return copia.textContent && copia.textContent.trim() ? html : '';
+  }
+  const blocos = [];
+  /** @type {HTMLParagraphElement|null} */
+  let solto = null;
+  Array.from(copia.childNodes).forEach(no => {
+    const ehBloco = no.nodeType === 1 && /^(P|DIV)$/.test(/** @type {Element} */ (no).tagName);
+    if (ehBloco) {
+      solto = null;
+      const p = document.createElement('p');
+      while (no.firstChild) p.appendChild(no.firstChild);
+      blocos.push(p);
+    } else {
+      if (!solto) { solto = document.createElement('p'); blocos.push(solto); }
+      solto.appendChild(no);
+    }
+  });
+  if (blocos.length <= 1) {
+    const unico = blocos[0];
+    return unico && unico.textContent && unico.textContent.trim() ? unico.innerHTML : '';
+  }
+  return blocos.map(p => (p.textContent && p.textContent.trim() ? p.outerHTML : '<p><br></p>')).join('');
 }
 
 /**
@@ -2985,13 +3013,28 @@ function autoCrescer(ta) {
 function wireContentTab(el, body) {
   wireBind(body, el);
 
-  const campoParagrafos = body.querySelector('textarea[data-texto-paragrafos]');
-  if (campoParagrafos instanceof HTMLTextAreaElement) {
-    campoParagrafos.addEventListener('input', () => {
-      el.content = linhasEmHtml(campoParagrafos.value);
+  const caixaRica = body.querySelector('[data-rich-content]');
+  if (caixaRica instanceof HTMLElement) {
+    const tipo = caixaRica.dataset.tipo || 'texto';
+    caixaRica.addEventListener('focus', () => {
+      try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) { /* navegador sem suporte */ }
+      try { document.execCommand('styleWithCSS', false, 'false'); } catch (e) { /* idem */ }
+    });
+    caixaRica.addEventListener('keydown', (e) => {
+      // Título: Enter quebra a linha (sem parágrafo novo).
+      if (tipo === 'titulo' && e.key === 'Enter') { e.preventDefault(); document.execCommand('insertLineBreak'); }
+    });
+    caixaRica.addEventListener('paste', (e) => {
+      // Cola só o texto (sem a formatação de onde veio).
+      e.preventDefault();
+      const texto = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+      document.execCommand('insertText', false, texto);
+    });
+    caixaRica.addEventListener('input', () => {
+      el.content = htmlDaCaixaRica(caixaRica, tipo);
       renderCanvasOnly();
     });
-    campoParagrafos.addEventListener('blur', () => pushHistory());
+    caixaRica.addEventListener('blur', () => pushHistory());
   }
 
   const uploadInput = body.querySelector('[data-image-upload]');
@@ -3060,7 +3103,7 @@ function renderElementInspector(el, body) {
     wireTypographyToggles(body, el);
   } else {
     body.innerHTML = isTextLike
-      ? colorFieldHtml(el, el.type === 'titulo' ? 'Cor do título' : 'Cor do texto') + renderContentTab(el) + renderStyleTab(el, true, true)
+      ? colorFieldHtml(el, el.type === 'titulo' ? 'Cor do título' : 'Cor do texto') + estiloRowHtml(el) + renderContentTab(el) + renderStyleTab(el, true, true, true)
       : renderContentTab(el);
     wireContentTab(el, body);
     if (isTextLike) wireTypographyToggles(body, el);
@@ -3090,10 +3133,78 @@ function renderTextoSaveTheDateInspector(el, body) {
 // destacar do fundo sem borrar as letras.
 const SOMBRA_DO_TEXTO = '0 1px 3px rgba(0, 0, 0, 0.22)';
 
+/**
+ * Trecho selecionado dentro da caixinha rica (ou null se não houver).
+ * @param {HTMLElement|null} caixa
+ * @returns {Range|null}
+ */
+function trechoSelecionadoNaCaixa(caixa) {
+  const sel = window.getSelection();
+  if (!caixa || !sel || !sel.rangeCount || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0);
+  return caixa.contains(r.commonAncestorContainer) ? r : null;
+}
+
+/**
+ * Sombra só no trecho: se o trecho já está numa sombra, tira; senão, envolve.
+ * @param {HTMLElement} caixa
+ * @param {Range} r
+ */
+function alternarSombraNoTrecho(caixa, r) {
+  const base = r.commonAncestorContainer.nodeType === 1 ? /** @type {Element} */ (r.commonAncestorContainer) : r.commonAncestorContainer.parentElement;
+  const comSombra = base ? base.closest('span[style*="text-shadow"]') : null;
+  if (comSombra && caixa.contains(comSombra)) {
+    const frag = document.createDocumentFragment();
+    while (comSombra.firstChild) frag.appendChild(comSombra.firstChild);
+    comSombra.replaceWith(frag);
+    return;
+  }
+  const span = document.createElement('span');
+  span.style.textShadow = SOMBRA_DO_TEXTO;
+  span.appendChild(r.extractContents());
+  r.insertNode(span);
+  const sel = window.getSelection();
+  if (sel) { const nova = document.createRange(); nova.selectNodeContents(span); sel.removeAllRanges(); sel.addRange(nova); }
+}
+
 function wireTypographyToggles(body, el) {
-  body.querySelectorAll('[data-typography-toggle]').forEach(btn => {
+  const caixa = /** @type {HTMLElement|null} */ (body.querySelector('[data-rich-content]'));
+  const botoes = Array.from(body.querySelectorAll('[data-typography-toggle]'));
+  // Com trecho selecionado, os botões mostram o estado do trecho.
+  const atualizarEstado = () => {
+    if (!body.isConnected) { document.removeEventListener('selectionchange', atualizarEstado); return; }
+    const r = trechoSelecionadoNaCaixa(caixa);
+    botoes.forEach(b => {
+      if (!(b instanceof HTMLElement)) return;
+      let ativo = b.dataset.ativoElemento === 'true';
+      if (r) {
+        const k = b.dataset.typographyToggle;
+        const base = r.commonAncestorContainer.nodeType === 1 ? /** @type {Element} */ (r.commonAncestorContainer) : r.commonAncestorContainer.parentElement;
+        if (k === 'bold') ativo = document.queryCommandState('bold');
+        else if (k === 'italic') ativo = document.queryCommandState('italic');
+        else if (k === 'sombra') ativo = !!(base && base.closest('span[style*="text-shadow"]'));
+      }
+      b.classList.toggle('active', ativo);
+    });
+  };
+  if (caixa) document.addEventListener('selectionchange', atualizarEstado);
+
+  botoes.forEach(btn => {
+    // Não tira o foco/seleção da caixinha ao clicar no botão.
+    btn.addEventListener('mousedown', (e) => { if (trechoSelecionadoNaCaixa(caixa)) e.preventDefault(); });
     btn.addEventListener('click', () => {
-      const kind = btn.dataset.typographyToggle;
+      const kind = btn instanceof HTMLElement ? btn.dataset.typographyToggle : '';
+      const trecho = trechoSelecionadoNaCaixa(caixa);
+      if (caixa && trecho) {
+        if (kind === 'bold') document.execCommand('bold');
+        else if (kind === 'italic') document.execCommand('italic');
+        else if (kind === 'sombra') alternarSombraNoTrecho(caixa, trecho);
+        el.content = htmlDaCaixaRica(caixa, caixa.dataset.tipo || 'texto');
+        pushHistory();
+        renderCanvasOnly();
+        atualizarEstado();
+        return;
+      }
       const isActive = btn.classList.contains('active');
       if (kind === 'bold') applyBind(el, 'style:fontWeight', isActive ? '400' : '700');
       else if (kind === 'italic') applyBind(el, 'style:fontStyle', isActive ? '' : 'italic');
@@ -3249,12 +3360,29 @@ function colorFieldHtml(el, label) {
   `;
 }
 
-function renderStyleTab(el, flat, skipColor) {
-  if (!STYLE_CAPABLE_TYPES.includes(el.type)) return '';
-  const align = cascadedStyleValue(el, 'textAlign');
+/**
+ * Linha "Estilo" (Negrito, Itálico, Sombra).
+ * @param {any} el
+ * @returns {string}
+ */
+function estiloRowHtml(el) {
   const isBold = cascadedStyleValue(el, 'fontWeight') === '700';
   const isItalic = cascadedStyleValue(el, 'fontStyle') === 'italic';
   const temSombra = !!cascadedStyleValue(el, 'textShadow');
+  return `
+    <div class="inspector-field">
+      <span class="inspector-field-label">Estilo</span>
+      <div class="inspector-segmented">
+        <button type="button" data-typography-toggle="bold" class="${isBold ? 'active' : ''}" data-ativo-elemento="${isBold}" title="Negrito">${BI.bold}</button>
+        <button type="button" data-typography-toggle="italic" class="${isItalic ? 'active' : ''}" data-ativo-elemento="${isItalic}" title="Itálico">${BI.italic}</button>
+        <button type="button" data-typography-toggle="sombra" class="${temSombra ? 'active' : ''}" data-ativo-elemento="${temSombra}" title="Sombra">${BI.textShadow}</button>
+      </div>
+    </div>`;
+}
+
+function renderStyleTab(el, flat, skipColor, semEstilo) {
+  if (!STYLE_CAPABLE_TYPES.includes(el.type)) return '';
+  const align = cascadedStyleValue(el, 'textAlign');
   const currentFont = cascadedStyleValue(el, 'fontFamily') || '';
   const tipografiaHeading = flat ? `<span class="inspector-field-label">Tipografia</span>` : `<div class="inspector-section-title">Tipografia</div>`;
   return `
@@ -3266,14 +3394,7 @@ function renderStyleTab(el, flat, skipColor) {
       </select>
     </div>
     ${fieldRow('Tamanho', `<div class="inspector-range-row"><input type="range" min="10" max="96" value="${parseInt(cascadedStyleValue(el, 'fontSize')) || 16}" data-bind="style:fontSize" data-unit="px"><span class="inspector-range-value" data-range-out="style:fontSize">${cascadedStyleValue(el, 'fontSize') || '16px'}</span></div>`)}
-    <div class="inspector-field">
-      <span class="inspector-field-label">Estilo</span>
-      <div class="inspector-segmented">
-        <button type="button" data-typography-toggle="bold" class="${isBold ? 'active' : ''}" title="Negrito">${BI.bold}</button>
-        <button type="button" data-typography-toggle="italic" class="${isItalic ? 'active' : ''}" title="Itálico">${BI.italic}</button>
-        <button type="button" data-typography-toggle="sombra" class="${temSombra ? 'active' : ''}" title="Sombra">${BI.textShadow}</button>
-      </div>
-    </div>
+    ${semEstilo ? '' : estiloRowHtml(el)}
     ${el.type === 'botao' ? '' : segRow('Alinhamento', 'style:textAlign', [
       { value: 'left', title: 'Esquerda', html: BI.alignLeft },
       { value: 'center', title: 'Centro', html: BI.alignCenter },
@@ -3395,11 +3516,11 @@ function renderContentTab(el) {
       `;
 
     case 'texto':
-      return fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain" data-texto-paragrafos>${escapeHtml(htmlEmLinhas(el.content || ''))}</textarea>`);
+      return fieldRow('Texto', caixaDeTextoRicaHtml(el));
 
     case 'titulo':
       return `
-        ${fieldRow('Texto do título', `<input type="text" class="inspector-input" data-bind="prop:content" value="${escapeHtml(el.content || '')}">`)}
+        ${fieldRow('Texto do título', caixaDeTextoRicaHtml(el))}
         ${fieldRow('Nível do título', `<select class="inspector-select" data-bind="prop:level" data-cast="number">
           ${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${Number(el.level) === n ? 'selected' : ''}>H${n}</option>`).join('')}
         </select>`)}

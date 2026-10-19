@@ -8641,3 +8641,15 @@ html body .margin-sync-toggle.active:not(#love-h-a) { color: #183b54; }
 html body .margin-sync-toggle:not(#love-h-a) svg { width: 15px; height: 15px; }
 body[data-theme="dark"] .margin-sync-toggle.active { background: transparent !important; color: #9CC3E4 !important; }
 body[data-theme="dark"] .margin-sync-toggle:hover { background: transparent !important; }
+
+/* Aparência › caixinha de escrever do Título/Texto (aceita negrito/itálico/
+   sombra num trecho): cresce com o texto, sem alça. */
+html body #builder-elements-panel .inspector-rich:not(#love-h-a) {
+  min-height: 64px; padding: 8px 10px; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+  font-size: 0.8125rem; line-height: 1.5; color: #18181B; outline: none; overflow-wrap: break-word; word-break: break-word; cursor: text;
+}
+html body #builder-elements-panel .inspector-rich[data-tipo="titulo"]:not(#love-h-a) { min-height: 38px; }
+html body #builder-elements-panel .inspector-rich:not(#love-h-a):focus { border-color: #181D24; }
+html body #builder-elements-panel .inspector-rich:not(#love-h-a) p { margin: 0 0 0.4em; }
+html body #builder-elements-panel .inspector-rich:not(#love-h-a) p:last-child { margin-bottom: 0; }
+body[data-theme="dark"] #builder-elements-panel .inspector-rich { background: #1F1F1F !important; border-color: #404040 !important; color: #FFFFFF !important; }

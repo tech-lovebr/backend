@@ -8583,3 +8583,7 @@ html body:not([data-theme="dark"]) #dashboard-main-area:has(#tab-legal-doc.activ
 html body:not([data-theme="dark"]) #view-event-os-dashboard:has(#tab-legal-doc.active):not(#love-h-a),
 html body:not([data-theme="dark"]) #dashboard-main-area #tab-legal-doc:not(#love-h-a),
 html body:not([data-theme="dark"]) #view-event-os-dashboard #tab-legal-doc .builder-toolbar:not(#love-h-a) { background-color: #FFFFFF !important; }
+
+/* Aparência (Convite digital e Save the Date): cabeçalho com Salvar/Publicar
+   branco, mantendo a linha cinza embaixo. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; }

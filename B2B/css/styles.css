@@ -8688,3 +8688,22 @@ body[data-theme="dark"] .contratos-detalhe .leads-table-wrap { background: #2525
 /* Construtor de sites: o fundo atrás do template (Site Principal e Meu
    Checkout) na mesma cor do fundo das páginas do Hub (#F4F6F7). */
 html body:not([data-theme="dark"]) .builder-canvas-viewport:not(#love-h-a) { background: var(--bg-dashboard); }
+
+/* Construtor de sites › abas "Elementos" / "Ajustes": no mesmo formato da
+   caixinha "Elementos" do Convite digital e "Editar texto" do Save the Date
+   (index) — uma caixa com bordas arredondadas (10px), com respiro lateral,
+   sem a linha de baixo; a aba escolhida em azul-clarinho (#EBF4FF) e a
+   outra branca. */
+html body #builder-elements-panel .builder-panel-tabs:not(#love-h-a) {
+  margin: 0.65rem 0.65rem 0; width: auto; padding: 0; gap: 0;
+  border: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; overflow: hidden;
+}
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a) {
+  height: 40px; border: none; border-radius: 0; background: #FFFFFF; color: #71717A;
+  font-weight: 700 !important; letter-spacing: -0.01em !important;
+}
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab + .builder-panel-tab:not(#love-h-a) { border-left: 1px solid #E4E4E7; }
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a):hover { background: #EBF4FF; color: #181D24; }
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a):hover { color: #181D24; }
+body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs { background: #1F1F1F !important; border-color: #404040 !important; }

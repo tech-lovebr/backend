@@ -8805,3 +8805,8 @@ html body .nova-empresa-etapa.is-ativa b:not(#love-h-a) { width: auto; height: a
 html body .nova-empresa-etapa.is-ativa:not(#love-h-a) { color: #183b54; font-weight: 700; }
 html body .nova-empresa-seta:not(#love-h-a) { width: 16px; height: 16px; color: #A1A1AA; flex-shrink: 0; }
 body[data-theme="dark"] .nova-empresa-etapa.is-ativa { color: #FFFFFF !important; }
+
+/* Cadastrar nova conta: o menu lateral aparece normal (sem apagar), só sem
+   clique; o nome da empresa antiga sai do topo. */
+html body[data-page="nova-empresa"] #shell-sidebar:not(#love-h-a) { opacity: 1; }
+html body[data-page="nova-empresa"] .topbar-account-wrap:not(#love-h-a) { visibility: hidden; }

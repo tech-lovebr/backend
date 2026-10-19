@@ -108,8 +108,8 @@ const QUICKNAV_EMOJI_MAP = {
   'qn-about': '💞'
 };
 
-// Ícones "Modernos": glifo sólido dentro de um círculo discreto, na cor dos
-// ícones da seção (monocromático — sem as cores fortes de antes). O mapa de
+// Ícones "Modernos": glifo sólido, sem círculo, num tom mais escuro que o
+// fundo do botão (ver corMaisEscura). O mapa de
 // cores abaixo não é mais usado no desenho; fica só por compatibilidade.
 const QUICKNAV_MODERN_COLOR_MAP = {
   'qn-loc': '#3B82F6',
@@ -119,13 +119,41 @@ const QUICKNAV_MODERN_COLOR_MAP = {
   'qn-about': '#F59E0B'
 };
 
+// Modernos: glifos sólidos, sem círculo em volta e diferentes dos Clássicos
+// (pino em vez de mapa, caixa de presente, envelope, vestido, coração cheio).
 const QUICKNAV_MODERN_ICON_MAP = {
-  'qn-loc': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-4.14 0-7.5 3.36-7.5 7.5 0 5.63 6.5 11.86 6.78 12.12a1 1 0 0 0 1.44 0C13 21.36 19.5 15.13 19.5 9.5 19.5 5.36 16.14 2 12 2Zm0 10.25a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5Z"/></svg>',
-  'qn-gifts': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 7h-2.1a3 3 0 0 0 .1-.75A3.25 3.25 0 0 0 14.75 3c-1.3 0-2.42.77-2.94 1.88a.9.9 0 0 0-.1.24l-.02.05a3.29 3.29 0 0 0-.12-.29A3.24 3.24 0 0 0 8.63 3 3.25 3.25 0 0 0 5.38 6.25c0 .27.04.51.1.75H4a2 2 0 0 0-2 2v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V9a2 2 0 0 0-2-2ZM8.63 5.5a.75.75 0 0 1 0 1.5A.75.75 0 0 1 8.63 5.5Zm6.12 0a.75.75 0 0 1 0 1.5.75.75 0 0 1 0-1.5ZM3 13v6a2 2 0 0 0 2 2h6v-8H3Zm10 8h6a2 2 0 0 0 2-2v-6h-8v8Z"/></svg>',
-  'qn-rsvp': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1.2 14.6-4.4-4.4 1.4-1.4 3 3 6-6 1.4 1.4-7.4 7.4Z"/></svg>',
-  'qn-dress': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 5.75a2.25 2.25 0 1 1 3.06 2.1c-.49.19-.81.66-.81 1.18V10m0 0 8.36 5.57A1.5 1.5 0 0 1 19.53 18.3H4.47a1.5 1.5 0 0 1-.83-2.73L12 10Z"/></svg>',
-  'qn-about': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.65 20.91l-.01-.01-.02-.01a15.2 15.2 0 0 1-.38-.22 25.2 25.2 0 0 1-4.25-3.17C4.69 15.36 2.25 12.17 2.25 8.25 2.25 5.32 4.71 3 7.69 3A5.5 5.5 0 0 1 12 5.05 5.5 5.5 0 0 1 16.31 3c2.98 0 5.44 2.32 5.44 5.25 0 3.93-2.44 7.11-4.74 9.26a25.2 25.2 0 0 1-4.24 3.17 15.2 15.2 0 0 1-.39.22l-.02.01-.01.01a.75.75 0 0 1-.7 0Z"/></svg>'
+  'qn-loc': '<svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 2a7.5 7.5 0 0 0-7.5 7.5c0 5.4 6.2 11.6 6.9 12.3a.85.85 0 0 0 1.2 0c.7-.7 6.9-6.9 6.9-12.3A7.5 7.5 0 0 0 12 2Zm0 10.25a2.75 2.75 0 1 0 0-5.5 2.75 2.75 0 0 0 0 5.5Z"/></svg>',
+  'qn-gifts': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h15A1.5 1.5 0 0 1 21 8.5V10a1 1 0 0 1-1 1h-7V7h-2v4H4a1 1 0 0 1-1-1V8.5Z"/><path d="M4.5 12.5H11V22H6a1.5 1.5 0 0 1-1.5-1.5v-8Zm8.5 0h6.5v8A1.5 1.5 0 0 1 18 22h-5v-9.5Z"/><path d="M12 7c-1.2-2.6-3.2-4-4.8-3.4-1.3.5-1.4 2.3.2 3.4H12Zm0 0c1.2-2.6 3.2-4 4.8-3.4 1.3.5 1.4 2.3-.2 3.4H12Z"/></svg>',
+  'qn-rsvp': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5v.35l-9 5.6-9-5.6V6.5Z"/><path d="M3 9.2v8.3A2.5 2.5 0 0 0 5.5 20h13a2.5 2.5 0 0 0 2.5-2.5V9.2l-8.47 5.27a1 1 0 0 1-1.06 0L3 9.2Z"/></svg>',
+  'qn-dress': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 2.5a.75.75 0 0 1 .75.75V5c0 .55.45 1 1 1h2.5c.55 0 1-.45 1-1V3.25a.75.75 0 0 1 1.5 0V6.2c0 .5-.2.98-.55 1.33l-.7.71 4.3 11.36A1.75 1.75 0 0 1 17.16 22H6.84a1.75 1.75 0 0 1-1.64-2.4L9.5 8.24l-.7-.71A1.88 1.88 0 0 1 8.25 6.2V3.25A.75.75 0 0 1 9 2.5Z"/></svg>',
+  'qn-about': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.4C.9 8.1 3.1 4 6.9 4c2.1 0 3.6 1.1 5.1 2.9C13.5 5.1 15 4 17.1 4c3.8 0 6 4.1 4.5 7.6C19.5 16.4 12 21 12 21Z"/></svg>'
 };
+
+/**
+ * Cor um pouco mais escura que a do botão (ícones Modernos): branco vira
+ * cinza, amarelo vira amarelo mais escuro. Aceita #rgb, #rrggbb e rgb()/rgba().
+ * @param {string} cor
+ * @param {number} [fator]  0–1 (quanto da luminosidade fica)
+ * @returns {string|null}
+ */
+function corMaisEscura(cor, fator) {
+  const k = typeof fator === 'number' ? fator : 0.68;
+  const txt = String(cor || '').trim();
+  /** @type {number[]} */
+  let rgb = [];
+  const hex = txt.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hex) {
+    let h = hex[1];
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    rgb = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+  } else {
+    const fn = txt.match(/^rgba?\(([^)]+)\)$/i);
+    if (!fn) return null;
+    rgb = fn[1].split(',').slice(0, 3).map(v => parseFloat(v));
+    if (rgb.length < 3 || rgb.some(v => isNaN(v))) return null;
+  }
+  return '#' + rgb.map(v => Math.max(0, Math.min(255, Math.round(v * k))).toString(16).padStart(2, '0')).join('');
+}
 
 function defaultQuickNavSection() {
   return {
@@ -1704,7 +1732,8 @@ function renderQuickNavSectionHtml(section, mode) {
           iconHtml = `<span class="builder-quicknav-icon" style="color:${iconColor};">${BI[iconKey]}</span>`;
         } else if (iconStyle === 'moderno') {
           const modernSvg = QUICKNAV_MODERN_ICON_MAP[btn.id] || BI.plusCircle;
-          iconHtml = `<span class="builder-quicknav-icon-modern" style="color:${iconColor};">${modernSvg}</span>`;
+          const corModerna = corMaisEscura(buttonBg) || iconColor;
+          iconHtml = `<span class="builder-quicknav-icon-modern" style="color:${corModerna};">${modernSvg}</span>`;
         } else if (iconStyle === 'animado') {
           const emoji = QUICKNAV_EMOJI_MAP[btn.id] || '⭐';
           iconHtml = `<span class="builder-quicknav-emoji">${emoji}</span>`;

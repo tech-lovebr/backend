@@ -8678,3 +8678,8 @@ html body #builder-canvas .builder-canvas-end-dropzone:not(#love-h-a) { min-heig
 html body #builder-canvas .builder-canvas-end-dropzone:not(#love-h-a) > span { visibility: hidden; }
 html body #builder-canvas.is-arrastando-elemento .builder-canvas-end-dropzone:not(#love-h-a) { min-height: 56px; border-color: var(--primary-blue, #537bae); background: #F8FAFC; color: #537bae; font-weight: 600; }
 html body #builder-canvas.is-arrastando-elemento .builder-canvas-end-dropzone:not(#love-h-a) > span { visibility: visible; }
+
+/* Botões › ícones Modernos: só o ícone (sem o círculo em volta), no tamanho
+   dos Clássicos; a cor vem do JS (um tom mais escuro que o botão). */
+html body .builder-quicknav-icon-modern:not(#love-h-a) { border: 0 !important; background: transparent !important; border-radius: 0 !important; width: 22px !important; height: 22px !important; }
+html body .builder-quicknav-icon-modern:not(#love-h-a) svg { width: 18px !important; height: 18px !important; }

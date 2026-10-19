@@ -8553,3 +8553,18 @@ html body #dashboard-footer .footer-bottom-bar :is(p, span):not(#love-h-a) { fon
 html body[data-theme="dark"] #dashboard-footer .footer-text-desc:not(#love-h-a),
 html body[data-theme="dark"] #dashboard-footer .footer-bottom-bar :is(p, span):not(#love-h-a) { color: #A1A1AA !important; }
 html body[data-theme="dark"] #dashboard-footer .space-y-3 > div > a:not(#love-h-a) { color: #FFFFFF !important; }
+
+/* Alinhamento do cabeçalho de cada tela com o conteúdo de baixo: o título
+   começa onde começam os cards/tabela e o último botão termina onde eles
+   terminam (mesma margem lateral do conteúdo: 24px / 32px). */
+html body #view-event-os-dashboard .builder-toolbar:not(#love-h-a) { padding-left: 24px !important; padding-right: 24px !important; }
+@media (min-width: 640px) {
+  html body #view-event-os-dashboard .builder-toolbar:not(#love-h-a) { padding-left: 32px !important; padding-right: 32px !important; }
+}
+html body #view-event-os-dashboard .builder-toolbar h2.floorplan-page-name:not(#love-h-a) { padding-left: 0 !important; padding-right: 0 !important; border-left-width: 0 !important; border-right-width: 0 !important; }
+/* Convite digital: não há conteúdo para alinhar; o Publicar termina na mesma
+   linha do quadradinho do perfil no topo (margem do topo: 16px / 24px). */
+html body #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { padding-left: 16px !important; padding-right: 16px !important; }
+@media (min-width: 640px) {
+  html body #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { padding-left: 24px !important; padding-right: 24px !important; }
+}

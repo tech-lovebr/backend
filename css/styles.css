@@ -5168,11 +5168,11 @@ body:not([data-theme="dark"]) #tab-b2b {
   background-color: #FFFFFF !important;
 }
 
-/* Sub-drawer (submenu de páginas) em #f3f3f3 no Light Mode */
+/* Sub-drawer (submenu de páginas) branco (igual ao header) no Light Mode */
 body:not([data-theme="dark"]) .sidebar-sub-drawer,
 body:not([data-theme="dark"]) #sidebar-sub-drawer {
-  background-color: #F3F3F3 !important;
-  background: #F3F3F3 !important;
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
 }
 
 /* Rail de ícones escuro (#181D24) no Light Mode Desktop — não afeta a barra mobile. */

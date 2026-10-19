@@ -8624,3 +8624,18 @@ html body #command-input:not(#love-h-a),
 html body input[type="search"]:not(#love-h-a) {
   font-family: 'Albert Sans', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
+
+/* Sombra suave (igual à caixa "Saldos" de referência) em todas as caixas e
+   tabelas do Hub: cards, caixas de tabela, cards de ajuda, produtos, planos,
+   verificação. Fica de fora o carrossel de anúncios e as caixas "chapadas"
+   da Central de ajuda. */
+html body :is(.dash-card, .dashboard-help-card, .product-card, .plan-card, .verif-card, .nova-empresa-card,
+  .contratos-clientes-list-card, .agenda-notifications-card, .lead-import-card, .finance-stat-card, .wallet-card,
+  .dash-analytics-card, .dash-news-card):not(.dash-ads-card):not(.guias-flat-card):not(#love-h-a) {
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 6px rgba(16, 24, 40, 0.05) !important;
+}
+body[data-theme="dark"] :is(.dash-card, .dashboard-help-card, .product-card, .plan-card, .verif-card, .nova-empresa-card,
+  .contratos-clientes-list-card, .agenda-notifications-card, .lead-import-card, .finance-stat-card, .wallet-card,
+  .dash-analytics-card, .dash-news-card):not(.dash-ads-card):not(.guias-flat-card) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+}

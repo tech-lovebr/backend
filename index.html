@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261019_caixaAzul">
+  <link rel="stylesheet" href="css/styles.css?v=20261019_salvarAntesDeSair">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4574,23 +4574,12 @@
        MODAL: ALTERAÇÕES NÃO SALVAS (Construtor de Aparência)
        ======================================================================= -->
   <div id="modal-unsaved-changes" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
-    <div class="modal-container-custom bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 relative">
-      <div class="text-center mb-5">
-        <div class="w-14 h-14 rounded-2xl border-2 border-slate-900 text-slate-900 flex items-center justify-center mx-auto mb-4">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v10m0 0-3.5-3.5M12 13l3.5-3.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/></svg>
-        </div>
-        <h3 class="text-lg font-extrabold text-slate-900">Salve sua página antes de sair</h3>
-      </div>
-      <p class="text-xs sm:text-sm text-slate-500 text-center leading-relaxed mb-6">
-        Você fez alterações que ainda não foram salvas. Se sair agora, elas serão perdidas.
-      </p>
-      <div class="flex flex-col gap-3">
-        <button type="button" id="btn-unsaved-save" class="w-full py-3 px-5 text-sm font-bold rounded-xl bg-[#333333] hover:bg-[#222222] text-white transition-all">
-          Salvar primeiro
-        </button>
-        <button type="button" id="btn-unsaved-discard" class="btn-white w-full py-3 px-5 text-sm font-bold rounded-xl">
-          Sair sem salvar
-        </button>
+    <div class="modal-container-custom modal-sair-sem-salvar bg-white w-full max-w-sm relative">
+      <h3 class="modal-sair-titulo">Deseja salvar antes de sair?</h3>
+      <p class="modal-sair-texto">Você fez alterações que ainda não foram salvas. Se sair sem salvar, elas serão perdidas.</p>
+      <div class="modal-sair-acoes">
+        <button type="button" id="btn-unsaved-discard" class="btn-white modal-sair-btn">Sair</button>
+        <button type="button" id="btn-unsaved-save" class="btn-primary modal-sair-btn">Salvar</button>
       </div>
     </div>
   </div>
@@ -5554,6 +5543,6 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/app.js?v=20261019_eventoAtivo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261019_dataJost"></script>
+  <script src="js/site-builder.js?v=20261019_salvarAntesDeSair"></script>
 </body>
 </html>

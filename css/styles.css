@@ -8595,3 +8595,12 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard #dashboard-footer:no
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs:not(#love-h-a),
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #EBF4FF !important; }
+
+/* Modal "Deseja salvar antes de sair?" (Aparência): Sair à esquerda, Salvar à direita. */
+html body #modal-unsaved-changes .modal-sair-sem-salvar:not(#love-h-a) { padding: 24px; border-radius: 10px; border: 1px solid #E4E4E7; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+html body #modal-unsaved-changes .modal-sair-titulo:not(#love-h-a) { font-size: 1.125rem; font-weight: 700; color: #18181B; margin: 0 0 8px; }
+html body #modal-unsaved-changes .modal-sair-texto:not(#love-h-a) { font-size: 0.875rem; line-height: 1.5; color: #71717A; margin: 0 0 20px; }
+html body #modal-unsaved-changes .modal-sair-acoes:not(#love-h-a) { display: flex; gap: 12px; }
+html body #modal-unsaved-changes .modal-sair-btn:not(#love-h-a) { flex: 1 1 0; height: 44px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+body[data-theme="dark"] #modal-unsaved-changes .modal-sair-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] #modal-unsaved-changes .modal-sair-sem-salvar { border-color: #404040 !important; }

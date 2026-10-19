@@ -909,12 +909,48 @@ window.builderConfirmLeaveIfDirty = function (proceed) {
   showUnsavedChangesModal(proceed);
 };
 
+// Botões/links que levam para fora do construtor e ainda não passam pelo
+// aviso do app.js (que já cobre sidebar e submenu): seletor de eventos,
+// atalhos do topo, menu da conta e links do rodapé.
+const SAIDAS_DO_CONSTRUTOR = [
+  '.event-switcher-item',
+  '#btn-dropdown-create-new-event',
+  '#btn-dash-header-chat',
+  '#btn-notifications-menu',
+  '#dropdown-user-account [id^="btn-account-"]:not(#btn-account-preview-site)',
+  '#dashboard-footer a',
+  '.sidebar-icon-rail [data-rail-tab]',
+  '#sidebar-sub-drawer .sub-drawer-item:not(.active)'
+].join(', ');
+
+let liberandoSaida = false;
+
+/** O construtor está na tela (Aparência › Convite digital / Save the Date)? */
+function construtorVisivel() {
+  const raiz = document.getElementById('site-builder-root');
+  return !!(raiz && raiz.offsetParent !== null);
+}
+
 function wireUnsavedChangesGuard() {
   window.addEventListener('beforeunload', (e) => {
     if (!hasUnsavedChanges) return;
     e.preventDefault();
     e.returnValue = '';
   });
+
+  // Fase de captura: segura o clique antes do destino agir, pergunta se quer
+  // salvar e, depois da resposta, repete o mesmo clique.
+  document.addEventListener('click', (e) => {
+    if (liberandoSaida || !hasUnsavedChanges || !construtorVisivel()) return;
+    const alvo = e.target instanceof Element ? e.target.closest(SAIDAS_DO_CONSTRUTOR) : null;
+    if (!alvo || !(alvo instanceof HTMLElement)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    showUnsavedChangesModal(() => {
+      liberandoSaida = true;
+      try { alvo.click(); } finally { liberandoSaida = false; }
+    });
+  }, true);
 }
 
 /* -------------------- Histórico (undo/redo) -------------------- */

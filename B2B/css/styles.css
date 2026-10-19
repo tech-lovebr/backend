@@ -8371,3 +8371,13 @@ html body #products-grid .status-badge.status-ativo:not(#love-h-a) { color: #1E9
 html body #products-grid .status-badge.status-ativo:not(#love-h-a)::before { background: #2FCB7E; box-shadow: 0 0 0 3px rgba(47, 203, 126, 0.16); }
 body[data-theme="dark"] #products-grid .status-badge.status-ativo { color: #5FE0A0 !important; }
 body[data-theme="dark"] #products-grid .status-badge.status-ativo::before { background: #5FE0A0 !important; }
+
+/* Cabeçalhos (só eles): "Olá, …" do painel e o título de cada página em
+   EB Garamond Bold 700. O resto continua em Albert Sans. */
+html body .greeting-title:not(#love-h-a),
+html body .b2b-header-bar h1:not(#love-h-a),
+html body .b2b-header-bar h2:not(#love-h-a) {
+  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0;
+}

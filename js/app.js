@@ -1248,6 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputName) inputName.value = '';
     if (inputSlug) inputSlug.value = '';
     if (inputDate) inputDate.value = '';
+    preencherInicioPadraoDoNovoEvento();
 
     showToast('Crie seu primeiro evento para começar!', '✨');
   }
@@ -1834,8 +1835,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Novo evento sempre começa amanhã ao meio-dia (e termina no mesmo dia).
+  // Se a data veio do /cadastro (pendente), respeita a que a pessoa escolheu.
+  function preencherInicioPadraoDoNovoEvento() {
+    let pendente = null;
+    try { pendente = localStorage.getItem('love-pending-event-date'); } catch (e) { /* sem armazenamento */ }
+    if (pendente) return;
+    const amanha = new Date();
+    amanha.setDate(amanha.getDate() + 1);
+    const iso = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, '0')}-${String(amanha.getDate()).padStart(2, '0')}`;
+    const inicio = /** @type {HTMLInputElement|null} */ (document.getElementById('page-new-event-date'));
+    const horaInicio = /** @type {HTMLInputElement|null} */ (document.getElementById('page-new-event-start-time'));
+    const fim = /** @type {HTMLInputElement|null} */ (document.getElementById('page-new-event-end-date'));
+    if (inicio) inicio.value = iso;
+    if (horaInicio) horaInicio.value = '12:00';
+    if (fim) fim.value = iso;
+  }
+
   function openCreateEventPage(isFirstAccess = false, goToForm = false) {
     state.currentTab = 'create-event-page';
+    preencherInicioPadraoDoNovoEvento();
     elements.railIconBtns.forEach(btn => btn.classList.remove('active'));
     elements.subDrawer.classList.add('hidden-drawer');
     elements.mainArea.classList.add('full-width');

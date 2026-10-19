@@ -8663,3 +8663,7 @@ html body:not([data-theme="dark"]) .kanban-list:not(#love-h-a) {
 html body:not([data-theme="dark"]) .kanban-list .kanban-task:not(#love-h-a) { border: 1px solid #E4E4E7; }
 html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a) { background: #EDEDEF; color: #3F3F46; }
 html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a):hover { background: #E4E4E7; color: #181D24; }
+
+/* Exceção: Política de privacidade (/privacidade) e Termos e condições
+   (/termos) com o fundo da página branco. */
+html body:not([data-theme="dark"]):is([data-page="privacidade"], [data-page="termos"]) { --bg-dashboard: #FFFFFF; background-color: #FFFFFF; }

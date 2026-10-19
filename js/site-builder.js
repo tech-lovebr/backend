@@ -255,6 +255,17 @@ function seletorDeHorarioHtml(valor, rotuloVazio) {
   </select>`;
 }
 
+// Fontes do elemento Data: as formais sem as cursivas (a data precisa ser
+// legível) e com a Jost, que entra sempre espaçada (ver JOST_TRACKING).
+const FONTES_CURSIVAS_FORA_DA_DATA = ['Alex Brush', 'Allura', 'Pinyon Script', 'Sacramento'];
+const FONT_OPTIONS_DATA = (() => {
+  const lista = FONT_OPTIONS_FORMAL.filter(f => !FONTES_CURSIVAS_FORA_DA_DATA.includes(f.label));
+  lista.push({ value: "'Jost', sans-serif", label: 'Jost' });
+  return [lista[0], ...lista.slice(1).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'))];
+})();
+// A Jost nunca fica no espaçamento padrão: letras abertas (0.2em, na faixa de 0.15em a 0.3em).
+const JOST_TRACKING = '0.2em';
+
 const VIDEO_ASPECT_RATIOS = { '16:9': 56.25, '9:16': 177.78, '1:1': 100, '4:5': 125 };
 const VIDEO_ASPECT_RATIO_OPTIONS = [
   { value: '16:9', label: 'Paisagem (16:9)' },
@@ -2281,6 +2292,7 @@ function renderElementContent(el, device, mode) {
       const formatted = formatEventDate(el.targetDate, el.targetTime);
       const textInline = [
         el.fontFamily ? `font-family:${el.fontFamily} !important;` : '',
+        el.fontFamily && el.fontFamily.includes('Jost') ? `letter-spacing:${JOST_TRACKING} !important;` : '',
         el.textColor ? `color:${el.textColor} !important;` : ''
       ].filter(Boolean).join('');
       const textAttr = textInline ? ` style="${textInline}"` : '';
@@ -3391,7 +3403,7 @@ function renderContentTab(el) {
         ${fieldRow('Data', `<input type="date" class="inspector-input" data-bind="prop:targetDate" value="${escapeHtml(el.targetDate || '')}">`)}
         ${fieldRow('Horário (opcional)', seletorDeHorarioHtml(el.targetTime, 'Sem horário'))}
         ${fieldRow('Fonte do texto', `<select class="inspector-select" data-bind="prop:fontFamily">
-          ${FONT_OPTIONS_FORMAL.map(f => `<option value="${escapeHtml(f.value)}" ${(el.fontFamily || '') === f.value ? 'selected' : ''}>${escapeHtml(f.label)}</option>`).join('')}
+          ${FONT_OPTIONS_DATA.map(f => `<option value="${escapeHtml(f.value)}" ${(el.fontFamily || '') === f.value ? 'selected' : ''}>${escapeHtml(f.label)}</option>`).join('')}
         </select>`)}
         <div class="inspector-field inspector-field-row">
           <span class="inspector-field-label">Cor do texto</span>

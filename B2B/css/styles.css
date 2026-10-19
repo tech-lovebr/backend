@@ -8582,3 +8582,18 @@ html body .wallet-periodo-btn:not(#love-h-a) { font-weight: 400; }
    fundo (#F4F6F7) e sem a linha de baixo. */
 html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a) { background: var(--bg-dashboard); border-bottom: none; }
 body[data-theme="dark"] .b2b-header-bar { background: var(--bg-dashboard) !important; border-bottom: none !important; }
+
+/* Subtítulo da página bem perto do título e mais longe das abas abaixo
+   (ex.: Meus produtos, Construtor de Site). */
+html body .b2b-header-bar + p:not(#love-h-a) { margin-top: -1.15rem; margin-bottom: 1.75rem; }
+
+/* Construtor de Site: a barra do editor usa a mesma margem lateral da
+   página, para "Publicar" alinhar com "Ver meu site" do cabeçalho. */
+html body .builder-wrap:not(#love-h-a) {
+  margin-left: calc(-1 * var(--b2b-content-pad-x)); margin-right: calc(-1 * var(--b2b-content-pad-x));
+  width: calc(100% + 2 * var(--b2b-content-pad-x));
+}
+html body .builder-wrap > .builder-toolbar:not(#love-h-a) { padding-left: var(--b2b-content-pad-x); padding-right: var(--b2b-content-pad-x); }
+
+/* Rodapé branco, como o topo. */
+html body:not([data-theme="dark"]) .b2b-footer:not(#love-h-a) { background: #FFFFFF; }

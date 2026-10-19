@@ -105,6 +105,7 @@ async function initNovaEmpresa() {
   }
 
   form.hidden = false;
+  document.getElementById('nova-empresa-etapas').hidden = false;
   ligarUpload('nova-empresa-perfil', 'nova-empresa-perfil-zona');
   ligarUpload('nova-empresa-capa', 'nova-empresa-capa-zona');
 
@@ -153,7 +154,7 @@ async function initNovaEmpresa() {
     if (cnpjAtual && !form.querySelector('input[name="nova-empresa-mesmo-cnpj"]:checked')) return 'Responda se o CNPJ é o mesmo da empresa atual.';
     if (cnpjInput.value.replace(/\D/g, '').length !== 14) return 'Confira o CNPJ: são 14 números.';
     if (!responsavel) return 'Preencha o responsável principal.';
-    if (telefone.length < 10) return 'Confira o telefone com o DDD.';
+    if (telefone.length < 10) return 'Confira o WhatsApp com o DDD.';
     return '';
   };
   const categoriaEscolhida = () => (form.querySelector('input[name="nova-empresa-categoria"]:checked') || {}).value || '';

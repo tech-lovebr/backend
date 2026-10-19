@@ -8793,3 +8793,15 @@ html body .sidebar-nav-group--construtor .sidebar-subnav-item:not(#love-h-a) {
 html body .sidebar-nav-group--construtor .sidebar-subnav-item:hover:not(#love-h-a) { background: rgba(255, 255, 255, 0.08); color: #FFFFFF; }
 html body .sidebar-nav-group--construtor .sidebar-subnav-item.active:not(#love-h-a) { background: #EBF4FF; color: #181D24; font-weight: 700; }
 body[data-theme="dark"] .sidebar-nav-toggle:hover { background: #4b4b4b !important; color: #FFFFFF !important; }
+
+/* Cadastrar nova conta › etapas fora da caixa: só o número ao lado do nome
+   (sem bolinha), setas entre elas; a atual em azul, as outras em cinza. */
+html body .nova-empresa-etapas:not(#love-h-a) { align-items: center; gap: 0.5rem 0.75rem; margin: 0 0 1rem; padding: 0; border: none; max-width: 720px; }
+html body .nova-empresa-etapa:not(#love-h-a),
+html body .nova-empresa-etapa.is-feita:not(#love-h-a) { gap: 0.35rem; font-size: 0.875rem; font-weight: 600; color: #A1A1AA; }
+html body .nova-empresa-etapa b:not(#love-h-a),
+html body .nova-empresa-etapa.is-feita b:not(#love-h-a),
+html body .nova-empresa-etapa.is-ativa b:not(#love-h-a) { width: auto; height: auto; border: none; border-radius: 0; background: none; color: inherit; font-size: inherit; font-weight: 700; }
+html body .nova-empresa-etapa.is-ativa:not(#love-h-a) { color: #183b54; font-weight: 700; }
+html body .nova-empresa-seta:not(#love-h-a) { width: 16px; height: 16px; color: #A1A1AA; flex-shrink: 0; }
+body[data-theme="dark"] .nova-empresa-etapa.is-ativa { color: #FFFFFF !important; }

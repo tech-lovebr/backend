@@ -13,7 +13,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova empresa — Portal do Fornecedor Love</title>
+  <title>Cadastrar nova conta — Portal do Fornecedor Love</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#183b54">
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=669">
+  <link rel="stylesheet" href="css/styles.css?v=670">
 </head>
 <body class="font-sans" data-page="nova-empresa">
 
@@ -40,7 +40,7 @@
 
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900">Nova empresa</h2>
+          <h2 class="text-xl font-bold text-zinc-900">Cadastrar nova conta</h2>
         </div>
 
         <!-- Plano sem vaga para mais uma empresa (Gratuito: 1; Pro: até 3). -->
@@ -49,15 +49,18 @@
           <a href="planos" class="btn-primary nova-empresa-limite-btn" id="nova-empresa-limite-btn">Ver planos</a>
         </div>
 
+        <!-- Etapas, fora da caixa: a atual em azul; as outras em cinza. -->
+        <div class="nova-empresa-etapas" id="nova-empresa-etapas" aria-label="Etapas" hidden>
+          <span class="nova-empresa-etapa is-ativa" data-etapa-indicador="1"><b>1</b> Dados da empresa</span>
+          <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+          <span class="nova-empresa-etapa" data-etapa-indicador="2"><b>2</b> Categoria</span>
+          <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+          <span class="nova-empresa-etapa" data-etapa-indicador="3"><b>3</b> Imagens</span>
+        </div>
+
         <!-- Nova empresa no mesmo login, em 3 etapas: dados, categoria e
              imagens. Ao concluir, o Hub abre direto na nova empresa. -->
         <form class="dash-card nova-empresa-card" id="nova-empresa-form" novalidate hidden>
-          <div class="nova-empresa-etapas" aria-label="Etapas">
-            <span class="nova-empresa-etapa is-ativa" data-etapa-indicador="1"><b>1</b> Dados da empresa</span>
-            <span class="nova-empresa-etapa" data-etapa-indicador="2"><b>2</b> Categoria</span>
-            <span class="nova-empresa-etapa" data-etapa-indicador="3"><b>3</b> Imagens</span>
-          </div>
-
           <!-- Etapa 1: dados -->
           <section class="nova-empresa-passo" data-etapa="1">
             <div class="nova-empresa-campos">
@@ -85,7 +88,7 @@
                 <input id="nova-empresa-responsavel" type="text" class="field-input" autocomplete="name">
               </div>
               <div>
-                <label for="nova-empresa-telefone" class="field-label">Contato telefônico <span style="color:#DC2626;">*</span></label>
+                <label for="nova-empresa-telefone" class="field-label">WhatsApp <span style="color:#DC2626;">*</span></label>
                 <input id="nova-empresa-telefone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000" autocomplete="tel">
               </div>
             </div>
@@ -137,6 +140,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=45"></script>
-  <script src="js/nova-empresa.js?v=2"></script>
+  <script src="js/nova-empresa.js?v=3"></script>
 </body>
 </html>

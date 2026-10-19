@@ -8589,3 +8589,9 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard #tab-legal-doc .buil
 html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; }
 /* Rodapé das telas logadas branco. */
 html body:not([data-theme="dark"]) #view-event-os-dashboard #dashboard-footer:not(#love-h-a) { background: #FFFFFF !important; }
+
+/* Aparência › caixinha "Elementos" (Convite digital) e "Editar texto" (Save
+   the Date): fundo azul-clarinho (#EBF4FF, o mesmo do ícone ativo do sidebar). */
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs:not(#love-h-a),
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #EBF4FF !important; }

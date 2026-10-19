@@ -959,8 +959,12 @@ function snapshotState() { return JSON.stringify(builderState); }
 
 function pushHistory() {
   if (suppressHistory) return;
+  // Sem mudança desde o último passo (ex.: só saiu de um campo): não grava,
+  // senão o Desfazer gastaria um passo "vazio" e parecia não fazer nada.
+  const foto = snapshotState();
+  if (historyStack[historyIndex] === foto) return;
   historyStack = historyStack.slice(0, historyIndex + 1);
-  historyStack.push(snapshotState());
+  historyStack.push(foto);
   if (historyStack.length > 60) historyStack.shift();
   historyIndex = historyStack.length - 1;
   hasUnsavedChanges = true;
@@ -3539,13 +3543,36 @@ function initSiteBuilder() {
     });
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (!document.getElementById('site-builder-root') || document.getElementById('site-builder-root').classList.contains('hidden')) return;
-    const tag = (document.activeElement && document.activeElement.tagName) || '';
-    const isEditingField = tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable);
+  // Ctrl+Z / Ctrl+Y (Cmd no Mac) fazem o mesmo que os botões Desfazer/Refazer.
+  // Se o cursor estiver num campo do painel ou no texto do convite, primeiro
+  // tira o foco dele — como o clique no botão faz —, para a edição em curso
+  // entrar no histórico e ser ela a desfeita (e não a ação anterior).
+  /** @param {() => void} acao */
+  const comoOsBotoes = (acao) => {
+    const ativo = document.activeElement;
+    const raiz = document.getElementById('site-builder-root');
+    if (ativo instanceof HTMLElement && raiz && raiz.contains(ativo) &&
+        (ativo.tagName === 'INPUT' || ativo.tagName === 'TEXTAREA' || ativo.tagName === 'SELECT' || ativo.isContentEditable)) {
+      ativo.blur();
+    }
+    // Garante que a edição em curso virou um passo do histórico mesmo que o
+    // blur não dispare (pushHistory ignora quando nada mudou).
+    pushHistory();
+    acao();
+  };
 
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undo(); return; }
-    if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) { e.preventDefault(); redo(); return; }
+  document.addEventListener('keydown', (e) => {
+    if (!construtorVisivel()) return;
+    const ativoEl = document.activeElement;
+    const raizEl = document.getElementById('site-builder-root');
+    // Campo fora do construtor (ex.: busca do topo) mantém o Ctrl+Z do navegador.
+    if (ativoEl && raizEl && ativoEl !== document.body && !raizEl.contains(ativoEl)) return;
+    const tag = (ativoEl && ativoEl.tagName) || '';
+    const isEditingField = tag === 'INPUT' || tag === 'TEXTAREA' || (ativoEl instanceof HTMLElement && ativoEl.isContentEditable);
+    const tecla = e.key.toLowerCase();
+
+    if ((e.metaKey || e.ctrlKey) && tecla === 'z' && !e.shiftKey) { e.preventDefault(); comoOsBotoes(undo); return; }
+    if ((e.metaKey || e.ctrlKey) && (tecla === 'y' || (tecla === 'z' && e.shiftKey))) { e.preventDefault(); comoOsBotoes(redo); return; }
 
     if (isEditingField) return;
 

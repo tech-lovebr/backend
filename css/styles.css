@@ -8716,3 +8716,10 @@ html body:not([data-theme="dark"]) button.std-gerar-ia:not(#love-h-a):hover {
 body[data-theme="dark"] button.std-gerar-ia { background: linear-gradient(180deg, #2E2E2E 0%, #232323 100%) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important; }
 /* Organizadores: sem o divisor do "Ver página publicada" (os botões já somem). */
 body.organizadores-sem-previa #classic-editor-toolbar .builder-toolbar-divider { display: none !important; }
+
+/* Prévia da esquerda (Informações/Anfitriões): o rodapé encosta no fim da
+   coluna — o conteúdo acima estica para ocupar a sobra. */
+html body #classic-builder-preview:not(.hidden):not(#love-h-a) { display: flex !important; flex-direction: column; }
+html body #classic-builder-preview:not(#love-h-a) > * { flex-shrink: 0; }
+html body #classic-builder-preview:not(#love-h-a) > :nth-last-child(2) { flex-grow: 1; }
+html body #classic-builder-preview:not(#love-h-a) > .builder-fixed-footer { margin-top: auto; }

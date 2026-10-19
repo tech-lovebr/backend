@@ -8765,8 +8765,8 @@ body[data-theme="dark"] .nova-empresa-etapas { border-color: #404040 !important;
    Formulários) só aparece aberto; a seta gira ao abrir. */
 html body .sidebar-nav-group:not(.open) > .sidebar-subnav:not(#love-h-a) { display: none; }
 html body .sidebar-nav-group.open > .sidebar-nav-toggle .sidebar-chevron:not(#love-h-a) { transform: rotate(180deg); }
-html body .sidebar-nav-toggle:not(#love-h-a) { width: 100%; border: none; background: transparent; cursor: pointer; text-align: left; font-family: inherit; }
-html body .sidebar-nav-group--construtor .sidebar-subnav:not(#love-h-a) { padding-left: 2.6rem; }
+html body .sidebar-nav-toggle:not(#love-h-a) { width: 100%; border: none; cursor: pointer; text-align: left; font-family: inherit; }
+
 
 /* Menu do perfil › empresas: sem a imagenzinha; check à esquerda, na mesma
    coluna do "+" de Adicionar empresa; nome e, ao lado, o CNPJ. */
@@ -8776,3 +8776,18 @@ html body .profile-empresa-marca:not(#love-h-a) { width: 16px; height: 16px; fle
 html body .profile-empresa-marca .profile-empresa-check:not(#love-h-a) { width: 16px; height: 16px; margin: 0; }
 html body .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { flex: 0 1 auto; }
 html body .profile-empresa-item .profile-empresa-cnpj:not(#love-h-a) { font-size: 0.75rem; font-weight: 400; color: #A1A1AA; white-space: nowrap; margin-left: 0.15rem; }
+
+/* Construtor no menu: hover igual aos outros itens (fundo preenchido);
+   seta maior; "Editar meu site" e "Formulários" ocupam a largura toda do
+   menu, com o texto alinhado ao de "Construtor". */
+html body .sidebar-nav-toggle:hover:not(#love-h-a) { background: rgba(255, 255, 255, 0.08); color: #FFFFFF; }
+html body .sidebar-nav-toggle .sidebar-chevron:not(#love-h-a) { width: 20px; height: 20px; margin-right: 0.35rem; }
+html body .sidebar-nav-toggle:hover .sidebar-chevron:not(#love-h-a) { color: #FFFFFF; }
+html body .sidebar-nav-group--construtor > .sidebar-subnav:not(#love-h-a) { padding: 0.15rem 0 0.35rem; gap: 0.15rem; }
+html body .sidebar-nav-group--construtor .sidebar-subnav-item:not(#love-h-a) {
+  width: 100%; min-height: 38px; padding: 0.45rem 0.5rem 0.45rem calc(0.5rem + 48px + 0.6rem);
+  border-radius: var(--radius-control); font-size: 0.875rem; font-weight: 600; color: #C4C4CC;
+}
+html body .sidebar-nav-group--construtor .sidebar-subnav-item:hover:not(#love-h-a) { background: rgba(255, 255, 255, 0.08); color: #FFFFFF; }
+html body .sidebar-nav-group--construtor .sidebar-subnav-item.active:not(#love-h-a) { background: #EBF4FF; color: #181D24; font-weight: 700; }
+body[data-theme="dark"] .sidebar-nav-toggle:hover { background: #4b4b4b !important; color: #FFFFFF !important; }

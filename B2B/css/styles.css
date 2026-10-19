@@ -8542,3 +8542,9 @@ html body .dashboard-panel-section > .dashboard-panel-header:not(#love-h-a),
 html body .dashboard-help-section > .dashboard-help-header:not(#love-h-a) { height: 32px; min-height: 32px; margin-bottom: 0.75rem; }
 html body .dashboard-panel-header .dash-analytics-period-btn:not(#love-h-a) { width: 32px; height: 32px; }
 html body .dash-analytics-header > div:first-child:not(#love-h-a) { display: flex; align-items: center; }
+
+/* Financeiro › Extrato / Saques / Notas fiscais: sem o rótulo, os três
+   dividindo a altura do card em partes iguais. */
+html body .finance-acesso-card:not(#love-h-a) { display: flex; flex-direction: column; padding: 0.35rem 1.25rem; }
+html body .finance-acesso-lista:not(#love-h-a) { flex: 1; display: flex; flex-direction: column; }
+html body .finance-acesso-item:not(#love-h-a) { flex: 1 1 0; min-height: 40px; }

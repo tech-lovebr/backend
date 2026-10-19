@@ -156,7 +156,6 @@ function renderFinanceStats() {
       <p class="finance-stat-sub">Mês passado: ${formatCurrency(faturamentoMesPassado)}</p>
     </div>
     <div class="dash-card finance-stat-card finance-acesso-card">
-      <p class="finance-stat-label">Acesso rápido</p>
       <nav class="finance-acesso-lista">
         ${FINANCE_LISTAS.map(l => `
           <button type="button" class="finance-acesso-item${l.chave === financeListaAtual ? ' is-ativo' : ''}" data-finance-lista="${l.chave}">

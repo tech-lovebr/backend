@@ -8548,3 +8548,4 @@ html body .dash-analytics-header > div:first-child:not(#love-h-a) { display: fle
 html body .finance-acesso-card:not(#love-h-a) { display: flex; flex-direction: column; padding: 0.35rem 1.25rem; }
 html body .finance-acesso-lista:not(#love-h-a) { flex: 1; display: flex; flex-direction: column; }
 html body .finance-acesso-item:not(#love-h-a) { flex: 1 1 0; min-height: 40px; }
+.withdrawal-pix-sugestao { font-size: 11px; color: #71717A; margin: 0.4rem 0 0; }

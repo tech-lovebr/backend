@@ -296,6 +296,24 @@ function openWithdrawalModal() {
 
   if (isFirstWithdrawalSetup()) {
     withdrawalKeyInfo = null;
+    // CNPJ já salvo no perfil: entra como sugestão de chave Pix (dá para trocar).
+    const prof = B2B_DATA.professional;
+    const cnpj = prof.documentType !== 'cpf' ? String(prof.documentNumber || '').trim() : '';
+    const keyInput = document.getElementById('withdrawal-pix-key-input');
+    let dica = document.getElementById('withdrawal-pix-sugestao');
+    if (cnpj && keyInput) {
+      keyInput.value = cnpj;
+      if (!dica) {
+        dica = document.createElement('p');
+        dica.id = 'withdrawal-pix-sugestao';
+        dica.className = 'withdrawal-pix-sugestao';
+        keyInput.insertAdjacentElement('afterend', dica);
+      }
+      dica.textContent = 'Sugerimos o CNPJ da sua empresa. Se a sua chave Pix for outra, é só trocar.';
+      dica.hidden = false;
+    } else if (dica) {
+      dica.hidden = true;
+    }
     goToWithdrawalStep('key');
   } else {
     const p = B2B_DATA.professional;

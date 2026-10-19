@@ -8577,3 +8577,8 @@ html body:not([data-theme="dark"]) .b2b-topbar:not(#love-h-a) { background: #FFF
 html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a) { background: #F7F7F8; }
 /* Botão do período (Últimos 30 dias): texto sem negrito. */
 html body .wallet-periodo-btn:not(#love-h-a) { font-weight: 400; }
+
+/* Faixa do título de cada página unificada com o conteúdo: mesma cor do
+   fundo (#F4F6F7) e sem a linha de baixo. */
+html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a) { background: var(--bg-dashboard); border-bottom: none; }
+body[data-theme="dark"] .b2b-header-bar { background: var(--bg-dashboard) !important; border-bottom: none !important; }

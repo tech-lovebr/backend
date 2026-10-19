@@ -8535,3 +8535,6 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard #dashboard-footer:no
    horizontal embaixo; o fundo atrás do template no Convite Digital também. */
 html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not(#love-h-a) { background: var(--bg-dashboard) !important; border-bottom: 0 !important; box-shadow: none !important; }
 html body:not([data-theme="dark"]) .builder-canvas-viewport:not(#love-h-a) { background: var(--bg-dashboard) !important; }
+/* Convite Digital (construtor): cabeçalho branco, separado do template por
+   uma linha cinza, como antes. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; }

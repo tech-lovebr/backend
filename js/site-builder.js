@@ -2951,7 +2951,7 @@ function wireImageDropZone(zoneEl, onFile) {
  * @returns {string}
  */
 function caixaDeTextoRicaHtml(el) {
-  return `<div class="inspector-rich" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
+  return botoesDeEstiloHtml(el, 'inspector-estilo-texto') + `<div class="inspector-rich" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
 }
 
 /**
@@ -3103,7 +3103,7 @@ function renderElementInspector(el, body) {
     wireTypographyToggles(body, el);
   } else {
     body.innerHTML = isTextLike
-      ? colorFieldHtml(el, el.type === 'titulo' ? 'Cor do título' : 'Cor do texto') + estiloRowHtml(el) + renderContentTab(el) + renderStyleTab(el, true, true, true)
+      ? colorFieldHtml(el, el.type === 'titulo' ? 'Cor do título' : 'Cor do texto') + renderContentTab(el) + renderStyleTab(el, true, true, true)
       : renderContentTab(el);
     wireContentTab(el, body);
     if (isTextLike) wireTypographyToggles(body, el);
@@ -3366,18 +3366,29 @@ function colorFieldHtml(el, label) {
  * @returns {string}
  */
 function estiloRowHtml(el) {
+  return `
+    <div class="inspector-field">
+      <span class="inspector-field-label">Estilo</span>
+      ${botoesDeEstiloHtml(el)}
+    </div>`;
+}
+
+/**
+ * Botões Negrito, Itálico e Sombra.
+ * @param {any} el
+ * @param {string} [classeExtra]
+ * @returns {string}
+ */
+function botoesDeEstiloHtml(el, classeExtra) {
   const isBold = cascadedStyleValue(el, 'fontWeight') === '700';
   const isItalic = cascadedStyleValue(el, 'fontStyle') === 'italic';
   const temSombra = !!cascadedStyleValue(el, 'textShadow');
   return `
-    <div class="inspector-field">
-      <span class="inspector-field-label">Estilo</span>
-      <div class="inspector-segmented">
+      <div class="inspector-segmented${classeExtra ? ' ' + classeExtra : ''}">
         <button type="button" data-typography-toggle="bold" class="${isBold ? 'active' : ''}" data-ativo-elemento="${isBold}" title="Negrito">${BI.bold}</button>
         <button type="button" data-typography-toggle="italic" class="${isItalic ? 'active' : ''}" data-ativo-elemento="${isItalic}" title="Itálico">${BI.italic}</button>
         <button type="button" data-typography-toggle="sombra" class="${temSombra ? 'active' : ''}" data-ativo-elemento="${temSombra}" title="Sombra">${BI.textShadow}</button>
-      </div>
-    </div>`;
+      </div>`;
 }
 
 function renderStyleTab(el, flat, skipColor, semEstilo) {

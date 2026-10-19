@@ -8657,3 +8657,6 @@ body[data-theme="dark"] #builder-elements-panel .inspector-rich { background: #1
    do próprio texto (não a regra geral de <p> em 1.6) e quase sem respiro. */
 .builder-canvas .be-text p { line-height: inherit; margin: 0 0 0.15em; }
 .builder-canvas .be-text p:last-child { margin-bottom: 0; }
+
+/* Título/Texto: botões de estilo entre o rótulo e a caixinha de escrever. */
+html body #builder-elements-panel .inspector-estilo-texto:not(#love-h-a) { margin-bottom: 6px; align-self: flex-start; }

@@ -8568,3 +8568,10 @@ html body #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#lo
 @media (min-width: 640px) {
   html body #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { padding-left: 24px !important; padding-right: 24px !important; }
 }
+
+/* Meus presentes › "Ativo": igual ao "Ativo" de Meus produtos no Hub —
+   texto verde, sem fundo nem borda, com a bolinha verde de halo suave. */
+html body .gift-status-badge.is-ativo:not(#love-h-a) { display: inline-flex !important; align-items: center; gap: 0.35rem; background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0.25rem 0 !important; font-size: 0.75rem !important; font-weight: 600 !important; color: #1E9E5E !important; white-space: nowrap; }
+html body .gift-status-badge.is-ativo:not(#love-h-a)::before { content: ''; width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; background: #2FCB7E; box-shadow: 0 0 0 3px rgba(47, 203, 126, 0.16); }
+body[data-theme="dark"] .gift-status-badge.is-ativo { color: #5FE0A0 !important; }
+body[data-theme="dark"] .gift-status-badge.is-ativo::before { background: #5FE0A0 !important; }

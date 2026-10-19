@@ -7219,7 +7219,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight" title="${gift.title}">
                 ${gift.title}
               </h4>
-              <span class="gift-status-badge">${isPurchased ? 'Comprado' : 'Ativo'}</span>
+              <span class="gift-status-badge${isPurchased ? '' : ' is-ativo'}">${isPurchased ? 'Comprado' : 'Ativo'}</span>
             </div>
             <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">
               ${gift.category || 'Presente fictício'}

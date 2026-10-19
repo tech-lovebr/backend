@@ -8571,3 +8571,7 @@ html body .b2b-header-bar h2:not(#love-h-a) { font-weight: 700 !important; lette
 :root { --bg-dashboard: #F4F6F7; }
 body[data-theme="dark"] { --bg-dashboard: #252525; }
 html body:not([data-theme="dark"]) .b2b-topbar:not(#love-h-a) { background: #FFFFFF; }
+
+/* Faixa do título de cada página (Leads, Meus produtos, Vendas…) na mesma
+   cor cinza do cabeçalho das tabelas (ID, Nome, Tipo do evento…). */
+html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a) { background: #F7F7F8; }

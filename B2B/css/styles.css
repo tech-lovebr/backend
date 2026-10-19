@@ -8671,3 +8671,16 @@ html body:not([data-theme="dark"]):is([data-page="privacidade"], [data-page="ter
 /* Nome da empresa no topo: link para o Início, sem sublinhado nem efeito no hover. */
 html body a.topbar-account-name:not(#love-h-a),
 html body a.topbar-account-name:not(#love-h-a):hover { text-decoration: none; cursor: pointer; }
+
+/* Vendas › Meus contratos: tabela em 100% da largura; clicar num contrato
+   abre os detalhes (evento e convidados) numa linha logo abaixo. */
+html body .contratos-cliente-row:not(#love-h-a) { cursor: pointer; }
+html body .contratos-cliente-row.is-selected td:not(#love-h-a) { background: #F7F7F8; }
+html body .contratos-detalhe-row > td:not(#love-h-a) { padding: 0; background: #FCFCFD; }
+html body .contratos-detalhe-row:hover > td:not(#love-h-a) { background: #FCFCFD; }
+html body .contratos-detalhe:not(#love-h-a) { padding: 1.1rem 1.25rem 1.25rem; white-space: normal; }
+html body .contratos-detalhe .contratos-convidados-block:not(#love-h-a) { margin-top: 1.1rem; padding-top: 1rem; }
+html body .contratos-detalhe .leads-table-wrap:not(#love-h-a) { border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; }
+body[data-theme="dark"] .contratos-detalhe-row > td,
+body[data-theme="dark"] .contratos-cliente-row.is-selected td { background: #1F1F1F !important; }
+body[data-theme="dark"] .contratos-detalhe .leads-table-wrap { background: #252525 !important; border-color: #404040 !important; }

@@ -101,7 +101,19 @@ function contratosClientesFiltrados() {
   return (bContratosAbertos || []).filter(c => !!c.evento).filter(c =>
     (!est.filtros.status || c.status === est.filtros.status) &&
     (!est.filtros.categoria || (c.categoria || '') === est.filtros.categoria) &&
-    tabelaBateBusca(est, [c.client, c.categoria]));
+    tabelaBateBusca(est, [c.client, c.categoria, produtoDoContrato(c)]));
+}
+
+// Produto/serviço escolhido pelo cliente (fica no JSON do evento do contrato).
+function produtoDoContrato(c) {
+  const ev = c.evento || {};
+  return ev.produto || ev.servico || ev.produto_nome || ev.product || '';
+}
+
+function dataCurtaDoEvento(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return isNaN(d) ? '—' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 function renderContratosClientes() {
@@ -110,87 +122,97 @@ function renderContratosClientes() {
   let rows = contratosClientesFiltrados();
   rows = rows.slice().sort((a, b) => (a.status === 'quitado' ? 1 : 0) - (b.status === 'quitado' ? 1 : 0));
 
-  const filterDropdown = document.getElementById('contratos-status-filter-dropdown');
-  if (filterDropdown) {
-    filterDropdown.hidden = !contratosStatusFilterOpen;
-    filterDropdown.querySelectorAll('[data-status-filter]').forEach(item => {
-      item.classList.toggle('active', item.dataset.statusFilter === contratosStatusFilter);
-    });
-  }
-
   body.innerHTML = rows.length
     ? rows.map(c => {
-      const info = CONTRATO_STATUS_LABELS[c.status] || CONTRATO_STATUS_LABELS.em_dia;
+      const aberto = c.id === selectedContratoId;
+      const convidados = (c.convidados || []).length;
       return `
-      <tr class="contratos-cliente-row${c.id === selectedContratoId ? ' is-selected' : ''}">
+      <tr class="contratos-cliente-row${aberto ? ' is-selected' : ''}" data-contrato-row="${escapeHtml(c.id)}">
         <td class="contratos-cliente-name-cell col-principal">${escapeHtml(c.client)}</td>
         <td>${escapeHtml(c.categoria || '—')}</td>
-        <td><span class="${info.className}">${info.label}</span></td>
+        <td>${escapeHtml(produtoDoContrato(c) || '—')}</td>
+        <td>${dataCurtaDoEvento(c.evento && c.evento.data)}</td>
+        <td>${convidados}</td>
         ${tabelaVerMaisHtml('data-contrato-select', c.id)}
       </tr>
+      ${aberto ? renderContratoDetalheRow(c) : ''}
     `;
     }).join('')
-    : `<tr><td colspan="4" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Nenhum contrato fechado no momento.</td></tr>`;
+    : `<tr><td colspan="6" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Nenhum contrato fechado no momento.</td></tr>`;
 
-  // Só o "ver mais" abre o contrato; a linha fica livre para selecionar texto.
-  body.querySelectorAll('[data-contrato-select]').forEach(btn => {
-    btn.addEventListener('click', () => selectContrato(btn.dataset.contratoSelect));
+  // Clicar na linha (ou no "ver mais") abre/fecha os detalhes logo abaixo.
+  body.querySelectorAll('[data-contrato-row]').forEach(tr => {
+    tr.addEventListener('click', () => {
+      if (String(window.getSelection && window.getSelection()).trim()) return;
+      selectContrato(tr.dataset.contratoRow);
+    });
+  });
+  body.querySelectorAll('[data-contrato-vermais]').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); openContratoDrawer(); });
+  });
+  body.querySelectorAll('[data-convidado-select]').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); openConvidadoDrawer(btn.dataset.convidadoSelect); });
   });
 }
 
-function selectContrato(id) {
-  selectedContratoId = id;
-  renderContratosClientes();
-  renderContratoEventoPanel();
-}
-
-function renderContratoEventoPanel() {
-  const emptyEl = document.getElementById('contratos-evento-empty');
-  const contentEl = document.getElementById('contratos-evento-content');
-  const contrato = findContrato(selectedContratoId);
-  if (!emptyEl || !contentEl) return;
-
-  if (!contrato) {
-    emptyEl.hidden = false;
-    contentEl.hidden = true;
-    return;
-  }
-
-  emptyEl.hidden = true;
-  contentEl.hidden = false;
-
-  setText('contratos-evento-nome', contrato.evento.nome);
-  setText('contratos-evento-local', contrato.evento.local);
-  setText('contratos-evento-data', formatEventoData(contrato.evento.data, contrato.evento.horario));
-  setText('contratos-evento-countdown', formatEventoCountdown(contrato.evento.data));
-
-  renderContratoConvidados(contrato);
-}
-
-function renderContratoConvidados(contrato) {
-  const body = document.getElementById('contratos-convidados-body');
-  if (!body) return;
-  const convidados = contrato.convidados || [];
-
-  body.innerHTML = convidados.length
+// Detalhes do contrato dentro da própria tabela: evento, status e convidados.
+function renderContratoDetalheRow(c) {
+  const ev = c.evento || {};
+  const info = CONTRATO_STATUS_LABELS[c.status] || CONTRATO_STATUS_LABELS.em_dia;
+  const convidados = c.convidados || [];
+  const linhasConvidados = convidados.length
     ? convidados.map(g => {
-      const info = CONVIDADO_STATUS_LABELS[g.status] || CONVIDADO_STATUS_LABELS.pendente;
+      const st = CONVIDADO_STATUS_LABELS[g.status] || CONVIDADO_STATUS_LABELS.pendente;
       return `
-      <tr class="contratos-convidado-row">
-        <td class="col-principal">${escapeHtml(g.nome)}</td>
-        <td><span class="${info.className}">${info.label}</span></td>
-        <td>${g.mesa ? escapeHtml(g.mesa) : '—'}</td>
-        <td>${g.whatsapp ? escapeHtml(g.whatsapp) : '—'}</td>
-        ${tabelaVerMaisHtml('data-convidado-select', g.id)}
-      </tr>
-    `;
+          <tr class="contratos-convidado-row">
+            <td class="col-principal">${escapeHtml(g.nome)}</td>
+            <td><span class="${st.className}">${st.label}</span></td>
+            <td>${g.mesa ? escapeHtml(g.mesa) : '—'}</td>
+            <td>${g.whatsapp ? escapeHtml(g.whatsapp) : '—'}</td>
+            ${tabelaVerMaisHtml('data-convidado-select', g.id)}
+          </tr>`;
     }).join('')
     : `<tr><td colspan="5" class="text-center text-sm text-zinc-500" style="padding:1rem 0;">Nenhum convidado cadastrado.</td></tr>`;
 
-  body.querySelectorAll('[data-convidado-select]').forEach(btn => {
-    btn.addEventListener('click', () => openConvidadoDrawer(btn.dataset.convidadoSelect));
-  });
+  return `
+      <tr class="contratos-detalhe-row">
+        <td colspan="6">
+          <div class="contratos-detalhe">
+            <div class="contratos-evento-header-row">
+              <p class="contratos-evento-label">Evento</p>
+              <div class="contratos-evento-header-actions">
+                <span class="contratos-evento-countdown">${formatEventoCountdown(ev.data)}</span>
+                <button type="button" class="btn-secondary builder-toolbar-btn contratos-evento-vermais-btn" data-contrato-vermais>Ver mais</button>
+              </div>
+            </div>
+            <h3 class="contratos-evento-title">${escapeHtml(ev.nome || '—')}</h3>
+            <p class="contratos-evento-meta">${escapeHtml(ev.local || '—')}</p>
+            <p class="contratos-evento-meta">${formatEventoData(ev.data, ev.horario)}</p>
+            <p class="contratos-evento-meta">Status do contrato: <span class="${info.className}">${info.label}</span></p>
+
+            <div class="contratos-convidados-block">
+              <p class="contratos-convidados-title">Convidados</p>
+              <div class="overflow-x-auto leads-table-wrap">
+                <table class="leads-table w-full">
+                  <thead>
+                    <tr><th>Nome</th><th>Status</th><th>Mesa</th><th>WhatsApp</th><th class="tabela-col-acoes"></th></tr>
+                  </thead>
+                  <tbody>${linhasConvidados}</tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>`;
 }
+
+function selectContrato(id) {
+  selectedContratoId = selectedContratoId === id ? null : id;
+  renderContratosClientes();
+}
+
+// O painel lateral saiu; os detalhes agora ficam na tabela.
+function renderContratoEventoPanel() {}
 
 let activeConvidadoId = null;
 
@@ -372,6 +394,8 @@ async function initContratosTab() {
     exportar: () => tabelaExportarCSV('contratos', [
       { titulo: 'Cliente', valor: c => c.client },
       { titulo: 'Categoria', valor: c => c.categoria },
+      { titulo: 'Produto/serviço', valor: c => produtoDoContrato(c) },
+      { titulo: 'Convidados', valor: c => (c.convidados || []).length },
       { titulo: 'Status', valor: c => (CONTRATO_STATUS_LABELS[c.status] || CONTRATO_STATUS_LABELS.em_dia).label },
       { titulo: 'Evento', valor: c => c.evento && c.evento.nome },
       { titulo: 'Data do evento', valor: c => c.evento && c.evento.data }
@@ -381,7 +405,6 @@ async function initContratosTab() {
   renderContratosClientes();
   renderContratoEventoPanel();
 
-  document.getElementById('contratos-vermais-btn')?.addEventListener('click', openContratoDrawer);
 
   const closeContrato = () => {
     document.getElementById('contrato-drawer').classList.remove('show');

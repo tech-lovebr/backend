@@ -8534,3 +8534,11 @@ body[data-theme="dark"] .finance-acesso-icone { color: #D4D4D8; }
 @media (min-width: 641px) {
   html body .wallet-card .wallet-periodo:not(#love-h-a) { top: auto; bottom: calc(100% + 0.75rem); right: 0; }
 }
+
+/* Painel: cabeçalhos das seções (Sua agenda, Analytics, Notícias, Ajuda) com
+   a mesma altura — o botão do calendário do Analytics não deixa o dele mais
+   alto —, para as caixas de baixo começarem na mesma linha. */
+html body .dashboard-panel-section > .dashboard-panel-header:not(#love-h-a),
+html body .dashboard-help-section > .dashboard-help-header:not(#love-h-a) { height: 32px; min-height: 32px; margin-bottom: 0.75rem; }
+html body .dashboard-panel-header .dash-analytics-period-btn:not(#love-h-a) { width: 32px; height: 32px; }
+html body .dash-analytics-header > div:first-child:not(#love-h-a) { display: flex; align-items: center; }

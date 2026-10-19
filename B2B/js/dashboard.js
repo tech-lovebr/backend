@@ -971,7 +971,14 @@ function alinharCarrosselComSaldo() {
   if (!card || !saldo || !atalhos) return;
   const ladoALado = window.matchMedia('(min-width: 1024px)').matches;
   if (!ladoALado) { card.style.height = ''; card.classList.remove('altura-alinhada'); return; }
-  const altura = atalhos.getBoundingClientRect().bottom - saldo.getBoundingClientRect().top;
+  // Altura = do topo do carrossel até onde começa "Sua agenda", menos o
+  // espaço entre os blocos: assim "Analytics" começa na mesma linha.
+  const agenda = saldo.closest('.dashboard-side-stack')?.querySelector('.dashboard-panel-section');
+  const gap = parseFloat(getComputedStyle(card.parentElement).rowGap) || 24;
+  card.style.height = '';
+  const altura = agenda
+    ? agenda.getBoundingClientRect().top - card.getBoundingClientRect().top - gap
+    : atalhos.getBoundingClientRect().bottom - saldo.getBoundingClientRect().top;
   if (altura > 0) {
     card.style.height = `${Math.round(altura)}px`;
     card.classList.add('altura-alinhada');

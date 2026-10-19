@@ -8346,3 +8346,21 @@ html body .b2b-header-bar h2:not(#love-h-a) {
   font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   letter-spacing: -0.02em;
 }
+
+/* ==========================================================================
+   Fonte do Hub: Albert Sans em tudo (títulos, textos, subtítulos dos menus,
+   botões, campos e buscas, valores dos cards). Fica de fora o site do
+   cliente (canvas do Construtor e a página pública), que usa as fontes
+   escolhidas no editor, e o SKU/código, que continua em mono.
+   ========================================================================== */
+html body.font-sans:not([data-page="site-preview"]) { font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+html body:not([data-page="site-preview"]) :is(button, input, select, textarea, p, span, a, label, h1, h2, h3, h4, h5, h6, li, td, th, div, strong, small, .font-sans):not(.builder-canvas):not(.builder-canvas *):not(.produto-sku):not([data-item-code]) {
+  font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+/* Valores (ex.: "R$ 50 / pessoa" nos cards de Produtos, totais, Analytics) também em Albert Sans. */
+html body #products-grid .product-card .text-base.font-bold:not(#love-h-a),
+html body #proposal-total:not(#love-h-a),
+html body .proposal-cell-total:not(#love-h-a),
+html body .dash-analytics-metric-value:not(#love-h-a) {
+  font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; letter-spacing: -0.01em;
+}

@@ -258,7 +258,7 @@ function seletorDeHorarioHtml(valor, rotuloVazio) {
 
 // Fontes do elemento Data: as formais sem as cursivas (a data precisa ser
 // legível) e com a Jost, que entra sempre espaçada (ver JOST_TRACKING).
-const FONTES_CURSIVAS_FORA_DA_DATA = ['Alex Brush', 'Allura', 'Pinyon Script', 'Sacramento'];
+const FONTES_CURSIVAS_FORA_DA_DATA = ['Alex Brush', 'Allura', 'Mea Culpa', 'Pinyon Script', 'Sacramento'];
 const FONT_OPTIONS_DATA = (() => {
   const lista = FONT_OPTIONS_FORMAL.filter(f => !FONTES_CURSIVAS_FORA_DA_DATA.includes(f.label));
   lista.push({ value: "'Jost', sans-serif", label: 'Jost' });

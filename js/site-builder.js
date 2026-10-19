@@ -1022,6 +1022,9 @@ function createElement(type) {
       return Object.assign(base, { content: 'Adicione aqui o texto do seu convite. Clique para editar.' });
     case 'titulo':
       base.styles.desktop.fontWeight = '700';
+      // Altura da linha nasce em 1: o texto fica centrado e a sobra (para mais
+      // ou para menos) se divide igual em cima e embaixo.
+      base.styles.desktop.lineHeight = '1';
       return Object.assign(base, { content: 'Título', level: 2 });
     case 'botao':
       return Object.assign(base, { content: 'Clique aqui', href: '#' });
@@ -3242,8 +3245,8 @@ function renderLayoutTab(el, flat) {
     ` : ''}
     ${el.type === 'titulo' ? `
     <div class="inspector-field">
-      <span class="${labelClass}">Altura <span data-range-out="style:lineHeight">${cascadedStyleValue(el, 'lineHeight') || '1.4'}</span></span>
-      <input type="range" min="1" max="2.5" step="0.1" value="${parseFloat(cascadedStyleValue(el, 'lineHeight')) || 1.4}" data-bind="style:lineHeight">
+      <span class="${labelClass}">Altura <span data-range-out="style:lineHeight">${cascadedStyleValue(el, 'lineHeight') || '1'}</span></span>
+      <input type="range" min="1" max="2.5" step="0.1" value="${parseFloat(cascadedStyleValue(el, 'lineHeight')) || 1}" data-bind="style:lineHeight">
     </div>
     ` : el.type === 'contagem' || el.type === 'data' ? `
     <div class="inspector-field">

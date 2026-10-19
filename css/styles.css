@@ -8619,3 +8619,7 @@ html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#lo
    sem sobra embaixo do último. */
 html body #builder-elements-panel textarea.builder-textarea-cresce:not(#love-h-a) { resize: none !important; overflow: hidden; }
 .builder-canvas .be-text p:last-child { margin-bottom: 0; }
+/* Parágrafos dentro do mesmo elemento Texto: espaço menor que o de um
+   elemento para outro (antes 1em). */
+.builder-canvas .be-text p { margin: 0 0 0.4em; }
+.builder-canvas .be-text p:last-child { margin-bottom: 0; }

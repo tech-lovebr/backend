@@ -8528,3 +8528,9 @@ html body .dash-card.wallet-card:not(#love-h-a) { overflow: visible; z-index: 5;
 .finance-valor.is-saida { color: #3F3F46; }
 body[data-theme="dark"] .finance-acesso-item { color: #F4F4F5; border-bottom-color: #333333; }
 body[data-theme="dark"] .finance-acesso-icone { color: #D4D4D8; }
+
+/* Período do Faturamento fora do card: logo acima dele, no canto direito
+   (na linha do "Boas-vindas"), sem mudar o espaço do título. */
+@media (min-width: 641px) {
+  html body .wallet-card .wallet-periodo:not(#love-h-a) { top: auto; bottom: calc(100% + 0.75rem); right: 0; }
+}

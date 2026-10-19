@@ -8655,11 +8655,11 @@ html body .agenda-timeline-header #share-board-btn svg:not(#love-h-a) { width: 1
 /* Gestão de Trabalho › Tarefas: listas (A iniciar, Em andamento, Concluído)
    brancas, com a borda e a sombra suave das caixas; as tarefas dentro ganham
    borda fina para não sumirem no branco. Lista com cor escolhida mantém a cor.
-   "Adicionar nova lista" no azul clarinho. */
+   "Adicionar nova lista" em cinza. */
 html body:not([data-theme="dark"]) .kanban-list:not(#love-h-a) {
   background: #FFFFFF; border: 1px solid #E4E4E7;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 6px rgba(16, 24, 40, 0.05);
 }
 html body:not([data-theme="dark"]) .kanban-list .kanban-task:not(#love-h-a) { border: 1px solid #E4E4E7; }
-html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a) { background: #EBF4FF; color: #183b54; }
-html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a):hover { background: #DCEBFC; color: #183b54; }
+html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a) { background: #EDEDEF; color: #3F3F46; }
+html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a):hover { background: #E4E4E7; color: #181D24; }

@@ -8666,3 +8666,7 @@ html body .inspector-vincular:not(#love-h-a) > span { font-size: 13px !important
 body[data-theme="dark"] .inspector-vincular > span { color: #D4D4D8 !important; }
 /* Contagem regressiva sem "Fundo da caixa": dias/horas/min/seg sem caixinha. */
 .be-countdown-unit.be-countdown-unit-sem-caixa { background: transparent !important; border-color: transparent !important; }
+
+/* Toggles (todos): ligados na cor da sidebar (#181D24), bolinha branca. */
+html body:not([data-theme="dark"]) .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #181D24 !important; border-color: #181D24 !important; }
+html body:not([data-theme="dark"]) .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a)::before { background: #FFFFFF; }

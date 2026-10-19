@@ -3639,7 +3639,7 @@ function renderContentTab(el) {
           <span class="inspector-field-label">Cor do texto</span>
           ${colorSwatchPopoverHtml(el.textColor, 'data-bind="prop:textColor"')}
         </div>
-        <div class="inspector-toggle-row"><span class="inspector-field-label">Fundo da caixa</span><label class="settings-switch"><input type="checkbox" data-bind="prop:showBox" data-redesenha-painel ${el.showBox !== false ? 'checked' : ''}><span class="settings-switch-track"></span></label></div>
+        <div class="inspector-toggle-row"><span class="inspector-field-label">Fundo com caixa</span><label class="settings-switch"><input type="checkbox" data-bind="prop:showBox" data-redesenha-painel ${el.showBox !== false ? 'checked' : ''}><span class="settings-switch-track"></span></label></div>
         ${el.showBox !== false ? `
         <div class="inspector-field inspector-field-row">
           <span class="inspector-field-label">Cor de fundo</span>

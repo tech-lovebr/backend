@@ -8575,3 +8575,5 @@ html body:not([data-theme="dark"]) .b2b-topbar:not(#love-h-a) { background: #FFF
 /* Faixa do título de cada página (Leads, Meus produtos, Vendas…) na mesma
    cor cinza do cabeçalho das tabelas (ID, Nome, Tipo do evento…). */
 html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a) { background: #F7F7F8; }
+/* Botão do período (Últimos 30 dias): texto sem negrito. */
+html body .wallet-periodo-btn:not(#love-h-a) { font-weight: 400; }

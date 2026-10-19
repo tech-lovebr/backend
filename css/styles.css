@@ -8542,3 +8542,14 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root >
 html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: var(--bg-dashboard) !important; }
 /* Rodapé das telas logadas no cinza do Hub (#EDEDEF). */
 html body:not([data-theme="dark"]) #view-event-os-dashboard #dashboard-footer:not(#love-h-a) { background: #EDEDEF !important; }
+
+/* Rodapé das telas logadas: tipografia igual à do rodapé do Hub. */
+html body #dashboard-footer :is(p, span, a, div):not(#love-h-a) { font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; letter-spacing: normal !important; font-weight: 400 !important; }
+html body #dashboard-footer .footer-text-desc:not(#love-h-a) { font-size: 0.8125rem !important; line-height: 1.5 !important; color: #71717A !important; max-width: 380px; }
+html body #dashboard-footer .space-y-3 > div > a:not(#love-h-a) { font-size: 0.8125rem !important; color: #18181B !important; text-decoration: none !important; }
+html body #dashboard-footer .space-y-3 > div > a:not(#love-h-a):hover { text-decoration: underline !important; }
+html body #dashboard-footer .space-y-3 > div:not(#love-h-a) { gap: 1rem; }
+html body #dashboard-footer .footer-bottom-bar :is(p, span):not(#love-h-a) { font-size: 0.75rem !important; color: #71717A !important; }
+html body[data-theme="dark"] #dashboard-footer .footer-text-desc:not(#love-h-a),
+html body[data-theme="dark"] #dashboard-footer .footer-bottom-bar :is(p, span):not(#love-h-a) { color: #A1A1AA !important; }
+html body[data-theme="dark"] #dashboard-footer .space-y-3 > div > a:not(#love-h-a) { color: #FFFFFF !important; }

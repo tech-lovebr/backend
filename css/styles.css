@@ -8653,3 +8653,7 @@ html body #builder-elements-panel .inspector-rich:not(#love-h-a):focus { border-
 html body #builder-elements-panel .inspector-rich:not(#love-h-a) p { margin: 0 0 0.4em; }
 html body #builder-elements-panel .inspector-rich:not(#love-h-a) p:last-child { margin-bottom: 0; }
 body[data-theme="dark"] #builder-elements-panel .inspector-rich { background: #1F1F1F !important; border-color: #404040 !important; color: #FFFFFF !important; }
+/* Parágrafos (Enter) dentro do mesmo elemento Texto: seguem a altura de linha
+   do próprio texto (não a regra geral de <p> em 1.6) e quase sem respiro. */
+.builder-canvas .be-text p { line-height: inherit; margin: 0 0 0.15em; }
+.builder-canvas .be-text p:last-child { margin-bottom: 0; }

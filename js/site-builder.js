@@ -1217,6 +1217,18 @@ function isHiddenOnDevice(el, device) {
 
 /* -------------------- Render: painel de elementos -------------------- */
 
+/** @param {HTMLElement} raiz */
+function ligarCaixasQueCrescem(raiz) {
+  raiz.querySelectorAll('textarea').forEach(ta => {
+    if (!(ta instanceof HTMLTextAreaElement)) return;
+    ta.classList.add('builder-textarea-cresce');
+    autoCrescer(ta);
+    // Painel recém-montado pode ainda não ter largura: mede de novo no próximo quadro.
+    requestAnimationFrame(() => autoCrescer(ta));
+    ta.addEventListener('input', () => autoCrescer(ta));
+  });
+}
+
 function renderLeftPanel() {
   const panel = document.getElementById('builder-elements-panel');
   if (!panel) return;
@@ -1225,6 +1237,7 @@ function renderLeftPanel() {
   const sel = currentPageKey === 'savethedate' ? null : findSelected();
   if (sel) {
     renderElementEditorPanel(panel, sel);
+    ligarCaixasQueCrescem(panel);
     const canvas = document.getElementById('builder-canvas');
     if (canvas) initSortables(canvas);
     return;
@@ -1239,6 +1252,7 @@ function renderLeftPanel() {
   `;
   if (ehSaveTheDate) renderEditorDeTextoSaveTheDate(document.getElementById('builder-panel-tab-body'));
   else renderElementosTab(document.getElementById('builder-panel-tab-body'));
+  ligarCaixasQueCrescem(panel);
 
   const canvas = document.getElementById('builder-canvas');
   if (canvas) initSortables(canvas);
@@ -2928,8 +2942,55 @@ function wireImageDropZone(zoneEl, onFile) {
   });
 }
 
+/**
+ * Conteúdo do elemento Texto (HTML) → texto da caixinha do painel: cada
+ * parágrafo/quebra vira uma linha. Marcações de dentro da linha (negrito etc.)
+ * ficam como estão.
+ * @param {string} html
+ * @returns {string}
+ */
+function htmlEmLinhas(html) {
+  return String(html || '')
+    .replace(/\r?\n/g, ' ')
+    .replace(/<br\s*\/?>\s*(<\/(p|div)>)/gi, '$1')
+    .replace(/<\/(p|div)>\s*<(p|div)(\s[^>]*)?>/gi, '\n')
+    .replace(/<(p|div)(\s[^>]*)?>/gi, '\n')
+    .replace(/<\/(p|div)>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/^\n/, '');
+}
+
+/**
+ * Texto da caixinha → HTML do elemento: cada Enter começa um parágrafo novo.
+ * @param {string} texto
+ * @returns {string}
+ */
+function linhasEmHtml(texto) {
+  const linhas = String(texto || '').split('\n');
+  if (linhas.length === 1) return linhas[0];
+  return linhas.map(l => `<p>${l.trim() ? l : '<br>'}</p>`).join('');
+}
+
+/**
+ * Caixinha de texto que cresce sozinha conforme o texto (sem alça de arrastar).
+ * @param {HTMLTextAreaElement} ta
+ */
+function autoCrescer(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 2 + 'px';
+}
+
 function wireContentTab(el, body) {
   wireBind(body, el);
+
+  const campoParagrafos = body.querySelector('textarea[data-texto-paragrafos]');
+  if (campoParagrafos instanceof HTMLTextAreaElement) {
+    campoParagrafos.addEventListener('input', () => {
+      el.content = linhasEmHtml(campoParagrafos.value);
+      renderCanvasOnly();
+    });
+    campoParagrafos.addEventListener('blur', () => pushHistory());
+  }
 
   const uploadInput = body.querySelector('[data-image-upload]');
   if (uploadInput) {
@@ -3330,7 +3391,7 @@ function renderContentTab(el) {
       `;
 
     case 'texto':
-      return fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain" data-bind="prop:content">${escapeHtml(el.content || '')}</textarea>`);
+      return fieldRow('Texto', `<textarea class="inspector-textarea inspector-textarea-plain" data-texto-paragrafos>${escapeHtml(htmlEmLinhas(el.content || ''))}</textarea>`);
 
     case 'titulo':
       return `

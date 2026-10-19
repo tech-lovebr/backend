@@ -8613,3 +8613,9 @@ body[data-theme="dark"] #modal-unsaved-changes .modal-sair-sem-salvar { border-c
 /* Aparência › caixinha "Elementos"/"Editar texto": mesma fonte e grossura do
    submenu ativo ("Aparência"). */
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a) { font-weight: 700 !important; letter-spacing: -0.01em !important; }
+
+/* Aparência › caixinhas de texto do painel: sem alça de redimensionar; a
+   altura acompanha o texto (JS autoCrescer). Parágrafos do elemento Texto
+   sem sobra embaixo do último. */
+html body #builder-elements-panel textarea.builder-textarea-cresce:not(#love-h-a) { resize: none !important; overflow: hidden; }
+.builder-canvas .be-text p:last-child { margin-bottom: 0; }

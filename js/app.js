@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('love-theme') || 'light';
       applyTheme(savedTheme);
     } else {
-      document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'first-access-locked');
+      document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode', 'first-access-locked');
       document.body.removeAttribute('data-theme');
       document.documentElement.removeAttribute('data-theme');
       if (elements.viewDashboard) {
@@ -1445,7 +1445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Reseta todos os modos especiais do body primeiro
-    document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode');
+    document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode');
 
     // 1. Atualiza destaque circular do ícone na Sidebar Rail
     elements.railIconBtns.forEach(btn => {

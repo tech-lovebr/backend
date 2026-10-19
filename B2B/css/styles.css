@@ -8443,3 +8443,16 @@ html body .greeting-title:not(#love-h-a) {
   font-weight: 700 !important;
   letter-spacing: -0.02em;
 }
+
+/* Painel › carrossel da direita: sem sombra e sem contorno; a imagem com os
+   quatro cantos arredondados; a faixa das bolinhas totalmente transparente.
+   A altura acompanha o bloco Saldo + atalhos (js/dashboard.js), para
+   "Analytics" começar na mesma altura de "Sua agenda". */
+html body .dash-card.dash-ads-card:not(#love-h-a) {
+  box-shadow: none !important; border: none !important; background: transparent !important;
+  border-radius: 0; overflow: visible; display: flex; flex-direction: column;
+}
+html body .dash-ads-carousel:not(#love-h-a) { border-radius: 12px; overflow: hidden; }
+html body .dash-ads-card.altura-alinhada .dash-ads-carousel:not(#love-h-a) { aspect-ratio: auto; flex: 1 1 auto; min-height: 0; }
+html body .dash-ads-dots:not(#love-h-a) { background: transparent !important; flex-shrink: 0; }
+body[data-theme="dark"] .dash-card.dash-ads-card { background: transparent !important; box-shadow: none !important; }

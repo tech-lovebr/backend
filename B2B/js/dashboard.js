@@ -830,3 +830,27 @@ async function renderNewsList() {
     if (lista.length) desenhar(lista);
   } catch (e) { /* mantém a lista fixa */ }
 }
+
+/* Carrossel da direita com a mesma altura do bloco da esquerda (Saldo +
+   atalhos): assim "Analytics" começa na mesma linha de "Sua agenda". Só
+   com as duas colunas lado a lado. */
+function alinharCarrosselComSaldo() {
+  const card = document.querySelector('.dash-ads-card');
+  const saldo = document.querySelector('.wallet-card');
+  const atalhos = document.querySelector('.dashboard-quick-actions');
+  if (!card || !saldo || !atalhos) return;
+  const ladoALado = window.matchMedia('(min-width: 1024px)').matches;
+  if (!ladoALado) { card.style.height = ''; card.classList.remove('altura-alinhada'); return; }
+  const altura = atalhos.getBoundingClientRect().bottom - saldo.getBoundingClientRect().top;
+  if (altura > 0) {
+    card.style.height = `${Math.round(altura)}px`;
+    card.classList.add('altura-alinhada');
+  }
+}
+window.addEventListener('resize', alinharCarrosselComSaldo);
+window.addEventListener('load', alinharCarrosselComSaldo);
+document.addEventListener('DOMContentLoaded', () => {
+  alinharCarrosselComSaldo();
+  const saldo = document.querySelector('.wallet-card');
+  if (saldo && 'ResizeObserver' in window) new ResizeObserver(alinharCarrosselComSaldo).observe(saldo);
+});

@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bodyEl) bodyEl.innerHTML = '';
     document.title = `${tituloProvisorio} — Love`;
 
-    const path = slug === 'termos' ? '/termos' : '/politica-de-privacidade';
+    const path = slug === 'termos' ? '/termos' : '/privacidade';
     if (opts.pushUrl !== false && window.location.pathname !== path) {
       history.pushState({ legalDoc: slug }, '', path);
     }
@@ -1234,7 +1234,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // URL limpa de cada aba principal do painel — sem isso, trocar de aba
-  // enquanto a URL estava em /termos ou /politica-de-privacidade deixava a
+  // enquanto a URL estava em /termos ou /privacidade deixava a
   // pessoa presa naquela URL em qualquer lugar que fosse depois (a troca de
   // aba nunca tocava a URL, então o que estava lá só ficava obsoleto).
   const RAIL_TAB_ROUTES = {
@@ -2725,7 +2725,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -16732,11 +16732,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Política de Privacidade & Termos de Uso: os <a href="/termos"> e
-  // <a href="/politica-de-privacidade"> do rodapé (público, dashboard,
+  // <a href="/privacidade"> do rodapé (público, dashboard,
   // login) continuam links de verdade (clique do meio/botão direito
   // funcionam normalmente) — um clique normal é interceptado pra abrir sem
   // sair da SPA, mantendo o header/rail atual (ver openLegalDocPage).
-  document.querySelectorAll('a[href="/termos"], a[href="/politica-de-privacidade"]').forEach(link => {
+  document.querySelectorAll('a[href="/termos"], a[href="/privacidade"]').forEach(link => {
     link.addEventListener('click', (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
@@ -16750,7 +16750,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('popstate', () => {
     const path = window.location.pathname;
     if (path === '/termos') { openLegalDocPage('termos', { pushUrl: false }); return; }
-    if (path === '/politica-de-privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
+    if (path === '/privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
     if (path === '/notificacoes' && state.currentView === 'dashboard') { openNotificationsPage({ pushUrl: false }); return; }
     if (path === '/duvidas' && state.currentView === 'dashboard') { openFaqPage({ pushUrl: false }); return; }
     if (path === '/configuracoes' && state.currentView === 'dashboard') { openAccountSettingsPage({ pushUrl: false }); return; }
@@ -16949,7 +16949,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // /login direto (URL limpa, sem hash) já abre na tela de login.
   const initialLegalSlug =
     window.location.pathname === '/termos' ? 'termos' :
-    window.location.pathname === '/politica-de-privacidade' ? 'privacidade' :
+    window.location.pathname === '/privacidade' ? 'privacidade' :
     null;
 
   // Quem acessa /presentes, /convidados etc. direto (link externo, favorito,
@@ -16999,7 +16999,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mostra a página legal (com um estado de carregamento) JÁ na primeira
   // pintura da tela, cobrindo o caso de quem NÃO está logado — sem isso,
   // dava pra ver a home piscar por um instante em /termos e
-  // /politica-de-privacidade antes da sessão terminar de resolver
+  // /privacidade antes da sessão terminar de resolver
   // (initClienteSession é assíncrono) e só então trocar pra lá. Quem está
   // logado nem chega a ver isso: switchView('dashboard') troca pra cá antes
   // de qualquer pintura (ver pendingInitialDashboardRoute).

@@ -1,7 +1,7 @@
 // Vercel Serverless Function — Política de Privacidade e Termos de Uso em
 // HTML pronto (renderizado no servidor).
 // Endpoint: GET /api/documento-legal?slug=privacidade|termos
-// (as rotas /politica-de-privacidade e /termos apontam para cá — vercel.json)
+// (as rotas /privacidade e /termos apontam para cá — vercel.json)
 //
 // Antes essas páginas eram montadas pelo JavaScript da SPA: o HTML que
 // chegava tinha o título e o texto vazios. Robôs que não rodam JavaScript —
@@ -15,7 +15,7 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtycGd0aXh3bXh3aHRqY2hjdWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzI5ODgsImV4cCI6MjEwNTc0ODk4OH0.6ZwpEz-m-qWM_bPW8_Fucvv2EWkdMBkmH2BVgPdMfuQ';
 
 const TITULOS = { privacidade: 'Política de Privacidade', termos: 'Termos de Uso' };
-const CAMINHOS = { privacidade: '/politica-de-privacidade', termos: '/termos' };
+const CAMINHOS = { privacidade: '/privacidade', termos: '/termos' };
 
 function escapar(texto) {
   return String(texto == null ? '' : texto)

@@ -8,7 +8,8 @@
     { "source": "/cadastro.html", "destination": "/cadastro", "permanent": true },
     { "source": "/resetar-senha.html", "destination": "/resetar-senha", "permanent": true },
     { "source": "/convite-preview.html", "destination": "/convite-preview", "permanent": true },
-    { "source": "/organizador.html", "destination": "/organizador", "permanent": true }
+    { "source": "/organizador.html", "destination": "/organizador", "permanent": true },
+    { "source": "/politica-de-privacidade", "destination": "/privacidade", "permanent": true }
   ],
   "rewrites": [
     { "source": "/cadastro", "destination": "/cadastro.html" },
@@ -17,7 +18,7 @@
     { "source": "/organizador", "destination": "/organizador.html" },
     { "source": "/login", "destination": "/" },
     { "source": "/termos", "destination": "/api/documento-legal?slug=termos" },
-    { "source": "/politica-de-privacidade", "destination": "/api/documento-legal?slug=privacidade" },
+    { "source": "/privacidade", "destination": "/api/documento-legal?slug=privacidade" },
     { "source": "/personalizar", "destination": "/" },
     { "source": "/presentes", "destination": "/" },
     { "source": "/convidados", "destination": "/" },

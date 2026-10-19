@@ -8559,9 +8559,9 @@ html body .b2b-header-bar h2:not(#love-h-a),
 html body .dashboard-panel-header .dashboard-help-title:not(#love-h-a),
 html body .dashboard-help-header .dashboard-help-title:not(#love-h-a),
 html body .dashboard-help-card-title:not(#love-h-a),
-html body button:not(#love-h-a),
-html body .btn-primary:not(#love-h-a),
-html body .btn-secondary:not(#love-h-a) {
+html body:not([data-page="site-preview"]) button:not(.builder-canvas *):not(#love-h-a),
+html body:not([data-page="site-preview"]) .btn-primary:not(.builder-canvas *):not(#love-h-a),
+html body:not([data-page="site-preview"]) .btn-secondary:not(.builder-canvas *):not(#love-h-a) {
   font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 html body .b2b-header-bar h1:not(#love-h-a),

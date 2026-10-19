@@ -8335,3 +8335,5 @@ html body .dashboard-quick-actions .dashboard-quick-action-btn:not(#love-h-a) { 
 @media (max-width: 768px) {
   html body .dashboard-quick-actions:not(#love-h-a) { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
 }
+/* Painel: sem a data no canto superior direito. */
+html body .greeting-date-side:not(#love-h-a) { display: none !important; }

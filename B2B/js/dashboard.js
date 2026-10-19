@@ -602,7 +602,7 @@ function renderGreeting() {
       : '';
     // "Boas-vindas, Victor": só o primeiro nome do responsável.
     const primeiroNome = String(B2B_DATA.professional.name || '').trim().split(/\s+/)[0] || '';
-    titleEl.innerHTML = `Boas-vindas${primeiroNome ? ', ' + escapeHtml(primeiroNome) : ''}${verifiedBadge}`;
+    titleEl.innerHTML = `Boas-vindas${primeiroNome ? ', ' + escapeHtml(primeiroNome) : ''}!${verifiedBadge}`;
     fitGreetingTitleToOneLine();
     sizeMobileAvatarToGreetingText();
   }

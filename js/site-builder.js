@@ -1607,10 +1607,11 @@ function renderCanvas() {
     ? novaSecaoDropzoneHtml('antes') + renderAnySectionHtml(section, 'edit', currentDevice) + novaSecaoDropzoneHtml('depois')
     : renderAnySectionHtml(section, 'edit', currentDevice)
   ).join('');
+  // Fim do convite (abaixo dos botões): soltar qualquer elemento aqui cria uma
+  // seção nova com ele. Invisível até começar a arrastar.
   const endDropzoneHtml = `
     <div class="builder-canvas-end-dropzone" id="builder-canvas-end-dropzone">
-      ${BI.section}
-      <span>Arraste "Nova seção" aqui para adicionar uma seção</span>
+      <span>Solte aqui para criar uma seção nova</span>
     </div>
   `;
 
@@ -2169,17 +2170,37 @@ function initSortables(canvas) {
   const endDropzone = canvas.querySelector('#builder-canvas-end-dropzone');
   if (endDropzone) {
     sortableInstances.push(new Sortable(endDropzone, {
-      group: { name: 'builder-elements', pull: false, put: (to, from, dragEl) => dragEl.dataset.elType === 'secao' },
+      group: { name: 'builder-elements', pull: false, put: true },
       sort: false,
       animation: 160,
       ghostClass: 'sortable-ghost',
       onAdd: (evt) => {
-        evt.item.remove();
         const newSection = createSection();
         builderState.sections.push(newSection);
+        let selecionar = { id: newSection.id, kind: 'section' };
+        if (evt.item.classList.contains('builder-el-item')) {
+          // Elemento da lista (Título, Texto…): entra na seção nova.
+          const type = evt.item.dataset.elType;
+          evt.item.remove();
+          if (type && type !== 'secao') {
+            const el = insertElementAt(newSection.columns[0].id, 0, type);
+            if (el) selecionar = { id: el.id, kind: 'element' };
+          }
+        } else if (evt.item.dataset.elementId) {
+          // Elemento que já estava no convite: sai de onde estava e vai para a seção nova.
+          const loc = findElementLocation(evt.item.dataset.elementId);
+          evt.item.remove();
+          if (loc) {
+            loc.column.elements.splice(loc.index, 1);
+            newSection.columns[0].elements.push(loc.element);
+            selecionar = { id: loc.element.id, kind: 'element' };
+          }
+        } else {
+          evt.item.remove();
+        }
         pushHistory();
         renderCanvas();
-        selectElement(newSection.id, 'section');
+        selectElement(selecionar.id, selecionar.kind);
       }
     }));
   }

@@ -8670,3 +8670,11 @@ body[data-theme="dark"] .inspector-vincular > span { color: #D4D4D8 !important; 
 /* Toggles (todos): ligados na cor da sidebar (#181D24), bolinha branca. */
 html body:not([data-theme="dark"]) .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #181D24 !important; border-color: #181D24 !important; }
 html body:not([data-theme="dark"]) .settings-switch input:checked ~ .settings-switch-track:not(#love-h-a)::before { background: #FFFFFF; }
+
+/* Fim do convite: sem o aviso fixo "Arraste nova seção aqui". Fica só um
+   espaço invisível; ao arrastar qualquer elemento ele aparece tracejado para
+   soltar e criar uma seção nova abaixo dos botões. */
+html body #builder-canvas .builder-canvas-end-dropzone:not(#love-h-a) { min-height: 48px; padding: 0.5rem 1rem; margin: 0.25rem 1.25rem 1rem; border-color: transparent; background: transparent; color: transparent; }
+html body #builder-canvas .builder-canvas-end-dropzone:not(#love-h-a) > span { visibility: hidden; }
+html body #builder-canvas.is-arrastando-elemento .builder-canvas-end-dropzone:not(#love-h-a) { min-height: 56px; border-color: var(--primary-blue, #537bae); background: #F8FAFC; color: #537bae; font-weight: 600; }
+html body #builder-canvas.is-arrastando-elemento .builder-canvas-end-dropzone:not(#love-h-a) > span { visibility: visible; }

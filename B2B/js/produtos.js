@@ -1406,7 +1406,7 @@ function initProductDrawer() {
     }
     form.reset();
     delete form.dataset.editId;
-    document.getElementById('product-drawer-title').textContent = 'Adicionar produto ou serviço';
+    document.getElementById('product-drawer-title').textContent = 'Adicionar produto/serviço';
     const avisoSuspensoNovo = document.getElementById('product-suspenso-aviso');
     if (avisoSuspensoNovo) avisoSuspensoNovo.hidden = true;
     resetDrawerState();

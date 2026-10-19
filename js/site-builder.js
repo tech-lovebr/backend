@@ -2328,11 +2328,12 @@ function renderElementContent(el, device, mode) {
         el.textColor ? `color:${el.textColor} !important;` : ''
       ].filter(Boolean).join('');
       const textAttr = textInline ? ` style="${textInline}"` : '';
-      const boxAttr = el.boxBgColor ? ` style="background-color:${el.boxBgColor} !important;"` : '';
+      const comCaixa = el.showBox !== false;
+      const boxAttr = comCaixa && el.boxBgColor ? ` style="background-color:${el.boxBgColor} !important;"` : '';
       const scale = (el.sizeScale !== undefined && el.sizeScale !== '' ? el.sizeScale : 100) / 100;
       const scaleStyle = scale !== 1 ? `transform:scale(${scale});transform-origin:center;` : '';
       const unitHtml = (dataAttr, unitLabel) => `
-        <div class="be-countdown-unit"${boxAttr}>
+        <div class="be-countdown-unit${comCaixa ? '' : ' be-countdown-unit-sem-caixa'}"${boxAttr}>
           <span class="be-countdown-number" ${dataAttr}${textAttr}>00</span>
           <span class="be-countdown-unit-label"${textAttr}>${unitLabel}</span>
         </div>`;
@@ -3012,6 +3013,9 @@ function autoCrescer(ta) {
 
 function wireContentTab(el, body) {
   wireBind(body, el);
+  body.querySelectorAll('[data-redesenha-painel]').forEach(input => {
+    input.addEventListener('change', () => renderLeftPanel());
+  });
 
   const caixaRica = body.querySelector('[data-rich-content]');
   if (caixaRica instanceof HTMLElement) {
@@ -3635,11 +3639,13 @@ function renderContentTab(el) {
           <span class="inspector-field-label">Cor do texto</span>
           ${colorSwatchPopoverHtml(el.textColor, 'data-bind="prop:textColor"')}
         </div>
+        <div class="inspector-toggle-row"><span class="inspector-field-label">Fundo da caixa</span><label class="settings-switch"><input type="checkbox" data-bind="prop:showBox" data-redesenha-painel ${el.showBox !== false ? 'checked' : ''}><span class="settings-switch-track"></span></label></div>
+        ${el.showBox !== false ? `
         <div class="inspector-field inspector-field-row">
           <span class="inspector-field-label">Cor de fundo</span>
           ${colorSwatchPopoverHtml(el.boxBgColor, 'data-bind="prop:boxBgColor"')}
         </div>
-        <p class="inspector-hint">A cor de fundo muda apenas as caixinhas de dias/horas/min/seg.</p>
+        <p class="inspector-hint">A cor de fundo muda apenas as caixinhas de dias/horas/min/seg.</p>` : ''}
         ${fieldRow('Data alvo', `<input type="date" class="inspector-input" data-bind="prop:targetDate" value="${escapeHtml(el.targetDate || '')}">`)}
         ${fieldRow('Horário', seletorDeHorarioHtml(el.targetTime, 'Sem horário'))}
       `;

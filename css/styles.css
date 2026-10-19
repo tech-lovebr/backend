@@ -8660,3 +8660,9 @@ body[data-theme="dark"] #builder-elements-panel .inspector-rich { background: #1
 
 /* Título/Texto: botões de estilo entre o rótulo e a caixinha de escrever. */
 html body #builder-elements-panel .inspector-estilo-texto:not(#love-h-a) { margin-bottom: 6px; align-self: stretch; width: 100%; }
+
+/* "Vincular valores" na mesma fonte dos rótulos do painel (Margem, Topo…). */
+html body .inspector-vincular:not(#love-h-a) > span { font-size: 13px !important; color: #333333 !important; letter-spacing: normal !important; text-transform: none !important; }
+body[data-theme="dark"] .inspector-vincular > span { color: #D4D4D8 !important; }
+/* Contagem regressiva sem "Fundo da caixa": dias/horas/min/seg sem caixinha. */
+.be-countdown-unit.be-countdown-unit-sem-caixa { background: transparent !important; border-color: transparent !important; }

@@ -8429,3 +8429,10 @@ html body .greeting-title:not(#love-h-a) {
   font-weight: 700 !important;
   letter-spacing: -0.01em;
 }
+
+/* Painel: "Boas-vindas, …" volta para Hanken Grotesk (como os cabeçalhos). */
+html body .greeting-title:not(#love-h-a) {
+  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em;
+}

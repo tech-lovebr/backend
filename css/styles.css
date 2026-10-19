@@ -8659,4 +8659,4 @@ body[data-theme="dark"] #builder-elements-panel .inspector-rich { background: #1
 .builder-canvas .be-text p:last-child { margin-bottom: 0; }
 
 /* Título/Texto: botões de estilo entre o rótulo e a caixinha de escrever. */
-html body #builder-elements-panel .inspector-estilo-texto:not(#love-h-a) { margin-bottom: 6px; align-self: flex-start; }
+html body #builder-elements-panel .inspector-estilo-texto:not(#love-h-a) { margin-bottom: 6px; align-self: stretch; width: 100%; }

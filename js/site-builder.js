@@ -2284,11 +2284,11 @@ function renderElementContent(el, device, mode) {
 
   switch (el.type) {
     case 'texto':
-      return `<div class="be-text" style="${style}" ${editable}>${el.content}</div>`;
+      return `<div class="be-text" style="${style}" ${editable}${edit ? ' data-placeholder="Insira um texto"' : ''}>${el.content}</div>`;
 
     case 'titulo': {
       const level = el.level || 2;
-      return `<h${level} class="be-heading" style="${style}" ${editable}>${el.content}</h${level}>`;
+      return `<h${level} class="be-heading" style="${style}" ${editable}${edit ? ' data-placeholder="Insira um título"' : ''}>${el.content}</h${level}>`;
     }
 
     case 'botao':
@@ -3002,7 +3002,7 @@ function wireImageDropZone(zoneEl, onFile) {
  * @returns {string}
  */
 function caixaDeTextoRicaHtml(el) {
-  return botoesDeEstiloHtml(el, 'inspector-estilo-texto') + `<div class="inspector-rich" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
+  return botoesDeEstiloHtml(el, 'inspector-estilo-texto') + `<div class="inspector-rich" data-placeholder="${el.type === 'titulo' ? 'Insira um título' : 'Insira um texto'}" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
 }
 
 /**

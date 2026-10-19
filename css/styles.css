@@ -8683,3 +8683,19 @@ html body #builder-canvas.is-arrastando-elemento .builder-canvas-end-dropzone:no
    dos Clássicos; a cor vem do JS (um tom mais escuro que o botão). */
 html body .builder-quicknav-icon-modern:not(#love-h-a) { border: 0 !important; background: transparent !important; border-radius: 0 !important; width: 22px !important; height: 22px !important; }
 html body .builder-quicknav-icon-modern:not(#love-h-a) svg { width: 18px !important; height: 18px !important; }
+
+/* Título/Texto vazios: "Insira um título" / "Insira um texto", cinza e sem
+   negrito (no canvas do editor e na caixinha do painel). */
+.builder-canvas .be-heading[data-placeholder]:empty::before,
+.builder-canvas .be-text[data-placeholder]:empty::before,
+.builder-canvas .be-heading[data-placeholder]:has(> br:only-child)::before,
+.builder-canvas .be-text[data-placeholder]:has(> br:only-child)::before,
+#builder-elements-panel .inspector-rich[data-placeholder]:empty::before,
+#builder-elements-panel .inspector-rich[data-placeholder]:has(> br:only-child)::before {
+  content: attr(data-placeholder);
+  font-weight: 400 !important;
+  font-style: normal;
+  text-shadow: none;
+  color: #A1A1AA;
+  pointer-events: none;
+}

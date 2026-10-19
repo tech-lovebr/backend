@@ -8517,3 +8517,15 @@ html body #view-event-os-dashboard #dash-hub-title:not(#love-h-a) {
   font-weight: 700 !important;
   letter-spacing: -0.02em !important;
 }
+
+/* Fundo das telas logadas #F4F6F7 (cards, tabelas e caixas seguem brancos);
+   topo (nome do evento, busca e ícones) branco; faixa do título de cada tela
+   no mesmo cinza do cabeçalho das tabelas (#F7F7F8). Modo escuro não muda. */
+:root { --bg-dashboard: #F4F6F7; }
+html body:not([data-theme="dark"]) #view-event-os-dashboard:not(#love-h-a),
+html body:not([data-theme="dark"]) #dashboard-main-area:not(#love-h-a),
+html body:not([data-theme="dark"]) #dashboard-main-area > div:not(.builder-canvas):not(#love-h-a),
+html body:not([data-theme="dark"]) #dashboard-main-area .dashboard-tab-content:not(#love-h-a) { background-color: var(--bg-dashboard) !important; }
+html body:not([data-theme="dark"]) .dashboard-top-navbar:not(#love-h-a) { background: #FFFFFF !important; }
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not(#love-h-a) { background: #F7F7F8 !important; }
+html body:not([data-theme="dark"]) #view-event-os-dashboard table.love-tabela thead th:not(#love-h-a) { background: #F7F7F8 !important; }

@@ -4296,8 +4296,9 @@ function telaInformacoesHtml(ev) {
   // Quando, Local, Endereço e Ponto de referência ficam numa caixa branca.
   const principais =
     bloco('Quando', [quando, ate].filter(Boolean).join(' — ')) +
-    bloco('Local', ev.local) +
-    bloco('Endereço', enderecoCompleto, botoesMapa) +
+    // "Como chegar" sempre logo abaixo do Local (sem local, abaixo do Endereço).
+    bloco('Local', ev.local, ev.local ? botoesMapa : '') +
+    bloco('Endereço', enderecoCompleto, ev.local ? '' : botoesMapa) +
     bloco('Ponto de referência', ev.referencia);
   // Dress code e Informações gerais: cada um na sua caixa branca, sobre o
   // fundo colorido — só aparecem se tiver texto.

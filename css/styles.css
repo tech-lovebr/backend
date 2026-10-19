@@ -8699,3 +8699,6 @@ html body .builder-quicknav-icon-modern:not(#love-h-a) svg { width: 18px !import
   color: #A1A1AA;
   pointer-events: none;
 }
+/* Fim do convite: sem arraste, a área de soltar não ocupa espaço (sem faixa em
+   branco entre os botões e o rodapé). Ela só abre ao começar a arrastar. */
+html body #builder-canvas:not(.is-arrastando-elemento) .builder-canvas-end-dropzone:not(#love-h-a) { min-height: 0; height: 0; padding: 0; margin: 0; border-width: 0; overflow: hidden; }

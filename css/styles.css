@@ -8467,3 +8467,15 @@ html body #kpi-budget-paid-total:not(#love-h-a), html body #kpi-budget-due:not(#
 html body #budget-donut-amount:not(#love-h-a), html body [id^="wallet-balance"]:not(#love-h-a), html body [id^="kpi-wallet"]:not(#love-h-a) {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace !important;
 }
+/* Valores em dinheiro (saldo da Carteira, KPIs do Orçamento): na mesma fonte
+   do cabeçalho (Inter), só com algarismos tabulares — sem fonte mono. */
+html body #kpi-budget-total:not(#love-h-a), html body #kpi-budget-spent:not(#love-h-a),
+html body #kpi-budget-paid-total:not(#love-h-a), html body #kpi-budget-due:not(#love-h-a),
+html body #budget-donut-amount:not(#love-h-a), html body .convite-carrinho-total strong:not(#love-h-a),
+html body [id^="wallet-balance"]:not(#love-h-a), html body [id^="kpi-wallet"]:not(#love-h-a) {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; letter-spacing: -0.025em; font-variant-numeric: tabular-nums;
+}
+/* Saldos grandes da Carteira: a mesma fonte dos títulos/cabeçalhos (Plus Jakarta Sans). */
+html body [id^="wallet-balance"]:not(#love-h-a), html body [id^="kpi-wallet"]:not(#love-h-a) {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}

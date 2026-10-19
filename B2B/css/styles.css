@@ -8343,7 +8343,7 @@ html body .greeting-date-side:not(#love-h-a) { display: none !important; }
 html body .greeting-title:not(#love-h-a),
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) {
-  font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'Syne', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   letter-spacing: -0.02em;
 }
 
@@ -8353,16 +8353,16 @@ html body .b2b-header-bar h2:not(#love-h-a) {
    cliente (canvas do Construtor e a página pública), que usa as fontes
    escolhidas no editor, e o SKU/código, que continua em mono.
    ========================================================================== */
-html body.font-sans:not([data-page="site-preview"]) { font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+html body.font-sans:not([data-page="site-preview"]) { font-family: 'Syne', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 html body:not([data-page="site-preview"]) :is(button, input, select, textarea, p, span, a, label, h1, h2, h3, h4, h5, h6, li, td, th, div, strong, small, .font-sans):not(.builder-canvas):not(.builder-canvas *):not(.produto-sku):not([data-item-code]) {
-  font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Syne', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 /* Valores (ex.: "R$ 50 / pessoa" nos cards de Produtos, totais, Analytics) também em Albert Sans. */
 html body #products-grid .product-card .text-base.font-bold:not(#love-h-a),
 html body #proposal-total:not(#love-h-a),
 html body .proposal-cell-total:not(#love-h-a),
 html body .dash-analytics-metric-value:not(#love-h-a) {
-  font-family: 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; letter-spacing: -0.01em;
+  font-family: 'Syne', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; letter-spacing: -0.01em;
 }
 
 /* Meus produtos: "Ativo" num verde mais claro e vivo (próprio, fora da
@@ -8387,7 +8387,7 @@ html body .b2b-header-bar h2:not(#love-h-a) {
 html body .greeting-title:not(#love-h-a),
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) {
-  font-family: 'Figtree', 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: 'Figtree', 'Syne', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   font-weight: 800 !important;
   letter-spacing: -0.025em;
   line-height: 1.12;

@@ -8747,4 +8747,4 @@ body[data-theme="dark"] #site-builder-root button.std-gerar-ia { background: tra
 
 /* "Como chegar" › Google Maps e Waze com o ícone de cada app à esquerda. */
 .convite-como-chegar-menu a { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; }
-.convite-como-chegar-menu a svg { width: 20px; height: 20px; flex-shrink: 0; }
+.convite-como-chegar-menu a img { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }

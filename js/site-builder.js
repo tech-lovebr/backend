@@ -5029,10 +5029,9 @@ function enderecoComCidade(endereco, cidade, uf) {
   return [(endereco || '').trim(), cidadeUf].filter(Boolean).join(', ');
 }
 
-// Ícones dos apps no menu "Como chegar" (pino colorido do Google Maps e o
-// fantasminha azul do Waze).
-const ICONE_GOOGLE_MAPS = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><clipPath id="love-gm-pino"><path d="M12 1.5a7.5 7.5 0 0 0-7.5 7.5c0 5.6 7.5 13.5 7.5 13.5S19.5 14.6 19.5 9A7.5 7.5 0 0 0 12 1.5Z"/></clipPath></defs><g clip-path="url(#love-gm-pino)"><rect width="12" height="9" fill="#EA4335"/><rect x="12" width="12" height="9" fill="#4285F4"/><rect y="9" width="12" height="15" fill="#FBBC04"/><rect x="12" y="9" width="12" height="15" fill="#34A853"/></g><circle cx="12" cy="9" r="2.8" fill="#FFFFFF"/></svg>';
-const ICONE_WAZE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#33CCFF" stroke="#1B1B1B" stroke-width="1.2" stroke-linejoin="round" d="M12.5 3.5c4.7 0 8.5 3.4 8.5 7.7 0 3-1.8 5.1-4.3 6.3l.2.9a1.6 1.6 0 1 1-3 .6l-.1-.6c-.9.1-2.2.1-3.3 0a1.6 1.6 0 1 1-3-.5c-1.5-.6-2.8-1.6-3.6-2.9-.7.1-1.5-.3-1.6-1.1 1.2-.4 1.4-1.6 1.6-3.2.5-4 3.8-7.2 8.6-7.2Z"/><circle cx="10.2" cy="9.8" r=".95" fill="#1B1B1B"/><circle cx="14.6" cy="9.8" r=".95" fill="#1B1B1B"/><path d="M10 12.7c1.1 1.2 3.3 1.2 4.4 0" fill="none" stroke="#1B1B1B" stroke-width="1.2" stroke-linecap="round"/></svg>';
+// Ícones oficiais dos apps no menu "Como chegar" (assets/).
+const ICONE_GOOGLE_MAPS = '<img src="/assets/googlemaps-icon.png" alt="" aria-hidden="true">';
+const ICONE_WAZE = '<img src="/assets/waze-icon.png" alt="" aria-hidden="true">';
 
 // "Google Maps" e "Waze" com o endereço do evento (abre o app no celular).
 function botoesDeMapaHtml(local, endereco) {

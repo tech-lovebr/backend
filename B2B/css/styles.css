@@ -8596,7 +8596,7 @@ html body .builder-wrap:not(#love-h-a) {
 html body .builder-wrap > .builder-toolbar:not(#love-h-a) { padding-left: var(--b2b-content-pad-x); padding-right: var(--b2b-content-pad-x); }
 
 /* Rodapé branco, como o topo. */
-html body:not([data-theme="dark"]) .b2b-footer:not(#love-h-a) { background: #EDEDEF; }
+html body:not([data-theme="dark"]) .b2b-footer:not(#love-h-a) { background: #FFFFFF; }
 
 /* Subtítulo colado no título (~4px), em todas as telas do Hub com subtítulo
    (Meus produtos, Construtor de Site, Vendas, Funções, Termos/Privacidade).

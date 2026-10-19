@@ -202,7 +202,6 @@ const FONT_OPTIONS = [
   { value: "'Bludhaven', 'Cinzel', serif", label: 'Bludhaven' },
   { value: "'Bride', 'Ephesis', cursive", label: 'Bride' },
   { value: "'Bodoni Moda', Georgia, serif", label: 'Couture Bodoni' },
-  { value: "'EB Garamond', Georgia, serif", label: 'Garamond' },
   { value: "'Great Vibes', cursive", label: 'Great Vibes' },
   { value: "'Inter', sans-serif", label: 'Inter' },
   { value: "'Lora', Georgia, serif", label: 'Lora' },
@@ -210,9 +209,10 @@ const FONT_OPTIONS = [
   { value: "'Montserrat', sans-serif", label: 'Montserrat' },
   { value: "'Outfit', sans-serif", label: 'Moderno Outfit' },
   { value: "'Parisienne', cursive", label: 'Parisienne' },
-  { value: "'Playfair Display', Georgia, serif", label: 'Playfair' },
+  { value: "'Pinyon Script', cursive", label: 'Pinyon Script' },
   { value: "'Plus Jakarta Sans', sans-serif", label: 'Plus Jakarta Sans' },
-  { value: "'Prata', Georgia, serif", label: 'Prata' }
+  { value: "'Prata', Georgia, serif", label: 'Prata' },
+  { value: "'Sacramento', cursive", label: 'Sacramento' }
 ];
 
 const FONT_OPTIONS_FORMAL = [
@@ -222,15 +222,15 @@ const FONT_OPTIONS_FORMAL = [
   { value: "'Avermont House', 'Avermont', 'Playfair Display', Georgia, serif", label: 'Avermont House' },
   { value: "'Cinzel', Georgia, serif", label: 'Cinzel' },
   { value: "'Bodoni Moda', Georgia, serif", label: 'Couture Bodoni' },
-  { value: "'EB Garamond', Georgia, serif", label: 'Garamond' },
   { value: "'Inter', sans-serif", label: 'Inter' },
   { value: "'Lora', Georgia, serif", label: 'Lora' },
   { value: "'Marcellus', Georgia, serif", label: 'Marcellus' },
   { value: "'Montserrat', sans-serif", label: 'Montserrat' },
   { value: "'Outfit', sans-serif", label: 'Moderno Outfit' },
-  { value: "'Playfair Display', Georgia, serif", label: 'Playfair' },
+  { value: "'Pinyon Script', cursive", label: 'Pinyon Script' },
   { value: "'Plus Jakarta Sans', sans-serif", label: 'Plus Jakarta Sans' },
   { value: "'Prata', Georgia, serif", label: 'Prata' },
+  { value: "'Sacramento', cursive", label: 'Sacramento' },
   { value: "'Times New Roman', Times, serif", label: 'Times New Roman' }
 ];
 

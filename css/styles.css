@@ -8540,3 +8540,5 @@ html body:not([data-theme="dark"]) .builder-canvas-viewport:not(#love-h-a) { bac
 html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; }
 /* Convite digital: cabeçalho no mesmo fundo geral (#F4F6F7), mantendo a linha cinza embaixo. */
 html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: var(--bg-dashboard) !important; }
+/* Rodapé das telas logadas no cinza do Hub (#EDEDEF). */
+html body:not([data-theme="dark"]) #view-event-os-dashboard #dashboard-footer:not(#love-h-a) { background: #EDEDEF !important; }

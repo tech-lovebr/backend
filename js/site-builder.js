@@ -196,37 +196,40 @@ function migrateQuickNavSection(state) {
 
 const FONT_OPTIONS = [
   { value: '', label: 'Padrão (Inter)' },
+  { value: "'Alex Brush', cursive", label: 'Alex Brush' },
+  { value: "'Allura', cursive", label: 'Allura' },
   { value: "'Avermont House', 'Avermont', 'Playfair Display', Georgia, serif", label: 'Avermont House' },
   { value: "'Bludhaven', 'Cinzel', serif", label: 'Bludhaven' },
   { value: "'Bride', 'Ephesis', cursive", label: 'Bride' },
-  { value: "'EB Garamond', Georgia, serif", label: 'Clássico Garamond' },
-  { value: "'Playfair Display', Georgia, serif", label: 'Clássico Playfair' },
   { value: "'Bodoni Moda', Georgia, serif", label: 'Couture Bodoni' },
-  { value: "'Lora', Georgia, serif", label: 'Editorial Lora' },
-  { value: "'Cormorant Garamond', Georgia, serif", label: 'Elegante Cormorant' },
-  { value: "'Montserrat', sans-serif", label: 'Geométrico Montserrat' },
+  { value: "'EB Garamond', Georgia, serif", label: 'Garamond' },
   { value: "'Great Vibes', cursive", label: 'Great Vibes' },
   { value: "'Inter', sans-serif", label: 'Inter' },
+  { value: "'Lora', Georgia, serif", label: 'Lora' },
   { value: "'Marcellus', Georgia, serif", label: 'Marcellus' },
+  { value: "'Montserrat', sans-serif", label: 'Montserrat' },
   { value: "'Outfit', sans-serif", label: 'Moderno Outfit' },
   { value: "'Parisienne', cursive", label: 'Parisienne' },
-  { value: "'Prata', Georgia, serif", label: 'Prata' },
-  { value: "'Tangerine', cursive", label: 'Tangerine' }
+  { value: "'Playfair Display', Georgia, serif", label: 'Playfair' },
+  { value: "'Plus Jakarta Sans', sans-serif", label: 'Plus Jakarta Sans' },
+  { value: "'Prata', Georgia, serif", label: 'Prata' }
 ];
 
 const FONT_OPTIONS_FORMAL = [
   { value: '', label: 'Padrão (Inter)' },
+  { value: "'Alex Brush', cursive", label: 'Alex Brush' },
+  { value: "'Allura', cursive", label: 'Allura' },
   { value: "'Avermont House', 'Avermont', 'Playfair Display', Georgia, serif", label: 'Avermont House' },
   { value: "'Cinzel', Georgia, serif", label: 'Cinzel' },
-  { value: "'EB Garamond', Georgia, serif", label: 'Clássico Garamond' },
-  { value: "'Playfair Display', Georgia, serif", label: 'Clássico Playfair' },
   { value: "'Bodoni Moda', Georgia, serif", label: 'Couture Bodoni' },
-  { value: "'Lora', Georgia, serif", label: 'Editorial Lora' },
-  { value: "'Cormorant Garamond', Georgia, serif", label: 'Elegante Cormorant' },
-  { value: "'Montserrat', sans-serif", label: 'Geométrico Montserrat' },
+  { value: "'EB Garamond', Georgia, serif", label: 'Garamond' },
   { value: "'Inter', sans-serif", label: 'Inter' },
+  { value: "'Lora', Georgia, serif", label: 'Lora' },
   { value: "'Marcellus', Georgia, serif", label: 'Marcellus' },
+  { value: "'Montserrat', sans-serif", label: 'Montserrat' },
   { value: "'Outfit', sans-serif", label: 'Moderno Outfit' },
+  { value: "'Playfair Display', Georgia, serif", label: 'Playfair' },
+  { value: "'Plus Jakarta Sans', sans-serif", label: 'Plus Jakarta Sans' },
   { value: "'Prata', Georgia, serif", label: 'Prata' },
   { value: "'Times New Roman', Times, serif", label: 'Times New Roman' }
 ];

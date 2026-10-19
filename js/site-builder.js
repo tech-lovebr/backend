@@ -1426,7 +1426,7 @@ function textoProntoDoSaveTheDate(anterior) {
   return opcoes[Math.floor(Math.random() * opcoes.length)] || montar(lista[0]);
 }
 
-const ICONE_IA = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 3.5 11.6 8a2 2 0 0 0 1.3 1.3L17.5 11l-4.6 1.6a2 2 0 0 0-1.3 1.3L10 18.5l-1.6-4.6a2 2 0 0 0-1.3-1.3L2.5 11l4.6-1.6A2 2 0 0 0 8.4 8Z"/><path d="M18 2.5l.7 1.8 1.8.7-1.8.7L18 7.5l-.7-1.8-1.8-.7 1.8-.7ZM18.5 15l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6Z"/></svg>';
+const ICONE_IA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5"/><path fill="currentColor" stroke-width="1.2" d="M17 2.5l.95 2.55L20.5 6l-2.55.95L17 9.5l-.95-2.55L13.5 6l2.55-.95Z"/><path fill="currentColor" stroke-width="1" d="M10 10l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4L8 12l1.4-.6Z"/></svg>';
 
 function renderEditorDeTextoSaveTheDate(body) {
   body.innerHTML = `

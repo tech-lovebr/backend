@@ -8723,3 +8723,22 @@ html body #classic-builder-preview:not(.hidden):not(#love-h-a) { display: flex !
 html body #classic-builder-preview:not(#love-h-a) > * { flex-shrink: 0; }
 html body #classic-builder-preview:not(#love-h-a) > :nth-last-child(2) { flex-grow: 1; }
 html body #classic-builder-preview:not(#love-h-a) > .builder-fixed-footer { margin-top: auto; }
+
+/* Save the Date › "Gerar com IA": botão "neon" — fundo azul-marinho, borda em
+   degradê azul → ciano, texto e ícone ciano e um brilho suave em volta. */
+html body #site-builder-root button.std-gerar-ia:not(#love-h-a),
+body[data-theme="dark"] #site-builder-root button.std-gerar-ia {
+  background: linear-gradient(#0B1626, #0B1626) padding-box, linear-gradient(90deg, #3B82F6 0%, #22D3EE 55%, #2DD4BF 100%) border-box !important;
+  border: 1.5px solid transparent !important;
+  border-radius: 999px !important;
+  color: #5CE1F2 !important;
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.35), inset 0 0 10px rgba(34, 211, 238, 0.10) !important;
+  padding: 0 18px !important;
+  gap: 8px;
+}
+html body #site-builder-root button.std-gerar-ia:not(#love-h-a):hover,
+body[data-theme="dark"] #site-builder-root button.std-gerar-ia:hover {
+  color: #7FEBF8 !important;
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.55), inset 0 0 12px rgba(34, 211, 238, 0.16) !important;
+}
+html body #site-builder-root button.std-gerar-ia:not(#love-h-a) svg { color: #5CE1F2 !important; width: 17px; height: 17px; }

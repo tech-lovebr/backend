@@ -21,7 +21,7 @@ const DRESSCODE_PUBLISHED_STATE_KEY = 'love-site-builder-dresscode-published-sta
 // Save the Date: capa (mesma imagem do convite) + textos, sem botões. Não é
 // publicado — é compartilhado como imagem + texto (WhatsApp, Instagram, e-mail).
 const SAVETHEDATE_STORAGE_KEY = 'love-site-builder-savethedate';
-const BUILDER_PAGE_LABELS = { convite: 'Convite Digital', presentes: 'Lista de Presentes', dresscode: 'Dress code', savethedate: 'Save the Date' };
+const BUILDER_PAGE_LABELS = { convite: 'Convite digital', presentes: 'Lista de Presentes', dresscode: 'Dress code', savethedate: 'Save the Date' };
 let currentPageKey = 'convite';
 
 function escapeHtml(str) {
@@ -805,7 +805,7 @@ function atualizarBotoesDaPagina() {
 
 function updatePageSwitcherUI() {
   const label = document.getElementById('builder-page-select-label');
-  if (label) label.textContent = BUILDER_PAGE_LABELS[currentPageKey] || 'Convite Digital';
+  if (label) label.textContent = BUILDER_PAGE_LABELS[currentPageKey] || 'Convite digital';
   document.querySelectorAll('#builder-page-dropdown [data-page-option]').forEach(item => {
     item.classList.toggle('active', item.dataset.pageOption === currentPageKey);
   });

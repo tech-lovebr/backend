@@ -8327,3 +8327,11 @@ html body .sidebar-edge-toggle:not(#love-h-a):focus-visible { opacity: 1; }
 body.sidebar-hover-mode .sidebar-edge-toggle { display: none !important; }
 body.sidebar-hover-mode .b2b-main { margin-left: var(--sidebar-collapsed-width); }
 body.sidebar-flutuando .b2b-sidebar { box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 8px 0 32px -8px rgba(16, 24, 40, 0.25); }
+
+/* Painel › atalhos (Cobrar, Orçamento, Financeiro, Construtor): os quatro
+   com a mesma largura, ocupando a linha toda. */
+html body .dashboard-quick-actions:not(#love-h-a) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+html body .dashboard-quick-actions .dashboard-quick-action-btn:not(#love-h-a) { width: 100%; justify-content: center; }
+@media (max-width: 768px) {
+  html body .dashboard-quick-actions:not(#love-h-a) { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
+}

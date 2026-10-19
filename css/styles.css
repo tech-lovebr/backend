@@ -8714,3 +8714,5 @@ html body:not([data-theme="dark"]) button.std-gerar-ia:not(#love-h-a):hover {
   background: linear-gradient(180deg, #FFFFFF 0%, #EDEDEF 100%) !important;
 }
 body[data-theme="dark"] button.std-gerar-ia { background: linear-gradient(180deg, #2E2E2E 0%, #232323 100%) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important; }
+/* Organizadores: sem o divisor do "Ver página publicada" (os botões já somem). */
+body.organizadores-sem-previa #classic-editor-toolbar .builder-toolbar-divider { display: none !important; }

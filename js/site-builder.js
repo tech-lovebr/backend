@@ -10,6 +10,17 @@ const BUILDER_PUBLISHED_KEY = 'love-site-builder-published';
 const BUILDER_PUBLISHED_STATE_KEY = 'love-site-builder-published-state';
 const PREVIEW_PAGE_URL = '/convite-preview';
 
+/**
+ * Link público do evento ativo (love.com.br/<slug>, no domínio atual). Sem
+ * slug ainda, cai na prévia.
+ * @returns {string}
+ */
+function urlDaPaginaPublicada() {
+  const evento = typeof getActiveEventForBuilder === 'function' ? getActiveEventForBuilder() : null;
+  const slug = evento && String(evento.slug || '').trim();
+  return slug ? `${window.location.origin}/${encodeURIComponent(slug)}` : PREVIEW_PAGE_URL;
+}
+
 // Páginas/templates adicionais do site (mesmo padrão do dropdown "Páginas do site"
 // do B2B — site principal + meu checkout): cada uma tem seu próprio estado salvo.
 const PRESENTES_STORAGE_KEY = 'love-site-builder-presentes';
@@ -3817,10 +3828,14 @@ function initSiteBuilder() {
 
   initCompartilharSaveTheDate();
 
-  const previewBtn = document.getElementById('builder-preview-link');
-  if (previewBtn) previewBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.open(PREVIEW_PAGE_URL, '_blank', 'noopener');
+  // "Ver página publicada" (Convite digital e Informações): abre o convite no
+  // link público do evento (love.com.br/<slug>), não a prévia.
+  ['builder-preview-link', 'classic-editor-ver-publicada'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open(urlDaPaginaPublicada(), '_blank', 'noopener');
+    });
   });
 
   const unsavedSaveBtn = document.getElementById('btn-unsaved-save');

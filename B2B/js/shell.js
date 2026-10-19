@@ -538,19 +538,22 @@ function renderEmpresasNoMenu() {
   const wrap = document.getElementById('profile-empresas');
   if (!wrap) return;
   const ativa = window.b2bEmpresaId;
+  const uid = window.b2bSession && window.b2bSession.user.id;
   const p = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
   let empresas = (window.b2bEmpresas || []).slice();
   if (!empresas.length) empresas = [{ id: ativa, company_name: p.company, avatar_url: p.avatar, cnpj: p.documentNumber }];
   empresas = empresas.map(e => (e.id === ativa ? { ...e, company_name: p.company || e.company_name, cnpj: e.cnpj || p.documentNumber } : e));
   const cnpjFormatado = v => {
-    const d = String(v || '').replace(/D/g, '');
+    const d = String(v || '').replace(/\D/g, '');
     return d.length === 14 && typeof formatDocumentValue === 'function' ? 'CNPJ ' + formatDocumentValue(d, 'cnpj') : '';
   };
   wrap.hidden = false;
   wrap.innerHTML = `<p class="profile-empresas-titulo">${empresas.length > 1 ? 'Suas empresas' : 'Sua empresa'}</p>` + empresas.map(e => `
     <button type="button" class="profile-empresa-item${e.id === ativa ? ' is-ativa' : ''}" data-empresa-id="${escapeHtml(e.id || '')}">
-      <span class="profile-empresa-marca">${e.id === ativa ? '<svg class="profile-empresa-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></svg>' : ''}</span>
-      <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
+      <span class="profile-empresa-linha">
+        <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
+        ${e.id === uid ? '<span class="profile-empresa-principal">Principal</span>' : ''}
+      </span>
       ${cnpjFormatado(e.cnpj) ? `<span class="profile-empresa-cnpj">${cnpjFormatado(e.cnpj)}</span>` : ''}
     </button>`).join('') + '<div class="topbar-dropdown-divider"></div>';
   wrap.querySelectorAll('[data-empresa-id]').forEach(btn => {

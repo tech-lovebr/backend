@@ -8810,3 +8810,15 @@ body[data-theme="dark"] .nova-empresa-etapa.is-ativa { color: #FFFFFF !important
    clique; o nome da empresa antiga sai do topo. */
 html body[data-page="nova-empresa"] #shell-sidebar:not(#love-h-a) { opacity: 1; }
 html body[data-page="nova-empresa"] .topbar-account-wrap:not(#love-h-a) { visibility: hidden; }
+
+/* Menu do perfil › empresas: sem ícone à esquerda; nome e, ao lado,
+   "Principal" em letra fina (a empresa do login); CNPJ embaixo.
+   "Adicionar empresa" com o + à direita. */
+html body .profile-empresa-item:not(#love-h-a) { flex-direction: column; align-items: flex-start; gap: 0.1rem; }
+html body .profile-empresa-linha:not(#love-h-a) { display: flex; align-items: baseline; gap: 0.4rem; min-width: 0; max-width: 100%; }
+html body .profile-empresa-principal:not(#love-h-a) { font-size: 0.75rem; font-weight: 300; color: #71717A; flex-shrink: 0; }
+html body .profile-empresa-item .profile-empresa-cnpj:not(#love-h-a) { margin-left: 0; }
+html body .profile-empresa-item.is-ativa .profile-empresa-nome:not(#love-h-a) { font-weight: 600; }
+html body .topbar-item-adicionar-empresa:not(#love-h-a) { justify-content: space-between; }
+html body .topbar-item-adicionar-empresa svg:not(#love-h-a) { flex-shrink: 0; }
+body[data-theme="dark"] .profile-empresa-principal { color: #A1A1AA !important; }

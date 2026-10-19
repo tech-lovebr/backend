@@ -66,6 +66,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Evento aberto lembrado no navegador: ao atualizar a página (F5), a pessoa
+  // continua no mesmo evento. Só muda quando ela troca no seletor do topo,
+  // cria um evento novo ou exclui o que estava aberto.
+  const CHAVE_EVENTO_ATIVO = 'love-evento-ativo';
+
+  /** @param {string|null} id */
+  function definirEventoAtivo(id) {
+    state.activeEventId = id;
+    try {
+      if (id) localStorage.setItem(CHAVE_EVENTO_ATIVO, String(id));
+      else localStorage.removeItem(CHAVE_EVENTO_ATIVO);
+    } catch (e) { /* armazenamento indisponível: segue sem lembrar */ }
+  }
+
+  /** @returns {string|null} */
+  function eventoAtivoGuardado() {
+    try { return localStorage.getItem(CHAVE_EVENTO_ATIVO); } catch (e) { return null; }
+  }
+
   // Helper para obter a comemoração ativa
   function getActiveEvent() {
     return state.events.find(e => e.id === state.activeEventId) || state.events[0];
@@ -1780,7 +1799,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       item.addEventListener('click', () => {
-        state.activeEventId = evt.id;
+        definirEventoAtivo(evt.id);
         elements.dashHeader.dropdownList.classList.add('hidden');
         document.body.setAttribute('data-event-theme', evt.type);
         updateAllCelebrationData();
@@ -11866,7 +11885,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setSidebarLocked(false);
       state.hasEventCreated = true;
       state.events.unshift(newEvt);
-      state.activeEventId = newEvt.id;
+      definirEventoAtivo(newEvt.id);
 
       // Convite Digital já nasce com o template (cor + imagem de capa) do tipo
       // de evento escolhido — ponto de partida editável em Aparência.
@@ -15951,7 +15970,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.events = state.events.filter(e => e.id !== id);
     const proprios = state.events.filter(e => !e.souOrganizador);
     if (!state.events.length) {
-      state.activeEventId = null;
+      definirEventoAtivo(null);
       setSidebarLocked(true);
       renderEventsSwitcher();
       // Topo sem o nome do evento que acabou de sair.
@@ -15963,7 +15982,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return null;
     }
     if (state.activeEventId === id || !state.events.some(e => e.id === state.activeEventId)) {
-      state.activeEventId = (proprios[0] || state.events[0]).id;
+      definirEventoAtivo((proprios[0] || state.events[0]).id);
       if (typeof window.reloadBuilderStateForActiveEvent === 'function') window.reloadBuilderStateForActiveEvent();
     }
     updateAllCelebrationData();
@@ -17131,9 +17150,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (events.length) {
       state.events = events;
-      state.activeEventId = events[0].id;
+      // Volta para o evento que estava aberto antes de atualizar a página.
+      const guardado = eventoAtivoGuardado();
+      state.activeEventId = (events.find(e => String(e.id) === guardado) || events[0]).id;
       state.hasEventCreated = true;
-      // Garante que o Convite Digital do evento ativo (o primeiro da lista)
+      // Garante que o Convite Digital do evento ativo (o guardado ou o primeiro)
       // sincronize com o Supabase assim que a sessão carrega — sem isso, só
       // sincronizava ao trocar/criar evento, nunca no login inicial.
       if (typeof window.reloadBuilderStateForActiveEvent === 'function') {

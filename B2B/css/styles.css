@@ -8667,3 +8667,7 @@ html body:not([data-theme="dark"]) .kanban-add-list-btn:not(#love-h-a):hover { b
 /* Exceção: Política de privacidade (/privacidade) e Termos e condições
    (/termos) com o fundo da página branco. */
 html body:not([data-theme="dark"]):is([data-page="privacidade"], [data-page="termos"]) { --bg-dashboard: #FFFFFF; background-color: #FFFFFF; }
+
+/* Nome da empresa no topo: link para o Início, sem sublinhado nem efeito no hover. */
+html body a.topbar-account-name:not(#love-h-a),
+html body a.topbar-account-name:not(#love-h-a):hover { text-decoration: none; cursor: pointer; }

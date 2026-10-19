@@ -78,6 +78,8 @@ const BI = {
   alignLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h14"/></svg>',
   alignCenter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M7 12h10M5 18h14"/></svg>',
   alignRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M10 12h10M6 18h14"/></svg>',
+  vinculo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+  vinculoCortado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/><path d="M3 3l18 18"/></svg>',
   plusCircle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>',
   grip: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.8"/><circle cx="16" cy="6" r="1.8"/><circle cx="8" cy="12" r="1.8"/><circle cx="16" cy="12" r="1.8"/><circle cx="8" cy="18" r="1.8"/><circle cx="16" cy="18" r="1.8"/></svg>',
   gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="9" width="18" height="4" rx="1"/><rect x="4.5" y="13" width="15" height="8" rx="1"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v12M12 9c-1.8 0-3.4-1.7-3.4-3.4A2.6 2.6 0 0 1 12 5c0 1.5-1.1 2.7-2.5 3.3M12 9c1.8 0 3.4-1.7 3.4-3.4A2.6 2.6 0 0 0 12 5c0 1.5 1.1 2.7 2.5 3.3"/></svg>',
@@ -3282,7 +3284,9 @@ function renderStyleTab(el, flat, skipColor) {
 }
 
 function renderLayoutTab(el, flat) {
-  const marginSyncBtn = `<button type="button" class="margin-sync-toggle ${marginSyncEnabled ? 'active' : ''}" data-margin-sync-toggle title="${marginSyncEnabled ? 'Sincronizado, mesmo valor nos 4 lados' : 'Livre, cada lado com seu valor'}">${BI.plusCircle}</button>`;
+  // Vincular valores: ligado = mesma margem nos 4 lados (corrente inteira);
+  // desligado = cada lado com seu valor (corrente cortada por uma linha).
+  const marginSyncBtn = `<button type="button" class="margin-sync-toggle ${marginSyncEnabled ? 'active' : ''}" data-margin-sync-toggle aria-pressed="${marginSyncEnabled}" title="${marginSyncEnabled ? 'Valores vinculados: mesmo valor nos 4 lados' : 'Valores livres: cada lado com seu valor'}">${marginSyncEnabled ? BI.vinculo : BI.vinculoCortado}</button>`;
   const alignmentRow = el.type === 'botao'
     ? segRow('Alinhamento', 'style:textAlign', [
         { value: 'left', title: 'Esquerda', html: BI.alignLeft },
@@ -3292,7 +3296,7 @@ function renderLayoutTab(el, flat) {
     : '';
   const marginHeading = flat
     ? `<span class="inspector-field-label">Margem (px)${marginSyncBtn}</span>`
-    : `<div class="inspector-section-title inspector-section-title-row"><span>Posicionamento</span>${marginSyncBtn}</div>${alignmentRow}<span class="inspector-field-label">Margem (px)</span>`;
+    : `<div class="inspector-section-title inspector-section-title-row inspector-vincular"><span>Vincular valores</span>${marginSyncBtn}</div>${alignmentRow}<span class="inspector-field-label">Margem (px)</span>`;
   const labelClass = flat ? 'inspector-field-label-plain' : 'inspector-field-label';
   const aparenciaHeading = flat ? '' : `<div class="inspector-section-title">Aparência</div>`;
   return `

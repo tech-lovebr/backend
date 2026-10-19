@@ -8627,3 +8627,17 @@ html body #builder-elements-panel textarea.builder-textarea-cresce:not(#love-h-a
    da caixinha da data (antes 70%, no máximo 320px). */
 .builder-canvas .be-date-display-rule,
 .builder-canvas .be-date-display-time-row { width: 94%; max-width: none; }
+
+/* Layout › "Vincular valores": título sem negrito; botão de vínculo sem fundo
+   (ligado = corrente na cor primária; desligado = corrente cortada, cinza). */
+html body .inspector-vincular:not(#love-h-a) > span { font-weight: 400 !important; }
+html body .margin-sync-toggle:not(#love-h-a),
+html body .margin-sync-toggle:not(#love-h-a):hover,
+html body .margin-sync-toggle.active:not(#love-h-a),
+html body .margin-sync-toggle.active:not(#love-h-a):hover { background: transparent !important; }
+html body .margin-sync-toggle:not(#love-h-a) { color: #A1A1AA; }
+html body .margin-sync-toggle:not(#love-h-a):hover { color: #181D24; }
+html body .margin-sync-toggle.active:not(#love-h-a) { color: #183b54; }
+html body .margin-sync-toggle:not(#love-h-a) svg { width: 15px; height: 15px; }
+body[data-theme="dark"] .margin-sync-toggle.active { background: transparent !important; color: #9CC3E4 !important; }
+body[data-theme="dark"] .margin-sync-toggle:hover { background: transparent !important; }

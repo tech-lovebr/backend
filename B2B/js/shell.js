@@ -812,7 +812,8 @@ function initCommandPalette() {
 function openCommandPalette() {
   const palette = document.getElementById('command-palette');
   const input = document.getElementById('command-input');
-  if (!palette) return;
+  // Em Nova empresa a busca (da empresa atual) fica desligada, inclusive pelo ⌘K.
+  if (!palette || document.body.dataset.page === 'nova-empresa') return;
   palette.classList.add('show');
   renderCommandResults('');
   setTimeout(() => input?.focus(), 30);

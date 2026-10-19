@@ -8720,19 +8720,21 @@ html body #builder-elements-panel :is(.builder-panel-tab-body, .inspector-body):
 html body .profile-empresa-textos:not(#love-h-a) { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; text-align: left; }
 html body .profile-empresa-cnpj:not(#love-h-a) { font-size: 0.6875rem; font-weight: 500; color: #A1A1AA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Nova empresa: ambiente isolado. Sem sidebar, sem nome da empresa, sem
-   busca e sem os ícones do topo (são da empresa atual). No menu do perfil
-   ficam só as empresas (clicar na atual volta para ela), o tema e Sair. */
+/* Nova empresa: o layout continua o mesmo (sidebar, nome da empresa, busca
+   e ícones do topo aparecem), mas nada disso é clicável — é tudo da empresa
+   atual. Só o perfil abre: nele, as empresas (clicar na atual volta para
+   ela), o tema e Sair; os outros itens ficam visíveis e apagados. */
 html body[data-page="nova-empresa"] #shell-sidebar:not(#love-h-a),
 html body[data-page="nova-empresa"] .topbar-account-wrap:not(#love-h-a),
 html body[data-page="nova-empresa"] #search-trigger:not(#love-h-a),
 html body[data-page="nova-empresa"] #topbar-icon-group > :not(:has(#avatar-trigger)):not(#love-h-a),
 html body[data-page="nova-empresa"] #avatar-dropdown a.topbar-dropdown-item:not([data-logout]):not(#love-h-a),
-html body[data-page="nova-empresa"] #avatar-dropdown a[href="nova-empresa"] + .topbar-dropdown-divider:not(#love-h-a),
-html body[data-page="nova-empresa"] #profile-empresas .topbar-dropdown-divider:not(#love-h-a) { display: none !important; }
-html body[data-page="nova-empresa"] .b2b-main:not(#love-h-a) { margin-left: 0 !important; }
-html body[data-page="nova-empresa"] .b2b-topbar:not(#love-h-a) { justify-content: flex-end; }
-html body[data-page="nova-empresa"] .profile-dropdown-header a:not(#love-h-a) { pointer-events: none; }
+html body[data-page="nova-empresa"] .profile-dropdown-header:not(#love-h-a) { pointer-events: none !important; cursor: default; user-select: none; }
+html body[data-page="nova-empresa"] #shell-sidebar:not(#love-h-a),
+html body[data-page="nova-empresa"] .topbar-account-wrap:not(#love-h-a),
+html body[data-page="nova-empresa"] #search-trigger:not(#love-h-a),
+html body[data-page="nova-empresa"] #topbar-icon-group > :not(:has(#avatar-trigger)):not(#love-h-a),
+html body[data-page="nova-empresa"] #avatar-dropdown a.topbar-dropdown-item:not([data-logout]):not(#love-h-a) { opacity: 0.45; }
 
 /* Nova empresa › etapas. */
 html body .nova-empresa-etapas:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0 0 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E4E4E7; }

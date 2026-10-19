@@ -8707,3 +8707,11 @@ html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a):hover { background: #EBF4FF; color: #181D24; }
 html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a):hover { color: #181D24; }
 body[data-theme="dark"] #builder-elements-panel .builder-panel-tabs { background: #1F1F1F !important; border-color: #404040 !important; }
+
+/* Construtor de sites › painel Elementos/Ajustes (e o inspetor do elemento):
+   barra de rolagem invisível — continua rolando, mas sem ocupar a lateral;
+   o respiro da direita fica igual ao da esquerda. */
+html body #builder-elements-panel :is(.builder-panel-tab-body, .inspector-body):not(#love-h-a) {
+  scrollbar-width: none; -ms-overflow-style: none; scrollbar-gutter: auto; padding-right: 0.75rem;
+}
+html body #builder-elements-panel :is(.builder-panel-tab-body, .inspector-body)::-webkit-scrollbar { width: 0; height: 0; display: none; }

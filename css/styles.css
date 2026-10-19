@@ -8575,3 +8575,11 @@ html body .gift-status-badge.is-ativo:not(#love-h-a) { display: inline-flex !imp
 html body .gift-status-badge.is-ativo:not(#love-h-a)::before { content: ''; width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; background: #2FCB7E; box-shadow: 0 0 0 3px rgba(47, 203, 126, 0.16); }
 body[data-theme="dark"] .gift-status-badge.is-ativo { color: #5FE0A0 !important; }
 body[data-theme="dark"] .gift-status-badge.is-ativo::before { background: #5FE0A0 !important; }
+
+/* Exceção: Privacidade (/privacidade) e Termos e condições (/termos) com
+   fundo branco, inclusive a faixa do título. */
+html body:not([data-theme="dark"]) #dashboard-main-area:has(#tab-legal-doc.active):not(#love-h-a),
+html body:not([data-theme="dark"]) #dashboard-main-area:has(#tab-legal-doc.active) > div:not(.builder-canvas):not(#love-h-a),
+html body:not([data-theme="dark"]) #view-event-os-dashboard:has(#tab-legal-doc.active):not(#love-h-a),
+html body:not([data-theme="dark"]) #dashboard-main-area #tab-legal-doc:not(#love-h-a),
+html body:not([data-theme="dark"]) #view-event-os-dashboard #tab-legal-doc .builder-toolbar:not(#love-h-a) { background-color: #FFFFFF !important; }

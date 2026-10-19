@@ -8609,3 +8609,18 @@ html body .b2b-header-bar + p:not(#love-h-a) {
   margin-bottom: 1.75rem;
   position: relative;
 }
+
+/* Albert Sans: botão de período "Últimos 30 dias" da home e todas as barras
+   de busca (topo, tabelas, Meus produtos, categorias, conversas, ⌘K). */
+html body .wallet-periodo-btn:not(#love-h-a),
+html body .wallet-periodo-btn *:not(#love-h-a),
+html body .topbar-search-trigger:not(#love-h-a),
+html body .topbar-search-trigger *:not(#love-h-a),
+html body .tabela-busca input:not(#love-h-a),
+html body #products-search:not(#love-h-a),
+html body #product-category-search:not(#love-h-a),
+html body #chat-search-input:not(#love-h-a),
+html body #command-input:not(#love-h-a),
+html body input[type="search"]:not(#love-h-a) {
+  font-family: 'Albert Sans', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

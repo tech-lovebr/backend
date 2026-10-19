@@ -129,7 +129,9 @@ async function initNovaEmpresa() {
         campoCnpj.hidden = mesmo;
         copiado.hidden = !mesmo;
         copiado.textContent = mesmo ? `Vamos usar o mesmo CNPJ: ${cnpjAtual}` : '';
-        if (mesmo) cnpjInput.value = cnpjAtual;
+        // Mesmo CNPJ: é outra marca da mesma empresa, então pede o nome fantasia.
+        document.getElementById('nova-empresa-nome-rotulo').textContent = mesmo ? 'Nome fantasia' : 'Nome da empresa';
+        if (mesmo) { cnpjInput.value = cnpjAtual; document.getElementById('nova-empresa-nome').focus(); }
         else { cnpjInput.value = ''; cnpjInput.focus(); }
       });
     });
@@ -150,9 +152,9 @@ async function initNovaEmpresa() {
     const nome = document.getElementById('nova-empresa-nome').value.trim();
     const responsavel = document.getElementById('nova-empresa-responsavel').value.trim();
     const telefone = telefoneInput.value.replace(/\D/g, '');
-    if (!nome) return 'Preencha o nome da empresa.';
     if (cnpjAtual && !form.querySelector('input[name="nova-empresa-mesmo-cnpj"]:checked')) return 'Responda se o CNPJ é o mesmo da empresa atual.';
     if (cnpjInput.value.replace(/\D/g, '').length !== 14) return 'Confira o CNPJ: são 14 números.';
+    if (!nome) return 'Preencha o ' + document.getElementById('nova-empresa-nome-rotulo').textContent.toLowerCase() + '.';
     if (!responsavel) return 'Preencha o responsável principal.';
     if (telefone.length < 10) return 'Confira o WhatsApp com o DDD.';
     return '';

@@ -64,10 +64,6 @@
           <!-- Etapa 1: dados -->
           <section class="nova-empresa-passo" data-etapa="1">
             <div class="nova-empresa-campos">
-              <div>
-                <label for="nova-empresa-nome" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
-                <input id="nova-empresa-nome" type="text" class="field-input" autocomplete="organization">
-              </div>
 
               <div id="nova-empresa-cnpj-pergunta" hidden>
                 <p class="field-label">O CNPJ é o mesmo da empresa atual? <span style="color:#DC2626;">*</span></p>
@@ -83,6 +79,11 @@
                 <input id="nova-empresa-cnpj" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00" autocomplete="off">
               </div>
 
+              <!-- CNPJ igual: "Nome fantasia"; CNPJ diferente: "Nome da empresa". -->
+              <div>
+                <label for="nova-empresa-nome" class="field-label"><span id="nova-empresa-nome-rotulo">Nome da empresa</span> <span style="color:#DC2626;">*</span></label>
+                <input id="nova-empresa-nome" type="text" class="field-input" autocomplete="organization">
+              </div>
               <div>
                 <label for="nova-empresa-responsavel" class="field-label">Responsável principal <span style="color:#DC2626;">*</span></label>
                 <input id="nova-empresa-responsavel" type="text" class="field-input" autocomplete="name">
@@ -140,6 +141,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=47"></script>
-  <script src="js/nova-empresa.js?v=3"></script>
+  <script src="js/nova-empresa.js?v=4"></script>
 </body>
 </html>

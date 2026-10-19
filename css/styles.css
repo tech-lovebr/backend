@@ -8609,3 +8609,7 @@ body[data-theme="dark"] #modal-unsaved-changes .modal-sair-sem-salvar { border-c
    "Altura" o texto subia e a sobra ficava toda embaixo; assim a altura da
    linha divide a sobra igual em cima e embaixo. */
 .builder-canvas .be-heading { min-height: 1em; }
+
+/* Aparência › caixinha "Elementos"/"Editar texto": mesma fonte e grossura do
+   submenu ativo ("Aparência"). */
+html body #builder-elements-panel .builder-panel-tabs .builder-panel-tab:not(#love-h-a) { font-weight: 700 !important; letter-spacing: -0.01em !important; }

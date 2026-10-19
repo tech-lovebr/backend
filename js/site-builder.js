@@ -74,6 +74,7 @@ const BI = {
   bold: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4.5h6.5a3.5 3.5 0 0 1 0 7H6zm0 7h7a3.5 3.5 0 0 1 0 7H6z"/></svg>',
   italic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M10 4.5h7M7 19.5h7M13.5 4.5l-3 15"/></svg>',
   underline: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 4v7a6 6 0 0 0 12 0V4M5 20h14"/></svg>',
+  textShadow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 12 5l5 15M8.7 15h6.6" opacity="0.35" transform="translate(2 1.5)"/><path d="M5 18.5 10 3.5l5 15M6.7 13.5h6.6"/></svg>',
   alignLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h14"/></svg>',
   alignCenter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M7 12h10M5 18h14"/></svg>',
   alignRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M10 12h10M6 18h14"/></svg>',
@@ -1176,7 +1177,7 @@ function currentStyleValue(el, key) {
 
 const STYLE_CSS_KEY = {
   color: 'color', fontSize: 'font-size', fontFamily: 'font-family', fontWeight: 'font-weight', textAlign: 'text-align',
-  lineHeight: 'line-height', fontStyle: 'font-style', textDecoration: 'text-decoration', marginTop: 'margin-top',
+  lineHeight: 'line-height', fontStyle: 'font-style', textDecoration: 'text-decoration', textShadow: 'text-shadow', marginTop: 'margin-top',
   marginBottom: 'margin-bottom', marginLeft: 'margin-left', marginRight: 'margin-right',
   width: 'width', maxWidth: 'max-width', borderRadius: 'border-radius', boxShadow: 'box-shadow',
   opacity: 'opacity', backgroundColor: 'background-color', objectFit: 'object-fit'
@@ -3022,6 +3023,10 @@ function renderTextoSaveTheDateInspector(el, body) {
   wireTypographyToggles(body, el);
 }
 
+// Sombra leve atrás do texto (título e texto): curta e transparente, só para
+// destacar do fundo sem borrar as letras.
+const SOMBRA_DO_TEXTO = '0 1px 3px rgba(0, 0, 0, 0.22)';
+
 function wireTypographyToggles(body, el) {
   body.querySelectorAll('[data-typography-toggle]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3030,6 +3035,7 @@ function wireTypographyToggles(body, el) {
       if (kind === 'bold') applyBind(el, 'style:fontWeight', isActive ? '400' : '700');
       else if (kind === 'italic') applyBind(el, 'style:fontStyle', isActive ? '' : 'italic');
       else if (kind === 'underline') applyBind(el, 'style:textDecoration', isActive ? '' : 'underline');
+      else if (kind === 'sombra') applyBind(el, 'style:textShadow', isActive ? '' : SOMBRA_DO_TEXTO);
       pushHistory();
       renderCanvasOnly();
       renderLeftPanel();
@@ -3185,7 +3191,7 @@ function renderStyleTab(el, flat, skipColor) {
   const align = cascadedStyleValue(el, 'textAlign');
   const isBold = cascadedStyleValue(el, 'fontWeight') === '700';
   const isItalic = cascadedStyleValue(el, 'fontStyle') === 'italic';
-  const isUnderline = cascadedStyleValue(el, 'textDecoration') === 'underline';
+  const temSombra = !!cascadedStyleValue(el, 'textShadow');
   const currentFont = cascadedStyleValue(el, 'fontFamily') || '';
   const tipografiaHeading = flat ? `<span class="inspector-field-label">Tipografia</span>` : `<div class="inspector-section-title">Tipografia</div>`;
   return `
@@ -3202,7 +3208,7 @@ function renderStyleTab(el, flat, skipColor) {
       <div class="inspector-segmented">
         <button type="button" data-typography-toggle="bold" class="${isBold ? 'active' : ''}" title="Negrito">${BI.bold}</button>
         <button type="button" data-typography-toggle="italic" class="${isItalic ? 'active' : ''}" title="Itálico">${BI.italic}</button>
-        <button type="button" data-typography-toggle="underline" class="${isUnderline ? 'active' : ''}" title="Sublinhado">${BI.underline}</button>
+        <button type="button" data-typography-toggle="sombra" class="${temSombra ? 'active' : ''}" title="Sombra">${BI.textShadow}</button>
       </div>
     </div>
     ${el.type === 'botao' ? '' : segRow('Alinhamento', 'style:textAlign', [

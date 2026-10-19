@@ -1107,14 +1107,15 @@ function createElement(type) {
     hidden: { desktop: false, tablet: false, mobile: false }
   };
   switch (type) {
+    // Título e Texto nascem vazios: mostram "Insira um título" / "Insira um texto".
     case 'texto':
-      return Object.assign(base, { content: 'Adicione aqui o texto do seu convite. Clique para editar.' });
+      return Object.assign(base, { content: '' });
     case 'titulo':
       base.styles.desktop.fontWeight = '700';
       // Altura da linha nasce em 1: o texto fica centrado e a sobra (para mais
       // ou para menos) se divide igual em cima e embaixo.
       base.styles.desktop.lineHeight = '1';
-      return Object.assign(base, { content: 'Título', level: 2 });
+      return Object.assign(base, { content: '', level: 2 });
     case 'botao':
       return Object.assign(base, { content: 'Clique aqui', href: '#' });
     case 'imagem':

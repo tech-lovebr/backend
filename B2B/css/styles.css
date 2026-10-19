@@ -8456,3 +8456,55 @@ html body .dash-ads-carousel:not(#love-h-a) { border-radius: 12px; overflow: hid
 html body .dash-ads-card.altura-alinhada .dash-ads-carousel:not(#love-h-a) { aspect-ratio: auto; flex: 1 1 auto; min-height: 0; }
 html body .dash-ads-dots:not(#love-h-a) { background: transparent !important; flex-shrink: 0; }
 body[data-theme="dark"] .dash-card.dash-ads-card { background: transparent !important; box-shadow: none !important; }
+
+/* Painel › Saldo/Faturamento › período (botão no canto + drop-down). */
+.wallet-periodo { position: absolute; top: 1.15rem; right: 3.6rem; z-index: 20; }
+.wallet-periodo-btn {
+  display: inline-flex; align-items: center; gap: 0.45rem; height: 34px; padding: 0 0.75rem;
+  border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; background: #FFFFFF; color: #18181B;
+  font-size: 0.8125rem; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap;
+}
+.wallet-periodo-btn svg { width: 15px; height: 15px; }
+.wallet-periodo-btn:hover, .wallet-periodo-btn[aria-expanded="true"] { border-color: #181D24; }
+.wallet-periodo-menu {
+  position: absolute; top: calc(100% + 6px); right: 0; width: 640px; max-width: calc(100vw - 32px);
+  background: #FFFFFF; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.wallet-periodo-menu[hidden] { display: none; }
+.wallet-periodo-corpo { display: flex; min-height: 0; }
+.wallet-periodo-atalhos { flex: 0 0 82px; padding: 0.85rem 0.5rem; border-right: 1px solid rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 0.2rem; }
+.wallet-periodo-atalhos p { font-size: 0.6875rem; color: #A1A1AA; margin: 0 0 0.25rem 0.5rem; }
+.wallet-periodo-atalhos button { text-align: left; padding: 0.4rem 0.5rem; border: none; background: none; border-radius: 6px; font-size: 0.8125rem; color: #18181B; cursor: pointer; font-family: inherit; }
+.wallet-periodo-atalhos button:hover, .wallet-periodo-atalhos button.is-ativo { background: #F4F4F5; font-weight: 600; }
+.wallet-periodo-cal { position: relative; flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; padding: 0.85rem 1rem 0.75rem; overflow-x: auto; }
+.wp-nav { position: absolute; top: 0.75rem; width: 28px; height: 28px; border: none; background: none; border-radius: 6px; cursor: pointer; color: #52525B; display: inline-flex; align-items: center; justify-content: center; }
+.wp-nav svg { width: 16px; height: 16px; }
+.wp-nav:hover { background: #F4F4F5; color: #181D24; }
+.wp-nav-ant { left: 0.75rem; }
+.wp-nav-prox { right: 0.75rem; }
+.wp-mes-titulo { text-align: center; font-size: 0.8125rem; font-weight: 700; color: #18181B; margin: 0.3rem 0 0.6rem; }
+.wp-grade { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 2px; }
+.wp-sem { font-size: 0.6875rem; color: #A1A1AA; text-align: center; padding-bottom: 0.3rem; }
+.wp-dia { height: 32px; border: none; background: none; font-size: 0.8125rem; color: #18181B; cursor: pointer; font-family: inherit; border-radius: 6px; }
+.wp-dia:hover:not(:disabled) { background: #F4F4F5; }
+.wp-dia.is-fora { color: #A1A1AA; }
+.wp-dia.is-futuro { color: #D4D4D8; cursor: default; }
+.wp-dia.is-hoje { font-weight: 700; }
+.wp-dia.is-dentro { background: #F4F4F5; border-radius: 0; }
+.wp-dia.is-ponta, .wp-dia.is-ponta:hover { background: #181D24; color: #FFFFFF; border-radius: 6px; }
+.wallet-periodo-rodape { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0.65rem 1rem; border-top: 1px solid rgba(0,0,0,0.06); }
+.wallet-periodo-cancelar { height: 32px; padding: 0 0.75rem; border: none; background: none; font-size: 0.8125rem; font-weight: 600; color: #3F3F46; cursor: pointer; font-family: inherit; border-radius: 6px; }
+.wallet-periodo-cancelar:hover { background: #F4F4F5; }
+.wallet-periodo-aplicar { height: 32px; padding: 0 0.9rem; border: none; background: #181D24; color: #FFFFFF; font-size: 0.8125rem; font-weight: 700; cursor: pointer; font-family: inherit; border-radius: 6px; }
+.wallet-periodo-aplicar:hover { background: #262D36; }
+@media (max-width: 640px) {
+  .wallet-periodo { position: static; margin-bottom: 0.75rem; }
+  .wallet-periodo-menu { left: 0; right: auto; }
+  .wallet-periodo-cal { grid-template-columns: 1fr; }
+  .wallet-periodo-cal .wp-mes + .wp-mes { display: none; }
+}
+body[data-theme="dark"] .wallet-periodo-btn, body[data-theme="dark"] .wallet-periodo-menu { background: #252525 !important; border-color: #404040 !important; color: #F4F4F5 !important; }
+body[data-theme="dark"] .wp-mes-titulo, body[data-theme="dark"] .wp-dia, body[data-theme="dark"] .wallet-periodo-atalhos button { color: #F4F4F5 !important; }
+body[data-theme="dark"] .wp-dia.is-dentro, body[data-theme="dark"] .wallet-periodo-atalhos button.is-ativo { background: #333333 !important; }
+body[data-theme="dark"] .wp-dia.is-ponta { background: #FAFAFA !important; color: #18181B !important; }
+html body .dash-card.wallet-card:not(#love-h-a) { overflow: visible; z-index: 5; }

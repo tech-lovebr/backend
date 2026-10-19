@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=637">
+  <link rel="stylesheet" href="css/styles.css?v=638">
 </head>
 <body class="font-sans" data-page="contratos">
   <div class="b2b-shell">
@@ -42,7 +42,20 @@
         <div data-view-panel="financeiro">
           <div class="finance-stat-grid" id="finance-stat-grid"></div>
 
-          <h2 class="text-base font-bold text-zinc-900 mb-3">Gestão de pagamentos</h2>
+          <!-- Lista escolhida no Acesso rápido: Extrato (padrão), Saques ou Notas fiscais. -->
+          <h2 class="text-base font-bold text-zinc-900 mb-3" id="finance-lista-titulo">Extrato</h2>
+          <div class="dash-card mb-6" id="finance-lista-card">
+            <div class="overflow-x-auto leads-table-wrap">
+              <table class="leads-table w-full">
+                <thead id="finance-lista-head"></thead>
+                <tbody id="finance-lista-body"></tbody>
+              </table>
+              <div class="payment-link-empty" id="finance-lista-vazia" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Gestão de pagamentos saiu da tela (fica escondida só para o JS). -->
+          <div hidden>
           <div class="dash-card mb-6" id="finance-contratos-card">
             <div class="overflow-x-auto leads-table-wrap">
               <table class="leads-table w-full">
@@ -52,6 +65,7 @@
                 <tbody id="finance-contratos-body"></tbody>
               </table>
             </div>
+          </div>
           </div>
         </div>
 
@@ -337,6 +351,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=40"></script>
-  <script src="js/contratos.js?v=29"></script>
+  <script src="js/contratos.js?v=30"></script>
 </body>
 </html>

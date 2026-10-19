@@ -155,14 +155,93 @@ function renderFinanceStats() {
       <p class="finance-stat-value">${formatCurrency(faturamentoEsteMes)}</p>
       <p class="finance-stat-sub">Mês passado: ${formatCurrency(faturamentoMesPassado)}</p>
     </div>
-    <div class="dash-card finance-stat-card">
-      <p class="finance-stat-label">Valor em aberto</p>
-      <p class="finance-stat-value">${formatCurrency(valorEmAberto)}</p>
+    <div class="dash-card finance-stat-card finance-acesso-card">
+      <p class="finance-stat-label">Acesso rápido</p>
+      <nav class="finance-acesso-lista">
+        ${FINANCE_LISTAS.map(l => `
+          <button type="button" class="finance-acesso-item${l.chave === financeListaAtual ? ' is-ativo' : ''}" data-finance-lista="${l.chave}">
+            <span class="finance-acesso-icone">${l.icone}</span>
+            <span class="finance-acesso-nome">${l.nome}</span>
+            <svg class="finance-acesso-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+          </button>`).join('')}
+      </nav>
     </div>
   `;
+  grid.querySelectorAll('[data-finance-lista]').forEach(btn => {
+    btn.addEventListener('click', () => mostrarListaFinanceira(btn.dataset.financeLista));
+  });
+  renderListaFinanceira();
 
   const withdrawBtn = document.getElementById('request-withdrawal-btn');
   if (withdrawBtn) withdrawBtn.addEventListener('click', openWithdrawalModal);
+}
+
+/* -------------------- Acesso rápido: Extrato / Saques / Notas fiscais --------------------
+   No lugar do antigo "Valor em aberto". Clicar troca a lista de baixo (sem
+   drawer): Extrato (recebimentos e saques, padrão), Saques (só as saídas)
+   e Minhas notas fiscais (as emitidas). */
+const FINANCE_LISTAS = [
+  { chave: 'extrato', nome: 'Extrato', titulo: 'Extrato',
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="2.6"/></svg>' },
+  { chave: 'saques', nome: 'Saques', titulo: 'Saques',
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.01M17.5 14.5v.01" stroke-width="2.4"/></svg>' },
+  { chave: 'notas', nome: 'Notas fiscais', titulo: 'Minhas notas fiscais',
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/><path d="M12 11v6M14 12.5c-.4-.6-1.1-.9-2-.9-1.1 0-1.9.6-1.9 1.4 0 1.9 4 .9 4 2.8 0 .8-.9 1.4-2.1 1.4-.9 0-1.7-.4-2-1"/></svg>' }
+];
+let financeListaAtual = 'extrato';
+let bNotasFiscais = [];
+let notasCarregadas = false;
+
+const dataHoraCurta = iso => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+function mostrarListaFinanceira(chave) {
+  financeListaAtual = chave;
+  document.querySelectorAll('[data-finance-lista]').forEach(b => b.classList.toggle('is-ativo', b.dataset.financeLista === chave));
+  renderListaFinanceira();
+}
+
+async function carregarNotasFiscais() {
+  if (notasCarregadas) return;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const { data } = await supabaseClient.from('notas_fiscais').select('*').eq('fornecedor_id', empresaId(session)).order('created_at', { ascending: false });
+  bNotasFiscais = data || [];
+  notasCarregadas = true;
+}
+
+async function renderListaFinanceira() {
+  const head = document.getElementById('finance-lista-head');
+  const body = document.getElementById('finance-lista-body');
+  const vazia = document.getElementById('finance-lista-vazia');
+  if (!head || !body) return;
+  const lista = FINANCE_LISTAS.find(l => l.chave === financeListaAtual) || FINANCE_LISTAS[0];
+  setText('finance-lista-titulo', lista.titulo);
+  let colunas = [];
+  let linhas = [];
+  let textoVazio = '';
+  if (lista.chave === 'extrato') {
+    colunas = ['Data', 'Descrição', 'Tipo', 'Valor'];
+    linhas = bWalletTransactions.map(t => {
+      const entrada = t.type === 'credit';
+      return `<tr><td>${dataHoraCurta(t.created_at)}</td><td>${escapeHtml(t.description || (entrada ? 'Recebimento' : 'Saque'))}</td><td>${entrada ? 'Entrada' : 'Saída'}</td><td class="finance-valor ${entrada ? 'is-entrada' : 'is-saida'}">${entrada ? '+' : '−'} ${formatCurrency(Number(t.amount))}</td></tr>`;
+    });
+    textoVazio = 'Nenhuma movimentação ainda.';
+  } else if (lista.chave === 'saques') {
+    colunas = ['Data', 'Descrição', 'Valor', 'Situação'];
+    linhas = bWalletTransactions.filter(t => t.type === 'debit').map(t =>
+      `<tr><td>${dataHoraCurta(t.created_at)}</td><td>${escapeHtml(t.description || 'Saque')}</td><td class="finance-valor">${formatCurrency(Number(t.amount))}</td><td>Concluído</td></tr>`);
+    textoVazio = 'Você ainda não fez nenhum saque.';
+  } else {
+    await carregarNotasFiscais();
+    if (financeListaAtual !== 'notas') return;
+    colunas = ['Número', 'Cliente', 'Valor', 'Emitida em', 'Situação'];
+    linhas = bNotasFiscais.map(n =>
+      `<tr><td>${escapeHtml(n.number || '—')}</td><td>${escapeHtml(n.client || '—')}</td><td class="finance-valor">${formatCurrency(Number(n.value || 0))}</td><td>${dataHoraCurta(n.created_at)}</td><td>${n.status === 'emitida' ? 'Emitida' : escapeHtml(n.status || '—')}</td></tr>`);
+    textoVazio = 'Nenhuma nota fiscal emitida ainda.';
+  }
+  head.innerHTML = `<tr>${colunas.map(c => `<th>${c}</th>`).join('')}</tr>`;
+  body.innerHTML = linhas.join('');
+  if (vazia) { vazia.textContent = textoVazio; vazia.style.display = linhas.length ? 'none' : ''; }
 }
 
 /* -------------------- Modal: sacar Pix -------------------- */

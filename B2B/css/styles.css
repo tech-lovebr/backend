@@ -8508,3 +8508,23 @@ body[data-theme="dark"] .wp-mes-titulo, body[data-theme="dark"] .wp-dia, body[da
 body[data-theme="dark"] .wp-dia.is-dentro, body[data-theme="dark"] .wallet-periodo-atalhos button.is-ativo { background: #333333 !important; }
 body[data-theme="dark"] .wp-dia.is-ponta { background: #FAFAFA !important; color: #18181B !important; }
 html body .dash-card.wallet-card:not(#love-h-a) { overflow: visible; z-index: 5; }
+
+/* Financeiro › Acesso rápido (no lugar de "Valor em aberto"). */
+.finance-acesso-card { padding: 1rem 1.25rem 0.5rem; }
+.finance-acesso-lista { display: flex; flex-direction: column; }
+.finance-acesso-item {
+  display: flex; align-items: center; gap: 0.7rem; width: 100%; padding: 0.55rem 0.15rem; border: none; background: none;
+  border-bottom: 1px solid rgba(0,0,0,0.06); cursor: pointer; text-align: left; font-family: inherit; color: #18181B;
+}
+.finance-acesso-item:last-child { border-bottom: none; }
+.finance-acesso-icone { width: 20px; height: 20px; display: inline-flex; color: #3F3F46; flex-shrink: 0; }
+.finance-acesso-icone svg { width: 20px; height: 20px; }
+.finance-acesso-nome { flex: 1; font-size: 0.875rem; font-weight: 600; }
+.finance-acesso-seta { width: 16px; height: 16px; color: #A1A1AA; flex-shrink: 0; }
+.finance-acesso-item:hover .finance-acesso-seta, .finance-acesso-item.is-ativo .finance-acesso-seta { color: #181D24; }
+.finance-acesso-item.is-ativo .finance-acesso-nome { color: #181D24; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.finance-valor { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.finance-valor.is-entrada { color: #1E9E5E; }
+.finance-valor.is-saida { color: #3F3F46; }
+body[data-theme="dark"] .finance-acesso-item { color: #F4F4F5; border-bottom-color: #333333; }
+body[data-theme="dark"] .finance-acesso-icone { color: #D4D4D8; }

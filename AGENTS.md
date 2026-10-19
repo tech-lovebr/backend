@@ -20,6 +20,7 @@ Sempre que "primária" ou "secundária" forem mencionadas, utilize `#183b54` e `
 - **Margem Lateral Padronizada**: Todas as seções, abas, submenus e caixas da plataforma (Explorar, Contratados, Serviços/Seguros, Favoritos, Home, Convidados, Presentes, Carteira, Aparência e Informações) DEVEM ter a mesma margem/respiro lateral uniforme (`2rem` / `px-6 sm:px-8`).
 - **Alinhamento Consistente**: Todas as caixas e cards devem alinhar-se no mesmo grid horizontal em qualquer tela.
 - **Respiro acima das tabelas**: entre o título, a descrição ou as abas de uma página e a caixa da tabela há sempre **24px** (como em Meus convidados). Nenhuma tabela nasce colada no texto de cima.
+- **Cabeçalho alinhado com o conteúdo**: o título no topo de cada tela começa na mesma linha vertical em que começam os cards/tabela abaixo, e o último botão/busca do cabeçalho termina onde eles terminam (mesma margem lateral do conteúdo, 24px / 32px). Onde não há conteúdo para alinhar (Convite digital), o último botão termina na mesma linha do perfil no topo.
 - **Abas de Submenu**: Sempre em formato de texto limpo com sublinhado (`border-b-2`) na cor primária (`#183b54`) quando ativa, sem caixas/pills contornados.
 - **Tipografia de Títulos & Headlines**: Todos os títulos, subtítulos e headlines da plataforma (h1 a h6, Aparência, Informações, Anfitriões, Fornecedores Contratados, Seguros, Financeiro, etc.) DEVEM utilizar exclusivamente a fonte **Inter** (`font-sans`), sem serifa.
 - **Border Radius Padronizado**:

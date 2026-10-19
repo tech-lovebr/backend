@@ -8392,3 +8392,21 @@ html body .b2b-header-bar h2:not(#love-h-a) {
   letter-spacing: -0.025em;
   line-height: 1.12;
 }
+
+/* Cabeçalhos das páginas ("Olá, …" e o título de cada menu) e títulos das
+   seções do painel (Sua agenda, Precisa de ajuda?, Analytics, Notícias e
+   eventos) em Hanken Grotesk. O resto continua em Plus Jakarta Sans. */
+html body .greeting-title:not(#love-h-a),
+html body .b2b-header-bar h1:not(#love-h-a),
+html body .b2b-header-bar h2:not(#love-h-a) {
+  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+html body .dashboard-panel-header .dashboard-help-title:not(#love-h-a),
+html body .dashboard-help-header .dashboard-help-title:not(#love-h-a) {
+  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}

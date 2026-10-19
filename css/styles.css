@@ -8482,8 +8482,8 @@ html body [id^="wallet-balance"]:not(#love-h-a), html body [id^="kpi-wallet"]:no
 
 /* ==========================================================================
    Tipografia igual à do Hub: Plus Jakarta Sans em tudo (textos, menus,
-   botões, campos, tabelas, cards e valores); Hanken Grotesk nos cabeçalhos
-   das páginas (800) e nos títulos de seção (700). Fica de fora o conteúdo
+   botões, campos, tabelas, cards e valores); cabeçalhos das telas, saudação
+   e títulos de seção em 700. Fica de fora o conteúdo
    que o anfitrião edita (canvas do editor, prévia ao vivo e página pública
    do convite/site/Save the Date), que usa as fontes escolhidas no editor,
    e os códigos, que continuam em mono.
@@ -8498,16 +8498,15 @@ html body #view-event-os-dashboard .floorplan-page-name:not(#love-h-a),
 html body #view-event-os-dashboard .builder-toolbar h2:not(#love-h-a),
 html body #view-event-os-dashboard #info-active-sub-title:not(#love-h-a),
 html body #view-event-os-dashboard #tab-rsvp-tables h2:not(#love-h-a) {
-  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, sans-serif !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.025em !important;
-  line-height: 1.12 !important;
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
 }
 
 /* Títulos de seção dentro das páginas (Benefícios & Serviços, Mais Recursos,
    Perfil, títulos dos cards). */
 html body #view-event-os-dashboard h3:not(.builder-canvas *):not([id="live-preview-container"] *):not(.convite-tela *):not(.font-serif):not(.font-serif-title):not(.uppercase):not(#love-h-a) {
-  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   font-weight: 700 !important;
   letter-spacing: -0.02em !important;
 }

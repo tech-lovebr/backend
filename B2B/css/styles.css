@@ -8381,3 +8381,14 @@ html body .b2b-header-bar h2:not(#love-h-a) {
   font-weight: 700 !important;
   letter-spacing: 0;
 }
+
+/* Cabeçalhos (Olá do painel e título de cada página): Figtree ExtraBold 800,
+   letras um pouco mais juntas (bloco coeso) e linha compacta. */
+html body .greeting-title:not(#love-h-a),
+html body .b2b-header-bar h1:not(#love-h-a),
+html body .b2b-header-bar h2:not(#love-h-a) {
+  font-family: 'Figtree', 'Albert Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}

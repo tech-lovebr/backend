@@ -552,7 +552,6 @@ function renderEmpresasNoMenu() {
     <button type="button" class="profile-empresa-item${e.id === ativa ? ' is-ativa' : ''}" data-empresa-id="${escapeHtml(e.id || '')}">
       <span class="profile-empresa-linha">
         <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
-        ${e.id === uid ? '<span class="profile-empresa-principal">Principal</span>' : ''}
       </span>
       ${cnpjFormatado(e.cnpj) ? `<span class="profile-empresa-cnpj">${cnpjFormatado(e.cnpj)}</span>` : ''}
     </button>`).join('') + '<div class="topbar-dropdown-divider"></div>';

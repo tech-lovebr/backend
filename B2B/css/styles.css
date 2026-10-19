@@ -8566,3 +8566,8 @@ html body:not([data-page="site-preview"]) .btn-secondary:not(.builder-canvas *):
 }
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) { font-weight: 700 !important; letter-spacing: -0.02em; }
+
+/* Fundo das páginas do Hub #F4F6F7; topo (nome da empresa e busca) branco. */
+:root { --bg-dashboard: #F4F6F7; }
+body[data-theme="dark"] { --bg-dashboard: #252525; }
+html body:not([data-theme="dark"]) .b2b-topbar:not(#love-h-a) { background: #FFFFFF; }

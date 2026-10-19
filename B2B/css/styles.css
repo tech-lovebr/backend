@@ -8684,3 +8684,7 @@ html body .contratos-detalhe .leads-table-wrap:not(#love-h-a) { border: 1px soli
 body[data-theme="dark"] .contratos-detalhe-row > td,
 body[data-theme="dark"] .contratos-cliente-row.is-selected td { background: #1F1F1F !important; }
 body[data-theme="dark"] .contratos-detalhe .leads-table-wrap { background: #252525 !important; border-color: #404040 !important; }
+
+/* Construtor de sites: o fundo atrás do template (Site Principal e Meu
+   Checkout) na mesma cor do fundo das páginas do Hub (#F4F6F7). */
+html body:not([data-theme="dark"]) .builder-canvas-viewport:not(#love-h-a) { background: var(--bg-dashboard); }

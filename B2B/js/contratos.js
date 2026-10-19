@@ -195,6 +195,12 @@ const dataHoraCurta = iso => new Date(iso).toLocaleDateString('pt-BR', { day: '2
 
 function mostrarListaFinanceira(chave) {
   financeListaAtual = chave;
+  ajustarFiltrosDaLista();
+  if (financeListaEstado) {
+    financeListaEstado.busca = '';
+    const busca = document.querySelector('#finance-lista-card .tabela-busca input');
+    if (busca) busca.value = '';
+  }
   document.querySelectorAll('[data-finance-lista]').forEach(b => b.classList.toggle('is-ativo', b.dataset.financeLista === chave));
   renderListaFinanceira();
 }
@@ -208,37 +214,134 @@ async function carregarNotasFiscais() {
   notasCarregadas = true;
 }
 
+/* Barra da lista (busca, Filtrar por, Exportar) — mesmo padrão de Leads.
+   Os filtros mudam conforme a lista aberta (Extrato, Saques, Notas). */
+let financeListaEstado = null;
+const financeListaFiltros = [];
+const MESES_CURTOS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+const chaveDoMes = iso => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
+const rotuloDoMes = chave => { const [a, m] = chave.split('-').map(Number); return `${MESES_CURTOS[m - 1]}/${a}`; };
+const numeroCurto = id => String(id || '').replace(/-/g, '').slice(0, 8).toUpperCase();
+const opcoesDeMes = itens => [...new Set(itens.map(i => chaveDoMes(i.created_at)))].sort().reverse().map(k => [k, rotuloDoMes(k)]);
+
+function linhasDaListaFinanceira() {
+  if (financeListaAtual === 'extrato') {
+    return bWalletTransactions.map(t => {
+      const entrada = t.type === 'credit';
+      return {
+        numero: numeroCurto(t.id), data: dataHoraCurta(t.created_at), mes: chaveDoMes(t.created_at),
+        descricao: t.description || (entrada ? 'Recebimento' : 'Saque'), tipo: entrada ? 'entrada' : 'saida',
+        valor: Number(t.amount) || 0
+      };
+    });
+  }
+  if (financeListaAtual === 'saques') {
+    return bWalletTransactions.filter(t => t.type === 'debit').map(t => ({
+      numero: numeroCurto(t.id), data: dataHoraCurta(t.created_at), mes: chaveDoMes(t.created_at),
+      descricao: t.description || 'Saque', valor: Number(t.amount) || 0, situacao: 'Concluído'
+    }));
+  }
+  return bNotasFiscais.map(n => ({
+    numero: n.number || '', cliente: n.client || '', valor: Number(n.value || 0),
+    data: dataHoraCurta(n.created_at), mes: chaveDoMes(n.created_at),
+    situacao: n.status === 'emitida' ? 'Emitida' : (n.status || '')
+  }));
+}
+
+function linhasFinanceirasFiltradas() {
+  const est = financeListaEstado || { busca: '', filtros: {} };
+  return linhasDaListaFinanceira().filter(r =>
+    (!est.filtros.tipo || r.tipo === est.filtros.tipo) &&
+    (!est.filtros.mes || r.mes === est.filtros.mes) &&
+    (!est.filtros.situacao || r.situacao === est.filtros.situacao) &&
+    tabelaBateBusca(est, [r.numero, r.descricao, r.cliente, r.data, r.valor, formatCurrency(r.valor)]));
+}
+
+function ajustarFiltrosDaLista() {
+  financeListaFiltros.length = 0;
+  if (financeListaAtual === 'extrato') {
+    financeListaFiltros.push(
+      { chave: 'tipo', rotulo: 'Tipo', opcoes: () => [['entrada', 'Entrada'], ['saida', 'Saída']] },
+      { chave: 'mes', rotulo: 'Mês', opcoes: () => opcoesDeMes(bWalletTransactions) });
+  } else if (financeListaAtual === 'saques') {
+    financeListaFiltros.push({ chave: 'mes', rotulo: 'Mês', opcoes: () => opcoesDeMes(bWalletTransactions.filter(t => t.type === 'debit')) });
+  } else {
+    financeListaFiltros.push(
+      { chave: 'situacao', rotulo: 'Situação', opcoes: () => [...new Set(bNotasFiscais.map(n => (n.status === 'emitida' ? 'Emitida' : n.status)).filter(Boolean))].map(s => [s, s]) },
+      { chave: 'mes', rotulo: 'Mês', opcoes: () => opcoesDeMes(bNotasFiscais) });
+  }
+  if (financeListaEstado) {
+    financeListaEstado.filtros = {};
+    const card = document.getElementById('finance-lista-card');
+    const contador = card && card.querySelector('.tabela-filtro-contador');
+    if (contador) contador.hidden = true;
+    card?.querySelector('[data-tabela-filtrar]')?.classList.remove('is-ativo');
+    const placeholder = financeListaAtual === 'notas' ? 'Buscar nº da nota ou cliente...' : 'Buscar nº, descrição ou valor...';
+    const busca = card && card.querySelector('.tabela-busca input');
+    if (busca) busca.placeholder = placeholder;
+  }
+}
+
+function initBarraListaFinanceira() {
+  const card = document.getElementById('finance-lista-card');
+  if (!card || financeListaEstado) return;
+  ajustarFiltrosDaLista();
+  financeListaEstado = montarBarraTabela(card, {
+    placeholder: 'Buscar nº, descrição ou valor...',
+    filtros: financeListaFiltros,
+    exportar: () => {
+      const rows = linhasFinanceirasFiltradas();
+      if (financeListaAtual === 'notas') {
+        tabelaExportarCSV('notas-fiscais', [
+          { titulo: 'Número', valor: r => r.numero }, { titulo: 'Cliente', valor: r => r.cliente },
+          { titulo: 'Valor', valor: r => r.valor }, { titulo: 'Emitida em', valor: r => r.data }, { titulo: 'Situação', valor: r => r.situacao }
+        ], rows);
+      } else if (financeListaAtual === 'saques') {
+        tabelaExportarCSV('saques', [
+          { titulo: 'Nº', valor: r => r.numero }, { titulo: 'Data', valor: r => r.data }, { titulo: 'Descrição', valor: r => r.descricao },
+          { titulo: 'Valor', valor: r => r.valor }, { titulo: 'Situação', valor: r => r.situacao }
+        ], rows);
+      } else {
+        tabelaExportarCSV('extrato', [
+          { titulo: 'Nº', valor: r => r.numero }, { titulo: 'Data', valor: r => r.data }, { titulo: 'Descrição', valor: r => r.descricao },
+          { titulo: 'Tipo', valor: r => (r.tipo === 'entrada' ? 'Entrada' : 'Saída') },
+          { titulo: 'Valor', valor: r => (r.tipo === 'entrada' ? r.valor : -r.valor) }
+        ], rows);
+      }
+    },
+    aoMudar: () => renderListaFinanceira()
+  });
+}
+
 async function renderListaFinanceira() {
   const head = document.getElementById('finance-lista-head');
   const body = document.getElementById('finance-lista-body');
   const vazia = document.getElementById('finance-lista-vazia');
   if (!head || !body) return;
+  initBarraListaFinanceira();
   const lista = FINANCE_LISTAS.find(l => l.chave === financeListaAtual) || FINANCE_LISTAS[0];
   setText('finance-lista-titulo', lista.titulo);
+  if (lista.chave === 'notas') { await carregarNotasFiscais(); if (financeListaAtual !== 'notas') return; }
+  const rows = linhasFinanceirasFiltradas();
+  const filtrando = !!(financeListaEstado && (financeListaEstado.busca || Object.values(financeListaEstado.filtros).some(Boolean)));
   let colunas = [];
   let linhas = [];
   let textoVazio = '';
   if (lista.chave === 'extrato') {
-    colunas = ['Data', 'Descrição', 'Tipo', 'Valor'];
-    linhas = bWalletTransactions.map(t => {
-      const entrada = t.type === 'credit';
-      return `<tr><td>${dataHoraCurta(t.created_at)}</td><td>${escapeHtml(t.description || (entrada ? 'Recebimento' : 'Saque'))}</td><td>${entrada ? 'Entrada' : 'Saída'}</td><td class="finance-valor ${entrada ? 'is-entrada' : 'is-saida'}">${entrada ? '+' : '−'} ${formatCurrency(Number(t.amount))}</td></tr>`;
-    });
+    colunas = ['Nº', 'Data', 'Descrição', 'Tipo', 'Valor'];
+    linhas = rows.map(r => `<tr><td class="col-id">${escapeHtml(r.numero)}</td><td>${r.data}</td><td>${escapeHtml(r.descricao)}</td><td>${r.tipo === 'entrada' ? 'Entrada' : 'Saída'}</td><td class="finance-valor ${r.tipo === 'entrada' ? 'is-entrada' : 'is-saida'}">${r.tipo === 'entrada' ? '+' : '−'} ${formatCurrency(r.valor)}</td></tr>`);
     textoVazio = 'Nenhuma movimentação ainda.';
   } else if (lista.chave === 'saques') {
-    colunas = ['Data', 'Descrição', 'Valor', 'Situação'];
-    linhas = bWalletTransactions.filter(t => t.type === 'debit').map(t =>
-      `<tr><td>${dataHoraCurta(t.created_at)}</td><td>${escapeHtml(t.description || 'Saque')}</td><td class="finance-valor">${formatCurrency(Number(t.amount))}</td><td>Concluído</td></tr>`);
+    colunas = ['Nº', 'Data', 'Descrição', 'Valor', 'Situação'];
+    linhas = rows.map(r => `<tr><td class="col-id">${escapeHtml(r.numero)}</td><td>${r.data}</td><td>${escapeHtml(r.descricao)}</td><td class="finance-valor">${formatCurrency(r.valor)}</td><td>${escapeHtml(r.situacao)}</td></tr>`);
     textoVazio = 'Você ainda não fez nenhum saque.';
   } else {
-    await carregarNotasFiscais();
-    if (financeListaAtual !== 'notas') return;
     colunas = ['Número', 'Cliente', 'Valor', 'Emitida em', 'Situação'];
-    linhas = bNotasFiscais.map(n =>
-      `<tr><td>${escapeHtml(n.number || '—')}</td><td>${escapeHtml(n.client || '—')}</td><td class="finance-valor">${formatCurrency(Number(n.value || 0))}</td><td>${dataHoraCurta(n.created_at)}</td><td>${n.status === 'emitida' ? 'Emitida' : escapeHtml(n.status || '—')}</td></tr>`);
+    linhas = rows.map(r => `<tr><td>${escapeHtml(r.numero || '—')}</td><td>${escapeHtml(r.cliente || '—')}</td><td class="finance-valor">${formatCurrency(r.valor)}</td><td>${r.data}</td><td>${escapeHtml(r.situacao || '—')}</td></tr>`);
     textoVazio = 'Nenhuma nota fiscal emitida ainda.';
   }
-  head.innerHTML = `<tr>${colunas.map(c => `<th>${c}</th>`).join('')}</tr>`;
+  if (filtrando) textoVazio = 'Nada encontrado com essa busca ou filtro.';
+  head.innerHTML = `<tr>${colunas.map(c => `<th${c === 'Nº' ? ' class="col-id"' : ''}>${c}</th>`).join('')}</tr>`;
   body.innerHTML = linhas.join('');
   if (vazia) { vazia.textContent = textoVazio; vazia.style.display = linhas.length ? 'none' : ''; }
 }

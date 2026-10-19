@@ -8623,3 +8623,7 @@ html body #builder-elements-panel textarea.builder-textarea-cresce:not(#love-h-a
    elemento para outro (antes 1em). */
 .builder-canvas .be-text p { margin: 0 0 0.4em; }
 .builder-canvas .be-text p:last-child { margin-bottom: 0; }
+/* Data › "Aplicar linhas": as linhas de cima e de baixo vão quase até a borda
+   da caixinha da data (antes 70%, no máximo 320px). */
+.builder-canvas .be-date-display-rule,
+.builder-canvas .be-date-display-time-row { width: 94%; max-width: none; }

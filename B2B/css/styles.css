@@ -8321,3 +8321,9 @@ html body .sidebar-edge-toggle:not(#love-h-a)::after { content: ''; position: ab
 html body .sidebar-edge-toggle:not(#love-h-a):hover,
 html body .sidebar-edge-toggle:not(#love-h-a):focus-visible { opacity: 1; }
 @media (hover: none) { html body .sidebar-edge-toggle:not(#love-h-a) { opacity: 1; } }
+
+/* Menu que abre ao passar o mouse (computador): sem a bolinha de recolher;
+   aberto, fica por cima do conteúdo (a página não anda) com sombra suave. */
+body.sidebar-hover-mode .sidebar-edge-toggle { display: none !important; }
+body.sidebar-hover-mode .b2b-main { margin-left: var(--sidebar-collapsed-width); }
+body.sidebar-flutuando .b2b-sidebar { box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 8px 0 32px -8px rgba(16, 24, 40, 0.25); }

@@ -17,9 +17,13 @@ const AUTH_OPTIONAL_PAGES = ['termos', 'privacidade'];
 
 // Aplica o tema e o estado do sidebar salvos o quanto antes, para evitar flash.
 document.body.dataset.theme = localStorage.getItem('b2b-theme') || 'light';
-if (localStorage.getItem('b2b-sidebar-collapsed') === '1') {
+// Computador (mouse): o menu fica sempre recolhido e abre ao passar o mouse
+// (ver initSidebarHover). Telas de toque mantêm o recolher/expandir salvo.
+const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
+if (SIDEBAR_HOVER || localStorage.getItem('b2b-sidebar-collapsed') === '1') {
   document.body.classList.add('sidebar-collapsed');
 }
+if (SIDEBAR_HOVER) document.body.classList.add('sidebar-hover-mode');
 
 // Ao navegar de uma página do próprio B2B para outra (clicou num link do
 // sidebar, por exemplo), a página já tem a transição nativa do navegador
@@ -467,7 +471,31 @@ function initSidebarNav() {
     setSidebarCollapsed(!document.body.classList.contains('sidebar-collapsed'));
   });
 
+  if (SIDEBAR_HOVER) { initSidebarHover(); return; }
   setSidebarCollapsed(document.body.classList.contains('sidebar-collapsed'));
+}
+
+/* Menu que abre ao passar o mouse: recolhido por padrão; com o mouse em
+   cima, abre por cima do conteúdo (sem empurrar a página); ao sair, recolhe. */
+function initSidebarHover() {
+  const sidebar = document.querySelector('.b2b-sidebar');
+  if (!sidebar) return;
+  let abrir = null;
+  let fechar = null;
+  sidebar.addEventListener('mouseenter', () => {
+    clearTimeout(fechar);
+    abrir = setTimeout(() => {
+      document.body.classList.add('sidebar-flutuando');
+      document.body.classList.remove('sidebar-collapsed');
+    }, 80);
+  });
+  sidebar.addEventListener('mouseleave', () => {
+    clearTimeout(abrir);
+    fechar = setTimeout(() => {
+      document.body.classList.add('sidebar-collapsed');
+      document.body.classList.remove('sidebar-flutuando');
+    }, 150);
+  });
 }
 
 function setSidebarCollapsed(collapsed) {

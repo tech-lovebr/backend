@@ -2340,11 +2340,11 @@ function renderElementContent(el, device, mode) {
 
   switch (el.type) {
     case 'texto':
-      return `<div class="be-text" style="${style}" ${editable}${edit ? ' data-placeholder="Insira um texto"' : ''}>${el.content}</div>`;
+      return `<div class="be-text" style="${style}" ${editable}${edit ? ' data-placeholder="Insira um texto"' : ''}>${el.content || (edit ? '' : '<span class="be-vazio-publico">Insira um texto</span>')}</div>`;
 
     case 'titulo': {
       const level = el.level || 2;
-      return `<h${level} class="be-heading" style="${style}" ${editable}${edit ? ' data-placeholder="Insira um título"' : ''}>${el.content}</h${level}>`;
+      return `<h${level} class="be-heading" style="${style}" ${editable}${edit ? ' data-placeholder="Insira um título"' : ''}>${el.content || (edit ? '' : '<span class="be-vazio-publico">Insira um título</span>')}</h${level}>`;
     }
 
     case 'botao':
@@ -2468,11 +2468,11 @@ function renderElementContent(el, device, mode) {
       const line = `<span class="be-date-display-line"${lineStyle}></span>`;
       const timeText = formatted.time
         ? `<span class="be-date-display-time-text">${formatted.time}</span>`
-        : (edit ? `<span class="be-date-display-time-text be-date-display-empty">Defina a data no painel à esquerda</span>` : '');
+        : `<span class="be-date-display-time-text be-date-display-empty">Dia da semana</span>`;
       const timeBlock = timeText
         ? (el.showLines
           ? `<div class="be-date-display-time-row"${textAttr}>${line}${timeText}${line}</div>`
-          : `<p class="be-date-display-time"${textAttr}>${formatted.time || 'Defina a data no painel à esquerda'}</p>`)
+          : `<p class="be-date-display-time"${textAttr}>${formatted.time || 'Dia da semana'}</p>`)
         : '';
       const scale = (el.sizeScale !== undefined && el.sizeScale !== '' ? el.sizeScale : 100) / 100;
       const scaleStyle = scale !== 1 ? `transform:scale(${scale});transform-origin:center;` : '';
@@ -4186,20 +4186,8 @@ function renderConvitePublico(root) {
     capaEl.classList.add('convite-capa');
   }
 
-  // Mesmas seções de Informações da prévia da aba Informações (dados do
-  // evento vindos de convite_publicado).
-  if (conviteDadosPublicos) {
-    const ev = conviteDadosPublicos.evento || {};
-    inserirSecoesDeInformacoes(root, {
-      local: (ev.local || '').trim(),
-      endereco: enderecoComCidade(ev.endereco, ev.cidade, ev.uf),
-      inicio: formatarDataPublica(ev.data, ev.hora),
-      termino: formatarDataPublica(ev.data_fim, ev.hora_fim),
-      dresscode: (ev.dresscode || '').trim(),
-      generalInfo: (ev.informacoes || '').trim()
-    });
-  }
-
+  // Local, endereço e "Como chegar" ficam só na tela Informações (botão
+  // Localização) — a home do convite mostra apenas o que foi montado em Aparência.
   startCountdownTicker(root);
 }
 
@@ -5067,49 +5055,6 @@ document.addEventListener('click', (e) => {
     if (!menu.contains(e.target) || e.target.closest('.convite-como-chegar-menu a')) menu.removeAttribute('open');
   });
 });
-
-// Seções de Informações dentro do convite — usada pela prévia da aba
-// Informações e pelo convite publicado, para os dois ficarem iguais:
-//   abaixo da imagem e antes dos botões → local/endereço + início e término;
-//   embaixo dos botões → Dress code e Informações gerais, cada um na sua seção.
-function inserirSecoesDeInformacoes(container, { local, endereco, inicio, termino, dresscode, generalInfo }) {
-  const quickNav = container.querySelector('.builder-quicknav-section');
-  // Mesmo fundo da seção de botões (que já acompanha a cor de Aparência).
-  const fundo = quickNav ? quickNav.style.backgroundColor : '';
-  const estiloFundo = fundo ? ` style="background-color:${fundo};"` : '';
-  const secaoInfo = conteudo => `<section class="classic-preview-info-section"${estiloFundo}><div class="classic-preview-info-box">${conteudo}</div></section>`;
-  const capa = container.querySelector(':scope > section');
-
-  if (local || endereco || inicio || termino) {
-    const topoHtml = secaoInfo(`
-      ${local ? `<h4>${escapeHtml(local)}</h4>` : ''}
-      ${endereco ? `<p>${escapeHtml(endereco)}</p>` : ''}
-      ${inicio || termino ? `<div class="classic-preview-info-datas">
-        ${inicio ? `<p><strong>Início:</strong> ${escapeHtml(inicio)}</p>` : ''}
-        ${termino ? `<p><strong>Término:</strong> ${escapeHtml(termino)}</p>` : ''}
-      </div>` : ''}
-      ${botoesDeMapaHtml(local, endereco)}
-    `);
-    if (quickNav) quickNav.insertAdjacentHTML('beforebegin', topoHtml);
-    else if (capa) capa.insertAdjacentHTML('afterend', topoHtml);
-    else container.insertAdjacentHTML('afterbegin', topoHtml);
-  }
-
-  // Dress code e Informações gerais: cada um na sua seção, com o fundo
-  // colorido da seção de botões e o texto numa caixa branca. Sem texto, a
-  // seção não aparece.
-  const baixoHtml =
-    ((dresscode || '').trim() ? secaoInfo(`<h4>Dress Code</h4><p>${escapeHtml(dresscode.trim())}</p>`) : '') +
-    ((generalInfo || '').trim() ? secaoInfo(`<h4>Informações Gerais</h4><p>${escapeHtml(generalInfo.trim())}</p>`) : '');
-  if (baixoHtml) {
-    if (quickNav) quickNav.insertAdjacentHTML('afterend', baixoHtml);
-    else {
-      const rodape = container.querySelector('.builder-fixed-footer');
-      if (rodape) rodape.insertAdjacentHTML('beforebegin', baixoHtml);
-      else container.insertAdjacentHTML('beforeend', baixoHtml);
-    }
-  }
-}
 
 // A prévia de Informações acompanha os campos enquanto a pessoa digita.
 let infoPreviewTimer = null;

@@ -8738,3 +8738,9 @@ html body #site-builder-root button.std-gerar-ia:not(#love-h-a) {
 html body #site-builder-root button.std-gerar-ia:not(#love-h-a):hover { background: #FFFFFF !important; color: #000000 !important; border-color: #000000 !important; }
 html body #site-builder-root button.std-gerar-ia:not(#love-h-a) svg { color: currentColor !important; width: 17px; height: 17px; }
 body[data-theme="dark"] #site-builder-root button.std-gerar-ia { background: transparent !important; border-color: #FFFFFF !important; color: #FFFFFF !important; box-shadow: none !important; }
+
+/* Convite: título (h1–h6) sem tamanho definido fica no tamanho do texto, igual
+   no editor e no convite publicado (que não carrega o reset do Tailwind). */
+.builder-canvas :is(h1, h2, h3, h4, h5, h6).be-heading { font-size: inherit; }
+/* Título/Texto deixados vazios no convite publicado. */
+.builder-canvas .be-vazio-publico { color: #A1A1AA; font-weight: 400; font-style: normal; text-shadow: none; }

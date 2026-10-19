@@ -8531,3 +8531,7 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not
 html body:not([data-theme="dark"]) #view-event-os-dashboard table.love-tabela thead th:not(#love-h-a) { background: #F7F7F8 !important; }
 /* Rodapé das telas logadas no mesmo cinza das faixas (#F7F7F8). */
 html body:not([data-theme="dark"]) #view-event-os-dashboard #dashboard-footer:not(#love-h-a) { background: #F7F7F8 !important; }
+/* Faixa do título de cada tela no mesmo fundo da Home (#F4F6F7), sem a linha
+   horizontal embaixo; o fundo atrás do template no Convite Digital também. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not(#love-h-a) { background: var(--bg-dashboard) !important; border-bottom: 0 !important; box-shadow: none !important; }
+html body:not([data-theme="dark"]) .builder-canvas-viewport:not(#love-h-a) { background: var(--bg-dashboard) !important; }

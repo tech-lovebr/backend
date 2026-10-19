@@ -1701,7 +1701,9 @@ function renderGiftsBlockSectionHtml(section, mode) {
 // A seção de botões não tem cor de fundo própria — ela sempre acompanha a cor
 // da seção imediatamente acima, para nunca criar uma quebra visual entre seções.
 function resolveAdjacentSectionBg(section) {
-  const sections = (builderState && builderState.sections) || [];
+  let sections = (builderState && builderState.sections) || [];
+  // Seção do convite desenhada com outra página aberta (prévia de Informações).
+  if (!sections.some(s => s.id === section.id)) sections = ((estadoDoConvite() || {}).sections) || [];
   const idx = sections.findIndex(s => s.id === section.id);
   if (idx <= 0) return 'transparent';
   const prev = sections[idx - 1];
@@ -4146,8 +4148,29 @@ function renderConvitePublico(root) {
 // Moldura das telas internas do convite (Informações, Presentes, Confirmar).
 // Cor de fundo da seção de botões (ela já acompanha a cor de Aparência) —
 // as telas internas do convite usam a mesma, como as seções de informação.
+/**
+ * Estado do Convite digital, mesmo com outra página aberta na Aparência
+ * (ex.: Save the Date). Informações, Anfitriões e as telas do convite usam
+ * sempre a capa, as cores e os botões do Convite digital.
+ * @returns {any}
+ */
+function estadoDoConvite() {
+  if (currentPageKey === 'convite' || !builderState) return builderState;
+  try {
+    // Cópia do convite deste evento (gravada ao salvar e ao sincronizar com o banco).
+    const raw = localStorage.getItem(pageStorageKey('convite'));
+    const salvo = raw ? JSON.parse(raw) : null;
+    if (salvo && Array.isArray(salvo.sections) && salvo.sections.length) {
+      if (!salvo.globalStyle) salvo.globalStyle = { primaryColor: '#537bae', radius: 16, sectionSpacing: 32 };
+      return salvo;
+    }
+    return loadPageState('convite') || builderState;
+  } catch (e) { return builderState; }
+}
+
 function corDeFundoDosBotoes() {
-  const qn = (builderState && builderState.sections || []).find(sec => sec.isQuickNav);
+  const conv = estadoDoConvite();
+  const qn = (conv && conv.sections || []).find(sec => sec.isQuickNav);
   if (!qn) return '';
   return qn.bg || resolveAdjacentSectionBg(qn) || '';
 }
@@ -4172,7 +4195,8 @@ function telaPublicaHtml(titulo, conteudo, { comCapa = false, fundoBranco = fals
 // Mesma foto de capa do convite (primeira seção de conteúdo), para as telas
 // internas que mostram a imagem logo abaixo do título.
 function capaDoConviteHtml() {
-  const secao = (builderState && builderState.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock && !s.hidden);
+  const conv = estadoDoConvite();
+  const secao = (conv && conv.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock && !s.hidden);
   const imagem = secao && secao.bgImage;
   if (!imagem) return '';
   // Mesmas camadas da capa em Aparência: cor por cima da foto e transição
@@ -4751,14 +4775,15 @@ document.addEventListener('DOMContentLoaded', initPublicPreview);
 
 function renderClassicBuilderPreview() {
   const container = document.getElementById('classic-builder-preview');
-  if (!container || !builderState) return;
+  const conv = estadoDoConvite();
+  if (!container || !conv) return;
 
-  const gs = builderState.globalStyle || {};
+  const gs = conv.globalStyle || {};
   container.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
   container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
   container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 
-  const visible = (builderState.sections || []).filter(s => !s.hidden);
+  const visible = (conv.sections || []).filter(s => !s.hidden);
   container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
 
   startCountdownTicker(container);
@@ -4774,7 +4799,18 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
   // Nessa prévia (modo "preview") a seção não ganha as classes de capa do modo
   // de edição — garante aqui a mesma altura mínima da primeira seção em Aparência.
   firstSection.style.minHeight = '348px';
-  const targetSection = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const conv = estadoDoConvite();
+  const targetSection = (conv && conv.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const salvarCapa = () => {
+    if (conv === builderState) {
+      pushHistory();
+      renderCanvas();
+      persistBuilderState(false);
+    } else {
+      try { localStorage.setItem(pageStorageKey('convite'), JSON.stringify(conv)); } catch (err) { /* sem armazenamento */ }
+      persistBuilderStateRemote('convite', conv);
+    }
+  };
 
   let fileInput = document.getElementById('classic-preview-cover-file-input');
   if (!fileInput) {
@@ -4815,9 +4851,7 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
       e.preventDefault();
       e.stopPropagation();
       targetSection.bgImage = '';
-      pushHistory();
-      renderCanvas();
-      persistBuilderState(false);
+      salvarCapa();
       rerenderFn();
     });
     firstSection.appendChild(removeBtn);
@@ -4831,9 +4865,7 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
       const target = targetSection;
       if (target) {
         target.bgImage = ev.target.result;
-        pushHistory();
-        renderCanvas();
-        persistBuilderState(false);
+        salvarCapa();
         rerenderFn();
       }
     };
@@ -4848,14 +4880,15 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
 // #hosts-team-list, preenchidos ali mesmo em Anfitriões).
 function renderAnfitrioesPreview() {
   const container = document.getElementById('classic-builder-preview');
-  if (!container || !builderState) return;
+  const conv = estadoDoConvite();
+  if (!container || !conv) return;
 
-  const gs = builderState.globalStyle || {};
+  const gs = conv.globalStyle || {};
   container.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
   container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
   container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 
-  const visible = (builderState.sections || []).filter(s => !s.hidden);
+  const visible = (conv.sections || []).filter(s => !s.hidden);
   container.innerHTML = visible.map(section => renderAnySectionHtml(section, 'preview', 'mobile')).join('') + renderFixedFooterHtml();
 
   // Remove os elementos de Título/Texto (a marcação de tipo só existe em modo preview).
@@ -4904,9 +4937,10 @@ window.renderAnfitrioesPreview = renderAnfitrioesPreview;
 // caixas brancas, para não depender da cor de fundo escolhida em Aparência.
 function renderInformacoesPreview() {
   const container = document.getElementById('classic-builder-preview');
-  if (!container || !builderState) return;
+  const conv = estadoDoConvite();
+  if (!container || !conv) return;
 
-  const gs = builderState.globalStyle || {};
+  const gs = conv.globalStyle || {};
   container.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
   container.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
   container.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');

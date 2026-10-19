@@ -182,7 +182,7 @@ async function initAuthGuard() {
   // dono_id (migration 066 ainda não rodada), só a principal.
   const uid = session.user.id;
   const { data: listaEmpresas, error: erroEmpresas } = await supabaseClient
-    .from('fornecedores').select('id, company_name, avatar_url').eq('dono_id', uid);
+    .from('fornecedores').select('id, company_name, avatar_url, cnpj').eq('dono_id', uid);
   const empresas = (!erroEmpresas && listaEmpresas) ? listaEmpresas.slice() : [];
   empresas.sort((a, b) => (a.id === uid ? -1 : b.id === uid ? 1 : String(a.company_name || '').localeCompare(String(b.company_name || ''), 'pt-BR')));
   const escolhida = window.b2bEmpresaId;
@@ -531,19 +531,29 @@ function initUserCard() {
   setText('upgrade-current-plan', p.plan);
 }
 
-/* Empresas do login no menu do perfil: clicar troca a empresa ativa. Só
-   aparece quando há mais de uma. */
+/* Empresas do login no menu do perfil, sempre visíveis (nome e CNPJ),
+   acima de "Adicionar empresa": clicar troca a empresa ativa. Na tela de
+   Nova empresa, clicar na empresa atual volta para ela. */
 function renderEmpresasNoMenu() {
   const wrap = document.getElementById('profile-empresas');
   if (!wrap) return;
-  const empresas = window.b2bEmpresas || [];
-  if (empresas.length < 2) { wrap.hidden = true; wrap.innerHTML = ''; return; }
   const ativa = window.b2bEmpresaId;
+  const p = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
+  let empresas = (window.b2bEmpresas || []).slice();
+  if (!empresas.length) empresas = [{ id: ativa, company_name: p.company, avatar_url: p.avatar, cnpj: p.documentNumber }];
+  empresas = empresas.map(e => (e.id === ativa ? { ...e, company_name: p.company || e.company_name, cnpj: e.cnpj || p.documentNumber } : e));
+  const cnpjFormatado = v => {
+    const d = String(v || '').replace(/D/g, '');
+    return d.length === 14 && typeof formatDocumentValue === 'function' ? 'CNPJ ' + formatDocumentValue(d, 'cnpj') : '';
+  };
   wrap.hidden = false;
-  wrap.innerHTML = `<p class="profile-empresas-titulo">Empresas</p>` + empresas.map(e => `
-    <button type="button" class="profile-empresa-item${e.id === ativa ? ' is-ativa' : ''}" data-empresa-id="${escapeHtml(e.id)}">
+  wrap.innerHTML = `<p class="profile-empresas-titulo">${empresas.length > 1 ? 'Suas empresas' : 'Sua empresa'}</p>` + empresas.map(e => `
+    <button type="button" class="profile-empresa-item${e.id === ativa ? ' is-ativa' : ''}" data-empresa-id="${escapeHtml(e.id || '')}">
       <span class="profile-empresa-avatar">${e.avatar_url ? `<img src="${escapeHtml(e.avatar_url)}" alt="">` : (typeof initialsAvatarHtml === 'function' ? initialsAvatarHtml(e.company_name) : '')}</span>
-      <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
+      <span class="profile-empresa-textos">
+        <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
+        ${cnpjFormatado(e.cnpj) ? `<span class="profile-empresa-cnpj">${cnpjFormatado(e.cnpj)}</span>` : ''}
+      </span>
       ${e.id === ativa ? '<svg class="profile-empresa-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></svg>' : ''}
     </button>`).join('') + '<div class="topbar-dropdown-divider"></div>';
   wrap.querySelectorAll('[data-empresa-id]').forEach(btn => {
@@ -552,7 +562,11 @@ function renderEmpresasNoMenu() {
 }
 
 function trocarEmpresa(id) {
-  if (!id || id === window.b2bEmpresaId) return;
+  const naNovaEmpresa = document.body.dataset.page === 'nova-empresa';
+  if (!id || id === window.b2bEmpresaId) {
+    if (naNovaEmpresa) window.location.href = 'dashboard';
+    return;
+  }
   const uid = window.b2bSession && window.b2bSession.user.id;
   if (id === uid) localStorage.removeItem('b2b-empresa-ativa');
   else localStorage.setItem('b2b-empresa-ativa', id);

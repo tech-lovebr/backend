@@ -1,12 +1,32 @@
 /* ==========================================================================
-   LOVE B2B — Adicionar empresa (mesmo login, outra empresa)
+   LOVE B2B — Nova empresa (mesmo login, outra empresa)
    Um login pode ter várias empresas (migration 066): cada uma com o seu
    nome, CNPJ, responsável, imagens e dados (serviços, leads, chat…).
    Limite pelo plano do login: Gratuito = 1 empresa; Pro = até 3.
-   Ao criar, a nova empresa vira a ativa e o Hub abre nela.
+
+   Ambiente isolado: sem sidebar, sem nome da empresa e sem busca no topo
+   (são da empresa atual). Para voltar, a pessoa abre o perfil e clica na
+   empresa atual. Cadastro em 3 etapas: dados → categoria → imagens. Ao
+   concluir, a nova empresa vira a ativa e o Hub abre nela.
    ========================================================================== */
 
 const LIMITE_POR_PLANO = { Gratuito: 1, Pro: 3 };
+
+// Categorias principais (as mesmas de Meus produtos, sem as subcategorias).
+const CATEGORIAS_DA_EMPRESA = [
+  'Buffet e Gastronomia',
+  'Bar e Bebidas',
+  'Espaços para Locação',
+  'Staff e Mão de Obra',
+  'Mídia e Audiovisual',
+  'Música e Entretenimento',
+  'Decoração',
+  'Assessoria e Cerimonialista',
+  'Trajes, Beleza e Estilo'
+];
+
+const TOTAL_DE_ETAPAS = 3;
+let etapaAtual = 1;
 
 async function limiteDeEmpresas() {
   const { data, error } = await supabaseClient.rpc('limite_de_empresas');
@@ -41,6 +61,28 @@ async function subirImagem(arquivo, pasta, uid) {
   return supabaseClient.storage.from('fornecedores').getPublicUrl(caminho).data.publicUrl;
 }
 
+// CNPJ da empresa atual (só quando o documento dela é um CNPJ completo).
+function cnpjDaEmpresaAtual() {
+  const p = B2B_DATA.professional || {};
+  const digitos = String(p.documentNumber || '').replace(/\D/g, '');
+  return digitos.length === 14 ? formatDocumentValue(digitos, 'cnpj') : '';
+}
+
+function mostrarEtapa(n) {
+  etapaAtual = n;
+  document.querySelectorAll('[data-etapa]').forEach(s => { s.hidden = Number(s.dataset.etapa) !== n; });
+  document.querySelectorAll('[data-etapa-indicador]').forEach(el => {
+    const i = Number(el.dataset.etapaIndicador);
+    el.classList.toggle('is-ativa', i === n);
+    el.classList.toggle('is-feita', i < n);
+  });
+  document.getElementById('nova-empresa-voltar').hidden = n === 1;
+  document.getElementById('nova-empresa-salvar').textContent = n === TOTAL_DE_ETAPAS ? 'Criar empresa e entrar' : 'Avançar';
+  document.getElementById('nova-empresa-erro').hidden = true;
+  const primeiro = document.querySelector(`[data-etapa="${n}"] input:not([type="radio"]):not([type="file"])`);
+  if (primeiro) primeiro.focus();
+}
+
 async function initNovaEmpresa() {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
@@ -50,6 +92,7 @@ async function initNovaEmpresa() {
   const limite = await limiteDeEmpresas();
   const form = document.getElementById('nova-empresa-form');
 
+  // Só o Pro cria outra empresa (até 3); o Gratuito vê o convite para o Pro.
   if (quantas >= limite) {
     const pro = B2B_DATA.professional.plan === 'Pro';
     document.getElementById('nova-empresa-limite-texto').textContent = pro
@@ -64,32 +107,84 @@ async function initNovaEmpresa() {
   form.hidden = false;
   ligarUpload('nova-empresa-perfil', 'nova-empresa-perfil-zona');
   ligarUpload('nova-empresa-capa', 'nova-empresa-capa-zona');
+
   const cnpjInput = document.getElementById('nova-empresa-cnpj');
-  if (typeof wireDocumentMaskInput === 'function') wireDocumentMaskInput(cnpjInput, () => 'cnpj');
+  const telefoneInput = document.getElementById('nova-empresa-telefone');
+  wireDocumentMaskInput(cnpjInput, () => 'cnpj');
+  wirePhoneMaskInput(telefoneInput);
   if (typeof wireNameCaseInput === 'function') wireNameCaseInput(document.getElementById('nova-empresa-responsavel'));
+
+  // CNPJ: se a empresa atual tem CNPJ, pergunta se é o mesmo (Sim copia;
+  // Não abre o campo). Sem CNPJ na atual, o campo já aparece.
+  const cnpjAtual = cnpjDaEmpresaAtual();
+  const pergunta = document.getElementById('nova-empresa-cnpj-pergunta');
+  const campoCnpj = document.getElementById('nova-empresa-cnpj-campo');
+  const copiado = document.getElementById('nova-empresa-cnpj-copiado');
+  if (cnpjAtual) {
+    pergunta.hidden = false;
+    form.querySelectorAll('input[name="nova-empresa-mesmo-cnpj"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const mesmo = r.value === 'sim';
+        campoCnpj.hidden = mesmo;
+        copiado.hidden = !mesmo;
+        copiado.textContent = mesmo ? `Vamos usar o mesmo CNPJ: ${cnpjAtual}` : '';
+        if (mesmo) cnpjInput.value = cnpjAtual;
+        else { cnpjInput.value = ''; cnpjInput.focus(); }
+      });
+    });
+  } else {
+    campoCnpj.hidden = false;
+  }
+
+  // Etapa 2: categorias principais, uma só.
+  document.getElementById('nova-empresa-categorias').innerHTML = CATEGORIAS_DA_EMPRESA.map(c => `
+    <label class="nova-empresa-opcao nova-empresa-categoria">
+      <input type="radio" name="nova-empresa-categoria" value="${escapeHtml(c)}"> ${escapeHtml(c)}
+    </label>`).join('');
 
   const erro = document.getElementById('nova-empresa-erro');
   const mostrarErro = (msg) => { erro.textContent = msg; erro.hidden = false; };
 
+  const validarEtapa1 = () => {
+    const nome = document.getElementById('nova-empresa-nome').value.trim();
+    const responsavel = document.getElementById('nova-empresa-responsavel').value.trim();
+    const telefone = telefoneInput.value.replace(/\D/g, '');
+    if (!nome) return 'Preencha o nome da empresa.';
+    if (cnpjAtual && !form.querySelector('input[name="nova-empresa-mesmo-cnpj"]:checked')) return 'Responda se o CNPJ é o mesmo da empresa atual.';
+    if (cnpjInput.value.replace(/\D/g, '').length !== 14) return 'Confira o CNPJ: são 14 números.';
+    if (!responsavel) return 'Preencha o responsável principal.';
+    if (telefone.length < 10) return 'Confira o telefone com o DDD.';
+    return '';
+  };
+  const categoriaEscolhida = () => (form.querySelector('input[name="nova-empresa-categoria"]:checked') || {}).value || '';
+
+  document.getElementById('nova-empresa-voltar').addEventListener('click', () => mostrarEtapa(Math.max(1, etapaAtual - 1)));
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     erro.hidden = true;
-    const nome = document.getElementById('nova-empresa-nome').value.trim();
-    const cnpj = cnpjInput.value.trim();
-    const responsavel = document.getElementById('nova-empresa-responsavel').value.trim();
-    if (!nome || !cnpj || !responsavel) return mostrarErro('Preencha nome da empresa, CNPJ e responsável principal.');
-    if (cnpj.replace(/\D/g, '').length !== 14) return mostrarErro('Confira o CNPJ: são 14 números.');
+    if (etapaAtual === 1) {
+      const msg = validarEtapa1();
+      if (msg) return mostrarErro(msg);
+      return mostrarEtapa(2);
+    }
+    if (etapaAtual === 2) {
+      if (!categoriaEscolhida()) return mostrarErro('Escolha a categoria da empresa.');
+      return mostrarEtapa(3);
+    }
 
     const salvar = document.getElementById('nova-empresa-salvar');
     salvar.disabled = true;
     try {
       const { data: nova, error } = await supabaseClient.from('fornecedores').insert({
         dono_id: uid,
-        company_name: nome,
+        company_name: document.getElementById('nova-empresa-nome').value.trim(),
         email: session.user.email,
-        contact_name: responsavel,
+        contact_name: document.getElementById('nova-empresa-responsavel').value.trim(),
+        phone: telefoneInput.value.trim(),
+        category: categoriaEscolhida(),
         document_type: 'cnpj',
-        cnpj
+        cnpj: cnpjInput.value.trim()
       }).select('id').single();
       if (error || !nova) {
         console.error('Não foi possível criar a empresa.', error);
@@ -108,7 +203,7 @@ async function initNovaEmpresa() {
           .eq('id', nova.id);
       }
 
-      // A nova empresa vira a ativa.
+      // A nova empresa vira a ativa e a pessoa já entra nela.
       localStorage.setItem('b2b-empresa-ativa', nova.id);
       localStorage.removeItem('b2b-professional-profile');
       window.location.href = 'dashboard';
@@ -117,6 +212,7 @@ async function initNovaEmpresa() {
     }
   });
 
+  mostrarEtapa(1);
   window.b2bPageReady?.();
 }
 

@@ -13,7 +13,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adicionar empresa — Portal do Fornecedor Love</title>
+  <title>Nova empresa — Portal do Fornecedor Love</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#183b54">
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=664">
+  <link rel="stylesheet" href="css/styles.css?v=665">
 </head>
 <body class="font-sans" data-page="nova-empresa">
 
@@ -40,7 +40,7 @@
 
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900">Adicionar empresa</h2>
+          <h2 class="text-xl font-bold text-zinc-900">Nova empresa</h2>
         </div>
 
         <!-- Plano sem vaga para mais uma empresa (Gratuito: 1; Pro: até 3). -->
@@ -49,49 +49,83 @@
           <a href="planos" class="btn-primary nova-empresa-limite-btn" id="nova-empresa-limite-btn">Ver planos</a>
         </div>
 
-        <!-- Nova empresa no mesmo login: nome, CNPJ, responsável e imagens. -->
+        <!-- Nova empresa no mesmo login, em 3 etapas: dados, categoria e
+             imagens. Ao concluir, o Hub abre direto na nova empresa. -->
         <form class="dash-card nova-empresa-card" id="nova-empresa-form" novalidate hidden>
-          <div class="nova-empresa-imagens">
-            <div>
-              <p class="field-label">Imagem de perfil</p>
-              <label class="nova-empresa-upload nova-empresa-upload--perfil" id="nova-empresa-perfil-zona">
-                <input type="file" accept="image/*" id="nova-empresa-perfil" hidden>
-                <span class="nova-empresa-upload-mais" aria-hidden="true">+</span>
-                <img alt="" hidden>
-              </label>
-              <p class="profile-logo-hint">400 × 400 px</p>
-            </div>
-            <div class="nova-empresa-capa-col">
-              <p class="field-label">Imagem de capa</p>
-              <label class="nova-empresa-upload nova-empresa-upload--capa" id="nova-empresa-capa-zona">
-                <input type="file" accept="image/*" id="nova-empresa-capa" hidden>
-                <span class="nova-empresa-upload-mais" aria-hidden="true">+</span>
-                <img alt="" hidden>
-              </label>
-              <p class="profile-logo-hint">1280 × 520 px</p>
-            </div>
+          <div class="nova-empresa-etapas" aria-label="Etapas">
+            <span class="nova-empresa-etapa is-ativa" data-etapa-indicador="1"><b>1</b> Dados da empresa</span>
+            <span class="nova-empresa-etapa" data-etapa-indicador="2"><b>2</b> Categoria</span>
+            <span class="nova-empresa-etapa" data-etapa-indicador="3"><b>3</b> Imagens</span>
           </div>
 
-          <div class="nova-empresa-campos">
-            <div>
-              <label for="nova-empresa-nome" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
-              <input id="nova-empresa-nome" type="text" class="field-input" autocomplete="organization">
+          <!-- Etapa 1: dados -->
+          <section class="nova-empresa-passo" data-etapa="1">
+            <div class="nova-empresa-campos">
+              <div>
+                <label for="nova-empresa-nome" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
+                <input id="nova-empresa-nome" type="text" class="field-input" autocomplete="organization">
+              </div>
+
+              <div id="nova-empresa-cnpj-pergunta" hidden>
+                <p class="field-label">O CNPJ é o mesmo da empresa atual? <span style="color:#DC2626;">*</span></p>
+                <div class="nova-empresa-escolha" role="radiogroup">
+                  <label class="nova-empresa-opcao"><input type="radio" name="nova-empresa-mesmo-cnpj" value="sim"> Sim</label>
+                  <label class="nova-empresa-opcao"><input type="radio" name="nova-empresa-mesmo-cnpj" value="nao"> Não</label>
+                </div>
+                <p class="nova-empresa-dica" id="nova-empresa-cnpj-copiado" hidden></p>
+              </div>
+
+              <div id="nova-empresa-cnpj-campo" hidden>
+                <label for="nova-empresa-cnpj" class="field-label">CNPJ <span style="color:#DC2626;">*</span></label>
+                <input id="nova-empresa-cnpj" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00" autocomplete="off">
+              </div>
+
+              <div>
+                <label for="nova-empresa-responsavel" class="field-label">Responsável principal <span style="color:#DC2626;">*</span></label>
+                <input id="nova-empresa-responsavel" type="text" class="field-input" autocomplete="name">
+              </div>
+              <div>
+                <label for="nova-empresa-telefone" class="field-label">Contato telefônico <span style="color:#DC2626;">*</span></label>
+                <input id="nova-empresa-telefone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000" autocomplete="tel">
+              </div>
             </div>
-            <div>
-              <label for="nova-empresa-cnpj" class="field-label">CNPJ <span style="color:#DC2626;">*</span></label>
-              <input id="nova-empresa-cnpj" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00" autocomplete="off">
+          </section>
+
+          <!-- Etapa 2: categoria principal (as mesmas de Meus produtos, sem subcategorias) -->
+          <section class="nova-empresa-passo" data-etapa="2" hidden>
+            <p class="field-label">Qual é a categoria da empresa? <span style="color:#DC2626;">*</span></p>
+            <div class="nova-empresa-categorias" id="nova-empresa-categorias" role="radiogroup"></div>
+          </section>
+
+          <!-- Etapa 3: imagens -->
+          <section class="nova-empresa-passo" data-etapa="3" hidden>
+            <div class="nova-empresa-imagens">
+              <div>
+                <p class="field-label">Imagem de perfil</p>
+                <label class="nova-empresa-upload nova-empresa-upload--perfil" id="nova-empresa-perfil-zona">
+                  <input type="file" accept="image/*" id="nova-empresa-perfil" hidden>
+                  <span class="nova-empresa-upload-mais" aria-hidden="true">+</span>
+                  <img alt="" hidden>
+                </label>
+                <p class="profile-logo-hint">400 × 400 px</p>
+              </div>
+              <div class="nova-empresa-capa-col">
+                <p class="field-label">Imagem de capa</p>
+                <label class="nova-empresa-upload nova-empresa-upload--capa" id="nova-empresa-capa-zona">
+                  <input type="file" accept="image/*" id="nova-empresa-capa" hidden>
+                  <span class="nova-empresa-upload-mais" aria-hidden="true">+</span>
+                  <img alt="" hidden>
+                </label>
+                <p class="profile-logo-hint">1280 × 520 px</p>
+              </div>
             </div>
-            <div>
-              <label for="nova-empresa-responsavel" class="field-label">Responsável principal <span style="color:#DC2626;">*</span></label>
-              <input id="nova-empresa-responsavel" type="text" class="field-input" autocomplete="name">
-            </div>
-          </div>
+          </section>
 
           <p class="nova-empresa-erro" id="nova-empresa-erro" hidden></p>
 
           <div class="nova-empresa-rodape">
-            <a href="dashboard" class="btn-secondary">Cancelar</a>
-            <button type="submit" class="btn-primary" id="nova-empresa-salvar">Criar empresa</button>
+            <button type="button" class="btn-secondary" id="nova-empresa-voltar" hidden>Voltar</button>
+            <button type="submit" class="btn-primary" id="nova-empresa-salvar">Avançar</button>
           </div>
         </form>
       </main>
@@ -102,7 +136,7 @@
   <script src="js/utils.js?v=32"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
-  <script src="js/shell.js?v=42"></script>
-  <script src="js/nova-empresa.js?v=1"></script>
+  <script src="js/shell.js?v=43"></script>
+  <script src="js/nova-empresa.js?v=2"></script>
 </body>
 </html>

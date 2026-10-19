@@ -8715,3 +8715,48 @@ html body #builder-elements-panel :is(.builder-panel-tab-body, .inspector-body):
   scrollbar-width: none; -ms-overflow-style: none; scrollbar-gutter: auto; padding-right: 0.75rem;
 }
 html body #builder-elements-panel :is(.builder-panel-tab-body, .inspector-body)::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* Menu do perfil: empresas sempre visíveis, com o CNPJ embaixo do nome. */
+html body .profile-empresa-textos:not(#love-h-a) { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; text-align: left; }
+html body .profile-empresa-cnpj:not(#love-h-a) { font-size: 0.6875rem; font-weight: 500; color: #A1A1AA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Nova empresa: ambiente isolado. Sem sidebar, sem nome da empresa, sem
+   busca e sem os ícones do topo (são da empresa atual). No menu do perfil
+   ficam só as empresas (clicar na atual volta para ela), o tema e Sair. */
+html body[data-page="nova-empresa"] #shell-sidebar:not(#love-h-a),
+html body[data-page="nova-empresa"] .topbar-account-wrap:not(#love-h-a),
+html body[data-page="nova-empresa"] #search-trigger:not(#love-h-a),
+html body[data-page="nova-empresa"] #topbar-icon-group > :not(:has(#avatar-trigger)):not(#love-h-a),
+html body[data-page="nova-empresa"] #avatar-dropdown a.topbar-dropdown-item:not([data-logout]):not(#love-h-a),
+html body[data-page="nova-empresa"] #avatar-dropdown a[href="nova-empresa"] + .topbar-dropdown-divider:not(#love-h-a),
+html body[data-page="nova-empresa"] #profile-empresas .topbar-dropdown-divider:not(#love-h-a) { display: none !important; }
+html body[data-page="nova-empresa"] .b2b-main:not(#love-h-a) { margin-left: 0 !important; }
+html body[data-page="nova-empresa"] .b2b-topbar:not(#love-h-a) { justify-content: flex-end; }
+html body[data-page="nova-empresa"] .profile-dropdown-header a:not(#love-h-a) { pointer-events: none; }
+
+/* Nova empresa › etapas. */
+html body .nova-empresa-etapas:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0 0 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #E4E4E7; }
+html body .nova-empresa-etapa:not(#love-h-a) { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.8125rem; font-weight: 500; color: #A1A1AA; }
+html body .nova-empresa-etapa b:not(#love-h-a) {
+  width: 22px; height: 22px; border-radius: 999px; border: 1px solid #E4E4E7; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 600; color: #A1A1AA; background: #FFFFFF;
+}
+html body .nova-empresa-etapa.is-ativa:not(#love-h-a) { color: #181D24; font-weight: 600; }
+html body .nova-empresa-etapa.is-ativa b:not(#love-h-a) { background: #183b54; border-color: #183b54; color: #FFFFFF; }
+html body .nova-empresa-etapa.is-feita:not(#love-h-a) { color: #3F3F46; }
+html body .nova-empresa-etapa.is-feita b:not(#love-h-a) { background: #EBF4FF; border-color: #EBF4FF; color: #183b54; }
+html body .nova-empresa-escolha:not(#love-h-a) { display: flex; gap: 0.6rem; }
+html body .nova-empresa-opcao:not(#love-h-a) {
+  display: inline-flex; align-items: center; gap: 0.5rem; min-height: 40px; padding: 0 14px; border: 1px solid #E4E4E7; border-radius: 8px;
+  background: #FFFFFF; font-size: 0.875rem; color: #3F3F46; cursor: pointer;
+}
+html body .nova-empresa-opcao:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .nova-empresa-opcao:has(input:checked):not(#love-h-a) { border-color: #183b54; background: #EBF4FF; color: #183b54; font-weight: 600; }
+html body .nova-empresa-opcao input:not(#love-h-a) { accent-color: #183b54; margin: 0; }
+html body .nova-empresa-dica:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.5rem 0 0; }
+html body .nova-empresa-categorias:not(#love-h-a) { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.6rem; }
+html body .nova-empresa-categoria:not(#love-h-a) { min-height: 46px; }
+html body .nova-empresa-rodape:not(#love-h-a) { justify-content: space-between; }
+html body .nova-empresa-rodape #nova-empresa-salvar:not(#love-h-a) { margin-left: auto; }
+body[data-theme="dark"] .nova-empresa-opcao { background: #252525 !important; border-color: #404040 !important; color: #F4F4F5 !important; }
+body[data-theme="dark"] .nova-empresa-etapas { border-color: #404040 !important; }

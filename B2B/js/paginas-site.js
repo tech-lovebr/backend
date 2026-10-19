@@ -50,25 +50,38 @@ async function carregarFormulariosDoBanco() {
 function openFromLink() {
   const params = new URLSearchParams(location.search);
   if (params.get('tab') !== 'formularios') return;
-  document.querySelector('#site-tabs [data-tab="formularios"]')?.click();
   if (params.get('novo') === '1') openFormDrawer(null);
-  history.replaceState(null, '', location.pathname);
+  history.replaceState(null, '', location.pathname + '?tab=formularios');
 }
 
 /* -------------------- Abas: Editar site / Formulários -------------------- */
 
-function initSiteTabs() {
-  const wrap = document.getElementById('site-tabs');
-  if (!wrap) return;
-
-  wrap.querySelectorAll('[data-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      wrap.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelectorAll('[data-tab-panel]').forEach(panel => {
-        panel.style.display = panel.dataset.tabPanel === btn.dataset.tab ? '' : 'none';
-      });
-    });
+// As abas saíram do topo: agora são o submenu do Construtor no menu
+// lateral (Editar meu site / Formulários). Na própria página, clicar no
+// submenu só troca o painel, sem recarregar.
+function mostrarAbaDoSite(aba) {
+  const alvo = aba === 'formularios' ? 'formularios' : 'editar';
+  document.querySelectorAll('[data-tab-panel]').forEach(panel => {
+    panel.style.display = panel.dataset.tabPanel === alvo ? '' : 'none';
   });
+  document.querySelectorAll('[data-construtor-aba]').forEach(a => a.classList.toggle('active', a.dataset.construtorAba === alvo));
+  window.b2bAbaDoSite = alvo;
+}
+
+function initSiteTabs() {
+  mostrarAbaDoSite(new URLSearchParams(location.search).get('tab'));
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-construtor-aba]');
+    if (!link) return;
+    e.preventDefault();
+    mostrarAbaDoSite(link.dataset.construtorAba);
+    history.replaceState(null, '', location.pathname + '?tab=' + window.b2bAbaDoSite);
+  });
+  // O menu lateral chega depois (partial): marca a aba quando aparecer.
+  const marcar = () => document.querySelectorAll('[data-construtor-aba]').forEach(a => a.classList.toggle('active', a.dataset.construtorAba === window.b2bAbaDoSite));
+  marcar();
+  const lateral = document.getElementById('shell-sidebar');
+  if (lateral) new MutationObserver(marcar).observe(lateral, { childList: true, subtree: true });
 }
 
 /* -------------------- Lista de formulários -------------------- */

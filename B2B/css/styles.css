@@ -8760,3 +8760,10 @@ html body .nova-empresa-rodape:not(#love-h-a) { justify-content: space-between; 
 html body .nova-empresa-rodape #nova-empresa-salvar:not(#love-h-a) { margin-left: auto; }
 body[data-theme="dark"] .nova-empresa-opcao { background: #252525 !important; border-color: #404040 !important; color: #F4F4F5 !important; }
 body[data-theme="dark"] .nova-empresa-etapas { border-color: #404040 !important; }
+
+/* Menu lateral › Construtor com seta: o submenu (Editar meu site /
+   Formulários) só aparece aberto; a seta gira ao abrir. */
+html body .sidebar-nav-group:not(.open) > .sidebar-subnav:not(#love-h-a) { display: none; }
+html body .sidebar-nav-group.open > .sidebar-nav-toggle .sidebar-chevron:not(#love-h-a) { transform: rotate(180deg); }
+html body .sidebar-nav-toggle:not(#love-h-a) { width: 100%; border: none; background: transparent; cursor: pointer; text-align: left; font-family: inherit; }
+html body .sidebar-nav-group--construtor .sidebar-subnav:not(#love-h-a) { padding-left: 2.6rem; }

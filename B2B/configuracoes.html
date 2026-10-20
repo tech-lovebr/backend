@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=681">
+  <link rel="stylesheet" href="css/styles.css?v=682">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -163,9 +163,10 @@
             </div>
             <p class="settings-url-aviso" id="settings-url-aviso" aria-live="polite"></p>
           </div>
-          <div class="settings-url-pro" id="settings-url-pro" hidden>
-            <p>Tenha um endereço só seu: <strong>suaempresa.love.com.br</strong>.</p>
-            <a href="planos" class="btn-secondary">Conhecer o plano Pro</a>
+          <!-- Faixa cinza embaixo da caixa (modelo Zola): editar a página. -->
+          <div class="settings-url-pro settings-url-editar-site">
+            <p>Crie e edite uma página para a sua empresa. <a href="guias" class="settings-url-saiba">Saiba mais</a></p>
+            <a href="paginas-site?tab=editar" class="settings-url-editar-btn">Editar meu site</a>
           </div>
         </div>
 
@@ -512,7 +513,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=49"></script>
-  <script src="js/configuracoes.js?v=56"></script>
+  <script src="js/configuracoes.js?v=57"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

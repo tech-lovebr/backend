@@ -9009,3 +9009,17 @@ body[data-theme="dark"] .field-request-change-link { background: #252525 !import
 html body .settings-google-desconectar:not(#love-h-a) { text-decoration: none; font-weight: 400; font-size: 0.8125rem; color: #71717A; }
 html body .settings-google-desconectar:hover:not(#love-h-a) { color: #181D24; }
 body[data-theme="dark"] .settings-google-desconectar { color: #A1A1AA !important; }
+
+/* URLs › faixa cinza embaixo da caixa do site (modelo Zola): texto com
+   "Saiba mais" e o botão "Editar meu site" embaixo. */
+html body .settings-url-editar-site:not(#love-h-a) { display: block; padding: 1.5rem 2.5rem 1.6rem; }
+html body .settings-url-editar-site p:not(#love-h-a) { font-size: 0.9375rem; color: #18181B; margin: 0 0 0.9rem; }
+html body .settings-url-saiba:not(#love-h-a) { color: #18181B; text-decoration: underline; text-underline-offset: 3px; }
+html body .settings-url-saiba:hover:not(#love-h-a) { color: #181D24; }
+html body .settings-url-editar-btn:not(#love-h-a) {
+  display: inline-flex; align-items: center; height: 40px; padding: 0 1.1rem; border: 1px solid #18181B; border-radius: 8px;
+  background: #FFFFFF; font-size: 0.875rem; font-weight: 600; color: #18181B; text-decoration: none;
+}
+html body .settings-url-editar-btn:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+body[data-theme="dark"] .settings-url-editar-site p, body[data-theme="dark"] .settings-url-saiba { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-url-editar-btn { background: #252525 !important; border-color: #FFFFFF !important; color: #FFFFFF !important; }

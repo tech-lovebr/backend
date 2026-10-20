@@ -8822,3 +8822,55 @@ html body .profile-empresa-item.is-ativa .profile-empresa-nome:not(#love-h-a) { 
 html body .topbar-item-adicionar-empresa:not(#love-h-a) { justify-content: space-between; }
 html body .topbar-item-adicionar-empresa svg:not(#love-h-a) { flex-shrink: 0; }
 body[data-theme="dark"] .profile-empresa-principal { color: #A1A1AA !important; }
+
+/* Configurações › Preferências › Login com o Google (sem senha). */
+html body .settings-login-google[hidden]:not(#love-h-a),
+html body #settings-login-senha[hidden]:not(#love-h-a) { display: none !important; }
+html body .settings-login-titulo:not(#love-h-a) { margin: 0 0 0.75rem; }
+html body .settings-login-google.com-senha-embaixo:not(#love-h-a) { padding-bottom: 1.25rem; margin-bottom: 1.25rem; border-bottom: 1px solid #E4E4E7; }
+html body .settings-login-linha:not(#love-h-a) { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1rem; border: 1px solid #E4E4E7; border-radius: 8px; }
+html body .settings-login-icone:not(#love-h-a) { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #E4E4E7; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: #FFFFFF; }
+html body .settings-login-nome:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #18181B; margin: 0; }
+html body .settings-login-email:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body .settings-login-data:not(#love-h-a) { margin: 0 0 0 auto; font-size: 0.8125rem; color: #71717A; white-space: nowrap; }
+body[data-theme="dark"] .settings-login-linha, body[data-theme="dark"] .settings-login-icone { border-color: #404040 !important; }
+body[data-theme="dark"] .settings-login-nome { color: #FFFFFF !important; }
+
+/* Configurações › Preferências de e-mail (modelo do Resend): uma linha por
+   opção com divisor fino, título 14px, descrição 13px e toggle à direita. */
+html body .prefs-email-card:not(#love-h-a) { border: 1px solid #E4E4E7 !important; border-radius: 10px; box-shadow: none !important; }
+html body .prefs-email-titulo:not(#love-h-a) { font-size: 1rem; font-weight: 700; color: #18181B; margin: 0; }
+html body .prefs-email-sub:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.25rem 0 0.75rem; }
+html body .prefs-email-linha:not(#love-h-a) { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0; border-top: 1px solid #E4E4E7; }
+html body .prefs-email-textos:not(#love-h-a) { flex: 1; min-width: 0; }
+html body .prefs-email-nome:not(#love-h-a) { font-size: 0.875rem; font-weight: 500; color: #18181B; margin: 0; }
+html body .prefs-email-desc:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.15rem 0 0; }
+html body .prefs-email-salvo:not(#love-h-a) { font-size: 0.75rem; font-weight: 500; color: #1E9E5E; opacity: 0; transition: opacity .2s ease; white-space: nowrap; }
+html body .prefs-email-salvo.is-erro:not(#love-h-a) { color: #DC2626; }
+html body .prefs-email-salvo.is-visivel:not(#love-h-a) { opacity: 1; }
+/* Toggle no padrão: cinza #E4E4E7 desligado, cor da sidebar #181D24 ligado, bolinha branca. */
+html body .prefs-email-switch .settings-switch-track:not(#love-h-a) { background: #E4E4E7; border-color: #E4E4E7; }
+html body .prefs-email-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #181D24; border-color: #181D24; }
+html body .prefs-email-switch .settings-switch-track:not(#love-h-a)::before { background: #FFFFFF; }
+body[data-theme="dark"] .prefs-email-card { border-color: #404040 !important; }
+body[data-theme="dark"] .prefs-email-linha { border-top-color: #404040 !important; }
+body[data-theme="dark"] .prefs-email-titulo, body[data-theme="dark"] .prefs-email-nome { color: #FFFFFF !important; }
+
+/* Pop-up do 2FA (centralizado; sombra só aqui, que é overlay). */
+html body .mfa-modal-card:not(#love-h-a) { position: relative; max-width: 400px; width: calc(100% - 2rem); padding: 24px; border-radius: 10px; border: 1px solid #E4E4E7; box-shadow: 0 8px 24px rgba(0,0,0,0.08); text-align: left; }
+html body .mfa-modal-fechar:not(#love-h-a) { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border: none; background: none; color: #71717A; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+html body .mfa-modal-fechar:hover:not(#love-h-a) { color: #181D24; }
+html body .mfa-modal-titulo:not(#love-h-a) { font-size: 1.0625rem; font-weight: 700; color: #18181B; margin: 0 0 0.35rem; padding-right: 2rem; }
+html body .mfa-modal-texto:not(#love-h-a) { font-size: 0.875rem; color: #52525B; margin: 0 0 0.9rem; }
+html body .mfa-modal-texto--menor:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.9rem 0 0.4rem; }
+html body .mfa-modal-qr:not(#love-h-a) { width: 184px; height: 184px; margin: 0 auto; border: 1px solid #E4E4E7; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; overflow: hidden; }
+html body .mfa-modal-qr img:not(#love-h-a) { width: 168px; height: 168px; }
+html body .mfa-modal-carregando:not(#love-h-a) { font-size: 0.8125rem; color: #A1A1AA; }
+html body .mfa-modal-chave:not(#love-h-a) { display: block; padding: 0.55rem 0.75rem; border: 1px solid #E4E4E7; border-radius: 8px; background: #FAFAFA; font-size: 0.8125rem; letter-spacing: 0.04em; word-break: break-all; color: #18181B; user-select: all; }
+html body .mfa-modal-codigo:not(#love-h-a) { letter-spacing: 0.3em; font-variant-numeric: tabular-nums; }
+html body .mfa-modal-erro:not(#love-h-a) { font-size: 0.8125rem; color: #DC2626; margin: 0.5rem 0 0; }
+html body .mfa-modal-confirmar:not(#love-h-a) { width: 100%; justify-content: center; margin-top: 1rem; }
+body[data-theme="dark"] .mfa-modal-card { border-color: #404040 !important; }
+body[data-theme="dark"] .mfa-modal-titulo, body[data-theme="dark"] .mfa-modal-chave { color: #FFFFFF !important; }
+body[data-theme="dark"] .mfa-modal-chave, body[data-theme="dark"] .mfa-modal-qr { border-color: #404040 !important; }
+body[data-theme="dark"] .mfa-modal-chave { background: #252525 !important; }

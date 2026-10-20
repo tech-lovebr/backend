@@ -1029,15 +1029,193 @@ function initPasswordForm() {
 function initSecurityRows() {
   const p = B2B_DATA.professional;
 
-  const twoFaToggle = document.getElementById('profile-2fa-toggle');
-  twoFaToggle.checked = !!p.twoFactorEnabled;
-  twoFaToggle.addEventListener('change', () => {
-    p.twoFactorEnabled = twoFaToggle.checked;
-    showToast(twoFaToggle.checked ? 'Autenticação de dois fatores ativada.' : 'Autenticação de dois fatores desativada.');
-  });
+  initLoginDaConta();
+  initDoisFatores();
+  initPreferenciasDeEmail();
 
   renderSelfieStatus();
   initVerificacaoDeConta();
+}
+
+/* -------------------- Preferências › Login --------------------
+   Entrou com o Google: caixa "Login" com o Google, o e-mail e a data em que
+   conectou (sem senha). "Alterar senha" só para quem criou a conta com
+   e-mail e senha. */
+async function initLoginDaConta() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  const user = session && session.user;
+  if (!user) return;
+  const identidades = user.identities || [];
+  const google = identidades.find(i => i.provider === 'google');
+  const temSenha = identidades.some(i => i.provider === 'email') || (!identidades.length && (user.app_metadata || {}).provider === 'email');
+  const caixaGoogle = document.getElementById('settings-login-google');
+  const caixaSenha = document.getElementById('settings-login-senha');
+  if (google && caixaGoogle) {
+    caixaGoogle.hidden = false;
+    const dados = google.identity_data || {};
+    setText('settings-login-google-email', dados.email || user.email || '—');
+    const quando = google.created_at || google.last_sign_in_at;
+    setText('settings-login-google-data', quando
+      ? 'Conectado em ' + new Date(quando).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
+      : '');
+  }
+  if (caixaSenha) caixaSenha.hidden = !temSenha;
+  if (caixaGoogle && !caixaGoogle.hidden && caixaSenha && !caixaSenha.hidden) caixaGoogle.classList.add('com-senha-embaixo');
+}
+
+/* -------------------- Preferências › Autenticação de dois fatores --------------------
+   "Permitir" já começa o cadastro TOTP (supabase.auth.mfa.enroll) e abre o
+   pop-up com o QR code do Google Authenticator, a chave e o código de 6
+   dígitos. Com o 2FA ativo, o botão vira "Desativar". */
+let mfaFatorPendente = null;
+
+async function fatorTotpVerificado() {
+  const { data, error } = await supabaseClient.auth.mfa.listFactors();
+  if (error || !data) return null;
+  return (data.totp || []).find(f => f.status === 'verified') || null;
+}
+
+async function renderDoisFatores() {
+  const btn = document.getElementById('profile-2fa-btn');
+  if (!btn) return;
+  const ativo = await fatorTotpVerificado();
+  btn.textContent = ativo ? 'Desativar' : 'Permitir';
+  btn.dataset.fatorId = ativo ? ativo.id : '';
+  setText('profile-2fa-desc', ativo ? 'Ativa: o login pede o código do Google Authenticator.' : 'Peça um código do Google Authenticator ao entrar.');
+}
+
+function fecharModalDoisFatores() {
+  const modal = document.getElementById('mfa-modal');
+  if (!modal || !modal.classList.contains('show')) return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  // Cadastro não confirmado: apaga o fator pendente para poder tentar de novo.
+  if (mfaFatorPendente) { supabaseClient.auth.mfa.unenroll({ factorId: mfaFatorPendente }); mfaFatorPendente = null; }
+}
+
+async function abrirModalDoisFatores() {
+  const modal = document.getElementById('mfa-modal');
+  const qr = document.getElementById('mfa-modal-qr');
+  const erro = document.getElementById('mfa-modal-erro');
+  const codigo = document.getElementById('mfa-modal-codigo');
+  qr.innerHTML = '<span class="mfa-modal-carregando">Gerando QR code…</span>';
+  setText('mfa-modal-chave', '—');
+  codigo.value = '';
+  erro.hidden = true;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+
+  // Tentativa anterior não confirmada fica como fator "unverified": limpa antes.
+  const { data: lista } = await supabaseClient.auth.mfa.listFactors();
+  const pendentes = ((lista && lista.all) || []).filter(f => f.factor_type === 'totp' && f.status !== 'verified');
+  await Promise.all(pendentes.map(f => supabaseClient.auth.mfa.unenroll({ factorId: f.id })));
+
+  const { data, error } = await supabaseClient.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Google Authenticator ' + Date.now() });
+  if (error || !data) {
+    qr.innerHTML = '';
+    erro.textContent = 'Não foi possível começar agora. Tente de novo em instantes.';
+    erro.hidden = false;
+    return;
+  }
+  mfaFatorPendente = data.id;
+  qr.innerHTML = `<img src="${data.totp.qr_code}" alt="QR code para o Google Authenticator">`;
+  setText('mfa-modal-chave', data.totp.secret);
+  codigo.focus();
+}
+
+async function confirmarDoisFatores() {
+  const codigo = document.getElementById('mfa-modal-codigo');
+  const erro = document.getElementById('mfa-modal-erro');
+  const btn = document.getElementById('mfa-modal-confirmar');
+  const valor = codigo.value.replace(/\D/g, '');
+  erro.hidden = true;
+  if (!mfaFatorPendente) return;
+  if (valor.length !== 6) { erro.textContent = 'Digite os 6 números do app.'; erro.hidden = false; return; }
+  btn.disabled = true;
+  const { error } = await supabaseClient.auth.mfa.challengeAndVerify({ factorId: mfaFatorPendente, code: valor });
+  btn.disabled = false;
+  if (error) { erro.textContent = 'Código inválido. Confira no app e tente de novo.'; erro.hidden = false; return; }
+  mfaFatorPendente = null;
+  fecharModalDoisFatores();
+  renderDoisFatores();
+}
+
+function initDoisFatores() {
+  const btn = document.getElementById('profile-2fa-btn');
+  const modal = document.getElementById('mfa-modal');
+  if (!btn || !modal) return;
+  renderDoisFatores();
+
+  btn.addEventListener('click', async () => {
+    if (btn.dataset.fatorId) {
+      btn.disabled = true;
+      await supabaseClient.auth.mfa.unenroll({ factorId: btn.dataset.fatorId });
+      btn.disabled = false;
+      renderDoisFatores();
+      return;
+    }
+    abrirModalDoisFatores();
+  });
+
+  const codigo = document.getElementById('mfa-modal-codigo');
+  codigo.addEventListener('input', () => { codigo.value = codigo.value.replace(/\D/g, '').slice(0, 6); });
+  codigo.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); confirmarDoisFatores(); } });
+  document.getElementById('mfa-modal-confirmar').addEventListener('click', confirmarDoisFatores);
+  document.getElementById('mfa-modal-fechar').addEventListener('click', fecharModalDoisFatores);
+  modal.addEventListener('click', (e) => { if (e.target === modal) fecharModalDoisFatores(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharModalDoisFatores(); });
+}
+
+/* -------------------- Preferências › E-mails --------------------
+   Uma linha por tipo de e-mail com toggle; salva ao clicar (sem botão) em
+   fornecedores.preferencias_email (jsonb) e mostra "Salvo" ao lado. */
+const PREFERENCIAS_DE_EMAIL = [
+  { chave: 'novos_leads', titulo: 'Novos leads', desc: 'Avise quando um cliente pedir orçamento', padrao: true },
+  { chave: 'mensagens', titulo: 'Mensagens', desc: 'Avise quando chegar mensagem de cliente', padrao: true },
+  { chave: 'vendas_pagamentos', titulo: 'Vendas e pagamentos', desc: 'Avise sobre pagamentos recebidos e saques', padrao: true },
+  { chave: 'novidades', titulo: 'Novidades da Love', desc: 'Novos recursos e anúncios', padrao: false },
+  { chave: 'dicas', titulo: 'Dicas e conteúdos', desc: 'Dicas para vender mais', padrao: false }
+];
+
+async function initPreferenciasDeEmail() {
+  const lista = document.getElementById('prefs-email-lista');
+  if (!lista) return;
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const id = empresaId(session);
+
+  const { data } = await supabaseClient.from('fornecedores').select('preferencias_email').eq('id', id).maybeSingle();
+  const salvas = (data && data.preferencias_email) || {};
+  const prefs = {};
+  PREFERENCIAS_DE_EMAIL.forEach(p => { prefs[p.chave] = typeof salvas[p.chave] === 'boolean' ? salvas[p.chave] : p.padrao; });
+
+  lista.innerHTML = PREFERENCIAS_DE_EMAIL.map(p => `
+    <div class="prefs-email-linha">
+      <div class="prefs-email-textos">
+        <p class="prefs-email-nome">${escapeHtml(p.titulo)}</p>
+        <p class="prefs-email-desc">${escapeHtml(p.desc)}</p>
+      </div>
+      <span class="prefs-email-salvo" data-salvo-de="${p.chave}" aria-live="polite"></span>
+      <label class="settings-switch prefs-email-switch">
+        <input type="checkbox" data-pref-email="${p.chave}"${prefs[p.chave] ? ' checked' : ''} aria-label="${escapeHtml(p.titulo)}">
+        <span class="settings-switch-track"></span>
+      </label>
+    </div>`).join('');
+
+  const timers = {};
+  lista.querySelectorAll('[data-pref-email]').forEach(input => {
+    input.addEventListener('change', async () => {
+      const chave = input.dataset.prefEmail;
+      prefs[chave] = input.checked;
+      const aviso = lista.querySelector(`[data-salvo-de="${chave}"]`);
+      const { error } = await supabaseClient.from('fornecedores').update({ preferencias_email: { ...prefs } }).eq('id', id);
+      aviso.textContent = error ? 'Não salvou' : 'Salvo';
+      aviso.classList.toggle('is-erro', !!error);
+      aviso.classList.add('is-visivel');
+      clearTimeout(timers[chave]);
+      timers[chave] = setTimeout(() => aviso.classList.remove('is-visivel'), 1800);
+    });
+  });
 }
 
 /* -------------------- Verificação de conta (migration 070) --------------------

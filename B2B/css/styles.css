@@ -9087,3 +9087,91 @@ body[data-theme="dark"][data-page="faq"] .guias-menu-table .guide-link--active {
   html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs:not(#love-h-a),
   html body[data-page="faq"] .guias-layout > .guias-sidebar:not(#love-h-a) { position: static; width: auto; border-right: none; padding: 0 0 1rem; background: transparent; }
 }
+
+/* ==========================================================================
+   Tipografia igual à da plataforma dos anfitriões (love.com.br), medida lá.
+   Só fonte, tamanho, peso, cor do texto, letter-spacing e line-height.
+   Fica de fora o site do fornecedor (canvas do Construtor e página pública)
+   e os códigos/SKU (mono).
+   ========================================================================== */
+:root { --fonte-love: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+/* Submenu (2º sidebar de Configurações e da Central de ajuda). */
+html body #settings-tabs .settings-nav-titulo:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 14px !important; font-weight: 700 !important; color: #18181B !important;
+  letter-spacing: -0.02em !important; line-height: 20px !important;
+}
+html body #settings-tabs .category-tab:not(#love-h-a),
+html body .guias-menu-table .guide-link:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 13px !important; font-weight: 600 !important; color: #475569 !important;
+  letter-spacing: -0.16px !important; line-height: 19.5px !important;
+}
+html body #settings-tabs .category-tab.active:not(#love-h-a),
+html body .guias-menu-table .guide-link--active:not(#love-h-a) { font-weight: 700 !important; color: #333333 !important; background: #EBF4FF !important; }
+
+/* Cabeçalhos. */
+html body .b2b-header-bar h1:not(#love-h-a),
+html body .b2b-header-bar h2:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 20px !important; font-weight: 700 !important; color: #18181B !important;
+  letter-spacing: -0.02em !important; line-height: 26px !important;
+}
+html body .greeting-title:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 20px !important; font-weight: 700 !important; color: #18181B !important;
+  letter-spacing: -0.02em !important; line-height: 28px !important;
+}
+html body .dashboard-help-title:not(#love-h-a),
+html body .dash-card-header h2:not(#love-h-a),
+html body .dash-card-header h3:not(#love-h-a),
+html body .settings-secao-titulo:not(#love-h-a),
+html body .settings-zola-bloco .settings-secao-titulo--painel:not(#love-h-a),
+html body .settings-shell [data-settings-panel] > .settings-secao-titulo--painel:not(#love-h-a),
+html body .prefs-email-titulo:not(#love-h-a),
+html body .faq-table-title:not(#love-h-a),
+html body #finance-lista-titulo:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 16px !important; font-weight: 700 !important; color: #18181B !important;
+  letter-spacing: -0.02em !important; line-height: 24px !important;
+}
+html body .topbar-account-name:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 14px !important; font-weight: 400 !important; color: #18181B !important; letter-spacing: -0.01em !important;
+}
+
+/* Abas de texto com sublinhado. */
+html body .category-tabs-bar:not([id="settings-tabs"]) .category-tab:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 13px !important; font-weight: 600 !important; color: #71717A !important; letter-spacing: normal !important;
+}
+html body .category-tabs-bar:not([id="settings-tabs"]) .category-tab.active:not(#love-h-a) { font-weight: 700 !important; color: #333333 !important; }
+
+/* Tabelas. */
+html body .leads-table th:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 13px !important; font-weight: 700 !important; color: #181D24 !important;
+}
+html body .leads-table td:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 14px !important; font-weight: 400 !important; color: #0F172A !important;
+  letter-spacing: -0.16px !important; line-height: 21px !important;
+}
+
+/* Texto comum / descrições (subtítulo das páginas e descrições de caixas). */
+html body .b2b-header-bar + p:not(#love-h-a),
+html body .settings-zola-sub:not(#love-h-a),
+html body .prefs-email-sub:not(#love-h-a),
+html body .dashboard-help-card-desc:not(#love-h-a) {
+  font-family: var(--fonte-love) !important; font-size: 14px !important; font-weight: 400 !important; color: #52525B !important;
+  letter-spacing: -0.01em !important; line-height: 20px !important;
+}
+
+/* Botões do cabeçalho. */
+html body .b2b-header-bar .btn-primary:not(#love-h-a),
+html body .b2b-header-bar .btn-secondary:not(#love-h-a) { font-family: var(--fonte-love) !important; font-size: 14px !important; font-weight: 600 !important; }
+
+/* Tema escuro: as cores claras de texto continuam valendo. */
+html body[data-theme="dark"] .b2b-header-bar h1:not(#love-h-a), html body[data-theme="dark"] .b2b-header-bar h2:not(#love-h-a), html body[data-theme="dark"] .greeting-title:not(#love-h-a),
+html body[data-theme="dark"] .dashboard-help-title:not(#love-h-a), html body[data-theme="dark"] .dash-card-header h2:not(#love-h-a), html body[data-theme="dark"] .dash-card-header h3:not(#love-h-a),
+html body[data-theme="dark"] .settings-secao-titulo:not(#love-h-a), html body[data-theme="dark"] .prefs-email-titulo:not(#love-h-a), html body[data-theme="dark"] .faq-table-title:not(#love-h-a),
+html body[data-theme="dark"] .topbar-account-name:not(#love-h-a), html body[data-theme="dark"] #settings-tabs .settings-nav-titulo:not(#love-h-a),
+html body[data-theme="dark"] .leads-table th:not(#love-h-a), html body[data-theme="dark"] .category-tabs-bar .category-tab.active:not(#love-h-a),
+html body[data-theme="dark"] #settings-tabs .category-tab.active:not(#love-h-a), html body[data-theme="dark"] .guias-menu-table .guide-link--active:not(#love-h-a) { color: #FFFFFF !important; }
+html body[data-theme="dark"] .leads-table td:not(#love-h-a) { color: #E4E4E7 !important; }
+html body[data-theme="dark"] .b2b-header-bar + p:not(#love-h-a), html body[data-theme="dark"] .settings-zola-sub:not(#love-h-a), html body[data-theme="dark"] .prefs-email-sub:not(#love-h-a),
+html body[data-theme="dark"] .dashboard-help-card-desc:not(#love-h-a), html body[data-theme="dark"] #settings-tabs .category-tab:not(#love-h-a),
+html body[data-theme="dark"] .guias-menu-table .guide-link:not(#love-h-a), html body[data-theme="dark"] .category-tabs-bar .category-tab:not(#love-h-a) { color: #A1A1AA !important; }
+html body[data-theme="dark"] #settings-tabs .category-tab.active:not(#love-h-a), html body[data-theme="dark"] .guias-menu-table .guide-link--active:not(#love-h-a) { background: #1C2125 !important; }

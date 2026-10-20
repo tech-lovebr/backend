@@ -9324,3 +9324,13 @@ html body .settings-privacidade-ajuda a:not(#love-h-a) { color: #18181B; font-we
 html body .settings-privacidade-ajuda a:hover:not(#love-h-a) { color: #181D24; }
 body[data-theme="dark"] .settings-privacidade-ajuda { color: #A1A1AA !important; }
 body[data-theme="dark"] .settings-privacidade-ajuda a { color: #FFFFFF !important; }
+
+/* Suas informações: imagem de perfil e capa acima da 1ª caixa, ocupando a
+   largura dela (40rem); a capa pega o resto da linha, mais larga. */
+html body .settings-imagens:not(#love-h-a) { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 1rem; max-width: 40rem; width: 100%; }
+html body .settings-imagens .profile-avatar-picker:not(#love-h-a) { width: 140px; height: 140px; aspect-ratio: auto; }
+html body .settings-imagens .profile-logo-picker:not(#love-h-a) { width: 100%; height: 140px; aspect-ratio: auto; }
+html body .settings-imagens .profile-logo-hint:not(#love-h-a) { margin-top: 0.4rem; }
+@media (max-width: 640px) {
+  html body .settings-imagens:not(#love-h-a) { grid-template-columns: 1fr; }
+}

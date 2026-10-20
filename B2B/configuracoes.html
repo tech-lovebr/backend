@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=692">
+  <link rel="stylesheet" href="css/styles.css?v=693">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -52,6 +52,21 @@
         <div data-settings-panel="perfil">
           <!-- Modelo Account settings da Zola: título fora da caixa e os campos
                um embaixo do outro. -->
+          <!-- Imagem de perfil e capa, acima da caixa e na largura dela
+               (a capa mais larga). Salvam com o "Salvar alterações" abaixo. -->
+          <div class="settings-imagens">
+            <div class="settings-imagens-perfil">
+              <p class="field-label">Imagem de perfil</p>
+              <div id="profile-avatar-wrap"></div>
+              <p class="profile-logo-hint">400 × 400 px</p>
+            </div>
+            <div class="settings-imagens-capa">
+              <p class="field-label">Imagem de capa</p>
+              <div id="profile-logo-wrap"></div>
+              <p class="profile-logo-hint">1280 × 520 px</p>
+            </div>
+          </div>
+
           <div class="dash-card settings-zola-card">
             <form id="profile-form" class="settings-zola-form">
               <div>
@@ -101,8 +116,6 @@
               <div hidden>
                 <input id="profile-name" type="text">
                 <input id="profile-birthdate" type="text" readonly autocomplete="off">
-                <div id="profile-avatar-wrap"></div>
-                <div id="profile-logo-wrap"></div>
                 <input id="profile-address" type="text">
                 <select id="profile-state"></select>
                 <input id="profile-city" type="text" list="profile-city-options">

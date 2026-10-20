@@ -8948,3 +8948,16 @@ html body .settings-url-pro p:not(#love-h-a) { font-size: 0.875rem; color: #3F3F
 body[data-theme="dark"] .settings-url-caixa { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .settings-url-slug, body[data-theme="dark"] .settings-url-editar, body[data-theme="dark"] .settings-url-texto { color: #FFFFFF !important; }
 body[data-theme="dark"] .settings-url-pro { background: #252525 !important; border-color: #404040 !important; }
+
+/* Linha horizontal de volta embaixo do cabeçalho de todas as telas (faixa
+   do título + botão). Onde há subtítulo colado no título, a linha passa
+   para baixo do subtítulo, de ponta a ponta, para não cortar o texto. */
+html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a) { border-bottom: 1px solid #E4E4E7; }
+body[data-theme="dark"] .b2b-header-bar { border-bottom: 1px solid #404040 !important; }
+html body .b2b-header-bar:has(+ p):not(#love-h-a) { border-bottom: none !important; }
+html body .b2b-header-bar + p:not(#love-h-a) {
+  margin-left: calc(-1 * var(--b2b-content-pad-x)); margin-right: calc(-1 * var(--b2b-content-pad-x));
+  padding: 0 var(--b2b-content-pad-x) 0.9rem; margin-bottom: 1.25rem;
+  border-bottom: 1px solid #E4E4E7;
+}
+body[data-theme="dark"] .b2b-header-bar + p { border-bottom-color: #404040 !important; }

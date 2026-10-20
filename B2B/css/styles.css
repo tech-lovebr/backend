@@ -8902,3 +8902,49 @@ body[data-theme="dark"] .settings-shell--lateral > #settings-tabs .category-tab.
   html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a) { width: auto; }
   html body .settings-nav-titulo:not(#love-h-a) { width: 100%; }
 }
+
+/* Configurações no modelo Account settings da Zola: título fora da caixa,
+   caixa branca de borda fina e campos um embaixo do outro. */
+html body .settings-nav-divisor:not(#love-h-a) { height: 1px; background: #E4E4E7; margin: 0.9rem 0.75rem 1rem; }
+html body .settings-nav-titulo + .category-tab:not(#love-h-a) { margin-top: 0; }
+html body .settings-shell--lateral > [data-settings-panel] > .settings-secao-titulo--painel:not(#love-h-a),
+html body .settings-zola-bloco .settings-secao-titulo--painel:not(#love-h-a) { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.025em; color: #18181B; margin: 0; }
+html body .settings-zola-bloco:not(#love-h-a) { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 1rem; }
+html body .settings-zola-sub:not(#love-h-a) { font-size: 0.9375rem; color: #3F3F46; margin: 0; }
+html body .settings-shell [data-settings-panel] > .settings-zola-card:not(#love-h-a) { padding: 2rem 2.5rem; max-width: 40rem; }
+html body .settings-zola-form:not(#love-h-a) { display: flex; flex-direction: column; gap: 1.25rem; }
+html body .settings-zola-form .field-label:not(#love-h-a) { font-size: 0.9375rem; font-weight: 500; color: #18181B; margin-bottom: 0.45rem; }
+html body .settings-zola-form .field-input:not(#love-h-a) { height: 44px; font-size: 0.9375rem; }
+html body .settings-doc-linha:not(#love-h-a) { display: flex; align-items: flex-end; gap: 1rem; }
+html body .settings-doc-campo:not(#love-h-a) { flex: 1; min-width: 0; }
+html body .settings-doc-linha .plan-billing-toggle:not(#love-h-a) { height: 44px; }
+html body .settings-zola-salvar:not(#love-h-a) { height: 44px; padding: 0 1.25rem; margin-top: 0.25rem; }
+html body .settings-zola-rotulo:not(#love-h-a) { font-size: 0.9375rem; font-weight: 600; color: #18181B; margin: 0 0 0.75rem; }
+html body .settings-zola-vazio:not(#love-h-a) { font-size: 0.875rem; color: #71717A; margin: 0; }
+@media (max-width: 640px) {
+  html body .settings-shell [data-settings-panel] > .settings-zola-card:not(#love-h-a) { padding: 1.25rem; }
+  html body .settings-doc-linha:not(#love-h-a) { flex-direction: column; align-items: stretch; }
+}
+
+/* Configurações › URLs: link do site com "Editar" dentro da caixa e
+   "Copiar link" ao lado (modelo Wedding website da Zola). */
+html body .settings-url-texto:not(#love-h-a) { font-size: 0.9375rem; color: #18181B; margin: 0 0 0.9rem; }
+html body .settings-url-base:not(#love-h-a) { font-size: 0.8125rem; color: #3F3F46; margin: 0 0 0.5rem; }
+html body .settings-url-linha:not(#love-h-a) { display: flex; align-items: center; gap: 0.75rem; }
+html body .settings-url-caixa:not(#love-h-a) {
+  flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  padding: 0 1rem; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+}
+html body .settings-url-slug:not(#love-h-a) { font-size: 0.9375rem; color: #18181B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body .settings-url-editar:not(#love-h-a) { font-size: 0.875rem; font-weight: 500; color: #18181B; text-decoration: underline; text-underline-offset: 3px; flex-shrink: 0; }
+html body .settings-url-copiar:not(#love-h-a) { height: 44px; padding: 0 1.1rem; flex-shrink: 0; }
+html body .settings-url-aviso:not(#love-h-a) { font-size: 0.8125rem; color: #1E9E5E; margin: 0.5rem 0 0; min-height: 1.1em; }
+html body .settings-url-pro:not(#love-h-a) {
+  max-width: 40rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;
+  margin-top: -1rem; padding: 1.25rem 2.5rem; background: #EDEDEF; border: 1px solid #E4E4E7; border-top: none; border-radius: 0 0 10px 10px;
+}
+html body .settings-url-pro[hidden]:not(#love-h-a) { display: none; }
+html body .settings-url-pro p:not(#love-h-a) { font-size: 0.875rem; color: #3F3F46; margin: 0; }
+body[data-theme="dark"] .settings-url-caixa { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .settings-url-slug, body[data-theme="dark"] .settings-url-editar, body[data-theme="dark"] .settings-url-texto { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-url-pro { background: #252525 !important; border-color: #404040 !important; }

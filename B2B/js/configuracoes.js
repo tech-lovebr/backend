@@ -60,7 +60,7 @@ function initSettingsTabs() {
       const saveBtn = document.getElementById('profile-save-top-btn');
       if (saveBtn) {
         const tab = btn.dataset.settingsTab;
-        saveBtn.hidden = tab === 'preferencias';
+        saveBtn.hidden = tab === 'preferencias' || tab === 'urls';
         saveBtn.setAttribute('form', tab === 'empresa' ? 'company-form' : 'profile-form');
       }
     });
@@ -74,6 +74,20 @@ function initProfileForm() {
 
   document.getElementById('profile-company').value = p.company || '';
   document.getElementById('profile-name').value = p.name || '';
+  // Primeiro nome e sobrenome: juntos formam o responsável (contact_name).
+  const nomeInput = document.getElementById('profile-name');
+  const primeiroInput = document.getElementById('profile-first-name');
+  const sobrenomeInput = document.getElementById('profile-last-name');
+  if (primeiroInput && sobrenomeInput) {
+    const partes = String(p.name || '').trim().split(/\s+/).filter(Boolean);
+    primeiroInput.value = partes.shift() || '';
+    sobrenomeInput.value = partes.join(' ');
+    const juntar = () => { nomeInput.value = [primeiroInput.value.trim(), sobrenomeInput.value.trim()].filter(Boolean).join(' '); };
+    [primeiroInput, sobrenomeInput].forEach(i => {
+      if (typeof wireNameCaseInput === 'function') wireNameCaseInput(i);
+      i.addEventListener('input', juntar);
+    });
+  }
   const birthdatePicker = initDatePicker(document.getElementById('profile-birthdate'), p.birthDate || '');
   document.getElementById('profile-phone').value = p.phone || '';
   document.getElementById('profile-address').value = p.address || '';
@@ -1032,6 +1046,7 @@ function initSecurityRows() {
   initLoginDaConta();
   initDoisFatores();
   initPreferenciasDeEmail();
+  initUrlsDoSite();
 
   renderSelfieStatus();
   initVerificacaoDeConta();
@@ -1070,7 +1085,43 @@ async function initLoginDaConta() {
       : '');
   }
   if (caixaSenha) caixaSenha.hidden = !temSenha;
-  if (caixaGoogle && !caixaGoogle.hidden && caixaSenha && !caixaSenha.hidden) caixaGoogle.classList.add('com-senha-embaixo');
+  const vazio = document.getElementById('settings-contas-vazio');
+  if (vazio) vazio.hidden = ehGoogle;
+}
+
+/* -------------------- URLs --------------------
+   O endereço do site publicado (o mesmo de Construtor › Ajustes): no Pro,
+   <slug>.love.com.br; no Gratuito, hub.love.com.br/site/<slug>. Sem site
+   publicado ainda, mostra o que vai ser (pelo nome da empresa). */
+async function initUrlsDoSite() {
+  const slugEl = document.getElementById('settings-url-slug');
+  if (!slugEl) return;
+  const p = B2B_DATA.professional || {};
+  const pro = p.plan === 'Pro';
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  let slug = '';
+  if (session) {
+    const { data } = await supabaseClient.from('site_pages').select('slug').eq('fornecedor_id', empresaId(session)).maybeSingle();
+    slug = (data && data.slug) || '';
+  }
+  if (!slug && typeof slugDoNome === 'function') slug = slugDoNome(p.company);
+  const base = pro ? 'https://' : 'https://hub.love.com.br/site/';
+  const exibido = pro ? `${slug}.love.com.br` : slug;
+  const link = pro ? `https://${slug}.love.com.br` : `https://hub.love.com.br/site/${slug}`;
+  setText('settings-url-base', base);
+  slugEl.textContent = slug ? exibido : '—';
+  const proBox = document.getElementById('settings-url-pro');
+  if (proBox) proBox.hidden = pro;
+
+  const aviso = document.getElementById('settings-url-aviso');
+  let timer = null;
+  document.getElementById('settings-url-copiar')?.addEventListener('click', async () => {
+    if (!slug) return;
+    try { await navigator.clipboard.writeText(link); aviso.textContent = 'Link copiado.'; }
+    catch (e) { aviso.textContent = link; }
+    clearTimeout(timer);
+    timer = setTimeout(() => { aviso.textContent = ''; }, 2000);
+  });
 }
 
 /* -------------------- Preferências › Autenticação de dois fatores --------------------

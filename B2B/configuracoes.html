@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=674">
+  <link rel="stylesheet" href="css/styles.css?v=675">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -46,102 +46,121 @@
           <button type="button" class="category-tab active" data-settings-tab="perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg><span>Meu perfil</span></button>
           <button type="button" class="category-tab" data-settings-tab="preferencias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h8m4 0h4M4 12h2m4 0h10M4 18h11m4 0h1"/><path d="M14 4v4M8 10v4M17 16v4"/></svg><span>Preferências</span></button>
           <button type="button" class="category-tab" data-settings-tab="empresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg><span>Minha Empresa</span></button>
+          <div class="settings-nav-divisor" role="separator"></div>
+          <p class="settings-nav-titulo">Suas configurações</p>
+          <button type="button" class="category-tab" data-settings-tab="urls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 15l6 -6"/><path d="M11 6l.46 -.54a5 5 0 0 1 7.07 7.07l-.53 .47"/><path d="M13 18l-.4 .53a5.07 5.07 0 0 1 -7.12 0a4.97 4.97 0 0 1 0 -7.07l.52 -.46"/></svg><span>URLs</span></button>
         </nav>
 
         <div data-settings-panel="perfil">
-          <div class="dash-card">
-            <h3 class="settings-secao-titulo">Meu perfil</h3>
-            <p class="settings-secao-nota">* indica campo obrigatório</p>
-            <form id="profile-form" class="flex flex-col gap-4">
-              <div class="profile-form-top">
-                <div class="profile-form-top-image">
-                  <div class="profile-form-top-avatar">
-                    <label class="field-label">Imagem de perfil</label>
-                    <div id="profile-avatar-wrap"></div>
-                    <p class="profile-logo-hint">400 × 400 px</p>
-                  </div>
-
-                  <div class="profile-form-top-cover">
-                    <label class="field-label">Imagem de Capa</label>
-                    <div id="profile-logo-wrap"></div>
-                    <p class="profile-logo-hint">1280 × 520 px</p>
+          <!-- Modelo Account settings da Zola: título fora da caixa e os campos
+               um embaixo do outro. -->
+          <h3 class="settings-secao-titulo settings-secao-titulo--painel">Suas informações</h3>
+          <div class="dash-card settings-zola-card">
+            <form id="profile-form" class="settings-zola-form">
+              <div>
+                <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
+                <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
+              </div>
+              <div>
+                <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
+                <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
+              </div>
+              <div>
+                <label for="profile-phone" class="field-label">Número de celular <span style="color:#DC2626;">*</span></label>
+                <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
+              </div>
+              <div>
+                <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
+                <div class="field-with-inline-link">
+                  <input id="profile-company" type="text" class="field-input">
+                  <a href="#" class="field-request-change-link" id="profile-company-request-change" hidden>Alterar</a>
+                </div>
+              </div>
+              <!-- Tipo de documento à esquerda e o campo ao lado; só o nome em
+                   cima muda (CNPJ ou CPF). CNPJ vem marcado. -->
+              <div class="settings-doc-linha">
+                <div>
+                  <label class="field-label">Tipo de documento</label>
+                  <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
+                    <button type="button" class="plan-billing-option active" data-doc-type="cnpj">
+                      <span class="plan-billing-option-title">CNPJ</span>
+                    </button>
+                    <button type="button" class="plan-billing-option" data-doc-type="cpf">
+                      <span class="plan-billing-option-title">CPF</span>
+                    </button>
                   </div>
                 </div>
-
-                <div class="profile-form-top-fields">
-                  <div>
-                    <label for="profile-company" class="field-label">Nome da empresa <span style="color:#DC2626;">*</span></label>
-                    <div class="field-with-inline-link">
-                      <input id="profile-company" type="text" class="field-input">
-                      <a href="#" class="field-request-change-link" id="profile-company-request-change" hidden>Alterar</a>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label for="profile-name" class="field-label">Responsável principal <span style="color:#DC2626;">*</span></label>
-                    <input id="profile-name" type="text" class="field-input">
-                  </div>
-                  <!-- Data de nascimento saiu da tela; fica escondida só para não
-                       perder o que já foi salvo. -->
-                  <div hidden>
-                    <input id="profile-birthdate" type="text" class="field-input" readonly autocomplete="off">
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <label for="profile-phone" class="field-label">Número de celular <span style="color:#DC2626;">*</span></label>
-                      <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
-                    </div>
-                    <div>
-                      <label class="field-label">Tipo de documento</label>
-                      <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
-                        <button type="button" class="plan-billing-option active" data-doc-type="cnpj">
-                          <span class="plan-billing-option-title">CNPJ</span>
-                        </button>
-                        <button type="button" class="plan-billing-option" data-doc-type="cpf">
-                          <span class="plan-billing-option-title">CPF</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
-                    <div class="field-with-inline-link">
-                      <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
-                      <a href="#" class="field-request-change-link" id="profile-document-request-change" hidden>Alterar</a>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 sm:grid-cols-[2fr_90px_1fr] gap-4">
-                    <div>
-                      <label for="profile-address" class="field-label">Endereço</label>
-                      <input id="profile-address" type="text" class="field-input" placeholder="Rua, número, bairro">
-                    </div>
-                    <div>
-                      <label for="profile-state" class="field-label">Estado</label>
-                      <select id="profile-state" class="field-select"></select>
-                    </div>
-                    <div>
-                      <label for="profile-city" class="field-label">Cidade</label>
-                      <input id="profile-city" type="text" class="field-input" list="profile-city-options" placeholder="Cidade">
-                      <datalist id="profile-city-options"></datalist>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label for="profile-description" class="field-label">Descrição da empresa</label>
-                    <textarea id="profile-description" class="field-textarea" style="min-height:110px;" maxlength="650" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
-                    <p class="text-xs text-zinc-400 text-right mt-1" id="profile-description-count">0/650</p>
+                <div class="settings-doc-campo">
+                  <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
+                  <div class="field-with-inline-link">
+                    <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
+                    <a href="#" class="field-request-change-link" id="profile-document-request-change" hidden>Alterar</a>
                   </div>
                 </div>
               </div>
 
-              <!-- Salvar no fim do formulário (mesmo do topo), igual ao Informações do love.com.br. -->
-              <div class="pt-2">
-                <button type="submit" class="informacoes-salvar-rodape">Salvar alterações</button>
+              <!-- Campos que saíram desta tela: ficam escondidos só para não
+                   perder o que já foi salvo (o formulário continua mandando). -->
+              <div hidden>
+                <input id="profile-name" type="text">
+                <input id="profile-birthdate" type="text" readonly autocomplete="off">
+                <div id="profile-avatar-wrap"></div>
+                <div id="profile-logo-wrap"></div>
+                <input id="profile-address" type="text">
+                <select id="profile-state"></select>
+                <input id="profile-city" type="text" list="profile-city-options">
+                <datalist id="profile-city-options"></datalist>
+                <textarea id="profile-description" maxlength="650"></textarea>
+                <p id="profile-description-count"></p>
+              </div>
+
+              <div>
+                <button type="submit" class="btn-primary settings-zola-salvar">Salvar alterações</button>
               </div>
             </form>
+          </div>
+
+          <!-- Contas conectadas: o login com o Google (antes em Preferências). -->
+          <div class="settings-zola-bloco">
+            <h3 class="settings-secao-titulo settings-secao-titulo--painel">Contas conectadas</h3>
+            <p class="settings-zola-sub">Conecte suas contas para entrar mais rápido.</p>
+          </div>
+          <div class="dash-card settings-zola-card">
+            <p class="settings-zola-rotulo">Conectado no momento</p>
+            <div class="settings-login-google" id="settings-login-google" hidden>
+              <div class="settings-login-linha">
+                <span class="settings-login-icone" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81Z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.27 14.29A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.57.38-2.29v-3.1H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.1Z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.61l4 3.1C6.22 6.88 8.87 4.77 12 4.77Z"/></svg>
+                </span>
+                <div class="min-w-0">
+                  <p class="settings-login-nome">Google</p>
+                  <p class="settings-login-email" id="settings-login-google-email">—</p>
+                </div>
+                <p class="settings-login-data" id="settings-login-google-data"></p>
+              </div>
+            </div>
+            <p class="settings-zola-vazio" id="settings-contas-vazio" hidden>Nenhuma conta conectada. Você entra com e-mail e senha.</p>
+          </div>
+        </div>
+
+        <!-- URLs: o endereço do site publicado (o mesmo de Construtor › Ajustes). -->
+        <div data-settings-panel="urls" style="display:none;">
+          <h3 class="settings-secao-titulo settings-secao-titulo--painel">Site</h3>
+          <div class="dash-card settings-zola-card">
+            <p class="settings-url-texto">O link principal do seu site.</p>
+            <p class="settings-url-base" id="settings-url-base">—</p>
+            <div class="settings-url-linha">
+              <div class="settings-url-caixa">
+                <span class="settings-url-slug" id="settings-url-slug">—</span>
+                <a href="paginas-site?tab=estilo" class="settings-url-editar">Editar</a>
+              </div>
+              <button type="button" class="btn-primary settings-url-copiar" id="settings-url-copiar">Copiar link</button>
+            </div>
+            <p class="settings-url-aviso" id="settings-url-aviso" aria-live="polite"></p>
+          </div>
+          <div class="settings-url-pro" id="settings-url-pro" hidden>
+            <p>Tenha um endereço só seu: <strong>suaempresa.love.com.br</strong>.</p>
+            <a href="planos" class="btn-secondary">Conhecer o plano Pro</a>
           </div>
         </div>
 
@@ -263,21 +282,6 @@
         <div data-settings-panel="preferencias" style="display:none;">
           <h3 class="settings-secao-titulo settings-secao-titulo--painel">Preferências</h3>
           <div class="dash-card mb-6">
-            <!-- Entrou com o Google: mostra o login conectado (sem senha). -->
-            <div class="settings-login-google" id="settings-login-google" hidden>
-              <h2 class="text-base font-bold text-zinc-900 settings-login-titulo">Login</h2>
-              <div class="settings-login-linha">
-                <span class="settings-login-icone" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81Z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.27 14.29A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.57.38-2.29v-3.1H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.1Z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.61l4 3.1C6.22 6.88 8.87 4.77 12 4.77Z"/></svg>
-                </span>
-                <div class="min-w-0">
-                  <p class="settings-login-nome">Google</p>
-                  <p class="settings-login-email" id="settings-login-google-email">—</p>
-                </div>
-                <p class="settings-login-data" id="settings-login-google-data"></p>
-              </div>
-            </div>
-
             <!-- Criou a conta com e-mail e senha: Alterar senha. -->
             <div id="settings-login-senha">
             <div class="dash-card-header">
@@ -503,7 +507,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=47"></script>
-  <script src="js/configuracoes.js?v=51"></script>
+  <script src="js/configuracoes.js?v=52"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

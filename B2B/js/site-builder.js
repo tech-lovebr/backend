@@ -1466,7 +1466,9 @@ async function ligarUrlDoSite(body, slugInput, siteSettings, companyName, isPro,
   slugInput.addEventListener('blur', () => pushHistory());
   checar();
 
-  // "Confirmar URL": grava na hora (se o site já foi publicado) e trava.
+  // Sem botão "Confirmar URL": a disponibilidade é checada enquanto digita
+  // (check verde / x vermelho + "Esta URL já está sendo usada.") e a URL é
+  // gravada ao Salvar/Publicar. O bloco abaixo só roda se o botão existir.
   body.querySelector('#site-slug-confirmar')?.addEventListener('click', async () => {
     aviso.hidden = true;
     const slug = slugInput.value;
@@ -1532,7 +1534,7 @@ function renderEstiloTab(body) {
       <p class="inspector-hint url-slug-error" id="site-slug-error" hidden>Esta URL já está sendo usada.</p>
       ${urlConfirmada
         ? '<button type="button" class="btn-secondary url-slug-acao" id="site-slug-alterar">Alterar URL</button>'
-        : '<button type="button" class="btn-primary url-slug-acao" id="site-slug-confirmar">Confirmar URL</button>'}
+        : ''}
     </div>` : `
     <div class="inspector-field">
       <span class="inspector-field-label">URL do site</span>

@@ -7969,6 +7969,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Ordem da lista de convidados: a que o anfitrião montou arrastando (guest.ordem,
+  // salvo no extra do convidado); sem ordem, vai para o fim em ordem alfabética.
+  /** @param {any} a @param {any} b */
+  function compararOrdemDeConvidados(a, b) {
+    const oa = typeof a.ordem === 'number' ? a.ordem : Infinity;
+    const ob = typeof b.ordem === 'number' ? b.ordem : Infinity;
+    if (oa !== ob) return oa - ob;
+    return (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' });
+  }
+
+  /**
+   * Move o convidado arrastado para antes/depois de outro e regrava a ordem.
+   * @param {string} idArrastado @param {string} idAlvo @param {boolean} depois
+   */
+  async function reordenarConvidado(idArrastado, idAlvo, depois) {
+    const ev = getActiveEvent();
+    if (!ev || !Array.isArray(ev.guests) || idArrastado === idAlvo) return;
+    const lista = [...ev.guests].sort(compararOrdemDeConvidados);
+    const de = lista.findIndex(g => g.id === idArrastado);
+    if (de < 0) return;
+    const [movido] = lista.splice(de, 1);
+    let para = lista.findIndex(g => g.id === idAlvo);
+    if (para < 0) return;
+    if (depois) para += 1;
+    lista.splice(para, 0, movido);
+    const mudaram = [];
+    lista.forEach((g, i) => { if (g.ordem !== i) { g.ordem = i; mudaram.push(g); } });
+    renderGuestsTable(currentRsvpFilter);
+    await Promise.all(mudaram.map(g => salvarConvidadoNoBanco(g)));
+  }
+
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
     currentRsvpFilter = activeFilter;
     const listEl = document.getElementById('rsvp-guests-table-body');
@@ -8040,7 +8071,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (guest.phone && guest.phone.includes(cleanSearch)) ||
         (guest.table && guest.table.toLowerCase().includes(cleanSearch));
       return matchesFilter && matchesSearch;
-    }).sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' }));
+    }).sort(compararOrdemDeConvidados);
 
     // O parêntese ao lado de "Convidados" mostra só quantos estão marcados
     // (ver atualizarLixeiraDeConvidados); o total já aparece nas abas acima.
@@ -8128,7 +8159,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${attendee.isPrimary ? `<input type="checkbox" class="gifts-select-all-check guest-select-check" data-guest-id="${escaparHtml(guest.id)}"${convidadosSelecionados.has(guest.id) ? ' checked' : ''} aria-label="Selecionar ${escaparHtml(guest.name || 'convidado')}">` : '<span class="guest-select-espaco" aria-hidden="true"></span>'}
               ${attendee.isPrimary ? '' : '<span class="guest-sub-conector" aria-hidden="true"></span>'}
               <span class="guest-tipo-badge ${attendee.isPrimary ? 'is-convidado' : 'is-acompanhante'}" title="${attendee.isPrimary ? 'Convidado' : 'Acompanhante'}">${attendee.isPrimary ? 'C' : 'A'}</span>
-              <span class="font-semibold text-zinc-900 block truncate">${attendee.name}</span>
+              <button type="button" class="guest-nome-btn font-semibold text-zinc-900 block truncate" title="Ver convidado">${attendee.name}</button>
             </div>
           </td>
           <td>
@@ -8145,13 +8176,45 @@ document.addEventListener('DOMContentLoaded', () => {
               ${statusBadges[guest.status] || guest.status}
             </div>
           </td>
-          <td class="love-tabela-col-mais">${botaoVerMaisHtml('Ver convidado')}</td>
+          <td class="love-tabela-col-mais">${attendee.isPrimary ? `<button type="button" class="guest-reordenar" draggable="true" title="Arraste para mudar a ordem" aria-label="Mudar a ordem de ${escaparHtml(guest.name || 'convidado')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 10.5h7M8.5 13.5h7"/></svg></button>` : ''}</td>
         `;
+        row.dataset.guestId = guest.id;
 
-        // Só o ⋯ abre o convidado: a linha fica livre para selecionar/copiar texto.
-        row.querySelector('.love-tabela-mais')?.addEventListener('click', (e) => {
+        // O nome abre o convidado (a linha continua livre para selecionar/copiar texto).
+        row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
           openAddGuestDrawer(guest.id);
+        });
+
+        // Alça: arrastar a reserva (convidado + acompanhantes) para outra posição.
+        const alca = row.querySelector('.guest-reordenar');
+        if (alca) {
+          alca.addEventListener('dragstart', (e) => {
+            e.stopPropagation();
+            if (!e.dataTransfer) return;
+            e.dataTransfer.setData('application/x-love-convidado', guest.id);
+            e.dataTransfer.effectAllowed = 'move';
+            listEl.querySelectorAll(`tr[data-guest-id="${CSS.escape(guest.id)}"]`).forEach(tr => tr.classList.add('is-arrastando'));
+          });
+          alca.addEventListener('dragend', () => {
+            listEl.querySelectorAll('.is-arrastando, .drop-antes, .drop-depois').forEach(tr => tr.classList.remove('is-arrastando', 'drop-antes', 'drop-depois'));
+          });
+        }
+        row.addEventListener('dragover', (e) => {
+          if (!e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
+          e.preventDefault();
+          const r = row.getBoundingClientRect();
+          const depois = e.clientY > r.top + r.height / 2;
+          listEl.querySelectorAll('.drop-antes, .drop-depois').forEach(tr => tr.classList.remove('drop-antes', 'drop-depois'));
+          row.classList.add(depois ? 'drop-depois' : 'drop-antes');
+        });
+        row.addEventListener('drop', (e) => {
+          if (!e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
+          e.preventDefault();
+          const arrastado = e.dataTransfer.getData('application/x-love-convidado');
+          const depois = row.classList.contains('drop-depois');
+          listEl.querySelectorAll('.drop-antes, .drop-depois, .is-arrastando').forEach(tr => tr.classList.remove('drop-antes', 'drop-depois', 'is-arrastando'));
+          reordenarConvidado(arrastado, guest.id, depois);
         });
 
         listEl.appendChild(row);

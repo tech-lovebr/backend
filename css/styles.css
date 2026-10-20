@@ -9068,3 +9068,14 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-view
 .floorplan-add-convidado svg { width: 14px; height: 14px; }
 .floorplan-add-convidado:hover { color: #181D24; background: #F4F4F5; }
 body[data-theme="dark"] .floorplan-add-convidado { color: #9CC3E4; }
+
+/* Meus convidados: o nome abre o convidado; alça de arrastar para mudar a ordem. */
+#rsvp-guests-table-body .guest-nome-btn { padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; font: inherit; font-weight: 600; max-width: 100%; }
+#rsvp-guests-table-body .guest-nome-btn:hover { text-decoration: underline; text-underline-offset: 2px; }
+#rsvp-guests-table-body .guest-reordenar { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; border-radius: 8px; color: #A1A1AA; cursor: grab; }
+#rsvp-guests-table-body .guest-reordenar:hover { color: #181D24; background: #F4F4F5; }
+#rsvp-guests-table-body .guest-reordenar:active { cursor: grabbing; }
+#rsvp-guests-table-body .guest-reordenar svg { width: 18px; height: 18px; }
+#rsvp-guests-table-body tr.is-arrastando td { opacity: .45; }
+#rsvp-guests-table-body tr.drop-antes td { box-shadow: inset 0 2px 0 #181D24; }
+#rsvp-guests-table-body tr.drop-depois td { box-shadow: inset 0 -2px 0 #181D24; }

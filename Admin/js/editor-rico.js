@@ -18,6 +18,16 @@
    ========================================================================== */
 
 const EditorRico = (() => {
+  /** @param {string} caminhos */
+  const ico = caminhos => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${caminhos}</svg>`;
+  const CHEVRON = '<svg class="editor-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>';
+  const ALINHAR = {
+    justifyLeft: { rotulo: 'À esquerda', icone: ico('<path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h14"/>') },
+    justifyCenter: { rotulo: 'Centralizado', icone: ico('<path d="M4 6h16"/><path d="M8 12h8"/><path d="M6 18h12"/>') },
+    justifyRight: { rotulo: 'À direita', icone: ico('<path d="M4 6h16"/><path d="M10 12h10"/><path d="M6 18h14"/>') },
+    justifyFull: { rotulo: 'Justificado', icone: ico('<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h12"/>') }
+  };
+
   const BARRA = `
     <div class="editor-barra">
       <button type="button" class="editor-btn" data-comando="bold" title="Negrito" aria-label="Negrito"><b>B</b></button>
@@ -35,8 +45,19 @@ const EditorRico = (() => {
 
       <span class="editor-separador"></span>
 
-      <button type="button" class="editor-btn" data-comando="insertUnorderedList" title="Lista" aria-label="Lista">&bull;&mdash;</button>
-      <button type="button" class="editor-btn" data-comando="insertOrderedList" title="Lista numerada" aria-label="Lista numerada">1&mdash;</button>
+      <button type="button" class="editor-btn" data-comando="insertUnorderedList" title="Lista com marcadores" aria-label="Lista com marcadores">${ico('<path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M5 6v.01"/><path d="M5 12v.01"/><path d="M5 18v.01"/>')}</button>
+      <button type="button" class="editor-btn" data-comando="insertOrderedList" title="Lista numerada" aria-label="Lista numerada">${ico('<path d="M11 6h9"/><path d="M11 12h9"/><path d="M12 18h8"/><path d="M4 16a2 2 0 1 1 4 0c0 .591 -.5 1 -1 1.5l-3 2.5h4"/><path d="M6 10v-6l-2 2"/>')}</button>
+      <button type="button" class="editor-btn" data-comando="outdent" title="Diminuir recuo" aria-label="Diminuir recuo">${ico('<path d="M20 6h-7"/><path d="M20 12h-9"/><path d="M20 18h-7"/><path d="M8 8l-4 4l4 4"/>')}</button>
+      <button type="button" class="editor-btn" data-comando="indent" title="Aumentar recuo" aria-label="Aumentar recuo">${ico('<path d="M20 6h-11"/><path d="M20 12h-7"/><path d="M20 18h-11"/><path d="M4 8l4 4l-4 4"/>')}</button>
+
+      <div class="editor-menu-wrap">
+        <button type="button" class="editor-btn editor-btn-menu" data-abrir="alinhar" title="Alinhamento do parágrafo" aria-label="Alinhamento do parágrafo">
+          <span class="editor-btn-icone" data-icone-alinhar>${ALINHAR.justifyLeft.icone}</span>${CHEVRON}
+        </button>
+        <div class="editor-menu" data-menu="alinhar" hidden>
+          ${Object.entries(ALINHAR).map(([cmd, a]) => `<button type="button" class="editor-menu-item" data-alinhar="${cmd}">${a.icone}<span>${a.rotulo}</span></button>`).join('')}
+        </div>
+      </div>
 
       <span class="editor-separador"></span>
 
@@ -51,6 +72,27 @@ const EditorRico = (() => {
       <button type="button" class="editor-btn" data-comando="unlink" title="Remover link" aria-label="Remover link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 22v-2" /><path d="M9 15l3 -3" /><path d="M22 17h-2" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072" /><path d="M3 3l18 18" /><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /></svg>
       </button>
+
+      <span class="editor-separador"></span>
+
+      <div class="editor-menu-wrap">
+        <button type="button" class="editor-btn editor-btn-menu" data-abrir="tabela" title="Tabela" aria-label="Tabela">
+          ${ico('<path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"/><path d="M3 10h18"/><path d="M10 3v18"/>')}${CHEVRON}
+        </button>
+        <div class="editor-menu editor-menu-tabela" data-menu="tabela" hidden>
+          <div class="editor-grade" data-grade>${Array.from({ length: 36 }, (_, i) => `<span data-l="${Math.floor(i / 6) + 1}" data-c="${(i % 6) + 1}"></span>`).join('')}</div>
+          <p class="editor-grade-rotulo" data-grade-rotulo>Inserir tabela</p>
+          <div class="editor-menu-tabela-acoes" data-acoes-tabela hidden>
+            <button type="button" class="editor-menu-item" data-tabela="linha">Adicionar linha abaixo</button>
+            <button type="button" class="editor-menu-item" data-tabela="coluna">Adicionar coluna à direita</button>
+            <button type="button" class="editor-menu-item" data-tabela="excluir-linha">Excluir linha</button>
+            <button type="button" class="editor-menu-item" data-tabela="excluir-coluna">Excluir coluna</button>
+            <button type="button" class="editor-menu-item editor-menu-perigo" data-tabela="excluir">Excluir tabela</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="editor-btn" data-linha title="Linha horizontal" aria-label="Linha horizontal">${ico('<path d="M4 12h16"/>')}</button>
+      <button type="button" class="editor-btn" data-limpar title="Limpar formatação" aria-label="Limpar formatação">${ico('<path d="M17 15l4 4m0 -4l-4 4"/><path d="M7 6v-1h11v1"/><path d="M7 19l4 0"/><path d="M13 5l-4 14"/>')}</button>
     </div>`;
 
   function montar(host, { placeholder = 'Escreva aqui.', aoMudar } = {}) {
@@ -204,6 +246,109 @@ const EditorRico = (() => {
       if (url) aplicar('createLink', url);
     });
 
+    /* ---- Menus da barra (alinhamento e tabela) */
+    const fecharMenus = () => host.querySelectorAll('[data-menu]').forEach(m => { m.hidden = true; });
+    host.querySelectorAll('[data-abrir]').forEach(btn => {
+      btn.addEventListener('mousedown', e => e.preventDefault());
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const menu = host.querySelector(`[data-menu="${btn.dataset.abrir}"]`);
+        const abrir = menu.hidden;
+        fecharMenus();
+        if (!abrir) return;
+        if (btn.dataset.abrir === 'tabela') host.querySelector('[data-acoes-tabela]').hidden = !celulaAtual();
+        menu.hidden = false;
+      });
+    });
+    host.querySelectorAll('[data-menu]').forEach(m => m.addEventListener('mousedown', e => e.preventDefault()));
+    document.addEventListener('click', (e) => { if (!host.contains(/** @type {Node} */ (e.target))) fecharMenus(); });
+
+    host.querySelectorAll('[data-alinhar]').forEach(btn => btn.addEventListener('click', () => {
+      aplicar(btn.dataset.alinhar);
+      host.querySelector('[data-icone-alinhar]').innerHTML = ALINHAR[btn.dataset.alinhar].icone;
+      fecharMenus();
+    }));
+
+    /* ---- Tabela: grade 6×6 para escolher o tamanho, como nos editores de texto */
+    const grade = host.querySelector('[data-grade]');
+    const rotuloGrade = host.querySelector('[data-grade-rotulo]');
+    grade.addEventListener('mouseover', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (!alvo.dataset.l) return;
+      const l = Number(alvo.dataset.l), c = Number(alvo.dataset.c);
+      grade.querySelectorAll('span').forEach(q => q.classList.toggle('is-on', Number(q.dataset.l) <= l && Number(q.dataset.c) <= c));
+      rotuloGrade.textContent = `${l} × ${c}`;
+    });
+    grade.addEventListener('mouseleave', () => {
+      grade.querySelectorAll('span').forEach(q => q.classList.remove('is-on'));
+      rotuloGrade.textContent = 'Inserir tabela';
+    });
+    grade.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (!alvo.dataset.l) return;
+      const linha = `<tr>${'<td><br></td>'.repeat(Number(alvo.dataset.c))}</tr>`;
+      aplicar('insertHTML', `<table><tbody>${linha.repeat(Number(alvo.dataset.l))}</tbody></table><p><br></p>`);
+      fecharMenus();
+    });
+
+    /** @returns {HTMLTableCellElement | null} */
+    function celulaAtual() {
+      const sel = window.getSelection();
+      let no = sel.rangeCount && dentro(sel.anchorNode) ? sel.anchorNode : (selecao && selecao.startContainer);
+      if (no && no.nodeType === 3) no = no.parentNode;
+      const cel = no && no.nodeType === 1 ? /** @type {HTMLElement} */ (no).closest('td, th') : null;
+      return cel && corpo.contains(cel) ? /** @type {HTMLTableCellElement} */ (cel) : null;
+    }
+
+    host.querySelectorAll('[data-tabela]').forEach(btn => btn.addEventListener('click', () => {
+      const cel = celulaAtual();
+      fecharMenus();
+      if (!cel) return;
+      const tr = /** @type {HTMLTableRowElement} */ (cel.parentElement);
+      const tabela = cel.closest('table');
+      const col = cel.cellIndex;
+      const acao = btn.dataset.tabela;
+      if (acao === 'linha') {
+        const nova = /** @type {HTMLTableRowElement} */ (tr.cloneNode(true));
+        [...nova.cells].forEach(c => { c.innerHTML = '<br>'; });
+        tr.after(nova);
+      } else if (acao === 'coluna') {
+        [...tabela.rows].forEach(r => {
+          const ref = r.cells[col];
+          const nova = document.createElement(ref ? ref.tagName.toLowerCase() : 'td');
+          nova.innerHTML = '<br>';
+          if (ref) ref.after(nova); else r.appendChild(nova);
+        });
+      } else if (acao === 'excluir-linha') {
+        if (tabela.rows.length > 1) tr.remove(); else tabela.remove();
+      } else if (acao === 'excluir-coluna') {
+        if (tr.cells.length > 1) [...tabela.rows].forEach(r => r.cells[col]?.remove());
+        else tabela.remove();
+      } else {
+        tabela.remove();
+      }
+      corpo.focus();
+      contar();
+    }));
+
+    /* ---- Linha horizontal e limpar formatação */
+    const botaoLinha = host.querySelector('[data-linha]');
+    botaoLinha.addEventListener('mousedown', e => e.preventDefault());
+    botaoLinha.addEventListener('click', () => aplicar('insertHTML', '<hr><p><br></p>'));
+
+    /* Limpar: tira negrito, itálico, sublinhado, cor e link da seleção e
+       devolve o bloco a parágrafo comum, alinhado à esquerda. */
+    const botaoLimpar = host.querySelector('[data-limpar]');
+    botaoLimpar.addEventListener('mousedown', e => e.preventDefault());
+    botaoLimpar.addEventListener('click', () => {
+      aplicar('removeFormat');
+      aplicar('unlink');
+      if (!celulaAtual()) aplicar('formatBlock', '<p>');
+      aplicar('justifyLeft');
+      host.querySelector('[data-icone-alinhar]').innerHTML = ALINHAR.justifyLeft.icone;
+      sincronizarBloco();
+    });
+
     /* Texto solto na raiz do contenteditable faz o formatBlock agir sobre o
        editor inteiro em vez do parágrafo — é a origem do "cliquei em Título 3
        e o resultado foi diferente a cada vez". Envolver em <p> na entrada
@@ -212,7 +357,7 @@ const EditorRico = (() => {
       const caixa = document.createElement('div');
       caixa.innerHTML = html || '';
 
-      const blocos = ['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'UL', 'OL', 'DIV', 'PRE'];
+      const blocos = ['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'UL', 'OL', 'DIV', 'PRE', 'TABLE', 'HR'];
       let solto = null;
 
       [...caixa.childNodes].forEach(no => {

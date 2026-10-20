@@ -8646,6 +8646,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHostAddGuest = document.getElementById('btn-host-add-guest');
   if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => openAddGuestDrawer());
+  // Mapear mesas › "+ Adicionar" ao lado de Convidados: o mesmo drawer.
+  document.getElementById('btn-floorplan-add-guest')?.addEventListener('click', () => openAddGuestDrawer());
   const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');
   const addGuestDrawerBackdrop = document.getElementById('add-guest-drawer-backdrop');
   if (btnCloseAddGuestDrawer) btnCloseAddGuestDrawer.addEventListener('click', closeAddGuestDrawer);

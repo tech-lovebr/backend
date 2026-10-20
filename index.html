@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_texturaAparencia">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_mesasAddConvidado">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2195,7 +2195,14 @@
             <div class="floorplan-body">
               <aside id="floorplan-guests-panel" class="floorplan-sidebar">
                 <div class="builder-panel-tab-body">
-                  <div class="builder-el-group-title">Convidados</div>
+                  <div class="floorplan-convidados-topo">
+                    <div class="builder-el-group-title">Convidados</div>
+                    <!-- Mesmo drawer do "Adicionar convidado" de Meus convidados -->
+                    <button type="button" id="btn-floorplan-add-guest" class="floorplan-add-convidado">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                      <span>Adicionar</span>
+                    </button>
+                  </div>
                   <div id="floorplan-guest-cards" class="floorplan-guest-cards">
                     <!-- Renderizado dinamicamente via JS: um card arrastável por convidado -->
                   </div>
@@ -5549,7 +5556,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_girarDentro"></script>
+  <script src="js/app.js?v=20261020_mesasAddConvidado"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_semCaixaRotulo"></script>

@@ -9061,3 +9061,10 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-view
   background-size: 20px 20px !important;
   background-position: 12px 12px !important;
 }
+
+/* Mapear mesas › título "Convidados" com "+ Adicionar" à direita. */
+.floorplan-convidados-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.floorplan-add-convidado { display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px; border: 0; background: transparent; border-radius: 8px; font-size: 13px; font-weight: 600; color: #183b54; cursor: pointer; }
+.floorplan-add-convidado svg { width: 14px; height: 14px; }
+.floorplan-add-convidado:hover { color: #181D24; background: #F4F4F5; }
+body[data-theme="dark"] .floorplan-add-convidado { color: #9CC3E4; }

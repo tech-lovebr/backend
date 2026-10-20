@@ -53,7 +53,7 @@ function initSettingsTabs() {
     btn.addEventListener('click', () => {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
       // O título da página é o nome da aba escolhida no menu lateral.
-      setText('settings-titulo-pagina', btn.textContent.trim());
+      setText('settings-titulo-pagina', btn.dataset.titulo || btn.textContent.trim());
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
         panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
       });
@@ -349,9 +349,24 @@ function initCompanyForm() {
     }
     [addressInput, stateSelect, cityInput].forEach(el => { el.disabled = useProfile; });
   };
-  sameAddressCheckbox.checked = p.useProfileAddress !== false;
-  applySameAddressState();
-  sameAddressCheckbox.addEventListener('change', applySameAddressState);
+  // Sem "usar o mesmo endereço do perfil": o endereço é sempre o da empresa.
+  // Quem usava o do perfil começa com ele já preenchido aqui.
+  if (p.useProfileAddress !== false && !p.businessAddress) {
+    sameAddressCheckbox.checked = true;
+    applySameAddressState();
+  }
+  sameAddressCheckbox.checked = false;
+  [addressInput, stateSelect, cityInput].forEach(el => { el.disabled = false; });
+
+  /* -------- Descrição da empresa (cresce com o texto, até 650) -------- */
+  const descricaoInput = document.getElementById('company-description');
+  const descricaoContador = document.getElementById('company-description-count');
+  const contarDescricao = () => { if (descricaoContador) descricaoContador.textContent = `${descricaoInput.value.length}/650`; };
+  if (descricaoInput) {
+    descricaoInput.value = (p.description || '').slice(0, 650);
+    descricaoInput.addEventListener('input', contarDescricao);
+    contarDescricao();
+  }
 
   /* -------- Raio de atendimento -------- */
   const radiusInput = document.getElementById('company-service-radius');
@@ -415,6 +430,11 @@ function initCompanyForm() {
     p.depositDeadlineDays = Number(document.getElementById('company-deposit-deadline').value) || null;
     p.requiresFullPaymentByEvent = requiresFullPayment;
     p.cancellationPolicy = document.getElementById('company-cancellation-policy').value.trim();
+    if (descricaoInput) {
+      p.description = descricaoInput.value.trim();
+      const descricaoPerfil = document.getElementById('profile-description');
+      if (descricaoPerfil) descricaoPerfil.value = p.description;
+    }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
     salvarEmpresaNoBanco(p);
     showToast('Informações da empresa atualizadas.');
@@ -443,7 +463,8 @@ async function salvarEmpresaNoBanco(p) {
       deposit_percent: p.depositPercent ?? null,
       deposit_deadline_days: p.depositDeadlineDays ?? null,
       requires_full_payment_by_event: !!p.requiresFullPaymentByEvent,
-      cancellation_policy: p.cancellationPolicy || null
+      cancellation_policy: p.cancellationPolicy || null,
+      description: p.description || null
     })
     .eq('id', empresaId(session));
 

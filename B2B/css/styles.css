@@ -9200,3 +9200,32 @@ html body:not([data-theme="dark"]) .guias-menu-table .guide-link--active:not(#lo
   background-color: #F4F4F5 !important; color: #333333 !important; font-weight: 700 !important;
   border: 1px solid transparent !important; box-shadow: none !important;
 }
+
+/* Configurações › Dados da empresa: caixas separadas (endereço / forma e
+   condições de pagamento) no mesmo modelo de Suas informações. */
+html body .settings-zola-forms:not(#love-h-a) { display: flex; flex-direction: column; gap: 1.5rem; }
+html body .settings-zola-forms > .settings-zola-card:not(#love-h-a) {
+  background: #FFFFFF; border: 1px solid #E4E4E7 !important; border-radius: 10px; padding: 2rem 2.5rem; margin: 0; max-width: 40rem;
+}
+html body .settings-zola-forms > .settings-zola-bloco:not(#love-h-a) { margin-top: 0.5rem; }
+html body .settings-endereco-linha:not(#love-h-a) { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 1rem; }
+html body .settings-endereco-linha--metade:not(#love-h-a) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+html body .settings-zola-form .field-select:not(#love-h-a) { height: 44px; font-size: 0.9375rem; }
+html body .settings-campo-nota:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: -0.2rem 0 0.5rem; }
+/* Descrição: sem alça de arrastar; começa num tamanho fixo e cresce com o texto. */
+html body textarea.settings-descricao:not(#love-h-a) { resize: none !important; min-height: 110px; field-sizing: content; overflow: hidden; font-size: 0.9375rem; }
+html body .settings-descricao-contador:not(#love-h-a) { font-size: 0.75rem; color: #A1A1AA; text-align: right; margin: 0.35rem 0 0; }
+/* Raio de atendimento: sem as bolinhas embaixo; barra um pouco mais grossa. */
+html body .settings-raio:not(#love-h-a) { max-width: 100%; }
+html body .settings-raio .b2b-range-ticks:not(#love-h-a) { display: none !important; }
+html body .settings-raio .b2b-range-slider:not(#love-h-a) { height: 8px; }
+html body .settings-raio .b2b-range-slider::-webkit-slider-runnable-track { height: 8px; }
+html body .settings-raio .b2b-range-slider::-moz-range-track { height: 8px; }
+html body .settings-raio .b2b-range-slider::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -6px; }
+html body .settings-raio .b2b-range-slider::-moz-range-thumb { width: 20px; height: 20px; }
+html body .settings-raio .b2b-range-track-wrap:not(#love-h-a) { justify-content: center; }
+body[data-theme="dark"] .settings-zola-forms > .settings-zola-card { background: #1F1F1F !important; border-color: #404040 !important; }
+@media (max-width: 640px) {
+  html body .settings-zola-forms > .settings-zola-card:not(#love-h-a) { padding: 1.25rem; }
+  html body .settings-endereco-linha--metade:not(#love-h-a) { grid-template-columns: 1fr; }
+}

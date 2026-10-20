@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=687">
+  <link rel="stylesheet" href="css/styles.css?v=688">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -31,7 +31,7 @@
       <div id="shell-topbar"></div>
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900" id="settings-titulo-pagina">Meu perfil</h2>
+          <h2 class="text-xl font-bold text-zinc-900" id="settings-titulo-pagina">Suas informações</h2>
         </div>
 
         <!-- Menu de abas na lateral (como o Account settings da Zola) e o
@@ -39,9 +39,9 @@
         <div class="settings-shell settings-shell--lateral">
         <nav class="category-tabs-bar" id="settings-tabs" aria-label="Configurações">
           <p class="settings-nav-titulo">Sua conta</p>
-          <button type="button" class="category-tab active" data-settings-tab="perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg><span>Meu perfil</span></button>
+          <button type="button" class="category-tab active" data-settings-tab="perfil" data-titulo="Suas informações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg><span>Informações</span></button>
           <button type="button" class="category-tab" data-settings-tab="preferencias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h8m4 0h4M4 12h2m4 0h10M4 18h11m4 0h1"/><path d="M14 4v4M8 10v4M17 16v4"/></svg><span>Preferências</span></button>
-          <button type="button" class="category-tab" data-settings-tab="empresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg><span>Minha Empresa</span></button>
+          <button type="button" class="category-tab" data-settings-tab="empresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg><span>Dados da empresa</span></button>
           <div class="settings-nav-divisor" role="separator"></div>
           <p class="settings-nav-titulo">Suas configurações</p>
           <button type="button" class="category-tab" data-settings-tab="urls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 15l6 -6"/><path d="M11 6l.46 -.54a5 5 0 0 1 7.07 7.07l-.53 .47"/><path d="M13 18l-.4 .53a5.07 5.07 0 0 1 -7.12 0a4.97 4.97 0 0 1 0 -7.07l.52 -.46"/></svg><span>URLs</span></button>
@@ -169,101 +169,94 @@
         </div>
 
         <div data-settings-panel="empresa" style="display:none;">
-          <div class="dash-card mb-6">
-            <form id="company-form" class="flex flex-col gap-5">
-              <div class="form-section-header form-section-header--sem-linha">
-                <span>Endereço comercial</span>
-              </div>
+          <!-- Dados da empresa em caixas separadas (como Suas informações):
+               1) endereço, descrição e raio; 2) forma e condições de pagamento. -->
+          <form id="company-form" class="settings-zola-forms">
+            <!-- O endereço agora é sempre o da empresa (sem "usar o do perfil"). -->
+            <input type="checkbox" id="company-same-address" hidden>
 
-              <label class="checkbox-row">
-                <input type="checkbox" id="company-same-address" checked>
-                Usar o mesmo endereço do Perfil
-              </label>
-
-              <div class="grid grid-cols-1 sm:grid-cols-[2fr_90px_1fr] gap-4">
+            <div class="dash-card settings-zola-card">
+              <div class="settings-zola-form">
                 <div>
                   <label for="company-address" class="field-label">Endereço</label>
                   <input id="company-address" type="text" class="field-input" placeholder="Rua, número, bairro">
                 </div>
-                <div>
-                  <label for="company-state" class="field-label">Estado</label>
-                  <select id="company-state" class="field-select"></select>
-                </div>
-                <div>
-                  <label for="company-city" class="field-label">Cidade</label>
-                  <input id="company-city" type="text" class="field-input" list="company-city-options" placeholder="Cidade">
-                  <datalist id="company-city-options"></datalist>
-                </div>
-              </div>
-
-              <div>
-                <label for="company-service-radius" class="field-label">Raio de atendimento</label>
-                <p class="text-xs text-zinc-500 mb-2">Essa informação não aparece na vitrine para o cliente</p>
-                <div class="b2b-range-row" style="max-width:50%;">
-                  <div class="b2b-range-track-wrap">
-                    <input type="range" id="company-service-radius" class="b2b-range-slider" min="0" max="6" step="1" value="0">
-                    <div class="b2b-range-ticks" id="company-service-radius-ticks"></div>
+                <div class="settings-endereco-linha">
+                  <div>
+                    <label for="company-state" class="field-label">Estado</label>
+                    <select id="company-state" class="field-select"></select>
                   </div>
-                  <span class="b2b-range-value" id="company-service-radius-value">50 km</span>
+                  <div>
+                    <label for="company-city" class="field-label">Cidade</label>
+                    <input id="company-city" type="text" class="field-input" list="company-city-options" placeholder="Cidade">
+                    <datalist id="company-city-options"></datalist>
+                  </div>
+                </div>
+                <div>
+                  <label for="company-description" class="field-label">Descrição da empresa</label>
+                  <textarea id="company-description" class="field-textarea settings-descricao" maxlength="650" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
+                  <p class="settings-descricao-contador" id="company-description-count">0/650</p>
+                </div>
+                <div>
+                  <label for="company-service-radius" class="field-label">Raio de atendimento</label>
+                  <p class="settings-campo-nota">Essa informação não aparece na vitrine para o cliente</p>
+                  <div class="b2b-range-row settings-raio">
+                    <div class="b2b-range-track-wrap">
+                      <input type="range" id="company-service-radius" class="b2b-range-slider" min="0" max="6" step="1" value="0">
+                      <div class="b2b-range-ticks" id="company-service-radius-ticks" hidden></div>
+                    </div>
+                    <span class="b2b-range-value" id="company-service-radius-value">50 km</span>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <!-- Prazo médio de entrega saiu da tela (fica escondido só para não
-                   perder o que já foi salvo). -->
-              <div hidden>
-                <input id="company-delivery-time" type="text" class="field-input">
-              </div>
-
-              <div class="form-section-header">
-                <span>Forma e condições de pagamento</span>
-              </div>
-
-              <!-- Mesma largura do "Sinal mínimo" logo abaixo (grade de 2 colunas). -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="settings-zola-bloco">
+              <h3 class="settings-secao-titulo settings-secao-titulo--painel">Forma e condições de pagamento</h3>
+            </div>
+            <div class="dash-card settings-zola-card">
+              <div class="settings-zola-form">
                 <div>
                   <label for="company-max-installments" class="field-label">Em quantas vezes sem juros?</label>
-                  <p class="text-xs text-zinc-500 mb-2">Os meses sem juros são pagos por você, os depois disso aparecem como juros para o cliente.</p>
+                  <p class="settings-campo-nota">Os meses sem juros são pagos por você, os depois disso aparecem como juros para o cliente.</p>
                   <select id="company-max-installments" class="field-select"></select>
                 </div>
-              </div>
 
-              <div>
-                <label class="field-label">Pagamento deve estar totalmente quitado até o dia do evento?</label>
-                <div class="plan-billing-toggle" id="company-full-payment-toggle" style="margin-bottom:0; width:fit-content;">
-                  <button type="button" class="plan-billing-option" data-full-payment="nao">
-                    <span class="plan-billing-option-title">Não</span>
-                  </button>
-                  <button type="button" class="plan-billing-option" data-full-payment="sim">
-                    <span class="plan-billing-option-title">Sim</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label for="company-deposit-percent" class="field-label">Sinal mínimo para reserva de data (%)</label>
-                  <input id="company-deposit-percent" type="text" inputmode="numeric" class="field-input" placeholder="Ex: 30%">
+                  <label class="field-label">Pagamento deve estar totalmente quitado até o dia do evento?</label>
+                  <div class="plan-billing-toggle" id="company-full-payment-toggle" style="margin-bottom:0; width:fit-content;">
+                    <button type="button" class="plan-billing-option" data-full-payment="nao">
+                      <span class="plan-billing-option-title">Não</span>
+                    </button>
+                    <button type="button" class="plan-billing-option" data-full-payment="sim">
+                      <span class="plan-billing-option-title">Sim</span>
+                    </button>
+                  </div>
                 </div>
+
+                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                  <div>
+                    <label for="company-deposit-percent" class="field-label">Sinal mínimo para reserva de data (%)</label>
+                    <input id="company-deposit-percent" type="text" inputmode="numeric" class="field-input" placeholder="Ex: 30%">
+                  </div>
+                  <div>
+                    <label for="company-deposit-deadline" class="field-label">Restante pago até (dias antes do evento)</label>
+                    <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15">
+                  </div>
+                </div>
+
+                <!-- Campos que saíram da tela (escondidos só para não perder o que já foi salvo). -->
+                <div hidden>
+                  <input id="company-delivery-time" type="text">
+                  <textarea id="company-cancellation-policy"></textarea>
+                </div>
+
                 <div>
-                  <label for="company-deposit-deadline" class="field-label">Restante pago até (dias antes do evento)</label>
-                  <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15">
+                  <button type="submit" class="informacoes-salvar-rodape settings-zola-salvar">Salvar alterações</button>
                 </div>
               </div>
-
-              <!-- Salvar no fim do formulário (mesmo do topo), igual ao Informações do love.com.br. -->
-              <div class="pt-2">
-                <button type="submit" class="informacoes-salvar-rodape">Salvar alterações</button>
-              </div>
-
-
-              <!-- Política de cancelamento e remarcação saiu da tela (escondida
-                   só para não perder o que já foi salvo). -->
-              <div hidden>
-                <textarea id="company-cancellation-policy" class="field-textarea"></textarea>
-              </div>
-
-            </form>
-          </div>
+            </div>
+          </form>
 
           <!-- Portfólio saiu da tela (escondido só para o JS e as fotos já salvas continuarem). -->
           <div class="dash-card" hidden>
@@ -509,7 +502,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=49"></script>
-  <script src="js/configuracoes.js?v=58"></script>
+  <script src="js/configuracoes.js?v=59"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

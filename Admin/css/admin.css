@@ -3606,3 +3606,9 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .sidebar-perfil-botao[aria-expanded="true"] .sidebar-perfil-nome,
 .sidebar-perfil-botao[aria-expanded="true"] .sidebar-perfil-icone { color: var(--text); }
 .sidebar-perfil-seta { width: 15px; height: 15px; color: #7b8798; }
+
+/* Menu do perfil: só o e-mail no topo (sem divisória pesada) e Homepage
+   com o ícone de abrir em outra aba à direita. */
+.sidebar-perfil .admin-user-menu-email { padding: .5rem .625rem; font-size: .8125rem; color: var(--text); }
+.admin-user-menu-externo { justify-content: space-between; }
+.admin-user-menu-externo svg { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }

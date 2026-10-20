@@ -183,11 +183,14 @@ function renderSidebar(admin) {
         <svg class="sidebar-perfil-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
       </button>
       <div class="admin-user-menu" id="user-menu" hidden>
-        <p class="admin-user-menu-nome">${escapeHtml(admin.name || 'Administrador')}</p>
         <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
 
         <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
         <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
+        <a href="https://love.com.br" target="_blank" rel="noopener noreferrer" class="admin-user-menu-item admin-user-menu-externo">
+          Homepage
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"/><path d="M11 13l9 -9"/><path d="M15 4h5v5"/></svg>
+        </a>
       </div>
     </div>
     <nav class="admin-nav">${sections}</nav>`;

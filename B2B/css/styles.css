@@ -9334,3 +9334,16 @@ html body .settings-imagens .profile-logo-hint:not(#love-h-a) { margin-top: 0.4r
 @media (max-width: 640px) {
   html body .settings-imagens:not(#love-h-a) { grid-template-columns: 1fr; }
 }
+
+/* Mídia › Adicionar imagens: as 6 vagas aparecem de uma vez (o "Adicionar"
+   e quadradinhos vazios ao lado), em grade, sem precisar rolar. */
+html body #product-gallery-list.product-gallery-strip:not(#love-h-a) { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.6rem; overflow: visible; }
+html body #product-gallery-list .product-gallery-tile:not(#love-h-a),
+html body #product-gallery-list .product-gallery-add:not(#love-h-a),
+html body #product-gallery-list .product-gallery-vaga:not(#love-h-a) { width: 100%; height: auto; aspect-ratio: 1; }
+html body .product-gallery-vaga:not(#love-h-a) {
+  display: block; border: 1.5px dashed #E4E4E7; border-radius: 10px; background: #FCFCFC; cursor: pointer;
+  transition: border-color .15s ease;
+}
+html body .product-gallery-vaga:hover:not(#love-h-a) { border-color: #A1A1AA; }
+body[data-theme="dark"] .product-gallery-vaga { background: #1F1F1F !important; border-color: #404040 !important; }

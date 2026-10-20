@@ -736,7 +736,11 @@ function renderGalleryImages() {
       <span class="image-upload-zone-text">Adicionar</span>
       <input type="file" accept="image/*" multiple class="image-upload-zone-input" id="product-gallery-input">
     </label>
-  `);
+  `) + (cheio ? '' : Array.from({ length: PRODUCT_GALLERY_MAX - currentGalleryImages.length - 1 }, () => `
+    <label class="product-gallery-vaga" for="product-gallery-input" title="Adicionar imagem" aria-hidden="true"></label>
+  `).join(''));
+  // Quadradinhos vazios ao lado do "Adicionar": mostram que cabem várias
+  // imagens (até 6) e também abrem a escolha de arquivos.
 
   const count = document.getElementById('product-gallery-count');
   if (count) count.textContent = `${currentGalleryImages.length}/${PRODUCT_GALLERY_MAX}`;

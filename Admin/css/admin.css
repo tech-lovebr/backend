@@ -3428,3 +3428,30 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .login-voltar { display: inline-block; margin-top: 1.25rem; font-size: .75rem; font-weight: 600; color: #18181B; text-decoration: none; }
 .login-voltar:hover { text-decoration: underline; }
 .login-erro.login-ok { color: #15803D; background: #F0FDF4; }
+
+/* ------------------------------------------------ Sidebar sem árvore
+   Ícones maiores e traço fino; texto em Inter normal (sem negrito), como na
+   referência. Os subitens só recuam até a linha do texto do grupo, sem a
+   linha vertical nem os galhos. */
+.admin-nav-item,
+.admin-nav-grupo-toggle {
+  font-size: .9375rem;
+  font-weight: 500;
+  gap: .75rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+.admin-nav-item svg:not(.sidebar-chevron) { width: 22px; height: 22px; stroke-width: 1.6px; }
+.admin-nav-item.is-active svg:not(.sidebar-chevron),
+.admin-nav-grupo-linha.is-active .admin-nav-item svg:not(.sidebar-chevron) { stroke-width: 1.8px; }
+.admin-nav-item.is-active { font-weight: 600; }
+
+.admin-nav-subitem::before,
+.admin-nav-subitem::after { content: none !important; display: none !important; }
+.admin-nav-subitem {
+  margin-left: 0;
+  padding: .4375rem .5rem .4375rem calc(.5rem + 30px + .75rem) !important;
+  font-size: .875rem;
+  font-weight: 400;
+}
+.admin-nav-subitem.is-active { font-weight: 500; }

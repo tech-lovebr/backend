@@ -8793,3 +8793,7 @@ html body:not([data-theme="dark"]) #builder-device-toggle:not(#love-h-a) { backg
 /* Aparência (Convite digital e Save the Date): fundo atrás do celular/tablet/
    desktop em cinza clarinho (#F4F4F5), sem o tom azulado. */
 html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-viewport:not(#love-h-a) { background: #F4F4F5 !important; }
+
+/* Save the Date › "Editar texto": só o texto, à esquerda, logo acima da barra
+   de formatação (Negrito, Itálico…). */
+html body #builder-elements-panel .std-editar-texto-rotulo:not(#love-h-a) { padding: 0 0 8px; justify-content: flex-start; text-align: left; }

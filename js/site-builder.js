@@ -317,7 +317,7 @@ const VIDEO_ASPECT_RATIO_OPTIONS = [
 ];
 
 const ELEMENT_GROUPS = [
-  { title: 'Básicos', types: ['titulo', 'texto', 'imagem', 'botao', 'video', 'separador', 'espacamento', 'secao'] },
+  { title: 'Elementos', types: ['titulo', 'texto', 'imagem', 'botao', 'video', 'separador', 'espacamento', 'secao'] },
   { title: 'Avançado', types: ['galeria', 'carrossel', 'mapa', 'contagem', 'data', 'redes'] }
 ];
 
@@ -1415,15 +1415,17 @@ function renderLeftPanel() {
     return;
   }
 
+  // Sem a caixinha de rótulo no topo: no Convite digital o primeiro grupo já
+  // se chama "Elementos"; no Save the Date fica só o texto "Editar texto".
   const ehSaveTheDate = currentPageKey === 'savethedate';
-  panel.innerHTML = `
-    <div class="builder-panel-tabs">
-      <span class="builder-panel-tab builder-panel-tab-rotulo active" style="cursor:default;">${ehSaveTheDate ? 'Editar texto' : 'Elementos'}</span>
-    </div>
-    <div class="builder-panel-tab-body" id="builder-panel-tab-body"></div>
-  `;
-  if (ehSaveTheDate) renderEditorDeTextoSaveTheDate(document.getElementById('builder-panel-tab-body'));
-  else renderElementosTab(document.getElementById('builder-panel-tab-body'));
+  panel.innerHTML = `<div class="builder-panel-tab-body" id="builder-panel-tab-body"></div>`;
+  const corpo = document.getElementById('builder-panel-tab-body');
+  if (ehSaveTheDate) {
+    renderEditorDeTextoSaveTheDate(corpo);
+    if (corpo) corpo.insertAdjacentHTML('afterbegin', '<div class="builder-el-group-title std-editar-texto-rotulo">Editar texto</div>');
+  } else {
+    renderElementosTab(corpo);
+  }
   ligarCaixasQueCrescem(panel);
 
   const canvas = document.getElementById('builder-canvas');

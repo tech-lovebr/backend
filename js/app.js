@@ -9516,6 +9516,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return mudou;
   }
 
+  // Formatos de mesa da planta (o mesmo nome vai em elements[].formato).
+  const FORMATOS_DE_MESA = ['redonda', 'retangular', 'quadrada', 'bistro'];
+
   function renderFloorPlanCanvas() {
     const canvas = document.getElementById('floorplan-canvas');
     const emptyHint = document.getElementById('floorplan-empty-hint');
@@ -9536,7 +9539,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
       const el = document.createElement('div');
       const isMesa = elData.type === 'mesa';
-      el.className = `floorplan-el${isMesa ? ' is-mesa' : ''}`;
+      el.className = `floorplan-el${isMesa ? ` is-mesa formato-${FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda'}` : ''}`;
       el.style.left = `${elData.x || 0}px`;
       el.style.top = `${elData.y || 0}px`;
       el.dataset.elId = elData.id;
@@ -9566,10 +9569,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const containerSize = 220;
         const ringRadius = 80;
         const showNames = elData.showNames !== false;
+        const formato = FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda';
         for (let i = 0; i < seats; i++) {
-          const angle = (2 * Math.PI * i / seats) - Math.PI / 2;
-          const seatX = containerSize / 2 + ringRadius * Math.cos(angle);
-          const seatY = containerSize / 2 + ringRadius * Math.sin(angle);
+          // Redonda segue a conta de sempre; os outros formatos têm a própria.
+          const [seatX, seatY] = formato === 'redonda'
+            ? [containerSize / 2 + ringRadius * Math.cos((2 * Math.PI * i / seats) - Math.PI / 2), containerSize / 2 + ringRadius * Math.sin((2 * Math.PI * i / seats) - Math.PI / 2)]
+            : posicaoDoAssento(formato, i, seats);
           const guestName = (seatNames[i] || '').trim();
           const confirmed = isFloorPlanSeatConfirmed(guestName);
           const declined = isFloorPlanSeatDeclined(guestName);
@@ -9708,7 +9713,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Cria uma nova mesa direto na planta (posições em cascata para não empilhar
   // uma exatamente sobre a outra) — usado pelo botão "Adicionar Mesa".
-  function addFloorPlanTableViaButton() {
+  /** @param {string} [formato]  redonda | retangular | quadrada | bistro */
+  function addFloorPlanTableViaButton(formato) {
     const canvas = document.getElementById('floorplan-canvas');
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
@@ -9726,6 +9732,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.push({
       id: `fp-${Date.now()}`,
       type: 'mesa',
+      formato: FORMATOS_DE_MESA.includes(formato || '') ? formato : 'redonda',
       number: mesaCount + 1,
       name: '',
       seats: 1,
@@ -9734,6 +9741,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     saveFloorPlanElements(elements);
     renderFloorPlanCanvas();
+  }
+
+  /**
+   * Posição (x, y) do assento i de n em volta da mesa, dentro do quadro de
+   * 220x220 da mesa (centro em 110, 110), conforme o formato.
+   * @param {string} formato @param {number} i @param {number} n
+   * @returns {[number, number]}
+   */
+  function posicaoDoAssento(formato, i, n) {
+    const c = 110;
+    if (formato === 'retangular') {
+      // Metade de cima, metade de baixo, espalhadas ao longo da mesa.
+      const emCima = Math.ceil(n / 2);
+      const naLinha = i < emCima ? emCima : n - emCima;
+      const j = i < emCima ? i : i - emCima;
+      const x = c - 70 + ((j + 0.5) / naLinha) * 140;
+      return [x, i < emCima ? c - 50 : c + 50];
+    }
+    if (formato === 'quadrada') {
+      // Distribuídos pelo contorno de um quadrado de 140 de lado.
+      const lado = 140;
+      const d = ((i + 0.5) / n) * lado * 4;
+      const s = Math.floor(d / lado);
+      const t = d - s * lado - lado / 2;
+      if (s === 0) return [c + t, c - lado / 2];
+      if (s === 1) return [c + lado / 2, c + t];
+      if (s === 2) return [c - t, c + lado / 2];
+      return [c - lado / 2, c - t];
+    }
+    const raio = formato === 'bistro' ? 52 : 80;
+    const ang = (2 * Math.PI * i / n) - Math.PI / 2;
+    return [c + raio * Math.cos(ang), c + raio * Math.sin(ang)];
   }
 
   function wireFloorPlanCanvasDrop() {
@@ -10067,8 +10106,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initFloorPlanTableModal();
     initFloorPlanFilterDropdown();
 
+    // "Adicionar Mesa" abre o menu de formatos (Redonda, Retangular, Quadrada, Bistrô).
     const btnAddTable = document.getElementById('btn-open-add-table-modal');
-    if (btnAddTable) btnAddTable.addEventListener('click', addFloorPlanTableViaButton);
+    const menuFormatos = document.getElementById('floorplan-add-table-menu');
+    if (btnAddTable && menuFormatos) {
+      const abrirMenu = (/** @type {boolean} */ abrir) => {
+        menuFormatos.classList.toggle('hidden', !abrir);
+        btnAddTable.setAttribute('aria-expanded', String(abrir));
+      };
+      btnAddTable.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirMenu(menuFormatos.classList.contains('hidden'));
+      });
+      menuFormatos.querySelectorAll('[data-mesa-formato]').forEach(op => {
+        op.addEventListener('click', (e) => {
+          e.stopPropagation();
+          abrirMenu(false);
+          addFloorPlanTableViaButton(/** @type {HTMLElement} */ (op).dataset.mesaFormato);
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!menuFormatos.classList.contains('hidden') && !(e.target instanceof Element && e.target.closest('.floorplan-add-mesa'))) abrirMenu(false);
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') abrirMenu(false); });
+    }
   }
 
   // Salvar Convidado (drawer compartilhado: cria um novo ou atualiza o que está sendo editado)

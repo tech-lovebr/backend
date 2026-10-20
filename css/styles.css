@@ -8996,3 +8996,18 @@ body[data-theme="dark"] .rfp-topo h3, body[data-theme="dark"] .rfp-pergunta, bod
 .rfp-categoria-foto:not(.sem-foto) svg { visibility: hidden; }
 .rfp-categoria-nome { display: block; width: 100%; padding: 8px 10px; font-size: 12px; font-weight: 600; color: #18181B; line-height: 1.3; }
 .rfp-categoria.ativa .rfp-categoria-nome { color: #181D24; }
+
+/* Mapear mesas › "Adicionar Mesa": menu com os formatos (caixinhas com ícone). */
+.floorplan-add-mesa { position: relative; display: inline-block; }
+.floorplan-formatos:not(.hidden) { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; display: grid; grid-template-columns: repeat(4, 76px); gap: 6px; padding: 8px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.floorplan-formatos button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 72px; padding: 6px 4px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-size: 12px; font-weight: 500; color: #3F3F46; cursor: pointer; }
+.floorplan-formatos button svg { width: 26px; height: 26px; color: #52525B; }
+.floorplan-formatos button:hover { border-color: #181D24; color: #181D24; }
+.floorplan-formatos button:hover svg { color: #181D24; }
+body[data-theme="dark"] .floorplan-formatos, body[data-theme="dark"] .floorplan-formatos button { background: #252525; border-color: #404040; color: #E4E4E7; }
+
+/* Formatos da mesa na planta (o quadro continua 220x220; muda só o centro). */
+.floorplan-el.is-mesa.formato-retangular .floorplan-mesa-core { width: 150px; height: 64px; border-radius: 8px; }
+.floorplan-el.is-mesa.formato-quadrada .floorplan-mesa-core { width: 96px; height: 96px; border-radius: 8px; }
+.floorplan-el.is-mesa.formato-bistro .floorplan-mesa-core { width: 60px; height: 60px; }
+.floorplan-el.is-mesa.formato-bistro .floorplan-table-core-name { max-width: 52px; }

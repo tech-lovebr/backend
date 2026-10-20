@@ -3571,3 +3571,6 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .btn-atualizar svg { width: 18px; height: 18px; }
 .btn-atualizar.is-girando svg { animation: girar-atualizar .8s linear infinite; }
 @keyframes girar-atualizar { to { transform: rotate(360deg); } }
+/* Mesma altura do botão de período ao lado (estica até a altura da linha). */
+.btn-atualizar { width: auto; align-self: stretch; padding: 0 .8125rem; }
+.btn-atualizar svg { width: 17px; height: 17px; }

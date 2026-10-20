@@ -2344,15 +2344,8 @@ document.addEventListener('DOMContentLoaded', () => {
       progressBar.style.width = `${percent}%`;
     }
 
-    // Exibe mensagem quando todas as tarefas estiverem em check (6/6)
-    const isAllDone = completedCount >= total;
-    if (allDoneBanner) {
-      if (isAllDone) {
-        allDoneBanner.classList.remove('hidden');
-      } else {
-        allDoneBanner.classList.add('hidden');
-      }
-    }
+    // Sem o card "Parabéns!" ao concluir as 6 tarefas: a lista toda marcada já basta.
+    if (allDoneBanner) allDoneBanner.classList.add('hidden');
 
     listEl.innerHTML = quickStartTasksData.map((task) => {
       const isDone = isQuickStartTaskAchieved(task.id, activeEvent);

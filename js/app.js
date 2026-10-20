@@ -692,6 +692,37 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSettingsSecurity();
     refreshMfaStatus();
     desenharFotoDaConta();
+    atualizarCartaoDeLogin();
+  }
+
+  // Login com o Google: mostra a conta conectada (e quando) no lugar da troca
+  // de senha — quem entrou pelo Google não criou senha. Quem tem e-mail e
+  // senha continua vendo "Senha".
+  async function atualizarCartaoDeLogin() {
+    const cartao = document.getElementById('settings-login-card');
+    const cartaoSenha = document.getElementById('settings-password-card');
+    if (!cartao || !cartaoSenha) return;
+    let usuario = window.loveClienteSession?.user || null;
+    try {
+      const { data } = await supabaseClient.auth.getUser();
+      if (data && data.user) usuario = data.user;
+    } catch (e) { /* segue com a sessão já carregada */ }
+    const identidades = (usuario && usuario.identities) || [];
+    const provedores = (usuario && usuario.app_metadata && usuario.app_metadata.providers) || [];
+    const google = identidades.find(i => i.provider === 'google') || null;
+    const comGoogle = !!google || provedores.includes('google');
+    const comSenha = identidades.some(i => i.provider === 'email') || provedores.includes('email');
+    cartao.classList.toggle('hidden', !comGoogle);
+    cartaoSenha.classList.toggle('hidden', comGoogle && !comSenha);
+    if (!comGoogle) return;
+    const email = (google && google.identity_data && google.identity_data.email) || (usuario && usuario.email) || '';
+    const desde = (google && (google.created_at || google.last_sign_in_at)) || (usuario && usuario.created_at) || '';
+    const emailEl = document.getElementById('settings-login-email');
+    const dataEl = document.getElementById('settings-login-data');
+    if (emailEl) emailEl.textContent = email;
+    if (dataEl) dataEl.textContent = desde
+      ? 'Conectado em ' + new Date(desde).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })
+      : 'Conectado';
   }
 
   // ---- Foto de perfil (Configurações › Minha conta) ----
@@ -16629,7 +16660,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mfaVerifiedFactor = (data.totp || []).find(f => f.status === 'verified') || null;
     if (mfaStatusEl) mfaStatusEl.textContent = mfaVerifiedFactor ? 'ativada' : 'desativada';
     // O botão mostra o estado: "Desativar" = está ativada; "Ativar" = está desativada.
-    btnMfaToggle.textContent = mfaVerifiedFactor ? 'Desativar' : 'Ativar';
+    btnMfaToggle.textContent = mfaVerifiedFactor ? 'Desativar' : 'Permitir';
     btnMfaToggle.disabled = false;
   }
 
@@ -16652,7 +16683,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Já aberto: o botão funciona como "cancelar".
     if (!mfaSetup.classList.contains('hidden')) {
       hideMfaSetup();
-      btnMfaToggle.textContent = 'Ativar';
+      btnMfaToggle.textContent = 'Permitir';
       return;
     }
 
@@ -16671,8 +16702,17 @@ document.addEventListener('DOMContentLoaded', () => {
     mfaPendingFactorId = data.id;
     document.getElementById('settings-mfa-qr').src = data.totp.qr_code;
     document.getElementById('settings-mfa-secret').textContent = data.totp.secret;
-    btnMfaToggle.textContent = 'Cancelar';
     document.getElementById('settings-mfa-code').focus();
+  });
+
+  // Pop-up dos dois fatores: mora no <body> (um ancestral com transform
+  // prendia o position:fixed fora da tela); fecha no X, no Esc ou fora da caixa.
+  if (mfaSetup && mfaSetup.parentElement !== document.body) document.body.appendChild(mfaSetup);
+  const fecharPopupMfa = () => { hideMfaSetup(); mfaPendingFactorId = null; refreshMfaStatus(); };
+  document.getElementById('btn-settings-mfa-close')?.addEventListener('click', fecharPopupMfa);
+  mfaSetup?.addEventListener('click', (e) => { if (e.target === mfaSetup) fecharPopupMfa(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mfaSetup && !mfaSetup.classList.contains('hidden')) fecharPopupMfa();
   });
 
   document.getElementById('btn-settings-mfa-verify')?.addEventListener('click', async (e) => {

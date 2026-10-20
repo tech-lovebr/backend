@@ -8748,3 +8748,21 @@ body[data-theme="dark"] #site-builder-root button.std-gerar-ia { background: tra
 /* "Como chegar" › Google Maps e Waze com o ícone de cada app à esquerda. */
 .convite-como-chegar-menu a { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; }
 .convite-como-chegar-menu a img { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
+
+/* Configurações › Login (conta conectada com o Google). */
+#settings-login-card .conta-login-linha { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+#settings-login-card .conta-login-icone { width: 20px; height: 20px; flex-shrink: 0; }
+#settings-login-card .conta-login-info { flex: 1; min-width: 0; }
+#settings-login-card .conta-login-nome { font-size: 0.875rem; font-weight: 600; color: #18181B; margin: 0; }
+#settings-login-card .conta-login-email { font-size: 0.75rem; color: #71717A; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#settings-login-card .conta-login-data { font-size: 0.75rem; color: #71717A; margin: 0; white-space: nowrap; }
+body[data-theme="dark"] #settings-login-card .conta-login-nome { color: #FFFFFF; }
+
+/* Configurações › pop-up da autenticação de dois fatores (Google Authenticator). */
+#settings-mfa-setup.mfa-popup:not(.hidden) { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 23, 42, 0.5); }
+#settings-mfa-setup .mfa-popup-caixa { width: 100%; max-width: 380px; background: #FFFFFF; border-radius: 10px; padding: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+#settings-mfa-setup .mfa-popup-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#settings-mfa-setup .mfa-popup-fechar { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; color: #71717A; cursor: pointer; border-radius: 8px; }
+#settings-mfa-setup .mfa-popup-fechar:hover { color: #181D24; }
+#settings-mfa-setup .mfa-popup-fechar svg { width: 18px; height: 18px; }
+body[data-theme="dark"] #settings-mfa-setup .mfa-popup-caixa { background: #1F1F1F; }

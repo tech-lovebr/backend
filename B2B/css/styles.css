@@ -9045,3 +9045,45 @@ body[data-theme="dark"] .settings-shell--lateral > #settings-tabs .category-tab.
 @media (max-width: 900px) {
   html body .settings-shell--lateral > #settings-tabs:not(#love-h-a) { border-right: none; padding-right: 0; }
 }
+
+/* TESTE — Configurações e Central de ajuda com o 2º sidebar igual ao do
+   love.com.br (o painel que abre ao lado dos ícones): coluna branca de
+   240px colada no menu de ícones, do topo até o fim da tela (passa pelo
+   rodapé), com a linha vertical à direita; itens 13px/600, ativo em
+   azul-clarinho. Para voltar atrás, é só apagar este bloco. */
+html body:is([data-page="configuracoes"], [data-page="faq"]) .b2b-main:not(#love-h-a) { position: relative; }
+html body:is([data-page="configuracoes"], [data-page="faq"]) .b2b-content:not(#love-h-a) { margin-left: 240px; }
+html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs:not(#love-h-a),
+html body[data-page="faq"] .guias-layout > .guias-sidebar:not(#love-h-a) {
+  position: absolute; top: var(--topbar-height); left: 0; bottom: 0; width: 240px; z-index: 5;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0.25rem;
+  margin: 0; padding: 16px; background: #FFFFFF; border: none; border-right: 1px solid #EAEAEA;
+  overflow-y: auto; box-shadow: none;
+}
+html body[data-page="configuracoes"] .settings-shell--lateral:not(#love-h-a),
+html body[data-page="faq"] .guias-layout:not(#love-h-a) { display: block; }
+html body[data-page="faq"] .guias-layout > .guias-sidebar .guias-menu-table:not(#love-h-a) { gap: 0.25rem; }
+/* Título da seção do painel (como "Aparência" no love.com.br). */
+html body[data-page="configuracoes"] #settings-tabs .settings-nav-titulo:not(#love-h-a) { font-size: 0.875rem; font-weight: 700; color: #18181B; padding: 0 0 0.75rem; margin: 0 0 0.25rem; border-bottom: 1px solid #F4F4F5; }
+html body[data-page="configuracoes"] #settings-tabs .settings-nav-divisor:not(#love-h-a) { margin: 0.75rem 0 0.75rem; background: #F4F4F5; }
+/* Itens: 13px/600, cinza; hover cinza bem claro; ativo azul-clarinho. */
+html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a),
+html body[data-page="faq"] .guias-menu-table .guide-link:not(#love-h-a) {
+  width: 100%; padding: 0.65rem 0.85rem; border: 1px solid transparent; border-radius: 12px; box-shadow: none;
+  background: transparent; font-size: 0.8125rem; font-weight: 600; color: #475569; line-height: 1.25;
+}
+html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a):hover,
+html body[data-page="faq"] .guias-menu-table .guide-link:not(#love-h-a):hover { background: #F8FAFC; color: #0F172A; }
+html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs .category-tab.active:not(#love-h-a),
+html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs .category-tab.active:not(#love-h-a):hover,
+html body[data-page="faq"] .guias-menu-table .guide-link--active:not(#love-h-a),
+html body[data-page="faq"] .guias-menu-table .guide-link--active:not(#love-h-a):hover { background: #EBF4FF; color: #333333; font-weight: 700; box-shadow: none; }
+body[data-theme="dark"][data-page="configuracoes"] #settings-tabs,
+body[data-theme="dark"][data-page="faq"] .guias-layout > .guias-sidebar { background: #1C2125 !important; border-right-color: #404040 !important; }
+body[data-theme="dark"][data-page="configuracoes"] #settings-tabs .category-tab.active,
+body[data-theme="dark"][data-page="faq"] .guias-menu-table .guide-link--active { background: #1C2125 !important; color: #FFFFFF !important; border-color: #595959 !important; }
+@media (max-width: 900px) {
+  html body:is([data-page="configuracoes"], [data-page="faq"]) .b2b-content:not(#love-h-a) { margin-left: 0; }
+  html body[data-page="configuracoes"] .settings-shell--lateral > #settings-tabs:not(#love-h-a),
+  html body[data-page="faq"] .guias-layout > .guias-sidebar:not(#love-h-a) { position: static; width: auto; border-right: none; padding: 0 0 1rem; background: transparent; }
+}

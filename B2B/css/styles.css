@@ -8969,3 +8969,28 @@ html body button.informacoes-salvar-rodape.settings-zola-salvar:not(#love-h-a) {
 /* Contas conectadas: o Google sem caixinha em volta. */
 html body .settings-login-linha:not(#love-h-a) { padding: 0; border: none; border-radius: 0; }
 body[data-theme="dark"] .settings-login-linha { border: none !important; }
+
+/* Contas conectadas › Desconectar do Google (link sublinhado logo abaixo)
+   e Conectar com o Google (botão claro com o G). */
+html body .settings-google-acoes[hidden]:not(#love-h-a),
+html body .settings-google-confirmar[hidden]:not(#love-h-a),
+html body .settings-google-conectar[hidden]:not(#love-h-a),
+html body .settings-google-msg[hidden]:not(#love-h-a),
+html body .settings-google-desconectar[hidden]:not(#love-h-a) { display: none !important; }
+html body .settings-google-acoes:not(#love-h-a) { margin-top: 0.75rem; }
+html body .settings-google-desconectar:not(#love-h-a) { border: none; background: none; padding: 0; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #18181B; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+html body .settings-google-desconectar:hover:not(#love-h-a) { color: #181D24; }
+html body .settings-google-confirmar:not(#love-h-a) { margin-top: 0.25rem; padding: 0.9rem 1rem; border: 1px solid #E4E4E7; border-radius: 8px; background: #FAFAFA; }
+html body .settings-google-confirmar p:not(#love-h-a) { font-size: 0.8125rem; line-height: 1.5; color: #3F3F46; margin: 0 0 0.75rem; }
+html body .settings-google-confirmar-botoes:not(#love-h-a) { display: flex; justify-content: flex-end; gap: 0.5rem; }
+html body .settings-google-conectar:not(#love-h-a) {
+  display: inline-flex; align-items: center; gap: 0.6rem; height: 44px; padding: 0 1.1rem; margin-top: 0.75rem;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #18181B; cursor: pointer;
+}
+html body .settings-google-conectar:hover:not(#love-h-a) { border-color: #181D24; }
+html body .settings-google-msg:not(#love-h-a) { font-size: 0.8125rem; color: #1E9E5E; margin: 0.75rem 0 0; }
+html body .settings-google-msg.is-erro:not(#love-h-a) { color: #DC2626; }
+body[data-theme="dark"] .settings-google-desconectar { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-google-confirmar { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .settings-google-confirmar p { color: #D4D4D8 !important; }
+body[data-theme="dark"] .settings-google-conectar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

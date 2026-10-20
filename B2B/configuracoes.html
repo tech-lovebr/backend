@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=678">
+  <link rel="stylesheet" href="css/styles.css?v=679">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -135,7 +135,23 @@
                 <p class="settings-login-data" id="settings-login-google-data"></p>
               </div>
             </div>
+            <!-- Desconectar: confirma na hora; depois o login passa a ser só pelo e-mail. -->
+            <div class="settings-google-acoes" id="settings-google-acoes" hidden>
+              <button type="button" class="settings-google-desconectar" id="settings-google-desconectar">Desconectar do Google</button>
+              <div class="settings-google-confirmar" id="settings-google-confirmar" hidden>
+                <p>Ao desconectar, o seu e-mail continua cadastrado, mas você passa a entrar com e-mail e senha. Na próxima vez, use <b>Esqueci minha senha</b> no login para criar a sua senha.</p>
+                <div class="settings-google-confirmar-botoes">
+                  <button type="button" class="btn-secondary" id="settings-google-cancelar">Cancelar</button>
+                  <button type="button" class="btn-primary" id="settings-google-confirmar-btn">Desconectar</button>
+                </div>
+              </div>
+            </div>
             <p class="settings-zola-vazio" id="settings-contas-vazio" hidden>Nenhuma conta conectada. Você entra com e-mail e senha.</p>
+            <button type="button" class="settings-google-conectar" id="settings-google-conectar" hidden>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81Z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.27 14.29A7.2 7.2 0 0 1 4.89 12c0-.8.14-1.57.38-2.29v-3.1H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.1Z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.61 4.59 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.61l4 3.1C6.22 6.88 8.87 4.77 12 4.77Z"/></svg>
+              Conectar com o Google
+            </button>
+            <p class="settings-google-msg" id="settings-google-msg" aria-live="polite" hidden></p>
           </div>
         </div>
 
@@ -503,7 +519,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=48"></script>
-  <script src="js/configuracoes.js?v=52"></script>
+  <script src="js/configuracoes.js?v=53"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

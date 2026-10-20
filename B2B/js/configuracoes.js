@@ -1087,6 +1087,71 @@ async function initLoginDaConta() {
   if (caixaSenha) caixaSenha.hidden = !temSenha;
   const vazio = document.getElementById('settings-contas-vazio');
   if (vazio) vazio.hidden = ehGoogle;
+  ligarContaGoogle(user, identidadeGoogle, ehGoogle);
+}
+
+/* Contas conectadas › Desconectar do Google / Conectar com o Google.
+   Desconectar: o e-mail continua cadastrado e o login passa a ser por
+   e-mail e senha (a pessoa cria a senha pelo "Esqueci minha senha").
+   Antes de soltar o Google, grava uma senha aleatória que ninguém sabe,
+   para a conta ter o login por e-mail. Precisa do "Manual linking"
+   ligado no Supabase (Authentication › Sign In / Providers). */
+let contaGoogleLigada = false;
+function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
+  const acoes = document.getElementById('settings-google-acoes');
+  const conectar = document.getElementById('settings-google-conectar');
+  const msg = document.getElementById('settings-google-msg');
+  if (!acoes || !conectar) return;
+  acoes.hidden = !ehGoogle;
+  conectar.hidden = ehGoogle;
+  if (contaGoogleLigada) return;
+  contaGoogleLigada = true;
+
+  const confirmar = document.getElementById('settings-google-confirmar');
+  const linkDesconectar = document.getElementById('settings-google-desconectar');
+  const mostrarMsg = (texto, erro) => { msg.textContent = texto; msg.hidden = !texto; msg.classList.toggle('is-erro', !!erro); };
+
+  linkDesconectar.addEventListener('click', () => { confirmar.hidden = false; linkDesconectar.hidden = true; mostrarMsg(''); });
+  document.getElementById('settings-google-cancelar').addEventListener('click', () => { confirmar.hidden = true; linkDesconectar.hidden = false; });
+
+  document.getElementById('settings-google-confirmar-btn').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    try {
+      const { data: fresco } = await supabaseClient.auth.getUser();
+      const atual = (fresco && fresco.user) || user;
+      const google = (atual.identities || []).find(i => i.provider === 'google') || identidadeGoogle;
+      // Senha aleatória: garante o login por e-mail (trocada no "Esqueci minha senha").
+      const aleatoria = Array.from(crypto.getRandomValues(new Uint8Array(24)), b => b.toString(16).padStart(2, '0')).join('');
+      await supabaseClient.auth.updateUser({ password: aleatoria });
+      const { error } = google ? await supabaseClient.auth.unlinkIdentity(google) : { error: new Error('sem identidade') };
+      if (error) {
+        console.warn('Não foi possível desconectar o Google.', error);
+        mostrarMsg(/manual linking|disabled/i.test(error.message || '')
+          ? 'A desconexão ainda não está liberada. Tente de novo mais tarde.'
+          : 'Não foi possível desconectar agora. Tente de novo em instantes.', true);
+        return;
+      }
+      confirmar.hidden = true;
+      linkDesconectar.hidden = false;
+      document.getElementById('settings-login-google').hidden = true;
+      acoes.hidden = true;
+      document.getElementById('settings-contas-vazio').hidden = false;
+      conectar.hidden = false;
+      mostrarMsg('Google desconectado. Na próxima vez, entre com o seu e-mail e use "Esqueci minha senha" para criar a senha.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Conectar de novo: vai ao Google e volta para o Hub já com a conta ligada.
+  conectar.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.linkIdentity({
+      provider: 'google',
+      options: { redirectTo: `${location.origin}/dashboard.html`, queryParams: { prompt: 'select_account' } }
+    });
+    if (error) mostrarMsg('Não foi possível conectar com o Google agora. Tente de novo em instantes.', true);
+  });
 }
 
 /* -------------------- URLs --------------------

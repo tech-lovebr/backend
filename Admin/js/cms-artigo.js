@@ -8,6 +8,9 @@
 const PARAMS = new URLSearchParams(window.location.search);
 const ARTIGO_ID = PARAMS.get('id');
 
+// Título do cabeçalho: "Novo artigo" ao criar, "Editar artigo" ao abrir um existente.
+if (ARTIGO_ID) document.body.dataset.title = 'Editar artigo';
+
 let ARTIGO = null;
 let CATEGORIAS = [];
 let SELECIONADAS = new Set();

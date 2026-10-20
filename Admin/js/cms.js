@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-categoria').addEventListener('change', render);
 
-  addHeaderAction('Adicionar novo', () => { window.location.href = 'cms-artigo.html'; }, {
+  addHeaderAction('Criar novo', () => { window.location.href = 'cms-artigo.html'; }, {
     principal: true,
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>'
   });
@@ -122,7 +122,7 @@ function render() {
     renderEmpty(tbody, 4, 'Nenhum artigo encontrado',
       ARTIGOS.length
         ? 'Ajuste a busca, a categoria ou a aba acima.'
-        : 'Clique em "Adicionar novo" no cabeçalho para escrever o primeiro.');
+        : 'Clique em "Criar novo" no cabeçalho para escrever o primeiro.');
     return;
   }
 

@@ -742,8 +742,9 @@ function renderGalleryImages() {
   // Quadradinhos vazios ao lado do "Adicionar": mostram que cabem várias
   // imagens (até 6) e também abrem a escolha de arquivos.
 
-  const count = document.getElementById('product-gallery-count');
-  if (count) count.textContent = `${currentGalleryImages.length}/${PRODUCT_GALLERY_MAX}`;
+  // "+ Adicionar nova" ao lado do título (sem contador); some quando as 6 vagas estão cheias.
+  const nova = document.getElementById('product-gallery-nova');
+  if (nova) nova.hidden = cheio;
 
   wrap.querySelectorAll('[data-remove-gallery-image]').forEach(btn => {
     btn.addEventListener('click', (e) => {

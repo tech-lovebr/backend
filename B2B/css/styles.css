@@ -9347,3 +9347,13 @@ html body .product-gallery-vaga:not(#love-h-a) {
 }
 html body .product-gallery-vaga:hover:not(#love-h-a) { border-color: #A1A1AA; }
 body[data-theme="dark"] .product-gallery-vaga { background: #1F1F1F !important; border-color: #404040 !important; }
+
+/* Mídia › "+ Adicionar nova" no canto direito do título (só texto). */
+html body .product-gallery-nova:not(#love-h-a) {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer;
+  font-size: 0.8125rem; font-weight: 600; color: #52525B; text-transform: none; letter-spacing: normal;
+}
+html body .product-gallery-nova span:not(#love-h-a) { font-size: 1rem; line-height: 1; }
+html body .product-gallery-nova:hover:not(#love-h-a) { color: #181D24; }
+html body .product-gallery-nova[hidden]:not(#love-h-a) { display: none; }
+body[data-theme="dark"] .product-gallery-nova { color: #D4D4D8 !important; }

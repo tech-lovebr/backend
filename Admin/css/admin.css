@@ -3513,3 +3513,9 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .sidebar-perfil-seta { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); transition: transform .2s ease; }
 .sidebar-perfil-botao[aria-expanded="true"] .sidebar-perfil-seta { transform: rotate(180deg); }
 .sidebar-perfil .admin-user-menu { left: 0; right: 0; min-width: 0; top: calc(100% + .25rem); }
+
+/* Barra do editor num cinza bem claro; "Limpar" com borracha e texto,
+   para não ser confundido com outro comando. */
+.editor-barra { background: #FAFAFA; }
+.editor-btn[data-limpar] { gap: .3125rem; padding: 0 .5rem; font-size: .75rem; color: var(--text-muted); }
+.editor-btn[data-limpar]:hover { color: var(--text); }

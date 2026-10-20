@@ -69,9 +69,6 @@ const EditorRico = (() => {
       <button type="button" class="editor-btn" data-link title="Inserir link" aria-label="Inserir link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6 -6" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464" /><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /></svg>
       </button>
-      <button type="button" class="editor-btn" data-comando="unlink" title="Remover link" aria-label="Remover link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 22v-2" /><path d="M9 15l3 -3" /><path d="M22 17h-2" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072" /><path d="M3 3l18 18" /><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /></svg>
-      </button>
 
       <span class="editor-separador"></span>
 
@@ -92,7 +89,7 @@ const EditorRico = (() => {
         </div>
       </div>
       <button type="button" class="editor-btn" data-linha title="Linha horizontal" aria-label="Linha horizontal">${ico('<path d="M4 12h16"/>')}</button>
-      <button type="button" class="editor-btn" data-limpar title="Limpar formatação" aria-label="Limpar formatação">${ico('<path d="M17 15l4 4m0 -4l-4 4"/><path d="M7 6v-1h11v1"/><path d="M7 19l4 0"/><path d="M13 5l-4 14"/>')}</button>
+      <button type="button" class="editor-btn" data-limpar title="Limpar formatação" aria-label="Limpar formatação">${ico('<path d="M19 20h-10.5l-4.21 -4.3a1 1 0 0 1 0 -1.41l10 -10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9.2 9.3"/><path d="M18 13.3l-6.3 -6.3"/>')}<span>Limpar</span></button>
     </div>`;
 
   function montar(host, { placeholder = 'Escreva aqui.', aoMudar } = {}) {

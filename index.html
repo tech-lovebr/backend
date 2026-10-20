@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_formatosMesa">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_abasNaTabela2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2086,16 +2086,15 @@
           <!-- Conteúdo Principal de Meus Convidados -->
           <div class="px-8 py-6 space-y-5 w-full">
 
-          <!-- Abas de Status (padrão B2B: category-tabs-bar) -->
-          <div class="love-tabs-nav" id="rsvp-status-tabs">
-            <button type="button" class="love-tab-item rsvp-status-option active" data-filter="all">Todos (<span id="count-rsvp-opt-all">0</span>)</button>
-            <button type="button" class="love-tab-item rsvp-status-option" data-filter="confirmed">Confirmados (<span id="count-rsvp-opt-confirmed">0</span>)</button>
-            <button type="button" class="love-tab-item rsvp-status-option" data-filter="pending">Pendentes (<span id="count-rsvp-opt-pending">0</span>)</button>
-            <button type="button" class="love-tab-item rsvp-status-option" data-filter="declined">Recusados (<span id="count-rsvp-opt-declined">0</span>)</button>
-          </div>
-
-          <!-- Caixa com tabela (padrão B2B: dash-card) -->
-          <div class="dash-card">
+          <!-- Caixa com tabela (padrão B2B: dash-card), com as abas de status
+               grudadas no topo da caixa -->
+          <div class="dash-card rsvp-caixa-com-abas">
+            <div class="love-tabs-nav" id="rsvp-status-tabs">
+              <button type="button" class="love-tab-item rsvp-status-option active" data-filter="all">Todos (<span id="count-rsvp-opt-all">0</span>)</button>
+              <button type="button" class="love-tab-item rsvp-status-option" data-filter="confirmed">Confirmados (<span id="count-rsvp-opt-confirmed">0</span>)</button>
+              <button type="button" class="love-tab-item rsvp-status-option" data-filter="pending">Pendentes (<span id="count-rsvp-opt-pending">0</span>)</button>
+              <button type="button" class="love-tab-item rsvp-status-option" data-filter="declined">Recusados (<span id="count-rsvp-opt-declined">0</span>)</button>
+            </div>
             <div class="overflow-x-auto -mx-1">
               <table class="guests-table w-full">
                 <thead>
@@ -5548,7 +5547,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_formatosMesa"></script>
+  <script src="js/app.js?v=20261020_abasNaTabela2"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_semCaixaRotulo"></script>

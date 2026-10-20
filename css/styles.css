@@ -9011,3 +9011,10 @@ body[data-theme="dark"] .floorplan-formatos, body[data-theme="dark"] .floorplan-
 .floorplan-el.is-mesa.formato-quadrada .floorplan-mesa-core { width: 96px; height: 96px; border-radius: 8px; }
 .floorplan-el.is-mesa.formato-bistro .floorplan-mesa-core { width: 60px; height: 60px; }
 .floorplan-el.is-mesa.formato-bistro .floorplan-table-core-name { max-width: 52px; }
+
+/* Meus convidados: abas de status grudadas no topo da caixa da tabela (acima
+   da barra de filtro/exportar), com a linha fina embaixo. */
+html body #tab-rsvp .rsvp-caixa-com-abas:not(#love-h-a) { display: flex; flex-direction: column; overflow: hidden; }
+html body #tab-rsvp .rsvp-caixa-com-abas > #rsvp-status-tabs:not(#love-h-a) { order: -1; margin: 0 !important; padding: 0 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
+html body #tab-rsvp .rsvp-caixa-com-abas > #rsvp-status-tabs .love-tab-item:not(#love-h-a) { padding-top: 12px; padding-bottom: 10px; }
+body[data-theme="dark"] #tab-rsvp .rsvp-caixa-com-abas > #rsvp-status-tabs { border-bottom-color: #404040 !important; }

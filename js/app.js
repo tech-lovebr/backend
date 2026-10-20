@@ -8085,10 +8085,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // módulo da planta existir.
     let elementosDaPlanta = [];
     try { elementosDaPlanta = getFloorPlanElements(); } catch (e) {}
+    // Coluna Mesa: "Mesa 2", "Mesa 4"… (sem mesa: "—").
     const mesaDaPessoa = (seatName, guest) => {
       const numero = findFloorPlanTableNumberForGuest(seatName, elementosDaPlanta);
-      if (numero !== null && numero !== undefined) return String(numero);
-      return extractTableNumber(guest.table === 'Mesa a Definir' ? '' : guest.table);
+      if (numero !== null && numero !== undefined) return `Mesa ${Number(numero) || numero}`;
+      const antiga = extractTableNumber(guest.table === 'Mesa a Definir' ? '' : guest.table);
+      return antiga === '—' ? antiga : `Mesa ${Number(antiga) || antiga}`;
     };
 
     // Um convidado com acompanhantes nunca aparece com nomes concatenados

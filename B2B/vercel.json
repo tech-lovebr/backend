@@ -31,7 +31,12 @@
     },
     {
       "source": "/faq.html",
-      "destination": "/faq",
+      "destination": "/central-de-ajuda",
+      "permanent": true
+    },
+    {
+      "source": "/faq",
+      "destination": "/central-de-ajuda",
       "permanent": true
     },
     {
@@ -157,7 +162,7 @@
       "destination": "/esqueci-senha.html"
     },
     {
-      "source": "/faq",
+      "source": "/central-de-ajuda",
       "destination": "/faq.html"
     },
     {

@@ -9023,3 +9023,25 @@ html body .settings-url-editar-btn:not(#love-h-a) {
 html body .settings-url-editar-btn:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .settings-url-editar-site p, body[data-theme="dark"] .settings-url-saiba { color: #FFFFFF !important; }
 body[data-theme="dark"] .settings-url-editar-btn { background: #252525 !important; border-color: #FFFFFF !important; color: #FFFFFF !important; }
+
+/* Central de ajuda e Configurações: mesmo menu lateral. Texto cinza; no
+   hover e na ativa o fundo fica branco, com a linha escura à esquerda
+   (reta) e a ponta da direita arredondada (8px). */
+html body .guias-menu-table .guide-link:not(#love-h-a),
+html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a) { border-radius: 0 8px 8px 0; }
+html body .settings-shell--lateral > #settings-tabs:not(#love-h-a) { gap: 0; padding-right: 1.25rem; border-right: 1px solid #E4E4E7; }
+html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a) {
+  height: auto; padding: 0.8rem 1rem; color: #71717A; font-weight: 500; background: transparent;
+  box-shadow: inset 2px 0 0 transparent;
+}
+html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a):hover { background: #FFFFFF; color: #181D24; }
+html body .settings-shell--lateral > #settings-tabs .category-tab.active:not(#love-h-a),
+html body .settings-shell--lateral > #settings-tabs .category-tab.active:not(#love-h-a):hover { background: #FFFFFF; color: #181D24; font-weight: 700; box-shadow: inset 2px 0 0 #181D24; }
+html body .settings-shell--lateral .settings-nav-titulo:not(#love-h-a) { padding: 0 1rem; }
+html body .settings-shell--lateral .settings-nav-divisor:not(#love-h-a) { margin-left: 1rem; margin-right: 0; }
+body[data-theme="dark"] .settings-shell--lateral > #settings-tabs { border-right-color: #404040 !important; }
+body[data-theme="dark"] .settings-shell--lateral > #settings-tabs .category-tab { background: transparent !important; color: #A1A1AA !important; }
+body[data-theme="dark"] .settings-shell--lateral > #settings-tabs .category-tab.active { color: #FFFFFF !important; box-shadow: inset 2px 0 0 #FFFFFF !important; }
+@media (max-width: 900px) {
+  html body .settings-shell--lateral > #settings-tabs:not(#love-h-a) { border-right: none; padding-right: 0; }
+}

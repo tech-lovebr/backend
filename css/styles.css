@@ -8788,5 +8788,8 @@ html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:n
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs:not(#love-h-a),
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #F4F4F5 !important; }
-/* Aparência: fundo do seletor Mobile / Tablet / Desktop em azul-clarinho. */
-html body:not([data-theme="dark"]) #builder-device-toggle:not(#love-h-a) { background-color: #EBF4FF !important; }
+/* Aparência: fundo do seletor Mobile / Tablet / Desktop em cinza clarinho. */
+html body:not([data-theme="dark"]) #builder-device-toggle:not(#love-h-a) { background-color: #F4F4F5 !important; }
+/* Aparência (Convite digital e Save the Date): fundo atrás do celular/tablet/
+   desktop em cinza clarinho (#F4F4F5), sem o tom azulado. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-viewport:not(#love-h-a) { background: #F4F4F5 !important; }

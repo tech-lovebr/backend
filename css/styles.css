@@ -8821,3 +8821,26 @@ body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar + div > p:firs
 @media (min-width: 769px) {
   #tab-account-settings > div:has(> #config-abas) { display: none !important; }
 }
+
+/* Presentes › Configurações: opções da taxa no modelo de caixinhas com rádio
+   (branca, borda cinza; selecionada com borda escura e bolinha cheia). */
+#gifts-panel-settings .gift-saiba-mais { color: #183b54; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; margin-left: 4px; }
+#gifts-panel-settings .gift-saiba-mais:hover { color: #181D24; }
+#gifts-panel-settings .gift-fee-card { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 10px; cursor: pointer; outline: none; }
+#gifts-panel-settings .gift-fee-card:hover { border-color: #A1A1AA; }
+#gifts-panel-settings .gift-fee-card.active,
+#gifts-panel-settings .gift-fee-card:focus-visible { border-color: #181D24; }
+#gifts-panel-settings .fee-radio-indicator { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; border-radius: 999px; border: 2px solid #A1A1AA; background: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; }
+#gifts-panel-settings .gift-fee-card.active .fee-radio-indicator { border-color: #181D24; }
+#gifts-panel-settings .gift-fee-card.active .fee-radio-indicator::after { content: ''; width: 10px; height: 10px; border-radius: 999px; background: #181D24; }
+#gifts-panel-settings .gift-fee-titulo { margin: 0; font-size: 0.9375rem; font-weight: 600; color: #18181B; }
+#gifts-panel-settings .gift-fee-exemplo { margin: 2px 0 0; font-size: 0.8125rem; color: #71717A; }
+/* Notificações e Recados: caixinhas brancas (não transparentes). */
+#gifts-panel-settings .gift-pref-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; cursor: pointer; }
+#gifts-panel-settings .gift-pref-item:hover { border-color: #A1A1AA; }
+#gifts-panel-settings .gift-pref-item input[type="checkbox"] { accent-color: #181D24; flex-shrink: 0; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-card,
+body[data-theme="dark"] #gifts-panel-settings .gift-pref-item { background: #252525; border-color: #404040; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-titulo { color: #FFFFFF; }
+/* "Salvar configurações" (Presentes) igual ao "Salvar alterações" de Informações. */
+html body #btn-save-gift-settings:not(#love-h-a) { height: 38px !important; min-height: 38px; padding: 0 14px !important; font-size: 14px !important; font-weight: 600 !important; border-radius: 8px !important; display: inline-flex; align-items: center; justify-content: center; }

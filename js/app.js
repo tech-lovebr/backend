@@ -871,6 +871,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let faqItensCache = null;
   let faqCategoriaAtiva = null;
+  // Categoria pedida por um link "Saiba mais" (trecho do nome, ex.: "present").
+  /** @type {string|null} */
+  let faqCategoriaPedida = null;
 
   async function loadFaqPage() {
     const cont = document.getElementById('faq-page-container');
@@ -1052,6 +1055,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    if (faqCategoriaPedida) {
+      const pedida = faqCategoriaPedida.toLowerCase();
+      const achou = categorias.find(c => c.toLowerCase().includes(pedida));
+      if (achou) faqCategoriaAtiva = achou;
+      faqCategoriaPedida = null;
+    }
     // Primeira categoria fica selecionada; mantém a escolhida ao recarregar.
     if (!faqCategoriaAtiva || !grupos.has(faqCategoriaAtiva)) faqCategoriaAtiva = categorias[0];
 
@@ -7908,62 +7917,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Alternar quem paga a taxa (repassar vs assumir)
+  // Quem paga a taxa dos presentes: "Seus convidados" ou "Você" (o visual
+  // de selecionado vem da classe .active no CSS).
   document.querySelectorAll('.gift-fee-card').forEach(card => {
-    card.addEventListener('click', () => {
+    const escolher = () => {
       document.querySelectorAll('.gift-fee-card').forEach(c => {
-        c.classList.remove('active', 'border-2', 'border-rose-400', 'bg-rose-50/20');
-        c.classList.add('border', 'border-slate-200', 'bg-white');
-        const dot = c.querySelector('.fee-radio-indicator span');
-        const circle = c.querySelector('.fee-radio-indicator');
-        if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-transparent';
-        if (circle) circle.className = 'fee-radio-indicator w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 mt-0.5 bg-white';
+        c.classList.toggle('active', c === card);
+        c.setAttribute('aria-checked', String(c === card));
       });
-      card.classList.add('active', 'border-2', 'border-rose-400', 'bg-rose-50/20');
-      card.classList.remove('border-slate-200', 'bg-white');
-      const dot = card.querySelector('.fee-radio-indicator span');
-      const circle = card.querySelector('.fee-radio-indicator');
-      if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
-      if (circle) circle.className = 'fee-radio-indicator w-5 h-5 rounded-full border-2 border-rose-500 flex items-center justify-center flex-shrink-0 mt-0.5 bg-white';
+    };
+    card.addEventListener('click', escolher);
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); escolher(); } });
+  });
 
-      const choice = card.getAttribute('data-fee-choice');
-      if (choice === 'guest') {
-        showToast('Taxa de 3,89% será repassada aos convidados.', '💳');
-      } else {
-        showToast('Você assumirá a taxa de 3,89% dos presentes recebidos.', '💼');
-      }
+  // "Saiba mais" da taxa: abre a Central de ajuda direto na categoria de presentes.
+  document.querySelectorAll('.gift-saiba-mais').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      faqCategoriaPedida = /** @type {HTMLElement} */ (link).dataset.ajudaCategoria || null;
+      openFaqPage();
     });
   });
 
-  // Alternar parcelamento sem juros
-  document.querySelectorAll('.installment-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.installment-card').forEach(c => {
-        c.classList.remove('active', 'border-2', 'border-indigo-600', 'bg-indigo-50/30', 'text-indigo-950');
-        c.classList.add('border-slate-200', 'bg-white');
-      });
-      card.classList.add('active', 'border-2', 'border-indigo-600', 'bg-indigo-50/30', 'text-indigo-950');
-      card.classList.remove('border-slate-200', 'bg-white');
-
-      const installments = parseInt(card.getAttribute('data-installments')) || 1;
-      const simText = document.getElementById('sim-installments-text');
-      if (simText) {
-        if (installments === 1) {
-          simText.textContent = '1x de R$ 600,00 à vista';
-        } else {
-          const installmentVal = (600 / installments).toFixed(2).replace('.', ',');
-          simText.textContent = `${installments} parcelas de R$ ${installmentVal} sem juros`;
-        }
-      }
-    });
-  });
-
-  // Salvar configurações da lista de presentes
+  // Salvar configurações da lista de presentes (retorno no próprio botão).
   const btnSaveGiftSettings = document.getElementById('btn-save-gift-settings');
   if (btnSaveGiftSettings) {
     btnSaveGiftSettings.addEventListener('click', () => {
-      showToast('Configurações da lista de presentes salvas com sucesso!', '✨');
-      triggerConfetti();
+      const texto = btnSaveGiftSettings.textContent;
+      btnSaveGiftSettings.textContent = 'Salvo';
+      btnSaveGiftSettings.disabled = true;
+      setTimeout(() => { btnSaveGiftSettings.textContent = texto; btnSaveGiftSettings.disabled = false; }, 1800);
     });
   }
 

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_configSubmenu">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_configLista2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2006,132 +2006,56 @@
             <div class="space-y-4 pb-8 border-b border-zinc-200/80">
               <div>
                 <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Taxa da Lista de Presentes</h3>
-                <p class="text-xs text-zinc-500 mt-0.5">Escolha como a taxa de processamento dos presentes (3,89%) será aplicada na sua lista.</p>
+                <p class="text-xs text-zinc-500 mt-0.5">Escolha como a taxa de processamento dos presentes (3,89%) será aplicada na sua lista. <a href="/central-de-ajuda" class="gift-saiba-mais" data-ajuda-categoria="present">Saiba mais</a></p>
               </div>
 
               <div class="space-y-3" id="gift-fee-options-container">
-                
-                <!-- Opção 1: Repassar a taxa para os convidados (Recomendado) -->
-                <div class="gift-fee-card active p-5 sm:p-6 rounded-2xl border-2 border-[#181D24] bg-[#181D24]/5 cursor-pointer relative transition-all flex items-start gap-4 hover:border-[#181D24]" data-fee-choice="guest">
-
-                  <!-- Custom Radio Indicator -->
-                  <div class="fee-radio-indicator w-5 h-5 rounded-full border-2 border-[#181D24] flex items-center justify-center flex-shrink-0 mt-0.5 bg-white">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#181D24]"></span>
-                  </div>
-
-                  <div class="flex-1 min-w-0 pr-24">
-                    <h4 class="font-bold text-zinc-900 text-sm sm:text-base leading-snug">Repassar a taxa dos presentes para os convidados</h4>
-                    <p class="text-xs text-zinc-500 mt-1 leading-relaxed">A taxa será embutida no valor dos seus presentes e o convidado verá apenas o valor total.</p>
-                  </div>
-
-                  <!-- Badge Recomendado no Canto Superior Direito -->
-                  <span class="absolute top-5 right-5 bg-[#181D24] text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-xs">
-                    recomendado
-                  </span>
-                </div>
-
-                <!-- Opção 2: Anfitrião assume a taxa -->
-                <div class="gift-fee-card p-5 sm:p-6 rounded-2xl border border-zinc-200 bg-white cursor-pointer relative transition-all flex items-start gap-4 hover:border-zinc-300" data-fee-choice="host">
-                  
-                  <!-- Custom Radio Indicator -->
-                  <div class="fee-radio-indicator w-5 h-5 rounded-full border-2 border-zinc-300 flex items-center justify-center flex-shrink-0 mt-0.5 bg-white">
-                    <span class="w-2.5 h-2.5 rounded-full bg-transparent"></span>
-                  </div>
-
-                  <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-zinc-900 text-sm sm:text-base leading-snug">Queremos assumir a taxa dos presentes</h4>
-                    <p class="text-xs text-zinc-500 mt-1 leading-relaxed">Vocês receberão o valor do presente na Carteira já com o desconto da taxa.</p>
+                <!-- Seus convidados pagam a taxa -->
+                <div class="gift-fee-card active" data-fee-choice="guest" role="radio" aria-checked="true" tabindex="0">
+                  <span class="fee-radio-indicator" aria-hidden="true"></span>
+                  <div class="min-w-0">
+                    <h4 class="gift-fee-titulo">Seus convidados</h4>
+                    <p class="gift-fee-exemplo">Ex.: presente de R$ 100 + o convidado paga R$ 3,89 de taxa = você recebe R$ 100</p>
                   </div>
                 </div>
 
+                <!-- Você paga a taxa -->
+                <div class="gift-fee-card" data-fee-choice="host" role="radio" aria-checked="false" tabindex="0">
+                  <span class="fee-radio-indicator" aria-hidden="true"></span>
+                  <div class="min-w-0">
+                    <h4 class="gift-fee-titulo">Você</h4>
+                    <p class="gift-fee-exemplo">Ex.: presente de R$ 100 − você paga R$ 3,89 de taxa = você recebe R$ 96,11</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- 2. PARCELAMENTO SEM JUROS PARA OS CONVIDADOS -->
-            <div class="space-y-4 pb-8 border-b border-zinc-200/80">
-              <div>
-                <div class="flex items-center justify-between">
-                  <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Parcelamento Sem Juros para Convidados</h3>
-                  <span class="text-xs font-bold text-[#537bae] bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-100">Cartão de Crédito</span>
-                </div>
-                <p class="text-xs text-zinc-500 mt-0.5">Defina em até quantas vezes seus convidados podem parcelar a compra de presentes sem cobrança de juros para eles.</p>
-              </div>
-
-              <!-- Seleção de Opções de Parcelas -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="gift-installment-options">
-                
-                <div class="installment-card p-4 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white cursor-pointer transition-all text-center space-y-1" data-installments="1">
-                  <span class="text-sm font-extrabold text-zinc-900 block">À vista</span>
-                  <span class="text-[11px] text-zinc-400 font-semibold block">1x sem juros</span>
-                  <span class="text-[10px] text-zinc-500 block pt-1 font-bold">Taxa: 0% extra</span>
-                </div>
-
-                <div class="installment-card p-4 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white cursor-pointer transition-all text-center space-y-1" data-installments="3">
-                  <span class="text-sm font-extrabold text-zinc-900 block">Até 3x</span>
-                  <span class="text-[11px] text-zinc-400 font-semibold block">Sem juros no cartão</span>
-                  <span class="text-[10px] text-[#537bae] block pt-1 font-bold">Taxa absorvida: 2,4%</span>
-                </div>
-
-                <div class="installment-card active p-4 rounded-xl border-2 border-[#181D24] bg-[#181D24]/5 cursor-pointer transition-all text-center space-y-1 relative" data-installments="6">
-                  <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#181D24] text-white text-[9px] font-black px-2 py-0.5 rounded-full">POPULAR</span>
-                  <span class="text-sm font-extrabold text-zinc-900 block">Até 6x</span>
-                  <span class="text-[11px] text-[#537bae] font-semibold block">Sem juros no cartão</span>
-                  <span class="text-[10px] text-[#537bae] block pt-1 font-bold">Taxa absorvida: 4,8%</span>
-                </div>
-
-                <div class="installment-card p-4 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white cursor-pointer transition-all text-center space-y-1" data-installments="12">
-                  <span class="text-sm font-extrabold text-zinc-900 block">Até 12x</span>
-                  <span class="text-[11px] text-zinc-400 font-semibold block">Máxima flexibilidade</span>
-                  <span class="text-[10px] text-[#537bae] block pt-1 font-bold">Taxa absorvida: 7,9%</span>
-                </div>
-
-              </div>
-
-              <!-- Simulador de Exemplo em Tempo Real -->
-              <div class="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div class="space-y-0.5">
-                  <span class="font-bold text-zinc-800 block">Exemplo com presente de R$ 600,00:</span>
-                  <span class="text-zinc-500 text-[11px]">Convidado paga <strong class="text-zinc-900" id="sim-installments-text">6 parcelas de R$ 100,00</strong> e você recebe o valor integral na sua carteira PIX.</span>
-                </div>
-                <span class="text-emerald-700 font-bold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 self-start sm:self-auto flex-shrink-0 inline-flex items-center gap-1.5">
-                  <img src="assets/pix-icone.png" alt="PIX" class="w-3.5 h-3.5 object-contain">
-                  Resgate 100% via PIX
-                </span>
-              </div>
-            </div>
-
-            <!-- 3. PREFERÊNCIAS DE NOTIFICAÇÃO DA LISTA -->
-            <div class="space-y-4 pb-8 border-b border-zinc-200/80">
+            <!-- 2. NOTIFICAÇÕES E RECADOS -->
+            <div class="space-y-4">
               <div>
                 <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Notificações e Recados</h3>
                 <p class="text-xs text-zinc-500 mt-0.5">Como você prefere ser avisado quando um convidado comprar um presente.</p>
               </div>
 
               <div class="space-y-3">
-                <label class="flex items-center justify-between p-4 rounded-xl border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors">
-                  <div class="space-y-0.5">
-                    <span class="font-bold text-zinc-900 text-xs sm:text-sm block">Notificação via WhatsApp a cada presente recebido</span>
-                    <span class="text-[11px] text-zinc-500 block">Receba o nome do convidado, valor e recado diretamente no celular.</span>
-                  </div>
-                  <input type="checkbox" checked class="w-5 h-5 rounded-lg text-[#537bae] focus:ring-[#537bae] cursor-pointer">
+                <label class="gift-pref-item">
+                  <span class="font-bold text-zinc-900 text-xs sm:text-sm block">Notificação via WhatsApp a cada presente recebido</span>
+                  <input type="checkbox" checked class="w-5 h-5 rounded-lg cursor-pointer">
                 </label>
 
-                <label class="flex items-center justify-between p-4 rounded-xl border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors">
+                <label class="gift-pref-item">
                   <div class="space-y-0.5">
                     <span class="font-bold text-zinc-900 text-xs sm:text-sm block">Permitir recado com foto ou vídeo do convidado</span>
                     <span class="text-[11px] text-zinc-500 block">Os convidados podem gravar um áudio ou anexar votos de felicitações.</span>
                   </div>
-                  <input type="checkbox" checked class="w-5 h-5 rounded-lg text-[#537bae] focus:ring-[#537bae] cursor-pointer">
+                  <input type="checkbox" checked class="w-5 h-5 rounded-lg cursor-pointer">
                 </label>
               </div>
             </div>
 
-            <!-- Botão Salvar Configurações -->
+            <!-- Salvar (mesmo botão do "Salvar alterações" de Informações) -->
             <div class="pt-2">
-              <button type="button" id="btn-save-gift-settings" class="btn-primary">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span>Salvar Configurações da Lista</span>
-              </button>
+              <button type="button" id="btn-save-gift-settings" class="btn-secondary builder-toolbar-btn">Salvar configurações</button>
             </div>
 
           </div>
@@ -5572,7 +5496,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_configSubmenu"></script>
+  <script src="js/app.js?v=20261020_configLista"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_semCaixaRotulo"></script>
 </body>

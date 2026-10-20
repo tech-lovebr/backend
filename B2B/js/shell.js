@@ -160,6 +160,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* -------------------- Autenticação (Supabase) -------------------- */
 
+/* Google desconectado em Configurações › Contas conectadas: se a pessoa
+   tentar entrar de novo pelo Google, o Supabase liga a conta sozinho (mesmo
+   e-mail). Aqui isso é desfeito: solta o Google, sai e volta ao login com o
+   aviso para entrar com o e-mail e usar "Esqueci minha senha". Quem clicou
+   em "Conectar com o Google" (marca no navegador) passa e a marca some. */
+async function bloquearGoogleDesconectado(session) {
+  if (window.name === 'love-hub-google-login') return false;
+  if (!((session.user || {}).user_metadata || {}).google_desconectado) return false;
+  const { data } = await supabaseClient.auth.getUser();
+  const user = (data && data.user) || session.user;
+  const google = (user.identities || []).find(i => i.provider === 'google');
+  if (!google) return false;
+  if (localStorage.getItem('b2b-reconectando-google')) {
+    localStorage.removeItem('b2b-reconectando-google');
+    await supabaseClient.auth.updateUser({ data: { google_desconectado: false } });
+    return false;
+  }
+  await supabaseClient.auth.unlinkIdentity(google);
+  await supabaseClient.auth.signOut();
+  window.location.href = 'login.html?erro=google-desconectado';
+  return true;
+}
+
 async function initAuthGuard() {
   const page = document.body.dataset.page;
   if (PUBLIC_PAGES.includes(page)) return true;
@@ -177,6 +200,7 @@ async function initAuthGuard() {
   }
 
   window.b2bSession = session;
+  if (await bloquearGoogleDesconectado(session)) return false;
 
   // Empresas deste login (a principal tem o id do login). Sem a coluna
   // dono_id (migration 066 ainda não rodada), só a principal.

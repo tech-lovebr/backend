@@ -213,6 +213,14 @@
       entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html'));
     });
 
+    // Voltou do Google com a conta desconectada do Google (Contas conectadas).
+    if (new URLSearchParams(location.search).get('erro') === 'google-desconectado') {
+      const avisoGoogle = document.getElementById('login-error');
+      avisoGoogle.textContent = 'Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueci minha senha" para criar uma senha.';
+      avisoGoogle.classList.remove('hidden');
+      history.replaceState(null, '', location.pathname);
+    }
+
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();

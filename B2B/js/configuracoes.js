@@ -1132,6 +1132,8 @@ function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
           : 'Não foi possível desconectar agora. Tente de novo em instantes.', true);
         return;
       }
+      // Marca a conta: entrar de novo pelo Google passa a ser recusado (ver shell.js).
+      await supabaseClient.auth.updateUser({ data: { google_desconectado: true } });
       confirmar.hidden = true;
       linkDesconectar.hidden = false;
       document.getElementById('settings-login-google').hidden = true;
@@ -1146,6 +1148,7 @@ function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
 
   // Conectar de novo: vai ao Google e volta para o Hub já com a conta ligada.
   conectar.addEventListener('click', async () => {
+    localStorage.setItem('b2b-reconectando-google', String(Date.now()));
     const { error } = await supabaseClient.auth.linkIdentity({
       provider: 'google',
       options: { redirectTo: `${location.origin}/dashboard.html`, queryParams: { prompt: 'select_account' } }

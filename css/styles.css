@@ -8854,3 +8854,6 @@ html body #gifts-panel-products:not(#love-h-a) { padding-top: 0 !important; }
 /* Carteira: os painéis (Carteira digital, Extrato…) se alternam — o visível não
    herda a margem do "space-y" do painel escondido antes dele (24px, padrão). */
 html body #tab-wallet .wallet-sub-panel:not(#love-h-a) { margin-top: 0 !important; }
+/* Mapear mesas: sem a caixinha "Lista de convidados"; fica só o título
+   "Convidados", no mesmo estilo de "Elementos" na Aparência. */
+html body #floorplan-guests-panel .builder-el-group-title:not(#love-h-a) { text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600; color: #71717A; }

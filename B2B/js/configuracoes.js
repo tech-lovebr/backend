@@ -1219,7 +1219,8 @@ async function initLoginDaConta() {
    e-mail e senha (a pessoa cria a senha pelo "Esqueci minha senha").
    Antes de soltar o Google, grava uma senha aleatória que ninguém sabe,
    para a conta ter o login por e-mail. Precisa do "Manual linking"
-   ligado no Supabase (Authentication › Sign In / Providers). */
+   ligado no Supabase só para "Conectar com o Google" de novo; desconectar é
+   feito no banco (função desconectar_google, migration 073). */
 let contaGoogleLigada = false;
 function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
   const acoes = document.getElementById('settings-google-acoes');
@@ -1241,22 +1242,15 @@ function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
     const btn = e.currentTarget;
     btn.disabled = true;
     try {
-      const { data: fresco } = await supabaseClient.auth.getUser();
-      const atual = (fresco && fresco.user) || user;
-      const google = (atual.identities || []).find(i => i.provider === 'google') || identidadeGoogle;
-      // Senha aleatória: garante o login por e-mail (trocada no "Esqueci minha senha").
-      const aleatoria = Array.from(crypto.getRandomValues(new Uint8Array(24)), b => b.toString(16).padStart(2, '0')).join('');
-      await supabaseClient.auth.updateUser({ password: aleatoria });
-      const { error } = google ? await supabaseClient.auth.unlinkIdentity(google) : { error: new Error('sem identidade') };
+      // Feito no banco (migration 073): a conta passa a entrar pelo e-mail, o
+      // Google sai e a conta fica marcada como "google_desconectado".
+      const { error } = await supabaseClient.rpc('desconectar_google');
       if (error) {
         console.warn('Não foi possível desconectar o Google.', error);
-        mostrarMsg(/manual linking|disabled/i.test(error.message || '')
-          ? 'A desconexão ainda não está liberada. Tente de novo mais tarde.'
-          : 'Não foi possível desconectar agora. Tente de novo em instantes.', true);
+        mostrarMsg('Não foi possível desconectar agora. Tente de novo em instantes.', true);
         return;
       }
-      // Marca a conta: entrar de novo pelo Google passa a ser recusado (ver shell.js).
-      await supabaseClient.auth.updateUser({ data: { google_desconectado: true } });
+      await supabaseClient.auth.refreshSession();
       linkDesconectar.hidden = false;
       document.getElementById('settings-login-google').hidden = true;
       acoes.hidden = true;

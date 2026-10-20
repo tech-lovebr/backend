@@ -3530,3 +3530,6 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .editor-grid-artigo .editor-corpo { flex: 1; }
 /* Limpar formatação: só a borracha. */
 .editor-btn[data-limpar] { padding: 0 .375rem; }
+
+/* Perfil da sidebar: só o ícone de pessoa, sem fundo. */
+.sidebar-perfil-icone { width: 24px; height: 24px; flex-shrink: 0; color: var(--sidebar-item); }

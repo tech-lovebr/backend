@@ -1107,14 +1107,13 @@ function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
   if (contaGoogleLigada) return;
   contaGoogleLigada = true;
 
-  const confirmar = document.getElementById('settings-google-confirmar');
   const linkDesconectar = document.getElementById('settings-google-desconectar');
   const mostrarMsg = (texto, erro) => { msg.textContent = texto; msg.hidden = !texto; msg.classList.toggle('is-erro', !!erro); };
 
-  linkDesconectar.addEventListener('click', () => { confirmar.hidden = false; linkDesconectar.hidden = true; mostrarMsg(''); });
-  document.getElementById('settings-google-cancelar').addEventListener('click', () => { confirmar.hidden = true; linkDesconectar.hidden = false; });
 
-  document.getElementById('settings-google-confirmar-btn').addEventListener('click', async (e) => {
+  // Clicou, desconecta na hora (sem confirmação).
+  linkDesconectar.addEventListener('click', async (e) => {
+    mostrarMsg('');
     const btn = e.currentTarget;
     btn.disabled = true;
     try {
@@ -1134,7 +1133,6 @@ function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
       }
       // Marca a conta: entrar de novo pelo Google passa a ser recusado (ver shell.js).
       await supabaseClient.auth.updateUser({ data: { google_desconectado: true } });
-      confirmar.hidden = true;
       linkDesconectar.hidden = false;
       document.getElementById('settings-login-google').hidden = true;
       acoes.hidden = true;

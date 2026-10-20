@@ -8766,3 +8766,10 @@ body[data-theme="dark"] #settings-login-card .conta-login-nome { color: #FFFFFF;
 #settings-mfa-setup .mfa-popup-fechar:hover { color: #181D24; }
 #settings-mfa-setup .mfa-popup-fechar svg { width: 18px; height: 18px; }
 body[data-theme="dark"] #settings-mfa-setup .mfa-popup-caixa { background: #1F1F1F; }
+
+/* Central de ajuda: no desktop as categorias ficam no submenu lateral (como os
+   outros menus); a lista de categorias dentro da página só aparece no celular. */
+@media (min-width: 769px) {
+  #tab-faq .faq-categorias { display: none !important; }
+  #tab-faq .faq-layout { grid-template-columns: minmax(0, 1fr); }
+}

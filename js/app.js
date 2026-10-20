@@ -662,6 +662,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openFaqPage(opts = {}) {
     abrirPaginaDaConta('tab-faq', '/duvidas', 'Central de ajuda', opts);
+    // Central de ajuda usa o submenu lateral, como os outros menus: título
+    // "Central de ajuda" e as categorias como itens.
+    if (elements.subDrawer) elements.subDrawer.classList.remove('hidden-drawer');
+    if (elements.mainArea) elements.mainArea.classList.remove('full-width');
+    if (elements.drawerTitle) elements.drawerTitle.textContent = 'Central de ajuda';
+    if (elements.drawerActionBtn && elements.drawerActionBtn.parentElement) elements.drawerActionBtn.parentElement.classList.add('hidden');
+    if (elements.drawerSubItemsList) elements.drawerSubItemsList.innerHTML = '';
     loadFaqPage();
   }
 
@@ -1038,6 +1045,24 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFaqPage(itens);
       });
     });
+
+    // Submenu lateral (desktop): as mesmas categorias, no formato dos outros menus.
+    if (state.currentTab === 'tab-faq' && elements.drawerSubItemsList) {
+      elements.drawerSubItemsList.innerHTML = '';
+      categorias.forEach(cat => {
+        const item = document.createElement('div');
+        item.className = `sub-drawer-item${cat === faqCategoriaAtiva ? ' active' : ''}`;
+        item.dataset.faqCategoria = cat;
+        const rotulo = document.createElement('span');
+        rotulo.textContent = cat;
+        item.appendChild(rotulo);
+        item.addEventListener('click', () => {
+          faqCategoriaAtiva = cat;
+          renderFaqPage(itens);
+        });
+        elements.drawerSubItemsList.appendChild(item);
+      });
+    }
     cont.querySelectorAll('.faq-pergunta').forEach(btn => {
       btn.addEventListener('click', () => {
         const item = btn.closest('.faq-item');

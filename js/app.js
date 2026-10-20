@@ -9541,7 +9541,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
       const el = document.createElement('div');
       const isMesa = elData.type === 'mesa';
-      el.className = `floorplan-el${isMesa ? ` is-mesa formato-${FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda'}` : ''}`;
+      el.className = `floorplan-el${isMesa ? ` is-mesa formato-${FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda'}${elData.formato === 'retangular' && elData.orientacao === 'vertical' ? ' is-vertical' : ''}` : ''}`;
       el.style.left = `${elData.x || 0}px`;
       el.style.top = `${elData.y || 0}px`;
       el.dataset.elId = elData.id;
@@ -9572,11 +9572,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const ringRadius = 80;
         const showNames = elData.showNames !== false;
         const formato = FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda';
+        if (formato === 'retangular') {
+          const girar = document.createElement('button');
+          girar.type = 'button';
+          girar.className = 'floorplan-girar';
+          girar.title = elData.orientacao === 'vertical' ? 'Deixar na horizontal' : 'Deixar na vertical';
+          girar.setAttribute('aria-label', girar.title);
+          girar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>';
+          // Não deixa o clique virar arrastar nem abrir o pop-up da mesa.
+          girar.addEventListener('mousedown', (e) => e.stopPropagation());
+          girar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const lista = getFloorPlanElements();
+            const alvo = lista.find(item => item.id === elData.id);
+            if (!alvo) return;
+            alvo.orientacao = alvo.orientacao === 'vertical' ? 'horizontal' : 'vertical';
+            saveFloorPlanElements(lista);
+            renderFloorPlanCanvas();
+          });
+          el.appendChild(girar);
+        }
         for (let i = 0; i < seats; i++) {
           // Redonda segue a conta de sempre; os outros formatos têm a própria.
-          const [seatX, seatY] = formato === 'redonda'
+          let [seatX, seatY] = formato === 'redonda'
             ? [containerSize / 2 + ringRadius * Math.cos((2 * Math.PI * i / seats) - Math.PI / 2), containerSize / 2 + ringRadius * Math.sin((2 * Math.PI * i / seats) - Math.PI / 2)]
             : posicaoDoAssento(formato, i, seats);
+          if (formato === 'retangular' && elData.orientacao === 'vertical') [seatX, seatY] = [seatY, seatX];
           const guestName = (seatNames[i] || '').trim();
           const confirmed = isFloorPlanSeatConfirmed(guestName);
           const declined = isFloorPlanSeatDeclined(guestName);

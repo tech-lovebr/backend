@@ -9018,3 +9018,11 @@ html body #tab-rsvp .rsvp-caixa-com-abas:not(#love-h-a) { display: flex; flex-di
 html body #tab-rsvp .rsvp-caixa-com-abas > #rsvp-status-tabs:not(#love-h-a) { order: -1; margin: 0 !important; padding: 0 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
 html body #tab-rsvp .rsvp-caixa-com-abas > #rsvp-status-tabs .love-tab-item:not(#love-h-a) { padding-top: 12px; padding-bottom: 10px; }
 body[data-theme="dark"] #tab-rsvp .rsvp-caixa-com-abas > #rsvp-status-tabs { border-bottom-color: #404040 !important; }
+
+/* Mesa retangular: vertical (girada) e botão de girar no hover. */
+.floorplan-el.is-mesa.formato-retangular.is-vertical .floorplan-mesa-core { width: 64px; height: 150px; }
+.floorplan-girar { position: absolute; top: 6px; right: 6px; z-index: 5; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #52525B; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .15s ease; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.floorplan-girar svg { width: 15px; height: 15px; }
+.floorplan-el.is-mesa:hover .floorplan-girar, .floorplan-girar:focus-visible { opacity: 1; pointer-events: auto; }
+.floorplan-girar:hover { color: #181D24; border-color: #181D24; }
+body[data-theme="dark"] .floorplan-girar { background: #252525; border-color: #404040; color: #E4E4E7; }

@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ------------------------------------------------------------------
-  // PÁGINAS DO MENU DA CONTA: Dúvidas (/duvidas) e Configurações
+  // PÁGINAS DO MENU DA CONTA: Dúvidas (/central-de-ajuda) e Configurações
   // (/configuracoes). Mesmo encaixe da página de notificações: sem aba
   // no rail, barra de título colada no header (body.page-mode).
   // ------------------------------------------------------------------
@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openFaqPage(opts = {}) {
-    abrirPaginaDaConta('tab-faq', '/duvidas', 'Central de ajuda', opts);
+    abrirPaginaDaConta('tab-faq', '/central-de-ajuda', 'Central de ajuda', opts);
     // Central de ajuda usa o submenu lateral, como os outros menus: título
     // "Central de ajuda" e as categorias como itens.
     if (elements.subDrawer) elements.subDrawer.classList.remove('hidden-drawer');
@@ -2819,7 +2819,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -16249,7 +16249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Configurações e Dúvidas são páginas próprias (/configuracoes, /duvidas).
+  // Configurações e Dúvidas são páginas próprias (/configuracoes, /central-de-ajuda).
   if (btnProfileData) {
     btnProfileData.addEventListener('click', () => {
       dropdownUserAccount?.classList.add('hidden');
@@ -16855,7 +16855,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (path === '/termos') { openLegalDocPage('termos', { pushUrl: false }); return; }
     if (path === '/privacidade') { openLegalDocPage('privacidade', { pushUrl: false }); return; }
     if (path === '/notificacoes' && state.currentView === 'dashboard') { openNotificationsPage({ pushUrl: false }); return; }
-    if (path === '/duvidas' && state.currentView === 'dashboard') { openFaqPage({ pushUrl: false }); return; }
+    if (path === '/central-de-ajuda' && state.currentView === 'dashboard') { openFaqPage({ pushUrl: false }); return; }
     if (path === '/configuracoes' && state.currentView === 'dashboard') { openAccountSettingsPage({ pushUrl: false }); return; }
 
     const rota = lerRota(path);
@@ -17065,7 +17065,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // /notificacoes não é uma aba do rail (sem ícone próprio) — mesma lógica
   // de rota "direta" das legais/abas, só que abrindo a página de notificações.
   const initialIsNotifications = window.location.pathname === '/notificacoes';
-  const initialIsFaq = window.location.pathname === '/duvidas';
+  const initialIsFaq = window.location.pathname === '/central-de-ajuda';
   const initialIsSettings = window.location.pathname === '/configuracoes';
 
   // Guardado ANTES do switchView/initClienteSession: se a sessão confirmar

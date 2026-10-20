@@ -9,6 +9,7 @@
     { "source": "/resetar-senha.html", "destination": "/resetar-senha", "permanent": true },
     { "source": "/convite-preview.html", "destination": "/convite-preview", "permanent": true },
     { "source": "/organizador.html", "destination": "/organizador", "permanent": true },
+    { "source": "/duvidas", "destination": "/central-de-ajuda", "permanent": true },
     { "source": "/politica-de-privacidade", "destination": "/privacidade", "permanent": true }
   ],
   "rewrites": [
@@ -30,7 +31,7 @@
     { "source": "/carteira/:path*", "destination": "/" },
     { "source": "/fornecedores/:path*", "destination": "/" },
     { "source": "/notificacoes", "destination": "/" },
-    { "source": "/duvidas", "destination": "/" },
+    { "source": "/central-de-ajuda", "destination": "/" },
     { "source": "/configuracoes", "destination": "/" },
     { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
     { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" },

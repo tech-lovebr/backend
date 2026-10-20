@@ -1216,8 +1216,6 @@ async function initLoginDaConta() {
 
 /* Contas conectadas › Desconectar do Google / Conectar com o Google.
    Desconectar: o e-mail continua cadastrado e o login passa a ser por
-   e-mail e senha (a pessoa cria a senha pelo "Esqueci minha senha").
-   Antes de soltar o Google, grava uma senha aleatória que ninguém sabe,
    para a conta ter o login por e-mail. Precisa do "Manual linking"
    ligado no Supabase só para "Conectar com o Google" de novo; desconectar é
    feito no banco (função desconectar_google, migration 073). */

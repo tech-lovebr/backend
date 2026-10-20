@@ -94,10 +94,14 @@ const EditorRico = (() => {
         </div>
       </div>
       <button type="button" class="editor-btn" data-linha title="Linha horizontal" aria-label="Linha horizontal">${ico('<path d="M4 12h16"/>')}</button>
-      <button type="button" class="editor-btn" data-limpar title="Limpar formatação" aria-label="Limpar formatação">${ico('<path d="M19 20h-10.5l-4.21 -4.3a1 1 0 0 1 0 -1.41l10 -10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9.2 9.3"/><path d="M18 13.3l-6.3 -6.3"/>')}<span>Limpar</span></button>
+      <button type="button" class="editor-btn" data-limpar title="Limpar formatação" aria-label="Limpar formatação">${ico('<path d="M19 20h-10.5l-4.21 -4.3a1 1 0 0 1 0 -1.41l10 -10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9.2 9.3"/><path d="M18 13.3l-6.3 -6.3"/>')}</button>
     </div>`;
 
-  function montar(host, { placeholder = 'Escreva aqui.', aoMudar } = {}) {
+  /**
+   * @param {HTMLElement} host
+   * @param {{ placeholder?: string, aoMudar?: () => void, tabela?: boolean }} [opcoes]
+   */
+  function montar(host, { placeholder = 'Escreva aqui.', aoMudar, tabela = true } = {}) {
     host.innerHTML = `
       ${BARRA}
       <div class="editor-corpo" contenteditable="true" role="textbox" aria-multiline="true"
@@ -464,6 +468,9 @@ const EditorRico = (() => {
 
       return caixa.innerHTML;
     }
+
+    // Sem tabela (artigos do blog): o botão sai da barra.
+    if (!tabela) host.querySelector('[data-abrir="tabela"]').closest('.editor-menu-wrap').remove();
 
     return {
       html: () => corpo.innerHTML,

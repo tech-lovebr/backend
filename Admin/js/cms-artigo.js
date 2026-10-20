@@ -75,7 +75,8 @@ function preencher() {
 
 function ligarEditor() {
   EDITOR = EditorRico.montar(document.getElementById('editor-host'), {
-    placeholder: 'Escreva o artigo aqui.'
+    placeholder: 'Escreva o artigo aqui.',
+    tabela: false
   });
   EDITOR.definir(ARTIGO?.conteudo || '');
 }

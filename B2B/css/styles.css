@@ -9003,3 +9003,9 @@ html body .field-request-change-link:not(#love-h-a) {
 }
 html body .field-request-change-link:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .field-request-change-link { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* "Desconectar do Google": sem sublinhado, sem negrito, no mesmo cinza do
+   "Conectado em" (#71717A); no hover só escurece. */
+html body .settings-google-desconectar:not(#love-h-a) { text-decoration: none; font-weight: 400; font-size: 0.8125rem; color: #71717A; }
+html body .settings-google-desconectar:hover:not(#love-h-a) { color: #181D24; }
+body[data-theme="dark"] .settings-google-desconectar { color: #A1A1AA !important; }

@@ -9175,3 +9175,7 @@ html body[data-theme="dark"] .b2b-header-bar + p:not(#love-h-a), html body[data-
 html body[data-theme="dark"] .dashboard-help-card-desc:not(#love-h-a), html body[data-theme="dark"] #settings-tabs .category-tab:not(#love-h-a),
 html body[data-theme="dark"] .guias-menu-table .guide-link:not(#love-h-a), html body[data-theme="dark"] .category-tabs-bar .category-tab:not(#love-h-a) { color: #A1A1AA !important; }
 html body[data-theme="dark"] #settings-tabs .category-tab.active:not(#love-h-a), html body[data-theme="dark"] .guias-menu-table .guide-link--active:not(#love-h-a) { background: #1C2125 !important; }
+
+/* Configurações: o título da página é o nome da aba; sem o 2º título antes
+   da caixa, a caixa de Verificação começa na 1ª linha ao lado. */
+.verificacao-aberta > #verificacao-conta-card { grid-row: 1 / span 3; }

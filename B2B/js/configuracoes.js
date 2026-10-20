@@ -52,6 +52,8 @@ function initSettingsTabs() {
   wrap.querySelectorAll('[data-settings-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      // O título da página é o nome da aba escolhida no menu lateral.
+      setText('settings-titulo-pagina', btn.textContent.trim());
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
         panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
       });

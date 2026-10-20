@@ -8874,3 +8874,31 @@ body[data-theme="dark"] .mfa-modal-card { border-color: #404040 !important; }
 body[data-theme="dark"] .mfa-modal-titulo, body[data-theme="dark"] .mfa-modal-chave { color: #FFFFFF !important; }
 body[data-theme="dark"] .mfa-modal-chave, body[data-theme="dark"] .mfa-modal-qr { border-color: #404040 !important; }
 body[data-theme="dark"] .mfa-modal-chave { background: #252525 !important; }
+
+/* Configurações com o menu de abas na lateral (modelo Account settings da
+   Zola): "Sua conta" + itens com ícone à esquerda; conteúdo à direita. */
+html body .settings-shell--lateral:not(#love-h-a) { display: grid; grid-template-columns: 220px minmax(0, 1fr); column-gap: 2.5rem; align-items: start; }
+html body .settings-shell--lateral > #settings-tabs:not(#love-h-a) {
+  grid-column: 1; grid-row: 1 / span 20; position: sticky; top: 1rem;
+  display: flex; flex-direction: column; align-items: stretch; gap: 2px;
+  margin: 0; padding: 0; border: none; overflow: visible; white-space: normal;
+}
+html body .settings-shell--lateral > [data-settings-panel]:not(#love-h-a) { grid-column: 2; min-width: 0; }
+html body .settings-nav-titulo:not(#love-h-a) { font-size: 0.9375rem; font-weight: 700; color: #18181B; margin: 0 0 0.6rem; padding: 0 0.75rem; letter-spacing: -0.01em; }
+html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a) {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%; height: 38px; padding: 0 0.75rem;
+  border: none; border-bottom: none; border-radius: 8px; background: transparent; text-align: left;
+  font-size: 0.875rem; font-weight: 500; line-height: 1; color: #52525B;
+}
+html body .settings-shell--lateral > #settings-tabs .category-tab svg:not(#love-h-a) { width: 18px; height: 18px; flex-shrink: 0; }
+html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a):hover { color: #181D24; }
+html body .settings-shell--lateral > #settings-tabs .category-tab.active:not(#love-h-a) { background: #E8EBED; color: #181D24; font-weight: 600; border-bottom: none; }
+body[data-theme="dark"] .settings-nav-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-shell--lateral > #settings-tabs .category-tab { color: #D4D4D8 !important; }
+body[data-theme="dark"] .settings-shell--lateral > #settings-tabs .category-tab.active { background: #333333 !important; color: #FFFFFF !important; }
+@media (max-width: 900px) {
+  html body .settings-shell--lateral:not(#love-h-a) { display: block; }
+  html body .settings-shell--lateral > #settings-tabs:not(#love-h-a) { position: static; flex-direction: row; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  html body .settings-shell--lateral > #settings-tabs .category-tab:not(#love-h-a) { width: auto; }
+  html body .settings-nav-titulo:not(#love-h-a) { width: 100%; }
+}

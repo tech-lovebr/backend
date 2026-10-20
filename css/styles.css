@@ -8797,3 +8797,21 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-view
 /* Save the Date › "Editar texto": só o texto, à esquerda, logo acima da barra
    de formatação (Negrito, Itálico…). */
 html body #builder-elements-panel .std-editar-texto-rotulo:not(#love-h-a) { padding: 0 0 8px; justify-content: flex-start; text-align: left; }
+
+/* Linha fina embaixo do cabeçalho de todas as telas (faixa com o título da
+   página e o botão da direita), de ponta a ponta — igual ao Hub. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }
+body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar { border-bottom: 1px solid #404040 !important; }
+/* Tela com subtítulo colado embaixo do título (ex.: Checklist): a linha sai da
+   faixa e vai para baixo do subtítulo, também de ponta a ponta. */
+html body #view-event-os-dashboard .builder-toolbar:has(+ div > p:first-child):not(#love-h-a) { border-bottom: none !important; }
+html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) {
+  margin-left: -24px; margin-right: -24px;
+  padding: 0 24px 14px;
+  border-bottom: 1px solid #E4E4E7;
+}
+@media (min-width: 640px) {
+  html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) { margin-left: -32px; margin-right: -32px; padding-left: 32px; padding-right: 32px; }
+}
+html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) + * { margin-top: 20px !important; }
+body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar + div > p:first-child { border-bottom-color: #404040 !important; }

@@ -3533,3 +3533,7 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 
 /* Perfil da sidebar: só o ícone de pessoa, sem fundo. */
 .sidebar-perfil-icone { width: 24px; height: 24px; flex-shrink: 0; color: var(--sidebar-item); }
+
+/* Linha entre o logo e o menu, na mesma altura e cor da linha do cabeçalho:
+   a área do logo tem a altura do cabeçalho, então as duas se continuam. */
+.admin-sidebar-brand { border-bottom: 1px solid var(--topbar-border); flex-shrink: 0; margin-bottom: .75rem; }

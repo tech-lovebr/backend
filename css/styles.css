@@ -8780,3 +8780,13 @@ html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item:not(.act
 /* Submenu da sidebar: itens (ativo e hover) com o lado esquerdo reto e só o
    lado direito arredondado. */
 html body #sidebar-sub-drawer .sub-drawer-item:not(#love-h-a) { border-radius: 0 8px 8px 0 !important; }
+
+/* Submenu da sidebar: item ativo no mesmo cinza clarinho do hover (#F4F4F5). */
+html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:not(#love-h-a),
+html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:not(#love-h-a):hover { background-color: #F4F4F5 !important; }
+/* Aparência: caixinha "Elementos"/"Editar texto" no mesmo cinza clarinho. */
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs:not(#love-h-a),
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.active:not(#love-h-a),
+html body:not([data-theme="dark"]) #builder-elements-panel .builder-panel-tabs .builder-panel-tab.builder-panel-tab-rotulo:not(#love-h-a) { background: #F4F4F5 !important; }
+/* Aparência: fundo do seletor Mobile / Tablet / Desktop em azul-clarinho. */
+html body:not([data-theme="dark"]) #builder-device-toggle:not(#love-h-a) { background-color: #EBF4FF !important; }

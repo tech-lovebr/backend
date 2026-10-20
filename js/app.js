@@ -672,9 +672,45 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFaqPage();
   }
 
+  /**
+   * Páginas da conta com o submenu lateral dos outros menus (título + itens),
+   * ex.: Configurações (Minha conta / Meus eventos).
+   * @param {string} titulo
+   * @param {{ id: string, rotulo: string }[]} itens
+   * @param {string} ativo
+   * @param {(id: string) => void} aoEscolher
+   */
+  function abrirSubmenuDaPagina(titulo, itens, ativo, aoEscolher) {
+    if (elements.subDrawer) elements.subDrawer.classList.remove('hidden-drawer');
+    if (elements.mainArea) elements.mainArea.classList.remove('full-width');
+    if (elements.drawerTitle) elements.drawerTitle.textContent = titulo;
+    if (elements.drawerActionBtn && elements.drawerActionBtn.parentElement) elements.drawerActionBtn.parentElement.classList.add('hidden');
+    const lista = elements.drawerSubItemsList;
+    if (!lista) return;
+    lista.innerHTML = '';
+    itens.forEach(({ id, rotulo }) => {
+      const item = document.createElement('div');
+      item.className = `sub-drawer-item${id === ativo ? ' active' : ''}`;
+      item.dataset.paginaItem = id;
+      const span = document.createElement('span');
+      span.textContent = rotulo;
+      item.appendChild(span);
+      item.addEventListener('click', () => {
+        lista.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.toggle('active', b === item));
+        aoEscolher(id);
+      });
+      lista.appendChild(item);
+    });
+  }
+
   function openAccountSettingsPage(opts = {}) {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
-    mostrarAbaDeConfiguracoes(opts.aba || 'conta');
+    const abaInicial = opts.aba || 'conta';
+    abrirSubmenuDaPagina('Configurações', [
+      { id: 'conta', rotulo: 'Minha conta' },
+      { id: 'eventos', rotulo: 'Meus eventos' }
+    ], abaInicial, mostrarAbaDeConfiguracoes);
+    mostrarAbaDeConfiguracoes(abaInicial);
     preencherConfiguracoesDaConta();
   }
 
@@ -16068,6 +16104,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Configurações › abas "Minha conta" / "Meus eventos".
   function mostrarAbaDeConfiguracoes(aba) {
     document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.classList.toggle('active', b.dataset.configAba === aba));
+    // Submenu lateral acompanha a aba (quando a troca vem de outro lugar).
+    if (state.currentTab === 'tab-account-settings') {
+      elements.drawerSubItemsList?.querySelectorAll('[data-pagina-item]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.paginaItem === aba));
+    }
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');

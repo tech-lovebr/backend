@@ -8815,3 +8815,9 @@ html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#l
 }
 html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) + * { margin-top: 20px !important; }
 body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar + div > p:first-child { border-bottom-color: #404040 !important; }
+
+/* Configurações: no desktop, "Minha conta" e "Meus eventos" ficam no submenu
+   lateral (como os outros menus); as abas no topo da página só no celular. */
+@media (min-width: 769px) {
+  #tab-account-settings > div:has(> #config-abas) { display: none !important; }
+}

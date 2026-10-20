@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initProfileForm();
   initCompanyForm();
   initPasswordForm();
+  initDesativarConta();
   initSecurityRows();
   initSubscriptionModal();
   initBankDetailsForm();
@@ -1095,28 +1096,69 @@ function wireProfileLogoAdjustModalOnce() {
 
 /* -------------------- Senha -------------------- */
 
+/* Mensagem curta embaixo do formulário (os toasts estão desligados). */
+function mostrarMsgForm(id, texto, erro) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = texto || '';
+  el.hidden = !texto;
+  el.classList.toggle('is-erro', !!erro);
+}
+
+/* Senha e segurança › Senha: confere a senha atual (entrando de novo com
+   ela) e grava a nova no Supabase. */
 function initPasswordForm() {
-  document.getElementById('password-form').addEventListener('submit', (e) => {
+  document.getElementById('password-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const form = e.target;
     const current = document.getElementById('password-current').value;
     const next = document.getElementById('password-new').value;
     const confirm = document.getElementById('password-confirm').value;
+    mostrarMsgForm('password-msg', '');
 
-    if (!current || !next || !confirm) {
-      showToast('Preencha todos os campos de senha.', true);
-      return;
-    }
-    if (next !== confirm) {
-      showToast('A confirmação não coincide com a nova senha.', true);
-      return;
-    }
-    if (next.length < 6) {
-      showToast('A nova senha precisa ter pelo menos 6 caracteres.', true);
-      return;
-    }
+    if (!current || !next || !confirm) return mostrarMsgForm('password-msg', 'Preencha a senha atual e a nova senha duas vezes.', true);
+    if (next !== confirm) return mostrarMsgForm('password-msg', 'A confirmação não é igual à nova senha.', true);
+    if (next.length < 6) return mostrarMsgForm('password-msg', 'A nova senha precisa ter pelo menos 6 caracteres.', true);
+    if (next === current) return mostrarMsgForm('password-msg', 'A nova senha precisa ser diferente da atual.', true);
 
-    e.target.reset();
-    showToast('Senha atualizada.');
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    try {
+      const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+      const email = session && session.user && session.user.email;
+      const { error: erroAtual } = await supabaseClient.auth.signInWithPassword({ email, password: current });
+      if (erroAtual) return mostrarMsgForm('password-msg', 'A senha atual está errada.', true);
+      const { error } = await supabaseClient.auth.updateUser({ password: next });
+      if (error) return mostrarMsgForm('password-msg', 'Não foi possível trocar a senha agora. Tente de novo.', true);
+      form.reset();
+      mostrarMsgForm('password-msg', 'Senha atualizada.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
+/* Senha e segurança › Desativar conta: confirma na própria tela, marca a
+   empresa como inativa (sai da vitrine) e desconecta. */
+function initDesativarConta() {
+  const btn = document.getElementById('settings-desativar-btn');
+  const caixa = document.getElementById('settings-desativar-confirmar');
+  if (!btn || !caixa) return;
+  btn.addEventListener('click', () => { caixa.hidden = false; btn.hidden = true; });
+  document.getElementById('settings-desativar-cancelar').addEventListener('click', () => { caixa.hidden = true; btn.hidden = false; });
+  document.getElementById('settings-desativar-sim').addEventListener('click', async (e) => {
+    const sim = e.currentTarget;
+    sim.disabled = true;
+    const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+    const { error } = session
+      ? await supabaseClient.from('fornecedores').update({ status: 'inativo' }).eq('id', empresaId(session))
+      : { error: new Error('sem sessão') };
+    if (error) {
+      sim.disabled = false;
+      return mostrarMsgForm('settings-desativar-msg', 'Não foi possível desativar agora. Fale com o suporte da Love.', true);
+    }
+    await supabaseClient.auth.signOut();
+    window.location.href = 'login.html';
   });
 }
 
@@ -1448,7 +1490,7 @@ async function carregarVerificacao() {
 
 function abrirCaixaVerificacao(abrir) {
   const card = document.getElementById('verificacao-conta-card');
-  const painel = document.querySelector('[data-settings-panel="preferencias"]');
+  const painel = document.querySelector('[data-settings-panel="seguranca"]');
   if (!card || !painel) return;
   card.hidden = !abrir;
   painel.classList.toggle('verificacao-aberta', abrir);
@@ -1543,17 +1585,25 @@ function initBankDetailsForm() {
 
   typeSelect.addEventListener('change', () => updatePixKeyFieldForType(typeSelect.value));
 
-  document.getElementById('bank-details-form').addEventListener('submit', (e) => {
+  // Já tem chave salva: o aceite vem marcado.
+  const aceite = document.getElementById('bank-details-aceite');
+  if (aceite && p.pixKey) aceite.checked = true;
+
+  document.getElementById('bank-details-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const key = keyInput.value.trim();
-    if (!key) {
-      showToast('Preencha sua chave Pix para continuar.', true);
-      return;
-    }
+    mostrarMsgForm('bank-details-msg', '');
+    if (!key) return mostrarMsgForm('bank-details-msg', 'Preencha a sua chave Pix.', true);
+    if (aceite && !aceite.checked) return mostrarMsgForm('bank-details-msg', 'Marque a confirmação para salvar.', true);
     p.pixKeyType = typeSelect.value;
     p.pixKey = key;
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
-    showToast('Dados bancários salvos.');
+    // Grava no banco (pix_key / pix_key_type), que é de onde o Hub lê.
+    const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+    const { error } = session
+      ? await supabaseClient.from('fornecedores').update({ pix_key: key, pix_key_type: typeSelect.value }).eq('id', empresaId(session))
+      : { error: new Error('sem sessão') };
+    mostrarMsgForm('bank-details-msg', error ? 'Não foi possível salvar agora. Tente de novo.' : 'Dados bancários salvos.', !!error);
   });
 }
 

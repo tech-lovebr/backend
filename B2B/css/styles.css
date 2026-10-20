@@ -8180,14 +8180,14 @@ body[data-theme="dark"] .assinatura-voltar-btn { background: #252525 !important;
 .settings-switch-desc:empty { display: none; }
 
 /* Configurações › Segurança › Verificação de conta: caixa ao lado. */
-html body .settings-shell [data-settings-panel="preferencias"].verificacao-aberta:not(#love-h-a) {
+html body .settings-shell [data-settings-panel="seguranca"].verificacao-aberta:not(#love-h-a) {
   max-width: 1160px; display: grid; grid-template-columns: minmax(0, 48rem) minmax(0, 1fr); column-gap: 1.5rem; row-gap: 1.5rem; align-items: start;
 }
 .verificacao-aberta > * { grid-column: 1; }
 .verificacao-aberta > .settings-secao-titulo { grid-column: 1 / -1; }
 .verificacao-aberta > #verificacao-conta-card { grid-column: 2; grid-row: 2 / span 3; }
 @media (max-width: 1180px) {
-  html body .settings-shell [data-settings-panel="preferencias"].verificacao-aberta:not(#love-h-a) { display: flex; max-width: 48rem; }
+  html body .settings-shell [data-settings-panel="seguranca"].verificacao-aberta:not(#love-h-a) { display: flex; max-width: 48rem; }
 }
 html body .settings-shell [data-settings-panel] > #verificacao-conta-card[hidden]:not(#love-h-a) { display: none !important; }
 .verif-card { display: flex; flex-direction: column; gap: 0.9rem; }
@@ -9264,3 +9264,46 @@ body[data-theme="dark"] .parcelas-card-titulo, body[data-theme="dark"] .parcelas
 body[data-theme="dark"] .parcelas-pill.is-ativo { background: #FFFFFF !important; color: #181D24 !important; }
 body[data-theme="dark"] .parcelas-alerta { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 @media (max-width: 640px) { html body .parcelas-opcoes:not(#love-h-a) { grid-template-columns: 1fr; } }
+
+/* Configurações › Senha e segurança e Dados bancários (modelo Zola). */
+html body #settings-login-senha[hidden]:not(#love-h-a) { display: none !important; }
+html body .settings-senha-form:not(#love-h-a) { margin-top: 1.25rem; }
+html body .settings-form-msg:not(#love-h-a) { font-size: 0.8125rem; color: #1E9E5E; margin: 0; }
+html body .settings-form-msg.is-erro:not(#love-h-a) { color: #DC2626; }
+html body .settings-form-msg[hidden]:not(#love-h-a) { display: none; }
+html body .settings-zola-card .settings-seguranca-linhas .settings-switch-row:first-child:not(#love-h-a) { padding-top: 0; }
+
+/* Desativar conta: por último, discreto, em vermelho. */
+html body .settings-desativar:not(#love-h-a) { max-width: 40rem; }
+html body .settings-desativar-btn:not(#love-h-a) {
+  height: 40px; padding: 0 1.1rem; border: 1px solid #FECACA; border-radius: 8px; background: #FFFFFF;
+  font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #DC2626; cursor: pointer;
+}
+html body .settings-desativar-btn:hover:not(#love-h-a) { border-color: #DC2626; }
+html body .settings-desativar-btn[hidden]:not(#love-h-a),
+html body .settings-desativar-confirmar[hidden]:not(#love-h-a) { display: none; }
+html body .settings-desativar-confirmar:not(#love-h-a) { padding: 1rem 1.25rem; border: 1px solid #FECACA; border-radius: 10px; background: #FFFFFF; }
+html body .settings-desativar-confirmar p:not(#love-h-a) { font-size: 0.875rem; line-height: 1.5; color: #3F3F46; margin: 0 0 0.85rem; }
+html body .settings-desativar-botoes:not(#love-h-a) { display: flex; justify-content: flex-end; gap: 0.5rem; }
+html body .settings-desativar-sim:not(#love-h-a) {
+  height: 40px; padding: 0 1.1rem; border: 1px solid #DC2626; border-radius: 8px; background: #DC2626;
+  font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #FFFFFF; cursor: pointer;
+}
+html body .settings-desativar-sim:hover:not(#love-h-a) { background: #B91C1C; border-color: #B91C1C; }
+
+/* Dados bancários. */
+html body .settings-banco-intro:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+html body .settings-banco-intro-texto:not(#love-h-a) { font-size: 0.9375rem; line-height: 1.55; color: #18181B; margin: 0; }
+html body .settings-banco-intro-icone:not(#love-h-a) { color: #A1A1AA; flex-shrink: 0; }
+html body .settings-banco-linha:not(#love-h-a) { grid-template-columns: 180px minmax(0, 1fr); }
+html body .settings-banco-aceite:not(#love-h-a) { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.8125rem; line-height: 1.5; color: #52525B; cursor: pointer; }
+html body .settings-banco-aceite input:not(#love-h-a) { width: 18px; height: 18px; margin: 0.1rem 0 0; flex-shrink: 0; accent-color: #181D24; }
+html body .settings-banco-salvar:not(#love-h-a) { height: 44px; padding: 0 1.25rem; gap: 0.5rem; background: #181D24; border-color: #181D24; }
+html body .settings-banco-salvar:hover:not(#love-h-a) { background: #000000; border-color: #000000; }
+body[data-theme="dark"] .settings-banco-intro-texto { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-desativar-btn, body[data-theme="dark"] .settings-desativar-confirmar { background: #252525 !important; border-color: #7F1D1D !important; }
+body[data-theme="dark"] .settings-desativar-confirmar p { color: #D4D4D8 !important; }
+@media (max-width: 640px) {
+  html body .settings-banco-linha:not(#love-h-a) { grid-template-columns: 1fr; }
+  html body .settings-banco-intro-icone:not(#love-h-a) { display: none; }
+}

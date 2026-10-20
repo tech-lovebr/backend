@@ -8804,17 +8804,17 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not
 body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar { border-bottom: 1px solid #404040 !important; }
 /* Tela com subtítulo colado embaixo do título (ex.: Checklist): a linha sai da
    faixa e vai para baixo do subtítulo, também de ponta a ponta. */
-html body #view-event-os-dashboard .builder-toolbar:has(+ div > p:first-child):not(#love-h-a) { border-bottom: none !important; }
-html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) {
+html body #view-event-os-dashboard .builder-toolbar:has(+ div > p:first-child:not(.hidden)):not(#love-h-a) { border-bottom: none !important; }
+html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(.hidden):not(#love-h-a) {
   margin-left: -24px; margin-right: -24px;
   padding: 0 24px 14px;
   border-bottom: 1px solid #E4E4E7;
 }
 @media (min-width: 640px) {
-  html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) { margin-left: -32px; margin-right: -32px; padding-left: 32px; padding-right: 32px; }
+  html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(.hidden):not(#love-h-a) { margin-left: -32px; margin-right: -32px; padding-left: 32px; padding-right: 32px; }
 }
-html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(#love-h-a) + * { margin-top: 20px !important; }
-body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar + div > p:first-child { border-bottom-color: #404040 !important; }
+html body #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(.hidden):not(#love-h-a) ~ :not(.hidden) { margin-top: 20px !important; }
+body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar + div > p:first-child:not(.hidden) { border-bottom-color: #404040 !important; }
 
 /* Configurações: no desktop, "Minha conta" e "Meus eventos" ficam no submenu
    lateral (como os outros menus); as abas no topo da página só no celular. */
@@ -8844,3 +8844,13 @@ body[data-theme="dark"] #gifts-panel-settings .gift-pref-item { background: #252
 body[data-theme="dark"] #gifts-panel-settings .gift-fee-titulo { color: #FFFFFF; }
 /* "Salvar configurações" (Presentes) igual ao "Salvar alterações" de Informações. */
 html body #btn-save-gift-settings:not(#love-h-a) { height: 38px !important; min-height: 38px; padding: 0 14px !important; font-size: 14px !important; font-weight: 600 !important; border-radius: 8px !important; display: inline-flex; align-items: center; justify-content: center; }
+
+/* Presentes: 24px entre o cabeçalho e o conteúdo (padrão das outras telas).
+   Em Configurações da lista, o bloco vazio de "Meus presentes" some; em
+   Meus presentes, sem o respiro extra acima dos cards. */
+#tab-gifts:has(#gifts-panel-settings:not(.hidden)) > div:has(> #gifts-panel-products) { display: none !important; }
+html body #gifts-panel-settings:not(#love-h-a) { padding-top: 24px !important; }
+html body #gifts-panel-products:not(#love-h-a) { padding-top: 0 !important; }
+/* Carteira: os painéis (Carteira digital, Extrato…) se alternam — o visível não
+   herda a margem do "space-y" do painel escondido antes dele (24px, padrão). */
+html body #tab-wallet .wallet-sub-panel:not(#love-h-a) { margin-top: 0 !important; }

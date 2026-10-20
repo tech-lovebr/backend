@@ -3488,3 +3488,28 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .editor-corpo td, .editor-corpo th { border: 1px solid #E4E4E7; padding: .4375rem .625rem; vertical-align: top; min-width: 48px; }
 .editor-corpo th { background: #FAFAFA; font-weight: 600; }
 .editor-corpo hr { border: 0; border-top: 1px solid #E4E4E7; margin: 1.25rem 0; }
+
+/* ------------------------------------------------ Perfil no topo da sidebar
+   No lugar da busca: quadradinho com a inicial, o e-mail (sem o domínio) e
+   a seta; abre o menu da conta logo abaixo. */
+.sidebar-perfil { margin: 0 .75rem .5rem; }
+.sidebar-perfil-botao {
+  display: flex; align-items: center; gap: .625rem; width: 100%;
+  padding: .375rem .5rem; border: 0; border-radius: var(--radius-control);
+  background: transparent; font-family: inherit; cursor: pointer; text-align: left;
+}
+.sidebar-perfil-botao:hover,
+.sidebar-perfil-botao[aria-expanded="true"] { background: #EEEEF0; }
+.sidebar-perfil-avatar {
+  width: 28px; height: 28px; flex-shrink: 0; border-radius: 7px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #27394f, #183b54); color: #fff;
+  font-size: .8125rem; font-weight: 700; line-height: 1;
+}
+.sidebar-perfil-nome {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: .9375rem; font-weight: 600; color: var(--text);
+}
+.sidebar-perfil-seta { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); transition: transform .2s ease; }
+.sidebar-perfil-botao[aria-expanded="true"] .sidebar-perfil-seta { transform: rotate(180deg); }
+.sidebar-perfil .admin-user-menu { left: 0; right: 0; min-width: 0; top: calc(100% + .25rem); }

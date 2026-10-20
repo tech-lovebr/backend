@@ -121,14 +121,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const admin = await window.adminReady;
   if (!admin) return;
 
-  renderSidebar();
-  renderTopbar(admin);
+  renderSidebar(admin);
+  renderTopbar();
   renderHeaderBar();
   document.body.classList.add('is-ready');
   refreshTicketBadge();
 });
 
-function renderSidebar() {
+/** @param {{ name?: string, email?: string }} admin */
+function renderSidebar(admin) {
   const host = document.getElementById('admin-sidebar');
   if (!host) return;
 
@@ -174,16 +175,45 @@ function renderSidebar() {
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
     </a>
-    <button type="button" class="sidebar-busca" id="sidebar-busca">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
-      <span>Buscar</span>
-      <kbd>⌘K</kbd>
-    </button>
+    <div class="admin-user sidebar-perfil">
+      <button type="button" class="sidebar-perfil-botao" id="btn-user-menu"
+              aria-haspopup="true" aria-expanded="false" title="${escapeHtml(admin.email || '')}">
+        <span class="sidebar-perfil-avatar">${escapeHtml((admin.email || admin.name || '?').trim().charAt(0).toLocaleUpperCase('pt-BR'))}</span>
+        <span class="sidebar-perfil-nome">${escapeHtml((admin.email || admin.name || 'Administrador').split('@')[0])}</span>
+        <svg class="sidebar-perfil-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+      </button>
+      <div class="admin-user-menu" id="user-menu" hidden>
+        <p class="admin-user-menu-nome">${escapeHtml(admin.name || 'Administrador')}</p>
+        <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
+
+        <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
+        <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
+
+        <div class="admin-user-menu-divider"></div>
+
+        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
+      </div>
+    </div>
     <nav class="admin-nav">${sections}</nav>`;
 
-
-
-  host.querySelector('#sidebar-busca').addEventListener('click', () => Busca.abrir());
+  const botaoMenu = host.querySelector('#btn-user-menu');
+  const menu = /** @type {HTMLElement} */ (host.querySelector('#user-menu'));
+  const fecharMenu = () => {
+    menu.hidden = true;
+    botaoMenu.setAttribute('aria-expanded', 'false');
+  };
+  botaoMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    botaoMenu.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', fecharMenu);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
+  host.querySelector('#btn-logout').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.replace('login.html');
+  });
 
   host.querySelectorAll('[data-grupo]').forEach(botao => {
     botao.addEventListener('click', () => {
@@ -245,7 +275,7 @@ function iniciaisDoAvatar(nome) {
   return letras || '?';
 }
 
-function renderTopbar(admin) {
+function renderTopbar() {
   const host = document.getElementById('admin-topbar');
   if (!host) return;
 
@@ -255,54 +285,13 @@ function renderTopbar(admin) {
     </button>
 
     <h1 class="topbar-titulo">Admin</h1>
-    <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>
-
-    <div class="admin-user">
-      <button type="button" class="admin-user-chip" id="btn-user-menu"
-              aria-haspopup="true" aria-expanded="false"
-              aria-label="${escapeHtml(admin.name || 'Administrador')}">
-        <span class="avatar">${escapeHtml(iniciaisDoAvatar(admin.name || admin.email))}</span>
-      </button>
-      <div class="admin-user-menu" id="user-menu" hidden>
-        <p class="admin-user-menu-nome">${escapeHtml(admin.name || 'Administrador')}</p>
-        <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
-
-        <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
-        <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
-
-        <div class="admin-user-menu-divider"></div>
-
-        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
-      </div>
-    </div>`;
+    <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>`;
 
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
     e.stopPropagation();
     document.getElementById('admin-sidebar')?.classList.toggle('is-open');
     document.getElementById('sidebar-backdrop')?.classList.toggle('is-open');
-  });
-
-  const botaoMenu = host.querySelector('#btn-user-menu');
-  const menu = host.querySelector('#user-menu');
-
-  const fecharMenu = () => {
-    menu.hidden = true;
-    botaoMenu.setAttribute('aria-expanded', 'false');
-  };
-
-  botaoMenu.addEventListener('click', (e) => {
-    e.stopPropagation();
-    menu.hidden = !menu.hidden;
-    botaoMenu.setAttribute('aria-expanded', String(!menu.hidden));
-  });
-
-  document.addEventListener('click', fecharMenu);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
-
-  host.querySelector('#btn-logout').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.replace('login.html');
   });
 
 }

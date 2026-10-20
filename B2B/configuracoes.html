@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=688">
+  <link rel="stylesheet" href="css/styles.css?v=689">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -216,10 +216,38 @@
             </div>
             <div class="dash-card settings-zola-card">
               <div class="settings-zola-form">
-                <div>
-                  <label for="company-max-installments" class="field-label">Em quantas vezes sem juros?</label>
-                  <p class="settings-campo-nota">Os meses sem juros são pagos por você, os depois disso aparecem como juros para o cliente.</p>
-                  <select id="company-max-installments" class="field-select"></select>
+                <!-- Parcelamento em duas etapas (revelação progressiva): 1) quem paga
+                     os juros; 2) só se o fornecedor assumir, até quantas vezes sem
+                     juros. Grava em max_installments_no_interest (0 = repassa ao cliente). -->
+                <div class="parcelas-bloco">
+                  <p class="field-label" id="parcelas-quem-rotulo">Juros do parcelamento</p>
+                  <div class="parcelas-opcoes" role="radiogroup" aria-labelledby="parcelas-quem-rotulo">
+                    <label class="parcelas-card">
+                      <input type="radio" name="interest-bearer" value="CLIENT">
+                      <span class="parcelas-card-textos">
+                        <span class="parcelas-card-titulo">Repassar juros ao cliente</span>
+                        <span class="parcelas-card-sub">O cliente arca com os custos da operadora a partir de 2x.</span>
+                      </span>
+                    </label>
+                    <label class="parcelas-card">
+                      <input type="radio" name="interest-bearer" value="SUPPLIER">
+                      <span class="parcelas-card-textos">
+                        <span class="parcelas-card-titulo">Assumir os custos (Oferecer sem juros)</span>
+                        <span class="parcelas-card-sub">Você absorve a taxa de parcelamento para incentivar o fechamento.</span>
+                      </span>
+                    </label>
+                  </div>
+
+                  <p class="parcelas-info" id="parcelas-info-cliente" hidden>Todas as opções parceladas incluirão juros pagos diretamente pelo cliente.</p>
+
+                  <div class="parcelas-limite" id="parcelas-limite" hidden>
+                    <p class="field-label" id="parcelas-limite-rotulo">Até quantas vezes oferecer sem juros?</p>
+                    <div class="parcelas-pills" id="parcelas-pills" role="radiogroup" aria-labelledby="parcelas-limite-rotulo"></div>
+                    <p class="parcelas-alerta" id="parcelas-alerta" aria-live="polite"></p>
+                  </div>
+
+                  <!-- Valor que vai para o banco (o JS mantém em sincronia). -->
+                  <select id="company-max-installments" hidden></select>
                 </div>
 
                 <div>
@@ -502,7 +530,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=49"></script>
-  <script src="js/configuracoes.js?v=59"></script>
+  <script src="js/configuracoes.js?v=60"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

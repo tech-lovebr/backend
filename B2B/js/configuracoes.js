@@ -395,6 +395,7 @@ function initCompanyForm() {
     .concat(Array.from({ length: 11 }, (_, i) => `<option value="${i + 2}">Até ${i + 2}x</option>`))
     .join('');
   installmentsSelect.value = String(p.maxInstallmentsNoInterest ?? 0);
+  initParcelamento(installmentsSelect, p.maxInstallmentsNoInterest ?? 0);
 
   const depositInput = document.getElementById('company-deposit-percent');
   wirePercentMaskInput(depositInput);
@@ -446,6 +447,64 @@ function initCompanyForm() {
 
 /* O mesmo bug que o Perfil já teve: sem isto, "Minha Empresa" só existia no
    localStorage de quem preenchia e nunca chegava ao banco/Admin. */
+/* -------------------- Parcelamento (revelação progressiva) --------------------
+   1) Quem paga os juros: CLIENT (repassa ao cliente → 0 parcelas sem juros)
+      ou SUPPLIER (o fornecedor assume).
+   2) Só no SUPPLIER: até quantas vezes sem juros (2x a 12x), com o resumo
+      do que fica com o fornecedor e do que passa para o cliente.
+   O valor final vai para o select escondido #company-max-installments, que
+   o "Salvar alterações" já grava em max_installments_no_interest. */
+const PARCELAS_SEM_JUROS = [2, 3, 4, 5, 6, 10, 12];
+const PARCELAS_MAXIMO = 12;
+const PARCELAS_PADRAO_FORNECEDOR = 6;
+
+function initParcelamento(select, valorSalvo) {
+  const pills = document.getElementById('parcelas-pills');
+  const limite = document.getElementById('parcelas-limite');
+  const infoCliente = document.getElementById('parcelas-info-cliente');
+  const alerta = document.getElementById('parcelas-alerta');
+  if (!pills || !limite) return;
+
+  // Valor antigo fora da lista (7, 8, 9, 11): fica na maior opção abaixo dele.
+  const normalizar = n => PARCELAS_SEM_JUROS.filter(v => v <= n).pop() || PARCELAS_SEM_JUROS[0];
+  let responsavel = Number(valorSalvo) >= 2 ? 'SUPPLIER' : 'CLIENT';
+  let parcelas = responsavel === 'SUPPLIER' ? normalizar(Number(valorSalvo)) : PARCELAS_PADRAO_FORNECEDOR;
+
+  pills.innerHTML = PARCELAS_SEM_JUROS.map(n => `
+    <button type="button" class="parcelas-pill" role="radio" data-parcelas="${n}">${n}x</button>`).join('');
+
+  const textoAlerta = n => n >= PARCELAS_MAXIMO
+    ? `Parcelas de 1x a ${n}x: taxa de parcelamento descontada do seu repasse.`
+    : `Parcelas de 1x a ${n}x: taxa de parcelamento descontada do seu repasse. Da ${n + 1}ª até a ${PARCELAS_MAXIMO}ª parcela: juros repassados ao cliente.`;
+
+  const render = () => {
+    const fornecedor = responsavel === 'SUPPLIER';
+    document.querySelectorAll('input[name="interest-bearer"]').forEach(r => { r.checked = r.value === responsavel; });
+    infoCliente.hidden = fornecedor;
+    limite.hidden = !fornecedor;
+    pills.querySelectorAll('[data-parcelas]').forEach(b => {
+      const ativo = Number(b.dataset.parcelas) === parcelas;
+      b.classList.toggle('is-ativo', ativo);
+      b.setAttribute('aria-checked', ativo ? 'true' : 'false');
+    });
+    alerta.textContent = fornecedor ? textoAlerta(parcelas) : '';
+    const valor = fornecedor ? parcelas : 0;
+    if (![...select.options].some(o => Number(o.value) === valor)) select.add(new Option(`${valor}x`, String(valor)));
+    select.value = String(valor);
+  };
+
+  document.querySelectorAll('input[name="interest-bearer"]').forEach(r => {
+    r.addEventListener('change', () => { responsavel = r.value; render(); });
+  });
+  pills.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-parcelas]');
+    if (!b) return;
+    parcelas = Number(b.dataset.parcelas);
+    render();
+  });
+  render();
+}
+
 async function salvarEmpresaNoBanco(p) {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;

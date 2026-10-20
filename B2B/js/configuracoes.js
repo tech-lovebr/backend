@@ -1042,19 +1042,29 @@ function initSecurityRows() {
    conectou (sem senha). "Alterar senha" só para quem criou a conta com
    e-mail e senha. */
 async function initLoginDaConta() {
-  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
-  const user = session && session.user;
-  if (!user) return;
-  const identidades = user.identities || [];
-  const google = identidades.find(i => i.provider === 'google');
-  const temSenha = identidades.some(i => i.provider === 'email') || (!identidades.length && (user.app_metadata || {}).provider === 'email');
   const caixaGoogle = document.getElementById('settings-login-google');
   const caixaSenha = document.getElementById('settings-login-senha');
-  if (google && caixaGoogle) {
+  // Até saber como a conta entra, a senha fica escondida (não pisca para quem é Google).
+  if (caixaSenha) caixaSenha.hidden = true;
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  let user = session && session.user;
+  // A sessão guardada pode vir sem as identidades: busca o usuário completo.
+  const { data: fresco } = await supabaseClient.auth.getUser();
+  if (fresco && fresco.user) user = fresco.user;
+  if (!user) return;
+  const identidades = user.identities || [];
+  const meta = user.app_metadata || {};
+  const provedores = meta.providers || (meta.provider ? [meta.provider] : []);
+  const identidadeGoogle = identidades.find(i => i.provider === 'google');
+  // Conta criada com o Google: a senha é do Google, então não tem "Alterar senha".
+  const ehGoogle = !!identidadeGoogle || provedores.includes('google');
+  const temSenha = !ehGoogle && (identidades.some(i => i.provider === 'email') || provedores.includes('email'));
+  if (ehGoogle && caixaGoogle) {
+    const google = identidadeGoogle || {};
     caixaGoogle.hidden = false;
     const dados = google.identity_data || {};
     setText('settings-login-google-email', dados.email || user.email || '—');
-    const quando = google.created_at || google.last_sign_in_at;
+    const quando = google.created_at || google.last_sign_in_at || user.created_at;
     setText('settings-login-google-data', quando
       ? 'Conectado em ' + new Date(quando).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
       : '');

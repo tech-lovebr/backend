@@ -86,6 +86,10 @@
     { id: 'exclusivo', nome: 'Exclusivo', faixa: 'acima de R$ 12.000', min: 12000, max: null }
   ];
 
+  // Foto de cada categoria (assets/rfp/<id>.jpg). Sem o arquivo, o card mostra o ícone.
+  /** @param {RfpCategory} id */
+  const fotoDaCategoria = (id) => `/assets/rfp/${id}.jpg`;
+
   const LIMITES = [{ valor: 3, nome: 'Até 3 propostas' }, { valor: 5, nome: 'Até 5 propostas' }, { valor: null, nome: 'Sem limite' }];
   const ETAPAS = ['O que você precisa', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
   const DESCRICAO_MIN = 50;
@@ -317,9 +321,12 @@
       <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
       <div class="rfp-categorias" role="radiogroup">
         ${CATEGORIAS.map(c => `
-          <button type="button" class="rfp-categoria${c.id === dados.categoria ? ' ativa' : ''}" role="radio" aria-checked="${c.id === dados.categoria}" data-rfp-campo="categoria" data-rfp-valor="${c.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.icone}</svg>
-            <span>${esc(c.nome)}</span>
+          <button type="button" class="rfp-categoria${c.id === dados.categoria ? ' ativa' : ''}" role="radio" aria-checked="${c.id === dados.categoria}" aria-label="${esc(c.nome)}" data-rfp-campo="categoria" data-rfp-valor="${c.id}">
+            <span class="rfp-categoria-foto">
+              <img src="${fotoDaCategoria(c.id)}" alt="" onerror="this.parentElement.classList.add('sem-foto');this.remove();">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.icone}</svg>
+            </span>
+            <span class="rfp-categoria-nome">${esc(c.nome)}</span>
           </button>`).join('')}
       </div>
       ${erroHtml('categoria')}

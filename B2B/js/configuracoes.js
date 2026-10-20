@@ -124,8 +124,8 @@ function initProfileForm() {
     const documentNumber = document.getElementById('profile-document').value.trim();
     const docLabel = p.documentType === 'cpf' ? 'CPF' : 'CNPJ';
 
-    if (!company || !name || !phone || !documentNumber) {
-      showToast(`Preencha nome da empresa, nome do responsável, número de celular e ${docLabel} para continuar.`, true);
+    if (!company || !name || !documentNumber) {
+      showToast(`Preencha nome, sobrenome, nome da empresa e ${docLabel} para continuar.`, true);
       return;
     }
 

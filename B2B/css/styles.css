@@ -8994,3 +8994,12 @@ body[data-theme="dark"] .settings-google-desconectar { color: #FFFFFF !important
 body[data-theme="dark"] .settings-google-confirmar { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .settings-google-confirmar p { color: #D4D4D8 !important; }
 body[data-theme="dark"] .settings-google-conectar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Suas informações › "Alterar" do nome da empresa e do CNPJ dentro de uma
+   caixinha (borda fina, 6px), no canto direito do campo. */
+html body .field-request-change-link:not(#love-h-a) {
+  right: 0.5rem; padding: 0.25rem 0.6rem; border: 1px solid #E4E4E7; border-radius: 6px; background: #FFFFFF;
+  font-size: 0.75rem; font-weight: 600; line-height: 1.2; color: #3F3F46;
+}
+html body .field-request-change-link:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+body[data-theme="dark"] .field-request-change-link { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

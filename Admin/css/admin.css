@@ -3565,3 +3565,9 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
   .periodo-calendario { flex-direction: column; }
   .cal-atalhos { flex-direction: row; flex-wrap: wrap; border-right: 0; padding-right: 0; border-bottom: 1px solid #F0F0F2; padding-bottom: .5rem; }
 }
+
+/* Atualizar o dashboard: só o ícone; gira enquanto recarrega. */
+.btn-atualizar { width: 38px; padding: 0; justify-content: center; }
+.btn-atualizar svg { width: 18px; height: 18px; }
+.btn-atualizar.is-girando svg { animation: girar-atualizar .8s linear infinite; }
+@keyframes girar-atualizar { to { transform: rotate(360deg); } }

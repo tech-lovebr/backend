@@ -211,6 +211,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   montarFiltroDePeriodo();
+  montarBotaoAtualizar();
+  await carregarDados();
+});
+
+/* Atualizar: só o ícone, à direita do filtro de período. Recarrega os
+   números e a lista de contas mantendo o período escolhido. */
+function montarBotaoAtualizar() {
+  const host = document.getElementById('header-actions');
+  if (!host) return;
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'btn btn-ghost btn-atualizar';
+  botao.title = 'Atualizar';
+  botao.setAttribute('aria-label', 'Atualizar o dashboard');
+  botao.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>';
+  const filtro = host.querySelector('.filtro-wrap');
+  if (filtro) filtro.after(botao); else host.prepend(botao);
+  botao.addEventListener('click', async () => {
+    if (botao.classList.contains('is-girando')) return;
+    botao.classList.add('is-girando');
+    await Promise.all([carregarDados(), carregarContas()]);
+    botao.classList.remove('is-girando');
+    toast('Dashboard atualizado.');
+  });
+}
+
+async function carregarDados() {
   renderKpiSkeleton();
 
   const [fornecedores, clientes, eventos, carteira, contratos, convidados, presentes, produtos] = await Promise.all([
@@ -244,7 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderKpis();
   renderTopFornecedores();
   renderCategorias();
-});
+}
 
 /* ------------------------------------------------------------------ KPIs */
 
@@ -401,6 +428,7 @@ let CONTAS = [];
 /** Quantas contas por página na tabela de últimos cadastros. */
 const CONTAS_POR_PAGINA = 10;
 let PAGINA_CONTAS = 1;
+let CONTAS_LIGADAS = false; // busca e filtro da lista ligados uma vez só
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
@@ -429,6 +457,8 @@ async function carregarContas() {
   ContaDrawer.semear({ contas: CONTAS });
   renderContas();
 
+  if (CONTAS_LIGADAS) return;
+  CONTAS_LIGADAS = true;
   const voltarAoInicio = () => { PAGINA_CONTAS = 1; renderContas(); };
   document.getElementById('busca-contas').addEventListener('input', voltarAoInicio);
   document.getElementById('filtro-origem').addEventListener('change', voltarAoInicio);

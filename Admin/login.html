@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=77">
+  <link rel="stylesheet" href="css/admin.css?v=78">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -88,6 +88,33 @@
         <p id="login-error" class="login-erro" style="display:none"></p>
       </form>
 
+      <!-- Esqueceu a senha: pede o e-mail e manda o link de redefinição. -->
+      <form id="esqueci-form" novalidate hidden>
+        <p class="login-texto">Informe o e-mail de acesso. Enviaremos um link para você criar uma nova senha.</p>
+        <label class="login-rotulo" for="esqueci-email">E-mail</label>
+        <div class="login-campo">
+          <input id="esqueci-email" type="email" placeholder="seu.email@exemplo.com" autocomplete="username" required>
+        </div>
+        <button type="submit" class="login-botao" id="esqueci-submit">Enviar link</button>
+        <p id="esqueci-aviso" class="login-erro" style="display:none"></p>
+        <a href="#" class="login-voltar" data-voltar-login>Voltar para o login</a>
+      </form>
+
+      <!-- Aberto pelo link do e-mail: a pessoa escreve a nova senha. -->
+      <form id="nova-senha-form" novalidate hidden>
+        <p class="login-texto">Crie uma nova senha para entrar no painel.</p>
+        <label class="login-rotulo" for="nova-senha">Nova senha</label>
+        <div class="login-campo">
+          <input id="nova-senha" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" required>
+        </div>
+        <label class="login-rotulo" for="nova-senha-confirmar">Confirmar nova senha</label>
+        <div class="login-campo">
+          <input id="nova-senha-confirmar" type="password" placeholder="Repita a nova senha" autocomplete="new-password" required>
+        </div>
+        <button type="submit" class="login-botao" id="nova-senha-submit">Salvar e entrar</button>
+        <p id="nova-senha-erro" class="login-erro" style="display:none"></p>
+      </form>
+
       <p id="nota-demo" class="login-nota" style="display:none">
         <strong>Modo demonstração.</strong> Os dados são fictícios e ficam só neste
         navegador. Entre com qualquer e-mail e senha.
@@ -126,8 +153,122 @@
       document.getElementById('login-password').value = 'demo';
     }
 
+    /* ---------------------------------------------- Esqueceu a senha */
+    const telas = {
+      login: document.getElementById('login-form'),
+      esqueci: document.getElementById('esqueci-form'),
+      novaSenha: document.getElementById('nova-senha-form')
+    };
+    const titulo = document.querySelector('.login-cartao h1');
+
+    /** @param {'login' | 'esqueci' | 'novaSenha'} qual */
+    function mostrarTela(qual) {
+      Object.entries(telas).forEach(([nome, el]) => { el.hidden = nome !== qual; });
+      titulo.textContent = qual === 'login' ? 'Painel Administrativo'
+        : qual === 'esqueci' ? 'Recuperar senha' : 'Nova senha';
+    }
+
+    /** @param {HTMLElement} el @param {string} texto @param {boolean} [ok] */
+    function aviso(el, texto, ok) {
+      el.textContent = texto;
+      el.classList.toggle('login-ok', !!ok);
+      el.style.display = 'block';
+    }
+
+    document.getElementById('login-esqueci').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('esqueci-email').value = document.getElementById('login-email').value.trim();
+      document.getElementById('esqueci-aviso').style.display = 'none';
+      mostrarTela('esqueci');
+      document.getElementById('esqueci-email').focus();
+    });
+
+    document.querySelectorAll('[data-voltar-login]').forEach(a => a.addEventListener('click', (e) => {
+      e.preventDefault();
+      mostrarTela('login');
+    }));
+
+    telas.esqueci.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const avisoEl = document.getElementById('esqueci-aviso');
+      const botao = document.getElementById('esqueci-submit');
+      const email = document.getElementById('esqueci-email').value.trim();
+      if (!/^\S+@\S+\.\S+$/.test(email)) return aviso(avisoEl, 'Informe um e-mail válido.');
+
+      botao.disabled = true;
+      botao.textContent = 'Enviando…';
+      const { error } = MODO_DEMO_ATIVO ? { error: null } : await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: `${location.origin}/login?redefinir=1`
+      });
+      botao.disabled = false;
+      botao.textContent = 'Enviar link';
+
+      if (error && /rate|seconds|limit/i.test(error.message)) {
+        return aviso(avisoEl, 'Um link acabou de ser enviado. Aguarde um minuto antes de pedir outro.');
+      }
+      if (error) return aviso(avisoEl, 'Não foi possível enviar agora. Tente de novo em instantes.');
+      // Mesma resposta exista ou não a conta, para não revelar quem tem acesso.
+      aviso(avisoEl, 'Se esse e-mail tiver acesso ao painel, você vai receber um link para criar a nova senha. Confira também o spam.', true);
+    });
+
+    // Chegou pelo link do e-mail? Mostra a tela de nova senha (e não pula
+    // direto para o dashboard com a sessão de recuperação).
+    const parametrosHash = new URLSearchParams(location.hash.slice(1));
+    const veioDoLink = new URLSearchParams(location.search).has('redefinir') || parametrosHash.get('type') === 'recovery';
+
+    if (veioDoLink) {
+      mostrarTela('novaSenha');
+      if (parametrosHash.get('error')) {
+        aviso(document.getElementById('nova-senha-erro'), 'Este link expirou ou já foi usado. Peça um novo em "Esqueceu a senha?".');
+        document.getElementById('nova-senha-submit').disabled = true;
+        setTimeout(() => { mostrarTela('login'); history.replaceState(null, '', 'login'); }, 4000);
+      }
+    }
+
+    telas.novaSenha.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const erroEl = document.getElementById('nova-senha-erro');
+      const botao = document.getElementById('nova-senha-submit');
+      const senha = document.getElementById('nova-senha').value;
+      const confirmar = document.getElementById('nova-senha-confirmar').value;
+      erroEl.style.display = 'none';
+
+      if (senha.length < 8 || !/\d/.test(senha) || !/[^A-Za-z0-9]/.test(senha)) {
+        return aviso(erroEl, 'A senha precisa ter no mínimo 8 caracteres, 1 número e 1 símbolo.');
+      }
+      if (senha !== confirmar) return aviso(erroEl, 'As senhas não conferem.');
+
+      botao.disabled = true;
+      botao.textContent = 'Salvando…';
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        botao.disabled = false;
+        botao.textContent = 'Salvar e entrar';
+        return aviso(erroEl, 'Este link expirou. Peça um novo em "Esqueceu a senha?".');
+      }
+
+      const { error } = await supabaseClient.auth.updateUser({ password: senha });
+      if (error) {
+        botao.disabled = false;
+        botao.textContent = 'Salvar e entrar';
+        return aviso(erroEl, /different|same/i.test(error.message)
+          ? 'A nova senha precisa ser diferente da anterior.'
+          : 'Não foi possível salvar a senha. Peça um novo link e tente de novo.');
+      }
+
+      const { data: admin } = await supabaseClient.from('admins')
+        .select('id, active').eq('id', session.user.id).maybeSingle();
+      if (!admin || !admin.active) {
+        await supabaseClient.auth.signOut();
+        mostrarTela('login');
+        history.replaceState(null, '', 'login');
+        return showError('Senha alterada, mas esta conta não tem permissão de administrador.');
+      }
+      window.location.replace('dashboard.html');
+    });
+
     // Já logado e com permissão? Vai direto para o dashboard.
-    if (!MODO_DEMO_ATIVO) supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
+    if (!MODO_DEMO_ATIVO && !veioDoLink) supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) return;
 
       const { data } = await supabaseClient.from('admins')

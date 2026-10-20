@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_girarMesa">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_abasForaColadas2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2086,15 +2086,16 @@
           <!-- Conteúdo Principal de Meus Convidados -->
           <div class="px-8 py-6 space-y-5 w-full">
 
-          <!-- Caixa com tabela (padrão B2B: dash-card), com as abas de status
-               grudadas no topo da caixa -->
-          <div class="dash-card rsvp-caixa-com-abas">
-            <div class="love-tabs-nav" id="rsvp-status-tabs">
+          <!-- Abas de status fora da caixa, coladas logo acima dela -->
+          <div class="love-tabs-nav" id="rsvp-status-tabs">
               <button type="button" class="love-tab-item rsvp-status-option active" data-filter="all">Todos (<span id="count-rsvp-opt-all">0</span>)</button>
               <button type="button" class="love-tab-item rsvp-status-option" data-filter="confirmed">Confirmados (<span id="count-rsvp-opt-confirmed">0</span>)</button>
               <button type="button" class="love-tab-item rsvp-status-option" data-filter="pending">Pendentes (<span id="count-rsvp-opt-pending">0</span>)</button>
               <button type="button" class="love-tab-item rsvp-status-option" data-filter="declined">Recusados (<span id="count-rsvp-opt-declined">0</span>)</button>
-            </div>
+          </div>
+
+          <!-- Caixa com tabela (padrão B2B: dash-card) -->
+          <div class="dash-card rsvp-caixa-abaixo-das-abas">
             <div class="overflow-x-auto -mx-1">
               <table class="guests-table w-full">
                 <thead>

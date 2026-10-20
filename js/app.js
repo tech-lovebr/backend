@@ -9553,7 +9553,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const numberEl = document.createElement('span');
         numberEl.className = 'floorplan-table-number';
         numberEl.textContent = `Mesa ${elData.number}`;
-        core.appendChild(numberEl);
+        // Retangular: o ícone de girar fica dentro da mesa, ao lado do "Mesa N"
+        // (à esquerda na horizontal; em cima na vertical).
+        const linhaDoNumero = document.createElement('span');
+        linhaDoNumero.className = 'floorplan-core-linha';
+        linhaDoNumero.appendChild(numberEl);
+        core.appendChild(linhaDoNumero);
 
         if (elData.name) {
           const nameEl = document.createElement('span');
@@ -9590,7 +9595,8 @@ document.addEventListener('DOMContentLoaded', () => {
             saveFloorPlanElements(lista);
             renderFloorPlanCanvas();
           });
-          el.appendChild(girar);
+          const linha = core.querySelector('.floorplan-core-linha');
+          if (linha) linha.insertBefore(girar, linha.firstChild); else el.appendChild(girar);
         }
         for (let i = 0; i < seats; i++) {
           // Redonda segue a conta de sempre; os outros formatos têm a própria.

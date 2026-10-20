@@ -9043,3 +9043,12 @@ html body #floorplan-canvas:not(#love-h-a) {
   background-position: 12px 12px;
 }
 body[data-theme="dark"] #floorplan-canvas { background-image: radial-gradient(circle at 1.5px 1.5px, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.6px) !important; background-size: 20px 20px !important; }
+
+/* Girar (mesa retangular): só o ícone, sem caixinha, dentro da mesa ao lado
+   do "Mesa N" — à esquerda na horizontal, em cima na vertical. Aparece no hover. */
+.floorplan-core-linha { display: inline-flex; flex-direction: row; align-items: center; justify-content: center; gap: 4px; }
+.floorplan-el.is-mesa.is-vertical .floorplan-core-linha { flex-direction: column; gap: 2px; }
+html body .floorplan-mesa-core .floorplan-girar:not(#love-h-a) { position: static; width: 16px; height: 16px; padding: 0; border: 0; background: transparent; box-shadow: none; border-radius: 4px; color: #71717A; }
+html body .floorplan-mesa-core .floorplan-girar:not(#love-h-a) svg { width: 13px; height: 13px; }
+html body .floorplan-mesa-core .floorplan-girar:not(#love-h-a):hover { color: #181D24; border: 0; }
+body[data-theme="dark"] .floorplan-mesa-core .floorplan-girar { background: transparent !important; border: 0 !important; color: #A1A1AA !important; }

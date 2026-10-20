@@ -9307,3 +9307,13 @@ body[data-theme="dark"] .settings-desativar-confirmar p { color: #D4D4D8 !import
   html body .settings-banco-linha:not(#love-h-a) { grid-template-columns: 1fr; }
   html body .settings-banco-intro-icone:not(#love-h-a) { display: none; }
 }
+
+/* Privacidade: sem a linha acima de "Autenticação de dois fatores";
+   "Desativar conta" como texto simples, cinza claro e menor (sem caixa). */
+html body .settings-zola-card .settings-seguranca-linhas:not(#love-h-a) { margin-top: 0; border-top: none; }
+html body .settings-desativar-btn:not(#love-h-a) {
+  height: auto; padding: 0; border: none; border-radius: 0; background: none;
+  font-size: 0.8125rem; font-weight: 400; color: #A1A1AA;
+}
+html body .settings-desativar-btn:hover:not(#love-h-a) { border: none; color: #71717A; }
+body[data-theme="dark"] .settings-desativar-btn { background: none !important; border: none !important; color: #71717A !important; }

@@ -9317,3 +9317,10 @@ html body .settings-desativar-btn:not(#love-h-a) {
 }
 html body .settings-desativar-btn:hover:not(#love-h-a) { border: none; color: #71717A; }
 body[data-theme="dark"] .settings-desativar-btn { background: none !important; border: none !important; color: #71717A !important; }
+
+/* Privacidade: frase com o link para a Central de ajuda, embaixo da caixa. */
+html body .settings-privacidade-ajuda:not(#love-h-a) { max-width: 40rem; margin: 0; font-size: 0.875rem; color: #52525B; }
+html body .settings-privacidade-ajuda a:not(#love-h-a) { color: #18181B; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+html body .settings-privacidade-ajuda a:hover:not(#love-h-a) { color: #181D24; }
+body[data-theme="dark"] .settings-privacidade-ajuda { color: #A1A1AA !important; }
+body[data-theme="dark"] .settings-privacidade-ajuda a { color: #FFFFFF !important; }

@@ -18,6 +18,11 @@ function initFaqPage() {
       if (titleEl) titleEl.textContent = btn.textContent;
     });
   });
+
+  // Link direto para uma categoria: central-de-ajuda?categoria=privacidade
+  const pedida = new URLSearchParams(location.search).get('categoria');
+  const alvo = pedida && document.querySelector(`#faq-categories [data-category="${pedida}"]`);
+  if (alvo) alvo.click();
 }
 
 // Avisa o shell que a página está pronta (sem isso a tela de carregamento

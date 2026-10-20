@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=691">
+  <link rel="stylesheet" href="css/styles.css?v=692">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -414,18 +414,8 @@
             </div>
           </div>
 
-          <!-- Desativar conta: por último; pede uma confirmação na própria tela. -->
-          <div class="settings-desativar">
-            <button type="button" class="settings-desativar-btn" id="settings-desativar-btn">Desativar conta</button>
-            <div class="settings-desativar-confirmar" id="settings-desativar-confirmar" hidden>
-              <p>A sua empresa sai da vitrine e você é desconectado. Para reativar, fale com o suporte da Love.</p>
-              <div class="settings-desativar-botoes">
-                <button type="button" class="btn-secondary" id="settings-desativar-cancelar">Cancelar</button>
-                <button type="button" class="settings-desativar-sim" id="settings-desativar-sim">Desativar minha conta</button>
-              </div>
-              <p class="settings-form-msg is-erro" id="settings-desativar-msg" hidden></p>
-            </div>
-          </div>
+          <!-- Mais informações sobre privacidade na Central de ajuda. -->
+          <p class="settings-privacidade-ajuda">Para mais informações sobre privacidade, acesse a <a href="central-de-ajuda?categoria=privacidade">Central de ajuda</a>.</p>
         </div>
 
         <!-- Dados bancários: a chave Pix que recebe os saques (modelo Bank

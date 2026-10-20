@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=691">
+  <link rel="stylesheet" href="css/styles.css?v=692">
 </head>
 <body class="font-sans" data-page="faq">
 
@@ -54,6 +54,7 @@
             <button type="button" class="guide-link" data-category="colaboradores">Colaboradores e Funções</button>
             <button type="button" class="guide-link" data-category="planos">Planos e Upgrade</button>
             <button type="button" class="guide-link" data-category="conta">Conta e Configurações</button>
+            <button type="button" class="guide-link" data-category="privacidade">Privacidade e segurança</button>
             <a href="guias" class="guide-link">Guia de início</a>
           </nav>
         </aside>
@@ -121,6 +122,29 @@
             </details>
           </div>
 
+          <div class="faq-list" data-category-panel="privacidade" style="display:none;">
+            <details class="faq-item" open>
+              <summary>Quais dados da minha empresa a Love guarda?</summary>
+              <p>Guardamos os dados que você cadastra no Hub (empresa, CNPJ/CPF, responsável, contato, endereço, produtos, clientes e contratos) só para fazer a plataforma funcionar. Você encontra tudo em detalhes na nossa <a href="privacidade">Política de privacidade</a>.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Como deixo a minha conta mais segura?</summary>
+              <p>Em <strong>Configurações › Privacidade</strong>, ative a autenticação de dois fatores: além da senha, o login passa a pedir um código do Google Authenticator.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Para que serve a verificação de conta?</summary>
+              <p>Ela confirma que a empresa é real (Cartão CNPJ e documento do sócio). Os documentos ficam guardados com segurança, só são usados para a verificação e contas verificadas ganham mais destaque na vitrine.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Entrei com o Google. Posso passar a entrar com e-mail e senha?</summary>
+              <p>Sim. Em <strong>Configurações › Informações › Contas conectadas</strong>, clique em "Desconectar do Google". Na próxima vez, digite o seu e-mail no login e use "Esqueci minha senha" para criar a senha.</p>
+            </details>
+            <details class="faq-item">
+              <summary>Quem consegue ver os meus dados bancários?</summary>
+              <p>Só você e quem você liberar em <strong>Funções</strong> com acesso ao financeiro. A chave Pix é usada apenas para enviar os seus saques.</p>
+            </details>
+          </div>
+
           <div class="faq-list" data-category-panel="conta" style="display:none;">
             <details class="faq-item" open>
               <summary>Como altero os dados da minha empresa (CNPJ/CPF)?</summary>
@@ -143,6 +167,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=49"></script>
-  <script src="js/faq.js?v=3"></script>
+  <script src="js/faq.js?v=4"></script>
 </body>
 </html>

@@ -8857,3 +8857,132 @@ html body #tab-wallet .wallet-sub-panel:not(#love-h-a) { margin-top: 0 !importan
 /* Mapear mesas: sem a caixinha "Lista de convidados"; fica só o título
    "Convidados", no mesmo estilo de "Elementos" na Aparência. */
 html body #floorplan-guests-panel .builder-el-group-title:not(#love-h-a) { text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600; color: #71717A; }
+
+/* ==========================================================================
+   Fornecedores › Pedidos de orçamento (RFP) — js/pedidos-orcamento.js
+   ========================================================================== */
+#b2b-pedidos-view .rfp-contagem { font-size: 13px; color: #71717A; }
+#b2b-pedidos-view .rfp-lista-aviso { margin: 0; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-size: 13px; color: #18181B; }
+#b2b-pedidos-view .rfp-col-titulo { font-weight: 600; color: #18181B; }
+#b2b-pedidos-view .rfp-col-sub { display: block; font-size: 12px; color: #71717A; margin-top: 2px; }
+#b2b-pedidos-view .rfp-col-num { font-variant-numeric: tabular-nums; }
+#b2b-pedidos-view .rfp-situacao { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+#b2b-pedidos-view .rfp-situacao-aberto { background: #ECFDF3; color: #1E9E5E; }
+#b2b-pedidos-view .rfp-situacao-fechado { background: #F4F4F5; color: #52525B; }
+#b2b-pedidos-view .rfp-situacao-cancelado { background: #FEF2F2; color: #B91C1C; }
+#b2b-pedidos-view .rfp-vazio { padding: 40px 16px !important; text-align: center; color: #71717A; }
+#b2b-pedidos-view .rfp-vazio p { margin: 0 0 6px; font-size: 14px; }
+#b2b-pedidos-view .rfp-vazio b { color: #18181B; }
+#b2b-pedidos-view .rfp-vazio .rfp-btn { margin-top: 12px; }
+.rfp-menu-wrap { position: relative; display: inline-block; }
+.rfp-menu-btn { width: 32px; height: 32px; border: 0; background: transparent; border-radius: 8px; color: #71717A; font-size: 18px; cursor: pointer; }
+.rfp-menu-btn:hover { color: #181D24; background: #F4F4F5; }
+.rfp-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 20; min-width: 170px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); padding: 4px; }
+.rfp-menu button { display: block; width: 100%; text-align: left; padding: 8px 10px; border: 0; background: transparent; border-radius: 8px; font-size: 13px; color: #18181B; cursor: pointer; }
+.rfp-menu button:hover { background: #F4F4F5; }
+.rfp-menu button[data-rfp-acao="excluir"] { color: #B91C1C; }
+#btn-rfp-novo svg { width: 16px; height: 16px; }
+
+/* Pop-up do pedido */
+.rfp-modal:not(.hidden) { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 23, 42, 0.5); }
+.rfp-caixa { width: 100%; max-width: 680px; max-height: calc(100vh - 32px); display: flex; flex-direction: column; background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); overflow: hidden; font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.rfp-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 24px 12px; }
+.rfp-topo h3 { margin: 0; font-size: 18px; font-weight: 700; color: #18181B; letter-spacing: -0.02em; }
+.rfp-subtitulo { margin: 2px 0 0; font-size: 13px; color: #71717A; }
+.rfp-fechar { width: 32px; height: 32px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; color: #71717A; border-radius: 8px; cursor: pointer; }
+.rfp-fechar:hover { color: #181D24; }
+.rfp-fechar svg { width: 18px; height: 18px; }
+.rfp-stepper { padding: 0 24px 14px; border-bottom: 1px solid #E4E4E7; }
+.rfp-progresso { height: 4px; background: #F4F4F5; border-radius: 999px; overflow: hidden; }
+.rfp-progresso span { display: block; height: 100%; background: #181D24; border-radius: 999px; transition: width .35s ease; }
+.rfp-etapas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+.rfp-etapa { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #A1A1AA; min-width: 0; }
+.rfp-etapa b { width: 20px; height: 20px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid #D4D4D8; font-size: 11px; font-weight: 600; color: #71717A; background: #FFFFFF; }
+.rfp-etapa em { font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rfp-etapa.atual { color: #18181B; font-weight: 600; }
+.rfp-etapa.atual b { background: #181D24; border-color: #181D24; color: #FFFFFF; }
+.rfp-etapa.feita b { background: #F4F4F5; border-color: #181D24; color: #181D24; }
+.rfp-progresso-texto { margin: 8px 0 0; font-size: 12px; color: #71717A; }
+.rfp-corpo { flex: 1; overflow-y: auto; padding: 4px 24px 20px; }
+.rfp-tela { animation: rfp-aparece .25s ease; }
+.rfp-tela.entra-direita { animation: rfp-da-direita .3s ease; }
+.rfp-tela.entra-esquerda { animation: rfp-da-esquerda .3s ease; }
+@keyframes rfp-aparece { from { opacity: .4; } to { opacity: 1; } }
+@keyframes rfp-da-direita { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes rfp-da-esquerda { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .rfp-tela, .rfp-progresso span { animation: none !important; transition: none !important; } }
+.rfp-pergunta { margin: 18px 0 10px; font-size: 14px; font-weight: 600; color: #18181B; }
+.rfp-opcional { font-weight: 400; color: #A1A1AA; }
+.rfp-categorias { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.rfp-categoria { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left; font-size: 13px; font-weight: 600; color: #18181B; cursor: pointer; min-height: 92px; }
+.rfp-categoria svg { width: 22px; height: 22px; color: #52525B; }
+.rfp-categoria:hover { border-color: #A1A1AA; }
+.rfp-categoria.ativa { border-color: #181D24; box-shadow: inset 0 0 0 1px #181D24; }
+.rfp-categoria.ativa svg { color: #181D24; }
+.rfp-tags, .rfp-pilulas { display: flex; flex-wrap: wrap; gap: 8px; }
+.rfp-tag, .rfp-pilula { padding: 7px 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-size: 13px; color: #3F3F46; cursor: pointer; }
+.rfp-tag:hover, .rfp-pilula:hover { border-color: #A1A1AA; color: #181D24; }
+.rfp-tag.ativa, .rfp-pilula.ativa { background: #F4F4F5; border-color: #181D24; color: #181D24; font-weight: 600; }
+.rfp-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.rfp-campo { height: 40px; padding: 0 12px; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; font-size: 14px; color: #18181B; outline: none; width: 100%; font-family: inherit; }
+.rfp-linha .rfp-campo { width: auto; min-width: 180px; }
+.rfp-campo:focus { border-color: #181D24; }
+.rfp-campo:disabled { background: #F4F4F5; color: #A1A1AA; }
+.rfp-descricao { height: auto; padding: 10px 12px; line-height: 1.5; resize: vertical; min-height: 120px; }
+.rfp-check { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #3F3F46; cursor: pointer; }
+.rfp-check input { accent-color: #181D24; width: 16px; height: 16px; }
+.rfp-grade-local { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+.rfp-rotulo { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #3F3F46; }
+.rfp-campo-uf { text-transform: uppercase; }
+.rfp-horas { margin-top: 12px; max-width: 200px; }
+.rfp-dica { margin: 6px 0 0; font-size: 12px; color: #71717A; }
+.rfp-erro { margin: 6px 0 0; font-size: 12px; color: #B91C1C; }
+.rfp-faixas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.rfp-faixa { display: flex; flex-direction: column; gap: 2px; padding: 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left; cursor: pointer; }
+.rfp-faixa b { font-size: 14px; color: #18181B; }
+.rfp-faixa span { font-size: 12px; color: #71717A; }
+.rfp-faixa:hover { border-color: #A1A1AA; }
+.rfp-faixa.ativa { border-color: #181D24; box-shadow: inset 0 0 0 1px #181D24; }
+.rfp-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 12px 14px; border: 1px solid #E4E4E7; border-radius: 10px; font-size: 13px; color: #18181B; cursor: pointer; }
+.rfp-contador { margin: 6px 0 0; font-size: 12px; color: #71717A; text-align: right; font-variant-numeric: tabular-nums; }
+.rfp-contador.falta { color: #B45309; }
+.rfp-fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.rfp-foto { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid #E4E4E7; }
+.rfp-foto img { width: 100%; height: 100%; object-fit: cover; }
+.rfp-foto button { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border: 0; border-radius: 999px; background: rgba(0, 0, 0, 0.6); color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.rfp-foto button svg { width: 12px; height: 12px; }
+.rfp-dropzone { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px; border: 1px dashed #D4D4D8; border-radius: 8px; color: #71717A; font-size: 11px; text-align: center; cursor: pointer; }
+.rfp-dropzone svg { width: 20px; height: 20px; }
+.rfp-dropzone:hover, .rfp-dropzone.arrastando { border-color: #181D24; color: #181D24; }
+.rfp-aviso { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; padding: 12px 14px; background: #F4F4F5; border-radius: 10px; font-size: 13px; color: #3F3F46; line-height: 1.5; }
+.rfp-aviso svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; color: #181D24; }
+.rfp-aviso p { margin: 0; }
+.rfp-feed-card { padding: 16px; border: 1px solid #E4E4E7; border-radius: 10px; background: #FFFFFF; }
+.rfp-feed-topo { display: flex; justify-content: space-between; gap: 8px; }
+.rfp-feed-categoria { font-size: 12px; font-weight: 600; color: #52525B; }
+.rfp-feed-novo { padding: 1px 8px; border-radius: 6px; background: #ECFDF3; color: #1E9E5E; font-size: 11px; font-weight: 600; }
+.rfp-feed-card h5 { margin: 6px 0 8px; font-size: 16px; font-weight: 700; color: #18181B; }
+.rfp-feed-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: #52525B; }
+.rfp-feed-faixa { margin: 8px 0 0; font-size: 13px; font-weight: 600; color: #18181B; }
+.rfp-feed-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.rfp-feed-tags span { padding: 2px 8px; border-radius: 6px; background: #F4F4F5; font-size: 12px; color: #3F3F46; }
+.rfp-feed-desc { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: #3F3F46; white-space: pre-line; }
+.rfp-feed-rodape { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid #F4F4F5; font-size: 12px; color: #71717A; }
+.rfp-rodape { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; border-top: 1px solid #E4E4E7; background: #FFFFFF; }
+.rfp-erro-geral { flex: 1; margin: 0; font-size: 12px; color: #B91C1C; text-align: center; }
+.rfp-btn { height: 40px; padding: 0 16px; border-radius: 8px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.rfp-btn svg { width: 16px; height: 16px; }
+@media (max-width: 640px) {
+  .rfp-modal:not(.hidden) { padding: 0; align-items: stretch; }
+  .rfp-caixa { max-width: none; max-height: none; height: 100%; border-radius: 0; }
+  .rfp-topo, .rfp-stepper, .rfp-corpo { padding-left: 16px; padding-right: 16px; }
+  .rfp-etapa em { display: none; }
+  .rfp-etapas { grid-template-columns: repeat(4, auto); justify-content: space-between; }
+  .rfp-categorias, .rfp-faixas { grid-template-columns: repeat(2, 1fr); }
+  .rfp-grade-local { grid-template-columns: 1fr; }
+  .rfp-rodape { position: sticky; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .rfp-rodape .rfp-btn { flex: 1; }
+  .rfp-erro-geral { position: absolute; left: 16px; right: 16px; bottom: calc(100% + 4px); background: #FFFFFF; }
+}
+body[data-theme="dark"] .rfp-caixa, body[data-theme="dark"] .rfp-rodape { background: #1F1F1F; }
+body[data-theme="dark"] .rfp-topo h3, body[data-theme="dark"] .rfp-pergunta, body[data-theme="dark"] .rfp-feed-card h5 { color: #FFFFFF; }

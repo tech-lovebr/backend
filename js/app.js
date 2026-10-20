@@ -1288,6 +1288,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'explore', label: 'Explorar' },
+        { id: 'pedidos', label: 'Pedidos de orçamento' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Meus contratos' },
         { id: 'insurance', label: 'Benefícios' },
@@ -1380,7 +1381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gifts: { 'my-gifts': '', 'gift-settings': 'configuracoes' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento', 'wallet-statement': 'extrato' },
-    b2b: { explore: '', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
+    b2b: { explore: '', pedidos: 'pedidos', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
   };
 
   // Ligado enquanto a tela está sendo montada a partir da URL (voltar/avançar
@@ -15005,6 +15006,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
+        'pedidos': 'Pedidos de orçamento',
         'messages': 'Mensagens',
         'contracted': 'Meus contratos',
         'insurance': 'Benefícios',
@@ -15017,6 +15019,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initB2BMarketplace();
+
+    // Pedidos de orçamento: a tabela dos pedidos e o botão "Novo pedido" no
+    // cabeçalho, sem busca/local/lista-grade.
+    const pedidosView = document.getElementById('b2b-pedidos-view');
+    const ehPedidos = viewId === 'pedidos';
+    pedidosView?.classList.toggle('hidden', !ehPedidos);
+    document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', !ehPedidos);
+    if (ehPedidos) {
+      document.body.classList.remove('b2b-chat-mode');
+      document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
+      if (searchBar) searchBar.classList.remove('hidden');
+      if (toolbarTitle) toolbarTitle.textContent = 'Pedidos de orçamento';
+      [exploreView, messagesView, contractedView, insuranceView].forEach(v => v?.classList.add('hidden'));
+      if (window.LovePedidos) window.LovePedidos.mostrarLista();
+      return;
+    }
 
     // Chat: só o título no cabeçalho — sem busca, local e lista/grade.
     document.getElementById('b2b-toolbar-controls')?.classList.toggle('hidden', viewId === 'messages');

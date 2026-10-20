@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_mesasSemCaixa">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_rfp">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3177,6 +3177,11 @@
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes / Meus Convidados) -->
           <div id="b2b-top-search-bar" class="builder-toolbar">
             <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Explorar</h2>
+            <!-- Pedidos de orçamento: botão do cabeçalho (só nessa tela) -->
+            <button type="button" id="btn-rfp-novo" class="btn-primary flex-shrink-0 hidden" data-rfp-novo>
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <span>Novo pedido</span>
+            </button>
             <div id="b2b-toolbar-controls" class="flex items-center gap-2.5 flex-shrink-0">
               <!-- Alternância Lista / Grid (ver b2bViewMode em app.js) — lista é o padrão. -->
               <div class="flex items-center gap-0.5 border border-zinc-200 rounded-xl p-0.5 bg-white" id="b2b-view-toggle">
@@ -3413,6 +3418,35 @@
           <!-- ===============================================================
                SUB-VIEW: FORNECEDORES CONTRATADOS (Gestão de Contratos e Serviços)
                =============================================================== -->
+          <!-- ===============================================================
+               SUB-VIEW: PEDIDOS DE ORÇAMENTO (RFP) — o anfitrião diz o que
+               precisa e os fornecedores mandam propostas (js/pedidos-orcamento.js)
+               =============================================================== -->
+          <div id="b2b-pedidos-view" class="hidden px-6 sm:px-8 py-6 space-y-4 w-full max-w-none">
+            <p id="rfp-lista-aviso" class="rfp-lista-aviso hidden" role="status"></p>
+            <div class="dash-card love-tabela-caixa" id="rfp-caixa">
+              <div class="love-tabela-barra">
+                <div class="love-tabela-barra-esq"><span class="rfp-contagem" id="rfp-contagem"></span></div>
+              </div>
+              <div class="w-full overflow-x-auto">
+                <table class="love-tabela w-full text-left border-collapse font-sans" id="rfp-tabela">
+                  <thead>
+                    <tr>
+                      <th>Serviço</th>
+                      <th>Evento</th>
+                      <th>Local</th>
+                      <th>Orçamento</th>
+                      <th>Propostas</th>
+                      <th>Situação</th>
+                      <th class="love-tabela-col-acoes love-tabela-col-mais"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="rfp-lista"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
           <div id="b2b-contracted-view" class="hidden px-6 sm:px-8 py-6 space-y-4 animate-fade-in w-full max-w-none">
 
             <!-- Lista de Fornecedores Contratados (mesmo padrão estético da lista do Explorar) -->
@@ -5493,7 +5527,8 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_configLista"></script>
+  <script src="js/app.js?v=20261020_rfp"></script>
+  <script src="js/pedidos-orcamento.js?v=20261020_rfp"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_semCaixaRotulo"></script>
 </body>

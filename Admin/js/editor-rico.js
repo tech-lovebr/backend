@@ -30,6 +30,11 @@ const EditorRico = (() => {
 
   const BARRA = `
     <div class="editor-barra">
+      <button type="button" class="editor-btn" data-historia="-1" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">${ico('<path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/>')}</button>
+      <button type="button" class="editor-btn" data-historia="1" title="Refazer (Ctrl+Y)" aria-label="Refazer">${ico('<path d="M15 14l4 -4l-4 -4"/><path d="M19 10h-11a4 4 0 1 0 0 8h1"/>')}</button>
+
+      <span class="editor-separador"></span>
+
       <button type="button" class="editor-btn" data-comando="bold" title="Negrito" aria-label="Negrito"><b>B</b></button>
       <button type="button" class="editor-btn" data-comando="italic" title="Itálico" aria-label="Itálico"><i>I</i></button>
       <button type="button" class="editor-btn" data-comando="underline" title="Sublinhado" aria-label="Sublinhado"><u>U</u></button>
@@ -54,8 +59,8 @@ const EditorRico = (() => {
         <button type="button" class="editor-btn editor-btn-menu" data-abrir="alinhar" title="Alinhamento do parágrafo" aria-label="Alinhamento do parágrafo">
           <span class="editor-btn-icone" data-icone-alinhar>${ALINHAR.justifyLeft.icone}</span>${CHEVRON}
         </button>
-        <div class="editor-menu" data-menu="alinhar" hidden>
-          ${Object.entries(ALINHAR).map(([cmd, a]) => `<button type="button" class="editor-menu-item" data-alinhar="${cmd}">${a.icone}<span>${a.rotulo}</span></button>`).join('')}
+        <div class="editor-menu editor-menu-icones" data-menu="alinhar" hidden>
+          ${Object.entries(ALINHAR).map(([cmd, a]) => `<button type="button" class="editor-btn" data-alinhar="${cmd}" title="${a.rotulo}" aria-label="${a.rotulo}">${a.icone}</button>`).join('')}
         </div>
       </div>
 
@@ -143,12 +148,77 @@ const EditorRico = (() => {
       sel.addRange(selecao);
     };
 
+    /* ---- Desfazer / refazer
+       O desfazer do navegador se perde quando o editor mexe no HTML direto
+       (tabela, limpeza de tamanhos, carregar o texto), então o editor guarda
+       a própria história: uma foto do HTML (e da posição do cursor) a cada
+       comando e a cada pausa na digitação. Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z e
+       os botões da barra andam por ela. */
+    /** @type {{ html: string, cursor: number }[]} */
+    let historia = [];
+    let passo = -1;
+    let emLote = false;
+    /** @type {number | undefined} */
+    let esperaDigitacao;
+
+    function posicaoDoCursor() {
+      const sel = window.getSelection();
+      if (!sel.rangeCount || !dentro(sel.focusNode)) return -1;
+      const r = document.createRange();
+      r.selectNodeContents(corpo);
+      r.setEnd(sel.focusNode, sel.focusOffset);
+      return r.toString().length;
+    }
+
+    /** @param {number} alvo */
+    function colocarCursor(alvo) {
+      corpo.focus();
+      const sel = window.getSelection();
+      const r = document.createRange();
+      const andar = document.createTreeWalker(corpo, NodeFilter.SHOW_TEXT);
+      let resto = alvo;
+      let no;
+      while ((no = andar.nextNode())) {
+        const tamanho = no.textContent.length;
+        if (resto <= tamanho) { r.setStart(no, Math.max(0, resto)); break; }
+        resto -= tamanho;
+      }
+      if (!no) { r.selectNodeContents(corpo); r.collapse(false); }
+      sel.removeAllRanges();
+      sel.addRange(r);
+    }
+
+    function registrar() {
+      clearTimeout(esperaDigitacao);
+      esperaDigitacao = undefined;
+      const html = corpo.innerHTML;
+      if (historia[passo]?.html === html) { historia[passo].cursor = posicaoDoCursor(); return; }
+      historia = historia.slice(0, passo + 1);
+      historia.push({ html, cursor: posicaoDoCursor() });
+      if (historia.length > 200) historia.shift();
+      passo = historia.length - 1;
+    }
+
+    /** @param {number} direcao -1 desfaz, +1 refaz */
+    function andarNaHistoria(direcao) {
+      if (esperaDigitacao !== undefined) registrar();
+      const destino = passo + direcao;
+      if (destino < 0 || destino >= historia.length) return;
+      passo = destino;
+      corpo.innerHTML = historia[passo].html;
+      colocarCursor(historia[passo].cursor);
+      guardar();
+      contar();
+      sincronizarBloco();
+    }
+
     const aplicar = (comando, valor) => {
       devolver();
       document.execCommand(comando, false, valor ?? null);
       guardar();
       corpo.focus();
       contar();
+      if (!emLote) registrar();
     };
 
     function contar() {
@@ -158,7 +228,26 @@ const EditorRico = (() => {
       aoMudar?.();
     }
 
-    corpo.addEventListener('input', contar);
+    corpo.addEventListener('input', () => {
+      contar();
+      clearTimeout(esperaDigitacao);
+      esperaDigitacao = window.setTimeout(registrar, 400);
+    });
+
+    corpo.addEventListener('keydown', (e) => {
+      if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+      const tecla = e.key.toLowerCase();
+      if (tecla === 'z') { e.preventDefault(); andarNaHistoria(e.shiftKey ? 1 : -1); }
+      else if (tecla === 'y') { e.preventDefault(); andarNaHistoria(1); }
+    });
+
+    historia = [{ html: corpo.innerHTML, cursor: -1 }];
+    passo = 0;
+
+    host.querySelectorAll('[data-historia]').forEach(btn => {
+      btn.addEventListener('mousedown', e => e.preventDefault());
+      btn.addEventListener('click', () => andarNaHistoria(Number(btn.dataset.historia)));
+    });
 
     // Colar entra como texto puro: HTML vindo do Word ou de outro site traria
     // estilos que não são os da plataforma e que depois ninguém limpa.
@@ -326,6 +415,7 @@ const EditorRico = (() => {
       }
       corpo.focus();
       contar();
+      registrar();
     }));
 
     /* ---- Linha horizontal e limpar formatação */
@@ -338,10 +428,13 @@ const EditorRico = (() => {
     const botaoLimpar = host.querySelector('[data-limpar]');
     botaoLimpar.addEventListener('mousedown', e => e.preventDefault());
     botaoLimpar.addEventListener('click', () => {
+      emLote = true;
       aplicar('removeFormat');
       aplicar('unlink');
       if (!celulaAtual()) aplicar('formatBlock', '<p>');
       aplicar('justifyLeft');
+      emLote = false;
+      registrar();
       host.querySelector('[data-icone-alinhar]').innerHTML = ALINHAR.justifyLeft.icone;
       sincronizarBloco();
     });
@@ -377,7 +470,15 @@ const EditorRico = (() => {
       texto: () => corpo.innerText,
       // Entra onde o cursor estiver — é assim que um vídeo fica no meio do texto.
       inserirHtml: (html) => aplicar('insertHTML', html),
-      definir: (html) => { corpo.innerHTML = normalizar(html); limparDimensoes(); contar(); sincronizarBloco(); },
+      definir: (html) => {
+        corpo.innerHTML = normalizar(html);
+        limparDimensoes();
+        contar();
+        sincronizarBloco();
+        // Texto carregado é o ponto de partida: o desfazer não volta antes dele.
+        historia = [{ html: corpo.innerHTML, cursor: -1 }];
+        passo = 0;
+      },
       focar: () => corpo.focus()
     };
   }

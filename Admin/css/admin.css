@@ -3519,3 +3519,6 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .editor-barra { background: #FAFAFA; }
 .editor-btn[data-limpar] { gap: .3125rem; padding: 0 .5rem; font-size: .75rem; color: var(--text-muted); }
 .editor-btn[data-limpar]:hover { color: var(--text); }
+
+/* Alinhamento: só os quatro ícones, lado a lado. */
+.editor-menu-icones { display: flex; gap: .125rem; min-width: 0; padding: .25rem; }

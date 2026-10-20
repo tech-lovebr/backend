@@ -8773,3 +8773,7 @@ body[data-theme="dark"] #settings-mfa-setup .mfa-popup-caixa { background: #1F1F
   #tab-faq .faq-categorias { display: none !important; }
   #tab-faq .faq-layout { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Submenu da sidebar: hover dos itens em cinza clarinho (#F4F4F5); o item
+   ativo continua azul-clarinho. */
+html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item:not(.active):not(#love-h-a):hover { background-color: #F4F4F5 !important; color: #18181B !important; }

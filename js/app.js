@@ -1291,7 +1291,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'pedidos', label: 'Pedidos de orçamento' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Meus contratos' },
-        { id: 'insurance', label: 'Benefícios' },
+        // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
+        { id: 'insurance', label: 'Benefícios', oculto: true },
         { id: 'favorites', label: 'Favoritos' }
       ]
     }
@@ -1626,7 +1627,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let unreadCount = 0;
         try { unreadCount = totalNaoLidasDoChat(); } catch (e) { /* chat ainda não carregou */ }
 
-        config.subItems.filter(item => areaPermitida(tabKey, item.id)).forEach((item, index) => {
+        config.subItems.filter(item => !item.oculto && areaPermitida(tabKey, item.id)).forEach((item, index) => {
           const btn = document.createElement('div');
           const isFirstActive = (tabKey === 'edit-site' && item.id === (state.activeSubSection || 'home'))
             || (pendingSubItemId && item.id === pendingSubItemId)

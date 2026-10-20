@@ -801,10 +801,97 @@ function ajustarDatasDoTemplate(state, quando) {
   })));
 }
 
+// Modelos prontos (no código) para os tipos que ainda não têm template salvo
+// no banco — mesma estrutura do modelo de casamento: capa com foto, abertura
+// em Lora itálico, título vazio ("Insira um título"), "A realizar-se", Data
+// com linhas, "Sobre…", Contagem regressiva, botões e "Com carinho,".
+const MODELOS_DE_CONVITE = {
+  baby_shower: {
+    fundo: '#eef5f8', destaque: '#2f6f86', caixa: '#cfe6ee',
+    abertura: 'Com muito amor e alegria,',
+    convite: 'Convidamos você para o chá de bebê de',
+    sobre: 'Sobre o chá'
+  },
+  gender_reveal: {
+    fundo: '#f5f0f8', destaque: '#6f4d8f', caixa: '#e3d6ee',
+    abertura: 'Menino ou menina?',
+    convite: 'Venha descobrir com a gente no chá revelação de',
+    sobre: 'Sobre o chá'
+  },
+  bridal_shower: {
+    fundo: '#f9eff1', destaque: '#9a4d62', caixa: '#f0d6dd',
+    abertura: 'Com muita alegria,',
+    convite: 'Convidamos você para o chá de panela de',
+    sobre: 'Sobre o chá'
+  },
+  anniversary: {
+    fundo: '#f6f1e8', destaque: '#7a5b2c', caixa: '#e8dcc4',
+    abertura: 'Celebrando uma história de amor,',
+    convite: 'Convidamos você para comemorar as bodas de',
+    sobre: 'Sobre a comemoração'
+  }
+};
+
+/**
+ * Convite inicial (no código) de um tipo de evento, ou null se o tipo não tem.
+ * @param {string} typeKey
+ * @returns {any|null}
+ */
+function modeloDeConviteEmCodigo(typeKey) {
+  const m = MODELOS_DE_CONVITE[typeKey];
+  if (!m) return null;
+  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
+  const LORA = "'Lora', Georgia, serif";
+  /** @param {string} tipo @param {object} props @param {object} [mobile] */
+  const el = (tipo, props, mobile) => {
+    const novo = Object.assign(createElement(tipo), props || {});
+    if (mobile) novo.styles.mobile = Object.assign({}, novo.styles.mobile || {}, mobile);
+    if (novo.styles && novo.styles.desktop) novo.styles.desktop.textAlign = 'center';
+    return novo;
+  };
+  const tituloDeSecao = (texto) => el('titulo', { content: texto }, { fontSize: '20px', fontFamily: LORA, fontWeight: '400', lineHeight: '1' });
+
+  const capa = createSection();
+  capa.bgImage = tmpl.coverImage;
+
+  const principal = createSection();
+  principal.bg = m.fundo;
+  principal.columns[0].elements = [
+    el('texto', { content: m.abertura }, { fontSize: '15px', fontStyle: 'italic', fontFamily: LORA }),
+    el('texto', { content: m.convite }, { fontSize: '15px', fontStyle: 'italic', fontFamily: LORA }),
+    el('titulo', { content: '' }),
+    el('texto', { content: 'A realizar-se' }, { color: m.destaque, fontSize: '17px', fontFamily: LORA }),
+    el('data', { showLines: true, textColor: m.destaque, fontFamily: LORA }),
+    tituloDeSecao(m.sobre),
+    el('texto', { content: '' }),
+    tituloDeSecao('Contagem Regressiva'),
+    el('contagem', { label: '', showBox: true, textColor: m.destaque, boxBgColor: m.caixa, fontFamily: LORA })
+  ];
+
+  const botoes = defaultQuickNavSection();
+  botoes.buttonBgColor = m.caixa;
+  botoes.iconStyle = 'moderno';
+  botoes.textColor = '#18181B';
+  botoes.iconColor = '#18181B';
+
+  const fim = createSection();
+  fim.bg = m.fundo;
+  fim.columns[0].elements = [
+    el('titulo', { content: 'Com carinho,' }, { fontFamily: LORA }),
+    el('texto', { content: '' })
+  ];
+
+  const state = defaultPageState();
+  state.globalStyle.primaryColor = tmpl.primaryColor;
+  state.sections = [capa, principal, botoes, fim];
+  return state;
+}
+
 async function seedConviteDigitalForEvent(eventoId, typeKey, quando) {
   if (typeof supabaseClient === 'undefined') return;
   // Com template padrão do tipo (ex.: casamento), o evento já nasce com ele.
-  let state = await templatePadraoDoTipo(typeKey);
+  // Sem template salvo no banco: modelo pronto do código (chás e bodas).
+  let state = (await templatePadraoDoTipo(typeKey)) || modeloDeConviteEmCodigo(typeKey);
   if (state) {
     ajustarDatasDoTemplate(state, quando);
   } else {

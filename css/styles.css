@@ -9052,3 +9052,12 @@ html body .floorplan-mesa-core .floorplan-girar:not(#love-h-a) { position: stati
 html body .floorplan-mesa-core .floorplan-girar:not(#love-h-a) svg { width: 13px; height: 13px; }
 html body .floorplan-mesa-core .floorplan-girar:not(#love-h-a):hover { color: #181D24; border: 0; }
 body[data-theme="dark"] .floorplan-mesa-core .floorplan-girar { background: transparent !important; border: 0 !important; color: #A1A1AA !important; }
+
+/* Aparência (Convite digital e Save the Date): fundo atrás do celular/tablet/
+   desktop igual ao de Mapear mesas — cor #FAFCFF + textura de pontinhos. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-viewport:not(#love-h-a) {
+  background-color: #FAFCFF !important;
+  background-image: radial-gradient(circle at 1.5px 1.5px, rgba(229, 231, 235, 0.5) 1.5px, transparent 1.6px) !important;
+  background-size: 20px 20px !important;
+  background-position: 12px 12px !important;
+}

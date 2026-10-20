@@ -77,9 +77,9 @@ function montarFiltroDePeriodo() {
   const wrap = document.createElement('div');
   wrap.className = 'filtro-wrap';
   wrap.innerHTML = `
-    <button type="button" class="btn btn-ghost" id="btn-periodo" aria-expanded="false" aria-controls="periodo-menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>
+    <button type="button" class="btn btn-ghost btn-periodo" id="btn-periodo" aria-expanded="false" aria-controls="periodo-menu">
       <span id="periodo-rotulo">Hoje</span>
+      <svg class="btn-periodo-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
     </button>
 
     <div class="filtro-menu periodo-menu periodo-calendario" id="periodo-menu" hidden>

@@ -3574,3 +3574,8 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 /* Mesma altura do botão de período ao lado (estica até a altura da linha). */
 .btn-atualizar { width: auto; align-self: stretch; padding: 0 .8125rem; }
 .btn-atualizar svg { width: 17px; height: 17px; }
+
+/* Período: texto à esquerda e seta à direita, sem o ícone de calendário. */
+.btn-periodo { min-width: 132px; justify-content: space-between; gap: 1rem; }
+.btn-periodo .btn-periodo-seta { width: 15px; height: 15px; color: var(--text-muted); transition: transform .2s ease; }
+.btn-periodo[aria-expanded="true"] .btn-periodo-seta { transform: rotate(180deg); }

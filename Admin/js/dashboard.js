@@ -17,7 +17,11 @@ let DADOS = null;
    com o histórico inteiro: ele é sobre a pessoa, não sobre o recorte.
    ====================================================================== */
 
-let PERIODO = { de: null, ate: null };
+// Abre sempre em "hoje"; o calendário do filtro muda para outro dia ou intervalo.
+let PERIODO = (() => {
+  const h = new Date();
+  return { de: new Date(h.getFullYear(), h.getMonth(), h.getDate()), ate: new Date(h.getFullYear(), h.getMonth(), h.getDate(), 23, 59, 59, 999) };
+})();
 
 /** "AAAA-MM-DD" → início ou fim daquele dia no fuso de quem está vendo. */
 function diaLocal(valor, fimDoDia) {
@@ -53,127 +57,142 @@ const formatarDia = d => d.toLocaleDateString('pt-BR');
 function rotuloDoPeriodo() {
   const { de, ate } = PERIODO;
   if (!de && !ate) return 'Todo o período';
+  if (de && ate && formatarDia(de) === formatarDia(ate) && formatarDia(de) === formatarDia(new Date())) return 'Hoje';
   if (de && ate && formatarDia(de) === formatarDia(ate)) return formatarDia(de);
   if (de && ate) return `${formatarDia(de)} – ${formatarDia(ate)}`;
   return de ? `A partir de ${formatarDia(de)}` : `Até ${formatarDia(ate)}`;
 }
 
-/** "AAAA-MM-DD" de um Date, sem passar por UTC. */
-function isoLocal(d) {
-  const dois = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${dois(d.getMonth() + 1)}-${dois(d.getDate())}`;
-}
-
+/* Filtro de período: abre em "Hoje". O botão mostra um calendário — um clique
+   escolhe um dia; um segundo clique fecha o intervalo. Atalhos ao lado para
+   os períodos mais usados. */
 function montarFiltroDePeriodo() {
   const host = document.getElementById('header-actions');
   if (!host) return;
+
+  const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const ATALHOS = [['hoje', 'Hoje'], ['7', 'Últimos 7 dias'], ['30', 'Últimos 30 dias'], ['mes', 'Este mês'], ['tudo', 'Todo o período']];
 
   const wrap = document.createElement('div');
   wrap.className = 'filtro-wrap';
   wrap.innerHTML = `
     <button type="button" class="btn btn-ghost" id="btn-periodo" aria-expanded="false" aria-controls="periodo-menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /></svg>
-      <span id="periodo-rotulo">Todo o período</span>
+      <span id="periodo-rotulo">Hoje</span>
     </button>
 
-    <div class="filtro-menu periodo-menu" id="periodo-menu" hidden>
-      <label class="field">
-        <span class="field-label">Período</span>
-        <select class="field-select" id="periodo-tipo">
-          <option value="tudo">Todo o período</option>
-          <option value="hoje">Hoje</option>
-          <option value="7">Últimos 7 dias</option>
-          <option value="30">Últimos 30 dias</option>
-          <option value="mes">Este mês</option>
-          <option value="dia">Data específica</option>
-          <option value="intervalo">De uma data até outra</option>
-        </select>
-      </label>
-
-      <label class="field" id="periodo-campo-dia" hidden>
-        <span class="field-label">Data</span>
-        <input class="field-input" type="date" id="periodo-dia">
-      </label>
-
-      <div class="field-row" id="periodo-campo-intervalo" hidden>
-        <label class="field">
-          <span class="field-label">De</span>
-          <input class="field-input" type="date" id="periodo-de">
-        </label>
-        <label class="field">
-          <span class="field-label">Até</span>
-          <input class="field-input" type="date" id="periodo-ate">
-        </label>
+    <div class="filtro-menu periodo-menu periodo-calendario" id="periodo-menu" hidden>
+      <div class="cal-atalhos">
+        ${ATALHOS.map(([v, r]) => `<button type="button" class="cal-atalho" data-atalho="${v}">${r}</button>`).join('')}
       </div>
-
-      <button type="button" class="btn btn-primary periodo-aplicar" id="periodo-aplicar">Aplicar</button>
-      <button type="button" class="filtro-limpar" id="periodo-limpar">Limpar período</button>
+      <div class="cal-corpo">
+        <div class="cal-topo">
+          <button type="button" class="cal-nav" data-mes="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg></button>
+          <span class="cal-mes" id="cal-mes"></span>
+          <button type="button" class="cal-nav" data-mes="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></button>
+        </div>
+        <div class="cal-semana">${SEMANA.map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="cal-dias" id="cal-dias"></div>
+        <p class="cal-dica" id="cal-dica">Clique num dia, ou em dois para um intervalo.</p>
+        <button type="button" class="btn btn-neutro periodo-aplicar" id="periodo-aplicar">Aplicar</button>
+      </div>
     </div>`;
   host.prepend(wrap);
 
   const botao = wrap.querySelector('#btn-periodo');
-  const menu = wrap.querySelector('#periodo-menu');
-  const tipo = wrap.querySelector('#periodo-tipo');
-  const campoDia = wrap.querySelector('#periodo-campo-dia');
-  const campoIntervalo = wrap.querySelector('#periodo-campo-intervalo');
-  const inputDia = wrap.querySelector('#periodo-dia');
-  const hoje = isoLocal(new Date());
-  wrap.querySelectorAll('input[type="date"]').forEach(i => { i.max = hoje; });
+  const menu = /** @type {HTMLElement} */ (wrap.querySelector('#periodo-menu'));
+  const dias = wrap.querySelector('#cal-dias');
+  const dica = wrap.querySelector('#cal-dica');
+  const inicioDoDia = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const fimDoDia = d => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  const hoje = inicioDoDia(new Date());
+
+  // Escolha em andamento no calendário (só vale depois de "Aplicar").
+  /** @type {Date | null} */ let selDe = PERIODO.de && inicioDoDia(PERIODO.de);
+  /** @type {Date | null} */ let selAte = PERIODO.ate && inicioDoDia(PERIODO.ate);
+  let mesVisto = new Date((selAte || hoje).getFullYear(), (selAte || hoje).getMonth(), 1);
+
+  function desenhar() {
+    wrap.querySelector('#cal-mes').textContent = `${MESES[mesVisto.getMonth()]} ${mesVisto.getFullYear()}`;
+    const primeiro = new Date(mesVisto.getFullYear(), mesVisto.getMonth(), 1);
+    const total = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + 1, 0).getDate();
+    let html = '<span></span>'.repeat(primeiro.getDay());
+    for (let n = 1; n <= total; n++) {
+      const d = new Date(mesVisto.getFullYear(), mesVisto.getMonth(), n);
+      const t = d.getTime();
+      const classes = ['cal-dia'];
+      if (t === hoje.getTime()) classes.push('is-hoje');
+      if (selDe && t === selDe.getTime()) classes.push('is-inicio');
+      if (selAte && t === selAte.getTime()) classes.push('is-fim');
+      if (selDe && selAte && t > selDe.getTime() && t < selAte.getTime()) classes.push('is-meio');
+      html += `<button type="button" class="${classes.join(' ')}" data-dia="${t}" ${t > hoje.getTime() ? 'disabled' : ''}>${n}</button>`;
+    }
+    dias.innerHTML = html;
+    const proximo = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + 1, 1);
+    /** @type {HTMLButtonElement} */ (wrap.querySelector('[data-mes="1"]')).disabled = proximo > hoje;
+    dica.textContent = !selDe ? 'Clique num dia, ou em dois para um intervalo.'
+      : selAte && selAte.getTime() !== selDe.getTime() ? `${formatarDia(selDe)} – ${formatarDia(selAte)}`
+      : `${formatarDia(selDe)} · clique em outro dia para um intervalo`;
+  }
+
+  /** @param {Date | null} de @param {Date | null} ate */
+  function aplicar(de, ate) {
+    PERIODO = { de: de && inicioDoDia(de), ate: ate && fimDoDia(ate) };
+    aplicarPeriodo();
+    fechar();
+  }
 
   const fechar = () => { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
 
   botao.addEventListener('click', e => {
     e.stopPropagation();
-    menu.hidden = !menu.hidden;
-    botao.setAttribute('aria-expanded', String(!menu.hidden));
+    const abrir = menu.hidden;
+    if (abrir) {
+      selDe = PERIODO.de && inicioDoDia(PERIODO.de);
+      selAte = PERIODO.ate && inicioDoDia(PERIODO.ate);
+      const ref = selAte || hoje;
+      mesVisto = new Date(ref.getFullYear(), ref.getMonth(), 1);
+      desenhar();
+    }
+    menu.hidden = !abrir;
+    botao.setAttribute('aria-expanded', String(abrir));
   });
   menu.addEventListener('click', e => e.stopPropagation());
   document.addEventListener('click', fechar);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
 
-  tipo.addEventListener('change', () => {
-    campoDia.hidden = tipo.value !== 'dia';
-    campoIntervalo.hidden = tipo.value !== 'intervalo';
-    if (tipo.value === 'dia' && !inputDia.value) inputDia.value = hoje;
+  wrap.querySelectorAll('[data-mes]').forEach(b => b.addEventListener('click', () => {
+    mesVisto = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + Number(/** @type {HTMLElement} */ (b).dataset.mes), 1);
+    desenhar();
+  }));
+
+  // Primeiro clique: um dia. Segundo: fecha o intervalo (em qualquer ordem).
+  // Terceiro: recomeça.
+  dias.addEventListener('click', e => {
+    const alvo = /** @type {HTMLElement} */ (e.target).closest('[data-dia]');
+    if (!alvo) return;
+    const d = new Date(Number(/** @type {HTMLElement} */ (alvo).dataset.dia));
+    if (!selDe || (selAte && selAte.getTime() !== selDe.getTime())) { selDe = d; selAte = d; }
+    else if (d < selDe) { selAte = selDe; selDe = d; }
+    else selAte = d;
+    desenhar();
   });
 
   wrap.querySelector('#periodo-aplicar').addEventListener('click', () => {
-    const agora = new Date();
-    const diasAtras = n => new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - n);
-    const fimDeHoje = diaLocal(hoje, true);
-
-    switch (tipo.value) {
-      case 'hoje': PERIODO = { de: diaLocal(hoje), ate: fimDeHoje }; break;
-      case '7': PERIODO = { de: diasAtras(6), ate: fimDeHoje }; break;
-      case '30': PERIODO = { de: diasAtras(29), ate: fimDeHoje }; break;
-      case 'mes': PERIODO = { de: new Date(agora.getFullYear(), agora.getMonth(), 1), ate: fimDeHoje }; break;
-      case 'dia': {
-        if (!inputDia.value) { toast('Escolha a data.'); return; }
-        PERIODO = { de: diaLocal(inputDia.value), ate: diaLocal(inputDia.value, true) };
-        break;
-      }
-      case 'intervalo': {
-        const de = wrap.querySelector('#periodo-de').value;
-        const ate = wrap.querySelector('#periodo-ate').value;
-        if (!de && !ate) { toast('Escolha ao menos uma das datas.'); return; }
-        if (de && ate && de > ate) { toast('A data inicial é depois da final.'); return; }
-        PERIODO = { de: diaLocal(de), ate: diaLocal(ate, true) };
-        break;
-      }
-      default: PERIODO = { de: null, ate: null };
-    }
-
-    aplicarPeriodo();
-    fechar();
+    if (!selDe) return toast('Escolha um dia no calendário.');
+    aplicar(selDe, selAte || selDe);
   });
 
-  wrap.querySelector('#periodo-limpar').addEventListener('click', () => {
-    tipo.value = 'tudo';
-    tipo.dispatchEvent(new Event('change'));
-    PERIODO = { de: null, ate: null };
-    aplicarPeriodo();
-    fechar();
-  });
+  wrap.querySelectorAll('[data-atalho]').forEach(b => b.addEventListener('click', () => {
+    const v = /** @type {HTMLElement} */ (b).dataset.atalho;
+    const menos = n => new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - n);
+    if (v === 'hoje') aplicar(hoje, hoje);
+    else if (v === '7') aplicar(menos(6), hoje);
+    else if (v === '30') aplicar(menos(29), hoje);
+    else if (v === 'mes') aplicar(new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje);
+    else aplicar(null, null);
+  }));
 }
 
 function aplicarPeriodo() {

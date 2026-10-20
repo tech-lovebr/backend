@@ -3537,3 +3537,31 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 /* Linha entre o logo e o menu, na mesma altura e cor da linha do cabeçalho:
    a área do logo tem a altura do cabeçalho, então as duas se continuam. */
 .admin-sidebar-brand { border-bottom: 1px solid var(--topbar-border); flex-shrink: 0; margin-bottom: .75rem; }
+
+/* ------------------------------------------------ Calendário do período
+   Atalhos à esquerda, mês à direita. Um clique marca o dia; o segundo fecha
+   o intervalo (dias do meio em cinza claro). */
+.periodo-calendario { width: auto; display: flex; gap: .75rem; padding: .75rem; right: 0; left: auto; }
+.cal-atalhos { display: flex; flex-direction: column; gap: .125rem; min-width: 128px; padding-right: .75rem; border-right: 1px solid #F0F0F2; }
+.cal-atalho { border: 0; background: none; padding: .4375rem .5rem; border-radius: 6px; font: inherit; font-size: .8125rem; color: var(--text); text-align: left; cursor: pointer; white-space: nowrap; }
+.cal-atalho:hover { background: #F4F4F5; }
+.cal-corpo { width: 252px; }
+.cal-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+.cal-mes { font-size: .875rem; font-weight: 600; color: var(--text); }
+.cal-nav { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 6px; background: none; color: var(--text-muted); cursor: pointer; }
+.cal-nav:hover:not(:disabled) { border-color: #E4E4E7; color: #181D24; }
+.cal-nav:disabled { opacity: .35; cursor: default; }
+.cal-nav svg { width: 16px; height: 16px; }
+.cal-semana, .cal-dias { display: grid; grid-template-columns: repeat(7, 36px); }
+.cal-semana span { text-align: center; font-size: .6875rem; font-weight: 500; color: #A1A1AA; padding-bottom: .25rem; }
+.cal-dia { height: 34px; border: 0; background: none; font: inherit; font-size: .8125rem; color: var(--text); cursor: pointer; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.cal-dia:hover:not(:disabled) { background: #F4F4F5; }
+.cal-dia:disabled { color: #D4D4D8; cursor: default; }
+.cal-dia.is-hoje { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.cal-dia.is-meio { background: #F4F4F5; border-radius: 0; }
+.cal-dia.is-inicio, .cal-dia.is-fim { background: #181D24; color: #fff; }
+.cal-dica { margin: .5rem 0; font-size: .75rem; color: var(--text-muted); text-align: center; min-height: 1.1em; }
+@media (max-width: 640px) {
+  .periodo-calendario { flex-direction: column; }
+  .cal-atalhos { flex-direction: row; flex-wrap: wrap; border-right: 0; padding-right: 0; border-bottom: 1px solid #F0F0F2; padding-bottom: .5rem; }
+}

@@ -258,7 +258,7 @@ function renderHeaderBar() {
   barra.className = 'admin-header-bar';
   barra.innerHTML = `
     <div class="header-bar-titulo">
-      <h1>${escapeHtml(document.body.dataset.title || 'Painel')}</h1>
+      ${document.body.dataset.title === '' ? '' : `<h1>${escapeHtml(document.body.dataset.title || 'Painel')}</h1>`}
       ${atalho}
     </div>
     <div class="admin-header-actions" id="header-actions"></div>`;

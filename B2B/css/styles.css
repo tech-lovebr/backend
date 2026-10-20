@@ -9179,3 +9179,24 @@ html body[data-theme="dark"] #settings-tabs .category-tab.active:not(#love-h-a),
 /* Configurações: o título da página é o nome da aba; sem o 2º título antes
    da caixa, a caixa de Verificação começa na 1ª linha ao lado. */
 .verificacao-aberta > #verificacao-conta-card { grid-row: 1 / span 3; }
+
+/* Submenu (2º sidebar branco de Configurações e da Central de ajuda) igual
+   ao do love.com.br: lado esquerdo reto e só o direito arredondado; hover
+   e item ativo no mesmo cinza clarinho #F4F4F5. Modo escuro não muda. */
+html body #settings-tabs .category-tab:not(#love-h-a),
+html body .guias-menu-table .guide-link:not(#love-h-a) {
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 13px !important; font-weight: 600 !important; color: #475569 !important; letter-spacing: -0.16px !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+html body:not([data-theme="dark"]) #settings-tabs .category-tab:not(.active):not(#love-h-a):hover,
+html body:not([data-theme="dark"]) .guias-menu-table .guide-link:not(.guide-link--active):not(#love-h-a):hover {
+  background-color: #F4F4F5 !important; color: #18181B !important;
+}
+html body:not([data-theme="dark"]) #settings-tabs .category-tab.active:not(#love-h-a),
+html body:not([data-theme="dark"]) #settings-tabs .category-tab.active:not(#love-h-a):hover,
+html body:not([data-theme="dark"]) .guias-menu-table .guide-link--active:not(#love-h-a),
+html body:not([data-theme="dark"]) .guias-menu-table .guide-link--active:not(#love-h-a):hover {
+  background-color: #F4F4F5 !important; color: #333333 !important; font-weight: 700 !important;
+  border: 1px solid transparent !important; box-shadow: none !important;
+}

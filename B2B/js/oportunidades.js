@@ -1,0 +1,418 @@
+/* ==========================================================================
+   LOVE B2B — Oportunidades (pedidos de orçamento dos anfitriões)
+   O anfitrião publica um pedido em love.com.br (pedidos_orcamento, migration
+   072). Aqui a empresa ativa vê os pedidos abertos, abre o detalhe e envia
+   UMA proposta pela RPC enviar_proposta (migration 074), que também grava a
+   mensagem tipo 'proposta' no chat. Contato do anfitrião nunca aparece.
+   ========================================================================== */
+
+const OP_CATEGORIAS = {
+  fotografia: 'Fotografia', buffet: 'Buffet', espaco: 'Espaço', decoracao: 'Decoração',
+  musica: 'Música', assessoria: 'Assessoria', bebidas: 'Bebidas', doces: 'Doces'
+};
+const OP_CELEBRACOES = {
+  casamento: 'casamento', aniversario: 'aniversário', bodas: 'bodas',
+  noivado: 'noivado', formatura: 'formatura', corporativo: 'evento corporativo'
+};
+const OP_CONVIDADOS = {
+  'ate-50': 'Até 50 convidados', '50-100': '50 a 100 convidados',
+  '100-200': '100 a 200 convidados', '200-mais': 'Mais de 200 convidados'
+};
+const OP_FAIXAS = {
+  economico: { nome: 'Econômico', min: 0, max: 2500 },
+  moderado: { nome: 'Moderado', min: 2500, max: 6000 },
+  premium: { nome: 'Premium', min: 6000, max: 12000 },
+  exclusivo: { nome: 'Exclusivo', min: 12000, max: null }
+};
+const OP_STATUS = {
+  enviada: { label: 'Enviada', classe: 'op-status--enviada' },
+  vista: { label: 'Vista', classe: 'op-status--vista' },
+  aceita: { label: 'Aceita', classe: 'op-status--aceita' },
+  recusada: { label: 'Recusada', classe: 'op-status--recusada' },
+  retirada: { label: 'Retirada', classe: 'op-status--retirada' }
+};
+// Categoria da empresa no Hub (Meus produtos / Nova empresa) → categoria do pedido.
+const OP_CATEGORIA_DO_HUB = {
+  'Mídia e Audiovisual': ['fotografia'],
+  'Buffet e Gastronomia': ['buffet', 'doces'],
+  'Espaços para Locação': ['espaco'],
+  'Decoração': ['decoracao'],
+  'Música e Entretenimento': ['musica'],
+  'Assessoria e Cerimonialista': ['assessoria'],
+  'Bar e Bebidas': ['bebidas']
+};
+
+let opEmpresaId = null;
+let opMinhasCategorias = [];
+let opPedidos = [];
+let opPropostas = [];
+let opFiltroCat = 'minha';
+let opPedidoAberto = null;
+
+const opBRL = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: Number(v) % 1 ? 2 : 0 });
+const opCategoria = c => OP_CATEGORIAS[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : 'Serviço');
+const opCelebracao = c => OP_CELEBRACOES[c] || c || 'evento';
+const opTitulo = p => `${opCategoria(p.categoria)} para ${opCelebracao(p.tipo_celebracao)}`;
+const opData = p => (p.data_flexivel || !p.data_evento)
+  ? 'Data flexível'
+  : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
+const opLocal = p => [p.bairro, [p.cidade, p.uf].filter(Boolean).join(' - ')].filter(Boolean).join(', ');
+const opPeriodo = p => p.periodo === 'horas' ? `${p.horas_servico || '?'}h de serviço` : (p.periodo === 'noturno' ? 'Noturno' : (p.periodo === 'diurno' ? 'Diurno' : ''));
+function opFaixaTexto(p) {
+  const f = OP_FAIXAS[p.faixa];
+  const min = p.valor_min != null ? p.valor_min : (f && f.min);
+  const max = p.valor_max != null ? p.valor_max : (f && f.max);
+  const valores = max ? `${opBRL(min)} a ${opBRL(max)}` : `acima de ${opBRL(min)}`;
+  return `${f ? f.nome : 'Faixa'} · ${valores}`;
+}
+function opHaQuanto(iso) {
+  const min = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (min < 60) return `há ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `há ${h} h`;
+  const d = Math.round(h / 24);
+  return `há ${d} ${d === 1 ? 'dia' : 'dias'}`;
+}
+const opNovo = p => Date.now() - new Date(p.created_at).getTime() < 48 * 3600 * 1000;
+const opContagem = p => p.limite_propostas ? `${p.propostas_recebidas} de ${p.limite_propostas} propostas` : `${p.propostas_recebidas} ${p.propostas_recebidas === 1 ? 'proposta' : 'propostas'}`;
+const opMinhaProposta = pedidoId => opPropostas.find(x => x.pedido_id === pedidoId);
+
+/* -------------------- Dados -------------------- */
+
+async function opCarregarCategoriasDaEmpresa() {
+  const cats = new Set();
+  const { data: emp } = await supabaseClient.from('fornecedores').select('category').eq('id', opEmpresaId).maybeSingle();
+  if (emp && emp.category) (OP_CATEGORIA_DO_HUB[emp.category] || []).forEach(c => cats.add(c));
+  // Sem categoria na empresa: usa as categorias dos produtos cadastrados.
+  if (!cats.size) {
+    const { data: prods } = await supabaseClient.from('products').select('category').eq('fornecedor_id', opEmpresaId);
+    (prods || []).forEach(p => (OP_CATEGORIA_DO_HUB[p.category] || []).forEach(c => cats.add(c)));
+  }
+  opMinhasCategorias = [...cats];
+}
+
+async function opCarregarPedidos() {
+  const { data, error } = await supabaseClient.from('pedidos_orcamento')
+    .select('id, categoria, especialidades, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, convidados, periodo, horas_servico, faixa, valor_min, valor_max, aceita_fora_da_faixa, descricao, referencias, limite_propostas, status, propostas_recebidas, created_at, cliente_id')
+    .eq('status', 'aberto')
+    .order('created_at', { ascending: false });
+  opPedidos = error ? [] : (data || []);
+  return !error;
+}
+
+async function opCarregarPropostas() {
+  const { data, error } = await supabaseClient.from('propostas_pedido')
+    .select('id, pedido_id, valor, inclui, validade, status, conversation_id, created_at, pedido:pedidos_orcamento(id, categoria, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, convidados, cliente_id)')
+    .eq('fornecedor_id', opEmpresaId)
+    .order('created_at', { ascending: false });
+  opPropostas = error ? [] : (data || []);
+  return !error;
+}
+
+/* -------------------- Pedidos abertos -------------------- */
+
+function opPedidosFiltrados() {
+  const uf = document.getElementById('op-filtro-uf').value;
+  const cidade = document.getElementById('op-filtro-cidade').value;
+  return opPedidos.filter(p =>
+    (opFiltroCat === 'todas' || !opMinhasCategorias.length || opMinhasCategorias.includes(p.categoria)) &&
+    (!uf || p.uf === uf) && (!cidade || p.cidade === cidade));
+}
+
+function opPreencherFiltrosDeLocal() {
+  const ufSel = document.getElementById('op-filtro-uf');
+  const cidSel = document.getElementById('op-filtro-cidade');
+  const ufAtual = ufSel.value;
+  const ufs = [...new Set(opPedidos.map(p => p.uf).filter(Boolean))].sort();
+  ufSel.innerHTML = '<option value="">Todos os estados</option>' + ufs.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+  ufSel.value = ufs.includes(ufAtual) ? ufAtual : '';
+  const cidAtual = cidSel.value;
+  const cidades = [...new Set(opPedidos.filter(p => !ufSel.value || p.uf === ufSel.value).map(p => p.cidade).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  cidSel.innerHTML = '<option value="">Todas as cidades</option>' + cidades.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  cidSel.value = cidades.includes(cidAtual) ? cidAtual : '';
+}
+
+function opCardHtml(p) {
+  const minha = opMinhaProposta(p.id);
+  const dados = [opData(p), opLocal(p), OP_CONVIDADOS[p.convidados], opPeriodo(p)].filter(Boolean);
+  return `
+    <article class="op-card" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
+      <div class="op-card-topo">
+        <span class="op-card-cat">${escapeHtml(opCategoria(p.categoria))}</span>
+        ${opNovo(p) ? '<span class="op-selo-novo">Novo</span>' : ''}
+        ${minha ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''}
+      </div>
+      <h3 class="op-card-titulo">${escapeHtml(opTitulo(p))}</h3>
+      <p class="op-card-dados">${dados.map(escapeHtml).join(' · ')}</p>
+      <p class="op-card-faixa">${escapeHtml(opFaixaTexto(p))}${p.aceita_fora_da_faixa ? ' <span class="op-fora-faixa">aceita fora da faixa</span>' : ''}</p>
+      ${(p.especialidades || []).length ? `<div class="op-tags">${p.especialidades.map(t => `<span class="op-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+      <p class="op-card-desc">${escapeHtml(p.descricao || '')}</p>
+      <div class="op-card-rodape">
+        <span>${escapeHtml(opContagem(p))}</span>
+        <span>${escapeHtml(opHaQuanto(p.created_at))}</span>
+      </div>
+    </article>`;
+}
+
+function opRenderPedidos() {
+  const grade = document.getElementById('op-grade');
+  const vazio = document.getElementById('op-vazio');
+  const lista = opPedidosFiltrados();
+  grade.innerHTML = lista.map(opCardHtml).join('');
+  vazio.hidden = lista.length > 0;
+  vazio.textContent = opFiltroCat === 'minha'
+    ? 'Nenhum pedido aberto na sua categoria agora. Avisaremos quando chegar um novo.'
+    : 'Nenhum pedido aberto com esses filtros agora.';
+  const aviso = document.getElementById('op-aviso');
+  aviso.hidden = !(opFiltroCat === 'minha' && !opMinhasCategorias.length);
+  aviso.textContent = 'A sua empresa ainda não tem categoria: mostrando todos os pedidos. Cadastre um produto para ver só os da sua área.';
+}
+
+/* -------------------- Detalhe do pedido -------------------- */
+
+function opAbrirDetalhe(id) {
+  const p = opPedidos.find(x => x.id === id) || (opPropostas.find(x => x.pedido_id === id) || {}).pedido;
+  if (!p) return;
+  opPedidoAberto = p;
+  const minha = opMinhaProposta(p.id);
+  const dados = [
+    ['Data', opData(p)], ['Local', opLocal(p)], ['Convidados', OP_CONVIDADOS[p.convidados] || ''],
+    ['Período', opPeriodo(p)], ['Faixa', p.faixa ? opFaixaTexto(p) + (p.aceita_fora_da_faixa ? ' (aceita fora da faixa)' : '') : '']
+  ].filter(([, v]) => v);
+  document.getElementById('op-detalhe-titulo').textContent = opTitulo(p);
+  document.getElementById('op-detalhe-corpo').innerHTML = `
+    <p class="op-detalhe-quem">Anfitrião(ã) · ${escapeHtml(opCelebracao(p.tipo_celebracao))}${p.created_at ? ` · publicado ${escapeHtml(opHaQuanto(p.created_at))}` : ''}</p>
+    <dl class="op-detalhe-dados">${dados.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl>
+    ${(p.especialidades || []).length ? `<div class="op-tags">${p.especialidades.map(t => `<span class="op-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+    ${p.descricao ? `<div class="op-detalhe-bloco"><p class="op-detalhe-rotulo">O que o anfitrião precisa</p><p class="op-detalhe-desc">${escapeHtml(p.descricao)}</p></div>` : ''}
+    ${(p.referencias || []).length ? `<div class="op-detalhe-bloco"><p class="op-detalhe-rotulo">Fotos de referência</p><div class="op-fotos">${p.referencias.map(u => `<button type="button" class="op-foto" data-op-foto="${escapeHtml(u)}"><img src="${escapeHtml(u)}" alt="Referência"></button>`).join('')}</div></div>` : ''}
+    <div class="op-detalhe-acao">
+      ${minha
+        ? `<p class="op-ja-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))} · <span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span></p>`
+        : (p.status === 'aberto' ? '<button type="button" class="btn-primary op-enviar-btn" data-op-enviar>Enviar proposta</button>' : '<p class="op-ja-enviada">Este pedido não recebe mais propostas.</p>')}
+    </div>`;
+  document.getElementById('op-detalhe').classList.add('show');
+  document.getElementById('op-detalhe-backdrop').classList.add('show');
+}
+
+function opFecharDetalhe() {
+  document.getElementById('op-detalhe').classList.remove('show');
+  document.getElementById('op-detalhe-backdrop').classList.remove('show');
+}
+
+/* -------------------- Enviar proposta -------------------- */
+
+function opValorDigitado() {
+  const d = document.getElementById('op-valor').value.replace(/\D/g, '');
+  return d ? Number(d) / 100 : 0;
+}
+
+function opChecarFaixa() {
+  const p = opPedidoAberto;
+  const alerta = document.getElementById('op-alerta-faixa');
+  const valor = opValorDigitado();
+  const f = OP_FAIXAS[p && p.faixa];
+  const min = p && p.valor_min != null ? Number(p.valor_min) : (f ? f.min : null);
+  const max = p && p.valor_max != null ? Number(p.valor_max) : (f ? f.max : null);
+  const fora = valor > 0 && ((min != null && valor < min) || (max != null && valor > max));
+  alerta.hidden = !(fora && p && !p.aceita_fora_da_faixa);
+  alerta.textContent = 'Este valor está fora da faixa do anfitrião, e ele não aceita propostas fora dela. Você ainda pode enviar.';
+}
+
+function opAbrirProposta() {
+  const p = opPedidoAberto;
+  if (!p) return;
+  const modal = document.getElementById('op-proposta-modal');
+  document.getElementById('op-proposta-form').hidden = false;
+  document.getElementById('op-enviada').hidden = true;
+  document.getElementById('op-proposta-form').reset();
+  document.getElementById('op-inclui-contador').textContent = '0/1000';
+  document.getElementById('op-proposta-sub').textContent = `${opTitulo(p)} · ${opData(p)} · ${opLocal(p)}`;
+  document.getElementById('op-faixa-pill').textContent = p.faixa ? opFaixaTexto(p) : '';
+  const validade = new Date(Date.now() + 15 * 86400000);
+  document.getElementById('op-validade').value = validade.toISOString().slice(0, 10);
+  mostrarMsgOp('');
+  opChecarFaixa();
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => document.getElementById('op-valor').focus(), 30);
+}
+
+function opFecharProposta() {
+  const modal = document.getElementById('op-proposta-modal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function mostrarMsgOp(texto, erro) {
+  const el = document.getElementById('op-proposta-msg');
+  el.textContent = texto || '';
+  el.hidden = !texto;
+  el.classList.toggle('is-erro', !!erro);
+}
+
+async function opEnviarProposta(e) {
+  e.preventDefault();
+  const p = opPedidoAberto;
+  const valor = opValorDigitado();
+  const inclui = document.getElementById('op-inclui').value.trim();
+  if (!valor) return mostrarMsgOp('Informe o valor total.', true);
+  if (!inclui) return mostrarMsgOp('Descreva o que está incluso.', true);
+  const btn = document.getElementById('op-enviar-btn');
+  btn.disabled = true;
+  mostrarMsgOp('');
+  const { data: propostaId, error } = await supabaseClient.rpc('enviar_proposta', {
+    p_pedido: p.id,
+    p_fornecedor: opEmpresaId,
+    p_valor: valor,
+    p_inclui: inclui,
+    p_mensagem: document.getElementById('op-mensagem').value.trim() || null,
+    p_validade: document.getElementById('op-validade').value || null,
+    p_prazo: document.getElementById('op-prazo').value.trim() || null
+  });
+  btn.disabled = false;
+  // A RPC devolve mensagens claras ("Você já enviou…", "Este pedido não recebe mais propostas").
+  if (error) return mostrarMsgOp(error.message || 'Não foi possível enviar a proposta.', true);
+
+  await Promise.all([opCarregarPropostas(), opCarregarPedidos()]);
+  const enviada = opPropostas.find(x => x.id === propostaId);
+  const link = document.getElementById('op-abrir-conversa');
+  link.href = enviada && enviada.conversation_id ? `chat?conversa=${encodeURIComponent(enviada.conversation_id)}` : 'chat';
+  document.getElementById('op-proposta-form').hidden = true;
+  document.getElementById('op-enviada').hidden = false;
+  opRenderPedidos();
+  opRenderPropostas();
+  if (opPedidoAberto) opAbrirDetalhe(opPedidoAberto.id);
+}
+
+/* -------------------- Minhas propostas -------------------- */
+
+function opRenderPropostas() {
+  const body = document.getElementById('op-propostas-body');
+  if (!body) return;
+  if (!opPropostas.length) {
+    body.innerHTML = '<tr><td colspan="7" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Você ainda não enviou propostas.</td></tr>';
+    return;
+  }
+  body.innerHTML = opPropostas.map(pr => {
+    const p = pr.pedido || {};
+    const st = OP_STATUS[pr.status] || OP_STATUS.enviada;
+    const podeRetirar = pr.status === 'enviada' || pr.status === 'vista';
+    const aceita = pr.status === 'aceita';
+    const orcamento = `vendas?criar=orcamento&cliente=${encodeURIComponent(p.cliente_id || '')}&servico=${encodeURIComponent(opCategoria(p.categoria))}&data=${encodeURIComponent(p.data_evento || '')}&local=${encodeURIComponent(opLocal(p))}`;
+    return `
+      <tr class="${aceita ? 'op-linha-aceita' : ''}">
+        <td class="col-principal">${escapeHtml(opTitulo(p))}${aceita ? `<a class="op-proximo-passo" href="${orcamento}">Gerar orçamento / contrato</a>` : ''}</td>
+        <td>${escapeHtml(p.data_evento || p.data_flexivel ? opData(p) : '—')}</td>
+        <td>${escapeHtml(opLocal(p) || '—')}</td>
+        <td class="finance-valor">${escapeHtml(opBRL(pr.valor))}</td>
+        <td><span class="op-status ${st.classe}">${st.label}</span></td>
+        <td>${new Date(pr.created_at).toLocaleDateString('pt-BR')}</td>
+        <td class="tabela-col-acoes">
+          <div class="op-menu-wrap">
+            <button type="button" class="tabela-ver-mais" data-op-menu="${escapeHtml(pr.id)}" title="Mais opções" aria-label="Mais opções">${typeof TABELA_ICONE_VER_MAIS !== 'undefined' ? TABELA_ICONE_VER_MAIS : '⋯'}</button>
+            <div class="op-menu" data-op-menu-lista="${escapeHtml(pr.id)}" hidden>
+              ${pr.conversation_id ? `<a href="chat?conversa=${encodeURIComponent(pr.conversation_id)}">Abrir conversa</a>` : ''}
+              ${podeRetirar ? `<button type="button" data-op-retirar="${escapeHtml(pr.id)}">Retirar proposta</button>` : ''}
+            </div>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+async function opRetirar(id) {
+  const { error } = await supabaseClient.from('propostas_pedido').update({ status: 'retirada' }).eq('id', id);
+  if (!error) { await opCarregarPropostas(); opRenderPropostas(); opRenderPedidos(); }
+}
+
+/* -------------------- Abas, filtros e eventos -------------------- */
+
+function opMostrarAba(aba) {
+  document.querySelectorAll('[data-op-aba]').forEach(b => b.classList.toggle('active', b.dataset.opAba === aba));
+  document.querySelectorAll('[data-op-painel]').forEach(s => { s.hidden = s.dataset.opPainel !== aba; });
+}
+
+function opLigarEventos() {
+  document.querySelectorAll('[data-op-aba]').forEach(b => b.addEventListener('click', () => opMostrarAba(b.dataset.opAba)));
+  document.querySelectorAll('[data-op-cat]').forEach(b => b.addEventListener('click', () => {
+    opFiltroCat = b.dataset.opCat;
+    document.querySelectorAll('[data-op-cat]').forEach(x => x.classList.toggle('active', x === b));
+    opRenderPedidos();
+  }));
+  document.getElementById('op-filtro-uf').addEventListener('change', () => { opPreencherFiltrosDeLocal(); opRenderPedidos(); });
+  document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
+
+  const grade = document.getElementById('op-grade');
+  grade.addEventListener('click', e => { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); });
+  grade.addEventListener('keydown', e => { if (e.key === 'Enter') { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); } });
+
+  document.querySelectorAll('[data-op-fechar]').forEach(b => b.addEventListener('click', opFecharDetalhe));
+  document.getElementById('op-detalhe-backdrop').addEventListener('click', opFecharDetalhe);
+  document.getElementById('op-detalhe-corpo').addEventListener('click', e => {
+    if (e.target.closest('[data-op-enviar]')) { opAbrirProposta(); return; }
+    const foto = e.target.closest('[data-op-foto]');
+    if (foto) {
+      document.getElementById('op-foto-grande').src = foto.dataset.opFoto;
+      document.getElementById('op-foto-modal').classList.add('show');
+    }
+  });
+  document.getElementById('op-foto-modal').addEventListener('click', () => document.getElementById('op-foto-modal').classList.remove('show'));
+
+  const modal = document.getElementById('op-proposta-modal');
+  document.querySelectorAll('[data-op-proposta-fechar]').forEach(b => b.addEventListener('click', opFecharProposta));
+  modal.addEventListener('click', e => { if (e.target === modal) opFecharProposta(); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (modal.classList.contains('show')) opFecharProposta();
+    else { opFecharDetalhe(); document.getElementById('op-foto-modal').classList.remove('show'); }
+  });
+  const valor = document.getElementById('op-valor');
+  valor.addEventListener('input', () => {
+    const d = valor.value.replace(/\D/g, '').slice(0, 11);
+    valor.value = d ? opBRL(Number(d) / 100).replace(/ /g, ' ') : '';
+    opChecarFaixa();
+  });
+  const inclui = document.getElementById('op-inclui');
+  inclui.addEventListener('input', () => { document.getElementById('op-inclui-contador').textContent = `${inclui.value.length}/1000`; });
+  document.getElementById('op-proposta-form').addEventListener('submit', opEnviarProposta);
+
+  const tabela = document.getElementById('op-propostas-body');
+  tabela.addEventListener('click', async e => {
+    const menuBtn = e.target.closest('[data-op-menu]');
+    if (menuBtn) {
+      e.stopPropagation();
+      const lista = tabela.querySelector(`[data-op-menu-lista="${menuBtn.dataset.opMenu}"]`);
+      const abrir = lista.hidden;
+      tabela.querySelectorAll('[data-op-menu-lista]').forEach(m => { m.hidden = true; });
+      lista.hidden = !abrir;
+      return;
+    }
+    const retirar = e.target.closest('[data-op-retirar]');
+    if (retirar) { retirar.disabled = true; await opRetirar(retirar.dataset.opRetirar); }
+  });
+  document.addEventListener('click', () => tabela.querySelectorAll('[data-op-menu-lista]').forEach(m => { m.hidden = true; }));
+}
+
+async function initOportunidades() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  opEmpresaId = empresaId(session);
+  opLigarEventos();
+  const [okPedidos] = await Promise.all([opCarregarPedidos(), opCarregarPropostas(), opCarregarCategoriasDaEmpresa()]);
+  if (!okPedidos) {
+    const aviso = document.getElementById('op-aviso');
+    aviso.hidden = false;
+    aviso.textContent = 'Não foi possível carregar os pedidos agora.';
+  }
+  opPreencherFiltrosDeLocal();
+  opRenderPedidos();
+  opRenderPropostas();
+  if (new URLSearchParams(location.search).get('aba') === 'propostas') opMostrarAba('propostas');
+  window.b2bPageReady?.();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!(await window.b2bAuthReady)) return;
+  initOportunidades();
+});

@@ -137,8 +137,11 @@ async function initB2BMensagens() {
   // senão, a primeira conversa com cliente (ou o suporte, se não houver).
   const abrirSuporte = new URLSearchParams(location.search).has('suporte');
   const primeira = b2bConversations.find(c => !c.isSuporte && conversaVisivel(c)) || b2bConversations[0];
-  activeConvId = abrirSuporte ? SUPORTE_CONV_ID : (primeira ? primeira.id : null);
-  if (abrirSuporte) history.replaceState(null, '', location.pathname);
+  // Oportunidades › "Abrir conversa" (chat?conversa=<id>) abre aquela conversa.
+  const pedida = new URLSearchParams(location.search).get('conversa');
+  const conversaPedida = pedida && b2bConversations.find(c => c.id === pedida);
+  activeConvId = abrirSuporte ? SUPORTE_CONV_ID : (conversaPedida ? conversaPedida.id : (primeira ? primeira.id : null));
+  if (abrirSuporte || pedida) history.replaceState(null, '', location.pathname);
 
   renderContactsList();
   renderActiveChat();
@@ -160,8 +163,18 @@ async function loadB2BConversations() {
     .select(`id, last_message_at, cliente:clientes(id, couple_name, avatar_url), messages(${campos})`)
     .eq('fornecedor_id', empresaId(session))
     .order('last_message_at', { ascending: false });
-  let { data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at, edited_at');
+  // tipo/proposta_id vêm da migration 074 (card de proposta); sem ela, cai nas consultas antigas.
+  let { data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at, edited_at, tipo, proposta_id');
+  if (error) ({ data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at, edited_at'));
   if (error) ({ data: rows, error } = await consultar('id, text, created_at, sender_role, attachment_url, attachment_type, read_at'));
+
+  // Propostas citadas nas mensagens (valor, o que inclui, validade, status atual).
+  const idsPropostas = [...new Set((rows || []).flatMap(r => (r.messages || []).map(m => m.proposta_id).filter(Boolean)))];
+  const propostas = {};
+  if (idsPropostas.length) {
+    const { data: lista } = await supabaseClient.from('propostas_pedido').select('id, valor, inclui, validade, prazo_entrega, status').in('id', idsPropostas);
+    (lista || []).forEach(p => { propostas[p.id] = p; });
+  }
 
   const suporte = await conversaSuporteLove(session);
   aplicarDigitandoNoSuporte(suporte);
@@ -187,7 +200,8 @@ async function loadB2BConversations() {
         sender: m.sender_role === 'fornecedor' ? 'me' : 'them',
         text: m.text,
         time: formatB2BMsgTime(m.created_at),
-        attachment: m.attachment_url ? { type: m.attachment_type || 'doc', url: m.attachment_url, name: 'Anexo' } : null
+        attachment: m.attachment_url ? { type: m.attachment_type || 'doc', url: m.attachment_url, name: 'Anexo' } : null,
+        proposta: m.tipo === 'proposta' && m.proposta_id ? (propostas[m.proposta_id] || { id: m.proposta_id }) : null
       }))
     };
   });
@@ -406,6 +420,26 @@ function subscribeToB2BMessages() {
 // Mesmo ícone de perfil padrão usado no cabeçalho (B2B_PROFILE_ICON, definido
 // em shell.js) — quadrado com cantos arredondados, nunca foto/placeholder
 // genérico quando o cliente ainda não tem avatar cadastrado.
+/* Card da mensagem tipo 'proposta' (Oportunidades › Enviar proposta): valor,
+   o que inclui, validade e o status atual da proposta. Sem os dados (RLS ou
+   proposta apagada), mostra o texto de reserva da mensagem. */
+const PROPOSTA_STATUS_CHAT = { enviada: 'Enviada', vista: 'Vista', aceita: 'Aceita', recusada: 'Recusada', retirada: 'Retirada' };
+function propostaCardChatHtml(p, textoReserva) {
+  if (!p || p.valor == null) return textoReserva ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(textoReserva)}</p>` : '';
+  const valor = Number(p.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const validade = p.validade ? new Date(p.validade + 'T00:00:00').toLocaleDateString('pt-BR') : '';
+  const status = PROPOSTA_STATUS_CHAT[p.status] || 'Enviada';
+  return `
+    <div class="chat-proposta-card">
+      <div class="chat-proposta-topo">
+        <span class="chat-proposta-titulo">Proposta · ${escapeMsg(valor)}</span>
+        <span class="op-status op-status--${escapeMsg(p.status || 'enviada')}">${status}</span>
+      </div>
+      <p class="chat-proposta-inclui">${escapeMsg(p.inclui || '')}</p>
+      <p class="chat-proposta-meta">${[validade ? 'Válida até ' + validade : '', p.prazo_entrega ? 'Entrega: ' + p.prazo_entrega : ''].filter(Boolean).map(escapeMsg).join(' · ')}</p>
+    </div>`;
+}
+
 function b2bAvatarHtml(url, name) {
   // Avatar "de iniciais" gerado pelo love.com.br (SVG com fundo azul claro):
   // desenha as iniciais aqui mesmo, em fundo branco, como as outras caixinhas.
@@ -564,7 +598,7 @@ function renderActiveChat() {
       row.innerHTML = `
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
           <div class="chat-msg-linha chat-msg-linha--minha">
-          ${msg.text && !activeConv.isSuporte ? `<button type="button" class="chat-msg-acao-btn chat-msg-menu-btn" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
+          ${msg.text && !activeConv.isSuporte && !msg.proposta ? `<button type="button" class="chat-msg-acao-btn chat-msg-menu-btn" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
           <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
             ${msg.id && msg.id === mensagemEmEdicaoId
               ? `<div class="chat-msg-edicao">
@@ -575,7 +609,7 @@ function renderActiveChat() {
                     <button type="button" class="btn-primary" data-edicao-salvar="${msgIndex}">Salvar</button>
                   </div>
                 </div>`
-              : (msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : '')}
+              : (msg.proposta ? propostaCardChatHtml(msg.proposta, msg.text) : (msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''))}
             ${attachmentHTML}
           </div>
           </div>
@@ -594,7 +628,7 @@ function renderActiveChat() {
         <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
         <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
           <div class="chat-msg-linha">
-          ${pedido ? pedidoOrcamentoCardHtml(pedido, `data-criar-orcamento="${msgIndex}"`) : `<div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
+          ${msg.proposta ? propostaCardChatHtml(msg.proposta, msg.text) : pedido ? pedidoOrcamentoCardHtml(pedido, `data-criar-orcamento="${msgIndex}"`) : `<div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>`}

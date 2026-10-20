@@ -20,6 +20,11 @@
       "permanent": true
     },
     {
+      "source": "/oportunidades.html",
+      "destination": "/oportunidades",
+      "permanent": true
+    },
+    {
       "source": "/dashboard.html",
       "destination": "/dashboard",
       "permanent": true
@@ -152,6 +157,10 @@
     {
       "source": "/crm",
       "destination": "/crm.html"
+    },
+    {
+      "source": "/oportunidades",
+      "destination": "/oportunidades.html"
     },
     {
       "source": "/dashboard",

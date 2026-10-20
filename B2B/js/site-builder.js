@@ -214,7 +214,7 @@ function uid(prefix) {
 const RESERVED_SLUGS = [
   'sophia-eventos', 'buffet-real', 'espaco-jardim', 'casa-de-festas', 'eventos-vip', 'admin', 'love',
   'hub', 'www', 'app', 'api', 'assets', 'css', 'js', 'partials', 'index', 'site-preview',
-  'agenda', 'configuracoes', 'crm', 'dashboard', 'esqueci-senha', 'faq', 'central-de-ajuda', 'funcoes', 'guias', 'login',
+  'agenda', 'configuracoes', 'crm', 'oportunidades', 'dashboard', 'esqueci-senha', 'faq', 'central-de-ajuda', 'funcoes', 'guias', 'login',
   'mensagens', 'chat', 'notificacoes', 'pagamentos', 'paginas-site', 'planos', 'privacidade', 'produtos', 'resetar-senha',
   'signup', 'termos', 'vendas', 'verificar', 'vitrine'
 ];

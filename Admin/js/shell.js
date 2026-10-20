@@ -188,10 +188,6 @@ function renderSidebar(admin) {
 
         <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
         <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
-
-        <div class="admin-user-menu-divider"></div>
-
-        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
       </div>
     </div>
     <nav class="admin-nav">${sections}</nav>`;
@@ -210,10 +206,6 @@ function renderSidebar(admin) {
   menu.addEventListener('click', e => e.stopPropagation());
   document.addEventListener('click', fecharMenu);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
-  host.querySelector('#btn-logout').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.replace('login.html');
-  });
 
   host.querySelectorAll('[data-grupo]').forEach(botao => {
     botao.addEventListener('click', () => {
@@ -285,13 +277,21 @@ function renderTopbar() {
     </button>
 
     <h1 class="topbar-titulo">Admin</h1>
-    <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>`;
+    <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>
+    <button type="button" class="topbar-sair" id="btn-logout" title="Sair" aria-label="Sair do painel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/></svg>
+    </button>`;
 
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
     e.stopPropagation();
     document.getElementById('admin-sidebar')?.classList.toggle('is-open');
     document.getElementById('sidebar-backdrop')?.classList.toggle('is-open');
+  });
+
+  host.querySelector('#btn-logout').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.replace('login.html');
   });
 
 }

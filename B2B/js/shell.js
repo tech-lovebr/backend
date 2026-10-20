@@ -553,7 +553,6 @@ function renderEmpresasNoMenu() {
       <span class="profile-empresa-linha">
         <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
       </span>
-      ${cnpjFormatado(e.cnpj) ? `<span class="profile-empresa-cnpj">${cnpjFormatado(e.cnpj)}</span>` : ''}
     </button>`).join('') + '<div class="topbar-dropdown-divider"></div>';
   wrap.querySelectorAll('[data-empresa-id]').forEach(btn => {
     btn.addEventListener('click', () => trocarEmpresa(btn.dataset.empresaId));

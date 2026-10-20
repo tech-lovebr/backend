@@ -9033,3 +9033,13 @@ html body #tab-rsvp #rsvp-status-tabs + .rsvp-caixa-abaixo-das-abas:not(#love-h-
 /* A linha das abas faz o papel da borda de cima da caixa (uma linha só). */
 html body #tab-rsvp #rsvp-status-tabs + .rsvp-caixa-abaixo-das-abas:not(#love-h-a) { border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
 html body #tab-rsvp #rsvp-status-tabs:not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }
+
+/* Mapear mesas: textura de pontinhos no fundo da planta ("textura circulos.svg":
+   círculos de 1,5px #E5E7EB a 50%, a cada 20px) — em CSS para repetir sem
+   emenda em qualquer tamanho de planta. */
+html body #floorplan-canvas:not(#love-h-a) {
+  background-image: radial-gradient(circle at 1.5px 1.5px, rgba(229, 231, 235, 0.5) 1.5px, transparent 1.6px);
+  background-size: 20px 20px;
+  background-position: 12px 12px;
+}
+body[data-theme="dark"] #floorplan-canvas { background-image: radial-gradient(circle at 1.5px 1.5px, rgba(255, 255, 255, 0.08) 1.5px, transparent 1.6px) !important; background-size: 20px 20px !important; }

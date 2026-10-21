@@ -9462,3 +9462,9 @@ body[data-theme="dark"] .b2b-footer { background: var(--bg-dashboard) !important
 html body .b2b-footer-bottom--enxuto:not(#love-h-a) { flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center; }
 html body .b2b-footer-bottom--enxuto p:not(#love-h-a) { margin: 0; }
 html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links:not(#love-h-a) { margin-top: 0; justify-content: center; }
+
+/* Cabeçalho das telas (faixa do título) branco, como no love.com.br. Onde há
+   subtítulo colado no título, a faixa do subtítulo também fica branca até a
+   linha de baixo. */
+html body:not([data-theme="dark"]) .b2b-header-bar:not(#love-h-a),
+html body:not([data-theme="dark"]) .b2b-header-bar + p:not(#love-h-a) { background: #FFFFFF; }

@@ -9213,3 +9213,14 @@ html body:not([data-theme="dark"]) #floorplan-canvas:not(#love-h-a) { background
 html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not(#love-h-a),
 html body:not([data-theme="dark"]) #view-event-os-dashboard .floorplan-toolbar:not(#love-h-a) { background: #FFFFFF !important; }
 html body:not([data-theme="dark"]) #view-event-os-dashboard .floorplan-toolbar:not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }
+
+/* Tudo monocromático: hover dos convidados já sentados (Mapear mesas), item
+   ativo do submenu e ícone ativo da barra de ícones na cor do fundo (#F4F6F7). */
+html body:not([data-theme="dark"]) .floorplan-guest-card.is-seated:not(.is-declined):not(#love-h-a):hover { background: #F4F6F7 !important; }
+html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:not(#love-h-a) { background-color: #F4F6F7 !important; }
+@media (min-width: 769px) {
+  html body:not([data-theme="dark"]) .rail-icon-btn.active:not(#love-h-a) { background-color: #F4F6F7 !important; }
+}
+/* Mais Recursos: botões brancos com borda fina. */
+html body:not([data-theme="dark"]) #tab-overview .mais-recursos-btn:not(#love-h-a) { background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; }
+html body:not([data-theme="dark"]) #tab-overview .mais-recursos-btn:not(#love-h-a):hover { background: #FFFFFF !important; border-color: #181D24 !important; }

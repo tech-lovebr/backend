@@ -9899,9 +9899,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function posicaoDoAssento(formato, i, n) {
     const c = 110;
     if (formato === 'retangular') {
-      // Metade de cima, metade de baixo, espalhadas ao longo da mesa.
-      const emCima = Math.ceil(n / 2);
-      const naLinha = i < emCima ? emCima : n - emCima;
+      // A partir de 6 lugares, um em cada ponta da mesa (cabeceiras) e o resto
+      // dividido entre os dois lados (ex.: 10 = 4 em cima, 4 embaixo, 1 em cada ponta).
+      const pontas = n >= 6 ? 2 : 0;
+      const nosLados = n - pontas;
+      if (pontas && i >= nosLados) return [i === nosLados ? c - 98 : c + 98, c];
+      const emCima = Math.ceil(nosLados / 2);
+      const naLinha = i < emCima ? emCima : nosLados - emCima;
       const j = i < emCima ? i : i - emCima;
       const x = c - 70 + ((j + 0.5) / naLinha) * 140;
       return [x, i < emCima ? c - 50 : c + 50];

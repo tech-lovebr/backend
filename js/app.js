@@ -8376,6 +8376,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
     atualizarLixeiraDeConvidados();
+    alinharLinhasVaziasDaTabela(listEl);
+  }
+
+  // Espaço em branco abaixo dos convidados: continua com as linhas que
+  // separam as linhas da tabela, na mesma altura e alinhadas com elas.
+  /** @param {HTMLElement} corpo */
+  function alinharLinhasVaziasDaTabela(corpo) {
+    const tabela = corpo.closest('table');
+    const caixa = tabela && /** @type {HTMLElement|null} */ (tabela.parentElement);
+    if (!tabela || !caixa) return;
+    const cabecalho = tabela.querySelector('thead');
+    const linhas = Array.from(corpo.querySelectorAll('tr')).filter(tr => /** @type {HTMLElement} */ (tr).offsetParent);
+    const alturaDaLinha = linhas.length ? Math.round(linhas[linhas.length - 1].getBoundingClientRect().height) : 51;
+    const fimDasLinhas = (cabecalho ? cabecalho.getBoundingClientRect().height : 0) + linhas.reduce((t, tr) => t + tr.getBoundingClientRect().height, 0);
+    caixa.classList.add('tabela-com-linhas-vazias');
+    caixa.style.setProperty('--altura-da-linha', `${alturaDaLinha || 51}px`);
+    caixa.style.setProperty('--fim-das-linhas', `${fimDasLinhas}px`);
   }
 
   // Lixeira ao lado do "Filtrar por" (barra da tabela): aparece com algum

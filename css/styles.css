@@ -9674,3 +9674,8 @@ html body #modal-floorplan-table .floorplan-cor-mesa-linha .inspector-field-labe
 html body #modal-floorplan-table .color-alpha-popover:not(#love-h-a) { right: 0; left: auto; z-index: 80; }
 html body .floorplan-mesa-core.tem-cor:not(#love-h-a) { background: var(--cor-da-mesa) !important; }
 html body .floorplan-mesa-core.tem-cor:not(#love-h-a), html body .floorplan-mesa-core.tem-cor:not(#love-h-a) * { color: var(--cor-texto-da-mesa) !important; }
+
+/* Meus convidados: abaixo do último convidado, as linhas finas continuam até o
+   fim da caixa (mesma cor e mesma altura das linhas da tabela). */
+html body .tabela-com-linhas-vazias:not(#love-h-a) { background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 0, rgba(0, 0, 0, 0.04) 1px, transparent 1px, transparent var(--altura-da-linha, 51px)); background-position: 0 var(--fim-das-linhas, 0px); background-size: 100% calc(100% - var(--fim-das-linhas, 0px)); background-repeat: no-repeat; }
+html body .tabela-com-linhas-vazias:not(#love-h-a) { background-repeat: repeat-x; }

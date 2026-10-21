@@ -9858,10 +9858,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (direita <= largura - 8) return 1;
     return Math.max(0.3, (largura - 8) / direita);
   }
-  /** Tamanho da mesa (1 = normal), entre 0,5 e 2. @param {any} item */
+  // Limites de aumentar/diminuir na planta: nem gigante (tomando o mapa todo)
+  // nem minúsculo (difícil de achar).
+  const ESCALA_MINIMA_NA_PLANTA = 0.6;
+  const ESCALA_MAXIMA_NA_PLANTA = 1.6;
+  /** Tamanho da mesa (1 = normal), entre os limites acima. @param {any} item */
   function escalaDaMesa(item) {
     const s = parseFloat(item && item.escala);
-    return s ? Math.min(2, Math.max(0.5, s)) : 1;
+    return s ? Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, s)) : 1;
   }
   /**
    * Tamanho de um item na planta. Cresce sempre na proporção (escala, de 0,4 a 3)
@@ -9882,7 +9886,7 @@ document.addEventListener('DOMContentLoaded', () => {
       escala = Math.max(w, h) / Math.max(bw, bh);
       if (bw !== bh && (w > h) !== (bw > bh)) rotacao = 90;
     }
-    escala = Math.min(3, Math.max(0.4, escala || 1));
+    escala = Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala || 1));
     const baseW = bw * escala;
     const baseH = bh * escala;
     // Caixa ocupada pelo desenho girado (na diagonal ela fica maior).
@@ -10695,11 +10699,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const dy = Math.abs(ev.clientY - base.top - centroY * s);
       const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
       if (isMesa) {
-        const escala = Math.round(Math.min(2, Math.max(0.5, escala0 * fator)) * 100) / 100;
+        const escala = Math.round(Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala0 * fator)) * 100) / 100;
         el.style.transform = escala === 1 ? '' : `scale(${escala})`;
         resultado = { escala };
       } else {
-        const escala = Math.round(Math.min(3, Math.max(0.4, escala0 * fator)) * 100) / 100;
+        const escala = Math.round(Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala0 * fator)) * 100) / 100;
         const w = tam0.w / escala0 * escala;
         const hh = tam0.h / escala0 * escala;
         const x = Math.max(0, centroX - w / 2);

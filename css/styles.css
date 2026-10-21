@@ -9372,3 +9372,5 @@ html body:not([data-theme="dark"]) .floorplan-guest-card.is-seated:not(.is-decli
 html body #account-dropdown-username:not(#love-h-a) { display: none !important; }
 html body .account-dropdown-header:not(#love-h-a) { align-items: center; }
 html body #account-dropdown-email:not(#love-h-a) { font-size: 0.875rem !important; font-weight: 500 !important; color: #18181B !important; }
+/* Mapa do evento › card do convidado: "Mesa N" sem negrito, na cor do nome. */
+html body .floorplan-guest-card .floorplan-guest-card-table:not(#love-h-a) { font-weight: 400 !important; color: #3F3F46 !important; }

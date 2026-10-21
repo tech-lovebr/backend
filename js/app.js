@@ -10172,17 +10172,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function addFloorPlanTableViaButton(formato) {
     const canvas = document.getElementById('floorplan-canvas');
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const shapeSize = 152;
     const elements = getFloorPlanElements();
     const mesaCount = elements.filter(item => item.type === 'mesa').length;
-
-    const step = 28;
-    const cascade = elements.length % 8;
-    const maxX = Math.max(16, rect.width - shapeSize - 16);
-    const maxY = Math.max(16, rect.height - shapeSize - 16);
-    const x = Math.min(16 + cascade * step, maxX);
-    const y = Math.min(16 + cascade * step, maxY);
+    // No meio da parte da planta que está na tela (quadro da mesa = 220px).
+    const { x, y } = posicaoNoMeioDaPlanta(canvas, elements, 220, 220);
 
     elements.push({
       id: `fp-${Date.now()}`,
@@ -10228,11 +10221,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('floorplan-canvas');
     if (!canvas) return;
     const elements = getFloorPlanElements();
-    const cascata = (elements.length % 8) * 28;
-    const rolagem = canvas.closest('.floorplan-body');
-    const topoVisivel = rolagem && rolagem.scrollTop ? rolagem.scrollTop : 0;
-    const x1 = 40 + cascata;
-    const y1 = topoVisivel + 40 + cascata;
+    // No meio da parte da planta que está na tela.
+    const meio = posicaoNoMeioDaPlanta(canvas, elements, 200, 20);
+    const x1 = meio.x + 10;
+    const y1 = meio.y + 10;
     elements.push(Object.assign({ id: `fp-${Date.now()}`, type: 'linha' }, caixaDaLinha(x1, y1, x1 + 180, y1)));
     plantaSelecionada = elements[elements.length - 1].id;
     saveFloorPlanElements(elements);
@@ -10359,23 +10351,40 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', soltar);
   }
 
+  /**
+   * Onde um elemento novo entra: centralizado na parte da planta que está na
+   * tela (vale com a página rolada e na planta expandida). Se já houver algo
+   * exatamente ali, desce um pouco em cascata para não ficar um em cima do outro.
+   * @param {HTMLElement} canvas @param {any[]} elements @param {number} w @param {number} h
+   */
+  function posicaoNoMeioDaPlanta(canvas, elements, w, h) {
+    const r = canvas.getBoundingClientRect();
+    const rolagem = canvas.closest('.floorplan-wrap.is-expandida') ? canvas.closest('.floorplan-body') : null;
+    const area = rolagem ? rolagem.getBoundingClientRect() : { top: 0, bottom: window.innerHeight, left: 0, right: window.innerWidth };
+    const cabecalho = document.querySelector('.floorplan-toolbar');
+    const topoTela = Math.max(area.top, cabecalho ? cabecalho.getBoundingClientRect().bottom : 0);
+    const topo = Math.max(r.top, topoTela);
+    const base = Math.min(r.bottom, area.bottom);
+    const esq = Math.max(r.left, area.left);
+    const dir = Math.min(r.right, area.right);
+    let x = (esq + dir) / 2 - r.left - w / 2;
+    let y = (base > topo ? (topo + base) / 2 : r.top + r.height / 2) - r.top - h / 2;
+    for (let i = 0; i < 8 && elements.some(el => Math.abs((parseFloat(el.x) || 0) - x) < 12 && Math.abs((parseFloat(el.y) || 0) - y) < 12); i++) {
+      x += 24;
+      y += 24;
+    }
+    return { x: Math.max(0, Math.min(x, r.width - w)), y: Math.max(0, y) };
+  }
+
   /** @param {string} tipo  um dos ITENS_DA_PLANTA */
   function inserirItemNaPlanta(tipo) {
     const canvas = document.getElementById('floorplan-canvas');
     const item = ITENS_DA_PLANTA.find(i => i.type === tipo);
     if (!canvas || !item) return;
     const elements = getFloorPlanElements();
-    const cascata = (elements.length % 8) * 28;
-    const largura = canvas.getBoundingClientRect().width || 600;
-    // Começa na parte da planta que está na tela (se rolou para baixo, aparece ali).
-    const rolagem = canvas.closest('.floorplan-body');
-    const topoVisivel = rolagem && rolagem.scrollTop ? rolagem.scrollTop : 0;
-    elements.push({
-      id: `fp-${Date.now()}`,
-      type: tipo,
-      x: Math.min(16 + cascata, Math.max(16, largura - item.w - 16)),
-      y: topoVisivel + 16 + cascata
-    });
+    // No meio da parte da planta que está na tela.
+    const { x, y } = posicaoNoMeioDaPlanta(canvas, elements, item.w, item.h);
+    elements.push({ id: `fp-${Date.now()}`, type: tipo, x, y });
     plantaSelecionada = elements[elements.length - 1].id;
     saveFloorPlanElements(elements);
     renderFloorPlanCanvas();

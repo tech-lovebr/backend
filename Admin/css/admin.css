@@ -3622,3 +3622,12 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 }
 .topbar-copiar:hover { color: #181D24; background: #F4F4F5; }
 .topbar-copiar svg { width: 13px; height: 13px; }
+
+/* Mesmas cores do Hub e do love.com.br: sidebar branca e o fundo de todas
+   as telas no cinza claro deles (--bg-dashboard #F4F6F7). Cards e tabelas
+   continuam brancos, com a borda fina. */
+:root {
+  --bg-app: #F4F6F7;
+  --sidebar-bg: #FFFFFF;
+  --header-bar-bg: #F4F6F7;
+}

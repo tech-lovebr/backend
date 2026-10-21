@@ -9804,3 +9804,5 @@ html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-column: 1 / 
   html body #form-add-gift:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
   html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-column: 1; grid-row: auto; }
 }
+
+#btn-gifts-listas-prontas.is-ativo { background: #F4F6F7 !important; }

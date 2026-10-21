@@ -1346,7 +1346,9 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'my-gifts', label: 'Meus presentes' },
-        { id: 'gift-settings', label: 'Configurações' }
+        { id: 'gift-settings', label: 'Configurações' },
+        // Listas prontas: página própria (/presentes/listas), aberta pelo botão "Listas".
+        { id: 'gift-lists', label: 'Listas', oculto: true }
       ]
     },
     rsvp: {
@@ -1466,7 +1468,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   const SUB_ROUTES = {
     'edit-site': { home: '', data: 'informacoes', about: 'anfitrioes', 'invite-print': 'convite' },
-    gifts: { 'my-gifts': '', 'gift-settings': 'configuracoes' },
+    gifts: { 'my-gifts': '', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento', 'wallet-statement': 'extrato' },
     b2b: { explore: '', pedidos: 'pedidos', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
@@ -8052,12 +8054,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!painel || !grade) return;
     painel.hidden = !mostrar;
     grade.classList.toggle('hidden', mostrar);
+    if (mostrar) grade.style.setProperty('display', 'none', 'important'); else grade.style.removeProperty('display');
     botao?.setAttribute('aria-pressed', String(mostrar));
     botao?.classList.toggle('is-ativo', mostrar);
     if (!mostrar) return;
-    painel.innerHTML = `<button type="button" class="listas-prontas-voltar" data-voltar-presentes>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Voltar para meus presentes
-      </button>` + LISTAS_PRONTAS.map((secao, s) => `
+    painel.innerHTML = LISTAS_PRONTAS.map((secao, s) => `
       <section class="listas-prontas-secao">
         <h3>${escaparHtml(secao.titulo)}</h3>
         <div class="listas-prontas-grade">
@@ -8102,19 +8103,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     if (!ok) return;
-    mostrarListasProntas(false);
-    renderHostGifts();
+    irParaListasProntas(false);
     updateAllCelebrationData();
   }
 
+  /** Troca entre Meus presentes e Listas prontas (cada uma com a sua URL). @param {boolean} listas */
+  function irParaListasProntas(listas) {
+    const sub = listas ? 'gift-lists' : 'my-gifts';
+    abrirSubItem('gifts', sub);
+    registrarRota(caminhoSubRota('gifts', sub));
+  }
   document.getElementById('btn-gifts-listas-prontas')?.addEventListener('click', () => {
     const painel = document.getElementById('gifts-listas-prontas');
-    mostrarListasProntas(!!painel && painel.hidden);
+    irParaListasProntas(!!painel && painel.hidden);
   });
   document.getElementById('gifts-listas-prontas')?.addEventListener('click', (e) => {
     const alvo = e.target instanceof Element ? e.target : null;
     if (!alvo) return;
-    if (alvo.closest('[data-voltar-presentes]')) { mostrarListasProntas(false); return; }
+    if (alvo.closest('[data-voltar-presentes]')) { irParaListasProntas(false); return; }
     const card = /** @type {HTMLElement|null} */ (alvo.closest('.lista-pronta-card'));
     if (!card) return;
     const lista = LISTAS_PRONTAS[Number(card.dataset.secao)]?.listas[Number(card.dataset.lista)];
@@ -8889,10 +8895,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panelProducts) panelProducts.classList.remove('hidden');
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.remove('hidden');
-      if (headerTitle) headerTitle.textContent = 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Listas prontas' : 'Meus presentes';
       if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
       const searchInput = document.getElementById('gifts-search-input');
       renderHostGifts(searchInput ? searchInput.value : '');
+      // Listas prontas ficam no lugar dos presentes (o item do menu continua "Meus presentes").
+      mostrarListasProntas(subId === 'gift-lists');
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Listas prontas' : 'Meus presentes';
+      if (subId === 'gift-lists') {
+        elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.routeSub === 'my-gifts'));
+      }
     }
   }
 

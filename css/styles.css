@@ -9669,7 +9669,7 @@ html body #modal-b2b-mensagem #b2b-mensagem-texto:not(#love-h-a) { border: 0 !im
 
 /* Mapa do evento › cor da mesa (pop-up do lápis): linha igual à do inspector
    do Convite digital; o tampo da mesa fica na cor escolhida. */
-html body #modal-floorplan-table .floorplan-cor-mesa-linha:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; }
+html body #modal-floorplan-table .floorplan-cor-mesa-linha:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0.875rem 0 0 !important; }
 html body #modal-floorplan-table .floorplan-cor-mesa-linha .inspector-field-label-plain:not(#love-h-a) { font-size: 0.8125rem; font-weight: 400; color: #333333; }
 html body #modal-floorplan-table .color-alpha-popover:not(#love-h-a) { right: 0; left: auto; z-index: 80; }
 html body .floorplan-mesa-core.tem-cor:not(#love-h-a) { background: var(--cor-da-mesa) !important; }

@@ -1333,7 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'home', label: 'Aparência' },
         { id: 'data', label: 'Informações' },
         { id: 'about', label: 'Organizadores' },
-        { id: 'invite-print', label: 'Produzir convite' }
+        { id: 'invite-print', label: 'Produzir convite', oculto: true }
       ]
     },
     gifts: {
@@ -6822,7 +6822,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const AREAS_ORGANIZADOR = [
     { id: 'aparencia', label: 'Aparência', tab: 'edit-site', sub: 'home' },
     { id: 'informacoes', label: 'Informações', tab: 'edit-site', sub: 'data' },
-    { id: 'produzir-convite', label: 'Produzir convite', tab: 'edit-site', sub: 'invite-print' },
     { id: 'presentes', label: 'Lista de presentes', tab: 'gifts' },
     { id: 'convidados', label: 'Meus convidados', tab: 'rsvp', sub: 'all' },
     { id: 'mesas', label: 'Mapa do evento', tab: 'rsvp', sub: 'tables' },

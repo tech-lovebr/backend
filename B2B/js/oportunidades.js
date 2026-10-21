@@ -117,9 +117,13 @@ async function opCarregarPropostas() {
 function opPedidosFiltrados() {
   const uf = document.getElementById('op-filtro-uf').value;
   const cidade = document.getElementById('op-filtro-cidade').value;
+  // Busca sem diferenciar maiúscula nem acento.
+  const normal = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  const busca = normal(document.getElementById('op-busca')?.value || '');
   return opPedidos.filter(p =>
-    (opFiltroCat === 'todas' || !opMinhasCategorias.length || opMinhasCategorias.includes(p.categoria)) &&
-    (!uf || p.uf === uf) && (!cidade || p.cidade === cidade));
+    (!opMinhasCategorias.length || opMinhasCategorias.includes(p.categoria)) &&
+    (!uf || p.uf === uf) && (!cidade || p.cidade === cidade) &&
+    (!busca || normal([opTitulo(p), p.cidade, p.bairro, p.uf, p.descricao, (p.especialidades || []).join(' ')].join(' ')).includes(busca)));
 }
 
 function opPreencherFiltrosDeLocal() {
@@ -135,38 +139,32 @@ function opPreencherFiltrosDeLocal() {
   cidSel.value = cidades.includes(cidAtual) ? cidAtual : '';
 }
 
-/* Linha da lista no modelo do Explorar (love.com.br): imagem larga à
-   esquerda (1ª foto de referência ou um fundo com a categoria), título,
-   quem pede, descrição em 2 linhas e o rodapé com faixa, data e cidade. */
+/* Card no modelo do Explorar (love.com.br, visão em grade): imagem larga em
+   cima (1ª foto de referência ou um fundo com a categoria), título com a
+   cidade ao lado, quem pede, faixa e data, e os botões embaixo. */
 function opCardHtml(p) {
   const minha = opMinhaProposta(p.id);
   const foto = (p.referencias || [])[0];
   const dados = [OP_CONVIDADOS[p.convidados], opPeriodo(p)].filter(Boolean);
   return `
-    <article class="op-item" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
-      <div class="op-item-imagem">
+    <article class="op-card2" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
+      <div class="op-card2-imagem">
         ${foto ? `<img src="${escapeHtml(foto)}" alt="" loading="lazy">` : `<span class="op-item-imagem-cat">${escapeHtml(opCategoria(p.categoria))}</span>`}
         ${opNovo(p) ? '<span class="op-selo-novo op-selo-sobre">Novo</span>' : ''}
       </div>
-      <div class="op-item-corpo">
-        <div class="op-item-topo">
-          <div class="min-w-0">
-            <h3 class="op-item-titulo">${escapeHtml(opTitulo(p))}</h3>
-            <p class="op-item-quem">Anfitrião(ã) · ${escapeHtml(dados.join(' · ') || opCelebracao(p.tipo_celebracao))}</p>
-          </div>
-          ${minha
-            ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>`
-            : '<span class="op-item-cta">Enviar proposta</span>'}
+      <div class="op-card2-corpo">
+        <div class="op-card2-titulo-linha">
+          <h3 class="op-card2-titulo">${escapeHtml(opTitulo(p))}</h3>
+          <span class="op-item-cidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>${escapeHtml(p.cidade || '')}</span>
         </div>
-        ${(p.especialidades || []).length ? `<div class="op-tags">${p.especialidades.map(t => `<span class="op-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-        <p class="op-item-desc">${escapeHtml(p.descricao || '')}</p>
-        <div class="op-item-rodape">
-          <span class="op-item-faixa">${escapeHtml(opFaixaTexto(p))}${p.aceita_fora_da_faixa ? ' <span class="op-fora-faixa">aceita fora da faixa</span>' : ''}</span>
-          <span class="op-item-meta">
-            <span>${escapeHtml(opData(p))}</span>
-            <span class="op-item-cidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>${escapeHtml([p.cidade, p.uf].filter(Boolean).join(' (') + (p.uf ? ')' : ''))}</span>
-            <span>${escapeHtml(opContagem(p))} · ${escapeHtml(opHaQuanto(p.created_at))}</span>
-          </span>
+        <p class="op-card2-linha">Anfitrião(ã) · ${escapeHtml(dados.join(' · ') || opCelebracao(p.tipo_celebracao))}</p>
+        <p class="op-card2-linha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>${escapeHtml(opFaixaTexto(p))}</p>
+        <p class="op-card2-linha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>${escapeHtml(opData(p))} · ${escapeHtml(opContagem(p))}</p>
+        <div class="op-card2-acoes">
+          <span class="op-card2-ver">Ver pedido</span>
+          ${minha
+            ? `<span class="op-status ${OP_STATUS[minha.status].classe} op-card2-status">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>`
+            : '<span class="op-card2-cta">Enviar proposta</span>'}
         </div>
       </div>
     </article>`;
@@ -373,6 +371,7 @@ function opLigarEventos() {
   document.getElementById('op-filtro-uf').addEventListener('change', () => { opPreencherFiltrosDeLocal(); opRenderPedidos(); });
   document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
 
+  document.getElementById('op-busca')?.addEventListener('input', opRenderPedidos);
   document.getElementById('op-chips').addEventListener('click', e => {
     const chip = e.target.closest('[data-op-chip]');
     if (!chip) return;
@@ -439,9 +438,9 @@ function leadsMostrarAba(aba) {
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
   document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
   const titulo = document.getElementById('leads-titulo-pagina');
-  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : 'Meus leads';
+  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Minhas propostas' : 'Meus leads');
   const acoes = document.getElementById('leads-acoes-topo');
-  if (acoes) acoes.hidden = aba === 'eventos';
+  if (acoes) acoes.hidden = aba !== 'leads';
 }
 
 async function opTemProdutos() {
@@ -456,15 +455,16 @@ async function initOportunidades() {
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.addEventListener('click', () => leadsMostrarAba(b.dataset.leadsAba)));
   const abaPedida = new URLSearchParams(location.search).get('aba');
   if (abaPedida === 'eventos' || abaPedida === 'propostas') {
-    leadsMostrarAba('eventos');
+    leadsMostrarAba(abaPedida);
     history.replaceState(null, '', location.pathname);
   }
 
   // Sem produto cadastrado: só a mensagem para cadastrar um.
+  // Sem produto cadastrado: Buscar eventos mostra só a mensagem para
+  // cadastrar um (Minhas propostas continua funcionando).
   if (!(await opTemProdutos())) {
     document.getElementById('op-sem-produtos').hidden = false;
     document.getElementById('op-conteudo').hidden = true;
-    return;
   }
   opLigarEventos();
   const [okPedidos] = await Promise.all([opCarregarPedidos(), opCarregarPropostas(), opCarregarCategoriasDaEmpresa()]);
@@ -476,7 +476,6 @@ async function initOportunidades() {
   opPreencherFiltrosDeLocal();
   opRenderPedidos();
   opRenderPropostas();
-  if (abaPedida === 'propostas') opMostrarAba('propostas');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

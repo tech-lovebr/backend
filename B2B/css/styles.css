@@ -9540,3 +9540,65 @@ html body .b2b-footer:not(#love-h-a) { padding-top: 1rem; padding-bottom: 1rem; 
 
 /* Mais respiro entre o fim do conteúdo e o rodapé (era 1,5rem). */
 html body .b2b-content > *:has(+ .b2b-footer):not(#love-h-a) { margin-bottom: 4.5rem; }
+
+/* Leads › Buscar eventos em grade, no modelo do card do Explorar
+   (love.com.br): imagem larga em cima, borda fina, cantos de 12px, sem
+   sombra; a imagem dá um zoom leve no hover. */
+html body .op-toolbar:not(#love-h-a) { display: flex; align-items: center; justify-content: flex-start; gap: 0.75rem; margin: 0 0 1rem; }
+html body .op-busca:not(#love-h-a) { width: 360px; max-width: 100%; margin: 0; }
+html body .op-busca input:not(#love-h-a) { height: 38px; font-size: 0.875rem; border-radius: 8px; box-sizing: border-box; }
+html body .op-grade:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+html body .op-card2:not(#love-h-a) {
+  display: flex; flex-direction: column; overflow: hidden; cursor: pointer; outline: none;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 12px;
+}
+html body .op-card2:focus-visible:not(#love-h-a) { border-color: #181D24; }
+html body .op-card2-imagem:not(#love-h-a) {
+  position: relative; width: 100%; aspect-ratio: 14 / 5; overflow: hidden;
+  background: linear-gradient(135deg, #EFF6FF, #FAFAFA 55%, #FFF7ED); display: flex; align-items: center; justify-content: center;
+}
+html body .op-card2-imagem img:not(#love-h-a) { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+html body .op-card2:hover .op-card2-imagem img:not(#love-h-a) { transform: scale(1.05); }
+html body .op-card2-corpo:not(#love-h-a) { flex: 1; display: flex; flex-direction: column; gap: 0.6rem; padding: 1rem; }
+html body .op-card2-titulo-linha:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+html body .op-card2-titulo:not(#love-h-a) { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: #18181B; }
+html body .op-card2-titulo-linha .op-item-cidade:not(#love-h-a) { flex-shrink: 0; font-size: 0.8125rem; }
+html body .op-card2-linha:not(#love-h-a) { display: flex; align-items: center; gap: 0.4rem; margin: 0; font-size: 0.875rem; color: #52525B; }
+html body .op-card2-linha svg:not(#love-h-a) { width: 16px; height: 16px; color: #A1A1AA; flex-shrink: 0; }
+html body .op-card2-acoes:not(#love-h-a) { display: flex; gap: 0.5rem; margin-top: auto; padding-top: 0.5rem; }
+html body .op-card2-ver:not(#love-h-a),
+html body .op-card2-cta:not(#love-h-a),
+html body .op-card2-status:not(#love-h-a) {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; height: 38px; border-radius: 8px;
+  font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+}
+html body .op-card2-ver:not(#love-h-a) { border: 1px solid #E4E4E7; background: #FFFFFF; color: #18181B; }
+html body .op-card2:hover .op-card2-ver:not(#love-h-a) { border-color: #181D24; }
+html body .op-card2-cta:not(#love-h-a) { background: #333333; color: #FFFFFF; }
+html body .op-card2:hover .op-card2-cta:not(#love-h-a) { background: #222222; }
+body[data-theme="dark"] .op-card2 { background: #1F1F1F !important; border-color: #404040 !important; }
+body[data-theme="dark"] .op-card2-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .op-card2-ver { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+@media (max-width: 1100px) { html body .op-grade:not(#love-h-a) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  html body .op-grade:not(#love-h-a) { grid-template-columns: 1fr; }
+  html body .op-busca:not(#love-h-a) { width: 100%; }
+}
+
+/* Meus produtos: busca e "Criar produto" com a mesma altura (38px), lado a
+   lado e centralizados com o título. */
+html body .produtos-header-acoes:not(#love-h-a) { align-items: center; flex-wrap: nowrap; }
+html body .produtos-header-acoes .produtos-busca:not(#love-h-a) { height: 38px; display: flex; align-items: center; margin: 0; }
+html body .produtos-header-acoes .tabela-busca input:not(#love-h-a) { height: 38px; }
+html body .produtos-header-acoes #product-add-btn:not(#love-h-a) { height: 38px; min-height: 38px; flex-shrink: 0; }
+@media (max-width: 640px) { html body .produtos-header-acoes:not(#love-h-a) { flex-wrap: wrap; } }
+
+/* Mais respiro entre o fim do conteúdo e o rodapé em todas as telas (era 4,5rem). */
+html body .b2b-content > *:has(+ .b2b-footer):not(#love-h-a) { margin-bottom: 6.5rem; }
+
+/* O respiro antes do rodapé é um bloco fixo (6,5rem); a margem antiga do
+   último elemento deixa de valer para não somar. */
+html body .b2b-content > *:has(+ .b2b-footer-respiro):not(#love-h-a),
+html body .b2b-content > .b2b-footer-respiro:not(#love-h-a) { margin-bottom: 0; }
+html body .b2b-footer-respiro:not(#love-h-a) { flex-shrink: 0; height: 6.5rem; }
+body[data-page="chat"] .b2b-footer-respiro { display: none; }

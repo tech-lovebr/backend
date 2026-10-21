@@ -434,6 +434,12 @@ async function loadShell() {
         </div>
       </div>
     `;
+    // Respiro fixo entre o fim do conteúdo e o rodapé (vale mesmo quando o
+    // último bloco da página está escondido, como as abas de Leads).
+    const respiro = document.createElement('div');
+    respiro.className = 'b2b-footer-respiro';
+    respiro.setAttribute('aria-hidden', 'true');
+    content.appendChild(respiro);
     content.appendChild(footer);
   }
 }

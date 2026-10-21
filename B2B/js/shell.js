@@ -423,18 +423,15 @@ async function loadShell() {
     const year = new Date().getFullYear();
     const footer = document.createElement('footer');
     footer.className = 'b2b-footer';
-    // Rodapé enxuto: só o © e, embaixo dele, Privacidade e Termos e condições
-    // (sem logo, frase e redes sociais).
+    // Rodapé enxuto e centralizado: © Love Hub Ltda + "Feito com amor…" e,
+    // embaixo, Privacidade e Termos e condições.
     footer.innerHTML = `
       <div class="b2b-footer-bottom b2b-footer-bottom--enxuto">
-        <div>
-          <p>© ${year} Love Hub Ltda. Todos os direitos reservados.</p>
-          <div class="b2b-footer-legal-links">
-            <a href="privacidade">Privacidade</a>
-            <a href="termos">Termos e condições</a>
-          </div>
+        <p>© ${year} Love Hub Ltda. Feito com amor para momentos inesquecíveis.</p>
+        <div class="b2b-footer-legal-links">
+          <a href="privacidade">Privacidade</a>
+          <a href="termos">Termos e condições</a>
         </div>
-        <span>Feito com amor para momentos inesquecíveis.</span>
       </div>
     `;
     content.appendChild(footer);

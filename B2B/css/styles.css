@@ -9454,3 +9454,11 @@ html body .chat-bubble-user-glass:has(> .chat-proposta-card):not(#love-h-a) { ba
 html body .b2b-footer-bottom--enxuto:not(#love-h-a) { margin-top: 0; padding-top: 0; border-top: none; align-items: flex-end; }
 html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links:not(#love-h-a) { margin-top: 0.4rem; gap: 1rem; }
 html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links a:not(#love-h-a) { font-size: 0.75rem; }
+
+/* Rodapé: no mesmo cinza do fundo, com a linha horizontal fina de ponta a
+   ponta em cima (como a do cabeçalho) e o texto centralizado. */
+html body:not([data-theme="dark"]) .b2b-footer:not(#love-h-a) { background: var(--bg-dashboard); border-top: 1px solid #E4E4E7; }
+body[data-theme="dark"] .b2b-footer { background: var(--bg-dashboard) !important; border-top: 1px solid #404040 !important; }
+html body .b2b-footer-bottom--enxuto:not(#love-h-a) { flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; text-align: center; }
+html body .b2b-footer-bottom--enxuto p:not(#love-h-a) { margin: 0; }
+html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links:not(#love-h-a) { margin-top: 0; justify-content: center; }

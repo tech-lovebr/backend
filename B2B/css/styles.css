@@ -9757,3 +9757,7 @@ html body .settings-shell [data-settings-panel]:not(.verificacao-aberta):not(#lo
 html body .settings-shell [data-settings-panel]:not(.verificacao-aberta) > *:not(#love-h-a) { margin-left: auto; margin-right: auto; width: 100%; }
 html body .settings-shell [data-settings-panel].verificacao-aberta:not(#love-h-a) { margin-left: auto; margin-right: auto; }
 html body .legal-doc-coluna:not(#love-h-a) { max-width: 760px; width: 100%; margin: 0 auto; }
+
+/* Editar meu site: sem subtítulo, a barra do editor (Site Principal) encosta
+   direto na linha do cabeçalho, sem o espaço da margem de baixo da faixa. */
+html body[data-page="paginas-site"]:not(.site-aba-formularios) .b2b-header-bar:not(#love-h-a) { margin-bottom: 0; }

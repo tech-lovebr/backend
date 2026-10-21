@@ -8063,6 +8063,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const voltar = document.getElementById('btn-gifts-listas-voltar');
     if (voltar) voltar.hidden = !mostrar;
     mostrarCaminhoDaLista(null);
+    if (voltar) voltar.setAttribute('aria-label', 'Voltar para meus presentes');
+    const tituloDoCabecalho = document.getElementById('gifts-header-title');
+    if (mostrar && tituloDoCabecalho) tituloDoCabecalho.textContent = 'Adicione uma lista';
     document.getElementById('gifts-top-search-bar')?.classList.toggle('gifts-acoes-escondidas', mostrar);
     if (!mostrar) return;
     const cardCriarDoZero = `<button type="button" class="lista-pronta-card lista-pronta-criar" data-criar-presente>
@@ -8094,28 +8097,14 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @type {{ nome: string, img: string, itens: [string, number][] } | null} */
   let listaProntaAberta = null;
 
-  /** Troca o título do cabeçalho pelo caminho até a lista (null volta ao título). @param {string|null} nomeDaLista */
+  /** Cabeçalho da lista aberta: seta de voltar + "Lista: nome" (null volta ao normal). @param {string|null} nomeDaLista */
   function mostrarCaminhoDaLista(nomeDaLista) {
-    const caminho = document.getElementById('gifts-breadcrumb');
     const titulo = document.getElementById('gifts-header-title');
     const voltar = document.getElementById('btn-gifts-listas-voltar');
-    if (!caminho) return;
-    const aberto = nomeDaLista !== null;
-    caminho.hidden = !aberto;
-    if (titulo) titulo.hidden = aberto;
-    if (aberto && voltar) voltar.hidden = true;
-    const seta = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
-    caminho.innerHTML = aberto ? `
-      <button type="button" data-caminho="presentes">Meus presentes</button>${seta}
-      <button type="button" data-caminho="listas">Adicione uma lista</button>${seta}
-      <span aria-current="page">${escaparHtml(nomeDaLista || '')}</span>` : '';
+    if (nomeDaLista === null) { listaProntaAberta = null; return; }
+    if (titulo) titulo.textContent = `Lista: ${nomeDaLista}`;
+    if (voltar) { voltar.hidden = false; voltar.setAttribute('aria-label', 'Voltar para Adicione uma lista'); }
   }
-  document.getElementById('gifts-breadcrumb')?.addEventListener('click', (e) => {
-    const item = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-caminho]')) : null;
-    if (!item) return;
-    if (item.dataset.caminho === 'presentes') irParaListasProntas(false);
-    else mostrarListasProntas(true);
-  });
 
   /** Mostra todos os presentes de uma lista pronta antes de adicionar. @param {{ nome: string, img: string, itens: [string, number][] }} lista */
   function mostrarDetalheDaLista(lista) {
@@ -8314,7 +8303,10 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirSubItem('gifts', sub);
     registrarRota(caminhoSubRota('gifts', sub));
   }
-  document.getElementById('btn-gifts-listas-voltar')?.addEventListener('click', () => irParaListasProntas(false));
+  document.getElementById('btn-gifts-listas-voltar')?.addEventListener('click', () => {
+    if (listaProntaAberta) mostrarListasProntas(true);
+    else irParaListasProntas(false);
+  });
   document.getElementById('btn-gifts-listas-prontas')?.addEventListener('click', () => {
     const painel = document.getElementById('gifts-listas-prontas');
     irParaListasProntas(!!painel && painel.hidden);

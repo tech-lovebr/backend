@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=726">
+  <link rel="stylesheet" href="css/styles.css?v=727">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -41,7 +41,13 @@
 
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900">Meus produtos</h2>
+          <div class="produto-titulo-wrap">
+            <button type="button" class="produto-voltar" id="produto-voltar" hidden>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></svg>
+              Voltar
+            </button>
+            <h2 class="text-xl font-bold text-zinc-900" id="produtos-titulo-pagina">Meus produtos</h2>
+          </div>
           <div class="produtos-header-acoes">
             <label class="tabela-busca produtos-busca">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
@@ -58,534 +64,538 @@
         <div class="category-tabs-bar" id="category-tabs"></div>
 
         <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+
+        <!-- Adicionar/editar produto na própria página (sem gaveta): a vitrine
+             some, o título vira "Adicionar novo produto" com "Voltar" à esquerda
+             e as etapas ficam no topo, como em Cadastrar nova conta. -->
+        <aside class="form-drawer" id="product-drawer" aria-label="Produto ou serviço">
+          <div class="form-drawer-header">
+            <div class="form-drawer-header-main">
+              <h2 class="task-drawer-title" id="product-drawer-title">Adicionar produto/serviço</h2>
+              <!-- Abas clicáveis (não mais etapas): dá pra ir direto em Mídia, por
+                   exemplo, sem passar pelas outras. Salvar valida Categoria e Preço
+                   e leva pra aba que faltar. -->
+              <div class="product-wizard-tabs" id="product-wizard-steps" role="tablist">
+                <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="1">1. Categoria</button>
+                <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="2">2. Detalhes</button>
+                <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="3">3. Mídia</button>
+              </div>
+            </div>
+            <button type="button" class="form-drawer-close" id="product-drawer-close" aria-label="Fechar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <div class="form-drawer-body">
+            <!-- Serviço suspenso pelo Admin (migration 059). -->
+            <div class="produto-suspenso-drawer" id="product-suspenso-aviso" hidden></div>
+            <form id="product-form" class="flex flex-col gap-4">
+
+              <!-- ETAPA 1: Identificação & Taxonomia -->
+              <div class="product-wizard-panel product-wizard-panel-spaced" data-step="1">
+                <div>
+                  <label class="field-label product-title-label">Categoria</label>
+                  <div class="category-select" id="product-category-select">
+                    <button type="button" class="category-select-trigger" id="product-category-trigger">
+                      <span id="product-category-trigger-label">Selecione a categoria...</span>
+                      <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="category-select-panel" id="product-category-panel" hidden>
+                      <div class="relative" style="padding:0.5rem 0.5rem 0;">
+                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-400">
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="product-category-search" class="field-input" style="padding-left:2.25rem;" placeholder="Buscar categoria...">
+                      </div>
+                      <div class="category-tree category-tree-flat" id="product-category-tree"></div>
+                    </div>
+                  </div>
+                  <select id="product-category" class="hidden">
+                    <option value="">Selecione</option>
+                    <option>Buffet e Gastronomia</option>
+                    <option>Bar e Bebidas</option>
+                    <option>Espaços para Locação</option>
+                    <option>Staff e Mão de Obra</option>
+                    <option>Mídia e Audiovisual</option>
+                    <option>Música e Entretenimento</option>
+                    <option>Decoração</option>
+                    <option>Assessoria e Cerimonialista</option>
+                    <option>Trajes, Beleza e Estilo</option>
+                    <option>Aluguel de Carros</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="product-name" class="field-label product-title-label">Título do anúncio</label>
+                  <p class="field-hint">Títulos específicos atraem mais clientes.</p>
+                  <input id="product-name" type="text" class="field-input">
+                </div>
+
+                <!-- Preço (antiga aba "Detalhes"): SKU, unidade de cobrança e valores. -->
+
+                <!-- Código (SKU) — interno do fornecedor, nunca aparece na vitrine — e
+                     a unidade de cobrança (drop-down) lado a lado. -->
+                <div class="grid grid-cols-2 gap-4 mb-2" id="product-sku-linha">
+                  <div>
+                    <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
+                      <span class="info-tooltip-wrap info-tooltip-wrap--esq">
+                        <button type="button" class="info-tooltip-trigger product-info-icone" tabindex="0" aria-label="Mais informações"><svg viewBox="0 0 24 24" fill="#FFFFFF" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5"/><circle cx="12" cy="7.75" r="0.6" fill="currentColor"/></svg></button>
+                        <span class="info-tooltip-bubble">Código interno de referência</span>
+                      </span>
+                    </label>
+                    <input id="product-sku" type="text" class="field-input product-sku-input" maxlength="40" autocomplete="off" spellcheck="false">
+                  </div>
+                  <div id="pricing-type-wrap">
+                    <label for="pricing-type-select" class="field-label product-title-label">Unidade de cobrança</label>
+                    <select id="pricing-type-select" class="field-select">
+                      <option value="">Selecione</option>
+                      <option value="POR_PESSOA">Por pessoa</option>
+                      <option value="POR_HORA">Por hora</option>
+                      <option value="VALOR_FIXO">Valor fixo</option>
+                      <option value="SOB_CONSULTA">Sob consulta</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div id="pricing-standard-section">
+
+                  <div id="pricing-per-person-fields" class="flex flex-col gap-4 mt-4" hidden>
+                    <div>
+                      <label for="pricing-per-person-price" class="field-label">Preço por pessoa</label>
+                      <input id="pricing-per-person-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label for="pricing-per-person-min" class="field-label">Mínimo de convidados</label>
+                        <input id="pricing-per-person-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
+                      </div>
+                      <div>
+                        <label for="pricing-per-person-max" class="field-label">Máximo suportado</label>
+                        <input id="pricing-per-person-max" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="pricing-per-hour-fields" class="flex flex-col gap-4 mt-4" hidden>
+                    <div>
+                      <label for="pricing-per-hour-price" class="field-label">Valor da hora</label>
+                      <input id="pricing-per-hour-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label for="pricing-per-hour-min" class="field-label">Mínimo de horas</label>
+                        <input id="pricing-per-hour-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
+                      </div>
+                      <div>
+                        <label for="pricing-per-hour-extra" class="field-label">Hora adicional</label>
+                        <input id="pricing-per-hour-extra" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="pricing-fixed-fields" class="flex flex-col gap-4 mt-4" hidden>
+                    <div>
+                      <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária</label>
+                      <input id="pricing-fixed-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                    </div>
+                    <div>
+                      <label for="pricing-fixed-duration-value" class="field-label">Duração/Permanência</label>
+                      <div class="flex gap-2">
+                        <input id="pricing-fixed-duration-value" type="number" min="0" step="1" class="field-input" placeholder="Ex: 6" style="flex:1;">
+                        <select id="pricing-fixed-duration-unit" class="field-select" style="flex:1;">
+                          <option value="horas" selected>Horas</option>
+                          <option value="minutos">Minutos</option>
+                          <option value="dias">Dias</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="pricing-on-request-fields" class="flex flex-col gap-4 mt-4" hidden>
+                    <div>
+                      <label for="pricing-on-request-price" class="field-label">Preço base inicial ("A partir de")</label>
+                      <input id="pricing-on-request-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Espaços para locação: detalhes do local antes do valor. -->
+                <div id="product-venue-details" class="mb-6" hidden>
+                  <label class="field-label product-title-label">Detalhes do local</label>
+                  <div class="flex flex-col gap-4">
+                    <div class="local-linha-endereco">
+                      <div>
+                        <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
+                        <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
+                      </div>
+                      <div>
+                        <label for="product-venue-number" class="field-label">Número</label>
+                        <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
+                      </div>
+                    </div>
+
+                    <div class="local-linha-complemento">
+                      <div>
+                        <label for="product-venue-complement" class="field-label">Complemento</label>
+                        <input id="product-venue-complement" type="text" class="field-input" placeholder="Opcional" autocomplete="off">
+                      </div>
+                      <div>
+                        <label for="product-venue-state" class="field-label">Estado</label>
+                        <select id="product-venue-state" class="field-select">
+                          <option value="">UF</option>
+                        </select>
+                      </div>
+                      <div class="local-campo-cidade">
+                        <label for="product-venue-city" class="field-label">Cidade</label>
+                        <input id="product-venue-city" type="text" class="field-input" placeholder="Selecione o estado primeiro" disabled autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false">
+                        <div class="cidade-sugestoes" id="product-venue-city-sugestoes" role="listbox" hidden></div>
+                      </div>
+                    </div>
+
+                    <div class="local-campo-area">
+                      <label for="product-venue-size" class="field-label">Área útil</label>
+                      <div class="campo-com-unidade">
+                        <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" placeholder="m²" autocomplete="off">
+                        <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ETAPA 2: Detalhes (escopo do serviço & atributos) -->
+              <div class="product-wizard-panel" data-step="2">
+
+                <!-- Incluso / não incluso: some em Espaços para locação (lá o escopo
+                     começa direto pelas áreas comuns). -->
+                <div id="product-scope-lists">
+                <div class="form-section-header">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  <span>O que está incluso</span>
+                </div>
+                <div class="scope-add-row">
+                  <input id="product-scope-included-input" type="text" class="field-input" placeholder="Escreva um item" autocomplete="off">
+                  <button type="button" id="product-scope-included-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item incluso">Adicionar</button>
+                </div>
+                <div id="product-scope-included-list" class="scope-list"></div>
+
+                <div class="form-section-header mt-2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75 14.25 14.25M14.25 9.75l-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                  <span>O que não está incluso</span>
+                </div>
+                <div class="scope-add-row">
+                  <input id="product-scope-excluded-input" type="text" class="field-input" placeholder="Escreva um item" autocomplete="off">
+                  <button type="button" id="product-scope-excluded-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item não incluso">Adicionar</button>
+                </div>
+                <div id="product-scope-excluded-list" class="scope-list"></div>
+                </div>
+
+                <div id="product-venue-fields" hidden>
+                  <div class="flex flex-col gap-4">
+
+                    <div>
+                      <label class="field-label">Áreas comuns</label>
+                      <p class="field-hint">Clique pra adicionar as que o espaço tem.</p>
+                      <div id="product-venue-common-areas-row" class="weekday-toggle-row"></div>
+                      <div class="scope-add-row mt-2" id="product-venue-common-area-outro" hidden>
+                        <input id="product-venue-common-area-outro-input" type="text" class="field-input" maxlength="40" autocomplete="off">
+                        <button type="button" id="product-venue-common-area-outro-add" class="btn-secondary scope-add-btn">Adicionar</button>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label for="product-venue-capacity-seated" class="field-label">Capacidade sentados</label>
+                        <input id="product-venue-capacity-seated" type="number" min="0" step="1" class="field-input" placeholder="Ex: 150">
+                      </div>
+                      <div>
+                        <label for="product-venue-capacity-standing" class="field-label">Capacidade em pé</label>
+                        <input id="product-venue-capacity-standing" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="field-label">Dias de funcionamento</label>
+                      <div id="product-weekday-row" class="weekday-toggle-row"></div>
+                    </div>
+
+                    <div>
+                      <label class="field-label">Horário de funcionamento</label>
+                      <div class="product-time-row">
+                        <input id="product-venue-hours-open" type="time" class="field-input">
+                        <span>até</span>
+                        <input id="product-venue-hours-close" type="time" class="field-input">
+                      </div>
+                    </div>
+
+                    <div id="pricing-venue-section">
+                      <label class="field-label">Valores</label>
+                      <div class="local-valores">
+                        <div class="local-valor-linha">
+                          <label for="product-venue-price-weekday">Segunda a sexta</label>
+                          <input id="product-venue-price-weekday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                        </div>
+                        <div class="local-valor-linha">
+                          <label for="product-venue-price-saturday">Sábado</label>
+                          <input id="product-venue-price-saturday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                        </div>
+                        <div class="local-valor-linha">
+                          <label for="product-venue-price-sunday">Domingo</label>
+                          <input id="product-venue-price-sunday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                        </div>
+                        <div class="local-valor-linha">
+                          <label for="product-venue-price-holiday">Feriado</label>
+                          <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                        </div>
+                      </div>
+                      <div class="mt-4">
+                        <label for="product-venue-cleaning-fee" class="field-label">Taxa de limpeza/caução</label>
+                        <input id="product-venue-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-5">
+                      <label class="checkbox-row"><input type="checkbox" id="product-venue-has-generator"> Possui gerador</label>
+                      <label class="checkbox-row"><input type="checkbox" id="product-venue-is-pcd-accessible"> Acessível PCD</label>
+                    </div>
+
+                    <div>
+                      <label for="product-venue-noise-restriction" class="field-label">Restrição de ruído/horário</label>
+                      <input id="product-venue-noise-restriction" type="text" class="field-input" placeholder="Ex: Som até 22h">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="product-food-fields" hidden>
+                  <div class="form-section-header mt-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v3.75M6 6.75h4.5v3.75a2.25 2.25 0 0 1-2.25 2.25v0a2.25 2.25 0 0 1-2.25-2.25V6.75Zm2.25 6v11.25M15.75 3v6a3 3 0 0 0 3 3v0a3 3 0 0 0 3-3V3M18.75 12v9.75" /></svg>
+                    <span>Cardápio</span>
+                  </div>
+                  <div class="flex flex-col gap-4 mt-3">
+                    <div>
+                      <label for="product-food-dietary" class="field-label">Restrições atendidas</label>
+                      <input id="product-food-dietary" type="text" class="field-input" placeholder="Ex: Vegano, sem glúten, sem lactose">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Buffet e Gastronomia / Bar e Bebidas: degustação é só sim ou não. -->
+                <div id="product-tasting-field" class="mt-2" hidden>
+                  <label class="checkbox-row"><input type="checkbox" id="product-tasting-allowed"> Permitido agendar degustação</label>
+                </div>
+
+                <div id="product-staff-fields" hidden>
+                  <div class="form-section-header mt-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                    <span>Detalhes da equipe</span>
+                  </div>
+                  <div class="flex flex-col gap-4 mt-3">
+                    <div>
+                      <label for="product-staff-uniform" class="field-label">Traje fornecido</label>
+                      <input id="product-staff-uniform" type="text" class="field-input" placeholder="Ex: Uniforme preto e branco">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label for="product-staff-arrival" class="field-label">Chegada com antecedência de</label>
+                        <input id="product-staff-arrival" type="text" class="field-input" placeholder="Ex: 1 hora">
+                      </div>
+                      <div class="flex items-end pb-2.5">
+                        <label class="checkbox-row"><input type="checkbox" id="product-staff-meal-required"> Exige refeição no local</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="product-audiovisual-fields" hidden>
+                  <div class="form-section-header mt-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a2.25 2.25 0 0 0-2.25-2.25H3.75A2.25 2.25 0 0 0 1.5 6v12a2.25 2.25 0 0 0 2.25 2.25h9.75A2.25 2.25 0 0 0 15.75 18v-4.5l4.72 4.72c.63.63 1.28.181 1.28-.659V6.44c0-.84-.65-1.29-1.28-.659L15.75 10.5Z" /></svg>
+                    <span>Detalhes de audiovisual</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4 mt-3">
+                    <div>
+                      <label for="product-av-crew-count" class="field-label">Profissionais inclusos</label>
+                      <input id="product-av-crew-count" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
+                    </div>
+                    <div>
+                      <label for="product-av-delivery-days" class="field-label">Prazo de entrega (dias)</label>
+                      <input id="product-av-delivery-days" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="product-equipment-fields" hidden>
+                  <div class="form-section-header mt-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.658.643 48.39 48.39 0 0 1-4.163-.3.75.75 0 0 0-.826.826 48.39 48.39 0 0 1 .3 4.163.64.64 0 0 1-.643.658v0c-.355 0-.676-.186-.959-.401a1.875 1.875 0 1 0 0 3.5c.283-.215.604-.401.959-.401v0a.64.64 0 0 1 .643.658 48.39 48.39 0 0 1-.3 4.163.75.75 0 0 0 .826.826 48.39 48.39 0 0 1 4.163-.3.64.64 0 0 1 .658.643v0c0 .355-.186.676-.401.959a1.875 1.875 0 1 0 3.5 0c-.215-.283-.401-.604-.401-.959v0a.64.64 0 0 1 .658-.643 48.39 48.39 0 0 1 4.163.3.75.75 0 0 0 .826-.826 48.39 48.39 0 0 1-.3-4.163.64.64 0 0 1 .643-.658v0c.355 0 .676.186.959.401a1.875 1.875 0 1 0 0-3.5c-.283.215-.604.401-.959.401v0a.64.64 0 0 1-.643-.658 48.39 48.39 0 0 1 .3-4.163.75.75 0 0 0-.826-.826 48.39 48.39 0 0 1-4.163.3.64.64 0 0 1-.658-.643v0Z" /></svg>
+                    <span>Detalhes do equipamento</span>
+                  </div>
+                  <div class="mt-3">
+                    <label for="product-equipment-type" class="field-label">Tipo do equipamento</label>
+                    <textarea id="product-equipment-type" class="field-textarea" style="min-height:90px;" placeholder="Insira os detalhes do tipo de equipamento que a sua empresa aluga."></textarea>
+                  </div>
+                </div>
+
+                <!-- Pacotes (variações do mesmo serviço, cada uma com o seu preço) e
+                     adicionais opcionais (somam ao valor). Evita criar um anúncio
+                     só para cada tamanho do mesmo serviço. -->
+                <div class="product-pacotes">
+                  <label class="field-label product-title-label">Pacotes</label>
+                  <p class="field-hint">Variações do mesmo serviço, cada uma com o seu preço.</p>
+                  <div id="product-packages-list" class="product-pacotes-lista"></div>
+                  <button type="button" id="product-package-add-btn" class="btn-secondary product-pacotes-add">Adicionar pacote</button>
+                </div>
+
+                <div class="product-pacotes" id="product-addons-bloco">
+                  <label class="field-label product-title-label">Adicionais</label>
+                  <p class="field-hint">Itens opcionais que o cliente pode somar ao valor.</p>
+                  <div id="product-addons-list" class="product-pacotes-lista"></div>
+                  <button type="button" id="product-addon-add-btn" class="btn-secondary product-pacotes-add">Adicionar item adicional</button>
+                </div>
+
+                <div>
+                  <label for="product-description" class="field-label product-title-label">Descrição</label>
+                  <textarea id="product-description" class="field-textarea" style="min-height:100px;" placeholder="Detalhe o que está incluso neste produto ou serviço…"></textarea>
+                </div>
+              </div>
+
+              <!-- ETAPA 3: Mídia -->
+              <div class="product-wizard-panel" data-step="3">
+
+                <!-- Títulos "Imagem de capa" e "Adicionar imagens" no tamanho de
+                     seção (sem ícone), cada um com o conteúdo logo abaixo. -->
+                <div>
+                  <div class="form-section-header product-media-title">
+                    <span>Imagem de capa</span>
+                  </div>
+                  <p class="field-hint">É a primeira imagem que aparece na vitrine.</p>
+                  <div id="product-cover-wrap"></div>
+                </div>
+
+                <div>
+                  <div class="form-section-header product-media-title">
+                    <span>Adicionar imagens</span>
+                    <label for="product-gallery-input" class="product-gallery-nova" id="product-gallery-nova"><span aria-hidden="true">+</span> Adicionar nova</label>
+                  </div>
+                  <p class="field-hint" id="product-gallery-hint">Adicione imagens sobre o seu serviço.</p>
+                  <!-- Carrossel de quadradinhos (até 6), do jeito que aparecem na
+                       galeria do fornecedor — ver renderGalleryImages em
+                       js/produtos.js. -->
+                  <div id="product-gallery-list" class="product-gallery-strip"></div>
+                </div>
+
+                <div>
+                  <div class="form-section-header product-media-title">
+                    <label for="product-video-url">Vídeo</label>
+                  </div>
+                  <p class="field-hint">YouTube ou Vimeo</p>
+                  <input id="product-video-url" type="url" class="field-input" autocomplete="off">
+                </div>
+
+                <!-- Redes sociais: clicar no ícone abre o campo do link daquela rede. -->
+                <div>
+                  <div class="form-section-header product-media-title">
+                    <span>Redes sociais</span>
+                  </div>
+                  <div class="produto-redes" id="product-social-icons">
+                    <button type="button" class="produto-rede-btn" data-rede="instagram" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></button>
+                    <button type="button" class="produto-rede-btn" data-rede="tiktok" title="TikTok" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 3.36-2.49V9.66a5.71 5.71 0 0 0-.76-.05A5.69 5.69 0 0 0 4.17 15.3 5.69 5.69 0 0 0 9.86 21a5.69 5.69 0 0 0 5.68-5.7V9.01a7.35 7.35 0 0 0 4.29 1.37V7.29s-1.88.09-3.23-1.47Z"/></svg></button>
+                    <button type="button" class="produto-rede-btn" data-rede="facebook" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.53l.38-2.94H13.5V8.69c0-.85.24-1.43 1.46-1.43h1.55V4.63A20.6 20.6 0 0 0 14.25 4.5c-2.24 0-3.78 1.37-3.78 3.88v2.18H7.94v2.94h2.53V21h3.03Z"/></svg></button>
+                  </div>
+                  <div class="produto-redes-campos">
+                    <div class="produto-rede-campo" data-rede-campo="instagram" hidden>
+                      <label for="product-social-instagram" class="field-label">Instagram</label>
+                      <input id="product-social-instagram" type="url" class="field-input" autocomplete="off">
+                    </div>
+                    <div class="produto-rede-campo" data-rede-campo="tiktok" hidden>
+                      <label for="product-social-tiktok" class="field-label">TikTok</label>
+                      <input id="product-social-tiktok" type="url" class="field-input" autocomplete="off">
+                    </div>
+                    <div class="produto-rede-campo" data-rede-campo="facebook" hidden>
+                      <label for="product-social-facebook" class="field-label">Facebook</label>
+                      <input id="product-social-facebook" type="url" class="field-input" autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Logística (cidade sede / raio, montagem) e Política de cancelamento
+                     saíram da tela. Os campos ficam escondidos só para os itens já
+                     salvos não perderem esses dados ao serem editados. -->
+                <div id="product-logistics-hidden" hidden>
+                <div class="form-section-header mt-2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                  <span>Logística</span>
+                </div>
+
+                <div>
+                  <div class="plan-billing-toggle" id="product-service-area-toggle" style="margin-bottom:0;">
+                    <button type="button" class="plan-billing-option active" data-service-area="city_only">
+                      <span class="plan-billing-option-title">Só cidade sede</span>
+                    </button>
+                    <button type="button" class="plan-billing-option" data-service-area="radius_km">
+                      <span class="plan-billing-option-title">Raio sem taxa extra</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div id="product-service-radius-fields" class="grid grid-cols-2 gap-4" hidden>
+                  <div>
+                    <label for="product-service-radius-km" class="field-label">Raio sem taxa extra (km)</label>
+                    <input id="product-service-radius-km" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
+                  </div>
+                  <div>
+                    <label for="product-service-extra-km-fee" class="field-label">Valor por km adicional</label>
+                    <input id="product-service-extra-km-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label for="product-setup-minutes" class="field-label">Tempo de montagem (min)</label>
+                    <input id="product-setup-minutes" type="number" min="0" step="5" class="field-input" placeholder="Ex: 60">
+                  </div>
+                  <div>
+                    <label for="product-teardown-minutes" class="field-label">Tempo de desmontagem (min)</label>
+                    <input id="product-teardown-minutes" type="number" min="0" step="5" class="field-input" placeholder="Ex: 60">
+                  </div>
+                </div>
+
+                <div>
+                  <label for="product-cancellation-policy" class="field-label" title="Flexível: reembolso integral até 7 dias antes. Moderada: reembolso parcial até 15 dias antes. Rigorosa: sinal não reembolsável.">Política de cancelamento</label>
+                  <select id="product-cancellation-policy" class="field-select">
+                    <option value="flexivel">Flexível</option>
+                    <option value="moderada">Moderada</option>
+                    <option value="rigorosa">Rigorosa</option>
+                  </select>
+                </div>
+                </div>
+              </div>
+
+            </form>
+          </div>
+
+          <div class="form-drawer-footer product-wizard-footer">
+            <div id="product-wizard-footer-default" class="product-wizard-footer-row">
+              <button type="button" id="product-drawer-delete-btn" class="btn-secondary" aria-label="Remover" title="Remover" hidden>
+                <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+              </button>
+              <button type="button" id="product-drawer-duplicate-btn" class="btn-secondary" hidden>Duplicar anúncio</button>
+              <button type="button" id="product-wizard-back-btn" class="btn-secondary" hidden>Voltar</button>
+              <button type="submit" form="product-form" id="product-wizard-submit-btn" class="btn-secondary">Salvar item</button>
+              <button type="button" id="product-wizard-next-btn" class="btn-primary">Próximo</button>
+            </div>
+            <div id="product-wizard-footer-confirm-delete" class="product-wizard-footer-row" hidden>
+              <span class="product-wizard-confirm-text">Tem certeza que deseja excluir?</span>
+              <button type="button" id="product-drawer-delete-no-btn" class="btn-secondary">Não</button>
+              <button type="button" id="product-drawer-delete-yes-btn" class="btn-primary btn-danger">Sim</button>
+            </div>
+          </div>
+        </aside>
       </main>
     </div>
   </div>
 
-  <!-- Drawer produto -->
+  <!-- Produto: abre na própria página (ver o editor dentro do <main>). -->
   <div class="drawer-backdrop" id="product-drawer-backdrop"></div>
-  <aside class="form-drawer" id="product-drawer" aria-label="Produto ou serviço">
-    <div class="form-drawer-header">
-      <div class="form-drawer-header-main">
-        <h2 class="task-drawer-title" id="product-drawer-title">Adicionar produto/serviço</h2>
-        <!-- Abas clicáveis (não mais etapas): dá pra ir direto em Mídia, por
-             exemplo, sem passar pelas outras. Salvar valida Categoria e Preço
-             e leva pra aba que faltar. -->
-        <div class="product-wizard-tabs" id="product-wizard-steps" role="tablist">
-          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="1">1. Categoria</button>
-          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="2">2. Detalhes</button>
-          <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="3">3. Mídia</button>
-        </div>
-      </div>
-      <button type="button" class="form-drawer-close" id="product-drawer-close" aria-label="Fechar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-      </button>
-    </div>
-
-    <div class="form-drawer-body">
-      <!-- Serviço suspenso pelo Admin (migration 059). -->
-      <div class="produto-suspenso-drawer" id="product-suspenso-aviso" hidden></div>
-      <form id="product-form" class="flex flex-col gap-4">
-
-        <!-- ETAPA 1: Identificação & Taxonomia -->
-        <div class="product-wizard-panel product-wizard-panel-spaced" data-step="1">
-          <div>
-            <label class="field-label product-title-label">Categoria</label>
-            <div class="category-select" id="product-category-select">
-              <button type="button" class="category-select-trigger" id="product-category-trigger">
-                <span id="product-category-trigger-label">Selecione a categoria...</span>
-                <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
-              </button>
-              <div class="category-select-panel" id="product-category-panel" hidden>
-                <div class="relative" style="padding:0.5rem 0.5rem 0;">
-                  <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-400">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                  </div>
-                  <input type="text" id="product-category-search" class="field-input" style="padding-left:2.25rem;" placeholder="Buscar categoria...">
-                </div>
-                <div class="category-tree category-tree-flat" id="product-category-tree"></div>
-              </div>
-            </div>
-            <select id="product-category" class="hidden">
-              <option value="">Selecione</option>
-              <option>Buffet e Gastronomia</option>
-              <option>Bar e Bebidas</option>
-              <option>Espaços para Locação</option>
-              <option>Staff e Mão de Obra</option>
-              <option>Mídia e Audiovisual</option>
-              <option>Música e Entretenimento</option>
-              <option>Decoração</option>
-              <option>Assessoria e Cerimonialista</option>
-              <option>Trajes, Beleza e Estilo</option>
-              <option>Aluguel de Carros</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="product-name" class="field-label product-title-label">Título do anúncio</label>
-            <p class="field-hint">Títulos específicos atraem mais clientes.</p>
-            <input id="product-name" type="text" class="field-input">
-          </div>
-
-          <!-- Preço (antiga aba "Detalhes"): SKU, unidade de cobrança e valores. -->
-
-          <!-- Código (SKU) — interno do fornecedor, nunca aparece na vitrine — e
-               a unidade de cobrança (drop-down) lado a lado. -->
-          <div class="grid grid-cols-2 gap-4 mb-2" id="product-sku-linha">
-            <div>
-              <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
-                <span class="info-tooltip-wrap info-tooltip-wrap--esq">
-                  <button type="button" class="info-tooltip-trigger product-info-icone" tabindex="0" aria-label="Mais informações"><svg viewBox="0 0 24 24" fill="#FFFFFF" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5"/><circle cx="12" cy="7.75" r="0.6" fill="currentColor"/></svg></button>
-                  <span class="info-tooltip-bubble">Código interno de referência</span>
-                </span>
-              </label>
-              <input id="product-sku" type="text" class="field-input product-sku-input" maxlength="40" autocomplete="off" spellcheck="false">
-            </div>
-            <div id="pricing-type-wrap">
-              <label for="pricing-type-select" class="field-label product-title-label">Unidade de cobrança</label>
-              <select id="pricing-type-select" class="field-select">
-                <option value="">Selecione</option>
-                <option value="POR_PESSOA">Por pessoa</option>
-                <option value="POR_HORA">Por hora</option>
-                <option value="VALOR_FIXO">Valor fixo</option>
-                <option value="SOB_CONSULTA">Sob consulta</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="pricing-standard-section">
-
-            <div id="pricing-per-person-fields" class="flex flex-col gap-4 mt-4" hidden>
-              <div>
-                <label for="pricing-per-person-price" class="field-label">Preço por pessoa</label>
-                <input id="pricing-per-person-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="pricing-per-person-min" class="field-label">Mínimo de convidados</label>
-                  <input id="pricing-per-person-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
-                </div>
-                <div>
-                  <label for="pricing-per-person-max" class="field-label">Máximo suportado</label>
-                  <input id="pricing-per-person-max" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
-                </div>
-              </div>
-            </div>
-
-            <div id="pricing-per-hour-fields" class="flex flex-col gap-4 mt-4" hidden>
-              <div>
-                <label for="pricing-per-hour-price" class="field-label">Valor da hora</label>
-                <input id="pricing-per-hour-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="pricing-per-hour-min" class="field-label">Mínimo de horas</label>
-                  <input id="pricing-per-hour-min" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
-                </div>
-                <div>
-                  <label for="pricing-per-hour-extra" class="field-label">Hora adicional</label>
-                  <input id="pricing-per-hour-extra" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-                </div>
-              </div>
-            </div>
-
-            <div id="pricing-fixed-fields" class="flex flex-col gap-4 mt-4" hidden>
-              <div>
-                <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária</label>
-                <input id="pricing-fixed-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-              <div>
-                <label for="pricing-fixed-duration-value" class="field-label">Duração/Permanência</label>
-                <div class="flex gap-2">
-                  <input id="pricing-fixed-duration-value" type="number" min="0" step="1" class="field-input" placeholder="Ex: 6" style="flex:1;">
-                  <select id="pricing-fixed-duration-unit" class="field-select" style="flex:1;">
-                    <option value="horas" selected>Horas</option>
-                    <option value="minutos">Minutos</option>
-                    <option value="dias">Dias</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div id="pricing-on-request-fields" class="flex flex-col gap-4 mt-4" hidden>
-              <div>
-                <label for="pricing-on-request-price" class="field-label">Preço base inicial ("A partir de")</label>
-                <input id="pricing-on-request-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-              </div>
-            </div>
-          </div>
-
-          <!-- Espaços para locação: detalhes do local antes do valor. -->
-          <div id="product-venue-details" class="mb-6" hidden>
-            <label class="field-label product-title-label">Detalhes do local</label>
-            <div class="flex flex-col gap-4">
-              <div class="local-linha-endereco">
-                <div>
-                  <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
-                  <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
-                </div>
-                <div>
-                  <label for="product-venue-number" class="field-label">Número</label>
-                  <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
-                </div>
-              </div>
-
-              <div class="local-linha-complemento">
-                <div>
-                  <label for="product-venue-complement" class="field-label">Complemento</label>
-                  <input id="product-venue-complement" type="text" class="field-input" placeholder="Opcional" autocomplete="off">
-                </div>
-                <div>
-                  <label for="product-venue-state" class="field-label">Estado</label>
-                  <select id="product-venue-state" class="field-select">
-                    <option value="">UF</option>
-                  </select>
-                </div>
-                <div class="local-campo-cidade">
-                  <label for="product-venue-city" class="field-label">Cidade</label>
-                  <input id="product-venue-city" type="text" class="field-input" placeholder="Selecione o estado primeiro" disabled autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false">
-                  <div class="cidade-sugestoes" id="product-venue-city-sugestoes" role="listbox" hidden></div>
-                </div>
-              </div>
-
-              <div class="local-campo-area">
-                <label for="product-venue-size" class="field-label">Área útil</label>
-                <div class="campo-com-unidade">
-                  <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" placeholder="m²" autocomplete="off">
-                  <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- ETAPA 2: Detalhes (escopo do serviço & atributos) -->
-        <div class="product-wizard-panel" data-step="2">
-
-          <!-- Incluso / não incluso: some em Espaços para locação (lá o escopo
-               começa direto pelas áreas comuns). -->
-          <div id="product-scope-lists">
-          <div class="form-section-header">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-            <span>O que está incluso</span>
-          </div>
-          <div class="scope-add-row">
-            <input id="product-scope-included-input" type="text" class="field-input" placeholder="Escreva um item" autocomplete="off">
-            <button type="button" id="product-scope-included-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item incluso">Adicionar</button>
-          </div>
-          <div id="product-scope-included-list" class="scope-list"></div>
-
-          <div class="form-section-header mt-2">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75 14.25 14.25M14.25 9.75l-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-            <span>O que não está incluso</span>
-          </div>
-          <div class="scope-add-row">
-            <input id="product-scope-excluded-input" type="text" class="field-input" placeholder="Escreva um item" autocomplete="off">
-            <button type="button" id="product-scope-excluded-add-btn" class="btn-secondary scope-add-btn" aria-label="Adicionar item não incluso">Adicionar</button>
-          </div>
-          <div id="product-scope-excluded-list" class="scope-list"></div>
-          </div>
-
-          <div id="product-venue-fields" hidden>
-            <div class="flex flex-col gap-4">
-
-              <div>
-                <label class="field-label">Áreas comuns</label>
-                <p class="field-hint">Clique pra adicionar as que o espaço tem.</p>
-                <div id="product-venue-common-areas-row" class="weekday-toggle-row"></div>
-                <div class="scope-add-row mt-2" id="product-venue-common-area-outro" hidden>
-                  <input id="product-venue-common-area-outro-input" type="text" class="field-input" maxlength="40" autocomplete="off">
-                  <button type="button" id="product-venue-common-area-outro-add" class="btn-secondary scope-add-btn">Adicionar</button>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="product-venue-capacity-seated" class="field-label">Capacidade sentados</label>
-                  <input id="product-venue-capacity-seated" type="number" min="0" step="1" class="field-input" placeholder="Ex: 150">
-                </div>
-                <div>
-                  <label for="product-venue-capacity-standing" class="field-label">Capacidade em pé</label>
-                  <input id="product-venue-capacity-standing" type="number" min="0" step="1" class="field-input" placeholder="Ex: 300">
-                </div>
-              </div>
-
-              <div>
-                <label class="field-label">Dias de funcionamento</label>
-                <div id="product-weekday-row" class="weekday-toggle-row"></div>
-              </div>
-
-              <div>
-                <label class="field-label">Horário de funcionamento</label>
-                <div class="product-time-row">
-                  <input id="product-venue-hours-open" type="time" class="field-input">
-                  <span>até</span>
-                  <input id="product-venue-hours-close" type="time" class="field-input">
-                </div>
-              </div>
-
-              <div id="pricing-venue-section">
-                <label class="field-label">Valores</label>
-                <div class="local-valores">
-                  <div class="local-valor-linha">
-                    <label for="product-venue-price-weekday">Segunda a sexta</label>
-                    <input id="product-venue-price-weekday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-                  </div>
-                  <div class="local-valor-linha">
-                    <label for="product-venue-price-saturday">Sábado</label>
-                    <input id="product-venue-price-saturday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-                  </div>
-                  <div class="local-valor-linha">
-                    <label for="product-venue-price-sunday">Domingo</label>
-                    <input id="product-venue-price-sunday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-                  </div>
-                  <div class="local-valor-linha">
-                    <label for="product-venue-price-holiday">Feriado</label>
-                    <input id="product-venue-price-holiday" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-                  </div>
-                </div>
-                <div class="mt-4">
-                  <label for="product-venue-cleaning-fee" class="field-label">Taxa de limpeza/caução</label>
-                  <input id="product-venue-cleaning-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-                </div>
-              </div>
-
-              <div class="flex items-center gap-5">
-                <label class="checkbox-row"><input type="checkbox" id="product-venue-has-generator"> Possui gerador</label>
-                <label class="checkbox-row"><input type="checkbox" id="product-venue-is-pcd-accessible"> Acessível PCD</label>
-              </div>
-
-              <div>
-                <label for="product-venue-noise-restriction" class="field-label">Restrição de ruído/horário</label>
-                <input id="product-venue-noise-restriction" type="text" class="field-input" placeholder="Ex: Som até 22h">
-              </div>
-            </div>
-          </div>
-
-          <div id="product-food-fields" hidden>
-            <div class="form-section-header mt-2">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v3.75M6 6.75h4.5v3.75a2.25 2.25 0 0 1-2.25 2.25v0a2.25 2.25 0 0 1-2.25-2.25V6.75Zm2.25 6v11.25M15.75 3v6a3 3 0 0 0 3 3v0a3 3 0 0 0 3-3V3M18.75 12v9.75" /></svg>
-              <span>Cardápio</span>
-            </div>
-            <div class="flex flex-col gap-4 mt-3">
-              <div>
-                <label for="product-food-dietary" class="field-label">Restrições atendidas</label>
-                <input id="product-food-dietary" type="text" class="field-input" placeholder="Ex: Vegano, sem glúten, sem lactose">
-              </div>
-            </div>
-          </div>
-
-          <!-- Buffet e Gastronomia / Bar e Bebidas: degustação é só sim ou não. -->
-          <div id="product-tasting-field" class="mt-2" hidden>
-            <label class="checkbox-row"><input type="checkbox" id="product-tasting-allowed"> Permitido agendar degustação</label>
-          </div>
-
-          <div id="product-staff-fields" hidden>
-            <div class="form-section-header mt-2">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-              <span>Detalhes da equipe</span>
-            </div>
-            <div class="flex flex-col gap-4 mt-3">
-              <div>
-                <label for="product-staff-uniform" class="field-label">Traje fornecido</label>
-                <input id="product-staff-uniform" type="text" class="field-input" placeholder="Ex: Uniforme preto e branco">
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label for="product-staff-arrival" class="field-label">Chegada com antecedência de</label>
-                  <input id="product-staff-arrival" type="text" class="field-input" placeholder="Ex: 1 hora">
-                </div>
-                <div class="flex items-end pb-2.5">
-                  <label class="checkbox-row"><input type="checkbox" id="product-staff-meal-required"> Exige refeição no local</label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="product-audiovisual-fields" hidden>
-            <div class="form-section-header mt-2">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a2.25 2.25 0 0 0-2.25-2.25H3.75A2.25 2.25 0 0 0 1.5 6v12a2.25 2.25 0 0 0 2.25 2.25h9.75A2.25 2.25 0 0 0 15.75 18v-4.5l4.72 4.72c.63.63 1.28.181 1.28-.659V6.44c0-.84-.65-1.29-1.28-.659L15.75 10.5Z" /></svg>
-              <span>Detalhes de audiovisual</span>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mt-3">
-              <div>
-                <label for="product-av-crew-count" class="field-label">Profissionais inclusos</label>
-                <input id="product-av-crew-count" type="number" min="0" step="1" class="field-input" placeholder="Ex: 2">
-              </div>
-              <div>
-                <label for="product-av-delivery-days" class="field-label">Prazo de entrega (dias)</label>
-                <input id="product-av-delivery-days" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
-              </div>
-            </div>
-          </div>
-
-          <div id="product-equipment-fields" hidden>
-            <div class="form-section-header mt-2">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.658.643 48.39 48.39 0 0 1-4.163-.3.75.75 0 0 0-.826.826 48.39 48.39 0 0 1 .3 4.163.64.64 0 0 1-.643.658v0c-.355 0-.676-.186-.959-.401a1.875 1.875 0 1 0 0 3.5c.283-.215.604-.401.959-.401v0a.64.64 0 0 1 .643.658 48.39 48.39 0 0 1-.3 4.163.75.75 0 0 0 .826.826 48.39 48.39 0 0 1 4.163-.3.64.64 0 0 1 .658.643v0c0 .355-.186.676-.401.959a1.875 1.875 0 1 0 3.5 0c-.215-.283-.401-.604-.401-.959v0a.64.64 0 0 1 .658-.643 48.39 48.39 0 0 1 4.163.3.75.75 0 0 0 .826-.826 48.39 48.39 0 0 1-.3-4.163.64.64 0 0 1 .643-.658v0c.355 0 .676.186.959.401a1.875 1.875 0 1 0 0-3.5c-.283.215-.604.401-.959.401v0a.64.64 0 0 1-.643-.658 48.39 48.39 0 0 1 .3-4.163.75.75 0 0 0-.826-.826 48.39 48.39 0 0 1-4.163.3.64.64 0 0 1-.658-.643v0Z" /></svg>
-              <span>Detalhes do equipamento</span>
-            </div>
-            <div class="mt-3">
-              <label for="product-equipment-type" class="field-label">Tipo do equipamento</label>
-              <textarea id="product-equipment-type" class="field-textarea" style="min-height:90px;" placeholder="Insira os detalhes do tipo de equipamento que a sua empresa aluga."></textarea>
-            </div>
-          </div>
-
-          <!-- Pacotes (variações do mesmo serviço, cada uma com o seu preço) e
-               adicionais opcionais (somam ao valor). Evita criar um anúncio
-               só para cada tamanho do mesmo serviço. -->
-          <div class="product-pacotes">
-            <label class="field-label product-title-label">Pacotes</label>
-            <p class="field-hint">Variações do mesmo serviço, cada uma com o seu preço.</p>
-            <div id="product-packages-list" class="product-pacotes-lista"></div>
-            <button type="button" id="product-package-add-btn" class="btn-secondary product-pacotes-add">Adicionar pacote</button>
-          </div>
-
-          <div class="product-pacotes" id="product-addons-bloco">
-            <label class="field-label product-title-label">Adicionais</label>
-            <p class="field-hint">Itens opcionais que o cliente pode somar ao valor.</p>
-            <div id="product-addons-list" class="product-pacotes-lista"></div>
-            <button type="button" id="product-addon-add-btn" class="btn-secondary product-pacotes-add">Adicionar item adicional</button>
-          </div>
-
-          <div>
-            <label for="product-description" class="field-label product-title-label">Descrição</label>
-            <textarea id="product-description" class="field-textarea" style="min-height:100px;" placeholder="Detalhe o que está incluso neste produto ou serviço…"></textarea>
-          </div>
-        </div>
-
-        <!-- ETAPA 3: Mídia -->
-        <div class="product-wizard-panel" data-step="3">
-
-          <!-- Títulos "Imagem de capa" e "Adicionar imagens" no tamanho de
-               seção (sem ícone), cada um com o conteúdo logo abaixo. -->
-          <div>
-            <div class="form-section-header product-media-title">
-              <span>Imagem de capa</span>
-            </div>
-            <p class="field-hint">É a primeira imagem que aparece na vitrine.</p>
-            <div id="product-cover-wrap"></div>
-          </div>
-
-          <div>
-            <div class="form-section-header product-media-title">
-              <span>Adicionar imagens</span>
-              <label for="product-gallery-input" class="product-gallery-nova" id="product-gallery-nova"><span aria-hidden="true">+</span> Adicionar nova</label>
-            </div>
-            <p class="field-hint" id="product-gallery-hint">Adicione imagens sobre o seu serviço.</p>
-            <!-- Carrossel de quadradinhos (até 6), do jeito que aparecem na
-                 galeria do fornecedor — ver renderGalleryImages em
-                 js/produtos.js. -->
-            <div id="product-gallery-list" class="product-gallery-strip"></div>
-          </div>
-
-          <div>
-            <div class="form-section-header product-media-title">
-              <label for="product-video-url">Vídeo</label>
-            </div>
-            <p class="field-hint">YouTube ou Vimeo</p>
-            <input id="product-video-url" type="url" class="field-input" autocomplete="off">
-          </div>
-
-          <!-- Redes sociais: clicar no ícone abre o campo do link daquela rede. -->
-          <div>
-            <div class="form-section-header product-media-title">
-              <span>Redes sociais</span>
-            </div>
-            <div class="produto-redes" id="product-social-icons">
-              <button type="button" class="produto-rede-btn" data-rede="instagram" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></button>
-              <button type="button" class="produto-rede-btn" data-rede="tiktok" title="TikTok" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 3.36-2.49V9.66a5.71 5.71 0 0 0-.76-.05A5.69 5.69 0 0 0 4.17 15.3 5.69 5.69 0 0 0 9.86 21a5.69 5.69 0 0 0 5.68-5.7V9.01a7.35 7.35 0 0 0 4.29 1.37V7.29s-1.88.09-3.23-1.47Z"/></svg></button>
-              <button type="button" class="produto-rede-btn" data-rede="facebook" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5h2.53l.38-2.94H13.5V8.69c0-.85.24-1.43 1.46-1.43h1.55V4.63A20.6 20.6 0 0 0 14.25 4.5c-2.24 0-3.78 1.37-3.78 3.88v2.18H7.94v2.94h2.53V21h3.03Z"/></svg></button>
-            </div>
-            <div class="produto-redes-campos">
-              <div class="produto-rede-campo" data-rede-campo="instagram" hidden>
-                <label for="product-social-instagram" class="field-label">Instagram</label>
-                <input id="product-social-instagram" type="url" class="field-input" autocomplete="off">
-              </div>
-              <div class="produto-rede-campo" data-rede-campo="tiktok" hidden>
-                <label for="product-social-tiktok" class="field-label">TikTok</label>
-                <input id="product-social-tiktok" type="url" class="field-input" autocomplete="off">
-              </div>
-              <div class="produto-rede-campo" data-rede-campo="facebook" hidden>
-                <label for="product-social-facebook" class="field-label">Facebook</label>
-                <input id="product-social-facebook" type="url" class="field-input" autocomplete="off">
-              </div>
-            </div>
-          </div>
-
-          <!-- Logística (cidade sede / raio, montagem) e Política de cancelamento
-               saíram da tela. Os campos ficam escondidos só para os itens já
-               salvos não perderem esses dados ao serem editados. -->
-          <div id="product-logistics-hidden" hidden>
-          <div class="form-section-header mt-2">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-            <span>Logística</span>
-          </div>
-
-          <div>
-            <div class="plan-billing-toggle" id="product-service-area-toggle" style="margin-bottom:0;">
-              <button type="button" class="plan-billing-option active" data-service-area="city_only">
-                <span class="plan-billing-option-title">Só cidade sede</span>
-              </button>
-              <button type="button" class="plan-billing-option" data-service-area="radius_km">
-                <span class="plan-billing-option-title">Raio sem taxa extra</span>
-              </button>
-            </div>
-          </div>
-
-          <div id="product-service-radius-fields" class="grid grid-cols-2 gap-4" hidden>
-            <div>
-              <label for="product-service-radius-km" class="field-label">Raio sem taxa extra (km)</label>
-              <input id="product-service-radius-km" type="number" min="0" step="1" class="field-input" placeholder="Ex: 30">
-            </div>
-            <div>
-              <label for="product-service-extra-km-fee" class="field-label">Valor por km adicional</label>
-              <input id="product-service-extra-km-fee" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="product-setup-minutes" class="field-label">Tempo de montagem (min)</label>
-              <input id="product-setup-minutes" type="number" min="0" step="5" class="field-input" placeholder="Ex: 60">
-            </div>
-            <div>
-              <label for="product-teardown-minutes" class="field-label">Tempo de desmontagem (min)</label>
-              <input id="product-teardown-minutes" type="number" min="0" step="5" class="field-input" placeholder="Ex: 60">
-            </div>
-          </div>
-
-          <div>
-            <label for="product-cancellation-policy" class="field-label" title="Flexível: reembolso integral até 7 dias antes. Moderada: reembolso parcial até 15 dias antes. Rigorosa: sinal não reembolsável.">Política de cancelamento</label>
-            <select id="product-cancellation-policy" class="field-select">
-              <option value="flexivel">Flexível</option>
-              <option value="moderada">Moderada</option>
-              <option value="rigorosa">Rigorosa</option>
-            </select>
-          </div>
-          </div>
-        </div>
-
-      </form>
-    </div>
-
-    <div class="form-drawer-footer product-wizard-footer">
-      <div id="product-wizard-footer-default" class="product-wizard-footer-row">
-        <button type="button" id="product-drawer-delete-btn" class="btn-secondary" aria-label="Remover" title="Remover" hidden>
-          <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
-        </button>
-        <button type="button" id="product-drawer-duplicate-btn" class="btn-secondary" hidden>Duplicar anúncio</button>
-        <button type="button" id="product-wizard-back-btn" class="btn-secondary" hidden>Voltar</button>
-        <button type="submit" form="product-form" id="product-wizard-submit-btn" class="btn-secondary">Salvar item</button>
-        <button type="button" id="product-wizard-next-btn" class="btn-primary">Próximo</button>
-      </div>
-      <div id="product-wizard-footer-confirm-delete" class="product-wizard-footer-row" hidden>
-        <span class="product-wizard-confirm-text">Tem certeza que deseja excluir?</span>
-        <button type="button" id="product-drawer-delete-no-btn" class="btn-secondary">Não</button>
-        <button type="button" id="product-drawer-delete-yes-btn" class="btn-primary btn-danger">Sim</button>
-      </div>
-    </div>
-  </aside>
 
   <!-- Modal: finalize seu cadastro -->
   <div class="modal-backdrop" id="complete-profile-modal">
@@ -626,6 +636,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=56"></script>
-  <script src="js/produtos.js?v=42"></script>
+  <script src="js/produtos.js?v=43"></script>
 </body>
 </html>

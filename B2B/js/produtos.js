@@ -1815,3 +1815,29 @@ function openProductDrawer(id) {
   document.getElementById('product-drawer').classList.add('show');
   document.getElementById('product-drawer-backdrop').classList.add('show');
 }
+
+/* -------------------- Produto na própria página (sem gaveta) --------------------
+   O editor (#product-drawer) agora fica dentro da página. Quando ele abre
+   (classe .show, posta pelos fluxos de criar/editar), a vitrine some, o
+   título vira "Adicionar novo produto" (ou "Editar produto") e aparece o
+   "Voltar" à esquerda, que fecha o editor e volta para Meus produtos. */
+(function ligarProdutoNaPagina() {
+  const editor = document.getElementById('product-drawer');
+  const titulo = document.getElementById('produtos-titulo-pagina');
+  const voltar = document.getElementById('produto-voltar');
+  if (!editor || !titulo || !voltar) return;
+  const aplicar = () => {
+    const aberto = editor.classList.contains('show');
+    document.body.classList.toggle('produto-editor-aberto', aberto);
+    voltar.hidden = !aberto;
+    const editando = !!(document.getElementById('product-form') || {}).dataset?.editId;
+    titulo.textContent = aberto ? (editando ? 'Editar produto' : 'Adicionar novo produto') : 'Meus produtos';
+    if (aberto) {
+      window.scrollTo({ top: 0 });
+      document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
+    }
+  };
+  new MutationObserver(aplicar).observe(editor, { attributes: true, attributeFilter: ['class'] });
+  voltar.addEventListener('click', () => document.getElementById('product-drawer-close')?.click());
+  aplicar();
+})();

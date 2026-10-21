@@ -9869,3 +9869,60 @@ html body.form-editor-aberto #forms-list:has(.forms-vazio):not(#love-h-a),
 html body.form-editor-aberto #forms-list:not(#love-h-a) { display: none !important; }
 html body #forms-list:not(#love-h-a) { max-width: 770px; width: 100%; margin-left: auto; margin-right: auto; }
 html body .forms-vazio:not(#love-h-a) { text-align: center; }
+
+/* ==========================================================================
+   Meus produtos › Adicionar novo produto na própria página (sem gaveta):
+   a vitrine some, o título muda e aparece "Voltar"; as etapas (Categoria,
+   Detalhes, Mídia) ficam como as abas de Cadastrar nova conta, na largura
+   da caixa, e o formulário numa caixa centralizada.
+   ========================================================================== */
+html body #product-drawer:not(.show):not(#love-h-a) { display: none; }
+html body.produto-editor-aberto #products-grid:not(#love-h-a),
+html body.produto-editor-aberto #category-tabs:not(#love-h-a),
+html body.produto-editor-aberto .produtos-header-acoes:not(#love-h-a),
+html body.produto-editor-aberto #product-drawer-backdrop:not(#love-h-a) { display: none !important; }
+html body.produto-editor-aberto .b2b-header-bar + p:not(#love-h-a) { display: none !important; }
+html body.produto-editor-aberto .b2b-header-bar:not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }
+
+/* Cabeçalho: "Voltar" à esquerda do título. */
+html body .produto-titulo-wrap:not(#love-h-a) { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+html body .produto-voltar:not(#love-h-a) {
+  display: inline-flex; align-items: center; gap: 0.3rem; height: 38px; padding: 0 0.85rem 0 0.6rem;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; color: #3F3F46;
+  font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer;
+}
+html body .produto-voltar:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .produto-voltar[hidden]:not(#love-h-a) { display: none; }
+
+/* O editor dentro da página. */
+html body #product-drawer.show:not(#love-h-a) {
+  position: relative; inset: auto; top: auto; right: auto; bottom: auto; left: auto; z-index: 1;
+  transform: none; width: 100%; max-width: 720px; height: auto; max-height: none; margin: 0 auto;
+  background: transparent; border: none; box-shadow: none; overflow: visible; display: flex; flex-direction: column;
+}
+/* Etapas no topo, como em Cadastrar nova conta (sem o título e o X da gaveta). */
+html body #product-drawer .form-drawer-header:not(#love-h-a) { padding: 0; border: none; background: transparent; min-height: 0; }
+html body #product-drawer #product-drawer-title:not(#love-h-a),
+html body #product-drawer #product-drawer-close:not(#love-h-a) { display: none; }
+html body #product-drawer .form-drawer-header-main:not(#love-h-a) { width: 100%; }
+html body #product-drawer .product-wizard-tabs:not(#love-h-a) {
+  display: flex; gap: 0; width: 100%; margin: 0; padding: 0 1rem; background: transparent; border: none; border-bottom: 1px solid #E4E4E7;
+}
+html body #product-drawer .product-wizard-tab:not(#love-h-a) {
+  flex: 1 1 0; height: auto; padding: 12px 8px 10px; margin-bottom: -1px; border: none; border-bottom: 2px solid transparent; border-radius: 0;
+  background: transparent; box-shadow: none; font-size: 13px; font-weight: 600; color: #71717A; text-align: center; white-space: nowrap; cursor: pointer;
+}
+html body #product-drawer .product-wizard-tab:hover:not(#love-h-a) { background: transparent; color: #3F3F46; }
+html body #product-drawer .product-wizard-tab.active:not(#love-h-a),
+html body #product-drawer .product-wizard-tab.is-active:not(#love-h-a),
+html body #product-drawer .product-wizard-tab[aria-selected="true"]:not(#love-h-a) { background: transparent; color: #333333; font-weight: 700; border-bottom-color: #333333; }
+/* A caixa do formulário, reta em cima (logo abaixo das etapas). */
+html body #product-drawer .form-drawer-body:not(#love-h-a) {
+  padding: 1.5rem; overflow: visible; background: #FFFFFF; border: 1px solid #E4E4E7; border-top: none; border-radius: 0;
+}
+html body #product-drawer .product-wizard-footer:not(#love-h-a) {
+  position: static; padding: 1rem 1.5rem; background: #FFFFFF; border: 1px solid #E4E4E7; border-top: 1px solid #F4F4F5;
+  border-radius: 0 0 10px 10px; box-shadow: none;
+}
+body[data-theme="dark"] #product-drawer .form-drawer-body,
+body[data-theme="dark"] #product-drawer .product-wizard-footer { background: #1F1F1F !important; border-color: #404040 !important; }

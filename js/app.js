@@ -9741,13 +9741,36 @@ document.addEventListener('DOMContentLoaded', () => {
     { type: 'linha', label: 'Linha', icon: '' },
     { type: 'rabisco', label: 'Rabisco', icon: '' },
     // Objetos › Texto: caixinha de texto simples (sem negrito), editável.
-    { type: 'texto', label: 'Texto', icon: '' }
+    { type: 'texto', label: 'Texto', icon: '' },
+    // Guias da régua (planta expandida): linha horizontal/vertical presa na planta.
+    { type: 'guia', label: 'Guia', icon: '' }
   ];
   /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
   function alturaNaPlanta(item) {
     if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
     if (item.type === 'linha') return parseFloat(item.h) || 20;
+    if (item.type === 'guia') return 0;
     return tamanhoDoItem(item).h;
+  }
+  /** Largura de um elemento na planta (onde ele termina à direita = x + isto). @param {any} item */
+  function larguraNaPlanta(item) {
+    if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
+    if (item.type === 'linha') return parseFloat(item.w) || 200;
+    if (item.type === 'guia') return 0;
+    return tamanhoDoItem(item).w;
+  }
+  /**
+   * Escala da planta na tela: 1 quando tudo cabe; menor quando algum elemento
+   * passa da largura disponível (ex.: montado na tela expandida e visto na
+   * reduzida) — assim tudo aparece, sem nada escondido à direita.
+   */
+  let escalaDaPlanta = 1;
+  /** @param {HTMLElement} canvas @param {any[]} elements */
+  function escalaParaCaber(canvas, elements) {
+    const largura = canvas.clientWidth || 0;
+    const direita = elements.reduce((max, it) => it.type === 'guia' ? max : Math.max(max, (parseFloat(it.x) || 0) + larguraNaPlanta(it)), 0);
+    if (!largura || direita <= largura - 8) return 1;
+    return Math.max(0.3, (largura - 8) / direita);
   }
   /** Tamanho da mesa (1 = normal), entre 0,5 e 2. @param {any} item */
   function escalaDaMesa(item) {
@@ -10016,7 +10039,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // mesa mais baixa. Encolhe de novo quando as mesas sobem.
   function ajustarAlturaDaPlanta(canvas, elements) {
     const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + alturaNaPlanta(item)), 0);
-    canvas.style.minHeight = maisBaixa ? `${Math.max(360, maisBaixa + 16)}px` : '';
+    canvas.style.minHeight = maisBaixa ? `${Math.max(360, (maisBaixa + 16) * escalaDaPlanta)}px` : '';
+    const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
+    if (camada) camada.style.height = `${Math.max(canvas.offsetHeight, (maisBaixa + 16) * escalaDaPlanta) / escalaDaPlanta}px`;
   }
 
   function alturaVisivelDaPlanta(canvas) {
@@ -10030,7 +10055,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function trazerMesasPerdidasDeVolta(canvas, elements) {
     // Expandida, a área visível é outra: não mexe em nada (só rola).
     if (canvas.closest('.floorplan-wrap.is-expandida')) return false;
-    let limite = alturaVisivelDaPlanta(canvas);
+    let limite = alturaVisivelDaPlanta(canvas) / escalaDaPlanta;
     let mudou = false;
     elements.slice().sort((a, b) => (parseFloat(a.y) || 0) - (parseFloat(b.y) || 0)).forEach(item => {
       const altura = alturaNaPlanta(item);
@@ -10051,8 +10076,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!canvas) return;
     const elements = getFloorPlanElements();
 
-    canvas.querySelectorAll('.floorplan-el').forEach(el => el.remove());
-    if (emptyHint) emptyHint.style.display = elements.length ? 'none' : 'flex';
+    canvas.querySelectorAll('.floorplan-el, .floorplan-guia').forEach(el => el.remove());
+    if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia') ? 'none' : 'flex';
+    // Camada com todos os elementos, na escala que faz tudo caber na largura.
+    escalaDaPlanta = escalaParaCaber(canvas, elements);
+    let camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
+    if (!camada) {
+      camada = document.createElement('div');
+      camada.className = 'floorplan-camada';
+      canvas.insertBefore(camada, canvas.firstChild);
+    }
+    camada.style.transform = escalaDaPlanta === 1 ? '' : `scale(${escalaDaPlanta})`;
+    camada.style.width = `${canvas.clientWidth / escalaDaPlanta}px`;
     // Mesa "perdida" lá embaixo (arrastada para longe): sobe para logo abaixo
     // da área visível / da mesa anterior, para sempre dar para alcançá-la.
     // Planta antiga com mesas repetidas ou buracos (ex.: duas "Mesa 7"):
@@ -10062,6 +10097,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ajustarAlturaDaPlanta(canvas, elements);
 
     elements.forEach(elData => {
+      if (elData.type === 'guia') { desenharGuia(/** @type {HTMLElement} */ (camada), elData); return; }
       const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
       const el = document.createElement('div');
       const isMesa = elData.type === 'mesa';
@@ -10206,9 +10242,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       wireFloorPlanElementDrag(el, elData);
-      canvas.appendChild(el);
+      /** @type {HTMLElement} */ (camada).appendChild(el);
     });
     desenharSelecaoDaPlanta();
+    desenharReguas();
   }
 
   // Ícones do menuzinho do elemento selecionado.
@@ -10263,8 +10300,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const alca = document.createElement('span');
         alca.className = 'floorplan-alca alca-ponta';
         alca.title = 'Arraste para mudar a direção';
-        alca.style.left = `${x0 + px - (cx.esq - folga) - 6.5}px`;
-        alca.style.top = `${y0 + py - (cx.topo - folga) - 6.5}px`;
+        alca.style.left = `${(x0 + px) * escalaDaPlanta - (cx.esq - folga) - 6.5}px`;
+        alca.style.top = `${(y0 + py) * escalaDaPlanta - (cx.topo - folga) - 6.5}px`;
         alca.addEventListener('mousedown', (e) => iniciarArrasteDaPonta(e, elData.id, ponta));
         sel.appendChild(alca);
       });
@@ -10377,16 +10414,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const y0 = parseFloat(alvo.y) || 0;
     const centroX = x0 + tam0.w / 2;
     const centroY = y0 + tam0.h / 2;
-    const dx0 = Math.abs(e.clientX - base.left - centroX) || 1;
-    const dy0 = Math.abs(e.clientY - base.top - centroY) || 1;
+    const s = escalaDaPlanta;
+    const dx0 = Math.abs(e.clientX - base.left - centroX * s) || 1;
+    const dy0 = Math.abs(e.clientY - base.top - centroY * s) || 1;
     const escala0 = isMesa ? escalaDaMesa(alvo) : tamanhoDoItem(alvo).escala;
     /** @type {Record<string, any>} */
     let resultado = isMesa ? { escala: escala0 } : { escala: escala0, rotacao: tamanhoDoItem(alvo).rotacao, x: x0, y: y0 };
     document.body.classList.add('planta-redimensionando');
 
     const mover = (/** @type {MouseEvent} */ ev) => {
-      const dx = Math.abs(ev.clientX - base.left - centroX);
-      const dy = Math.abs(ev.clientY - base.top - centroY);
+      const dx = Math.abs(ev.clientX - base.left - centroX * s);
+      const dy = Math.abs(ev.clientY - base.top - centroY * s);
       const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
       if (isMesa) {
         const escala = Math.round(Math.min(2, Math.max(0.5, escala0 * fator)) * 100) / 100;
@@ -10449,14 +10487,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Área visível da mesa (círculo + assentos) dentro da caixa de 220px:
       // é ela que não pode sair da planta, não a caixa inteira.
       // (Mesa aumentada/diminuída: a caixa na tela é a escalada; volta para a de 220px.)
-      const caixaTela = el.getBoundingClientRect();
-      const caixa = { left: caixaTela.left + (caixaTela.width - el.offsetWidth) / 2, top: caixaTela.top + (caixaTela.height - el.offsetHeight) / 2 };
+      // Tudo em unidades da planta (a tela pode estar em escala: escalaDaPlanta).
+      const s = escalaDaPlanta;
+      const tela = canvas.getBoundingClientRect();
+      const caixa = { left: tela.left + origLeft * s, top: tela.top + origTop * s };
       const partes = Array.from(el.children).filter(c => !c.classList.contains('floorplan-selecao')).map(c => c.getBoundingClientRect()).filter(r => r.width && r.height);
       const visivel = partes.length ? {
-        esq: Math.min(...partes.map(r => r.left)) - caixa.left,
-        dir: Math.max(...partes.map(r => r.right)) - caixa.left,
-        topo: Math.min(...partes.map(r => r.top)) - caixa.top,
-        base: Math.max(...partes.map(r => r.bottom)) - caixa.top
+        esq: (Math.min(...partes.map(r => r.left)) - caixa.left) / s,
+        dir: (Math.max(...partes.map(r => r.right)) - caixa.left) / s,
+        topo: (Math.min(...partes.map(r => r.top)) - caixa.top) / s,
+        base: (Math.max(...partes.map(r => r.bottom)) - caixa.top) / s
       } : { esq: 0, dir: el.offsetWidth, topo: 0, base: el.offsetHeight };
       // Selecionar já no clique; a caixa some enquanto arrasta e volta ao soltar.
       plantaSelecionada = elData.id;
@@ -10464,18 +10504,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Até onde a mesa pode descer neste arraste: o fundo atual da planta
       // + o tamanho de uma mesa (cresce aos poucos, nunca sem fim).
-      const alturaInicial = canvas.getBoundingClientRect().height;
+      const alturaInicial = canvas.getBoundingClientRect().height / s;
       const topoMaximo = alturaInicial + 220 - el.offsetHeight - 16;
 
       const onMouseMove = (moveEvt) => {
-        const dx = moveEvt.clientX - startX;
-        const dy = moveEvt.clientY - startY;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+        const dxTela = moveEvt.clientX - startX;
+        const dyTela = moveEvt.clientY - startY;
+        if (Math.abs(dxTela) > 3 || Math.abs(dyTela) > 3) moved = true;
+        const dx = dxTela / s;
+        const dy = dyTela / s;
         const rect = canvas.getBoundingClientRect();
-        const newLeft = Math.max(4 - visivel.esq, Math.min(origLeft + dx, rect.width - 4 - visivel.dir));
+        const newLeft = Math.max(4 - visivel.esq, Math.min(origLeft + dx, rect.width / s - 4 - visivel.dir));
         const newTop = Math.max(4 - visivel.topo, Math.min(origTop + dy, topoMaximo));
-        const fundoNecessario = newTop + el.offsetHeight + 16;
-        if (fundoNecessario > rect.height) canvas.style.minHeight = `${fundoNecessario}px`;
+        const fundoNecessario = (newTop + el.offsetHeight + 16) * s;
+        if (fundoNecessario > rect.height) {
+          canvas.style.minHeight = `${fundoNecessario}px`;
+          const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
+          if (camada) camada.style.height = `${fundoNecessario / s}px`;
+        }
         el.style.left = `${newLeft}px`;
         el.style.top = `${newTop}px`;
       };
@@ -10584,8 +10630,8 @@ document.addEventListener('DOMContentLoaded', () => {
     /** @type {ReturnType<typeof caixaDaLinha>|null} */
     let resultado = null;
     const mover = (/** @type {MouseEvent} */ ev) => {
-      const px = Math.max(10, Math.min(ev.clientX - base.left, canvas.clientWidth - 10));
-      const py = Math.max(10, ev.clientY - base.top);
+      const px = Math.max(10, Math.min((ev.clientX - base.left) / escalaDaPlanta, canvas.clientWidth / escalaDaPlanta - 10));
+      const py = Math.max(10, (ev.clientY - base.top) / escalaDaPlanta);
       resultado = ponta === 'a' ? caixaDaLinha(px, py, fixa.x, fixa.y) : caixaDaLinha(fixa.x, fixa.y, px, py);
       el.style.left = `${resultado.x}px`;
       el.style.top = `${resultado.y}px`;
@@ -10649,20 +10695,21 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     e.stopPropagation();
     const base = canvas.getBoundingClientRect();
+    const s = escalaDaPlanta;
     /** @type {{x: number, y: number}[]} */
-    const pontos = [{ x: e.clientX - base.left, y: e.clientY - base.top }];
+    const pontos = [{ x: (e.clientX - base.left) / s, y: (e.clientY - base.top) / s }];
     const aoVivo = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     aoVivo.setAttribute('class', 'floorplan-rabisco-ao-vivo');
-    aoVivo.setAttribute('width', String(canvas.clientWidth));
-    aoVivo.setAttribute('height', String(canvas.scrollHeight));
+    aoVivo.setAttribute('width', String(canvas.clientWidth / s));
+    aoVivo.setAttribute('height', String(canvas.scrollHeight / s));
     const caminho = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     aoVivo.appendChild(caminho);
-    canvas.appendChild(aoVivo);
+    (canvas.querySelector('.floorplan-camada') || canvas).appendChild(aoVivo);
     const comoTexto = (/** @type {{x: number, y: number}[]} */ pts, dx = 0, dy = 0) => 'M' + pts.map(p => `${(p.x - dx).toFixed(1)} ${(p.y - dy).toFixed(1)}`).join(' L');
     const mover = (/** @type {MouseEvent} */ ev) => {
-      const p = { x: ev.clientX - base.left, y: ev.clientY - base.top };
+      const p = { x: (ev.clientX - base.left) / s, y: (ev.clientY - base.top) / s };
       const ult = pontos[pontos.length - 1];
-      if (Math.hypot(p.x - ult.x, p.y - ult.y) < 2) return;
+      if (Math.hypot(p.x - ult.x, p.y - ult.y) < 2 / s) return;
       pontos.push(p);
       caminho.setAttribute('d', comoTexto(pontos));
     };
@@ -10702,13 +10749,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const base = Math.min(r.bottom, area.bottom);
     const esq = Math.max(r.left, area.left);
     const dir = Math.min(r.right, area.right);
-    let x = (esq + dir) / 2 - r.left - w / 2;
-    let y = (base > topo ? (topo + base) / 2 : r.top + r.height / 2) - r.top - h / 2;
+    const s = escalaDaPlanta;
+    let x = ((esq + dir) / 2 - r.left) / s - w / 2;
+    let y = ((base > topo ? (topo + base) / 2 : r.top + r.height / 2) - r.top) / s - h / 2;
     for (let i = 0; i < 8 && elements.some(el => Math.abs((parseFloat(el.x) || 0) - x) < 12 && Math.abs((parseFloat(el.y) || 0) - y) < 12); i++) {
       x += 24;
       y += 24;
     }
-    return { x: Math.max(0, Math.min(x, r.width - w)), y: Math.max(0, y) };
+    return { x: Math.max(0, Math.min(x, r.width / s - w)), y: Math.max(0, y) };
   }
 
   /** Centraliza a caixa de texto no bloco, girada e na escala. @param {number} escala @param {number} rotacao */
@@ -10795,6 +10843,125 @@ document.addEventListener('DOMContentLoaded', () => {
     caixa.addEventListener('blur', () => terminar(true));
   }
 
+  // ==========================================
+  // RÉGUAS E GUIAS (só na planta expandida, como no Photoshop)
+  // ==========================================
+  // Arrastar da régua de cima cria uma guia horizontal; da régua da esquerda,
+  // uma vertical. A guia fica presa na planta (rola junto) e pode ser movida;
+  // arrastada de volta para a régua, some.
+
+  /** Desenha uma guia salva dentro da camada da planta. @param {HTMLElement} camada @param {any} g */
+  function desenharGuia(camada, g) {
+    const guia = document.createElement('div');
+    const horizontal = g.orientacao !== 'v';
+    guia.className = `floorplan-guia ${horizontal ? 'is-h' : 'is-v'}`;
+    guia.dataset.elId = g.id;
+    guia.style[horizontal ? 'top' : 'left'] = `${parseFloat(g.pos) || 0}px`;
+    guia.addEventListener('mousedown', (e) => arrastarGuia(e, horizontal ? 'h' : 'v', g.id));
+    camada.appendChild(guia);
+  }
+
+  /** Réguas: cria (uma vez), posiciona e desenha as marcas na escala da planta. */
+  function desenharReguas() {
+    const canvas = document.getElementById('floorplan-canvas');
+    const wrap = canvas && /** @type {HTMLElement|null} */ (canvas.closest('.floorplan-wrap'));
+    const corpo = canvas && /** @type {HTMLElement|null} */ (canvas.closest('.floorplan-body'));
+    if (!canvas || !wrap || !corpo) return;
+    let reguaH = /** @type {HTMLElement|null} */ (wrap.querySelector('.floorplan-regua-h'));
+    let reguaV = /** @type {HTMLElement|null} */ (wrap.querySelector('.floorplan-regua-v'));
+    let canto = /** @type {HTMLElement|null} */ (wrap.querySelector('.floorplan-regua-canto'));
+    if (!reguaH || !reguaV || !canto) {
+      reguaH = document.createElement('div');
+      reguaH.className = 'floorplan-regua floorplan-regua-h';
+      reguaV = document.createElement('div');
+      reguaV.className = 'floorplan-regua floorplan-regua-v';
+      canto = document.createElement('div');
+      canto.className = 'floorplan-regua-canto';
+      reguaH.addEventListener('mousedown', (e) => arrastarGuia(e, 'h', null));
+      reguaV.addEventListener('mousedown', (e) => arrastarGuia(e, 'v', null));
+      wrap.append(reguaH, reguaV, canto);
+      corpo.addEventListener('scroll', desenharReguas, { passive: true });
+      window.addEventListener('resize', desenharReguas);
+    }
+    if (!wrap.classList.contains('is-expandida')) return;
+    const w = wrap.getBoundingClientRect();
+    const c = canvas.getBoundingClientRect();
+    const b = corpo.getBoundingClientRect();
+    const s = escalaDaPlanta;
+    const R = 20;
+    Object.assign(reguaH.style, { left: `${c.left - w.left}px`, top: `${b.top - w.top}px`, width: `${Math.min(c.right, b.right) - c.left}px`, height: `${R}px` });
+    Object.assign(reguaV.style, { left: `${c.left - w.left - R}px`, top: `${b.top - w.top + R}px`, width: `${R}px`, height: `${b.height - R}px` });
+    Object.assign(canto.style, { left: `${c.left - w.left - R}px`, top: `${b.top - w.top}px`, width: `${R}px`, height: `${R}px` });
+    const origemY = c.top - (b.top + R);
+    [reguaH, reguaV].forEach(r => {
+      r.style.setProperty('--passo-menor', `${10 * s}px`);
+      r.style.setProperty('--passo-maior', `${50 * s}px`);
+    });
+    reguaH.style.setProperty('--origem', '0px');
+    reguaV.style.setProperty('--origem', `${origemY}px`);
+    // Números a cada 100 (unidades da planta).
+    const numeros = (/** @type {number} */ comprimento, /** @type {number} */ origem) => {
+      const passo = 100 * s;
+      let html = '';
+      const primeiro = Math.max(0, Math.ceil(-origem / passo));
+      for (let n = primeiro; origem + n * passo < comprimento; n++) {
+        if (n === 0) continue;
+        html += `<span style="--p:${origem + n * passo}px">${n * 100}</span>`;
+      }
+      return html;
+    };
+    reguaH.innerHTML = numeros(Math.min(c.right, b.right) - c.left, 0);
+    reguaV.innerHTML = numeros(b.height - R, origemY);
+  }
+
+  /**
+   * Arrasta uma guia: nova (vindo da régua, id null) ou já existente. Solta
+   * em cima da régua = apaga.
+   * @param {MouseEvent} e @param {'h' | 'v'} orientacao @param {string|null} id
+   */
+  function arrastarGuia(e, orientacao, id) {
+    const canvas = document.getElementById('floorplan-canvas');
+    const wrap = canvas && /** @type {HTMLElement|null} */ (canvas.closest('.floorplan-wrap.is-expandida'));
+    if (!canvas || !wrap) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const horizontal = orientacao === 'h';
+    const regua = /** @type {HTMLElement} */ (wrap.querySelector(horizontal ? '.floorplan-regua-h' : '.floorplan-regua-v'));
+    const temporaria = document.createElement('div');
+    temporaria.className = `floorplan-guia-temporaria ${horizontal ? 'is-h' : 'is-v'}`;
+    wrap.appendChild(temporaria);
+    const existente = id ? /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-guia[data-el-id="${CSS.escape(id)}"]`)) : null;
+    if (existente) existente.style.visibility = 'hidden';
+    const mover = (/** @type {MouseEvent} */ ev) => {
+      const w = wrap.getBoundingClientRect();
+      const c = canvas.getBoundingClientRect();
+      if (horizontal) Object.assign(temporaria.style, { top: `${ev.clientY - w.top}px`, left: `${c.left - w.left}px`, width: `${c.width}px` });
+      else Object.assign(temporaria.style, { left: `${ev.clientX - w.left}px`, top: `${c.top - w.top}px`, height: `${Math.min(c.height, w.bottom - c.top)}px` });
+    };
+    mover(e);
+    const soltar = (/** @type {MouseEvent} */ ev) => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      temporaria.remove();
+      const r = regua.getBoundingClientRect();
+      const c = canvas.getBoundingClientRect();
+      const naRegua = horizontal ? ev.clientY <= r.bottom : ev.clientX <= r.right;
+      const lista = getFloorPlanElements();
+      if (naRegua) {
+        if (id) saveFloorPlanElements(lista.filter(x => x.id !== id));
+      } else {
+        const pos = Math.round(((horizontal ? ev.clientY - c.top : ev.clientX - c.left) / escalaDaPlanta) * 10) / 10;
+        const guia = id ? lista.find(x => x.id === id) : null;
+        if (guia) guia.pos = pos;
+        else lista.push({ id: `fp-${Date.now()}`, type: 'guia', orientacao, pos });
+        saveFloorPlanElements(lista);
+      }
+      renderFloorPlanCanvas();
+    };
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
+  }
+
   /** @param {string} tipo  um dos ITENS_DA_PLANTA */
   function inserirItemNaPlanta(tipo) {
     const canvas = document.getElementById('floorplan-canvas');
@@ -10878,10 +11045,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const isMesa = payload.type === 'mesa';
       const shapeSize = isMesa ? 220 : 84;
       const shapeHeightOffset = isMesa ? 110 : 32;
-      let x = e.clientX - rect.left - shapeSize / 2;
-      let y = e.clientY - rect.top - shapeHeightOffset;
-      x = Math.max(4, Math.min(x, rect.width - shapeSize - 4));
-      y = Math.max(4, Math.min(y, rect.height - shapeSize - 4));
+      const s = escalaDaPlanta;
+      let x = (e.clientX - rect.left) / s - shapeSize / 2;
+      let y = (e.clientY - rect.top) / s - shapeHeightOffset;
+      x = Math.max(4, Math.min(x, rect.width / s - shapeSize - 4));
+      y = Math.max(4, Math.min(y, rect.height / s - shapeSize - 4));
 
       const elements = getFloorPlanElements();
       const newEl = { id: `fp-${Date.now()}`, type: payload.type, x, y };
@@ -11302,6 +11470,15 @@ document.addEventListener('DOMContentLoaded', () => {
           pararRabisco();
         });
       }
+      // Tela mudou de tamanho: a planta recalcula a escala para tudo caber.
+      let esperaDoRedimensionar = 0;
+      window.addEventListener('resize', () => {
+        clearTimeout(esperaDoRedimensionar);
+        esperaDoRedimensionar = window.setTimeout(() => {
+          const planta = document.getElementById('floorplan-canvas');
+          if (planta && planta.offsetParent) renderFloorPlanCanvas();
+        }, 150);
+      });
       const canvasDeDesenho = document.getElementById('floorplan-canvas');
       if (canvasDeDesenho) canvasDeDesenho.addEventListener('mousedown', desenharRabisco, true);
 

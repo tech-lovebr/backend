@@ -9198,3 +9198,12 @@ body[data-theme="dark"] #floorplan-canvas {
 }
 /* Expandir: mesma altura do "Adicionar Mesa" (38px), largura de botão pequeno (quadrado). */
 html body #btn-floorplan-expandir:not(#love-h-a) { width: 38px; }
+
+/* Fundo normal das telas (#F4F6F7, --bg-dashboard) em mais lugares:
+   - hover dos itens do submenu da sidebar;
+   - fundo atrás do celular/tablet/desktop no Convite digital e no Save the
+     Date (sem os pontinhos);
+   - fundo da planta de Mapear mesas (o quadriculado continua por cima). */
+html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item:not(.active):not(#love-h-a):hover { background-color: var(--bg-dashboard) !important; }
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-viewport:not(#love-h-a) { background-color: var(--bg-dashboard) !important; background-image: none !important; }
+html body:not([data-theme="dark"]) #floorplan-canvas:not(#love-h-a) { background-color: var(--bg-dashboard) !important; }

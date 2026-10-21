@@ -9676,16 +9676,22 @@ document.addEventListener('DOMContentLoaded', () => {
           let seatState = 'is-empty';
           if (guestName) seatState = declined ? 'is-declined' : (confirmed ? 'is-confirmed' : 'is-assigned');
           seatDot.className = `floorplan-seat-dot ${seatState}`;
+          if (!guestName) {
+            seatDot.textContent = '+';
+            seatDot.title = 'Lugar vago';
+          }
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {
-              // Só o primeiro nome no assento (o nome inteiro fica no title).
-              const firstLine = document.createElement('span');
-              firstLine.className = 'floorplan-seat-dot-line';
-              firstLine.textContent = guestName.split(/\s+/)[0] || '';
-              seatDot.appendChild(firstLine);
+              // As duas iniciais no assento redondo (o nome inteiro fica no title).
+              const iniciais = document.createElement('span');
+              iniciais.className = 'floorplan-seat-dot-line';
+              const partes = guestName.split(/\s+/).filter(Boolean);
+              iniciais.textContent = ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : ((partes[0] || '')[1] || ''));
+              iniciais.textContent = iniciais.textContent.toUpperCase();
+              seatDot.appendChild(iniciais);
             }
             seatDot.draggable = true;
             seatDot.addEventListener('dragstart', (e) => {

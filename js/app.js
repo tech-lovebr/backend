@@ -7863,6 +7863,8 @@ document.addEventListener('DOMContentLoaded', () => {
     painel.hidden = !mostrar;
     grade.classList.toggle('hidden', mostrar);
     if (mostrar) grade.style.setProperty('display', 'none', 'important'); else grade.style.removeProperty('display');
+    const linhaDoTotal = document.getElementById('gifts-total-linha');
+    if (linhaDoTotal) linhaDoTotal.hidden = mostrar;
     botao?.setAttribute('aria-pressed', String(mostrar));
     botao?.classList.toggle('is-ativo', mostrar);
     const voltar = document.getElementById('btn-gifts-listas-voltar');
@@ -8295,7 +8297,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let filteredGifts = giftList;
     if (searchQuery && searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
-      filteredGifts = giftList.filter(g => g.title && g.title.toLowerCase().includes(q));
+      // pelo nome do presente ou da lista de onde ele veio
+      filteredGifts = giftList.filter(g => [g.title, g.listaNome, g.category].some(t => typeof t === 'string' && t.toLowerCase().includes(q)));
     }
 
     if (filteredGifts.length === 0) {

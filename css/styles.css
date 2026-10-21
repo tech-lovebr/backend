@@ -9875,9 +9875,14 @@ html body #gifts-header-title[hidden]:not(#love-h-a) { display: none !important;
 html body #suas-listas-tabela .suas-listas-nome:not(#love-h-a) { font-weight: 600; color: #18181B; }
 html body #suas-listas-tabela .suas-listas-valor:not(#love-h-a) { font-variant-numeric: tabular-nums; white-space: nowrap; }
 html body .suas-listas-campo:not(#love-h-a) { width: 100%; max-width: 260px; height: 36px; padding: 0 10px; border: 1px solid #181D24; border-radius: 8px; font: inherit; font-weight: 500; color: #18181B; background: #FFFFFF; outline: none; box-shadow: none; }
-html body #gifts-panel-settings .suas-listas-caixa:not(#love-h-a) { margin-top: 24px !important; }
+html body #gifts-panel-settings .suas-listas-caixa:not(#love-h-a) { margin-top: 0 !important; }
 
 /* Criar presente: "Habilitar contribuição coletiva" no mesmo formato do valor extra. */
 .gift-contribuicao-texto { display: flex; flex-direction: column; gap: 2px; }
 .gift-contribuicao-descricao { font-size: 12px; color: #71717A; }
 html body .gift-valor-extra + .gift-contribuicao-coletiva:not(#love-h-a) { margin-top: 4px; }
+
+/* Meus presentes: total da lista fora do cabeçalho, no canto esquerdo de cima. */
+.gifts-total-linha { margin: 0 0 20px; font-size: 14px; color: #71717A; }
+.gifts-total-linha span { font-weight: 700; color: #18181B; font-variant-numeric: tabular-nums; }
+html body .gifts-total-linha[hidden]:not(#love-h-a) { display: none; }

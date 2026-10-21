@@ -9816,3 +9816,8 @@ html body[data-page="paginas-site"]:not(.site-aba-formularios) .builder-body:not
    aberta só com o texto em branco e negrito, sem outra caixinha. */
 html body .sidebar-nav-group--construtor .sidebar-subnav-item.active:not(#love-h-a) { background: transparent; color: #FFFFFF; font-weight: 700; }
 html body .sidebar-nav-toggle.active:hover:not(#love-h-a) { background: #EBF4FF; color: #181D24; }
+
+/* Cadastrar nova conta: as etapas e a caixa centralizadas no espaço. */
+html body .nova-empresa-etapas:not(#love-h-a),
+html body .nova-empresa-card:not(#love-h-a) { width: 100%; margin-left: auto; margin-right: auto; }
+html body .nova-empresa-etapas:not(#love-h-a) { max-width: 720px; }

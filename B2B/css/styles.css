@@ -9724,3 +9724,10 @@ body[data-theme="dark"] #form-drawer .form-field-question-input { background: #2
 
 /* Com cor/imagem de fundo escolhida, o fundo aparece atrás dos cards (como o fundo do Google Forms). */
 html body #form-drawer.show.has-custom-bg:not(#love-h-a) { padding: 1.25rem; border-radius: 10px; }
+
+/* Cor primária da Love (#183b54) na faixa da pergunta em edição do
+   formulário e no menu lateral (no lugar do quase preto #181D24). */
+html body #form-drawer .form-field-card:focus-within:not(#love-h-a) { box-shadow: inset 6px 0 0 #183b54; }
+html body:not([data-theme="dark"]) .b2b-sidebar:not(#love-h-a),
+html body.sidebar-collapsed:not([data-theme="dark"]) .b2b-sidebar:not(#love-h-a) { background-color: #183b54; }
+html body:not([data-theme="dark"]) .sidebar-edge-toggle:not(#love-h-a) { background-color: #183b54; }

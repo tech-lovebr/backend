@@ -946,10 +946,10 @@
           <div class="builder-toolbar" id="classic-editor-toolbar" style="display:none !important;">
             <h2 id="editor-active-sub-title" class="floorplan-page-name" style="margin:0;">Aparência</h2>
             <div class="flex items-center gap-2 flex-shrink-0">
-              <button type="button" class="builder-tool-btn" id="classic-editor-undo" title="Desfazer" disabled>
+              <button type="button" class="builder-tool-btn" id="classic-editor-undo" data-dica="Desfazer" aria-label="Desfazer" disabled>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 4 10m0 0 5-5m-5 5h11a4 4 0 0 1 0 8h-1"/></svg>
               </button>
-              <button type="button" class="builder-tool-btn" id="classic-editor-redo" title="Refazer" disabled>
+              <button type="button" class="builder-tool-btn" id="classic-editor-redo" data-dica="Refazer" aria-label="Refazer" disabled>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 15 5-5m0 0-5-5m5 5H9a4 4 0 0 0 0 8h1"/></svg>
               </button>
               <span class="builder-toolbar-divider"></span>
@@ -1888,21 +1888,21 @@
                 </div>
               </div>
               <div class="builder-device-toggle" id="builder-device-toggle">
-                <button type="button" class="builder-device-btn active" data-device="mobile" title="Mobile">
+                <button type="button" class="builder-device-btn active" data-device="mobile" data-dica="Mobile" aria-label="Mobile">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="2.5" width="8" height="19" rx="1.6"/><path stroke-linecap="round" d="M12 18h.01"/></svg>
                 </button>
-                <button type="button" class="builder-device-btn" data-device="tablet" title="Tablet">
+                <button type="button" class="builder-device-btn" data-device="tablet" data-dica="Tablet" aria-label="Tablet">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="19" rx="1.8"/><path stroke-linecap="round" d="M12 18.5h.01"/></svg>
                 </button>
-                <button type="button" class="builder-device-btn" data-device="desktop" title="Desktop">
+                <button type="button" class="builder-device-btn" data-device="desktop" data-dica="Desktop" aria-label="Desktop">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path stroke-linecap="round" d="M8 20h8M12 16.5V20"/></svg>
                 </button>
               </div>
               <div class="builder-toolbar-right">
-                <button type="button" class="builder-tool-btn" id="builder-undo" title="Desfazer" disabled>
+                <button type="button" class="builder-tool-btn" id="builder-undo" data-dica="Desfazer" aria-label="Desfazer" disabled>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 4 10m0 0 5-5m-5 5h11a4 4 0 0 1 0 8h-1"/></svg>
                 </button>
-                <button type="button" class="builder-tool-btn" id="builder-redo" title="Refazer" disabled>
+                <button type="button" class="builder-tool-btn" id="builder-redo" data-dica="Refazer" aria-label="Refazer" disabled>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 15 5-5m0 0-5-5m5 5H9a4 4 0 0 0 0 8h1"/></svg>
                 </button>
                 <span class="builder-toolbar-divider"></span>

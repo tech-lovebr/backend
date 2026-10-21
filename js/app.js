@@ -8593,6 +8593,123 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ==========================================
+  // RESTRIÇÕES ALIMENTARES (drawer de adicionar/editar convidado)
+  // ==========================================
+  /**
+   * @typedef {'NONE' | 'VEGETARIAN' | 'VEGAN' | 'GLUTEN_FREE' | 'LACTOSE_FREE' | 'ALLERGY' | 'OTHER'} TipoDeRestricao
+   * @typedef {{ restrictionType: TipoDeRestricao, details?: string }} RestricaoAlimentar
+   */
+  /** @type {{ valor: TipoDeRestricao, rotulo: string }[]} */
+  const OPCOES_DE_RESTRICAO = [
+    { valor: 'NONE', rotulo: 'Sem restrições alimentares' },
+    { valor: 'VEGETARIAN', rotulo: 'Vegetariano' },
+    { valor: 'VEGAN', rotulo: 'Vegano' },
+    { valor: 'GLUTEN_FREE', rotulo: 'Sem glúten' },
+    { valor: 'LACTOSE_FREE', rotulo: 'Sem lactose' },
+    { valor: 'ALLERGY', rotulo: 'Possui alergia alimentar' },
+    { valor: 'OTHER', rotulo: 'Outra restrição' }
+  ];
+  /** Campo de detalhe que aparece em "Possui alergia" e "Outra restrição". */
+  const DETALHE_DA_RESTRICAO = {
+    ALLERGY: { rotulo: 'Qual é a alergia?', placeholder: 'Ex: camarão, amendoim, ovo, nozes...' },
+    OTHER: { rotulo: 'Descreva a restrição', placeholder: 'Ex: Kosher, Halal, diabético...' }
+  };
+
+  /**
+   * Select de restrição alimentar com o campo de detalhe condicional (abre e
+   * fecha com animação). Para as outras opções o detalhe some e é apagado.
+   * @param {HTMLElement} raiz  onde o componente é montado
+   * @param {{ valor?: RestricaoAlimentar|null, onChange?: (data: RestricaoAlimentar) => void }} [opcoes]
+   */
+  function DietaryRestrictionSelect(raiz, opcoes = {}) {
+    raiz.innerHTML = `
+      <label for="guest-restricao-tipo" class="block text-xs font-bold text-zinc-700 mb-1.5">Restrições alimentares</label>
+      <select id="guest-restricao-tipo" class="field-input">
+        ${OPCOES_DE_RESTRICAO.map(o => `<option value="${o.valor}">${o.rotulo}</option>`).join('')}
+      </select>
+      <div class="restricao-detalhe" aria-hidden="true">
+        <div class="restricao-detalhe-dentro">
+          <label for="guest-restricao-detalhe" class="block text-xs font-bold text-zinc-700 mb-1.5 mt-3"></label>
+          <input type="text" id="guest-restricao-detalhe" class="field-input" autocomplete="off">
+          <p class="text-[11px] text-rose-600 mt-1 hidden" id="guest-restricao-erro">Preencha este campo.</p>
+        </div>
+      </div>`;
+    const select = /** @type {HTMLSelectElement} */ (raiz.querySelector('#guest-restricao-tipo'));
+    const caixa = /** @type {HTMLElement} */ (raiz.querySelector('.restricao-detalhe'));
+    const rotulo = /** @type {HTMLLabelElement} */ (raiz.querySelector('label[for="guest-restricao-detalhe"]'));
+    const detalhe = /** @type {HTMLInputElement} */ (raiz.querySelector('#guest-restricao-detalhe'));
+    const erro = /** @type {HTMLElement} */ (raiz.querySelector('#guest-restricao-erro'));
+
+    /** @returns {RestricaoAlimentar} */
+    const valorAtual = () => {
+      const tipo = /** @type {TipoDeRestricao} */ (select.value);
+      return tipo in DETALHE_DA_RESTRICAO ? { restrictionType: tipo, details: detalhe.value.trim() } : { restrictionType: tipo };
+    };
+    const atualizar = () => {
+      const tipo = select.value;
+      const config = DETALHE_DA_RESTRICAO[/** @type {'ALLERGY'|'OTHER'} */ (tipo)];
+      if (config) {
+        rotulo.textContent = config.rotulo;
+        detalhe.placeholder = config.placeholder;
+        detalhe.required = true;
+        caixa.classList.add('is-aberto');
+        caixa.setAttribute('aria-hidden', 'false');
+      } else {
+        detalhe.required = false;
+        detalhe.value = '';
+        erro.classList.add('hidden');
+        caixa.classList.remove('is-aberto');
+        caixa.setAttribute('aria-hidden', 'true');
+      }
+    };
+    select.addEventListener('change', () => {
+      atualizar();
+      if (detalhe.required) setTimeout(() => detalhe.focus(), 150);
+      opcoes.onChange?.(valorAtual());
+    });
+    detalhe.addEventListener('input', () => {
+      if (detalhe.value.trim()) erro.classList.add('hidden');
+      opcoes.onChange?.(valorAtual());
+    });
+
+    const definir = (/** @type {RestricaoAlimentar|null|undefined} */ v) => {
+      const tipo = v && OPCOES_DE_RESTRICAO.some(o => o.valor === v.restrictionType) ? v.restrictionType : 'NONE';
+      select.value = tipo;
+      detalhe.value = (v && v.details) || '';
+      erro.classList.add('hidden');
+      atualizar();
+    };
+    definir(opcoes.valor);
+
+    return {
+      valor: valorAtual,
+      definir,
+      /** Obrigatório: com alergia/outra, o detalhe precisa estar preenchido. */
+      validar() {
+        if (detalhe.required && !detalhe.value.trim()) {
+          erro.classList.remove('hidden');
+          detalhe.focus();
+          return false;
+        }
+        erro.classList.add('hidden');
+        return true;
+      }
+    };
+  }
+
+  /** Texto legível da restrição (vai em guest.dietaryRestrictions, usado em listas/exportações). @param {RestricaoAlimentar} r */
+  function textoDaRestricao(r) {
+    if (!r || r.restrictionType === 'NONE') return '';
+    const rotuloDaOpcao = (OPCOES_DE_RESTRICAO.find(o => o.valor === r.restrictionType) || { rotulo: '' }).rotulo;
+    if (r.restrictionType === 'ALLERGY') return `Alergia: ${r.details || ''}`.trim();
+    if (r.restrictionType === 'OTHER') return r.details || rotuloDaOpcao;
+    return rotuloDaOpcao;
+  }
+
+  const raizDaRestricao = document.getElementById('guest-restricao-alimentar');
+  const restricaoDoConvidado = raizDaRestricao ? DietaryRestrictionSelect(raizDaRestricao) : null;
+
   // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
   function openAddGuestDrawer(guestId = null) {
     const drawer = document.getElementById('drawer-add-guest');
@@ -8661,7 +8778,7 @@ document.addEventListener('DOMContentLoaded', () => {
       : (guest.companionsNames || []).map(name => ({ name, ageGroup: 'adult' }));
     companionsDetailed.forEach(c => addCompanionRow(c));
 
-    renderGuestComments(guest);
+    restricaoDoConvidado?.definir(guest.restricaoAlimentar || null);
 
     const removeWrap = document.getElementById('guest-remove-wrap');
     if (removeWrap) removeWrap.hidden = !guestId;
@@ -10971,6 +11088,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       phoneError?.classList.add('hidden');
 
+      // Restrição alimentar: com alergia/outra, o detalhe é obrigatório.
+      if (restricaoDoConvidado && !restricaoDoConvidado.validar()) return;
+
       // Acompanhantes: { id, name, ageGroup } por linha.
       const companionsDetailed = Array.from(document.querySelectorAll('.guest-companion-row')).map(row => ({
         id: row.dataset.id,
@@ -10993,6 +11113,10 @@ document.addEventListener('DOMContentLoaded', () => {
       guest.children = children;
       guest.relationshipTitle = document.getElementById('guest-title-input').value || '';
       guest.relationshipHost = document.getElementById('guest-title-host-input').value || '';
+      if (restricaoDoConvidado) {
+        guest.restricaoAlimentar = restricaoDoConvidado.valor();
+        guest.dietaryRestrictions = textoDaRestricao(guest.restricaoAlimentar);
+      }
 
       // Grava no banco antes de fechar; se falhar, o aviso fica no botão e a
       // gaveta continua aberta para tentar de novo.

@@ -9086,3 +9086,11 @@ html body:not([data-theme="dark"]) .floorplan-guest-card.is-seated:not(.is-decli
 html body .floorplan-add-convidado:not(#love-h-a) { font-size: 13px; font-weight: 600; color: #71717A; padding: 0.5rem 0.4rem 0.4rem; }
 html body .floorplan-add-convidado:not(#love-h-a):hover { color: #181D24; background: transparent; }
 html body .floorplan-guest-card-table:not(#love-h-a) { font-size: 0.75rem; }
+
+/* Girar (mesa retangular): fora da mesa, no canto de cima à direita, só o
+   ícone (seta curva). Aparece ao passar o mouse na mesa. */
+html body .floorplan-el.is-mesa > .floorplan-girar:not(#love-h-a) { position: absolute; top: 56px; left: 188px; right: auto; width: 22px; height: 22px; padding: 0; border: 0; background: transparent; box-shadow: none; border-radius: 6px; color: #52525B; }
+html body .floorplan-el.is-mesa.is-vertical > .floorplan-girar:not(#love-h-a) { top: 14px; left: 146px; }
+html body .floorplan-el.is-mesa > .floorplan-girar:not(#love-h-a) svg { width: 18px; height: 18px; }
+html body .floorplan-el.is-mesa > .floorplan-girar:not(#love-h-a):hover { color: #181D24; border: 0; }
+body[data-theme="dark"] .floorplan-el.is-mesa > .floorplan-girar { background: transparent !important; border: 0 !important; color: #A1A1AA !important; }

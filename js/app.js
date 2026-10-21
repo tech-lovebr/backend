@@ -9648,7 +9648,7 @@ document.addEventListener('DOMContentLoaded', () => {
           girar.className = 'floorplan-girar';
           girar.title = elData.orientacao === 'vertical' ? 'Deixar na horizontal' : 'Deixar na vertical';
           girar.setAttribute('aria-label', girar.title);
-          girar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>';
+          girar.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.5 17.5a9 9 0 0 1 15.2-6.5l1.8-1.8a.6.6 0 0 1 1 .4V16a.6.6 0 0 1-.6.6h-6.4a.6.6 0 0 1-.4-1l2.2-2.2A5.8 5.8 0 0 0 5.7 17.5Z"/></svg>';
           // Não deixa o clique virar arrastar nem abrir o pop-up da mesa.
           girar.addEventListener('mousedown', (e) => e.stopPropagation());
           girar.addEventListener('click', (e) => {
@@ -9660,8 +9660,8 @@ document.addEventListener('DOMContentLoaded', () => {
             saveFloorPlanElements(lista);
             renderFloorPlanCanvas();
           });
-          const linha = core.querySelector('.floorplan-core-linha');
-          if (linha) linha.insertBefore(girar, linha.firstChild); else el.appendChild(girar);
+          // Fora da mesa, no canto de cima à direita (ver .floorplan-girar no CSS).
+          el.appendChild(girar);
         }
         for (let i = 0; i < seats; i++) {
           // Redonda segue a conta de sempre; os outros formatos têm a própria.

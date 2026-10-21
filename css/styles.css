@@ -9446,3 +9446,11 @@ body[data-theme="dark"] .floorplan-texto { color: #E4E4E7; }
 .restricao-detalhe { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .22s ease, opacity .18s ease; }
 .restricao-detalhe.is-aberto { grid-template-rows: 1fr; opacity: 1; }
 .restricao-detalhe-dentro { overflow: hidden; min-height: 0; }
+
+/* Mapa do evento: sem o rodapé da plataforma na tela normal; expandida, um
+   rodapé próprio com o logo da Love à esquerda e a frase. */
+html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp-tables.active) > #dashboard-footer:not(#love-h-a) { display: none !important; }
+.floorplan-rodape-expandida { display: none; }
+html body .floorplan-wrap.is-expandida > .floorplan-rodape-expandida:not(#love-h-a) { display: flex; align-items: center; gap: 16px; flex-shrink: 0; padding: 12px 24px; background: #FFFFFF; border-top: 1px solid #E4E4E7; font-size: 12px; font-weight: 400; color: #71717A; }
+.floorplan-rodape-logo { height: 20px; width: auto; display: block; }
+body[data-theme="dark"] .floorplan-wrap.is-expandida > .floorplan-rodape-expandida { background: #181D24; border-top-color: #404040; color: #A1A1AA; }

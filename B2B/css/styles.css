@@ -9788,3 +9788,17 @@ html body.site-aba-formularios #builder-page-select-btn:not(#love-h-a) { pointer
   html body .site-cabecalho-acoes:not(#love-h-a), html body .site-seletor-seta:not(#love-h-a) { display: none; }
   html body #builder-page-select-btn:not(#love-h-a) { pointer-events: none; }
 }
+
+/* Editar meu site › botões que subiram para o cabeçalho: as mesmas cores de
+   quando estavam na barra do editor (o cabeçalho deixava todos escuros).
+   Salvar e Ver meu site claros; Publicar na cor primária. Aparelhos no centro. */
+html body.site-barra-no-cabecalho .b2b-header-bar #builder-save:not(#love-h-a),
+html body.site-barra-no-cabecalho .b2b-header-bar #builder-ver-site:not(#love-h-a) { background: #FFFFFF; border: 1px solid #E4E4E7; color: #3F3F46; }
+html body.site-barra-no-cabecalho .b2b-header-bar #builder-save:hover:not(#love-h-a),
+html body.site-barra-no-cabecalho .b2b-header-bar #builder-ver-site:hover:not(#love-h-a) { background: #FFFFFF; border-color: #181D24; color: #181D24; }
+html body.site-barra-no-cabecalho .b2b-header-bar #builder-publish:not(#love-h-a) { background: #183b54; border: 1px solid #183b54; color: #FFFFFF; }
+html body.site-barra-no-cabecalho .b2b-header-bar #builder-publish:hover:not(#love-h-a) { background: #122c3f; border-color: #122c3f; color: #FFFFFF; }
+html body.site-barra-no-cabecalho .b2b-header-bar:not(#love-h-a) { position: relative; }
+html body.site-barra-no-cabecalho .b2b-header-bar > #builder-device-toggle:not(#love-h-a) { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; }
+html body.site-aba-formularios .b2b-header-bar > #builder-device-toggle:not(#love-h-a) { display: none !important; }
+@media (max-width: 1180px) { html body .b2b-header-bar > #builder-device-toggle:not(#love-h-a) { display: none; } }

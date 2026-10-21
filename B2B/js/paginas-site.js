@@ -48,7 +48,9 @@ function subirBarraDoEditor() {
 
   const direita = document.createElement('div');
   direita.className = 'site-cabecalho-acoes';
-  direita.append(aparelhos, acoes);
+  // Aparelhos no centro da faixa (como estavam na barra do editor).
+  cabecalho.append(aparelhos);
+  direita.append(acoes);
   cabecalho.append(direita);
   document.body.classList.add('site-barra-no-cabecalho');
 }

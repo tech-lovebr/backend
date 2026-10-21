@@ -9511,3 +9511,6 @@ html body #tab-b2b :is(.btn-toggle-card-fav, .btn-message-supplier, .btn-hire-su
 html body #tab-b2b :is(.btn-toggle-card-fav, .btn-message-supplier, .btn-hire-supplier, #btn-b2b-profile-favorite, #btn-b2b-profile-message, #btn-b2b-profile-hire):not(#love-h-a) { box-shadow: none !important; border: 1px solid #E4E4E7 !important; }
 /* Mensagens: a coluna com a lista de conversas no mesmo fundo das telas (#F4F6F7). */
 html body:not([data-theme="dark"]) #tab-b2b :is(.b2b-chat-contacts-column, #b2b-chat-contacts-list):not(#love-h-a) { background-color: var(--bg-dashboard, #F4F6F7) !important; }
+/* Coração de favoritar vazio: preenchido com a cor do fundo das telas, para
+   diferenciar do branco do botão (favoritado continua rosa). */
+html body :is(.btn-toggle-card-fav svg.fill-none, #b2b-profile-favorite-icon.fill-none):not(#love-h-a) { fill: var(--bg-dashboard, #F4F6F7) !important; }

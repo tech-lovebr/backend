@@ -9351,3 +9351,8 @@ html body:is(.editor-split-mode, .rsvp-mode, .b2b-mode, .gifts-mode, .wallet-mod
    Mapa do evento: a planta vai até o rodapé, sem respiro. */
 html body:is(.editor-split-mode, .b2b-chat-mode) #view-event-os-dashboard .dashboard-main-area > .rodape-respiro:not(#love-h-a),
 html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp-tables.active) > .rodape-respiro:not(#love-h-a) { display: none !important; }
+
+/* Barra de ícones da esquerda na cor primária da Love (igual ao Hub B2B), só
+   no tema claro. Ícones, hover, ativo e o submenu branco continuam iguais. */
+html body:not([data-theme="dark"]) .sidebar-icon-rail:not(#love-h-a),
+html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top:not(#love-h-a) { background-color: #183b54 !important; }

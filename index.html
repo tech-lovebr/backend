@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_rodapeMapa">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_restricaoCores">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2094,6 +2094,7 @@
                     <th>Mesa</th>
                     <th>Presente</th>
                     <th>Status RSVP</th>
+                    <th class="guest-col-restricao" aria-label="Restrição alimentar"></th>
                   </tr>
                 </thead>
                 <tbody id="rsvp-guests-table-body">
@@ -5430,6 +5431,10 @@
           </div>
         </div>
 
+        <!-- Restrições alimentares (DietaryRestrictionSelect em app.js): logo
+             depois do e-mail; detalhe aparece em "Possui alergia" / "Outra" -->
+        <div id="guest-restricao-alimentar"></div>
+
         <!-- BLOCO 2: Vínculo & papel no evento -->
         <div class="flex gap-3">
           <div class="flex-1">
@@ -5471,10 +5476,6 @@
           </div>
         </div>
       </form>
-
-      <!-- Restrições alimentares (DietaryRestrictionSelect em app.js): select +
-           campo de texto que aparece só em "Possui alergia" / "Outra restrição" -->
-      <div id="guest-restricao-alimentar"></div>
 
       <div id="guest-remove-wrap" hidden>
         <button type="button" id="btn-remove-guest" class="guest-remove-btn">Remover convidado</button>
@@ -5548,7 +5549,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_restricaoAlimentar"></script>
+  <script src="js/app.js?v=20261021_restricaoCores2"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

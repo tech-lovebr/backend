@@ -8165,13 +8165,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // acompanhante sem nome lá é "Acompanhante de <primeiro nome>".
       const primeiroNome = (guest.name || '').trim().split(/\s+/)[0];
       const attendees = [{ name: guest.name, seatName: guest.name, isPrimary: true }];
-      (guest.companionsNames || []).forEach(comp => {
+      (guest.companionsNames || []).forEach((comp, i) => {
         const cleanName = (comp || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
         const generico = !cleanName || cleanName.toLowerCase() === 'acompanhante';
         attendees.push({
           name: cleanName || 'Acompanhante',
           seatName: generico ? `Acompanhante de ${primeiroNome}` : cleanName,
-          isPrimary: false
+          isPrimary: false,
+          restricaoAlimentar: guest.companionsDetailed && guest.companionsDetailed[i] ? guest.companionsDetailed[i].restricaoAlimentar : null
         });
       });
 
@@ -8203,6 +8204,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${statusBadges[guest.status] || guest.status}
             </div>
           </td>
+          <td class="guest-col-restricao">${bolinhaDaRestricaoHtml(attendee.isPrimary ? guest.restricaoAlimentar : attendee.restricaoAlimentar)}</td>
         `;
         row.dataset.guestId = guest.id;
 
@@ -8485,9 +8487,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!list) return;
     const { id, name = '', ageGroup = 'adult' } = companion;
     const row = document.createElement('div');
-    row.className = 'flex items-center gap-2 guest-companion-row';
+    row.className = 'guest-companion-row';
     row.dataset.id = id || `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     row.innerHTML = `
+      <div class="flex items-center gap-2">
       <input type="text" placeholder="Nome ou 'Acompanhante'" class="field-input guest-companion-name-input" value="${name.replace(/"/g, '&quot;')}">
       <select class="field-input guest-companion-age-input" style="flex: 0 0 auto; width: 150px;">
         ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([val, label]) => `<option value="${val}" ${val === ageGroup ? 'selected' : ''}>${label}</option>`).join('')}
@@ -8495,8 +8498,13 @@ document.addEventListener('DOMContentLoaded', () => {
       <button type="button" class="btn-remove-companion-row w-9 h-9 rounded-xl border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Remover acompanhante">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
+      </div>
+      <div class="guest-companion-restricao mt-2"></div>
     `;
     row.querySelector('.btn-remove-companion-row').addEventListener('click', () => row.remove());
+    // Restrição alimentar deste acompanhante.
+    const raizDoAcompanhante = /** @type {HTMLElement} */ (row.querySelector('.guest-companion-restricao'));
+    restricaoDoAcompanhante.set(row, DietaryRestrictionSelect(raizDoAcompanhante, { rotulo: 'Restrições alimentares deste acompanhante', valor: companion.restricaoAlimentar || null }));
     list.appendChild(row);
     if (!name) row.querySelector('input').focus();
   }
@@ -8600,14 +8608,17 @@ document.addEventListener('DOMContentLoaded', () => {
    * @typedef {'NONE' | 'VEGETARIAN' | 'VEGAN' | 'GLUTEN_FREE' | 'LACTOSE_FREE' | 'ALLERGY' | 'OTHER'} TipoDeRestricao
    * @typedef {{ restrictionType: TipoDeRestricao, details?: string }} RestricaoAlimentar
    */
-  /** @type {{ valor: TipoDeRestricao, rotulo: string }[]} */
+  /**
+   * Opções com a cor da bolinha (cor = bolinha; fundo = assento no Mapa do evento).
+   * @type {{ valor: TipoDeRestricao, rotulo: string, cor?: string, fundo?: string }[]}
+   */
   const OPCOES_DE_RESTRICAO = [
     { valor: 'NONE', rotulo: 'Sem restrições alimentares' },
-    { valor: 'VEGETARIAN', rotulo: 'Vegetariano' },
-    { valor: 'VEGAN', rotulo: 'Vegano' },
-    { valor: 'GLUTEN_FREE', rotulo: 'Sem glúten' },
-    { valor: 'LACTOSE_FREE', rotulo: 'Sem lactose' },
-    { valor: 'ALLERGY', rotulo: 'Possui alergia alimentar' },
+    { valor: 'VEGETARIAN', rotulo: 'Vegetariano', cor: '#86EFAC', fundo: '#DCFCE7' },
+    { valor: 'VEGAN', rotulo: 'Vegano', cor: '#F9A8D4', fundo: '#FCE7F3' },
+    { valor: 'GLUTEN_FREE', rotulo: 'Sem glúten', cor: '#D2B48C', fundo: '#F3E8DA' },
+    { valor: 'LACTOSE_FREE', rotulo: 'Sem lactose', cor: '#93C5FD', fundo: '#DBEAFE' },
+    { valor: 'ALLERGY', rotulo: 'Possui alergia alimentar', cor: '#FCA5A5', fundo: '#FEE2E2' },
     { valor: 'OTHER', rotulo: 'Outra restrição' }
   ];
   /** Campo de detalhe que aparece em "Possui alergia" e "Outra restrição". */
@@ -8616,38 +8627,75 @@ document.addEventListener('DOMContentLoaded', () => {
     OTHER: { rotulo: 'Descreva a restrição', placeholder: 'Ex: Kosher, Halal, diabético...' }
   };
 
+  /** Opção (com cor) de uma restrição salva; null quando não tem bolinha. @param {any} r */
+  function opcaoComCor(r) {
+    const o = r && OPCOES_DE_RESTRICAO.find(x => x.valor === r.restrictionType);
+    return o && o.cor ? o : null;
+  }
+
+  /** Bolinha colorida (com a dica do nome) para a lista de convidados. @param {any} r */
+  function bolinhaDaRestricaoHtml(r) {
+    const o = opcaoComCor(r);
+    if (!o) return '';
+    const nome = r.restrictionType === 'ALLERGY' && r.details ? `Alergia: ${r.details}` : o.rotulo;
+    return `<span class="restricao-bolinha" style="--cor:${o.cor}" data-dica="${escaparHtml(nome)}" aria-label="${escaparHtml(nome)}" role="img"></span>`;
+  }
+
+  // Fecha qualquer lista de restrição aberta ao clicar fora.
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.restricao-select.is-aberto').forEach(s => {
+      if (!(e.target instanceof Node && s.contains(e.target))) s.dispatchEvent(new CustomEvent('restricao-fechar'));
+    });
+  });
+
+  let contadorDeRestricao = 0;
   /**
-   * Select de restrição alimentar com o campo de detalhe condicional (abre e
-   * fecha com animação). Para as outras opções o detalhe some e é apagado.
+   * Seletor de restrição alimentar: lista própria com a bolinha de cor de cada
+   * opção + campo de detalhe condicional (abre/fecha com animação). Nas
+   * outras opções o detalhe some e é apagado.
    * @param {HTMLElement} raiz  onde o componente é montado
-   * @param {{ valor?: RestricaoAlimentar|null, onChange?: (data: RestricaoAlimentar) => void }} [opcoes]
+   * @param {{ valor?: RestricaoAlimentar|null, rotulo?: string, onChange?: (data: RestricaoAlimentar) => void }} [opcoes]
    */
   function DietaryRestrictionSelect(raiz, opcoes = {}) {
+    const id = `restricao-${++contadorDeRestricao}`;
+    const seta = '<svg class="restricao-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
     raiz.innerHTML = `
-      <label for="guest-restricao-tipo" class="block text-xs font-bold text-zinc-700 mb-1.5">Restrições alimentares</label>
-      <select id="guest-restricao-tipo" class="field-input">
-        ${OPCOES_DE_RESTRICAO.map(o => `<option value="${o.valor}">${o.rotulo}</option>`).join('')}
-      </select>
+      <p class="block text-xs font-bold text-zinc-700 mb-1.5" id="${id}-rotulo">${escaparHtml(opcoes.rotulo || 'Restrições alimentares')}</p>
+      <div class="restricao-select">
+        <button type="button" class="field-input restricao-botao" id="${id}-botao" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="${id}-rotulo ${id}-botao">
+          <span class="restricao-bolinha"></span><span class="restricao-texto"></span>${seta}
+        </button>
+        <ul class="restricao-lista" role="listbox" aria-labelledby="${id}-rotulo" tabindex="-1">
+          ${OPCOES_DE_RESTRICAO.map(o => `<li role="option" tabindex="-1" data-valor="${o.valor}"><span class="restricao-bolinha"${o.cor ? ` style="--cor:${o.cor}"` : ''}></span><span>${o.rotulo}</span></li>`).join('')}
+        </ul>
+      </div>
       <div class="restricao-detalhe" aria-hidden="true">
         <div class="restricao-detalhe-dentro">
-          <label for="guest-restricao-detalhe" class="block text-xs font-bold text-zinc-700 mb-1.5 mt-3"></label>
-          <input type="text" id="guest-restricao-detalhe" class="field-input" autocomplete="off">
-          <p class="text-[11px] text-rose-600 mt-1 hidden" id="guest-restricao-erro">Preencha este campo.</p>
+          <label for="${id}-detalhe" class="block text-xs font-bold text-zinc-700 mb-1.5 mt-3"></label>
+          <input type="text" id="${id}-detalhe" class="field-input" autocomplete="off">
+          <p class="text-[11px] text-rose-600 mt-1 hidden" id="${id}-erro">Preencha este campo.</p>
         </div>
       </div>`;
-    const select = /** @type {HTMLSelectElement} */ (raiz.querySelector('#guest-restricao-tipo'));
+    const caixaSelect = /** @type {HTMLElement} */ (raiz.querySelector('.restricao-select'));
+    const botao = /** @type {HTMLButtonElement} */ (raiz.querySelector('.restricao-botao'));
+    const lista = /** @type {HTMLElement} */ (raiz.querySelector('.restricao-lista'));
+    const itens = /** @type {HTMLElement[]} */ (Array.from(lista.querySelectorAll('li')));
     const caixa = /** @type {HTMLElement} */ (raiz.querySelector('.restricao-detalhe'));
-    const rotulo = /** @type {HTMLLabelElement} */ (raiz.querySelector('label[for="guest-restricao-detalhe"]'));
-    const detalhe = /** @type {HTMLInputElement} */ (raiz.querySelector('#guest-restricao-detalhe'));
-    const erro = /** @type {HTMLElement} */ (raiz.querySelector('#guest-restricao-erro'));
+    const rotulo = /** @type {HTMLLabelElement} */ (raiz.querySelector(`label[for="${id}-detalhe"]`));
+    const detalhe = /** @type {HTMLInputElement} */ (raiz.querySelector(`#${id}-detalhe`));
+    const erro = /** @type {HTMLElement} */ (raiz.querySelector(`#${id}-erro`));
+    /** @type {TipoDeRestricao} */
+    let tipo = 'NONE';
 
     /** @returns {RestricaoAlimentar} */
-    const valorAtual = () => {
-      const tipo = /** @type {TipoDeRestricao} */ (select.value);
-      return tipo in DETALHE_DA_RESTRICAO ? { restrictionType: tipo, details: detalhe.value.trim() } : { restrictionType: tipo };
-    };
-    const atualizar = () => {
-      const tipo = select.value;
+    const valorAtual = () => (tipo in DETALHE_DA_RESTRICAO ? { restrictionType: tipo, details: detalhe.value.trim() } : { restrictionType: tipo });
+    const mostrarTipo = () => {
+      const o = OPCOES_DE_RESTRICAO.find(x => x.valor === tipo) || OPCOES_DE_RESTRICAO[0];
+      const bolinha = /** @type {HTMLElement} */ (botao.querySelector('.restricao-bolinha'));
+      bolinha.style.setProperty('--cor', o.cor || 'transparent');
+      bolinha.classList.toggle('is-vazia', !o.cor);
+      /** @type {HTMLElement} */ (botao.querySelector('.restricao-texto')).textContent = o.rotulo;
+      itens.forEach(li => li.setAttribute('aria-selected', String(li.dataset.valor === tipo)));
       const config = DETALHE_DA_RESTRICAO[/** @type {'ALLERGY'|'OTHER'} */ (tipo)];
       if (config) {
         rotulo.textContent = config.rotulo;
@@ -8663,10 +8711,34 @@ document.addEventListener('DOMContentLoaded', () => {
         caixa.setAttribute('aria-hidden', 'true');
       }
     };
-    select.addEventListener('change', () => {
-      atualizar();
+    const abrir = (/** @type {boolean} */ sim) => {
+      caixaSelect.classList.toggle('is-aberto', sim);
+      botao.setAttribute('aria-expanded', String(sim));
+      if (sim) (itens.find(li => li.dataset.valor === tipo) || itens[0]).focus();
+    };
+    const escolher = (/** @type {string} */ valor) => {
+      tipo = /** @type {TipoDeRestricao} */ (valor);
+      mostrarTipo();
+      abrir(false);
+      botao.focus();
       if (detalhe.required) setTimeout(() => detalhe.focus(), 150);
       opcoes.onChange?.(valorAtual());
+    };
+    caixaSelect.addEventListener('restricao-fechar', () => abrir(false));
+    botao.addEventListener('click', () => abrir(!caixaSelect.classList.contains('is-aberto')));
+    botao.addEventListener('keydown', (e) => {
+      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(e.key)) { e.preventDefault(); abrir(true); }
+    });
+    itens.forEach((li, i) => {
+      li.addEventListener('click', () => escolher(li.dataset.valor || 'NONE'));
+      li.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'ArrowDown') { e.preventDefault(); (itens[i + 1] || li).focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); (itens[i - 1] || li).focus(); }
+        else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); escolher(li.dataset.valor || 'NONE'); }
+        else if (e.key === 'Escape') { e.preventDefault(); abrir(false); botao.focus(); }
+        else if (e.key === 'Tab') abrir(false);
+      });
     });
     detalhe.addEventListener('input', () => {
       if (detalhe.value.trim()) erro.classList.add('hidden');
@@ -8674,11 +8746,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const definir = (/** @type {RestricaoAlimentar|null|undefined} */ v) => {
-      const tipo = v && OPCOES_DE_RESTRICAO.some(o => o.valor === v.restrictionType) ? v.restrictionType : 'NONE';
-      select.value = tipo;
-      detalhe.value = (v && v.details) || '';
+      tipo = v && OPCOES_DE_RESTRICAO.some(o => o.valor === v.restrictionType) ? v.restrictionType : 'NONE';
+      mostrarTipo();
+      detalhe.value = (v && tipo in DETALHE_DA_RESTRICAO && v.details) || '';
       erro.classList.add('hidden');
-      atualizar();
     };
     definir(opcoes.valor);
 
@@ -8698,7 +8769,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  /** Texto legível da restrição (vai em guest.dietaryRestrictions, usado em listas/exportações). @param {RestricaoAlimentar} r */
+  /** Texto legível da restrição (vai em dietaryRestrictions, usado em listas/exportações). @param {RestricaoAlimentar} r */
   function textoDaRestricao(r) {
     if (!r || r.restrictionType === 'NONE') return '';
     const rotuloDaOpcao = (OPCOES_DE_RESTRICAO.find(o => o.valor === r.restrictionType) || { rotulo: '' }).rotulo;
@@ -8707,8 +8778,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return rotuloDaOpcao;
   }
 
+  /**
+   * Restrição de quem está num assento do Mapa do evento (convidado ou
+   * acompanhante), pelo nome com que aparece na planta.
+   * @param {string} nomeNoAssento
+   */
+  function restricaoDoAssento(nomeNoAssento) {
+    const ev = getActiveEvent();
+    const alvo = String(nomeNoAssento || '').trim().toLowerCase();
+    if (!ev || !alvo) return null;
+    for (const g of ev.guests || []) {
+      if ((g.name || '').trim().toLowerCase() === alvo) return g.restricaoAlimentar || null;
+      const primeiro = (g.name || '').trim().split(/\s+/)[0];
+      const nomes = g.companionsNames || [];
+      for (let i = 0; i < nomes.length; i++) {
+        const limpo = (nomes[i] || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+        const nomeNaPlanta = !limpo || limpo.toLowerCase() === 'acompanhante' ? `Acompanhante de ${primeiro}` : limpo;
+        if (nomeNaPlanta.toLowerCase() === alvo) return (g.companionsDetailed && g.companionsDetailed[i] && g.companionsDetailed[i].restricaoAlimentar) || null;
+      }
+    }
+    return null;
+  }
+
   const raizDaRestricao = document.getElementById('guest-restricao-alimentar');
   const restricaoDoConvidado = raizDaRestricao ? DietaryRestrictionSelect(raizDaRestricao) : null;
+  /** Restrição de cada linha de acompanhante do drawer. @type {WeakMap<HTMLElement, ReturnType<typeof DietaryRestrictionSelect>>} */
+  const restricaoDoAcompanhante = new WeakMap();
 
   // guestId: null = novo convidado; caso contrário abre já preenchido para edição.
   function openAddGuestDrawer(guestId = null) {
@@ -9858,6 +9953,13 @@ document.addEventListener('DOMContentLoaded', () => {
           let seatState = 'is-empty';
           if (guestName) seatState = declined ? 'is-declined' : (confirmed ? 'is-confirmed' : 'is-assigned');
           seatDot.className = `floorplan-seat-dot ${seatState}`;
+          // Restrição alimentar de quem senta aqui: o assento fica na cor dela.
+          const corDaRestricao = guestName ? opcaoComCor(restricaoDoAssento(guestName)) : null;
+          if (corDaRestricao) {
+            seatDot.classList.add('tem-restricao');
+            seatDot.style.setProperty('--cor-restricao', corDaRestricao.fundo || corDaRestricao.cor || '');
+            seatDot.style.setProperty('--cor-restricao-borda', corDaRestricao.cor || '');
+          }
           if (!guestName) seatDot.title = 'Lugar vago';
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
@@ -11090,12 +11192,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Restrição alimentar: com alergia/outra, o detalhe é obrigatório.
       if (restricaoDoConvidado && !restricaoDoConvidado.validar()) return;
+      const linhasDeAcompanhante = /** @type {HTMLElement[]} */ (Array.from(document.querySelectorAll('.guest-companion-row')));
+      if (linhasDeAcompanhante.some(l => { const r = restricaoDoAcompanhante.get(l); return r ? !r.validar() : false; })) return;
 
       // Acompanhantes: { id, name, ageGroup } por linha.
       const companionsDetailed = Array.from(document.querySelectorAll('.guest-companion-row')).map(row => ({
         id: row.dataset.id,
         name: row.querySelector('.guest-companion-name-input').value.trim() || 'Acompanhante',
-        ageGroup: row.querySelector('.guest-companion-age-input').value
+        ageGroup: row.querySelector('.guest-companion-age-input').value,
+        restricaoAlimentar: restricaoDoAcompanhante.get(/** @type {HTMLElement} */ (row))?.valor() || { restrictionType: 'NONE' }
       }));
       const companionsNames = companionsDetailed.map(c => c.name);
       const adults = 1 + companionsDetailed.filter(c => c.ageGroup === 'adult').length;
@@ -11148,6 +11253,8 @@ document.addEventListener('DOMContentLoaded', () => {
       closeAddGuestDrawer();
       renderGuestsTable();
       renderFloorPlanGuestCards();
+      // A cor da restrição alimentar aparece no assento do Mapa do evento.
+      renderFloorPlanCanvas();
       updateAllCelebrationData();
       showToast(wasNew ? `Convidado ${name} adicionado à lista de ${activeEvent.title}!` : `Convidado ${name} atualizado!`, '👤');
     });

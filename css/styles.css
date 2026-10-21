@@ -9494,3 +9494,8 @@ html body button.guest-remove-lixeira:not(#love-h-a) svg { width: 18px; height: 
 /* Confirmando: some lixeira e Salvar; aparece "Remover este convidado? Sim / Não". */
 .guest-drawer-rodape.is-confirmando #guest-remove-wrap, .guest-drawer-rodape.is-confirmando #btn-save-guest { display: none !important; }
 .guest-drawer-rodape .guest-remove-confirm { flex: 1; min-height: 44px; }
+/* Drawer do convidado: cada acompanhante começa com uma linha horizontal,
+   separando das informações do convidado principal (e de outro acompanhante). */
+html body #guest-companions-list .guest-companion-row:not(#love-h-a) { border-bottom: 0; padding-bottom: 0; border-top: 1px solid #E4E4E7; padding-top: 16px; margin-top: 16px; }
+html body #guest-companions-list.space-y-2 > .guest-companion-row:not(#love-h-a) { margin-top: 16px; }
+html body #guest-companions-list:not(:empty) + .guest-add-acompanhante:not(#love-h-a) { margin-top: 12px; }

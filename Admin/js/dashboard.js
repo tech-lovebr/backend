@@ -17,11 +17,8 @@ let DADOS = null;
    com o histórico inteiro: ele é sobre a pessoa, não sobre o recorte.
    ====================================================================== */
 
-// Abre sempre em "hoje"; o calendário do filtro muda para outro dia ou intervalo.
-let PERIODO = (() => {
-  const h = new Date();
-  return { de: new Date(h.getFullYear(), h.getMonth(), h.getDate()), ate: new Date(h.getFullYear(), h.getMonth(), h.getDate(), 23, 59, 59, 999) };
-})();
+// Abre em "Todo o período"; o calendário do filtro recorta um dia ou intervalo.
+let PERIODO = { de: null, ate: null };
 
 /** "AAAA-MM-DD" → início ou fim daquele dia no fuso de quem está vendo. */
 function diaLocal(valor, fimDoDia) {
@@ -78,7 +75,7 @@ function montarFiltroDePeriodo() {
   wrap.className = 'filtro-wrap';
   wrap.innerHTML = `
     <button type="button" class="btn btn-ghost btn-periodo" id="btn-periodo" aria-expanded="false" aria-controls="periodo-menu">
-      <span id="periodo-rotulo">Hoje</span>
+      <span id="periodo-rotulo">Todo o período</span>
       <svg class="btn-periodo-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
     </button>
 

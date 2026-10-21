@@ -9449,3 +9449,8 @@ body[data-theme="dark"] .op-tag { background: #252525 !important; border-color: 
 
 /* A proposta no chat aparece como card solto (sem a bolha escura em volta). */
 html body .chat-bubble-user-glass:has(> .chat-proposta-card):not(#love-h-a) { background: transparent !important; padding: 0 !important; box-shadow: none !important; border: none !important; backdrop-filter: none !important; }
+
+/* Rodapé enxuto: sem a linha de cima (não há mais bloco acima), links logo abaixo do ©. */
+html body .b2b-footer-bottom--enxuto:not(#love-h-a) { margin-top: 0; padding-top: 0; border-top: none; align-items: flex-end; }
+html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links:not(#love-h-a) { margin-top: 0.4rem; gap: 1rem; }
+html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links a:not(#love-h-a) { font-size: 0.75rem; }

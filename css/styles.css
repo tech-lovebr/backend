@@ -9368,3 +9368,7 @@ html body:not([data-theme="dark"]) #floorplan-canvas:not(#love-h-a) {
    convidado e outro; já sentado = cor do fundo das telas / item ativo do menu. */
 html body #floorplan-guests-panel .floorplan-guest-card:not(#love-h-a) { padding-top: 12px !important; padding-bottom: 12px !important; }
 html body:not([data-theme="dark"]) .floorplan-guest-card.is-seated:not(.is-declined):not(#love-h-a) { background: #F4F6F7 !important; }
+/* Menu do perfil: só o e-mail ao lado da foto (sem o nome). */
+html body #account-dropdown-username:not(#love-h-a) { display: none !important; }
+html body .account-dropdown-header:not(#love-h-a) { align-items: center; }
+html body #account-dropdown-email:not(#love-h-a) { font-size: 0.875rem !important; font-weight: 500 !important; color: #18181B !important; }

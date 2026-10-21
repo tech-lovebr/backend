@@ -9745,3 +9745,7 @@ body[data-theme="dark"] .profile-dropdown-header .profile-dropdown-email { color
 
 /* Dashboard › Analytics: sem o botão de calendário (período) por enquanto. */
 html body .dash-analytics-period-wrap:not(#love-h-a) { display: none !important; }
+
+/* Subtítulo escondido (ex.: Editar meu site): a linha volta para a faixa do título. */
+html body:not([data-theme="dark"]) .b2b-header-bar:has(+ p[hidden]):not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }
+html body .b2b-header-bar + p[hidden]:not(#love-h-a) { display: none !important; }

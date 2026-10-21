@@ -69,10 +69,12 @@ function mostrarAbaDoSite(aba) {
   // O cabeçalho da página acompanha a aba: Construtor de sites × Seus formulários.
   const titulo = document.getElementById('site-titulo-pagina');
   const subtitulo = document.getElementById('site-subtitulo-pagina');
-  if (titulo) titulo.textContent = alvo === 'formularios' ? 'Seus formulários' : 'Construtor de sites';
-  if (subtitulo) subtitulo.textContent = alvo === 'formularios'
-    ? 'Crie formulários personalizados para coletar informações dos seus clientes.'
-    : 'Personalize seu site e crie formulários para seus clientes.';
+  // "Editar meu site" sem subtítulo; "Seus formulários" com.
+  if (titulo) titulo.textContent = alvo === 'formularios' ? 'Seus formulários' : 'Editar meu site';
+  if (subtitulo) {
+    subtitulo.textContent = alvo === 'formularios' ? 'Crie formulários personalizados para coletar informações dos seus clientes.' : '';
+    subtitulo.hidden = alvo !== 'formularios';
+  }
   document.body.classList.toggle('site-aba-formularios', alvo === 'formularios');
 }
 

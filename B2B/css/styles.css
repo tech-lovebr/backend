@@ -9926,3 +9926,8 @@ html body #product-drawer .product-wizard-footer:not(#love-h-a) {
 }
 body[data-theme="dark"] #product-drawer .form-drawer-body,
 body[data-theme="dark"] #product-drawer .product-wizard-footer { background: #1F1F1F !important; border-color: #404040 !important; }
+
+/* Adicionar novo produto: o "Voltar" é só a setinha à esquerda do título. */
+html body .produto-voltar:not(#love-h-a) { height: auto; padding: 0; border: none; background: none; color: #18181B; gap: 0; margin-left: -4px; }
+html body .produto-voltar:hover:not(#love-h-a) { border: none; color: #52525B; }
+html body .produto-titulo-wrap:not(#love-h-a) { gap: 0.35rem; }

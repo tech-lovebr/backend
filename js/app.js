@@ -18847,12 +18847,12 @@ document.addEventListener('DOMContentLoaded', () => {
     /** @param {string} rotulo @param {string} valorHtml */
     const linha = (rotulo, valorHtml) => `<div class="config-evento-linha"><dt>${rotulo}</dt><dd>${valorHtml || '<span class="config-evento-vazio">—</span>'}</dd></div>`;
     const organizadoresHtml = (/** @type {{nome: string, email: string, papel: string}[]} */ lista) => lista.map(o =>
-      `<span class="config-evento-organizador"><strong>${escaparHtml(o.nome || o.email || '')}</strong>${o.email && o.nome ? `<span>${escaparHtml(o.email)}</span>` : ''}${o.papel ? `<em>${escaparHtml(o.papel)}</em>` : ''}</span>`).join('');
+      `<span class="config-evento-organizador"><span class="config-evento-organizador-quem"><strong>${escaparHtml(o.nome || o.email || '')}</strong>${o.email && o.nome ? `<span>${escaparHtml(o.email)}</span>` : ''}</span>${o.papel ? `<em>${escaparHtml(o.papel)}</em>` : ''}</span>`).join('');
     const criador = { nome: ehDono ? (nomeDaConta(perfil) || perfil.couple_name || 'Anfitrião') : (ev.hostName || 'Anfitrião'), email: ehDono ? (perfil.email || '') : '', papel: 'Criador' };
     const desenhar = (/** @type {any[]} */ organizadores) => {
       caixa.innerHTML = [
         linha('Nome do evento', escaparHtml(ev.title || '')),
-        linha('Endereço do site', url ? `<a href="${escaparHtml(url)}" target="_blank" rel="noopener" class="config-evento-link">${escaparHtml(url.replace(/^https?:\/\//, ''))}</a>` : ''),
+        linha('Endereço do site', url ? `<span class="config-evento-site"><a href="${escaparHtml(url)}" target="_blank" rel="noopener" class="config-evento-link">${escaparHtml(url.replace(/^https?:\/\//, ''))}</a><a href="${escaparHtml(url)}" target="_blank" rel="noopener" class="config-evento-abrir" data-dica="Abrir site" aria-label="Abrir site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg></a></span>` : ''),
         linha('Nome da conta', escaparHtml(nomeDaConta(perfil) || '')),
         linha('E-mail cadastrado', escaparHtml(perfil.email || '')),
         linha('Co-anfitriões', `<span class="config-evento-organizadores">${organizadoresHtml([criador, ...organizadores])}</span>`),

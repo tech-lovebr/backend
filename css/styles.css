@@ -9523,3 +9523,8 @@ html body #tab-b2b :is(.btn-hire-supplier, #btn-b2b-profile-hire):not(#love-h-a)
 html body #tab-b2b :is(.btn-hire-supplier, #btn-b2b-profile-hire):not(#love-h-a):hover { background: #122c3f !important; border-color: #122c3f !important; }
 html body #tab-b2b :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite):not(#love-h-a) { border-color: #183b54 !important; }
 html body #tab-b2b :is(.btn-toggle-card-fav svg.fill-none, #b2b-profile-favorite-icon.fill-none):not(#love-h-a) { color: #183b54 !important; stroke: #183b54 !important; }
+/* Drawer do convidado › remover acompanhante: lixeira preta num quadradinho
+   cinza claro, sem borda; no hover o cinza só escurece um pouco. */
+html body button.guest-acompanhante-lixeira:not(#love-h-a) { width: 43px; height: 43px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #F4F4F5; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; transition: background-color .15s; }
+html body button.guest-acompanhante-lixeira:not(#love-h-a):hover { background: #E4E4E7; color: #18181B; }
+html body button.guest-acompanhante-lixeira:not(#love-h-a) svg { width: 16px; height: 16px; }

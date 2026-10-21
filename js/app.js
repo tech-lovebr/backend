@@ -8619,8 +8619,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <select class="field-input guest-companion-age-input" style="flex: 0 0 auto; width: 150px;">
         ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([val, label]) => `<option value="${val}" ${val === ageGroup ? 'selected' : ''}>${label}</option>`).join('')}
       </select>
-      <button type="button" class="btn-remove-companion-row w-9 h-9 rounded-xl border border-zinc-200 hover:border-rose-300 hover:bg-rose-50 text-zinc-400 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Remover acompanhante">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      <button type="button" class="btn-remove-companion-row guest-acompanhante-lixeira" aria-label="Remover acompanhante">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg>
       </button>
       </div>
       <div class="guest-companion-restricao mt-2"></div>

@@ -18076,7 +18076,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.loveClienteProfile = cliente || perfilDeColaborador(session);
     atualizarAvatarDoCabecalho();
     const dropdownUsername = document.getElementById('account-dropdown-username');
-    if (dropdownUsername) dropdownUsername.textContent = window.loveClienteProfile.couple_name;
+    if (dropdownUsername) dropdownUsername.textContent = nomeDaConta(window.loveClienteProfile);
 
     // Veio da página /cadastro, que já perguntou o tipo de evento no onboarding
     // — pula os eventos de demonstração e leva direto pro formulário de criar

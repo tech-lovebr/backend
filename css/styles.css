@@ -9417,3 +9417,6 @@ html body #btn-floorplan-formas:not(#love-h-a) { width: 38px; padding: 0; justif
    em vez de cortar com "..."). */
 html body #account-dropdown-avatar:not(#love-h-a) { display: none !important; }
 html body #account-dropdown-email:not(#love-h-a) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+/* Menu do perfil: só o nome e sobrenome da pessoa (sem o e-mail). */
+html body #account-dropdown-username:not(#love-h-a) { display: block !important; font-size: 0.875rem !important; font-weight: 500 !important; color: #18181B !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+html body #account-dropdown-email:not(#love-h-a) { display: none !important; }

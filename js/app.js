@@ -792,7 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const abaInicial = opts.aba || 'conta';
     abrirSubmenuDaPagina('Configurações', [
       { id: 'conta', rotulo: 'Minha conta' },
-      { id: 'eventos', rotulo: 'Meus eventos' }
+      { id: 'eventos', rotulo: 'Meu evento' }
     ], abaInicial, mostrarAbaDeConfiguracoes);
     mostrarAbaDeConfiguracoes(abaInicial);
     preencherConfiguracoesDaConta();
@@ -17915,7 +17915,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
-    if (aba === 'eventos') renderMeusEventos();
+    if (aba === 'eventos') renderMeuEvento();
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
 
@@ -17988,6 +17988,74 @@ document.addEventListener('DOMContentLoaded', () => {
       atualizarLixeiraDeEventos();
     });
   }
+
+  // ==========================================
+  // CONFIGURAÇÕES › MEU EVENTO (o evento ativo)
+  // ==========================================
+  /** Data "2026-11-22" → "22 de novembro de 2026". @param {string} iso */
+  function dataPorExtensoDoEvento(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    if (!m) return '';
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  async function renderMeuEvento() {
+    const caixa = document.getElementById('config-meu-evento-dados');
+    const ev = getActiveEvent();
+    if (!caixa || !ev) return;
+    const det = ev.eventDetails || {};
+    const perfil = window.loveClienteProfile || {};
+    const ehDono = !ev.souOrganizador;
+    const url = ev.publicUrl || (ev.slug ? `https://love.com.br/${ev.slug}` : '');
+    const data = dataPorExtensoDoEvento(det.date || ev.date || '');
+    const hora = (det.time || '').slice(0, 5);
+    const local = [det.locationName, det.address].map(v => String(v || '').trim()).filter(Boolean).join(' · ') || (ev.location && ev.location !== 'Adicionar Local' ? ev.location : '');
+    /** @param {string} rotulo @param {string} valorHtml */
+    const linha = (rotulo, valorHtml) => `<div class="config-evento-linha"><dt>${rotulo}</dt><dd>${valorHtml || '<span class="config-evento-vazio">—</span>'}</dd></div>`;
+    const organizadoresHtml = (/** @type {{nome: string, email: string, papel: string}[]} */ lista) => lista.map(o =>
+      `<span class="config-evento-organizador"><strong>${escaparHtml(o.nome || o.email || '')}</strong>${o.email && o.nome ? `<span>${escaparHtml(o.email)}</span>` : ''}${o.papel ? `<em>${escaparHtml(o.papel)}</em>` : ''}</span>`).join('');
+    const criador = { nome: ehDono ? (nomeDaConta(perfil) || perfil.couple_name || 'Anfitrião') : (ev.hostName || 'Anfitrião'), email: ehDono ? (perfil.email || '') : '', papel: 'Criador' };
+    const desenhar = (/** @type {any[]} */ organizadores) => {
+      caixa.innerHTML = [
+        linha('Nome do evento', escaparHtml(ev.title || '')),
+        linha('Endereço do site', url ? `<a href="${escaparHtml(url)}" target="_blank" rel="noopener" class="config-evento-link">${escaparHtml(url.replace(/^https?:\/\//, ''))}</a>` : ''),
+        linha('Nome da conta', escaparHtml(nomeDaConta(perfil) || '')),
+        linha('E-mail cadastrado', escaparHtml(perfil.email || '')),
+        linha('Organizadores', `<span class="config-evento-organizadores">${organizadoresHtml([criador, ...organizadores])}</span>`),
+        linha('Data', escaparHtml([data, hora ? `às ${hora}` : ''].filter(Boolean).join(' '))),
+        linha('Local', escaparHtml(local))
+      ].join('');
+    };
+    desenhar([]);
+    // Só quem criou o evento desativa.
+    const blocoDesativar = /** @type {HTMLElement|null} */ (document.querySelector('.config-evento-desativar'));
+    if (blocoDesativar) blocoDesativar.hidden = !ehDono;
+    if (!ehUuid(ev.id)) return;
+    const { data: org, error } = await supabaseClient
+      .from('eventos_organizadores')
+      .select('email, nome, papel, status')
+      .eq('evento_id', ev.id)
+      .neq('status', 'removido')
+      .order('created_at', { ascending: true });
+    if (error) return;
+    const PAPEIS = { anfitriao: 'Anfitrião', colaborador: 'Colaborador' };
+    if (getActiveEvent() === ev) desenhar((org || []).map(o => ({ nome: o.nome || '', email: o.email || '', papel: PAPEIS[/** @type {'anfitriao'|'colaborador'} */ (o.papel)] || o.papel || '' })));
+  }
+
+  // Desativar evento (fim de "Meu evento"): pergunta na janela da Love e
+  // tira o evento da conta (mesmo caminho da antiga lixeira de "Meus eventos").
+  document.getElementById('btn-desativar-evento')?.addEventListener('click', async () => {
+    const ev = getActiveEvent();
+    if (!ev || ev.souOrganizador) return;
+    const ok = await confirmarNaLove({
+      titulo: `Desativar "${ev.title || 'evento'}"?`,
+      texto: 'O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.',
+      botao: 'Desativar evento',
+      aoConfirmar: async () => excluirEventoDoCriador(ev.id)
+    });
+    if (ok) renderMeuEvento();
+  });
 
   function renderMeusEventos() {
     const lista = document.getElementById('config-lista-eventos');

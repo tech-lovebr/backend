@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_listaMesaX">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_meuEvento">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -925,8 +925,6 @@
         <div class="sub-drawer-item active" data-sub-id="home"><span>Aparência</span></div>
         <div class="sub-drawer-item" data-sub-id="data"><span>Informações</span></div>
         <div class="sub-drawer-item" data-sub-id="about"><span>Organizadores</span></div>
-        <div class="sub-drawer-item" data-sub-id="invite-online"><span>Convite online</span></div>
-        <div class="sub-drawer-item" data-sub-id="invite-print"><span>Produzir convite</span></div>
       </div>
 
     </aside>
@@ -3085,12 +3083,12 @@
           <div class="px-6 sm:px-8 pt-4 w-full max-w-none">
             <div class="love-tabs-nav" id="config-abas">
               <button type="button" class="love-tab-item active" data-config-aba="conta">Minha conta</button>
-              <button type="button" class="love-tab-item" data-config-aba="eventos">Meus eventos</button>
+              <button type="button" class="love-tab-item" data-config-aba="eventos">Meu evento</button>
             </div>
           </div>
 
           <div class="px-6 sm:px-8 py-6 w-full max-w-none">
-            <div class="max-w-3xl space-y-6" id="config-painel-conta">
+            <div class="max-w-3xl mx-auto space-y-6" id="config-painel-conta">
 
               <form id="form-user-settings" class="space-y-6">
                 <!-- Perfil -->
@@ -3230,24 +3228,17 @@
 
             </div>
 
-            <!-- Meus eventos: os eventos que esta conta criou; excluir marca o
-                 evento como excluído (o Admin continua vendo e pode restaurar). -->
-            <div class="max-w-3xl hidden" id="config-painel-eventos">
-              <h3 class="text-base font-bold text-zinc-900 mb-4">Meus eventos</h3>
-              <div class="dash-card" id="config-eventos-caixa">
-                <div class="overflow-x-auto">
-                  <table id="config-eventos-tabela" class="w-full text-left border-collapse font-sans">
-                    <thead>
-                      <tr>
-                        <th><span class="inline-flex items-center gap-4"><input type="checkbox" id="config-eventos-select-all" class="gifts-select-all-check" aria-label="Selecionar todos os eventos"><span>Evento <span class="guests-footer-count" id="config-eventos-count"></span></span></span></th>
-                        <th>Tipo</th>
-                        <th>Data</th>
-                        <th>Situação</th>
-                      </tr>
-                    </thead>
-                    <tbody id="config-lista-eventos"></tbody>
-                  </table>
-                </div>
+            <!-- Meu evento: as informações do evento ativo e, no fim, desativar
+                 (marca o evento como excluído; o Admin continua vendo e pode restaurar). -->
+            <div class="max-w-3xl mx-auto hidden space-y-6" id="config-painel-eventos">
+              <div class="dash-card">
+                <h3 class="text-base font-bold text-zinc-900 mb-4">Meu evento</h3>
+                <dl class="config-evento-dados" id="config-meu-evento-dados"></dl>
+              </div>
+              <div class="dash-card config-evento-desativar">
+                <h3 class="text-base font-bold text-zinc-900 mb-1">Desativar evento</h3>
+                <p class="text-sm text-zinc-500 mb-4">O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.</p>
+                <button type="button" id="btn-desativar-evento" class="config-btn-desativar">Desativar evento</button>
               </div>
             </div>
           </div>
@@ -5585,7 +5576,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_tamanhoFixoPlanta"></script>
+  <script src="js/app.js?v=20261021_meuEvento"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_corDaMesa"></script>

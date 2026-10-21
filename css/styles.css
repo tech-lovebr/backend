@@ -9721,3 +9721,21 @@ html body .floorplan-lista-pessoa:not(#love-h-a):hover { background: transparent
 html body .floorplan-lista-tirar:not(#love-h-a) { width: 28px; height: 28px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #3F3F46; cursor: pointer; }
 html body .floorplan-lista-tirar:not(#love-h-a):hover { background: #F4F6F7; color: #18181B; }
 .floorplan-lista-tirar svg { width: 16px; height: 16px; }
+
+/* Configurações: caixas centralizadas; "Meu evento" em linhas rótulo/valor. */
+.config-evento-dados { margin: 0; display: flex; flex-direction: column; }
+.config-evento-linha { display: grid; grid-template-columns: 180px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid #F4F4F5; }
+.config-evento-linha:first-child { border-top: 0; padding-top: 0; }
+.config-evento-linha dt { font-size: 13px; font-weight: 500; color: #71717A; }
+.config-evento-linha dd { margin: 0; font-size: 14px; color: #18181B; min-width: 0; overflow-wrap: anywhere; }
+.config-evento-vazio { color: #A1A1AA; }
+.config-evento-link { color: #183b54; text-decoration: none; }
+.config-evento-link:hover { text-decoration: underline; }
+.config-evento-organizadores { display: flex; flex-direction: column; gap: 8px; }
+.config-evento-organizador { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.config-evento-organizador strong { font-weight: 600; }
+.config-evento-organizador span { font-size: 13px; color: #71717A; }
+.config-evento-organizador em { font-style: normal; font-size: 11px; font-weight: 500; color: #52525B; background: #F4F4F5; border-radius: 6px; padding: 2px 6px; }
+html body .config-btn-desativar:not(#love-h-a) { height: 40px; padding: 0 16px; background: #FFFFFF; border: 1px solid #FCA5A5; border-radius: 8px; color: #DC2626; font-size: 14px; font-weight: 600; cursor: pointer; }
+html body .config-btn-desativar:not(#love-h-a):hover { border-color: #DC2626; }
+@media (max-width: 640px) { .config-evento-linha { grid-template-columns: 1fr; gap: 4px; } }

@@ -9821,3 +9821,20 @@ html body .sidebar-nav-toggle.active:hover:not(#love-h-a) { background: #EBF4FF;
 html body .nova-empresa-etapas:not(#love-h-a),
 html body .nova-empresa-card:not(#love-h-a) { width: 100%; margin-left: auto; margin-right: auto; }
 html body .nova-empresa-etapas:not(#love-h-a) { max-width: 720px; }
+
+/* Cadastrar nova conta › etapas no modelo das abas de Meus convidados
+   (love.com.br): grudadas no topo da caixa, na largura toda, divididas por
+   igual, com a linha fina embaixo e a etapa atual sublinhada. */
+html body #nova-empresa-form.nova-empresa-card:not(#love-h-a) { padding-top: 0; overflow: hidden; }
+html body #nova-empresa-form .nova-empresa-etapas:not(#love-h-a) {
+  display: flex; flex-wrap: nowrap; gap: 0; max-width: none; width: auto;
+  margin: 0 -1.5rem 1.5rem; padding: 0 1rem; border-bottom: 1px solid #E4E4E7;
+}
+html body #nova-empresa-form .nova-empresa-etapas[hidden]:not(#love-h-a) { display: none; }
+html body #nova-empresa-form .nova-empresa-seta:not(#love-h-a) { display: none; }
+html body #nova-empresa-form .nova-empresa-etapa:not(#love-h-a) {
+  flex: 1 1 0; justify-content: center; padding: 12px 8px 10px; margin-bottom: -1px;
+  border-bottom: 2px solid transparent; font-size: 13px; font-weight: 600; color: #71717A; white-space: nowrap;
+}
+html body #nova-empresa-form .nova-empresa-etapa.is-ativa:not(#love-h-a) { color: #333333; font-weight: 700; border-bottom-color: #333333; }
+body[data-theme="dark"] #nova-empresa-form .nova-empresa-etapas { border-bottom-color: #404040 !important; }

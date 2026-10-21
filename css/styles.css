@@ -9130,7 +9130,6 @@ html body .convite-tela.convite-tela-presente .convite-voltar:not(#love-h-a) { b
 .floorplan-expandir .icone-recolher { display: none; }
 .floorplan-wrap.is-expandida .floorplan-expandir .icone-expandir { display: none; }
 .floorplan-wrap.is-expandida .floorplan-expandir .icone-recolher { display: block; }
-.floorplan-wrap.is-expandida #floorplan-guests-panel { display: none !important; }
 .floorplan-wrap.is-expandida { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: #FFFFFF; }
 .floorplan-wrap.is-expandida .floorplan-body { flex: 1; min-height: 0; overflow: auto; }
 .floorplan-wrap.is-expandida #floorplan-canvas { min-height: 100%; }
@@ -9279,3 +9278,25 @@ body[data-theme="dark"] .floorplan-acoes { background: #252525; border-color: #4
 body[data-theme="dark"] .floorplan-selecao, body[data-theme="dark"] .floorplan-alca { border-color: #E4E4E7; }
 body[data-theme="dark"] .floorplan-alca { background: #252525; }
 body[data-theme="dark"] .floorplan-acao { color: #D4D4D8 !important; }
+
+/* Mapear mesas › expandida: a lista de convidados flutua sobre a planta
+   (arrastável pela barra de cima) e minimiza no tracinho. */
+.floorplan-minimizar-lista { display: none; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel:not(#love-h-a) { display: flex !important; position: fixed; top: 84px; left: 16px; z-index: 65; width: 290px; min-height: 0; max-height: calc(100vh - 100px); background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); overflow: hidden; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel:not(#love-h-a) > .builder-panel-tab-body { display: flex; flex-direction: column; min-height: 0; overflow: hidden; padding: 0; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel:not(#love-h-a) .floorplan-convidados-topo { padding: 10px 10px 10px 14px; cursor: move; user-select: none; border-bottom: 1px solid #E4E4E7; flex-shrink: 0; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel:not(#love-h-a) .floorplan-guest-cards { overflow-y: auto; min-height: 0; padding: 10px; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel:not(#love-h-a) .floorplan-minimizar-lista { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-left: 4px; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #52525B; cursor: pointer; flex-shrink: 0; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel:not(#love-h-a) .floorplan-minimizar-lista:hover { border-color: #181D24; color: #181D24; }
+.floorplan-minimizar-lista svg { width: 16px; height: 16px; }
+.floorplan-minimizar-lista .icone-maximizar { display: none; }
+#floorplan-guests-panel.is-minimizada .floorplan-minimizar-lista .icone-minimizar { display: none; }
+#floorplan-guests-panel.is-minimizada .floorplan-minimizar-lista .icone-maximizar { display: block; width: 14px; height: 14px; }
+.floorplan-convidados-topo .builder-el-group-title { margin-right: auto; }
+/* Minimizada: só a barrinha com "Convidados" e o botão de abrir. */
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel.is-minimizada:not(#love-h-a) { width: 200px; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel.is-minimizada:not(#love-h-a) .floorplan-guest-cards,
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel.is-minimizada:not(#love-h-a) #btn-floorplan-add-guest { display: none !important; }
+html body .floorplan-wrap.is-expandida #floorplan-guests-panel.is-minimizada:not(#love-h-a) .floorplan-convidados-topo { border-bottom: 0; }
+body[data-theme="dark"] .floorplan-wrap.is-expandida #floorplan-guests-panel { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .floorplan-minimizar-lista { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }

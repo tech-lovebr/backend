@@ -10542,9 +10542,46 @@ document.addEventListener('DOMContentLoaded', () => {
         btnExpandir.setAttribute('aria-pressed', String(ligado));
         btnExpandir.title = ligado ? 'Voltar ao tamanho normal' : 'Expandir a planta';
         btnExpandir.setAttribute('aria-label', btnExpandir.title);
+        const lista = document.getElementById('floorplan-guests-panel');
+        if (lista && !ligado) { lista.style.left = ''; lista.style.top = ''; }
         renderFloorPlanCanvas();
       };
       btnExpandir.addEventListener('click', () => expandir(!wrapPlanta.classList.contains('is-expandida')));
+
+      // Expandida: a lista de convidados flutua sobre a planta. O tracinho
+      // minimiza (fica só a barrinha); o quadradinho abre de novo. Dá para
+      // arrastar a lista pela barra de cima.
+      const listaFlutuante = document.getElementById('floorplan-guests-panel');
+      const btnMinimizar = document.getElementById('btn-floorplan-minimizar-lista');
+      if (listaFlutuante && btnMinimizar) {
+        btnMinimizar.addEventListener('click', () => {
+          const minimizada = listaFlutuante.classList.toggle('is-minimizada');
+          btnMinimizar.title = minimizada ? 'Abrir lista' : 'Minimizar lista';
+          btnMinimizar.setAttribute('aria-label', btnMinimizar.title);
+          btnMinimizar.setAttribute('aria-expanded', String(!minimizada));
+        });
+        const barra = listaFlutuante.querySelector('.floorplan-convidados-topo');
+        if (barra) {
+          barra.addEventListener('mousedown', (e) => {
+            if (!wrapPlanta.classList.contains('is-expandida')) return;
+            if (e.target instanceof Element && e.target.closest('button')) return;
+            e.preventDefault();
+            const r = listaFlutuante.getBoundingClientRect();
+            const dx = e.clientX - r.left;
+            const dy = e.clientY - r.top;
+            const mover = (/** @type {MouseEvent} */ ev) => {
+              listaFlutuante.style.left = `${Math.max(8, Math.min(ev.clientX - dx, window.innerWidth - r.width - 8))}px`;
+              listaFlutuante.style.top = `${Math.max(8, Math.min(ev.clientY - dy, window.innerHeight - 48))}px`;
+            };
+            const soltar = () => {
+              document.removeEventListener('mousemove', mover);
+              document.removeEventListener('mouseup', soltar);
+            };
+            document.addEventListener('mousemove', mover);
+            document.addEventListener('mouseup', soltar);
+          });
+        }
+      }
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && wrapPlanta.classList.contains('is-expandida') && !document.querySelector('.modal-backdrop-custom.open')) expandir(false);
       });

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_selecaoPlanta">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_listaFlutuante">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2244,6 +2244,11 @@
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
                       <span>Adicionar</span>
                     </button>
+                    <!-- Só na planta expandida: a lista flutua e pode ser minimizada -->
+                    <button type="button" id="btn-floorplan-minimizar-lista" class="floorplan-minimizar-lista" title="Minimizar lista" aria-label="Minimizar lista" aria-expanded="true">
+                      <svg class="icone-minimizar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+                      <svg class="icone-maximizar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+                    </button>
                   </div>
                   <div id="floorplan-guest-cards" class="floorplan-guest-cards">
                     <!-- Renderizado dinamicamente via JS: um card arrastável por convidado -->
@@ -2254,7 +2259,7 @@
                 <p id="floorplan-empty-hint" class="floorplan-empty-hint">
                   <!-- Mesmo ícone da "Redonda" no menu de formatos -->
                   <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="16" cy="16" r="6.5"/><circle cx="16" cy="5" r="1.8"/><circle cx="16" cy="27" r="1.8"/><circle cx="5" cy="16" r="1.8"/><circle cx="27" cy="16" r="1.8"/><circle cx="8.2" cy="8.2" r="1.8"/><circle cx="23.8" cy="8.2" r="1.8"/><circle cx="8.2" cy="23.8" r="1.8"/><circle cx="23.8" cy="23.8" r="1.8"/></svg>
-                  <span>Clique em "Adicionar Mesa" para começar a montar a planta.</span>
+                  <span>Clique em "Inserir item" para começar a montar a planta.</span>
                 </p>
               </div>
             </div>
@@ -5595,7 +5600,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_iconeKids"></script>
+  <script src="js/app.js?v=20261020_listaFlutuante"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

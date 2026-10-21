@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_monocromatico">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_inserirItem2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2162,9 +2162,13 @@
                   <svg class="icone-recolher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>
                 </button>
                 <div class="floorplan-add-mesa">
-                  <button type="button" id="btn-open-add-table-modal" class="btn-secondary" aria-haspopup="true" aria-expanded="false">Adicionar Mesa</button>
+                  <button type="button" id="btn-open-add-table-modal" class="btn-primary btn-host-add-gift" aria-haspopup="true" aria-expanded="false">
+                    <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>Inserir item</span>
+                  </button>
                   <!-- Formatos de mesa (ver addFloorPlanTableViaButton em app.js) -->
-                  <div id="floorplan-add-table-menu" class="floorplan-formatos hidden" role="menu" aria-label="Formato da mesa">
+                  <div id="floorplan-add-table-menu" class="floorplan-formatos hidden" role="menu" aria-label="Inserir item">
+                    <p class="floorplan-formatos-titulo">Mesas</p>
                     <button type="button" role="menuitem" data-mesa-formato="redonda">
                       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="16" cy="16" r="6.5"/><circle cx="16" cy="5" r="1.8"/><circle cx="16" cy="27" r="1.8"/><circle cx="5" cy="16" r="1.8"/><circle cx="27" cy="16" r="1.8"/><circle cx="8.2" cy="8.2" r="1.8"/><circle cx="23.8" cy="8.2" r="1.8"/><circle cx="8.2" cy="23.8" r="1.8"/><circle cx="23.8" cy="23.8" r="1.8"/></svg>
                       <span>Redonda</span>
@@ -2180,6 +2184,51 @@
                     <button type="button" role="menuitem" data-mesa-formato="bistro">
                       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="16" cy="16" r="4.5"/><circle cx="16" cy="8" r="1.8"/><circle cx="16" cy="24" r="1.8"/></svg>
                       <span>Bistrô</span>
+                    </button>
+                    <p class="floorplan-formatos-titulo">Espaços</p>
+                    <button type="button" role="menuitem" data-planta-item="buffet">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="26" height="9" rx="1.5"/><path d="M7 14a3.5 3.5 0 0 1 7 0M18 14a3.5 3.5 0 0 1 7 0M10.5 8.5v2M21.5 8.5v2"/></svg>
+                      <span>Buffet</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="doces">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="18" width="24" height="7" rx="1.5"/><path d="M9 18v-4h6v4M10 14v-2.5a2 2 0 0 1 4 0V14M19 18l2.5-6 2.5 6"/></svg>
+                      <span>Mesa de doces</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="cafe">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6Z"/><path d="M21 15h2a3 3 0 0 1 0 6h-2.5M11 6.5c0 1.5 1.5 1.5 1.5 3M15.5 6.5c0 1.5 1.5 1.5 1.5 3M6 27h17"/></svg>
+                      <span>Mesa de café</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="bar">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h14l-7 9Z"/><path d="M14 16v9M10 25h8M21.5 10.5l4-4"/><circle cx="23.5" cy="9" r="1.5"/></svg>
+                      <span>Bar de drinks</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="pista">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="22" height="22" rx="1.5"/><path d="M5 12.3h22M5 19.7h22M12.3 5v22M19.7 5v22"/></svg>
+                      <span>Pista de dança</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="palco">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="15" width="26" height="9" rx="1.5"/><path d="M6 15V9l5 3V8l5 3V7l5 3V6l5 3v6"/></svg>
+                      <span>Palco</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="altar">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 23c4-9 18-9 22 0Z"/><path d="M16 5v8M12.5 8h7M5 27h22"/></svg>
+                      <span>Altar</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="banda">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="21" r="5"/><path d="M16 21V7l9-2v13"/><circle cx="22.5" cy="18" r="2.5"/></svg>
+                      <span>Banda</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="kids">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="9" r="3"/><path d="M16 12v8M10 15h12M16 20l-4 7M16 20l4 7"/></svg>
+                      <span>Área kids</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="sofa">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 15v-3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/><path d="M5 15a2 2 0 0 1 2 2v2h18v-2a2 2 0 0 1 4 0v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2ZM7 23v3M25 23v3"/></svg>
+                      <span>Sofá</span>
+                    </button>
+                    <button type="button" role="menuitem" data-planta-item="backdrop">
+                      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h22v15H5Z"/><path d="M5 5l5 15M27 5l-5 15M9 27l2-7M23 27l-2-7"/></svg>
+                      <span>Backdrop</span>
                     </button>
                   </div>
                 </div>
@@ -5549,7 +5598,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_cabeceiras"></script>
+  <script src="js/app.js?v=20261020_inserirItem2"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

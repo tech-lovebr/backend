@@ -9224,3 +9224,31 @@ html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:n
 /* Mais Recursos: botões brancos com borda fina. */
 html body:not([data-theme="dark"]) #tab-overview .mais-recursos-btn:not(#love-h-a) { background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; }
 html body:not([data-theme="dark"]) #tab-overview .mais-recursos-btn:not(#love-h-a):hover { background: #FFFFFF !important; border-color: #181D24 !important; }
+
+/* Mapear mesas › Inserir item: menu com Mesas e Espaços. */
+.floorplan-formatos-titulo { grid-column: 1 / -1; margin: 2px 2px 0; font-size: 11px; font-weight: 500; color: #A1A1AA; }
+.floorplan-formatos-titulo + button, .floorplan-formatos button + .floorplan-formatos-titulo { margin-top: 0; }
+.floorplan-formatos button + .floorplan-formatos-titulo { margin-top: 6px; }
+html body .floorplan-formatos:not(.hidden):not(#love-h-a) { max-height: calc(100vh - 160px); overflow-y: auto; }
+html body .floorplan-formatos button:not(#love-h-a) { text-align: center; line-height: 1.15; }
+html body .floorplan-formatos button span { font-size: 11.5px; }
+
+/* Itens da planta (buffet, palco, pista...): bloco branco com borda fina. */
+html body .floorplan-el.is-item:not(#love-h-a) { min-height: 0; padding: 6px; gap: 4px; background: #FFFFFF; border: 1px solid #D4D4D8; border-radius: 8px; box-shadow: none; }
+html body .floorplan-el.is-item:not(#love-h-a):hover { border-color: #181D24; }
+.floorplan-el.is-item .floorplan-item-icone { display: flex; color: #52525B; }
+.floorplan-el.is-item .floorplan-item-icone svg { width: 24px; height: 24px; }
+html body .floorplan-el.is-item:not(#love-h-a) .floorplan-el-label { font-size: 12px; font-weight: 600; color: #181D24; white-space: nowrap; }
+.floorplan-el.is-item.item-pista { background-image: linear-gradient(45deg, #F4F4F5 25%, transparent 25%, transparent 75%, #F4F4F5 75%), linear-gradient(45deg, #F4F4F5 25%, transparent 25%, transparent 75%, #F4F4F5 75%); background-size: 40px 40px; background-position: 0 0, 20px 20px; }
+.floorplan-el.is-item.item-backdrop { flex-direction: row; gap: 8px; }
+.floorplan-el.is-item.item-backdrop .floorplan-item-icone svg { width: 20px; height: 20px; }
+.floorplan-item-remover { position: absolute; top: -9px; right: -9px; width: 20px; height: 20px; display: none; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 999px; color: #52525B; cursor: pointer; }
+.floorplan-item-remover svg { width: 11px; height: 11px; }
+.floorplan-el.is-item:hover .floorplan-item-remover { display: flex; }
+.floorplan-item-remover:hover { border-color: #181D24; color: #181D24; }
+body[data-theme="dark"] .floorplan-el.is-item { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .floorplan-el.is-item .floorplan-el-label, body[data-theme="dark"] .floorplan-el.is-item .floorplan-item-icone { color: #E4E4E7 !important; }
+
+/* Expandida: a planta rola para baixo (antes cortava o que estava embaixo). */
+html body #tab-rsvp-tables .floorplan-wrap.is-expandida .floorplan-body:not(#love-h-a) { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+html body #btn-open-add-table-modal:not(#love-h-a) { gap: 7.2px; }

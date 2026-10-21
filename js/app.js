@@ -9381,9 +9381,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // arrastável e os cards de convidados; arraste "Mesa" para a planta e depois
   // arraste um convidado da lista até a mesa para acomodá-lo num assento.
   // ==========================================
-  const FLOORPLAN_ELEMENT_TYPES = [
-    { type: 'mesa', label: 'Mesa', icon: '🪑' }
+  // Itens da planta além das mesas (Inserir item › Espaços). w/h = tamanho na planta.
+  const ITENS_DA_PLANTA = [
+    { type: 'buffet', label: 'Buffet', w: 200, h: 72, svg: '<rect x="3" y="14" width="26" height="9" rx="1.5"/><path d="M7 14a3.5 3.5 0 0 1 7 0M18 14a3.5 3.5 0 0 1 7 0M10.5 8.5v2M21.5 8.5v2"/>' },
+    { type: 'doces', label: 'Mesa de doces', w: 150, h: 72, svg: '<rect x="4" y="18" width="24" height="7" rx="1.5"/><path d="M9 18v-4h6v4M10 14v-2.5a2 2 0 0 1 4 0V14M19 18l2.5-6 2.5 6"/>' },
+    { type: 'cafe', label: 'Mesa de café', w: 130, h: 72, svg: '<path d="M8 13h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6Z"/><path d="M21 15h2a3 3 0 0 1 0 6h-2.5M11 6.5c0 1.5 1.5 1.5 1.5 3M15.5 6.5c0 1.5 1.5 1.5 1.5 3M6 27h17"/>' },
+    { type: 'bar', label: 'Bar de drinks', w: 170, h: 72, svg: '<path d="M7 7h14l-7 9Z"/><path d="M14 16v9M10 25h8M21.5 10.5l4-4"/><circle cx="23.5" cy="9" r="1.5"/>' },
+    { type: 'pista', label: 'Pista de dança', w: 200, h: 200, svg: '<rect x="5" y="5" width="22" height="22" rx="1.5"/><path d="M5 12.3h22M5 19.7h22M12.3 5v22M19.7 5v22"/>' },
+    { type: 'palco', label: 'Palco', w: 240, h: 110, svg: '<rect x="3" y="15" width="26" height="9" rx="1.5"/><path d="M6 15V9l5 3V8l5 3V7l5 3V6l5 3v6"/>' },
+    { type: 'altar', label: 'Altar', w: 150, h: 80, svg: '<path d="M5 23c4-9 18-9 22 0Z"/><path d="M16 5v8M12.5 8h7M5 27h22"/>' },
+    { type: 'banda', label: 'Banda', w: 170, h: 100, svg: '<circle cx="11" cy="21" r="5"/><path d="M16 21V7l9-2v13"/><circle cx="22.5" cy="18" r="2.5"/>' },
+    { type: 'kids', label: 'Área kids', w: 170, h: 140, svg: '<circle cx="16" cy="9" r="3"/><path d="M16 12v8M10 15h12M16 20l-4 7M16 20l4 7"/>' },
+    { type: 'sofa', label: 'Sofá', w: 150, h: 64, svg: '<path d="M7 15v-3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/><path d="M5 15a2 2 0 0 1 2 2v2h18v-2a2 2 0 0 1 4 0v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2ZM7 23v3M25 23v3"/>' },
+    { type: 'backdrop', label: 'Backdrop', w: 200, h: 56, svg: '<path d="M5 5h22v15H5Z"/><path d="M5 5l5 15M27 5l-5 15M9 27l2-7M23 27l-2-7"/>' }
   ];
+  const FLOORPLAN_ELEMENT_TYPES = [
+    { type: 'mesa', label: 'Mesa', icon: '🪑' },
+    ...ITENS_DA_PLANTA.map(item => ({ type: item.type, label: item.label, icon: '' }))
+  ];
+  /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
+  function alturaNaPlanta(item) {
+    if (item.type === 'mesa') return 220;
+    const meta = ITENS_DA_PLANTA.find(i => i.type === item.type);
+    return meta ? meta.h : 84;
+  }
   const FLOORPLAN_TYPE_META = {};
   FLOORPLAN_ELEMENT_TYPES.forEach(t => { FLOORPLAN_TYPE_META[t.type] = t; });
   const FLOORPLAN_MAX_SEATS = 24;
@@ -9609,7 +9630,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Altura da planta: a da tela (CSS) ou, se alguma mesa passar dela, até a
   // mesa mais baixa. Encolhe de novo quando as mesas sobem.
   function ajustarAlturaDaPlanta(canvas, elements) {
-    const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + (item.type === 'mesa' ? 220 : 84)), 0);
+    const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + alturaNaPlanta(item)), 0);
     canvas.style.minHeight = maisBaixa ? `${Math.max(360, maisBaixa + 16)}px` : '';
   }
 
@@ -9622,12 +9643,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function trazerMesasPerdidasDeVolta(canvas, elements) {
+    // Expandida, a área visível é outra: não mexe em nada (só rola).
+    if (canvas.closest('.floorplan-wrap.is-expandida')) return false;
     let limite = alturaVisivelDaPlanta(canvas);
     let mudou = false;
     elements.slice().sort((a, b) => (parseFloat(a.y) || 0) - (parseFloat(b.y) || 0)).forEach(item => {
-      const altura = item.type === 'mesa' ? 220 : 84;
+      const altura = alturaNaPlanta(item);
       const y = parseFloat(item.y) || 0;
-      if (y > limite) { item.y = Math.max(0, limite - 40); mudou = true; }
+      // Folga de uma mesa abaixo do fundo (o mesmo que o arraste deixa descer).
+      if (y > limite + 220) { item.y = Math.max(0, limite - 40); mudou = true; }
       limite = Math.max(limite, (parseFloat(item.y) || 0) + altura);
     });
     return mudou;
@@ -9776,15 +9800,33 @@ document.addEventListener('DOMContentLoaded', () => {
           el.appendChild(seatDot);
         }
       } else {
+        // Item (buffet, palco, pista...): bloco com ícone e nome; o X tira da planta.
+        const item = ITENS_DA_PLANTA.find(i => i.type === elData.type);
+        el.classList.add('is-item', `item-${elData.type}`);
+        if (item) { el.style.width = `${item.w}px`; el.style.height = `${item.h}px`; }
         const iconEl = document.createElement('span');
-        iconEl.className = 'floorplan-el-emoji';
-        iconEl.textContent = meta.icon;
+        iconEl.className = 'floorplan-item-icone';
+        iconEl.innerHTML = item ? `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${item.svg}</svg>` : '';
         el.appendChild(iconEl);
 
         const labelEl = document.createElement('span');
         labelEl.className = 'floorplan-el-label';
         labelEl.textContent = meta.label;
         el.appendChild(labelEl);
+
+        const remover = document.createElement('button');
+        remover.type = 'button';
+        remover.className = 'floorplan-item-remover';
+        remover.title = `Tirar ${meta.label} da planta`;
+        remover.setAttribute('aria-label', remover.title);
+        remover.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+        remover.addEventListener('mousedown', (e) => e.stopPropagation());
+        remover.addEventListener('click', (e) => {
+          e.stopPropagation();
+          saveFloorPlanElements(getFloorPlanElements().filter(x => x.id !== elData.id));
+          renderFloorPlanCanvas();
+        });
+        el.appendChild(remover);
       }
 
       wireFloorPlanElementDrag(el, elData);
@@ -9848,7 +9890,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveFloorPlanElements(elements);
           }
           ajustarAlturaDaPlanta(canvas, elements);
-        } else {
+        } else if (elData.type === 'mesa') {
           openFloorplanTableModal(elData.id);
         }
       };
@@ -9885,6 +9927,27 @@ document.addEventListener('DOMContentLoaded', () => {
       seats: 1,
       seatNames: [''],
       x, y
+    });
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+  }
+
+  /** @param {string} tipo  um dos ITENS_DA_PLANTA */
+  function inserirItemNaPlanta(tipo) {
+    const canvas = document.getElementById('floorplan-canvas');
+    const item = ITENS_DA_PLANTA.find(i => i.type === tipo);
+    if (!canvas || !item) return;
+    const elements = getFloorPlanElements();
+    const cascata = (elements.length % 8) * 28;
+    const largura = canvas.getBoundingClientRect().width || 600;
+    // Começa na parte da planta que está na tela (se rolou para baixo, aparece ali).
+    const rolagem = canvas.closest('.floorplan-body');
+    const topoVisivel = rolagem && rolagem.scrollTop ? rolagem.scrollTop : 0;
+    elements.push({
+      id: `fp-${Date.now()}`,
+      type: tipo,
+      x: Math.min(16 + cascata, Math.max(16, largura - item.w - 16)),
+      y: topoVisivel + 16 + cascata
     });
     saveFloorPlanElements(elements);
     renderFloorPlanCanvas();
@@ -10293,6 +10356,13 @@ document.addEventListener('DOMContentLoaded', () => {
           e.stopPropagation();
           abrirMenu(false);
           addFloorPlanTableViaButton(/** @type {HTMLElement} */ (op).dataset.mesaFormato);
+        });
+      });
+      menuFormatos.querySelectorAll('[data-planta-item]').forEach(op => {
+        op.addEventListener('click', (e) => {
+          e.stopPropagation();
+          abrirMenu(false);
+          inserirItemNaPlanta(/** @type {HTMLElement} */ (op).dataset.plantaItem || '');
         });
       });
       document.addEventListener('click', (e) => {

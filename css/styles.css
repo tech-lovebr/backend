@@ -9808,3 +9808,8 @@ html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-column: 1 / 
 #btn-gifts-listas-prontas.is-ativo { background: #F4F6F7 !important; }
 /* Mapa do evento vazio: ícone de "+" maior. */
 html body .floorplan-empty-hint:not(#love-h-a) svg { width: 48px !important; height: 48px !important; }
+/* "Deseja salvar antes de sair?": o Sair fica só como texto (sem caixa);
+   o Salvar continua botão. */
+html body #modal-unsaved-changes .modal-sair-acoes:not(#love-h-a) { align-items: center; gap: 8px; }
+html body #modal-unsaved-changes #btn-unsaved-discard.modal-sair-btn:not(#love-h-a) { flex: 0 0 auto; padding: 0 20px; background: transparent !important; border: 0 !important; box-shadow: none !important; color: #18181B; }
+html body #modal-unsaved-changes #btn-unsaved-discard.modal-sair-btn:not(#love-h-a):hover { text-decoration: underline; background: transparent !important; }

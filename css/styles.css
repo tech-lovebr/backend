@@ -9356,3 +9356,11 @@ html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp-tables.act
    no tema claro. Ícones, hover, ativo e o submenu branco continuam iguais. */
 html body:not([data-theme="dark"]) .sidebar-icon-rail:not(#love-h-a),
 html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top:not(#love-h-a) { background-color: #183b54 !important; }
+/* Mapa do evento: quadriculado um pouco mais transparente. */
+html body:not([data-theme="dark"]) #floorplan-canvas:not(#love-h-a) {
+  background-image:
+    linear-gradient(to right, rgba(229, 231, 235, 0.65) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(229, 231, 235, 0.65) 1px, transparent 1px),
+    linear-gradient(to right, rgba(229, 231, 235, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(229, 231, 235, 0.35) 1px, transparent 1px) !important;
+}

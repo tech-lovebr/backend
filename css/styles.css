@@ -9104,3 +9104,12 @@ html body .floorplan-seat-dot.is-confirmed:not(#love-h-a) { background: #181D24;
 html body .floorplan-seat-dot.is-declined:not(#love-h-a) { background: #FEF2F2; border: 1.5px solid #FECACA; color: #F87171; }
 html body .floorplan-seat-dot:not(#love-h-a) .floorplan-seat-dot-line { overflow: visible; }
 body[data-theme="dark"] .floorplan-seat-dot.is-empty { background: #252525 !important; border-color: #404040 !important; }
+
+/* Meus convidados › arrastar: a reserva arrastada fica destacada (sem a linha
+   de "soltar aqui"); as outras abrem espaço com animação. */
+#rsvp-guests-table-body tr.is-arrastando td { opacity: 1 !important; background: #F4F4F5 !important; }
+#rsvp-guests-table-body tr.is-arrastando { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); position: relative; z-index: 2; }
+#rsvp-guests-table-body tr.drop-antes td, #rsvp-guests-table-body tr.drop-depois td { box-shadow: none !important; }
+#rsvp-guests-table-body .guest-reordenar svg { width: 16px; height: 16px; }
+html body #tab-rsvp #rsvp-guests-table-body tr.is-arrastando td:not(#love-h-a),
+html body #tab-rsvp #rsvp-guests-table-body tr.is-arrastando:hover td:not(#love-h-a) { background: #F4F4F5 !important; opacity: 1 !important; }

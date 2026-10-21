@@ -7969,6 +7969,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /** @type {string|null} */
+  let convidadoArrastado = null;
+  /** @type {HTMLImageElement|null} */
+  let imagemVaziaDeArraste = null;
+
+  /** @param {HTMLElement} lista @param {string} id @returns {HTMLElement[]} */
+  function linhasDoConvidado(lista, id) {
+    return /** @type {HTMLElement[]} */ (Array.from(lista.querySelectorAll(`tr[data-guest-id="${CSS.escape(id)}"]`)));
+  }
+
+  /**
+   * Move as linhas para antes da âncora, animando quem mudou de lugar (FLIP).
+   * @param {HTMLElement} lista @param {HTMLElement[]} linhas @param {Element|null} ancora
+   */
+  function moverLinhasComAnimacao(lista, linhas, ancora) {
+    if (!linhas.length || linhas.includes(/** @type {HTMLElement} */ (ancora))) return;
+    if (ancora === linhas[linhas.length - 1].nextElementSibling) return;
+    const todas = /** @type {HTMLElement[]} */ (Array.from(lista.children));
+    const antes = new Map(todas.map(tr => [tr, tr.getBoundingClientRect().top]));
+    linhas.forEach(tr => lista.insertBefore(tr, ancora));
+    todas.forEach(tr => {
+      const desloc = (antes.get(tr) || 0) - tr.getBoundingClientRect().top;
+      if (!desloc) return;
+      tr.style.transition = 'none';
+      tr.style.transform = `translateY(${desloc}px)`;
+      requestAnimationFrame(() => {
+        tr.style.transition = 'transform .18s ease';
+        tr.style.transform = '';
+      });
+    });
+  }
+
   // Ordem da lista de convidados: a que o anfitrião montou arrastando (guest.ordem,
   // salvo no extra do convidado); sem ordem, vai para o fim em ordem alfabética.
   /** @param {any} a @param {any} b */
@@ -8176,7 +8208,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${statusBadges[guest.status] || guest.status}
             </div>
           </td>
-          <td class="love-tabela-col-mais">${attendee.isPrimary ? `<button type="button" class="guest-reordenar" draggable="true" title="Arraste para mudar a ordem" aria-label="Mudar a ordem de ${escaparHtml(guest.name || 'convidado')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 10.5h7M8.5 13.5h7"/></svg></button>` : ''}</td>
+          <td class="love-tabela-col-mais">${attendee.isPrimary ? `<button type="button" class="guest-reordenar" draggable="true" title="Arraste para mudar a ordem" aria-label="Mudar a ordem de ${escaparHtml(guest.name || 'convidado')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg></button>` : ''}</td>
         `;
         row.dataset.guestId = guest.id;
 
@@ -8186,7 +8218,8 @@ document.addEventListener('DOMContentLoaded', () => {
           openAddGuestDrawer(guest.id);
         });
 
-        // Alça: arrastar a reserva (convidado + acompanhantes) para outra posição.
+        // Alça: arrastar a reserva (convidado + acompanhantes). Enquanto arrasta,
+        // as linhas dela andam na própria lista e as outras abrem espaço.
         const alca = row.querySelector('.guest-reordenar');
         if (alca) {
           alca.addEventListener('dragstart', (e) => {
@@ -8194,27 +8227,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!e.dataTransfer) return;
             e.dataTransfer.setData('application/x-love-convidado', guest.id);
             e.dataTransfer.effectAllowed = 'move';
-            listEl.querySelectorAll(`tr[data-guest-id="${CSS.escape(guest.id)}"]`).forEach(tr => tr.classList.add('is-arrastando'));
+            // Sem a "fotinha" do navegador: quem anda é a própria linha.
+            if (!imagemVaziaDeArraste) { imagemVaziaDeArraste = new Image(); imagemVaziaDeArraste.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; }
+            e.dataTransfer.setDragImage(imagemVaziaDeArraste, 0, 0);
+            convidadoArrastado = guest.id;
+            linhasDoConvidado(listEl, guest.id).forEach(tr => tr.classList.add('is-arrastando'));
           });
           alca.addEventListener('dragend', () => {
-            listEl.querySelectorAll('.is-arrastando, .drop-antes, .drop-depois').forEach(tr => tr.classList.remove('is-arrastando', 'drop-antes', 'drop-depois'));
+            if (!convidadoArrastado) return;
+            // Soltou fora da lista: volta tudo como estava.
+            convidadoArrastado = null;
+            renderGuestsTable(currentRsvpFilter);
           });
         }
         row.addEventListener('dragover', (e) => {
-          if (!e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
+          if (!convidadoArrastado || !e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
           e.preventDefault();
+          if (row.dataset.guestId === convidadoArrastado) return;
           const r = row.getBoundingClientRect();
           const depois = e.clientY > r.top + r.height / 2;
-          listEl.querySelectorAll('.drop-antes, .drop-depois').forEach(tr => tr.classList.remove('drop-antes', 'drop-depois'));
-          row.classList.add(depois ? 'drop-depois' : 'drop-antes');
+          // Âncora: a primeira linha da reserva-alvo (antes) ou a última (depois).
+          const alvo = linhasDoConvidado(listEl, row.dataset.guestId || '');
+          const ancora = depois ? alvo[alvo.length - 1].nextElementSibling : alvo[0];
+          moverLinhasComAnimacao(listEl, linhasDoConvidado(listEl, convidadoArrastado), ancora);
         });
         row.addEventListener('drop', (e) => {
-          if (!e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
+          if (!convidadoArrastado || !e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
           e.preventDefault();
-          const arrastado = e.dataTransfer.getData('application/x-love-convidado');
-          const depois = row.classList.contains('drop-depois');
-          listEl.querySelectorAll('.drop-antes, .drop-depois, .is-arrastando').forEach(tr => tr.classList.remove('drop-antes', 'drop-depois', 'is-arrastando'));
-          reordenarConvidado(arrastado, guest.id, depois);
+          const arrastado = convidadoArrastado;
+          convidadoArrastado = null;
+          // A posição final é a que ficou na tela: entra antes do próximo
+          // convidado (ou depois do anterior, se ficou por último).
+          const principais = Array.from(listEl.querySelectorAll('tr:not(.is-acompanhante-row)'));
+          const i = principais.findIndex(tr => /** @type {HTMLElement} */ (tr).dataset.guestId === arrastado);
+          const proximo = /** @type {HTMLElement|undefined} */ (principais[i + 1]);
+          const anterior = /** @type {HTMLElement|undefined} */ (principais[i - 1]);
+          if (proximo) reordenarConvidado(arrastado, proximo.dataset.guestId || '', false);
+          else if (anterior) reordenarConvidado(arrastado, anterior.dataset.guestId || '', true);
+          else renderGuestsTable(currentRsvpFilter);
         });
 
         listEl.appendChild(row);

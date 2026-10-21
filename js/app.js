@@ -9365,7 +9365,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ...ITENS_DA_PLANTA.map(item => ({ type: item.type, label: item.label, icon: '' })),
     // Botão de formas: linha (arrasta as pontas) e rabisco (desenho livre).
     { type: 'linha', label: 'Linha', icon: '' },
-    { type: 'rabisco', label: 'Rabisco', icon: '' }
+    { type: 'rabisco', label: 'Rabisco', icon: '' },
+    // Objetos › Texto: caixinha de texto simples (sem negrito), editável.
+    { type: 'texto', label: 'Texto', icon: '' }
   ];
   /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
   function alturaNaPlanta(item) {
@@ -9805,6 +9807,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const tam = tamanhoDoItem(elData);
         el.style.width = `${tam.w}px`;
         el.style.height = `${tam.h}px`;
+        if (!item && elData.type === 'texto') {
+          const caixa = document.createElement('div');
+          caixa.className = 'floorplan-texto';
+          caixa.textContent = String(elData.texto || '');
+          caixa.style.transform = transformDoTexto(tam.escala, tam.rotacao);
+          el.appendChild(caixa);
+          el.addEventListener('dblclick', (e) => { e.stopPropagation(); editarTextoDaPlanta(elData.id); });
+        }
         if (!item && elData.type === 'rabisco') {
           el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${parseFloat(elData.bw) || 84} ${parseFloat(elData.bh) || 64}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.rotacao ? ` rotate(${tam.rotacao}deg)` : ''}" aria-hidden="true"><path class="l" d="${tracadoSeguro(elData.d)}"/></svg>`);
         }
@@ -9890,7 +9900,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const acoes = document.createElement('div');
     acoes.className = 'floorplan-acoes';
     /** @type {[string, string][]} */
-    const botoes = elData.type === 'mesa' ? [['editar', 'Editar mesa']] : [];
+    const botoes = elData.type === 'mesa' ? [['editar', 'Editar mesa']] : elData.type === 'texto' ? [['editar', 'Editar texto']] : [];
     if (giravel) botoes.push(['girar', 'Girar']);
     botoes.push(['duplicar', 'Duplicar'], ['excluir', 'Excluir']);
     botoes.forEach(([acao, titulo]) => {
@@ -9922,6 +9932,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!alvo) return;
     if (acao === 'editar') {
       if (alvo.type === 'mesa') openFloorplanTableModal(id);
+      else if (alvo.type === 'texto') editarTextoDaPlanta(id);
       return;
     }
     if (acao === 'girar') {
@@ -10009,6 +10020,8 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.height = `${hh}px`;
         el.style.left = `${x}px`;
         el.style.top = `${y}px`;
+        const caixaDeTexto = /** @type {HTMLElement|null} */ (el.querySelector('.floorplan-texto'));
+        if (caixaDeTexto) caixaDeTexto.style.transform = transformDoTexto(escala, resultado.rotacao || 0);
         const desenho = /** @type {SVGElement|null} */ (el.querySelector('.floorplan-planta'));
         if (desenho) {
           const t0 = tamanhoDoItem(alvo);
@@ -10314,6 +10327,90 @@ document.addEventListener('DOMContentLoaded', () => {
       y += 24;
     }
     return { x: Math.max(0, Math.min(x, r.width - w)), y: Math.max(0, y) };
+  }
+
+  /** Centraliza a caixa de texto no bloco, girada e na escala. @param {number} escala @param {number} rotacao */
+  function transformDoTexto(escala, rotacao) {
+    return `translate(-50%, -50%)${rotacao ? ` rotate(${rotacao}deg)` : ''} scale(${escala})`;
+  }
+
+  /** Tamanho do texto no tamanho normal (escala 1), medido com a mesma fonte da planta. @param {string} texto */
+  function medirTextoDaPlanta(texto) {
+    const medida = document.createElement('div');
+    medida.className = 'floorplan-texto floorplan-texto-medida';
+    medida.textContent = texto || ' ';
+    document.body.appendChild(medida);
+    const r = { w: Math.ceil(medida.offsetWidth) || 40, h: Math.ceil(medida.offsetHeight) || 24 };
+    medida.remove();
+    return r;
+  }
+
+  // Objetos › Texto: entra no meio da planta com "Texto" já selecionado para digitar.
+  function inserirTextoNaPlanta() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    const elements = getFloorPlanElements();
+    const { w, h } = medirTextoDaPlanta('Texto');
+    const { x, y } = posicaoNoMeioDaPlanta(canvas, elements, w, h);
+    elements.push({ id: `fp-${Date.now()}`, type: 'texto', texto: 'Texto', bw: w, bh: h, x, y });
+    plantaSelecionada = elements[elements.length - 1].id;
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+    editarTextoDaPlanta(plantaSelecionada);
+  }
+
+  // Editar o texto direto na planta: texto simples (sem negrito/itálico, colar vira
+  // texto puro). Enter salva, Shift+Enter quebra a linha, Esc desiste.
+  /** @param {string} id */
+  function editarTextoDaPlanta(id) {
+    const canvas = document.getElementById('floorplan-canvas');
+    const caixa = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"] .floorplan-texto`));
+    if (!caixa) return;
+    const original = caixa.textContent || '';
+    try { caixa.contentEditable = 'plaintext-only'; } catch (err) { caixa.contentEditable = 'true'; }
+    if (caixa.contentEditable !== 'plaintext-only') caixa.contentEditable = 'true';
+    caixa.classList.add('is-editando');
+    caixa.focus();
+    const faixa = document.createRange();
+    faixa.selectNodeContents(caixa);
+    const sel = window.getSelection();
+    if (sel) { sel.removeAllRanges(); sel.addRange(faixa); }
+    caixa.addEventListener('mousedown', (e) => e.stopPropagation());
+    caixa.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const puro = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+      document.execCommand('insertText', false, puro);
+    });
+    let terminou = false;
+    const terminar = (/** @type {boolean} */ salvar) => {
+      if (terminou) return;
+      terminou = true;
+      caixa.contentEditable = 'false';
+      const texto = (caixa.innerText || '').replace(/\n+$/, '');
+      const lista = getFloorPlanElements();
+      const alvo = lista.find(x => x.id === id);
+      if (salvar && alvo && texto.trim() && texto !== original) {
+        // Mantém o centro no lugar com o tamanho novo do texto.
+        const antes = tamanhoDoItem(alvo);
+        const medida = medirTextoDaPlanta(texto);
+        alvo.texto = texto;
+        alvo.bw = medida.w;
+        alvo.bh = medida.h;
+        const depois = tamanhoDoItem(alvo);
+        alvo.x = Math.max(0, (parseFloat(alvo.x) || 0) + (antes.w - depois.w) / 2);
+        alvo.y = Math.max(0, (parseFloat(alvo.y) || 0) + (antes.h - depois.h) / 2);
+        saveFloorPlanElements(lista);
+      }
+      renderFloorPlanCanvas();
+    };
+    caixa.addEventListener('keydown', (e) => {
+      e.stopPropagation();
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); terminar(true); }
+      else if (e.key === 'Escape') { e.preventDefault(); terminar(false); }
+      // Sem negrito/itálico/sublinhado: é um texto simples.
+      else if ((e.ctrlKey || e.metaKey) && ['b', 'i', 'u'].includes(e.key.toLowerCase())) e.preventDefault();
+    });
+    caixa.addEventListener('blur', () => terminar(true));
   }
 
   /** @param {string} tipo  um dos ITENS_DA_PLANTA */
@@ -10811,6 +10908,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (forma === 'linha') inserirLinhaNaPlanta();
             else if (forma === 'circulo') inserirItemNaPlanta('circulo');
             else if (forma === 'rabisco') comecarRabisco();
+            else if (forma === 'texto') inserirTextoNaPlanta();
           });
         });
         document.addEventListener('click', (e) => {

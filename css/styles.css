@@ -9649,3 +9649,11 @@ html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp.active) > 
    fina embaixo e o corpo no fundo das telas. */
 html body #drawer-add-gift:not(#love-h-a) { background: var(--bg-dashboard, #F4F6F7) !important; }
 html body #drawer-add-gift > div:first-child:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; align-items: center; }
+
+/* Drawer do convidado › remover acompanhante: o X numa caixinha com borda
+   (como era antes); no hover só o fundo fica cinza, o X continua preto. */
+html body button.guest-acompanhante-remover:not(#love-h-a) { width: 43px; height: 43px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #18181B; cursor: pointer; transition: background-color .15s; }
+html body button.guest-acompanhante-remover:not(#love-h-a):hover { background: #F4F4F5; border-color: #E4E4E7; color: #18181B; }
+html body button.guest-acompanhante-remover:not(#love-h-a) svg { width: 16px; height: 16px; }
+/* Restrição sem escolha: o texto "Restrições alimentares" em cinza claro. */
+.restricao-botao .restricao-texto.is-placeholder { color: #A1A1AA; }

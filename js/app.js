@@ -8648,13 +8648,14 @@ document.addEventListener('DOMContentLoaded', () => {
     row.className = 'guest-companion-row';
     row.dataset.id = id || `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     row.innerHTML = `
+      <label class="block text-xs font-bold text-zinc-700 mb-1.5">Nome do acompanhante</label>
       <div class="flex items-center gap-2">
-      <input type="text" placeholder="Nome ou 'Acompanhante'" class="field-input guest-companion-name-input" value="${name.replace(/"/g, '&quot;')}">
-      <select class="field-input guest-companion-age-input" style="flex: 0 0 auto; width: 150px;">
+      <input type="text" class="field-input guest-companion-name-input" aria-label="Nome do acompanhante" value="${name.replace(/"/g, '&quot;')}">
+      <select class="field-input guest-companion-age-input" style="flex: 0 0 auto; width: 150px;" aria-label="Faixa etária">
         ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([val, label]) => `<option value="${val}" ${val === ageGroup ? 'selected' : ''}>${label}</option>`).join('')}
       </select>
-      <button type="button" class="btn-remove-companion-row guest-acompanhante-lixeira" aria-label="Remover acompanhante">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg>
+      <button type="button" class="btn-remove-companion-row guest-acompanhante-remover" aria-label="Remover acompanhante">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
       </div>
       <div class="guest-companion-restricao mt-2"></div>
@@ -8662,7 +8663,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.querySelector('.btn-remove-companion-row').addEventListener('click', () => row.remove());
     // Restrição alimentar deste acompanhante.
     const raizDoAcompanhante = /** @type {HTMLElement} */ (row.querySelector('.guest-companion-restricao'));
-    restricaoDoAcompanhante.set(row, DietaryRestrictionSelect(raizDoAcompanhante, { rotulo: 'Restrições alimentares deste acompanhante', valor: companion.restricaoAlimentar || null }));
+    restricaoDoAcompanhante.set(row, DietaryRestrictionSelect(raizDoAcompanhante, { semRotulo: true, placeholder: 'Restrições alimentares', valor: companion.restricaoAlimentar || null }));
     list.appendChild(row);
     if (!name) row.querySelector('input').focus();
   }
@@ -8812,13 +8813,13 @@ document.addEventListener('DOMContentLoaded', () => {
    * opção + campo de detalhe condicional (abre/fecha com animação). Nas
    * outras opções o detalhe some e é apagado.
    * @param {HTMLElement} raiz  onde o componente é montado
-   * @param {{ valor?: RestricaoAlimentar|null, rotulo?: string, onChange?: (data: RestricaoAlimentar) => void }} [opcoes]
+   * @param {{ valor?: RestricaoAlimentar|null, rotulo?: string, semRotulo?: boolean, placeholder?: string, onChange?: (data: RestricaoAlimentar) => void }} [opcoes]
    */
   function DietaryRestrictionSelect(raiz, opcoes = {}) {
     const id = `restricao-${++contadorDeRestricao}`;
     const seta = '<svg class="restricao-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
     raiz.innerHTML = `
-      <p class="block text-xs font-bold text-zinc-700 mb-1.5" id="${id}-rotulo">${escaparHtml(opcoes.rotulo || 'Restrições alimentares')}</p>
+      <p class="block text-xs font-bold text-zinc-700 mb-1.5${opcoes.semRotulo ? ' sr-only' : ''}" id="${id}-rotulo">${escaparHtml(opcoes.rotulo || 'Restrições alimentares')}</p>
       <div class="restricao-select">
         <button type="button" class="field-input restricao-botao" id="${id}-botao" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="${id}-rotulo ${id}-botao">
           <span class="restricao-bolinha"></span><span class="restricao-texto"></span>${seta}
@@ -8852,7 +8853,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const bolinha = /** @type {HTMLElement} */ (botao.querySelector('.restricao-bolinha'));
       bolinha.style.setProperty('--cor', o.cor || 'transparent');
       bolinha.classList.toggle('is-vazia', !o.cor);
-      /** @type {HTMLElement} */ (botao.querySelector('.restricao-texto')).textContent = o.rotulo;
+      // Sem escolha ainda (e com placeholder): mostra o texto cinza no lugar.
+      const textoDoBotao = /** @type {HTMLElement} */ (botao.querySelector('.restricao-texto'));
+      const mostrarPlaceholder = !!opcoes.placeholder && tipo === 'NONE';
+      textoDoBotao.textContent = mostrarPlaceholder ? /** @type {string} */ (opcoes.placeholder) : o.rotulo;
+      textoDoBotao.classList.toggle('is-placeholder', mostrarPlaceholder);
       itens.forEach(li => li.setAttribute('aria-selected', String(li.dataset.valor === tipo)));
       const config = DETALHE_DA_RESTRICAO[/** @type {'ALLERGY'|'OTHER'} */ (tipo)];
       if (config) {

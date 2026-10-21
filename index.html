@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_sairSemCaixa">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_sairX">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4634,11 +4634,12 @@
        ======================================================================= -->
   <div id="modal-unsaved-changes" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
     <div class="modal-container-custom modal-sair-sem-salvar bg-white w-full max-w-sm relative">
+      <!-- X: sai sem salvar (o mesmo que o antigo botão Sair) -->
+      <button type="button" id="btn-unsaved-discard" class="modal-sair-fechar" aria-label="Sair sem salvar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <h3 class="modal-sair-titulo">Deseja salvar antes de sair?</h3>
       <p class="modal-sair-texto">Você fez alterações que ainda não foram salvas. Se sair sem salvar, elas serão perdidas.</p>
       <div class="modal-sair-acoes">
-        <button type="button" id="btn-unsaved-discard" class="btn-white modal-sair-btn">Sair</button>
-        <button type="button" id="btn-unsaved-save" class="btn-primary modal-sair-btn">Salvar</button>
+        <button type="button" id="btn-unsaved-save" class="informacoes-salvar-rodape">Salvar</button>
       </div>
     </div>
   </div>

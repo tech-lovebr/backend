@@ -9813,3 +9813,11 @@ html body .floorplan-empty-hint:not(#love-h-a) svg { width: 48px !important; hei
 html body #modal-unsaved-changes .modal-sair-acoes:not(#love-h-a) { align-items: center; gap: 8px; }
 html body #modal-unsaved-changes #btn-unsaved-discard.modal-sair-btn:not(#love-h-a) { flex: 0 0 auto; padding: 0 20px; background: transparent !important; border: 0 !important; box-shadow: none !important; color: #18181B; }
 html body #modal-unsaved-changes #btn-unsaved-discard.modal-sair-btn:not(#love-h-a):hover { text-decoration: underline; background: transparent !important; }
+/* "Deseja salvar antes de sair?": X no canto (sai sem salvar) e o Salvar igual
+   ao "Salvar alterações" de Informações. */
+html body #modal-unsaved-changes .modal-sair-sem-salvar:not(#love-h-a) { position: relative; }
+html body #modal-unsaved-changes .modal-sair-titulo:not(#love-h-a) { padding-right: 32px; }
+html body .modal-sair-fechar:not(#love-h-a) { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #52525B; cursor: pointer; }
+html body .modal-sair-fechar:not(#love-h-a):hover { color: #18181B; background: #F4F6F7; }
+.modal-sair-fechar svg { width: 18px; height: 18px; }
+html body #modal-unsaved-changes #btn-unsaved-save.informacoes-salvar-rodape:not(#love-h-a) { width: 100%; height: 44px; }

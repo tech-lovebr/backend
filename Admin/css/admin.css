@@ -3645,3 +3645,10 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .admin-nav-subitem:not(.is-active):hover,
 .sidebar-perfil-botao:hover,
 .sidebar-perfil-botao[aria-expanded="true"] { background: #F8F9FA; }
+
+/* Cabeçalho: CNPJ com o copiar à esquerda; perfil (ícone, e-mail e seta)
+   à direita, abrindo o menu da conta para baixo. */
+.admin-topbar .topbar-empresa { margin: 0; font-size: .8125rem; }
+.topbar-perfil { margin: 0 0 0 auto; }
+.topbar-perfil .sidebar-perfil-botao { width: auto; }
+.topbar-perfil .admin-user-menu { left: auto; right: 0; min-width: 230px; top: calc(100% + .375rem); }

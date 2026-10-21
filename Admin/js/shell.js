@@ -7,12 +7,7 @@ const NAV_SECTIONS = [
   {
     label: 'Visão geral',
     items: [
-      { page: 'dashboard', href: 'dashboard.html', text: 'Dashboard', icon: 'grid' }
-    ]
-  },
-  {
-    label: 'Contas',
-    items: [
+      { page: 'dashboard', href: 'dashboard.html', text: 'Dashboard', icon: 'grid' },
       {
         // O grupo só abre e fecha os filhos; não leva a nenhuma página.
         grupo: 'fornecedores', text: 'Empresas', icon: 'store',
@@ -121,15 +116,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const admin = await window.adminReady;
   if (!admin) return;
 
-  renderSidebar(admin);
-  renderTopbar();
+  renderSidebar();
+  renderTopbar(admin);
   renderHeaderBar();
   document.body.classList.add('is-ready');
   refreshTicketBadge();
 });
 
-/** @param {{ name?: string, email?: string }} admin */
-function renderSidebar(admin) {
+function renderSidebar() {
   const host = document.getElementById('admin-sidebar');
   if (!host) return;
 
@@ -175,45 +169,8 @@ function renderSidebar(admin) {
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
     </a>
-    <div class="admin-user sidebar-perfil">
-      <button type="button" class="sidebar-perfil-botao" id="btn-user-menu"
-              aria-haspopup="true" aria-expanded="false" title="${escapeHtml(admin.email || '')}">
-        <svg class="sidebar-perfil-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
-        <span class="sidebar-perfil-nome">${escapeHtml((admin.email || admin.name || 'Administrador').split('@')[0])}</span>
-        <svg class="sidebar-perfil-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
-      </button>
-      <div class="admin-user-menu" id="user-menu" hidden>
-        <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
-
-        <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
-        <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
-        <a href="https://love.com.br" target="_blank" rel="noopener noreferrer" class="admin-user-menu-item admin-user-menu-externo">
-          Homepage
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"/><path d="M11 13l9 -9"/><path d="M15 4h5v5"/></svg>
-        </a>
-        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
-      </div>
-    </div>
     <nav class="admin-nav">${sections}</nav>`;
 
-  const botaoMenu = host.querySelector('#btn-user-menu');
-  const menu = /** @type {HTMLElement} */ (host.querySelector('#user-menu'));
-  const fecharMenu = () => {
-    menu.hidden = true;
-    botaoMenu.setAttribute('aria-expanded', 'false');
-  };
-  botaoMenu.addEventListener('click', (e) => {
-    e.stopPropagation();
-    menu.hidden = !menu.hidden;
-    botaoMenu.setAttribute('aria-expanded', String(!menu.hidden));
-  });
-  menu.addEventListener('click', e => e.stopPropagation());
-  document.addEventListener('click', fecharMenu);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
-  host.querySelector('#btn-logout').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.replace('login.html');
-  });
 
   host.querySelectorAll('[data-grupo]').forEach(botao => {
     botao.addEventListener('click', () => {
@@ -275,7 +232,8 @@ function iniciaisDoAvatar(nome) {
   return letras || '?';
 }
 
-function renderTopbar() {
+/** @param {{ name?: string, email?: string }} admin */
+function renderTopbar(admin) {
   const host = document.getElementById('admin-topbar');
   if (!host) return;
 
@@ -284,10 +242,28 @@ function renderTopbar() {
       ${icon('menu')}
     </button>
 
-    <h1 class="topbar-titulo">Admin</h1>
     <p class="topbar-empresa">CNPJ 69.386.397/0001-06
       <button type="button" class="topbar-copiar" id="btn-copiar-cnpj" title="Copiar número do CNPJ" aria-label="Copiar número do CNPJ">${ICONE_COPIAR}</button>
-    </p>`;
+    </p>
+    <div class="admin-user sidebar-perfil topbar-perfil">
+      <button type="button" class="sidebar-perfil-botao" id="btn-user-menu"
+              aria-haspopup="true" aria-expanded="false" title="${escapeHtml(admin.email || '')}">
+        <svg class="sidebar-perfil-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+        <span class="sidebar-perfil-nome">${escapeHtml((admin.email || admin.name || 'Administrador').split('@')[0])}</span>
+        <svg class="sidebar-perfil-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+      </button>
+      <div class="admin-user-menu" id="user-menu" hidden>
+        <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
+
+        <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
+        <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
+        <a href="https://love.com.br" target="_blank" rel="noopener noreferrer" class="admin-user-menu-item admin-user-menu-externo">
+          Homepage
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"/><path d="M11 13l9 -9"/><path d="M15 4h5v5"/></svg>
+        </a>
+        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
+      </div>
+    </div>`;
 
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
@@ -303,6 +279,25 @@ function renderTopbar() {
     } catch {
       toast('Não foi possível copiar.');
     }
+  });
+
+  const botaoMenu = host.querySelector('#btn-user-menu');
+  const menu = /** @type {HTMLElement} */ (host.querySelector('#user-menu'));
+  const fecharMenu = () => {
+    menu.hidden = true;
+    botaoMenu.setAttribute('aria-expanded', 'false');
+  };
+  botaoMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    botaoMenu.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', fecharMenu);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
+  host.querySelector('#btn-logout').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.replace('login.html');
   });
 }
 

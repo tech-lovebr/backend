@@ -10145,8 +10145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Quem está sentado na mesa (ícone de lista do menuzinho): numerados, com
-   * "Acompanhante de …" embaixo de quem é acompanhante; clicar num nome abre
-   * o "Mover convidado para".
+   * "+1 de …" embaixo de quem é acompanhante; o X no fim tira a pessoa da mesa.
    * @param {HTMLElement} ancora @param {any} mesa
    */
   function abrirListaDaMesa(ancora, mesa) {
@@ -10156,15 +10155,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const caixa = document.createElement('div');
     caixa.className = 'floorplan-mover-para floorplan-lista-mesa';
     caixa.setAttribute('role', 'dialog');
-    const setas = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>';
+    const xis = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
     caixa.innerHTML = `<div class="floorplan-lista-topo"><p>Convidados</p><span>Mesa ${escaparHtml(String(mesa.number))}</span></div>` + (sentados.length ? sentados.map((nome, i) => {
       const p = pessoas.find(x => x.name.toLowerCase() === nome.toLowerCase());
-      const sub = p && !p.isPrimary && p.host ? `Acompanhante de ${p.host}` : '';
-      return `<button type="button" class="floorplan-lista-pessoa" data-nome="${escaparHtml(nome)}">
+      const sub = p && !p.isPrimary && p.host ? `+1 de ${p.host}` : '';
+      return `<div class="floorplan-lista-pessoa">
         <span class="floorplan-lista-numero">${i + 1}</span>
         <span class="floorplan-lista-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}</span>
-        <span class="floorplan-lista-setas">${setas}</span>
-      </button>`;
+        <button type="button" class="floorplan-lista-tirar" data-nome="${escaparHtml(nome)}" aria-label="Tirar ${escaparHtml(nome)} desta mesa">${xis}</button>
+      </div>`;
     }).join('') : '<p class="floorplan-mover-vazio">Nenhum convidado nesta mesa ainda.</p>');
     document.body.appendChild(caixa);
     const r = ancora.getBoundingClientRect();
@@ -10174,8 +10173,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (top + altura > window.innerHeight - 8) top = Math.max(8, r.top - altura - 8);
     caixa.style.top = `${top}px`;
     caixa.style.left = `${Math.max(8, Math.min(r.left + r.width / 2 - largura / 2, window.innerWidth - largura - 8))}px`;
-    caixa.querySelectorAll('.floorplan-lista-pessoa').forEach(b => {
-      b.addEventListener('click', () => abrirMoverParaMesa(/** @type {HTMLElement} */ (b), [/** @type {HTMLElement} */ (b).dataset.nome || '']));
+    // X: a pessoa sai da mesa (o lugar fica vazio) e a lista se atualiza.
+    caixa.querySelectorAll('.floorplan-lista-tirar').forEach(b => {
+      b.addEventListener('click', () => {
+        const nome = ((/** @type {HTMLElement} */ (b)).dataset.nome || '').trim().toLowerCase();
+        const lista = getFloorPlanElements();
+        const m = lista.find(x => x.id === mesa.id);
+        if (!m || !Array.isArray(m.seatNames)) return;
+        m.seatNames = m.seatNames.map(/** @param {string} s */ s => ((s || '').trim().toLowerCase() === nome ? '' : s));
+        saveFloorPlanElements(lista);
+        renderFloorPlanCanvas();
+        renderFloorPlanGuestCards();
+        renderGuestsTable();
+        abrirListaDaMesa(ancora.isConnected ? ancora : caixa, m);
+        if (!ancora.isConnected) {
+          const nova = document.querySelector('.floorplan-lista-mesa');
+          if (nova instanceof HTMLElement) { nova.style.top = caixa.style.top; nova.style.left = caixa.style.left; }
+        }
+      });
     });
   }
 

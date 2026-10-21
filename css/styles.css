@@ -9714,3 +9714,10 @@ html body .floorplan-mover-para:not(#love-h-a), html body .floorplan-mover-para:
 html body .floorplan-mover-para .floorplan-mover-titulo:not(#love-h-a), html body .floorplan-mover-para .floorplan-lista-topo p:not(#love-h-a) { font-size: 13px !important; font-weight: 600 !important; color: #71717A !important; text-align: left; }
 html body .floorplan-mover-para .floorplan-mover-texto strong:not(#love-h-a), html body .floorplan-mover-para .floorplan-lista-nome strong:not(#love-h-a) { font-size: 13px !important; font-weight: 600 !important; }
 html body .floorplan-mover-para .floorplan-lista-topo span:not(#love-h-a) { font-size: 13px !important; font-weight: 600 !important; color: #71717A !important; }
+
+/* Lista da mesa: linhas sem clique; só o X no fim tira a pessoa da mesa. */
+html body .floorplan-lista-pessoa:not(#love-h-a) { cursor: default; }
+html body .floorplan-lista-pessoa:not(#love-h-a):hover { background: transparent; }
+html body .floorplan-lista-tirar:not(#love-h-a) { width: 28px; height: 28px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #3F3F46; cursor: pointer; }
+html body .floorplan-lista-tirar:not(#love-h-a):hover { background: #F4F6F7; color: #18181B; }
+.floorplan-lista-tirar svg { width: 16px; height: 16px; }

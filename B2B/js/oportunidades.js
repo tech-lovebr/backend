@@ -438,7 +438,7 @@ function leadsMostrarAba(aba) {
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
   document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
   const titulo = document.getElementById('leads-titulo-pagina');
-  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Minhas propostas' : 'Meus leads');
+  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Propostas enviadas' : 'Leads');
   const acoes = document.getElementById('leads-acoes-topo');
   if (acoes) acoes.hidden = aba !== 'leads';
 }
@@ -454,7 +454,7 @@ async function initOportunidades() {
   opEmpresaId = empresaId(session);
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.addEventListener('click', () => leadsMostrarAba(b.dataset.leadsAba)));
   const abaPedida = new URLSearchParams(location.search).get('aba');
-  if (abaPedida === 'eventos' || abaPedida === 'propostas') {
+  if (abaPedida === 'eventos' || abaPedida === 'propostas' || abaPedida === 'leads') {
     leadsMostrarAba(abaPedida);
     history.replaceState(null, '', location.pathname);
   }

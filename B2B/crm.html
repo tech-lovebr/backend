@@ -13,7 +13,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meus leads — Portal do Fornecedor Love</title>
+  <title>Leads — Portal do Fornecedor Love</title>
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#537bae">
@@ -31,25 +31,19 @@
       <div id="shell-topbar"></div>
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900" id="leads-titulo-pagina">Meus leads</h2>
-          <!-- Busca, filtros, importar e exportar ficam na barra da tabela. -->
-          <div class="flex items-center gap-3" id="leads-acoes-topo">
-            <button type="button" id="lead-add-btn" class="btn-secondary builder-toolbar-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-              Criar lead
-            </button>
-          </div>
+          <h2 class="text-xl font-bold text-zinc-900" id="leads-titulo-pagina">Buscar eventos</h2>
         </div>
 
 
-        <!-- Leads: Meus leads × Buscar eventos (pedidos de orçamento dos anfitriões). -->
+        <!-- Primeiro a empresa encontra o evento, manda a proposta e depois a
+             pessoa vira lead: Buscar eventos › Propostas enviadas › Leads. -->
         <div class="category-tabs-bar" id="leads-abas">
-          <button type="button" class="category-tab active" data-leads-aba="leads">Meus leads</button>
-          <button type="button" class="category-tab" data-leads-aba="eventos">Buscar eventos</button>
-          <button type="button" class="category-tab" data-leads-aba="propostas">Minhas propostas</button>
+          <button type="button" class="category-tab active" data-leads-aba="eventos">Buscar eventos</button>
+          <button type="button" class="category-tab" data-leads-aba="propostas">Propostas enviadas</button>
+          <button type="button" class="category-tab" data-leads-aba="leads">Leads</button>
         </div>
 
-        <div data-leads-painel="leads">
+        <div data-leads-painel="leads" hidden>
         <div class="dash-card" id="leads-table-card">
           <div class="overflow-x-auto leads-table-wrap">
             <table class="leads-table w-full">
@@ -65,7 +59,7 @@
 
         <!-- Buscar eventos: no modelo do Explorar do love.com.br. Só os pedidos
              da categoria da empresa; busca + chips de cidade e os cards. -->
-        <div data-leads-painel="eventos" hidden>
+        <div data-leads-painel="eventos">
           <!-- Sem produto cadastrado, não dá para buscar eventos pela categoria. -->
           <div class="op-vazio op-sem-produtos" id="op-sem-produtos" hidden>
             <p>Cadastre um produto para encontrar eventos buscando a sua categoria de negócio.</p>
@@ -324,6 +318,6 @@
   <script src="js/shell.js?v=52"></script>
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="js/crm.js?v=27"></script>
-  <script src="js/oportunidades.js?v=4"></script>
+  <script src="js/oportunidades.js?v=5"></script>
 </body>
 </html>

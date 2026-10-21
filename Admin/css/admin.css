@@ -3688,3 +3688,25 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .editor-corpo img { max-width: 100%; height: auto; border-radius: 8px; display: block; }
 .editor-corpo .video-embed { margin: 0 0 .875rem; }
 label.editor-btn { cursor: pointer; }
+
+/* ------------------------------------------------ Sidebar como a referência
+   Nomes sem negrito (400), cinza médio, linhas mais altas e ícones de traço
+   fino; o ativo se distingue só pelo fundo e pelo tom um pouco mais escuro. */
+.admin-nav { gap: .25rem; }
+.admin-nav-item,
+.admin-nav-grupo-toggle {
+  font-size: .9375rem;
+  font-weight: 400;
+  letter-spacing: -.005em;
+  color: #52525B;
+  padding-top: .625rem;
+  padding-bottom: .625rem;
+}
+.admin-nav-item svg:not(.sidebar-chevron) { width: 22px; height: 22px; stroke-width: 1.5px; color: #52525B; }
+.admin-nav-item.is-active,
+.admin-nav-grupo-linha.is-active .admin-nav-item { font-weight: 500; color: #18181B; }
+.admin-nav-item.is-active svg:not(.sidebar-chevron),
+.admin-nav-grupo-linha.is-active .admin-nav-item svg:not(.sidebar-chevron) { stroke-width: 1.6px; color: #18181B; }
+.admin-nav-subitem { font-size: .875rem; font-weight: 400; color: #52525B; }
+.admin-nav-subitem.is-active { font-weight: 500; color: #18181B; }
+.admin-nav-label { font-size: .6875rem; font-weight: 600; letter-spacing: .06em; color: #A1A1AA; padding-top: 1rem; }

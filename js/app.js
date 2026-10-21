@@ -8069,13 +8069,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <strong>Adicionar presente</strong>
         <span class="lista-pronta-qtd">Crie um presente do zero</span>
       </button>`;
-    painel.innerHTML = LISTAS_PRONTAS.map((secao, s) => `
+    // Uma grade só, sem títulos de seção: só "Escolha entre uma das listas".
+    painel.innerHTML = `
       <section class="listas-prontas-secao">
-        <h3>${escaparHtml(secao.titulo)}</h3>
-        <p class="listas-prontas-sub">${escaparHtml(secao.subtitulo || '')}</p>
+        <p class="listas-prontas-sub listas-prontas-chamada">Escolha entre uma das listas</p>
         <div class="listas-prontas-grade">
-          ${s === 0 ? cardCriarDoZero : ''}
-          ${secao.listas.map((l, i) => {
+          ${cardCriarDoZero}
+          ${LISTAS_PRONTAS.map((secao, s) => secao.listas.map((l, i) => {
             const total = l.itens.reduce((t, it) => t + it[1], 0);
             return `<button type="button" class="lista-pronta-card" data-secao="${s}" data-lista="${i}">
               <img src="${escaparHtml(l.img)}" alt="" loading="lazy">
@@ -8085,9 +8085,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="lista-pronta-total"><span>Total da lista:</span><b>${reaisDaLista(total)}</b></span>
               </span>
             </button>`;
-          }).join('')}
+          }).join('')).join('')}
         </div>
-      </section>`).join('');
+      </section>`;
   }
 
   /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number][] }} lista */
@@ -8909,13 +8909,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panelProducts) panelProducts.classList.remove('hidden');
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.remove('hidden');
-      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Listas prontas' : 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : 'Meus presentes';
       if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
       const searchInput = document.getElementById('gifts-search-input');
       renderHostGifts(searchInput ? searchInput.value : '');
       // Listas prontas ficam no lugar dos presentes (o item do menu continua "Meus presentes").
       mostrarListasProntas(subId === 'gift-lists');
-      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Listas prontas' : 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : 'Meus presentes';
       if (subId === 'gift-lists') {
         elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.routeSub === 'my-gifts'));
       }

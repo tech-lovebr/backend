@@ -10,12 +10,11 @@ const NAV_SECTIONS = [
       { page: 'dashboard', href: 'dashboard.html', text: 'Dashboard', icon: 'grid' },
       {
         // O grupo só abre e fecha os filhos; não leva a nenhuma página.
-        grupo: 'fornecedores', text: 'Empresas', icon: 'store',
+        grupo: 'fornecedores', text: 'Fornecedores', icon: 'store',
         children: [
           { page: 'fornecedores', href: 'fornecedores.html', text: 'Cadastros' },
-          { page: 'produtos', href: 'produtos.html', text: 'Serviços/Produtos' },
-          { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Configurações' },
-          { page: 'afiliados', href: 'afiliados.html', text: 'Afiliados' }
+          { page: 'produtos', href: 'produtos.html', text: 'Produtos' },
+          { page: 'fornecedores-dashboard', href: 'fornecedores-dashboard.html', text: 'Configurações' }
         ]
       },
       {

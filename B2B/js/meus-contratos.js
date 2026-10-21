@@ -85,6 +85,10 @@ async function loadContratosAbertos() {
       comentarios: g.comentarios || []
     }))
   }));
+
+  // SANDBOX: sem nenhum contrato ainda, mostra um de exemplo (js/contratos-nf.js).
+  if (!bContratosAbertos.length && typeof CONTRATO_EXEMPLO === 'function') bContratosAbertos = [CONTRATO_EXEMPLO()];
+  if (typeof carregarNotasDosContratos === 'function') await carregarNotasDosContratos(session);
 }
 
 function findContrato(id) {
@@ -128,12 +132,12 @@ function renderContratosClientes() {
       const convidados = (c.convidados || []).length;
       return `
       <tr class="contratos-cliente-row${aberto ? ' is-selected' : ''}" data-contrato-row="${escapeHtml(c.id)}">
-        <td class="contratos-cliente-name-cell col-principal">${escapeHtml(c.client)}</td>
+        <td class="contratos-cliente-name-cell col-principal">${escapeHtml(c.client)}${c.exemplo ? ' <span class="contrato-exemplo">Exemplo</span>' : ''}</td>
         <td>${escapeHtml(c.categoria || '—')}</td>
         <td>${escapeHtml(produtoDoContrato(c) || '—')}</td>
         <td>${dataCurtaDoEvento(c.evento && c.evento.data)}</td>
         <td>${convidados}</td>
-        ${tabelaVerMaisHtml('data-contrato-select', c.id)}
+        ${typeof nfMenuHtml === 'function' ? nfMenuHtml(c) : tabelaVerMaisHtml('data-contrato-select', c.id)}
       </tr>
       ${aberto ? renderContratoDetalheRow(c) : ''}
     `;
@@ -142,7 +146,8 @@ function renderContratosClientes() {
 
   // Clicar na linha (ou no "ver mais") abre/fecha os detalhes logo abaixo.
   body.querySelectorAll('[data-contrato-row]').forEach(tr => {
-    tr.addEventListener('click', () => {
+    tr.addEventListener('click', (e) => {
+      if (e.target.closest('.contrato-menu-wrap')) return;
       if (String(window.getSelection && window.getSelection()).trim()) return;
       selectContrato(tr.dataset.contratoRow);
     });

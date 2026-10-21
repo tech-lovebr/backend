@@ -9614,3 +9614,17 @@ html body .builder-ver-site svg:not(#love-h-a) { width: 16px; height: 16px; }
 
 /* Construtor › Formulários: a lista não fica colada no cabeçalho (só o editor fica). */
 html body[data-page="paginas-site"].site-aba-formularios .b2b-header-bar + p:not(#love-h-a) { margin-bottom: 1.5rem; }
+
+/* Vendas › Meus contratos: menu ⋯ (detalhes e nota fiscal), selo do
+   contrato de exemplo (sandbox) e o pop-up da nota fiscal. */
+html body .contrato-menu-wrap:not(#love-h-a) { position: relative; display: inline-flex; }
+html body .leads-table-wrap:has(.op-menu:not([hidden])):not(#love-h-a) { overflow: visible; }
+html body .contrato-exemplo:not(#love-h-a) { margin-left: 0.4rem; padding: 2px 7px; border-radius: 6px; background: #FEF3C7; color: #92400E; font-size: 0.6875rem; font-weight: 700; vertical-align: middle; }
+html body .nf-modal-card:not(#love-h-a) { position: relative; max-width: 440px; width: calc(100% - 2rem); padding: 24px; border-radius: 10px; border: 1px solid #E4E4E7; box-shadow: 0 8px 24px rgba(0,0,0,0.08); text-align: left; }
+html body .nf-aviso:not(#love-h-a) { margin: 0 0 1rem; padding: 0.55rem 0.75rem; border: 1px solid #FDE68A; border-radius: 8px; background: #FFFBEB; font-size: 0.8125rem; color: #92400E; }
+html body .nf-erro:not(#love-h-a) { margin: 0; font-size: 0.875rem; color: #DC2626; }
+html body .nf-dados:not(#love-h-a) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem 1rem; margin: 0 0 1.25rem; }
+html body .nf-dados dt:not(#love-h-a) { font-size: 0.75rem; color: #A1A1AA; margin: 0 0 0.15rem; }
+html body .nf-dados dd:not(#love-h-a) { font-size: 0.875rem; color: #18181B; margin: 0; font-variant-numeric: tabular-nums; }
+html body .nf-pdf-btn:not(#love-h-a) { width: 100%; height: 44px; justify-content: center; }
+body[data-theme="dark"] .nf-dados dd { color: #FFFFFF !important; }

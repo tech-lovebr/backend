@@ -1,5 +1,8 @@
 /* ==========================================================================
-   LOVE B2B — Oportunidades (pedidos de orçamento dos anfitriões)
+   LOVE B2B — Leads › Buscar eventos (pedidos de orçamento dos anfitriões)
+   Antes era a página Oportunidades; agora é a 2ª aba de Leads (crm.html).
+   Só aparece para quem tem produto cadastrado (é a categoria do produto que
+   filtra os pedidos).
    O anfitrião publica um pedido em love.com.br (pedidos_orcamento, migration
    072). Aqui a empresa ativa vê os pedidos abertos, abre o detalhe e envia
    UMA proposta pela RPC enviar_proposta (migration 074), que também grava a
@@ -132,26 +135,52 @@ function opPreencherFiltrosDeLocal() {
   cidSel.value = cidades.includes(cidAtual) ? cidAtual : '';
 }
 
+/* Linha da lista no modelo do Explorar (love.com.br): imagem larga à
+   esquerda (1ª foto de referência ou um fundo com a categoria), título,
+   quem pede, descrição em 2 linhas e o rodapé com faixa, data e cidade. */
 function opCardHtml(p) {
   const minha = opMinhaProposta(p.id);
-  const dados = [opData(p), opLocal(p), OP_CONVIDADOS[p.convidados], opPeriodo(p)].filter(Boolean);
+  const foto = (p.referencias || [])[0];
+  const dados = [OP_CONVIDADOS[p.convidados], opPeriodo(p)].filter(Boolean);
   return `
-    <article class="op-card" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
-      <div class="op-card-topo">
-        <span class="op-card-cat">${escapeHtml(opCategoria(p.categoria))}</span>
-        ${opNovo(p) ? '<span class="op-selo-novo">Novo</span>' : ''}
-        ${minha ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''}
+    <article class="op-item" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
+      <div class="op-item-imagem">
+        ${foto ? `<img src="${escapeHtml(foto)}" alt="" loading="lazy">` : `<span class="op-item-imagem-cat">${escapeHtml(opCategoria(p.categoria))}</span>`}
+        ${opNovo(p) ? '<span class="op-selo-novo op-selo-sobre">Novo</span>' : ''}
       </div>
-      <h3 class="op-card-titulo">${escapeHtml(opTitulo(p))}</h3>
-      <p class="op-card-dados">${dados.map(escapeHtml).join(' · ')}</p>
-      <p class="op-card-faixa">${escapeHtml(opFaixaTexto(p))}${p.aceita_fora_da_faixa ? ' <span class="op-fora-faixa">aceita fora da faixa</span>' : ''}</p>
-      ${(p.especialidades || []).length ? `<div class="op-tags">${p.especialidades.map(t => `<span class="op-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      <p class="op-card-desc">${escapeHtml(p.descricao || '')}</p>
-      <div class="op-card-rodape">
-        <span>${escapeHtml(opContagem(p))}</span>
-        <span>${escapeHtml(opHaQuanto(p.created_at))}</span>
+      <div class="op-item-corpo">
+        <div class="op-item-topo">
+          <div class="min-w-0">
+            <h3 class="op-item-titulo">${escapeHtml(opTitulo(p))}</h3>
+            <p class="op-item-quem">Anfitrião(ã) · ${escapeHtml(dados.join(' · ') || opCelebracao(p.tipo_celebracao))}</p>
+          </div>
+          ${minha
+            ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>`
+            : '<span class="op-item-cta">Enviar proposta</span>'}
+        </div>
+        ${(p.especialidades || []).length ? `<div class="op-tags">${p.especialidades.map(t => `<span class="op-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        <p class="op-item-desc">${escapeHtml(p.descricao || '')}</p>
+        <div class="op-item-rodape">
+          <span class="op-item-faixa">${escapeHtml(opFaixaTexto(p))}${p.aceita_fora_da_faixa ? ' <span class="op-fora-faixa">aceita fora da faixa</span>' : ''}</span>
+          <span class="op-item-meta">
+            <span>${escapeHtml(opData(p))}</span>
+            <span class="op-item-cidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>${escapeHtml([p.cidade, p.uf].filter(Boolean).join(' (') + (p.uf ? ')' : ''))}</span>
+            <span>${escapeHtml(opContagem(p))} · ${escapeHtml(opHaQuanto(p.created_at))}</span>
+          </span>
+        </div>
       </div>
     </article>`;
+}
+
+/* Chips de cidade (Todas + "Cidade (UF)" de cada pedido aberto). */
+function opRenderChips() {
+  const wrap = document.getElementById('op-chips');
+  if (!wrap) return;
+  const atual = document.getElementById('op-filtro-cidade').value;
+  const cidades = [...new Map(opPedidos.filter(p => p.cidade).map(p => [p.cidade + '|' + p.uf, p])).values()]
+    .sort((a, b) => a.cidade.localeCompare(b.cidade, 'pt-BR'));
+  wrap.innerHTML = `<button type="button" class="op-chip${atual ? '' : ' is-ativo'}" data-op-chip="">Todas as cidades</button>` +
+    cidades.map(p => `<button type="button" class="op-chip${atual === p.cidade ? ' is-ativo' : ''}" data-op-chip="${escapeHtml(p.cidade)}" data-op-chip-uf="${escapeHtml(p.uf || '')}">${escapeHtml(p.cidade)} (${escapeHtml(p.uf || '')})</button>`).join('');
 }
 
 function opRenderPedidos() {
@@ -159,9 +188,10 @@ function opRenderPedidos() {
   const vazio = document.getElementById('op-vazio');
   const lista = opPedidosFiltrados();
   grade.innerHTML = lista.map(opCardHtml).join('');
+  opRenderChips();
   vazio.hidden = lista.length > 0;
   vazio.textContent = opFiltroCat === 'minha'
-    ? 'Nenhum pedido aberto na sua categoria agora. Avisaremos quando chegar um novo.'
+    ? 'Nenhum evento procurando a sua categoria agora. Avisaremos quando chegar um novo.'
     : 'Nenhum pedido aberto com esses filtros agora.';
   const aviso = document.getElementById('op-aviso');
   aviso.hidden = !(opFiltroCat === 'minha' && !opMinhasCategorias.length);
@@ -343,6 +373,15 @@ function opLigarEventos() {
   document.getElementById('op-filtro-uf').addEventListener('change', () => { opPreencherFiltrosDeLocal(); opRenderPedidos(); });
   document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
 
+  document.getElementById('op-chips').addEventListener('click', e => {
+    const chip = e.target.closest('[data-op-chip]');
+    if (!chip) return;
+    const ufSel = document.getElementById('op-filtro-uf');
+    ufSel.value = chip.dataset.opChipUf || '';
+    opPreencherFiltrosDeLocal();
+    document.getElementById('op-filtro-cidade').value = chip.dataset.opChip;
+    opRenderPedidos();
+  });
   const grade = document.getElementById('op-grade');
   grade.addEventListener('click', e => { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); });
   grade.addEventListener('keydown', e => { if (e.key === 'Enter') { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); } });
@@ -394,10 +433,39 @@ function opLigarEventos() {
   document.addEventListener('click', () => tabela.querySelectorAll('[data-op-menu-lista]').forEach(m => { m.hidden = true; }));
 }
 
+/* Abas de Leads: Meus leads × Buscar eventos. O título da página segue a aba
+   e o "Criar lead" só aparece em Meus leads. */
+function leadsMostrarAba(aba) {
+  document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
+  document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
+  const titulo = document.getElementById('leads-titulo-pagina');
+  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : 'Meus leads';
+  const acoes = document.getElementById('leads-acoes-topo');
+  if (acoes) acoes.hidden = aba === 'eventos';
+}
+
+async function opTemProdutos() {
+  const { count, error } = await supabaseClient.from('products').select('id', { count: 'exact', head: true }).eq('fornecedor_id', opEmpresaId);
+  return !error && (count || 0) > 0;
+}
+
 async function initOportunidades() {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
   opEmpresaId = empresaId(session);
+  document.querySelectorAll('[data-leads-aba]').forEach(b => b.addEventListener('click', () => leadsMostrarAba(b.dataset.leadsAba)));
+  const abaPedida = new URLSearchParams(location.search).get('aba');
+  if (abaPedida === 'eventos' || abaPedida === 'propostas') {
+    leadsMostrarAba('eventos');
+    history.replaceState(null, '', location.pathname);
+  }
+
+  // Sem produto cadastrado: só a mensagem para cadastrar um.
+  if (!(await opTemProdutos())) {
+    document.getElementById('op-sem-produtos').hidden = false;
+    document.getElementById('op-conteudo').hidden = true;
+    return;
+  }
   opLigarEventos();
   const [okPedidos] = await Promise.all([opCarregarPedidos(), opCarregarPropostas(), opCarregarCategoriasDaEmpresa()]);
   if (!okPedidos) {
@@ -408,8 +476,7 @@ async function initOportunidades() {
   opPreencherFiltrosDeLocal();
   opRenderPedidos();
   opRenderPropostas();
-  if (new URLSearchParams(location.search).get('aba') === 'propostas') opMostrarAba('propostas');
-  window.b2bPageReady?.();
+  if (abaPedida === 'propostas') opMostrarAba('propostas');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

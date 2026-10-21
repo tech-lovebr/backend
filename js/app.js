@@ -4,6 +4,10 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Rodapé da plataforma logada: ano atual no "© {ano} Love Hub Ltda."
+  const anoDoRodape = document.getElementById('rodape-ano');
+  if (anoDoRodape) anoDoRodape.textContent = String(new Date().getFullYear());
+
   // Estado Global da Aplicação com Isolamento Completo por Comemoração
   const state = {
     currentView: 'public', // 'public' | 'dashboard'

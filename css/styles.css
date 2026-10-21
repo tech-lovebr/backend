@@ -9316,3 +9316,33 @@ html body .floorplan-el.is-item:not(#love-h-a):hover { border: 0; }
 body[data-theme="dark"] .floorplan-planta * { fill: #252525; stroke: #A1A1AA; }
 body[data-theme="dark"] .floorplan-planta .l, body[data-theme="dark"] .floorplan-planta .l * { fill: none; }
 body[data-theme="dark"] .floorplan-planta .c { fill: #333333; stroke: none; }
+
+/* Rodapé da plataforma logada igual ao do Hub: uma linha baixa, na cor do fundo
+   das telas, com uma linha fina em cima de ponta a ponta. O texto começa na
+   linha do título do cabeçalho e os links terminam onde o conteúdo termina. */
+html body #view-event-os-dashboard .dashboard-main-area > .rodape-respiro:not(#love-h-a) { display: block; flex: 0 0 6.5rem; height: 6.5rem; }
+html body #view-event-os-dashboard .dashboard-main-area > .dashboard-content-wrapper:not(#love-h-a) { padding-bottom: 0 !important; }
+html body #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { margin-top: 0 !important; padding-top: 1rem !important; padding-bottom: 1rem !important; padding-left: var(--rodape-respiro-lateral, 2rem) !important; padding-right: var(--rodape-respiro-lateral, 2rem) !important; background: transparent !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; box-shadow: none !important; }
+html body #dashboard-footer .rodape-logado-linha:not(#love-h-a) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
+html body #dashboard-footer .rodape-logado-texto:not(#love-h-a) { margin: 0; font-size: 12px !important; font-weight: 400 !important; line-height: 1.5 !important; color: #71717A !important; }
+html body #dashboard-footer .rodape-logado-texto span:not(#love-h-a) { font-size: inherit !important; color: inherit !important; }
+html body #dashboard-footer .rodape-logado-links:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 16px; }
+html body #dashboard-footer .rodape-logado-links a:not(#love-h-a) { font-size: 12px !important; font-weight: 400 !important; line-height: 1.5 !important; color: #18181B !important; text-decoration: none !important; }
+html body #dashboard-footer .rodape-logado-links a:not(#love-h-a):hover { text-decoration: underline !important; }
+html body[data-theme="dark"] #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { background: transparent !important; border-top-color: #404040 !important; }
+html body[data-theme="dark"] #dashboard-footer .rodape-logado-texto:not(#love-h-a) { color: #A1A1AA !important; }
+html body[data-theme="dark"] #dashboard-footer .rodape-logado-links a:not(#love-h-a) { color: #FFFFFF !important; }
+/* Rodapé de ponta a ponta (sangra até as bordas da área principal) e sem
+   sobras de padding no fim das telas: o respiro é só o bloco de 6.5rem. */
+html body #view-event-os-dashboard .dashboard-main-area > #dashboard-footer.rodape-logado:not(#love-h-a) { width: calc(100% + var(--rodape-sangria-esq, 0px) + var(--rodape-sangria-dir, 0px)) !important; max-width: none !important; margin-left: calc(-1 * var(--rodape-sangria-esq, 0px)) !important; margin-right: calc(-1 * var(--rodape-sangria-dir, 0px)) !important; padding-left: 2rem !important; padding-right: 2rem !important; }
+html body #view-event-os-dashboard .dashboard-content-wrapper > .dashboard-tab-content:not(#love-h-a) { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+/* O último bloco visível da tela (o de py-6) não soma os 24px de baixo ao respiro. */
+html body #view-event-os-dashboard .dashboard-tab-content > [class*="py-6"]:not(:has(~ :not(.hidden))):not(#love-h-a) { padding-bottom: 0 !important; }
+/* Quanto o rodapé sangra para os lados = o respiro lateral da área principal
+   naquela tela (2rem na Home; 0 nas telas em "modo" como Convidados/Presentes). */
+html body #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 2rem; --rodape-sangria-dir: 2rem; }
+html body:is(.editor-split-mode, .rsvp-mode, .b2b-mode, .gifts-mode, .wallet-mode, .page-mode, .b2b-chat-mode) #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 0px; --rodape-sangria-dir: 0px; }
+@media (max-width: 768px) {
+  html body #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 1rem; --rodape-sangria-dir: 1rem; }
+  html body.b2b-chat-mode #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 0px; --rodape-sangria-dir: 0px; }
+}

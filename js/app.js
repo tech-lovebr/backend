@@ -50,6 +50,40 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', esconder, true);
   })();
 
+  // Personalizar evento (Convite digital, Aparência, Informações...): sem a
+  // caixinha do navegador nos ícones. O texto do title vira aria-label (para
+  // leitores de tela); onde precisa de dica, o botão usa data-dica.
+  (function semDicaDoNavegadorNoEditor() {
+    const raiz = document.getElementById('tab-edit-site');
+    if (!raiz) return;
+    /** @param {Element} el */
+    const limpar = (el) => {
+      const t = el.getAttribute('title');
+      if (t === null) return;
+      if (t && !el.hasAttribute('aria-label')) el.setAttribute('aria-label', t);
+      el.removeAttribute('title');
+    };
+    /** @param {Node} n */
+    const varrer = (n) => {
+      if (!(n instanceof Element)) return;
+      if (n.hasAttribute('title')) limpar(n);
+      n.querySelectorAll('[title]').forEach(limpar);
+    };
+    varrer(raiz);
+    new MutationObserver(ms => ms.forEach(m => {
+      if (m.type === 'attributes') limpar(/** @type {Element} */ (m.target));
+      else m.addedNodes.forEach(varrer);
+    })).observe(raiz, { subtree: true, childList: true, attributes: true, attributeFilter: ['title'] });
+  })();
+
+  // Campos de data e horário: o ícone do navegador (com a dica "Mostrar seletor
+  // de datas/horário") some; fica o nosso ícone e o clique abre o seletor.
+  document.addEventListener('click', (e) => {
+    const campo = e.target instanceof HTMLInputElement && (e.target.type === 'date' || e.target.type === 'time') ? e.target : null;
+    if (!campo || !campo.closest('#view-event-os-dashboard') || campo.disabled || campo.readOnly) return;
+    try { campo.showPicker(); } catch (err) { /* navegador sem showPicker: segue digitando */ }
+  });
+
   // Rodapé da plataforma logada: ano atual no "© {ano} Love Hub Ltda."
   const anoDoRodape = document.getElementById('rodape-ano');
   if (anoDoRodape) anoDoRodape.textContent = String(new Date().getFullYear());
@@ -2917,7 +2951,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (existsInOtherEvents || isReserved) {
       if (statusIcon) {
         statusIcon.innerHTML = `
-          <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-50 text-rose-500 border border-rose-200 flex items-center justify-center shadow-2xs animate-in fade-in duration-200" title="URL já utilizada">
+          <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-50 text-rose-500 border border-rose-200 flex items-center justify-center shadow-2xs animate-in fade-in duration-200" data-dica="URL já utilizada" aria-label="URL já utilizada">
             <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -2947,7 +2981,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Slug liberado / sem uso no database
     if (statusIcon) {
       statusIcon.innerHTML = `
-        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs animate-in fade-in duration-200" title="URL disponível">
+        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shadow-2xs animate-in fade-in duration-200" data-dica="URL disponível" aria-label="URL disponível">
           <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
           </svg>

@@ -3631,3 +3631,17 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
   --sidebar-bg: #FFFFFF;
   --header-bar-bg: #F4F6F7;
 }
+
+/* Item ativo da sidebar com o mesmo cinza do fundo das telas (#F4F6F7);
+   o hover dos outros itens fica um tom mais claro, para não competir. */
+.admin-nav-item.is-active,
+.admin-nav-item.is-active:hover,
+.admin-nav-grupo-linha.is-active,
+.admin-nav-grupo-linha.is-active:hover,
+.admin-nav-subitem.is-active,
+.admin-nav-subitem.is-active:hover { background: var(--bg-app); }
+.admin-nav-item:not(.is-active):hover,
+.admin-nav-grupo-linha:not(.is-active):hover,
+.admin-nav-subitem:not(.is-active):hover,
+.sidebar-perfil-botao:hover,
+.sidebar-perfil-botao[aria-expanded="true"] { background: #F8F9FA; }

@@ -13035,6 +13035,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const doAdmin = await carregarPromoDoAdmin();
     if (doAdmin) dashboardPromoSlides = doAdmin;
+    // Banner cadastrado no Admin só é clicável se tiver link salvo; as
+    // imagens padrão (sem Admin) continuam levando para a papelaria.
+    const bannersDoAdmin = !!doAdmin;
+    const tituloDoSlide = s => bannersDoAdmin
+      ? (s.href && s.titulo ? ` title="${s.titulo}"` : '')
+      : ` title="${s.titulo || 'Ver modelos de convites e papelaria'}"`;
 
     if (!dashboardPromoSlides.length) {
       document.getElementById('dashboard-promo-carousel')?.remove();
@@ -13042,17 +13048,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     track.innerHTML = dashboardPromoSlides.map((s, i) => `
-      <div class="dashboard-promo-slide${i === 0 ? ' active' : ''}" data-promo-href="${encodeURI(s.href || '')}" title="${s.titulo || 'Ver modelos de convites e papelaria'}">
+      <div class="dashboard-promo-slide${i === 0 ? ' active' : ''}${bannersDoAdmin && !s.href ? ' sem-link' : ''}" data-promo-href="${encodeURI(s.href || '')}"${tituloDoSlide(s)}>
         <img src="${s.src}" alt="${s.alt}">
       </div>
     `).join('');
 
-    // Sem link cadastrado o slide continua levando para a papelaria, como antes.
-    // Link externo abre em nova aba; link interno navega na mesma.
+    // Banner do Admin sem link: não leva a lugar nenhum. Imagem padrão sem
+    // link: papelaria, como antes. Link externo abre em nova aba; interno
+    // navega na mesma.
     track.querySelectorAll('.dashboard-promo-slide').forEach(slide => {
       slide.addEventListener('click', () => {
         const href = slide.dataset.promoHref;
-        if (!href) return navigateToStationery();
+        if (!href) return bannersDoAdmin ? undefined : navigateToStationery();
         if (/^https?:\/\//i.test(href)) window.open(href, '_blank', 'noopener');
         else window.location.href = href;
       });

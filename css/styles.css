@@ -201,6 +201,8 @@ select.field-input {
 .dashboard-promo-slide:first-child { position: relative; }
 .dashboard-promo-slide.active { opacity: 1; z-index: 1; }
 .dashboard-promo-slide img { width: 100%; height: auto; display: block; object-fit: cover; }
+/* Banner do Admin sem link: não é clicável. */
+.dashboard-promo-slide.sem-link { cursor: default; }
 .dashboard-promo-dots {
   position: absolute;
   bottom: 0.75rem;

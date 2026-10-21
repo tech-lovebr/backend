@@ -9957,7 +9957,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!nome || nome.toLowerCase() === 'acompanhante') {
           nome = `Acompanhante de ${g.name.trim().split(/\s+/)[0]}`;
         }
-        pessoas.push({ name: nome, status: g.status, isPrimary: false });
+        pessoas.push({ name: nome, status: g.status, isPrimary: false, host: g.name.trim() });
       });
     });
     return pessoas;
@@ -10140,6 +10140,42 @@ document.addEventListener('DOMContentLoaded', () => {
         moverPessoasParaMesa([...alvo], destino);
         fecharMoverParaMesa();
       });
+    });
+  }
+
+  /**
+   * Quem está sentado na mesa (ícone de lista do menuzinho): numerados, com
+   * "Acompanhante de …" embaixo de quem é acompanhante; clicar num nome abre
+   * o "Mover convidado para".
+   * @param {HTMLElement} ancora @param {any} mesa
+   */
+  function abrirListaDaMesa(ancora, mesa) {
+    fecharMoverParaMesa();
+    const pessoas = pessoasParaMesas();
+    const sentados = (mesa.seatNames || []).map(/** @param {string} s */ s => (s || '').trim()).filter(Boolean);
+    const caixa = document.createElement('div');
+    caixa.className = 'floorplan-mover-para floorplan-lista-mesa';
+    caixa.setAttribute('role', 'dialog');
+    const setas = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg>';
+    caixa.innerHTML = `<div class="floorplan-lista-topo"><p>Convidados</p><span>Mesa ${escaparHtml(String(mesa.number))}</span></div>` + (sentados.length ? sentados.map((nome, i) => {
+      const p = pessoas.find(x => x.name.toLowerCase() === nome.toLowerCase());
+      const sub = p && !p.isPrimary && p.host ? `Acompanhante de ${p.host}` : '';
+      return `<button type="button" class="floorplan-lista-pessoa" data-nome="${escaparHtml(nome)}">
+        <span class="floorplan-lista-numero">${i + 1}</span>
+        <span class="floorplan-lista-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}</span>
+        <span class="floorplan-lista-setas">${setas}</span>
+      </button>`;
+    }).join('') : '<p class="floorplan-mover-vazio">Nenhum convidado nesta mesa ainda.</p>');
+    document.body.appendChild(caixa);
+    const r = ancora.getBoundingClientRect();
+    const altura = caixa.offsetHeight;
+    const largura = caixa.offsetWidth;
+    let top = r.bottom + 8;
+    if (top + altura > window.innerHeight - 8) top = Math.max(8, r.top - altura - 8);
+    caixa.style.top = `${top}px`;
+    caixa.style.left = `${Math.max(8, Math.min(r.left + r.width / 2 - largura / 2, window.innerWidth - largura - 8))}px`;
+    caixa.querySelectorAll('.floorplan-lista-pessoa').forEach(b => {
+      b.addEventListener('click', () => abrirMoverParaMesa(/** @type {HTMLElement} */ (b), [/** @type {HTMLElement} */ (b).dataset.nome || '']));
     });
   }
 
@@ -10399,6 +10435,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Ícones do menuzinho do elemento selecionado.
   const ICONES_DA_SELECAO = {
+    convidados: '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="2.6"/>',
     editar: '<path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
     girar: '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
     duplicar: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/>',
@@ -10468,7 +10505,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const acoes = document.createElement('div');
     acoes.className = 'floorplan-acoes';
     /** @type {[string, string][]} */
-    const botoes = elData.type === 'mesa' ? [['editar', 'Editar mesa']] : elData.type === 'texto' ? [['editar', 'Editar texto']] : [];
+    // Mesa: a lista de quem está sentado nela vem antes do lápis.
+    const botoes = elData.type === 'mesa' ? [['convidados', 'Convidados da mesa'], ['editar', 'Editar mesa']] : elData.type === 'texto' ? [['editar', 'Editar texto']] : [];
     if (giravel) botoes.push(['girar', 'Girar']);
     botoes.push(['duplicar', 'Duplicar'], ['excluir', 'Excluir']);
     botoes.forEach(([acao, titulo]) => {
@@ -10479,7 +10517,7 @@ document.addEventListener('DOMContentLoaded', () => {
       b.setAttribute('aria-label', titulo);
       b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES_DA_SELECAO[/** @type {keyof typeof ICONES_DA_SELECAO} */ (acao)]}</svg>`;
       b.addEventListener('mousedown', (e) => e.stopPropagation());
-      b.addEventListener('click', (e) => { e.stopPropagation(); acaoNaSelecao(acao, elData.id); });
+      b.addEventListener('click', (e) => { e.stopPropagation(); acaoNaSelecao(acao, elData.id, b); });
       acoes.appendChild(b);
     });
     sel.appendChild(acoes);
@@ -10493,11 +10531,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cx.base + folga + 12 + acoes.offsetHeight > canvas.clientHeight) acoes.classList.add('is-acima');
   }
 
-  /** @param {string} acao @param {string} id */
-  function acaoNaSelecao(acao, id) {
+  /** @param {string} acao @param {string} id @param {HTMLElement} [botao] */
+  function acaoNaSelecao(acao, id, botao) {
     const lista = getFloorPlanElements();
     const alvo = lista.find(x => x.id === id);
     if (!alvo) return;
+    if (acao === 'convidados') { if (botao) abrirListaDaMesa(botao, alvo); return; }
     if (acao === 'editar') {
       if (alvo.type === 'mesa') openFloorplanTableModal(id);
       else if (alvo.type === 'texto') editarTextoDaPlanta(id);

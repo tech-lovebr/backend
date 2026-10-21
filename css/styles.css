@@ -9666,3 +9666,11 @@ html body button.guest-acompanhante-remover:not(#love-h-a) svg { width: 16px; he
 .b2b-mensagem-produto-linha .b2b-mensagem-produto { margin: 0; }
 html body .b2b-mensagem-saudacao:not(#love-h-a) { display: block; margin: 0 0 6px; font-size: 14px; color: #18181B; }
 html body #modal-b2b-mensagem #b2b-mensagem-texto:not(#love-h-a) { border: 0 !important; background: transparent !important; box-shadow: none !important; outline: none !important; padding: 0 !important; border-radius: 0 !important; }
+
+/* Mapa do evento › cor da mesa (pop-up do lápis): linha igual à do inspector
+   do Convite digital; o tampo da mesa fica na cor escolhida. */
+html body #modal-floorplan-table .floorplan-cor-mesa-linha:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; }
+html body #modal-floorplan-table .floorplan-cor-mesa-linha .inspector-field-label-plain:not(#love-h-a) { font-size: 0.8125rem; font-weight: 400; color: #333333; }
+html body #modal-floorplan-table .color-alpha-popover:not(#love-h-a) { right: 0; left: auto; z-index: 80; }
+html body .floorplan-mesa-core.tem-cor:not(#love-h-a) { background: var(--cor-da-mesa) !important; }
+html body .floorplan-mesa-core.tem-cor:not(#love-h-a), html body .floorplan-mesa-core.tem-cor:not(#love-h-a) * { color: var(--cor-texto-da-mesa) !important; }

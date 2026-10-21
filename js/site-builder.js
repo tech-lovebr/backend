@@ -5246,3 +5246,6 @@ function initCompartilharSaveTheDate() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 }
 window.switchBuilderPage = switchBuilderPage;
+// Mesmo seletor de cor do inspector, usado também no pop-up da mesa (Mapa do evento).
+window.colorSwatchPopoverHtml = colorSwatchPopoverHtml;
+window.wireColorSwatchPopovers = wireColorSwatchPopovers;

@@ -10115,6 +10115,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMesa) {
         const core = document.createElement('div');
         core.className = 'floorplan-mesa-core';
+        // Cor escolhida no pop-up: pinta o tampo; texto claro se a cor for escura.
+        if (/^#[0-9a-f]{6}$/i.test(elData.cor || '')) {
+          core.classList.add('tem-cor');
+          core.style.setProperty('--cor-da-mesa', elData.cor);
+          core.style.setProperty('--cor-texto-da-mesa', corEhEscura(elData.cor) ? '#FFFFFF' : '#18181B');
+        }
 
         const numberEl = document.createElement('span');
         numberEl.className = 'floorplan-table-number';
@@ -11141,6 +11147,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /** Cor escura (pede texto branco por cima)? @param {string} hex */
+  function corEhEscura(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) < 150;
+  }
+
+  // Pop-up da mesa › "Cor da mesa": o mesmo quadradinho + seletor de cor do
+  // inspector do Convite digital; muda a mesa na hora (o Voltar desfaz).
+  /** @param {any} mesa */
+  function montarCorDaMesa(mesa) {
+    const campo = document.getElementById('floorplan-cor-mesa-campo');
+    const w = /** @type {any} */ (window);
+    if (!campo || typeof w.colorSwatchPopoverHtml !== 'function') return;
+    campo.innerHTML = w.colorSwatchPopoverHtml(mesa.cor || '#FFFFFF', 'data-cor-da-mesa');
+    if (typeof w.wireColorSwatchPopovers === 'function') w.wireColorSwatchPopovers(campo);
+    const nativo = /** @type {HTMLInputElement|null} */ (campo.querySelector('.color-alpha-native'));
+    if (!nativo) return;
+    nativo.addEventListener('input', () => {
+      const lista = getFloorPlanElements();
+      const alvo = lista.find(x => x.id === floorplanActiveTableId);
+      if (!alvo) return;
+      alvo.cor = nativo.value.toUpperCase();
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+    });
+  }
+
   function openFloorplanTableModal(tableId) {
     const elements = getFloorPlanElements();
     const t = elements.find(item => item.id === tableId);
@@ -11151,6 +11185,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const titleEl = document.getElementById('floorplan-table-modal-title');
     if (titleEl) titleEl.textContent = `Mesa ${t.number}`;
+    montarCorDaMesa(t);
     const nameInput = document.getElementById('floorplan-el-name-input');
     if (nameInput) nameInput.value = t.name || '';
     const seatsValueEl = document.getElementById('floorplan-seats-value');

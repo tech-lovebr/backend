@@ -14601,11 +14601,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <!-- Chat e Contratar no topo à direita: não quebram para a linha de baixo -->
               <div class="flex items-center gap-2.5 shrink-0">
                 <button type="button" class="btn-message-supplier btn-secondary">
-                  <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
                   <span>Mensagens</span>
                 </button>
                 <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
-                  Contratar
+                  Solicitar
                 </button>
               </div>
             </div>
@@ -14720,11 +14719,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="flex items-center gap-2 mt-auto pt-2">
           <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
-            <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
             <span>Mensagens</span>
           </button>
           <button type="button" class="btn-hire-supplier flex-1 px-3 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer">
-            Contratar
+            Solicitar
           </button>
         </div>
       </div>

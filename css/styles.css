@@ -9499,3 +9499,7 @@ html body button.guest-remove-lixeira:not(#love-h-a) svg { width: 18px; height: 
 html body #guest-companions-list .guest-companion-row:not(#love-h-a) { border-bottom: 0; padding-bottom: 0; border-top: 1px solid #E4E4E7; padding-top: 16px; margin-top: 16px; }
 html body #guest-companions-list.space-y-2 > .guest-companion-row:not(#love-h-a) { margin-top: 16px; }
 html body #guest-companions-list:not(:empty) + .guest-add-acompanhante:not(#love-h-a) { margin-top: 12px; }
+
+/* Perfil do fornecedor: coração igual ao do card do Explorar (fundo branco,
+   sem contorno, sombra leve). */
+html body #btn-b2b-profile-favorite.b2b-perfil-favoritar:not(#love-h-a) { border: 0 !important; background: #FFFFFF !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }

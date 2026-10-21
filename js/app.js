@@ -1272,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'all', label: 'Meus convidados' },
-        { id: 'tables', label: 'Mapear mesas' },
+        { id: 'tables', label: 'Mapa do evento' },
         { id: 'checklist', label: 'Checklist' }
       ]
     },
@@ -6620,7 +6620,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 'produzir-convite', label: 'Produzir convite', tab: 'edit-site', sub: 'invite-print' },
     { id: 'presentes', label: 'Lista de presentes', tab: 'gifts' },
     { id: 'convidados', label: 'Meus convidados', tab: 'rsvp', sub: 'all' },
-    { id: 'mesas', label: 'Mapear mesas', tab: 'rsvp', sub: 'tables' },
+    { id: 'mesas', label: 'Mapa do evento', tab: 'rsvp', sub: 'tables' },
     { id: 'checklist', label: 'Checklist', tab: 'rsvp', sub: 'checklist' },
     { id: 'fornecedores', label: 'Fornecedores', tab: 'b2b' },
     { id: 'carteira', label: 'Carteira (sem saque)', tab: 'wallet' }
@@ -11063,7 +11063,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('rsvp');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Mapear mesas'));
+        b.classList.toggle('active', b.textContent.includes('Mapa do evento'));
       });
     }
     document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));

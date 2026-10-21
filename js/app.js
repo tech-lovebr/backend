@@ -792,6 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const abaInicial = opts.aba || 'conta';
     abrirSubmenuDaPagina('Configurações', [
       { id: 'conta', rotulo: 'Informações' },
+      { id: 'privacidade', rotulo: 'Privacidade' },
       { id: 'eventos', rotulo: 'Meu evento' }
     ], abaInicial, mostrarAbaDeConfiguracoes);
     mostrarAbaDeConfiguracoes(abaInicial);
@@ -817,9 +818,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cpfInput) cpfInput.value = profile.cpf ? mascaraCpf(String(profile.cpf)) : '';
     document.getElementById('settings-form-error')?.classList.add('hidden');
     document.getElementById('settings-form-ok')?.classList.add('hidden');
-    document.getElementById('settings-delete-box')?.classList.add('hidden');
-    const confirmInput = document.getElementById('settings-delete-confirm-input');
-    if (confirmInput) confirmInput.value = '';
     resetSettingsSecurity();
     refreshMfaStatus();
     desenharFotoDaConta();
@@ -830,30 +828,103 @@ document.addEventListener('DOMContentLoaded', () => {
   // de senha — quem entrou pelo Google não criou senha. Quem tem e-mail e
   // senha continua vendo "Senha".
   async function atualizarCartaoDeLogin() {
-    const cartao = document.getElementById('settings-login-card');
+    const caixaGoogle = document.getElementById('settings-login-google');
     const cartaoSenha = document.getElementById('settings-password-card');
-    if (!cartao || !cartaoSenha) return;
+    // Até saber como a conta entra, a senha fica escondida (não pisca para quem é Google).
+    if (cartaoSenha) cartaoSenha.hidden = true;
     let usuario = window.loveClienteSession?.user || null;
     try {
       const { data } = await supabaseClient.auth.getUser();
       if (data && data.user) usuario = data.user;
     } catch (e) { /* segue com a sessão já carregada */ }
-    const identidades = (usuario && usuario.identities) || [];
-    const provedores = (usuario && usuario.app_metadata && usuario.app_metadata.providers) || [];
+    if (!usuario) return;
+    const identidades = usuario.identities || [];
+    const meta = usuario.app_metadata || {};
+    const provedores = meta.providers || (meta.provider ? [meta.provider] : []);
     const google = identidades.find(i => i.provider === 'google') || null;
     const comGoogle = !!google || provedores.includes('google');
-    const comSenha = identidades.some(i => i.provider === 'email') || provedores.includes('email');
-    cartao.classList.toggle('hidden', !comGoogle);
-    cartaoSenha.classList.toggle('hidden', comGoogle && !comSenha);
+    // Senha só para quem entra com e-mail e senha (quem é só Google não tem senha).
+    const comSenha = !comGoogle && (identidades.some(i => i.provider === 'email') || provedores.includes('email'));
+    if (cartaoSenha) cartaoSenha.hidden = !comSenha;
+    if (caixaGoogle) caixaGoogle.hidden = !comGoogle;
+    const vazio = document.getElementById('settings-contas-vazio');
+    if (vazio) vazio.hidden = comGoogle;
+    const acoes = document.getElementById('settings-google-acoes');
+    const conectar = document.getElementById('settings-google-conectar');
+    if (acoes) acoes.hidden = !comGoogle;
+    if (conectar) conectar.hidden = comGoogle;
     if (!comGoogle) return;
-    const email = (google && google.identity_data && google.identity_data.email) || (usuario && usuario.email) || '';
-    const desde = (google && (google.created_at || google.last_sign_in_at)) || (usuario && usuario.created_at) || '';
+    const email = (google && google.identity_data && google.identity_data.email) || usuario.email || '';
+    const desde = (google && (google.created_at || google.last_sign_in_at)) || usuario.created_at || '';
     const emailEl = document.getElementById('settings-login-email');
     const dataEl = document.getElementById('settings-login-data');
-    if (emailEl) emailEl.textContent = email;
+    if (emailEl) emailEl.textContent = email || '—';
     if (dataEl) dataEl.textContent = desde
-      ? 'Conectado em ' + new Date(desde).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })
-      : 'Conectado';
+      ? 'Conectado em ' + new Date(desde).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '')
+      : '';
+  }
+
+  // Contas conectadas › Desconectar do Google (mesma função do banco do Hub,
+  // desconectar_google — migration 073): o Google sai, a conta passa a entrar
+  // pelo e-mail (a senha é criada pelo "Esqueci minha senha") e fica marcada
+  // como google_desconectado (ver bloquearGoogleDesconectado).
+  function mensagemDaContaGoogle(/** @type {string} */ texto, erro = false) {
+    const msg = document.getElementById('settings-google-msg');
+    if (!msg) return;
+    msg.textContent = texto;
+    msg.hidden = !texto;
+    msg.classList.toggle('is-erro', !!erro);
+  }
+  document.getElementById('settings-google-desconectar')?.addEventListener('click', async (e) => {
+    const btn = /** @type {HTMLButtonElement} */ (e.currentTarget);
+    mensagemDaContaGoogle('');
+    btn.disabled = true;
+    try {
+      const { error } = await supabaseClient.rpc('desconectar_google');
+      if (error) {
+        console.warn('Não foi possível desconectar o Google.', error);
+        mensagemDaContaGoogle('Não foi possível desconectar agora. Tente de novo em instantes.', true);
+        return;
+      }
+      await supabaseClient.auth.refreshSession();
+      await atualizarCartaoDeLogin();
+      mensagemDaContaGoogle('Google desconectado. Na próxima vez, entre com o seu e-mail e use "Esqueci minha senha" para criar a senha.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  // Conectar de novo: vai ao Google e volta para Configurações já com a conta ligada.
+  document.getElementById('settings-google-conectar')?.addEventListener('click', async () => {
+    mensagemDaContaGoogle('');
+    try { localStorage.setItem('love-reconectando-google', String(Date.now())); } catch (e) {}
+    const { error } = await supabaseClient.auth.linkIdentity({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/configuracoes`, queryParams: { prompt: 'select_account' } }
+    });
+    if (error) mensagemDaContaGoogle('Não foi possível conectar com o Google agora. Tente de novo em instantes.', true);
+  });
+
+  /* Google desconectado em Contas conectadas: se a pessoa entrar de novo pelo
+     Google, o Supabase liga a conta sozinho (mesmo e-mail). Aqui isso é
+     desfeito: solta o Google, sai e mostra no login para entrar com o e-mail.
+     Quem clicou em "Conectar com o Google" (marca no navegador) passa. */
+  async function bloquearGoogleDesconectado(/** @type {any} */ session) {
+    if (!((session && session.user && session.user.user_metadata) || {}).google_desconectado) return false;
+    const { data } = await supabaseClient.auth.getUser();
+    const usuario = (data && data.user) || session.user;
+    const google = (usuario.identities || []).find(/** @param {any} i */ i => i.provider === 'google');
+    if (!google) return false;
+    let reconectando = null;
+    try { reconectando = localStorage.getItem('love-reconectando-google'); localStorage.removeItem('love-reconectando-google'); } catch (e) {}
+    if (reconectando) {
+      await supabaseClient.auth.updateUser({ data: { google_desconectado: false } });
+      return false;
+    }
+    await supabaseClient.auth.unlinkIdentity(google).catch(err => console.warn('Não foi possível soltar o Google.', err));
+    await supabaseClient.auth.signOut();
+    switchView('login');
+    showLoginError('Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueci minha senha" para criar uma senha.');
+    return true;
   }
 
   // ---- Foto de perfil (Configurações › Minha conta) ----
@@ -1202,44 +1273,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const aberto = item.classList.toggle('aberto');
         btn.setAttribute('aria-expanded', String(aberto));
       });
-    });
-  }
-
-  // ---- Excluir a própria conta (RPC excluir_minha_conta, migration 051) ----
-  const btnDeleteAccount = document.getElementById('btn-settings-delete-account');
-  const deleteBox = document.getElementById('settings-delete-box');
-  if (btnDeleteAccount && deleteBox) {
-    btnDeleteAccount.addEventListener('click', () => {
-      deleteBox.classList.toggle('hidden');
-      if (!deleteBox.classList.contains('hidden')) document.getElementById('settings-delete-confirm-input')?.focus();
-    });
-    document.getElementById('settings-delete-confirm-input')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
-    document.getElementById('btn-settings-delete-cancel')?.addEventListener('click', () => {
-      deleteBox.classList.add('hidden');
-      document.getElementById('settings-delete-confirm-input').value = '';
-      document.getElementById('settings-delete-error').classList.add('hidden');
-    });
-    document.getElementById('btn-settings-delete-confirm')?.addEventListener('click', async (e) => {
-      const btn = e.currentTarget;
-      const input = document.getElementById('settings-delete-confirm-input');
-      const err = document.getElementById('settings-delete-error');
-      err.classList.add('hidden');
-      if (input.value.trim().toUpperCase() !== 'EXCLUIR') {
-        err.textContent = 'Digite EXCLUIR para confirmar.';
-        err.classList.remove('hidden');
-        return;
-      }
-      btn.disabled = true;
-      const { error } = await supabaseClient.rpc('excluir_minha_conta');
-      if (error) {
-        console.error('Erro ao excluir a conta:', error);
-        btn.disabled = false;
-        err.textContent = 'Não foi possível excluir sua conta agora. Tente de novo em instantes.';
-        err.classList.remove('hidden');
-        return;
-      }
-      try { await supabaseClient.auth.signOut({ scope: 'local' }); } catch (e2) { /* a conta já não existe */ }
-      window.location.replace('/');
     });
   }
 
@@ -18709,8 +18742,10 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.drawerSubItemsList?.querySelectorAll('[data-pagina-item]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.paginaItem === aba));
     }
     const tituloDaPagina = document.getElementById('account-settings-header-title');
-    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : 'Suas informações';
+    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
+    document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
+    if (aba === 'privacidade') refreshMfaStatus();
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
     if (aba === 'eventos') renderMeuEvento();
@@ -19253,9 +19288,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('settings-user-last-name').value
       );
       const name = full_name;
-      const currentPassword = document.getElementById('settings-password-current').value;
-      const newPassword = document.getElementById('settings-password-new').value;
-      const confirmPassword = document.getElementById('settings-password-confirm').value;
       const errorEl = document.getElementById('settings-form-error');
 
       // showToast está desligado na plataforma — o erro aparece no formulário.
@@ -19272,40 +19304,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (telefoneDigitado && !isValidBrazilPhone(telefoneDigitado)) return showSettingsError('Celular incompleto: use (DDD) 9XXXX-XXXX.');
       if (cpfDigitado && cpfDigitado.replace(/\D/g, '').length !== 11) return showSettingsError('CPF incompleto.');
 
-      const wantsPasswordChange = currentPassword || newPassword || confirmPassword;
-      if (wantsPasswordChange) {
-        if (!currentPassword || !newPassword || !confirmPassword) return showSettingsError('Preencha os 3 campos de senha para trocá-la.');
-        if (newPassword !== confirmPassword) return showSettingsError('A confirmação não coincide com a nova senha.');
-        if (newPassword.length < 6) return showSettingsError('A nova senha precisa ter pelo menos 6 caracteres.');
-      }
-
       saveBtn.disabled = true;
-
-      if (wantsPasswordChange) {
-        // Confere a senha atual num cliente separado e descartável: um
-        // signInWithPassword no cliente principal trocaria a sessão atual por
-        // uma nova de nível aal1, derrubando quem tem dois fatores ativos.
-        const checker = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'love-password-check' }
-        });
-        const { error: authError } = await checker.auth.signInWithPassword({
-          email: session.user.email,
-          password: currentPassword
-        });
-        if (!authError) await checker.auth.signOut({ scope: 'local' });
-        if (authError) {
-          saveBtn.disabled = false;
-          return showSettingsError('Senha atual incorreta.');
-        }
-
-        const { error: updateError } = await supabaseClient.auth.updateUser({ password: newPassword });
-        if (updateError) {
-          saveBtn.disabled = false;
-          return showSettingsError(/different from the old/i.test(updateError.message || '')
-            ? 'A nova senha precisa ser diferente da atual.'
-            : 'Não foi possível trocar sua senha. Tente novamente.');
-        }
-      }
 
       // Nome vai pros dois lugares: tabela clientes (couple_name é mantido
       // igual a full_name pelo gatilho do banco) e user_metadata do Auth
@@ -19339,6 +19338,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Privacidade › Senha: confere a senha atual e grava a nova.
+  document.getElementById('form-user-password')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const session = window.loveClienteSession;
+    const msg = document.getElementById('settings-password-msg');
+    const btn = /** @type {HTMLButtonElement|null} */ (document.getElementById('btn-save-password'));
+    const valor = (/** @type {string} */ id) => /** @type {HTMLInputElement} */ (document.getElementById(id)).value;
+    const avisar = (/** @type {string} */ texto, erro = true) => {
+      if (!msg) return;
+      msg.textContent = texto;
+      msg.hidden = !texto;
+      msg.classList.toggle('is-erro', erro);
+    };
+    avisar('');
+    const atual = valor('settings-password-current');
+    const nova = valor('settings-password-new');
+    const confirmar = valor('settings-password-confirm');
+    if (!atual || !nova || !confirmar) return avisar('Preencha os 3 campos de senha.');
+    if (nova !== confirmar) return avisar('A confirmação não coincide com a nova senha.');
+    if (nova.length < 6) return avisar('A nova senha precisa ter pelo menos 6 caracteres.');
+    if (!session || !btn) return;
+    btn.disabled = true;
+    try {
+      // Confere a senha atual num cliente separado e descartável: um
+      // signInWithPassword no cliente principal trocaria a sessão atual por
+      // uma nova de nível aal1, derrubando quem tem dois fatores ativos.
+      const checker = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'love-password-check' }
+      });
+      const { error: authError } = await checker.auth.signInWithPassword({ email: session.user.email, password: atual });
+      if (authError) return avisar('Senha atual incorreta.');
+      await checker.auth.signOut({ scope: 'local' });
+      const { error: updateError } = await supabaseClient.auth.updateUser({ password: nova });
+      if (updateError) {
+        return avisar(/different from the old/i.test(updateError.message || '')
+          ? 'A nova senha precisa ser diferente da atual.'
+          : 'Não foi possível trocar sua senha. Tente novamente.');
+      }
+      ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => { /** @type {HTMLInputElement} */ (document.getElementById(id)).value = ''; });
+      avisar('Senha atualizada.', false);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
   // Configurações da conta › acordeão "Segurança" (senha + dois fatores)
   const btnSecurityToggle = document.getElementById('btn-settings-security-toggle');
   const securityBody = document.getElementById('settings-security-body');
@@ -19369,6 +19413,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setSecurityOpen(false);
     setPasswordFieldsOpen(false);
     hideMfaSetup();
+    passwordInputIds.forEach(id => { const campo = /** @type {HTMLInputElement|null} */ (document.getElementById(id)); if (campo) campo.value = ''; });
+    const msgSenha = document.getElementById('settings-password-msg');
+    if (msgSenha) msgSenha.hidden = true;
   }
 
   btnSecurityToggle?.addEventListener('click', () => {
@@ -19412,13 +19459,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // O botão mostra o estado: "Desativar" = está ativada; "Ativar" = está desativada.
     btnMfaToggle.textContent = mfaVerifiedFactor ? 'Desativar' : 'Permitir';
     btnMfaToggle.disabled = false;
+    const descMfa = document.getElementById('settings-mfa-desc');
+    if (descMfa) descMfa.textContent = mfaVerifiedFactor ? 'Ativa: o login pede o código do Google Authenticator.' : 'Peça um código do Google Authenticator ao entrar.';
   }
 
   btnMfaToggle?.addEventListener('click', async () => {
     mfaErrorEl.classList.add('hidden');
 
     if (mfaVerifiedFactor) {
-      if (!confirm('Desativar a autenticação de dois fatores? Seu login voltará a pedir só e-mail e senha.')) return;
+      const desativar = await confirmarNaLove({ titulo: 'Desativar a autenticação de dois fatores?', texto: 'Seu login voltará a pedir só e-mail e senha.', botao: 'Desativar' });
+      if (!desativar) return;
       btnMfaToggle.disabled = true;
       const { error } = await supabaseClient.auth.mfa.unenroll({ factorId: mfaVerifiedFactor.id });
       if (error) {
@@ -19891,6 +19941,9 @@ document.addEventListener('DOMContentLoaded', () => {
           : `O e-mail ${escaparHtml(session.user.email || '')} já está em uso numa conta de fornecedor do Hub B2B. Para usar a plataforma de anfitrião, entre ou cadastre-se com outro e-mail.`;
       }
     }
+
+    // Desconectou o Google em Configurações e tentou entrar pelo Google de novo.
+    if (await bloquearGoogleDesconectado(session)) return;
 
     // Convite de organizador aberto antes de entrar/criar a conta: aceita agora.
     await aceitarConvitePendenteDeOrganizador();

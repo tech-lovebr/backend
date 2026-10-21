@@ -9886,3 +9886,49 @@ html body .gift-valor-extra + .gift-contribuicao-coletiva:not(#love-h-a) { margi
 .gifts-total-linha { margin: 0 0 20px; font-size: 14px; color: #71717A; }
 .gifts-total-linha span { font-weight: 700; color: #18181B; font-variant-numeric: tabular-nums; }
 html body .gifts-total-linha[hidden]:not(#love-h-a) { display: none; }
+
+/* Configurações › Informações: foto à esquerda e os campos à direita
+   (nome e sobrenome lado a lado); Contas conectadas e Privacidade no modelo do Hub. */
+html body .conta-perfil-linha:not(#love-h-a) { display: flex; align-items: flex-start; gap: 32px; }
+html body .conta-perfil-linha .conta-info-campos:not(#love-h-a) { flex: 1; min-width: 0; }
+html body .conta-nome-linha:not(#love-h-a) { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 639px) {
+  html body .conta-perfil-linha:not(#love-h-a) { flex-direction: column; gap: 20px; }
+  html body .conta-nome-linha:not(#love-h-a) { grid-template-columns: 1fr; gap: 1.25rem; }
+}
+html body .settings-zola-bloco:not(#love-h-a) { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 2rem; }
+html body .settings-zola-bloco .settings-secao-titulo--painel:not(#love-h-a) { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.025em; color: #18181B; margin: 0; }
+html body .settings-zola-sub:not(#love-h-a) { font-size: 0.875rem; color: #71717A; margin: 0; }
+html body .settings-zola-vazio:not(#love-h-a) { font-size: 0.875rem; color: #71717A; margin: 0; }
+html body .settings-login-linha:not(#love-h-a) { display: flex; align-items: center; gap: 0.75rem; }
+html body .settings-login-icone:not(#love-h-a) { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #E4E4E7; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: #FFFFFF; }
+html body .settings-login-nome:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #18181B; margin: 0; }
+html body .settings-login-email:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body .settings-login-data:not(#love-h-a) { margin: 0 0 0 auto; font-size: 0.8125rem; color: #71717A; white-space: nowrap; }
+html body .settings-login-google[hidden]:not(#love-h-a),
+html body .settings-google-acoes[hidden]:not(#love-h-a),
+html body .settings-google-conectar[hidden]:not(#love-h-a),
+html body .settings-google-msg[hidden]:not(#love-h-a),
+html body .settings-zola-vazio[hidden]:not(#love-h-a),
+html body #settings-password-card[hidden]:not(#love-h-a),
+html body .conta-senha-msg[hidden]:not(#love-h-a) { display: none !important; }
+html body .settings-google-acoes:not(#love-h-a) { margin-top: 0.75rem; }
+html body .settings-google-desconectar:not(#love-h-a) { border: none; background: none; padding: 0; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #18181B; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+html body .settings-google-desconectar:disabled:not(#love-h-a) { opacity: 0.6; cursor: default; }
+html body .settings-google-conectar:not(#love-h-a) { display: inline-flex; align-items: center; gap: 0.6rem; height: 44px; padding: 0 1.1rem; margin-top: 0.75rem; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #18181B; cursor: pointer; }
+html body .settings-google-conectar:hover:not(#love-h-a) { border-color: #181D24; }
+html body .settings-google-msg:not(#love-h-a),
+html body .conta-senha-msg:not(#love-h-a) { font-size: 0.8125rem; color: #1E9E5E; margin: 0.75rem 0 0; }
+html body .conta-senha-msg:not(#love-h-a) { margin: 0; }
+html body .settings-google-msg.is-erro:not(#love-h-a),
+html body .conta-senha-msg.is-erro:not(#love-h-a) { color: #DC2626; }
+html body .conta-card-titulo:not(#love-h-a) { font-size: 1rem; font-weight: 700; color: #18181B; margin: 0; letter-spacing: -0.025em; }
+html body .conta-card-sub:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.15rem 0 1.25rem; }
+html body #config-painel-privacidade .settings-switch-row:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+html body #config-painel-privacidade .settings-switch-label:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #18181B; margin: 0; }
+html body #config-painel-privacidade .settings-switch-desc:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.15rem 0 0; }
+html body .conta-mfa-btn:not(#love-h-a) { flex-shrink: 0; height: 38px; padding: 0 14px; }
+html body .conta-mfa-btn:disabled:not(#love-h-a) { opacity: 0.6; }
+body[data-theme="dark"] .settings-login-icone { border-color: #404040 !important; }
+body[data-theme="dark"] .settings-login-nome, body[data-theme="dark"] .settings-google-desconectar, body[data-theme="dark"] .conta-card-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .settings-google-conectar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

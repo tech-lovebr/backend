@@ -9141,3 +9141,21 @@ body[data-theme="dark"] .floorplan-wrap.is-expandida { background: #181D24; }
 /* A animação de entrada da aba usa transform, o que prenderia o position:fixed. */
 body.planta-expandida #tab-rsvp-tables { transform: none !important; animation: none !important; }
 html body .floorplan-wrap.is-expandida:not(#love-h-a) { margin: 0 !important; width: auto !important; height: auto !important; max-width: none !important; border-radius: 0 !important; }
+
+/* Mapear mesas: papel quadriculado (SVG "graph-pattern": linhas #a0c4ff de
+   0,8px a cada 20px) no lugar dos pontinhos — em CSS, sem emendas. A linha
+   fica com 1px a 80% (0,8px não desenha igual em todas as telas). */
+html body #floorplan-canvas:not(#love-h-a) {
+  background-color: #FFFFFF;
+  background-image:
+    linear-gradient(to right, rgba(160, 196, 255, 0.8) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(160, 196, 255, 0.8) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+body[data-theme="dark"] #floorplan-canvas {
+  background-image:
+    linear-gradient(to right, rgba(160, 196, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(160, 196, 255, 0.18) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+}

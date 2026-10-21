@@ -16,7 +16,10 @@ const PUBLIC_PAGES = ['site-preview'];
 const AUTH_OPTIONAL_PAGES = ['termos', 'privacidade'];
 
 // Aplica o tema e o estado do sidebar salvos o quanto antes, para evitar flash.
-document.body.dataset.theme = localStorage.getItem('b2b-theme') || 'light';
+// Sem a opção de tema no menu do perfil: o Hub fica sempre no claro (e quem
+// tinha escolhido o escuro volta para o claro).
+localStorage.removeItem('b2b-theme');
+document.body.dataset.theme = 'light';
 // Computador (mouse): o menu fica sempre recolhido e abre ao passar o mouse
 // (ver initSidebarHover). Telas de toque mantêm o recolher/expandir salvo.
 const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;

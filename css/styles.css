@@ -9594,3 +9594,5 @@ html body .floorplan-wrap.is-expandida #floorplan-canvas:not(#love-h-a) { margin
 html body #drawer-add-guest:not(#love-h-a) { background: var(--bg-dashboard, #F4F6F7) !important; }
 html body #drawer-add-guest > div:first-child:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; align-items: center; }
 html body #drawer-add-guest > .guest-drawer-rodape:not(#love-h-a) { background: var(--bg-dashboard, #F4F6F7) !important; border-top-color: #E4E4E7 !important; }
+/* Favoritado: o círculo fica só branco, sem a linha azul (o coração rosa basta). */
+html body #tab-b2b :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite):has(svg:not(.fill-none)):not(#love-h-a) { border-color: transparent !important; }

@@ -7907,7 +7907,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const titulo = document.getElementById('gifts-header-title');
     const voltar = document.getElementById('btn-gifts-listas-voltar');
     if (nomeDaLista === null) { listaProntaAberta = null; return; }
-    if (titulo) titulo.textContent = `Lista: ${nomeDaLista}`;
+    if (titulo) titulo.textContent = nomeDaLista;
     if (voltar) { voltar.hidden = false; voltar.setAttribute('aria-label', 'Voltar para Adicione uma lista'); }
   }
 

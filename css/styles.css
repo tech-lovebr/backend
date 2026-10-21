@@ -9207,3 +9207,9 @@ html body #btn-floorplan-expandir:not(#love-h-a) { width: 38px; }
 html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item:not(.active):not(#love-h-a):hover { background-color: var(--bg-dashboard) !important; }
 html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-viewport:not(#love-h-a) { background-color: var(--bg-dashboard) !important; background-image: none !important; }
 html body:not([data-theme="dark"]) #floorplan-canvas:not(#love-h-a) { background-color: var(--bg-dashboard) !important; }
+
+/* Cabeçalho de todas as telas igual ao do Convite digital: fundo branco e a
+   linha cinza fina embaixo (inclui Mapear mesas, que usa .floorplan-toolbar). */
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-toolbar:not(#love-h-a),
+html body:not([data-theme="dark"]) #view-event-os-dashboard .floorplan-toolbar:not(#love-h-a) { background: #FFFFFF !important; }
+html body:not([data-theme="dark"]) #view-event-os-dashboard .floorplan-toolbar:not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }

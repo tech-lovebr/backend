@@ -8159,7 +8159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const [titulo, preco] of lista.itens) {
           const presente = {
             id: `gift-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
-            title: titulo, description: '', category: lista.nome, price: preco, type: 'virtual',
+            title: titulo, description: '', category: lista.nome, listaNome: lista.nome, price: preco, type: 'virtual',
             marketplaceUrl: null, received: 0, status: 'Disponível para Presentear', image: lista.img,
             contributorsCount: 0, isCrowdfunding: false, crowdfundingConfig: null, categoryTag: null
           };
@@ -8172,6 +8172,139 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     if (!ok) return;
     irParaListasProntas(false);
+    updateAllCelebrationData();
+  }
+
+  // ==========================================
+  // CONFIGURAÇÕES › SUAS LISTAS (listas prontas que a pessoa adicionou)
+  // ==========================================
+  const NOMES_DAS_LISTAS_PRONTAS = new Set(LISTAS_PRONTAS.flatMap(s => s.listas.map(l => l.nome)));
+
+  /** Nome da lista de um presente ('' quando não veio de lista). @param {any} g @returns {string} */
+  function listaDoPresente(g) {
+    if (typeof g.listaNome === 'string') return g.listaNome;
+    // presentes adicionados antes de guardar listaNome: pela categoria
+    return NOMES_DAS_LISTAS_PRONTAS.has(g.category) ? g.category : '';
+  }
+
+  /** @param {any} g */
+  const presenteFoiComprado = (g) => Boolean(g.buyerName) || (parseFloat(g.received) || 0) > 0;
+
+  function renderSuasListas() {
+    const corpo = document.getElementById('suas-listas-corpo');
+    if (!corpo) return;
+    const ev = getActiveEvent();
+    /** @type {Map<string, any[]>} */
+    const grupos = new Map();
+    for (const g of (ev && ev.giftList) || []) {
+      const nome = listaDoPresente(g);
+      if (!nome) continue;
+      if (!grupos.has(nome)) grupos.set(nome, []);
+      grupos.get(nome).push(g);
+    }
+    if (!grupos.size) {
+      corpo.innerHTML = '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-10">Nenhuma lista adicionada ainda. Em Meus presentes, use "Adicionar lista".</td></tr>';
+      return;
+    }
+    corpo.innerHTML = [...grupos].map(([nome, presentes]) => {
+      const total = presentes.reduce((t, g) => t + (parseFloat(g.price) || 0), 0);
+      const recebidos = presentes.filter(presenteFoiComprado).length;
+      const arrecadado = presentes.reduce((t, g) => t + Math.max(0, parseFloat(g.received) || 0), 0);
+      return `<tr data-lista-nome="${escaparHtml(nome)}">
+        <td class="suas-listas-nome">${escaparHtml(nome)}</td>
+        <td>${presentes.length}</td>
+        <td class="suas-listas-valor">${reaisDaLista(total)}</td>
+        <td>${recebidos}</td>
+        <td class="suas-listas-valor">${reaisDaLista(arrecadado)}</td>
+        <td class="love-tabela-col-mais">${botaoVerMaisHtml('Mais opções')}</td>
+      </tr>`;
+    }).join('');
+    corpo.querySelectorAll('tr[data-lista-nome]').forEach(tr => {
+      tr.querySelector('.love-tabela-mais')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirMenuDaLista(/** @type {HTMLElement} */ (e.currentTarget), /** @type {HTMLElement} */ (tr).dataset.listaNome || '');
+      });
+    });
+  }
+
+  /** @param {HTMLElement} botao @param {string} nome */
+  function abrirMenuDaLista(botao, nome) {
+    fecharMenuDoPresente();
+    const menu = document.createElement('div');
+    menu.className = 'gift-card-menu';
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = `
+      <button type="button" role="menuitem" data-acao="renomear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg><span>Renomear</span></button>
+      <button type="button" role="menuitem" data-acao="remover" class="is-perigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg><span>Remover</span></button>`;
+    document.body.appendChild(menu);
+    const r = botao.getBoundingClientRect();
+    menu.style.top = `${Math.min(r.bottom + 6, window.innerHeight - menu.offsetHeight - 8)}px`;
+    menu.style.left = `${Math.max(8, Math.min(r.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - 8))}px`;
+    menu.addEventListener('click', async (e) => {
+      const item = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-acao]')) : null;
+      if (!item) return;
+      fecharMenuDoPresente();
+      if (item.dataset.acao === 'renomear') renomearListaNaTabela(nome);
+      else if (item.dataset.acao === 'remover') await removerLista(nome);
+    });
+  }
+
+  /** Troca o nome na própria linha por um campo; Enter ou sair do campo salva. @param {string} nome */
+  function renomearListaNaTabela(nome) {
+    const linha = [...document.querySelectorAll('#suas-listas-corpo tr[data-lista-nome]')].find(tr => /** @type {HTMLElement} */ (tr).dataset.listaNome === nome);
+    const celula = linha?.querySelector('.suas-listas-nome');
+    if (!celula) return;
+    celula.innerHTML = `<input type="text" class="suas-listas-campo" value="${escaparHtml(nome)}" aria-label="Nome da lista" maxlength="80">`;
+    const campo = /** @type {HTMLInputElement} */ (celula.querySelector('input'));
+    campo.focus();
+    campo.select();
+    let feito = false;
+    const concluir = async (/** @type {boolean} */ salvar) => {
+      if (feito) return;
+      feito = true;
+      const novo = campo.value.trim();
+      if (salvar && novo && novo !== nome) await renomearLista(nome, novo);
+      renderSuasListas();
+    };
+    campo.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); concluir(true); }
+      else if (e.key === 'Escape') { e.preventDefault(); concluir(false); }
+    });
+    campo.addEventListener('blur', () => concluir(true));
+  }
+
+  /** @param {string} nome @param {string} novo */
+  async function renomearLista(nome, novo) {
+    const ev = getActiveEvent();
+    if (!ev) return;
+    for (const g of (ev.giftList || []).filter(/** @param {any} g */ g => listaDoPresente(g) === nome)) {
+      g.listaNome = novo;
+      if (g.category === nome) g.category = novo;
+      await salvarPresenteNoBanco(g).catch(err => console.error('Erro ao renomear lista:', err));
+    }
+  }
+
+  /** Remove os presentes disponíveis da lista; os já comprados ficam em Meus presentes. @param {string} nome */
+  async function removerLista(nome) {
+    const ev = getActiveEvent();
+    if (!ev) return;
+    const daLista = (ev.giftList || []).filter(/** @param {any} g */ g => listaDoPresente(g) === nome);
+    /** @type {Set<any>} */
+    const removidos = new Set();
+    for (const g of daLista) {
+      if (presenteFoiComprado(g)) {
+        // comprado não sai; só deixa de fazer parte da lista
+        g.listaNome = '';
+        await salvarPresenteNoBanco(g).catch(err => console.error('Erro ao atualizar presente:', err));
+        continue;
+      }
+      const { error } = await excluirPresenteNoBanco(g.id).catch(err => ({ error: err }));
+      if (!error) removidos.add(g);
+    }
+    ev.giftList = (ev.giftList || []).filter(/** @param {any} g */ g => !removidos.has(g));
+    renderSuasListas();
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('gifts-search-input'));
+    renderHostGifts(busca ? busca.value : '');
     updateAllCelebrationData();
   }
 
@@ -8952,6 +9085,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panelSettings) panelSettings.classList.remove('hidden');
       if (summaryStats) summaryStats.classList.add('hidden');
       if (headerTitle) headerTitle.textContent = 'Configurações da Lista';
+      renderSuasListas();
       if (headerSub) headerSub.textContent = 'Configure taxas, parcelamento sem juros para convidados e preferências.';
     } else {
       if (topSearchBar) topSearchBar.classList.remove('hidden');

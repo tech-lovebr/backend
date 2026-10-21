@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_detalheLista">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_suasListas2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1987,6 +1987,31 @@
 
           <!-- SUB-PAINEL 2: CONFIGURAÇÕES DA LISTA DE PRESENTES (Estilo Livre / Fundo Branco) -->
           <div id="gifts-panel-settings" class="hidden px-6 sm:px-8 pt-4 pb-6 space-y-8 max-w-4xl">
+
+            <!-- 0. SUAS LISTAS: as listas prontas que a pessoa adicionou -->
+            <div class="space-y-4 pb-8 border-b border-zinc-200/80">
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Suas listas</h3>
+                <p class="text-xs text-zinc-500 mt-0.5">As listas prontas que você adicionou em Meus presentes.</p>
+              </div>
+              <div class="dash-card love-tabela-caixa suas-listas-caixa">
+                <div class="w-full overflow-x-auto">
+                  <table id="suas-listas-tabela" class="love-tabela w-full text-left border-collapse font-sans">
+                    <thead>
+                      <tr>
+                        <th>Lista</th>
+                        <th>Presentes</th>
+                        <th>Total da lista</th>
+                        <th>Recebidos</th>
+                        <th>Saldo arrecadado</th>
+                        <th class="love-tabela-col-acoes love-tabela-col-mais"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="suas-listas-corpo"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
             
             <!-- 1. QUEM PAGA A TAXA DOS PRESENTES -->
             <div class="space-y-4 pb-8 border-b border-zinc-200/80">
@@ -5591,7 +5616,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_detalheLista"></script>
+  <script src="js/app.js?v=20261021_suasListas"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>

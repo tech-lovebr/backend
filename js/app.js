@@ -10701,8 +10701,8 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapPlanta.classList.toggle('is-expandida', ligado);
         document.body.classList.toggle('planta-expandida', ligado);
         btnExpandir.setAttribute('aria-pressed', String(ligado));
-        btnExpandir.title = ligado ? 'Voltar ao tamanho normal' : 'Expandir a planta';
-        btnExpandir.setAttribute('aria-label', btnExpandir.title);
+        btnExpandir.dataset.dica = ligado ? 'Reduzir' : 'Expandir';
+        btnExpandir.setAttribute('aria-label', btnExpandir.dataset.dica);
         const lista = document.getElementById('floorplan-guests-panel');
         if (lista && !ligado) { lista.style.left = ''; lista.style.top = ''; }
         renderFloorPlanCanvas();

@@ -953,7 +953,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 15 5-5m0 0-5-5m5 5H9a4 4 0 0 0 0 8h1"/></svg>
               </button>
               <span class="builder-toolbar-divider"></span>
-              <button type="button" class="builder-tool-btn" id="classic-editor-ver-publicada" title="Ver página publicada">
+              <button type="button" class="builder-tool-btn" id="classic-editor-ver-publicada" data-dica="Ver convite" aria-label="Ver convite">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
               </button>
               <div id="editor-header-save-container" class="flex-shrink-0">
@@ -1906,7 +1906,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 15 5-5m0 0-5-5m5 5H9a4 4 0 0 0 0 8h1"/></svg>
                 </button>
                 <span class="builder-toolbar-divider"></span>
-                <button type="button" class="builder-tool-btn" id="builder-preview-link" title="Ver página publicada">
+                <button type="button" class="builder-tool-btn" id="builder-preview-link" data-dica="Ver convite" aria-label="Ver convite">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
                 </button>
                 <button type="button" class="btn-secondary builder-toolbar-btn" id="builder-save">Salvar</button>
@@ -1953,7 +1953,7 @@
               </div>
 
               <!-- Botão Adicionar Presente Aleatório (Ícone de Random) -->
-              <button type="button" id="btn-host-add-random-gift" title="Adicionar presente aleatório" class="btn-white text-xs py-2 px-3 font-semibold flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 hover:border-zinc-300 text-zinc-700 shadow-2xs cursor-pointer hover:bg-zinc-50 transition-colors flex-shrink-0">
+              <button type="button" id="btn-host-add-random-gift" data-dica="Adicionar aleatório" aria-label="Adicionar aleatório" class="btn-white text-xs py-2 px-3 font-semibold flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 hover:border-zinc-300 text-zinc-700 shadow-2xs cursor-pointer hover:bg-zinc-50 transition-colors flex-shrink-0">
                 <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
                   <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
@@ -2145,13 +2145,13 @@
               <span class="floorplan-page-name">Mapa do evento</span>
               <div class="floorplan-toolbar-right">
                 <!-- Expandir: esconde a lista de convidados e deixa a planta na tela toda -->
-                <button type="button" id="btn-floorplan-expandir" class="builder-tool-btn floorplan-expandir" title="Expandir a planta" aria-label="Expandir a planta" aria-pressed="false">
+                <button type="button" id="btn-floorplan-expandir" class="builder-tool-btn floorplan-expandir" data-dica="Expandir" aria-label="Expandir" aria-pressed="false">
                   <svg class="icone-expandir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
                   <svg class="icone-recolher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>
                 </button>
                 <!-- Formas: linha e rabisco (desenho livre) -->
                 <div class="floorplan-formas">
-                  <button type="button" id="btn-floorplan-formas" class="builder-tool-btn floorplan-formas-btn" title="Linha ou rabisco" aria-label="Linha ou rabisco" aria-haspopup="true" aria-expanded="false">
+                  <button type="button" id="btn-floorplan-formas" class="builder-tool-btn floorplan-formas-btn" data-dica="Forma" aria-label="Forma" aria-haspopup="true" aria-expanded="false">
                     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21c3-8 6-11 8-9s-3 8 0 9 5-9 8-9 1 7 3 8 3-2 3-2"/></svg>
                   </button>
                   <div id="floorplan-formas-menu" class="floorplan-formas-menu hidden" role="menu" aria-label="Formas">
@@ -5553,7 +5553,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_convidadosAlfabetico"></script>
+  <script src="js/app.js?v=20261021_dicas2"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

@@ -9749,3 +9749,11 @@ html body .dash-analytics-period-wrap:not(#love-h-a) { display: none !important;
 /* Subtítulo escondido (ex.: Editar meu site): a linha volta para a faixa do título. */
 html body:not([data-theme="dark"]) .b2b-header-bar:has(+ p[hidden]):not(#love-h-a) { border-bottom: 1px solid #E4E4E7 !important; }
 html body .b2b-header-bar + p[hidden]:not(#love-h-a) { display: none !important; }
+
+/* Configurações (Suas informações, Sua empresa, Preferências, Privacidade,
+   Dados bancários, URLs) e Privacidade/Termos: a coluna de caixas fica
+   centralizada no espaço, como o editor de formulário. */
+html body .settings-shell [data-settings-panel]:not(.verificacao-aberta):not(#love-h-a) { max-width: 40rem; width: 100%; margin-left: auto; margin-right: auto; }
+html body .settings-shell [data-settings-panel]:not(.verificacao-aberta) > *:not(#love-h-a) { margin-left: auto; margin-right: auto; width: 100%; }
+html body .settings-shell [data-settings-panel].verificacao-aberta:not(#love-h-a) { margin-left: auto; margin-right: auto; }
+html body .legal-doc-coluna:not(#love-h-a) { max-width: 760px; width: 100%; margin: 0 auto; }

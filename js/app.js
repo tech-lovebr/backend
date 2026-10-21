@@ -10256,6 +10256,25 @@ document.addEventListener('DOMContentLoaded', () => {
     initFloorPlanTableModal();
     initFloorPlanFilterDropdown();
 
+    // Expandir: esconde a lista de convidados e a planta ocupa a tela toda
+    // (clique de novo para voltar). Esc também volta.
+    const btnExpandir = document.getElementById('btn-floorplan-expandir');
+    const wrapPlanta = btnExpandir ? btnExpandir.closest('.floorplan-wrap') : null;
+    if (btnExpandir && wrapPlanta) {
+      const expandir = (/** @type {boolean} */ ligado) => {
+        wrapPlanta.classList.toggle('is-expandida', ligado);
+        document.body.classList.toggle('planta-expandida', ligado);
+        btnExpandir.setAttribute('aria-pressed', String(ligado));
+        btnExpandir.title = ligado ? 'Voltar ao tamanho normal' : 'Expandir a planta';
+        btnExpandir.setAttribute('aria-label', btnExpandir.title);
+        renderFloorPlanCanvas();
+      };
+      btnExpandir.addEventListener('click', () => expandir(!wrapPlanta.classList.contains('is-expandida')));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && wrapPlanta.classList.contains('is-expandida') && !document.querySelector('.modal-backdrop-custom.open')) expandir(false);
+      });
+    }
+
     // "Adicionar Mesa" abre o menu de formatos (Redonda, Retangular, Quadrada, Bistrô).
     const btnAddTable = document.getElementById('btn-open-add-table-modal');
     const menuFormatos = document.getElementById('floorplan-add-table-menu');

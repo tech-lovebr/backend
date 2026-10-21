@@ -2361,6 +2361,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ? 'onclick="navigateToConviteDigital()"'
             : task.id === 'savethedate'
             ? 'onclick="navigateToSaveTheDate()"'
+            : task.id === 'vendors'
+            ? 'onclick="navigateToExplorarFornecedores()"'
             : `onclick="switchRailTab('${task.tab}')"`);
       return `
         <div class="group py-4 px-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${clickAction} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
@@ -11056,6 +11058,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       if (typeof window.switchBuilderPage === 'function') window.switchBuilderPage('savethedate');
     }, 150);
+  };
+
+  // Guia de primeiros passos › "Favoritar primeiros fornecedores": Fornecedores › Explorar.
+  window.navigateToExplorarFornecedores = function() {
+    if (state.currentTab === 'b2b') { abrirSubItem('b2b', 'explore'); return; }
+    pendingSubItemId = 'explore';
+    switchRailTab('b2b');
   };
 
   window.navigateToTables = function() {

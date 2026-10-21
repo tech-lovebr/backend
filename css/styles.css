@@ -6723,13 +6723,17 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .convite-sobre-texto { font-size: 0.9375rem; line-height: 1.7; color: #3F3F46; margin: 0; }
 
 
-/* Botão de música do convite: círculo com contorno preto e ícone preto
-   (!important: regras gerais de botão da plataforma mudam raio e cor). */
+/* Botão de música do convite: círculo translúcido (como o voltar do presente),
+   sem contorno, ícone preto (!important: regras gerais de botão da plataforma
+   mudam raio e cor). */
 .convite-musica-botao,
 .convite-musica-botao:not(.is-tocando) {
   border-radius: 50% !important;
-  border: 1.5px solid #000000 !important;
-  background: #FFFFFF !important;
+  border: 0 !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
   color: #000000 !important;
 }
 .convite-musica-botao svg { stroke: #000000 !important; }

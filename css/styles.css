@@ -9196,3 +9196,5 @@ body[data-theme="dark"] #floorplan-canvas {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px) !important;
   background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px !important;
 }
+/* Expandir: mesma altura do "Adicionar Mesa" (38px), largura de botão pequeno (quadrado). */
+html body #btn-floorplan-expandir:not(#love-h-a) { width: 38px; }

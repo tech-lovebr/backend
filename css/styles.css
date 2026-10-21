@@ -9783,3 +9783,24 @@ html body .lista-pronta-card:not(#love-h-a):hover { border-color: #A1A1AA; }
 /* Drawer de presente › valor extra (checkbox abaixo do valor). */
 .gift-valor-extra { display: flex; align-items: flex-start; gap: 10px; margin-top: -4px; font-size: 13px; color: #3F3F46; cursor: pointer; line-height: 1.4; }
 .gift-valor-extra input { margin-top: 1px; flex-shrink: 0; }
+
+/* Sem drawers na plataforma: todos abrem como pop-up centralizado na tela
+   (adicionar/editar convidado, criar presente, despesa, comprovante, mesa). */
+html body :is(.guest-add-drawer, .gift-drawer, .budget-expense-drawer, .table-drawer):not(#love-h-a) {
+  top: 50%; left: 50%; right: auto; bottom: auto;
+  width: calc(100vw - 32px); max-width: 560px; height: auto; max-height: calc(100vh - 48px);
+  transform: translate(-50%, -50%) !important; transition: none !important;
+  border: 1px solid #E4E4E7; border-radius: 10px !important; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden; flex-direction: column;
+}
+/* Criar presente: caixa larga com duas colunas — campos à esquerda e a
+   imagem à direita; o salvar ocupa a largura toda embaixo. */
+html body #drawer-add-gift.gift-drawer:not(#love-h-a) { max-width: 880px; }
+html body #form-add-gift:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; row-gap: 20px; align-items: start; }
+html body #form-add-gift:not(#love-h-a) > * { grid-column: 1; margin: 0 !important; }
+html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-column: 2; grid-row: 1 / span 8; }
+html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-column: 1 / -1; }
+@media (max-width: 720px) {
+  html body #form-add-gift:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+  html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-column: 1; grid-row: auto; }
+}

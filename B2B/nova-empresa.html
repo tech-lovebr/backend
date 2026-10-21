@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=723">
+  <link rel="stylesheet" href="css/styles.css?v=724">
 </head>
 <body class="font-sans" data-page="nova-empresa">
 
@@ -51,16 +51,17 @@
 
         <!-- Nova empresa no mesmo login, em 3 etapas: dados, categoria e
              imagens. Ao concluir, o Hub abre direto na nova empresa. -->
+        <!-- Etapas como as abas de Meus convidados (love.com.br): logo acima da
+             caixa, na largura dela, com fundo transparente, com a linha embaixo e a atual sublinhada. -->
+        <div class="nova-empresa-etapas" id="nova-empresa-etapas" aria-label="Etapas" hidden>
+          <span class="nova-empresa-etapa is-ativa" data-etapa-indicador="1"><b>1</b> Dados da empresa</span>
+          <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+          <span class="nova-empresa-etapa" data-etapa-indicador="2"><b>2</b> Categoria</span>
+          <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
+          <span class="nova-empresa-etapa" data-etapa-indicador="3"><b>3</b> Imagens</span>
+        </div>
+
         <form class="dash-card nova-empresa-card" id="nova-empresa-form" novalidate hidden>
-          <!-- Etapas como as abas de Meus convidados (love.com.br): grudadas no topo
-               da caixa, na largura toda, com a linha embaixo e a atual sublinhada. -->
-          <div class="nova-empresa-etapas" id="nova-empresa-etapas" aria-label="Etapas" hidden>
-            <span class="nova-empresa-etapa is-ativa" data-etapa-indicador="1"><b>1</b> Dados da empresa</span>
-            <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
-            <span class="nova-empresa-etapa" data-etapa-indicador="2"><b>2</b> Categoria</span>
-            <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
-            <span class="nova-empresa-etapa" data-etapa-indicador="3"><b>3</b> Imagens</span>
-          </div>
           <!-- Etapa 1: dados -->
           <section class="nova-empresa-passo" data-etapa="1">
             <div class="nova-empresa-campos">

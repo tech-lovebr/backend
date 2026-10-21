@@ -9119,9 +9119,9 @@ html body #tab-rsvp #rsvp-guests-table-body tr.is-arrastando:hover td:not(#love-
 .convite-tela.convite-tela-presente { position: relative; padding-top: 0; }
 .convite-tela.convite-tela-presente > .convite-tela-topo { position: absolute; top: 12px; left: 12px; right: auto; z-index: 3; margin: 0; padding: 0; background: transparent; display: block; }
 .convite-tela.convite-tela-presente > .convite-tela-topo + * { margin-top: 0 !important; }
-.convite-tela.convite-tela-presente .convite-voltar { width: 36px; height: 36px; border-radius: 999px; background: rgba(255, 255, 255, 0.92); border: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); display: inline-flex; align-items: center; justify-content: center; }
+.convite-tela.convite-tela-presente .convite-voltar { width: 36px; height: 36px; border-radius: 999px; background: rgba(255, 255, 255, 0.6); border: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); display: inline-flex; align-items: center; justify-content: center; }
 .convite-tela.convite-tela-presente .convite-presente-detalhe-foto { margin-top: 0; height: 300px; }
-html body .convite-tela.convite-tela-presente .convite-voltar:not(#love-h-a) { border-radius: 999px !important; background: rgba(255, 255, 255, 0.92) !important; border: 0 !important; width: 36px; height: 36px; }
+html body .convite-tela.convite-tela-presente .convite-voltar:not(#love-h-a) { border-radius: 999px !important; background: rgba(255, 255, 255, 0.6) !important; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 0 !important; width: 36px; height: 36px; }
 
 /* Mapear mesas › Expandir: some a lista de convidados, a sidebar e o topo; a
    planta ocupa a tela toda (o cabeçalho com Expandir/Adicionar Mesa fica). */

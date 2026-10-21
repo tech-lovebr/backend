@@ -9705,7 +9705,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // arrastável e os cards de convidados; arraste "Mesa" para a planta e depois
   // arraste um convidado da lista até a mesa para acomodá-lo num assento.
   // ==========================================
-  // Itens da planta além das mesas (Inserir item › Espaços). w/h = tamanho
+  // Itens da planta além das mesas (Adicionar item › Espaços). w/h = tamanho
   // base; svg = ícone do menu; planta = desenho em planta baixa (viewBox w x h).
   const ITENS_DA_PLANTA = [
     { type: 'buffet', label: 'Buffet', w: 200, h: 72, svg: '<path d="M4 23h24M6.5 23a9.5 9.5 0 0 1 19 0M16 13.5v-2.5M13.5 11h5M7 26.5h18"/>',
@@ -11441,7 +11441,7 @@ document.addEventListener('DOMContentLoaded', () => {
           addFloorPlanTableViaButton(/** @type {HTMLElement} */ (op).dataset.mesaFormato);
         });
       });
-      // Formas (linha, círculo, rabisco) — caixinha à esquerda do "Inserir item".
+      // Formas (linha, círculo, rabisco) — caixinha à esquerda do "Adicionar item".
       const btnFormas = document.getElementById('btn-floorplan-formas');
       const menuFormas = document.getElementById('floorplan-formas-menu');
       if (btnFormas && menuFormas) {

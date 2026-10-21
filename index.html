@@ -2150,12 +2150,12 @@
                   <svg class="icone-expandir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
                   <svg class="icone-recolher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>
                 </button>
-                <!-- Objetos: linha, rabisco (desenho livre) e texto -->
+                <!-- Formas: linha, rabisco (desenho livre) e texto -->
                 <div class="floorplan-formas">
-                  <button type="button" id="btn-floorplan-formas" class="builder-tool-btn floorplan-formas-btn" data-dica="Objeto" aria-label="Objeto" aria-haspopup="true" aria-expanded="false">
+                  <button type="button" id="btn-floorplan-formas" class="builder-tool-btn floorplan-formas-btn" data-dica="Forma" aria-label="Forma" aria-haspopup="true" aria-expanded="false">
                     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21c3-8 6-11 8-9s-3 8 0 9 5-9 8-9 1 7 3 8 3-2 3-2"/></svg>
                   </button>
-                  <div id="floorplan-formas-menu" class="floorplan-formas-menu hidden" role="menu" aria-label="Objetos">
+                  <div id="floorplan-formas-menu" class="floorplan-formas-menu hidden" role="menu" aria-label="Formas">
                     <button type="button" role="menuitem" data-planta-forma="linha"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 25 25 7"/></svg><span>Linha</span></button>
                     <button type="button" role="menuitem" data-planta-forma="rabisco"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21c3-8 6-11 8-9s-3 8 0 9 5-9 8-9 1 7 3 8 3-2 3-2"/></svg><span>Rabisco</span></button>
                     <button type="button" role="menuitem" data-planta-forma="texto"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8h18M16 8v17M12.5 25h7"/></svg><span>Texto</span></button>
@@ -2163,11 +2163,11 @@
                 </div>
                 <div class="floorplan-add-mesa">
                   <button type="button" id="btn-open-add-table-modal" class="btn-primary btn-host-add-gift" aria-haspopup="true" aria-expanded="false">
-                    <span>Inserir item</span>
+                    <span>Adicionar item</span>
                     <svg class="seta-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                   </button>
                   <!-- Formatos de mesa (ver addFloorPlanTableViaButton em app.js) -->
-                  <div id="floorplan-add-table-menu" class="floorplan-formatos hidden" role="menu" aria-label="Inserir item">
+                  <div id="floorplan-add-table-menu" class="floorplan-formatos hidden" role="menu" aria-label="Adicionar item">
                     <p class="floorplan-formatos-titulo">Mesas</p>
                     <button type="button" role="menuitem" data-mesa-formato="redonda">
                       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="16" cy="16" r="6.5"/><circle cx="16" cy="5" r="1.8"/><circle cx="16" cy="27" r="1.8"/><circle cx="5" cy="16" r="1.8"/><circle cx="27" cy="16" r="1.8"/><circle cx="8.2" cy="8.2" r="1.8"/><circle cx="23.8" cy="8.2" r="1.8"/><circle cx="8.2" cy="23.8" r="1.8"/><circle cx="23.8" cy="23.8" r="1.8"/></svg>
@@ -2263,7 +2263,7 @@
                 <p id="floorplan-empty-hint" class="floorplan-empty-hint">
                   <!-- Moldura com + (inserir) -->
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6.5A2.5 2.5 0 0 1 6.5 4H8M16 4h1.5A2.5 2.5 0 0 1 20 6.5V8M20 16v1.5a2.5 2.5 0 0 1-2.5 2.5H16M8 20H6.5A2.5 2.5 0 0 1 4 17.5V16M12 8.5v7M8.5 12h7"/></svg>
-                  <span>Clique em "Inserir item" para começar a montar o mapa do evento.</span>
+                  <span>Clique em "Adicionar item" para começar a montar o mapa do evento.</span>
                 </p>
               </div>
             </div>

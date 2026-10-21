@@ -9861,3 +9861,11 @@ html body.site-aba-formularios .site-form-criar:not(#love-h-a) { display: inline
 html body .forms-vazio:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
 html body .forms-vazio p:not(#love-h-a) { margin: 0; }
 html body #forms-list:has(.forms-vazio):not(#love-h-a) { display: block; }
+
+/* Seus formulários: com o editor aberto, a caixa "nenhum formulário" some
+   (antes ficava uma em cima da outra). A lista e a caixa vazia ficam
+   centralizadas na mesma largura do editor de formulário (770px). */
+html body.form-editor-aberto #forms-list:has(.forms-vazio):not(#love-h-a),
+html body.form-editor-aberto #forms-list:not(#love-h-a) { display: none !important; }
+html body #forms-list:not(#love-h-a) { max-width: 770px; width: 100%; margin-left: auto; margin-right: auto; }
+html body .forms-vazio:not(#love-h-a) { text-align: center; }

@@ -9423,7 +9423,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   /**
    * Tamanho de um item na planta. Cresce sempre na proporção (escala, de 0,4 a 3)
-   * e gira de 90 em 90° (0, 90, 180, 270). Plantas antigas guardavam
+   * e gira de 45 em 45° (0, 45, 90... 315). Plantas antigas guardavam
    * largura/altura soltas ou só "girado": vira escala + rotação.
    * @param {any} elData
    */
@@ -9432,7 +9432,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bw = meta ? meta.w : 84;
     const bh = meta ? meta.h : 64;
     let escala = parseFloat(elData.escala);
-    let rotacao = [0, 90, 180, 270].includes(elData.rotacao) ? elData.rotacao : (elData.girado ? 90 : 0);
+    let rotacao = Number.isInteger(elData.rotacao) && elData.rotacao % 45 === 0 ? ((elData.rotacao % 360) + 360) % 360 : (elData.girado ? 90 : 0);
     if (!escala && (parseFloat(elData.w) || parseFloat(elData.h))) {
       const w = parseFloat(elData.w) || bw;
       const h = parseFloat(elData.h) || bh;
@@ -9442,8 +9442,11 @@ document.addEventListener('DOMContentLoaded', () => {
     escala = Math.min(3, Math.max(0.4, escala || 1));
     const baseW = bw * escala;
     const baseH = bh * escala;
-    const deLado = rotacao % 180 === 90;
-    return { w: deLado ? baseH : baseW, h: deLado ? baseW : baseH, escala, rotacao, baseW, baseH };
+    // Caixa ocupada pelo desenho girado (na diagonal ela fica maior).
+    const rad = rotacao * Math.PI / 180;
+    const cos = Math.abs(Math.round(Math.cos(rad) * 1e6) / 1e6);
+    const sen = Math.abs(Math.round(Math.sin(rad) * 1e6) / 1e6);
+    return { w: baseW * cos + baseH * sen, h: baseW * sen + baseH * cos, escala, rotacao, baseW, baseH };
   }
 
   // Elemento selecionado na planta (caixa com alças + menuzinho embaixo).
@@ -9936,12 +9939,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (alvo.type === 'mesa') {
         alvo.orientacao = alvo.orientacao === 'vertical' ? 'horizontal' : 'vertical';
       } else {
-        // Item: gira 90°, mantendo o centro no lugar.
+        // Item: gira 45° (8 posições), mantendo o centro no lugar.
         const t = tamanhoDoItem(alvo);
-        alvo.x = Math.max(0, (parseFloat(alvo.x) || 0) + (t.w - t.h) / 2);
-        alvo.y = Math.max(0, (parseFloat(alvo.y) || 0) + (t.h - t.w) / 2);
         alvo.escala = t.escala;
-        alvo.rotacao = (t.rotacao + 90) % 360;
+        alvo.rotacao = (t.rotacao + 45) % 360;
+        delete alvo.girado;
+        const novo = tamanhoDoItem(alvo);
+        alvo.x = Math.max(0, (parseFloat(alvo.x) || 0) + (t.w - novo.w) / 2);
+        alvo.y = Math.max(0, (parseFloat(alvo.y) || 0) + (t.h - novo.h) / 2);
         delete alvo.girado;
         delete alvo.w;
         delete alvo.h;

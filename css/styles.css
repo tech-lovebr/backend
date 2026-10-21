@@ -9374,3 +9374,34 @@ html body .account-dropdown-header:not(#love-h-a) { align-items: center; }
 html body #account-dropdown-email:not(#love-h-a) { font-size: 0.875rem !important; font-weight: 500 !important; color: #18181B !important; }
 /* Mapa do evento › card do convidado: "Mesa N" sem negrito, na cor do nome. */
 html body .floorplan-guest-card .floorplan-guest-card-table:not(#love-h-a) { font-weight: 400 !important; color: #3F3F46 !important; }
+
+/* Mapa do evento › caixinha de formas (linha, círculo, rabisco) à esquerda do
+   "Inserir item": branca com borda, como o Expandir, com a setinha de menu. */
+.floorplan-formas { position: relative; display: inline-block; }
+html body #btn-floorplan-formas:not(#love-h-a) { height: 38px; min-height: 38px; padding: 0 8px 0 10px; display: inline-flex; align-items: center; gap: 4px; background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px; color: #3F3F46; box-shadow: none; }
+html body #btn-floorplan-formas:not(#love-h-a):hover { background: #F4F4F5 !important; color: #181D24; }
+#btn-floorplan-formas > svg:first-child { width: 20px; height: 20px; }
+.seta-menu { width: 14px; height: 14px; flex-shrink: 0; }
+html body #btn-open-add-table-modal:not(#love-h-a) .seta-menu { margin-left: 2px; }
+.floorplan-formas-menu:not(.hidden) { position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; min-width: 180px; padding: 6px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; }
+html body .floorplan-formas-menu button:not(#love-h-a) { display: flex; align-items: center; gap: 12px; width: 100%; height: 36px; padding: 0 10px; background: transparent; border: 0; border-radius: 8px; font-size: 14px; font-weight: 400; color: #18181B; cursor: pointer; text-align: left; }
+html body .floorplan-formas-menu button:not(#love-h-a):hover { background: #F4F6F7; }
+.floorplan-formas-menu button svg { width: 20px; height: 20px; color: #3F3F46; flex-shrink: 0; }
+body[data-theme="dark"] #btn-floorplan-formas, body[data-theme="dark"] .floorplan-formas-menu { background: #252525 !important; border-color: #404040 !important; color: #E4E4E7 !important; }
+
+/* Linha na planta: só o traço; a faixa invisível ajuda a pegar com o mouse. */
+html body .floorplan-el.is-linha:not(#love-h-a) { min-height: 0; padding: 0; background: transparent; border: 0; box-shadow: none; pointer-events: none; display: block; }
+.floorplan-linha-svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.floorplan-linha-svg .pega { stroke: transparent; stroke-width: 14px; pointer-events: stroke; cursor: grab; }
+.floorplan-linha-svg .traco { stroke: #52525B; stroke-width: 2px; stroke-linecap: round; }
+.floorplan-el.is-linha:hover .floorplan-linha-svg .traco { stroke: #181D24; }
+.floorplan-selecao.is-linha { border: 0; }
+.floorplan-alca.alca-ponta { cursor: move; }
+body[data-theme="dark"] .floorplan-linha-svg .traco { stroke: #A1A1AA; }
+
+/* Rabisco: traço livre um pouco mais forte. Enquanto desenha: cursor em cruz. */
+.floorplan-el.item-rabisco .floorplan-planta path { stroke-width: 2px; }
+#floorplan-canvas.is-desenhando, #floorplan-canvas.is-desenhando * { cursor: crosshair !important; }
+.floorplan-rabisco-ao-vivo { position: absolute; left: 0; top: 0; z-index: 35; pointer-events: none; overflow: visible; }
+.floorplan-rabisco-ao-vivo path { fill: none; stroke: #181D24; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+.floorplan-dica-desenho { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 36; padding: 6px 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-size: 12px; color: #3F3F46; pointer-events: none; white-space: nowrap; }

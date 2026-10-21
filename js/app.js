@@ -9399,7 +9399,7 @@ document.addEventListener('DOMContentLoaded', () => {
       planta: '<rect x="1" y="1" width="168" height="52" rx="4"/><path d="M1 14h168" class="l"/><circle cx="35" cy="75" r="9"/><circle cx="85" cy="75" r="9"/><circle cx="135" cy="75" r="9"/><svg x="69" y="16" width="32" height="32" viewBox="0 0 32 32" class="l"><path d="M7 7h14l-7 9Z"/><path d="M14 16v9M10 25h8M21.5 10.5l4-4"/><circle cx="23.5" cy="9" r="1.5"/></svg>' },
     { type: 'pista', label: 'Pista de dança', w: 200, h: 200, svg: '<rect x="5" y="5" width="22" height="22" rx="1.5"/><path d="M5 12.3h22M5 19.7h22M12.3 5v22M19.7 5v22"/>',
       planta: '<rect x="1" y="1" width="198" height="198" rx="2"/><rect x="1" y="40.6" width="39.6" height="39.6" class="c"/><rect x="1" y="119.80000000000001" width="39.6" height="39.6" class="c"/><rect x="40.6" y="1" width="39.6" height="39.6" class="c"/><rect x="40.6" y="80.2" width="39.6" height="39.6" class="c"/><rect x="40.6" y="159.4" width="39.6" height="39.6" class="c"/><rect x="80.2" y="40.6" width="39.6" height="39.6" class="c"/><rect x="80.2" y="119.80000000000001" width="39.6" height="39.6" class="c"/><rect x="119.80000000000001" y="1" width="39.6" height="39.6" class="c"/><rect x="119.80000000000001" y="80.2" width="39.6" height="39.6" class="c"/><rect x="119.80000000000001" y="159.4" width="39.6" height="39.6" class="c"/><rect x="159.4" y="40.6" width="39.6" height="39.6" class="c"/><rect x="159.4" y="119.80000000000001" width="39.6" height="39.6" class="c"/><rect x="1" y="1" width="198" height="198" rx="2" class="l"/>' },
-    { type: 'palco', label: 'Palco', w: 240, h: 110, svg: '<rect x="13" y="3" width="6" height="10.5" rx="3"/><path d="M16 13.5V20M16 20l-5.5 8M16 20l5.5 8M16 20v8"/>',
+    { type: 'palco', label: 'Palco', w: 240, h: 110, svg: '<path d="M4 5h24M7 5c0 6 1.5 10.5 4.5 13.5M25 5c0 6-1.5 10.5-4.5 13.5M3 22h26v4.5H3Z"/><circle cx="16" cy="10.5" r="2"/><path d="M16 12.5v6"/>',
       planta: '<rect x="12" y="92" width="216" height="17" rx="2"/><rect x="1" y="1" width="238" height="94" rx="4"/><rect x="12" y="12" width="24" height="24" rx="2"/><circle cx="24" cy="24" r="6.5" class="l"/><rect x="204" y="12" width="24" height="24" rx="2"/><circle cx="216" cy="24" r="6.5" class="l"/><rect x="80" y="14" width="80" height="36" rx="3"/><circle cx="99" cy="32" r="11" class="l"/><circle cx="99" cy="32" r="2.5" class="l"/><circle cx="141" cy="32" r="11" class="l"/><circle cx="141" cy="32" r="2.5" class="l"/><rect x="114.5" y="22" width="11" height="20" rx="1.5" class="l"/><circle cx="120" cy="72" r="4" class="l"/>' },
     { type: 'altar', label: 'Altar', w: 150, h: 80, svg: '<path d="M5 23c4-9 18-9 22 0Z"/><path d="M16 5v8M12.5 8h7M5 27h22"/>',
       planta: '<path d="M1 1h148v48a74 30 0 0 1-148 0Z"/><rect x="52" y="12" width="46" height="20" rx="2" class="l"/><circle cx="22" cy="22" r="10" class="l"/><circle cx="22" cy="22" r="4" class="l"/><circle cx="128" cy="22" r="10" class="l"/><circle cx="128" cy="22" r="4" class="l"/>' },
@@ -9410,15 +9410,27 @@ document.addEventListener('DOMContentLoaded', () => {
     { type: 'backdrop', label: 'Backdrop', w: 200, h: 40, svg: '<path d="M5 5h22v15H5Z"/><path d="M5 5l5 15M27 5l-5 15M9 27l2-7M23 27l-2-7"/>',
       planta: '<rect x="1" y="1" width="198" height="10" rx="2"/><circle cx="16" cy="24" r="10"/><circle cx="16" cy="24" r="4" class="l"/><circle cx="184" cy="24" r="10"/><circle cx="184" cy="24" r="4" class="l"/><circle cx="40" cy="17" r="4" class="l"/><circle cx="60" cy="17" r="4" class="l"/><circle cx="80" cy="17" r="4" class="l"/><circle cx="100" cy="17" r="4" class="l"/><circle cx="120" cy="17" r="4" class="l"/><circle cx="140" cy="17" r="4" class="l"/><circle cx="160" cy="17" r="4" class="l"/>' }
   ];
+  ITENS_DA_PLANTA.push(
+    { type: 'banheiro', label: 'Banheiro', w: 120, h: 100, svg: '<circle cx="10" cy="6.5" r="2.3"/><path d="M7.2 11h5.6v7.5h-1.3V27H8.5v-8.5H7.2Z"/><circle cx="22" cy="6.5" r="2.3"/><path d="M22 11l3.8 9h-2.3v7h-3v-7h-2.3Z"/><path d="M16 4v24"/>',
+      planta: '<rect x="1" y="1" width="118" height="98" rx="3"/><path d="M60 1v58" class="l"/><rect x="20" y="6" width="20" height="8" rx="2" class="l"/><ellipse cx="30" cy="26" rx="8" ry="10" class="l"/><rect x="80" y="6" width="20" height="8" rx="2" class="l"/><ellipse cx="90" cy="26" rx="8" ry="10" class="l"/><rect x="10" y="80" width="26" height="14" rx="3" class="l"/><circle cx="23" cy="87" r="3" class="l"/><path d="M84 99V71a28 28 0 0 1 28 28" class="l"/>' },
+    { type: 'recepcao', label: 'Recepção', w: 160, h: 80, svg: '<circle cx="16" cy="8.5" r="3.5"/><path d="M9.5 18.5a6.5 6.5 0 0 1 13 0M4 18.5h24v8.5H4Z"/>',
+      planta: '<path d="M8 8h144v18c0 30-30 52-72 52S8 56 8 26Z"/><path d="M24 8v16c0 22 24 38 56 38s56-16 56-38V8" class="l"/><circle cx="80" cy="24" r="9" class="l"/><rect x="104" y="20" width="18" height="12" rx="2" class="l"/>' },
+    // Círculo (botão de formas): só aumenta/diminui.
+    { type: 'circulo', label: 'Círculo', w: 120, h: 120, svg: '', planta: '<circle cx="60" cy="60" r="59"/>' }
+  );
   // Banda saiu do menu (virou Palco); plantas antigas com banda mostram o palco.
   ITENS_DA_PLANTA.push(Object.assign({}, ITENS_DA_PLANTA.find(i => i.type === 'palco'), { type: 'banda', label: 'Palco' }));
   const FLOORPLAN_ELEMENT_TYPES = [
     { type: 'mesa', label: 'Mesa', icon: '🪑' },
-    ...ITENS_DA_PLANTA.map(item => ({ type: item.type, label: item.label, icon: '' }))
+    ...ITENS_DA_PLANTA.map(item => ({ type: item.type, label: item.label, icon: '' })),
+    // Botão de formas: linha (arrasta as pontas) e rabisco (desenho livre).
+    { type: 'linha', label: 'Linha', icon: '' },
+    { type: 'rabisco', label: 'Rabisco', icon: '' }
   ];
   /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
   function alturaNaPlanta(item) {
     if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
+    if (item.type === 'linha') return parseFloat(item.h) || 20;
     return tamanhoDoItem(item).h;
   }
   /** Tamanho da mesa (1 = normal), entre 0,5 e 2. @param {any} item */
@@ -9434,8 +9446,9 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function tamanhoDoItem(elData) {
     const meta = ITENS_DA_PLANTA.find(i => i.type === elData.type);
-    const bw = meta ? meta.w : 84;
-    const bh = meta ? meta.h : 64;
+    // Rabisco: o tamanho base é o do desenho feito à mão (bw x bh).
+    const bw = meta ? meta.w : (parseFloat(elData.bw) || 84);
+    const bh = meta ? meta.h : (parseFloat(elData.bh) || 64);
     let escala = parseFloat(elData.escala);
     let rotacao = Number.isInteger(elData.rotacao) && elData.rotacao % 45 === 0 ? ((elData.rotacao % 360) + 360) % 360 : (elData.girado ? 90 : 0);
     if (!escala && (parseFloat(elData.w) || parseFloat(elData.h))) {
@@ -9457,6 +9470,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Elemento selecionado na planta (caixa com alças + menuzinho embaixo).
   /** @type {string|null} */
   let plantaSelecionada = null;
+  /** Linha com a ponta sendo arrastada (ainda não salva). @type {any} */
+  let dadosDaSelecaoEmArraste = null;
   /** Pop-up da mesa: como a planta estava ao abrir (o Voltar desfaz). @type {string|null} */
   let plantaAntesDoPopup = null;
   const FLOORPLAN_TYPE_META = {};
@@ -9833,15 +9848,26 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           el.appendChild(seatDot);
         }
+      } else if (elData.type === 'linha') {
+        // Linha: só o traço; dá para pegar no traço e arrastar, e as pontas
+        // (quando selecionada) mudam a direção.
+        el.classList.add('is-linha');
+        el.title = 'Linha';
+        el.style.width = `${parseFloat(elData.w) || 200}px`;
+        el.style.height = `${parseFloat(elData.h) || 20}px`;
+        el.innerHTML = svgDaLinha(elData);
       } else {
         // Item (buffet, palco, pista...): só o desenho em planta baixa, sem nome
-        // (o nome aparece ao parar o mouse em cima).
+        // (o nome aparece ao parar o mouse em cima). Rabisco: o desenho à mão.
         const item = ITENS_DA_PLANTA.find(i => i.type === elData.type);
         el.classList.add('is-item', `item-${elData.type}`);
         el.title = meta.label;
         const tam = tamanhoDoItem(elData);
         el.style.width = `${tam.w}px`;
         el.style.height = `${tam.h}px`;
+        if (!item && elData.type === 'rabisco') {
+          el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${parseFloat(elData.bw) || 84} ${parseFloat(elData.bh) || 64}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.rotacao ? ` rotate(${tam.rotacao}deg)` : ''}" aria-hidden="true"><path class="l" d="${tracadoSeguro(elData.d)}"/></svg>`);
+        }
         if (item) {
           el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${item.w} ${item.h}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.rotacao ? ` rotate(${tam.rotacao}deg)` : ''}" aria-hidden="true">${item.planta}</svg>`);
         }
@@ -9884,7 +9910,7 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.querySelectorAll('.floorplan-selecao').forEach(s => s.remove());
     if (!plantaSelecionada) return;
     const el = /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(plantaSelecionada)}"]`));
-    const elData = getFloorPlanElements().find(x => x.id === plantaSelecionada);
+    const elData = dadosDaSelecaoEmArraste || getFloorPlanElements().find(x => x.id === plantaSelecionada);
     if (!el || !elData) { plantaSelecionada = null; return; }
     const cx = caixaVisivelNaPlanta(canvas, el);
     const folga = 6;
@@ -9894,15 +9920,33 @@ document.addEventListener('DOMContentLoaded', () => {
     sel.style.top = `${cx.topo - folga}px`;
     sel.style.width = `${cx.dir - cx.esq + folga * 2}px`;
     sel.style.height = `${cx.base - cx.topo + folga * 2}px`;
-    ['tl', 'tr', 'bl', 'br'].forEach(canto => {
-      const alca = document.createElement('span');
-      alca.className = `floorplan-alca alca-${canto}`;
-      alca.title = 'Arraste para aumentar ou diminuir';
-      alca.addEventListener('mousedown', (e) => iniciarRedimensionamento(e, elData.id));
-      sel.appendChild(alca);
-    });
+    if (elData.type === 'linha') {
+      // Linha: sem caixa; uma bolinha em cada ponta para mudar a direção.
+      sel.classList.add('is-linha');
+      const x0 = parseFloat(elData.x) || 0;
+      const y0 = parseFloat(elData.y) || 0;
+      /** @type {['a' | 'b', number, number][]} */
+      const pontas = [['a', parseFloat(elData.ax) || 0, parseFloat(elData.ay) || 0], ['b', parseFloat(elData.bx) || 0, parseFloat(elData.by) || 0]];
+      pontas.forEach(([ponta, px, py]) => {
+        const alca = document.createElement('span');
+        alca.className = 'floorplan-alca alca-ponta';
+        alca.title = 'Arraste para mudar a direção';
+        alca.style.left = `${x0 + px - (cx.esq - folga) - 6.5}px`;
+        alca.style.top = `${y0 + py - (cx.topo - folga) - 6.5}px`;
+        alca.addEventListener('mousedown', (e) => iniciarArrasteDaPonta(e, elData.id, ponta));
+        sel.appendChild(alca);
+      });
+    } else {
+      ['tl', 'tr', 'bl', 'br'].forEach(canto => {
+        const alca = document.createElement('span');
+        alca.className = `floorplan-alca alca-${canto}`;
+        alca.title = 'Arraste para aumentar ou diminuir';
+        alca.addEventListener('mousedown', (e) => iniciarRedimensionamento(e, elData.id));
+        sel.appendChild(alca);
+      });
+    }
 
-    const giravel = elData.type !== 'mesa' || elData.formato === 'retangular';
+    const giravel = elData.type === 'mesa' ? elData.formato === 'retangular' : !['linha', 'circulo'].includes(elData.type);
     const acoes = document.createElement('div');
     acoes.className = 'floorplan-acoes';
     /** @type {[string, string][]} */
@@ -10153,6 +10197,166 @@ document.addEventListener('DOMContentLoaded', () => {
     plantaSelecionada = elements[elements.length - 1].id;
     saveFloorPlanElements(elements);
     renderFloorPlanCanvas();
+  }
+
+  /** Caminho do rabisco só com números e M/L (vem do banco). @param {any} d */
+  function tracadoSeguro(d) {
+    return String(d || '').replace(/[^MLml0-9.\s-]/g, '');
+  }
+
+  /** SVG da linha (traço visível + faixa invisível mais grossa para pegar com o mouse). @param {any} l */
+  function svgDaLinha(l) {
+    const w = parseFloat(l.w) || 200;
+    const hh = parseFloat(l.h) || 20;
+    const p = [l.ax, l.ay, l.bx, l.by].map(v => parseFloat(v) || 0);
+    return `<svg class="floorplan-linha-svg" width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" aria-hidden="true"><line class="pega" x1="${p[0]}" y1="${p[1]}" x2="${p[2]}" y2="${p[3]}"/><line class="traco" x1="${p[0]}" y1="${p[1]}" x2="${p[2]}" y2="${p[3]}"/></svg>`;
+  }
+
+  /**
+   * Caixa da linha a partir das duas pontas (na planta), com folga de 10px.
+   * @param {number} x1 @param {number} y1 @param {number} x2 @param {number} y2
+   */
+  function caixaDaLinha(x1, y1, x2, y2) {
+    const f = 10;
+    const x = Math.min(x1, x2) - f;
+    const y = Math.min(y1, y2) - f;
+    return { x, y, w: Math.abs(x2 - x1) + f * 2, h: Math.abs(y2 - y1) + f * 2, ax: x1 - x, ay: y1 - y, bx: x2 - x, by: y2 - y };
+  }
+
+  // Formas › Linha: entra na parte visível da planta, já selecionada.
+  function inserirLinhaNaPlanta() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    const elements = getFloorPlanElements();
+    const cascata = (elements.length % 8) * 28;
+    const rolagem = canvas.closest('.floorplan-body');
+    const topoVisivel = rolagem && rolagem.scrollTop ? rolagem.scrollTop : 0;
+    const x1 = 40 + cascata;
+    const y1 = topoVisivel + 40 + cascata;
+    elements.push(Object.assign({ id: `fp-${Date.now()}`, type: 'linha' }, caixaDaLinha(x1, y1, x1 + 180, y1)));
+    plantaSelecionada = elements[elements.length - 1].id;
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+  }
+
+  // Arrastar uma ponta da linha: a outra fica parada.
+  /** @param {MouseEvent} e @param {string} id @param {'a' | 'b'} ponta */
+  function iniciarArrasteDaPonta(e, id, ponta) {
+    e.preventDefault();
+    e.stopPropagation();
+    const canvas = document.getElementById('floorplan-canvas');
+    const el = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"]`));
+    const alvo = getFloorPlanElements().find(x => x.id === id);
+    if (!canvas || !el || !alvo) return;
+    const base = canvas.getBoundingClientRect();
+    const x0 = parseFloat(alvo.x) || 0;
+    const y0 = parseFloat(alvo.y) || 0;
+    const fixa = ponta === 'a'
+      ? { x: x0 + (parseFloat(alvo.bx) || 0), y: y0 + (parseFloat(alvo.by) || 0) }
+      : { x: x0 + (parseFloat(alvo.ax) || 0), y: y0 + (parseFloat(alvo.ay) || 0) };
+    /** @type {ReturnType<typeof caixaDaLinha>|null} */
+    let resultado = null;
+    const mover = (/** @type {MouseEvent} */ ev) => {
+      const px = Math.max(10, Math.min(ev.clientX - base.left, canvas.clientWidth - 10));
+      const py = Math.max(10, ev.clientY - base.top);
+      resultado = ponta === 'a' ? caixaDaLinha(px, py, fixa.x, fixa.y) : caixaDaLinha(fixa.x, fixa.y, px, py);
+      el.style.left = `${resultado.x}px`;
+      el.style.top = `${resultado.y}px`;
+      el.style.width = `${resultado.w}px`;
+      el.style.height = `${resultado.h}px`;
+      el.innerHTML = svgDaLinha(resultado);
+      Object.assign(alvo, resultado);
+      desenharSelecaoComDados(alvo);
+    };
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      if (!resultado) return;
+      const lista = getFloorPlanElements();
+      const t = lista.find(x => x.id === id);
+      if (!t) return;
+      Object.assign(t, resultado);
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+    };
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
+  }
+
+  // Durante o arraste da ponta a planta ainda não foi salva: redesenha a seleção
+  // com os dados em mãos.
+  /** @param {any} dados */
+  function desenharSelecaoComDados(dados) {
+    dadosDaSelecaoEmArraste = dados;
+    desenharSelecaoDaPlanta();
+    dadosDaSelecaoEmArraste = null;
+  }
+
+  // Formas › Rabisco: o próximo arraste na planta vira um desenho livre.
+  function comecarRabisco() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    plantaSelecionada = null;
+    desenharSelecaoDaPlanta();
+    canvas.classList.add('is-desenhando');
+    let dica = canvas.querySelector('.floorplan-dica-desenho');
+    if (!dica) {
+      dica = document.createElement('div');
+      dica.className = 'floorplan-dica-desenho';
+      dica.textContent = 'Desenhe com o mouse na planta · Esc cancela';
+      canvas.appendChild(dica);
+    }
+  }
+
+  function pararRabisco() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    canvas.classList.remove('is-desenhando');
+    canvas.querySelectorAll('.floorplan-dica-desenho, .floorplan-rabisco-ao-vivo').forEach(n => n.remove());
+  }
+
+  /** @param {MouseEvent} e */
+  function desenharRabisco(e) {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas || !canvas.classList.contains('is-desenhando')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const base = canvas.getBoundingClientRect();
+    /** @type {{x: number, y: number}[]} */
+    const pontos = [{ x: e.clientX - base.left, y: e.clientY - base.top }];
+    const aoVivo = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    aoVivo.setAttribute('class', 'floorplan-rabisco-ao-vivo');
+    aoVivo.setAttribute('width', String(canvas.clientWidth));
+    aoVivo.setAttribute('height', String(canvas.scrollHeight));
+    const caminho = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    aoVivo.appendChild(caminho);
+    canvas.appendChild(aoVivo);
+    const comoTexto = (/** @type {{x: number, y: number}[]} */ pts, dx = 0, dy = 0) => 'M' + pts.map(p => `${(p.x - dx).toFixed(1)} ${(p.y - dy).toFixed(1)}`).join(' L');
+    const mover = (/** @type {MouseEvent} */ ev) => {
+      const p = { x: ev.clientX - base.left, y: ev.clientY - base.top };
+      const ult = pontos[pontos.length - 1];
+      if (Math.hypot(p.x - ult.x, p.y - ult.y) < 2) return;
+      pontos.push(p);
+      caminho.setAttribute('d', comoTexto(pontos));
+    };
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      pararRabisco();
+      if (pontos.length < 3) return;
+      const folga = 4;
+      const minX = Math.min(...pontos.map(p => p.x)) - folga;
+      const minY = Math.min(...pontos.map(p => p.y)) - folga;
+      const bw = Math.max(12, Math.max(...pontos.map(p => p.x)) - minX + folga);
+      const bh = Math.max(12, Math.max(...pontos.map(p => p.y)) - minY + folga);
+      const lista = getFloorPlanElements();
+      lista.push({ id: `fp-${Date.now()}`, type: 'rabisco', x: Math.max(0, minX), y: Math.max(0, minY), bw: Math.round(bw), bh: Math.round(bh), d: comoTexto(pontos, minX, minY) });
+      plantaSelecionada = lista[lista.length - 1].id;
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+    };
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
   }
 
   /** @param {string} tipo  um dos ITENS_DA_PLANTA */
@@ -10628,6 +10832,42 @@ document.addEventListener('DOMContentLoaded', () => {
           addFloorPlanTableViaButton(/** @type {HTMLElement} */ (op).dataset.mesaFormato);
         });
       });
+      // Formas (linha, círculo, rabisco) — caixinha à esquerda do "Inserir item".
+      const btnFormas = document.getElementById('btn-floorplan-formas');
+      const menuFormas = document.getElementById('floorplan-formas-menu');
+      if (btnFormas && menuFormas) {
+        const abrirFormas = (/** @type {boolean} */ abrir) => {
+          menuFormas.classList.toggle('hidden', !abrir);
+          btnFormas.setAttribute('aria-expanded', String(abrir));
+        };
+        btnFormas.addEventListener('click', (e) => {
+          e.stopPropagation();
+          abrirMenu(false);
+          abrirFormas(menuFormas.classList.contains('hidden'));
+        });
+        btnAddTable.addEventListener('click', () => abrirFormas(false));
+        menuFormas.querySelectorAll('[data-planta-forma]').forEach(op => {
+          op.addEventListener('click', (e) => {
+            e.stopPropagation();
+            abrirFormas(false);
+            const forma = /** @type {HTMLElement} */ (op).dataset.plantaForma;
+            if (forma === 'linha') inserirLinhaNaPlanta();
+            else if (forma === 'circulo') inserirItemNaPlanta('circulo');
+            else if (forma === 'rabisco') comecarRabisco();
+          });
+        });
+        document.addEventListener('click', (e) => {
+          if (!menuFormas.classList.contains('hidden') && !(e.target instanceof Element && e.target.closest('.floorplan-formas'))) abrirFormas(false);
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== 'Escape') return;
+          abrirFormas(false);
+          pararRabisco();
+        });
+      }
+      const canvasDeDesenho = document.getElementById('floorplan-canvas');
+      if (canvasDeDesenho) canvasDeDesenho.addEventListener('mousedown', desenharRabisco, true);
+
       menuFormatos.querySelectorAll('[data-planta-item]').forEach(op => {
         op.addEventListener('click', (e) => {
           e.stopPropagation();

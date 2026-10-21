@@ -9602,3 +9602,12 @@ html body .b2b-content > *:has(+ .b2b-footer-respiro):not(#love-h-a),
 html body .b2b-content > .b2b-footer-respiro:not(#love-h-a) { margin-bottom: 0; }
 html body .b2b-footer-respiro:not(#love-h-a) { flex-shrink: 0; height: 6.5rem; }
 body[data-page="chat"] .b2b-footer-respiro { display: none; }
+
+/* Construtor de sites: o editor começa colado no cabeçalho (sem a margem
+   nem a 2ª linha entre o subtítulo e a barra Site Principal). Botão quadrado
+   "Ver meu site" à esquerda do Salvar, na mesma cor dele. */
+html body[data-page="paginas-site"] .b2b-header-bar + p:not(#love-h-a) { margin-bottom: 0; }
+html body[data-page="paginas-site"] .builder-wrap:not(#love-h-a) { margin-top: 0; border-top: none; }
+html body[data-page="paginas-site"] .builder-narrow-notice:not(#love-h-a) { margin-top: 1rem; }
+html body .builder-ver-site:not(#love-h-a) { width: 38px; min-width: 38px; height: 38px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; }
+html body .builder-ver-site svg:not(#love-h-a) { width: 16px; height: 16px; }

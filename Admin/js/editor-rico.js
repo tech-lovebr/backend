@@ -351,7 +351,6 @@ const EditorRico = (() => {
       const temTexto = !!selecao && !selecao.collapsed;
       const digitado = await pedirTexto({
         titulo: 'Inserir link',
-        texto: 'Cole o endereço. Link do YouTube entra como vídeo.',
         placeholder: 'https://',
         tipo: 'url'
       });

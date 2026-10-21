@@ -7455,7 +7455,7 @@ document.addEventListener('DOMContentLoaded', () => {
       "titulo": "Listas",
       "listas": [
         {
-          "nome": "Aniversário de namoro",
+          "nome": "Celebrando o amor",
           "img": "assets/wedding_sunset_couple.jpg",
           "itens": [
             [
@@ -7497,6 +7497,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Viagem de fim de semana",
               1800
+            ]
+          ]
+        },
+        {
+          "nome": "Bodas de papel",
+          "img": "assets/criar-bodas.jpg",
+          "itens": [
+            [
+              "Jantar de 1 ano de casados",
+              420
+            ],
+            [
+              "Álbum de fotos do primeiro ano",
+              350
+            ],
+            [
+              "Quadro com o mapa do dia do casamento",
+              190
+            ],
+            [
+              "Livro de cartas um para o outro",
+              90
+            ],
+            [
+              "Noite em pousada romântica",
+              780
+            ],
+            [
+              "Assinatura de clube do livro",
+              150
+            ],
+            [
+              "Origami de flores para a casa",
+              120
+            ],
+            [
+              "Viagem de bodas",
+              2200
+            ],
+            [
+              "Ingressos para teatro",
+              300
+            ],
+            [
+              "Kit de papelaria personalizada",
+              140
             ]
           ]
         },
@@ -7835,6 +7881,98 @@ document.addEventListener('DOMContentLoaded', () => {
           ]
         },
         {
+          "nome": "Festa de 15 anos",
+          "img": "assets/criar-aniversario.jpg",
+          "itens": [
+            [
+              "Vestido da festa",
+              1200
+            ],
+            [
+              "Sessão de fotos de debutante",
+              850
+            ],
+            [
+              "Valsa com coreografia",
+              600
+            ],
+            [
+              "Maquiagem e cabelo",
+              450
+            ],
+            [
+              "Joia de 15 anos",
+              700
+            ],
+            [
+              "Viagem com as amigas",
+              2500
+            ],
+            [
+              "Celular novo",
+              3200
+            ],
+            [
+              "Curso de idiomas",
+              1800
+            ],
+            [
+              "Kit de maquiagem",
+              380
+            ],
+            [
+              "Perfume importado",
+              520
+            ]
+          ]
+        },
+        {
+          "nome": "Meu primeiro aninho",
+          "img": "assets/criar-cha-de-bebe.jpg",
+          "itens": [
+            [
+              "Bolo e docinhos da festa",
+              450
+            ],
+            [
+              "Ensaio fotográfico smash the cake",
+              380
+            ],
+            [
+              "Andador musical",
+              290
+            ],
+            [
+              "Kit de livros de pano",
+              120
+            ],
+            [
+              "Brinquedos educativos",
+              220
+            ],
+            [
+              "Roupinhas de 1 ano",
+              260
+            ],
+            [
+              "Piscina de bolinhas",
+              340
+            ],
+            [
+              "Cadeirinha de alimentação",
+              590
+            ],
+            [
+              "Poupança para o futuro",
+              500
+            ],
+            [
+              "Day use em parque infantil",
+              180
+            ]
+          ]
+        },
+        {
           "nome": "Enxoval de bebê",
           "img": "assets/criar-revelacao.jpg",
           "itens": [
@@ -7879,6 +8017,52 @@ document.addEventListener('DOMContentLoaded', () => {
               420
             ]
           ]
+        },
+        {
+          "nome": "Formatura",
+          "img": "assets/wedding_table_dinner.jpg",
+          "itens": [
+            [
+              "Anel de formatura",
+              650
+            ],
+            [
+              "Ensaio fotográfico da formatura",
+              500
+            ],
+            [
+              "Traje para a colação",
+              700
+            ],
+            [
+              "Notebook para começar a carreira",
+              4200
+            ],
+            [
+              "Curso de especialização",
+              2500
+            ],
+            [
+              "Viagem de formatura",
+              3000
+            ],
+            [
+              "Mala de viagem",
+              450
+            ],
+            [
+              "Relógio",
+              600
+            ],
+            [
+              "Livros da área",
+              250
+            ],
+            [
+              "Jantar com a família",
+              480
+            ]
+          ]
         }
       ]
     }
@@ -7916,7 +8100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Uma grade só, sem títulos de seção: só "Escolha entre uma das listas".
     painel.innerHTML = `
       <section class="listas-prontas-secao">
-        <p class="listas-prontas-sub listas-prontas-chamada">Escolha entre uma das listas</p>
+        <p class="listas-prontas-sub listas-prontas-chamada">Escolha uma lista de presentes pronta ou adicione um presente personalizado.</p>
         <div class="listas-prontas-grade">
           ${cardCriarDoZero}
           ${LISTAS_PRONTAS.map((secao, s) => secao.listas.map((l, i) => {
@@ -8007,7 +8191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // CONFIGURAÇÕES › SUAS LISTAS (listas prontas que a pessoa adicionou)
   // ==========================================
-  const NOMES_DAS_LISTAS_PRONTAS = new Set([...LISTAS_PRONTAS.flatMap(s => s.listas.map(l => l.nome)), ...["Praias do Nordeste","Serra Gaúcha","Safári na África","Maldivas","Europa romântica","Santorini"]]);
+  const NOMES_DAS_LISTAS_PRONTAS = new Set([...LISTAS_PRONTAS.flatMap(s => s.listas.map(l => l.nome)), ...["Aniversário de namoro","Praias do Nordeste","Serra Gaúcha","Safári na África","Maldivas","Europa romântica","Santorini"]]);
 
   /** Nome da lista de um presente ('' quando não veio de lista). @param {any} g @returns {string} */
   function listaDoPresente(g) {
@@ -8330,8 +8514,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let filteredGifts = giftList;
     if (searchQuery && searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
-      // pelo nome do presente ou da lista de onde ele veio
-      filteredGifts = giftList.filter(g => [g.title, g.listaNome, g.category].some(t => typeof t === 'string' && t.toLowerCase().includes(q)));
+      filteredGifts = giftList.filter(g => g.title && g.title.toLowerCase().includes(q));
     }
 
     if (filteredGifts.length === 0) {

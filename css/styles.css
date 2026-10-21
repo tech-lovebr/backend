@@ -9514,3 +9514,12 @@ html body:not([data-theme="dark"]) #tab-b2b :is(.b2b-chat-contacts-column, #b2b-
 /* Coração de favoritar vazio (sem preenchimento): contorno mais grosso, em
    "negrito"; favoritado continua rosa e cheio. */
 html body :is(.btn-toggle-card-fav svg.fill-none, #b2b-profile-favorite-icon.fill-none):not(#love-h-a) { stroke-width: 2.4px; }
+/* Explorar (cards e página do serviço) na cor da barra lateral (#183b54):
+   Mensagens com texto e contorno nela; Solicitar cheio nela; coração com o
+   contorno do círculo e do coração nela (favoritado continua rosa). */
+html body #tab-b2b :is(.btn-message-supplier, #btn-b2b-profile-message):not(#love-h-a) { color: #183b54 !important; border-color: #183b54 !important; background: #FFFFFF !important; }
+html body #tab-b2b :is(.btn-message-supplier, #btn-b2b-profile-message):not(#love-h-a) * { color: #183b54 !important; }
+html body #tab-b2b :is(.btn-hire-supplier, #btn-b2b-profile-hire):not(#love-h-a) { background: #183b54 !important; border-color: #183b54 !important; color: #FFFFFF !important; }
+html body #tab-b2b :is(.btn-hire-supplier, #btn-b2b-profile-hire):not(#love-h-a):hover { background: #122c3f !important; border-color: #122c3f !important; }
+html body #tab-b2b :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite):not(#love-h-a) { border-color: #183b54 !important; }
+html body #tab-b2b :is(.btn-toggle-card-fav svg.fill-none, #b2b-profile-favorite-icon.fill-none):not(#love-h-a) { color: #183b54 !important; stroke: #183b54 !important; }

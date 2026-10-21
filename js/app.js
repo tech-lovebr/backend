@@ -317,8 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Aplica tema salvo ao entrar na plataforma logada
-      const savedTheme = localStorage.getItem('love-theme') || 'light';
-      applyTheme(savedTheme);
+      // Sem seletor de tema no perfil: sempre no claro.
+      applyTheme('light');
     } else {
       document.body.classList.remove('dashboard-mode', 'editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode', 'first-access-locked');
       document.body.removeAttribute('data-theme');
@@ -1225,9 +1225,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Carrega tema salvo ou light por padrão
-  const currentSavedTheme = localStorage.getItem('love-theme') || 'light';
-  applyTheme(currentSavedTheme);
+  // Sem seletor de tema no perfil: sempre no claro.
+  applyTheme('light');
 
   // Registra eventos de clique nos botões de tema (Light e Dark)
   document.querySelectorAll('.theme-toggle-btn').forEach(btn => {

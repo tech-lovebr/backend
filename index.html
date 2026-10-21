@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_listaVoltar">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_contribuicao">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4295,18 +4295,12 @@
           <span>Permitir que os convidados adicionem um valor extra ao presente</span>
         </label>
 
-        <!-- 4.1 Vaquinha: o convidado escolhe quanto dar (o valor todo ou uma parte) -->
-        <label class="vaquinha-card" for="gift-crowdfunding-toggle">
-          <span class="vaquinha-icone" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </span>
-          <span class="vaquinha-texto">
-            <span class="vaquinha-titulo">Permitir vaquinha</span>
-            <span class="vaquinha-descricao">Ideal para presentes de maior valor. Cada convidado escolhe quanto quer dar: o valor todo ou só uma parte.</span>
-          </span>
-          <span class="settings-switch vaquinha-switch" id="gift-crowdfunding-switch">
-            <input type="checkbox" id="gift-crowdfunding-toggle">
-            <span class="settings-switch-track"></span>
+        <!-- 4.1 Contribuição coletiva (vaquinha): mesma caixinha de check do valor extra -->
+        <label class="gift-valor-extra gift-contribuicao-coletiva" for="gift-crowdfunding-toggle">
+          <input type="checkbox" id="gift-crowdfunding-toggle" class="gifts-select-all-check">
+          <span class="gift-contribuicao-texto">
+            <span>Habilitar contribuição coletiva</span>
+            <span class="gift-contribuicao-descricao">Vários convidados podem contribuir com qualquer valor para completar este presente.</span>
           </span>
         </label>
 

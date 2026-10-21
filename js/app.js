@@ -10066,7 +10066,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // se não bater, os assentos ficam desalinhados em volta da mesa.
         const containerSize = 220;
         const ringRadius = 80;
-        const showNames = elData.showNames !== false;
+        // Sem o "Exibir nomes" no pop-up: as iniciais aparecem sempre.
+        const showNames = true;
         const formato = FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda';
         for (let i = 0; i < seats; i++) {
           // Redonda segue a conta de sempre; os outros formatos têm a própria.

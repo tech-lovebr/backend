@@ -9528,3 +9528,7 @@ html body #tab-b2b :is(.btn-toggle-card-fav svg.fill-none, #b2b-profile-favorite
 html body button.guest-acompanhante-lixeira:not(#love-h-a) { width: 43px; height: 43px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #F4F4F5; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; transition: background-color .15s; }
 html body button.guest-acompanhante-lixeira:not(#love-h-a):hover { background: #E4E4E7; color: #18181B; }
 html body button.guest-acompanhante-lixeira:not(#love-h-a) svg { width: 16px; height: 16px; }
+/* Rodapé da planta expandida: logotipo completo (ícone + nome) à esquerda e a
+   frase à direita. */
+html body .floorplan-wrap.is-expandida > .floorplan-rodape-expandida:not(#love-h-a) { justify-content: space-between; }
+html body .floorplan-rodape-logo:not(#love-h-a) { height: 24px; width: auto; }

@@ -9831,3 +9831,6 @@ html body .gift-card-menu button:not(#love-h-a) { gap: 10px; }
    igual à da lista de convidados do Mapa do evento. */
 html body #editor-form-data > div:not(:last-child):not(.hidden):not(#love-h-a) { position: relative; }
 html body #editor-form-data > div:not(:last-child):not(.hidden):not(#love-h-a)::after { content: ''; position: absolute; left: -24px; right: -24px; bottom: -12px; height: 1px; background: rgba(0, 0, 0, 0.05); pointer-events: none; }
+
+/* Meus presentes: situação (disponível/comprado) embaixo do valor. */
+html body .gift-situacao:not(#love-h-a) { display: inline-flex; margin-top: 6px; }

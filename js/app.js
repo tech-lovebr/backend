@@ -8361,12 +8361,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <!-- Corpo do Card: Título com Badge de Status, Subtítulo, Valor e Botões -->
         <div class="p-4 sm:p-5 flex flex-col justify-between flex-1 space-y-3.5 text-left">
           <div>
-            <div class="flex items-start justify-between gap-2">
-              <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-1 font-sans tracking-tight" title="${gift.title}">
-                ${gift.title}
-              </h4>
-              <span class="gift-status-badge${isPurchased ? '' : ' is-ativo'}">${isPurchased ? 'Comprado' : 'Ativo'}</span>
-            </div>
+            <!-- Título usa a linha toda (até 2 linhas); a situação fica embaixo do valor -->
+            <h4 class="text-sm sm:text-base font-bold text-zinc-900 line-clamp-2 font-sans tracking-tight" title="${gift.title}">
+              ${gift.title}
+            </h4>
             <p class="text-xs text-zinc-400 font-medium font-sans mt-0.5">
               ${gift.category || 'Presente fictício'}
             </p>
@@ -8377,6 +8375,7 @@ document.addEventListener('DOMContentLoaded', () => {
               R$ ${parseFloat(gift.price).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
             ${barraDaVaquinhaHtml(gift)}
+            <span class="gift-status-badge gift-situacao${isPurchased ? '' : ' is-ativo'}">${isPurchased ? 'Presente comprado' : 'Presente disponível'}</span>
           </div>
 
         </div>

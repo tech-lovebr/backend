@@ -4570,6 +4570,13 @@ function renderPresentePublico(root, id) {
       ${sobre}
     </div>`;
   root.innerHTML = telaPublicaHtml(vaquinha ? 'Vaquinha' : 'Presente', conteudo, { fundoBranco: true });
+  // Página do presente: sem o título, a foto vai até o topo e o Voltar fica
+  // por cima dela (ver .convite-tela-presente no CSS).
+  const tela = root.querySelector('.convite-tela');
+  if (tela) {
+    tela.classList.add('convite-tela-presente');
+    tela.querySelector('.convite-tela-titulo')?.remove();
+  }
   voltarPara(root, '#presentes');
 }
 

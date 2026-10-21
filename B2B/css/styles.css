@@ -9802,3 +9802,12 @@ html body.site-barra-no-cabecalho .b2b-header-bar:not(#love-h-a) { position: rel
 html body.site-barra-no-cabecalho .b2b-header-bar > #builder-device-toggle:not(#love-h-a) { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; }
 html body.site-aba-formularios .b2b-header-bar > #builder-device-toggle:not(#love-h-a) { display: none !important; }
 @media (max-width: 1180px) { html body .b2b-header-bar > #builder-device-toggle:not(#love-h-a) { display: none; } }
+
+/* Editar meu site: sem rodapé; o editor (painel de Elementos e o site) vai
+   até o fim da janela do navegador, em vez da altura fixa de 640px. */
+html body[data-page="paginas-site"]:not(.site-aba-formularios) .b2b-footer:not(#love-h-a),
+html body[data-page="paginas-site"]:not(.site-aba-formularios) .b2b-footer-respiro:not(#love-h-a) { display: none !important; }
+html body[data-page="paginas-site"]:not(.site-aba-formularios) .b2b-content:not(#love-h-a) { padding-bottom: 0; }
+html body[data-page="paginas-site"]:not(.site-aba-formularios) [data-tab-panel="editar"]:not(#love-h-a) { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+html body[data-page="paginas-site"]:not(.site-aba-formularios) .builder-wrap:not(#love-h-a) { flex: 1 1 auto; min-height: 0; margin-bottom: 0; }
+html body[data-page="paginas-site"]:not(.site-aba-formularios) .builder-body:not(#love-h-a) { flex: 1 1 auto; height: auto; min-height: 0; }

@@ -10819,6 +10819,14 @@ document.addEventListener('DOMContentLoaded', () => {
           plantaSelecionada = null;
           desenharSelecaoDaPlanta();
         }
+        // Delete (ou Backspace) com um item selecionado na planta: exclui, igual
+        // à lixeira do menuzinho. Não vale enquanto digita num campo.
+        if ((e.key === 'Delete' || e.key === 'Backspace') && plantaSelecionada && canvasDaPlanta.offsetParent
+          && !document.querySelector('.modal-backdrop-custom.open')
+          && !(e.target instanceof HTMLElement && (e.target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)))) {
+          e.preventDefault();
+          acaoNaSelecao('excluir', plantaSelecionada);
+        }
       });
     }
 

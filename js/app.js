@@ -1336,7 +1336,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'home', label: 'Aparência' },
         { id: 'data', label: 'Informações' },
-        { id: 'about', label: 'Organizadores' },
+        { id: 'about', label: 'Co-anfitriões' },
         { id: 'invite-print', label: 'Produzir convite', oculto: true }
       ]
     },
@@ -2703,7 +2703,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title.textContent = 'Informações';
         setTimeout(() => ajustarTextosAutomaticos(document.getElementById('editor-form-data') || document), 0);
       } else if (subId === 'about') {
-        title.textContent = 'Organizadores';
+        title.textContent = 'Co-anfitriões';
         renderHostsTeam();
       } else if (subId === 'invite-online') {
         title.textContent = 'Convite online';
@@ -18830,7 +18830,7 @@ document.addEventListener('DOMContentLoaded', () => {
         linha('Endereço do site', url ? `<a href="${escaparHtml(url)}" target="_blank" rel="noopener" class="config-evento-link">${escaparHtml(url.replace(/^https?:\/\//, ''))}</a>` : ''),
         linha('Nome da conta', escaparHtml(nomeDaConta(perfil) || '')),
         linha('E-mail cadastrado', escaparHtml(perfil.email || '')),
-        linha('Organizadores', `<span class="config-evento-organizadores">${organizadoresHtml([criador, ...organizadores])}</span>`),
+        linha('Co-anfitriões', `<span class="config-evento-organizadores">${organizadoresHtml([criador, ...organizadores])}</span>`),
         linha('Data', escaparHtml([data, hora ? `às ${hora}` : ''].filter(Boolean).join(' '))),
         linha('Local', escaparHtml(local))
       ].join('');

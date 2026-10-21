@@ -9856,3 +9856,7 @@ html body .lista-pronta-criar:not(#love-h-a) { align-items: center; justify-cont
 .lista-pronta-criar-icone svg { width: 22px; height: 22px; }
 .lista-pronta-criar strong { font-size: 16px; font-weight: 600; color: #18181B; }
 .lista-pronta-criar .lista-pronta-qtd { border: 0; padding: 0; }
+
+/* Co-anfitriões: subtítulo logo abaixo da linha do cabeçalho, 24px antes da tabela. */
+html body #editor-form-about .coanfitrioes-sub:not(#love-h-a) { margin: 0 0 24px !important; font-size: 14px; line-height: 1.5; color: #71717A; }
+html body #editor-form-about .coanfitrioes-sub + #organizadores-caixa:not(#love-h-a) { margin-top: 0 !important; }

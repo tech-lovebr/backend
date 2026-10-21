@@ -9634,3 +9634,14 @@ html body .b2b-mensagem-enviar:not(#love-h-a):disabled { background: #E4E4E7; co
   html body .b2b-mensagem-empresa:not(#love-h-a) { font-size: 20px; }
   .b2b-mensagem-rodape { margin-top: 32px; }
 }
+/* Meus convidados: a caixa da tabela ocupa a altura da tela (espaço em branco
+   quando há poucos convidados) e o "Mostrar / Página" fica embaixo, perto do
+   rodapé. */
+html body #view-event-os-dashboard .dashboard-content-wrapper:has(> #tab-rsvp.active):not(#love-h-a) { display: flex; flex-direction: column; }
+html body #tab-rsvp.active:not(#love-h-a) { display: flex !important; flex-direction: column; flex: 1 0 auto; }
+html body #tab-rsvp.active > div.px-8:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body #tab-rsvp.active .rsvp-caixa-abaixo-das-abas:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body #tab-rsvp.active .rsvp-caixa-abaixo-das-abas > .overflow-x-auto:not(#love-h-a) { flex: 1 0 auto; }
+html body #tab-rsvp.active #rsvp-pagination:not(#love-h-a) { margin-top: auto; }
+/* Aqui o respiro antes do rodapé é menor, para a caixa chegar perto dele. */
+html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp.active) > .rodape-respiro:not(#love-h-a) { flex-basis: 2rem; height: 2rem; }

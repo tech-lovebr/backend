@@ -7419,243 +7419,100 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @type {{ titulo: string, subtitulo?: string, listas: { nome: string, img: string, itens: [string, number][] }[] }[]} */
   const LISTAS_PRONTAS = [
     {
-      "titulo": "Destinos de lua de mel",
-    "subtitulo": "Uma seleção de destinos incríveis, escolha o que mais combina com vocês.",
+      "titulo": "Listas",
       "listas": [
         {
-          "nome": "Praias do Nordeste",
-          "img": "assets/theme_coastal.jpg",
-          "itens": [
-            [
-              "Passagens aéreas para o casal",
-              3200
-            ],
-            [
-              "Pousada pé na areia (3 diárias)",
-              2400
-            ],
-            [
-              "Passeio de buggy pelas dunas",
-              450
-            ],
-            [
-              "Mergulho com cilindro",
-              680
-            ],
-            [
-              "Jantar à beira-mar",
-              380
-            ],
-            [
-              "Passeio de catamarã",
-              520
-            ],
-            [
-              "Massagem relaxante a dois",
-              420
-            ],
-            [
-              "Café da manhã especial",
-              190
-            ],
-            [
-              "Aluguel de carro (5 dias)",
-              900
-            ],
-            [
-              "Day use em beach club",
-              350
-            ]
-          ]
-        },
-        {
-          "nome": "Serra Gaúcha",
-          "img": "assets/theme_garden.jpg",
-          "itens": [
-            [
-              "Passagens aéreas para o casal",
-              2600
-            ],
-            [
-              "Hotel boutique (3 diárias)",
-              2900
-            ],
-            [
-              "Tour pelas vinícolas",
-              690
-            ],
-            [
-              "Fondue a dois",
-              320
-            ],
-            [
-              "Passeio de Maria-fumaça",
-              380
-            ],
-            [
-              "Spa do casal",
-              540
-            ],
-            [
-              "Chocolates artesanais",
-              150
-            ],
-            [
-              "Jantar italiano",
-              360
-            ],
-            [
-              "Passeio de balão",
-              1400
-            ]
-          ]
-        },
-        {
-          "nome": "Safári na África",
-          "img": "assets/card_safari.jpg",
-          "itens": [
-            [
-              "Passagens internacionais",
-              12000
-            ],
-            [
-              "Lodge no safári (4 noites)",
-              9800
-            ],
-            [
-              "Game drive ao amanhecer",
-              1500
-            ],
-            [
-              "Jantar sob as estrelas",
-              900
-            ],
-            [
-              "Voo panorâmico",
-              2200
-            ],
-            [
-              "Vinícola na Cidade do Cabo",
-              750
-            ],
-            [
-              "Seguro viagem",
-              600
-            ]
-          ]
-        },
-        {
-          "nome": "Maldivas",
-          "img": "assets/card_kayak.jpg",
-          "itens": [
-            [
-              "Passagens internacionais",
-              14000
-            ],
-            [
-              "Bangalô sobre as águas (5 noites)",
-              18000
-            ],
-            [
-              "Snorkel com arraias",
-              900
-            ],
-            [
-              "Jantar submarino",
-              2400
-            ],
-            [
-              "Passeio de caiaque",
-              450
-            ],
-            [
-              "Spa no resort",
-              1300
-            ],
-            [
-              "Traslado de hidroavião",
-              3200
-            ]
-          ]
-        },
-        {
-          "nome": "Europa romântica",
-          "img": "assets/wedding_table_dinner.jpg",
-          "itens": [
-            [
-              "Passagens internacionais",
-              9000
-            ],
-            [
-              "Hotel em Paris (4 noites)",
-              4800
-            ],
-            [
-              "Jantar na Torre Eiffel",
-              1600
-            ],
-            [
-              "Passeio de gôndola em Veneza",
-              650
-            ],
-            [
-              "Trem Paris–Veneza",
-              1200
-            ],
-            [
-              "Degustação na Toscana",
-              520
-            ],
-            [
-              "Ingressos do Louvre",
-              260
-            ],
-            [
-              "Passeio de bicicleta",
-              220
-            ]
-          ]
-        },
-        {
-          "nome": "Santorini",
+          "nome": "Aniversário de namoro",
           "img": "assets/wedding_sunset_couple.jpg",
           "itens": [
             [
-              "Passagens internacionais",
-              9800
+              "Jantar romântico a dois",
+              450
             ],
             [
-              "Hotel com vista para a caldeira",
-              6200
+              "Buquê de rosas",
+              180
             ],
             [
-              "Veleiro ao pôr do sol",
-              980
+              "Café da manhã surpresa",
+              160
             ],
             [
-              "Jantar em Oia",
-              640
+              "Noite em hotel boutique",
+              890
             ],
             [
               "Ensaio fotográfico do casal",
+              750
+            ],
+            [
+              "Spa para dois",
+              620
+            ],
+            [
+              "Passeio de balão",
               1200
             ],
             [
-              "Aluguel de quadriciclo",
-              380
+              "Vinho e tábua de frios",
+              280
             ],
             [
-              "Tour pelas vinícolas",
-              450
+              "Ingressos para show",
+              540
+            ],
+            [
+              "Viagem de fim de semana",
+              1800
             ]
           ]
-        }
-      ]
-    },
-    {
-      "titulo": "Listas de casamento",
-    "subtitulo": "Listas completas para a casa nova e para a lua de mel.",
-      "listas": [
+        },
+        {
+          "nome": "Presentes de casamento",
+          "img": "assets/hero_gift.jpg",
+          "itens": [
+            [
+              "Geladeira",
+              4500
+            ],
+            [
+              "Fogão",
+              2200
+            ],
+            [
+              "Micro-ondas",
+              800
+            ],
+            [
+              "Máquina de lavar",
+              3200
+            ],
+            [
+              "Smart TV",
+              3600
+            ],
+            [
+              "Sofá",
+              4200
+            ],
+            [
+              "Mesa de jantar",
+              2800
+            ],
+            [
+              "Cama box",
+              3400
+            ],
+            [
+              "Batedeira",
+              900
+            ],
+            [
+              "Faqueiro",
+              650
+            ]
+          ]
+        },
         {
           "nome": "Cotas de lua de mel",
           "img": "assets/criar-casamento.jpg",
@@ -7765,104 +7622,6 @@ document.addEventListener('DOMContentLoaded', () => {
           ]
         },
         {
-          "nome": "Presentes de casamento",
-          "img": "assets/hero_gift.jpg",
-          "itens": [
-            [
-              "Geladeira",
-              4500
-            ],
-            [
-              "Fogão",
-              2200
-            ],
-            [
-              "Micro-ondas",
-              800
-            ],
-            [
-              "Máquina de lavar",
-              3200
-            ],
-            [
-              "Smart TV",
-              3600
-            ],
-            [
-              "Sofá",
-              4200
-            ],
-            [
-              "Mesa de jantar",
-              2800
-            ],
-            [
-              "Cama box",
-              3400
-            ],
-            [
-              "Batedeira",
-              900
-            ],
-            [
-              "Faqueiro",
-              650
-            ]
-          ]
-        },
-        {
-          "nome": "Cozinha completa",
-          "img": "assets/card_lecreuset.jpg",
-          "itens": [
-            [
-              "Panela Le Creuset",
-              799
-            ],
-            [
-              "Jogo de facas",
-              680
-            ],
-            [
-              "Tábua de madeira",
-              180
-            ],
-            [
-              "Cafeteira espresso",
-              890
-            ],
-            [
-              "Mixer",
-              320
-            ],
-            [
-              "Forma de bolo",
-              120
-            ],
-            [
-              "Jogo de potes",
-              260
-            ],
-            [
-              "Panela de pressão",
-              390
-            ],
-            [
-              "Frigideira antiaderente",
-              280
-            ],
-            [
-              "Air fryer",
-              650
-            ]
-          ]
-        }
-      ]
-    },
-    {
-      "titulo": "Listas temáticas",
-    "subtitulo": "Para chá de bebê, chá de panela, aniversário e outras comemorações.",
-      "listas": [
-        {
           "nome": "Chá de bebê",
           "img": "assets/criar-cha-de-bebe.jpg",
           "itens": [
@@ -7917,48 +7676,48 @@ document.addEventListener('DOMContentLoaded', () => {
           ]
         },
         {
-          "nome": "Enxoval de bebê",
-          "img": "assets/criar-revelacao.jpg",
+          "nome": "Cozinha completa",
+          "img": "assets/card_lecreuset.jpg",
           "itens": [
             [
-              "Berço",
-              1500
+              "Panela Le Creuset",
+              799
             ],
             [
-              "Carrinho de bebê",
-              2200
+              "Jogo de facas",
+              680
             ],
             [
-              "Bebê conforto",
-              1100
-            ],
-            [
-              "Banheira",
-              250
-            ],
-            [
-              "Kit de bodies",
+              "Tábua de madeira",
               180
             ],
             [
-              "Mantas",
-              160
+              "Cafeteira espresso",
+              890
             ],
             [
-              "Babá eletrônica",
+              "Mixer",
+              320
+            ],
+            [
+              "Forma de bolo",
+              120
+            ],
+            [
+              "Jogo de potes",
+              260
+            ],
+            [
+              "Panela de pressão",
+              390
+            ],
+            [
+              "Frigideira antiaderente",
+              280
+            ],
+            [
+              "Air fryer",
               650
-            ],
-            [
-              "Trocador",
-              300
-            ],
-            [
-              "Cômoda",
-              1300
-            ],
-            [
-              "Kit berço",
-              420
             ]
           ]
         },
@@ -8039,6 +7798,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Curso online",
               290
+            ]
+          ]
+        },
+        {
+          "nome": "Enxoval de bebê",
+          "img": "assets/criar-revelacao.jpg",
+          "itens": [
+            [
+              "Berço",
+              1500
+            ],
+            [
+              "Carrinho de bebê",
+              2200
+            ],
+            [
+              "Bebê conforto",
+              1100
+            ],
+            [
+              "Banheira",
+              250
+            ],
+            [
+              "Kit de bodies",
+              180
+            ],
+            [
+              "Mantas",
+              160
+            ],
+            [
+              "Babá eletrônica",
+              650
+            ],
+            [
+              "Trocador",
+              300
+            ],
+            [
+              "Cômoda",
+              1300
+            ],
+            [
+              "Kit berço",
+              420
             ]
           ]
         }
@@ -8167,7 +7972,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // CONFIGURAÇÕES › SUAS LISTAS (listas prontas que a pessoa adicionou)
   // ==========================================
-  const NOMES_DAS_LISTAS_PRONTAS = new Set(LISTAS_PRONTAS.flatMap(s => s.listas.map(l => l.nome)));
+  const NOMES_DAS_LISTAS_PRONTAS = new Set([...LISTAS_PRONTAS.flatMap(s => s.listas.map(l => l.nome)), ...["Praias do Nordeste","Serra Gaúcha","Safári na África","Maldivas","Europa romântica","Santorini"]]);
 
   /** Nome da lista de um presente ('' quando não veio de lista). @param {any} g @returns {string} */
   function listaDoPresente(g) {

@@ -7416,10 +7416,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // LISTAS PRONTAS (Meus presentes › ícone de lista)
   // ==========================================
-  /** @type {{ titulo: string, listas: { nome: string, img: string, itens: [string, number][] }[] }[]} */
+  /** @type {{ titulo: string, subtitulo?: string, listas: { nome: string, img: string, itens: [string, number][] }[] }[]} */
   const LISTAS_PRONTAS = [
     {
       "titulo": "Destinos de lua de mel",
+    "subtitulo": "Uma seleção de destinos incríveis, escolha o que mais combina com vocês.",
       "listas": [
         {
           "nome": "Praias do Nordeste",
@@ -7653,6 +7654,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       "titulo": "Listas de casamento",
+    "subtitulo": "Listas completas para a casa nova e para a lua de mel.",
       "listas": [
         {
           "nome": "Cotas de lua de mel",
@@ -7858,6 +7860,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     {
       "titulo": "Listas temáticas",
+    "subtitulo": "Para chá de bebê, chá de panela, aniversário e outras comemorações.",
       "listas": [
         {
           "nome": "Chá de bebê",
@@ -8057,11 +8060,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mostrar) grade.style.setProperty('display', 'none', 'important'); else grade.style.removeProperty('display');
     botao?.setAttribute('aria-pressed', String(mostrar));
     botao?.classList.toggle('is-ativo', mostrar);
+    const voltar = document.getElementById('btn-gifts-listas-voltar');
+    if (voltar) voltar.hidden = !mostrar;
+    document.getElementById('gifts-top-search-bar')?.classList.toggle('gifts-acoes-escondidas', mostrar);
     if (!mostrar) return;
+    const cardCriarDoZero = `<button type="button" class="lista-pronta-card lista-pronta-criar" data-criar-presente>
+        <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+        <strong>Adicionar presente</strong>
+        <span class="lista-pronta-qtd">Crie um presente do zero</span>
+      </button>`;
     painel.innerHTML = LISTAS_PRONTAS.map((secao, s) => `
       <section class="listas-prontas-secao">
         <h3>${escaparHtml(secao.titulo)}</h3>
+        <p class="listas-prontas-sub">${escaparHtml(secao.subtitulo || '')}</p>
         <div class="listas-prontas-grade">
+          ${s === 0 ? cardCriarDoZero : ''}
           ${secao.listas.map((l, i) => {
             const total = l.itens.reduce((t, it) => t + it[1], 0);
             return `<button type="button" class="lista-pronta-card" data-secao="${s}" data-lista="${i}">
@@ -8113,6 +8126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirSubItem('gifts', sub);
     registrarRota(caminhoSubRota('gifts', sub));
   }
+  document.getElementById('btn-gifts-listas-voltar')?.addEventListener('click', () => irParaListasProntas(false));
   document.getElementById('btn-gifts-listas-prontas')?.addEventListener('click', () => {
     const painel = document.getElementById('gifts-listas-prontas');
     irParaListasProntas(!!painel && painel.hidden);
@@ -8121,6 +8135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const alvo = e.target instanceof Element ? e.target : null;
     if (!alvo) return;
     if (alvo.closest('[data-voltar-presentes]')) { irParaListasProntas(false); return; }
+    if (alvo.closest('[data-criar-presente]')) { openGiftDrawer(); return; }
     const card = /** @type {HTMLElement|null} */ (alvo.closest('.lista-pronta-card'));
     if (!card) return;
     const lista = LISTAS_PRONTAS[Number(card.dataset.secao)]?.listas[Number(card.dataset.lista)];
@@ -8525,7 +8540,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHostAddGift = document.getElementById('btn-host-add-gift');
   if (btnHostAddGift) {
-    btnHostAddGift.addEventListener('click', () => openGiftDrawer());
+    btnHostAddGift.addEventListener('click', () => irParaListasProntas(true));
   }
 
   const btnHostAddRandomGift = document.getElementById('btn-host-add-random-gift');

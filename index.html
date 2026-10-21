@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_situacaoCinza">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_criarLista">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1943,7 +1943,13 @@
 
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas): título à esquerda, busca + ações à direita -->
           <div class="builder-toolbar">
-            <h2 id="gifts-header-title" class="floorplan-page-name" style="margin:0;">Meus presentes</h2>
+            <div class="flex items-center gap-2 min-w-0">
+              <!-- Voltar (só nas listas prontas): volta para Meus presentes -->
+              <button type="button" id="btn-gifts-listas-voltar" class="gifts-listas-voltar" aria-label="Voltar para meus presentes" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <h2 id="gifts-header-title" class="floorplan-page-name" style="margin:0;">Meus presentes</h2>
+            </div>
 
             <div id="gifts-top-search-bar" class="flex items-center gap-2.5 flex-shrink-0">
               <div class="text-xs sm:text-sm text-zinc-500 font-sans font-medium flex-shrink-0">
@@ -1958,8 +1964,7 @@
 
               <!-- Botão Adicionar Presente (Abre o Drawer) -->
               <button type="button" id="btn-host-add-gift" class="btn-primary btn-host-add-gift flex-shrink-0">
-                <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>Criar presente</span>
+                <span>Criar lista</span>
               </button>
             </div>
           </div>
@@ -5584,7 +5589,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_situacaoPresente"></script>
+  <script src="js/app.js?v=20261021_criarLista"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_corDaMesa"></script>

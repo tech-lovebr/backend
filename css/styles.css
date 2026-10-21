@@ -9837,3 +9837,20 @@ html body .gift-situacao:not(#love-h-a) { display: inline-flex; margin-top: 6px;
 /* Situação do presente: cinza, sem bolinha verde (disponível e comprado iguais). */
 html body .gift-status-badge.gift-situacao:not(#love-h-a) { color: #71717A !important; font-size: 12px; font-weight: 400; padding: 0; background: transparent; }
 html body .gift-status-badge.gift-situacao:not(#love-h-a)::before { display: none !important; }
+
+/* Meus presentes › Criar lista: página das listas prontas por cima, com a
+   seta de voltar no cabeçalho e o card "Adicionar presente" primeiro. */
+html body .gifts-listas-voltar:not(#love-h-a) { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; margin-left: -6px; background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; flex-shrink: 0; }
+html body .gifts-listas-voltar:not(#love-h-a):hover { background: #F4F6F7; }
+.gifts-listas-voltar svg { width: 20px; height: 20px; }
+html body .gifts-listas-voltar[hidden]:not(#love-h-a) { display: none; }
+html body #gifts-top-search-bar.gifts-acoes-escondidas:not(#love-h-a) { display: none !important; }
+.listas-prontas-secao + .listas-prontas-secao { padding-top: 32px; border-top: 1px solid #E4E4E7; margin-top: 32px; }
+.listas-prontas-secao:first-child { margin-top: 0; }
+.listas-prontas-secao h3 { margin-bottom: 4px !important; }
+.listas-prontas-sub { margin: 0 0 20px; font-size: 14px; color: #71717A; }
+html body .lista-pronta-criar:not(#love-h-a) { align-items: center; justify-content: center; gap: 6px; min-height: 260px; padding: 24px; border-style: dashed; text-align: center; }
+.lista-pronta-criar-icone { width: 48px; height: 48px; border-radius: 999px; background: #F4F6F7; display: inline-flex; align-items: center; justify-content: center; color: #18181B; margin-bottom: 6px; }
+.lista-pronta-criar-icone svg { width: 22px; height: 22px; }
+.lista-pronta-criar strong { font-size: 16px; font-weight: 600; color: #18181B; }
+.lista-pronta-criar .lista-pronta-qtd { border: 0; padding: 0; }

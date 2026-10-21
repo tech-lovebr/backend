@@ -9811,3 +9811,8 @@ html body[data-page="paginas-site"]:not(.site-aba-formularios) .b2b-content:not(
 html body[data-page="paginas-site"]:not(.site-aba-formularios) [data-tab-panel="editar"]:not(#love-h-a) { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 html body[data-page="paginas-site"]:not(.site-aba-formularios) .builder-wrap:not(#love-h-a) { flex: 1 1 auto; min-height: 0; margin-bottom: 0; }
 html body[data-page="paginas-site"]:not(.site-aba-formularios) .builder-body:not(#love-h-a) { flex: 1 1 auto; height: auto; min-height: 0; }
+
+/* Construtor ativo (caixinha no item de cima); o submenu marca a opção
+   aberta só com o texto em branco e negrito, sem outra caixinha. */
+html body .sidebar-nav-group--construtor .sidebar-subnav-item.active:not(#love-h-a) { background: transparent; color: #FFFFFF; font-weight: 700; }
+html body .sidebar-nav-toggle.active:hover:not(#love-h-a) { background: #EBF4FF; color: #181D24; }

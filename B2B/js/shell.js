@@ -501,6 +501,9 @@ function initSidebarState() {
     .find(btn => (btn.dataset.pages || '').split(',').includes(page));
 
   groupToggle?.closest('.sidebar-nav-group')?.classList.add('open');
+  // Na página do grupo (ex.: Editar meu site / Formulários), o item de cima
+  // (Construtor) é que fica marcado como ativo, com a caixinha.
+  groupToggle?.classList.add('active');
 
   const mobileGroupToggle = Array.from(document.querySelectorAll('.mobile-nav-toggle[data-pages]'))
     .find(btn => (btn.dataset.pages || '').split(',').includes(page));

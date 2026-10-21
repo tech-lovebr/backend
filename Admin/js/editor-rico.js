@@ -28,6 +28,16 @@ const EditorRico = (() => {
     justifyFull: { rotulo: 'Justificado', icone: ico('<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h12"/>') }
   };
 
+  /** Link do YouTube (watch, youtu.be, shorts, embed) → vídeo embutido; senão null.
+   *  @param {string} texto */
+  function htmlDoVideo(texto) {
+    const limpo = String(texto || '').trim();
+    if (!limpo || /\s/.test(limpo)) return null;
+    const yt = limpo.match(/^(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,})/i);
+    if (!yt) return null;
+    return `<div class="video-embed" contenteditable="false"><iframe src="https://www.youtube.com/embed/${yt[1]}" title="Vídeo do YouTube" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px"></iframe></div><p><br></p>`;
+  }
+
   const BARRA = `
     <div class="editor-barra">
       <button type="button" class="editor-btn" data-historia="-1" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">${ico('<path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/>')}</button>
@@ -71,6 +81,10 @@ const EditorRico = (() => {
         <input type="color" data-cor value="#101828" aria-label="Cor do texto">
       </label>
 
+      <label class="editor-btn" data-imagem title="Inserir imagem" aria-label="Inserir imagem">
+        ${ico('<path d="M15 8h.01"/><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"/><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/>')}
+        <input type="file" accept="image/*" data-arquivo-imagem hidden>
+      </label>
       <button type="button" class="editor-btn" data-link title="Inserir link" aria-label="Inserir link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15l6 -6" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464" /><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /></svg>
       </button>
@@ -99,9 +113,9 @@ const EditorRico = (() => {
 
   /**
    * @param {HTMLElement} host
-   * @param {{ placeholder?: string, aoMudar?: () => void, tabela?: boolean }} [opcoes]
+   * @param {{ placeholder?: string, aoMudar?: () => void, tabela?: boolean, imagem?: boolean }} [opcoes]
    */
-  function montar(host, { placeholder = 'Escreva aqui.', aoMudar, tabela = true } = {}) {
+  function montar(host, { placeholder = 'Escreva aqui.', aoMudar, tabela = true, imagem = false } = {}) {
     host.innerHTML = `
       ${BARRA}
       <div class="editor-corpo" contenteditable="true" role="textbox" aria-multiline="true"
@@ -258,6 +272,8 @@ const EditorRico = (() => {
     corpo.addEventListener('paste', (e) => {
       e.preventDefault();
       const texto = (e.clipboardData || window.clipboardData).getData('text/plain');
+      const video = htmlDoVideo(texto);
+      if (video) return aplicar('insertHTML', video);
       document.execCommand('insertText', false, texto);
     });
 
@@ -331,9 +347,32 @@ const EditorRico = (() => {
 
     const botaoLink = host.querySelector('[data-link]');
     botaoLink.addEventListener('mousedown', e => e.preventDefault());
-    botaoLink.addEventListener('click', () => {
-      const url = window.prompt('Endereço do link (comece com https://)');
-      if (url) aplicar('createLink', url);
+    botaoLink.addEventListener('click', async () => {
+      const temTexto = !!selecao && !selecao.collapsed;
+      const digitado = await pedirTexto({
+        titulo: 'Inserir link',
+        texto: 'Cole o endereço. Link do YouTube entra como vídeo.',
+        placeholder: 'https://',
+        tipo: 'url'
+      });
+      if (!digitado) return;
+      const url = /^(https?:|mailto:|tel:)/i.test(digitado) ? digitado : `https://${digitado}`;
+      const video = htmlDoVideo(url);
+      if (video) return aplicar('insertHTML', video);
+      if (temTexto) aplicar('createLink', url);
+      else aplicar('insertHTML', `<a href="${escapeHtml(url)}">${escapeHtml(digitado)}</a>&nbsp;`);
+    });
+
+    /* ---- Imagem no meio do texto: envia para o Storage e entra onde está o cursor */
+    const arquivoImagem = /** @type {HTMLInputElement} */ (host.querySelector('[data-arquivo-imagem]'));
+    host.querySelector('[data-imagem]').addEventListener('mousedown', e => e.preventDefault());
+    arquivoImagem.addEventListener('change', async () => {
+      const file = arquivoImagem.files[0];
+      arquivoImagem.value = '';
+      if (!file) return;
+      toast('Enviando imagem…');
+      const url = await enviarImagem(file, 'conteudo');
+      if (url) aplicar('insertHTML', `<p><img src="${escapeHtml(url)}" alt=""></p><p><br></p>`);
     });
 
     /* ---- Menus da barra (alinhamento e tabela) */
@@ -471,6 +510,7 @@ const EditorRico = (() => {
 
     // Sem tabela (artigos do blog): o botão sai da barra.
     if (!tabela) host.querySelector('[data-abrir="tabela"]').closest('.editor-menu-wrap').remove();
+    if (!imagem) host.querySelector('[data-imagem]').remove();
 
     return {
       html: () => corpo.innerHTML,

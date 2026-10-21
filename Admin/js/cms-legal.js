@@ -48,9 +48,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function ligarAbas() {
   document.querySelectorAll('#abas-documento [data-doc]').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       // Trocar de aba com texto não salvo perderia a edição em silêncio.
-      if (sujo() && !window.confirm('Há alterações não salvas. Trocar de documento mesmo assim?')) return;
+      if (sujo() && !(await confirmar('Há alterações não salvas. Trocar de documento mesmo assim?', { titulo: 'Alterações não salvas', rotulo: 'Trocar sem salvar' }))) return;
 
       document.querySelectorAll('#abas-documento [data-doc]')
         .forEach(b => b.classList.toggle('is-active', b === btn));

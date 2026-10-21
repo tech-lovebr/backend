@@ -24,14 +24,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=97">
+  <link rel="stylesheet" href="css/admin.css?v=98">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/utils.js?v=2"></script>
-  <script src="js/shell.js?v=11"></script>
+  <script src="js/utils.js?v=3"></script>
+  <script src="js/shell.js?v=12"></script>
 </head>
-<body data-page="cms" data-title="Novo artigo">
+<body data-page="cms" data-title="Novo artigo" data-voltar="cms.html">
 
   <div class="admin-shell">
     <aside class="admin-sidebar" id="admin-sidebar"></aside>
@@ -50,28 +50,6 @@
           </div>
 
           <aside class="editor-lateral">
-            <section class="card editor-bloco">
-              <p class="editor-bloco-titulo">Publicar</p>
-
-              <div class="lista-dados">
-                <div class="dados-linha">
-                  <span class="rotulo">Situação</span>
-                  <span class="valor" id="artigo-situacao">Rascunho</span>
-                </div>
-                <div class="dados-linha">
-                  <span class="rotulo">Publicado em</span>
-                  <span class="valor" id="artigo-publicado-em">—</span>
-                </div>
-              </div>
-
-              <div class="editor-acoes">
-                <button type="button" class="btn btn-ghost" id="btn-rascunho">Salvar</button>
-                <button type="button" class="btn btn-primary" id="btn-publicar">Publicar</button>
-              </div>
-
-              <button type="button" class="editor-lixeira" id="btn-lixeira" hidden>Mover para a lixeira</button>
-            </section>
-
             <section class="card editor-bloco">
               <p class="editor-bloco-titulo">Imagem de capa</p>
               <div class="capa-previa" id="capa-previa"><span>Nenhuma imagem</span></div>
@@ -92,9 +70,10 @@
             </section>
 
             <section class="card editor-bloco">
-              <p class="editor-bloco-titulo">Resumo</p>
-              <textarea class="field-textarea" id="artigo-resumo"
-                        placeholder="Texto curto que aparece na listagem do blog."></textarea>
+              <p class="editor-bloco-titulo">Keywords</p>
+              <div class="keywords" id="keywords"></div>
+              <input type="text" class="field-input" id="keyword-nova" placeholder="Digite e aperte Enter" autocomplete="off">
+              <p class="editor-bloco-dica">Palavras-chave para a busca (SEO). Separe com Enter ou vírgula.</p>
             </section>
           </aside>
         </div>
@@ -102,7 +81,7 @@
     </div>
   </div>
 
-  <script src="js/editor-rico.js?v=5"></script>
-  <script src="js/cms-artigo.js?v=3"></script>
+  <script src="js/editor-rico.js?v=6"></script>
+  <script src="js/cms-artigo.js?v=4"></script>
 </body>
 </html>

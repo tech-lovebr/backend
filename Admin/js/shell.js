@@ -210,10 +210,18 @@ function renderHeaderBar() {
       </svg>
     </a>` : '';
 
+  // Página de dentro de outra (ex.: um artigo do Blog): ícone de voltar à
+  // esquerda do título, apontando para data-voltar.
+  const voltar = document.body.dataset.voltar ? `
+    <a class="header-bar-voltar" href="${escapeHtml(document.body.dataset.voltar)}" title="Voltar" aria-label="Voltar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
+    </a>` : '';
+
   const barra = document.createElement('div');
   barra.className = 'admin-header-bar';
   barra.innerHTML = `
     <div class="header-bar-titulo">
+      ${voltar}
       ${document.body.dataset.title === '' ? '' : `<h1>${escapeHtml(document.body.dataset.title || 'Painel')}</h1>`}
       ${atalho}
     </div>

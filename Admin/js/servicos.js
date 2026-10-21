@@ -368,7 +368,7 @@ async function salvar(id) {
 }
 
 async function excluir(item) {
-  if (!window.confirm(`Excluir "${item.titulo || item.nome}"? Ele deixa de aparecer na plataforma.`)) return;
+  if (!(await confirmar(`Excluir "${item.titulo || item.nome}"? Ele deixa de aparecer na plataforma.`, { titulo: 'Excluir', rotulo: 'Excluir', perigo: true }))) return;
 
   const { error } = await supabaseClient.from('servicos_beneficios').delete().eq('id', item.id);
   if (error) return toast(`Não foi possível excluir: ${error.message}`);

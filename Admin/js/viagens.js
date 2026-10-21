@@ -255,7 +255,7 @@ async function salvar(id) {
 }
 
 async function excluir(item) {
-  if (!window.confirm(`Excluir "${item.titulo}"? Ele deixa de aparecer na vitrine.`)) return;
+  if (!(await confirmar(`Excluir "${item.titulo}"? Ele deixa de aparecer na vitrine.`, { titulo: 'Excluir pacote', rotulo: 'Excluir', perigo: true }))) return;
 
   const { error } = await supabaseClient.from('viagens_pacotes').delete().eq('id', item.id);
   if (error) {

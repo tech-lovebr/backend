@@ -16,6 +16,10 @@ let CATEGORIAS = [];
 let SELECIONADAS = new Set();
 let CAPA_URL = null;
 let EDITOR = null;
+/** @type {string[]} */
+let KEYWORDS = [];
+
+const ICONE_LIXEIRA_ARTIGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>';
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
@@ -39,12 +43,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   ligarEditor();
   preencher();
   renderCategorias();
+  renderKeywords();
   ligarCapa();
   ligarAcoes();
 
-  addHeaderAction('Voltar', () => { window.location.href = 'cms.html'; }, {
-    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>'
-  });
+  // Voltar é o ícone ao lado do título (data-voltar no HTML). No lugar do
+  // antigo botão Voltar ficam as ações do artigo.
+  if (ARTIGO && ARTIGO.status !== 'lixo') {
+    addHeaderAction('Mover para a lixeira', moverParaLixeira, { icone: ICONE_LIXEIRA_ARTIGO })
+      .classList.add('btn-so-icone', 'btn-lixeira-artigo');
+  }
+  addHeaderAction('Salvar', () => salvar('rascunho'), { icone: null }).id = 'btn-rascunho';
+  addHeaderAction(ARTIGO?.status === 'publicado' ? 'Atualizar' : 'Publicar', () => salvar('publicado'), { icone: null, principal: true }).id = 'btn-publicar';
 });
 
 /* --------------------------------------------------------- Preenchimento */
@@ -53,22 +63,31 @@ function preencher() {
   if (!ARTIGO) return;
 
   document.getElementById('artigo-titulo').value = ARTIGO.titulo || '';
-  document.getElementById('artigo-resumo').value = ARTIGO.resumo || '';
 
   CAPA_URL = ARTIGO.imagem_destaque_url || null;
   renderCapa();
 
-  document.getElementById('artigo-situacao').textContent =
-    { rascunho: 'Rascunho', publicado: 'Publicado', lixo: 'Na lixeira' }[ARTIGO.status] || ARTIGO.status;
+  KEYWORDS = Array.isArray(ARTIGO.palavras_chave) ? ARTIGO.palavras_chave.filter(Boolean) : [];
+}
 
-  document.getElementById('artigo-publicado-em').textContent =
-    ARTIGO.publicado_em ? formatDateTime(ARTIGO.publicado_em) : '—';
+/* ------------------------------------------------------------ Keywords */
 
-  if (ARTIGO.status === 'publicado') {
-    document.getElementById('btn-publicar').textContent = 'Atualizar';
-  }
+function renderKeywords() {
+  const host = document.getElementById('keywords');
+  host.innerHTML = KEYWORDS.map((k, i) => `
+    <span class="keyword">${escapeHtml(k)}<button type="button" data-tirar-keyword="${i}" aria-label="Remover ${escapeHtml(k)}">×</button></span>`).join('');
+  host.querySelectorAll('[data-tirar-keyword]').forEach(b => b.addEventListener('click', () => {
+    KEYWORDS.splice(Number(/** @type {HTMLElement} */ (b).dataset.tirarKeyword), 1);
+    renderKeywords();
+  }));
+}
 
-  document.getElementById('btn-lixeira').hidden = ARTIGO.status === 'lixo';
+/** @param {string} texto */
+function adicionarKeywords(texto) {
+  texto.split(',').map(k => k.trim()).filter(Boolean).forEach(k => {
+    if (!KEYWORDS.some(x => x.toLowerCase() === k.toLowerCase())) KEYWORDS.push(k.slice(0, 60));
+  });
+  renderKeywords();
 }
 
 /* -------------------------------------------------------------- Editor */
@@ -76,7 +95,8 @@ function preencher() {
 function ligarEditor() {
   EDITOR = EditorRico.montar(document.getElementById('editor-host'), {
     placeholder: 'Escreva o artigo aqui.',
-    tabela: false
+    tabela: false,
+    imagem: true
   });
   EDITOR.definir(ARTIGO?.conteudo || '');
 }
@@ -164,9 +184,27 @@ function renderCategorias() {
 
 function ligarAcoes() {
   document.getElementById('btn-categoria').addEventListener('click', criarCategoria);
-  document.getElementById('btn-rascunho').addEventListener('click', () => salvar('rascunho'));
-  document.getElementById('btn-publicar').addEventListener('click', () => salvar('publicado'));
-  document.getElementById('btn-lixeira').addEventListener('click', () => salvar('lixo'));
+
+  const campo = /** @type {HTMLInputElement} */ (document.getElementById('keyword-nova'));
+  campo.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ',') return;
+    e.preventDefault();
+    adicionarKeywords(campo.value);
+    campo.value = '';
+  });
+  campo.addEventListener('blur', () => { if (campo.value.trim()) { adicionarKeywords(campo.value); campo.value = ''; } });
+}
+
+async function moverParaLixeira() {
+  const ok = await confirmar('O artigo sai do blog e vai para a lixeira.', { titulo: 'Mover para a lixeira', rotulo: 'Mover', perigo: true });
+  if (ok) salvar('lixo');
+}
+
+/** Resumo da listagem do blog: o começo do texto, já que o campo saiu da tela. */
+function resumoDoTexto() {
+  const texto = EDITOR.texto().replace(/\s+/g, ' ').trim();
+  if (texto.length <= 200) return texto || null;
+  return texto.slice(0, 200).replace(/\s+\S*$/, '') + '…';
 }
 
 async function criarCategoria() {
@@ -213,13 +251,14 @@ async function salvar(status) {
     return;
   }
 
-  const botoes = document.querySelectorAll('.editor-acoes .btn, .editor-lixeira');
+  const botoes = document.querySelectorAll('#header-actions .btn');
   botoes.forEach(b => { b.disabled = true; });
 
   const linha = {
     titulo,
     conteudo: EDITOR.html(),
-    resumo: document.getElementById('artigo-resumo').value.trim() || null,
+    resumo: resumoDoTexto(),
+    palavras_chave: KEYWORDS,
     imagem_destaque_url: CAPA_URL,
     status
   };
@@ -238,9 +277,18 @@ async function salvar(status) {
     linha.publicado_em = new Date().toISOString();
   }
 
-  const resposta = ARTIGO
-    ? await supabaseClient.from('artigos').update(linha).eq('id', ARTIGO.id).select().single()
-    : await supabaseClient.from('artigos').insert(linha).select().single();
+  const gravar = (dados) => ARTIGO
+    ? supabaseClient.from('artigos').update(dados).eq('id', ARTIGO.id).select().single()
+    : supabaseClient.from('artigos').insert(dados).select().single();
+
+  let resposta = await gravar(linha);
+
+  // Sem a coluna de keywords (migration 076 ainda não rodada): salva o resto.
+  if (resposta.error && /palavras_chave/i.test(resposta.error.message || '')) {
+    delete linha.palavras_chave;
+    resposta = await gravar(linha);
+    if (!resposta.error && KEYWORDS.length) toast('Keywords não salvas: rode a migration 076 no Supabase.');
+  }
 
   if (resposta.error) {
     botoes.forEach(b => { b.disabled = false; });

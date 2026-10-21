@@ -1066,7 +1066,7 @@ async function gravar(tabela, id, payload) {
 }
 
 async function excluir(tabela, id, nome) {
-  if (!window.confirm(`Excluir "${nome || 'este item'}"? Esta ação não pode ser desfeita.`)) return false;
+  if (!(await confirmar(`Excluir "${nome || 'este item'}"? Esta ação não pode ser desfeita.`, { titulo: 'Excluir', rotulo: 'Excluir', perigo: true }))) return false;
 
   const { error } = await supabaseClient.from(tabela).delete().eq('id', id);
 

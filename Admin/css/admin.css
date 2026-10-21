@@ -3652,3 +3652,39 @@ body[data-page="cms-legal"] .admin-header-bar { display: none; }
 .topbar-perfil { margin: 0 0 0 auto; }
 .topbar-perfil .sidebar-perfil-botao { width: auto; }
 .topbar-perfil .admin-user-menu { left: auto; right: 0; min-width: 230px; top: calc(100% + .375rem); }
+
+/* Janelas da Love (confirmar, pedir link) por cima de drawers abertos. */
+.modal-fundo { z-index: 80; }
+.modal-campo { width: 100%; margin: .25rem 0 1rem; }
+.modal-campo[hidden] { display: none; }
+
+/* Página de dentro de outra: ícone de voltar à esquerda do título. */
+.header-bar-voltar {
+  width: 32px; height: 32px; flex-shrink: 0; margin-left: -.375rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-control); color: var(--text-muted);
+}
+.header-bar-voltar:hover { color: #181D24; background: #EDEFF0; }
+.header-bar-voltar svg { width: 20px; height: 20px; }
+
+/* Botão do cabeçalho só com ícone (o texto fica para leitores de tela). */
+.btn-so-icone { padding-left: .75rem; padding-right: .75rem; }
+.btn-so-icone span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.btn-lixeira-artigo:hover { color: var(--danger); border-color: var(--danger); }
+
+/* Keywords do artigo: etiquetas com × para tirar. */
+.keywords { display: flex; flex-wrap: wrap; gap: .375rem; margin-bottom: .5rem; }
+.keywords:empty { display: none; }
+.keyword {
+  display: inline-flex; align-items: center; gap: .25rem;
+  padding: .1875rem .25rem .1875rem .5rem; border: 1px solid #E4E4E7; border-radius: 6px;
+  font-size: .75rem; color: var(--text); background: #FAFAFA;
+}
+.keyword button { border: 0; background: none; padding: 0 .1875rem; font-size: .875rem; line-height: 1; color: var(--text-muted); cursor: pointer; }
+.keyword button:hover { color: var(--danger); }
+.editor-bloco-dica { margin: .5rem 0 0; font-size: .6875rem; color: #A1A1AA; line-height: 1.5; }
+
+/* Imagem e vídeo dentro do texto do editor. */
+.editor-corpo img { max-width: 100%; height: auto; border-radius: 8px; display: block; }
+.editor-corpo .video-embed { margin: 0 0 .875rem; }
+label.editor-btn { cursor: pointer; }

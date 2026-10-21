@@ -408,6 +408,7 @@ const Modal = {
       <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
         <h2 class="modal-titulo" id="modal-titulo"></h2>
         <p class="modal-texto" id="modal-texto"></p>
+        <input class="field-input modal-campo" id="modal-campo" autocomplete="off" hidden>
         <div class="modal-acoes" id="modal-acoes"></div>
       </div>`;
 
@@ -421,8 +422,13 @@ const Modal = {
   },
 
   /** `acoes`: [{ rotulo, classe, aoClicar }] — a última fica à direita. */
-  abrir({ titulo, texto, acoes = [] }) {
+  /**
+   * @param {{ titulo?: string, texto?: string, acoes?: { rotulo: string, classe?: string, icone?: string, aoClicar?: (b: HTMLButtonElement) => void }[],
+   *           campo?: { tipo?: string, placeholder?: string, valor?: string }, aoFechar?: () => void }} opcoes
+   */
+  abrir({ titulo, texto, acoes = [], campo, aoFechar }) {
     this._build();
+    this._aoFechar = aoFechar || null;
 
     document.getElementById('modal-titulo').textContent = titulo || '';
     document.getElementById('modal-texto').textContent = texto || '';
@@ -446,6 +452,23 @@ const Modal = {
       host.appendChild(botao);
     });
 
+    // Campo de texto opcional (ex.: endereço do link). Enter confirma pela
+    // última ação, que é sempre a principal.
+    const entrada = /** @type {HTMLInputElement} */ (document.getElementById('modal-campo'));
+    entrada.hidden = !campo;
+    entrada.onkeydown = null;
+    if (campo) {
+      entrada.type = campo.tipo || 'text';
+      entrada.placeholder = campo.placeholder || '';
+      entrada.value = campo.valor || '';
+      entrada.onkeydown = (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        /** @type {HTMLButtonElement} */ (host.lastElementChild)?.click();
+      };
+      setTimeout(() => { entrada.focus(); entrada.select(); }, 30);
+    }
+
     document.getElementById('modal-fundo').classList.add('is-open');
     document.body.style.overflow = 'hidden';
   },
@@ -459,8 +482,59 @@ const Modal = {
     if (!fundo) return;
     fundo.classList.remove('is-open');
     document.body.style.overflow = '';
+    const aoFechar = this._aoFechar;
+    this._aoFechar = null;
+    aoFechar?.();
+  },
+
+  /** Texto digitado no campo do modal. */
+  valor() {
+    return /** @type {HTMLInputElement} */ (document.getElementById('modal-campo'))?.value.trim() || '';
   }
 };
+
+/* Janelas da própria Love no lugar das do navegador (confirm/prompt): o
+   Admin nunca abre a caixinha cinza do navegador. */
+
+/**
+ * @param {string} texto
+ * @param {{ titulo?: string, rotulo?: string, perigo?: boolean }} [opcoes]
+ * @returns {Promise<boolean>}
+ */
+function confirmar(texto, { titulo = 'Tem certeza?', rotulo = 'Confirmar', perigo = false } = {}) {
+  return new Promise(resolve => {
+    let ok = false;
+    Modal.abrir({
+      titulo,
+      texto,
+      aoFechar: () => resolve(ok),
+      acoes: [
+        { rotulo: 'Cancelar', aoClicar: () => Modal.fechar() },
+        { rotulo, classe: perigo ? 'btn-danger' : 'btn-neutro', aoClicar: () => { ok = true; Modal.fechar(); } }
+      ]
+    });
+  });
+}
+
+/**
+ * @param {{ titulo: string, texto?: string, placeholder?: string, valor?: string, rotulo?: string, tipo?: string }} opcoes
+ * @returns {Promise<string | null>} null se cancelar
+ */
+function pedirTexto({ titulo, texto = '', placeholder = '', valor = '', rotulo = 'Inserir', tipo = 'text' }) {
+  return new Promise(resolve => {
+    let resposta = null;
+    Modal.abrir({
+      titulo,
+      texto,
+      campo: { placeholder, valor, tipo },
+      aoFechar: () => resolve(resposta),
+      acoes: [
+        { rotulo: 'Cancelar', aoClicar: () => Modal.fechar() },
+        { rotulo, classe: 'btn-neutro', aoClicar: () => { resposta = Modal.valor(); Modal.fechar(); } }
+      ]
+    });
+  });
+}
 
 /* ------------------------------------------------------- Busca global */
 

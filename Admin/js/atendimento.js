@@ -505,7 +505,7 @@ function editarResposta(r) {
 
   document.getElementById('btn-cancelar-resposta').addEventListener('click', abrirBiblioteca);
   document.getElementById('btn-excluir-resposta')?.addEventListener('click', async () => {
-    if (!window.confirm(`Excluir "${r.titulo}"?`)) return;
+    if (!(await confirmar(`Excluir "${r.titulo}"?`, { titulo: 'Excluir comando', rotulo: 'Excluir', perigo: true }))) return;
     const { error } = await supabaseClient.from('respostas_prontas').delete().eq('id', r.id);
     if (error) return toast(`Não foi possível excluir: ${error.message}`);
     RESPOSTAS = RESPOSTAS.filter(x => x.id !== r.id);

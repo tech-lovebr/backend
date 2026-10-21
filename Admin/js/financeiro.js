@@ -58,12 +58,9 @@ function renderKpis({ carteira, links, notas, carteiraCliente, presentes }) {
 
   document.getElementById('kpi-grid').innerHTML = [
     tile('Entradas no B2B', formatCurrency(entradasB2B), `${formatNumber(pagos.length)} links pagos`),
-    tile('Saques dos fornecedores', formatCurrency(saidasB2B), 'Debitados da carteira'),
     tile('Saldo retido no B2B', formatCurrency(entradasB2B - saidasB2B), 'Ainda não sacado'),
     tile('A receber', formatCurrency(valorPendente), `${formatNumber(pendentes.length)} links pendentes`),
-    tile('Presentes (noivos)', formatCurrency(arrecadadoPresentes), 'Arrecadado em presentes'),
-    tile('Saldo dos clientes', formatCurrency(walletBalance(carteiraCliente)), 'Disponível para saque'),
-    tile('Notas fiscais', formatNumber(notas.length), `${formatCurrency(notas.reduce((s, n) => s + (Number(n.value) || 0), 0))} emitidos`)
+    tile('Presentes (noivos)', formatCurrency(arrecadadoPresentes), 'Arrecadado em presentes')
   ].join('');
 }
 

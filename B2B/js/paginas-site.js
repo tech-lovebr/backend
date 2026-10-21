@@ -203,7 +203,7 @@ function openFormDrawer(formId) {
   } else {
     titleInput.value = '';
     descriptionInput.value = '';
-    drawerFields = [makeField('curta')];
+    drawerFields = [makeField('multipla')];
     drawerBgColor = '';
     drawerBgImage = '';
   }
@@ -212,14 +212,18 @@ function openFormDrawer(formId) {
   renderDrawerFields();
   renderFormBgField();
   applyFormHeaderBg();
-  backdrop.classList.add('show');
+  // Abre na própria página (sem gaveta): a lista some e o editor aparece no lugar.
+  document.body.classList.add('form-editor-aberto');
   drawer.classList.add('show');
+  window.scrollTo({ top: 0 });
+  document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
   titleInput.focus();
 }
 
 function closeFormDrawer() {
   document.getElementById('form-drawer-backdrop').classList.remove('show');
   document.getElementById('form-drawer').classList.remove('show');
+  document.body.classList.remove('form-editor-aberto');
   closeOpenColorPopover();
 }
 

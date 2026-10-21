@@ -9633,3 +9633,94 @@ body[data-theme="dark"] .nf-dados dd { color: #FFFFFF !important; }
    tem fundo branco, então pintava por cima da metade de baixo dos botões
    (Novo orçamento, Criar produto…). O conteúdo da faixa fica por cima. */
 html body .b2b-header-bar > *:not(#love-h-a) { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   Construtor › Seus formulários: editor na própria página (modelo Google
+   Forms), no lugar da gaveta. Cabeçalho em card com faixa colorida em cima,
+   perguntas em cards (a ativa ganha a faixa azul à esquerda) e a barra
+   lateral com o "+" para adicionar pergunta.
+   ========================================================================== */
+html body #form-drawer:not(.show):not(#love-h-a) { display: none; }
+html body.form-editor-aberto #forms-list:not(#love-h-a) { display: none; }
+html body.form-editor-aberto #form-drawer-backdrop:not(#love-h-a) { display: none !important; }
+html body #form-drawer.show:not(#love-h-a) {
+  position: relative; inset: auto; top: auto; right: auto; bottom: auto; left: auto; z-index: 1;
+  transform: none; width: 100%; max-width: 770px; height: auto; max-height: none; margin: 0 auto;
+  padding: 0 0 2rem; background: transparent; border: none; box-shadow: none; overflow: visible;
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+
+/* Cabeçalho: título e descrição num card com a faixa da cor primária em cima. */
+html body #form-drawer .form-drawer-header:not(#love-h-a) {
+  position: relative; display: block; padding: 1.5rem 1.5rem 1.25rem; background: #FFFFFF;
+  border: 1px solid #E4E4E7; border-top: 10px solid #183b54; border-radius: 10px; box-shadow: none;
+}
+html body #form-drawer .form-drawer-header-main:not(#love-h-a) { display: flex; flex-direction: column; gap: 0.75rem; padding-right: 2.5rem; }
+html body #form-drawer .form-drawer-title-input:not(#love-h-a) {
+  width: 100%; border: none; border-bottom: 1px solid transparent; background: transparent; padding: 0 0 0.35rem;
+  font-family: inherit; font-size: 2rem; font-weight: 400; line-height: 1.25; color: #18181B; outline: none;
+}
+html body #form-drawer .form-drawer-description-input:not(#love-h-a) {
+  width: 100%; border: none; border-bottom: 1px solid transparent; background: transparent; padding: 0 0 0.35rem;
+  font-family: inherit; font-size: 0.9375rem; color: #52525B; resize: none; outline: none;
+}
+html body #form-drawer .form-drawer-title-input:focus:not(#love-h-a),
+html body #form-drawer .form-drawer-description-input:focus:not(#love-h-a) { border-bottom-color: #183b54; }
+html body #form-drawer .form-drawer-bg-field:not(#love-h-a) { margin-top: 1rem; }
+html body #form-drawer .form-drawer-close:not(#love-h-a) { position: absolute; top: 0.85rem; right: 0.85rem; }
+
+/* Perguntas em cards. */
+html body #form-drawer .form-drawer-body:not(#love-h-a) { padding: 0; overflow: visible; background: transparent; display: flex; flex-direction: column; gap: 0.75rem; }
+html body #form-drawer .form-field-card:not(#love-h-a) {
+  position: relative; padding: 1.5rem 1.5rem 0.75rem; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none;
+}
+html body #form-drawer .form-field-card:focus-within:not(#love-h-a) { box-shadow: inset 6px 0 0 #4285F4; }
+html body #form-drawer .form-field-card-header:not(#love-h-a) { display: flex; align-items: flex-start; gap: 1rem; }
+html body #form-drawer .form-field-question-input:not(#love-h-a) {
+  flex: 1; min-width: 0; height: 56px; padding: 0 1rem; border: none; border-bottom: 1px solid #A1A1AA; border-radius: 4px 4px 0 0;
+  background: #F4F4F5; font-family: inherit; font-size: 1rem; color: #18181B; outline: none;
+}
+html body #form-drawer .form-field-question-input:focus:not(#love-h-a) { border-bottom: 2px solid #183b54; }
+html body #form-drawer .form-field-type-select:not(#love-h-a) {
+  width: 240px; flex-shrink: 0; height: 48px; padding: 0 0.85rem; border: 1px solid #E4E4E7; border-radius: 8px; background-color: #FFFFFF;
+  font-family: inherit; font-size: 0.9375rem; color: #18181B;
+}
+html body #form-drawer .form-field-body:not(#love-h-a) { padding: 1rem 0 0.5rem; }
+html body #form-drawer .form-field-footer:not(#love-h-a) {
+  display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px solid #E4E4E7;
+}
+html body #form-drawer .form-field-footer-actions:not(#love-h-a) { display: flex; align-items: center; gap: 0.25rem; padding-right: 0.75rem; border-right: 1px solid #E4E4E7; }
+
+/* Barra lateral com o "+" (adicionar pergunta), presa ao lado das perguntas. */
+html body #form-drawer .form-drawer-add-field-wrap:not(#love-h-a) {
+  position: sticky; bottom: 1.5rem; align-self: flex-end; margin-right: -4.25rem; margin-top: -3.5rem;
+  padding: 0.35rem; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); z-index: 2;
+}
+html body #form-drawer .form-add-field-btn:not(#love-h-a) {
+  width: 40px; height: 40px; padding: 0; border: none; border-radius: 8px; background: transparent; cursor: pointer;
+  font-size: 0; color: #3F3F46; display: inline-flex; align-items: center; justify-content: center; position: relative;
+}
+html body #form-drawer .form-add-field-btn:not(#love-h-a)::before {
+  content: '+'; width: 24px; height: 24px; border: 2px solid currentColor; border-radius: 999px;
+  font-size: 18px; font-weight: 600; line-height: 20px; text-align: center;
+}
+html body #form-drawer .form-add-field-btn:hover:not(#love-h-a) { color: #181D24; background: #F4F4F5; }
+
+/* Rodapé: Salvar formulário na largura do editor. */
+html body #form-drawer .form-drawer-footer:not(#love-h-a) { position: static; padding: 0.5rem 0 0; background: transparent; border: none; box-shadow: none; }
+html body #form-drawer .form-drawer-footer .btn-primary:not(#love-h-a) { height: 44px; }
+
+body[data-theme="dark"] #form-drawer .form-drawer-header,
+body[data-theme="dark"] #form-drawer .form-field-card,
+body[data-theme="dark"] #form-drawer .form-drawer-add-field-wrap { background: #1F1F1F !important; border-color: #404040 !important; }
+body[data-theme="dark"] #form-drawer .form-drawer-title-input,
+body[data-theme="dark"] #form-drawer .form-field-question-input { color: #FFFFFF !important; }
+body[data-theme="dark"] #form-drawer .form-field-question-input { background: #252525 !important; }
+@media (max-width: 900px) {
+  html body #form-drawer .form-drawer-add-field-wrap:not(#love-h-a) { margin-right: 0; margin-top: 0; align-self: center; }
+  html body #form-drawer .form-field-card-header:not(#love-h-a) { flex-direction: column; }
+  html body #form-drawer .form-field-type-select:not(#love-h-a) { width: 100%; }
+}
+
+/* Com cor/imagem de fundo escolhida, o fundo aparece atrás dos cards (como o fundo do Google Forms). */
+html body #form-drawer.show.has-custom-bg:not(#love-h-a) { padding: 1.25rem; border-radius: 10px; }

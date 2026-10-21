@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=709">
+  <link rel="stylesheet" href="css/styles.css?v=710">
 </head>
 <body class="font-sans" data-page="paginas-site">
 
@@ -108,6 +108,29 @@
 
         <div class="site-tab-panel" data-tab-panel="formularios" style="display:none;">
           <div class="forms-list" id="forms-list"></div>
+
+          <!-- Editor do formulário na própria página (modelo Google Forms), no
+               lugar da lista: cabeçalho com título e descrição, as perguntas em
+               cards e a barra lateral com "+" para adicionar pergunta. -->
+          <aside class="form-drawer" id="form-drawer" aria-label="Editor de formulário">
+            <div class="form-drawer-header" id="form-drawer-header">
+              <div class="form-drawer-header-main">
+                <input type="text" class="form-drawer-title-input" id="form-title-input" placeholder="Formulário sem título">
+                <textarea class="form-drawer-description-input" id="form-description-input" placeholder="Descrição do formulário (opcional)" rows="1"></textarea>
+              </div>
+              <div class="form-drawer-bg-field" id="form-bg-field"></div>
+              <button type="button" class="form-drawer-close" id="form-drawer-close" aria-label="Fechar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <div class="form-drawer-body" id="form-drawer-fields"></div>
+            <div class="form-drawer-add-field-wrap">
+              <button type="button" class="form-add-field-btn" id="form-add-field-btn">+ Adicionar pergunta</button>
+            </div>
+            <div class="form-drawer-footer">
+              <button type="button" class="btn-primary justify-center w-full py-3" id="form-save-btn">Salvar formulário</button>
+            </div>
+          </aside>
         </div>
 
       </main>
@@ -115,25 +138,6 @@
   </div>
 
   <div class="drawer-backdrop" id="form-drawer-backdrop"></div>
-  <aside class="form-drawer" id="form-drawer" aria-label="Editor de formulário">
-    <div class="form-drawer-header" id="form-drawer-header">
-      <div class="form-drawer-header-main">
-        <input type="text" class="form-drawer-title-input" id="form-title-input" placeholder="Formulário sem título">
-        <textarea class="form-drawer-description-input" id="form-description-input" placeholder="Descrição do formulário (opcional)" rows="1"></textarea>
-      </div>
-      <div class="form-drawer-bg-field" id="form-bg-field"></div>
-      <button type="button" class="form-drawer-close" id="form-drawer-close" aria-label="Fechar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-      </button>
-    </div>
-    <div class="form-drawer-body" id="form-drawer-fields"></div>
-    <div class="form-drawer-add-field-wrap">
-      <button type="button" class="form-add-field-btn" id="form-add-field-btn">+ Adicionar pergunta</button>
-    </div>
-    <div class="form-drawer-footer">
-      <button type="button" class="btn-primary justify-center w-full py-3" id="form-save-btn">Salvar formulário</button>
-    </div>
-  </aside>
 
   <div class="drawer-backdrop" id="responses-drawer-backdrop"></div>
   <aside class="form-drawer" id="responses-drawer" aria-label="Respostas do formulário">
@@ -190,7 +194,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=52"></script>
-  <script src="js/paginas-site.js?v=14"></script>
+  <script src="js/paginas-site.js?v=15"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=292"></script>
 </body>

@@ -9823,3 +9823,6 @@ html body .modal-sair-fechar:not(#love-h-a):hover { color: #18181B; background: 
 html body #modal-unsaved-changes #btn-unsaved-save.informacoes-salvar-rodape:not(#love-h-a) { width: 100%; height: 44px; }
 /* Elementos (Convite digital): hover das caixinhas na cor do fundo das telas. */
 html body:not([data-theme="dark"]) #builder-elements-panel .builder-el-item:not(#love-h-a):hover { background: var(--bg-dashboard, #F4F6F7) !important; }
+/* Menu do presente: ícone à esquerda de cada opção. */
+html body .gift-card-menu button:not(#love-h-a) { gap: 10px; }
+.gift-card-menu button svg { width: 16px; height: 16px; flex-shrink: 0; }

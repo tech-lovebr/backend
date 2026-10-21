@@ -8210,9 +8210,9 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.dataset.giftId = String(gift.id);
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
-      <button type="button" role="menuitem" data-acao="editar">Editar presente</button>
-      <button type="button" role="menuitem" data-acao="duplicar">Duplicar</button>
-      <button type="button" role="menuitem" data-acao="remover" class="is-perigo">Remover</button>`;
+      <button type="button" role="menuitem" data-acao="editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg><span>Editar presente</span></button>
+      <button type="button" role="menuitem" data-acao="duplicar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/></svg><span>Duplicar</span></button>
+      <button type="button" role="menuitem" data-acao="remover" class="is-perigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg><span>Remover</span></button>`;
     document.body.appendChild(menu);
     const r = botao.getBoundingClientRect();
     menu.style.top = `${Math.min(r.bottom + 6, window.innerHeight - menu.offsetHeight - 8)}px`;

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_acompanhanteX">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_popupMensagem3">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4466,12 +4466,15 @@
         <img id="b2b-mensagem-foto" src="" alt="" class="b2b-mensagem-foto">
         <div class="min-w-0">
           <h3 id="b2b-mensagem-empresa" class="b2b-mensagem-empresa"></h3>
-          <p id="b2b-mensagem-produto" class="b2b-mensagem-produto"></p>
+          <div class="b2b-mensagem-produto-linha">
+            <p id="b2b-mensagem-produto" class="b2b-mensagem-produto"></p>
+            <span id="b2b-mensagem-categoria" class="b2b-categoria-tag" hidden></span>
+          </div>
         </div>
       </div>
       <label for="b2b-mensagem-texto" class="b2b-mensagem-rotulo">Sua mensagem</label>
       <div class="b2b-mensagem-campo" id="b2b-mensagem-campo">
-        <div class="b2b-mensagem-saudacao">Olá <span id="b2b-mensagem-saudacao-nome" class="b2b-mensagem-chip"></span></div>
+        <p class="b2b-mensagem-saudacao">Olá, <span id="b2b-mensagem-saudacao-nome"></span></p>
         <textarea id="b2b-mensagem-texto" rows="3" maxlength="250"></textarea>
         <svg class="b2b-mensagem-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
       </div>
@@ -4481,7 +4484,8 @@
       </div>
       <div class="b2b-mensagem-sugestoes">
         <button type="button" class="b2b-mensagem-chip" data-sugestao="Gostaria de solicitar um orçamento.">Gostaria de solicitar um orçamento.</button>
-        <button type="button" class="b2b-mensagem-chip" data-sugestao="Poderia me explicar melhor sobre os seus serviços?">Poderia me explicar melhor sobre os seus serviços?</button>
+        <button type="button" class="b2b-mensagem-chip" data-sugestao="Eu preciso de ajuda com ">Eu preciso de ajuda com...</button>
+        <button type="button" class="b2b-mensagem-chip" data-sugestao="Estou procurando uma ">Estou procurando uma...</button>
       </div>
       <div class="b2b-mensagem-rodape">
         <button type="button" data-close-modal class="b2b-mensagem-cancelar">Cancelar</button>
@@ -5580,7 +5584,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_cidadeExplorar"></script>
+  <script src="js/app.js?v=20261021_popupMensagem2"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

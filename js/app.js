@@ -14251,8 +14251,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @type {any} */
   let fornecedorDaMensagem = null;
 
-  /** @param {any} item @param {string} produto */
-  function abrirMensagemParaFornecedor(item, produto) {
+  /** @param {any} item @param {string} produto @param {string} [categoria] */
+  function abrirMensagemParaFornecedor(item, produto, categoria) {
     const modal = document.getElementById('modal-b2b-mensagem');
     if (!modal || !item) return;
     fornecedorDaMensagem = item;
@@ -14260,11 +14260,17 @@ document.addEventListener('DOMContentLoaded', () => {
     foto.src = item.avatar || avatarComIniciais(item.name);
     foto.alt = item.name || '';
     /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-empresa')).textContent = item.name || '';
-    /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-produto')).textContent = produto && produto !== item.name ? produto : '';
+    /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-produto')).textContent = produto || '';
+    // Ao lado do produto, a categoria em que ele está (ex.: "Buffet e Gastronomia").
+    const etiqueta = /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-categoria'));
+    const cat = (categoria || (item.servicoCard && item.servicoCard.category) || item.mainCategory || (item.categories || [])[0] || '').trim();
+    etiqueta.textContent = cat;
+    etiqueta.hidden = !cat;
     /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-saudacao-nome')).textContent = (item.name || '').trim();
     const texto = /** @type {HTMLTextAreaElement} */ (document.getElementById('b2b-mensagem-texto'));
     texto.value = '';
     texto.placeholder = `Pergunte a ${item.name || 'este fornecedor'} ou conte um pouco sobre o seu evento`;
+    // (o "Olá, Empresa" fica fixo no topo do campo)
     mostrarErroDaMensagem(false);
     atualizarCampoDaMensagem();
     openModal(modal);
@@ -14327,6 +14333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = /** @type {HTMLTextAreaElement} */ (texto);
         const sugestao = /** @type {HTMLElement} */ (b).dataset.sugestao || '';
         t.value = (t.value.trim() ? `${t.value.trim()} ${sugestao}` : sugestao).slice(0, LIMITE_DA_PRIMEIRA_MENSAGEM);
+        t.setSelectionRange(t.value.length, t.value.length);
         mostrarErroDaMensagem(false);
         atualizarCampoDaMensagem();
         t.focus();
@@ -16020,8 +16027,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-b2b-profile-message')?.addEventListener('click', () => {
     if (!activeB2BProfileItem) return;
-    const servico = activeB2BProfileServico && (activeB2BProfileItem.services || []).some(s => s.id === activeB2BProfileServico.id) ? activeB2BProfileServico.name : '';
-    abrirMensagemParaFornecedor(activeB2BProfileItem, servico || tituloDoCard(activeB2BProfileItem));
+    const servicoAberto = activeB2BProfileServico && (activeB2BProfileItem.services || []).some(s => s.id === activeB2BProfileServico.id) ? activeB2BProfileServico : null;
+    abrirMensagemParaFornecedor(activeB2BProfileItem, (servicoAberto && servicoAberto.name) || tituloDoCard(activeB2BProfileItem), servicoAberto ? servicoAberto.category : '');
   });
 
   document.getElementById('btn-b2b-profile-hire')?.addEventListener('click', () => {

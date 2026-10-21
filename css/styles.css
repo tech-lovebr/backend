@@ -9657,3 +9657,12 @@ html body button.guest-acompanhante-remover:not(#love-h-a):hover { background: #
 html body button.guest-acompanhante-remover:not(#love-h-a) svg { width: 16px; height: 16px; }
 /* Restrição sem escolha: o texto "Restrições alimentares" em cinza claro. */
 .restricao-botao .restricao-texto.is-placeholder { color: #A1A1AA; }
+
+/* Pop-up "Mensagem" (ajustes): foto no formato do perfil do fornecedor
+   (quadrado com cantos arredondados), produto + etiqueta da categoria, um campo
+   só (o "Olá, Empresa" é texto no topo, sem caixinha). */
+.b2b-mensagem-foto { border-radius: 16px !important; border: 1px solid #E4E4E7; }
+.b2b-mensagem-produto-linha { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.b2b-mensagem-produto-linha .b2b-mensagem-produto { margin: 0; }
+html body .b2b-mensagem-saudacao:not(#love-h-a) { display: block; margin: 0 0 6px; font-size: 14px; color: #18181B; }
+html body #modal-b2b-mensagem #b2b-mensagem-texto:not(#love-h-a) { border: 0 !important; background: transparent !important; box-shadow: none !important; outline: none !important; padding: 0 !important; border-radius: 0 !important; }

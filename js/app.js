@@ -10028,13 +10028,21 @@ document.addEventListener('DOMContentLoaded', () => {
       card.draggable = !isSeated;
       card.dataset.guestName = g.name || '';
 
-      if (g.status === 'confirmed') {
-        card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-check-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></span>');
-      } else if (isDeclined) {
-        card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-x-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6 6 18"/></svg></span>');
-      } else {
-        card.insertAdjacentHTML('beforeend', '<span class="floorplan-guest-card-pending-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M5 12h14"/></svg></span>');
-      }
+      // Caixinha para marcar vários e mover todos de mesa de uma vez.
+      const marcador = document.createElement('input');
+      marcador.type = 'checkbox';
+      marcador.className = 'gifts-select-all-check floorplan-guest-card-marcar';
+      marcador.setAttribute('aria-label', `Selecionar ${g.name || 'convidado'}`);
+      marcador.checked = convidadosMarcadosNaPlanta().has(g.name || '');
+      marcador.addEventListener('mousedown', (e) => e.stopPropagation());
+      marcador.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (marcador.checked) convidadosMarcadosNaPlanta().add(g.name || '');
+        else convidadosMarcadosNaPlanta().delete(g.name || '');
+        card.classList.toggle('is-marcado', marcador.checked);
+      });
+      card.classList.toggle('is-marcado', marcador.checked);
+      card.appendChild(marcador);
 
       const nameEl = document.createElement('span');
       nameEl.className = 'floorplan-guest-card-name';
@@ -10053,8 +10061,121 @@ document.addEventListener('DOMContentLoaded', () => {
         e.dataTransfer.effectAllowed = 'copy';
       });
 
+      // Clique: com convidados marcados, move os marcados; sem marcados, só
+      // abre o "Mover para" se esta pessoa já estiver numa mesa.
+      card.addEventListener('click', () => {
+        const marcados = [...convidadosMarcadosNaPlanta()].filter(Boolean);
+        const nomes = marcados.length ? marcados : (isSeated ? [g.name || ''] : []);
+        if (!nomes.length) return;
+        abrirMoverParaMesa(card, nomes);
+      });
+
       container.appendChild(card);
     });
+  }
+
+  // ==========================================
+  // "MOVER CONVIDADO PARA" (lista de convidados do Mapa do evento)
+  // ==========================================
+  /** Nomes marcados na lista (checkbox). Função (e não const) para já existir
+   * mesmo se a lista for desenhada antes desta parte do código rodar. @returns {Set<string>} */
+  function convidadosMarcadosNaPlanta() {
+    const w = /** @type {any} */ (window);
+    if (!w.__loveMarcadosNaPlanta) w.__loveMarcadosNaPlanta = new Set();
+    return w.__loveMarcadosNaPlanta;
+  }
+
+  function fecharMoverParaMesa() {
+    document.querySelectorAll('.floorplan-mover-para').forEach(p => p.remove());
+  }
+  document.addEventListener('mousedown', (e) => {
+    if (!(e.target instanceof Element) || e.target.closest('.floorplan-mover-para') || e.target.closest('.floorplan-guest-card')) return;
+    fecharMoverParaMesa();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMoverParaMesa(); });
+
+  /**
+   * Caixinha perto do nome: "Mover convidado para" + a lista de mesas com os
+   * lugares ocupados; a mesa atual vem marcada.
+   * @param {HTMLElement} ancora @param {string[]} nomes
+   */
+  function abrirMoverParaMesa(ancora, nomes) {
+    fecharMoverParaMesa();
+    const elements = getFloorPlanElements();
+    const mesas = elements.filter(t => t.type === 'mesa').sort((x, y) => (parseInt(x.number) || 0) - (parseInt(y.number) || 0));
+    const norm = (/** @type {string} */ n) => (n || '').trim().toLowerCase();
+    const alvo = new Set(nomes.map(norm));
+    // Mesa atual: a de todos os escolhidos, se estiverem na mesma.
+    const mesasAtuais = new Set(nomes.map(n => {
+      const t = mesas.find(m => (m.seatNames || []).some(/** @param {string} s */ s => norm(s) === norm(n)));
+      return t ? t.id : '';
+    }));
+    const atual = mesasAtuais.size === 1 ? [...mesasAtuais][0] : '';
+    const caixa = document.createElement('div');
+    caixa.className = 'floorplan-mover-para';
+    caixa.setAttribute('role', 'dialog');
+    const titulo = nomes.length > 1 ? `Mover ${nomes.length} convidados para` : 'Mover convidado para';
+    caixa.innerHTML = `<p class="floorplan-mover-titulo">${titulo}</p>` + (mesas.length ? mesas.map(m => {
+      const ocupados = (m.seatNames || []).filter(/** @param {string} s */ s => s && s.trim()).length;
+      const total = parseInt(m.seats) || 1;
+      const nome = (m.name || '').trim();
+      return `<button type="button" class="floorplan-mover-mesa${m.id === atual ? ' is-atual' : ''}" data-mesa-id="${escaparHtml(m.id)}" role="radio" aria-checked="${m.id === atual}">
+        <span class="floorplan-mover-texto"><strong>Mesa ${escaparHtml(String(m.number))}${nome ? ` · ${escaparHtml(nome)}` : ''}</strong><span>${ocupados} de ${total} ${total === 1 ? 'lugar ocupado' : 'lugares ocupados'}</span></span>
+        <span class="floorplan-mover-radio" aria-hidden="true"></span>
+      </button>`;
+    }).join('') : '<p class="floorplan-mover-vazio">Nenhuma mesa na planta ainda.</p>');
+    document.body.appendChild(caixa);
+    // Perto do nome: embaixo dele (ou em cima, se não couber).
+    const r = ancora.getBoundingClientRect();
+    const altura = caixa.offsetHeight;
+    const largura = caixa.offsetWidth;
+    let top = r.bottom + 6;
+    if (top + altura > window.innerHeight - 8) top = Math.max(8, r.top - altura - 6);
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - largura - 8));
+    caixa.style.top = `${top}px`;
+    caixa.style.left = `${left}px`;
+    caixa.querySelectorAll('[data-mesa-id]').forEach(b => {
+      b.addEventListener('click', () => {
+        const destino = /** @type {HTMLElement} */ (b).dataset.mesaId || '';
+        moverPessoasParaMesa([...alvo], destino);
+        fecharMoverParaMesa();
+      });
+    });
+  }
+
+  /**
+   * Tira cada pessoa do assento onde está (se estiver) e senta na mesa de
+   * destino, no primeiro lugar vazio (cria mais um lugar se estiver cheia).
+   * @param {string[]} nomesNormalizados @param {string} destinoId
+   */
+  function moverPessoasParaMesa(nomesNormalizados, destinoId) {
+    const elements = getFloorPlanElements();
+    const destino = elements.find(t => t.id === destinoId && t.type === 'mesa');
+    if (!destino) return;
+    const pessoas = pessoasParaMesas();
+    nomesNormalizados.forEach(nn => {
+      const nomeReal = (pessoas.find(p => (p.name || '').trim().toLowerCase() === nn) || { name: nn }).name || nn;
+      // Já está nesta mesa: nada a fazer.
+      resizeSeatNames(destino);
+      if (destino.seatNames.some(/** @param {string} s */ s => (s || '').trim().toLowerCase() === nn)) return;
+      let idx = destino.seatNames.findIndex(/** @param {string} s */ s => !s || !s.trim());
+      if (idx === -1) {
+        if ((parseInt(destino.seats) || 1) >= FLOORPLAN_MAX_SEATS) return;
+        destino.seats = (parseInt(destino.seats) || 1) + 1;
+        resizeSeatNames(destino);
+        idx = destino.seatNames.length - 1;
+      }
+      elements.forEach(t => {
+        if (t.type !== 'mesa' || !Array.isArray(t.seatNames)) return;
+        t.seatNames = t.seatNames.map(/** @param {string} s */ s => ((s || '').trim().toLowerCase() === nn ? '' : s));
+      });
+      destino.seatNames[idx] = nomeReal;
+    });
+    convidadosMarcadosNaPlanta().clear();
+    saveFloorPlanElements(elements);
+    renderFloorPlanCanvas();
+    renderFloorPlanGuestCards();
+    renderGuestsTable();
   }
 
   // Altura da planta: a da tela (CSS) ou, se alguma mesa passar dela, até a

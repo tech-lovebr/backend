@@ -9679,3 +9679,18 @@ html body .floorplan-mesa-core.tem-cor:not(#love-h-a), html body .floorplan-mesa
    fim da caixa (mesma cor e mesma altura das linhas da tabela). */
 html body .tabela-com-linhas-vazias:not(#love-h-a) { background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 0, rgba(0, 0, 0, 0.04) 1px, transparent 1px, transparent var(--altura-da-linha, 51px)); background-position: 0 var(--fim-das-linhas, 0px); background-size: 100% calc(100% - var(--fim-das-linhas, 0px)); background-repeat: no-repeat; }
 html body .tabela-com-linhas-vazias:not(#love-h-a) { background-repeat: repeat-x; }
+
+/* Mapa do evento › lista: caixinha de marcar no lugar do selo de status, e o
+   "Mover convidado para" perto do nome. */
+html body .floorplan-guest-card .floorplan-guest-card-marcar:not(#love-h-a) { flex-shrink: 0; margin: 0; cursor: pointer; }
+html body #floorplan-guests-panel .floorplan-guest-card.is-seated:not(#love-h-a), html body #floorplan-guests-panel .floorplan-guest-card.is-marcado:not(#love-h-a) { cursor: pointer; }
+.floorplan-mover-para { position: fixed; z-index: 200; width: 280px; max-height: 360px; overflow-y: auto; padding: 8px 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.floorplan-mover-titulo { margin: 4px 0 6px; padding: 0 16px; font-size: 15px; font-weight: 600; color: #18181B; text-align: center; }
+html body .floorplan-mover-mesa:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 16px; background: transparent; border: 0; border-top: 1px solid #F4F4F5; text-align: left; cursor: pointer; }
+html body .floorplan-mover-mesa:not(#love-h-a):hover { background: #F4F6F7; }
+.floorplan-mover-texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.floorplan-mover-texto strong { font-size: 14px; font-weight: 600; color: #18181B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.floorplan-mover-texto span { font-size: 12px; color: #71717A; }
+.floorplan-mover-radio { width: 20px; height: 20px; flex-shrink: 0; border: 1.5px solid #18181B; border-radius: 999px; position: relative; }
+.floorplan-mover-mesa.is-atual .floorplan-mover-radio::after { content: ''; position: absolute; inset: 3.5px; border-radius: 999px; background: #18181B; }
+.floorplan-mover-vazio { margin: 0; padding: 12px 16px; font-size: 13px; color: #71717A; }

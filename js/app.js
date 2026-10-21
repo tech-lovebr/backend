@@ -8020,67 +8020,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /** @type {string|null} */
-  let convidadoArrastado = null;
-  /** @type {HTMLImageElement|null} */
-  let imagemVaziaDeArraste = null;
-
-  /** @param {HTMLElement} lista @param {string} id @returns {HTMLElement[]} */
-  function linhasDoConvidado(lista, id) {
-    return /** @type {HTMLElement[]} */ (Array.from(lista.querySelectorAll(`tr[data-guest-id="${CSS.escape(id)}"]`)));
-  }
-
-  /**
-   * Move as linhas para antes da âncora, animando quem mudou de lugar (FLIP).
-   * @param {HTMLElement} lista @param {HTMLElement[]} linhas @param {Element|null} ancora
-   */
-  function moverLinhasComAnimacao(lista, linhas, ancora) {
-    if (!linhas.length || linhas.includes(/** @type {HTMLElement} */ (ancora))) return;
-    if (ancora === linhas[linhas.length - 1].nextElementSibling) return;
-    const todas = /** @type {HTMLElement[]} */ (Array.from(lista.children));
-    const antes = new Map(todas.map(tr => [tr, tr.getBoundingClientRect().top]));
-    linhas.forEach(tr => lista.insertBefore(tr, ancora));
-    todas.forEach(tr => {
-      const desloc = (antes.get(tr) || 0) - tr.getBoundingClientRect().top;
-      if (!desloc) return;
-      tr.style.transition = 'none';
-      tr.style.transform = `translateY(${desloc}px)`;
-      requestAnimationFrame(() => {
-        tr.style.transition = 'transform .18s ease';
-        tr.style.transform = '';
-      });
-    });
-  }
-
-  // Ordem da lista de convidados: a que o anfitrião montou arrastando (guest.ordem,
-  // salvo no extra do convidado); sem ordem, vai para o fim em ordem alfabética.
+  // Ordem da lista de convidados: sempre alfabética pelo nome do convidado
+  // (os acompanhantes vêm logo abaixo de quem os trouxe, fora dessa ordem).
   /** @param {any} a @param {any} b */
   function compararOrdemDeConvidados(a, b) {
-    const oa = typeof a.ordem === 'number' ? a.ordem : Infinity;
-    const ob = typeof b.ordem === 'number' ? b.ordem : Infinity;
-    if (oa !== ob) return oa - ob;
     return (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' });
-  }
-
-  /**
-   * Move o convidado arrastado para antes/depois de outro e regrava a ordem.
-   * @param {string} idArrastado @param {string} idAlvo @param {boolean} depois
-   */
-  async function reordenarConvidado(idArrastado, idAlvo, depois) {
-    const ev = getActiveEvent();
-    if (!ev || !Array.isArray(ev.guests) || idArrastado === idAlvo) return;
-    const lista = [...ev.guests].sort(compararOrdemDeConvidados);
-    const de = lista.findIndex(g => g.id === idArrastado);
-    if (de < 0) return;
-    const [movido] = lista.splice(de, 1);
-    let para = lista.findIndex(g => g.id === idAlvo);
-    if (para < 0) return;
-    if (depois) para += 1;
-    lista.splice(para, 0, movido);
-    const mudaram = [];
-    lista.forEach((g, i) => { if (g.ordem !== i) { g.ordem = i; mudaram.push(g); } });
-    renderGuestsTable(currentRsvpFilter);
-    await Promise.all(mudaram.map(g => salvarConvidadoNoBanco(g)));
   }
 
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
@@ -8259,7 +8203,6 @@ document.addEventListener('DOMContentLoaded', () => {
               ${statusBadges[guest.status] || guest.status}
             </div>
           </td>
-          <td class="love-tabela-col-mais">${attendee.isPrimary ? `<button type="button" class="guest-reordenar" draggable="true" title="Arraste para mudar a ordem" aria-label="Mudar a ordem de ${escaparHtml(guest.name || 'convidado')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M8 15l4 4 4-4"/></svg></button>` : ''}</td>
         `;
         row.dataset.guestId = guest.id;
 
@@ -8267,55 +8210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
           openAddGuestDrawer(guest.id);
-        });
-
-        // Alça: arrastar a reserva (convidado + acompanhantes). Enquanto arrasta,
-        // as linhas dela andam na própria lista e as outras abrem espaço.
-        const alca = row.querySelector('.guest-reordenar');
-        if (alca) {
-          alca.addEventListener('dragstart', (e) => {
-            e.stopPropagation();
-            if (!e.dataTransfer) return;
-            e.dataTransfer.setData('application/x-love-convidado', guest.id);
-            e.dataTransfer.effectAllowed = 'move';
-            // Sem a "fotinha" do navegador: quem anda é a própria linha.
-            if (!imagemVaziaDeArraste) { imagemVaziaDeArraste = new Image(); imagemVaziaDeArraste.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; }
-            e.dataTransfer.setDragImage(imagemVaziaDeArraste, 0, 0);
-            convidadoArrastado = guest.id;
-            linhasDoConvidado(listEl, guest.id).forEach(tr => tr.classList.add('is-arrastando'));
-          });
-          alca.addEventListener('dragend', () => {
-            if (!convidadoArrastado) return;
-            // Soltou fora da lista: volta tudo como estava.
-            convidadoArrastado = null;
-            renderGuestsTable(currentRsvpFilter);
-          });
-        }
-        row.addEventListener('dragover', (e) => {
-          if (!convidadoArrastado || !e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
-          e.preventDefault();
-          if (row.dataset.guestId === convidadoArrastado) return;
-          const r = row.getBoundingClientRect();
-          const depois = e.clientY > r.top + r.height / 2;
-          // Âncora: a primeira linha da reserva-alvo (antes) ou a última (depois).
-          const alvo = linhasDoConvidado(listEl, row.dataset.guestId || '');
-          const ancora = depois ? alvo[alvo.length - 1].nextElementSibling : alvo[0];
-          moverLinhasComAnimacao(listEl, linhasDoConvidado(listEl, convidadoArrastado), ancora);
-        });
-        row.addEventListener('drop', (e) => {
-          if (!convidadoArrastado || !e.dataTransfer || !e.dataTransfer.types.includes('application/x-love-convidado')) return;
-          e.preventDefault();
-          const arrastado = convidadoArrastado;
-          convidadoArrastado = null;
-          // A posição final é a que ficou na tela: entra antes do próximo
-          // convidado (ou depois do anterior, se ficou por último).
-          const principais = Array.from(listEl.querySelectorAll('tr:not(.is-acompanhante-row)'));
-          const i = principais.findIndex(tr => /** @type {HTMLElement} */ (tr).dataset.guestId === arrastado);
-          const proximo = /** @type {HTMLElement|undefined} */ (principais[i + 1]);
-          const anterior = /** @type {HTMLElement|undefined} */ (principais[i - 1]);
-          if (proximo) reordenarConvidado(arrastado, proximo.dataset.guestId || '', false);
-          else if (anterior) reordenarConvidado(arrastado, anterior.dataset.guestId || '', true);
-          else renderGuestsTable(currentRsvpFilter);
         });
 
         listEl.appendChild(row);
@@ -8745,7 +8639,7 @@ document.addEventListener('DOMContentLoaded', () => {
     activeDrawerGuestId = guest.id;
     if (titleEl) titleEl.textContent = guestId ? 'Editar Convidado' : 'Adicionar Convidado';
     const saveBtn = document.getElementById('btn-save-guest');
-    if (saveBtn) saveBtn.textContent = guestId ? 'Salvar Alterações' : 'Salvar Convidado';
+    if (saveBtn) saveBtn.textContent = guestId ? 'Salvar alterações' : 'Salvar convidado';
     document.getElementById('guest-name-input').value = guest.name || '';
     document.getElementById('guest-phone-input').value = guest.phone || '';
     document.getElementById('guest-email-input').value = guest.email || '';

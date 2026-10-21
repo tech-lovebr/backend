@@ -9645,3 +9645,7 @@ html body #tab-rsvp.active .rsvp-caixa-abaixo-das-abas > .overflow-x-auto:not(#l
 html body #tab-rsvp.active #rsvp-pagination:not(#love-h-a) { margin-top: auto; }
 /* Aqui o respiro antes do rodapé é menor, para a caixa chegar perto dele. */
 html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp.active) > .rodape-respiro:not(#love-h-a) { flex-basis: 2rem; height: 2rem; }
+/* Drawer de presente: igual ao do convidado — cabeçalho branco com a linha
+   fina embaixo e o corpo no fundo das telas. */
+html body #drawer-add-gift:not(#love-h-a) { background: var(--bg-dashboard, #F4F6F7) !important; }
+html body #drawer-add-gift > div:first-child:not(#love-h-a) { background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important; align-items: center; }

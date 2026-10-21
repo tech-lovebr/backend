@@ -791,7 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
     const abaInicial = opts.aba || 'conta';
     abrirSubmenuDaPagina('Configurações', [
-      { id: 'conta', rotulo: 'Minha conta' },
+      { id: 'conta', rotulo: 'Informações' },
       { id: 'eventos', rotulo: 'Meu evento' }
     ], abaInicial, mostrarAbaDeConfiguracoes);
     mostrarAbaDeConfiguracoes(abaInicial);
@@ -811,6 +811,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (firstNameInput) firstNameInput.value = first;
     if (lastNameInput) lastNameInput.value = last;
     if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
+    const telInput = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-phone'));
+    if (telInput) telInput.value = profile.phone ? maskBrazilPhone(String(profile.phone)) : '';
+    const cpfInput = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-cpf'));
+    if (cpfInput) cpfInput.value = profile.cpf ? mascaraCpf(String(profile.cpf)) : '';
     document.getElementById('settings-form-error')?.classList.add('hidden');
     document.getElementById('settings-form-ok')?.classList.add('hidden');
     document.getElementById('settings-delete-box')?.classList.add('hidden');
@@ -17912,6 +17916,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.currentTab === 'tab-account-settings') {
       elements.drawerSubItemsList?.querySelectorAll('[data-pagina-item]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.paginaItem === aba));
     }
+    const tituloDaPagina = document.getElementById('account-settings-header-title');
+    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
@@ -18432,6 +18438,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Formulário de Configurações da Conta (Perfil + Segurança)
+  // Suas informações: máscara do celular e do CPF enquanto digita.
+  document.getElementById('settings-user-phone')?.addEventListener('input', (e) => {
+    const campo = /** @type {HTMLInputElement} */ (e.target);
+    campo.value = maskBrazilPhone(campo.value);
+  });
+  document.getElementById('settings-user-cpf')?.addEventListener('input', (e) => {
+    const campo = /** @type {HTMLInputElement} */ (e.target);
+    campo.value = mascaraCpf(campo.value);
+  });
+
   const formUserSettings = document.getElementById('form-user-settings');
   if (formUserSettings) {
     formUserSettings.addEventListener('submit', async (e) => {
@@ -18457,7 +18473,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       errorEl.classList.add('hidden');
 
-      if (!first_name) return showSettingsError('O nome não pode ficar vazio.');
+      if (!first_name) return showSettingsError('O primeiro nome não pode ficar vazio.');
+      if (!last_name) return showSettingsError('O sobrenome não pode ficar vazio.');
+      const telefoneDigitado = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-phone'))?.value.trim() || '';
+      const cpfDigitado = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-cpf'))?.value.trim() || '';
+      if (telefoneDigitado && !isValidBrazilPhone(telefoneDigitado)) return showSettingsError('Celular incompleto: use (DDD) 9XXXX-XXXX.');
+      if (cpfDigitado && cpfDigitado.replace(/\D/g, '').length !== 11) return showSettingsError('CPF incompleto.');
 
       const wantsPasswordChange = currentPassword || newPassword || confirmPassword;
       if (wantsPasswordChange) {
@@ -18500,7 +18521,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const [{ error: profileError }, { error: metaError }] = await Promise.all([
         supabaseClient
           .from('clientes')
-          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name })
+          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name, phone: telefoneDigitado || null, cpf: cpfDigitado || null })
           .eq('id', session.user.id),
         supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name } })
       ]);
@@ -18510,7 +18531,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (profileError || metaError) return showSettingsError('Não foi possível salvar seus dados. Tente novamente.');
 
       if (window.loveClienteProfile) {
-        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name });
+        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name, phone: telefoneDigitado || null, cpf: cpfDigitado || null });
       }
       atualizarAvatarDoCabecalho();
       const dropdownUsername = document.getElementById('account-dropdown-username');

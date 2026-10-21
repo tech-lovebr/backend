@@ -9739,3 +9739,14 @@ html body .floorplan-lista-tirar:not(#love-h-a):hover { background: #F4F6F7; col
 html body .config-btn-desativar:not(#love-h-a) { height: 40px; padding: 0 16px; background: #FFFFFF; border: 1px solid #FCA5A5; border-radius: 8px; color: #DC2626; font-size: 14px; font-weight: 600; cursor: pointer; }
 html body .config-btn-desativar:not(#love-h-a):hover { border-color: #DC2626; }
 @media (max-width: 640px) { .config-evento-linha { grid-template-columns: 1fr; gap: 4px; } }
+
+/* Configurações › Informações: campos no modelo "Suas informações" do Hub. */
+html body #config-painel-conta .conta-perfil-topo:not(#love-h-a) { flex-direction: column; align-items: flex-start; gap: 20px; }
+html body .conta-info-campos:not(#love-h-a) { display: flex; flex-direction: column; gap: 1.25rem; width: 100%; }
+html body .conta-info-campos .field-label:not(#love-h-a) { display: block; font-size: 0.9375rem; font-weight: 500; color: #18181B; margin-bottom: 0.45rem; }
+html body .conta-info-campos .field-input:not(#love-h-a) { width: 100%; height: 44px; font-size: 0.9375rem; }
+html body .conta-info-campos .field-input:disabled:not(#love-h-a) { background: #F4F4F5; color: #71717A; cursor: not-allowed; }
+.conta-obrigatorio { color: #DC2626; }
+html body button.informacoes-salvar-rodape.settings-zola-salvar:not(#love-h-a) { width: 100%; height: 44px; margin-top: 0.25rem; padding: 0; }
+html body #config-painel-conta .conta-perfil-topo:not(#love-h-a) { margin-bottom: 20px; }
+html body #config-painel-conta #btn-save-user-settings.settings-zola-salvar:not(#love-h-a) { height: 44px !important; min-height: 44px !important; width: 100% !important; padding: 0 !important; font-size: 14px !important; font-weight: 600 !important; border-radius: 8px !important; background: #FAFAFA !important; color: #181D24 !important; border: 1px solid #E4E4E7 !important; }

@@ -9731,3 +9731,9 @@ html body #form-drawer .form-field-card:focus-within:not(#love-h-a) { box-shadow
 html body:not([data-theme="dark"]) .b2b-sidebar:not(#love-h-a),
 html body.sidebar-collapsed:not([data-theme="dark"]) .b2b-sidebar:not(#love-h-a) { background-color: #183b54; }
 html body:not([data-theme="dark"]) .sidebar-edge-toggle:not(#love-h-a) { background-color: #183b54; }
+
+/* Menu do perfil: só o e-mail ao lado da foto (sem o nome), centralizado na altura. */
+html body #profile-dropdown-name:not(#love-h-a) { display: none !important; }
+html body .profile-dropdown-header:not(#love-h-a) { align-items: center; }
+html body .profile-dropdown-header .profile-dropdown-email:not(#love-h-a) { margin: 0; font-size: 0.8125rem; color: #3F3F46; }
+body[data-theme="dark"] .profile-dropdown-header .profile-dropdown-email { color: #D4D4D8 !important; }

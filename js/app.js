@@ -9381,20 +9381,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // arrastável e os cards de convidados; arraste "Mesa" para a planta e depois
   // arraste um convidado da lista até a mesa para acomodá-lo num assento.
   // ==========================================
-  // Itens da planta além das mesas (Inserir item › Espaços). w/h = tamanho na planta.
+  // Itens da planta além das mesas (Inserir item › Espaços). w/h = tamanho
+  // base; svg = ícone do menu; planta = desenho em planta baixa (viewBox w x h).
   const ITENS_DA_PLANTA = [
-    { type: 'buffet', label: 'Buffet', w: 200, h: 72, svg: '<rect x="3" y="14" width="26" height="9" rx="1.5"/><path d="M7 14a3.5 3.5 0 0 1 7 0M18 14a3.5 3.5 0 0 1 7 0M10.5 8.5v2M21.5 8.5v2"/>' },
-    { type: 'doces', label: 'Mesa de doces', w: 150, h: 72, svg: '<rect x="4" y="18" width="24" height="7" rx="1.5"/><path d="M9 18v-4h6v4M10 14v-2.5a2 2 0 0 1 4 0V14M19 18l2.5-6 2.5 6"/>' },
-    { type: 'cafe', label: 'Mesa de café', w: 130, h: 72, svg: '<path d="M8 13h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6Z"/><path d="M21 15h2a3 3 0 0 1 0 6h-2.5M11 6.5c0 1.5 1.5 1.5 1.5 3M15.5 6.5c0 1.5 1.5 1.5 1.5 3M6 27h17"/>' },
-    { type: 'bar', label: 'Bar de drinks', w: 170, h: 72, svg: '<path d="M7 7h14l-7 9Z"/><path d="M14 16v9M10 25h8M21.5 10.5l4-4"/><circle cx="23.5" cy="9" r="1.5"/>' },
-    { type: 'pista', label: 'Pista de dança', w: 200, h: 200, svg: '<rect x="5" y="5" width="22" height="22" rx="1.5"/><path d="M5 12.3h22M5 19.7h22M12.3 5v22M19.7 5v22"/>' },
-    { type: 'palco', label: 'Palco', w: 240, h: 110, svg: '<rect x="3" y="15" width="26" height="9" rx="1.5"/><path d="M6 15V9l5 3V8l5 3V7l5 3V6l5 3v6"/>' },
-    { type: 'altar', label: 'Altar', w: 150, h: 80, svg: '<path d="M5 23c4-9 18-9 22 0Z"/><path d="M16 5v8M12.5 8h7M5 27h22"/>' },
-    { type: 'banda', label: 'Banda', w: 170, h: 100, svg: '<path d="M12 23.5V8l15-3v15.5"/><path d="M12 13l15-3"/><circle cx="8.5" cy="23.5" r="3.5"/><circle cx="23.5" cy="20.5" r="3.5"/>' },
-    { type: 'kids', label: 'Área kids', w: 170, h: 140, svg: '<path d="M16 3.5a7.5 7.5 0 0 1 7.5 7.5c0 4.6-3.9 8.6-7.5 9.6-3.6-1-7.5-5-7.5-9.6A7.5 7.5 0 0 1 16 3.5Z"/><path d="m14.6 20.6 1.4 1.9 1.4-1.9M16 22.5c0 2.2-2.5 2.6-2.5 6M12.5 8.5a3.5 3.5 0 0 1 2.5-1.8"/>' },
-    { type: 'sofa', label: 'Sofá', w: 150, h: 64, svg: '<path d="M7 15v-3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/><path d="M5 15a2 2 0 0 1 2 2v2h18v-2a2 2 0 0 1 4 0v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2ZM7 23v3M25 23v3"/>' },
-    { type: 'backdrop', label: 'Backdrop', w: 200, h: 56, svg: '<path d="M5 5h22v15H5Z"/><path d="M5 5l5 15M27 5l-5 15M9 27l2-7M23 27l-2-7"/>' }
+    { type: 'buffet', label: 'Buffet', w: 200, h: 72, svg: '<path d="M4 23h24M6.5 23a9.5 9.5 0 0 1 19 0M16 13.5v-2.5M13.5 11h5M7 26.5h18"/>',
+      planta: '<rect x="1" y="1" width="198" height="70" rx="4"/><circle cx="34" cy="36" r="11" class="l"/><circle cx="166" cy="36" r="11" class="l"/><svg x="76" y="12" width="48" height="48" viewBox="0 0 32 32" class="l"><path d="M4 23h24M6.5 23a9.5 9.5 0 0 1 19 0M16 13.5v-2.5M13.5 11h5M7 26.5h18"/></svg>' },
+    { type: 'doces', label: 'Mesa de doces', w: 150, h: 72, svg: '<path d="M7 27v-9h18v9M5 27h22M7 21.5c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0M10 18v-4h12v4M16 14v-3"/><path d="M16 5.5c1.1 1.3 1.1 2.4 0 3.3-1.1-.9-1.1-2-0-3.3Z"/>',
+      planta: '<rect x="1" y="1" width="148" height="70" rx="4"/><circle cx="22" cy="22" r="6" class="l"/><circle cx="22" cy="50" r="6" class="l"/><circle cx="128" cy="22" r="6" class="l"/><circle cx="128" cy="50" r="6" class="l"/><svg x="51" y="12" width="48" height="48" viewBox="0 0 32 32" class="l"><path d="M7 27v-9h18v9M5 27h22M7 21.5c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0M10 18v-4h12v4M16 14v-3"/><path d="M16 5.5c1.1 1.3 1.1 2.4 0 3.3-1.1-.9-1.1-2-0-3.3Z"/></svg>' },
+    { type: 'cafe', label: 'Mesa de café', w: 130, h: 72, svg: '<path d="M8 13h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6Z"/><path d="M21 15h2a3 3 0 0 1 0 6h-2.5M11 6.5c0 1.5 1.5 1.5 1.5 3M15.5 6.5c0 1.5 1.5 1.5 1.5 3M6 27h17"/>',
+      planta: '<rect x="1" y="1" width="128" height="70" rx="4"/><svg x="43" y="14" width="44" height="44" viewBox="0 0 32 32" class="l"><path d="M8 13h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6Z"/><path d="M21 15h2a3 3 0 0 1 0 6h-2.5M11 6.5c0 1.5 1.5 1.5 1.5 3M15.5 6.5c0 1.5 1.5 1.5 1.5 3M6 27h17"/></svg>' },
+    { type: 'bar', label: 'Bar de drinks', w: 170, h: 90, svg: '<path d="M7 7h14l-7 9Z"/><path d="M14 16v9M10 25h8M21.5 10.5l4-4"/><circle cx="23.5" cy="9" r="1.5"/>',
+      planta: '<rect x="1" y="1" width="168" height="52" rx="4"/><path d="M1 14h168" class="l"/><circle cx="35" cy="75" r="9"/><circle cx="85" cy="75" r="9"/><circle cx="135" cy="75" r="9"/><svg x="69" y="16" width="32" height="32" viewBox="0 0 32 32" class="l"><path d="M7 7h14l-7 9Z"/><path d="M14 16v9M10 25h8M21.5 10.5l4-4"/><circle cx="23.5" cy="9" r="1.5"/></svg>' },
+    { type: 'pista', label: 'Pista de dança', w: 200, h: 200, svg: '<rect x="5" y="5" width="22" height="22" rx="1.5"/><path d="M5 12.3h22M5 19.7h22M12.3 5v22M19.7 5v22"/>',
+      planta: '<rect x="1" y="1" width="198" height="198" rx="2"/><rect x="1" y="40.6" width="39.6" height="39.6" class="c"/><rect x="1" y="119.80000000000001" width="39.6" height="39.6" class="c"/><rect x="40.6" y="1" width="39.6" height="39.6" class="c"/><rect x="40.6" y="80.2" width="39.6" height="39.6" class="c"/><rect x="40.6" y="159.4" width="39.6" height="39.6" class="c"/><rect x="80.2" y="40.6" width="39.6" height="39.6" class="c"/><rect x="80.2" y="119.80000000000001" width="39.6" height="39.6" class="c"/><rect x="119.80000000000001" y="1" width="39.6" height="39.6" class="c"/><rect x="119.80000000000001" y="80.2" width="39.6" height="39.6" class="c"/><rect x="119.80000000000001" y="159.4" width="39.6" height="39.6" class="c"/><rect x="159.4" y="40.6" width="39.6" height="39.6" class="c"/><rect x="159.4" y="119.80000000000001" width="39.6" height="39.6" class="c"/><rect x="1" y="1" width="198" height="198" rx="2" class="l"/>' },
+    { type: 'palco', label: 'Palco', w: 240, h: 110, svg: '<rect x="13" y="3" width="6" height="10.5" rx="3"/><path d="M16 13.5V20M16 20l-5.5 8M16 20l5.5 8M16 20v8"/>',
+      planta: '<rect x="12" y="92" width="216" height="17" rx="2"/><rect x="1" y="1" width="238" height="94" rx="4"/><rect x="12" y="12" width="24" height="24" rx="2"/><circle cx="24" cy="24" r="6.5" class="l"/><rect x="204" y="12" width="24" height="24" rx="2"/><circle cx="216" cy="24" r="6.5" class="l"/><rect x="80" y="14" width="80" height="36" rx="3"/><circle cx="99" cy="32" r="11" class="l"/><circle cx="99" cy="32" r="2.5" class="l"/><circle cx="141" cy="32" r="11" class="l"/><circle cx="141" cy="32" r="2.5" class="l"/><rect x="114.5" y="22" width="11" height="20" rx="1.5" class="l"/><circle cx="120" cy="72" r="4" class="l"/>' },
+    { type: 'altar', label: 'Altar', w: 150, h: 80, svg: '<path d="M5 23c4-9 18-9 22 0Z"/><path d="M16 5v8M12.5 8h7M5 27h22"/>',
+      planta: '<path d="M1 1h148v48a74 30 0 0 1-148 0Z"/><rect x="52" y="12" width="46" height="20" rx="2" class="l"/><circle cx="22" cy="22" r="10" class="l"/><circle cx="22" cy="22" r="4" class="l"/><circle cx="128" cy="22" r="10" class="l"/><circle cx="128" cy="22" r="4" class="l"/>' },
+    { type: 'kids', label: 'Área kids', w: 170, h: 140, svg: '<path d="M16 3.5a7.5 7.5 0 0 1 7.5 7.5c0 4.6-3.9 8.6-7.5 9.6-3.6-1-7.5-5-7.5-9.6A7.5 7.5 0 0 1 16 3.5Z"/><path d="m14.6 20.6 1.4 1.9 1.4-1.9M16 22.5c0 2.2-2.5 2.6-2.5 6M12.5 8.5a3.5 3.5 0 0 1 2.5-1.8"/>',
+      planta: '<rect x="1" y="1" width="168" height="138" rx="16"/><rect x="20" y="98" width="16" height="16" rx="2" class="l"/><rect x="38" y="106" width="13" height="13" rx="2" class="l"/><circle cx="144" cy="108" r="9" class="l"/><svg x="61" y="26" width="48" height="48" viewBox="0 0 32 32" class="l"><path d="M16 3.5a7.5 7.5 0 0 1 7.5 7.5c0 4.6-3.9 8.6-7.5 9.6-3.6-1-7.5-5-7.5-9.6A7.5 7.5 0 0 1 16 3.5Z"/><path d="m14.6 20.6 1.4 1.9 1.4-1.9M16 22.5c0 2.2-2.5 2.6-2.5 6M12.5 8.5a3.5 3.5 0 0 1 2.5-1.8"/></svg>' },
+    { type: 'sofa', label: 'Sofá', w: 150, h: 64, svg: '<rect x="4" y="9" width="24" height="14" rx="2"/><path d="M4 13h24M8 13v10M24 13v10M16 13v10"/>',
+      planta: '<rect x="1" y="1" width="148" height="62" rx="6"/><rect x="17" y="1" width="116" height="14" rx="2" class="l"/><rect x="1" y="1" width="16" height="62" rx="6" class="l"/><rect x="133" y="1" width="16" height="62" rx="6" class="l"/><rect x="19" y="17" width="55" height="44" rx="3" class="l"/><rect x="76" y="17" width="55" height="44" rx="3" class="l"/>' },
+    { type: 'backdrop', label: 'Backdrop', w: 200, h: 40, svg: '<path d="M5 5h22v15H5Z"/><path d="M5 5l5 15M27 5l-5 15M9 27l2-7M23 27l-2-7"/>',
+      planta: '<rect x="1" y="1" width="198" height="10" rx="2"/><circle cx="16" cy="24" r="10"/><circle cx="16" cy="24" r="4" class="l"/><circle cx="184" cy="24" r="10"/><circle cx="184" cy="24" r="4" class="l"/><circle cx="40" cy="17" r="4" class="l"/><circle cx="60" cy="17" r="4" class="l"/><circle cx="80" cy="17" r="4" class="l"/><circle cx="100" cy="17" r="4" class="l"/><circle cx="120" cy="17" r="4" class="l"/><circle cx="140" cy="17" r="4" class="l"/><circle cx="160" cy="17" r="4" class="l"/>' }
   ];
+  // Banda saiu do menu (virou Palco); plantas antigas com banda mostram o palco.
+  ITENS_DA_PLANTA.push(Object.assign({}, ITENS_DA_PLANTA.find(i => i.type === 'palco'), { type: 'banda', label: 'Palco' }));
   const FLOORPLAN_ELEMENT_TYPES = [
     { type: 'mesa', label: 'Mesa', icon: '🪑' },
     ...ITENS_DA_PLANTA.map(item => ({ type: item.type, label: item.label, icon: '' }))
@@ -9402,19 +9414,35 @@ document.addEventListener('DOMContentLoaded', () => {
   /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
   function alturaNaPlanta(item) {
     if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
-    if (parseFloat(item.h)) return parseFloat(item.h);
-    const meta = ITENS_DA_PLANTA.find(i => i.type === item.type);
-    return meta ? meta.h : 84;
+    return tamanhoDoItem(item).h;
   }
   /** Tamanho da mesa (1 = normal), entre 0,5 e 2. @param {any} item */
   function escalaDaMesa(item) {
     const s = parseFloat(item && item.escala);
     return s ? Math.min(2, Math.max(0.5, s)) : 1;
   }
-  /** Largura/altura de um item (buffet, palco...), já com o que o anfitrião redimensionou. @param {any} elData */
+  /**
+   * Tamanho de um item na planta. Cresce sempre na proporção (escala, de 0,4 a 3)
+   * e pode estar girado 90°. Plantas antigas guardavam largura/altura soltas:
+   * vira escala + girado.
+   * @param {any} elData
+   */
   function tamanhoDoItem(elData) {
     const meta = ITENS_DA_PLANTA.find(i => i.type === elData.type);
-    return { w: parseFloat(elData.w) || (meta ? meta.w : 84), h: parseFloat(elData.h) || (meta ? meta.h : 64) };
+    const bw = meta ? meta.w : 84;
+    const bh = meta ? meta.h : 64;
+    let escala = parseFloat(elData.escala);
+    let girado = !!elData.girado;
+    if (!escala && (parseFloat(elData.w) || parseFloat(elData.h))) {
+      const w = parseFloat(elData.w) || bw;
+      const h = parseFloat(elData.h) || bh;
+      escala = Math.max(w, h) / Math.max(bw, bh);
+      if (bw !== bh) girado = (w > h) !== (bw > bh);
+    }
+    escala = Math.min(3, Math.max(0.4, escala || 1));
+    const baseW = bw * escala;
+    const baseH = bh * escala;
+    return { w: girado ? baseH : baseW, h: girado ? baseW : baseH, escala, girado, baseW, baseH };
   }
 
   // Elemento selecionado na planta (caixa com alças + menuzinho embaixo).
@@ -9797,23 +9825,17 @@ document.addEventListener('DOMContentLoaded', () => {
           el.appendChild(seatDot);
         }
       } else {
-        // Item (buffet, palco, pista...): bloco com ícone e nome; o X tira da planta.
+        // Item (buffet, palco, pista...): só o desenho em planta baixa, sem nome
+        // (o nome aparece ao parar o mouse em cima).
         const item = ITENS_DA_PLANTA.find(i => i.type === elData.type);
         el.classList.add('is-item', `item-${elData.type}`);
+        el.title = meta.label;
         const tam = tamanhoDoItem(elData);
         el.style.width = `${tam.w}px`;
         el.style.height = `${tam.h}px`;
-        // Mais alto que largo (ex.: backdrop girado): o nome fica na vertical.
-        el.classList.toggle('is-em-pe', tam.h > tam.w * 1.4);
-        const iconEl = document.createElement('span');
-        iconEl.className = 'floorplan-item-icone';
-        iconEl.innerHTML = item ? `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${item.svg}</svg>` : '';
-        el.appendChild(iconEl);
-
-        const labelEl = document.createElement('span');
-        labelEl.className = 'floorplan-el-label';
-        labelEl.textContent = elData.nome || meta.label;
-        el.appendChild(labelEl);
+        if (item) {
+          el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${item.w} ${item.h}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.girado ? ' rotate(90deg)' : ''}" aria-hidden="true">${item.planta}</svg>`);
+        }
       }
 
       wireFloorPlanElementDrag(el, elData);
@@ -9875,7 +9897,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const acoes = document.createElement('div');
     acoes.className = 'floorplan-acoes';
     /** @type {[string, string][]} */
-    const botoes = [['editar', elData.type === 'mesa' ? 'Editar mesa' : 'Editar nome']];
+    const botoes = elData.type === 'mesa' ? [['editar', 'Editar mesa']] : [];
     if (giravel) botoes.push(['girar', 'Girar']);
     botoes.push(['duplicar', 'Duplicar'], ['excluir', 'Excluir']);
     botoes.forEach(([acao, titulo]) => {
@@ -9906,20 +9928,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const alvo = lista.find(x => x.id === id);
     if (!alvo) return;
     if (acao === 'editar') {
-      if (alvo.type === 'mesa') { openFloorplanTableModal(id); return; }
-      editarNomeDoItem(id);
+      if (alvo.type === 'mesa') openFloorplanTableModal(id);
       return;
     }
     if (acao === 'girar') {
       if (alvo.type === 'mesa') {
         alvo.orientacao = alvo.orientacao === 'vertical' ? 'horizontal' : 'vertical';
       } else {
-        // Item: troca largura e altura, mantendo o centro no lugar.
+        // Item: gira 90°, mantendo o centro no lugar.
         const t = tamanhoDoItem(alvo);
         alvo.x = Math.max(0, (parseFloat(alvo.x) || 0) + (t.w - t.h) / 2);
         alvo.y = Math.max(0, (parseFloat(alvo.y) || 0) + (t.h - t.w) / 2);
-        alvo.w = t.h;
-        alvo.h = t.w;
+        alvo.escala = t.escala;
+        alvo.girado = !t.girado;
+        delete alvo.w;
+        delete alvo.h;
       }
     } else if (acao === 'duplicar') {
       const copia = JSON.parse(JSON.stringify(alvo));
@@ -9948,44 +9971,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (alvo.type === 'mesa') renderFloorPlanGuestCards();
   }
 
-  // Item: o lápis deixa escrever o nome direto no bloco (Enter salva, Esc desiste).
-  /** @param {string} id */
-  function editarNomeDoItem(id) {
-    const canvas = document.getElementById('floorplan-canvas');
-    const label = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"] .floorplan-el-label`));
-    if (!label) return;
-    const original = label.textContent || '';
-    label.contentEditable = 'true';
-    label.classList.add('is-editando');
-    label.focus();
-    const faixa = document.createRange();
-    faixa.selectNodeContents(label);
-    const selecao = window.getSelection();
-    if (selecao) { selecao.removeAllRanges(); selecao.addRange(faixa); }
-    label.addEventListener('mousedown', (e) => e.stopPropagation());
-    let terminou = false;
-    const terminar = (/** @type {boolean} */ salvar) => {
-      if (terminou) return;
-      terminou = true;
-      label.contentEditable = 'false';
-      const lista = getFloorPlanElements();
-      const alvo = lista.find(x => x.id === id);
-      const texto = (label.textContent || '').trim();
-      if (salvar && alvo && texto && texto !== original) {
-        alvo.nome = texto;
-        saveFloorPlanElements(lista);
-      }
-      renderFloorPlanCanvas();
-    };
-    label.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); terminar(true); }
-      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); terminar(false); }
-    });
-    label.addEventListener('blur', () => terminar(true));
-  }
-
   // Alças da seleção: arrastar para fora aumenta, para dentro diminui.
-  // Mesa cresce por igual (escala); item muda largura e altura. O centro fica no lugar.
+  // Mesa e item crescem por igual (na proporção). O centro fica no lugar.
   /** @param {MouseEvent} e @param {string} id */
   function iniciarRedimensionamento(e, id) {
     e.preventDefault();
@@ -10003,28 +9990,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const centroY = y0 + tam0.h / 2;
     const dx0 = Math.abs(e.clientX - base.left - centroX) || 1;
     const dy0 = Math.abs(e.clientY - base.top - centroY) || 1;
-    const escala0 = escalaDaMesa(alvo);
-    let resultado = isMesa ? { escala: escala0 } : { w: tam0.w, h: tam0.h, x: x0, y: y0 };
+    const escala0 = isMesa ? escalaDaMesa(alvo) : tamanhoDoItem(alvo).escala;
+    /** @type {Record<string, any>} */
+    let resultado = isMesa ? { escala: escala0 } : { escala: escala0, girado: tamanhoDoItem(alvo).girado, x: x0, y: y0 };
     document.body.classList.add('planta-redimensionando');
 
     const mover = (/** @type {MouseEvent} */ ev) => {
       const dx = Math.abs(ev.clientX - base.left - centroX);
       const dy = Math.abs(ev.clientY - base.top - centroY);
+      const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
       if (isMesa) {
-        const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
         const escala = Math.round(Math.min(2, Math.max(0.5, escala0 * fator)) * 100) / 100;
         el.style.transform = escala === 1 ? '' : `scale(${escala})`;
         resultado = { escala };
       } else {
-        const w = Math.round(Math.min(800, Math.max(56, tam0.w + 2 * (dx - dx0))));
-        const hh = Math.round(Math.min(800, Math.max(40, tam0.h + 2 * (dy - dy0))));
+        const escala = Math.round(Math.min(3, Math.max(0.4, escala0 * fator)) * 100) / 100;
+        const w = tam0.w / escala0 * escala;
+        const hh = tam0.h / escala0 * escala;
         const x = Math.max(0, centroX - w / 2);
         const y = Math.max(0, centroY - hh / 2);
         el.style.width = `${w}px`;
         el.style.height = `${hh}px`;
         el.style.left = `${x}px`;
         el.style.top = `${y}px`;
-        resultado = { w, h: hh, x, y };
+        const desenho = /** @type {SVGElement|null} */ (el.querySelector('.floorplan-planta'));
+        if (desenho) {
+          const t0 = tamanhoDoItem(alvo);
+          desenho.style.width = `${t0.baseW / escala0 * escala}px`;
+          desenho.style.height = `${t0.baseH / escala0 * escala}px`;
+        }
+        resultado = { escala, girado: resultado.girado, x, y };
       }
       desenharSelecaoDaPlanta();
     };
@@ -10036,6 +10031,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const t = lista.find(x => x.id === id);
       if (!t) return;
       Object.assign(t, resultado);
+      if (!isMesa) { delete t.w; delete t.h; }
       saveFloorPlanElements(lista);
       renderFloorPlanCanvas();
     };

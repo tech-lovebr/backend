@@ -9304,3 +9304,15 @@ html body .floorplan-wrap.is-expandida #floorplan-guests-panel.is-minimizada:not
 html body .floorplan-wrap.is-expandida #floorplan-guests-panel.is-minimizada:not(#love-h-a) .floorplan-convidados-topo { border-bottom: 0; }
 body[data-theme="dark"] .floorplan-wrap.is-expandida #floorplan-guests-panel { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .floorplan-minimizar-lista { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+
+/* Itens da planta em planta baixa: só o desenho (sem caixa, sem nome). */
+html body .floorplan-el.is-item:not(#love-h-a) { padding: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+html body .floorplan-el.is-item:not(#love-h-a):hover { border: 0; }
+.floorplan-planta { position: absolute; left: 50%; top: 50%; overflow: visible; pointer-events: none; }
+.floorplan-planta * { fill: #FFFFFF; stroke: #52525B; stroke-width: 1.5px; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.floorplan-planta .l, .floorplan-planta .l * { fill: none; }
+.floorplan-planta .c { fill: #F4F4F5; stroke: none; }
+.floorplan-el.is-item:hover .floorplan-planta * { stroke: #181D24; }
+body[data-theme="dark"] .floorplan-planta * { fill: #252525; stroke: #A1A1AA; }
+body[data-theme="dark"] .floorplan-planta .l, body[data-theme="dark"] .floorplan-planta .l * { fill: none; }
+body[data-theme="dark"] .floorplan-planta .c { fill: #333333; stroke: none; }

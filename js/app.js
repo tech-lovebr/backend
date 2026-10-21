@@ -3327,7 +3327,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function getDefaultCoverForEventType(typeKey = '', typeLabel = '') {
     const t = `${typeKey || ''} ${typeLabel || ''}`.toLowerCase();
     if (t.includes('birthday') || t.includes('anivers') || t.includes('niver')) {
-      return 'assets/criar-aniversario.jpg?v=20261019b';
+      return 'assets/criar-aniversario.jpg?v=20261021';
     }
     if (t.includes('baby') || t.includes('bebe') || t.includes('bebê')) {
       return 'assets/criar-cha-de-bebe.jpg';

@@ -9532,3 +9532,8 @@ body[data-theme="dark"] .op-chip.is-ativo { background: #FFFFFF !important; colo
    (o rodapé já usa o mesmo respiro lateral do conteúdo). */
 html body .b2b-footer-bottom--enxuto:not(#love-h-a) { align-items: flex-start; text-align: left; }
 html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links:not(#love-h-a) { justify-content: flex-start; }
+
+/* Rodapé numa linha só: Love Hub Ltda à esquerda, Privacidade e Termos à direita. */
+html body .b2b-footer-bottom--enxuto:not(#love-h-a) { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; }
+html body .b2b-footer-bottom--enxuto .b2b-footer-legal-links:not(#love-h-a) { justify-content: flex-end; }
+html body .b2b-footer:not(#love-h-a) { padding-top: 1rem; padding-bottom: 1rem; }

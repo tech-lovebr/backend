@@ -9391,7 +9391,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { type: 'palco', label: 'Palco', w: 240, h: 110, svg: '<rect x="3" y="15" width="26" height="9" rx="1.5"/><path d="M6 15V9l5 3V8l5 3V7l5 3V6l5 3v6"/>' },
     { type: 'altar', label: 'Altar', w: 150, h: 80, svg: '<path d="M5 23c4-9 18-9 22 0Z"/><path d="M16 5v8M12.5 8h7M5 27h22"/>' },
     { type: 'banda', label: 'Banda', w: 170, h: 100, svg: '<circle cx="11" cy="21" r="5"/><path d="M16 21V7l9-2v13"/><circle cx="22.5" cy="18" r="2.5"/>' },
-    { type: 'kids', label: 'Área kids', w: 170, h: 140, svg: '<circle cx="16" cy="9" r="3"/><path d="M16 12v8M10 15h12M16 20l-4 7M16 20l4 7"/>' },
+    { type: 'kids', label: 'Área kids', w: 170, h: 140, svg: '<path d="M16 3.5a7.5 7.5 0 0 1 7.5 7.5c0 4.6-3.9 8.6-7.5 9.6-3.6-1-7.5-5-7.5-9.6A7.5 7.5 0 0 1 16 3.5Z"/><path d="m14.6 20.6 1.4 1.9 1.4-1.9M16 22.5c0 2.2-2.5 2.6-2.5 6M12.5 8.5a3.5 3.5 0 0 1 2.5-1.8"/>' },
     { type: 'sofa', label: 'Sofá', w: 150, h: 64, svg: '<path d="M7 15v-3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/><path d="M5 15a2 2 0 0 1 2 2v2h18v-2a2 2 0 0 1 4 0v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2ZM7 23v3M25 23v3"/>' },
     { type: 'backdrop', label: 'Backdrop', w: 200, h: 56, svg: '<path d="M5 5h22v15H5Z"/><path d="M5 5l5 15M27 5l-5 15M9 27l2-7M23 27l-2-7"/>' }
   ];

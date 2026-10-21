@@ -9826,3 +9826,8 @@ html body:not([data-theme="dark"]) #builder-elements-panel .builder-el-item:not(
 /* Menu do presente: ícone à esquerda de cada opção. */
 html body .gift-card-menu button:not(#love-h-a) { gap: 10px; }
 .gift-card-menu button svg { width: 16px; height: 16px; flex-shrink: 0; }
+/* Personalizar evento › Informações: uma linha bem clara de ponta a ponta
+   separando cada bloco (nome do evento, endereço do site, data e horário…),
+   igual à da lista de convidados do Mapa do evento. */
+html body #editor-form-data > div:not(:last-child):not(.hidden):not(#love-h-a) { position: relative; }
+html body #editor-form-data > div:not(:last-child):not(.hidden):not(#love-h-a)::after { content: ''; position: absolute; left: -24px; right: -24px; bottom: -12px; height: 1px; background: rgba(0, 0, 0, 0.05); pointer-events: none; }

@@ -7468,6 +7468,86 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
   }
 
+  // ==========================================
+  // MENU DO PRESENTE (três bolinhas no cartão)
+  // ==========================================
+  function fecharMenuDoPresente() {
+    document.querySelectorAll('.gift-card-menu').forEach(m => m.remove());
+  }
+  document.addEventListener('mousedown', (e) => {
+    if (e.target instanceof Element && (e.target.closest('.gift-card-menu') || e.target.closest('.gift-card-mais'))) return;
+    fecharMenuDoPresente();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuDoPresente(); });
+
+  /** @param {HTMLElement} botao @param {any} gift */
+  function abrirMenuDoPresente(botao, gift) {
+    const jaAberto = document.querySelector('.gift-card-menu');
+    fecharMenuDoPresente();
+    if (jaAberto && /** @type {HTMLElement} */ (jaAberto).dataset.giftId === String(gift.id)) return;
+    const menu = document.createElement('div');
+    menu.className = 'gift-card-menu';
+    menu.dataset.giftId = String(gift.id);
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = `
+      <button type="button" role="menuitem" data-acao="editar">Editar presente</button>
+      <button type="button" role="menuitem" data-acao="duplicar">Duplicar</button>
+      <button type="button" role="menuitem" data-acao="remover" class="is-perigo">Remover</button>`;
+    document.body.appendChild(menu);
+    const r = botao.getBoundingClientRect();
+    menu.style.top = `${Math.min(r.bottom + 6, window.innerHeight - menu.offsetHeight - 8)}px`;
+    menu.style.left = `${Math.max(8, Math.min(r.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - 8))}px`;
+    menu.addEventListener('click', async (e) => {
+      const item = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-acao]')) : null;
+      if (!item) return;
+      fecharMenuDoPresente();
+      if (item.dataset.acao === 'editar') openGiftDrawerForEdit(gift);
+      else if (item.dataset.acao === 'duplicar') await duplicarPresente(gift);
+      else if (item.dataset.acao === 'remover') await removerPresente(gift);
+    });
+  }
+
+  /** Cópia do presente logo depois do original (nasce disponível). @param {any} original @returns {Promise<boolean>} */
+  async function duplicarPresente(original) {
+    const activeEvent = getActiveEvent();
+    if (!activeEvent || !original) return false;
+    const copia = JSON.parse(JSON.stringify(original));
+    copia.id = `gift-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    copia.title = `${original.title || 'Presente'} (cópia)`;
+    copia.received = 0;
+    copia.buyerName = null;
+    copia.contributorsCount = 0;
+    copia.status = 'Disponível para Presentear';
+    const { error } = await salvarPresenteNoBanco(copia).catch(err => ({ error: err }));
+    if (error) { console.error('Erro ao duplicar presente:', error); return false; }
+    const idx = (activeEvent.giftList || []).indexOf(original);
+    activeEvent.giftList.splice(idx >= 0 ? idx + 1 : 0, 0, copia);
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('gifts-search-input'));
+    renderHostGifts(busca ? busca.value : '');
+    updateAllCelebrationData();
+    return true;
+  }
+
+  /** Remove o presente (pergunta na janela da Love). @param {any} gift */
+  async function removerPresente(gift) {
+    const evento = getActiveEvent();
+    if (!evento || !gift) return;
+    const removeu = await confirmarNaLove({
+      titulo: `Remover "${gift.title || 'presente'}"?`,
+      texto: 'Essa ação não pode ser desfeita.',
+      botao: 'Remover',
+      aoConfirmar: async () => {
+        const { error } = await excluirPresenteNoBanco(gift.id);
+        return error ? 'Não foi possível remover o presente agora. Tente de novo.' : null;
+      }
+    });
+    if (!removeu) return;
+    evento.giftList = (evento.giftList || []).filter(/** @param {any} g */ g => g.id !== gift.id);
+    const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('gifts-search-input'));
+    renderHostGifts(busca ? busca.value : '');
+    updateAllCelebrationData();
+  }
+
   function renderHostGifts(searchQuery = '') {
     const container = document.getElementById('host-gifts-grid');
     const headerTitle = document.getElementById('gifts-header-title');
@@ -7542,10 +7622,10 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <!-- Topo do Card: Imagem com Proporção Ampla e Background Suave -->
         <div class="w-full h-44 sm:h-48 bg-zinc-50 flex items-center justify-center relative overflow-hidden">
-          <label class="gift-select-box" title="Selecionar presente">
-            <input type="checkbox" class="gift-select-check" ${presentesSelecionados.has(gift.id) ? 'checked' : ''} aria-label="Selecionar ${escaparHtml(gift.title || 'presente')}">
-            <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
-          </label>
+          <!-- Três bolinhas: Editar presente / Duplicar / Remover -->
+          <button type="button" class="gift-card-mais" aria-label="Opções do presente" aria-haspopup="menu">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+          </button>
           ${gift.image
             ? `<img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full flex items-center justify-center bg-zinc-100 text-zinc-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div>'}
@@ -7579,44 +7659,19 @@ document.addEventListener('DOMContentLoaded', () => {
             ${barraDaVaquinhaHtml(gift)}
           </div>
 
-          <!-- Linha de Ações: Editar / Excluir (também no presente comprado) -->
-          ${true ? `
-            <div class="flex items-center gap-2 pt-1 mt-auto">
-              <button type="button" class="btn-edit-gift flex-1 py-2 px-3 rounded-[var(--radius-control,12px)] border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition-all font-sans cursor-pointer text-center">
-                Editar
-              </button>
-            </div>
-          ` : `
-            <div class="pt-1 mt-auto">
-              <div class="gift-received-btn w-full py-2 px-3 rounded-[var(--radius-control,12px)] bg-[#FAFAFA] border border-zinc-200 text-center text-xs font-bold text-zinc-600 font-sans select-none flex items-center justify-center gap-1.5" title="Ver recado">
-                <span>Presente recebido</span>
-              </div>
-            </div>
-          `}
         </div>
       `;
 
-      // Evento de edição do presente
-      const btnEdit = card.querySelector('.btn-edit-gift');
-      if (btnEdit) {
-        btnEdit.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openGiftDrawerForEdit(gift);
-        });
-      }
-
-      // Caixinha de seleção (exclusão em massa pela lixeira do topo)
-      const checkSelecao = card.querySelector('.gift-select-check');
-      if (checkSelecao) {
-        checkSelecao.closest('.gift-select-box').addEventListener('click', (e) => e.stopPropagation());
-        checkSelecao.addEventListener('change', () => {
-          if (checkSelecao.checked) presentesSelecionados.add(gift.id);
-          else presentesSelecionados.delete(gift.id);
-          card.classList.toggle('gift-card-selecionado', checkSelecao.checked);
-          atualizarLixeiraDePresentes();
-        });
-        card.classList.toggle('gift-card-selecionado', checkSelecao.checked);
-      }
+      // O cartão inteiro abre o editar; as três bolinhas abrem o menu.
+      card.classList.add('gift-card-clicavel');
+      card.addEventListener('click', (e) => {
+        if (e.target instanceof Element && e.target.closest('.gift-card-mais')) return;
+        openGiftDrawerForEdit(gift);
+      });
+      card.querySelector('.gift-card-mais')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirMenuDoPresente(/** @type {HTMLElement} */ (e.currentTarget), gift);
+      });
 
 
       // Evento de favoritar presente

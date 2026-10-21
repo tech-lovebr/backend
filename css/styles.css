@@ -9750,3 +9750,15 @@ html body .conta-info-campos .field-input:disabled:not(#love-h-a) { background: 
 html body button.informacoes-salvar-rodape.settings-zola-salvar:not(#love-h-a) { width: 100%; height: 44px; margin-top: 0.25rem; padding: 0; }
 html body #config-painel-conta .conta-perfil-topo:not(#love-h-a) { margin-bottom: 20px; }
 html body #config-painel-conta #btn-save-user-settings.settings-zola-salvar:not(#love-h-a) { height: 44px !important; min-height: 44px !important; width: 100% !important; padding: 0 !important; font-size: 14px !important; font-weight: 600 !important; border-radius: 8px !important; background: #FAFAFA !important; color: #181D24 !important; border: 1px solid #E4E4E7 !important; }
+
+/* Meus presentes: o cartão inteiro abre o editar; três bolinhas no canto da
+   foto com Editar presente / Duplicar / Remover. Sem seleção em massa. */
+html body #view-event-os-dashboard #btn-gifts-delete-selected:not(#love-h-a) { display: none !important; }
+.gift-card-clicavel { cursor: pointer; }
+html body .gift-card-mais:not(#love-h-a) { position: absolute; top: 10px; right: 10px; z-index: 5; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 0; border-radius: 999px; color: #52525B; cursor: pointer; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+html body .gift-card-mais:not(#love-h-a):hover { color: #18181B; }
+.gift-card-mais svg { width: 16px; height: 16px; }
+.gift-card-menu { position: fixed; z-index: 200; min-width: 180px; padding: 6px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); display: flex; flex-direction: column; }
+html body .gift-card-menu button:not(#love-h-a) { display: flex; align-items: center; width: 100%; height: 36px; padding: 0 10px; background: transparent; border: 0; border-radius: 8px; font-size: 14px; color: #18181B; text-align: left; cursor: pointer; }
+html body .gift-card-menu button:not(#love-h-a):hover { background: #F4F6F7; }
+html body .gift-card-menu button.is-perigo:not(#love-h-a) { color: #DC2626; }

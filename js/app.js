@@ -9765,20 +9765,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Objetos › Texto: caixinha de texto simples (sem negrito), editável.
     { type: 'texto', label: 'Texto', icon: '' },
     // Guias da régua (planta expandida): linha horizontal/vertical presa na planta.
-    { type: 'guia', label: 'Guia', icon: '' }
+    { type: 'guia', label: 'Guia', icon: '' },
+    // Largura base da planta (não aparece): a planta é desenhada na proporção dela.
+    { type: 'config', label: 'Planta', icon: '' }
   ];
   /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
   function alturaNaPlanta(item) {
     if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
     if (item.type === 'linha') return parseFloat(item.h) || 20;
-    if (item.type === 'guia') return 0;
+    if (item.type === 'guia' || item.type === 'config') return 0;
     return tamanhoDoItem(item).h;
   }
   /** Largura de um elemento na planta (onde ele termina à direita = x + isto). @param {any} item */
   function larguraNaPlanta(item) {
     if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
     if (item.type === 'linha') return parseFloat(item.w) || 200;
-    if (item.type === 'guia') return 0;
+    if (item.type === 'guia' || item.type === 'config') return 0;
     return tamanhoDoItem(item).w;
   }
   /**
@@ -9790,9 +9792,14 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @param {HTMLElement} canvas @param {any[]} elements */
   function escalaParaCaber(canvas, elements) {
     const largura = canvas.clientWidth || 0;
-    const direita = elements.reduce((max, it) => it.type === 'guia' ? max : Math.max(max, (parseFloat(it.x) || 0) + larguraNaPlanta(it)), 0);
-    if (!largura || direita <= largura - 8) return 1;
-    return Math.max(0.3, (largura - 8) / direita);
+    if (!largura) return 1;
+    // Proporcional: a planta tem uma largura base (guardada na primeira vez) e
+    // cada tela desenha tudo na mesma proporção — a expandida aumenta, a
+    // reduzida diminui, e uma mesa ocupa o mesmo espaço relativo nas duas.
+    const config = elements.find(it => it.type === 'config');
+    const base = (config && parseFloat(config.largura)) || largura;
+    const direita = elements.reduce((max, it) => (it.type === 'guia' || it.type === 'config') ? max : Math.max(max, (parseFloat(it.x) || 0) + larguraNaPlanta(it)), 0);
+    return Math.min(3, Math.max(0.3, largura / Math.max(base, direita + 8)));
   }
   /** Tamanho da mesa (1 = normal), entre 0,5 e 2. @param {any} item */
   function escalaDaMesa(item) {
@@ -10271,7 +10278,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const elements = getFloorPlanElements();
 
     canvas.querySelectorAll('.floorplan-el, .floorplan-guia').forEach(el => el.remove());
-    if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia') ? 'none' : 'flex';
+    if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia' && x.type !== 'config') ? 'none' : 'flex';
+    // Primeira vez: a largura desta tela vira a largura base da planta.
+    if (!elements.some(x => x.type === 'config') && canvas.clientWidth) {
+      elements.push({ id: 'planta-config', type: 'config', largura: Math.round(canvas.clientWidth) });
+      saveFloorPlanElements(elements);
+    }
     // Camada com todos os elementos, na escala que faz tudo caber na largura.
     escalaDaPlanta = escalaParaCaber(canvas, elements);
     let camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
@@ -10291,6 +10303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ajustarAlturaDaPlanta(canvas, elements);
 
     elements.forEach(elData => {
+      if (elData.type === 'config') return;
       if (elData.type === 'guia') { desenharGuia(/** @type {HTMLElement} */ (camada), elData); return; }
       const meta = FLOORPLAN_TYPE_META[elData.type] || { label: elData.type, icon: '❓' };
       const el = document.createElement('div');

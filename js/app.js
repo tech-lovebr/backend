@@ -8062,6 +8062,7 @@ document.addEventListener('DOMContentLoaded', () => {
     botao?.classList.toggle('is-ativo', mostrar);
     const voltar = document.getElementById('btn-gifts-listas-voltar');
     if (voltar) voltar.hidden = !mostrar;
+    mostrarCaminhoDaLista(null);
     document.getElementById('gifts-top-search-bar')?.classList.toggle('gifts-acoes-escondidas', mostrar);
     if (!mostrar) return;
     const cardCriarDoZero = `<button type="button" class="lista-pronta-card lista-pronta-criar" data-criar-presente>
@@ -8088,6 +8089,60 @@ document.addEventListener('DOMContentLoaded', () => {
           }).join('')).join('')}
         </div>
       </section>`;
+  }
+
+  /** @type {{ nome: string, img: string, itens: [string, number][] } | null} */
+  let listaProntaAberta = null;
+
+  /** Troca o título do cabeçalho pelo caminho até a lista (null volta ao título). @param {string|null} nomeDaLista */
+  function mostrarCaminhoDaLista(nomeDaLista) {
+    const caminho = document.getElementById('gifts-breadcrumb');
+    const titulo = document.getElementById('gifts-header-title');
+    const voltar = document.getElementById('btn-gifts-listas-voltar');
+    if (!caminho) return;
+    const aberto = nomeDaLista !== null;
+    caminho.hidden = !aberto;
+    if (titulo) titulo.hidden = aberto;
+    if (aberto && voltar) voltar.hidden = true;
+    const seta = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+    caminho.innerHTML = aberto ? `
+      <button type="button" data-caminho="presentes">Meus presentes</button>${seta}
+      <button type="button" data-caminho="listas">Adicione uma lista</button>${seta}
+      <span aria-current="page">${escaparHtml(nomeDaLista || '')}</span>` : '';
+  }
+  document.getElementById('gifts-breadcrumb')?.addEventListener('click', (e) => {
+    const item = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-caminho]')) : null;
+    if (!item) return;
+    if (item.dataset.caminho === 'presentes') irParaListasProntas(false);
+    else mostrarListasProntas(true);
+  });
+
+  /** Mostra todos os presentes de uma lista pronta antes de adicionar. @param {{ nome: string, img: string, itens: [string, number][] }} lista */
+  function mostrarDetalheDaLista(lista) {
+    const painel = document.getElementById('gifts-listas-prontas');
+    if (!painel) return;
+    listaProntaAberta = lista;
+    const total = lista.itens.reduce((t, it) => t + it[1], 0);
+    painel.innerHTML = `
+      <section class="lista-detalhe">
+        <div class="lista-detalhe-topo">
+          <p class="lista-detalhe-resumo">${lista.itens.length} presentes <span aria-hidden="true">·</span> Total da lista: <b>${reaisDaLista(total)}</b></p>
+          <button type="button" class="btn-primary" data-adicionar-lista>Adicionar lista</button>
+        </div>
+        <div class="listas-prontas-grade">
+          ${lista.itens.map(([titulo, preco]) => `
+            <div class="lista-item-card">
+              <img src="${escaparHtml(lista.img)}" alt="" loading="lazy">
+              <span class="lista-pronta-corpo">
+                <strong>${escaparHtml(titulo)}</strong>
+                <span class="lista-item-preco">${reaisDaLista(preco)}</span>
+              </span>
+            </div>`).join('')}
+        </div>
+      </section>`;
+    mostrarCaminhoDaLista(lista.nome);
+    document.getElementById('dashboard-main-area')?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
   }
 
   /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number][] }} lista */
@@ -8136,10 +8191,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!alvo) return;
     if (alvo.closest('[data-voltar-presentes]')) { irParaListasProntas(false); return; }
     if (alvo.closest('[data-criar-presente]')) { openGiftDrawer(); return; }
+    if (alvo.closest('[data-adicionar-lista]')) { if (listaProntaAberta) adicionarListaPronta(listaProntaAberta); return; }
     const card = /** @type {HTMLElement|null} */ (alvo.closest('.lista-pronta-card'));
     if (!card) return;
     const lista = LISTAS_PRONTAS[Number(card.dataset.secao)]?.listas[Number(card.dataset.lista)];
-    if (lista) adicionarListaPronta(lista);
+    if (lista) mostrarDetalheDaLista(lista);
   });
 
   const randomGiftsPool = [

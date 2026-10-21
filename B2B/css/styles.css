@@ -9742,3 +9742,6 @@ body[data-theme="dark"] .profile-dropdown-header .profile-dropdown-email { color
    de overlay, no lugar da caixinha preta do navegador (igual ao love.com.br). */
 .love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #18181B; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
 .love-dica.is-visivel { opacity: 1; visibility: visible; }
+
+/* Dashboard › Analytics: sem o botão de calendário (período) por enquanto. */
+html body .dash-analytics-period-wrap:not(#love-h-a) { display: none !important; }

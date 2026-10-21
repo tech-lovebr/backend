@@ -553,7 +553,7 @@ function setSidebarCollapsed(collapsed) {
 
   const label = collapsed ? 'Expandir menu' : 'Recolher menu';
   const btn = document.getElementById('sidebar-collapse-toggle');
-  if (btn) { btn.title = label; btn.setAttribute('aria-label', label); }
+  if (btn) { btn.dataset.dica = label; btn.removeAttribute('title'); btn.setAttribute('aria-label', label); }
 }
 
 // Sem foto, o avatar padrão é o ícone da Love (não um bonequinho genérico):

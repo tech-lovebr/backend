@@ -8263,20 +8263,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return true;
   }
 
-  /** Remove o presente (pergunta na janela da Love). @param {any} gift */
+  /** Remove o presente direto, sem perguntar. @param {any} gift */
   async function removerPresente(gift) {
     const evento = getActiveEvent();
     if (!evento || !gift) return;
-    const removeu = await confirmarNaLove({
-      titulo: `Remover "${gift.title || 'presente'}"?`,
-      texto: 'Essa ação não pode ser desfeita.',
-      botao: 'Remover',
-      aoConfirmar: async () => {
-        const { error } = await excluirPresenteNoBanco(gift.id);
-        return error ? 'Não foi possível remover o presente agora. Tente de novo.' : null;
-      }
-    });
-    if (!removeu) return;
+    // Remove direto, sem perguntar.
+    const { error } = await excluirPresenteNoBanco(gift.id).catch(err => ({ error: err }));
+    if (error) { console.error('Erro ao remover presente:', error); return; }
     evento.giftList = (evento.giftList || []).filter(/** @param {any} g */ g => g.id !== gift.id);
     const busca = /** @type {HTMLInputElement|null} */ (document.getElementById('gifts-search-input'));
     renderHostGifts(busca ? busca.value : '');

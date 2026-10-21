@@ -9536,3 +9536,7 @@ html body .floorplan-rodape-logo:not(#love-h-a) { height: 24px; width: auto; }
 html body .floorplan-planta text.t:not(#love-h-a) { fill: #52525B; stroke: none; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; }
 html body .floorplan-el.is-item:hover .floorplan-planta text.t:not(#love-h-a) { fill: #181D24; stroke: none; }
 body[data-theme="dark"] .floorplan-planta text.t { fill: #D4D4D8 !important; }
+/* Mapa do evento › lista de convidados: quem ainda não tem assento ganha uma
+   linha bem clara embaixo, de uma borda da lista até a outra. */
+html body #floorplan-guests-panel .floorplan-guest-card:not(.is-seated):not(#love-h-a) { position: relative; }
+html body #floorplan-guests-panel .floorplan-guest-card:not(.is-seated):not(:last-child):not(#love-h-a)::after { content: ''; position: absolute; left: -12px; right: -12px; bottom: -2.5px; height: 1px; background: rgba(0, 0, 0, 0.05); pointer-events: none; }

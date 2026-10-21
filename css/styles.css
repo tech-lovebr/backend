@@ -9405,3 +9405,6 @@ body[data-theme="dark"] .floorplan-linha-svg .traco { stroke: #A1A1AA; }
 .floorplan-rabisco-ao-vivo { position: absolute; left: 0; top: 0; z-index: 35; pointer-events: none; overflow: visible; }
 .floorplan-rabisco-ao-vivo path { fill: none; stroke: #181D24; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
 .floorplan-dica-desenho { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 36; padding: 6px 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-size: 12px; color: #3F3F46; pointer-events: none; white-space: nowrap; }
+/* Mapa do evento › lista de convidados: mesma margem dos dois lados (era 12px
+   à esquerda e 4px à direita). */
+html body .floorplan-wrap:not(.is-expandida) #floorplan-guests-panel > .builder-panel-tab-body:not(#love-h-a) { padding-right: 12px !important; }

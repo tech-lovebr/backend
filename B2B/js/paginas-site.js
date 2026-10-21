@@ -28,7 +28,33 @@ let drawerBgMode = 'color';
 let drawerBgColor = '';
 let drawerBgImage = '';
 
+/* Editar meu site: um cabeçalho só. O título vira o seletor de página (seta
+   para baixo › Site Principal / Meu checkout; o padrão é o Site Principal) e
+   os aparelhos, Desfazer/Refazer, Ver meu site, Salvar e Publicar sobem para
+   a faixa do título. A barra de baixo do editor some. Os elementos são os
+   mesmos (só mudam de lugar), então os cliques do editor continuam valendo. */
+function subirBarraDoEditor() {
+  const cabecalho = document.querySelector('.b2b-header-bar');
+  const titulo = document.getElementById('site-titulo-pagina');
+  const seletor = document.getElementById('builder-page-switcher');
+  const botaoSeletor = document.getElementById('builder-page-select-btn');
+  const aparelhos = document.getElementById('builder-device-toggle');
+  const acoes = document.querySelector('.builder-toolbar-right');
+  if (!cabecalho || !titulo || !seletor || !botaoSeletor || !aparelhos || !acoes) return;
+
+  botaoSeletor.prepend(titulo);
+  botaoSeletor.insertAdjacentHTML('beforeend', '<svg class="site-seletor-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>');
+  cabecalho.prepend(seletor);
+
+  const direita = document.createElement('div');
+  direita.className = 'site-cabecalho-acoes';
+  direita.append(aparelhos, acoes);
+  cabecalho.append(direita);
+  document.body.classList.add('site-barra-no-cabecalho');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  subirBarraDoEditor();
   initSiteTabs();
   initFormsList();
   initFormDrawer();

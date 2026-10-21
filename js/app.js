@@ -14239,6 +14239,97 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Chat/Contratar abrem (ou criam) a conversa real com aquele fornecedor.
+  // ==========================================
+  // POP-UP "MENSAGEM" (Explorar e página do serviço)
+  // ==========================================
+  const LIMITE_DA_PRIMEIRA_MENSAGEM = 250;
+  /** @type {any} */
+  let fornecedorDaMensagem = null;
+
+  /** @param {any} item @param {string} produto */
+  function abrirMensagemParaFornecedor(item, produto) {
+    const modal = document.getElementById('modal-b2b-mensagem');
+    if (!modal || !item) return;
+    fornecedorDaMensagem = item;
+    const foto = /** @type {HTMLImageElement} */ (document.getElementById('b2b-mensagem-foto'));
+    foto.src = item.avatar || avatarComIniciais(item.name);
+    foto.alt = item.name || '';
+    /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-empresa')).textContent = item.name || '';
+    /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-produto')).textContent = produto && produto !== item.name ? produto : '';
+    /** @type {HTMLElement} */ (document.getElementById('b2b-mensagem-saudacao-nome')).textContent = (item.name || '').trim();
+    const texto = /** @type {HTMLTextAreaElement} */ (document.getElementById('b2b-mensagem-texto'));
+    texto.value = '';
+    texto.placeholder = `Pergunte a ${item.name || 'este fornecedor'} ou conte um pouco sobre o seu evento`;
+    mostrarErroDaMensagem(false);
+    atualizarCampoDaMensagem();
+    openModal(modal);
+    setTimeout(() => texto.focus(), 50);
+  }
+
+  /** @param {boolean} sim */
+  function mostrarErroDaMensagem(sim) {
+    document.getElementById('b2b-mensagem-campo')?.classList.toggle('is-erro', sim);
+    const erro = document.getElementById('b2b-mensagem-erro');
+    if (erro) erro.hidden = !sim;
+  }
+
+  // Cresce com o texto (sem a alça de redimensionar), conta os caracteres e
+  // libera o Enviar quando há texto.
+  function atualizarCampoDaMensagem() {
+    const texto = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('b2b-mensagem-texto'));
+    if (!texto) return;
+    texto.style.height = 'auto';
+    texto.style.height = `${Math.max(texto.scrollHeight, 96)}px`;
+    const restantes = LIMITE_DA_PRIMEIRA_MENSAGEM - texto.value.length;
+    const contador = document.getElementById('b2b-mensagem-contador');
+    if (contador) contador.textContent = `${restantes} caractere${restantes === 1 ? '' : 's'} restante${restantes === 1 ? '' : 's'}`;
+    const enviar = /** @type {HTMLButtonElement|null} */ (document.getElementById('b2b-mensagem-enviar'));
+    if (enviar) enviar.disabled = !texto.value.trim();
+  }
+
+  async function enviarMensagemAoFornecedor() {
+    const texto = /** @type {HTMLTextAreaElement|null} */ (document.getElementById('b2b-mensagem-texto'));
+    const enviar = /** @type {HTMLButtonElement|null} */ (document.getElementById('b2b-mensagem-enviar'));
+    if (!texto || !enviar || !fornecedorDaMensagem) return;
+    const corpo = texto.value.trim();
+    if (!corpo) { mostrarErroDaMensagem(true); texto.focus(); return; }
+    const nome = (fornecedorDaMensagem.name || '').trim();
+    const mensagem = `Olá${nome ? `, ${nome}` : ''}! ${corpo}`;
+    enviar.disabled = true;
+    enviar.textContent = 'Enviando…';
+    try {
+      // Abre (ou cria) a conversa em Mensagens e manda o texto nela.
+      await abrirChatComFornecedor(fornecedorDaMensagem.id);
+      if (window.LoveChatService && activeB2BConversationId) await window.LoveChatService.sendMessage(activeB2BConversationId, mensagem, 'cliente');
+      closeModal(document.getElementById('modal-b2b-mensagem'));
+    } catch (err) {
+      console.error('Erro ao enviar a mensagem:', err);
+    } finally {
+      enviar.textContent = 'Enviar';
+      atualizarCampoDaMensagem();
+    }
+  }
+
+  (function ligarPopupDeMensagem() {
+    const texto = document.getElementById('b2b-mensagem-texto');
+    if (!texto) return;
+    texto.addEventListener('input', () => { mostrarErroDaMensagem(false); atualizarCampoDaMensagem(); });
+    texto.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); enviarMensagemAoFornecedor(); }
+    });
+    document.querySelectorAll('#modal-b2b-mensagem [data-sugestao]').forEach(b => {
+      b.addEventListener('click', () => {
+        const t = /** @type {HTMLTextAreaElement} */ (texto);
+        const sugestao = /** @type {HTMLElement} */ (b).dataset.sugestao || '';
+        t.value = (t.value.trim() ? `${t.value.trim()} ${sugestao}` : sugestao).slice(0, LIMITE_DA_PRIMEIRA_MENSAGEM);
+        mostrarErroDaMensagem(false);
+        atualizarCampoDaMensagem();
+        t.focus();
+      });
+    });
+    document.getElementById('b2b-mensagem-enviar')?.addEventListener('click', enviarMensagemAoFornecedor);
+  })();
+
   async function abrirChatComFornecedor(fornecedorId) {
     // Já marca a conversa desse fornecedor como a ativa (se estiver na
     // memória), para o Chat abrir direto nela.
@@ -14809,7 +14900,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- Favoritar à esquerda do Mensagens (saiu de cima da foto) -->
                 <button type="button" class="btn-toggle-card-fav w-10 h-10 shrink-0 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer" data-dica="Favoritar" aria-label="Favoritar"><svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
                 <button type="button" class="btn-message-supplier btn-secondary">
-                  <span>Mensagens</span>
+                  <span>Mensagem</span>
                 </button>
                 <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
                   Solicitar
@@ -14853,7 +14944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        abrirChatComFornecedor(item.id);
+        abrirMensagemParaFornecedor(item, tituloDoCard(item));
       });
 
       card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
@@ -14923,7 +15014,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="flex items-center gap-2 mt-auto pt-2">
           <button type="button" class="btn-toggle-card-fav w-9 h-9 shrink-0 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer" data-dica="Favoritar" aria-label="Favoritar"><svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
           <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
-            <span>Mensagens</span>
+            <span>Mensagem</span>
           </button>
           <button type="button" class="btn-hire-supplier flex-1 px-3 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer">
             Solicitar
@@ -14945,7 +15036,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      abrirChatComFornecedor(item.id);
+      abrirMensagemParaFornecedor(item, tituloDoCard(item));
     });
 
     card.querySelector('.btn-hire-supplier')?.addEventListener('click', (e) => {
@@ -15887,7 +15978,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-b2b-profile-message')?.addEventListener('click', () => {
-    if (activeB2BProfileItem) abrirChatComFornecedor(activeB2BProfileItem.id);
+    if (!activeB2BProfileItem) return;
+    const servico = activeB2BProfileServico && (activeB2BProfileItem.services || []).some(s => s.id === activeB2BProfileServico.id) ? activeB2BProfileServico.name : '';
+    abrirMensagemParaFornecedor(activeB2BProfileItem, servico || tituloDoCard(activeB2BProfileItem));
   });
 
   document.getElementById('btn-b2b-profile-hire')?.addEventListener('click', () => {

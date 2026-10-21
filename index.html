@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_favSemBorda">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_popupMensagem">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3345,7 +3345,7 @@
                   <svg id="b2b-profile-favorite-icon" class="w-4 h-4 fill-none stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
                 </button>
                 <button type="button" id="btn-b2b-profile-message" class="btn-secondary">
-                  <span>Mensagens</span>
+                  <span>Mensagem</span>
                 </button>
                 <button type="button" id="btn-b2b-profile-hire" class="px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
                   Solicitar
@@ -4456,6 +4456,41 @@
        briefing e rodapé de confiança. Lógica em app.js (abrirPedidoOrcamento
        / enviarPedidoOrcamento).
        ======================================================================= -->
+  <!-- Mensagem para o fornecedor (Explorar › Mensagem): foto, empresa e o
+       serviço; texto de até 250 caracteres; ao enviar, abre o chat. -->
+  <div id="modal-b2b-mensagem" class="modal-backdrop-custom fixed inset-0 bg-black/50 z-50 items-center justify-center p-4 hidden" style="display: none !important;" role="dialog" aria-modal="true" aria-labelledby="b2b-mensagem-empresa">
+    <div class="modal-container-custom b2b-mensagem-caixa">
+      <button type="button" data-close-modal class="b2b-mensagem-fechar" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="b2b-mensagem-topo">
+        <img id="b2b-mensagem-foto" src="" alt="" class="b2b-mensagem-foto">
+        <div class="min-w-0">
+          <h3 id="b2b-mensagem-empresa" class="b2b-mensagem-empresa"></h3>
+          <p id="b2b-mensagem-produto" class="b2b-mensagem-produto"></p>
+        </div>
+      </div>
+      <label for="b2b-mensagem-texto" class="b2b-mensagem-rotulo">Sua mensagem</label>
+      <div class="b2b-mensagem-campo" id="b2b-mensagem-campo">
+        <div class="b2b-mensagem-saudacao">Olá <span id="b2b-mensagem-saudacao-nome" class="b2b-mensagem-chip"></span></div>
+        <textarea id="b2b-mensagem-texto" rows="3" maxlength="250"></textarea>
+        <svg class="b2b-mensagem-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/></svg>
+      </div>
+      <div class="b2b-mensagem-linha">
+        <p id="b2b-mensagem-erro" class="b2b-mensagem-erro" hidden>Escreva uma mensagem</p>
+        <p id="b2b-mensagem-contador" class="b2b-mensagem-contador">250 caracteres restantes</p>
+      </div>
+      <div class="b2b-mensagem-sugestoes">
+        <button type="button" class="b2b-mensagem-chip" data-sugestao="Gostaria de solicitar um orçamento.">Gostaria de solicitar um orçamento.</button>
+        <button type="button" class="b2b-mensagem-chip" data-sugestao="Poderia me explicar melhor sobre os seus serviços?">Poderia me explicar melhor sobre os seus serviços?</button>
+      </div>
+      <div class="b2b-mensagem-rodape">
+        <button type="button" data-close-modal class="b2b-mensagem-cancelar">Cancelar</button>
+        <button type="button" id="b2b-mensagem-enviar" class="b2b-mensagem-enviar" disabled>Enviar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-b2b-orcamento" class="modal-backdrop-custom fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-end sm:items-center justify-center p-0 sm:p-4 hidden" style="display: none !important;" role="dialog" aria-modal="true" aria-labelledby="orcamento-titulo">
     <div class="modal-container-custom orc-modal bg-white w-full sm:max-w-xl relative max-h-[92vh] flex flex-col">
 
@@ -5546,7 +5581,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_reguasPlanta"></script>
+  <script src="js/app.js?v=20261021_popupMensagem"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_restricaoCores">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_importarConvidados">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -5467,27 +5467,33 @@
 
         <!-- BLOCO 3: Acompanhantes -->
         <div>
-          <button type="button" id="btn-add-companion-row" class="text-xs font-bold text-[#333333] hover:underline cursor-pointer flex items-center gap-1">
+          <div id="guest-companions-list" class="space-y-2">
+            <!-- Linhas de acompanhante (nome + faixa etária) adicionadas dinamicamente via JS -->
+          </div>
+          <!-- Adicionar acompanhante: embaixo de tudo, com o + à esquerda -->
+          <button type="button" id="btn-add-companion-row" class="guest-add-acompanhante">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             Adicionar acompanhante
           </button>
-          <div id="guest-companions-list" class="space-y-2 mt-2">
-            <!-- Linhas de acompanhante (nome + faixa etária) adicionadas dinamicamente via JS -->
-          </div>
         </div>
       </form>
 
-      <div id="guest-remove-wrap" hidden>
-        <button type="button" id="btn-remove-guest" class="guest-remove-btn">Remover convidado</button>
-        <div id="guest-remove-confirm" class="guest-remove-confirm hidden">
-          <span>Tem certeza?</span>
-          <button type="button" id="btn-remove-guest-sim" class="guest-remove-sim">Sim</button>
-          <button type="button" id="btn-remove-guest-nao" class="guest-remove-nao">Não</button>
-        </div>
       </div>
     </div>
 
-    <div class="p-5 sm:p-6 border-t border-zinc-100 flex-shrink-0">
+    <div class="p-5 sm:p-6 border-t border-zinc-100 flex-shrink-0 guest-drawer-rodape">
+      <!-- Remover (só ao editar): lixeira pequena à esquerda do Salvar; vira
+           "Remover convidado? Sim / Não" no lugar dos botões -->
+      <div id="guest-remove-wrap" hidden>
+        <button type="button" id="btn-remove-guest" class="guest-remove-lixeira" data-dica="Remover convidado" aria-label="Remover convidado">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
+      <div id="guest-remove-confirm" class="guest-remove-confirm hidden">
+        <span>Remover este convidado?</span>
+        <button type="button" id="btn-remove-guest-sim" class="guest-remove-sim">Sim</button>
+        <button type="button" id="btn-remove-guest-nao" class="guest-remove-nao">Não</button>
+      </div>
       <!-- Mesmo botão do "Salvar alterações" de Informações (Personalizar evento) -->
       <button type="submit" form="form-add-guest" id="btn-save-guest" class="informacoes-salvar-rodape">Salvar convidado</button>
     </div>
@@ -5549,7 +5555,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_restricaoCores2"></script>
+  <script src="js/app.js?v=20261021_importarConvidados"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

@@ -6602,6 +6602,129 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Monta as barras das tabelas da plataforma (uma vez; os elementos existem desde o carregamento).
+  // ==========================================
+  // IMPORTAR CONVIDADOS (CSV) — Meus convidados, ao lado do Exportar
+  // ==========================================
+  const ICONE_IMPORTAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 15V3m0 12-4.5-4.5M12 15l4.5-4.5"/></svg>';
+
+  /**
+   * Lê um CSV (";" ou ","; aspas; com ou sem cabeçalho). O Excel salva assim
+   * em "Salvar como › CSV".
+   * @param {string} texto @returns {string[][]}
+   */
+  function lerCsv(texto) {
+    const limpo = texto.replace(/^\uFEFF/, '');
+    const primeira = limpo.split(/\r?\n/)[0] || '';
+    const sep = (primeira.match(/;/g) || []).length >= (primeira.match(/,/g) || []).length ? ';' : ',';
+    /** @type {string[][]} */
+    const linhas = [];
+    let linha = [], campo = '', aspas = false;
+    for (let i = 0; i < limpo.length; i++) {
+      const ch = limpo[i];
+      if (aspas) {
+        if (ch === '"' && limpo[i + 1] === '"') { campo += '"'; i++; }
+        else if (ch === '"') aspas = false;
+        else campo += ch;
+      } else if (ch === '"') aspas = true;
+      else if (ch === sep) { linha.push(campo); campo = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && limpo[i + 1] === '\n') i++;
+        linha.push(campo); campo = '';
+        if (linha.some(c => c.trim())) linhas.push(linha);
+        linha = [];
+      } else campo += ch;
+    }
+    linha.push(campo);
+    if (linha.some(c => c.trim())) linhas.push(linha);
+    return linhas.map(l => l.map(c => c.trim()));
+  }
+
+  /**
+   * Convidados a partir das linhas do CSV. Reconhece as colunas pelo nome
+   * (Nome/Convidado, Telefone/Celular/WhatsApp, E-mail); sem cabeçalho, usa
+   * nome; telefone; e-mail. Pula vazios e quem já está na lista.
+   * @param {string[][]} linhas @param {any[]} jaNaLista
+   */
+  function convidadosDoCsv(linhas, jaNaLista) {
+    if (!linhas.length) return [];
+    const norm = (/** @type {string} */ s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+    const cab = linhas[0].map(norm);
+    const acha = (/** @type {string[]} */ nomes) => cab.findIndex(c => nomes.some(n => c === n || c.startsWith(n)));
+    let iNome = acha(['nome', 'convidado', 'name']);
+    let iTel = acha(['telefone', 'celular', 'whatsapp', 'fone', 'phone']);
+    let iEmail = acha(['email', 'mail']);
+    const temCabecalho = iNome >= 0 || iTel >= 0 || iEmail >= 0;
+    if (!temCabecalho) { iNome = 0; iTel = 1; iEmail = 2; }
+    if (iNome < 0) iNome = 0;
+    const existentes = new Set(jaNaLista.map(g => (g.name || '').trim().toLowerCase()));
+    /** @type {any[]} */
+    const novos = [];
+    (temCabecalho ? linhas.slice(1) : linhas).forEach((l, i) => {
+      const nome = (l[iNome] || '').replace(/\s+/g, ' ').trim();
+      if (nome.length < 2 || existentes.has(nome.toLowerCase())) return;
+      existentes.add(nome.toLowerCase());
+      const telBruto = iTel >= 0 ? (l[iTel] || '') : '';
+      const emailBruto = iEmail >= 0 ? (l[iEmail] || '') : '';
+      novos.push({
+        id: `g-${Date.now()}-${i}`,
+        name: nome,
+        email: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailBruto) ? emailBruto : '',
+        companions: 0, companionsNames: [], companionsDetailed: [],
+        adults: 1, children: 0,
+        phone: telBruto ? maskBrazilPhone(telBruto) : '',
+        table: 'Mesa a Definir', status: 'pending', giftsBought: [],
+        dietaryRestrictions: '', observationComments: [],
+        relationshipTitle: 'Convidado', relationshipHost: ''
+      });
+    });
+    return novos;
+  }
+
+  // Botão "Importar": escolhe o arquivo, cria os convidados e salva. O
+  // resultado aparece no próprio botão por alguns segundos.
+  function botaoImportarConvidados() {
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.id = 'btn-rsvp-importar';
+    botao.innerHTML = `${ICONE_IMPORTAR}<span>Importar</span>`;
+    botao.dataset.dica = 'Arquivo CSV com nome, telefone e e-mail';
+    const arquivo = document.createElement('input');
+    arquivo.type = 'file';
+    arquivo.accept = '.csv,text/csv,.txt';
+    arquivo.hidden = true;
+    botao.appendChild(arquivo);
+    const texto = /** @type {HTMLElement} */ (botao.querySelector('span'));
+    const avisar = (/** @type {string} */ msg) => {
+      texto.textContent = msg;
+      setTimeout(() => { texto.textContent = 'Importar'; botao.disabled = false; }, 3500);
+    };
+    botao.addEventListener('click', (e) => { if (e.target !== arquivo && !botao.disabled) arquivo.click(); });
+    arquivo.addEventListener('change', async () => {
+      const f = arquivo.files && arquivo.files[0];
+      arquivo.value = '';
+      if (!f) return;
+      const ev = getActiveEvent();
+      if (!ev) return;
+      botao.disabled = true;
+      texto.textContent = 'Importando…';
+      let novos = [];
+      try { novos = convidadosDoCsv(lerCsv(await f.text()), ev.guests || []); } catch (err) { console.error('Erro ao ler o CSV:', err); }
+      if (!novos.length) { avisar('Nenhum convidado novo'); return; }
+      let falhas = 0;
+      for (const g of novos) {
+        ev.guests.push(g);
+        const { error } = await salvarConvidadoNoBanco(g).catch(err => ({ error: err }));
+        if (error) { falhas++; ev.guests.splice(ev.guests.indexOf(g), 1); }
+      }
+      renderGuestsTable();
+      renderFloorPlanGuestCards();
+      updateAllCelebrationData();
+      const ok = novos.length - falhas;
+      avisar(falhas ? `${ok} importados · ${falhas} com erro` : `${ok} importado${ok === 1 ? '' : 's'}`);
+    });
+    return botao;
+  }
+
   function montarBarrasDasTabelas() {
     // Meus convidados: busca e "Adicionar" estavam no cabeçalho — a busca desce
     // para a caixa; "Filtrar por" aciona as abas de status já existentes.
@@ -6611,6 +6734,7 @@ document.addEventListener('DOMContentLoaded', () => {
       montarBarraDaTabela(tabelaConvidados, {
         buscaExistente: buscaConvidados,
         nome: 'convidados',
+        extras: [botaoImportarConvidados()],
         filtro: {
           opcoes: [{ label: 'Confirmados', value: 'confirmed' }, { label: 'Pendentes', value: 'pending' }, { label: 'Recusados', value: 'declined' }],
           aoEscolher: (v) => document.querySelector(`.rsvp-status-option[data-filter="${v || 'all'}"]`)?.click()
@@ -8879,6 +9003,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (removeWrap) removeWrap.hidden = !guestId;
     document.getElementById('btn-remove-guest')?.classList.remove('hidden');
     document.getElementById('guest-remove-confirm')?.classList.add('hidden');
+    document.querySelector('.guest-drawer-rodape')?.classList.remove('is-confirmando');
 
     backdrop.classList.remove('hidden');
     backdrop.style.setProperty('display', 'block', 'important');
@@ -8937,15 +9062,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRemoveGuestSim = document.getElementById('btn-remove-guest-sim');
   const btnRemoveGuestNao = document.getElementById('btn-remove-guest-nao');
   if (btnRemoveGuest && guestRemoveConfirm) {
+    const rodapeDoDrawer = btnRemoveGuest.closest('.guest-drawer-rodape');
     btnRemoveGuest.addEventListener('click', () => {
       if (!activeDrawerGuestId) return;
-      btnRemoveGuest.classList.add('hidden');
+      rodapeDoDrawer?.classList.add('is-confirmando');
       guestRemoveConfirm.classList.remove('hidden');
       btnRemoveGuestSim?.focus();
     });
     btnRemoveGuestNao?.addEventListener('click', () => {
       guestRemoveConfirm.classList.add('hidden');
-      btnRemoveGuest.classList.remove('hidden');
+      rodapeDoDrawer?.classList.remove('is-confirmando');
     });
     btnRemoveGuestSim?.addEventListener('click', async () => {
       if (!activeDrawerGuestId || btnRemoveGuestSim.disabled) return;
@@ -8962,7 +9088,9 @@ document.addEventListener('DOMContentLoaded', () => {
         guestRemoveConfirm.querySelector('span').textContent = 'Não foi possível remover. Tentar de novo?';
         return;
       }
-      guestRemoveConfirm.querySelector('span').textContent = 'Tem certeza?';
+      guestRemoveConfirm.querySelector('span').textContent = 'Remover este convidado?';
+      guestRemoveConfirm.classList.add('hidden');
+      rodapeDoDrawer?.classList.remove('is-confirmando');
       const idxAtual = activeEvent.guests.findIndex(g => g.id === activeDrawerGuestId);
       if (idxAtual !== -1) activeEvent.guests.splice(idxAtual, 1);
       convidadosSelecionados.delete(activeDrawerGuestId);

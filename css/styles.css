@@ -9479,3 +9479,18 @@ html body .restricao-botao:not(#love-h-a) { display: flex; align-items: center; 
 
 /* Mapa do evento: assento de quem tem restrição fica na cor dela. */
 html body .floorplan-seat-dot.tem-restricao:not(#love-h-a) { background: var(--cor-restricao) !important; border-color: var(--cor-restricao-borda) !important; color: #18181B !important; }
+
+/* Drawer do convidado: "+ Adicionar acompanhante" embaixo de tudo. */
+html body button.guest-add-acompanhante:not(#love-h-a) { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; padding: 0; background: transparent; border: 0; font-size: 13px; font-weight: 600; color: #18181B; cursor: pointer; }
+html body button.guest-add-acompanhante:not(#love-h-a):hover { text-decoration: underline; }
+html body button.guest-add-acompanhante:not(#love-h-a) svg { width: 14px; height: 14px; }
+
+/* Rodapé do drawer: lixeira pequena à esquerda do Salvar (só ao editar). */
+.guest-drawer-rodape { display: flex; align-items: center; gap: 8px; }
+.guest-drawer-rodape #btn-save-guest { flex: 1; }
+html body button.guest-remove-lixeira:not(#love-h-a) { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #71717A; cursor: pointer; flex-shrink: 0; }
+html body button.guest-remove-lixeira:not(#love-h-a):hover { border-color: #DC2626; color: #DC2626; }
+html body button.guest-remove-lixeira:not(#love-h-a) svg { width: 18px; height: 18px; }
+/* Confirmando: some lixeira e Salvar; aparece "Remover este convidado? Sim / Não". */
+.guest-drawer-rodape.is-confirmando #guest-remove-wrap, .guest-drawer-rodape.is-confirmando #btn-save-guest { display: none !important; }
+.guest-drawer-rodape .guest-remove-confirm { flex: 1; min-height: 44px; }

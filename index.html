@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_inserirItem2">
+  <link rel="stylesheet" href="css/styles.css?v=20261020_selecaoPlanta">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -5192,12 +5192,9 @@
           </label>
         </div>
         <div class="flex items-center gap-2.5">
-          <button type="button" id="btn-floorplan-remove" class="floorplan-remove-btn" title="Excluir mesa" aria-label="Excluir mesa">
-            <svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
-          </button>
-          <button type="button" id="btn-floorplan-clear" class="floorplan-clear-btn">Limpar</button>
-          <!-- Voltar: fecha o pop-up -->
-          <button type="button" data-close-modal class="floorplan-back-btn">Voltar</button>
+          <!-- Voltar desfaz o que mudou no pop-up; Salvar mantém (excluir fica no menu da mesa) -->
+          <button type="button" id="btn-floorplan-voltar" class="floorplan-back-btn">Voltar</button>
+          <button type="button" id="btn-floorplan-salvar" class="floorplan-salvar-btn">Salvar</button>
         </div>
       </div>
     </div>
@@ -5598,7 +5595,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261020_inserirItem2"></script>
+  <script src="js/app.js?v=20261020_selecaoPlanta"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

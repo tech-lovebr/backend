@@ -9252,3 +9252,30 @@ body[data-theme="dark"] .floorplan-el.is-item .floorplan-el-label, body[data-the
 /* Expandida: a planta rola para baixo (antes cortava o que estava embaixo). */
 html body #tab-rsvp-tables .floorplan-wrap.is-expandida .floorplan-body:not(#love-h-a) { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 html body #btn-open-add-table-modal:not(#love-h-a) { gap: 7.2px; }
+
+/* Mapear mesas › elemento selecionado: caixa fina com 4 alças (arrastar
+   aumenta/diminui) e o menuzinho embaixo (Editar, Girar, Duplicar, Excluir). */
+.floorplan-selecao { position: absolute; z-index: 30; border: 1.5px solid #181D24; border-radius: 8px; pointer-events: none; }
+.floorplan-alca { position: absolute; width: 12px; height: 12px; background: #FFFFFF; border: 1.5px solid #181D24; border-radius: 999px; pointer-events: auto; }
+.floorplan-alca.alca-tl { top: -6.5px; left: -6.5px; cursor: nwse-resize; }
+.floorplan-alca.alca-br { bottom: -6.5px; right: -6.5px; cursor: nwse-resize; }
+.floorplan-alca.alca-tr { top: -6.5px; right: -6.5px; cursor: nesw-resize; }
+.floorplan-alca.alca-bl { bottom: -6.5px; left: -6.5px; cursor: nesw-resize; }
+.floorplan-acoes { position: absolute; top: calc(100% + 12px); display: flex; gap: 2px; padding: 4px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); pointer-events: auto; white-space: nowrap; }
+.floorplan-acoes.is-acima { top: auto; bottom: calc(100% + 12px); }
+html body .floorplan-acao:not(#love-h-a) { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #52525B; cursor: pointer; }
+.floorplan-acao svg { width: 18px; height: 18px; }
+html body .floorplan-acao:not(#love-h-a):hover { color: #181D24; background: #F4F6F7; }
+html body .floorplan-acao.acao-excluir:not(#love-h-a):hover { color: #DC2626; }
+body.planta-redimensionando, body.planta-redimensionando * { cursor: nwse-resize !important; user-select: none; }
+.floorplan-el.is-mesa { transform-origin: 50% 50%; }
+.floorplan-el.is-item.is-em-pe .floorplan-el-label { writing-mode: vertical-rl; transform: rotate(180deg); }
+.floorplan-el.is-item .floorplan-el-label.is-editando { outline: none; border-bottom: 1px solid #181D24; cursor: text; user-select: text; }
+/* Pop-up da mesa: Voltar e Salvar lado a lado. */
+.floorplan-salvar-btn { flex: 1; height: 34px; padding: 0.5rem; border: 1px solid #333333; border-radius: 8px; background: #333333; color: #FFFFFF; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+.floorplan-salvar-btn:hover { background: #222222; }
+html body .floorplan-back-btn:not(#love-h-a) { border-radius: 8px; }
+body[data-theme="dark"] .floorplan-acoes { background: #252525; border-color: #404040; }
+body[data-theme="dark"] .floorplan-selecao, body[data-theme="dark"] .floorplan-alca { border-color: #E4E4E7; }
+body[data-theme="dark"] .floorplan-alca { background: #252525; }
+body[data-theme="dark"] .floorplan-acao { color: #D4D4D8 !important; }

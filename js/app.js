@@ -9401,10 +9401,27 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   /** Altura de um elemento na planta (mesa = quadro de 220px). @param {any} item */
   function alturaNaPlanta(item) {
-    if (item.type === 'mesa') return 220;
+    if (item.type === 'mesa') return 110 + 110 * escalaDaMesa(item);
+    if (parseFloat(item.h)) return parseFloat(item.h);
     const meta = ITENS_DA_PLANTA.find(i => i.type === item.type);
     return meta ? meta.h : 84;
   }
+  /** Tamanho da mesa (1 = normal), entre 0,5 e 2. @param {any} item */
+  function escalaDaMesa(item) {
+    const s = parseFloat(item && item.escala);
+    return s ? Math.min(2, Math.max(0.5, s)) : 1;
+  }
+  /** Largura/altura de um item (buffet, palco...), já com o que o anfitrião redimensionou. @param {any} elData */
+  function tamanhoDoItem(elData) {
+    const meta = ITENS_DA_PLANTA.find(i => i.type === elData.type);
+    return { w: parseFloat(elData.w) || (meta ? meta.w : 84), h: parseFloat(elData.h) || (meta ? meta.h : 64) };
+  }
+
+  // Elemento selecionado na planta (caixa com alças + menuzinho embaixo).
+  /** @type {string|null} */
+  let plantaSelecionada = null;
+  /** Pop-up da mesa: como a planta estava ao abrir (o Voltar desfaz). @type {string|null} */
+  let plantaAntesDoPopup = null;
   const FLOORPLAN_TYPE_META = {};
   FLOORPLAN_ELEMENT_TYPES.forEach(t => { FLOORPLAN_TYPE_META[t.type] = t; });
   const FLOORPLAN_MAX_SEATS = 24;
@@ -9684,6 +9701,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el.style.left = `${elData.x || 0}px`;
       el.style.top = `${elData.y || 0}px`;
       el.dataset.elId = elData.id;
+      if (isMesa && escalaDaMesa(elData) !== 1) el.style.transform = `scale(${escalaDaMesa(elData)})`;
 
       if (isMesa) {
         const core = document.createElement('div');
@@ -9716,27 +9734,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const ringRadius = 80;
         const showNames = elData.showNames !== false;
         const formato = FORMATOS_DE_MESA.includes(elData.formato) ? elData.formato : 'redonda';
-        if (formato === 'retangular') {
-          const girar = document.createElement('button');
-          girar.type = 'button';
-          girar.className = 'floorplan-girar';
-          girar.title = elData.orientacao === 'vertical' ? 'Deixar na horizontal' : 'Deixar na vertical';
-          girar.setAttribute('aria-label', girar.title);
-          girar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6a14 14 0 0 1 14 14"/><path d="m14.5 16.8 3.5 3.7 3.5-3.7"/></svg>';
-          // Não deixa o clique virar arrastar nem abrir o pop-up da mesa.
-          girar.addEventListener('mousedown', (e) => e.stopPropagation());
-          girar.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const lista = getFloorPlanElements();
-            const alvo = lista.find(item => item.id === elData.id);
-            if (!alvo) return;
-            alvo.orientacao = alvo.orientacao === 'vertical' ? 'horizontal' : 'vertical';
-            saveFloorPlanElements(lista);
-            renderFloorPlanCanvas();
-          });
-          // Fora da mesa, no canto de cima à direita (ver .floorplan-girar no CSS).
-          el.appendChild(girar);
-        }
         for (let i = 0; i < seats; i++) {
           // Redonda segue a conta de sempre; os outros formatos têm a própria.
           let [seatX, seatY] = formato === 'redonda'
@@ -9803,7 +9800,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Item (buffet, palco, pista...): bloco com ícone e nome; o X tira da planta.
         const item = ITENS_DA_PLANTA.find(i => i.type === elData.type);
         el.classList.add('is-item', `item-${elData.type}`);
-        if (item) { el.style.width = `${item.w}px`; el.style.height = `${item.h}px`; }
+        const tam = tamanhoDoItem(elData);
+        el.style.width = `${tam.w}px`;
+        el.style.height = `${tam.h}px`;
+        // Mais alto que largo (ex.: backdrop girado): o nome fica na vertical.
+        el.classList.toggle('is-em-pe', tam.h > tam.w * 1.4);
         const iconEl = document.createElement('span');
         iconEl.className = 'floorplan-item-icone';
         iconEl.innerHTML = item ? `<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${item.svg}</svg>` : '';
@@ -9811,28 +9812,237 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const labelEl = document.createElement('span');
         labelEl.className = 'floorplan-el-label';
-        labelEl.textContent = meta.label;
+        labelEl.textContent = elData.nome || meta.label;
         el.appendChild(labelEl);
-
-        const remover = document.createElement('button');
-        remover.type = 'button';
-        remover.className = 'floorplan-item-remover';
-        remover.title = `Tirar ${meta.label} da planta`;
-        remover.setAttribute('aria-label', remover.title);
-        remover.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
-        remover.addEventListener('mousedown', (e) => e.stopPropagation());
-        remover.addEventListener('click', (e) => {
-          e.stopPropagation();
-          saveFloorPlanElements(getFloorPlanElements().filter(x => x.id !== elData.id));
-          renderFloorPlanCanvas();
-        });
-        el.appendChild(remover);
       }
 
       wireFloorPlanElementDrag(el, elData);
       canvas.appendChild(el);
     });
+    desenharSelecaoDaPlanta();
   }
+
+  // Ícones do menuzinho do elemento selecionado.
+  const ICONES_DA_SELECAO = {
+    editar: '<path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+    girar: '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
+    duplicar: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/>',
+    excluir: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>'
+  };
+
+  /** Caixa visível do elemento dentro da planta (mesa = tampo + assentos). @param {HTMLElement} canvas @param {HTMLElement} el */
+  function caixaVisivelNaPlanta(canvas, el) {
+    const base = canvas.getBoundingClientRect();
+    const partes = el.classList.contains('is-mesa')
+      ? Array.from(el.children).map(c => c.getBoundingClientRect()).filter(r => r.width && r.height)
+      : [el.getBoundingClientRect()];
+    if (!partes.length) partes.push(el.getBoundingClientRect());
+    return {
+      esq: Math.min(...partes.map(r => r.left)) - base.left,
+      topo: Math.min(...partes.map(r => r.top)) - base.top,
+      dir: Math.max(...partes.map(r => r.right)) - base.left,
+      base: Math.max(...partes.map(r => r.bottom)) - base.top
+    };
+  }
+
+  // Desenha a caixa de seleção (com as 4 alças para aumentar/diminuir) e o
+  // menuzinho embaixo: Editar, Girar, Duplicar e Excluir.
+  function desenharSelecaoDaPlanta() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    canvas.querySelectorAll('.floorplan-selecao').forEach(s => s.remove());
+    if (!plantaSelecionada) return;
+    const el = /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(plantaSelecionada)}"]`));
+    const elData = getFloorPlanElements().find(x => x.id === plantaSelecionada);
+    if (!el || !elData) { plantaSelecionada = null; return; }
+    const cx = caixaVisivelNaPlanta(canvas, el);
+    const folga = 6;
+    const sel = document.createElement('div');
+    sel.className = 'floorplan-selecao';
+    sel.style.left = `${cx.esq - folga}px`;
+    sel.style.top = `${cx.topo - folga}px`;
+    sel.style.width = `${cx.dir - cx.esq + folga * 2}px`;
+    sel.style.height = `${cx.base - cx.topo + folga * 2}px`;
+    ['tl', 'tr', 'bl', 'br'].forEach(canto => {
+      const alca = document.createElement('span');
+      alca.className = `floorplan-alca alca-${canto}`;
+      alca.title = 'Arraste para aumentar ou diminuir';
+      alca.addEventListener('mousedown', (e) => iniciarRedimensionamento(e, elData.id));
+      sel.appendChild(alca);
+    });
+
+    const giravel = elData.type !== 'mesa' || elData.formato === 'retangular';
+    const acoes = document.createElement('div');
+    acoes.className = 'floorplan-acoes';
+    /** @type {[string, string][]} */
+    const botoes = [['editar', elData.type === 'mesa' ? 'Editar mesa' : 'Editar nome']];
+    if (giravel) botoes.push(['girar', 'Girar']);
+    botoes.push(['duplicar', 'Duplicar'], ['excluir', 'Excluir']);
+    botoes.forEach(([acao, titulo]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = `floorplan-acao acao-${acao}`;
+      b.title = titulo;
+      b.setAttribute('aria-label', titulo);
+      b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES_DA_SELECAO[/** @type {keyof typeof ICONES_DA_SELECAO} */ (acao)]}</svg>`;
+      b.addEventListener('mousedown', (e) => e.stopPropagation());
+      b.addEventListener('click', (e) => { e.stopPropagation(); acaoNaSelecao(acao, elData.id); });
+      acoes.appendChild(b);
+    });
+    sel.appendChild(acoes);
+    canvas.appendChild(sel);
+    // O menuzinho fica embaixo; se não couber (fim da planta), vai para cima.
+    // Na horizontal, não sai pelas laterais.
+    const larguraMenu = acoes.offsetWidth;
+    const centro = (cx.esq + cx.dir) / 2;
+    const esqMenu = Math.max(4, Math.min(centro - larguraMenu / 2, canvas.clientWidth - larguraMenu - 4));
+    acoes.style.left = `${esqMenu - (cx.esq - folga)}px`;
+    if (cx.base + folga + 12 + acoes.offsetHeight > canvas.clientHeight) acoes.classList.add('is-acima');
+  }
+
+  /** @param {string} acao @param {string} id */
+  function acaoNaSelecao(acao, id) {
+    const lista = getFloorPlanElements();
+    const alvo = lista.find(x => x.id === id);
+    if (!alvo) return;
+    if (acao === 'editar') {
+      if (alvo.type === 'mesa') { openFloorplanTableModal(id); return; }
+      editarNomeDoItem(id);
+      return;
+    }
+    if (acao === 'girar') {
+      if (alvo.type === 'mesa') {
+        alvo.orientacao = alvo.orientacao === 'vertical' ? 'horizontal' : 'vertical';
+      } else {
+        // Item: troca largura e altura, mantendo o centro no lugar.
+        const t = tamanhoDoItem(alvo);
+        alvo.x = Math.max(0, (parseFloat(alvo.x) || 0) + (t.w - t.h) / 2);
+        alvo.y = Math.max(0, (parseFloat(alvo.y) || 0) + (t.h - t.w) / 2);
+        alvo.w = t.h;
+        alvo.h = t.w;
+      }
+    } else if (acao === 'duplicar') {
+      const copia = JSON.parse(JSON.stringify(alvo));
+      copia.id = `fp-${Date.now()}`;
+      copia.x = (parseFloat(alvo.x) || 0) + 28;
+      copia.y = (parseFloat(alvo.y) || 0) + 28;
+      if (copia.type === 'mesa') {
+        // Mesma mesa, com número novo e os lugares vazios (ninguém senta em dois lugares).
+        copia.number = lista.filter(x => x.type === 'mesa').length + 1;
+        copia.seatNames = (copia.seatNames || []).map(() => '');
+      }
+      lista.push(copia);
+      plantaSelecionada = copia.id;
+    } else if (acao === 'excluir') {
+      const resto = lista.filter(x => x.id !== id);
+      renumerarMesas(resto);
+      plantaSelecionada = null;
+      saveFloorPlanElements(resto);
+      if (alvo.type === 'mesa') renderGuestsTable();
+      renderFloorPlanCanvas();
+      renderFloorPlanGuestCards();
+      return;
+    }
+    saveFloorPlanElements(lista);
+    renderFloorPlanCanvas();
+    if (alvo.type === 'mesa') renderFloorPlanGuestCards();
+  }
+
+  // Item: o lápis deixa escrever o nome direto no bloco (Enter salva, Esc desiste).
+  /** @param {string} id */
+  function editarNomeDoItem(id) {
+    const canvas = document.getElementById('floorplan-canvas');
+    const label = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"] .floorplan-el-label`));
+    if (!label) return;
+    const original = label.textContent || '';
+    label.contentEditable = 'true';
+    label.classList.add('is-editando');
+    label.focus();
+    const faixa = document.createRange();
+    faixa.selectNodeContents(label);
+    const selecao = window.getSelection();
+    if (selecao) { selecao.removeAllRanges(); selecao.addRange(faixa); }
+    label.addEventListener('mousedown', (e) => e.stopPropagation());
+    let terminou = false;
+    const terminar = (/** @type {boolean} */ salvar) => {
+      if (terminou) return;
+      terminou = true;
+      label.contentEditable = 'false';
+      const lista = getFloorPlanElements();
+      const alvo = lista.find(x => x.id === id);
+      const texto = (label.textContent || '').trim();
+      if (salvar && alvo && texto && texto !== original) {
+        alvo.nome = texto;
+        saveFloorPlanElements(lista);
+      }
+      renderFloorPlanCanvas();
+    };
+    label.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); terminar(true); }
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); terminar(false); }
+    });
+    label.addEventListener('blur', () => terminar(true));
+  }
+
+  // Alças da seleção: arrastar para fora aumenta, para dentro diminui.
+  // Mesa cresce por igual (escala); item muda largura e altura. O centro fica no lugar.
+  /** @param {MouseEvent} e @param {string} id */
+  function iniciarRedimensionamento(e, id) {
+    e.preventDefault();
+    e.stopPropagation();
+    const canvas = document.getElementById('floorplan-canvas');
+    const el = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"]`));
+    const alvo = getFloorPlanElements().find(x => x.id === id);
+    if (!canvas || !el || !alvo) return;
+    const base = canvas.getBoundingClientRect();
+    const isMesa = alvo.type === 'mesa';
+    const tam0 = isMesa ? { w: 220, h: 220 } : tamanhoDoItem(alvo);
+    const x0 = parseFloat(alvo.x) || 0;
+    const y0 = parseFloat(alvo.y) || 0;
+    const centroX = x0 + tam0.w / 2;
+    const centroY = y0 + tam0.h / 2;
+    const dx0 = Math.abs(e.clientX - base.left - centroX) || 1;
+    const dy0 = Math.abs(e.clientY - base.top - centroY) || 1;
+    const escala0 = escalaDaMesa(alvo);
+    let resultado = isMesa ? { escala: escala0 } : { w: tam0.w, h: tam0.h, x: x0, y: y0 };
+    document.body.classList.add('planta-redimensionando');
+
+    const mover = (/** @type {MouseEvent} */ ev) => {
+      const dx = Math.abs(ev.clientX - base.left - centroX);
+      const dy = Math.abs(ev.clientY - base.top - centroY);
+      if (isMesa) {
+        const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
+        const escala = Math.round(Math.min(2, Math.max(0.5, escala0 * fator)) * 100) / 100;
+        el.style.transform = escala === 1 ? '' : `scale(${escala})`;
+        resultado = { escala };
+      } else {
+        const w = Math.round(Math.min(800, Math.max(56, tam0.w + 2 * (dx - dx0))));
+        const hh = Math.round(Math.min(800, Math.max(40, tam0.h + 2 * (dy - dy0))));
+        const x = Math.max(0, centroX - w / 2);
+        const y = Math.max(0, centroY - hh / 2);
+        el.style.width = `${w}px`;
+        el.style.height = `${hh}px`;
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        resultado = { w, h: hh, x, y };
+      }
+      desenharSelecaoDaPlanta();
+    };
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      document.body.classList.remove('planta-redimensionando');
+      const lista = getFloorPlanElements();
+      const t = lista.find(x => x.id === id);
+      if (!t) return;
+      Object.assign(t, resultado);
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+    };
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
+  }
+
 
   // Arrastar um elemento já posicionado para reorganizar; um clique sem
   // arrastar (deslocamento mínimo) seleciona o elemento e abre o inspector na sidebar.
@@ -9851,14 +10061,19 @@ document.addEventListener('DOMContentLoaded', () => {
       let moved = false;
       // Área visível da mesa (círculo + assentos) dentro da caixa de 220px:
       // é ela que não pode sair da planta, não a caixa inteira.
-      const caixa = el.getBoundingClientRect();
-      const partes = Array.from(el.children).map(c => c.getBoundingClientRect()).filter(r => r.width && r.height);
+      // (Mesa aumentada/diminuída: a caixa na tela é a escalada; volta para a de 220px.)
+      const caixaTela = el.getBoundingClientRect();
+      const caixa = { left: caixaTela.left + (caixaTela.width - el.offsetWidth) / 2, top: caixaTela.top + (caixaTela.height - el.offsetHeight) / 2 };
+      const partes = Array.from(el.children).filter(c => !c.classList.contains('floorplan-selecao')).map(c => c.getBoundingClientRect()).filter(r => r.width && r.height);
       const visivel = partes.length ? {
         esq: Math.min(...partes.map(r => r.left)) - caixa.left,
         dir: Math.max(...partes.map(r => r.right)) - caixa.left,
         topo: Math.min(...partes.map(r => r.top)) - caixa.top,
         base: Math.max(...partes.map(r => r.bottom)) - caixa.top
       } : { esq: 0, dir: el.offsetWidth, topo: 0, base: el.offsetHeight };
+      // Selecionar já no clique; a caixa some enquanto arrasta e volta ao soltar.
+      plantaSelecionada = elData.id;
+      canvas.querySelectorAll('.floorplan-selecao').forEach(s => s.remove());
 
       // Até onde a mesa pode descer neste arraste: o fundo atual da planta
       // + o tamanho de uma mesa (cresce aos poucos, nunca sem fim).
@@ -9890,9 +10105,8 @@ document.addEventListener('DOMContentLoaded', () => {
             saveFloorPlanElements(elements);
           }
           ajustarAlturaDaPlanta(canvas, elements);
-        } else if (elData.type === 'mesa') {
-          openFloorplanTableModal(elData.id);
         }
+        desenharSelecaoDaPlanta();
       };
 
       document.addEventListener('mousemove', onMouseMove);
@@ -9928,6 +10142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       seatNames: [''],
       x, y
     });
+    plantaSelecionada = elements[elements.length - 1].id;
     saveFloorPlanElements(elements);
     renderFloorPlanCanvas();
   }
@@ -9949,6 +10164,7 @@ document.addEventListener('DOMContentLoaded', () => {
       x: Math.min(16 + cascata, Math.max(16, largura - item.w - 16)),
       y: topoVisivel + 16 + cascata
     });
+    plantaSelecionada = elements[elements.length - 1].id;
     saveFloorPlanElements(elements);
     renderFloorPlanCanvas();
   }
@@ -10117,6 +10333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const t = elements.find(item => item.id === tableId);
     if (!t) return;
     floorplanActiveTableId = tableId;
+    plantaAntesDoPopup = JSON.stringify(elements);
     resizeSeatNames(t);
 
     const titleEl = document.getElementById('floorplan-table-modal-title');
@@ -10239,31 +10456,25 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    const removeBtn = document.getElementById('btn-floorplan-remove');
-    if (removeBtn) {
-      removeBtn.addEventListener('click', () => {
-        const els = getFloorPlanElements().filter(item => item.id !== floorplanActiveTableId);
-        renumerarMesas(els);
-        saveFloorPlanElements(els);
-        // A coluna Mesa de Meus convidados lê a planta: redesenha com os números novos.
-        renderGuestsTable();
-        renderFloorPlanCanvas();
-        renderFloorPlanGuestCards();
+    // Voltar: desfaz o que mudou desde que o pop-up abriu. Salvar: mantém e fecha.
+    const voltarBtn = document.getElementById('btn-floorplan-voltar');
+    if (voltarBtn) {
+      voltarBtn.addEventListener('click', () => {
+        if (plantaAntesDoPopup) {
+          saveFloorPlanElements(JSON.parse(plantaAntesDoPopup));
+          plantaAntesDoPopup = null;
+          renderGuestsTable();
+          renderFloorPlanCanvas();
+          renderFloorPlanGuestCards();
+        }
         closeModal(document.getElementById('modal-floorplan-table'));
       });
     }
-
-    const clearBtn = document.getElementById('btn-floorplan-clear');
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => {
-        const els = getFloorPlanElements();
-        const t = els.find(item => item.id === floorplanActiveTableId);
-        if (!t) return;
-        t.seatNames = t.seatNames.map(() => '');
-        saveFloorPlanElements(els);
-        renderFloorPlanCanvas();
-        renderFloorPlanGuestCards();
-        renderFloorPlanSeatAssignments(t);
+    const salvarBtn = document.getElementById('btn-floorplan-salvar');
+    if (salvarBtn) {
+      salvarBtn.addEventListener('click', () => {
+        plantaAntesDoPopup = null;
+        closeModal(document.getElementById('modal-floorplan-table'));
       });
     }
 
@@ -10336,6 +10547,20 @@ document.addEventListener('DOMContentLoaded', () => {
       btnExpandir.addEventListener('click', () => expandir(!wrapPlanta.classList.contains('is-expandida')));
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && wrapPlanta.classList.contains('is-expandida') && !document.querySelector('.modal-backdrop-custom.open')) expandir(false);
+      });
+    }
+
+    // Clique no fundo da planta (ou Esc) tira a seleção.
+    const canvasDaPlanta = document.getElementById('floorplan-canvas');
+    if (canvasDaPlanta) {
+      canvasDaPlanta.addEventListener('mousedown', (e) => {
+        if (e.target === canvasDaPlanta && plantaSelecionada) { plantaSelecionada = null; desenharSelecaoDaPlanta(); }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && plantaSelecionada && !document.querySelector('.modal-backdrop-custom.open') && !(e.target instanceof HTMLElement && e.target.isContentEditable)) {
+          plantaSelecionada = null;
+          desenharSelecaoDaPlanta();
+        }
       });
     }
 

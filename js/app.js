@@ -9698,7 +9698,7 @@ document.addEventListener('DOMContentLoaded', () => {
           girar.className = 'floorplan-girar';
           girar.title = elData.orientacao === 'vertical' ? 'Deixar na horizontal' : 'Deixar na vertical';
           girar.setAttribute('aria-label', girar.title);
-          girar.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.5 17.5a9 9 0 0 1 15.2-6.5l1.8-1.8a.6.6 0 0 1 1 .4V16a.6.6 0 0 1-.6.6h-6.4a.6.6 0 0 1-.4-1l2.2-2.2A5.8 5.8 0 0 0 5.7 17.5Z"/></svg>';
+          girar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6a14 14 0 0 1 14 14"/><path d="m14.5 16.8 3.5 3.7 3.5-3.7"/></svg>';
           // Não deixa o clique virar arrastar nem abrir o pop-up da mesa.
           girar.addEventListener('mousedown', (e) => e.stopPropagation());
           girar.addEventListener('click', (e) => {
@@ -9726,10 +9726,7 @@ document.addEventListener('DOMContentLoaded', () => {
           let seatState = 'is-empty';
           if (guestName) seatState = declined ? 'is-declined' : (confirmed ? 'is-confirmed' : 'is-assigned');
           seatDot.className = `floorplan-seat-dot ${seatState}`;
-          if (!guestName) {
-            seatDot.textContent = '+';
-            seatDot.title = 'Lugar vago';
-          }
+          if (!guestName) seatDot.title = 'Lugar vago';
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
           if (guestName) {

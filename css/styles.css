@@ -9420,3 +9420,8 @@ html body #account-dropdown-email:not(#love-h-a) { white-space: normal !importan
 /* Menu do perfil: só o nome e sobrenome da pessoa (sem o e-mail). */
 html body #account-dropdown-username:not(#love-h-a) { display: block !important; font-size: 0.875rem !important; font-weight: 500 !important; color: #18181B !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
 html body #account-dropdown-email:not(#love-h-a) { display: none !important; }
+
+/* Dica dos botões só com ícone (data-dica): caixinha branca com borda fina e
+   sombra de overlay, no lugar da caixinha preta do navegador. */
+.love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #18181B; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
+.love-dica.is-visivel { opacity: 1; visibility: visible; }

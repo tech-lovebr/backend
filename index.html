@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_perfilNome">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_dicas">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -728,7 +728,7 @@
         
         <!-- Botão Mensagens / Chat (balão de conversa - Direciona para o Chat B2B) -->
         <div class="relative">
-          <button id="btn-dash-header-chat" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Mensagens">
+          <button id="btn-dash-header-chat" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Mensagens" aria-label="Mensagens">
             <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
             </svg>
@@ -739,7 +739,7 @@
 
         <!-- Notificações: abre a página própria /notificacoes (ver
              openNotificationsPage em app.js) em vez de um dropdown. -->
-        <button id="btn-notifications-menu" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Notificações">
+        <button id="btn-notifications-menu" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Notificações" aria-label="Notificações">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
           </svg>
@@ -3263,10 +3263,10 @@
             <div id="b2b-toolbar-controls" class="flex items-center gap-2.5 flex-shrink-0">
               <!-- Alternância Lista / Grid (ver b2bViewMode em app.js) — lista é o padrão. -->
               <div class="flex items-center gap-0.5 border border-zinc-200 rounded-xl p-0.5 bg-white" id="b2b-view-toggle">
-                <button type="button" id="btn-b2b-view-list" class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer" title="Ver em lista">
+                <button type="button" id="btn-b2b-view-list" class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer" data-dica="Ver em lista" aria-label="Ver em lista">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
                 </button>
-                <button type="button" id="btn-b2b-view-grid" class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer" title="Ver em grid">
+                <button type="button" id="btn-b2b-view-grid" class="w-7 h-7 rounded-lg flex items-center justify-center transition-colors cursor-pointer" data-dica="Ver em grid" aria-label="Ver em grid">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h7.5v7.5h-7.5v-7.5Zm9 0h7.5v7.5h-7.5v-7.5Zm-9 9h7.5v7.5h-7.5v-7.5Zm9 0h7.5v7.5h-7.5v-7.5Z"/></svg>
                 </button>
               </div>
@@ -5552,7 +5552,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_perfilNome"></script>
+  <script src="js/app.js?v=20261021_dicas"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261020_presenteTopo"></script>

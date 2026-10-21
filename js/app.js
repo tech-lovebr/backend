@@ -4,6 +4,52 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Dica dos botões só com ícone (Mensagens, Notificações, lista/grid em
+  // Encontrar fornecedor): caixinha branca da Love no lugar da caixinha preta
+  // do navegador. Basta o botão ter data-dica="Texto". Aparece em cima do
+  // botão; se não couber (ex.: topo da tela), embaixo.
+  (function ligarDicasDosIcones() {
+    /** @type {HTMLDivElement|null} */
+    let dica = null;
+    const esconder = () => { if (dica) dica.classList.remove('is-visivel'); };
+    /** @param {HTMLElement} alvo */
+    const mostrar = (alvo) => {
+      const texto = alvo.dataset.dica;
+      if (!texto) return;
+      if (!dica) {
+        dica = document.createElement('div');
+        dica.className = 'love-dica';
+        dica.setAttribute('role', 'tooltip');
+        document.body.appendChild(dica);
+      }
+      dica.textContent = texto;
+      dica.classList.add('is-visivel');
+      const r = alvo.getBoundingClientRect();
+      const d = dica.getBoundingClientRect();
+      let top = r.top - d.height - 8;
+      if (top < 8) top = r.bottom + 8;
+      const left = Math.max(8, Math.min(r.left + r.width / 2 - d.width / 2, window.innerWidth - d.width - 8));
+      dica.style.top = `${top}px`;
+      dica.style.left = `${left}px`;
+    };
+    document.addEventListener('mouseover', (e) => {
+      const alvo = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-dica]')) : null;
+      if (alvo) mostrar(alvo);
+    });
+    document.addEventListener('mouseout', (e) => {
+      const de = e.target instanceof Element ? e.target.closest('[data-dica]') : null;
+      const para = e.relatedTarget instanceof Element ? e.relatedTarget.closest('[data-dica]') : null;
+      if (de && de !== para) esconder();
+    });
+    document.addEventListener('focusin', (e) => {
+      const alvo = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-dica]')) : null;
+      if (alvo && alvo.matches(':focus-visible')) mostrar(alvo);
+    });
+    document.addEventListener('focusout', esconder);
+    document.addEventListener('click', esconder, true);
+    window.addEventListener('scroll', esconder, true);
+  })();
+
   // Rodapé da plataforma logada: ano atual no "© {ano} Love Hub Ltda."
   const anoDoRodape = document.getElementById('rodape-ano');
   if (anoDoRodape) anoDoRodape.textContent = String(new Date().getFullYear());

@@ -9806,3 +9806,5 @@ html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-column: 1 / 
 }
 
 #btn-gifts-listas-prontas.is-ativo { background: #F4F6F7 !important; }
+/* Mapa do evento vazio: ícone de "+" maior. */
+html body .floorplan-empty-hint:not(#love-h-a) svg { width: 48px !important; height: 48px !important; }

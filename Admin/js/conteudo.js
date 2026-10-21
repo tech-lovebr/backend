@@ -206,6 +206,7 @@ function renderBanners(host) {
       <div class="banner-slot-img" ${b.imagem_url ? `style="background-image:url('${escapeHtml(b.imagem_url)}')"` : ''}>
         ${b.imagem_url ? '' : '<span>sem imagem</span>'}
         <span class="banner-slot-ordem">${i + 1}</span>
+        <span class="banner-slot-status ${b.ativo ? '' : 'is-rascunho'}">${b.ativo ? 'Publicado' : 'Rascunho'}</span>
       </div>
       <div class="banner-slot-body">
         <p class="nome">${escapeHtml(b.titulo)}</p>
@@ -213,9 +214,7 @@ function renderBanners(host) {
         ${b.link_url ? `<p class="link">${escapeHtml(b.link_url)}</p>` : ''}
       </div>
       <div class="banner-slot-foot">
-        <span class="pos">${b.ativo ? 'publicado' : 'rascunho'}</span>
-        <button type="button" class="btn btn-ghost btn-sm" data-editar-banner="${b.id}">Editar</button>
-        <button type="button" class="btn btn-danger btn-sm" data-excluir-banner="${b.id}">Excluir</button>
+        <button type="button" class="btn-editar-banner" data-editar-banner="${b.id}">Editar</button>
       </div>
     </article>`).join('');
 
@@ -245,9 +244,6 @@ function renderBanners(host) {
   lista.querySelectorAll('[data-editar-banner]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioBanner(BANNERS.find(b => b.id === btn.dataset.editarBanner)));
   });
-  lista.querySelectorAll('[data-excluir-banner]').forEach(btn => {
-    btn.addEventListener('click', () => excluir('conteudo_plataforma', btn.dataset.excluirBanner, BANNERS.find(b => b.id === btn.dataset.excluirBanner)?.titulo));
-  });
   lista.querySelectorAll('[data-nova-imagem]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioBanner({ posicao: Number(btn.dataset.novaImagem) }));
   });
@@ -275,15 +271,20 @@ function abrirFormularioBanner(item) {
           <span class="field-label">Link do banner</span>
           <input class="field-input" name="link_url" type="text" placeholder="https://" value="${escapeHtml(item?.link_url || '')}">
         </label>
-        ${blocoPublicacao(item?.posicao ?? proximaPosicao(BANNERS), !item || item.ativo, 'Ordem no carrossel')}
+        <label class="field">
+          <span class="field-label">Ordem no carrossel</span>
+          <input class="field-input" name="posicao" type="number" min="0" value="${item?.posicao ?? proximaPosicao(BANNERS)}">
+        </label>
       </form>`,
     footer: `
+      ${editando ? '<button type="button" class="btn btn-danger" id="btn-excluir-banner" style="margin-right:auto">Excluir</button>' : ''}
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
       <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
   });
 
   const form = document.getElementById('form-conteudo');
   ligarCamposDeImagem(form, 'banners');
+  document.getElementById('btn-excluir-banner')?.addEventListener('click', () => excluir('conteudo_plataforma', item.id, item.titulo));
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
   document.getElementById('btn-salvar').addEventListener('click', async () => {
     const d = Object.fromEntries(new FormData(form).entries());
@@ -295,7 +296,8 @@ function abrirFormularioBanner(item) {
       imagem_url: d.imagem_url.trim() || null,
       link_url: d.link_url.trim() || null,
       posicao: Number(d.posicao) || 0,
-      ativo: d.ativo === 'true'
+      // Banner é sempre publicado; para tirar do ar, exclui.
+      ativo: true
     };
     if (!payload.titulo) return toast('O título é obrigatório.');
     await gravar('conteudo_plataforma', item?.id, payload);

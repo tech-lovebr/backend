@@ -7286,7 +7286,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formAddGift) formAddGift.reset();
     // Presente novo: começa sem imagem.
     mostrarImagemDoPresente('');
-    if (drawerTitle) drawerTitle.textContent = 'Adicionar novo presente';
+    if (drawerTitle) drawerTitle.textContent = 'Criar novo presente';
+    const extraNovo = /** @type {HTMLInputElement|null} */ (document.getElementById('gift-valor-extra-toggle'));
+    if (extraNovo) extraNovo.checked = false;
     if (drawerSub) drawerSub.textContent = 'Cadastre um novo presente fictício para sua lista de presentes.';
     if (btnSubmitText) btnSubmitText.textContent = 'Criar presente';
     document.getElementById('btn-submit-gift-icon')?.classList.remove('hidden');
@@ -7331,6 +7333,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-submit-gift-icon')?.classList.add('hidden');
     document.getElementById('btn-duplicate-gift')?.classList.remove('hidden');
     populateGiftCrowdfundingFields(gift);
+    const extraEditar = /** @type {HTMLInputElement|null} */ (document.getElementById('gift-valor-extra-toggle'));
+    if (extraEditar) extraEditar.checked = !!gift.permitirValorExtra;
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
@@ -7406,6 +7410,716 @@ document.addEventListener('DOMContentLoaded', () => {
       container.appendChild(card);
     });
   }
+
+  // ==========================================
+  // LISTAS PRONTAS (Meus presentes › ícone de lista)
+  // ==========================================
+  /** @type {{ titulo: string, listas: { nome: string, img: string, itens: [string, number][] }[] }[]} */
+  const LISTAS_PRONTAS = [
+    {
+      "titulo": "Destinos de lua de mel",
+      "listas": [
+        {
+          "nome": "Praias do Nordeste",
+          "img": "assets/theme_coastal.jpg",
+          "itens": [
+            [
+              "Passagens aéreas para o casal",
+              3200
+            ],
+            [
+              "Pousada pé na areia (3 diárias)",
+              2400
+            ],
+            [
+              "Passeio de buggy pelas dunas",
+              450
+            ],
+            [
+              "Mergulho com cilindro",
+              680
+            ],
+            [
+              "Jantar à beira-mar",
+              380
+            ],
+            [
+              "Passeio de catamarã",
+              520
+            ],
+            [
+              "Massagem relaxante a dois",
+              420
+            ],
+            [
+              "Café da manhã especial",
+              190
+            ],
+            [
+              "Aluguel de carro (5 dias)",
+              900
+            ],
+            [
+              "Day use em beach club",
+              350
+            ]
+          ]
+        },
+        {
+          "nome": "Serra Gaúcha",
+          "img": "assets/theme_garden.jpg",
+          "itens": [
+            [
+              "Passagens aéreas para o casal",
+              2600
+            ],
+            [
+              "Hotel boutique (3 diárias)",
+              2900
+            ],
+            [
+              "Tour pelas vinícolas",
+              690
+            ],
+            [
+              "Fondue a dois",
+              320
+            ],
+            [
+              "Passeio de Maria-fumaça",
+              380
+            ],
+            [
+              "Spa do casal",
+              540
+            ],
+            [
+              "Chocolates artesanais",
+              150
+            ],
+            [
+              "Jantar italiano",
+              360
+            ],
+            [
+              "Passeio de balão",
+              1400
+            ]
+          ]
+        },
+        {
+          "nome": "Safári na África",
+          "img": "assets/card_safari.jpg",
+          "itens": [
+            [
+              "Passagens internacionais",
+              12000
+            ],
+            [
+              "Lodge no safári (4 noites)",
+              9800
+            ],
+            [
+              "Game drive ao amanhecer",
+              1500
+            ],
+            [
+              "Jantar sob as estrelas",
+              900
+            ],
+            [
+              "Voo panorâmico",
+              2200
+            ],
+            [
+              "Vinícola na Cidade do Cabo",
+              750
+            ],
+            [
+              "Seguro viagem",
+              600
+            ]
+          ]
+        },
+        {
+          "nome": "Maldivas",
+          "img": "assets/card_kayak.jpg",
+          "itens": [
+            [
+              "Passagens internacionais",
+              14000
+            ],
+            [
+              "Bangalô sobre as águas (5 noites)",
+              18000
+            ],
+            [
+              "Snorkel com arraias",
+              900
+            ],
+            [
+              "Jantar submarino",
+              2400
+            ],
+            [
+              "Passeio de caiaque",
+              450
+            ],
+            [
+              "Spa no resort",
+              1300
+            ],
+            [
+              "Traslado de hidroavião",
+              3200
+            ]
+          ]
+        },
+        {
+          "nome": "Europa romântica",
+          "img": "assets/wedding_table_dinner.jpg",
+          "itens": [
+            [
+              "Passagens internacionais",
+              9000
+            ],
+            [
+              "Hotel em Paris (4 noites)",
+              4800
+            ],
+            [
+              "Jantar na Torre Eiffel",
+              1600
+            ],
+            [
+              "Passeio de gôndola em Veneza",
+              650
+            ],
+            [
+              "Trem Paris–Veneza",
+              1200
+            ],
+            [
+              "Degustação na Toscana",
+              520
+            ],
+            [
+              "Ingressos do Louvre",
+              260
+            ],
+            [
+              "Passeio de bicicleta",
+              220
+            ]
+          ]
+        },
+        {
+          "nome": "Santorini",
+          "img": "assets/wedding_sunset_couple.jpg",
+          "itens": [
+            [
+              "Passagens internacionais",
+              9800
+            ],
+            [
+              "Hotel com vista para a caldeira",
+              6200
+            ],
+            [
+              "Veleiro ao pôr do sol",
+              980
+            ],
+            [
+              "Jantar em Oia",
+              640
+            ],
+            [
+              "Ensaio fotográfico do casal",
+              1200
+            ],
+            [
+              "Aluguel de quadriciclo",
+              380
+            ],
+            [
+              "Tour pelas vinícolas",
+              450
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "Listas de casamento",
+      "listas": [
+        {
+          "nome": "Cotas de lua de mel",
+          "img": "assets/criar-casamento.jpg",
+          "itens": [
+            [
+              "Cota de passagem aérea",
+              500
+            ],
+            [
+              "Cota de hospedagem",
+              400
+            ],
+            [
+              "Cota de jantar romântico",
+              250
+            ],
+            [
+              "Cota de passeio",
+              200
+            ],
+            [
+              "Cota de spa",
+              300
+            ],
+            [
+              "Cota de champanhe",
+              150
+            ],
+            [
+              "Cota de café da manhã",
+              120
+            ],
+            [
+              "Cota de aluguel de carro",
+              300
+            ],
+            [
+              "Cota de mergulho",
+              350
+            ],
+            [
+              "Cota de fotos da viagem",
+              400
+            ]
+          ]
+        },
+        {
+          "nome": "Open House",
+          "img": "assets/card_bedding.jpg",
+          "itens": [
+            [
+              "Jogo de lençóis 400 fios",
+              620
+            ],
+            [
+              "Jogo de toalhas",
+              380
+            ],
+            [
+              "Edredom",
+              450
+            ],
+            [
+              "Par de travesseiros",
+              290
+            ],
+            [
+              "Aspirador robô",
+              1800
+            ],
+            [
+              "Air fryer",
+              650
+            ],
+            [
+              "Liquidificador",
+              320
+            ],
+            [
+              "Jogo de panelas",
+              1200
+            ],
+            [
+              "Aparelho de jantar",
+              890
+            ],
+            [
+              "Taças de vinho (6)",
+              260
+            ],
+            [
+              "Cafeteira espresso",
+              890
+            ],
+            [
+              "Tapete da sala",
+              750
+            ],
+            [
+              "Luminária",
+              280
+            ],
+            [
+              "Kit organização",
+              190
+            ]
+          ]
+        },
+        {
+          "nome": "Presentes de casamento",
+          "img": "assets/hero_gift.jpg",
+          "itens": [
+            [
+              "Geladeira",
+              4500
+            ],
+            [
+              "Fogão",
+              2200
+            ],
+            [
+              "Micro-ondas",
+              800
+            ],
+            [
+              "Máquina de lavar",
+              3200
+            ],
+            [
+              "Smart TV",
+              3600
+            ],
+            [
+              "Sofá",
+              4200
+            ],
+            [
+              "Mesa de jantar",
+              2800
+            ],
+            [
+              "Cama box",
+              3400
+            ],
+            [
+              "Batedeira",
+              900
+            ],
+            [
+              "Faqueiro",
+              650
+            ]
+          ]
+        },
+        {
+          "nome": "Cozinha completa",
+          "img": "assets/card_lecreuset.jpg",
+          "itens": [
+            [
+              "Panela Le Creuset",
+              799
+            ],
+            [
+              "Jogo de facas",
+              680
+            ],
+            [
+              "Tábua de madeira",
+              180
+            ],
+            [
+              "Cafeteira espresso",
+              890
+            ],
+            [
+              "Mixer",
+              320
+            ],
+            [
+              "Forma de bolo",
+              120
+            ],
+            [
+              "Jogo de potes",
+              260
+            ],
+            [
+              "Panela de pressão",
+              390
+            ],
+            [
+              "Frigideira antiaderente",
+              280
+            ],
+            [
+              "Air fryer",
+              650
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "Listas temáticas",
+      "listas": [
+        {
+          "nome": "Chá de bebê",
+          "img": "assets/criar-cha-de-bebe.jpg",
+          "itens": [
+            [
+              "Fraldas RN (pacote)",
+              90
+            ],
+            [
+              "Fraldas P (pacote)",
+              95
+            ],
+            [
+              "Lenços umedecidos (kit)",
+              60
+            ],
+            [
+              "Pomada para assaduras",
+              45
+            ],
+            [
+              "Kit de mamadeiras",
+              180
+            ],
+            [
+              "Body manga longa (kit)",
+              120
+            ],
+            [
+              "Manta de algodão",
+              90
+            ],
+            [
+              "Toalha com capuz",
+              75
+            ],
+            [
+              "Kit de higiene",
+              120
+            ],
+            [
+              "Termômetro digital",
+              80
+            ],
+            [
+              "Mordedor",
+              40
+            ],
+            [
+              "Saquinho de dormir",
+              130
+            ]
+          ]
+        },
+        {
+          "nome": "Enxoval de bebê",
+          "img": "assets/criar-revelacao.jpg",
+          "itens": [
+            [
+              "Berço",
+              1500
+            ],
+            [
+              "Carrinho de bebê",
+              2200
+            ],
+            [
+              "Bebê conforto",
+              1100
+            ],
+            [
+              "Banheira",
+              250
+            ],
+            [
+              "Kit de bodies",
+              180
+            ],
+            [
+              "Mantas",
+              160
+            ],
+            [
+              "Babá eletrônica",
+              650
+            ],
+            [
+              "Trocador",
+              300
+            ],
+            [
+              "Cômoda",
+              1300
+            ],
+            [
+              "Kit berço",
+              420
+            ]
+          ]
+        },
+        {
+          "nome": "Chá de panela",
+          "img": "assets/criar-cha-de-panela.jpg",
+          "itens": [
+            [
+              "Jogo de panelas",
+              1200
+            ],
+            [
+              "Assadeiras",
+              180
+            ],
+            [
+              "Escorredor de louça",
+              90
+            ],
+            [
+              "Jogo de copos",
+              140
+            ],
+            [
+              "Talheres",
+              260
+            ],
+            [
+              "Kit de panos de prato",
+              80
+            ],
+            [
+              "Liquidificador",
+              320
+            ],
+            [
+              "Sanduicheira",
+              150
+            ],
+            [
+              "Espremedor de frutas",
+              120
+            ]
+          ]
+        },
+        {
+          "nome": "Aniversário",
+          "img": "assets/criar-aniversario.jpg",
+          "itens": [
+            [
+              "Vale experiência",
+              300
+            ],
+            [
+              "Jantar especial",
+              350
+            ],
+            [
+              "Dia de spa",
+              400
+            ],
+            [
+              "Ingresso de show",
+              450
+            ],
+            [
+              "Kit de livros",
+              150
+            ],
+            [
+              "Perfume",
+              420
+            ],
+            [
+              "Fone bluetooth",
+              380
+            ],
+            [
+              "Curso online",
+              290
+            ]
+          ]
+        }
+      ]
+    }
+  ];
+
+  /** @param {number} v */
+  const reaisDaLista = (v) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  /** Mostra (ou esconde) as listas prontas no lugar dos presentes. @param {boolean} mostrar */
+  function mostrarListasProntas(mostrar) {
+    const painel = document.getElementById('gifts-listas-prontas');
+    const grade = document.getElementById('host-gifts-grid');
+    const botao = document.getElementById('btn-gifts-listas-prontas');
+    if (!painel || !grade) return;
+    painel.hidden = !mostrar;
+    grade.classList.toggle('hidden', mostrar);
+    botao?.setAttribute('aria-pressed', String(mostrar));
+    botao?.classList.toggle('is-ativo', mostrar);
+    if (!mostrar) return;
+    painel.innerHTML = `<button type="button" class="listas-prontas-voltar" data-voltar-presentes>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Voltar para meus presentes
+      </button>` + LISTAS_PRONTAS.map((secao, s) => `
+      <section class="listas-prontas-secao">
+        <h3>${escaparHtml(secao.titulo)}</h3>
+        <div class="listas-prontas-grade">
+          ${secao.listas.map((l, i) => {
+            const total = l.itens.reduce((t, it) => t + it[1], 0);
+            return `<button type="button" class="lista-pronta-card" data-secao="${s}" data-lista="${i}">
+              <img src="${escaparHtml(l.img)}" alt="" loading="lazy">
+              <span class="lista-pronta-corpo">
+                <strong>${escaparHtml(l.nome)}</strong>
+                <span class="lista-pronta-qtd">${l.itens.length} presentes</span>
+                <span class="lista-pronta-total"><span>Total da lista:</span><b>${reaisDaLista(total)}</b></span>
+              </span>
+            </button>`;
+          }).join('')}
+        </div>
+      </section>`).join('');
+  }
+
+  /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number][] }} lista */
+  async function adicionarListaPronta(lista) {
+    const ev = getActiveEvent();
+    if (!ev) return;
+    const total = lista.itens.reduce((t, it) => t + it[1], 0);
+    const ok = await confirmarNaLove({
+      titulo: `Adicionar a lista "${lista.nome}"?`,
+      texto: `${lista.itens.length} presentes, somando ${reaisDaLista(total)}, entram em Meus presentes. Depois dá para editar ou remover cada um.`,
+      botao: 'Adicionar lista',
+      aoConfirmar: async () => {
+        if (!ev.giftList) ev.giftList = [];
+        for (const [titulo, preco] of lista.itens) {
+          const presente = {
+            id: `gift-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+            title: titulo, description: '', category: lista.nome, price: preco, type: 'virtual',
+            marketplaceUrl: null, received: 0, status: 'Disponível para Presentear', image: lista.img,
+            contributorsCount: 0, isCrowdfunding: false, crowdfundingConfig: null, categoryTag: null
+          };
+          const { error } = await salvarPresenteNoBanco(presente).catch(err => ({ error: err }));
+          if (error) return 'Não foi possível adicionar todos os presentes agora. Tente de novo.';
+          ev.giftList.push(presente);
+        }
+        return null;
+      }
+    });
+    if (!ok) return;
+    mostrarListasProntas(false);
+    renderHostGifts();
+    updateAllCelebrationData();
+  }
+
+  document.getElementById('btn-gifts-listas-prontas')?.addEventListener('click', () => {
+    const painel = document.getElementById('gifts-listas-prontas');
+    mostrarListasProntas(!!painel && painel.hidden);
+  });
+  document.getElementById('gifts-listas-prontas')?.addEventListener('click', (e) => {
+    const alvo = e.target instanceof Element ? e.target : null;
+    if (!alvo) return;
+    if (alvo.closest('[data-voltar-presentes]')) { mostrarListasProntas(false); return; }
+    const card = /** @type {HTMLElement|null} */ (alvo.closest('.lista-pronta-card'));
+    if (!card) return;
+    const lista = LISTAS_PRONTAS[Number(card.dataset.secao)]?.listas[Number(card.dataset.lista)];
+    if (lista) adicionarListaPronta(lista);
+  });
 
   const randomGiftsPool = [
     { title: 'Contribuir com Safari na Lua de Mel', price: 1200.00, category: 'honeymoon', image: 'assets/card_safari.jpg' },
@@ -7598,7 +8312,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
             </svg>
             <p class="text-xs sm:text-sm text-zinc-500 font-medium font-sans">Sua lista de presentes está vazia.</p>
-            <button type="button" id="btn-empty-gifts-add" class="btn-brand text-xs py-2 px-3.5 font-semibold rounded-[var(--radius-control,12px)] cursor-pointer">Adicionar novo</button>
+            <button type="button" id="btn-empty-gifts-add" class="btn-brand text-xs py-2 px-3.5 font-semibold rounded-[var(--radius-control,12px)] cursor-pointer">Criar presente</button>
           </div>
         `;
         const btnEmptyAddGift = document.getElementById('btn-empty-gifts-add');
@@ -7998,6 +8712,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Vaquinha livre: sem cotas — o convidado escolhe o valor que quer dar.
       if (isCrowdfunding) crowdfundingConfig = { valorLivre: true };
       const categoryTag = document.getElementById('gift-category-tag-input')?.value || null;
+      const permitirValorExtra = !!(/** @type {HTMLInputElement|null} */ (document.getElementById('gift-valor-extra-toggle'))?.checked);
 
       if (editingGiftId) {
         const giftItem = activeEvent.giftList.find(g => g.id === editingGiftId);
@@ -8009,6 +8724,7 @@ document.addEventListener('DOMContentLoaded', () => {
           giftItem.isCrowdfunding = isCrowdfunding;
           giftItem.crowdfundingConfig = crowdfundingConfig;
           giftItem.categoryTag = categoryTag;
+          giftItem.permitirValorExtra = permitirValorExtra;
           if (!(await salvarComRetorno(giftItem))) return;
         }
         editingGiftId = null;
@@ -8037,7 +8753,8 @@ document.addEventListener('DOMContentLoaded', () => {
         contributorsCount: 0,
         isCrowdfunding: isCrowdfunding,
         crowdfundingConfig: crowdfundingConfig,
-        categoryTag: categoryTag
+        categoryTag: categoryTag,
+        permitirValorExtra: permitirValorExtra
       };
       if (!(await salvarComRetorno(novoPresente))) return;
       activeEvent.giftList.unshift(novoPresente);

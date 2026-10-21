@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_menuPresente">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_listasProntas">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1950,15 +1950,9 @@
                 Valor total: <span id="gifts-total-value" class="font-bold text-zinc-900 font-sans">R$ 0,00</span>
               </div>
 
-              <!-- Botão Adicionar Presente Aleatório (Ícone de Random) -->
-              <button type="button" id="btn-host-add-random-gift" data-dica="Adicionar aleatório" aria-label="Adicionar aleatório" class="btn-white text-xs py-2 px-3 font-semibold flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 hover:border-zinc-300 text-zinc-700 shadow-2xs cursor-pointer hover:bg-zinc-50 transition-colors flex-shrink-0">
-                <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m18 2 4 4-4 4"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M22 18h-5.9c-1.3 0-2.5-.7-3.3-1.8l-.5-.8"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m18 14 4 4-4 4"/>
-                </svg>
+              <!-- Listas prontas: abre, no lugar dos presentes, listas com vários presentes de uma vez -->
+              <button type="button" id="btn-gifts-listas-prontas" data-dica="Listas prontas" aria-label="Listas prontas" aria-pressed="false" class="btn-white text-xs py-2 px-3 font-semibold flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="2.6"/></svg>
               </button>
 
               <!-- Excluir em massa: aparece ao marcar presentes (caixinha no canto da imagem) -->
@@ -1970,7 +1964,7 @@
               <!-- Botão Adicionar Presente (Abre o Drawer) -->
               <button type="button" id="btn-host-add-gift" class="btn-primary btn-host-add-gift flex-shrink-0">
                 <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>Adicionar novo</span>
+                <span>Criar presente</span>
               </button>
             </div>
           </div>
@@ -1983,6 +1977,8 @@
               <div id="host-gifts-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 <!-- Inserido dinamicamente via JS de acordo com a comemoração ativa -->
               </div>
+              <!-- Listas prontas (ícone de lista no cabeçalho): no mesmo espaço dos presentes -->
+              <div id="gifts-listas-prontas" hidden></div>
             </div>
           </div>
 
@@ -4208,7 +4204,7 @@
     <!-- Header do Drawer: Mesmo estilo dos títulos das páginas com linha horizontal cortando -->
     <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
       <div>
-        <h2 id="drawer-gift-heading-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar novo presente</h2>
+        <h2 id="drawer-gift-heading-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Criar novo presente</h2>
       </div>
       <button id="btn-close-gift-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -4223,7 +4219,7 @@
         
         <!-- 1. Nome do Presente -->
         <div class="space-y-1.5">
-          <label for="gift-title-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Nome</label>
+          <label for="gift-title-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Nome do presente</label>
           <input type="text" id="gift-title-input" required class="w-full text-xs sm:text-sm p-3.5 rounded-[12px] border border-zinc-200 bg-white focus:bg-white focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 focus:outline-none text-zinc-900 font-medium transition-all font-sans">
         </div>
 
@@ -4267,6 +4263,12 @@
             <input type="number" id="gift-price-input" step="0.01" min="1" required class="w-full text-xs sm:text-sm pl-10 pr-4 py-3.5 rounded-[12px] border border-zinc-200 bg-white focus:bg-white focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 focus:outline-none text-zinc-900 font-bold transition-all font-sans">
           </div>
         </div>
+
+        <!-- 4.0 Valor extra: o convidado pode dar mais que o valor do presente -->
+        <label class="gift-valor-extra" for="gift-valor-extra-toggle">
+          <input type="checkbox" id="gift-valor-extra-toggle" class="gifts-select-all-check">
+          <span>Permitir que os convidados adicionem um valor extra ao presente</span>
+        </label>
 
         <!-- 4.1 Vaquinha: o convidado escolhe quanto dar (o valor todo ou uma parte) -->
         <label class="vaquinha-card" for="gift-crowdfunding-toggle">
@@ -5586,7 +5588,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261021_limiteTamanho"></script>
+  <script src="js/app.js?v=20261021_listasProntas"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_corDaMesa"></script>

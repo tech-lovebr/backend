@@ -9762,3 +9762,24 @@ html body .gift-card-mais:not(#love-h-a):hover { color: #18181B; }
 html body .gift-card-menu button:not(#love-h-a) { display: flex; align-items: center; width: 100%; height: 36px; padding: 0 10px; background: transparent; border: 0; border-radius: 8px; font-size: 14px; color: #18181B; text-align: left; cursor: pointer; }
 html body .gift-card-menu button:not(#love-h-a):hover { background: #F4F6F7; }
 html body .gift-card-menu button.is-perigo:not(#love-h-a) { color: #DC2626; }
+
+/* Meus presentes › Listas prontas (no lugar da grade de presentes). */
+#btn-gifts-listas-prontas.is-ativo { border-color: #181D24 !important; color: #181D24 !important; }
+.listas-prontas-voltar { display: inline-flex; align-items: center; gap: 6px; padding: 0; margin-bottom: 8px; background: transparent; border: 0; font-size: 14px; font-weight: 500; color: #3F3F46; cursor: pointer; }
+.listas-prontas-voltar:hover { color: #18181B; text-decoration: underline; }
+.listas-prontas-voltar svg { width: 16px; height: 16px; }
+.listas-prontas-secao { margin-top: 24px; }
+.listas-prontas-secao h3 { margin: 0 0 16px; font-size: 18px; font-weight: 700; color: #18181B; letter-spacing: -0.025em; }
+.listas-prontas-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
+html body .lista-pronta-card:not(#love-h-a) { display: flex; flex-direction: column; padding: 0; overflow: hidden; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left; cursor: pointer; transition: border-color .15s; }
+html body .lista-pronta-card:not(#love-h-a):hover { border-color: #A1A1AA; }
+.lista-pronta-card img { width: 100%; height: 150px; object-fit: cover; display: block; background: #F4F4F5; }
+.lista-pronta-corpo { display: flex; flex-direction: column; padding: 14px 16px 16px; }
+.lista-pronta-corpo strong { font-size: 16px; font-weight: 600; color: #18181B; }
+.lista-pronta-qtd { margin-top: 2px; font-size: 13px; color: #71717A; padding-bottom: 12px; border-bottom: 1px solid #E4E4E7; }
+.lista-pronta-total { display: flex; flex-direction: column; margin-top: 10px; font-size: 13px; color: #71717A; }
+.lista-pronta-total b { font-size: 14px; font-weight: 700; color: #18181B; }
+
+/* Drawer de presente › valor extra (checkbox abaixo do valor). */
+.gift-valor-extra { display: flex; align-items: flex-start; gap: 10px; margin-top: -4px; font-size: 13px; color: #3F3F46; cursor: pointer; line-height: 1.4; }
+.gift-valor-extra input { margin-top: 1px; flex-shrink: 0; }

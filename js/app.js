@@ -9423,8 +9423,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   /**
    * Tamanho de um item na planta. Cresce sempre na proporção (escala, de 0,4 a 3)
-   * e pode estar girado 90°. Plantas antigas guardavam largura/altura soltas:
-   * vira escala + girado.
+   * e gira de 90 em 90° (0, 90, 180, 270). Plantas antigas guardavam
+   * largura/altura soltas ou só "girado": vira escala + rotação.
    * @param {any} elData
    */
   function tamanhoDoItem(elData) {
@@ -9432,17 +9432,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const bw = meta ? meta.w : 84;
     const bh = meta ? meta.h : 64;
     let escala = parseFloat(elData.escala);
-    let girado = !!elData.girado;
+    let rotacao = [0, 90, 180, 270].includes(elData.rotacao) ? elData.rotacao : (elData.girado ? 90 : 0);
     if (!escala && (parseFloat(elData.w) || parseFloat(elData.h))) {
       const w = parseFloat(elData.w) || bw;
       const h = parseFloat(elData.h) || bh;
       escala = Math.max(w, h) / Math.max(bw, bh);
-      if (bw !== bh) girado = (w > h) !== (bw > bh);
+      if (bw !== bh && (w > h) !== (bw > bh)) rotacao = 90;
     }
     escala = Math.min(3, Math.max(0.4, escala || 1));
     const baseW = bw * escala;
     const baseH = bh * escala;
-    return { w: girado ? baseH : baseW, h: girado ? baseW : baseH, escala, girado, baseW, baseH };
+    const deLado = rotacao % 180 === 90;
+    return { w: deLado ? baseH : baseW, h: deLado ? baseW : baseH, escala, rotacao, baseW, baseH };
   }
 
   // Elemento selecionado na planta (caixa com alças + menuzinho embaixo).
@@ -9834,7 +9835,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.width = `${tam.w}px`;
         el.style.height = `${tam.h}px`;
         if (item) {
-          el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${item.w} ${item.h}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.girado ? ' rotate(90deg)' : ''}" aria-hidden="true">${item.planta}</svg>`);
+          el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${item.w} ${item.h}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.rotacao ? ` rotate(${tam.rotacao}deg)` : ''}" aria-hidden="true">${item.planta}</svg>`);
         }
       }
 
@@ -9940,7 +9941,8 @@ document.addEventListener('DOMContentLoaded', () => {
         alvo.x = Math.max(0, (parseFloat(alvo.x) || 0) + (t.w - t.h) / 2);
         alvo.y = Math.max(0, (parseFloat(alvo.y) || 0) + (t.h - t.w) / 2);
         alvo.escala = t.escala;
-        alvo.girado = !t.girado;
+        alvo.rotacao = (t.rotacao + 90) % 360;
+        delete alvo.girado;
         delete alvo.w;
         delete alvo.h;
       }
@@ -9992,7 +9994,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dy0 = Math.abs(e.clientY - base.top - centroY) || 1;
     const escala0 = isMesa ? escalaDaMesa(alvo) : tamanhoDoItem(alvo).escala;
     /** @type {Record<string, any>} */
-    let resultado = isMesa ? { escala: escala0 } : { escala: escala0, girado: tamanhoDoItem(alvo).girado, x: x0, y: y0 };
+    let resultado = isMesa ? { escala: escala0 } : { escala: escala0, rotacao: tamanhoDoItem(alvo).rotacao, x: x0, y: y0 };
     document.body.classList.add('planta-redimensionando');
 
     const mover = (/** @type {MouseEvent} */ ev) => {
@@ -10019,7 +10021,7 @@ document.addEventListener('DOMContentLoaded', () => {
           desenho.style.width = `${t0.baseW / escala0 * escala}px`;
           desenho.style.height = `${t0.baseH / escala0 * escala}px`;
         }
-        resultado = { escala, girado: resultado.girado, x, y };
+        resultado = { escala, rotacao: resultado.rotacao, x, y };
       }
       desenharSelecaoDaPlanta();
     };
@@ -10031,7 +10033,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const t = lista.find(x => x.id === id);
       if (!t) return;
       Object.assign(t, resultado);
-      if (!isMesa) { delete t.w; delete t.h; }
+      if (!isMesa) { delete t.w; delete t.h; delete t.girado; }
       saveFloorPlanElements(lista);
       renderFloorPlanCanvas();
     };

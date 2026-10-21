@@ -9427,3 +9427,8 @@ html body #account-dropdown-email:not(#love-h-a) { display: none !important; }
 .love-dica.is-visivel { opacity: 1; visibility: visible; }
 /* Encontrar fornecedor › campo "Em [cidade]": a cidade um pouco mais longe do "Em". */
 html body #b2b-location-input:not(#love-h-a) { padding-left: 37px !important; }
+/* Mapa do evento › lista de convidados: um respiro de 4px entre um convidado e
+   outro (sem a linha divisória) e o lado direito arredondado, como o item
+   ativo do submenu (esquerda reta, direita 8px). */
+html body #floorplan-guests-panel .floorplan-guest-cards:not(#love-h-a) { gap: 4px; }
+html body #floorplan-guests-panel .floorplan-guest-card:not(#love-h-a) { border-top: 0 !important; border-radius: 0 8px 8px 0 !important; }

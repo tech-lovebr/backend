@@ -3710,3 +3710,84 @@ label.editor-btn { cursor: pointer; }
 .admin-nav-subitem { font-size: .875rem; font-weight: 400; color: #52525B; }
 .admin-nav-subitem.is-active { font-weight: 500; color: #18181B; }
 .admin-nav-label { font-size: .6875rem; font-weight: 600; letter-spacing: .06em; color: #A1A1AA; padding-top: 1rem; }
+
+/* ------------------------------------------------ Caixas de informação
+   Como na referência: um card branco com uma faixa cinza clara dentro; os
+   números ficam lado a lado, separados por linhas finas, com o valor em cima
+   e o rótulo pequeno, em maiúsculas, embaixo. */
+.kpi-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-columns: none;
+  gap: 0;
+  padding: .75rem;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 10px;
+}
+.kpi-grid > .kpi {
+  display: flex;
+  flex-direction: column;
+  background: #F4F6F7;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: .875rem 1.25rem;
+  position: relative;
+  min-width: 0;
+}
+.kpi-grid > .kpi:first-child { border-radius: 8px 0 0 8px; }
+.kpi-grid > .kpi:last-child { border-radius: 0 8px 8px 0; }
+.kpi-grid > .kpi:only-child { border-radius: 8px; }
+.kpi-grid > .kpi + .kpi::before {
+  content: ''; position: absolute; left: 0; top: 22%; bottom: 22%;
+  border-left: 1px solid #DCDFE3;
+}
+.kpi-grid > .kpi .kpi-value { order: 1; margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -.01em; color: #18181B; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-grid > .kpi .kpi-label { order: 2; margin-top: .25rem; font-size: .625rem; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; color: #52525B; }
+.kpi-grid > .kpi .kpi-sub { order: 3; margin-top: .125rem; font-size: .6875rem; color: #A1A1AA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-grid > .kpi .kpi-icon { display: none; }
+.kpi-grid > .kpi .skeleton { order: 0; }
+@media (max-width: 900px) {
+  .kpi-grid { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1px; }
+  .kpi-grid > .kpi { border-radius: 0 !important; }
+  .kpi-grid > .kpi:nth-child(odd)::before { display: none; }
+}
+
+/* ------------------------------------------------ Botões do cabeçalho e da
+   barra da tabela no formato do "Filters" da referência: brancos, borda
+   fina, compactos, texto pequeno em peso médio. Vale também para a ação
+   principal (Cadastrar, Criar novo…), que deixa de ser cinza com sombra. */
+.admin-header-actions .btn,
+.table-toolbar .btn,
+.admin-header-actions .filtro-wrap > .btn {
+  height: 34px;
+  padding: 0 .75rem;
+  gap: .375rem;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: .8125rem;
+  font-weight: 500;
+  color: #18181B;
+}
+.admin-header-actions .btn:hover:not(:disabled),
+.table-toolbar .btn:hover:not(:disabled) { background: #FFFFFF; border-color: #181D24; color: #181D24; box-shadow: none; }
+.admin-header-actions .btn svg,
+.table-toolbar .btn svg { width: 15px; height: 15px; color: #52525B; }
+.admin-header-actions .btn:hover svg,
+.table-toolbar .btn:hover svg { color: #181D24; }
+.admin-header-actions .btn-atualizar { width: 34px; padding: 0; align-self: auto; }
+.admin-header-actions .search-input { height: 34px; font-size: .8125rem; }
+
+/* Sininho de notificações à esquerda do e-mail no cabeçalho (saiu do CMS). */
+.topbar-sino {
+  margin-left: auto; width: 36px; height: 36px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; color: #52525B;
+}
+.topbar-sino:hover, .topbar-sino.is-active { background: #F4F6F7; color: #181D24; }
+.topbar-sino svg { width: 20px; height: 20px; }
+.topbar-sino + .topbar-perfil { margin-left: .25rem; }

@@ -45,8 +45,7 @@ const NAV_SECTIONS = [
     label: 'CMS',
     items: [
       { page: 'cms', href: 'cms.html', text: 'Blog', icon: 'artigo' },
-      { page: 'cms-legal', href: 'cms-legal.html', text: 'Legal', icon: 'legal' },
-      { page: 'cms-notificacoes', href: 'cms-notificacoes.html', text: 'Notificações', icon: 'sino' }
+      { page: 'cms-legal', href: 'cms-legal.html', text: 'Legal', icon: 'legal' }
     ]
   }
 ];
@@ -252,6 +251,9 @@ function renderTopbar(admin) {
     <p class="topbar-empresa">CNPJ 69.386.397/0001-06
       <button type="button" class="topbar-copiar" id="btn-copiar-cnpj" title="Copiar número do CNPJ" aria-label="Copiar número do CNPJ">${ICONE_COPIAR}</button>
     </p>
+    <a href="cms-notificacoes.html" class="topbar-sino ${document.body.dataset.page === 'cms-notificacoes' ? 'is-active' : ''}" title="Notificações" aria-label="Notificações">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS.sino}</svg>
+    </a>
     <div class="admin-user sidebar-perfil topbar-perfil">
       <button type="button" class="sidebar-perfil-botao" id="btn-user-menu"
               aria-haspopup="true" aria-expanded="false" title="${escapeHtml(admin.email || '')}">

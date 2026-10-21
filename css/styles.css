@@ -9159,3 +9159,8 @@ body[data-theme="dark"] #floorplan-canvas {
     linear-gradient(to bottom, rgba(160, 196, 255, 0.18) 1px, transparent 1px) !important;
   background-size: 20px 20px !important;
 }
+/* Mapear mesas › Expandir: botão branco no estilo de "Filtrar por"/"Exportar",
+   com a mesma altura e largura de "Adicionar Mesa"; hover cinza clarinho. */
+html body #btn-floorplan-expandir:not(#love-h-a) { width: 133px; height: 38px; min-height: 38px; padding: 0; background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px; color: #3F3F46; }
+html body #btn-floorplan-expandir:not(#love-h-a):hover { background: #F4F4F5 !important; color: #181D24; border-color: #E4E4E7 !important; }
+body[data-theme="dark"] #btn-floorplan-expandir { background: #252525 !important; border-color: #404040 !important; color: #E4E4E7 !important; }

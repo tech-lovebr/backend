@@ -9708,3 +9708,9 @@ html body .floorplan-lista-pessoa:not(#love-h-a):hover { background: #F4F6F7; }
 .floorplan-lista-nome span { font-size: 12px; color: #71717A; }
 .floorplan-lista-setas { display: flex; color: #3F3F46; flex-shrink: 0; }
 .floorplan-lista-setas svg { width: 16px; height: 16px; }
+/* "Mover convidado para" e lista da mesa: mesma fonte e tamanho do
+   "Convidados" / "+ Adicionar" da lista ao lado (Plus Jakarta Sans 13px 600). */
+html body .floorplan-mover-para:not(#love-h-a), html body .floorplan-mover-para:not(#love-h-a) * { font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; letter-spacing: normal !important; }
+html body .floorplan-mover-para .floorplan-mover-titulo:not(#love-h-a), html body .floorplan-mover-para .floorplan-lista-topo p:not(#love-h-a) { font-size: 13px !important; font-weight: 600 !important; color: #71717A !important; text-align: left; }
+html body .floorplan-mover-para .floorplan-mover-texto strong:not(#love-h-a), html body .floorplan-mover-para .floorplan-lista-nome strong:not(#love-h-a) { font-size: 13px !important; font-weight: 600 !important; }
+html body .floorplan-mover-para .floorplan-lista-topo span:not(#love-h-a) { font-size: 13px !important; font-weight: 600 !important; color: #71717A !important; }

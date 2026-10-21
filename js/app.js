@@ -1292,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'explore', label: 'Explorar' },
-        { id: 'pedidos', label: 'Pedidos de orçamento' },
+        { id: 'pedidos', label: 'Solicitar propostas' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Meus contratos' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
@@ -15579,7 +15579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
-        'pedidos': 'Pedidos de orçamento',
+        'pedidos': 'Solicitar propostas',
         'messages': 'Mensagens',
         'contracted': 'Meus contratos',
         'insurance': 'Benefícios',
@@ -15603,7 +15603,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('b2b-chat-mode');
       document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
       if (searchBar) searchBar.classList.remove('hidden');
-      if (toolbarTitle) toolbarTitle.textContent = 'Pedidos de orçamento';
+      if (toolbarTitle) toolbarTitle.textContent = 'Solicitar propostas';
       [exploreView, messagesView, contractedView, insuranceView].forEach(v => v?.classList.add('hidden'));
       if (window.LovePedidos) window.LovePedidos.mostrarLista();
       return;

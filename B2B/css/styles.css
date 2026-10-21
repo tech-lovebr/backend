@@ -9853,3 +9853,11 @@ html body .nova-empresa-etapas .nova-empresa-etapa:not(#love-h-a) {
 }
 html body .nova-empresa-etapas .nova-empresa-etapa.is-ativa:not(#love-h-a) { color: #333333; font-weight: 700; border-bottom-color: #333333; }
 html body #nova-empresa-form.nova-empresa-card:not(#love-h-a) { padding-top: 1.5rem; border-top: none !important; border-top-left-radius: 0; border-top-right-radius: 0; }
+
+/* Seus formulários: botão "Criar novo" no cabeçalho (só nessa aba) e a caixa
+   vazia no estilo da de Buscar eventos, com o botão centralizado embaixo. */
+html body .site-form-criar:not(#love-h-a) { display: none; }
+html body.site-aba-formularios .site-form-criar:not(#love-h-a) { display: inline-flex; margin-left: auto; flex-shrink: 0; }
+html body .forms-vazio:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
+html body .forms-vazio p:not(#love-h-a) { margin: 0; }
+html body #forms-list:has(.forms-vazio):not(#love-h-a) { display: block; }

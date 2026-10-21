@@ -52,6 +52,15 @@ function subirBarraDoEditor() {
   cabecalho.append(aparelhos);
   direita.append(acoes);
   cabecalho.append(direita);
+
+  // "Criar novo" (só na aba Seus formulários): o mesmo botão do "Novo orçamento".
+  const criar = document.createElement('button');
+  criar.type = 'button';
+  criar.id = 'form-criar-topo';
+  criar.className = 'btn-secondary builder-toolbar-btn site-form-criar';
+  criar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo';
+  criar.addEventListener('click', () => openFormDrawer(null));
+  cabecalho.append(criar);
   document.body.classList.add('site-barra-no-cabecalho');
 }
 
@@ -165,6 +174,18 @@ function renderFormsList() {
       </div>
     </div>
   `;
+
+  // Sem formulário: caixa vazia (mesmo estilo da de Buscar eventos) com o
+  // botão "Criar novo"; com pelo menos um, a lista normal.
+  if (!siteForms.length) {
+    list.innerHTML = `
+      <div class="op-vazio forms-vazio">
+        <p>Você ainda não tem nenhum formulário criado.</p>
+        <button type="button" class="btn-secondary builder-toolbar-btn" data-form-criar><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo</button>
+      </div>`;
+    list.querySelector('[data-form-criar]').addEventListener('click', () => openFormDrawer(null));
+    return;
+  }
 
   list.innerHTML = itemsHtml + createBoxHtml;
 

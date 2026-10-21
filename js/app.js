@@ -14579,11 +14579,6 @@ document.addEventListener('DOMContentLoaded', () => {
           ${(item.cardImage || item.image)
             ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
-          <button type="button" class="btn-toggle-card-fav absolute top-3 right-3 w-9 h-9 rounded-full bg-white hover:bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
-            <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-            </svg>
-          </button>
         </div>
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
@@ -14598,8 +14593,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
               </div>
 
-              <!-- Chat e Contratar no topo à direita: não quebram para a linha de baixo -->
+              <!-- Favoritar, Mensagens e Solicitar no topo à direita: não quebram para a linha de baixo -->
               <div class="flex items-center gap-2.5 shrink-0">
+                <!-- Favoritar à esquerda do Mensagens (saiu de cima da foto) -->
+                <button type="button" class="btn-toggle-card-fav w-10 h-10 shrink-0 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer" data-dica="Favoritar" aria-label="Favoritar"><svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
                 <button type="button" class="btn-message-supplier btn-secondary">
                   <span>Mensagens</span>
                 </button>
@@ -14683,11 +14680,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ${(item.cardImage || item.image)
           ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
           : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
-        <button type="button" class="btn-toggle-card-fav absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer z-10" title="Favoritar">
-          <svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
-          </svg>
-        </button>
       </div>
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
@@ -14718,6 +14710,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="flex items-center gap-2 mt-auto pt-2">
+          <button type="button" class="btn-toggle-card-fav w-9 h-9 shrink-0 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer" data-dica="Favoritar" aria-label="Favoritar"><svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
           <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
             <span>Mensagens</span>
           </button>

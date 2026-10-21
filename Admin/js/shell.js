@@ -191,6 +191,7 @@ function renderSidebar(admin) {
           Homepage
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"/><path d="M11 13l9 -9"/><path d="M15 4h5v5"/></svg>
         </a>
+        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
       </div>
     </div>
     <nav class="admin-nav">${sections}</nav>`;
@@ -209,6 +210,10 @@ function renderSidebar(admin) {
   menu.addEventListener('click', e => e.stopPropagation());
   document.addEventListener('click', fecharMenu);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
+  host.querySelector('#btn-logout').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.replace('login.html');
+  });
 
   host.querySelectorAll('[data-grupo]').forEach(botao => {
     botao.addEventListener('click', () => {
@@ -280,10 +285,9 @@ function renderTopbar() {
     </button>
 
     <h1 class="topbar-titulo">Admin</h1>
-    <p class="topbar-empresa">CNPJ 69.386.397/0001-06</p>
-    <button type="button" class="topbar-sair" id="btn-logout" title="Sair" aria-label="Sair do painel">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/></svg>
-    </button>`;
+    <p class="topbar-empresa">CNPJ 69.386.397/0001-06
+      <button type="button" class="topbar-copiar" id="btn-copiar-cnpj" title="Copiar número do CNPJ" aria-label="Copiar número do CNPJ">${ICONE_COPIAR}</button>
+    </p>`;
 
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
@@ -292,11 +296,14 @@ function renderTopbar() {
     document.getElementById('sidebar-backdrop')?.classList.toggle('is-open');
   });
 
-  host.querySelector('#btn-logout').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.replace('login.html');
+  host.querySelector('#btn-copiar-cnpj').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText('69.386.397/0001-06');
+      toast('CNPJ copiado.');
+    } catch {
+      toast('Não foi possível copiar.');
+    }
   });
-
 }
 
 /** Contador de chamados abertos no menu lateral. */

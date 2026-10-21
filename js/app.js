@@ -14368,6 +14368,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // Paulo. Usa a grafia da vitrine quando há fornecedor lá; senão a do
   // evento, e a lista fica vazia dizendo a cidade (as caixinhas deixam
   // trocar). Evento sem cidade: mostra todas.
+  // Explorar aberto antes do login / do evento terminarem de carregar: confere
+  // de novo algumas vezes e redesenha assim que estiverem prontos.
+  let tentativasDoExplorar = 0;
+  function esperarParaRedesenharExplorar() {
+    if (tentativasDoExplorar >= 20) return;
+    tentativasDoExplorar++;
+    setTimeout(() => {
+      if (currentB2BView !== 'explore' || state.currentTab !== 'b2b') return;
+      if (window.loveClienteSession) renderB2BExplore();
+      else esperarParaRedesenharExplorar();
+    }, 400);
+  }
+  let tentativasDaCidade = 0;
+  function esperarCidadeDoEvento() {
+    if (tentativasDaCidade >= 20) return;
+    tentativasDaCidade++;
+    setTimeout(() => {
+      if (b2bCityChosenByUser || currentB2BView !== 'explore' || state.currentTab !== 'b2b') return;
+      if (cidadeDoEventoAtivo()) {
+        aplicarCidadePadraoVitrine();
+        renderB2BCityFilter();
+        renderB2BExplore();
+      } else esperarCidadeDoEvento();
+    }, 400);
+  }
+
   function aplicarCidadePadraoVitrine() {
     if (b2bCityChosenByUser) return;
     const cidadeEvento = cidadeDoEventoAtivo();
@@ -14789,11 +14815,21 @@ document.addEventListener('DOMContentLoaded', () => {
           renderB2BCityFilter();
           renderB2BExplore();
         });
+      } else {
+        // Página aberta direto no Explorar (F5): o login ainda está chegando.
+        // Tenta de novo em instantes, em vez de ficar parado no "Carregando".
+        esperarParaRedesenharExplorar();
       }
       return;
     }
 
     aplicarCidadePadraoVitrine();
+    // O campo "Em [cidade]" acompanha a cidade na hora (antes só mudava em
+    // outro redesenho, por isso às vezes precisava atualizar a página).
+    const campoDaCidade = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-location-input'));
+    if (campoDaCidade && document.activeElement !== campoDaCidade && campoDaCidade.value !== (b2bSelectedCity || '')) renderB2BCityFilter();
+    // O evento (e a cidade dele) pode ainda estar carregando: confere de novo.
+    if (!b2bCityChosenByUser && !cidadeDoEventoAtivo()) esperarCidadeDoEvento();
 
     let items = b2bFornecedores.flatMap(cardsPorServico);
     let categoryName = 'serviços';

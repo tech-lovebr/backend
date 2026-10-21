@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261020_margemLista">
+  <link rel="stylesheet" href="css/styles.css?v=20261021_formasPerfil">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -760,7 +760,7 @@
           <!-- Dropdown Menu de Minha Conta -->
           <div id="dropdown-user-account" class="hidden absolute right-0 top-full mt-2 w-64 sm:w-72 glass-dropdown rounded-2xl shadow-2xl p-2 z-50 space-y-0.5">
 
-            <!-- Topo do menu: avatar (foto ou iniciais) + nome + e-mail da conta -->
+            <!-- Topo do menu: só o e-mail completo da conta (avatar e nome ficam escondidos) -->
             <div class="account-dropdown-header">
               <span id="account-dropdown-avatar" class="love-avatar-box" aria-hidden="true"></span>
               <div class="min-w-0">
@@ -2149,15 +2149,13 @@
                   <svg class="icone-expandir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
                   <svg class="icone-recolher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>
                 </button>
-                <!-- Formas: linha, círculo e rabisco (desenho livre) -->
+                <!-- Formas: linha e rabisco (desenho livre) -->
                 <div class="floorplan-formas">
-                  <button type="button" id="btn-floorplan-formas" class="builder-tool-btn floorplan-formas-btn" title="Linha, círculo ou rabisco" aria-label="Linha, círculo ou rabisco" aria-haspopup="true" aria-expanded="false">
+                  <button type="button" id="btn-floorplan-formas" class="builder-tool-btn floorplan-formas-btn" title="Linha ou rabisco" aria-label="Linha ou rabisco" aria-haspopup="true" aria-expanded="false">
                     <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21c3-8 6-11 8-9s-3 8 0 9 5-9 8-9 1 7 3 8 3-2 3-2"/></svg>
-                    <svg class="seta-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                   </button>
                   <div id="floorplan-formas-menu" class="floorplan-formas-menu hidden" role="menu" aria-label="Formas">
                     <button type="button" role="menuitem" data-planta-forma="linha"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 25 25 7"/></svg><span>Linha</span></button>
-                    <button type="button" role="menuitem" data-planta-forma="circulo"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="10"/></svg><span>Círculo</span></button>
                     <button type="button" role="menuitem" data-planta-forma="rabisco"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21c3-8 6-11 8-9s-3 8 0 9 5-9 8-9 1 7 3 8 3-2 3-2"/></svg><span>Rabisco</span></button>
                   </div>
                 </div>

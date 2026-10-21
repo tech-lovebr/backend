@@ -9408,3 +9408,12 @@ body[data-theme="dark"] .floorplan-linha-svg .traco { stroke: #A1A1AA; }
 /* Mapa do evento › lista de convidados: mesma margem dos dois lados (era 12px
    à esquerda e 4px à direita). */
 html body .floorplan-wrap:not(.is-expandida) #floorplan-guests-panel > .builder-panel-tab-body:not(#love-h-a) { padding-right: 12px !important; }
+
+/* Mapa do evento: o botão de formas é só o ícone do rabisco (38x38). */
+html body #btn-floorplan-formas:not(#love-h-a) { width: 38px; padding: 0; justify-content: center; }
+#btn-floorplan-formas > svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* Menu do perfil: sem o ícone/foto; só o e-mail completo (quebra se for longo,
+   em vez de cortar com "..."). */
+html body #account-dropdown-avatar:not(#love-h-a) { display: none !important; }
+html body #account-dropdown-email:not(#love-h-a) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }

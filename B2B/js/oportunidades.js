@@ -438,7 +438,7 @@ function leadsMostrarAba(aba) {
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
   document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
   const titulo = document.getElementById('leads-titulo-pagina');
-  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Propostas enviadas' : 'Leads');
+  if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');
   if (acoes) acoes.hidden = aba !== 'leads';
 }

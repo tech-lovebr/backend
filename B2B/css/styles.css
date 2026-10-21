@@ -9737,3 +9737,8 @@ html body #profile-dropdown-name:not(#love-h-a) { display: none !important; }
 html body .profile-dropdown-header:not(#love-h-a) { align-items: center; }
 html body .profile-dropdown-header .profile-dropdown-email:not(#love-h-a) { margin: 0; font-size: 0.8125rem; color: #3F3F46; }
 body[data-theme="dark"] .profile-dropdown-header .profile-dropdown-email { color: #D4D4D8 !important; }
+
+/* Dica dos ícones do topo (data-dica): caixinha branca com borda fina e sombra
+   de overlay, no lugar da caixinha preta do navegador (igual ao love.com.br). */
+.love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #18181B; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
+.love-dica.is-visivel { opacity: 1; visibility: visible; }

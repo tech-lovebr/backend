@@ -8453,7 +8453,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return raw.split('&').map(n => n.trim()).filter(Boolean);
   }
 
-  // Rótulo da coluna/campo "Título" na lista de convidados: "Pai/Beatriz",
+  // Rótulo da coluna "Relação" (antes "Título") na lista de convidados: "Pai/Beatriz",
   // ou só "Pai" quando não há anfitrião associado (ou só um anfitrião no evento).
   // "Irmão / Victor": título + primeiro nome de quem convidou (sempre que houver).
   function formatGuestTitleLabel(guest) {

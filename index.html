@@ -843,49 +843,49 @@
         
         <!-- Brand Icon: iconelove2 no topo (altura do header), antes dos ícones de menu -->
         <div class="sidebar-brand-top w-full h-[76px] hidden md:flex items-center justify-center flex-shrink-0 border-b border-zinc-200/80 bg-[#FAFAFA]">
-          <a href="javascript:void(0)" class="btn-navigate-home flex items-center justify-center cursor-pointer p-1.5 hover:scale-105 transition-transform" title="Visão Geral / Home">
+          <a href="javascript:void(0)" class="btn-navigate-home flex items-center justify-center cursor-pointer p-1.5 hover:scale-105 transition-transform" aria-label="Visão Geral / Home">
             <img id="sidebar-brand-icon-light" src="assets/iconelove2.png?v=2" alt="Love" class="w-[42px] h-[42px] object-contain">
             <img id="sidebar-brand-icon-dark" src="assets/icon-white1.png" alt="Love" class="hidden w-[42px] h-[42px] object-contain">
           </a>
         </div>
 
         <!-- 1. ÍCONE HOME / VISÃO GERAL (🏠 - 1º no Desktop) -->
-        <button class="rail-icon-btn active hidden md:flex md:order-1" data-rail-tab="overview" title="Visão Geral">
+        <button class="rail-icon-btn active hidden md:flex md:order-1" data-rail-tab="overview" aria-label="Visão Geral">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
           </svg>
         </button>
 
         <!-- 2. ÍCONE DE PERSONALIZAR (✏️ Pencil Square - 2º no Desktop) -->
-        <button class="rail-icon-btn mobile-center-edit order-3 md:order-2" data-rail-tab="edit-site" title="Personalizar evento">
+        <button class="rail-icon-btn mobile-center-edit order-3 md:order-2" data-rail-tab="edit-site" aria-label="Personalizar evento">
           <svg class="w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
           </svg>
         </button>
 
         <!-- 3. PRESENTE (🎁 - 3º no Desktop, 1º no Mobile) -->
-        <button class="rail-icon-btn order-1 md:order-3" data-rail-tab="gifts" title="Lista de Presentes">
+        <button class="rail-icon-btn order-1 md:order-3" data-rail-tab="gifts" aria-label="Lista de Presentes">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
           </svg>
         </button>
 
         <!-- 4. CONVIDADOS (👥 - 4º no Desktop, 2º no Mobile) -->
-        <button class="rail-icon-btn order-2 md:order-4" data-rail-tab="rsvp" title="Seus Convidados (RSVP)">
+        <button class="rail-icon-btn order-2 md:order-4" data-rail-tab="rsvp" aria-label="Seus Convidados (RSVP)">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
         </button>
 
         <!-- 5. CARTEIRA (👛 - 5º no Desktop, 4º no Mobile) -->
-        <button class="rail-icon-btn order-4 md:order-5" data-rail-tab="wallet" title="Carteira">
+        <button class="rail-icon-btn order-4 md:order-5" data-rail-tab="wallet" aria-label="Carteira">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5Zm0 0h-4a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h4M17 14h.01" />
           </svg>
         </button>
 
         <!-- 6. FORNECEDORES (👑 Coroa - 6º no Desktop, 5º no Mobile) -->
-        <button class="rail-icon-btn order-5 md:order-6" data-rail-tab="b2b" title="Fornecedores">
+        <button class="rail-icon-btn order-5 md:order-6" data-rail-tab="b2b" aria-label="Fornecedores">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
             <path d="M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z"/>
           </svg>

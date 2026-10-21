@@ -9628,3 +9628,8 @@ html body .nf-dados dt:not(#love-h-a) { font-size: 0.75rem; color: #A1A1AA; marg
 html body .nf-dados dd:not(#love-h-a) { font-size: 0.875rem; color: #18181B; margin: 0; font-variant-numeric: tabular-nums; }
 html body .nf-pdf-btn:not(#love-h-a) { width: 100%; height: 44px; justify-content: center; }
 body[data-theme="dark"] .nf-dados dd { color: #FFFFFF !important; }
+
+/* Botões do cabeçalho cortados ao meio: o subtítulo sobe colado no título e
+   tem fundo branco, então pintava por cima da metade de baixo dos botões
+   (Novo orçamento, Criar produto…). O conteúdo da faixa fica por cima. */
+html body .b2b-header-bar > *:not(#love-h-a) { position: relative; z-index: 1; }

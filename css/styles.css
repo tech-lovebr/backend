@@ -9834,3 +9834,6 @@ html body #editor-form-data > div:not(:last-child):not(.hidden):not(#love-h-a)::
 
 /* Meus presentes: situação (disponível/comprado) embaixo do valor. */
 html body .gift-situacao:not(#love-h-a) { display: inline-flex; margin-top: 6px; }
+/* Situação do presente: cinza, sem bolinha verde (disponível e comprado iguais). */
+html body .gift-status-badge.gift-situacao:not(#love-h-a) { color: #71717A !important; font-size: 12px; font-weight: 400; padding: 0; background: transparent; }
+html body .gift-status-badge.gift-situacao:not(#love-h-a)::before { display: none !important; }

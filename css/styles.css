@@ -9346,3 +9346,8 @@ html body:is(.editor-split-mode, .rsvp-mode, .b2b-mode, .gifts-mode, .wallet-mod
   html body #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 1rem; --rodape-sangria-dir: 1rem; }
   html body.b2b-chat-mode #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 0px; --rodape-sangria-dir: 0px; }
 }
+/* Onde não há rodapé (Personalizar evento: Aparência, Informações, Organizadores,
+   Convite online...; chat de fornecedores) o respiro de 104px também some.
+   Mapa do evento: a planta vai até o rodapé, sem respiro. */
+html body:is(.editor-split-mode, .b2b-chat-mode) #view-event-os-dashboard .dashboard-main-area > .rodape-respiro:not(#love-h-a),
+html body #view-event-os-dashboard .dashboard-main-area:has(#tab-rsvp-tables.active) > .rodape-respiro:not(#love-h-a) { display: none !important; }

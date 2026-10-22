@@ -10066,3 +10066,8 @@ html body .produto-tags-nova .field-input:not(#love-h-a) { flex: 1; min-width: 0
 html body .produto-tags-nova .btn-secondary:not(#love-h-a) { flex-shrink: 0; height: 42px; }
 body[data-theme="dark"] .produto-tag { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 body[data-theme="dark"] .produto-tag.is-marcada { background: #FFFFFF !important; color: #181D24 !important; }
+
+/* Tags: o mesmo espaço dos outros campos da etapa (24px entre Título do
+   anúncio e Código/Unidade); antes somava mais 20px e ficava 44px. */
+html body .produto-tags:not(#love-h-a) { margin-top: 0; }
+html body .produto-tags .field-label:not(#love-h-a) { margin-bottom: 0.5rem; }

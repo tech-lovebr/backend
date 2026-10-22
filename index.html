@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261022_presenteAvulso">
+  <link rel="stylesheet" href="css/styles.css?v=20261022_preferencias">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2040,29 +2040,6 @@
               </div>
             </div>
 
-            <!-- 2. NOTIFICAÇÕES E RECADOS -->
-            <div class="space-y-4">
-              <div>
-                <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Notificações e Recados</h3>
-                <p class="text-xs text-zinc-500 mt-0.5">Como você prefere ser avisado quando um convidado comprar um presente.</p>
-              </div>
-
-              <div class="space-y-3">
-                <label class="gift-pref-item">
-                  <span class="font-bold text-zinc-900 text-xs sm:text-sm block">Notificação via WhatsApp a cada presente recebido</span>
-                  <input type="checkbox" checked class="w-5 h-5 rounded-lg cursor-pointer">
-                </label>
-
-                <label class="gift-pref-item">
-                  <div class="space-y-0.5">
-                    <span class="font-bold text-zinc-900 text-xs sm:text-sm block">Permitir recado com foto ou vídeo do convidado</span>
-                    <span class="text-[11px] text-zinc-500 block">Os convidados podem gravar um áudio ou anexar votos de felicitações.</span>
-                  </div>
-                  <input type="checkbox" checked class="w-5 h-5 rounded-lg cursor-pointer">
-                </label>
-              </div>
-            </div>
-
             <!-- Salvar (mesmo botão do "Salvar alterações" de Informações) -->
             <div class="pt-2">
               <button type="button" id="btn-save-gift-settings" class="btn-secondary builder-toolbar-btn">Salvar configurações</button>
@@ -3104,6 +3081,7 @@
             <div class="love-tabs-nav" id="config-abas">
               <button type="button" class="love-tab-item active" data-config-aba="conta">Informações</button>
               <button type="button" class="love-tab-item" data-config-aba="privacidade">Privacidade</button>
+              <button type="button" class="love-tab-item" data-config-aba="preferencias">Preferências</button>
               <button type="button" class="love-tab-item" data-config-aba="eventos">Meu evento</button>
             </div>
           </div>
@@ -3247,6 +3225,21 @@
 
             <!-- Meu evento: as informações do evento ativo e, no fim, desativar
                  (marca o evento como excluído; o Admin continua vendo e pode restaurar). -->
+            <!-- Preferências: e-mails da Love e avisos da lista de presentes.
+                 Salva ao clicar no toggle (como em Preferências do Hub). -->
+            <div class="max-w-3xl mx-auto hidden space-y-6" id="config-painel-preferencias">
+              <div class="dash-card prefs-email-card">
+                <h3 class="conta-card-titulo">Preferências de e-mail</h3>
+                <p class="conta-card-sub">Escolha o que você quer receber da Love.</p>
+                <div class="prefs-email-lista" data-prefs-grupo="email"></div>
+              </div>
+              <div class="dash-card prefs-email-card">
+                <h3 class="conta-card-titulo">Lista de presentes</h3>
+                <p class="conta-card-sub">Como você prefere ser avisado quando um convidado comprar um presente.</p>
+                <div class="prefs-email-lista" data-prefs-grupo="presentes"></div>
+              </div>
+            </div>
+
             <div class="max-w-3xl mx-auto hidden space-y-6" id="config-painel-eventos">
               <div class="dash-card">
                 <h3 class="text-base font-bold text-zinc-900 mb-4">Meu evento</h3>
@@ -5617,7 +5610,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261022_presenteAvulso"></script>
+  <script src="js/app.js?v=20261022_preferencias"></script>
   <script src="js/pedidos-orcamento.js?v=20261022_rfpDropdown"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>

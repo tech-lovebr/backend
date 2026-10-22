@@ -793,6 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirSubmenuDaPagina('Configurações', [
       { id: 'conta', rotulo: 'Informações' },
       { id: 'privacidade', rotulo: 'Privacidade' },
+      { id: 'preferencias', rotulo: 'Preferências' },
       { id: 'eventos', rotulo: 'Meu evento' }
     ], abaInicial, mostrarAbaDeConfiguracoes);
     mostrarAbaDeConfiguracoes(abaInicial);
@@ -19404,6 +19405,57 @@ document.addEventListener('DOMContentLoaded', () => {
     return null;
   }
 
+  // Configurações › Preferências: uma linha por aviso, com toggle que salva na
+  // hora (sem botão), guardado nos dados da conta (user_metadata.preferencias).
+  const PREFERENCIAS_DO_ANFITRIAO = [
+    { grupo: 'email', chave: 'ofertas', titulo: 'Ofertas e promoções', desc: 'Receba ofertas e descontos de parceiros da Love', padrao: false },
+    { grupo: 'email', chave: 'beneficios', titulo: 'Benefícios', desc: 'Vantagens exclusivas para quem organiza o evento na Love', padrao: false },
+    { grupo: 'email', chave: 'viagens', titulo: 'Viagens', desc: 'Ideias e ofertas de lua de mel e destinos', padrao: false },
+    { grupo: 'presentes', chave: 'whatsapp_presente', titulo: 'Notificação via WhatsApp', desc: 'Avise a cada presente recebido', padrao: true },
+    { grupo: 'presentes', chave: 'recado_midia', titulo: 'Recado com foto ou vídeo', desc: 'Os convidados podem gravar um áudio ou anexar fotos e vídeos com os votos', padrao: true }
+  ];
+
+  async function desenharPreferencias() {
+    const { data } = await supabaseClient.auth.getUser().catch(() => ({ data: { user: null } }));
+    const user = data && data.user;
+    const salvas = (user && user.user_metadata && user.user_metadata.preferencias) || {};
+    /** @type {Record<string, boolean>} */
+    const prefs = {};
+    PREFERENCIAS_DO_ANFITRIAO.forEach(p => { prefs[p.chave] = typeof salvas[p.chave] === 'boolean' ? salvas[p.chave] : p.padrao; });
+    document.querySelectorAll('#config-painel-preferencias [data-prefs-grupo]').forEach(lista => {
+      const grupo = /** @type {HTMLElement} */ (lista).dataset.prefsGrupo;
+      lista.innerHTML = PREFERENCIAS_DO_ANFITRIAO.filter(p => p.grupo === grupo).map(p => `
+        <div class="prefs-email-linha">
+          <div class="prefs-email-textos">
+            <p class="prefs-email-nome">${escaparHtml(p.titulo)}</p>
+            <p class="prefs-email-desc">${escaparHtml(p.desc)}</p>
+          </div>
+          <span class="prefs-email-salvo" data-salvo-de="${p.chave}" aria-live="polite"></span>
+          <label class="settings-switch prefs-email-switch">
+            <input type="checkbox" data-pref="${p.chave}"${prefs[p.chave] ? ' checked' : ''} aria-label="${escaparHtml(p.titulo)}">
+            <span class="settings-switch-track"></span>
+          </label>
+        </div>`).join('');
+    });
+    /** @type {Record<string, any>} */
+    const timers = {};
+    document.querySelectorAll('#config-painel-preferencias [data-pref]').forEach(el => {
+      const input = /** @type {HTMLInputElement} */ (el);
+      input.addEventListener('change', async () => {
+        const chave = input.dataset.pref || '';
+        prefs[chave] = input.checked;
+        const aviso = document.querySelector(`#config-painel-preferencias [data-salvo-de="${chave}"]`);
+        const { error } = await supabaseClient.auth.updateUser({ data: { preferencias: { ...prefs } } }).catch(err => ({ error: err }));
+        if (!aviso) return;
+        aviso.textContent = error ? 'Não salvou' : 'Salvo';
+        aviso.classList.toggle('is-erro', !!error);
+        aviso.classList.add('is-visivel');
+        clearTimeout(timers[chave]);
+        timers[chave] = setTimeout(() => aviso.classList.remove('is-visivel'), 1800);
+      });
+    });
+  }
+
   // Configurações › abas "Minha conta" / "Meus eventos".
   function mostrarAbaDeConfiguracoes(aba) {
     document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.classList.toggle('active', b.dataset.configAba === aba));
@@ -19412,10 +19464,12 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.drawerSubItemsList?.querySelectorAll('[data-pagina-item]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.paginaItem === aba));
     }
     const tituloDaPagina = document.getElementById('account-settings-header-title');
-    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : 'Suas informações';
+    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
     if (aba === 'privacidade') refreshMfaStatus();
+    document.getElementById('config-painel-preferencias')?.classList.toggle('hidden', aba !== 'preferencias');
+    if (aba === 'preferencias') desenharPreferencias();
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
     if (aba === 'eventos') renderMeuEvento();

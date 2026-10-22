@@ -10127,3 +10127,20 @@ html body button.lista-item-adicionar.is-adicionado:not(#love-h-a) { background:
 .lista-item-erro[hidden] { display: none; }
 body[data-theme="dark"] button.lista-item-adicionar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] button.lista-item-adicionar.is-adicionado { background: #333333 !important; color: #A1A1AA !important; }
+
+/* Configurações › Preferências (igual a Preferências do Hub): linhas com
+   toggle que salva na hora e "Salvo" ao lado. */
+html body #config-painel-preferencias .prefs-email-lista:not(#love-h-a) { margin-top: 0.75rem; }
+html body #config-painel-preferencias .prefs-email-linha:not(#love-h-a) { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0; border-top: 1px solid #E4E4E7; }
+html body #config-painel-preferencias .prefs-email-linha:last-child:not(#love-h-a) { padding-bottom: 0; }
+html body #config-painel-preferencias .prefs-email-textos:not(#love-h-a) { flex: 1; min-width: 0; }
+html body #config-painel-preferencias .prefs-email-nome:not(#love-h-a) { font-size: 0.875rem; font-weight: 500; color: #18181B; margin: 0; }
+html body #config-painel-preferencias .prefs-email-desc:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; margin: 0.15rem 0 0; }
+html body #config-painel-preferencias .prefs-email-salvo:not(#love-h-a) { font-size: 0.75rem; font-weight: 500; color: #1E9E5E; opacity: 0; transition: opacity .2s ease; white-space: nowrap; }
+html body #config-painel-preferencias .prefs-email-salvo.is-erro:not(#love-h-a) { color: #DC2626; }
+html body #config-painel-preferencias .prefs-email-salvo.is-visivel:not(#love-h-a) { opacity: 1; }
+html body #config-painel-preferencias .prefs-email-switch .settings-switch-track:not(#love-h-a) { background: #E4E4E7; }
+html body #config-painel-preferencias .prefs-email-switch input:checked ~ .settings-switch-track:not(#love-h-a) { background: #181D24; }
+body[data-theme="dark"] #config-painel-preferencias .prefs-email-linha { border-top-color: #404040 !important; }
+body[data-theme="dark"] #config-painel-preferencias .prefs-email-nome { color: #FFFFFF !important; }
+body[data-theme="dark"] #config-painel-preferencias .prefs-email-desc { color: #A1A1AA !important; }

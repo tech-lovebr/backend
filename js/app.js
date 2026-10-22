@@ -19425,7 +19425,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const nomes = ids.map(id => { const e = state.events.find(x => x.id === id); return e ? `"${e.title}"` : ''; }).filter(Boolean).join(', ');
       const ok = await confirmarNaLove({
         titulo: ids.length === 1 ? `Excluir ${nomes}?` : `Excluir ${ids.length} eventos?`,
-        texto: 'O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.',
+        texto: 'Esta ação não pode ser desfeita. O site, os convidados e os presentes deste evento deixam de estar disponíveis.',
         botao: ids.length === 1 ? 'Excluir evento' : 'Excluir eventos',
         aoConfirmar: async () => {
           for (const id of ids) {
@@ -19516,11 +19516,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ev || ev.souOrganizador) return;
     const ok = await confirmarNaLove({
       titulo: `Desativar "${ev.title || 'evento'}"?`,
-      texto: 'O evento sai da sua conta e o site dele deixa de ficar no ar. Convidados, presentes e o histórico continuam guardados: se foi sem querer, fale com o suporte da Love para recuperar.',
+      texto: 'Esta ação não pode ser desfeita. O site, os convidados e os presentes deste evento deixam de estar disponíveis.',
       botao: 'Desativar evento',
       aoConfirmar: async () => excluirEventoDoCriador(ev.id)
     });
-    if (ok) renderMeuEvento();
+    if (!ok) return;
+    // Sem outro evento, excluirEventoDoCriador já abriu "Criar novo evento"
+    // (sidebar bloqueado); com outro evento, vai para a Home dele.
+    if (state.events.length) switchRailTab('overview');
   });
 
   function renderMeusEventos() {

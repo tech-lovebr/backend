@@ -148,8 +148,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   initProductDrawer();
   initCompleteProfileModal();
 
-  if (new URLSearchParams(location.search).get('add') === '1') {
+  // Atualizar a página (F5) com o produto aberto continua nele:
+  // produtos?add=1 (criando) ou produtos?editar=<id> (editando).
+  const pedido = new URLSearchParams(location.search);
+  if (pedido.get('add') === '1') {
     document.getElementById('product-add-btn')?.click();
+  } else if (pedido.get('editar') && typeof openProductDrawer === 'function') {
+    if (bProducts.some(p => String(p.id) === pedido.get('editar'))) openProductDrawer(pedido.get('editar'));
+    else history.replaceState(null, '', location.pathname);
   }
   window.b2bPageReady?.();
 });
@@ -1860,6 +1866,10 @@ function openProductDrawer(id) {
     voltar.hidden = !aberto;
     const editando = !!(document.getElementById('product-form') || {}).dataset?.editId;
     titulo.textContent = aberto ? (editando ? 'Editar produto' : 'Adicionar novo produto') : 'Meus produtos';
+    // O endereço acompanha o que está aberto, para o F5 voltar ao mesmo lugar.
+    const idEditando = (document.getElementById('product-form') || {}).dataset?.editId;
+    const endereco = aberto ? (editando ? `?editar=${encodeURIComponent(idEditando)}` : '?add=1') : '';
+    if (location.search !== endereco) history.replaceState(null, '', location.pathname + endereco);
     document.body.classList.toggle('produto-modo-editar', aberto && editando);
     document.body.classList.toggle('produto-modo-criar', aberto && !editando);
     if (aberto && editando) {

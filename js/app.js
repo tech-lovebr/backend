@@ -1412,8 +1412,8 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'explore', label: 'Explorar' },
         { id: 'pedidos', label: 'Criar solicitação' },
+        { id: 'explore', label: 'Explorar' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Contratos' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).

@@ -7461,52 +7461,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Jantar romântico a dois",
               450,
-              "assets/presentes/jantar-romantico.jpg"
+              "assets/presentes/jantar-romantico.jpg?v=2"
             ],
             [
               "Buquê de rosas",
               180,
-              "assets/presentes/buque-rosas.jpg"
+              "assets/presentes/buque-rosas.jpg?v=2"
             ],
             [
               "Café da manhã surpresa",
               160,
-              "assets/presentes/cafe-da-manha.jpg"
+              "assets/presentes/cafe-da-manha.jpg?v=2"
             ],
             [
               "Noite em hotel boutique",
               890,
-              "assets/presentes/hotel-boutique.jpg"
+              "assets/presentes/hotel-boutique.jpg?v=2"
             ],
             [
               "Ensaio fotográfico do casal",
               750,
-              "assets/presentes/ensaio-casal.jpg"
+              "assets/presentes/ensaio-casal.jpg?v=2"
             ],
             [
               "Spa para dois",
               620,
-              "assets/presentes/spa-para-dois.jpg"
+              "assets/presentes/spa-para-dois.jpg?v=2"
             ],
             [
               "Passeio de balão",
               1200,
-              "assets/presentes/passeio-balao.jpg"
+              "assets/presentes/passeio-balao.jpg?v=2"
             ],
             [
               "Vinho e tábua de frios",
               280,
-              "assets/presentes/vinho-frios.jpg"
+              "assets/presentes/vinho-frios.jpg?v=2"
             ],
             [
               "Ingressos para show",
               540,
-              "assets/presentes/show.jpg"
+              "assets/presentes/show.jpg?v=2"
             ],
             [
               "Viagem de fim de semana",
               1800,
-              "assets/presentes/viagem-fim-de-semana.jpg"
+              "assets/presentes/viagem-fim-de-semana.jpg?v=2"
             ]
           ]
         },
@@ -7517,52 +7517,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Jantar de 1 ano de casados",
               420,
-              "assets/presentes/jantar-aniversario.jpg"
+              "assets/presentes/jantar-aniversario.jpg?v=2"
             ],
             [
               "Álbum de fotos do primeiro ano",
               350,
-              "assets/presentes/album-fotos.jpg"
+              "assets/presentes/album-fotos.jpg?v=2"
             ],
             [
               "Quadro com o mapa do dia do casamento",
               190,
-              "assets/presentes/quadro-mapa.jpg"
+              "assets/presentes/quadro-mapa.jpg?v=2"
             ],
             [
               "Livro de cartas um para o outro",
               90,
-              "assets/presentes/livro-cartas.jpg"
+              "assets/presentes/livro-cartas.jpg?v=2"
             ],
             [
               "Noite em pousada romântica",
               780,
-              "assets/presentes/pousada.jpg"
+              "assets/presentes/pousada.jpg?v=2"
             ],
             [
               "Assinatura de clube do livro",
               150,
-              "assets/presentes/clube-livro.jpg"
+              "assets/presentes/clube-livro.jpg?v=2"
             ],
             [
               "Origami de flores para a casa",
               120,
-              "assets/presentes/origami-flores.jpg"
+              "assets/presentes/origami-flores.jpg?v=2"
             ],
             [
               "Viagem de bodas",
               2200,
-              "assets/presentes/viagem-bodas.jpg"
+              "assets/presentes/viagem-bodas.jpg?v=2"
             ],
             [
               "Ingressos para teatro",
               300,
-              "assets/presentes/teatro.jpg"
+              "assets/presentes/teatro.jpg?v=2"
             ],
             [
               "Kit de papelaria personalizada",
               140,
-              "assets/presentes/papelaria.jpg"
+              "assets/presentes/papelaria.jpg?v=2"
             ]
           ]
         },
@@ -7573,52 +7573,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Geladeira",
               4500,
-              "assets/presentes/geladeira.jpg"
+              "assets/presentes/geladeira.jpg?v=2"
             ],
             [
               "Fogão",
               2200,
-              "assets/presentes/fogao.jpg"
+              "assets/presentes/fogao.jpg?v=2"
             ],
             [
               "Micro-ondas",
               800,
-              "assets/presentes/micro-ondas.jpg"
+              "assets/presentes/micro-ondas.jpg?v=2"
             ],
             [
               "Máquina de lavar",
               3200,
-              "assets/presentes/maquina-lavar.jpg"
+              "assets/presentes/maquina-lavar.jpg?v=2"
             ],
             [
               "Smart TV",
               3600,
-              "assets/presentes/smart-tv.jpg"
+              "assets/presentes/smart-tv.jpg?v=2"
             ],
             [
               "Sofá",
               4200,
-              "assets/presentes/sofa.jpg"
+              "assets/presentes/sofa.jpg?v=2"
             ],
             [
               "Mesa de jantar",
               2800,
-              "assets/presentes/mesa-jantar.jpg"
+              "assets/presentes/mesa-jantar.jpg?v=2"
             ],
             [
               "Cama box",
               3400,
-              "assets/presentes/cama.jpg"
+              "assets/presentes/cama.jpg?v=2"
             ],
             [
               "Batedeira",
               900,
-              "assets/presentes/batedeira.jpg"
+              "assets/presentes/batedeira.jpg?v=2"
             ],
             [
               "Faqueiro",
               650,
-              "assets/presentes/faqueiro.jpg"
+              "assets/presentes/faqueiro.jpg?v=2"
             ]
           ]
         },
@@ -7629,52 +7629,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Cota de passagem aérea",
               500,
-              "assets/presentes/passagem-aerea.jpg"
+              "assets/presentes/passagem-aerea.jpg?v=2"
             ],
             [
               "Cota de hospedagem",
               400,
-              "assets/presentes/hospedagem.jpg"
+              "assets/presentes/hospedagem.jpg?v=2"
             ],
             [
               "Cota de jantar romântico",
               250,
-              "assets/presentes/jantar-praia.jpg"
+              "assets/presentes/jantar-praia.jpg?v=2"
             ],
             [
               "Cota de passeio",
               200,
-              "assets/presentes/passeio-barco.jpg"
+              "assets/presentes/passeio-barco.jpg?v=2"
             ],
             [
               "Cota de spa",
               300,
-              "assets/presentes/spa-para-dois.jpg"
+              "assets/presentes/spa-para-dois.jpg?v=2"
             ],
             [
               "Cota de champanhe",
               150,
-              "assets/presentes/champanhe.jpg"
+              "assets/presentes/champanhe.jpg?v=2"
             ],
             [
               "Cota de café da manhã",
               120,
-              "assets/presentes/cafe-hotel.jpg"
+              "assets/presentes/cafe-hotel.jpg?v=2"
             ],
             [
               "Cota de aluguel de carro",
               300,
-              "assets/presentes/aluguel-carro.jpg"
+              "assets/presentes/aluguel-carro.jpg?v=2"
             ],
             [
               "Cota de mergulho",
               350,
-              "assets/presentes/mergulho.jpg"
+              "assets/presentes/mergulho.jpg?v=2"
             ],
             [
               "Cota de fotos da viagem",
               400,
-              "assets/presentes/fotos-viagem.jpg"
+              "assets/presentes/fotos-viagem.jpg?v=2"
             ]
           ]
         },
@@ -7685,72 +7685,72 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Jogo de lençóis 400 fios",
               620,
-              "assets/presentes/lencois.jpg"
+              "assets/presentes/lencois.jpg?v=2"
             ],
             [
               "Jogo de toalhas",
               380,
-              "assets/presentes/toalhas.jpg"
+              "assets/presentes/toalhas.jpg?v=2"
             ],
             [
               "Edredom",
               450,
-              "assets/presentes/edredom.jpg"
+              "assets/presentes/edredom.jpg?v=2"
             ],
             [
               "Par de travesseiros",
               290,
-              "assets/presentes/travesseiros.jpg"
+              "assets/presentes/travesseiros.jpg?v=2"
             ],
             [
               "Aspirador robô",
               1800,
-              "assets/presentes/aspirador-robo.jpg"
+              "assets/presentes/aspirador-robo.jpg?v=2"
             ],
             [
               "Air fryer",
               650,
-              "assets/presentes/air-fryer.jpg"
+              "assets/presentes/air-fryer.jpg?v=2"
             ],
             [
               "Liquidificador",
               320,
-              "assets/presentes/liquidificador.jpg"
+              "assets/presentes/liquidificador.jpg?v=2"
             ],
             [
               "Jogo de panelas",
               1200,
-              "assets/presentes/jogo-panelas.jpg"
+              "assets/presentes/jogo-panelas.jpg?v=2"
             ],
             [
               "Aparelho de jantar",
               890,
-              "assets/presentes/aparelho-jantar.jpg"
+              "assets/presentes/aparelho-jantar.jpg?v=2"
             ],
             [
               "Taças de vinho (6)",
               260,
-              "assets/presentes/tacas-vinho.jpg"
+              "assets/presentes/tacas-vinho.jpg?v=2"
             ],
             [
               "Cafeteira espresso",
               890,
-              "assets/presentes/cafeteira.jpg"
+              "assets/presentes/cafeteira.jpg?v=2"
             ],
             [
               "Tapete da sala",
               750,
-              "assets/presentes/tapete.jpg"
+              "assets/presentes/tapete.jpg?v=2"
             ],
             [
               "Luminária",
               280,
-              "assets/presentes/luminaria.jpg"
+              "assets/presentes/luminaria.jpg?v=2"
             ],
             [
               "Kit organização",
               190,
-              "assets/presentes/organizacao.jpg"
+              "assets/presentes/organizacao.jpg?v=2"
             ]
           ]
         },
@@ -7761,62 +7761,62 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Fraldas RN (pacote)",
               90,
-              "assets/presentes/fraldas-rn.jpg"
+              "assets/presentes/fraldas-rn.jpg?v=2"
             ],
             [
               "Fraldas P (pacote)",
               95,
-              "assets/presentes/fraldas-p.jpg"
+              "assets/presentes/fraldas-p.jpg?v=2"
             ],
             [
               "Lenços umedecidos (kit)",
               60,
-              "assets/presentes/lencos-umedecidos.jpg"
+              "assets/presentes/lencos-umedecidos.jpg?v=2"
             ],
             [
               "Pomada para assaduras",
               45,
-              "assets/presentes/pomada.jpg"
+              "assets/presentes/pomada.jpg?v=2"
             ],
             [
               "Kit de mamadeiras",
               180,
-              "assets/presentes/mamadeiras.jpg"
+              "assets/presentes/mamadeiras.jpg?v=2"
             ],
             [
               "Body manga longa (kit)",
               120,
-              "assets/presentes/body-bebe.jpg"
+              "assets/presentes/body-bebe.jpg?v=2"
             ],
             [
               "Manta de algodão",
               90,
-              "assets/presentes/manta-bebe.jpg"
+              "assets/presentes/manta-bebe.jpg?v=2"
             ],
             [
               "Toalha com capuz",
               75,
-              "assets/presentes/toalha-capuz.jpg"
+              "assets/presentes/toalha-capuz.jpg?v=2"
             ],
             [
               "Kit de higiene",
               120,
-              "assets/presentes/higiene-bebe.jpg"
+              "assets/presentes/higiene-bebe.jpg?v=2"
             ],
             [
               "Termômetro digital",
               80,
-              "assets/presentes/termometro.jpg"
+              "assets/presentes/termometro.jpg?v=2"
             ],
             [
               "Mordedor",
               40,
-              "assets/presentes/mordedor.jpg"
+              "assets/presentes/mordedor.jpg?v=2"
             ],
             [
               "Saquinho de dormir",
               130,
-              "assets/presentes/saco-dormir.jpg"
+              "assets/presentes/saco-dormir.jpg?v=2"
             ]
           ]
         },
@@ -7827,52 +7827,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Panela Le Creuset",
               799,
-              "assets/presentes/panela-ferro.jpg"
+              "assets/presentes/panela-ferro.jpg?v=2"
             ],
             [
               "Jogo de facas",
               680,
-              "assets/presentes/facas.jpg"
+              "assets/presentes/facas.jpg?v=2"
             ],
             [
               "Tábua de madeira",
               180,
-              "assets/presentes/tabua.jpg"
+              "assets/presentes/tabua.jpg?v=2"
             ],
             [
               "Cafeteira espresso",
               890,
-              "assets/presentes/cafeteira.jpg"
+              "assets/presentes/cafeteira.jpg?v=2"
             ],
             [
               "Mixer",
               320,
-              "assets/presentes/mixer.jpg"
+              "assets/presentes/mixer.jpg?v=2"
             ],
             [
               "Forma de bolo",
               120,
-              "assets/presentes/forma-bolo.jpg"
+              "assets/presentes/forma-bolo.jpg?v=2"
             ],
             [
               "Jogo de potes",
               260,
-              "assets/presentes/potes.jpg"
+              "assets/presentes/potes.jpg?v=2"
             ],
             [
               "Panela de pressão",
               390,
-              "assets/presentes/panela-pressao.jpg"
+              "assets/presentes/panela-pressao.jpg?v=2"
             ],
             [
               "Frigideira antiaderente",
               280,
-              "assets/presentes/frigideira.jpg"
+              "assets/presentes/frigideira.jpg?v=2"
             ],
             [
               "Air fryer",
               650,
-              "assets/presentes/air-fryer.jpg"
+              "assets/presentes/air-fryer.jpg?v=2"
             ]
           ]
         },
@@ -7883,47 +7883,47 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Jogo de panelas",
               1200,
-              "assets/presentes/jogo-panelas.jpg"
+              "assets/presentes/jogo-panelas.jpg?v=2"
             ],
             [
               "Assadeiras",
               180,
-              "assets/presentes/assadeiras.jpg"
+              "assets/presentes/assadeiras.jpg?v=2"
             ],
             [
               "Escorredor de louça",
               90,
-              "assets/presentes/escorredor.jpg"
+              "assets/presentes/escorredor.jpg?v=2"
             ],
             [
               "Jogo de copos",
               140,
-              "assets/presentes/copos.jpg"
+              "assets/presentes/copos.jpg?v=2"
             ],
             [
               "Talheres",
               260,
-              "assets/presentes/faqueiro.jpg"
+              "assets/presentes/faqueiro.jpg?v=2"
             ],
             [
               "Kit de panos de prato",
               80,
-              "assets/presentes/panos-prato.jpg"
+              "assets/presentes/panos-prato.jpg?v=2"
             ],
             [
               "Liquidificador",
               320,
-              "assets/presentes/liquidificador.jpg"
+              "assets/presentes/liquidificador.jpg?v=2"
             ],
             [
               "Sanduicheira",
               150,
-              "assets/presentes/sanduicheira.jpg"
+              "assets/presentes/sanduicheira.jpg?v=2"
             ],
             [
               "Espremedor de frutas",
               120,
-              "assets/presentes/espremedor.jpg"
+              "assets/presentes/espremedor.jpg?v=2"
             ]
           ]
         },
@@ -7934,42 +7934,42 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Vale experiência",
               300,
-              "assets/presentes/vale-experiencia.jpg"
+              "assets/presentes/vale-experiencia.jpg?v=2"
             ],
             [
               "Jantar especial",
               350,
-              "assets/presentes/jantar-especial.jpg"
+              "assets/presentes/jantar-especial.jpg?v=2"
             ],
             [
               "Dia de spa",
               400,
-              "assets/presentes/dia-spa.jpg"
+              "assets/presentes/dia-spa.jpg?v=2"
             ],
             [
               "Ingresso de show",
               450,
-              "assets/presentes/show.jpg"
+              "assets/presentes/show.jpg?v=2"
             ],
             [
               "Kit de livros",
               150,
-              "assets/presentes/kit-livros.jpg"
+              "assets/presentes/kit-livros.jpg?v=2"
             ],
             [
               "Perfume",
               420,
-              "assets/presentes/perfume.jpg"
+              "assets/presentes/perfume.jpg?v=2"
             ],
             [
               "Fone bluetooth",
               380,
-              "assets/presentes/fone.jpg"
+              "assets/presentes/fone.jpg?v=2"
             ],
             [
               "Curso online",
               290,
-              "assets/presentes/curso-online.jpg"
+              "assets/presentes/curso-online.jpg?v=2"
             ]
           ]
         },
@@ -7980,52 +7980,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Vestido da festa",
               1200,
-              "assets/presentes/vestido-festa.jpg"
+              "assets/presentes/vestido-festa.jpg?v=2"
             ],
             [
               "Sessão de fotos de debutante",
               850,
-              "assets/presentes/ensaio-debutante.jpg"
+              "assets/presentes/ensaio-debutante.jpg?v=2"
             ],
             [
               "Valsa com coreografia",
               600,
-              "assets/presentes/valsa.jpg"
+              "assets/presentes/valsa.jpg?v=2"
             ],
             [
               "Maquiagem e cabelo",
               450,
-              "assets/presentes/maquiagem-cabelo.jpg"
+              "assets/presentes/maquiagem-cabelo.jpg?v=2"
             ],
             [
               "Joia de 15 anos",
               700,
-              "assets/presentes/joia.jpg"
+              "assets/presentes/joia.jpg?v=2"
             ],
             [
               "Viagem com as amigas",
               2500,
-              "assets/presentes/viagem-amigas.jpg"
+              "assets/presentes/viagem-amigas.jpg?v=2"
             ],
             [
               "Celular novo",
               3200,
-              "assets/presentes/celular.jpg"
+              "assets/presentes/celular.jpg?v=2"
             ],
             [
               "Curso de idiomas",
               1800,
-              "assets/presentes/curso-idiomas.jpg"
+              "assets/presentes/curso-idiomas.jpg?v=2"
             ],
             [
               "Kit de maquiagem",
               380,
-              "assets/presentes/kit-maquiagem.jpg"
+              "assets/presentes/kit-maquiagem.jpg?v=2"
             ],
             [
               "Perfume importado",
               520,
-              "assets/presentes/perfume.jpg"
+              "assets/presentes/perfume.jpg?v=2"
             ]
           ]
         },
@@ -8036,52 +8036,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Bolo e docinhos da festa",
               450,
-              "assets/presentes/bolo-docinhos.jpg"
+              "assets/presentes/bolo-docinhos.jpg?v=2"
             ],
             [
               "Ensaio fotográfico smash the cake",
               380,
-              "assets/presentes/smash-the-cake.jpg"
+              "assets/presentes/smash-the-cake.jpg?v=2"
             ],
             [
               "Andador musical",
               290,
-              "assets/presentes/andador.jpg"
+              "assets/presentes/andador.jpg?v=2"
             ],
             [
               "Kit de livros de pano",
               120,
-              "assets/presentes/livros-pano.jpg"
+              "assets/presentes/livros-pano.jpg?v=2"
             ],
             [
               "Brinquedos educativos",
               220,
-              "assets/presentes/brinquedos-educativos.jpg"
+              "assets/presentes/brinquedos-educativos.jpg?v=2"
             ],
             [
               "Roupinhas de 1 ano",
               260,
-              "assets/presentes/roupinhas.jpg"
+              "assets/presentes/roupinhas.jpg?v=2"
             ],
             [
               "Piscina de bolinhas",
               340,
-              "assets/presentes/piscina-bolinhas.jpg"
+              "assets/presentes/piscina-bolinhas.jpg?v=2"
             ],
             [
               "Cadeirinha de alimentação",
               590,
-              "assets/presentes/cadeirinha.jpg"
+              "assets/presentes/cadeirinha.jpg?v=2"
             ],
             [
               "Poupança para o futuro",
               500,
-              "assets/presentes/poupanca.jpg"
+              "assets/presentes/poupanca.jpg?v=2"
             ],
             [
               "Day use em parque infantil",
               180,
-              "assets/presentes/parque-infantil.jpg"
+              "assets/presentes/parque-infantil.jpg?v=2"
             ]
           ]
         },
@@ -8092,52 +8092,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Berço",
               1500,
-              "assets/presentes/berco.jpg"
+              "assets/presentes/berco.jpg?v=2"
             ],
             [
               "Carrinho de bebê",
               2200,
-              "assets/presentes/carrinho.jpg"
+              "assets/presentes/carrinho.jpg?v=2"
             ],
             [
               "Bebê conforto",
               1100,
-              "assets/presentes/bebe-conforto.jpg"
+              "assets/presentes/bebe-conforto.jpg?v=2"
             ],
             [
               "Banheira",
               250,
-              "assets/presentes/banheira.jpg"
+              "assets/presentes/banheira.jpg?v=2"
             ],
             [
               "Kit de bodies",
               180,
-              "assets/presentes/body-bebe.jpg"
+              "assets/presentes/body-bebe.jpg?v=2"
             ],
             [
               "Mantas",
               160,
-              "assets/presentes/manta-bebe.jpg"
+              "assets/presentes/manta-bebe.jpg?v=2"
             ],
             [
               "Babá eletrônica",
               650,
-              "assets/presentes/baba-eletronica.jpg"
+              "assets/presentes/baba-eletronica.jpg?v=2"
             ],
             [
               "Trocador",
               300,
-              "assets/presentes/trocador.jpg"
+              "assets/presentes/trocador.jpg?v=2"
             ],
             [
               "Cômoda",
               1300,
-              "assets/presentes/comoda.jpg"
+              "assets/presentes/comoda.jpg?v=2"
             ],
             [
               "Kit berço",
               420,
-              "assets/presentes/kit-berco.jpg"
+              "assets/presentes/kit-berco.jpg?v=2"
             ]
           ]
         },
@@ -8148,52 +8148,52 @@ document.addEventListener('DOMContentLoaded', () => {
             [
               "Anel de formatura",
               650,
-              "assets/presentes/anel.jpg"
+              "assets/presentes/anel.jpg?v=2"
             ],
             [
               "Ensaio fotográfico da formatura",
               500,
-              "assets/presentes/ensaio-formatura.jpg"
+              "assets/presentes/ensaio-formatura.jpg?v=2"
             ],
             [
               "Traje para a colação",
               700,
-              "assets/presentes/traje-colacao.jpg"
+              "assets/presentes/traje-colacao.jpg?v=2"
             ],
             [
               "Notebook para começar a carreira",
               4200,
-              "assets/presentes/notebook.jpg"
+              "assets/presentes/notebook.jpg?v=2"
             ],
             [
               "Curso de especialização",
               2500,
-              "assets/presentes/especializacao.jpg"
+              "assets/presentes/especializacao.jpg?v=2"
             ],
             [
               "Viagem de formatura",
               3000,
-              "assets/presentes/viagem-formatura.jpg"
+              "assets/presentes/viagem-formatura.jpg?v=2"
             ],
             [
               "Mala de viagem",
               450,
-              "assets/presentes/mala.jpg"
+              "assets/presentes/mala.jpg?v=2"
             ],
             [
               "Relógio",
               600,
-              "assets/presentes/relogio.jpg"
+              "assets/presentes/relogio.jpg?v=2"
             ],
             [
               "Livros da área",
               250,
-              "assets/presentes/livros-area.jpg"
+              "assets/presentes/livros-area.jpg?v=2"
             ],
             [
               "Jantar com a família",
               480,
-              "assets/presentes/jantar-familia.jpg"
+              "assets/presentes/jantar-familia.jpg?v=2"
             ]
           ]
         }

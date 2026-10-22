@@ -24,6 +24,19 @@ const PROVEDORES = {
   desconhecido: 'Não informado'
 };
 
+/* Selo ao lado do e-mail: quem entrou pelo Google não confirma e-mail com
+   a Love (o Google já garante o endereço), então mostra "Login Google".
+   "Verificado" só para quem se cadastrou com e-mail e clicou no link de
+   confirmação; sem isso, "Não verificado". */
+function seloDaConta(c) {
+  if (c.provedor === 'google') return '<span class="selo-verificado selo-google">Login Google</span>';
+  if (c.provedor === 'apple') return '<span class="selo-verificado selo-google">Login Apple</span>';
+  if (c.provedor === 'desconhecido' || c.email_confirmado == null) return '';
+  return c.email_confirmado
+    ? '<span class="selo-verificado">Verificado</span>'
+    : '<span class="selo-verificado selo-pendente">Não verificado</span>';
+}
+
 /** Data e hora completas — para saber o momento exato do cadastro. */
 function dataHoraCompleta(valor) {
   if (!valor) return null;
@@ -183,8 +196,7 @@ const ContaDrawer = (() => {
 
     Drawer.open({
       title: c.nome || c.email || 'Conta',
-      subtitleHtml: `${escapeHtml(c.email || '')}${c.email_confirmado
-        ? '<span class="selo-verificado">Verificado</span>' : ''}`,
+      subtitleHtml: `${escapeHtml(c.email || '')}${seloDaConta(c)}`,
       body: `
         <div class="lista-dados">
           ${linha('Canal', escapeHtml(origem.rotulo))}

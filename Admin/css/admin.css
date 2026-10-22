@@ -3811,3 +3811,7 @@ label.editor-btn { cursor: pointer; }
   transition: border-color .15s, box-shadow .15s;
 }
 .btn-editar-banner:hover { border-color: #181D24; box-shadow: 0 3px 10px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.05); }
+
+/* Selo da conta: Login Google/Apple em cinza neutro; não verificado em âmbar. */
+.selo-verificado.selo-google { background: #F4F4F5; color: #3F3F46; }
+.selo-verificado.selo-pendente { background: #FEF3C7; color: #92400E; }

@@ -9961,3 +9961,8 @@ html body.produto-editor-aberto #product-drawer .form-drawer-body:not(#love-h-a)
   html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a) { position: static; width: auto; flex-direction: row; padding: 0 0 1rem; border-right: none; background: transparent; }
   html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a)::before { display: none; }
 }
+
+/* Configurações › Suas informações: "Salvar" claro no cabeçalho. */
+html body .b2b-header-bar .settings-salvar-topo:not(#love-h-a) { height: 38px; padding: 0 1rem; background: #FFFFFF; border: 1px solid #E4E4E7; color: #3F3F46; }
+html body .b2b-header-bar .settings-salvar-topo:hover:not(#love-h-a) { background: #FFFFFF; border-color: #181D24; color: #181D24; }
+html body .settings-salvar-topo[hidden]:not(#love-h-a) { display: none !important; }

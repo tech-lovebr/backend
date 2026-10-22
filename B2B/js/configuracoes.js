@@ -55,6 +55,8 @@ function initSettingsTabs() {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
       // O título da página é o nome da aba escolhida no menu lateral.
       setText('settings-titulo-pagina', btn.dataset.titulo || btn.textContent.trim());
+      const salvarTopo = document.getElementById('settings-salvar-topo');
+      if (salvarTopo) salvarTopo.hidden = btn.dataset.settingsTab !== 'perfil';
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
         panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
       });

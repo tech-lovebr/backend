@@ -241,6 +241,14 @@
       <div class="rfp-intro">
         <h3 class="rfp-etapa-titulo" id="rfp-etapa-titulo" aria-live="polite"></h3>
         <p class="rfp-etapa-sub" id="rfp-etapa-sub"></p>
+        <div class="rfp-exemplos" id="rfp-exemplos" hidden>
+          <p class="rfp-exemplos-titulo">Exemplos de título</p>
+          <ul>
+            <li>Sítio arborizado para casamento ao ar livre com 150 convidados</li>
+            <li>Bolo de aniversário de 3 andares com tema floral</li>
+            <li>Banda de música sertaneja para festa de aniversário de 40 anos</li>
+          </ul>
+        </div>
       </div>
       <div class="rfp-coluna">
         <div class="rfp-caixa-form">
@@ -353,6 +361,8 @@
     const sub = document.getElementById('rfp-etapa-sub');
     if (titulo) titulo.textContent = textos.titulo;
     if (sub) sub.textContent = textos.sub;
+    const exemplos = document.getElementById('rfp-exemplos');
+    if (exemplos) exemplos.hidden = etapa !== 1;
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {

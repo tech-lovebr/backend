@@ -10203,3 +10203,12 @@ html body .rfp-campo-titulo:not(#love-h-a) { height: 44px; padding: 0 14px; marg
 html body .rfp-cat-rotulo-categoria:not(#love-h-a) { margin-top: 20px; }
 .rfp-rotulo-texto { display: block; line-height: 1.4; }
 html body .rfp-campo-outro:not(#love-h-a) { margin-top: 12px; max-width: 360px; }
+
+/* Nova solicitação, etapa 1: exemplos de título abaixo do subtítulo. */
+html body .rfp-exemplos[hidden]:not(#love-h-a) { display: none; }
+html body .rfp-exemplos:not(#love-h-a) { margin-top: 1.25rem; }
+html body .rfp-exemplos-titulo:not(#love-h-a) { margin: 0 0 0.5rem; font-size: 0.875rem; font-weight: 600; color: #18181B; }
+html body .rfp-exemplos ul:not(#love-h-a) { margin: 0; padding-left: 1.1rem; list-style: disc; display: flex; flex-direction: column; gap: 0.35rem; }
+html body .rfp-exemplos li:not(#love-h-a) { font-size: 0.875rem; line-height: 1.5; color: #52525B; }
+body[data-theme="dark"] .rfp-exemplos-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-exemplos li { color: #A1A1AA !important; }

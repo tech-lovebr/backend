@@ -9997,3 +9997,10 @@ html body .gift-rodape-acoes:not(#love-h-a) { display: flex; justify-content: fl
 html body .gift-voltar-texto:not(#love-h-a) { padding: 0; background: transparent; border: 0; font-size: 14px; font-weight: 600; color: #3F3F46; cursor: pointer; }
 html body .gift-voltar-texto:not(#love-h-a):hover { color: #181D24; text-decoration: underline; }
 html body .gift-salvar-pequeno:not(#love-h-a) { width: auto !important; flex: 0 0 auto !important; height: 40px !important; padding: 0 20px !important; }
+
+/* Pop-up do presente mais baixo: espaços e descrição menores. */
+html body #drawer-add-gift > div:first-child:not(#love-h-a) { padding-top: 18px !important; padding-bottom: 14px !important; }
+html body #drawer-add-gift > div:nth-child(2):not(#love-h-a) { padding-top: 18px !important; padding-bottom: 18px !important; }
+html body #form-add-gift:not(#love-h-a) { row-gap: 14px; }
+html body #gift-description-input:not(#love-h-a) { min-height: 72px !important; height: 72px !important; }
+html body #form-add-gift > .gift-campo-salvar:not(#love-h-a) { padding-top: 14px !important; }

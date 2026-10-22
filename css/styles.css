@@ -9991,3 +9991,9 @@ html body .floorplan-formatos:not(.hidden):not(#love-h-a), html body .floorplan-
 .floorplan-conector-ao-vivo { position: absolute; left: 0; top: 0; z-index: 35; pointer-events: none; overflow: visible; }
 .floorplan-conector-ao-vivo polyline { fill: none; stroke: #181D24; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
 .floorplan-conector-ao-vivo circle { fill: #FFFFFF; stroke: #181D24; stroke-width: 1.5px; }
+
+/* Pop-up do presente: Voltar (texto) e Salvar pequeno no canto direito; sem Duplicar. */
+html body .gift-rodape-acoes:not(#love-h-a) { display: flex; justify-content: flex-end; align-items: center; gap: 16px; }
+html body .gift-voltar-texto:not(#love-h-a) { padding: 0; background: transparent; border: 0; font-size: 14px; font-weight: 600; color: #3F3F46; cursor: pointer; }
+html body .gift-voltar-texto:not(#love-h-a):hover { color: #181D24; text-decoration: underline; }
+html body .gift-salvar-pequeno:not(#love-h-a) { width: auto !important; flex: 0 0 auto !important; height: 40px !important; padding: 0 20px !important; }

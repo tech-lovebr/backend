@@ -7363,7 +7363,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (drawerTitle) drawerTitle.textContent = 'Editar Presente';
     if (drawerSub) drawerSub.textContent = 'Modifique os detalhes ou o valor deste presente.';
-    if (btnSubmitText) btnSubmitText.textContent = 'Salvar Alterações';
+    if (btnSubmitText) btnSubmitText.textContent = 'Salvar';
     // Editar: sem o "+" no botão e com "Duplicar" ao lado.
     document.getElementById('btn-submit-gift-icon')?.classList.add('hidden');
     document.getElementById('btn-duplicate-gift')?.classList.remove('hidden');
@@ -8897,6 +8897,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const giftDrawerBackdrop = document.getElementById('gift-drawer-backdrop');
   if (btnCloseGiftDrawer) btnCloseGiftDrawer.addEventListener('click', closeGiftDrawer);
   if (giftDrawerBackdrop) giftDrawerBackdrop.addEventListener('click', closeGiftDrawer);
+  document.getElementById('btn-gift-voltar')?.addEventListener('click', closeGiftDrawer);
 
   // Alternância das abas dentro do Modal de Adicionar Presente
   const tabBtnGiftCustom = document.getElementById('tab-btn-gift-custom');

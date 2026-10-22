@@ -10031,3 +10031,8 @@ html body.produto-modo-editar #product-drawer .product-wizard-footer:not(#love-h
 html body.produto-editor-aberto .b2b-header-bar:not(#love-h-a) { position: sticky; top: 0; z-index: 6; }
 html body.produto-modo-editar #product-wizard-footer-default:not(#love-h-a) { display: flex; justify-content: flex-end; }
 html body.produto-modo-editar #product-wizard-submit-btn:not(#love-h-a) { flex: 0 0 auto; min-width: 180px; height: 44px; }
+
+/* Correção do cabeçalho preso: o "top: 0" contava a partir do respiro de cima
+   da área de conteúdo, então ele parava 32px abaixo do topo e o conteúdo
+   aparecia por cima, nesse vão. Agora ele encosta no topo de verdade. */
+html body.produto-editor-aberto .b2b-header-bar:not(#love-h-a) { top: calc(-1 * var(--b2b-content-pad-y)); }

@@ -10036,3 +10036,9 @@ html body.produto-modo-editar #product-wizard-submit-btn:not(#love-h-a) { flex: 
    da área de conteúdo, então ele parava 32px abaixo do topo e o conteúdo
    aparecia por cima, nesse vão. Agora ele encosta no topo de verdade. */
 html body.produto-editor-aberto .b2b-header-bar:not(#love-h-a) { top: calc(-1 * var(--b2b-content-pad-y)); }
+
+/* Adicionar novo produto: subtítulo embaixo do título grande da etapa. */
+html body.produto-modo-criar #produto-etapa-intro:not(#love-h-a) { grid-column: 1; grid-row: 1 / span 2; }
+html body.produto-modo-criar #produto-etapa-intro #produto-etapa-titulo:not(#love-h-a) { grid-column: auto; grid-row: auto; }
+html body .produto-etapa-sub:not(#love-h-a) { margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.6; color: #52525B; }
+html body:not(.produto-modo-criar) #produto-etapa-intro:not(#love-h-a) { display: none; }

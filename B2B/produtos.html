@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=735">
+  <link rel="stylesheet" href="css/styles.css?v=736">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -85,7 +85,10 @@
             </button>
           </div>
 
-          <h3 class="produto-etapa-titulo" id="produto-etapa-titulo" aria-live="polite"></h3>
+          <div class="produto-etapa-intro" id="produto-etapa-intro">
+            <h3 class="produto-etapa-titulo" id="produto-etapa-titulo" aria-live="polite"></h3>
+            <p class="produto-etapa-sub" id="produto-etapa-sub"></p>
+          </div>
           <div class="form-drawer-body">
             <!-- Serviço suspenso pelo Admin (migration 059). -->
             <div class="produto-suspenso-drawer" id="product-suspenso-aviso" hidden></div>
@@ -637,6 +640,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=56"></script>
-  <script src="js/produtos.js?v=45"></script>
+  <script src="js/produtos.js?v=46"></script>
 </body>
 </html>

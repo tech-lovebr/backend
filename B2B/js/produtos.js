@@ -1255,6 +1255,12 @@ function goToStep(n) {
     setPanelHidden('product-wizard-submit-btn', false);
   }
   const tituloEtapa = document.getElementById('produto-etapa-titulo');
+  const subEtapa = document.getElementById('produto-etapa-sub');
+  if (subEtapa) subEtapa.textContent = ({
+    1: 'Crie anúncios atrativos para seus produtos e serviços na vitrine da Love e seja descoberto por quem está organizando eventos agora.',
+    2: 'Conte o que está incluso, os pacotes e os valores para o cliente entender a sua proposta.',
+    3: 'Fotos e vídeos bem escolhidos fazem o seu anúncio se destacar na vitrine.'
+  })[n] || '';
   if (tituloEtapa) tituloEtapa.textContent = ({ 1: 'Qual produto ou serviço você vai anunciar?', 2: 'Conte os detalhes do que você oferece', 3: 'Mostre o seu trabalho' })[n] || '';
   const salvarTexto = document.getElementById('product-wizard-submit-btn');
   if (salvarTexto) salvarTexto.textContent = criando ? 'Salvar produto' : 'Salvar alterações';

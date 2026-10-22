@@ -91,7 +91,16 @@
   const fotoDaCategoria = (id) => `/assets/rfp/${id}.jpg`;
 
   const LIMITES = [{ valor: 3, nome: 'Até 3 propostas' }, { valor: 5, nome: 'Até 5 propostas' }, { valor: null, nome: 'Sem limite' }];
-  const ETAPAS = ['O que você precisa', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
+  const ETAPAS = ['Tipo de serviço', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
+  // Título grande e subtítulo de cada etapa (à esquerda da caixa, como em Adicionar novo produto do Hub).
+  const TEXTOS_DAS_ETAPAS = [
+    { titulo: 'Qual tipo de serviço você procura?', sub: 'Escolha a categoria e, se quiser, marque as especialidades que fazem diferença para você.' },
+    { titulo: 'Conte sobre o seu evento', sub: 'Tipo de celebração, data, local, número de convidados e horário.' },
+    { titulo: 'Qual é o seu orçamento?', sub: 'Escolha a faixa de preço e descreva o que você precisa, com fotos de referência se quiser.' },
+    { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
+  ];
+  const TITULO_DA_LISTA = 'Solicitações de orçamento';
+  const TITULO_DA_NOVA = 'Nova solicitação de orçamento';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 1000;
   const MAX_FOTOS = 5;
@@ -186,39 +195,32 @@
   // Modal (montado uma vez e reaproveitado)
   // --------------------------------------------------------------------------
 
-  /** @returns {HTMLElement} */
+  /** @returns {HTMLElement|null} */
   function modal() {
-    let m = document.getElementById('rfp-modal');
-    if (m) return m;
-    m = document.createElement('div');
-    m.id = 'rfp-modal';
-    m.className = 'rfp-modal hidden';
-    m.setAttribute('role', 'dialog');
-    m.setAttribute('aria-modal', 'true');
-    m.setAttribute('aria-labelledby', 'rfp-titulo');
+    const m = document.getElementById('rfp-editor');
+    if (!m) return null;
+    if (m.dataset.montado) return m;
+    m.dataset.montado = '1';
     m.innerHTML = `
-      <div class="rfp-caixa">
-        <header class="rfp-topo">
-          <div>
-            <h3 id="rfp-titulo">Novo pedido de orçamento</h3>
-            <p class="rfp-subtitulo">Conte o que você precisa e receba propostas dos fornecedores.</p>
-          </div>
-          <button type="button" class="rfp-fechar" data-rfp-fechar aria-label="Fechar">${ICONE_FECHAR}</button>
-        </header>
-        <div class="rfp-stepper" id="rfp-stepper"></div>
-        <div class="rfp-corpo" id="rfp-corpo"></div>
+      <div class="rfp-intro">
+        <p class="rfp-etapa-num" id="rfp-etapa-num"></p>
+        <h3 class="rfp-etapa-titulo" id="rfp-etapa-titulo" aria-live="polite"></h3>
+        <p class="rfp-etapa-sub" id="rfp-etapa-sub"></p>
+      </div>
+      <div class="rfp-coluna">
+        <div class="rfp-caixa-form">
+          <div class="rfp-corpo" id="rfp-corpo"></div>
+        </div>
         <footer class="rfp-rodape">
-          <button type="button" class="btn-white rfp-btn" data-rfp-voltar>Voltar</button>
           <p class="rfp-erro-geral hidden" id="rfp-erro-geral" role="alert"></p>
+          <button type="button" class="rfp-voltar-texto" data-rfp-voltar>Cancelar</button>
           <button type="button" class="btn-primary rfp-btn" data-rfp-avancar>Continuar</button>
         </footer>
       </div>`;
-    document.body.appendChild(m);
 
     m.addEventListener('click', (e) => {
       const alvo = /** @type {HTMLElement} */ (e.target);
-      if (alvo === m || alvo.closest('[data-rfp-fechar]')) return fechar();
-      if (alvo.closest('[data-rfp-voltar]')) return irPara(etapa - 1, -1);
+      if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? fechar() : irPara(etapa - 1, -1);
       if (alvo.closest('[data-rfp-avancar]')) return avancar();
       const opcao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-campo]'));
       if (opcao && opcao.dataset.rfpValor !== undefined) return escolher(opcao.dataset.rfpCampo || '', opcao.dataset.rfpValor || '');
@@ -229,10 +231,18 @@
     });
     m.addEventListener('input', aoDigitar);
     m.addEventListener('change', aoDigitar);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !m.classList.contains('hidden')) fechar();
-    });
     return m;
+  }
+
+  /** Cabeçalho: na nova solicitação, setinha + "Nova solicitação de orçamento". @param {boolean} aberta */
+  function cabecalho(aberta) {
+    const titulo = document.getElementById('b2b-toolbar-title');
+    const voltar = document.getElementById('btn-rfp-voltar');
+    const criar = document.getElementById('btn-rfp-novo');
+    const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
+    if (titulo && pedidosAberto) titulo.textContent = aberta ? TITULO_DA_NOVA : TITULO_DA_LISTA;
+    if (voltar) voltar.hidden = !aberta;
+    if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 
   function abrir() {
@@ -244,16 +254,20 @@
     previas.forEach(u => URL.revokeObjectURL(u));
     previas = [];
     const m = modal();
-    m.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    if (!m) return;
+    m.hidden = false;
+    document.body.classList.add('rfp-editor-aberto');
+    cabecalho(true);
     desenhar(0);
+    window.scrollTo({ top: 0 });
   }
 
   function fechar() {
     if (publicando) return;
-    const m = document.getElementById('rfp-modal');
-    if (m) m.classList.add('hidden');
-    document.body.style.overflow = '';
+    const m = document.getElementById('rfp-editor');
+    if (m) m.hidden = true;
+    document.body.classList.remove('rfp-editor-aberto');
+    cabecalho(false);
   }
 
   /** @param {number} n @param {number} direcao */
@@ -282,14 +296,13 @@
 
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
-    const pct = Math.round((etapa / ETAPAS.length) * 100);
-    const stepper = document.getElementById('rfp-stepper');
-    if (stepper) stepper.innerHTML = `
-      <div class="rfp-progresso" aria-hidden="true"><span style="width:${pct}%"></span></div>
-      <div class="rfp-etapas">
-        ${ETAPAS.map((nome, i) => `<span class="rfp-etapa${i + 1 === etapa ? ' atual' : ''}${i + 1 < etapa ? ' feita' : ''}"><b>${i + 1}</b><em>${esc(nome)}</em></span>`).join('')}
-      </div>
-      <p class="rfp-progresso-texto">Etapa ${etapa} de ${ETAPAS.length} · ${pct}%</p>`;
+    const textos = TEXTOS_DAS_ETAPAS[etapa - 1];
+    const num = document.getElementById('rfp-etapa-num');
+    const titulo = document.getElementById('rfp-etapa-titulo');
+    const sub = document.getElementById('rfp-etapa-sub');
+    if (num) num.textContent = `Etapa ${etapa} de ${ETAPAS.length} · ${ETAPAS[etapa - 1]}`;
+    if (titulo) titulo.textContent = textos.titulo;
+    if (sub) sub.textContent = textos.sub;
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
@@ -297,11 +310,11 @@
       corpo.innerHTML = `<div class="rfp-tela${direcao > 0 ? ' entra-direita' : direcao < 0 ? ' entra-esquerda' : ''}">${telas[etapa - 1]()}</div>`;
       if (direcao) corpo.scrollTop = 0;
     }
-    const voltar = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-modal [data-rfp-voltar]'));
-    const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-modal [data-rfp-avancar]'));
-    if (voltar) voltar.style.visibility = etapa === 1 ? 'hidden' : 'visible';
+    const voltar = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-voltar]'));
+    const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
+    if (voltar) voltar.textContent = etapa === 1 ? 'Cancelar' : 'Voltar';
     if (avancarBtn) {
-      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? 'Publicar solicitação de orçamento' : 'Continuar');
+      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? 'Publicar solicitação' : 'Continuar');
       avancarBtn.disabled = publicando;
     }
   }
@@ -318,7 +331,6 @@
   function htmlEtapa1() {
     const cat = categoriaPorId(dados.categoria);
     return `
-      <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
       <div class="rfp-categorias" role="radiogroup">
         ${CATEGORIAS.map(c => `
           <button type="button" class="rfp-categoria${c.id === dados.categoria ? ' ativa' : ''}" role="radio" aria-checked="${c.id === dados.categoria}" aria-label="${esc(c.nome)}" data-rfp-campo="categoria" data-rfp-valor="${c.id}">
@@ -690,11 +702,8 @@
     const linhas = data || [];
     if (contagem) contagem.textContent = linhas.length === 1 ? '1 pedido' : `${linhas.length} pedidos`;
     if (!linhas.length) {
-      corpo.innerHTML = `<tr><td colspan="7" class="rfp-vazio">
-        <p><b>Você ainda não pediu orçamentos.</b></p>
-        <p>Conte o que precisa e os fornecedores mandam propostas para você — sem precisar procurar um por um.</p>
-        <button type="button" class="btn-primary rfp-btn" data-rfp-novo>${ICONE_MAIS}<span>Novo pedido</span></button>
-      </td></tr>`;
+      corpo.innerHTML = '';
+      linhasDaTabela(corpo);
       return;
     }
     corpo.innerHTML = linhas.map(p => {
@@ -722,6 +731,24 @@
           </td>
         </tr>`;
     }).join('');
+    linhasDaTabela(corpo);
+  }
+
+  // Abaixo das linhas, as linhas finas continuam até o fim da caixa (como em Meus convidados).
+  /** @param {HTMLElement} corpo */
+  function linhasDaTabela(corpo) {
+    const tabela = corpo.closest('table');
+    const caixa = tabela && /** @type {HTMLElement|null} */ (tabela.parentElement);
+    if (!tabela || !caixa) return;
+    requestAnimationFrame(() => {
+      const cab = tabela.querySelector('thead');
+      const linhas = Array.from(corpo.querySelectorAll('tr'));
+      const altura = linhas.length ? Math.round(linhas[linhas.length - 1].getBoundingClientRect().height) : 51;
+      const fim = (cab ? cab.getBoundingClientRect().height : 0) + linhas.reduce((t, tr) => t + tr.getBoundingClientRect().height, 0);
+      caixa.classList.add('tabela-com-linhas-vazias');
+      caixa.style.setProperty('--altura-da-linha', `${altura || 51}px`);
+      caixa.style.setProperty('--fim-das-linhas', `${fim}px`);
+    });
   }
 
   /** @param {string} texto */
@@ -754,5 +781,9 @@
     mostrarLista();
   });
 
-  window.LovePedidos = { abrir, mostrarLista, CATEGORIAS, FAIXAS };
+  document.addEventListener('click', (e) => {
+    if (e.target instanceof Element && e.target.closest('#btn-rfp-voltar')) fechar();
+  });
+
+  window.LovePedidos = { abrir, fechar, mostrarLista, CATEGORIAS, FAIXAS };
 })();

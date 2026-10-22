@@ -18273,13 +18273,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // cabeçalho, sem busca/local/lista-grade.
     const pedidosView = document.getElementById('b2b-pedidos-view');
     const ehPedidos = viewId === 'pedidos';
+    // Saindo (ou voltando) para a tela: a nova solicitação aberta fecha.
+    if (window.LovePedidos && window.LovePedidos.fechar) window.LovePedidos.fechar();
     pedidosView?.classList.toggle('hidden', !ehPedidos);
     document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', !ehPedidos);
     if (ehPedidos) {
       document.body.classList.remove('b2b-chat-mode');
       document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
       if (searchBar) searchBar.classList.remove('hidden');
-      if (toolbarTitle) toolbarTitle.textContent = 'Solicitar propostas';
+      if (toolbarTitle) toolbarTitle.textContent = 'Solicitações de orçamento';
       [exploreView, messagesView, contractedView, insuranceView].forEach(v => v?.classList.add('hidden'));
       if (window.LovePedidos) window.LovePedidos.mostrarLista();
       return;

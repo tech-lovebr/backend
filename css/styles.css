@@ -10144,3 +10144,12 @@ html body #config-painel-preferencias .prefs-email-switch input:checked ~ .setti
 body[data-theme="dark"] #config-painel-preferencias .prefs-email-linha { border-top-color: #404040 !important; }
 body[data-theme="dark"] #config-painel-preferencias .prefs-email-nome { color: #FFFFFF !important; }
 body[data-theme="dark"] #config-painel-preferencias .prefs-email-desc { color: #A1A1AA !important; }
+
+/* Pop-ups Adicionar convidado e Novo presente: todo branco (fundo, rodapé e
+   caixa da foto), sem o cinza #F4F6F7. Só no tema claro. */
+html body:not([data-theme="dark"]) #drawer-add-guest:not(#love-h-a),
+html body:not([data-theme="dark"]) #drawer-add-gift:not(#love-h-a),
+html body:not([data-theme="dark"]) #drawer-add-guest .border-t:not(#love-h-a),
+html body:not([data-theme="dark"]) #drawer-add-guest > .guest-drawer-rodape:not(#love-h-a),
+html body:not([data-theme="dark"]) #drawer-add-gift .gift-rodape-acoes:not(#love-h-a),
+html body:not([data-theme="dark"]) #drawer-add-gift #gift-image-dropzone:not(#love-h-a) { background: #FFFFFF !important; background-color: #FFFFFF !important; }

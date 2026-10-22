@@ -10165,3 +10165,6 @@ html body.produto-editor-aberto .b2b-footer:not(#love-h-a) { position: relative;
 
 /* Editar: {nome do produto} — nome comprido termina em "…" numa linha só. */
 html body #produtos-titulo-pagina:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Tags: o campo de tag nova só aparece depois de clicar em "Outro". */
+html body .produto-tags-nova[hidden]:not(#love-h-a) { display: none; }

@@ -1952,7 +1952,7 @@ function renderTagsDoProduto() {
   lista.innerHTML = todas.map(t => {
     const marcada = currentProductTags.some(x => x.toLowerCase() === t.toLowerCase());
     return `<button type="button" class="produto-tag${marcada ? ' is-marcada' : ''}" data-produto-tag="${escapeHtml(t)}" aria-pressed="${marcada}">${escapeHtml(t)}</button>`;
-  }).join('');
+  }).join('') + `<button type="button" class="produto-tag produto-tag-outro" data-produto-tag-outro>Outro</button>`;
 }
 
 function adicionarTagEscrita() {
@@ -1970,7 +1970,14 @@ function adicionarTagEscrita() {
   const lista = document.getElementById('product-tags-lista');
   const input = document.getElementById('product-tag-input');
   if (!lista || !input) return;
+  const nova = document.getElementById('product-tag-nova');
   lista.addEventListener('click', (e) => {
+    // "Outro": abre o campo para escrever uma tag nova (Enter adiciona).
+    if (e.target.closest('[data-produto-tag-outro]')) {
+      if (nova) nova.hidden = false;
+      input.focus();
+      return;
+    }
     const chip = e.target.closest('[data-produto-tag]');
     if (!chip) return;
     const tag = chip.dataset.produtoTag;
@@ -1981,5 +1988,6 @@ function adicionarTagEscrita() {
   input.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ',') && !e.isComposing) { e.preventDefault(); adicionarTagEscrita(); }
   });
-  document.getElementById('product-tag-add')?.addEventListener('click', adicionarTagEscrita);
+  // Saiu do campo sem escrever nada: ele some de novo.
+  input.addEventListener('blur', () => { if (!input.value.trim() && nova) nova.hidden = true; });
 })();

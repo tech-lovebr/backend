@@ -7449,7 +7449,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // LISTAS PRONTAS (Meus presentes › ícone de lista)
   // ==========================================
-  /** @type {{ titulo: string, subtitulo?: string, listas: { nome: string, img: string, itens: [string, number][] }[] }[]} */
+  /** @type {{ titulo: string, subtitulo?: string, listas: { nome: string, img: string, itens: [string, number, string?][] }[] }[]} */
   const LISTAS_PRONTAS = [
     {
       "titulo": "Listas",
@@ -7460,43 +7460,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Jantar romântico a dois",
-              450
+              450,
+              "assets/presentes/jantar-romantico.jpg"
             ],
             [
               "Buquê de rosas",
-              180
+              180,
+              "assets/presentes/buque-rosas.jpg"
             ],
             [
               "Café da manhã surpresa",
-              160
+              160,
+              "assets/presentes/cafe-da-manha.jpg"
             ],
             [
               "Noite em hotel boutique",
-              890
+              890,
+              "assets/presentes/hotel-boutique.jpg"
             ],
             [
               "Ensaio fotográfico do casal",
-              750
+              750,
+              "assets/presentes/ensaio-casal.jpg"
             ],
             [
               "Spa para dois",
-              620
+              620,
+              "assets/presentes/spa-para-dois.jpg"
             ],
             [
               "Passeio de balão",
-              1200
+              1200,
+              "assets/presentes/passeio-balao.jpg"
             ],
             [
               "Vinho e tábua de frios",
-              280
+              280,
+              "assets/presentes/vinho-frios.jpg"
             ],
             [
               "Ingressos para show",
-              540
+              540,
+              "assets/presentes/show.jpg"
             ],
             [
               "Viagem de fim de semana",
-              1800
+              1800,
+              "assets/presentes/viagem-fim-de-semana.jpg"
             ]
           ]
         },
@@ -7506,43 +7516,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Jantar de 1 ano de casados",
-              420
+              420,
+              "assets/presentes/jantar-aniversario.jpg"
             ],
             [
               "Álbum de fotos do primeiro ano",
-              350
+              350,
+              "assets/presentes/album-fotos.jpg"
             ],
             [
               "Quadro com o mapa do dia do casamento",
-              190
+              190,
+              "assets/presentes/quadro-mapa.jpg"
             ],
             [
               "Livro de cartas um para o outro",
-              90
+              90,
+              "assets/presentes/livro-cartas.jpg"
             ],
             [
               "Noite em pousada romântica",
-              780
+              780,
+              "assets/presentes/pousada.jpg"
             ],
             [
               "Assinatura de clube do livro",
-              150
+              150,
+              "assets/presentes/clube-livro.jpg"
             ],
             [
               "Origami de flores para a casa",
-              120
+              120,
+              "assets/presentes/origami-flores.jpg"
             ],
             [
               "Viagem de bodas",
-              2200
+              2200,
+              "assets/presentes/viagem-bodas.jpg"
             ],
             [
               "Ingressos para teatro",
-              300
+              300,
+              "assets/presentes/teatro.jpg"
             ],
             [
               "Kit de papelaria personalizada",
-              140
+              140,
+              "assets/presentes/papelaria.jpg"
             ]
           ]
         },
@@ -7552,43 +7572,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Geladeira",
-              4500
+              4500,
+              "assets/presentes/geladeira.jpg"
             ],
             [
               "Fogão",
-              2200
+              2200,
+              "assets/presentes/fogao.jpg"
             ],
             [
               "Micro-ondas",
-              800
+              800,
+              "assets/presentes/micro-ondas.jpg"
             ],
             [
               "Máquina de lavar",
-              3200
+              3200,
+              "assets/presentes/maquina-lavar.jpg"
             ],
             [
               "Smart TV",
-              3600
+              3600,
+              "assets/presentes/smart-tv.jpg"
             ],
             [
               "Sofá",
-              4200
+              4200,
+              "assets/presentes/sofa.jpg"
             ],
             [
               "Mesa de jantar",
-              2800
+              2800,
+              "assets/presentes/mesa-jantar.jpg"
             ],
             [
               "Cama box",
-              3400
+              3400,
+              "assets/presentes/cama.jpg"
             ],
             [
               "Batedeira",
-              900
+              900,
+              "assets/presentes/batedeira.jpg"
             ],
             [
               "Faqueiro",
-              650
+              650,
+              "assets/presentes/faqueiro.jpg"
             ]
           ]
         },
@@ -7598,43 +7628,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Cota de passagem aérea",
-              500
+              500,
+              "assets/presentes/passagem-aerea.jpg"
             ],
             [
               "Cota de hospedagem",
-              400
+              400,
+              "assets/presentes/hospedagem.jpg"
             ],
             [
               "Cota de jantar romântico",
-              250
+              250,
+              "assets/presentes/jantar-praia.jpg"
             ],
             [
               "Cota de passeio",
-              200
+              200,
+              "assets/presentes/passeio-barco.jpg"
             ],
             [
               "Cota de spa",
-              300
+              300,
+              "assets/presentes/spa-para-dois.jpg"
             ],
             [
               "Cota de champanhe",
-              150
+              150,
+              "assets/presentes/champanhe.jpg"
             ],
             [
               "Cota de café da manhã",
-              120
+              120,
+              "assets/presentes/cafe-hotel.jpg"
             ],
             [
               "Cota de aluguel de carro",
-              300
+              300,
+              "assets/presentes/aluguel-carro.jpg"
             ],
             [
               "Cota de mergulho",
-              350
+              350,
+              "assets/presentes/mergulho.jpg"
             ],
             [
               "Cota de fotos da viagem",
-              400
+              400,
+              "assets/presentes/fotos-viagem.jpg"
             ]
           ]
         },
@@ -7644,59 +7684,73 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Jogo de lençóis 400 fios",
-              620
+              620,
+              "assets/presentes/lencois.jpg"
             ],
             [
               "Jogo de toalhas",
-              380
+              380,
+              "assets/presentes/toalhas.jpg"
             ],
             [
               "Edredom",
-              450
+              450,
+              "assets/presentes/edredom.jpg"
             ],
             [
               "Par de travesseiros",
-              290
+              290,
+              "assets/presentes/travesseiros.jpg"
             ],
             [
               "Aspirador robô",
-              1800
+              1800,
+              "assets/presentes/aspirador-robo.jpg"
             ],
             [
               "Air fryer",
-              650
+              650,
+              "assets/presentes/air-fryer.jpg"
             ],
             [
               "Liquidificador",
-              320
+              320,
+              "assets/presentes/liquidificador.jpg"
             ],
             [
               "Jogo de panelas",
-              1200
+              1200,
+              "assets/presentes/jogo-panelas.jpg"
             ],
             [
               "Aparelho de jantar",
-              890
+              890,
+              "assets/presentes/aparelho-jantar.jpg"
             ],
             [
               "Taças de vinho (6)",
-              260
+              260,
+              "assets/presentes/tacas-vinho.jpg"
             ],
             [
               "Cafeteira espresso",
-              890
+              890,
+              "assets/presentes/cafeteira.jpg"
             ],
             [
               "Tapete da sala",
-              750
+              750,
+              "assets/presentes/tapete.jpg"
             ],
             [
               "Luminária",
-              280
+              280,
+              "assets/presentes/luminaria.jpg"
             ],
             [
               "Kit organização",
-              190
+              190,
+              "assets/presentes/organizacao.jpg"
             ]
           ]
         },
@@ -7706,51 +7760,63 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Fraldas RN (pacote)",
-              90
+              90,
+              "assets/presentes/fraldas-rn.jpg"
             ],
             [
               "Fraldas P (pacote)",
-              95
+              95,
+              "assets/presentes/fraldas-p.jpg"
             ],
             [
               "Lenços umedecidos (kit)",
-              60
+              60,
+              "assets/presentes/lencos-umedecidos.jpg"
             ],
             [
               "Pomada para assaduras",
-              45
+              45,
+              "assets/presentes/pomada.jpg"
             ],
             [
               "Kit de mamadeiras",
-              180
+              180,
+              "assets/presentes/mamadeiras.jpg"
             ],
             [
               "Body manga longa (kit)",
-              120
+              120,
+              "assets/presentes/body-bebe.jpg"
             ],
             [
               "Manta de algodão",
-              90
+              90,
+              "assets/presentes/manta-bebe.jpg"
             ],
             [
               "Toalha com capuz",
-              75
+              75,
+              "assets/presentes/toalha-capuz.jpg"
             ],
             [
               "Kit de higiene",
-              120
+              120,
+              "assets/presentes/higiene-bebe.jpg"
             ],
             [
               "Termômetro digital",
-              80
+              80,
+              "assets/presentes/termometro.jpg"
             ],
             [
               "Mordedor",
-              40
+              40,
+              "assets/presentes/mordedor.jpg"
             ],
             [
               "Saquinho de dormir",
-              130
+              130,
+              "assets/presentes/saco-dormir.jpg"
             ]
           ]
         },
@@ -7760,43 +7826,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Panela Le Creuset",
-              799
+              799,
+              "assets/presentes/panela-ferro.jpg"
             ],
             [
               "Jogo de facas",
-              680
+              680,
+              "assets/presentes/facas.jpg"
             ],
             [
               "Tábua de madeira",
-              180
+              180,
+              "assets/presentes/tabua.jpg"
             ],
             [
               "Cafeteira espresso",
-              890
+              890,
+              "assets/presentes/cafeteira.jpg"
             ],
             [
               "Mixer",
-              320
+              320,
+              "assets/presentes/mixer.jpg"
             ],
             [
               "Forma de bolo",
-              120
+              120,
+              "assets/presentes/forma-bolo.jpg"
             ],
             [
               "Jogo de potes",
-              260
+              260,
+              "assets/presentes/potes.jpg"
             ],
             [
               "Panela de pressão",
-              390
+              390,
+              "assets/presentes/panela-pressao.jpg"
             ],
             [
               "Frigideira antiaderente",
-              280
+              280,
+              "assets/presentes/frigideira.jpg"
             ],
             [
               "Air fryer",
-              650
+              650,
+              "assets/presentes/air-fryer.jpg"
             ]
           ]
         },
@@ -7806,39 +7882,48 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Jogo de panelas",
-              1200
+              1200,
+              "assets/presentes/jogo-panelas.jpg"
             ],
             [
               "Assadeiras",
-              180
+              180,
+              "assets/presentes/assadeiras.jpg"
             ],
             [
               "Escorredor de louça",
-              90
+              90,
+              "assets/presentes/escorredor.jpg"
             ],
             [
               "Jogo de copos",
-              140
+              140,
+              "assets/presentes/copos.jpg"
             ],
             [
               "Talheres",
-              260
+              260,
+              "assets/presentes/faqueiro.jpg"
             ],
             [
               "Kit de panos de prato",
-              80
+              80,
+              "assets/presentes/panos-prato.jpg"
             ],
             [
               "Liquidificador",
-              320
+              320,
+              "assets/presentes/liquidificador.jpg"
             ],
             [
               "Sanduicheira",
-              150
+              150,
+              "assets/presentes/sanduicheira.jpg"
             ],
             [
               "Espremedor de frutas",
-              120
+              120,
+              "assets/presentes/espremedor.jpg"
             ]
           ]
         },
@@ -7848,35 +7933,43 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Vale experiência",
-              300
+              300,
+              "assets/presentes/vale-experiencia.jpg"
             ],
             [
               "Jantar especial",
-              350
+              350,
+              "assets/presentes/jantar-especial.jpg"
             ],
             [
               "Dia de spa",
-              400
+              400,
+              "assets/presentes/dia-spa.jpg"
             ],
             [
               "Ingresso de show",
-              450
+              450,
+              "assets/presentes/show.jpg"
             ],
             [
               "Kit de livros",
-              150
+              150,
+              "assets/presentes/kit-livros.jpg"
             ],
             [
               "Perfume",
-              420
+              420,
+              "assets/presentes/perfume.jpg"
             ],
             [
               "Fone bluetooth",
-              380
+              380,
+              "assets/presentes/fone.jpg"
             ],
             [
               "Curso online",
-              290
+              290,
+              "assets/presentes/curso-online.jpg"
             ]
           ]
         },
@@ -7886,43 +7979,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Vestido da festa",
-              1200
+              1200,
+              "assets/presentes/vestido-festa.jpg"
             ],
             [
               "Sessão de fotos de debutante",
-              850
+              850,
+              "assets/presentes/ensaio-debutante.jpg"
             ],
             [
               "Valsa com coreografia",
-              600
+              600,
+              "assets/presentes/valsa.jpg"
             ],
             [
               "Maquiagem e cabelo",
-              450
+              450,
+              "assets/presentes/maquiagem-cabelo.jpg"
             ],
             [
               "Joia de 15 anos",
-              700
+              700,
+              "assets/presentes/joia.jpg"
             ],
             [
               "Viagem com as amigas",
-              2500
+              2500,
+              "assets/presentes/viagem-amigas.jpg"
             ],
             [
               "Celular novo",
-              3200
+              3200,
+              "assets/presentes/celular.jpg"
             ],
             [
               "Curso de idiomas",
-              1800
+              1800,
+              "assets/presentes/curso-idiomas.jpg"
             ],
             [
               "Kit de maquiagem",
-              380
+              380,
+              "assets/presentes/kit-maquiagem.jpg"
             ],
             [
               "Perfume importado",
-              520
+              520,
+              "assets/presentes/perfume.jpg"
             ]
           ]
         },
@@ -7932,43 +8035,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Bolo e docinhos da festa",
-              450
+              450,
+              "assets/presentes/bolo-docinhos.jpg"
             ],
             [
               "Ensaio fotográfico smash the cake",
-              380
+              380,
+              "assets/presentes/smash-the-cake.jpg"
             ],
             [
               "Andador musical",
-              290
+              290,
+              "assets/presentes/andador.jpg"
             ],
             [
               "Kit de livros de pano",
-              120
+              120,
+              "assets/presentes/livros-pano.jpg"
             ],
             [
               "Brinquedos educativos",
-              220
+              220,
+              "assets/presentes/brinquedos-educativos.jpg"
             ],
             [
               "Roupinhas de 1 ano",
-              260
+              260,
+              "assets/presentes/roupinhas.jpg"
             ],
             [
               "Piscina de bolinhas",
-              340
+              340,
+              "assets/presentes/piscina-bolinhas.jpg"
             ],
             [
               "Cadeirinha de alimentação",
-              590
+              590,
+              "assets/presentes/cadeirinha.jpg"
             ],
             [
               "Poupança para o futuro",
-              500
+              500,
+              "assets/presentes/poupanca.jpg"
             ],
             [
               "Day use em parque infantil",
-              180
+              180,
+              "assets/presentes/parque-infantil.jpg"
             ]
           ]
         },
@@ -7978,43 +8091,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Berço",
-              1500
+              1500,
+              "assets/presentes/berco.jpg"
             ],
             [
               "Carrinho de bebê",
-              2200
+              2200,
+              "assets/presentes/carrinho.jpg"
             ],
             [
               "Bebê conforto",
-              1100
+              1100,
+              "assets/presentes/bebe-conforto.jpg"
             ],
             [
               "Banheira",
-              250
+              250,
+              "assets/presentes/banheira.jpg"
             ],
             [
               "Kit de bodies",
-              180
+              180,
+              "assets/presentes/body-bebe.jpg"
             ],
             [
               "Mantas",
-              160
+              160,
+              "assets/presentes/manta-bebe.jpg"
             ],
             [
               "Babá eletrônica",
-              650
+              650,
+              "assets/presentes/baba-eletronica.jpg"
             ],
             [
               "Trocador",
-              300
+              300,
+              "assets/presentes/trocador.jpg"
             ],
             [
               "Cômoda",
-              1300
+              1300,
+              "assets/presentes/comoda.jpg"
             ],
             [
               "Kit berço",
-              420
+              420,
+              "assets/presentes/kit-berco.jpg"
             ]
           ]
         },
@@ -8024,43 +8147,53 @@ document.addEventListener('DOMContentLoaded', () => {
           "itens": [
             [
               "Anel de formatura",
-              650
+              650,
+              "assets/presentes/anel.jpg"
             ],
             [
               "Ensaio fotográfico da formatura",
-              500
+              500,
+              "assets/presentes/ensaio-formatura.jpg"
             ],
             [
               "Traje para a colação",
-              700
+              700,
+              "assets/presentes/traje-colacao.jpg"
             ],
             [
               "Notebook para começar a carreira",
-              4200
+              4200,
+              "assets/presentes/notebook.jpg"
             ],
             [
               "Curso de especialização",
-              2500
+              2500,
+              "assets/presentes/especializacao.jpg"
             ],
             [
               "Viagem de formatura",
-              3000
+              3000,
+              "assets/presentes/viagem-formatura.jpg"
             ],
             [
               "Mala de viagem",
-              450
+              450,
+              "assets/presentes/mala.jpg"
             ],
             [
               "Relógio",
-              600
+              600,
+              "assets/presentes/relogio.jpg"
             ],
             [
               "Livros da área",
-              250
+              250,
+              "assets/presentes/livros-area.jpg"
             ],
             [
               "Jantar com a família",
-              480
+              480,
+              "assets/presentes/jantar-familia.jpg"
             ]
           ]
         }
@@ -8118,7 +8251,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </section>`;
   }
 
-  /** @type {{ nome: string, img: string, itens: [string, number][] } | null} */
+  /** @type {{ nome: string, img: string, itens: [string, number, string?][] } | null} */
   let listaProntaAberta = null;
 
   /** Cabeçalho da lista aberta: seta de voltar + "Lista: nome" (null volta ao normal). @param {string|null} nomeDaLista */
@@ -8130,7 +8263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (voltar) { voltar.hidden = false; voltar.setAttribute('aria-label', 'Voltar para Adicione uma lista'); }
   }
 
-  /** Mostra todos os presentes de uma lista pronta antes de adicionar. @param {{ nome: string, img: string, itens: [string, number][] }} lista */
+  /** Mostra todos os presentes de uma lista pronta antes de adicionar. @param {{ nome: string, img: string, itens: [string, number, string?][] }} lista */
   function mostrarDetalheDaLista(lista) {
     const painel = document.getElementById('gifts-listas-prontas');
     if (!painel) return;
@@ -8143,9 +8276,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <button type="button" class="btn-primary" data-adicionar-lista>Adicionar lista</button>
         </div>
         <div class="listas-prontas-grade">
-          ${lista.itens.map(([titulo, preco]) => `
+          ${lista.itens.map(([titulo, preco, foto]) => `
             <div class="lista-item-card">
-              <img src="${escaparHtml(lista.img)}" alt="" loading="lazy" onerror="this.removeAttribute('src');this.classList.add('sem-foto')">
+              <img src="${escaparHtml(foto || lista.img)}" alt="" loading="lazy" onerror="this.removeAttribute('src');this.classList.add('sem-foto')">
               <span class="lista-pronta-corpo">
                 <strong>${escaparHtml(titulo)}</strong>
                 <span class="lista-item-preco">${reaisDaLista(preco)}</span>
@@ -8158,7 +8291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0 });
   }
 
-  /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number][] }} lista */
+  /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number, string?][] }} lista */
   async function adicionarListaPronta(lista) {
     const ev = getActiveEvent();
     if (!ev) return;
@@ -8169,11 +8302,11 @@ document.addEventListener('DOMContentLoaded', () => {
       botao: 'Adicionar lista',
       aoConfirmar: async () => {
         if (!ev.giftList) ev.giftList = [];
-        for (const [titulo, preco] of lista.itens) {
+        for (const [titulo, preco, foto] of lista.itens) {
           const presente = {
             id: `gift-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
             title: titulo, description: '', category: lista.nome, listaNome: lista.nome, price: preco, type: 'virtual',
-            marketplaceUrl: null, received: 0, status: 'Disponível para Presentear', image: lista.img,
+            marketplaceUrl: null, received: 0, status: 'Disponível para Presentear', image: foto || lista.img,
             contributorsCount: 0, isCrowdfunding: false, crowdfundingConfig: null, categoryTag: null
           };
           const { error } = await salvarPresenteNoBanco(presente).catch(err => ({ error: err }));

@@ -10162,3 +10162,6 @@ html body #avatar-dropdown .topbar-item-adicionar-empresa:hover:not(#love-h-a) {
 /* Editar produto: o rodapé passa por cima do menu lateral (Categoria,
    Detalhes, Mídia), que antes cobria o começo dele. */
 html body.produto-editor-aberto .b2b-footer:not(#love-h-a) { position: relative; z-index: 6; }
+
+/* Editar: {nome do produto} — nome comprido termina em "…" numa linha só. */
+html body #produtos-titulo-pagina:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -1871,7 +1871,9 @@ function openProductDrawer(id) {
     document.body.classList.toggle('produto-editor-aberto', aberto);
     voltar.hidden = !aberto;
     const editando = !!(document.getElementById('product-form') || {}).dataset?.editId;
-    titulo.textContent = aberto ? (editando ? 'Editar produto' : 'Adicionar novo produto') : 'Meus produtos';
+    // Editando: 'Editar: Bar completo' (o nome do produto ao lado).
+    const nomeProduto = ((document.getElementById('product-name') || {}).value || '').trim();
+    titulo.textContent = aberto ? (editando ? (nomeProduto ? `Editar: ${nomeProduto}` : 'Editar produto') : 'Adicionar novo produto') : 'Meus produtos';
     // O endereço acompanha o que está aberto, para o F5 voltar ao mesmo lugar.
     const idEditando = (document.getElementById('product-form') || {}).dataset?.editId;
     const endereco = aberto ? (editando ? `?editar=${encodeURIComponent(idEditando)}` : '?add=1') : '';

@@ -10944,8 +10944,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { type: 'recepcao', label: 'Recepção', w: 150, h: 110, svg: '<path d="M4 6v14a6 6 0 0 0 6 6h12a6 6 0 0 0 6-6V6M9 6v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/><rect x="12.5" y="8.5" width="7" height="7" rx="1.5"/>',
       planta: '<path d="M2 2V80Q2 108 30 108H120Q148 108 148 80V2H130V78Q130 90 118 90H32Q20 90 20 78V2Z"/><rect x="55" y="96" width="40" height="3" rx="1.5" class="l"/><rect x="58" y="24" width="34" height="9" rx="3"/><rect x="58" y="35" width="34" height="30" rx="6"/><rect x="52" y="37" width="5" height="24" rx="2" class="l"/><rect x="93" y="37" width="5" height="24" rx="2" class="l"/>' },
     // Decoração: vaso de planta (visto de lado).
-    { type: 'decoracao', label: 'Decoração', w: 80, h: 100, svg: '<path d="M11 21h10l-1.4 7h-7.2Z"/><path d="M10 21h12"/><path d="M16 21c0-6-1-11 0-16 1 5 0 10 0 16Z"/><path d="M16 21c-1-5-5-8-10-8 1 5 5 8 10 8Z"/><path d="M16 21c1-5 5-8 10-8-1 5-5 8-10 8Z"/>',
-      planta: '<path d="M40 58C27 42 28 15 40 3C52 15 53 42 40 58Z"/><path d="M40 58C25 56 6 46 3 20C20 20 37 35 40 58Z"/><path d="M40 58C55 56 74 46 77 20C60 20 43 35 40 58Z"/><path d="M40 56V10M39 56C30 45 18 34 9 25M41 56C50 45 62 34 71 25" class="l"/><path d="M22 66L27 98H53L58 66Z"/><rect x="19" y="59" width="42" height="8" rx="2"/>' },
+    { type: 'decoracao', label: 'Decoração', w: 90, h: 50, escalaMin: 0.5, escalaMax: 1.2, svg: '<path d="M4 18h24l-2 9H6Z"/><path d="M8 18c-1-5 0-9 3-12 1 4 0 8-3 12ZM14 18c0-6 2-10 5-13 1 5-1 9-5 13ZM21 18c0-5 2-8 5-10 0 4-1 7-5 10Z"/>',
+      planta: '<path d="M12 31C4 26 2 16 6 8C12 14 15 22 12 31Z"/><path d="M74 31C76 22 82 16 88 14C86 22 80 28 74 31Z"/><path d="M20 31C16 20 18 10 24 3C28 12 26 22 20 31Z"/><path d="M66 31C66 21 72 13 80 10C78 20 72 27 66 31Z"/><path d="M30 31C28 20 32 12 40 7C40 17 36 25 30 31Z"/><path d="M56 31C54 19 58 9 64 3C68 12 64 24 56 31Z"/><path d="M48 31C48 20 54 11 62 7C62 17 56 25 48 31Z"/><path d="M40 31C36 18 40 8 46 1C50 10 48 22 40 31Z"/><path d="M11.5 29 6.5 10M20.5 29 23.8 5M30.5 29 39 9M40.5 29 45.8 3M48.5 29 61 9M56.5 29 63.8 5M66.5 29 79 12M74.5 29 87 15" class="l"/><rect x="4" y="29" width="82" height="5" rx="1.5"/><path d="M6 33H84L81 49H9Z"/>' },
     // Círculo (botão de formas): só aumenta/diminui.
     { type: 'circulo', label: 'Círculo', w: 120, h: 120, svg: '', planta: '<circle cx="60" cy="60" r="59"/>' }
   );
@@ -10999,6 +10999,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // nem minúsculo (difícil de achar).
   const ESCALA_MINIMA_NA_PLANTA = 0.6;
   const ESCALA_MAXIMA_NA_PLANTA = 1.6;
+  /** Limites de escala do item (alguns, como a Decoração, têm os próprios). @param {string} tipo @returns {[number, number]} */
+  function limitesDaEscala(tipo) {
+    const meta = /** @type {any} */ (ITENS_DA_PLANTA.find(i => i.type === tipo));
+    return [meta && meta.escalaMin || ESCALA_MINIMA_NA_PLANTA, meta && meta.escalaMax || ESCALA_MAXIMA_NA_PLANTA];
+  }
   /** Tamanho da mesa (1 = normal), entre os limites acima. @param {any} item */
   function escalaDaMesa(item) {
     const s = parseFloat(item && item.escala);
@@ -11023,7 +11028,8 @@ document.addEventListener('DOMContentLoaded', () => {
       escala = Math.max(w, h) / Math.max(bw, bh);
       if (bw !== bh && (w > h) !== (bw > bh)) rotacao = 90;
     }
-    escala = Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala || 1));
+    const [escalaMin, escalaMax] = limitesDaEscala(elData.type);
+    escala = Math.min(escalaMax, Math.max(escalaMin, escala || 1));
     const baseW = bw * escala;
     const baseH = bh * escala;
     // Caixa ocupada pelo desenho girado (na diagonal ela fica maior).
@@ -11852,7 +11858,8 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transform = escala === 1 ? '' : `scale(${escala})`;
         resultado = { escala };
       } else {
-        const escala = Math.round(Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala0 * fator)) * 100) / 100;
+        const [escalaMin, escalaMax] = limitesDaEscala(alvo.type);
+        const escala = Math.round(Math.min(escalaMax, Math.max(escalaMin, escala0 * fator)) * 100) / 100;
         const w = tam0.w / escala0 * escala;
         const hh = tam0.h / escala0 * escala;
         const x = Math.max(0, centroX - w / 2);

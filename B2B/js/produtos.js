@@ -193,6 +193,7 @@ async function loadProducts() {
     pricing: (p.extra && p.extra.pricing) || null,
     scope: (p.extra && p.extra.scope) || { included: [], excluded: [] },
     sku: (p.extra && p.extra.sku) || '',
+    tags: Array.isArray(p.extra && p.extra.tags) ? p.extra.tags : [],
     social: (p.extra && p.extra.social) || {},
     packages: Array.isArray(p.extra && p.extra.packages) ? p.extra.packages : [],
     addons: Array.isArray(p.extra && p.extra.addons) ? p.extra.addons : [],
@@ -1028,6 +1029,7 @@ function categoryGroups(category) {
 
 function updateCategoryFieldsVisibility() {
   const category = document.getElementById('product-category').value;
+  renderTagsDoProduto();
   const { isVenue, isEquipment, isFood, isStaff, isAV } = categoryGroups(category);
 
   // Etapa 3: bloco de atributos específico por categoria.
@@ -1345,6 +1347,7 @@ function initProductDrawer() {
     backdrop.classList.remove('show');
     form.reset();
     delete form.dataset.editId;
+    currentProductTags = [];
     showDeleteConfirm(false);
   };
 
@@ -1438,6 +1441,7 @@ function initProductDrawer() {
     }
     form.reset();
     delete form.dataset.editId;
+    currentProductTags = [];
     document.getElementById('product-drawer-title').textContent = 'Adicionar produto/serviço';
     const avisoSuspensoNovo = document.getElementById('product-suspenso-aviso');
     if (avisoSuspensoNovo) avisoSuspensoNovo.hidden = true;
@@ -1680,6 +1684,7 @@ function initProductDrawer() {
           subcategory: currentSubcategory,
           sku: isVenue ? null : (limparSku(document.getElementById('product-sku').value.trim()) || null),
           social: lerRedesSociais(),
+          tags: currentProductTags.slice(),
           pricing,
           scope: {
             included: currentScopeIncluded.map(i => i.text).filter(Boolean),
@@ -1742,6 +1747,7 @@ function openProductDrawer(id) {
     }
   }
   document.getElementById('product-name').value = p.name;
+  currentProductTags = (p.tags || []).slice();
   document.getElementById('product-category').value = p.category;
   document.getElementById('product-description').value = p.description || '';
 
@@ -1900,3 +1906,74 @@ document.querySelectorAll('[id^="product-social-"]').forEach(input => {
   });
   input.addEventListener('blur', () => { if (input.value.trim() === 'https://') input.value = ''; });
 });
+
+/* -------------------- Tags do produto --------------------
+   Sugestões por categoria (clicar marca/desmarca) + tags escritas pela
+   pessoa. Ficam em extra.tags e ajudam a escolher quem aparece na vitrine. */
+let currentProductTags = [];
+const TAGS_POR_CATEGORIA = {
+  'Buffet e Gastronomia': ['Buffet completo', 'Coquetel', 'Finger food', 'Churrasco', 'Comida de boteco', 'Massas', 'Comida japonesa', 'Mesa de frios', 'Doces finos', 'Bolo', 'Vegano', 'Vegetariano', 'Sem glúten', 'Café da manhã', 'Brunch', 'Food truck', 'Buffet infantil', 'Jantar servido à francesa'],
+  'Bar e Bebidas': ['Open bar', 'Drinks autorais', 'Bartender', 'Chopp', 'Cervejas artesanais', 'Vinhos', 'Espumantes', 'Drinks sem álcool', 'Coquetelaria clássica', 'Bar móvel', 'Gin tônica', 'Caipirinhas', 'Café e barista', 'Bar infantil'],
+  'Espaços para Locação': ['Ao ar livre', 'Salão fechado', 'Com piscina', 'Jardim', 'Vista para o mar', 'Campo', 'Rústico', 'Industrial', 'Clássico', 'Estacionamento', 'Acessível', 'Hospedagem no local', 'Até 100 convidados', 'Mais de 300 convidados', 'Cerimônia no local'],
+  'Staff e Mão de Obra': ['Garçons', 'Recepcionistas', 'Seguranças', 'Bartenders', 'Copeiras', 'Manobristas', 'Limpeza', 'Montagem', 'Coordenação de equipe', 'Bilíngue', 'Uniformizado'],
+  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Making of', 'Ensaio pré-wedding', 'Álbum impresso', 'Cabine de fotos', 'Transmissão ao vivo', 'Edição em 4K', 'Same day edit', 'Estilo documental', 'Estilo editorial', 'Fotos instantâneas'],
+  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Voz e violão', 'Quarteto de cordas', 'Samba e pagode', 'Sertanejo', 'Música eletrônica', 'MPB', 'Cerimônia musical', 'Mestre de cerimônias', 'Animação infantil', 'Pista de dança', 'Iluminação cênica', 'Efeitos especiais'],
+  'Decoração': ['Clássica', 'Rústica', 'Boho', 'Minimalista', 'Moderna', 'Tropical', 'Romântica', 'Arranjos florais', 'Flores naturais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Painel instagramável', 'Mesa posta', 'Balões'],
+  'Assessoria e Cerimonialista': ['Assessoria completa', 'Assessoria do dia', 'Cerimonial', 'Planejamento', 'Destination wedding', 'Celebrante', 'Casamento civil', 'Bilíngue', 'Roteiro do evento', 'Gestão de fornecedores'],
+  'Trajes, Beleza e Estilo': ['Vestido de noiva', 'Traje masculino', 'Aluguel', 'Sob medida', 'Maquiagem', 'Penteado', 'Dia da noiva', 'Dia do noivo', 'Madrinhas', 'Daminhas e pajens', 'Acessórios', 'Atendimento em domicílio']
+};
+
+function tagsSugeridasDaCategoria() {
+  const categoria = (document.getElementById('product-category') || {}).value || '';
+  const principal = typeof normalizeCategory === 'function' ? normalizeCategory(categoria) : categoria;
+  if (TAGS_POR_CATEGORIA[principal]) return TAGS_POR_CATEGORIA[principal];
+  // Valor guardado como subcategoria: acha a categoria principal dela.
+  const mapa = typeof SUBCATEGORY_MAP !== 'undefined' ? SUBCATEGORY_MAP : {};
+  const dona = Object.keys(mapa).find(k => (mapa[k] || []).includes(categoria) || (mapa[k] || []).includes(currentSubcategory));
+  return TAGS_POR_CATEGORIA[dona] || [];
+}
+
+function renderTagsDoProduto() {
+  const wrap = document.getElementById('product-tags-wrap');
+  const lista = document.getElementById('product-tags-lista');
+  if (!wrap || !lista) return;
+  const categoria = (document.getElementById('product-category') || {}).value || '';
+  wrap.hidden = !categoria;
+  if (!categoria) return;
+  const sugeridas = tagsSugeridasDaCategoria();
+  const minhas = currentProductTags.filter(t => !sugeridas.some(s => s.toLowerCase() === t.toLowerCase()));
+  const todas = sugeridas.concat(minhas);
+  lista.innerHTML = todas.map(t => {
+    const marcada = currentProductTags.some(x => x.toLowerCase() === t.toLowerCase());
+    return `<button type="button" class="produto-tag${marcada ? ' is-marcada' : ''}" data-produto-tag="${escapeHtml(t)}" aria-pressed="${marcada}">${escapeHtml(t)}</button>`;
+  }).join('');
+}
+
+function adicionarTagEscrita() {
+  const input = document.getElementById('product-tag-input');
+  if (!input) return;
+  const texto = input.value.replace(/\s+/g, ' ').trim().replace(/,$/, '');
+  if (!texto) return;
+  if (!currentProductTags.some(t => t.toLowerCase() === texto.toLowerCase())) currentProductTags.push(texto);
+  input.value = '';
+  renderTagsDoProduto();
+  input.focus();
+}
+
+(function ligarTagsDoProduto() {
+  const lista = document.getElementById('product-tags-lista');
+  const input = document.getElementById('product-tag-input');
+  if (!lista || !input) return;
+  lista.addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-produto-tag]');
+    if (!chip) return;
+    const tag = chip.dataset.produtoTag;
+    const i = currentProductTags.findIndex(t => t.toLowerCase() === tag.toLowerCase());
+    if (i >= 0) currentProductTags.splice(i, 1); else currentProductTags.push(tag);
+    renderTagsDoProduto();
+  });
+  input.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ',') && !e.isComposing) { e.preventDefault(); adicionarTagEscrita(); }
+  });
+  document.getElementById('product-tag-add')?.addEventListener('click', adicionarTagEscrita);
+})();

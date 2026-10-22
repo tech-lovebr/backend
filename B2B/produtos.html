@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=737">
+  <link rel="stylesheet" href="css/styles.css?v=738">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -156,6 +156,19 @@
                       <option value="VALOR_FIXO">Valor fixo</option>
                       <option value="SOB_CONSULTA">Sob consulta</option>
                     </select>
+                  </div>
+                </div>
+
+                <!-- Tags do produto: sugeridas pela categoria (clicar marca/desmarca) e
+                     também escritas pela pessoa. Ajudam a Love a escolher quem
+                     aparece na vitrine para cada busca. Salvas em extra.tags. -->
+                <div class="produto-tags" id="product-tags-wrap" hidden>
+                  <p class="field-label product-title-label">Tags</p>
+                  <p class="produto-tags-dica">Toque nas que combinam com o seu serviço. Elas ajudam os anfitriões a encontrar você na vitrine.</p>
+                  <div class="produto-tags-lista" id="product-tags-lista"></div>
+                  <div class="produto-tags-nova">
+                    <input type="text" id="product-tag-input" class="field-input" maxlength="40" placeholder="Escreva outra tag e aperte Enter" autocomplete="off">
+                    <button type="button" class="btn-secondary builder-toolbar-btn" id="product-tag-add">Adicionar</button>
                   </div>
                 </div>
 
@@ -639,6 +652,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=56"></script>
-  <script src="js/produtos.js?v=52"></script>
+  <script src="js/produtos.js?v=53"></script>
 </body>
 </html>

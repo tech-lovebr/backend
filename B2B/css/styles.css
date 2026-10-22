@@ -10048,3 +10048,21 @@ html body:not(.produto-modo-criar) #produto-etapa-intro:not(#love-h-a) { display
 html body #product-category-tree .category-tree-row:not(#love-h-a) { padding: 0.8rem 0.9rem; font-size: 0.875rem; }
 html body #product-category-tree .category-tree-subrow:not(#love-h-a) { padding: 0.7rem 0.9rem 0.7rem 2.4rem; font-size: 0.875rem; }
 html body #product-category-tree.category-tree-flat:not(#love-h-a) { max-height: 360px; }
+
+/* Produto › Tags: sugestões da categoria como etiquetas clicáveis (marcada em
+   azul escuro) e um campo para escrever outras. */
+html body .produto-tags:not(#love-h-a) { margin-top: 1.25rem; }
+html body .produto-tags[hidden]:not(#love-h-a) { display: none; }
+html body .produto-tags-dica:not(#love-h-a) { margin: -0.15rem 0 0.75rem; font-size: 0.8125rem; color: #71717A; }
+html body .produto-tags-lista:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+html body .produto-tag:not(#love-h-a) {
+  height: 34px; padding: 0 0.85rem; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+  font-family: inherit; font-size: 0.8125rem; font-weight: 500; color: #3F3F46; cursor: pointer; transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+html body .produto-tag:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .produto-tag.is-marcada:not(#love-h-a) { background: #183b54; border-color: #183b54; color: #FFFFFF; }
+html body .produto-tags-nova:not(#love-h-a) { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+html body .produto-tags-nova .field-input:not(#love-h-a) { flex: 1; min-width: 0; }
+html body .produto-tags-nova .btn-secondary:not(#love-h-a) { flex-shrink: 0; height: 42px; }
+body[data-theme="dark"] .produto-tag { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .produto-tag.is-marcada { background: #FFFFFF !important; color: #181D24 !important; }

@@ -10161,3 +10161,31 @@ html body .presentes-vazio:not(#love-h-a) { display: flex; flex-direction: colum
 html body .presentes-vazio .lista-pronta-criar:not(#love-h-a) { min-height: 240px; }
 @media (max-width: 560px) { .presentes-vazio-cards { grid-template-columns: minmax(0, 1fr); } }
 body[data-theme="dark"] .presentes-vazio { background: #252525 !important; border-color: #404040 !important; }
+
+/* Fornecedores › Contratos: abas Solicitações / Meus contratos (24px até a
+   tabela), lista de solicitações ocupando até o rodapé e tela de propostas. */
+html body #view-event-os-dashboard .dashboard-content-wrapper:has(> #tab-b2b.active #b2b-contracted-view:not(.hidden)):not(#love-h-a) { display: flex; flex-direction: column; }
+html body #tab-b2b.active:has(#b2b-contracted-view:not(.hidden)):not(#love-h-a) { display: flex !important; flex-direction: column; flex: 1 0 auto; }
+html body #b2b-contracted-view:not(.hidden):not(#love-h-a) { display: flex; flex-direction: column; flex: 1 0 auto; }
+html body #b2b-contracted-view .contratos-painel:not(#love-h-a) { margin-top: 24px; }
+html body #contratos-painel-solicitacoes:not(.hidden):not(#love-h-a),
+html body #rfp-lista-wrap:not(.hidden):not(#love-h-a) { display: flex; flex-direction: column; flex: 1 0 auto; }
+html body #rfp-lista-wrap .rfp-lista-aviso:not(#love-h-a) { margin-bottom: 16px; }
+html body #rfp-lista tr.rfp-linha-clicavel:not(#love-h-a) { cursor: pointer; }
+html body #rfp-lista tr.rfp-linha-clicavel:not(#love-h-a):hover > td { background: #FAFAFA; }
+.rfp-propostas-topo { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+html body .rfp-propostas-titulo:not(#love-h-a) { margin: 0; font-size: 16px; font-weight: 700; color: #18181B; letter-spacing: -0.025em; }
+.rfp-propostas-sub { margin: 2px 0 0; font-size: 13px; color: #71717A; }
+.rfp-forn { display: inline-flex; align-items: center; gap: 10px; }
+.rfp-forn-foto { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #F4F4F5; }
+.rfp-forn-inicial { display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #52525B; }
+.rfp-col-inclui { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 320px; }
+html body .rfp-proposta-enviada:not(#love-h-a) { background: #EBF4FF; color: #183b54; }
+html body .rfp-proposta-vista:not(#love-h-a) { background: #F4F4F5; color: #52525B; }
+html body .rfp-proposta-aceita:not(#love-h-a) { background: #ECFDF3; color: #067647; }
+html body .rfp-proposta-recusada:not(#love-h-a) { background: #FEF3F2; color: #B42318; }
+html body button.rfp-conversar:not(#love-h-a) { height: 32px; padding: 0 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #3F3F46; cursor: pointer; white-space: nowrap; }
+html body button.rfp-conversar:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+body[data-theme="dark"] .rfp-propostas-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] #rfp-lista tr.rfp-linha-clicavel:hover > td { background: #2A2A2A !important; }
+body[data-theme="dark"] button.rfp-conversar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

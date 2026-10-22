@@ -220,7 +220,7 @@
 
     m.addEventListener('click', (e) => {
       const alvo = /** @type {HTMLElement} */ (e.target);
-      if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? fechar() : irPara(etapa - 1, -1);
+      if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? sair() : irPara(etapa - 1, -1);
       if (alvo.closest('[data-rfp-avancar]')) return avancar();
       if (alvo.closest('[data-rfp-cat-gatilho]')) { categoriaAberta = !categoriaAberta; return desenhar(0); }
       const opcao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-campo]'));
@@ -269,6 +269,13 @@
     cabecalho(true);
     desenhar(0);
     window.scrollTo({ top: 0 });
+  }
+
+  /** Sai da nova solicitação para Contratos › Solicitações (app.js escuta). */
+  function sair() {
+    if (publicando) return;
+    fechar();
+    window.dispatchEvent(new CustomEvent('love:rfp-sair'));
   }
 
   function fechar() {
@@ -660,9 +667,8 @@
       const { error } = await supabaseClient.from('pedidos_orcamento').insert(linha);
       if (error) throw new Error(tabelaAusente(error) ? 'Os pedidos de orçamento ainda não foram ativados no banco.' : 'Não foi possível publicar agora. Tente de novo.');
       publicando = false;
-      fechar();
-      avisoNaLista('Pedido publicado. Os fornecedores da categoria já podem enviar propostas.');
-      mostrarLista();
+      sair();
+      avisoNaLista('Solicitação publicada. Os fornecedores da categoria já podem enviar propostas.');
     } catch (err) {
       publicando = false;
       desenhar(0);
@@ -686,7 +692,12 @@
     if (msg) setTimeout(() => el.classList.add('hidden'), 6000);
   }
 
+  /** Pedidos da última carga da lista (para o título da tela de propostas). @type {Record<string, any>} */
+  let pedidosCarregados = {};
+
   async function mostrarLista() {
+    document.getElementById('rfp-lista-wrap')?.classList.remove('hidden');
+    document.getElementById('rfp-propostas')?.classList.add('hidden');
     const corpo = document.getElementById('rfp-lista');
     const contagem = document.getElementById('rfp-contagem');
     if (!corpo) return;
@@ -708,6 +719,8 @@
       return;
     }
     const linhas = data || [];
+    pedidosCarregados = {};
+    linhas.forEach(p => { pedidosCarregados[p.id] = p; });
     if (contagem) contagem.textContent = linhas.length === 1 ? '1 pedido' : `${linhas.length} pedidos`;
     if (!linhas.length) {
       corpo.innerHTML = '';
@@ -721,7 +734,7 @@
       const local = [p.bairro, p.cidade].filter(Boolean).join(', ') + (p.uf ? ` - ${p.uf}` : '');
       const situacao = SITUACOES[/** @type {'aberto'|'fechado'|'cancelado'} */ (p.status)] || p.status;
       return `
-        <tr data-rfp-id="${esc(p.id)}">
+        <tr data-rfp-id="${esc(p.id)}" class="rfp-linha-clicavel" title="Ver propostas">
           <td><b class="rfp-col-titulo">${esc(cat ? cat.nome : p.categoria)}</b>${(p.especialidades || []).length ? `<span class="rfp-col-sub">${esc(p.especialidades.slice(0, 2).join(', '))}${p.especialidades.length > 2 ? ` +${p.especialidades.length - 2}` : ''}</span>` : ''}</td>
           <td>${esc(nomeDe(CELEBRACOES, p.tipo_celebracao))}<span class="rfp-col-sub">${esc(quando)}</span></td>
           <td>${esc(local)}</td>
@@ -759,6 +772,77 @@
     });
   }
 
+  // --------------------------------------------------------------------------
+  // Propostas de uma solicitação: os fornecedores que enviaram orçamento
+  // --------------------------------------------------------------------------
+  const SITUACOES_DA_PROPOSTA = { enviada: 'Nova', vista: 'Vista', aceita: 'Aceita', recusada: 'Recusada', retirada: 'Retirada' };
+  /** @param {number} v */
+  const reais = (v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  /** @param {string} id */
+  async function mostrarPropostas(id) {
+    const wrap = document.getElementById('rfp-lista-wrap');
+    const det = document.getElementById('rfp-propostas');
+    if (!det || typeof supabaseClient === 'undefined') return;
+    wrap?.classList.add('hidden');
+    det.classList.remove('hidden');
+    const ped = pedidosCarregados[id] || {};
+    const cat = categoriaPorId(ped.categoria);
+    const quando = ped.data_flexivel || !ped.data_evento ? 'Data flexível' : formatarData(ped.data_evento);
+    const sub = [nomeDe(CELEBRACOES, ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
+    const linhaUnica = (/** @type {string} */ t) => `<tr><td colspan="6" class="rfp-vazio"><p>${esc(t)}</p></td></tr>`;
+    det.innerHTML = `
+      <div class="rfp-propostas-topo">
+        <button type="button" class="rfp-voltar-seta" data-rfp-propostas-voltar aria-label="Voltar para as solicitações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="min-w-0">
+          <h3 class="rfp-propostas-titulo">${esc(cat ? cat.nome : (ped.categoria || 'Solicitação'))}</h3>
+          ${sub ? `<p class="rfp-propostas-sub">${esc(sub)}</p>` : ''}
+        </div>
+      </div>
+      <div class="dash-card love-tabela-caixa">
+        <div class="w-full overflow-x-auto">
+          <table class="love-tabela w-full text-left border-collapse font-sans">
+            <thead><tr><th>Fornecedor</th><th>Valor</th><th>O que inclui</th><th>Enviada em</th><th>Situação</th><th class="love-tabela-col-acoes"></th></tr></thead>
+            <tbody id="rfp-propostas-lista">${linhaUnica('Carregando…')}</tbody>
+          </table>
+        </div>
+      </div>`;
+    const corpo = document.getElementById('rfp-propostas-lista');
+    const { data, error } = await supabaseClient
+      .from('propostas_pedido')
+      .select('id, fornecedor_id, valor, inclui, mensagem, prazo_entrega, status, created_at, fornecedores(company_name, logo_url, avatar_url)')
+      .eq('pedido_id', id)
+      .order('created_at', { ascending: true });
+    if (!corpo) return;
+    // Sem a tabela de propostas no banco (migration 074), ainda não há propostas.
+    const semTabela = !!error && (error.code === 'PGRST205' || error.code === '42P01');
+    if (error && !semTabela) { corpo.innerHTML = linhaUnica('Não foi possível carregar as propostas agora.'); return; }
+    const lista = (semTabela ? [] : data || []).filter(x => x.status !== 'retirada');
+    if (!lista.length) { corpo.innerHTML = linhaUnica('Nenhum fornecedor enviou proposta ainda.'); linhasDaTabela(corpo); return; }
+    corpo.innerHTML = lista.map(x => {
+      const f = /** @type {any} */ (x.fornecedores) || {};
+      const nome = f.company_name || 'Fornecedor';
+      const foto = f.logo_url || f.avatar_url || '';
+      const enviada = formatarData(String(x.created_at || '').slice(0, 10));
+      return `
+        <tr>
+          <td><span class="rfp-forn">${foto ? `<img src="${esc(foto)}" alt="" class="rfp-forn-foto">` : `<span class="rfp-forn-foto rfp-forn-inicial">${esc(nome.charAt(0).toUpperCase())}</span>`}<b class="rfp-col-titulo">${esc(nome)}</b></span></td>
+          <td class="rfp-col-num">${esc(reais(x.valor))}</td>
+          <td><span class="rfp-col-inclui">${esc(x.inclui)}</span>${x.prazo_entrega ? `<span class="rfp-col-sub">Prazo: ${esc(x.prazo_entrega)}</span>` : ''}</td>
+          <td>${esc(enviada)}</td>
+          <td><span class="rfp-situacao rfp-proposta-${esc(x.status)}">${esc(SITUACOES_DA_PROPOSTA[/** @type {'enviada'} */ (x.status)] || x.status)}</span></td>
+          <td class="love-tabela-col-acoes"><button type="button" class="rfp-conversar" data-rfp-conversar="${esc(x.fornecedor_id)}">Conversar</button></td>
+        </tr>`;
+    }).join('');
+    linhasDaTabela(corpo);
+    // Abriu a solicitação: as propostas novas passam a "Vista".
+    if (lista.some(x => x.status === 'enviada')) {
+      supabaseClient.from('propostas_pedido').update({ status: 'vista' }).eq('pedido_id', id).eq('status', 'enviada').then(() => {});
+    }
+  }
+
   /** @param {string} texto */
   const linhaVazia = (texto) => `<tr><td colspan="7" class="rfp-vazio"><p>${esc(texto)}</p></td></tr>`;
 
@@ -766,7 +850,9 @@
   document.addEventListener('click', async (e) => {
     const alvo = e.target instanceof Element ? e.target : null;
     if (!alvo) return;
-    if (alvo.closest('[data-rfp-novo]')) { abrir(); return; }
+    if (alvo.closest('[data-rfp-propostas-voltar]')) { mostrarLista(); return; }
+    const conversar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-conversar]'));
+    if (conversar) { const w = /** @type {any} */ (window); if (w.loveAbrirChatComFornecedor) w.loveAbrirChatComFornecedor(conversar.dataset.rfpConversar); return; }
     const abertos = document.querySelectorAll('.rfp-menu:not(.hidden)');
     const btnMenu = alvo.closest('[data-rfp-menu]');
     if (btnMenu) {
@@ -777,11 +863,20 @@
     }
     const acao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-acao]'));
     abertos.forEach(m => m.classList.add('hidden'));
-    if (!acao) return;
+    if (!acao) {
+      // Clique na linha (fora do menu ⋯): fornecedores que enviaram proposta.
+      const tr = /** @type {HTMLElement|null} */ (alvo.closest('#rfp-lista tr[data-rfp-id]'));
+      if (tr && !alvo.closest('.rfp-menu-wrap')) mostrarPropostas(tr.dataset.rfpId || '');
+      return;
+    }
     const linha = /** @type {HTMLElement|null} */ (acao.closest('[data-rfp-id]'));
     const id = linha && linha.dataset.rfpId;
     if (!id || typeof supabaseClient === 'undefined') return;
-    if (acao.dataset.rfpAcao === 'excluir' && !confirm('Excluir este pedido de orçamento? Os fornecedores deixam de vê-lo.')) return;
+    if (acao.dataset.rfpAcao === 'excluir') {
+      const w = /** @type {any} */ (window);
+      const ok = w.confirmarNaLove ? await w.confirmarNaLove({ titulo: 'Excluir esta solicitação?', texto: 'Os fornecedores deixam de vê-la.', botao: 'Excluir' }) : false;
+      if (!ok) return;
+    }
     const { error } = acao.dataset.rfpAcao === 'encerrar'
       ? await supabaseClient.from('pedidos_orcamento').update({ status: 'fechado' }).eq('id', id)
       : await supabaseClient.from('pedidos_orcamento').delete().eq('id', id);
@@ -790,7 +885,7 @@
   });
 
   document.addEventListener('click', (e) => {
-    if (e.target instanceof Element && e.target.closest('#btn-rfp-voltar')) fechar();
+    if (e.target instanceof Element && e.target.closest('#btn-rfp-voltar')) sair();
   });
 
   window.LovePedidos = { abrir, fechar, mostrarLista, CATEGORIAS, FAIXAS };

@@ -198,6 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   }
 
+  // Também usada por js/pedidos-orcamento.js (excluir solicitação).
+  window.confirmarNaLove = (/** @type {any} */ o) => confirmarNaLove(o);
   // Pop-up de confirmação da Love (no lugar do confirm() do navegador).
   // aoConfirmar (opcional, async): roda com o pop-up aberto e o botão
   // travado; se devolver um texto, ele aparece como erro e o pop-up fica.
@@ -1411,9 +1413,9 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'explore', label: 'Explorar' },
-        { id: 'pedidos', label: 'Solicitar propostas' },
+        { id: 'pedidos', label: 'Criar solicitação' },
         { id: 'messages', label: 'Mensagens' },
-        { id: 'contracted', label: 'Meus contratos' },
+        { id: 'contracted', label: 'Contratos' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
         { id: 'insurance', label: 'Benefícios', oculto: true },
         { id: 'favorites', label: 'Favoritos' }
@@ -16081,6 +16083,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('b2b-mensagem-enviar')?.addEventListener('click', enviarMensagemAoFornecedor);
   })();
 
+  // Propostas das solicitações (js/pedidos-orcamento.js) abrem a conversa.
+  window.loveAbrirChatComFornecedor = (/** @type {string} */ id) => abrirChatComFornecedor(id);
+
   async function abrirChatComFornecedor(fornecedorId) {
     // Já marca a conversa desse fornecedor como a ativa (se estiver na
     // memória), para o Chat abrir direto nela.
@@ -18315,9 +18320,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
-        'pedidos': 'Solicitar propostas',
+        'pedidos': 'Criar solicitação',
         'messages': 'Mensagens',
-        'contracted': 'Meus contratos',
+        'contracted': 'Contratos',
         'insurance': 'Benefícios',
         'favorites': 'Favoritos'
       };
@@ -18336,14 +18341,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Saindo (ou voltando) para a tela: a nova solicitação aberta fecha.
     if (window.LovePedidos && window.LovePedidos.fechar) window.LovePedidos.fechar();
     pedidosView?.classList.toggle('hidden', !ehPedidos);
-    document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', !ehPedidos);
+    document.getElementById('btn-rfp-novo')?.classList.add('hidden');
     if (ehPedidos) {
+      // "Criar solicitação" abre direto a Nova solicitação de orçamento.
       document.body.classList.remove('b2b-chat-mode');
       document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
       if (searchBar) searchBar.classList.remove('hidden');
-      if (toolbarTitle) toolbarTitle.textContent = 'Solicitações de orçamento';
       [exploreView, messagesView, contractedView, insuranceView].forEach(v => v?.classList.add('hidden'));
-      if (window.LovePedidos) window.LovePedidos.mostrarLista();
+      if (window.LovePedidos) window.LovePedidos.abrir();
       return;
     }
 
@@ -18373,9 +18378,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (exploreView) exploreView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
-        if (toolbarTitle) toolbarTitle.textContent = 'Meus Contratos';
+        if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
         if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
         renderB2BContracted();
+        mostrarAbaDeContratos(abaDeContratos);
       } else if (viewId === 'insurance') {
         if (exploreView) exploreView.classList.add('hidden');
         if (contractedView) contractedView.classList.add('hidden');
@@ -18404,6 +18410,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  // Contratos › abas Solicitações (pedidos de orçamento criados) e Meus contratos.
+  /** @type {'solicitacoes'|'contratos'} */
+  var abaDeContratos = 'contratos'; // var: switchB2BView pode rodar antes desta linha (rota no F5)
+  /** @param {'solicitacoes'|'contratos'} aba */
+  function mostrarAbaDeContratos(aba) {
+    abaDeContratos = aba;
+    const solicitacoes = aba === 'solicitacoes';
+    document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.contratosAba === aba));
+    document.getElementById('contratos-painel-solicitacoes')?.classList.toggle('hidden', !solicitacoes);
+    document.getElementById('contratos-painel-contratos')?.classList.toggle('hidden', solicitacoes);
+    // Solicitações: no cabeçalho só o "Criar solicitação" (sem a busca de fornecedores).
+    document.getElementById('b2b-toolbar-controls')?.classList.toggle('hidden', solicitacoes);
+    document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', !solicitacoes);
+    if (solicitacoes && window.LovePedidos) window.LovePedidos.mostrarLista();
+  }
+  document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.addEventListener('click', () => {
+    mostrarAbaDeContratos(/** @type {any} */ (/** @type {HTMLElement} */ (b).dataset.contratosAba));
+  }));
+  // Botão do cabeçalho (aba Solicitações) → Criar solicitação.
+  document.getElementById('btn-rfp-novo')?.addEventListener('click', () => {
+    switchB2BView('pedidos');
+    registrarRota(caminhoSubRota('b2b', 'pedidos'));
+  });
+  // Saiu da nova solicitação (Cancelar, seta de voltar ou publicou): vai para
+  // Contratos › Solicitações.
+  window.addEventListener('love:rfp-sair', () => {
+    abaDeContratos = 'solicitacoes';
+    switchB2BView('contracted');
+    registrarRota(caminhoSubRota('b2b', 'contracted'));
+  });
 
   // "R$ 28.500,00" → 28500
   function parseValorBRL(texto) {

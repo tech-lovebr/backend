@@ -10168,3 +10168,29 @@ html body #produtos-titulo-pagina:not(#love-h-a) { min-width: 0; overflow: hidde
 
 /* Tags: o campo de tag nova só aparece depois de clicar em "Outro". */
 html body .produto-tags-nova[hidden]:not(#love-h-a) { display: none; }
+
+/* Produto (criar e editar): Detalhes e Mídia no mesmo padrão de Categoria.
+   - Títulos dos campos (Áreas comuns, Capacidade sentados, Vídeo, ...):
+     14px/700 #18181B, 0.6rem até o campo — igual a "Título do anúncio".
+   - Seções (O que está incluso, Imagem de capa, ...): mesmo título, sem a
+     linha em cima.
+   - Escolhas (Áreas comuns, Dias de funcionamento): mesmo formato das tags.
+   - 24px entre um campo e outro, como na etapa Categoria. */
+html body #product-drawer .field-label:not(#love-h-a),
+html body #product-drawer .form-section-header:not(#love-h-a),
+html body #product-drawer .form-section-header label:not(.product-gallery-nova):not(#love-h-a) {
+  font-size: 0.875rem; font-weight: 700; color: #18181B; letter-spacing: -0.025em; line-height: 1.4;
+}
+html body #product-drawer .field-label:not(#love-h-a) { margin-bottom: 0.6rem; }
+html body #product-drawer .form-section-header:not(#love-h-a) { border-top: none; padding-top: 0; margin-top: 0; margin-bottom: 0.6rem; }
+html body #product-drawer .field-label + .field-hint:not(#love-h-a),
+html body #product-drawer .form-section-header + .field-hint:not(#love-h-a) { margin-top: -0.35rem; }
+html body #product-drawer .product-wizard-panel:not(#love-h-a) { gap: 1.5rem; }
+html body #product-drawer .product-wizard-panel .flex.flex-col.gap-4:not(#love-h-a) { gap: 1.5rem; }
+html body #product-drawer .weekday-toggle-chip:not(#love-h-a) {
+  height: 34px; min-width: 0; padding: 0 0.85rem; border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+  font-family: inherit; font-size: 0.8125rem; font-weight: 500; color: #3F3F46;
+}
+html body #product-drawer .weekday-toggle-chip:hover:not(.active):not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body #product-drawer .weekday-toggle-chip.active:not(#love-h-a) { background: #183b54; border-color: #183b54; color: #FFFFFF; }
+html body #product-drawer .weekday-toggle-row:not(#love-h-a) { gap: 0.5rem; }

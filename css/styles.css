@@ -9948,3 +9948,6 @@ html body .config-btn-desativar:not(#love-h-a):hover { border-color: #181D24; co
 html body .config-evento-organizador:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: nowrap; }
 .config-evento-organizador-quem { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; min-width: 0; }
 .config-evento-organizador em { flex-shrink: 0; }
+
+/* Listas prontas: enquanto a foto (assets/listaN.jpg) não existe, fundo cinza no lugar. */
+img.sem-foto { visibility: visible; background: #F4F4F5; }

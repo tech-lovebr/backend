@@ -7456,7 +7456,7 @@ document.addEventListener('DOMContentLoaded', () => {
       "listas": [
         {
           "nome": "Celebrando o amor",
-          "img": "assets/wedding_sunset_couple.jpg",
+          "img": "assets/lista1.jpg",
           "itens": [
             [
               "Jantar romântico a dois",
@@ -7502,7 +7502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Bodas de papel",
-          "img": "assets/criar-bodas.jpg",
+          "img": "assets/lista2.jpg",
           "itens": [
             [
               "Jantar de 1 ano de casados",
@@ -7548,7 +7548,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Presentes de casamento",
-          "img": "assets/hero_gift.jpg",
+          "img": "assets/lista3.jpg",
           "itens": [
             [
               "Geladeira",
@@ -7594,7 +7594,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Cotas de lua de mel",
-          "img": "assets/criar-casamento.jpg",
+          "img": "assets/lista4.jpg",
           "itens": [
             [
               "Cota de passagem aérea",
@@ -7640,7 +7640,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Open House",
-          "img": "assets/card_bedding.jpg",
+          "img": "assets/lista5.jpg",
           "itens": [
             [
               "Jogo de lençóis 400 fios",
@@ -7702,7 +7702,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Chá de bebê",
-          "img": "assets/criar-cha-de-bebe.jpg",
+          "img": "assets/lista6.jpg",
           "itens": [
             [
               "Fraldas RN (pacote)",
@@ -7756,7 +7756,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Cozinha completa",
-          "img": "assets/card_lecreuset.jpg",
+          "img": "assets/lista7.jpg",
           "itens": [
             [
               "Panela Le Creuset",
@@ -7802,7 +7802,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Chá de panela",
-          "img": "assets/criar-cha-de-panela.jpg",
+          "img": "assets/lista8.jpg",
           "itens": [
             [
               "Jogo de panelas",
@@ -7844,7 +7844,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Aniversário",
-          "img": "assets/criar-aniversario.jpg",
+          "img": "assets/lista9.jpg",
           "itens": [
             [
               "Vale experiência",
@@ -7882,7 +7882,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Festa de 15 anos",
-          "img": "assets/criar-aniversario.jpg",
+          "img": "assets/lista10.jpg",
           "itens": [
             [
               "Vestido da festa",
@@ -7928,7 +7928,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Meu primeiro aninho",
-          "img": "assets/criar-cha-de-bebe.jpg",
+          "img": "assets/lista11.jpg",
           "itens": [
             [
               "Bolo e docinhos da festa",
@@ -7974,7 +7974,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Enxoval de bebê",
-          "img": "assets/criar-revelacao.jpg",
+          "img": "assets/lista12.jpg",
           "itens": [
             [
               "Berço",
@@ -8020,7 +8020,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Formatura",
-          "img": "assets/wedding_table_dinner.jpg",
+          "img": "assets/lista13.jpg",
           "itens": [
             [
               "Anel de formatura",
@@ -8106,7 +8106,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ${LISTAS_PRONTAS.map((secao, s) => secao.listas.map((l, i) => {
             const total = l.itens.reduce((t, it) => t + it[1], 0);
             return `<button type="button" class="lista-pronta-card" data-secao="${s}" data-lista="${i}">
-              <img src="${escaparHtml(l.img)}" alt="" loading="lazy">
+              <img src="${escaparHtml(l.img)}" alt="" loading="lazy" onerror="this.removeAttribute('src');this.classList.add('sem-foto')">
               <span class="lista-pronta-corpo">
                 <strong>${escaparHtml(l.nome)}</strong>
                 <span class="lista-pronta-qtd">${l.itens.length} presentes</span>
@@ -8145,7 +8145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="listas-prontas-grade">
           ${lista.itens.map(([titulo, preco]) => `
             <div class="lista-item-card">
-              <img src="${escaparHtml(lista.img)}" alt="" loading="lazy">
+              <img src="${escaparHtml(lista.img)}" alt="" loading="lazy" onerror="this.removeAttribute('src');this.classList.add('sem-foto')">
               <span class="lista-pronta-corpo">
                 <strong>${escaparHtml(titulo)}</strong>
                 <span class="lista-item-preco">${reaisDaLista(preco)}</span>

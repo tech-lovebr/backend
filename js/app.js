@@ -7456,7 +7456,7 @@ document.addEventListener('DOMContentLoaded', () => {
       "listas": [
         {
           "nome": "Celebrando o amor",
-          "img": "assets/lista1.jpg?v=20261022",
+          "img": "assets/lista1.jpg?v=20261022b",
           "itens": [
             [
               "Jantar romântico a dois",
@@ -7512,7 +7512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Bodas de papel",
-          "img": "assets/lista2.jpg?v=20261022",
+          "img": "assets/lista2.jpg?v=20261022b",
           "itens": [
             [
               "Jantar de 1 ano de casados",
@@ -7568,7 +7568,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Presentes de casamento",
-          "img": "assets/lista3.jpg?v=20261022",
+          "img": "assets/lista3.jpg?v=20261022b",
           "itens": [
             [
               "Geladeira",
@@ -7624,7 +7624,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Cotas de lua de mel",
-          "img": "assets/lista4.jpg?v=20261022",
+          "img": "assets/lista4.jpg?v=20261022b",
           "itens": [
             [
               "Cota de passagem aérea",
@@ -7680,7 +7680,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Open House",
-          "img": "assets/lista5.jpg?v=20261022",
+          "img": "assets/lista5.jpg?v=20261022b",
           "itens": [
             [
               "Jogo de lençóis 400 fios",
@@ -7756,7 +7756,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Chá de bebê",
-          "img": "assets/lista6.jpg?v=20261022",
+          "img": "assets/lista6.jpg?v=20261022b",
           "itens": [
             [
               "Fraldas RN (pacote)",
@@ -7822,7 +7822,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Cozinha completa",
-          "img": "assets/lista7.jpg?v=20261022",
+          "img": "assets/lista7.jpg?v=20261022b",
           "itens": [
             [
               "Panela Le Creuset",
@@ -7878,7 +7878,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Chá de panela",
-          "img": "assets/lista8.jpg?v=20261022",
+          "img": "assets/lista8.jpg?v=20261022b",
           "itens": [
             [
               "Jogo de panelas",
@@ -7929,7 +7929,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Aniversário",
-          "img": "assets/lista9.jpg?v=20261022",
+          "img": "assets/lista9.jpg?v=20261022b",
           "itens": [
             [
               "Vale experiência",
@@ -7975,7 +7975,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Festa de 15 anos",
-          "img": "assets/lista10.jpg?v=20261022",
+          "img": "assets/lista10.jpg?v=20261022b",
           "itens": [
             [
               "Vestido da festa",
@@ -8031,7 +8031,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Meu primeiro aninho",
-          "img": "assets/lista11.jpg?v=20261022",
+          "img": "assets/lista11.jpg?v=20261022b",
           "itens": [
             [
               "Bolo e docinhos da festa",
@@ -8087,7 +8087,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Enxoval de bebê",
-          "img": "assets/lista12.jpg?v=20261022",
+          "img": "assets/lista12.jpg?v=20261022b",
           "itens": [
             [
               "Berço",
@@ -8143,7 +8143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
           "nome": "Formatura",
-          "img": "assets/lista13.jpg?v=20261022",
+          "img": "assets/lista13.jpg?v=20261022b",
           "itens": [
             [
               "Anel de formatura",

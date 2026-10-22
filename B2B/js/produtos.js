@@ -1875,7 +1875,9 @@ function openProductDrawer(id) {
     // O endereço acompanha o que está aberto, para o F5 voltar ao mesmo lugar.
     const idEditando = (document.getElementById('product-form') || {}).dataset?.editId;
     const endereco = aberto ? (editando ? `?editar=${encodeURIComponent(idEditando)}` : '?add=1') : '';
-    if (location.search !== endereco) history.replaceState(null, '', location.pathname + endereco);
+    // Na 1ª chamada (página carregando) não mexe no endereço: é ele que diz
+    // se o produto deve reabrir depois do F5 (?add=1 / ?editar=id).
+    if (jaIniciou && location.search !== endereco) history.replaceState(null, '', location.pathname + endereco);
     document.body.classList.toggle('produto-modo-editar', aberto && editando);
     document.body.classList.toggle('produto-modo-criar', aberto && !editando);
     if (aberto && editando) {
@@ -1889,9 +1891,11 @@ function openProductDrawer(id) {
       document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
     }
   };
+  let jaIniciou = false;
   new MutationObserver(aplicar).observe(editor, { attributes: true, attributeFilter: ['class'] });
   voltar.addEventListener('click', () => document.getElementById('product-drawer-close')?.click());
   aplicar();
+  jaIniciou = true;
 })();
 
 /* Redes sociais do produto: ao clicar no campo, ele já vem com "https://"

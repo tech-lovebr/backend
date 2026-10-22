@@ -10074,3 +10074,8 @@ html body .produto-tags .field-label:not(#love-h-a) { margin-bottom: 0.5rem; }
 
 /* O nome da empresa saiu do topo: o "Olá, {razão social}" do Dashboard já mostra. */
 html body .topbar-account-name:not(#love-h-a), html body a.topbar-account-name:not(#love-h-a) { display: none !important; }
+
+/* Menu do perfil: itens com a mesma letra das abas Saldo/Faturamento do Dashboard (14px, 600). */
+html body #avatar-dropdown .topbar-dropdown-item:not(#love-h-a),
+html body #avatar-dropdown .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #18181B; }
+body[data-theme="dark"] #avatar-dropdown .topbar-dropdown-item, body[data-theme="dark"] #avatar-dropdown .profile-empresa-nome { color: #FFFFFF !important; }

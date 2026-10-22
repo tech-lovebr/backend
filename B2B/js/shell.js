@@ -252,7 +252,7 @@ async function initAuthGuard() {
   // dono_id (migration 066 ainda não rodada), só a principal.
   const uid = session.user.id;
   const { data: listaEmpresas, error: erroEmpresas } = await supabaseClient
-    .from('fornecedores').select('id, company_name, avatar_url, cnpj').eq('dono_id', uid);
+    .from('fornecedores').select('id, company_name, razao_social, avatar_url, cnpj').eq('dono_id', uid);
   const empresas = (!erroEmpresas && listaEmpresas) ? listaEmpresas.slice() : [];
   empresas.sort((a, b) => (a.id === uid ? -1 : b.id === uid ? 1 : String(a.company_name || '').localeCompare(String(b.company_name || ''), 'pt-BR')));
   const escolhida = window.b2bEmpresaId;
@@ -595,18 +595,19 @@ function renderEmpresasNoMenu() {
   const p = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
   let empresas = (window.b2bEmpresas || []).slice();
   if (!empresas.length) empresas = [{ id: ativa, company_name: p.company, avatar_url: p.avatar, cnpj: p.documentNumber }];
-  empresas = empresas.map(e => (e.id === ativa ? { ...e, company_name: p.company || e.company_name, cnpj: e.cnpj || p.documentNumber } : e));
+  empresas = empresas.map(e => (e.id === ativa ? { ...e, company_name: p.company || e.company_name, razao_social: p.razaoSocial || e.razao_social, cnpj: e.cnpj || p.documentNumber } : e));
   const cnpjFormatado = v => {
     const d = String(v || '').replace(/\D/g, '');
     return d.length === 14 && typeof formatDocumentValue === 'function' ? 'CNPJ ' + formatDocumentValue(d, 'cnpj') : '';
   };
   wrap.hidden = false;
-  wrap.innerHTML = `<p class="profile-empresas-titulo">${empresas.length > 1 ? 'Suas empresas' : 'Sua empresa'}</p>` + empresas.map(e => `
+  // Só o nome de cada empresa (razão social; sem ela, o nome fantasia), sem título nem linha antes de "Adicionar empresa".
+  wrap.innerHTML = empresas.map(e => `
     <button type="button" class="profile-empresa-item${e.id === ativa ? ' is-ativa' : ''}" data-empresa-id="${escapeHtml(e.id || '')}">
       <span class="profile-empresa-linha">
-        <span class="profile-empresa-nome">${escapeHtml(e.company_name || 'Empresa')}</span>
+        <span class="profile-empresa-nome">${escapeHtml(e.razao_social || e.company_name || 'Empresa')}</span>
       </span>
-    </button>`).join('') + '<div class="topbar-dropdown-divider"></div>';
+    </button>`).join('');
   wrap.querySelectorAll('[data-empresa-id]').forEach(btn => {
     btn.addEventListener('click', () => trocarEmpresa(btn.dataset.empresaId));
   });

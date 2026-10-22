@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=731">
+  <link rel="stylesheet" href="css/styles.css?v=732">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -85,6 +85,7 @@
             </button>
           </div>
 
+          <h3 class="produto-etapa-titulo" id="produto-etapa-titulo" aria-live="polite"></h3>
           <div class="form-drawer-body">
             <!-- Serviço suspenso pelo Admin (migration 059). -->
             <div class="produto-suspenso-drawer" id="product-suspenso-aviso" hidden></div>
@@ -580,7 +581,8 @@
               <button type="button" id="product-drawer-duplicate-btn" class="btn-secondary" hidden>Duplicar anúncio</button>
               <button type="button" id="product-wizard-back-btn" class="btn-secondary" hidden>Voltar</button>
               <button type="submit" form="product-form" id="product-wizard-submit-btn" class="btn-secondary">Salvar item</button>
-              <button type="button" id="product-wizard-next-btn" class="btn-primary">Próximo</button>
+              <button type="button" id="product-wizard-cancel-btn" class="produto-cancelar" hidden>Cancelar</button>
+              <button type="button" id="product-wizard-next-btn" class="btn-primary">Continuar</button>
             </div>
             <div id="product-wizard-footer-confirm-delete" class="product-wizard-footer-row" hidden>
               <span class="product-wizard-confirm-text">Tem certeza que deseja excluir?</span>
@@ -635,6 +637,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=56"></script>
-  <script src="js/produtos.js?v=43"></script>
+  <script src="js/produtos.js?v=44"></script>
 </body>
 </html>

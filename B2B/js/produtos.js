@@ -736,7 +736,7 @@ function renderGalleryImages() {
       <span class="image-upload-zone-text">Adicionar</span>
       <input type="file" accept="image/*" multiple class="image-upload-zone-input" id="product-gallery-input">
     </label>
-  `) + (cheio ? '' : Array.from({ length: PRODUCT_GALLERY_MAX - currentGalleryImages.length - 1 }, () => `
+  `) + (cheio ? '' : Array.from({ length: Math.max(0, 4 - currentGalleryImages.length) }, () => `
     <label class="product-gallery-vaga" for="product-gallery-input" title="Adicionar imagem" aria-hidden="true"></label>
   `).join(''));
   // Quadradinhos vazios ao lado do "Adicionar": mostram que cabem várias
@@ -1240,9 +1240,24 @@ function goToStep(n) {
   // à direita. Salvar fica disponível em qualquer aba (o submit valida
   // Categoria e Preço e leva pra aba que faltar).
   const ultima = n === 3;
-  setPanelHidden('product-wizard-back-btn', !ultima);
-  setPanelHidden('product-wizard-next-btn', ultima);
-  setPanelHidden('product-wizard-submit-btn', false);
+  const criando = !document.getElementById('product-form')?.dataset.editId;
+  if (criando) {
+    // Criando: uma etapa de cada vez. 1: Cancelar + Continuar; 2: Voltar +
+    // Continuar; 3: Voltar + Salvar produto.
+    setPanelHidden('product-wizard-cancel-btn', n !== 1);
+    setPanelHidden('product-wizard-back-btn', n === 1);
+    setPanelHidden('product-wizard-next-btn', ultima);
+    setPanelHidden('product-wizard-submit-btn', !ultima);
+  } else {
+    setPanelHidden('product-wizard-cancel-btn', true);
+    setPanelHidden('product-wizard-back-btn', !ultima);
+    setPanelHidden('product-wizard-next-btn', ultima);
+    setPanelHidden('product-wizard-submit-btn', false);
+  }
+  const tituloEtapa = document.getElementById('produto-etapa-titulo');
+  if (tituloEtapa) tituloEtapa.textContent = ({ 1: 'Qual produto ou serviço você vai anunciar?', 2: 'Conte os detalhes do que você oferece', 3: 'Mostre o seu trabalho' })[n] || '';
+  const salvarTexto = document.getElementById('product-wizard-submit-btn');
+  if (salvarTexto) salvarTexto.textContent = criando ? 'Salvar produto' : 'Salvar item';
   const salvarBtn = document.getElementById('product-wizard-submit-btn');
   if (salvarBtn) {
     salvarBtn.classList.toggle('btn-primary', ultima);
@@ -1499,11 +1514,18 @@ function initProductDrawer() {
     });
   });
 
+  document.getElementById('product-wizard-cancel-btn')?.addEventListener('click', () => {
+    document.getElementById('product-drawer-close')?.click();
+  });
   document.getElementById('product-wizard-back-btn').addEventListener('click', () => {
     if (currentStep > 1) goToStep(currentStep - 1);
   });
   document.querySelectorAll('#product-wizard-steps [data-step-indicator]').forEach(tab => {
-    tab.addEventListener('click', () => goToStep(Number(tab.dataset.stepIndicator)));
+    tab.addEventListener('click', () => {
+      // Criando, as etapas vão em sequência (Continuar); só editando dá para pular.
+      if (!document.getElementById('product-form')?.dataset.editId) return;
+      goToStep(Number(tab.dataset.stepIndicator));
+    });
   });
   document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
     // Aba 1 (Categoria) também tem a unidade de cobrança.
@@ -1832,6 +1854,14 @@ function openProductDrawer(id) {
     voltar.hidden = !aberto;
     const editando = !!(document.getElementById('product-form') || {}).dataset?.editId;
     titulo.textContent = aberto ? (editando ? 'Editar produto' : 'Adicionar novo produto') : 'Meus produtos';
+    document.body.classList.toggle('produto-modo-editar', aberto && editando);
+    document.body.classList.toggle('produto-modo-criar', aberto && !editando);
+    if (aberto && editando) {
+      const main = document.querySelector('.b2b-main');
+      const cab = document.querySelector('.b2b-header-bar');
+      if (main && cab) main.style.setProperty('--produto-lateral-topo', `${Math.round(cab.getBoundingClientRect().bottom - main.getBoundingClientRect().top)}px`);
+    }
+    if (aberto && typeof goToStep === 'function' && typeof currentStep !== 'undefined') goToStep(currentStep);
     if (aberto) {
       window.scrollTo({ top: 0 });
       document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
@@ -1841,3 +1871,16 @@ function openProductDrawer(id) {
   voltar.addEventListener('click', () => document.getElementById('product-drawer-close')?.click());
   aplicar();
 })();
+
+/* Redes sociais do produto: ao clicar no campo, ele já vem com "https://"
+   para a pessoa só completar o link; se sair sem digitar nada, limpa. */
+document.querySelectorAll('[id^="product-social-"]').forEach(input => {
+  if (input.tagName !== 'INPUT') return;
+  input.addEventListener('focus', () => {
+    if (!input.value.trim()) {
+      input.value = 'https://';
+      requestAnimationFrame(() => input.setSelectionRange(input.value.length, input.value.length));
+    }
+  });
+  input.addEventListener('blur', () => { if (input.value.trim() === 'https://') input.value = ''; });
+});

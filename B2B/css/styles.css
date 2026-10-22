@@ -9972,3 +9972,47 @@ html body .settings-salvar-topo[hidden]:not(#love-h-a) { display: none !importan
    prende à área do Hub e vira o 2º menu lateral de verdade. */
 html body.produto-editor-aberto #product-drawer .form-drawer-header:not(#love-h-a),
 html body.produto-editor-aberto #product-drawer .form-drawer-header-main:not(#love-h-a) { position: static; }
+
+/* ==========================================================================
+   Produto: criar × editar.
+   - Criando: uma etapa de cada vez, sem menu lateral. Título grande da etapa
+     à esquerda e a caixa à direita; Cancelar/Voltar e Continuar fora da
+     caixa, embaixo à direita (modelo da 1ª imagem).
+   - Editando: o cabeçalho vai de ponta a ponta e o menu lateral (Categoria,
+     Detalhes, Mídia, sem o título "Etapas") começa logo abaixo dele.
+   ========================================================================== */
+html body.produto-editor-aberto[data-page="produtos"] .b2b-content:not(#love-h-a) { margin-left: 0; }
+html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a)::before { display: none; content: none; }
+
+/* Criando */
+html body.produto-modo-criar #product-drawer .form-drawer-header:not(#love-h-a) { display: none; }
+html body.produto-modo-criar #product-drawer.show:not(#love-h-a) {
+  display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); column-gap: 3rem; align-items: start; max-width: 1040px;
+}
+html body.produto-modo-criar #produto-etapa-titulo:not(#love-h-a) {
+  grid-column: 1; grid-row: 1 / span 2; margin: 0.25rem 0 0; font-size: 2rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.03em; color: #18181B;
+}
+html body.produto-modo-criar #product-drawer .form-drawer-body:not(#love-h-a) { grid-column: 2; grid-row: 1; border: 1px solid #E4E4E7; border-radius: 10px; }
+html body.produto-modo-criar #product-drawer .product-wizard-footer:not(#love-h-a) {
+  grid-column: 2; grid-row: 2; padding: 1.25rem 0 0; background: transparent; border: none; border-radius: 0;
+}
+html body.produto-modo-criar #product-wizard-footer-default:not(#love-h-a) { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; }
+html body.produto-modo-criar #product-wizard-footer-default > button:not([hidden]):not(#love-h-a) { flex: 0 0 auto; min-width: 120px; height: 44px; }
+html body .produto-cancelar:not(#love-h-a) { border: none; background: none; padding: 0 0.5rem; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; min-width: 0 !important; }
+html body .produto-cancelar:hover:not(#love-h-a) { color: #181D24; }
+html body .produto-cancelar[hidden]:not(#love-h-a) { display: none; }
+html body:not(.produto-modo-criar) #produto-etapa-titulo:not(#love-h-a) { display: none; }
+@media (max-width: 900px) {
+  html body.produto-modo-criar #product-drawer.show:not(#love-h-a) { display: flex; flex-direction: column; }
+  html body.produto-modo-criar #produto-etapa-titulo:not(#love-h-a) { font-size: 1.5rem; margin-bottom: 1rem; }
+}
+
+/* Editando */
+html body.produto-modo-editar #product-drawer .product-wizard-tabs:not(#love-h-a) { top: var(--produto-lateral-topo, 148px); padding-top: 16px; }
+html body.produto-modo-editar #product-drawer.show:not(#love-h-a) {
+  margin-left: max(calc(240px - var(--b2b-content-pad-x) + 2rem), calc((100% - 720px) / 2)); margin-right: auto;
+}
+
+/* Mídia: 5 quadradinhos numa linha só. */
+html body #product-gallery-list.product-gallery-strip:not(#love-h-a) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (max-width: 640px) { html body #product-gallery-list.product-gallery-strip:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

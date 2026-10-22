@@ -382,7 +382,7 @@
     const cat = categoriaPorId(dados.categoria);
     return `
       <label class="rfp-cat-rotulo" for="rfp-titulo">Título</label>
-      <input type="text" id="rfp-titulo" class="rfp-campo rfp-campo-titulo" data-rfp-input="titulo" value="${esc(dados.titulo)}" maxlength="120" placeholder="Ex.: Preciso de um sítio para a festa" autocomplete="off">
+      <input type="text" id="rfp-titulo" class="rfp-campo rfp-campo-titulo" data-rfp-input="titulo" value="${esc(dados.titulo)}" maxlength="120" autocomplete="off">
       ${erroHtml('titulo')}
       <label class="rfp-cat-rotulo rfp-cat-rotulo-categoria">Categoria</label>
       <div class="rfp-cat-select${categoriaAberta ? ' is-open' : ''}">

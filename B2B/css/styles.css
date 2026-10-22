@@ -10016,3 +10016,11 @@ html body.produto-modo-editar #product-drawer.show:not(#love-h-a) {
 /* Mídia: 5 quadradinhos numa linha só. */
 html body #product-gallery-list.product-gallery-strip:not(#love-h-a) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 @media (max-width: 640px) { html body #product-gallery-list.product-gallery-strip:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Editar produto: a caixa fica centralizada no espaço à direita do menu
+   lateral (como em Configurações), em vez de encostada nele. */
+html body.produto-modo-editar #product-drawer.show:not(#love-h-a) {
+  max-width: none; width: auto; margin-left: calc(240px - var(--b2b-content-pad-x)); margin-right: 0;
+}
+html body.produto-modo-editar #product-drawer .form-drawer-body:not(#love-h-a),
+html body.produto-modo-editar #product-drawer .product-wizard-footer:not(#love-h-a) { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }

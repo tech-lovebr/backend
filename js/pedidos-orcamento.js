@@ -94,7 +94,7 @@
   const ETAPAS = ['Tipo de serviço', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
   // Título grande e subtítulo de cada etapa (à esquerda da caixa, como em Adicionar novo produto do Hub).
   const TEXTOS_DAS_ETAPAS = [
-    { titulo: 'Qual tipo de serviço você procura?', sub: 'Escolha a categoria e, se quiser, marque as especialidades que fazem diferença para você.' },
+    { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha a categoria e, se quiser, marque as especialidades que fazem diferença para você.' },
     { titulo: 'Conte sobre o seu evento', sub: 'Tipo de celebração, data, local, número de convidados e horário.' },
     { titulo: 'Qual é o seu orçamento?', sub: 'Escolha a faixa de preço e descreva o que você precisa, com fotos de referência se quiser.' },
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
@@ -126,6 +126,7 @@
   /** @type {RfpFormData} */
   let dados = rascunhoVazio();
   let etapa = 1;
+  let categoriaAberta = false; // drop-down de Categoria (etapa 1) aberto
   /** @type {Record<string, string>} */
   let erros = {};
   let publicando = false;
@@ -203,7 +204,6 @@
     m.dataset.montado = '1';
     m.innerHTML = `
       <div class="rfp-intro">
-        <p class="rfp-etapa-num" id="rfp-etapa-num"></p>
         <h3 class="rfp-etapa-titulo" id="rfp-etapa-titulo" aria-live="polite"></h3>
         <p class="rfp-etapa-sub" id="rfp-etapa-sub"></p>
       </div>
@@ -222,12 +222,21 @@
       const alvo = /** @type {HTMLElement} */ (e.target);
       if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? fechar() : irPara(etapa - 1, -1);
       if (alvo.closest('[data-rfp-avancar]')) return avancar();
+      if (alvo.closest('[data-rfp-cat-gatilho]')) { categoriaAberta = !categoriaAberta; return desenhar(0); }
       const opcao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-campo]'));
       if (opcao && opcao.dataset.rfpValor !== undefined) return escolher(opcao.dataset.rfpCampo || '', opcao.dataset.rfpValor || '');
       const tag = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-tag]'));
       if (tag) return alternarTag(tag.dataset.rfpTag || '');
       const tirar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-tirar-foto]'));
       if (tirar) return tirarFoto(Number(tirar.dataset.rfpTirarFoto));
+    });
+    document.addEventListener('click', (e) => {
+      if (!categoriaAberta) return;
+      if (/** @type {HTMLElement} */ (e.target).closest('.rfp-cat-select')) return;
+      categoriaAberta = false; desenhar(0);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && categoriaAberta) { categoriaAberta = false; desenhar(0); }
     });
     m.addEventListener('input', aoDigitar);
     m.addEventListener('change', aoDigitar);
@@ -297,10 +306,8 @@
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
     const textos = TEXTOS_DAS_ETAPAS[etapa - 1];
-    const num = document.getElementById('rfp-etapa-num');
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
-    if (num) num.textContent = `Etapa ${etapa} de ${ETAPAS.length} · ${ETAPAS[etapa - 1]}`;
     if (titulo) titulo.textContent = textos.titulo;
     if (sub) sub.textContent = textos.sub;
 
@@ -331,15 +338,16 @@
   function htmlEtapa1() {
     const cat = categoriaPorId(dados.categoria);
     return `
-      <div class="rfp-categorias" role="radiogroup">
-        ${CATEGORIAS.map(c => `
-          <button type="button" class="rfp-categoria${c.id === dados.categoria ? ' ativa' : ''}" role="radio" aria-checked="${c.id === dados.categoria}" aria-label="${esc(c.nome)}" data-rfp-campo="categoria" data-rfp-valor="${c.id}">
-            <span class="rfp-categoria-foto">
-              <img src="${fotoDaCategoria(c.id)}" alt="" onerror="this.parentElement.classList.add('sem-foto');this.remove();">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.icone}</svg>
-            </span>
-            <span class="rfp-categoria-nome">${esc(c.nome)}</span>
-          </button>`).join('')}
+      <label class="rfp-cat-rotulo">Categoria</label>
+      <div class="rfp-cat-select${categoriaAberta ? ' is-open' : ''}">
+        <button type="button" class="rfp-cat-gatilho" data-rfp-cat-gatilho aria-haspopup="listbox" aria-expanded="${categoriaAberta}">
+          <span class="${cat ? '' : 'rfp-cat-vazio'}">${esc(cat ? cat.nome : 'Selecione a categoria...')}</span>
+          <svg class="rfp-cat-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+        </button>
+        ${categoriaAberta ? `
+          <div class="rfp-cat-painel" role="listbox">
+            ${CATEGORIAS.map(c => `<button type="button" class="rfp-cat-opcao${c.id === dados.categoria ? ' ativa' : ''}" role="option" aria-selected="${c.id === dados.categoria}" data-rfp-campo="categoria" data-rfp-valor="${c.id}">${esc(c.nome)}</button>`).join('')}
+          </div>` : ''}
       </div>
       ${erroHtml('categoria')}
       ${cat ? `
@@ -487,7 +495,7 @@
     const d = /** @type {any} */ (dados);
     if (campo === 'limitePropostas') d.limitePropostas = valor === '' ? null : Number(valor);
     else d[campo] = valor;
-    if (campo === 'categoria') dados.especialidades = [];
+    if (campo === 'categoria') { dados.especialidades = []; categoriaAberta = false; }
     if (campo === 'periodo' && valor !== 'horas') dados.horasServico = null;
     delete erros[campo];
     desenhar(0);

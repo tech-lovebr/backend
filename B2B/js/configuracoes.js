@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   initSettingsTabs();
   await carregarLiberacoes();
-  await carregarDatasDeAlteracao();
   initProfileForm();
   initCompanyForm();
   initPasswordForm();
@@ -31,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSubscriptionModal();
   initBankDetailsForm();
   initAccordionCards();
-  initRequestChangeLinks();
   window.b2bPageReady?.();
 });
 
@@ -123,7 +121,7 @@ function initProfileForm() {
 
   document.getElementById('profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const antes = { company: p.company, documentNumber: p.documentNumber, documentType: p.documentType };
+    const antes = { company: p.company, razaoSocial: p.razaoSocial, documentNumber: p.documentNumber, documentType: p.documentType };
     const company = document.getElementById('profile-company').value.trim();
     const name = document.getElementById('profile-name').value.trim();
     const phone = document.getElementById('profile-phone').value.trim();
@@ -146,29 +144,27 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     const erroBanco = await salvarPerfilNoBanco(p);
-    // Nome da empresa / documento alterados há menos de 7 dias: o banco
-    // recusa (migration 064) e o valor anterior volta.
+    // Razão social / documento já preenchidos: o banco recusa a troca (migration 077)
+    // e o valor anterior volta.
     if (erroBanco && /ALTERACAO_BLOQUEADA/.test(erroBanco.message || '')) {
       Object.assign(p, antes);
       document.getElementById('profile-company').value = p.company || '';
+      document.getElementById('profile-razao-social').value = p.razaoSocial || '';
       document.getElementById('profile-document').value = p.documentNumber || '';
       lockConfiguredFields(p);
-      showToast('Por segurança, só é possível alterar o nome e o documento a cada 7 dias.', true);
+      showToast('A razão social e o CNPJ não podem ser alterados depois de preenchidos.', true);
       return;
     }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
-    const agora = new Date().toISOString();
     if (antes.company && antes.company !== p.company) {
-      ALTERADO_EM.company = agora;
       // A URL do site acompanha o nome da empresa.
       if (typeof atualizarUrlDoSitePeloNome === 'function') {
         atualizarUrlDoSitePeloNome(p.company).then(slug => { if (slug) showToast(`URL do site atualizada: ${slug}`); });
       }
     }
-    if (antes.documentNumber && (antes.documentNumber !== p.documentNumber || antes.documentType !== p.documentType)) ALTERADO_EM.documento = agora;
 
     // Liberação concedida pelo Admin vale uma edição: gastou, trava de novo.
-    consumirLiberacoes(['company', 'documento']).then(() => lockConfiguredFields(p));
+    consumirLiberacoes(['razao_social', 'documento']).then(() => lockConfiguredFields(p));
 
     lockConfiguredFields(p);
     showToast('Perfil atualizado.');
@@ -248,85 +244,27 @@ async function consumirLiberacoes(campos) {
   LIBERACOES = LIBERACOES.filter(l => !campos.includes(l.campo));
 }
 
+/* Razão social e CNPJ/CPF: depois de preenchidos, ficam travados (sem
+   "Alterar"); só o Admin consegue liberar. O nome fantasia muda à vontade.
+   O banco garante a mesma regra (migration 077). */
 function lockConfiguredFields(p) {
-  const companyInput = document.getElementById('profile-company');
+  const razaoInput = document.getElementById('profile-razao-social');
   const documentInput = document.getElementById('profile-document');
-  const companyRequestChange = document.getElementById('profile-company-request-change');
-  const documentRequestChange = document.getElementById('profile-document-request-change');
 
-  if (p.company && !liberado('company')) {
-    companyInput.readOnly = true;
-    companyInput.classList.add('field-locked');
-    companyRequestChange.hidden = false;
+  if (p.razaoSocial && razaoInput && !liberado('razao_social')) {
+    razaoInput.readOnly = true;
+    razaoInput.classList.add('field-locked');
   }
 
   if (p.documentNumber && !liberado('documento')) {
     documentInput.readOnly = true;
     documentInput.classList.add('field-locked');
-    documentRequestChange.hidden = false;
     document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
       btn.disabled = true;
     });
   }
 }
 
-/* "Alterar" (nome da empresa e CNPJ/CPF): libera o campo na hora, sem
-   passar pelo Admin. Regra: depois de uma alteração, só dá para mudar de
-   novo 7 dias depois (garantida no banco — migration 064). Antes disso,
-   clicar em "Alterar" mostra o aviso logo acima da caixa. */
-const PRAZO_ALTERACAO_MS = 7 * 24 * 60 * 60 * 1000;
-const ALTERADO_EM = { company: null, documento: null };
-
-async function carregarDatasDeAlteracao() {
-  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
-  if (!session) return;
-  const { data, error } = await supabaseClient.from('fornecedores')
-    .select('company_alterado_em, documento_alterado_em').eq('id', empresaId(session)).maybeSingle();
-  if (error || !data) return;
-  ALTERADO_EM.company = data.company_alterado_em || null;
-  ALTERADO_EM.documento = data.documento_alterado_em || null;
-}
-
-function diasParaAlterarDeNovo(campo) {
-  const quando = ALTERADO_EM[campo];
-  if (!quando) return 0;
-  const falta = new Date(quando).getTime() + PRAZO_ALTERACAO_MS - Date.now();
-  return falta > 0 ? Math.ceil(falta / (24 * 60 * 60 * 1000)) : 0;
-}
-
-function initRequestChangeLinks() {
-  const campos = [
-    { campo: 'company', link: 'profile-company-request-change', input: 'profile-company' },
-    { campo: 'documento', link: 'profile-document-request-change', input: 'profile-document' }
-  ];
-
-  campos.forEach(({ campo, link, input }) => {
-    const el = document.getElementById(link);
-    if (!el) return;
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      const caixa = el.closest('.field-with-inline-link');
-      caixa.parentElement.querySelector('.campo-aviso-alteracao')?.remove();
-
-      const dias = diasParaAlterarDeNovo(campo);
-      if (dias > 0) {
-        const oQue = campo === 'company' ? 'o nome' : (B2B_DATA.professional.documentType === 'cpf' ? 'o CPF' : 'o CNPJ');
-        caixa.insertAdjacentHTML('beforebegin', `<p class="campo-aviso-alteracao">Por segurança, só é possível alterar ${oQue} a cada 7 dias.</p>`);
-        return;
-      }
-
-      const campoInput = document.getElementById(input);
-      campoInput.readOnly = false;
-      campoInput.classList.remove('field-locked');
-      el.hidden = true;
-      if (campo === 'documento') {
-        document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => { btn.disabled = false; });
-      }
-      campoInput.focus();
-      campoInput.select?.();
-    });
-  });
-}
 
 /* -------------------- Minha Empresa -------------------- */
 

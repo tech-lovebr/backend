@@ -82,16 +82,16 @@
                 <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
               </div>
               <!-- Razão social: o nome exato do CNPJ. Aparece no "Olá" do Dashboard.
-                   Nome fantasia (abaixo) é o que os clientes veem. -->
+                   Razão social e CNPJ, depois de preenchidos, não mudam mais;
+                   só o nome fantasia (abaixo, o que os clientes veem) muda. -->
               <div>
                 <label for="profile-razao-social" class="field-label">Razão social</label>
-                <input id="profile-razao-social" type="text" class="field-input" placeholder="Nome exato que está no CNPJ" autocomplete="organization">
+                <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
               </div>
               <div>
                 <label for="profile-company" class="field-label">Nome fantasia <span style="color:#DC2626;">*</span></label>
                 <div class="field-with-inline-link">
                   <input id="profile-company" type="text" class="field-input">
-                  <a href="#" class="field-request-change-link" id="profile-company-request-change" hidden>Alterar</a>
                 </div>
               </div>
               <!-- Tipo de documento à esquerda e o campo ao lado; só o nome em
@@ -112,7 +112,6 @@
                   <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
                   <div class="field-with-inline-link">
                     <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
-                    <a href="#" class="field-request-change-link" id="profile-document-request-change" hidden>Alterar</a>
                   </div>
                 </div>
               </div>
@@ -570,7 +569,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=58"></script>
-  <script src="js/configuracoes.js?v=64"></script>
+  <script src="js/configuracoes.js?v=65"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

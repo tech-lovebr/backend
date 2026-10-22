@@ -10212,3 +10212,5 @@ html body .rfp-exemplos ul:not(#love-h-a) { margin: 0; padding-left: 1.1rem; lis
 html body .rfp-exemplos li:not(#love-h-a) { font-size: 0.875rem; line-height: 1.5; color: #52525B; }
 body[data-theme="dark"] .rfp-exemplos-titulo { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-exemplos li { color: #A1A1AA !important; }
+/* "Exemplos de título" em negrito (outra regra do .rfp-intro p zerava o peso). */
+html body #rfp-editor .rfp-intro p.rfp-exemplos-titulo:not(#love-h-a) { font-weight: 700 !important; }

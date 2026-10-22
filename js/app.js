@@ -8322,15 +8322,17 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="lista-detalhe">
         <div class="lista-detalhe-topo">
           <p class="lista-detalhe-resumo">${lista.itens.length} presentes <span aria-hidden="true">·</span> Total da lista: <b>${reaisDaLista(total)}</b></p>
-          <button type="button" class="lista-selecionar" data-adicionar-lista>Selecionar esta lista</button>
+          <button type="button" class="lista-selecionar" data-adicionar-lista>Adicionar lista completa</button>
         </div>
         <div class="listas-prontas-grade">
-          ${lista.itens.map(([titulo, preco, foto]) => `
+          ${lista.itens.map(([titulo, preco, foto], i) => `
             <div class="lista-item-card">
               <img src="${escaparHtml(foto || lista.img)}" alt="" loading="lazy" onerror="this.removeAttribute('src');this.classList.add('sem-foto')">
               <span class="lista-pronta-corpo">
                 <strong>${escaparHtml(titulo)}</strong>
                 <span class="lista-item-preco">${reaisDaLista(preco)}</span>
+                <button type="button" class="lista-item-adicionar" data-adicionar-item="${i}">Adicionar este presente</button>
+                <span class="lista-item-erro" hidden></span>
               </span>
             </div>`).join('')}
         </div>
@@ -8338,6 +8340,44 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarCaminhoDaLista(lista.nome);
     document.getElementById('dashboard-main-area')?.scrollTo({ top: 0 });
     window.scrollTo({ top: 0 });
+  }
+
+  /**
+   * Presente de uma lista pronta no formato de Meus presentes.
+   * @param {{ nome: string, img: string }} lista @param {[string, number, string?]} item
+   */
+  function presenteDaListaPronta(lista, [titulo, preco, foto]) {
+    return {
+      id: `gift-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+      title: titulo, description: '', category: lista.nome, listaNome: lista.nome, price: preco, type: 'virtual',
+      marketplaceUrl: null, received: 0, status: 'Disponível para Presentear', image: foto || lista.img,
+      contributorsCount: 0, isCrowdfunding: false, crowdfundingConfig: null, categoryTag: null
+    };
+  }
+
+  /** "Adicionar este presente": só um presente da lista aberta, sem perguntar. @param {HTMLButtonElement} botao */
+  async function adicionarPresenteDaLista(botao) {
+    const ev = getActiveEvent();
+    const lista = listaProntaAberta;
+    const item = lista && lista.itens[Number(botao.dataset.adicionarItem)];
+    if (!ev || !lista || !item || botao.disabled) return;
+    const erro = /** @type {HTMLElement|null} */ (botao.parentElement?.querySelector('.lista-item-erro') || null);
+    if (erro) erro.hidden = true;
+    botao.disabled = true;
+    botao.textContent = 'Adicionando…';
+    const presente = presenteDaListaPronta(lista, item);
+    const { error } = await salvarPresenteNoBanco(presente).catch(err => ({ error: err }));
+    if (error) {
+      botao.disabled = false;
+      botao.textContent = 'Adicionar este presente';
+      if (erro) { erro.textContent = 'Não foi possível adicionar agora. Tente de novo.'; erro.hidden = false; }
+      return;
+    }
+    if (!ev.giftList) ev.giftList = [];
+    ev.giftList.push(presente);
+    botao.textContent = 'Adicionado';
+    botao.classList.add('is-adicionado');
+    updateAllCelebrationData();
   }
 
   /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number, string?][] }} lista */
@@ -8348,16 +8388,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const ok = await confirmarNaLove({
       titulo: `Adicionar a lista "${lista.nome}"?`,
       texto: `${lista.itens.length} presentes, somando ${reaisDaLista(total)}, entram em Meus presentes. Depois dá para editar ou remover cada um.`,
-      botao: 'Adicionar lista',
+      botao: 'Adicionar lista completa',
       aoConfirmar: async () => {
         if (!ev.giftList) ev.giftList = [];
-        for (const [titulo, preco, foto] of lista.itens) {
-          const presente = {
-            id: `gift-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
-            title: titulo, description: '', category: lista.nome, listaNome: lista.nome, price: preco, type: 'virtual',
-            marketplaceUrl: null, received: 0, status: 'Disponível para Presentear', image: foto || lista.img,
-            contributorsCount: 0, isCrowdfunding: false, crowdfundingConfig: null, categoryTag: null
-          };
+        for (const item of lista.itens) {
+          const presente = presenteDaListaPronta(lista, item);
           const { error } = await salvarPresenteNoBanco(presente).catch(err => ({ error: err }));
           if (error) return 'Não foi possível adicionar todos os presentes agora. Tente de novo.';
           ev.giftList.push(presente);
@@ -8523,6 +8558,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (alvo.closest('[data-voltar-presentes]')) { irParaListasProntas(false); return; }
     if (alvo.closest('[data-criar-presente]')) { openGiftDrawer(); return; }
     if (alvo.closest('[data-adicionar-lista]')) { if (listaProntaAberta) adicionarListaPronta(listaProntaAberta); return; }
+    const umPresente = /** @type {HTMLButtonElement|null} */ (alvo.closest('[data-adicionar-item]'));
+    if (umPresente) { adicionarPresenteDaLista(umPresente); return; }
     const card = /** @type {HTMLElement|null} */ (alvo.closest('.lista-pronta-card'));
     if (!card) return;
     const lista = LISTAS_PRONTAS[Number(card.dataset.secao)]?.listas[Number(card.dataset.lista)];

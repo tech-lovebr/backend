@@ -10102,3 +10102,9 @@ body[data-theme="dark"] .rfp-cat-gatilho { background: #333333 !important; borde
 body[data-theme="dark"] .rfp-cat-painel { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .rfp-cat-opcao { background: #252525 !important; color: #D4D4D8 !important; border-bottom-color: #404040 !important; }
 body[data-theme="dark"] .rfp-cat-opcao.ativa { background: #333333 !important; color: #FFFFFF !important; }
+
+/* Co-anfitriões › convite: Cancelar e Enviar convite à direita (Enviar por último). */
+html body .org-convite-acoes:not(#love-h-a) { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; padding-top: 0.25rem; }
+html body .org-convite-cancelar:not(#love-h-a) { background: transparent; border: 0; padding: 0 0.25rem; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; }
+html body .org-convite-cancelar:not(#love-h-a):hover { color: #181D24; }
+body[data-theme="dark"] .org-convite-cancelar { color: #D4D4D8 !important; }

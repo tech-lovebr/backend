@@ -7165,12 +7165,26 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { avisar('Digite um e-mail válido.', true); return false; }
       feedback?.classList.add('hidden');
       emailLabel.textContent = email;
-      if (!areasBox.children.length) areasBox.innerHTML = checklistDeAreasHtml('host-invite-area');
+      if (!areasBox.children.length) {
+        // "Acesso total" primeiro: marca (ou desmarca) todas as funções de uma vez.
+        areasBox.innerHTML = `
+      <label class="org-acesso-total flex items-center gap-2 text-xs text-zinc-700 cursor-pointer select-none">
+        <input type="checkbox" class="gifts-select-all-check host-invite-total">
+        <span>Acesso total</span>
+      </label>` + checklistDeAreasHtml('host-invite-area');
+      }
       passo2.classList.remove('hidden');
       return true;
     };
 
     inputEmail.addEventListener('input', () => { if (!passo2.classList.contains('hidden')) emailLabel.textContent = inputEmail.value.trim(); });
+    areasBox.addEventListener('change', (e) => {
+      const alvo = /** @type {HTMLInputElement} */ (e.target);
+      const areas = /** @type {HTMLInputElement[]} */ (Array.from(areasBox.querySelectorAll('.host-invite-area')));
+      const total = /** @type {HTMLInputElement|null} */ (areasBox.querySelector('.host-invite-total'));
+      if (alvo.classList.contains('host-invite-total')) areas.forEach(c => { c.checked = alvo.checked; });
+      else if (total) total.checked = areas.length > 0 && areas.every(c => c.checked);
+    });
     // "Continuar" ao lado do e-mail: abre as funções (o mesmo que dar Enter).
     document.getElementById('btn-continuar-host-invite')?.addEventListener('click', () => {
       if (abrirPasso2()) passo2.querySelector('input')?.focus();

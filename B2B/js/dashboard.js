@@ -607,9 +607,11 @@ function renderGreeting() {
 }
 
 /* -------------------- Saldo total --------------------
-   Valor grande do saldo (créditos − débitos da carteira) e o gráfico do
-   saldo dia a dia nos últimos 30 dias. Sem nenhuma movimentação, mostra uma
-   linha cinza de exemplo (subindo devagar), como no modelo. */
+   Valor grande do saldo (créditos − débitos da carteira) e, embaixo, o
+   gráfico do faturamento de cada dia nos últimos 30 dias. Passando o mouse
+   (ou o dedo), o ponto do dia aparece no topo da linha com a data e quanto
+   foi faturado. Sem nenhuma movimentação, mostra uma linha cinza de exemplo,
+   sem valores. */
 async function renderSaldoTotal() {
   const valorEl = document.getElementById('dash-saldo-total-valor');
   const grafico = document.getElementById('dash-saldo-total-grafico');
@@ -621,24 +623,29 @@ async function renderSaldoTotal() {
     transacoes = data || [];
   }
   const sinal = t => (t.type === 'credit' ? 1 : -1) * Number(t.amount || 0);
-  const saldo = transacoes.reduce((soma, t) => soma + sinal(t), 0);
-  valorEl.textContent = formatCurrency(saldo);
+  valorEl.textContent = formatCurrency(transacoes.reduce((soma, t) => soma + sinal(t), 0));
+
+  // Faturamento (créditos) de cada um dos últimos 30 dias.
+  const DIA = 24 * 60 * 60 * 1000;
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const dias = [];
+  for (let i = 29; i >= 0; i--) {
+    const inicio = new Date(hoje.getTime() - i * DIA);
+    const fim = inicio.getTime() + DIA;
+    const valor = transacoes
+      .filter(t => t.type === 'credit')
+      .filter(t => { const x = new Date(t.created_at).getTime(); return x >= inicio.getTime() && x < fim; })
+      .reduce((soma, t) => soma + Number(t.amount || 0), 0);
+    dias.push({ data: inicio, valor });
+  }
+  const temFaturamento = dias.some(d => d.valor > 0);
 
   let pontos;
-  if (!transacoes.length) {
+  if (!temFaturamento) {
     pontos = [0.38, 0.45, 0.42, 0.5, 0.48, 0.57, 0.54, 0.51, 0.6, 0.57, 0.64, 0.62, 0.6, 0.67, 0.65, 0.71, 0.68, 0.67, 0.73, 0.7, 0.76, 0.75, 0.73, 0.78];
   } else {
-    const DIA = 24 * 60 * 60 * 1000;
-    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-    const valores = [];
-    for (let i = 29; i >= 0; i--) {
-      const fimDoDia = hoje.getTime() - i * DIA + DIA;
-      valores.push(transacoes.filter(t => new Date(t.created_at).getTime() < fimDoDia).reduce((soma, t) => soma + sinal(t), 0));
-    }
-    const min = Math.min(0, ...valores);
-    const max = Math.max(...valores);
-    const faixa = max - min || 1;
-    pontos = valores.map(v => 0.1 + 0.75 * ((v - min) / faixa));
+    const max = Math.max(...dias.map(d => d.valor)) || 1;
+    pontos = dias.map(d => 0.04 + 0.8 * (d.valor / max));
   }
   const L = 600, A = 180;
   const xy = pontos.map((p, i) => [(i / (pontos.length - 1)) * L, A - p * A]);
@@ -649,7 +656,33 @@ async function renderSaldoTotal() {
       <path d="${linha} L${L},${A} L0,${A} Z" fill="url(#dash-saldo-grad)"/>
       <path d="${linha}" fill="none" stroke="#D4D4D8" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
       <line x1="0" y1="${A - 0.5}" x2="${L}" y2="${A - 0.5}" stroke="#D4D4D8" stroke-width="1" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>
-    </svg>`;
+    </svg>
+    <span class="dash-saldo-ponto" hidden></span>
+    <div class="dash-saldo-dica" hidden></div>`;
+  if (!temFaturamento) return;
+
+  const ponto = grafico.querySelector('.dash-saldo-ponto');
+  const dica = grafico.querySelector('.dash-saldo-dica');
+  const formatarDia = d => d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }).replace('.', '');
+  const mostrar = (clientX) => {
+    const caixa = grafico.getBoundingClientRect();
+    const fracao = Math.min(1, Math.max(0, (clientX - caixa.left) / caixa.width));
+    const i = Math.round(fracao * (dias.length - 1));
+    const x = (i / (dias.length - 1)) * 100;
+    const y = (1 - pontos[i]) * 100;
+    ponto.style.left = `${x}%`; ponto.style.top = `${y}%`; ponto.hidden = false;
+    dica.innerHTML = `<span class="dash-saldo-dica-dia">${formatarDia(dias[i].data)}</span><strong>${formatCurrency(dias[i].valor)}</strong>`;
+    dica.style.top = `${y}%`;
+    dica.hidden = false;
+    // Perto das bordas a dica não sai da caixa.
+    const largura = dica.offsetWidth;
+    const px = (x / 100) * caixa.width;
+    dica.style.left = `${Math.min(caixa.width - largura / 2, Math.max(largura / 2, px))}px`;
+  };
+  const esconder = () => { ponto.hidden = true; dica.hidden = true; };
+  grafico.addEventListener('pointermove', e => mostrar(e.clientX));
+  grafico.addEventListener('pointerdown', e => mostrar(e.clientX));
+  grafico.addEventListener('pointerleave', esconder);
 }
 
 

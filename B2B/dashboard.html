@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=743">
+  <link rel="stylesheet" href="css/styles.css?v=744">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -60,14 +60,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1.38fr_0.73fr] gap-6">
 
           <div class="dashboard-side-stack">
-            <!-- Saldo total: valor grande e o gráfico do saldo ao longo dos
-                 últimos 30 dias (sem dados, uma linha cinza de exemplo).
+            <!-- Saldo total: valor grande e o gráfico do faturamento de cada dia
+                 dos últimos 30 dias (passando o mouse, mostra o dia e o valor).
                  O card Saldo/Faturamento foi para Financeiro. -->
-            <a href="pagamentos" class="dash-saldo-total" id="dash-saldo-total">
+            <div class="dash-saldo-total" id="dash-saldo-total">
               <p class="dash-saldo-total-rotulo">Saldo total · Todos os saldos</p>
               <p class="dash-saldo-total-valor" id="dash-saldo-total-valor">—</p>
-              <div class="dash-saldo-total-grafico" id="dash-saldo-total-grafico" aria-hidden="true"></div>
-            </a>
+              <div class="dash-saldo-total-grafico" id="dash-saldo-total-grafico"></div>
+            </div>
 
             <div class="dashboard-quick-actions">
               <button type="button" id="dashboard-create-payment-link-btn" class="btn-secondary dashboard-quick-action-btn">
@@ -342,6 +342,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=58"></script>
-  <script src="js/dashboard.js?v=65"></script>
+  <script src="js/dashboard.js?v=66"></script>
 </body>
 </html>

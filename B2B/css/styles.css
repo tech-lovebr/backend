@@ -10105,3 +10105,12 @@ html body .finance-topo .wallet-card .wallet-periodo:not(#love-h-a) { top: 1.15r
 
 /* Adicionar novo produto: um pouco mais de respiro entre o cabeçalho e o conteúdo. */
 html body.produto-modo-criar #product-drawer.show:not(#love-h-a) { margin-top: 1rem; }
+
+/* Dashboard › gráfico do faturamento: ponto no topo da linha e a dica com o
+   dia e o valor faturado (aparecem passando o mouse). */
+html body .dash-saldo-total-grafico:not(#love-h-a) { position: relative; touch-action: pan-y; }
+html body .dash-saldo-ponto:not(#love-h-a) { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #181D24; border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px #181D24; transform: translate(-50%, -50%); pointer-events: none; }
+html body .dash-saldo-dica:not(#love-h-a) { position: absolute; transform: translate(-50%, calc(-100% - 14px)); display: flex; flex-direction: column; gap: 2px; padding: 0.45rem 0.65rem; background: #FFFFFF; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); white-space: nowrap; pointer-events: none; font-size: 0.75rem; color: #18181B; font-variant-numeric: tabular-nums; }
+html body .dash-saldo-dica-dia:not(#love-h-a) { font-size: 11px; font-weight: 500; color: #A1A1AA; }
+html body .dash-saldo-dica strong:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; }
+html body .dash-saldo-ponto[hidden]:not(#love-h-a), html body .dash-saldo-dica[hidden]:not(#love-h-a) { display: none; }

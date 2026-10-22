@@ -9951,3 +9951,6 @@ html body .config-evento-organizador:not(#love-h-a) { display: flex; align-items
 
 /* Listas prontas: enquanto a foto (assets/listaN.jpg) não existe, fundo cinza no lugar. */
 img.sem-foto { visibility: visible; background: #F4F4F5; }
+
+/* Adicione uma lista: "Total da lista:" à esquerda e o valor à direita, na mesma linha. */
+html body .lista-pronta-total:not(#love-h-a) { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 8px; }

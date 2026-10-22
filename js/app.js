@@ -7309,6 +7309,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (trocar) { trocar.classList.toggle('hidden', !temImagem); trocar.classList.toggle('flex', temImagem); }
   }
 
+  /**
+   * Vaquinha que já recebeu o primeiro pagamento: o valor do presente fica
+   * bloqueado (e a vaquinha não pode ser desligada); embaixo do valor aparece
+   * o progresso com a porcentagem e o total arrecadado. null = presente novo.
+   * @param {any} gift
+   */
+  function aplicarTravaDaVaquinha(gift) {
+    const arrecadado = gift ? Math.max(0, parseFloat(gift.received) || 0) : 0;
+    const travado = !!(gift && gift.isCrowdfunding && arrecadado > 0);
+    const preco = /** @type {HTMLInputElement|null} */ (document.getElementById('gift-price-input'));
+    const vaquinha = /** @type {HTMLInputElement|null} */ (document.getElementById('gift-crowdfunding-toggle'));
+    const caixa = document.getElementById('gift-vaquinha-progresso');
+    if (preco) {
+      preco.readOnly = travado;
+      preco.classList.toggle('is-bloqueado', travado);
+      preco.title = travado ? 'O valor fica bloqueado depois do primeiro pagamento da vaquinha.' : '';
+    }
+    if (vaquinha) vaquinha.disabled = travado;
+    document.querySelector('.gift-contribuicao-coletiva')?.classList.toggle('is-bloqueado', travado);
+    if (!caixa) return;
+    caixa.hidden = !travado;
+    if (!travado) { caixa.innerHTML = ''; return; }
+    const meta = parseFloat(gift.price) || 0;
+    const pct = meta > 0 ? Math.min(100, Math.round((arrecadado / meta) * 100)) : 0;
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    caixa.innerHTML = `
+      <div class="gift-vaquinha-linha">
+        <span class="gift-vaquinha-pct">${pct}%</span>
+        <div class="gift-vaquinha-trilho"><div class="gift-vaquinha-barra" style="width:${pct}%"></div></div>
+      </div>
+      <p class="gift-vaquinha-info">Total arrecadado: <strong>${brl(arrecadado)}</strong></p>`;
+  }
+
   function openGiftDrawer() {
     editingGiftId = null;
     const formAddGift = document.getElementById('form-add-gift');
@@ -7329,6 +7362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-submit-gift-icon')?.classList.remove('hidden');
     document.getElementById('btn-duplicate-gift')?.classList.add('hidden');
     resetGiftCrowdfundingFields();
+    aplicarTravaDaVaquinha(null);
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
@@ -7368,6 +7402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-submit-gift-icon')?.classList.add('hidden');
     document.getElementById('btn-duplicate-gift')?.classList.remove('hidden');
     populateGiftCrowdfundingFields(gift);
+    aplicarTravaDaVaquinha(gift);
     const extraEditar = /** @type {HTMLInputElement|null} */ (document.getElementById('gift-valor-extra-toggle'));
     if (extraEditar) extraEditar.checked = !!gift.permitirValorExtra;
 

@@ -10023,3 +10023,10 @@ html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-row: 5; }
 /* Vaquinha (crowdfunding): só na coluna da esquerda, terminando na linha da descrição, texto justificado. */
 html body #form-add-gift:not(#love-h-a) > .gift-contribuicao-coletiva { grid-column: 1; }
 html body #form-add-gift .gift-contribuicao-texto:not(#love-h-a), html body #form-add-gift .gift-contribuicao-descricao:not(#love-h-a) { text-align: justify; }
+
+/* Pop-up do presente: vaquinha já paga — valor bloqueado e progresso embaixo. */
+html body #gift-price-input.is-bloqueado:not(#love-h-a) { background: #F4F4F5 !important; color: #71717A !important; cursor: not-allowed; }
+html body .gift-vaquinha-progresso[hidden]:not(#love-h-a) { display: none !important; }
+html body .gift-vaquinha-progresso:not(#love-h-a) { margin-top: 10px !important; }
+html body .gift-vaquinha-progresso .gift-vaquinha-info:not(#love-h-a) { font-size: 12px; margin-top: 6px; }
+html body .gift-contribuicao-coletiva.is-bloqueado:not(#love-h-a) { opacity: 0.6; cursor: not-allowed; }

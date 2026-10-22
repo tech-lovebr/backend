@@ -77,6 +77,7 @@ function initSettingsTabs() {
 function initProfileForm() {
   const p = B2B_DATA.professional;
 
+  document.getElementById('profile-razao-social').value = p.razaoSocial || '';
   document.getElementById('profile-company').value = p.company || '';
   document.getElementById('profile-name').value = p.name || '';
   // Primeiro nome e sobrenome: juntos formam o responsável (contact_name).
@@ -130,11 +131,12 @@ function initProfileForm() {
     const docLabel = p.documentType === 'cpf' ? 'CPF' : 'CNPJ';
 
     if (!company || !name || !documentNumber) {
-      showToast(`Preencha nome, sobrenome, nome da empresa e ${docLabel} para continuar.`, true);
+      showToast(`Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.`, true);
       return;
     }
 
     p.company = company;
+    p.razaoSocial = document.getElementById('profile-razao-social').value.trim();
     p.name = name;
     p.birthDate = birthdatePicker.getValue();
     p.phone = phone;
@@ -184,6 +186,7 @@ async function salvarPerfilNoBanco(p) {
   const { error } = await supabaseClient
     .from('fornecedores')
     .update({
+      razao_social: p.razaoSocial || null,
       company_name: p.company || null,
       contact_name: p.name || null,
       document_type: p.documentType || 'cnpj',

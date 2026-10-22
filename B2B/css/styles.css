@@ -10071,3 +10071,6 @@ body[data-theme="dark"] .produto-tag.is-marcada { background: #FFFFFF !important
    anúncio e Código/Unidade); antes somava mais 20px e ficava 44px. */
 html body .produto-tags:not(#love-h-a) { margin-top: 0; }
 html body .produto-tags .field-label:not(#love-h-a) { margin-bottom: 0.5rem; }
+
+/* O nome da empresa saiu do topo: o "Olá, {razão social}" do Dashboard já mostra. */
+html body .topbar-account-name:not(#love-h-a), html body a.topbar-account-name:not(#love-h-a) { display: none !important; }

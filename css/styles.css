@@ -10189,3 +10189,10 @@ html body button.rfp-conversar:not(#love-h-a):hover { border-color: #181D24; col
 body[data-theme="dark"] .rfp-propostas-titulo { color: #FFFFFF !important; }
 body[data-theme="dark"] #rfp-lista tr.rfp-linha-clicavel:hover > td { background: #2A2A2A !important; }
 body[data-theme="dark"] button.rfp-conversar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Nova solicitação: Continuar / Publicar como o Continuar do Hub
+   (Adicionar novo produto): fundo #181D24, texto branco. */
+html body .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a) { background: #181D24 !important; border: 1px solid #181D24 !important; color: #FFFFFF !important; }
+html body .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a):hover:not(:disabled) { background: #262D36 !important; border-color: #262D36 !important; color: #FFFFFF !important; }
+html body .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a) * { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-editor .rfp-rodape button.btn-primary { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }

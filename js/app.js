@@ -16114,11 +16114,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return ((ev && ev.eventDetails && ev.eventDetails.city) || '').trim();
   }
 
-  // Por padrão o Explorar mostra só quem atende a cidade do evento — um
-  // fornecedor cadastrado em Indaiatuba não aparece pra um evento em São
-  // Paulo. Usa a grafia da vitrine quando há fornecedor lá; senão a do
-  // evento, e a lista fica vazia dizendo a cidade (as caixinhas deixam
-  // trocar). Evento sem cidade: mostra todas.
+  // O Explorar mostra fornecedores de todas as cidades; as caixinhas (ou o
+  // campo Local) filtram por uma cidade só quando a pessoa escolhe.
   // Explorar aberto antes do login / do evento terminarem de carregar: confere
   // de novo algumas vezes e redesenha assim que estiverem prontos.
   let tentativasDoExplorar = 0;
@@ -16146,11 +16143,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function aplicarCidadePadraoVitrine() {
+    // Explorar mostra todas as cidades; só filtra quando a pessoa escolhe uma.
     if (b2bCityChosenByUser) return;
-    const cidadeEvento = cidadeDoEventoAtivo();
-    if (!cidadeEvento) { b2bSelectedCity = null; return; }
-    const naVitrine = cidadesDaVitrine().find(c => cidadeNormalizada(c.city) === cidadeNormalizada(cidadeEvento));
-    b2bSelectedCity = naVitrine ? naVitrine.city : cidadeEvento;
+    b2bSelectedCity = null;
   }
 
   // Alternância Lista / Grid do Explorar — lista é o padrão.
@@ -16580,7 +16575,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const campoDaCidade = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-location-input'));
     if (campoDaCidade && document.activeElement !== campoDaCidade && campoDaCidade.value !== (b2bSelectedCity || '')) renderB2BCityFilter();
     // O evento (e a cidade dele) pode ainda estar carregando: confere de novo.
-    if (!b2bCityChosenByUser && !cidadeDoEventoAtivo()) esperarCidadeDoEvento();
 
     let items = b2bFornecedores.flatMap(cardsPorServico);
     let categoryName = 'serviços';

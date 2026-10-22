@@ -10042,3 +10042,9 @@ html body.produto-modo-criar #produto-etapa-intro:not(#love-h-a) { grid-column: 
 html body.produto-modo-criar #produto-etapa-intro #produto-etapa-titulo:not(#love-h-a) { grid-column: auto; grid-row: auto; }
 html body .produto-etapa-sub:not(#love-h-a) { margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.6; color: #52525B; }
 html body:not(.produto-modo-criar) #produto-etapa-intro:not(#love-h-a) { display: none; }
+
+/* Lista de categorias do produto: sem a busca, itens um pouco mais altos e
+   texto um pouco maior. */
+html body #product-category-tree .category-tree-row:not(#love-h-a) { padding: 0.8rem 0.9rem; font-size: 0.875rem; }
+html body #product-category-tree .category-tree-subrow:not(#love-h-a) { padding: 0.7rem 0.9rem 0.7rem 2.4rem; font-size: 0.875rem; }
+html body #product-category-tree.category-tree-flat:not(#love-h-a) { max-height: 360px; }

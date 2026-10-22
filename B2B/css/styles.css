@@ -9966,3 +9966,9 @@ html body.produto-editor-aberto #product-drawer .form-drawer-body:not(#love-h-a)
 html body .b2b-header-bar .settings-salvar-topo:not(#love-h-a) { height: 38px; padding: 0 1rem; background: #FFFFFF; border: 1px solid #E4E4E7; color: #3F3F46; }
 html body .b2b-header-bar .settings-salvar-topo:hover:not(#love-h-a) { background: #FFFFFF; border-color: #181D24; color: #181D24; }
 html body .settings-salvar-topo[hidden]:not(#love-h-a) { display: none !important; }
+
+/* Correção: o cabeçalho da antiga gaveta é "position: relative", então o menu
+   das etapas ficava preso nele (em cima do formulário). Sem isso, ele se
+   prende à área do Hub e vira o 2º menu lateral de verdade. */
+html body.produto-editor-aberto #product-drawer .form-drawer-header:not(#love-h-a),
+html body.produto-editor-aberto #product-drawer .form-drawer-header-main:not(#love-h-a) { position: static; }

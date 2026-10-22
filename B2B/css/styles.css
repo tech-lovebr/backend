@@ -10024,3 +10024,10 @@ html body.produto-modo-editar #product-drawer.show:not(#love-h-a) {
 }
 html body.produto-modo-editar #product-drawer .form-drawer-body:not(#love-h-a),
 html body.produto-modo-editar #product-drawer .product-wizard-footer:not(#love-h-a) { width: 100%; max-width: 720px; margin-left: auto; margin-right: auto; }
+
+/* Editar produto: o cabeçalho fica preso no topo ao rolar (o menu lateral
+   começa logo abaixo dele e não deixa mais um buraco) e o rodapé tem só o
+   "Salvar alterações", à direita. */
+html body.produto-editor-aberto .b2b-header-bar:not(#love-h-a) { position: sticky; top: 0; z-index: 6; }
+html body.produto-modo-editar #product-wizard-footer-default:not(#love-h-a) { display: flex; justify-content: flex-end; }
+html body.produto-modo-editar #product-wizard-submit-btn:not(#love-h-a) { flex: 0 0 auto; min-width: 180px; height: 44px; }

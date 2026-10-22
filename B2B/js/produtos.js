@@ -1249,19 +1249,19 @@ function goToStep(n) {
     setPanelHidden('product-wizard-next-btn', ultima);
     setPanelHidden('product-wizard-submit-btn', !ultima);
   } else {
-    setPanelHidden('product-wizard-cancel-btn', true);
-    setPanelHidden('product-wizard-back-btn', !ultima);
-    setPanelHidden('product-wizard-next-btn', ultima);
+    // Editando: só "Salvar alterações" (as etapas ficam no menu lateral).
+    ['product-wizard-cancel-btn', 'product-wizard-back-btn', 'product-wizard-next-btn', 'product-drawer-duplicate-btn', 'product-drawer-delete-btn']
+      .forEach(id => setPanelHidden(id, true));
     setPanelHidden('product-wizard-submit-btn', false);
   }
   const tituloEtapa = document.getElementById('produto-etapa-titulo');
   if (tituloEtapa) tituloEtapa.textContent = ({ 1: 'Qual produto ou serviço você vai anunciar?', 2: 'Conte os detalhes do que você oferece', 3: 'Mostre o seu trabalho' })[n] || '';
   const salvarTexto = document.getElementById('product-wizard-submit-btn');
-  if (salvarTexto) salvarTexto.textContent = criando ? 'Salvar produto' : 'Salvar item';
+  if (salvarTexto) salvarTexto.textContent = criando ? 'Salvar produto' : 'Salvar alterações';
   const salvarBtn = document.getElementById('product-wizard-submit-btn');
   if (salvarBtn) {
-    salvarBtn.classList.toggle('btn-primary', ultima);
-    salvarBtn.classList.toggle('btn-secondary', !ultima);
+    salvarBtn.classList.toggle('btn-primary', ultima || !criando);
+    salvarBtn.classList.toggle('btn-secondary', !(ultima || !criando));
   }
   updateWizardNextButtonState();
 }

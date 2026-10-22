@@ -10209,3 +10209,10 @@ html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-secondary:not
 }
 html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-secondary:hover:not(#love-h-a) { color: #181D24; }
 html body .hub-confirmar-acoes:not(#love-h-a) { align-items: center; }
+
+/* Pop-up de deletar produto: "Sim, deletar" claro (cinza), no padrão dos
+   botões claros — sem vermelho. */
+html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-primary:not(#love-h-a) {
+  background: #F4F4F5; border: 1px solid #E4E4E7; color: #18181B; box-shadow: none;
+}
+html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-primary:hover:not(#love-h-a) { background: #F4F4F5; border-color: #181D24; color: #181D24; }

@@ -1472,9 +1472,9 @@ function initProductDrawer() {
     if (!id) return;
     confirmarNoHub({
       titulo: 'Tem certeza que deseja deletar esse produto?',
-      texto: 'Ele sai da sua vitrine e não dá para desfazer.',
+      texto: 'Esta ação é permanente. O produto será removido da sua vitrine.',
       botao: 'Sim, deletar',
-      perigo: true,
+      perigo: false,
       aoConfirmar: async () => {
         const { error } = await supabaseClient.from('products').delete().eq('id', id);
         if (error) throw new Error('Não foi possível deletar o produto. Tente de novo.');

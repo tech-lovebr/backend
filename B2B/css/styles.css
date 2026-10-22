@@ -10102,3 +10102,6 @@ html body .finance-topo .wallet-card .wallet-periodo:not(#love-h-a) { top: 1.15r
 @media (max-width: 640px) {
   html body .finance-topo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Adicionar novo produto: um pouco mais de respiro entre o cabeçalho e o conteúdo. */
+html body.produto-modo-criar #product-drawer.show:not(#love-h-a) { margin-top: 1rem; }

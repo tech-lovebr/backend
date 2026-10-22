@@ -45,21 +45,21 @@
   /** @type {{ id: RfpCategory, nome: string, icone: string, tags: string[] }[]} */
   const CATEGORIAS = [
     { id: 'fotografia', nome: 'Fotografia & Vídeo', icone: '<path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.6l1.2-1.8A1.5 1.5 0 0 1 9.55 3.5h4.9a1.5 1.5 0 0 1 1.25.7L16.9 6h1.6A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-9Z"/><circle cx="12" cy="13" r="3.5"/>',
-      tags: ['Ensaio pré-wedding', 'Cobertura completa', 'Álbum impresso', 'Drone', 'Vídeo / filme', 'Making of'] },
+      tags: ['Ensaio pré-wedding', 'Ensaio de gestante', 'Cobertura completa', 'Cobertura da cerimônia', 'Making of', 'Fotos de família', 'Álbum impresso', 'Drone', 'Vídeo / filme', 'Teaser para redes sociais', 'Transmissão ao vivo', 'Cabine de fotos', 'Fotos instantâneas (polaroid)', 'Plataforma 360°', 'Ensaio pós-evento'] },
     { id: 'buffet', nome: 'Buffet & Gastronomia', icone: '<path d="M4 13h16M5 13a7 7 0 0 1 14 0M12 6V4M3 17h18"/>',
-      tags: ['Coquetel', 'Jantar empratado', 'Ilhas gastronômicas', 'Churrasco', 'Opções veganas', 'Finger food'] },
+      tags: ['Coquetel', 'Jantar empratado', 'Jantar volante', 'Ilhas gastronômicas', 'Mesa de frios', 'Café da manhã', 'Brunch', 'Almoço', 'Churrasco', 'Feijoada', 'Comida de boteco', 'Massas e risotos', 'Comida japonesa', 'Food truck', 'Finger food', 'Estação de crepes', 'Pizza no local', 'Buffet infantil', 'Opções veganas', 'Opções sem glúten', 'Ceia da madrugada', 'Chef em casa'] },
     { id: 'espaco', nome: 'Espaço para Eventos', icone: '<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>',
-      tags: ['Ao ar livre', 'Salão fechado', 'Com hospedagem', 'Com estacionamento', 'Cerimônia no local', 'Acessibilidade'] },
+      tags: ['Ao ar livre', 'Salão fechado', 'Campo', 'Praia', 'Sítio / chácara', 'Fazenda', 'Vinícola', 'Rooftop', 'Casa de festas', 'Restaurante', 'Hotel', 'Igreja / capela', 'Galpão / industrial', 'Jardim', 'Beira de lago', 'Serra / montanha', 'Com hospedagem', 'Com estacionamento', 'Cerimônia no local', 'Acessibilidade', 'Espaço kids'] },
     { id: 'decoracao', nome: 'Decoração & Cenografia', icone: '<path d="M12 21v-7M12 14c-3 0-5-2-5-5 2 0 3.5.8 5 2.5C13.5 9.8 15 9 17 9c0 3-2 5-5 5ZM12 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>',
-      tags: ['Flores naturais', 'Iluminação cênica', 'Mobiliário', 'Decoração da cerimônia', 'Mesa de doces', 'Painel / backdrop'] },
+      tags: ['Flores naturais', 'Flores permanentes', 'Decoração da cerimônia', 'Decoração da recepção', 'Arco de flores', 'Mesa posta', 'Centro de mesa', 'Mesa de doces', 'Painel / backdrop', 'Arco de balões', 'Iluminação cênica', 'Varal de luzes', 'Mobiliário', 'Tapetes e lounge', 'Tendas', 'Decoração rústica', 'Decoração boho', 'Decoração clássica', 'Decoração temática infantil', 'Letreiro neon', 'Lembrancinhas'] },
     { id: 'musica', nome: 'Música, Banda & DJ', icone: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
-      tags: ['DJ', 'Banda ao vivo', 'Música na cerimônia', 'Som e iluminação', 'Pista de dança', 'Voz e violão'] },
+      tags: ['DJ', 'Banda ao vivo', 'Banda de sertanejo', 'Samba e pagode', 'Rock e pop', 'MPB e bossa nova', 'Forró', 'Música eletrônica', 'Voz e violão', 'Quarteto de cordas', 'Violino na cerimônia', 'Saxofonista', 'Coral', 'Música na cerimônia', 'Som e iluminação', 'Telão e projeção', 'Pista de dança', 'Fumaça e efeitos', 'Animação infantil', 'Mestre de cerimônias'] },
     { id: 'assessoria', nome: 'Assessoria & Cerimonial', icone: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2ZM9 13l2 2 4-4"/>',
-      tags: ['Assessoria completa', 'Assessoria do dia', 'Cerimonialista', 'Roteiro e cronograma', 'Gestão de fornecedores'] },
+      tags: ['Assessoria completa', 'Assessoria do dia', 'Assessoria parcial', 'Cerimonialista', 'Celebrante', 'Roteiro e cronograma', 'Gestão de fornecedores', 'Recepcionistas', 'Lista de convidados e RSVP', 'Destination wedding', 'Planejamento de orçamento', 'Seguranças', 'Manobristas', 'Equipe de limpeza'] },
     { id: 'bebidas', nome: 'Bebidas & Bar', icone: '<path d="M8 3h8l-1 8a3 3 0 0 1-6 0L8 3ZM12 14v7M8 21h8"/>',
-      tags: ['Open bar', 'Drinks autorais', 'Bartender', 'Cervejas especiais', 'Vinhos e espumantes', 'Drinks sem álcool'] },
+      tags: ['Open bar', 'Drinks autorais', 'Bartender', 'Bar de caipirinhas', 'Gin bar', 'Cervejas especiais', 'Chopp', 'Vinhos e espumantes', 'Whisky bar', 'Drinks sem álcool', 'Sucos naturais', 'Café e espresso', 'Bar de chás', 'Brinde com espumante', 'Gelo e refrigeração', 'Taças e copos'] },
     { id: 'doces', nome: 'Doces & Bolo', icone: '<path d="M4 21h16M5 21v-6h14v6M7 15v-3h10v3M12 12V8M12 8c-1 0-1.5-1-1-2l1-2 1 2c.5 1 0 2-1 2Z"/>',
-      tags: ['Bolo de casamento', 'Bem-casados', 'Doces finos', 'Mesa de doces', 'Naked cake', 'Lembrancinhas'] }
+      tags: ['Bolo de casamento', 'Bolo de aniversário', 'Bolo cenográfico', 'Naked cake', 'Bolo de andares', 'Bem-casados', 'Doces finos', 'Brigadeiros gourmet', 'Mesa de doces', 'Cupcakes', 'Macarons', 'Pão de mel', 'Bolo no pote', 'Doces temáticos', 'Sem açúcar / sem glúten', 'Carrinho de sorvete', 'Churros', 'Algodão-doce e pipoca', 'Lembrancinhas'] }
   ];
 
   /** @type {{ id: RfpCelebracao, nome: string }[]} */

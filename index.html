@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261021_totalLinha">
+  <link rel="stylesheet" href="css/styles.css?v=20261022_acompanhantes">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -5434,7 +5434,10 @@
   <aside id="drawer-add-guest" class="guest-add-drawer hidden" style="display: none !important;" aria-label="Convidado">
     <!-- Header do Drawer: mesmo padrão do drawer de Adicionar presente -->
     <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white flex-shrink-0">
-      <div>
+      <div class="guest-titulo-linha">
+        <button type="button" id="btn-guest-voltar" class="guest-voltar" aria-label="Voltar para o convidado" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
         <h2 id="add-guest-drawer-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Convidado</h2>
       </div>
       <button id="btn-close-add-guest-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
@@ -5446,6 +5449,7 @@
 
     <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
       <form id="form-add-guest" class="space-y-6">
+        <div id="guest-pagina-principal" class="space-y-6">
 
         <!-- BLOCO 1: Dados principais -->
         <div class="space-y-4">
@@ -5506,15 +5510,24 @@
           </div>
         </div>
 
-        <!-- BLOCO 3: Acompanhantes -->
+        <!-- BLOCO 3: Acompanhantes — resumo; o + abre a página "Adicionar acompanhante" -->
         <div>
-          <div id="guest-companions-list" class="space-y-2">
-            <!-- Linhas de acompanhante (nome + faixa etária) adicionadas dinamicamente via JS -->
-          </div>
-          <!-- Adicionar acompanhante: embaixo de tudo, com o + à esquerda -->
+          <div id="guest-acompanhantes-resumo" class="guest-acompanhantes-resumo"></div>
           <button type="button" id="btn-add-companion-row" class="guest-add-acompanhante">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             Adicionar acompanhante
+          </button>
+        </div>
+        </div>
+
+        <!-- Página "Adicionar acompanhante": quantos quiser (nome, faixa etária e restrição) -->
+        <div id="guest-pagina-acompanhantes" hidden>
+          <div id="guest-companions-list" class="space-y-2">
+            <!-- Linhas de acompanhante adicionadas via JS -->
+          </div>
+          <button type="button" id="btn-add-companion-mais" class="guest-add-acompanhante">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Adicionar outro acompanhante
           </button>
         </div>
       </form>
@@ -5596,7 +5609,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261022_presentesTop"></script>
+  <script src="js/app.js?v=20261022_acompanhantes"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>

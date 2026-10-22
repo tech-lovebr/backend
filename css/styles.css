@@ -9954,3 +9954,21 @@ img.sem-foto { visibility: visible; background: #F4F4F5; }
 
 /* Adicione uma lista: "Total da lista:" à esquerda e o valor à direita, na mesma linha. */
 html body .lista-pronta-total:not(#love-h-a) { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 8px; }
+
+/* Pop-up do convidado › página "Adicionar acompanhante" e resumo na principal. */
+.guest-titulo-linha { display: flex; align-items: center; gap: 8px; min-width: 0; }
+html body .guest-voltar:not(#love-h-a) { width: 32px; height: 32px; margin-left: -6px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; flex-shrink: 0; }
+html body .guest-voltar:not(#love-h-a):hover { background: #F4F6F7; }
+html body .guest-voltar[hidden]:not(#love-h-a),
+html body #guest-pagina-principal[hidden]:not(#love-h-a),
+html body #guest-pagina-acompanhantes[hidden]:not(#love-h-a) { display: none !important; }
+.guest-voltar svg { width: 20px; height: 20px; }
+html body #guest-companions-list > .guest-companion-row:first-child:not(#love-h-a) { border-top: 0; padding-top: 0; margin-top: 0; }
+html body #guest-pagina-acompanhantes .guest-add-acompanhante:not(#love-h-a) { margin-top: 16px; }
+.guest-acompanhantes-resumo:empty { display: none; }
+.guest-acompanhantes-resumo { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.guest-acompanhantes-resumo-titulo { margin: 0 0 2px; font-size: 13px; font-weight: 700; color: #3F3F46; }
+html body .guest-acompanhante-resumo-item:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; height: 40px; padding: 0 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-size: 14px; color: #18181B; text-align: left; cursor: pointer; }
+html body .guest-acompanhante-resumo-item:not(#love-h-a):hover { border-color: #181D24; }
+.guest-acompanhante-resumo-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.guest-acompanhante-resumo-item em { font-style: normal; font-size: 12px; color: #71717A; flex-shrink: 0; }

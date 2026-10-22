@@ -10185,6 +10185,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ? guest.companionsDetailed
       : (guest.companionsNames || []).map(name => ({ name, ageGroup: 'adult' }));
     companionsDetailed.forEach(c => addCompanionRow(c));
+    tituloDoConvidado = guestId ? 'Editar Convidado' : 'Adicionar Convidado';
+    paginaDeAcompanhantes(false);
 
     restricaoDoConvidado?.definir(guest.restricaoAlimentar || null);
 
@@ -10292,8 +10294,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const btnAddCompanionRow = document.getElementById('btn-add-companion-row');
-  if (btnAddCompanionRow) btnAddCompanionRow.addEventListener('click', () => addCompanionRow());
+  // Pop-up do convidado › página "Adicionar acompanhante" (seta volta ao convidado).
+  let tituloDoConvidado = 'Adicionar Convidado';
+  /** @param {boolean} abrir */
+  function paginaDeAcompanhantes(abrir) {
+    const principal = document.getElementById('guest-pagina-principal');
+    const pagina = document.getElementById('guest-pagina-acompanhantes');
+    const voltar = document.getElementById('btn-guest-voltar');
+    const titulo = document.getElementById('add-guest-drawer-title');
+    if (!principal || !pagina) return;
+    if (abrir && titulo && pagina.hidden) tituloDoConvidado = titulo.textContent || tituloDoConvidado;
+    principal.hidden = abrir;
+    pagina.hidden = !abrir;
+    if (voltar) voltar.hidden = !abrir;
+    if (titulo) titulo.textContent = abrir ? 'Adicionar acompanhante' : tituloDoConvidado;
+    if (abrir) {
+      if (!document.querySelector('#guest-companions-list .guest-companion-row')) addCompanionRow();
+    } else {
+      desenharResumoDeAcompanhantes();
+    }
+    pagina.closest('.overflow-y-auto')?.scrollTo({ top: 0 });
+  }
+  // Na página principal: um resumo de quem já foi adicionado (clique abre a página).
+  function desenharResumoDeAcompanhantes() {
+    const resumo = document.getElementById('guest-acompanhantes-resumo');
+    if (!resumo) return;
+    const linhas = /** @type {HTMLElement[]} */ (Array.from(document.querySelectorAll('#guest-companions-list .guest-companion-row')));
+    resumo.innerHTML = linhas.length ? `<p class="guest-acompanhantes-resumo-titulo">Acompanhantes (${linhas.length})</p>` + linhas.map(l => {
+      const nome = /** @type {HTMLInputElement|null} */ (l.querySelector('.guest-companion-name-input'))?.value.trim() || 'Acompanhante sem nome';
+      const faixa = /** @type {HTMLSelectElement|null} */ (l.querySelector('.guest-companion-age-input'));
+      const rotulo = faixa ? (faixa.options[faixa.selectedIndex]?.text || '') : '';
+      return `<button type="button" class="guest-acompanhante-resumo-item" data-abrir-acompanhantes><span>${escaparHtml(nome)}</span><em>${escaparHtml(rotulo)}</em></button>`;
+    }).join('') : '';
+    const botao = document.getElementById('btn-add-companion-row');
+    if (botao) botao.lastChild.textContent = linhas.length ? ' Adicionar ou editar acompanhantes' : ' Adicionar acompanhante';
+  }
+
+  document.getElementById('btn-add-companion-row')?.addEventListener('click', () => paginaDeAcompanhantes(true));
+  document.getElementById('btn-add-companion-mais')?.addEventListener('click', () => addCompanionRow());
+  document.getElementById('btn-guest-voltar')?.addEventListener('click', () => paginaDeAcompanhantes(false));
+  document.getElementById('guest-acompanhantes-resumo')?.addEventListener('click', (e) => {
+    if (e.target instanceof Element && e.target.closest('[data-abrir-acompanhantes]')) paginaDeAcompanhantes(true);
+  });
 
   // Listener para Busca de Convidado em Tempo Real
   const inputRsvpSearch = document.getElementById('rsvp-search-input');
@@ -12909,7 +12951,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Restrição alimentar: com alergia/outra, o detalhe é obrigatório.
       if (restricaoDoConvidado && !restricaoDoConvidado.validar()) return;
       const linhasDeAcompanhante = /** @type {HTMLElement[]} */ (Array.from(document.querySelectorAll('.guest-companion-row')));
-      if (linhasDeAcompanhante.some(l => { const r = restricaoDoAcompanhante.get(l); return r ? !r.validar() : false; })) return;
+      if (linhasDeAcompanhante.some(l => { const r = restricaoDoAcompanhante.get(l); return r ? !r.validar() : false; })) { paginaDeAcompanhantes(true); linhasDeAcompanhante.forEach(l => restricaoDoAcompanhante.get(l)?.validar()); return; }
 
       // Acompanhantes: { id, name, ageGroup } por linha.
       const companionsDetailed = Array.from(document.querySelectorAll('.guest-companion-row')).map(row => ({

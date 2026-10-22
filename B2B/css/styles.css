@@ -10158,3 +10158,7 @@ html body #avatar-dropdown .profile-empresa-item .profile-empresa-linha:not(#lov
 html body #avatar-dropdown .topbar-item-adicionar-empresa:not(#love-h-a) { color: #64748B; }
 html body #avatar-dropdown .topbar-item-adicionar-empresa .menu-perfil-icone:not(#love-h-a) { color: #94A3B8; }
 html body #avatar-dropdown .topbar-item-adicionar-empresa:hover:not(#love-h-a) { color: #1E293B; }
+
+/* Editar produto: o rodapé passa por cima do menu lateral (Categoria,
+   Detalhes, Mídia), que antes cobria o começo dele. */
+html body.produto-editor-aberto .b2b-footer:not(#love-h-a) { position: relative; z-index: 6; }

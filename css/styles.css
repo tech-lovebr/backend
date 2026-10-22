@@ -10019,3 +10019,7 @@ html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-row: 5; }
 @media (max-width: 720px) {
   html body #form-add-gift:not(#love-h-a) > * { grid-column: 1 !important; grid-row: auto !important; }
 }
+
+/* Vaquinha (crowdfunding): só na coluna da esquerda, terminando na linha da descrição, texto justificado. */
+html body #form-add-gift:not(#love-h-a) > .gift-contribuicao-coletiva { grid-column: 1; }
+html body #form-add-gift .gift-contribuicao-texto:not(#love-h-a), html body #form-add-gift .gift-contribuicao-descricao:not(#love-h-a) { text-align: justify; }

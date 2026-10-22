@@ -9980,3 +9980,6 @@ html body .guest-drawer-rodape.na-pagina-acompanhantes #btn-save-guest:not(#love
 html body .guest-drawer-rodape.na-pagina-acompanhantes #guest-remove-wrap:not(#love-h-a),
 html body .guest-drawer-rodape.na-pagina-acompanhantes #guest-remove-confirm:not(#love-h-a) { display: none !important; }
 html body .guest-rodape-botao:not(#love-h-a) { height: 40px; padding: 0 18px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+
+/* Mapa expandido: menus de Formas e Adicionar item por cima da régua. */
+html body .floorplan-formatos:not(.hidden):not(#love-h-a), html body .floorplan-formas-menu:not(.hidden):not(#love-h-a) { z-index: 90; }

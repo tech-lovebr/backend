@@ -10121,3 +10121,12 @@ html body #avatar-dropdown .topbar-dropdown-item:not(#love-h-a),
 html body #avatar-dropdown .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { color: #C4C4CC; }
 html body #avatar-dropdown .topbar-dropdown-item:hover:not(#love-h-a),
 html body #avatar-dropdown .profile-empresa-item:hover .profile-empresa-nome:not(#love-h-a) { color: #181D24; }
+
+/* Configurações › URLs: "Editar meu site" à direita da faixa cinza, na
+   mesma linha vertical do "Copiar link" da caixa de cima. */
+html body .settings-url-editar-site:not(#love-h-a) { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 1rem; }
+html body .settings-url-editar-site p:not(#love-h-a) { margin: 0; min-width: 0; }
+html body .settings-url-editar-site .settings-url-editar-btn:not(#love-h-a) { flex-shrink: 0; margin-left: auto; }
+@media (max-width: 640px) {
+  html body .settings-url-pro.settings-url-editar-site:not(#love-h-a) { padding-left: 1.25rem; padding-right: 1.25rem; }
+}

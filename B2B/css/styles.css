@@ -10130,3 +10130,23 @@ html body .settings-url-editar-site .settings-url-editar-btn:not(#love-h-a) { fl
 @media (max-width: 640px) {
   html body .settings-url-pro.settings-url-editar-site:not(#love-h-a) { padding-left: 1.25rem; padding-right: 1.25rem; }
 }
+
+/* Menu do perfil igual ao "Minha conta" do love.com.br: caixa de 288px com
+   8px de respiro, itens com ícone de 20px à esquerda (#64748B), texto
+   Plus Jakarta Sans 14,5px/500 em #334155; Sair mais claro. */
+html body #avatar-dropdown.profile-dropdown:not(#love-h-a) { width: 288px; padding: 8px; border-radius: 10px; }
+html body #avatar-dropdown .topbar-dropdown-divider:not(#love-h-a) { margin: 2px -8px; background: #E4E4E7; }
+html body #avatar-dropdown .topbar-dropdown-item:not(#love-h-a),
+html body #avatar-dropdown .profile-empresa-item:not(#love-h-a) {
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px; width: 100%; padding: 10px 14px; border-radius: 8px;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 14.5px; font-weight: 500; line-height: 1.4; color: #334155; background: transparent;
+}
+html body #avatar-dropdown .profile-empresa-item .profile-empresa-linha:not(#love-h-a) { display: flex; align-items: center; gap: 12px; min-width: 0; }
+html body #avatar-dropdown .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { font-size: 14.5px; font-weight: 500; color: inherit; }
+html body #avatar-dropdown .menu-perfil-icone:not(#love-h-a) { width: 20px; height: 20px; flex-shrink: 0; color: #64748B; }
+html body #avatar-dropdown .topbar-dropdown-item:hover:not(#love-h-a),
+html body #avatar-dropdown .profile-empresa-item:hover:not(#love-h-a) { color: #0F172A; background: #F8FAFC; }
+html body #avatar-dropdown .profile-empresa-item:hover .profile-empresa-nome:not(#love-h-a) { color: #0F172A; }
+html body #avatar-dropdown .topbar-item-sair:not(#love-h-a) { color: #64748B; }
+html body #avatar-dropdown .topbar-item-sair .menu-perfil-icone:not(#love-h-a) { color: #94A3B8; }
+html body #avatar-dropdown .topbar-item-sair:hover:not(#love-h-a) { color: #1E293B; background: rgba(241, 245, 249, 0.8); }

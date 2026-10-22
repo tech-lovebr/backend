@@ -10153,3 +10153,11 @@ html body:not([data-theme="dark"]) #drawer-add-guest .border-t:not(#love-h-a),
 html body:not([data-theme="dark"]) #drawer-add-guest > .guest-drawer-rodape:not(#love-h-a),
 html body:not([data-theme="dark"]) #drawer-add-gift .gift-rodape-acoes:not(#love-h-a),
 html body:not([data-theme="dark"]) #drawer-add-gift #gift-image-dropzone:not(#love-h-a) { background: #FFFFFF !important; background-color: #FFFFFF !important; }
+
+/* Meus presentes vazio: frase + dois cards (Adicionar presente / Adicionar lista pronta). */
+html body .presentes-vazio:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; padding: 40px 24px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; }
+.presentes-vazio-texto { margin: 0 0 20px; font-size: 14px; font-weight: 500; color: #71717A; }
+.presentes-vazio-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 260px)); gap: 16px; width: 100%; justify-content: center; }
+html body .presentes-vazio .lista-pronta-criar:not(#love-h-a) { min-height: 240px; }
+@media (max-width: 560px) { .presentes-vazio-cards { grid-template-columns: minmax(0, 1fr); } }
+body[data-theme="dark"] .presentes-vazio { background: #252525 !important; border-color: #404040 !important; }

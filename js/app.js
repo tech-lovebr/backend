@@ -8746,16 +8746,24 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       } else {
         container.innerHTML = `
-          <div class="col-span-full py-16 text-center bg-white rounded-[var(--radius-card,10px)] border border-transparent space-y-3">
-            <svg class="w-10 h-10 mx-auto text-zinc-300" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
-            </svg>
-            <p class="text-xs sm:text-sm text-zinc-500 font-medium font-sans">Sua lista de presentes está vazia.</p>
-            <button type="button" id="btn-empty-gifts-add" class="btn-brand text-xs py-2 px-3.5 font-semibold rounded-[var(--radius-control,12px)] cursor-pointer">Criar presente</button>
+          <div class="col-span-full presentes-vazio">
+            <p class="presentes-vazio-texto">Sua lista de presentes está vazia.</p>
+            <div class="presentes-vazio-cards">
+              <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="presente">
+                <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+                <strong>Adicionar presente</strong>
+                <span class="lista-pronta-qtd">Crie um presente do zero</span>
+              </button>
+              <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="lista">
+                <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></span>
+                <strong>Adicionar lista pronta</strong>
+                <span class="lista-pronta-qtd">Escolha uma das nossas listas</span>
+              </button>
+            </div>
           </div>
         `;
-        const btnEmptyAddGift = document.getElementById('btn-empty-gifts-add');
-        if (btnEmptyAddGift) btnEmptyAddGift.addEventListener('click', () => openGiftDrawer());
+        container.querySelector('[data-vazio="presente"]')?.addEventListener('click', () => openGiftDrawer());
+        container.querySelector('[data-vazio="lista"]')?.addEventListener('click', () => irParaListasProntas(true));
       }
       return;
     }

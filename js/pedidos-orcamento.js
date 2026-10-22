@@ -407,7 +407,7 @@
       </div>
       ${erroHtml('categoria')}
       ${cat ? `
-        <h4 class="rfp-pergunta">Especialidades <span class="rfp-opcional">(opcional)</span></h4>
+        <h4 class="rfp-pergunta">Subcategorias <span class="rfp-opcional">(opcional)</span></h4>
         <div class="rfp-tags">
           ${cat.tags.map(t => `<button type="button" class="rfp-tag${dados.especialidades.includes(t) ? ' ativa' : ''}" aria-pressed="${dados.especialidades.includes(t)}" data-rfp-tag="${esc(t)}">${esc(t)}</button>`).join('')}
         </div>` : ''}`;

@@ -9983,3 +9983,11 @@ html body .guest-rodape-botao:not(#love-h-a) { height: 40px; padding: 0 18px; bo
 
 /* Mapa expandido: menus de Formas e Adicionar item por cima da régua. */
 html body .floorplan-formatos:not(.hidden):not(#love-h-a), html body .floorplan-formas-menu:not(.hidden):not(#love-h-a) { z-index: 90; }
+
+/* Mapa › Formas › Conector: vários trechos ligados, marcados clique a clique. */
+#floorplan-canvas.is-conectando, #floorplan-canvas.is-conectando * { cursor: crosshair !important; }
+.floorplan-linha-svg polyline { fill: none; }
+.floorplan-linha-svg polyline.traco { stroke-linejoin: round; }
+.floorplan-conector-ao-vivo { position: absolute; left: 0; top: 0; z-index: 35; pointer-events: none; overflow: visible; }
+.floorplan-conector-ao-vivo polyline { fill: none; stroke: #181D24; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+.floorplan-conector-ao-vivo circle { fill: #FFFFFF; stroke: #181D24; stroke-width: 1.5px; }

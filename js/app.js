@@ -11696,7 +11696,19 @@ document.addEventListener('DOMContentLoaded', () => {
     sel.style.top = `${cx.topo - folga}px`;
     sel.style.width = `${cx.dir - cx.esq + folga * 2}px`;
     sel.style.height = `${cx.base - cx.topo + folga * 2}px`;
-    if (elData.type === 'linha') {
+    if (elData.type === 'linha' && Array.isArray(elData.pts) && elData.pts.length >= 2) {
+      // Conector: uma bolinha em cada ponto.
+      sel.classList.add('is-linha');
+      pontosDoConector(elData).forEach((p, i) => {
+        const alca = document.createElement('span');
+        alca.className = 'floorplan-alca alca-ponta';
+        alca.title = 'Arraste para mover este ponto';
+        alca.style.left = `${p.x * escalaDaPlanta - (cx.esq - folga) - 6.5}px`;
+        alca.style.top = `${p.y * escalaDaPlanta - (cx.topo - folga) - 6.5}px`;
+        alca.addEventListener('mousedown', (e) => iniciarArrasteDoPontoDoConector(e, elData.id, i));
+        sel.appendChild(alca);
+      });
+    } else if (elData.type === 'linha') {
       // Linha: sem caixa; uma bolinha em cada ponta para mudar a direção.
       sel.classList.add('is-linha');
       const x0 = parseFloat(elData.x) || 0;
@@ -11991,6 +12003,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function svgDaLinha(l) {
     const w = parseFloat(l.w) || 200;
     const hh = parseFloat(l.h) || 20;
+    if (Array.isArray(l.pts) && l.pts.length >= 2) {
+      const pontos = l.pts.map((/** @type {number[]} */ p) => `${parseFloat(String(p[0])) || 0},${parseFloat(String(p[1])) || 0}`).join(' ');
+      return `<svg class="floorplan-linha-svg" width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" aria-hidden="true"><polyline class="pega" points="${pontos}"/><polyline class="traco" points="${pontos}"/></svg>`;
+    }
     const p = [l.ax, l.ay, l.bx, l.by].map(v => parseFloat(v) || 0);
     return `<svg class="floorplan-linha-svg" width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" aria-hidden="true"><line class="pega" x1="${p[0]}" y1="${p[1]}" x2="${p[2]}" y2="${p[3]}"/><line class="traco" x1="${p[0]}" y1="${p[1]}" x2="${p[2]}" y2="${p[3]}"/></svg>`;
   }
@@ -12004,6 +12020,135 @@ document.addEventListener('DOMContentLoaded', () => {
     const x = Math.min(x1, x2) - f;
     const y = Math.min(y1, y2) - f;
     return { x, y, w: Math.abs(x2 - x1) + f * 2, h: Math.abs(y2 - y1) + f * 2, ax: x1 - x, ay: y1 - y, bx: x2 - x, by: y2 - y };
+  }
+
+  /**
+   * Caixa do conector a partir dos pontos (na planta), com folga de 10px.
+   * Com só dois pontos vira uma linha comum.
+   * @param {{x: number, y: number}[]} pts
+   */
+  function caixaDoConector(pts) {
+    if (pts.length === 2) return caixaDaLinha(pts[0].x, pts[0].y, pts[1].x, pts[1].y);
+    const f = 10;
+    const x = Math.min(...pts.map(p => p.x)) - f;
+    const y = Math.min(...pts.map(p => p.y)) - f;
+    const w = Math.max(...pts.map(p => p.x)) - x + f;
+    const hh = Math.max(...pts.map(p => p.y)) - y + f;
+    return { x, y, w, h: hh, pts: pts.map(p => [Math.round((p.x - x) * 10) / 10, Math.round((p.y - y) * 10) / 10]) };
+  }
+  /** Pontos do conector na planta (absolutos). @param {any} l @returns {{x: number, y: number}[]} */
+  function pontosDoConector(l) {
+    const x0 = parseFloat(l.x) || 0;
+    const y0 = parseFloat(l.y) || 0;
+    return (l.pts || []).map((/** @type {number[]} */ p) => ({ x: x0 + (parseFloat(String(p[0])) || 0), y: y0 + (parseFloat(String(p[1])) || 0) }));
+  }
+
+  // Formas › Conector: cada clique na planta marca um ponto ligado ao anterior;
+  // duplo clique ou Enter termina, Esc cancela. Com dois pontos fica uma linha.
+  /** @type {{x: number, y: number}[]} */
+  let pontosDoConectorEmCurso = [];
+  function comecarConector() {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    pararRabisco();
+    plantaSelecionada = null;
+    desenharSelecaoDaPlanta();
+    pontosDoConectorEmCurso = [];
+    canvas.classList.add('is-conectando');
+    canvas.querySelectorAll('.floorplan-dica-desenho').forEach(n => n.remove());
+    const dica = document.createElement('div');
+    dica.className = 'floorplan-dica-desenho';
+    dica.textContent = 'Clique para marcar os pontos · duplo clique ou Enter termina · Esc cancela';
+    canvas.appendChild(dica);
+  }
+  function pararConector() {
+    const canvas = document.getElementById('floorplan-canvas');
+    pontosDoConectorEmCurso = [];
+    if (!canvas) return;
+    canvas.classList.remove('is-conectando');
+    canvas.querySelectorAll('.floorplan-dica-desenho, .floorplan-conector-ao-vivo').forEach(n => n.remove());
+  }
+  /** Ponto do mouse na planta (sem sair dela). @param {MouseEvent} e @param {HTMLElement} canvas */
+  function pontoNaPlanta(e, canvas) {
+    const base = canvas.getBoundingClientRect();
+    return {
+      x: Math.max(10, Math.min((e.clientX - base.left) / escalaDaPlanta, canvas.clientWidth / escalaDaPlanta - 10)),
+      y: Math.max(10, (e.clientY - base.top) / escalaDaPlanta)
+    };
+  }
+  /** Desenho ao vivo: os pontos marcados + o trecho até o mouse. @param {{x: number, y: number}|null} mouse */
+  function desenharConectorAoVivo(mouse) {
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!canvas) return;
+    let svg = canvas.querySelector('.floorplan-conector-ao-vivo');
+    if (!svg) {
+      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'floorplan-conector-ao-vivo');
+      (canvas.querySelector('.floorplan-camada') || canvas).appendChild(svg);
+    }
+    svg.setAttribute('width', String(canvas.clientWidth / escalaDaPlanta));
+    svg.setAttribute('height', String(canvas.scrollHeight / escalaDaPlanta));
+    const pts = mouse ? [...pontosDoConectorEmCurso, mouse] : pontosDoConectorEmCurso;
+    svg.innerHTML = `<polyline points="${pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}"/>` +
+      pontosDoConectorEmCurso.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5"/>`).join('');
+  }
+  function terminarConector() {
+    const pts = pontosDoConectorEmCurso.filter((p, i, arr) => i === 0 || Math.hypot(p.x - arr[i - 1].x, p.y - arr[i - 1].y) > 3);
+    pararConector();
+    if (pts.length < 2) return;
+    const lista = getFloorPlanElements();
+    lista.push(Object.assign({ id: `fp-${Date.now()}`, type: 'linha' }, caixaDoConector(pts)));
+    plantaSelecionada = lista[lista.length - 1].id;
+    saveFloorPlanElements(lista);
+    renderFloorPlanCanvas();
+  }
+  /** @param {MouseEvent} e */
+  function cliqueDoConector(e) {
+    const canvas = /** @type {HTMLElement|null} */ (document.getElementById('floorplan-canvas'));
+    if (!canvas || !canvas.classList.contains('is-conectando') || e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.detail >= 2) { terminarConector(); return; }
+    pontosDoConectorEmCurso.push(pontoNaPlanta(e, canvas));
+    desenharConectorAoVivo(null);
+  }
+
+  // Arrastar um ponto do conector: os outros ficam parados.
+  /** @param {MouseEvent} e @param {string} id @param {number} indice */
+  function iniciarArrasteDoPontoDoConector(e, id, indice) {
+    e.preventDefault();
+    e.stopPropagation();
+    const canvas = document.getElementById('floorplan-canvas');
+    const el = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"]`));
+    const alvo = getFloorPlanElements().find(x => x.id === id);
+    if (!canvas || !el || !alvo) return;
+    const pts = pontosDoConector(alvo);
+    /** @type {any} */
+    let resultado = null;
+    const mover = (/** @type {MouseEvent} */ ev) => {
+      pts[indice] = pontoNaPlanta(ev, canvas);
+      resultado = caixaDoConector(pts);
+      el.style.left = `${resultado.x}px`;
+      el.style.top = `${resultado.y}px`;
+      el.style.width = `${resultado.w}px`;
+      el.style.height = `${resultado.h}px`;
+      el.innerHTML = svgDaLinha(resultado);
+      Object.assign(alvo, resultado);
+      desenharSelecaoComDados(alvo);
+    };
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      if (!resultado) return;
+      const lista = getFloorPlanElements();
+      const t = lista.find(x => x.id === id);
+      if (!t) return;
+      Object.assign(t, resultado);
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+    };
+    document.addEventListener('mousemove', mover);
+    document.addEventListener('mouseup', soltar);
   }
 
   // Formas › Linha: entra na parte visível da planta, já selecionada.
@@ -12894,6 +13039,7 @@ document.addEventListener('DOMContentLoaded', () => {
             abrirFormas(false);
             const forma = /** @type {HTMLElement} */ (op).dataset.plantaForma;
             if (forma === 'linha') inserirLinhaNaPlanta();
+            else if (forma === 'conector') comecarConector();
             else if (forma === 'circulo') inserirItemNaPlanta('circulo');
             else if (forma === 'rabisco') comecarRabisco();
             else if (forma === 'texto') inserirTextoNaPlanta();
@@ -12903,9 +13049,12 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!menuFormas.classList.contains('hidden') && !(e.target instanceof Element && e.target.closest('.floorplan-formas'))) abrirFormas(false);
         });
         document.addEventListener('keydown', (e) => {
+          const conectando = document.getElementById('floorplan-canvas')?.classList.contains('is-conectando');
+          if (e.key === 'Enter' && conectando) { e.preventDefault(); terminarConector(); return; }
           if (e.key !== 'Escape') return;
           abrirFormas(false);
           pararRabisco();
+          pararConector();
         });
       }
       // Tela mudou de tamanho: a planta recalcula a escala para tudo caber.
@@ -12919,6 +13068,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const canvasDeDesenho = document.getElementById('floorplan-canvas');
       if (canvasDeDesenho) canvasDeDesenho.addEventListener('mousedown', desenharRabisco, true);
+      if (canvasDeDesenho) {
+        canvasDeDesenho.addEventListener('mousedown', cliqueDoConector, true);
+        canvasDeDesenho.addEventListener('mousemove', (e) => {
+          if (!canvasDeDesenho.classList.contains('is-conectando') || !pontosDoConectorEmCurso.length) return;
+          desenharConectorAoVivo(pontoNaPlanta(e, canvasDeDesenho));
+        });
+        canvasDeDesenho.addEventListener('click', (e) => { if (canvasDeDesenho.classList.contains('is-conectando')) { e.preventDefault(); e.stopPropagation(); } }, true);
+      }
 
       menuFormatos.querySelectorAll('[data-planta-item]').forEach(op => {
         op.addEventListener('click', (e) => {

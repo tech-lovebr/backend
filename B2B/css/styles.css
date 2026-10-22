@@ -10216,3 +10216,9 @@ html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-primary:not(#
   background: #F4F4F5; border: 1px solid #E4E4E7; color: #18181B; box-shadow: none;
 }
 html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-primary:hover:not(#love-h-a) { background: #F4F4F5; border-color: #181D24; color: #181D24; }
+
+/* Etapa Detalhes: 24px entre "O que está incluso" (com a lista) e
+   "O que não está incluso", como entre os outros campos. */
+html body #product-drawer #product-scope-lists .form-section-header + .scope-add-row:not(#love-h-a) { margin-top: 0; }
+html body #product-drawer #product-scope-lists .scope-list:not(:empty):not(#love-h-a) { margin-top: 0.6rem; }
+html body #product-drawer #product-scope-lists .form-section-header.mt-2:not(#love-h-a) { margin-top: 1.5rem; }

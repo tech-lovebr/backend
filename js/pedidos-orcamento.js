@@ -16,14 +16,16 @@
   /**
    * @typedef {'fotografia'|'buffet'|'espaco'|'decoracao'|'musica'|'assessoria'|'bebidas'|'doces'} RfpCategory
    * @typedef {'economico'|'moderado'|'premium'|'exclusivo'} RfpBudgetTier
-   * @typedef {'casamento'|'aniversario'|'bodas'|'noivado'|'formatura'|'corporativo'} RfpCelebracao
+   * @typedef {string} RfpCelebracao  id da lista (casamento…) ou 'outro'
    * @typedef {'ate-50'|'50-100'|'100-200'|'200-mais'} RfpConvidados
    * @typedef {'diurno'|'noturno'|'horas'} RfpPeriodo
    *
    * @typedef {Object} RfpFormData
+   * @property {string} titulo               o que a pessoa procura (etapa 1)
    * @property {RfpCategory|''} categoria
    * @property {string[]} especialidades
    * @property {RfpCelebracao|''} tipoCelebracao
+   * @property {string} celebracaoOutro      texto quando tipoCelebracao = 'outro'
    * @property {string} dataEvento            AAAA-MM-DD ('' quando flexível)
    * @property {boolean} dataFlexivel
    * @property {string} cep
@@ -64,8 +66,38 @@
   const CELEBRACOES = [
     { id: 'casamento', nome: 'Casamento' }, { id: 'aniversario', nome: 'Aniversário' },
     { id: 'bodas', nome: 'Bodas' }, { id: 'noivado', nome: 'Noivado' },
-    { id: 'formatura', nome: 'Formatura' }, { id: 'corporativo', nome: 'Evento corporativo' }
+    { id: 'formatura', nome: 'Formatura' }, { id: 'corporativo', nome: 'Evento corporativo' },
+    { id: 'chá de bebê', nome: 'Chá de bebê' }, { id: 'chá revelação', nome: 'Chá revelação' },
+    { id: 'chá de panela', nome: 'Chá de panela' }, { id: 'outro', nome: 'Outro' }
   ];
+
+  // Palavras do título que já escolhem a categoria (sem acento, minúsculas).
+  /** @type {[RfpCategory, RegExp][]} */
+  const PALAVRAS_DA_CATEGORIA = [
+    ['espaco', /\b(espaco|sitio|chacara|salao|saloes|lugar|local|fazenda|casa de festas?|galpao|rooftop|area de lazer)\b/],
+    ['musica', /\b(banda|dj|musica|musico|cantor|cantora|som|violao|violino|violinista|orquestra|saxofonista|pagode|samba|musical)\b/],
+    ['fotografia', /\b(foto|fotos|fotografo|fotografa|fotografia|video|videos|filmagem|filmar|cinegrafista|drone)\b/],
+    ['buffet', /\b(buffet|bufe|comida|jantar|almoco|gastronomia|churrasco|coquetel|salgados?|cardapio|chef|finger food)\b/],
+    ['decoracao', /\b(decoracao|decorador|decoradora|decorar|flores|florista|cenografia|arranjos?|baloes)\b/],
+    ['assessoria', /\b(assessoria|assessor|assessora|cerimonial|cerimonialista|organizador|organizadora|wedding planner|planner)\b/],
+    ['bebidas', /\b(bebidas?|bar|bartender|drinks?|open bar|cervejas?|chopp|chope|vinhos?|espumantes?)\b/],
+    ['doces', /\b(doces?|bolo|bolos|brigadeiros?|bem casados?|bem-casados?|confeitaria|confeiteira|confeiteiro|sobremesas?)\b/]
+  ];
+
+  /** Categoria pelo título (a palavra que aparece primeiro); '' se nenhuma. @param {string} titulo @returns {RfpCategory|''} */
+  function categoriaPeloTitulo(titulo) {
+    const t = String(titulo || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    let melhor = /** @type {RfpCategory|''} */ ('');
+    let pos = Infinity;
+    for (const [id, re] of PALAVRAS_DA_CATEGORIA) {
+      const m = re.exec(t);
+      if (m && m.index < pos) { pos = m.index; melhor = id; }
+    }
+    return melhor;
+  }
+
+  /** Nome da celebração (texto livre quando é "Outro"). @param {string} id */
+  const nomeDaCelebracao = (id) => nomeDe(CELEBRACOES, id) || String(id || '');
 
   /** @type {{ id: RfpConvidados, nome: string }[]} */
   const CONVIDADOS = [
@@ -94,7 +126,7 @@
   const ETAPAS = ['Tipo de serviço', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
   // Título grande e subtítulo de cada etapa (à esquerda da caixa, como em Adicionar novo produto do Hub).
   const TEXTOS_DAS_ETAPAS = [
-    { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha a categoria e, se quiser, marque as especialidades que fazem diferença para você.' },
+    { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: 'Diga o que você procura e escolha a categoria. Se quiser, marque as especialidades que fazem diferença para você.' },
     { titulo: 'Conte sobre o seu evento', sub: 'Tipo de celebração, data, local, número de convidados e horário.' },
     { titulo: 'Qual é o seu orçamento?', sub: 'Escolha a faixa de preço e descreva o que você precisa, com fotos de referência se quiser.' },
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
@@ -127,6 +159,7 @@
   let dados = rascunhoVazio();
   let etapa = 1;
   let categoriaAberta = false; // drop-down de Categoria (etapa 1) aberto
+  let categoriaEscolhidaAMao = false; // escolheu no drop-down: o título não troca mais
   /** @type {Record<string, string>} */
   let erros = {};
   let publicando = false;
@@ -136,7 +169,7 @@
   /** @returns {RfpFormData} */
   function rascunhoVazio() {
     return {
-      categoria: '', especialidades: [], tipoCelebracao: '', dataEvento: '', dataFlexivel: false,
+      titulo: '', categoria: '', especialidades: [], tipoCelebracao: '', celebracaoOutro: '', dataEvento: '', dataFlexivel: false,
       cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null,
       faixa: '', aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: 5
     };
@@ -164,9 +197,11 @@
   function validarEtapa(n) {
     /** @type {Record<string, string>} */
     const e = {};
+    if (n === 1 && dados.titulo.trim().length < 3) e.titulo = 'Escreva o que você está procurando.';
     if (n === 1 && !dados.categoria) e.categoria = 'Escolha a categoria do serviço.';
     if (n === 2) {
       if (!dados.tipoCelebracao) e.tipoCelebracao = 'Escolha o tipo de celebração.';
+      else if (dados.tipoCelebracao === 'outro' && !dados.celebracaoOutro.trim()) e.celebracaoOutro = 'Escreva o tipo de celebração.';
       if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Data flexível".';
       if (!dados.dataFlexivel && dados.dataEvento && dados.dataEvento < hojeIso()) e.dataEvento = 'A data precisa ser hoje ou depois.';
       if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
@@ -260,6 +295,7 @@
     etapa = 1;
     erros = {};
     publicando = false;
+    categoriaEscolhidaAMao = false;
     previas.forEach(u => URL.revokeObjectURL(u));
     previas = [];
     const m = modal();
@@ -345,7 +381,10 @@
   function htmlEtapa1() {
     const cat = categoriaPorId(dados.categoria);
     return `
-      <label class="rfp-cat-rotulo">Categoria</label>
+      <label class="rfp-cat-rotulo" for="rfp-titulo">Título</label>
+      <input type="text" id="rfp-titulo" class="rfp-campo rfp-campo-titulo" data-rfp-input="titulo" value="${esc(dados.titulo)}" maxlength="120" placeholder="Ex.: Preciso de um sítio para a festa" autocomplete="off">
+      ${erroHtml('titulo')}
+      <label class="rfp-cat-rotulo rfp-cat-rotulo-categoria">Categoria</label>
       <div class="rfp-cat-select${categoriaAberta ? ' is-open' : ''}">
         <button type="button" class="rfp-cat-gatilho" data-rfp-cat-gatilho aria-haspopup="listbox" aria-expanded="${categoriaAberta}">
           <span class="${cat ? '' : 'rfp-cat-vazio'}">${esc(cat ? cat.nome : 'Selecione a categoria...')}</span>
@@ -369,6 +408,9 @@
       <h4 class="rfp-pergunta">Tipo de celebração</h4>
       ${pilulas('tipoCelebracao', CELEBRACOES, dados.tipoCelebracao)}
       ${erroHtml('tipoCelebracao')}
+      ${dados.tipoCelebracao === 'outro' ? `
+        <input type="text" class="rfp-campo rfp-campo-outro" data-rfp-input="celebracaoOutro" value="${esc(dados.celebracaoOutro)}" maxlength="60" placeholder="Qual é a celebração? Ex.: Batizado" aria-label="Tipo de celebração">
+        ${erroHtml('celebracaoOutro')}` : ''}
 
       <h4 class="rfp-pergunta">Data do evento</h4>
       <div class="rfp-linha">
@@ -379,18 +421,18 @@
 
       <h4 class="rfp-pergunta">Local</h4>
       <div class="rfp-grade-local">
-        <label class="rfp-rotulo">CEP <span class="rfp-opcional">(opcional)</span>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">CEP <span class="rfp-opcional">(opcional)</span></span>
           <input type="text" class="rfp-campo" data-rfp-input="cep" value="${esc(dados.cep)}" inputmode="numeric" maxlength="9" placeholder="00000-000">
           <span class="rfp-dica" id="rfp-cep-status"></span>
         </label>
-        <label class="rfp-rotulo">Cidade
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>
           <input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Ex.: São Paulo">
           ${erroHtml('cidade')}
         </label>
-        <label class="rfp-rotulo">Bairro <span class="rfp-opcional">(opcional)</span>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Bairro <span class="rfp-opcional">(opcional)</span></span>
           <input type="text" class="rfp-campo" data-rfp-input="bairro" value="${esc(dados.bairro)}" placeholder="Ex.: Pinheiros">
         </label>
-        <label class="rfp-rotulo">UF
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">UF</span>
           <input type="text" class="rfp-campo rfp-campo-uf" data-rfp-input="uf" value="${esc(dados.uf)}" maxlength="2" placeholder="SP">
           ${erroHtml('uf')}
         </label>
@@ -474,7 +516,7 @@
           <span class="rfp-feed-categoria">${esc(cat ? cat.nome : '')}</span>
           <span class="rfp-feed-novo">Novo</span>
         </div>
-        <h5>${esc(cat ? cat.nome : 'Serviço')} para ${esc(nomeDe(CELEBRACOES, dados.tipoCelebracao).toLowerCase() || 'evento')}</h5>
+        <h5>${esc(dados.titulo.trim() || `${cat ? cat.nome : 'Serviço'} para ${celebracaoDoRascunho().toLowerCase() || 'evento'}`)}</h5>
         <ul class="rfp-feed-meta">
           <li>${esc(quando)}</li><li>${esc(local)}</li>
           <li>${esc(nomeDe(CONVIDADOS, dados.convidados))} convidados</li><li>${esc(periodo)}</li>
@@ -484,6 +526,11 @@
         <p class="rfp-feed-desc">${esc(desc.length > 220 ? desc.slice(0, 220) + '…' : desc)}</p>
         <p class="rfp-feed-rodape">${dados.referencias.length ? `${dados.referencias.length} foto(s) de referência · ` : ''}${dados.limitePropostas ? `Até ${dados.limitePropostas} propostas` : 'Propostas sem limite'}</p>
       </article>`;
+  }
+
+  /** Celebração do rascunho como vai para o banco ("Outro" vira o texto digitado). */
+  function celebracaoDoRascunho() {
+    return dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : nomeDaCelebracao(dados.tipoCelebracao);
   }
 
   /** @param {string} iso */
@@ -502,7 +549,7 @@
     const d = /** @type {any} */ (dados);
     if (campo === 'limitePropostas') d.limitePropostas = valor === '' ? null : Number(valor);
     else d[campo] = valor;
-    if (campo === 'categoria') { dados.especialidades = []; categoriaAberta = false; }
+    if (campo === 'categoria') { dados.especialidades = []; categoriaAberta = false; categoriaEscolhidaAMao = true; }
     if (campo === 'periodo' && valor !== 'horas') dados.horasServico = null;
     delete erros[campo];
     desenhar(0);
@@ -537,6 +584,20 @@
       return;
     }
     d[campo] = el.value;
+    if (campo === 'titulo' && e.type === 'input') {
+      if (erros.titulo) { delete erros.titulo; }
+      const achou = categoriaPeloTitulo(el.value);
+      if (achou && achou !== dados.categoria && !categoriaEscolhidaAMao) {
+        dados.categoria = achou;
+        dados.especialidades = [];
+        delete erros.categoria;
+        const cursor = el.selectionStart;
+        desenhar(0);
+        const novo = /** @type {HTMLInputElement|null} */ (document.getElementById('rfp-titulo'));
+        if (novo) { novo.focus(); if (cursor !== null) novo.setSelectionRange(cursor, cursor); }
+      }
+      return;
+    }
     if (campo === 'descricao') {
       const tam = el.value.trim().length;
       const cont = document.getElementById('rfp-contador');
@@ -646,7 +707,8 @@
         evento_id: /^[0-9a-f-]{36}$/i.test(String(eventoId || '')) ? eventoId : null,
         categoria: dados.categoria,
         especialidades: dados.especialidades,
-        tipo_celebracao: dados.tipoCelebracao,
+        titulo: dados.titulo.trim(),
+        tipo_celebracao: dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : dados.tipoCelebracao,
         data_evento: dados.dataFlexivel ? null : dados.dataEvento,
         data_flexivel: dados.dataFlexivel,
         cep: dados.cep || null,
@@ -664,7 +726,12 @@
         referencias: urls,
         limite_propostas: dados.limitePropostas
       };
-      const { error } = await supabaseClient.from('pedidos_orcamento').insert(linha);
+      let { error } = await supabaseClient.from('pedidos_orcamento').insert(linha);
+      // Banco ainda sem a coluna titulo (migration 078): publica sem ela.
+      if (error && /titulo/.test(String(error.message || ''))) {
+        const { titulo: _semTitulo, ...semTitulo } = linha;
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(semTitulo));
+      }
       if (error) throw new Error(tabelaAusente(error) ? 'Os pedidos de orçamento ainda não foram ativados no banco.' : 'Não foi possível publicar agora. Tente de novo.');
       publicando = false;
       sair();
@@ -710,7 +777,7 @@
     corpo.innerHTML = linhaVazia('Carregando…');
     const { data, error } = await supabaseClient
       .from('pedidos_orcamento')
-      .select('id, categoria, especialidades, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, faixa, limite_propostas, propostas_recebidas, status, created_at')
+      .select('*')
       .eq('cliente_id', usuario.id)
       .order('created_at', { ascending: false });
     if (error) {
@@ -735,8 +802,8 @@
       const situacao = SITUACOES[/** @type {'aberto'|'fechado'|'cancelado'} */ (p.status)] || p.status;
       return `
         <tr data-rfp-id="${esc(p.id)}" class="rfp-linha-clicavel" title="Ver propostas">
-          <td><b class="rfp-col-titulo">${esc(cat ? cat.nome : p.categoria)}</b>${(p.especialidades || []).length ? `<span class="rfp-col-sub">${esc(p.especialidades.slice(0, 2).join(', '))}${p.especialidades.length > 2 ? ` +${p.especialidades.length - 2}` : ''}</span>` : ''}</td>
-          <td>${esc(nomeDe(CELEBRACOES, p.tipo_celebracao))}<span class="rfp-col-sub">${esc(quando)}</span></td>
+          <td><b class="rfp-col-titulo">${esc(p.titulo || (cat ? cat.nome : p.categoria))}</b>${p.titulo ? `<span class="rfp-col-sub">${esc(cat ? cat.nome : p.categoria)}</span>` : ''}${(p.especialidades || []).length ? `<span class="rfp-col-sub">${esc(p.especialidades.slice(0, 2).join(', '))}${p.especialidades.length > 2 ? ` +${p.especialidades.length - 2}` : ''}</span>` : ''}</td>
+          <td>${esc(nomeDaCelebracao(p.tipo_celebracao))}<span class="rfp-col-sub">${esc(quando)}</span></td>
           <td>${esc(local)}</td>
           <td>${esc(faixa ? faixa.nome : '')}<span class="rfp-col-sub">${esc(faixa ? faixa.faixa : '')}</span></td>
           <td class="rfp-col-num">${p.propostas_recebidas || 0}${p.limite_propostas ? ` / ${p.limite_propostas}` : ''}</td>
@@ -789,7 +856,7 @@
     const ped = pedidosCarregados[id] || {};
     const cat = categoriaPorId(ped.categoria);
     const quando = ped.data_flexivel || !ped.data_evento ? 'Data flexível' : formatarData(ped.data_evento);
-    const sub = [nomeDe(CELEBRACOES, ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
+    const sub = [ped.titulo ? (cat ? cat.nome : '') : '', nomeDaCelebracao(ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
     const linhaUnica = (/** @type {string} */ t) => `<tr><td colspan="6" class="rfp-vazio"><p>${esc(t)}</p></td></tr>`;
     det.innerHTML = `
       <div class="rfp-propostas-topo">
@@ -797,7 +864,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <div class="min-w-0">
-          <h3 class="rfp-propostas-titulo">${esc(cat ? cat.nome : (ped.categoria || 'Solicitação'))}</h3>
+          <h3 class="rfp-propostas-titulo">${esc(ped.titulo || (cat ? cat.nome : (ped.categoria || 'Solicitação')))}</h3>
           ${sub ? `<p class="rfp-propostas-sub">${esc(sub)}</p>` : ''}
         </div>
       </div>

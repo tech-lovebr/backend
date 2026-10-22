@@ -10196,3 +10196,10 @@ html body .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a) { background
 html body .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a):hover:not(:disabled) { background: #262D36 !important; border-color: #262D36 !important; color: #FFFFFF !important; }
 html body .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a) * { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-editor .rfp-rodape button.btn-primary { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }
+
+/* Nova solicitação: Título antes da Categoria; "(opcional)" na mesma linha
+   do rótulo (CEP alinhado com Cidade); campo do "Outro" em celebração. */
+html body .rfp-campo-titulo:not(#love-h-a) { height: 44px; padding: 0 14px; margin-bottom: 0; }
+html body .rfp-cat-rotulo-categoria:not(#love-h-a) { margin-top: 20px; }
+.rfp-rotulo-texto { display: block; line-height: 1.4; }
+html body .rfp-campo-outro:not(#love-h-a) { margin-top: 12px; max-width: 360px; }

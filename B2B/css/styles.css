@@ -10150,3 +10150,11 @@ html body #avatar-dropdown .profile-empresa-item:hover .profile-empresa-nome:not
 html body #avatar-dropdown .topbar-item-sair:not(#love-h-a) { color: #64748B; }
 html body #avatar-dropdown .topbar-item-sair .menu-perfil-icone:not(#love-h-a) { color: #94A3B8; }
 html body #avatar-dropdown .topbar-item-sair:hover:not(#love-h-a) { color: #1E293B; background: rgba(241, 245, 249, 0.8); }
+
+/* Menu do perfil: a empresa atual alinhada como os outros itens (ícone na
+   mesma linha vertical) e "Adicionar empresa" num cinza mais claro. */
+html body #avatar-dropdown .profile-empresa-item:not(#love-h-a) { flex-direction: row; align-items: center; justify-content: flex-start; margin: 0; text-align: left; }
+html body #avatar-dropdown .profile-empresa-item .profile-empresa-linha:not(#love-h-a) { margin: 0; padding: 0; }
+html body #avatar-dropdown .topbar-item-adicionar-empresa:not(#love-h-a) { color: #64748B; }
+html body #avatar-dropdown .topbar-item-adicionar-empresa .menu-perfil-icone:not(#love-h-a) { color: #94A3B8; }
+html body #avatar-dropdown .topbar-item-adicionar-empresa:hover:not(#love-h-a) { color: #1E293B; }

@@ -10108,3 +10108,10 @@ html body .org-convite-acoes:not(#love-h-a) { display: flex; justify-content: fl
 html body .org-convite-cancelar:not(#love-h-a) { background: transparent; border: 0; padding: 0 0.25rem; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; }
 html body .org-convite-cancelar:not(#love-h-a):hover { color: #181D24; }
 body[data-theme="dark"] .org-convite-cancelar { color: #D4D4D8 !important; }
+
+/* Personalizar evento › Co-anfitriões: única aba do Personalizar com rodapé
+   (Aparência e Informações continuam sem). */
+@media (min-width: 768px) {
+  html body.editor-split-mode.organizadores-sem-previa #view-event-os-dashboard .dashboard-main-area > footer#dashboard-footer:not(#love-h-a) { display: block !important; }
+}
+html body.editor-split-mode.organizadores-sem-previa #view-event-os-dashboard .dashboard-main-area > .rodape-respiro:not(#love-h-a) { display: block !important; }

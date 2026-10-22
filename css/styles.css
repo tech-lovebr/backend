@@ -10070,3 +10070,13 @@ html body .rfp-editor .rfp-rodape .btn-primary:not(#love-h-a) { min-width: 120px
   html body .rfp-etapa-titulo:not(#love-h-a) { font-size: 1.5rem; }
   .rfp-intro { margin-bottom: 1rem; }
 }
+
+/* Adicione uma lista › lista aberta: "Selecionar lista" com as cores do
+   "Salvar" de Informações, em tamanho normal de botão. */
+html body button.lista-selecionar:not(#love-h-a) {
+  display: inline-flex; align-items: center; justify-content: center; width: auto; height: 42px; padding: 0 16px;
+  background: #FAFAFA; border: 1px solid #E4E4E7; border-radius: 8px; color: #181D24; font-family: inherit; font-size: 14px; font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+html body button.lista-selecionar:not(#love-h-a):hover { background: #FAFAFA; border-color: #181D24; box-shadow: 0 3px 10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05); }
+body[data-theme="dark"] button.lista-selecionar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

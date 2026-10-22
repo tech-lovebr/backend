@@ -10004,3 +10004,18 @@ html body #drawer-add-gift > div:nth-child(2):not(#love-h-a) { padding-top: 18px
 html body #form-add-gift:not(#love-h-a) { row-gap: 14px; }
 html body #gift-description-input:not(#love-h-a) { min-height: 72px !important; height: 72px !important; }
 html body #form-add-gift > .gift-campo-salvar:not(#love-h-a) { padding-top: 14px !important; }
+
+/* Pop-up do presente: valor embaixo da imagem; a descrição ocupa a coluna
+   da esquerda até a mesma altura em que a imagem termina. */
+html body #form-add-gift:not(#love-h-a) { align-items: stretch; }
+html body #form-add-gift:not(#love-h-a) > :first-child { grid-column: 1; grid-row: 1; }
+html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-column: 2; grid-row: 1 / span 2; }
+html body #form-add-gift:not(#love-h-a) > :has(#gift-description-input) { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; }
+html body #form-add-gift > :has(#gift-description-input) #gift-description-input:not(#love-h-a) { flex: 1 1 auto; height: auto !important; min-height: 72px !important; }
+html body #form-add-gift:not(#love-h-a) > :has(#gift-price-input) { grid-column: 2; grid-row: 3; }
+html body #form-add-gift:not(#love-h-a) > .gift-valor-extra:not(.gift-contribuicao-coletiva) { grid-column: 1; grid-row: 3; align-self: end; }
+html body #form-add-gift:not(#love-h-a) > .gift-contribuicao-coletiva { grid-column: 1 / -1; grid-row: 4; }
+html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-row: 5; }
+@media (max-width: 720px) {
+  html body #form-add-gift:not(#love-h-a) > * { grid-column: 1 !important; grid-row: auto !important; }
+}

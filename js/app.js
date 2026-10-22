@@ -8308,7 +8308,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="lista-detalhe">
         <div class="lista-detalhe-topo">
           <p class="lista-detalhe-resumo">${lista.itens.length} presentes <span aria-hidden="true">·</span> Total da lista: <b>${reaisDaLista(total)}</b></p>
-          <button type="button" class="lista-selecionar" data-adicionar-lista>Selecionar lista</button>
+          <button type="button" class="lista-selecionar" data-adicionar-lista>Selecionar esta lista</button>
         </div>
         <div class="listas-prontas-grade">
           ${lista.itens.map(([titulo, preco, foto]) => `

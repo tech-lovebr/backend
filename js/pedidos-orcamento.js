@@ -126,7 +126,7 @@
   const ETAPAS = ['Tipo de serviço', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
   // Título grande e subtítulo de cada etapa (à esquerda da caixa, como em Adicionar novo produto do Hub).
   const TEXTOS_DAS_ETAPAS = [
-    { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: 'Diga o que você procura e escolha a categoria. Se quiser, marque as especialidades que fazem diferença para você.' },
+    { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: 'Escolha um título claro e a categoria ideal: os fornecedores certos vão receber sua solicitação e responder com orçamentos.' },
     { titulo: 'Conte sobre o seu evento', sub: 'Tipo de celebração, data, local, número de convidados e horário.' },
     { titulo: 'Qual é o seu orçamento?', sub: 'Escolha a faixa de preço e descreva o que você precisa, com fotos de referência se quiser.' },
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }

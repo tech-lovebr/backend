@@ -9972,3 +9972,11 @@ html body .guest-acompanhante-resumo-item:not(#love-h-a) { display: flex; align-
 html body .guest-acompanhante-resumo-item:not(#love-h-a):hover { border-color: #181D24; }
 .guest-acompanhante-resumo-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .guest-acompanhante-resumo-item em { font-style: normal; font-size: 12px; color: #71717A; flex-shrink: 0; }
+
+/* Pop-up do convidado › página de acompanhantes: Voltar e Salvar à direita. */
+html body .guest-rodape-acompanhantes:not(#love-h-a) { display: flex; justify-content: flex-end; align-items: center; gap: 8px; width: 100%; }
+html body .guest-rodape-acompanhantes[hidden]:not(#love-h-a) { display: none !important; }
+html body .guest-drawer-rodape.na-pagina-acompanhantes #btn-save-guest:not(#love-h-a),
+html body .guest-drawer-rodape.na-pagina-acompanhantes #guest-remove-wrap:not(#love-h-a),
+html body .guest-drawer-rodape.na-pagina-acompanhantes #guest-remove-confirm:not(#love-h-a) { display: none !important; }
+html body .guest-rodape-botao:not(#love-h-a) { height: 40px; padding: 0 18px; border-radius: 8px; font-size: 14px; font-weight: 600; }

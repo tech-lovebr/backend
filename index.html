@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261022_acompanhantes">
+  <link rel="stylesheet" href="css/styles.css?v=20261022_acompanhantes2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -5470,10 +5470,7 @@
             <p class="text-[11px] text-rose-600 mt-1 hidden" id="guest-phone-error">Informe o DDD + 9 dígitos.</p>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-zinc-700 mb-1.5">E-mail <span class="font-normal text-zinc-400">(opcional)</span></label>
-            <input type="email" id="guest-email-input" placeholder="" class="field-input">
-          </div>
+          <input type="hidden" id="guest-email-input">
         </div>
 
         <!-- Restrições alimentares (DietaryRestrictionSelect em app.js): logo
@@ -5550,6 +5547,11 @@
       </div>
       <!-- Mesmo botão do "Salvar alterações" de Informações (Personalizar evento) -->
       <button type="submit" form="form-add-guest" id="btn-save-guest" class="informacoes-salvar-rodape">Salvar convidado</button>
+      <!-- Página "Adicionar acompanhante": Voltar (caixinha) e Salvar à direita; Salvar volta ao convidado -->
+      <div id="guest-rodape-acompanhantes" class="guest-rodape-acompanhantes" hidden>
+        <button type="button" id="btn-acompanhantes-voltar" class="btn-secondary guest-rodape-botao">Voltar</button>
+        <button type="button" id="btn-acompanhantes-salvar" class="btn-primary guest-rodape-botao">Salvar</button>
+      </div>
     </div>
   </aside>
 
@@ -5609,7 +5611,7 @@
   <script src="js/supabase-init.js?v=20261018_googleprojeto"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261022_acompanhantes"></script>
+  <script src="js/app.js?v=20261022_acompanhantes2"></script>
   <script src="js/pedidos-orcamento.js?v=20261020_rfpFotos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>

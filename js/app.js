@@ -10304,9 +10304,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const titulo = document.getElementById('add-guest-drawer-title');
     if (!principal || !pagina) return;
     if (abrir && titulo && pagina.hidden) tituloDoConvidado = titulo.textContent || tituloDoConvidado;
+    // Mesmo tamanho do pop-up nas duas páginas.
+    const caixa = /** @type {HTMLElement|null} */ (document.getElementById('drawer-add-guest'));
+    if (caixa) {
+      if (abrir && pagina.hidden) caixa.style.height = caixa.offsetHeight + 'px';
+      if (!abrir) caixa.style.removeProperty('height');
+    }
     principal.hidden = abrir;
     pagina.hidden = !abrir;
     if (voltar) voltar.hidden = !abrir;
+    const rodapeAcompanhantes = document.getElementById('guest-rodape-acompanhantes');
+    if (rodapeAcompanhantes) rodapeAcompanhantes.hidden = !abrir;
+    document.querySelector('.guest-drawer-rodape')?.classList.toggle('na-pagina-acompanhantes', abrir);
     if (titulo) titulo.textContent = abrir ? 'Adicionar acompanhante' : tituloDoConvidado;
     if (abrir) {
       if (!document.querySelector('#guest-companions-list .guest-companion-row')) addCompanionRow();
@@ -10333,6 +10342,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-add-companion-row')?.addEventListener('click', () => paginaDeAcompanhantes(true));
   document.getElementById('btn-add-companion-mais')?.addEventListener('click', () => addCompanionRow());
   document.getElementById('btn-guest-voltar')?.addEventListener('click', () => paginaDeAcompanhantes(false));
+  document.getElementById('btn-acompanhantes-voltar')?.addEventListener('click', () => paginaDeAcompanhantes(false));
+  // Salvar (acompanhantes): confere as restrições e volta para o convidado.
+  document.getElementById('btn-acompanhantes-salvar')?.addEventListener('click', () => {
+    const linhas = /** @type {HTMLElement[]} */ (Array.from(document.querySelectorAll('#guest-companions-list .guest-companion-row')));
+    const invalidas = linhas.filter(l => { const r = restricaoDoAcompanhante.get(l); return r ? !r.validar() : false; });
+    if (invalidas.length) return;
+    paginaDeAcompanhantes(false);
+  });
   document.getElementById('guest-acompanhantes-resumo')?.addEventListener('click', (e) => {
     if (e.target instanceof Element && e.target.closest('[data-abrir-acompanhantes]')) paginaDeAcompanhantes(true);
   });

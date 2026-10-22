@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=752">
+  <link rel="stylesheet" href="css/styles.css?v=753">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -588,6 +588,8 @@
 
           <div class="form-drawer-footer product-wizard-footer">
             <div id="product-wizard-footer-default" class="product-wizard-footer-row">
+              <!-- Só ao editar: texto pequeno à esquerda; abre o pop-up de confirmação. -->
+              <button type="button" id="produto-deletar-link" class="produto-deletar-link">Deletar produto</button>
               <button type="button" id="product-drawer-delete-btn" class="btn-secondary" aria-label="Remover" title="Remover" hidden>
                 <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
               </button>
@@ -650,6 +652,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=60"></script>
-  <script src="js/produtos.js?v=56"></script>
+  <script src="js/produtos.js?v=57"></script>
 </body>
 </html>

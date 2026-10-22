@@ -1466,6 +1466,29 @@ function initProductDrawer() {
   const deleteNoBtn = document.getElementById('product-drawer-delete-no-btn');
   if (deleteNoBtn) deleteNoBtn.addEventListener('click', () => showDeleteConfirm(false));
 
+  // "Deletar produto" (rodapé, ao editar): pop-up de confirmação da Love.
+  document.getElementById('produto-deletar-link')?.addEventListener('click', () => {
+    const id = form.dataset.editId;
+    if (!id) return;
+    confirmarNoHub({
+      titulo: 'Tem certeza que deseja deletar esse produto?',
+      texto: 'Ele sai da sua vitrine e não dá para desfazer.',
+      botao: 'Sim, deletar',
+      perigo: true,
+      aoConfirmar: async () => {
+        const { error } = await supabaseClient.from('products').delete().eq('id', id);
+        if (error) throw new Error('Não foi possível deletar o produto. Tente de novo.');
+        close();
+        await loadProducts();
+        renderCategoryTabs();
+        renderProducts();
+        showToast('Produto deletado.');
+      }
+    });
+    // Cancelar como texto simples, fora de caixa.
+    document.querySelector('.hub-confirmar:last-of-type')?.classList.add('hub-confirmar--cancelar-texto');
+  });
+
   const deleteYesBtn = document.getElementById('product-drawer-delete-yes-btn');
   if (deleteYesBtn) deleteYesBtn.addEventListener('click', async () => {
     const id = form.dataset.editId;

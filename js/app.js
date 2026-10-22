@@ -14935,7 +14935,27 @@ document.addEventListener('DOMContentLoaded', () => {
     loginErrorMessage.classList.remove('hidden');
   }
   function hideLoginError() {
-    if (loginErrorMessage) loginErrorMessage.classList.add('hidden');
+    if (loginErrorMessage) {
+      loginErrorMessage.classList.add('hidden');
+      loginErrorMessage.classList.replace('text-slate-600', 'text-red-600');
+    }
+  }
+
+  /* Confirmação de e-mail (Supabase › Confirm email ligado): quem se cadastra
+     com e-mail só entra depois de clicar no link. Aviso na tela de login, em
+     cinza, com "Reenviar e-mail" para o caso de o primeiro não ter chegado. */
+  function avisoConfirmeEmail(email, frase) {
+    if (!loginErrorMessage) return;
+    const seguro = String(email).replace(/[<>&"]/g, '');
+    loginErrorMessage.innerHTML = `${frase} <strong>${seguro}</strong>. Confira também o spam. <button type="button" id="btn-reenviar-confirmacao" class="font-bold text-[#537bae] hover:underline">Reenviar e-mail</button>`;
+    loginErrorMessage.classList.replace('text-red-600', 'text-slate-600');
+    loginErrorMessage.classList.remove('hidden');
+    document.getElementById('btn-reenviar-confirmacao')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      const { error } = await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: `${window.location.origin}/` } });
+      btn.textContent = error ? 'Aguarde um minuto e tente de novo' : 'E-mail reenviado';
+    });
   }
 
   if (formLoginEmail) {
@@ -14950,6 +14970,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
+        // Conta criada com e-mail e ainda sem clicar no link de confirmação.
+        if (/not confirmed/i.test(error.message || '') || error.code === 'email_not_confirmed') {
+          submitBtn.disabled = false;
+          avisoConfirmeEmail(email, 'Confirme seu e-mail para entrar. Enviamos um link para');
+          loginFailedAttempts = 0;
+          return;
+        }
         if (/banned/i.test(error.message || '')) {
           submitBtn.disabled = false;
           showLoginError('Este usuário está bloqueado.');
@@ -15287,12 +15314,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const submitBtn = document.getElementById('btn-register-submit');
 
       submitBtn.disabled = true;
-      const { error } = await supabaseClient.auth.signUp({
+      const { data: cadastro, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { role: 'cliente', first_name, last_name, full_name, couple_name: full_name, ...dadosDoDispositivo() } }
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: { role: 'cliente', first_name, last_name, full_name, couple_name: full_name, ...dadosDoDispositivo() }
+        }
       });
       submitBtn.disabled = false;
+
+      // Confirmação de e-mail ligada: sem sessão até a pessoa clicar no link.
+      if (!error && !cadastro?.session) {
+        closeModal(elements.modals.register);
+        const campoEmail = document.getElementById('login-email-input');
+        if (campoEmail) campoEmail.value = email;
+        avisoConfirmeEmail(email, 'Conta criada! Para entrar, clique no link que enviamos para');
+        return;
+      }
 
       if (error) {
         showToast(

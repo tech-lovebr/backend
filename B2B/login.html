@@ -241,6 +241,11 @@
 
       if (error) {
         submitBtn.disabled = false;
+        if (/not confirmed/i.test(error.message || '') || error.code === 'email_not_confirmed') {
+          return avisoConfirmeEmailHub(errorEl, email, 'Confirme seu e-mail para entrar. Enviamos um link para');
+        }
+        errorEl.classList.remove('text-zinc-600');
+        errorEl.classList.add('text-red-600');
         errorEl.textContent = /banned/i.test(error.message || '') ? 'Este usuário está bloqueado.' : 'Usuário ou senha inválidos.';
         errorEl.classList.remove('hidden');
         return;
@@ -281,10 +286,13 @@
       errorEl.classList.add('hidden');
       submitBtn.disabled = true;
 
-      const { error } = await supabaseClient.auth.signUp({
+      const { data: cadastro, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { role: 'fornecedor', company_name: company, ...dadosDoDispositivo() } }
+        options: {
+          emailRedirectTo: window.location.origin + '/dashboard.html',
+          data: { role: 'fornecedor', company_name: company, ...dadosDoDispositivo() }
+        }
       });
 
       submitBtn.disabled = false;
@@ -297,8 +305,28 @@
         return;
       }
 
+      // Confirmação de e-mail ligada no Supabase: só entra depois do link.
+      if (!cadastro?.session) {
+        avisoConfirmeEmailHub(errorEl, email, 'Conta criada! Para entrar, clique no link que enviamos para');
+        return;
+      }
+
       window.location.href = 'dashboard.html';
     });
+
+    /* Aviso de confirmação de e-mail, em cinza, com "Reenviar e-mail". */
+    function avisoConfirmeEmailHub(el, email, frase) {
+      const seguro = String(email).replace(/[<>&"]/g, '');
+      el.innerHTML = frase + ' <strong>' + seguro + '</strong>. Confira também o spam. <button type="button" class="font-bold text-[#183b54] hover:underline" data-reenviar-confirmacao>Reenviar e-mail</button>';
+      el.classList.remove('text-red-600', 'hidden');
+      el.classList.add('text-zinc-600');
+      el.querySelector('[data-reenviar-confirmacao]').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        btn.disabled = true;
+        const { error } = await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } });
+        btn.textContent = error ? 'Aguarde um minuto e tente de novo' : 'E-mail reenviado';
+      });
+    }
   </script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>

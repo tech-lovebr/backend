@@ -2014,3 +2014,17 @@ function adicionarTagEscrita() {
   // Saiu do campo sem escrever nada: ele some de novo.
   input.addEventListener('blur', () => { if (!input.value.trim() && nova) nova.hidden = true; });
 })();
+
+/* Horário de funcionamento: só de 5 em 5 minutos. Se for digitado um
+   horário quebrado (ex.: 08:07), arredonda para o múltiplo de 5 mais perto. */
+['product-venue-hours-open', 'product-venue-hours-close'].forEach(id => {
+  const campo = document.getElementById(id);
+  if (!campo) return;
+  campo.addEventListener('change', () => {
+    const [h, m] = String(campo.value || '').split(':').map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m) || m % 5 === 0) return;
+    let total = Math.round((h * 60 + m) / 5) * 5;
+    if (total >= 24 * 60) total = 24 * 60 - 5;
+    campo.value = `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  });
+});

@@ -134,26 +134,13 @@ function renderFinanceStats() {
   const grid = document.getElementById('finance-stat-grid');
   if (!grid) return;
 
-  const saqueDisponivel = computeSaldoDisponivel();
   const saldoAReceber = computeSaldoAReceber();
-  const faturamentoEsteMes = computeFaturamentoDoMes(0);
-  const faturamentoMesPassado = computeFaturamentoDoMes(1);
   const valorEmAberto = computeValorEmAberto();
 
   grid.innerHTML = `
     <div class="dash-card finance-stat-card">
-      <p class="finance-stat-label">Saque disponível</p>
-      <p class="finance-stat-value">${formatCurrency(saqueDisponivel)}</p>
-      <button type="button" class="btn-secondary finance-stat-action-btn" id="request-withdrawal-btn">Solicitar saque</button>
-    </div>
-    <div class="dash-card finance-stat-card">
       <p class="finance-stat-label">Saldo a receber</p>
       <p class="finance-stat-value">${formatCurrency(saldoAReceber)}</p>
-    </div>
-    <div class="dash-card finance-stat-card">
-      <p class="finance-stat-label">Faturamento este mês</p>
-      <p class="finance-stat-value">${formatCurrency(faturamentoEsteMes)}</p>
-      <p class="finance-stat-sub">Mês passado: ${formatCurrency(faturamentoMesPassado)}</p>
     </div>
     <div class="dash-card finance-stat-card finance-acesso-card">
       <nav class="finance-acesso-lista">
@@ -172,7 +159,11 @@ function renderFinanceStats() {
   renderListaFinanceira();
 
   const withdrawBtn = document.getElementById('request-withdrawal-btn');
-  if (withdrawBtn) withdrawBtn.addEventListener('click', openWithdrawalModal);
+  // O botão fica na carteira (não é redesenhado): liga uma vez só.
+  if (withdrawBtn && !withdrawBtn.dataset.ligado) {
+    withdrawBtn.dataset.ligado = '1';
+    withdrawBtn.addEventListener('click', openWithdrawalModal);
+  }
 }
 
 /* -------------------- Acesso rápido: Extrato / Saques / Notas fiscais --------------------

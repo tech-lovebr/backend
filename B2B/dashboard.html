@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=741">
+  <link rel="stylesheet" href="css/styles.css?v=742">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -60,61 +60,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-[1.38fr_0.73fr] gap-6">
 
           <div class="dashboard-side-stack">
-            <div class="dash-card wallet-card">
-              <button type="button" class="wallet-eye-btn wallet-eye-btn-global" id="wallet-eye-btn" aria-label="Mostrar ou ocultar valores">
-                <svg class="wallet-eye-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
-                <svg class="wallet-eye-icon-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12c1.292 4.338 5.31 7.5 10.066 7.5.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.5a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
-              </button>
-
-              <!-- Período do Faturamento: botão + drop-down (atalhos e calendário). -->
-              <div class="wallet-periodo" id="wallet-periodo">
-                <button type="button" class="wallet-periodo-btn" id="wallet-periodo-btn" aria-haspopup="dialog" aria-expanded="false">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
-                  <span id="wallet-periodo-rotulo">Últimos 30 dias</span>
-                </button>
-                <div class="wallet-periodo-menu" id="wallet-periodo-menu" role="dialog" aria-label="Escolher período" hidden>
-                  <div class="wallet-periodo-corpo">
-                    <div class="wallet-periodo-atalhos">
-                      <p>Últimos</p>
-                      <button type="button" data-periodo-dias="1">1d</button>
-                      <button type="button" data-periodo-dias="7">7d</button>
-                      <button type="button" data-periodo-dias="15">15d</button>
-                      <button type="button" data-periodo-dias="30">30d</button>
-                    </div>
-                    <div class="wallet-periodo-cal" id="wallet-periodo-cal"></div>
-                  </div>
-                  <div class="wallet-periodo-rodape">
-                    <button type="button" class="wallet-periodo-cancelar" id="wallet-periodo-cancelar">Cancelar</button>
-                    <button type="button" class="wallet-periodo-aplicar" id="wallet-periodo-aplicar">Aplicar</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="wallet-tabs" id="wallet-tabs">
-                <button type="button" class="wallet-tab active" data-wallet-tab="saldo">Saldo</button>
-                <button type="button" class="wallet-tab" data-wallet-tab="faturamento">Faturamento</button>
-              </div>
-
-              <div class="wallet-panel" data-wallet-panel="saldo">
-                <div class="wallet-panel-row">
-                  <div class="wallet-balance-wrap">
-                    <a href="pagamentos" class="wallet-balance" id="wallet-saldo-value">—</a>
-                  </div>
-                  <a href="pagamentos" class="btn-primary wallet-withdraw-btn">Solicitar saque</a>
-                </div>
-                <p class="wallet-sub">Saldo pendente: <span id="wallet-saldo-pendente">—</span></p>
-              </div>
-
-              <div class="wallet-panel" data-wallet-panel="faturamento" hidden>
-                <div class="wallet-panel-row">
-                  <div class="wallet-balance-wrap">
-                    <a href="pagamentos" class="wallet-balance" id="wallet-faturamento-value">—</a>
-                  </div>
-                </div>
-                <p class="wallet-sub"><span id="wallet-faturamento-anterior-rotulo">Período anterior</span>: <span id="wallet-faturamento-anterior">—</span> <span id="wallet-faturamento-delta"></span></p>
-              </div>
-
-            </div>
+            <!-- Saldo total: valor grande e o gráfico do saldo ao longo dos
+                 últimos 30 dias (sem dados, uma linha cinza de exemplo).
+                 O card Saldo/Faturamento foi para Financeiro. -->
+            <a href="pagamentos" class="dash-saldo-total" id="dash-saldo-total">
+              <p class="dash-saldo-total-rotulo">Saldo total · Todos os saldos</p>
+              <p class="dash-saldo-total-valor" id="dash-saldo-total-valor">—</p>
+              <div class="dash-saldo-total-grafico" id="dash-saldo-total-grafico" aria-hidden="true"></div>
+            </a>
 
             <div class="dashboard-quick-actions">
               <button type="button" id="dashboard-create-payment-link-btn" class="btn-secondary dashboard-quick-action-btn">
@@ -389,6 +342,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=2"></script>
   <script src="js/shell.js?v=58"></script>
-  <script src="js/dashboard.js?v=64"></script>
+  <script src="js/dashboard.js?v=65"></script>
 </body>
 </html>

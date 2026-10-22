@@ -10079,3 +10079,26 @@ html body .topbar-account-name:not(#love-h-a), html body a.topbar-account-name:n
 html body #avatar-dropdown .topbar-dropdown-item:not(#love-h-a),
 html body #avatar-dropdown .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #18181B; }
 body[data-theme="dark"] #avatar-dropdown .topbar-dropdown-item, body[data-theme="dark"] #avatar-dropdown .profile-empresa-nome { color: #FFFFFF !important; }
+
+/* Dashboard › Saldo total (logo abaixo do "Olá"): rótulo, valor grande e o
+   gráfico cinza do saldo, sem caixa em volta. */
+html body .dash-saldo-total:not(#love-h-a) { display: block; text-decoration: none; color: inherit; }
+html body .dash-saldo-total-rotulo:not(#love-h-a) { margin: 0 0 0.35rem; font-size: 0.875rem; font-weight: 400; color: #18181B; }
+html body .dash-saldo-total-valor:not(#love-h-a) { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 2.25rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; color: #18181B; font-variant-numeric: tabular-nums; }
+html body .dash-saldo-total-grafico:not(#love-h-a) { margin-top: 1.25rem; height: 200px; }
+html body .dash-saldo-total-grafico svg:not(#love-h-a) { display: block; width: 100%; height: 100%; }
+body[data-theme="dark"] .dash-saldo-total-rotulo, body[data-theme="dark"] .dash-saldo-total-valor { color: #FFFFFF !important; }
+
+/* Financeiro: a carteira (Saldo/Faturamento) ocupa o lugar de Saque
+   disponível e Faturamento este mês; Saldo a receber e Acesso rápido à
+   direita. O período fica dentro da caixa, no canto. */
+html body .finance-topo:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; margin-bottom: 1.5rem; align-items: stretch; }
+html body .finance-topo > .finance-stat-grid:not(#love-h-a) { display: contents; }
+html body .finance-topo .wallet-card .wallet-periodo:not(#love-h-a) { top: 1.15rem; bottom: auto; right: 3.6rem; }
+@media (max-width: 1023px) {
+  html body .finance-topo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  html body .finance-topo > .wallet-card:not(#love-h-a) { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  html body .finance-topo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+}

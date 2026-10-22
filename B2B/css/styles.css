@@ -9931,3 +9931,33 @@ body[data-theme="dark"] #product-drawer .product-wizard-footer { background: #1F
 html body .produto-voltar:not(#love-h-a) { height: auto; padding: 0; border: none; background: none; color: #18181B; gap: 0; margin-left: -4px; }
 html body .produto-voltar:hover:not(#love-h-a) { border: none; color: #52525B; }
 html body .produto-titulo-wrap:not(#love-h-a) { gap: 0.35rem; }
+
+/* Adicionar novo produto: as etapas (Categoria, Detalhes, Mídia) abrem num
+   2º menu lateral branco, igual ao de Configurações, colado no menu de
+   ícones e indo até o fim da tela; o formulário fica à direita. */
+html body[data-page="produtos"] .b2b-main:not(#love-h-a) { position: relative; }
+html body.produto-editor-aberto[data-page="produtos"] .b2b-content:not(#love-h-a) { margin-left: 240px; }
+html body.produto-editor-aberto #product-drawer.show:not(#love-h-a) { position: static; }
+html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a) {
+  position: absolute; top: var(--topbar-height); left: 0; bottom: 0; width: 240px; z-index: 5;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0.25rem;
+  margin: 0; padding: 16px; background: #FFFFFF; border: none; border-right: 1px solid #EAEAEA; overflow-y: auto;
+}
+html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a)::before {
+  content: "Etapas"; display: block; padding: 0 0 0.75rem; margin: 0 0 0.25rem; border-bottom: 1px solid #F4F4F5;
+  font-size: 14px; font-weight: 700; letter-spacing: -0.02em; line-height: 20px; color: #18181B;
+}
+html body.produto-editor-aberto #product-drawer .product-wizard-tab:not(#love-h-a) {
+  flex: 0 0 auto; width: 100%; height: auto; margin: 0; padding: 0.65rem 0.85rem; text-align: left;
+  border: 1px solid transparent; border-radius: 0 8px 8px 0; background: transparent; box-shadow: none;
+  font-size: 13px; font-weight: 600; letter-spacing: -0.16px; line-height: 19.5px; color: #475569;
+}
+html body.produto-editor-aberto #product-drawer .product-wizard-tab:hover:not(#love-h-a) { background: #F4F4F5; color: #18181B; }
+html body.produto-editor-aberto #product-drawer .product-wizard-tab.is-active:not(#love-h-a) { background: #F4F4F5; color: #333333; font-weight: 700; border-bottom-color: transparent; }
+/* Sem as abas no topo, a caixa do formulário volta a ter os cantos de cima arredondados. */
+html body.produto-editor-aberto #product-drawer .form-drawer-body:not(#love-h-a) { border-top: 1px solid #E4E4E7; border-radius: 10px 10px 0 0; }
+@media (max-width: 900px) {
+  html body.produto-editor-aberto[data-page="produtos"] .b2b-content:not(#love-h-a) { margin-left: 0; }
+  html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a) { position: static; width: auto; flex-direction: row; padding: 0 0 1rem; border-right: none; background: transparent; }
+  html body.produto-editor-aberto #product-drawer .product-wizard-tabs:not(#love-h-a)::before { display: none; }
+}

@@ -730,9 +730,19 @@ function renderCategorias() {
       const f = fatias[Number(arco.dataset.fatia)];
       dica.innerHTML = `<div class="dash-dica-linha"><span class="dash-chip-cor" style="background:${f.cor}"></span><span>${escapeHtml(f.rotulo)}</span><b>${dinheiro ? formatCurrency(f.valor) : formatNumber(f.valor)} · ${Math.round(f.pct)}%</b></div>`;
       dica.hidden = false;
+      // A dica fica sempre dentro do card: perto da borda, vira para o outro lado.
       const caixa = host.querySelector('.dash-rosca').getBoundingClientRect();
-      dica.style.left = `${e.clientX - caixa.left + 12}px`;
-      dica.style.top = `${e.clientY - caixa.top + 12}px`;
+      const px = e.clientX - caixa.left;
+      const py = e.clientY - caixa.top;
+      const larg = dica.offsetWidth;
+      const alt = dica.offsetHeight;
+      let esquerda = px + 12;
+      if (esquerda + larg > caixa.width) esquerda = px - 12 - larg;
+      esquerda = Math.max(0, Math.min(esquerda, caixa.width - larg));
+      let topo = py + 12;
+      if (topo + alt > caixa.height) topo = py - 12 - alt;
+      dica.style.left = `${esquerda}px`;
+      dica.style.top = `${Math.max(0, topo)}px`;
     });
     arco.addEventListener('mouseleave', () => { dica.hidden = true; });
   });

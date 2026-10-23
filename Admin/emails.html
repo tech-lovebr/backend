@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo Love</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-admin.png">
+  <link rel="apple-touch-icon" href="assets/fav-admin.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=106">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js?v=4"></script>
+  <script src="js/shell.js?v=15"></script>
+</head>
+<body data-page="settings" data-title="E-mails" data-voltar="settings.html">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <nav class="conteudo-tabs" id="abas-emails" aria-label="E-mails">
+          <button type="button" class="conteudo-tab is-active" data-aba="metricas">Métricas</button>
+          <button type="button" class="conteudo-tab" data-aba="templates">Templates</button>
+        </nav>
+
+        <div id="aba-metricas">
+          <section class="card conexao-ses" id="conexao-ses" hidden></section>
+
+          <section class="kpi-grid" id="kpi-grid"></section>
+
+          <section class="bloco emails-graficos">
+            <div class="card viz-root">
+              <div class="viz-head">
+                <div><h2>Volume e entregas diárias</h2><p>Disparos, entregas e bounces registrados no livro-razão</p></div>
+              </div>
+              <div class="viz-body" id="grafico-dias"></div>
+            </div>
+            <div class="card viz-root">
+              <div class="viz-head">
+                <div><h2>Disparos por categoria</h2><p>Distribuição dos envios no período</p></div>
+              </div>
+              <div class="viz-body" id="grafico-categorias"></div>
+            </div>
+          </section>
+
+          <section class="card table-card bloco">
+            <div class="table-toolbar">
+              <div class="table-toolbar-esq">
+                <div><h2 class="table-titulo">Registro de disparos</h2><p class="table-subtitulo">Tudo o que saiu pelo Amazon SES, atualizado pelos eventos da AWS</p></div>
+              </div>
+              <div class="table-toolbar-dir">
+                <input type="search" class="search-input" id="busca" placeholder="Buscar destinatário ou assunto...">
+                <select class="field-select" id="filtro-status" style="width:auto">
+                  <option value="">Todos os status</option>
+                  <option value="entregue">Entregue</option>
+                  <option value="enviado">Enviado</option>
+                  <option value="atrasado">Atrasado</option>
+                  <option value="bounce">Bounce</option>
+                  <option value="denuncia">Denúncia</option>
+                  <option value="rejeitado">Rejeitado</option>
+                  <option value="falhou">Falhou</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Template</th><th>Destinatário</th><th>Remetente</th><th>Status</th><th>Provedor</th><th class="col-numero">Latência</th><th>Horário</th></tr></thead>
+                <tbody id="tbody-envios"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div id="aba-templates" hidden>
+          <section class="card table-card">
+            <div class="table-toolbar">
+              <div class="table-toolbar-esq"><input type="search" class="search-input" id="busca-templates" placeholder="Buscar template..."></div>
+              <div class="table-toolbar-dir"></div>
+            </div>
+            <div class="table-wrap">
+              <table class="data">
+                <thead><tr><th>Nome</th><th>Assunto</th><th>Categoria</th><th>Atualizado em</th></tr></thead>
+                <tbody id="tbody-templates"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/editor-rico.js?v=7"></script>
+  <script src="js/emails.js?v=1"></script>
+</body>
+</html>

@@ -16,7 +16,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-cost-explorer": "^3.1156.0",
     "@aws-sdk/client-ses": "^3.1138.0",
+    "@aws-sdk/client-sesv2": "^3.1156.0",
+    "@aws-sdk/client-sns": "^3.1156.0",
     "@supabase/supabase-js": "^2.116.0"
   },
   "devDependencies": {

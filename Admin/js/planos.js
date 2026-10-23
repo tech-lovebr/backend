@@ -7,6 +7,20 @@
 
 const PERIODOS = { mensal: '1 mês', trimestral: '3 meses', semestral: '6 meses', anual: '12 meses' };
 
+/* Cada plano tem moeda e país: a Love vai rodar em outros países, com outro
+   domínio, e o preço sai na moeda de quem compra. Por enquanto só Brasil/real;
+   para abrir outro país, acrescente aqui (ex.: US: { nome: 'Estados Unidos',
+   moeda: 'USD', locale: 'en-US' }). */
+const PAISES = { BR: { nome: 'Brasil', moeda: 'BRL', locale: 'pt-BR' } };
+const MOEDAS_PLANO = { BRL: 'Real (BRL)' };
+
+function precoDoPlano(p) {
+  const moeda = p.moeda || 'BRL';
+  if (!Number(p.preco)) return 'Grátis';
+  const locale = (PAISES[p.pais] || PAISES.BR).locale;
+  return Number(p.preco).toLocaleString(locale, { style: 'currency', currency: moeda });
+}
+
 let PLANOS = [];
 let ASSINANTES = new Map();
 
@@ -28,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function carregar() {
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 8);
+  renderLoading(tbody, 9);
 
   const [planos, fornecedores] = await Promise.all([
     safeSelect('planos', '*', q => q.order('ordem').order('created_at')),
@@ -36,7 +50,7 @@ async function carregar() {
   ]);
 
   if (planos.error) {
-    tbody.innerHTML = `<tr class="no-hover"><td colspan="8"><div class="empty-state">
+    tbody.innerHTML = `<tr class="no-hover"><td colspan="9"><div class="empty-state">
       <strong>Banco ainda não está preparado</strong>
       <p>Rode supabase/migrations/090_planos.sql no SQL Editor do Supabase.</p></div></td></tr>`;
     return;
@@ -61,11 +75,11 @@ async function carregar() {
 function render() {
   const tbody = document.getElementById('tbody');
   const termo = document.getElementById('busca').value.trim().toLowerCase();
-  const lista = PLANOS.filter(p => !termo || [p.id, p.nome, p.descricao, p.status, PERIODOS[p.periodo], p.preco]
+  const lista = PLANOS.filter(p => !termo || [p.id, p.nome, p.descricao, p.status, PERIODOS[p.periodo], p.preco, p.moeda]
     .some(v => String(v ?? '').toLowerCase().includes(termo)));
 
   if (!lista.length) {
-    renderEmpty(tbody, 8, 'Nenhum plano', termo ? 'Nada encontrado para essa busca.' : 'Adicione o primeiro plano.');
+    renderEmpty(tbody, 9, 'Nenhum plano', termo ? 'Nada encontrado para essa busca.' : 'Adicione o primeiro plano.');
     return;
   }
 
@@ -75,7 +89,8 @@ function render() {
       <td class="cell-strong">${escapeHtml(p.nome)}</td>
       <td class="cell-muted plano-descricao" title="${escapeHtml(p.descricao || '')}">${escapeHtml(p.descricao || '—')}</td>
       <td>${p.status === 'ativo' ? badge('Ativo', 'badge-success') : badge('Inativo')}</td>
-      <td class="cell-strong valor-dinheiro">${Number(p.preco) ? formatCurrency(p.preco) : 'Grátis'}</td>
+      <td class="cell-strong valor-dinheiro">${escapeHtml(precoDoPlano(p))}</td>
+      <td class="cell-muted">${escapeHtml(p.moeda || 'BRL')}</td>
       <td>${badge(PERIODOS[p.periodo] || p.periodo)}</td>
       <td class="col-numero">${formatNumber(p.limite_empresas)}</td>
       <td class="col-numero">${formatNumber(ASSINANTES.get(String(p.nome).toLowerCase()) || 0)}</td>
@@ -110,7 +125,21 @@ function abrirFormulario(item) {
         </label>
         <div class="field-row">
           <label class="field">
-            <span class="field-label">Preço (R$)</span>
+            <span class="field-label">País</span>
+            <select class="field-select" name="pais">
+              ${Object.entries(PAISES).map(([k, v]) => `<option value="${k}" ${(item?.pais || 'BR') === k ? 'selected' : ''}>${v.nome}</option>`).join('')}
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Moeda</span>
+            <select class="field-select" name="moeda">
+              ${Object.entries(MOEDAS_PLANO).map(([k, v]) => `<option value="${k}" ${(item?.moeda || 'BRL') === k ? 'selected' : ''}>${v}</option>`).join('')}
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Preço</span>
             <input class="field-input" name="preco" type="number" min="0" step="0.01" value="${item?.preco ?? 0}">
           </label>
           <label class="field">
@@ -167,8 +196,13 @@ function abrirFormulario(item) {
       periodo: d.periodo,
       limite_empresas: Math.max(1, Math.round(Number(d.limite_empresas) || 1)),
       status: d.status,
+      pais: d.pais || 'BR',
+      moeda: d.moeda || 'BRL',
       updated_at: new Date().toISOString()
     };
+
+    // Sem a migration 091 ainda, salva sem país e moeda.
+    if (!PLANOS.some(p => 'moeda' in p)) { delete payload.pais; delete payload.moeda; }
 
     Drawer.setFooterBusy(true);
     let resposta;

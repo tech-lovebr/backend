@@ -11,15 +11,10 @@
 //   EMAIL_WEBHOOK_SECRET    string aleatória — quem chamar este endpoint precisa enviá-la
 //                           no header "x-webhook-secret"
 
-const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
+const { enviarEmail } = require("./_ses");
 
-const sesClient = new SESClient({
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
+// Categoria de cada tipo no painel de E-mails do Admin.
+const CATEGORIA_DO_TIPO = { WELCOME: "Boas-vindas", GUEST_CONFIRMED: "Convidados", GIFT_RECEIVED: "Presentes" };
 
 function buildHtmlTemplate(content) {
   return `
@@ -138,32 +133,17 @@ module.exports = async (req, res) => {
   try {
     const template = getTemplate(type, data);
 
-    const command = new SendEmailCommand({
-      Source: process.env.EMAIL_FROM || "Love <contato@love.com.br>",
-      Destination: {
-        ToAddresses: [to],
-      },
-      Message: {
-        Subject: {
-          Data: template.subject,
-          Charset: "UTF-8",
-        },
-        Body: {
-          Html: {
-            Data: template.html,
-            Charset: "UTF-8",
-          },
-          Text: {
-            Data: template.text,
-            Charset: "UTF-8",
-          },
-        },
-      },
-      ReplyToAddresses: ["contato@love.com.br"],
+    const result = await enviarEmail({
+      para: to,
+      assunto: template.subject,
+      html: template.html,
+      texto: template.text,
+      responderPara: "contato@love.com.br",
+      template: type,
+      categoria: CATEGORIA_DO_TIPO[type] || "Transacional",
     });
-
-    const result = await sesClient.send(command);
-    return res.status(200).json({ success: true, messageId: result.MessageId });
+    if (!result.ok) throw new Error(result.erro);
+    return res.status(200).json({ success: true, messageId: result.messageId });
   } catch (error) {
     console.error("Erro no envio pelo SES:", error);
     return res.status(500).json({ error: error.message });

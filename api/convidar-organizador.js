@@ -93,22 +93,16 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
-    const ses = new SESClient({
-      region: process.env.AWS_REGION || "us-east-1",
-      credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY },
+    const { enviarEmail } = require("./_ses");
+    const r = await enviarEmail({
+      para: conv.email,
+      assunto: `${nomeAnfitriao} convidou você para organizar ${nomeEvento}`,
+      texto: `${nomeAnfitriao} convidou você para organizar ${nomeEvento} na Love, como ${papel}. Aceite em: ${link}`,
+      html: htmlDoEmail({ anfitriao: nomeAnfitriao, evento: nomeEvento, papel, link }),
+      template: "Convite de organizador",
+      categoria: "Convites",
     });
-    await ses.send(new SendEmailCommand({
-      Source: process.env.EMAIL_FROM,
-      Destination: { ToAddresses: [conv.email] },
-      Message: {
-        Subject: { Data: `${nomeAnfitriao} convidou você para organizar ${nomeEvento}`, Charset: "UTF-8" },
-        Body: {
-          Text: { Data: `${nomeAnfitriao} convidou você para organizar ${nomeEvento} na Love, como ${papel}. Aceite em: ${link}`, Charset: "UTF-8" },
-          Html: { Data: htmlDoEmail({ anfitriao: nomeAnfitriao, evento: nomeEvento, papel, link }), Charset: "UTF-8" },
-        },
-      },
-    }));
+    if (!r.ok) throw new Error(r.erro);
     return res.status(200).json({ ok: true, enviado: true, link });
   } catch (e) {
     console.error("Erro ao enviar convite de organizador:", e);

@@ -165,24 +165,18 @@ async function responder(req, res) {
     email.motivo = "email_nao_configurado";
   } else {
     try {
-      const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
-      const ses = new SESClient({
-        region: process.env.AWS_REGION || "us-east-1",
-        credentials: { accessKeyId: process.env.AWS_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY },
+      const { enviarEmail } = require("./_ses");
+      const r = await enviarEmail({
+        para: ticket.email,
+        responderPara: suporte,
+        assunto: assuntoEmail,
+        texto: `${texto}\n\nProtocolo ${ticket.protocolo}`,
+        html: layoutDoEmail({ corpoHtml: html, protocolo: ticket.protocolo, suporte }),
+        template: "Resposta do atendimento",
+        categoria: "Atendimento",
       });
-      const r = await ses.send(new SendEmailCommand({
-        Source: process.env.EMAIL_FROM,
-        Destination: { ToAddresses: [ticket.email] },
-        ReplyToAddresses: [suporte],
-        Message: {
-          Subject: { Data: assuntoEmail, Charset: "UTF-8" },
-          Body: {
-            Text: { Data: `${texto}\n\nProtocolo ${ticket.protocolo}`, Charset: "UTF-8" },
-            Html: { Data: layoutDoEmail({ corpoHtml: html, protocolo: ticket.protocolo, suporte }), Charset: "UTF-8" },
-          },
-        },
-      }));
-      email = { enviado: true, motivo: null, id: r && r.MessageId };
+      if (!r.ok) throw new Error(r.erro);
+      email = { enviado: true, motivo: null, id: r.messageId };
     } catch (e) {
       console.error("Atendimento: falha ao enviar e-mail", e);
       email = { enviado: false, motivo: "falha_envio", detalhe: String(e && e.message || e) };

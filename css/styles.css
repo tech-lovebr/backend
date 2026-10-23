@@ -10360,3 +10360,11 @@ body[data-theme="dark"] :is(#love-confirmar-cancelar, .b2b-mensagem-cancelar, .c
 /* Propostas recebidas: as abas Criar nova / Minhas solicitações somem de verdade
    (o display das abas vencia o .hidden). */
 html body #pedidos-abas.hidden:not(#love-h-a) { display: none !important; }
+
+/* Confirmar remoção nos pop-ups: cinza claro, como o "Sim, deletar" do Hub
+   (#F4F4F5, borda #E4E4E7, texto escuro; hover só escurece a borda). */
+html body button.love-confirmar-perigo:not(#love-h-a) { background: #F4F4F5 !important; border: 1px solid #E4E4E7 !important; color: #18181B !important; box-shadow: none !important; }
+html body button.love-confirmar-perigo:not(#love-h-a):hover:not(:disabled) { background: #F4F4F5 !important; border-color: #181D24 !important; color: #181D24 !important; }
+body[data-theme="dark"] button.love-confirmar-perigo { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+html body #btn-confirm-delete-event:not(#love-h-a) { background: #F4F4F5 !important; border: 1px solid #E4E4E7 !important; color: #18181B !important; }
+html body #btn-confirm-delete-event:not(#love-h-a):hover { background: #F4F4F5 !important; border-color: #181D24 !important; color: #181D24 !important; }

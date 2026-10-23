@@ -502,7 +502,9 @@ function opAbrirProposta() {
   document.getElementById('op-enviada').hidden = true;
   document.getElementById('op-proposta-form').reset();
   document.getElementById('op-inclui-contador').textContent = '0/1000';
-  document.getElementById('op-proposta-sub').textContent = `${opTitulo(p)} · ${opDataCurta(p)} · ${[p.cidade, p.uf].filter(Boolean).join(', ')}`;
+  // Título, data e local, cada um numa caixinha cinza.
+  document.getElementById('op-proposta-sub').innerHTML = [opTitulo(p), opDataCurta(p), [p.cidade, p.uf].filter(Boolean).join(', ')]
+    .filter(Boolean).map(t => `<span>${escapeHtml(t)}</span>`).join('');
   document.getElementById('op-faixa-pill').textContent = p.faixa ? opFaixaTexto(p) : '';
   // Produtos da empresa que atendem a categoria do pedido (sem nenhum, todos).
   const daCategoria = opMeusProdutos.filter(pr => opCategoriasDoProduto(pr.category).includes(p.categoria));

@@ -10388,3 +10388,10 @@ html body .op-prop-voltar:hover:not(#love-h-a) { color: #181D24; }
 html body .op-prop-voltar[hidden]:not(#love-h-a), html body .op-prop-btn[hidden]:not(#love-h-a) { display: none; }
 html body .op-prop-btn:not(#love-h-a) { height: 44px; min-width: 140px; justify-content: center; }
 html body #op-produto[hidden]:not(#love-h-a) { display: none; }
+
+/* Enviar proposta: título, data e local em caixinhas cinzas; as 3 abas
+   (Produto, Orçamento, Detalhes) dividem a largura toda do pop-up. */
+html body .op-prop-sub:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+html body .op-prop-sub span:not(#love-h-a) { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 6px; background: #F4F4F5; font-size: 13px; font-weight: 500; color: #3F3F46; }
+html body .op-prop-abas:not(#love-h-a) { gap: 0; }
+html body .op-prop-aba:not(#love-h-a) { flex: 1 1 0; text-align: center; }

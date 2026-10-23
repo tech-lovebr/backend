@@ -7,8 +7,8 @@
 //   - Supabase (banco de dados): plano da organização pela Management API —
 //     a Supabase não tem API de fatura, então vale o preço do plano (ou o
 //     valor fixo em SUPABASE_CUSTO_MENSAL_USD, quando informado);
-//   - Amazon SES (e-mail): AWS Cost Explorer, serviço "Amazon Simple Email
-//     Service". O usuário IAM precisa da permissão ce:GetCostAndUsage.
+//   - Amazon AWS (e-mail): AWS Cost Explorer, fatura da conta inteira por
+//     serviço (SES, SNS, impostos). O usuário IAM precisa de ce:GetCostAndUsage.
 // E a cotação do dia (USD e EUR em reais) para converter tudo.
 //
 // Variáveis de ambiente:
@@ -18,7 +18,7 @@
 //   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY              (já usadas pelo SES)
 
 const crypto = require("crypto");
-const { createClient } = require("@supabase/supabase-js");
+const { supabaseAdmin } = require("./_ses");
 
 const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
 const MESES = 6;
@@ -140,7 +140,34 @@ async function custoSupabase(meses) {
     if (!(plano in PRECO_PLANO_SUPABASE)) {
       throw new Error(`Plano "${org.plan}" sem preço fixo; informe SUPABASE_CUSTO_MENSAL_USD`);
     }
-    return comValor(PRECO_PLANO_SUPABASE[plano], { detalhe: `Plano ${plano}` });
+    // Add-ons pagos de cada projeto (compute, IPv4, PITR, domínio...).
+    // Preço por hora vira mês com 730 h. O plano pago já cobre US$ 10 de compute por projeto.
+    let addons = 0;
+    const nomes = [];
+    try {
+      const rp = await fetch("https://api.supabase.com/v1/projects", cabecalho);
+      const projetos = rp.ok ? await rp.json() : [];
+      for (const p of projetos.filter(p => !org.id || p.organization_id === org.id || p.organization_slug === slug)) {
+        const ra = await fetch(`https://api.supabase.com/v1/projects/${p.id || p.ref}/billing/addons`, cabecalho);
+        if (!ra.ok) continue;
+        const ja = await ra.json();
+        let doProjeto = 0;
+        let compute = 0;
+        (ja.selected_addons || []).forEach(a => {
+          const preco = a.variant?.price || {};
+          const valor = Number(preco.amount) || 0;
+          const mensal = preco.interval === "hourly" ? valor * 730 : valor;
+          if (a.type === "compute_instance") compute += mensal;
+          else doProjeto += mensal;
+          if (mensal > 0) nomes.push(a.variant?.name || a.type);
+        });
+        doProjeto += plano === "free" ? compute : Math.max(0, compute - 10);
+        addons += doProjeto;
+      }
+    } catch { /* sem add-ons: fica só o plano */ }
+    const total = Math.round((PRECO_PLANO_SUPABASE[plano] + addons) * 100) / 100;
+    const detalhe = `Plano ${plano}` + (addons > 0 ? ` + add-ons (${nomes.join(", ")})` : "");
+    return comValor(total, { detalhe });
   } catch (e) {
     return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
   }
@@ -197,8 +224,8 @@ async function costExplorer(alvo, corpo) {
   return j;
 }
 
-async function custoSes(meses) {
-  const base = { fonte: "ses", nome: "Amazon SES", categoria: "E-mail", tipo: "recorrente", moeda: "USD" };
+async function custoAws(meses) {
+  const base = { fonte: "aws", nome: "Amazon AWS", categoria: "E-mail", tipo: "recorrente", moeda: "USD" };
   if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
     return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
   }
@@ -208,17 +235,28 @@ async function custoSes(meses) {
       TimePeriod: { Start: `${meses[0]}-01`, End: amanha },
       Granularity: "MONTHLY",
       Metrics: ["UnblendedCost"],
-      Filter: { Dimensions: { Key: "SERVICE", Values: ["Amazon Simple Email Service"] } }
+      GroupBy: [{ Type: "DIMENSION", Key: "SERVICE" }]
     });
+    // Fatura inteira da conta (SES, SNS, impostos...), somada por mês.
     const porMes = mesesZerados(meses);
+    const doMesAtual = {};
     let moeda = "USD";
     (j.ResultsByTime || []).forEach(p => {
       const mes = String(p.TimePeriod?.Start || "").slice(0, 7);
-      const custo = p.Total?.UnblendedCost;
-      if (custo?.Unit) moeda = custo.Unit;
-      if (mes in porMes) porMes[mes] += Number(custo?.Amount) || 0;
+      (p.Groups || []).forEach(g => {
+        const custo = g.Metrics?.UnblendedCost;
+        const valor = Number(custo?.Amount) || 0;
+        if (custo?.Unit) moeda = custo.Unit;
+        if (mes in porMes) porMes[mes] += valor;
+        if (mes === meses[meses.length - 1] && valor >= 0.005) {
+          const nome = String(g.Keys?.[0] || "").replace(/^Amazon |^AWS /, "").replace("Simple Email Service", "SES").replace("Simple Notification Service", "SNS");
+          doMesAtual[nome] = (doMesAtual[nome] || 0) + valor;
+        }
+      });
     });
-    return { ...base, moeda, status: "ativo", meses: porMes };
+    const servicos = Object.entries(doMesAtual).sort((a, b) => b[1] - a[1]).map(([n, v]) => `${n} US$ ${v.toFixed(2)}`);
+    const detalhe = servicos.length ? servicos.join(" · ") : "Sem cobrança no mês";
+    return { ...base, moeda, status: "ativo", detalhe, meses: porMes };
   } catch (e) {
     return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
   }
@@ -234,9 +272,16 @@ module.exports = async (req, res) => {
   const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   if (!token) return res.status(401).json({ error: "Sem sessão" });
 
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY), {
-    auth: { persistSession: false }
-  });
+  try {
+    return await responder(req, res, token);
+  } catch (e) {
+    return res.status(500).json({ error: String(e.message || e) });
+  }
+};
+
+async function responder(req, res, token) {
+  const supabase = supabaseAdmin();
+  if (!supabase) return res.status(500).json({ error: "Falta SUPABASE_SECRET_KEY no projeto love-platform da Vercel" });
   const { data: quem, error: erroSessao } = await supabase.auth.getUser(token);
   if (erroSessao || !quem?.user) return res.status(401).json({ error: "Sessão inválida" });
   const { data: admin } = await supabase
@@ -247,12 +292,12 @@ module.exports = async (req, res) => {
   if (!forcar && CACHE && Date.now() - CACHE.em < VALIDADE_CACHE) return res.status(200).json(CACHE.dados);
 
   const meses = ultimosMeses();
-  const [taxas, vercel, supa, ses] = await Promise.all([
-    cotacoes(), custoVercel(meses), custoSupabase(meses), custoSes(meses)
+  const [taxas, vercel, supa, aws] = await Promise.all([
+    cotacoes(), custoVercel(meses), custoSupabase(meses), custoAws(meses)
   ]);
 
-  const dados = { meses, cotacoes: taxas, itens: [vercel, supa, ses], atualizado_em: new Date().toISOString() };
+  const dados = { meses, cotacoes: taxas, itens: [vercel, supa, aws], atualizado_em: new Date().toISOString() };
   // Com alguma integração em erro, não guarda: a próxima consulta tenta de novo.
   if (!dados.itens.some(i => i.status === "erro")) CACHE = { em: Date.now(), dados };
   return res.status(200).json(dados);
-};
+}

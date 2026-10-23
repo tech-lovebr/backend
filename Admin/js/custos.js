@@ -82,7 +82,7 @@ async function buscarIntegracoes(forcar) {
       itens: [
         { fonte: 'vercel', nome: 'Vercel', categoria: 'Servidor', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado },
         { fonte: 'supabase', nome: 'Supabase', categoria: 'Banco de dados', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado },
-        { fonte: 'ses', nome: 'Amazon SES', categoria: 'E-mail', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado }
+        { fonte: 'aws', nome: 'Amazon AWS', categoria: 'E-mail', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado }
       ]
     };
   }

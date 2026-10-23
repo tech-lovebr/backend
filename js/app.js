@@ -1415,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'pedidos', label: 'Criar solicitação' },
         { id: 'explore', label: 'Explorar' },
         { id: 'messages', label: 'Mensagens' },
-        { id: 'contracted', label: 'Propostas' },
+        { id: 'contracted', label: 'Contratos' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
         { id: 'insurance', label: 'Benefícios', oculto: true },
         { id: 'favorites', label: 'Favoritos' }
@@ -18317,7 +18317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'explore': 'Explorar',
         'pedidos': 'Criar solicitação',
         'messages': 'Mensagens',
-        'contracted': 'Propostas',
+        'contracted': 'Contratos',
         'insurance': 'Benefícios',
         'favorites': 'Favoritos'
       };
@@ -18373,7 +18373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (exploreView) exploreView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
-        if (toolbarTitle) toolbarTitle.textContent = 'Minhas propostas';
+        if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
         if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
         renderB2BContracted();
         mostrarAbaDeContratos(abaDeContratos);

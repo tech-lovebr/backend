@@ -298,7 +298,7 @@
     const criar = document.getElementById('btn-rfp-novo');
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
     if (titulo && pedidosAberto) titulo.textContent = aberta ? TITULO_DA_NOVA : TITULO_DA_LISTA;
-    if (voltar) voltar.hidden = !aberta;
+    if (voltar) voltar.hidden = true;
     if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 

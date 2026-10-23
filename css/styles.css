@@ -11138,3 +11138,10 @@ html body .chk-modal-card:not(#love-h-a) { min-height: min(563px, calc(100vh - 4
 html body #chk-modal .chk-form:not(#love-h-a) { flex: 1 1 auto; display: flex; flex-direction: column; }
 html body #chk-modal .chk-form-colunas:not(#love-h-a) { flex: 1 1 auto; }
 html body #chk-modal .chk-form-acoes:not(#love-h-a) { margin-top: auto; padding-top: 18px; }
+
+/* Cadeira: assento centralizado na cadeira, iniciais no meio com a mesma margem dos quatro lados. */
+html body .floorplan-seat-dot:not(#love-h-a) { padding: 0; justify-content: center; align-items: center; }
+html body .floorplan-seat-dot .floorplan-seat-dot-line:not(#love-h-a) { max-width: 22px; text-align: center; line-height: 1; }
+
+/* Pop-up Adicionar/Editar convidado: sem a linha horizontal abaixo do título. */
+html body #drawer-add-guest > div:first-child:not(#love-h-a) { border-bottom: 0 !important; }

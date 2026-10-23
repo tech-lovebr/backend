@@ -1340,14 +1340,45 @@
     return `${etapa === 1 ? htmlModos() : ''}${formato === 'completo' ? htmlPaginaCompleto() : htmlPaginaUnico()}`;
   }
 
+  /** Texto do drop-down de serviços do Evento completo. */
+  function resumoDosServicos() {
+    const marcados = CATEGORIAS.filter(c => lote.categorias.includes(c.id));
+    return !marcados.length ? 'Selecione os serviços...'
+      : marcados.length <= 2 ? marcados.map(c => CATEGORIA_CURTA[c.id] || c.nome).join(', ')
+      : `${marcados.length} serviços selecionados`;
+  }
+
+  /**
+   * Marca/desmarca um serviço no drop-down do Evento completo sem redesenhar a
+   * tela (assim não pisca): só troca a caixinha e o texto do campo.
+   * @param {HTMLElement} opcao
+   */
+  function marcarServicoNoLugar(opcao) {
+    const id = opcao.dataset.loteCat || '';
+    const i = lote.categorias.indexOf(id);
+    if (i >= 0) lote.categorias.splice(i, 1);
+    else { lote.categorias.push(id); if (!lote.itens[id]) lote.itens[id] = itemNovo(id); }
+    const on = i < 0;
+    opcao.classList.toggle('ativa', on);
+    opcao.setAttribute('aria-selected', String(on));
+    const caixa = opcao.closest('.rfp-cat-multi');
+    const texto = caixa && caixa.querySelector('.rfp-cat-gatilho span');
+    if (texto) { texto.textContent = resumoDosServicos(); texto.classList.toggle('rfp-cat-vazio', !lote.categorias.length); }
+    if (erros.categorias) {
+      delete erros.categorias;
+      const sec = caixa && caixa.closest('.rfp-secao');
+      const aviso = sec && sec.querySelector('.rfp-erro');
+      if (aviso) aviso.remove();
+    }
+    if (!publicando && !publicado) agendarRascunho();
+  }
+
   /** Grade compacta de serviços (marcar um ou mais). */
   function gradeDeServicos() {
     // Evento completo: drop-down igual ao de Categoria, mas com caixinhas
     // para marcar vários serviços (fica aberto enquanto a pessoa marca).
     const marcados = CATEGORIAS.filter(c => lote.categorias.includes(c.id));
-    const resumo = !marcados.length ? 'Selecione os serviços...'
-      : marcados.length <= 2 ? marcados.map(c => CATEGORIA_CURTA[c.id] || c.nome).join(', ')
-      : `${marcados.length} serviços selecionados`;
+    const resumo = resumoDosServicos();
     return `
       <div class="rfp-cat-select rfp-cat-multi${categoriaAberta ? ' is-open' : ''}">
         <button type="button" class="rfp-cat-gatilho" data-rfp-cat-gatilho aria-haspopup="listbox" aria-expanded="${categoriaAberta}">
@@ -1511,6 +1542,7 @@
       return true;
     }
     const cat = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-cat]'));
+    if (cat && cat.closest('.rfp-cat-multi')) { marcarServicoNoLugar(cat); return true; }
     if (cat) { alternarCategoriaDoLote(cat.dataset.loteCat || ''); return true; }
     const tag = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-tag]'));
     if (tag) {

@@ -23,6 +23,10 @@ const { supabaseAdmin } = require("./_ses");
 const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
 const MESES = 6;
 const PRECO_PLANO_SUPABASE = { free: 0, pro: 25, team: 599 };
+// Plano atual da Love na Supabase (decisão de 2026-10-23: fica no Free por
+// enquanto). Vale quando a API não deixa ler o plano. Ao mudar para o Pro,
+// troque aqui para "pro" ou informe SUPABASE_CUSTO_MENSAL_USD na Vercel.
+const PLANO_SUPABASE_ATUAL = "free";
 
 // O Cost Explorer cobra US$ 0,01 por consulta: guarda a resposta por 6 horas
 // enquanto a função estiver quente.
@@ -121,7 +125,8 @@ async function custoSupabase(meses) {
   });
 
   if (fixo !== undefined && fixo !== "") return comValor(Number(fixo) || 0, { detalhe: "Valor fixo informado" });
-  if (!token) return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
+  const planoInformado = () => comValor(PRECO_PLANO_SUPABASE[PLANO_SUPABASE_ATUAL], { detalhe: `Plano ${PLANO_SUPABASE_ATUAL}` });
+  if (!token) return planoInformado();
 
   try {
     const cabecalho = { headers: { Authorization: `Bearer ${token}` } };
@@ -140,6 +145,8 @@ async function custoSupabase(meses) {
       }
     }
     const r = await fetch(`https://api.supabase.com/v1/organizations/${encodeURIComponent(slug)}`, cabecalho);
+    // Token sem permissão de ver a organização: usa o plano informado acima.
+    if (r.status === 401 || r.status === 403) return planoInformado();
     if (!r.ok) throw new Error(`Supabase respondeu ${r.status}`);
     const org = await r.json();
     const plano = String(org.plan || "").toLowerCase();

@@ -4022,3 +4022,12 @@ body[data-page="dashboard"] .kpi-grid > .kpi .kpi-linha .kpi-value { font-size: 
 body[data-page="dashboard"] .kpi-grid > .kpi .kpi-sub { order: 2; margin-top: .375rem; font-size: .75rem; color: #A1A1AA; white-space: normal; overflow: visible; }
 body[data-theme="dark"] .kpi-variacao.is-negativa { background: rgba(192, 0, 26, .18); color: #FF8A8A; }
 body[data-theme="dark"] .kpi-variacao.is-positiva { background: rgba(21, 128, 61, .2); color: #6EE7A0; }
+
+/* Dashboard: as três linhas do gráfico como botões numa linha só.
+   Clicar mostra só aquela; clicar de novo volta para as três. */
+.dash-chips { flex-wrap: nowrap; overflow-x: auto; }
+button.dash-chip { font: inherit; font-size: .8125rem; font-weight: 500; padding: .375rem .75rem; cursor: pointer; white-space: nowrap; transition: border-color .15s ease, color .15s ease, opacity .15s ease; }
+button.dash-chip:hover { border-color: #181D24; }
+button.dash-chip.is-ativa { border-color: #181D24; color: #181D24; font-weight: 600; }
+button.dash-chip.is-apagada { color: #A1A1AA; }
+button.dash-chip.is-apagada .dash-chip-cor { opacity: .4; }

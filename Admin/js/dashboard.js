@@ -492,16 +492,35 @@ function renderKpis() {
   ].join('');
 }
 
-/* ------------------------------------------- Receita, custo e lucro
+/* ------------------------------------- TPV, custo total e faturamento bruto
    Linhas no tempo. Um dia só: por hora. Até dois meses: por dia. Mais que
    isso: por mês. Passar o mouse mostra os três valores daquele ponto. */
 
 const SERIES = [
-  { id: 'receita', rotulo: 'Receita', cor: '#1baf7a' },
-  { id: 'custo', rotulo: 'Custo Total', cor: '#64748b' },
-  { id: 'lucro', rotulo: 'Lucro Líquido', cor: '#c0001a' }
+  { id: 'tpv', rotulo: 'TPV total', cor: '#2a78d6' },
+  { id: 'custo', rotulo: 'Custo total', cor: '#64748b' },
+  { id: 'receita', rotulo: 'Fat. bruto', cor: '#1baf7a' }
 ];
-let SERIES_VISIVEIS = new Set(SERIES.map(s => s.id));
+// Nenhuma escolhida: mostra as três. Clicar numa mostra só ela; clicar de
+// novo na mesma volta para as três. Nunca fica sem linha nenhuma.
+let SERIE_ESCOLHIDA = null;
+
+function montarTopoDoGrafico() {
+  const host = document.getElementById('grafico-topo');
+  host.innerHTML = `
+    <div class="dash-chips" role="group" aria-label="Linha do gráfico">
+      ${SERIES.map(s => `
+        <button type="button" class="dash-chip${SERIE_ESCOLHIDA === s.id ? ' is-ativa' : ''}${SERIE_ESCOLHIDA && SERIE_ESCOLHIDA !== s.id ? ' is-apagada' : ''}"
+                data-serie="${s.id}" aria-pressed="${SERIE_ESCOLHIDA === s.id}">
+          <span class="dash-chip-cor" style="background:${s.cor}"></span>${escapeHtml(s.rotulo)}
+        </button>`).join('')}
+    </div>`;
+  host.querySelectorAll('[data-serie]').forEach(b => b.addEventListener('click', () => {
+    SERIE_ESCOLHIDA = SERIE_ESCOLHIDA === b.dataset.serie ? null : b.dataset.serie;
+    montarTopoDoGrafico();
+    renderGraficoFinanceiro();
+  }));
+}
 
 function fatiasDoTempo(de, ate) {
   const mesmoDia = de.toDateString() === ate.toDateString();
@@ -531,56 +550,6 @@ function fatiasDoTempo(de, ate) {
   return lista;
 }
 
-// Sempre pelo menos uma métrica: a última não tem × nem pode ser desmarcada.
-function montarTopoDoGrafico() {
-  const host = document.getElementById('grafico-topo');
-  const ultima = SERIES_VISIVEIS.size === 1;
-  const chips = SERIES.filter(s => SERIES_VISIVEIS.has(s.id)).map(s => `
-    <span class="dash-chip"><span class="dash-chip-cor" style="background:${s.cor}"></span>${escapeHtml(s.rotulo)}
-      ${ultima ? '' : `<button type="button" data-tirar="${s.id}" aria-label="Tirar ${escapeHtml(s.rotulo)}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>`}
-    </span>`).join('');
-  host.innerHTML = `
-    <div class="dash-chips">${chips}</div>
-    <div class="filtro-wrap">
-      <button type="button" class="btn btn-ghost dash-metricas" id="btn-metricas" aria-expanded="false">
-        Métricas <span class="dash-metricas-n">${SERIES_VISIVEIS.size}</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
-      </button>
-      <div class="filtro-menu dash-metricas-menu" id="menu-metricas" hidden>
-        ${SERIES.map(s => `<label class="dash-metrica"><input type="checkbox" data-serie="${s.id}" ${SERIES_VISIVEIS.has(s.id) ? 'checked' : ''} ${ultima && SERIES_VISIVEIS.has(s.id) ? 'disabled' : ''}><span class="dash-chip-cor" style="background:${s.cor}"></span>${escapeHtml(s.rotulo)}</label>`).join('')}
-      </div>
-    </div>`;
-
-  host.querySelectorAll('[data-tirar]').forEach(b => b.addEventListener('click', () => {
-    if (SERIES_VISIVEIS.size <= 1) return;
-    SERIES_VISIVEIS.delete(b.dataset.tirar);
-    montarTopoDoGrafico();
-    renderGraficoFinanceiro();
-  }));
-  const botao = host.querySelector('#btn-metricas');
-  const menu = host.querySelector('#menu-metricas');
-  botao.addEventListener('click', e => {
-    e.stopPropagation();
-    menu.hidden = !menu.hidden;
-    botao.setAttribute('aria-expanded', String(!menu.hidden));
-  });
-  menu.addEventListener('click', e => e.stopPropagation());
-  menu.querySelectorAll('[data-serie]').forEach(c => c.addEventListener('change', () => {
-    if (c.checked) SERIES_VISIVEIS.add(c.dataset.serie);
-    else if (SERIES_VISIVEIS.size > 1) SERIES_VISIVEIS.delete(c.dataset.serie);
-    montarTopoDoGrafico();
-    document.getElementById('menu-metricas').hidden = false;
-    renderGraficoFinanceiro();
-  }));
-}
-
-document.addEventListener('click', () => {
-  const menu = document.getElementById('menu-metricas');
-  if (menu) menu.hidden = true;
-});
-
 function escalaBonita(valor) {
   if (!valor) return 4;
   const potencia = 10 ** Math.floor(Math.log10(valor));
@@ -595,11 +564,11 @@ function renderGraficoFinanceiro() {
   const pontos = fatias.map(f => {
     const fimReal = f.fim > ate ? ate : f.fim;
     const futuro = f.ini > new Date();
-    const receita = futuro ? 0 : receitaNoIntervalo(f.ini, new Date(fimReal.getTime() - 1)).receita;
+    const r = futuro ? { tpv: 0, receita: 0 } : receitaNoIntervalo(f.ini, new Date(fimReal.getTime() - 1));
     const custo = futuro ? 0 : somar(custosNoIntervalo(f.ini, fimReal));
-    return { ...f, receita, custo, lucro: receita - custo };
+    return { ...f, tpv: r.tpv, receita: r.receita, custo };
   });
-  const series = SERIES.filter(s => SERIES_VISIVEIS.has(s.id));
+  const series = SERIES.filter(s => !SERIE_ESCOLHIDA || s.id === SERIE_ESCOLHIDA);
 
   const largura = Math.max(host.clientWidth || 640, 300);
   const altura = 300;
@@ -628,7 +597,7 @@ function renderGraficoFinanceiro() {
     ${pontos.map((p, i) => `<circle cx="${x(i)}" cy="${y(p[s.id])}" r="3" fill="#fff" stroke="${s.cor}" stroke-width="1.5" data-ponto="${i}" />`).join('')}`).join('');
 
   host.innerHTML = `
-    <svg width="${largura}" height="${altura}" role="img" aria-label="Receita, custo total e lucro líquido">
+    <svg width="${largura}" height="${altura}" role="img" aria-label="TPV total, custo total e faturamento bruto">
       ${grade}
       <line class="dash-guia" id="dash-guia" x1="0" x2="0" y1="${m.topo}" y2="${m.topo + h}" visibility="hidden" />
       ${linhas}

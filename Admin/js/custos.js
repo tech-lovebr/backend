@@ -168,19 +168,28 @@ function renderKpis(linhas) {
   // Média só dos meses que tiveram custo (antes disso as contas não existiam).
   const comCusto = MESES.map(m => totalNoMes(linhas, m)).filter(v => v > 0);
   const media = comCusto.length ? comCusto.reduce((s, v) => s + v, 0) / comCusto.length : 0;
-  const variacao = anterior ? ((atual - anterior) / anterior) * 100 : (atual ? 100 : 0);
-  const sinal = variacao > 0 ? '+' : '';
-
   const cotacao = [
     COTACAO.USD ? `US$ 1 = ${formatCurrency(COTACAO.USD)}` : null,
     COTACAO.EUR ? `€ 1 = ${formatCurrency(COTACAO.EUR)}` : null
   ].filter(Boolean).join(' · ') || 'Cotação indisponível';
 
-  const tile = (label, value, sub) => `
-    <div class="kpi"><p class="kpi-label">${label}</p><p class="kpi-value">${value}</p><p class="kpi-sub">${sub}</p></div>`;
+  // Mesmo padrão do Dashboard: título em cima, valor com a variação ao lado
+  // (vermelha se caiu, verde se subiu) e o período anterior embaixo.
+  let variacao = '';
+  if (anterior) {
+    const pct = ((atual - anterior) / anterior) * 100;
+    const classe = pct < 0 ? 'is-negativa' : (pct > 0 ? 'is-positiva' : '');
+    variacao = `<span class="kpi-variacao ${classe}">${pct > 0 ? '+' : ''}${pct.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%</span>`;
+  }
+  const tile = (label, value, sub, extra = '') => `
+    <div class="kpi">
+      <p class="kpi-label">${escapeHtml(label)}</p>
+      <div class="kpi-linha"><p class="kpi-value">${escapeHtml(value)}</p>${extra}</div>
+      <p class="kpi-sub">${escapeHtml(sub)}</p>
+    </div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('Custo deste mês', formatCurrency(atual), `${sinal}${Math.round(variacao)}% sobre o mês passado`),
+    tile('Custo deste mês', formatCurrency(atual), `P.P: ${formatCurrency(anterior)}`, variacao),
     tile('Mês passado', formatCurrency(anterior), nomeDoMes(mesPassado())),
     tile('Média mensal', formatCurrency(media), cotacao)
   ].join('');

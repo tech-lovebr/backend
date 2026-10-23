@@ -627,7 +627,7 @@
     m.hidden = true;
     m.innerHTML = `
       <div class="chk-modal-card" role="dialog" aria-modal="true" aria-labelledby="chk-modal-titulo">
-        <h3 id="chk-modal-titulo" class="chk-modal-titulo">Nova tarefa</h3>
+        <h3 id="chk-modal-titulo" class="chk-modal-titulo">Adicionar tarefa</h3>
         <form id="chk-form" class="chk-form" novalidate>
           <label class="chk-campo"><span>Tarefa</span><input type="text" name="titulo" maxlength="140" required></label>
           <div class="chk-form-linha">
@@ -659,7 +659,7 @@
     editando = t;
     const form = /** @type {HTMLFormElement} */ (m.querySelector('form'));
     const titulo = m.querySelector('#chk-modal-titulo');
-    if (titulo) titulo.textContent = t ? 'Editar tarefa' : 'Nova tarefa';
+    if (titulo) titulo.textContent = t ? 'Editar tarefa' : 'Adicionar tarefa';
     /** @param {string} n @param {string} v */
     const definir = (n, v) => { const el = /** @type {HTMLInputElement|null} */ (form.elements.namedItem(n)); if (el) el.value = v; };
     definir('titulo', t ? t.titulo : '');

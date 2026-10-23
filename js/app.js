@@ -1013,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Dúvidas (FAQ) ----
   // Ordem fixa das categorias pedidas; outras criadas no Admin vêm depois, em
   // ordem alfabética.
-  const FAQ_CATEGORIAS_ORDEM = ['Fornecedores', 'Carteira digital', 'Lista de convidados', 'Meus presentes', 'Editar meu site', 'Convite digital', 'Benefícios', 'Serviços'];
+  const FAQ_CATEGORIAS_ORDEM = ['Fornecedores', 'Carteira digital', 'Lista de convidados', 'Meus presentes', 'Editar meu site', 'Convite digital', 'Checklist', 'Benefícios', 'Serviços'];
 
   // Usada só quando a tabela `faq` não existe ou está vazia.
   const FAQ_PADRAO = [
@@ -1023,6 +1023,14 @@ document.addEventListener('DOMContentLoaded', () => {
     { categoria: 'Presentes', pergunta: 'Posso duplicar um presente?', resposta: 'Sim. Em Meus Presentes, abra o presente e use "Duplicar": uma cópia é criada e você só ajusta o que mudar.' },
     { categoria: 'Convite digital', pergunta: 'Como mudar as cores e o visual do meu site?', resposta: 'Em Personalizar, na aba Aparência, escolha um modelo pronto ou ajuste cores, fontes e foto de capa com a prévia ao vivo.' },
     { categoria: 'Convite digital', pergunta: 'Dá para colocar música no site?', resposta: 'Sim. Em Personalizar, informe o link da música e, se quiser, marque para tocar automaticamente quando o convidado abrir o site.' },
+    { categoria: 'Checklist', pergunta: 'O que é o Checklist?', resposta: 'É a sua lista de tarefas para organizar o evento do começo ao fim. Ele já vem com tarefas sugeridas para o tipo do seu evento (casamento, aniversário, chá de bebê e outros), cada uma com prazo e categoria, e mostra no topo o progresso, as pendentes e as atrasadas.' },
+    { categoria: 'Checklist', pergunta: 'Como os prazos das tarefas são calculados?', resposta: 'A partir da data do evento e do dia em que você criou o evento na Love. Se o evento foi criado com menos tempo que o ideal para aquele tipo, as tarefas são distribuídas entre a criação e o dia do evento. Você pode mudar qualquer prazo pelo menu da tarefa, em Editar prazo.' },
+    { categoria: 'Checklist', pergunta: 'Como adiciono uma tarefa?', resposta: 'Clique em Adicionar tarefa, no topo do Checklist. Escreva o que precisa ser feito, escolha a categoria e, se quiser, informe o prazo, o orçamento e notas.' },
+    { categoria: 'Checklist', pergunta: 'Como marco uma tarefa como concluída?', resposta: 'Clique no círculo ao lado da tarefa. Ela fica riscada e passa a contar no progresso do evento. Para desmarcar, clique de novo.' },
+    { categoria: 'Checklist', pergunta: 'Posso definir um responsável para cada tarefa?', resposta: 'Sim. Clique no quadradinho de responsável da tarefa e escolha você ou um dos fornecedores contratados.' },
+    { categoria: 'Checklist', pergunta: 'O que é o botão Buscar fornecedores?', resposta: 'Ele aparece nas tarefas de contratação, como Contratar o buffet. Ao clicar, você vai para Fornecedores › Explorar já filtrado pela categoria da tarefa.' },
+    { categoria: 'Checklist', pergunta: 'Quem vê o meu Checklist?', resposta: 'Você e os co-anfitriões do evento. As alterações ficam salvas e aparecem para todos que organizam o evento com você.' },
+    { categoria: 'Checklist', pergunta: 'Posso ver as tarefas por categoria?', resposta: 'Sim. No topo da lista, troque Cronograma por Por categoria. Você também pode filtrar por Todas, Pendentes ou Concluídas.' },
     { categoria: 'Fornecedores', pergunta: 'Como contratar um fornecedor pela Love?', resposta: 'Em Fornecedores, encontre quem você procura, abra o perfil e use "Contratar" ou peça um orçamento. Os contratados ficam reunidos em Contratados.' },
     { categoria: 'Fornecedores', pergunta: 'Como falo com um fornecedor?', resposta: 'Pelo chat da plataforma: clique em "Chat" no card ou no perfil do fornecedor. As conversas ficam em Fornecedores › Mensagens.' },
     { categoria: 'Financeiro', pergunta: 'Como faço o saque do meu saldo?', resposta: 'Na Carteira, cadastre seus dados de saque (chave Pix ou conta para TED) e peça o saque do saldo disponível.' },
@@ -9371,8 +9379,9 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); escolher(); } });
   });
 
-  // "Saiba mais" da taxa: abre a Central de ajuda direto na categoria de presentes.
-  document.querySelectorAll('.gift-saiba-mais').forEach(link => {
+  // "Saiba mais" (taxa dos presentes, Checklist): abre a Central de ajuda direto
+  // na categoria do link (data-ajuda-categoria).
+  document.querySelectorAll('.gift-saiba-mais, .chk-saiba-mais').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       faqCategoriaPedida = /** @type {HTMLElement} */ (link).dataset.ajudaCategoria || null;

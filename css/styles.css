@@ -10942,3 +10942,40 @@ html body #carteira-raiz .cart-lista:not(#love-h-a) { margin-top: 24px; }
 .cart-data { white-space: nowrap; }
 body[data-theme="dark"] #carteira-raiz .cart-numero, body[data-theme="dark"] .cart-nome { color: #FFFFFF !important; }
 html body #carteira-raiz .cart-numero:not(#love-h-a), html body #carteira-raiz .cart-numero .cart-valor:not(#love-h-a) { font-weight: 700 !important; }
+
+/* ==========================================================================
+   Padrão único de caixas e botões claros (referência: a caixa "Pesquisar
+   presente" de Meus presentes): linha fina cinza (--borda-suave, preto a 6%)
+   + anel bem leve (--anel-suave, preto a 3%), cantos 10px nas caixas e 8px
+   nos botões. Vale para dashboard, tabelas, cards e botões claros.
+   ========================================================================== */
+html body #view-event-os-dashboard :is(
+  .dash-card, .love-tabela-caixa, .rsvp-caixa-abaixo-das-abas,
+  #host-gifts-grid > .group, .presentes-vazio, .lista-pronta-card, .lista-item-card,
+  .cart-caixa, .rfp-caixa-form, .rfp-props, .rfp-lote-linha, .rfp-lote-itens, .rfp-lote-revisao,
+  .chk-progresso, .chk-lista,
+  .rfp-modo:not(.ativo), .rfp-lote-cat:not(.ativa)
+):not(#love-h-a) {
+  border-color: var(--borda-suave) !important;
+  box-shadow: var(--anel-suave) !important;
+}
+html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a) { border-width: 1px !important; border-style: solid !important; }
+html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a):hover { box-shadow: var(--anel-suave), 0 4px 12px rgba(0, 0, 0, 0.05) !important; }
+
+/* Botões claros: mesma linha e anel; no hover só a borda escurece (#181D24). */
+html body #view-event-os-dashboard :is(
+  .btn-secondary, .btn-white, .love-tabela-botao,
+  .rfp-post-mais, .rfp-post-botao, .rfp-conversar,
+  .chk-mais, .chk-resp, .chk-buscar,
+  .cart-mais, .floorplan-lista-mover, .lista-item-adicionar, .lista-selecionar
+):not(#love-h-a):not(:hover):not(:focus-visible):not(:disabled) {
+  border-color: var(--borda-suave) !important;
+  box-shadow: var(--anel-suave) !important;
+}
+html body #view-event-os-dashboard :is(.chk-mais):not(#love-h-a) { border-style: solid !important; border-width: 1px !important; }
+/* Cards da Home e demais caixas com cantos de card (rounded-[var(--radius-card)]). */
+html body #view-event-os-dashboard [class*="rounded-[var(--radius-card"].border:not(#love-h-a),
+html body #view-event-os-dashboard [class*="rounded-[var(--radius-card"].bg-white:not(#love-h-a) {
+  border-color: var(--borda-suave) !important;
+  box-shadow: var(--anel-suave) !important;
+}

@@ -1068,15 +1068,14 @@
 
   /** Os dois jeitos de começar (cards no topo). */
   function htmlModos() {
-    const card = (/** @type {string} */ id, /** @type {string} */ nome, /** @type {string} */ texto, /** @type {string} */ icone) => `
+    const card = (/** @type {string} */ id, /** @type {string} */ nome, /** @type {string} */ texto, /** @type {string} */ _icone) => `
       <button type="button" class="rfp-modo${formato === id ? ' ativo' : ''}" role="radio" aria-checked="${formato === id}" data-rfp-formato="${id}">
-        <span class="rfp-modo-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icone}</svg></span>
         <span class="rfp-modo-textos"><b>${nome}</b><span>${texto}</span></span>
         <span class="rfp-lote-cat-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
       </button>`;
     return `
       <div class="rfp-modos" role="radiogroup" aria-label="Como você prefere começar">
-        ${card('unico', 'Serviço avulso', 'Escolha uma categoria e encontre o fornecedor ideal.', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
+        ${card('unico', 'Serviço avulso', 'Crie a solicitação para um serviço e encontre o melhor fornecedor para realizá-lo.', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
         ${card('completo', 'Evento completo', 'Receba todos os orçamentos para o seu evento completo de uma só vez.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
       </div>`;
   }

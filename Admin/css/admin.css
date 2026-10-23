@@ -4008,3 +4008,17 @@ body[data-page="custos"] table.data tbody tr[data-integracao] { cursor: pointer;
 /* Legenda da rosca: embaixo, com rolagem quando passa da altura. */
 .dash-rosca { padding: .5rem 0 1rem; }
 .dash-rosca-lista { max-height: 132px; overflow-y: auto; padding-right: .25rem; border-top: 1px solid var(--divisor-suave, #F0F0F2); padding-top: .875rem; }
+
+/* ------------------------------------------------ Dashboard: números do topo
+   Caixa branca, título em cima, valor com a variação ao lado e o período
+   anterior (P.P) embaixo, sem cortar o texto. */
+body[data-page="dashboard"] .kpi-grid > .kpi { background: #FFFFFF; padding: .5rem 1.25rem; }
+body[data-page="dashboard"] .kpi-grid > .kpi .kpi-label { order: 0; margin: 0 0 .375rem; font-size: .8125rem; font-weight: 500; text-transform: none; letter-spacing: 0; color: #52525B; }
+.kpi-linha { order: 1; display: flex; align-items: center; gap: .5rem; min-width: 0; }
+body[data-page="dashboard"] .kpi-grid > .kpi .kpi-linha .kpi-value { font-size: 1.375rem; }
+.kpi-variacao { flex-shrink: 0; padding: .125rem .375rem; border-radius: 6px; font-size: .75rem; font-weight: 600; font-variant-numeric: tabular-nums; background: #F4F4F5; color: #52525B; }
+.kpi-variacao.is-negativa { background: #FDECEC; color: #C0001A; }
+.kpi-variacao.is-positiva { background: #E8F7EF; color: #15803D; }
+body[data-page="dashboard"] .kpi-grid > .kpi .kpi-sub { order: 2; margin-top: .375rem; font-size: .75rem; color: #A1A1AA; white-space: normal; overflow: visible; }
+body[data-theme="dark"] .kpi-variacao.is-negativa { background: rgba(192, 0, 26, .18); color: #FF8A8A; }
+body[data-theme="dark"] .kpi-variacao.is-positiva { background: rgba(21, 128, 61, .2); color: #6EE7A0; }

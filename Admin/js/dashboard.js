@@ -459,31 +459,36 @@ function renderKpis() {
   const anterior = periodoAnterior(de, ate);
   const antes = anterior && numerosDoPeriodo(anterior.de, anterior.ate);
 
-  // Embaixo do valor: quanto foi no período anterior e a variação.
-  const comparacao = chave => {
-    if (!anterior) return 'Desde o início';
+  // Título em cima; ao lado do valor, a variação (vermelha se caiu, verde se
+  // subiu); embaixo, o valor do período anterior ("P.P").
+  const tile = (label, chave) => {
     const a = atual[chave];
-    const b = antes[chave];
-    const prefixo = anterior.nome === 'ontem' ? '' : (/^\d/.test(anterior.nome) ? 'nos ' : 'no ');
-    const base = `${formatCurrency(b)} ${prefixo}${anterior.nome}`;
-    if (!b) return base;
-    const pct = ((a - b) / Math.abs(b)) * 100;
-    const sinal = pct > 0 ? '+' : '';
-    return `${sinal}${Math.round(pct)}% · ${base}`;
+    let variacao = '';
+    let sub = 'Desde o início';
+    if (anterior) {
+      const b = antes[chave];
+      sub = `P.P: ${formatCurrency(b)}`;
+      if (b) {
+        const pct = ((a - b) / Math.abs(b)) * 100;
+        const classe = pct < 0 ? 'is-negativa' : (pct > 0 ? 'is-positiva' : '');
+        const texto = `${pct > 0 ? '+' : ''}${pct.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
+        variacao = `<span class="kpi-variacao ${classe}">${escapeHtml(texto)}</span>`;
+      }
+    }
+    const dica = anterior ? `Período anterior: ${anterior.nome}` : '';
+    return `
+    <div class="kpi kpi-dash">
+      <p class="kpi-label">${escapeHtml(label)}</p>
+      <div class="kpi-linha"><p class="kpi-value">${escapeHtml(formatCurrency(a))}</p>${variacao}</div>
+      <p class="kpi-sub" title="${escapeHtml(dica)}">${escapeHtml(sub)}</p>
+    </div>`;
   };
 
-  const tile = (label, value, sub) => `
-    <div class="kpi">
-      <p class="kpi-label">${escapeHtml(label)}</p>
-      <p class="kpi-value">${escapeHtml(value)}</p>
-      <p class="kpi-sub">${escapeHtml(sub)}</p>
-    </div>`;
-
   document.getElementById('kpi-grid').innerHTML = [
-    tile('TPV', formatCurrency(atual.tpv), comparacao('tpv')),
-    tile('Custo total', formatCurrency(atual.custo), comparacao('custo')),
-    tile('Faturamento bruto', formatCurrency(atual.receita), comparacao('receita')),
-    tile('Lucro líquido', formatCurrency(atual.lucro), comparacao('lucro'))
+    tile('TPV total', 'tpv'),
+    tile('Custo total', 'custo'),
+    tile('Faturamento bruto', 'receita'),
+    tile('Lucro líquido', 'lucro')
   ].join('');
 }
 

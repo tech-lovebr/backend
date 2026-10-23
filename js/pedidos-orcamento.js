@@ -1021,12 +1021,13 @@
       return `
         <div class="rfp-post" data-rascunho-id="${esc(it.id)}">
           <div class="rfp-post-info">
-            <button type="button" class="rfp-post-titulo" data-rfp-editar="${esc(it.id)}">${esc(titulo)}</button>
+            <p class="rfp-post-titulo">${esc(titulo)}</p>
             <p class="rfp-post-criado">Criada ${esc(haQuanto(it.criado))} por você</p>
             <p class="rfp-post-situacao"><b>Rascunho</b> · Salvo em ${esc(dataCurta(it.quando))}</p>
           </div>
           <div class="rfp-post-num"></div>
           <div class="rfp-post-num"></div>
+          <button type="button" class="rfp-post-botao" data-rfp-acao="editar">Editar rascunho</button>
           ${menuDaLinha([['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
         </div>`;
     }
@@ -1038,12 +1039,13 @@
     return `
       <div class="rfp-post" data-rfp-id="${esc(p.id)}">
         <div class="rfp-post-info">
-          <button type="button" class="rfp-post-titulo" data-rfp-ver="${esc(p.id)}">${esc(titulo)}</button>
+          <p class="rfp-post-titulo">${esc(titulo)}</p>
           <p class="rfp-post-criado">Criada ${esc(haQuanto(p.created_at))} por você</p>
           <p class="rfp-post-situacao"><b>${esc(situacao)}</b> · ${esc(dataCurta(p.created_at))}</p>
         </div>
-        <div class="rfp-post-num"><b>${n.total}${n.novas ? ` (${n.novas} ${n.novas === 1 ? 'nova' : 'novas'})` : ''}</b><span>Propostas</span></div>
         <div class="rfp-post-num"><b>${n.mensagens}</b><span>Mensagens</span></div>
+        <div class="rfp-post-num"><b>${n.total}${n.novas ? ` (${n.novas} ${n.novas === 1 ? 'nova' : 'novas'})` : ''}</b><span>Propostas</span></div>
+        <button type="button" class="rfp-post-botao" data-rfp-ver="${esc(p.id)}">Ver propostas</button>
         ${menuDaLinha([['duplicar', 'Duplicar'], ['excluir', 'Remover']])}
       </div>`;
   }
@@ -1256,11 +1258,9 @@
     abertos.forEach(m => m.classList.add('hidden'));
     const linha = /** @type {HTMLElement|null} */ (alvo.closest('#rfp-lista .rfp-post'));
     if (!acao) {
-      // Clique na solicitação (fora do menu ⋯): rascunho abre para editar;
-      // publicada mostra as propostas que chegaram.
-      if (!linha || alvo.closest('.rfp-menu-wrap')) return;
-      if (linha.dataset.rfpId) mostrarPropostas(linha.dataset.rfpId);
-      else if (linha.dataset.rascunhoId) editarRascunho(linha.dataset.rascunhoId);
+      // A linha não é clicável: só o botão "Ver propostas".
+      const ver = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-ver]'));
+      if (ver) mostrarPropostas(ver.dataset.rfpVer || '');
       return;
     }
     if (!linha || typeof supabaseClient === 'undefined') return;

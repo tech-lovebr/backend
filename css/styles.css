@@ -10313,3 +10313,16 @@ html body #b2b-pedidos-view .rfp-editor:not(#love-h-a) { padding-top: 24px; }
 html body #pedidos-painel-minhas:not(.hidden):not(#love-h-a) { display: flex; flex-direction: column; flex: 1 0 auto; margin-top: 24px; }
 html body #pedidos-abas.hidden + #pedidos-painel-minhas:not(#love-h-a) { margin-top: 0; }
 html body #b2b-pedidos-view:has(#pedidos-abas.hidden) #rfp-propostas:not(#love-h-a) { margin-top: 0; }
+
+/* Minhas solicitações: linha sem clique; Mensagens, Propostas, botão
+   "Ver propostas" / "Editar rascunho" e o ⋯. */
+html body .rfp-post:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 110px 140px 132px 36px; align-items: center; cursor: default; }
+html body .rfp-post:not(#love-h-a):hover { background: transparent; }
+html body .rfp-post p.rfp-post-titulo:not(#love-h-a) { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body button.rfp-post-botao:not(#love-h-a) { height: 36px; padding: 0 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #18181B; cursor: pointer; white-space: nowrap; }
+html body button.rfp-post-botao:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+@media (max-width: 760px) {
+  html body .rfp-post:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) auto 36px; }
+}
+body[data-theme="dark"] .rfp-post p.rfp-post-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] button.rfp-post-botao { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

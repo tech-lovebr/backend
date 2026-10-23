@@ -1112,7 +1112,8 @@
     };
   }
 
-  /** Clique no título: a solicitação inteira, na mesma caixa da lista. @param {string} id */
+  /** Clique no título: a solicitação inteira, na mesma caixa da lista
+   *  (modelo da página do job: descrição no topo, depois os blocos). @param {string} id */
   function mostrarDetalhe(id) {
     const caixa = document.getElementById('rfp-lista');
     if (!caixa) return;
@@ -1126,38 +1127,66 @@
     const local = [[info.cidade, info.uf].filter(Boolean).join(' - '), info.bairro, info.cep ? `CEP ${info.cep}` : ''].filter(Boolean).join(' · ') || traco;
     const periodo = info.periodo === 'horas' ? `${info.horas_servico || '?'} ${textoDeHoras(info.horas_servico) || 'horas'} de serviço` : (nomeDe(PERIODOS, info.periodo) || traco);
     const temOrcamento = !!(info.valor_min || info.valor_max);
-    const situacao = rascunho ? `Rascunho · Salvo em ${dataCurta(rascunho.updated_at || rascunho.created_at)}`
-      : `${info.status === 'aberto' ? 'Publicada' : (SITUACOES[/** @type {'fechado'} */ (info.status)] || info.status)} · Criada em ${dataCurta(info.created_at)}`;
-    /** @type {[string, string][]} */
-    const linhas = [
-      ['Categoria', cat ? cat.nome : (info.categoria || traco)],
-      ['Subcategorias', (info.especialidades || []).join(', ') || traco],
-      ['Tipo de celebração', nomeDaCelebracao(info.tipo_celebracao) || traco],
-      ['Data do evento', quando],
-      ['Local', local],
-      ['Convidados', info.convidados ? `${nomeDe(CONVIDADOS, info.convidados)} convidados` : traco],
-      ['Horário / duração', periodo],
-      ['Orçamento', textoDoOrcamento(info.valor_min, info.valor_max, info.faixa)],
-      ...(/** @type {[string, string][]} */ (temOrcamento ? [['Propostas fora da faixa', info.aceita_fora_da_faixa ? 'Aceito' : 'Não aceito']] : [])),
-      ['Propostas', info.limite_propostas ? `Até ${info.limite_propostas} propostas` : 'Sem limite']
-    ];
+    const meta = rascunho
+      ? `Rascunho · Salvo em ${dataCurta(rascunho.updated_at || rascunho.created_at)}`
+      : `${info.status === 'aberto' ? 'Publicado em' : `${SITUACOES[/** @type {'fechado'} */ (info.status)] || info.status} · Criado em`} ${dataCurta(info.created_at)}`;
+    const n = pedido ? (numerosDasPropostas[id] || { total: pedido.propostas_recebidas || 0, novas: 0, mensagens: 0 }) : null;
     const fotos = Array.isArray(info.referencias) ? info.referencias : [];
+    const tags = Array.isArray(info.especialidades) ? info.especialidades : [];
+    const icone = (/** @type {string} */ d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const destaques = [
+      [icone('<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>'), quando, 'Data do evento'],
+      [icone('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5M16 5.2a3 3 0 0 1 0 5.6M18 14.3c1.7.6 2.8 2.2 3 4.7"/>'), info.convidados ? `${nomeDe(CONVIDADOS, info.convidados)} convidados` : traco, 'Convidados'],
+      [icone('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'), periodo, 'Horário / duração']
+    ];
     caixa.innerHTML = `
       <div class="rfp-detalhe">
-        <button type="button" class="rfp-detalhe-voltar" data-rfp-detalhe-voltar>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-          <span>Minhas solicitações</span>
-        </button>
-        <h3 class="rfp-detalhe-titulo">${esc(String(info.titulo || '').trim() || (cat ? cat.nome : 'Solicitação'))}</h3>
-        <p class="rfp-detalhe-meta">${esc(situacao)}</p>
-        <dl class="rfp-detalhe-grade">
-          ${linhas.map(([rotulo, valor]) => `<div><dt>${esc(rotulo)}</dt><dd>${esc(valor)}</dd></div>`).join('')}
-        </dl>
-        <h4 class="rfp-detalhe-sub">Descrição</h4>
-        <p class="rfp-detalhe-desc">${esc(String(info.descricao || '').trim() || traco)}</p>
+        <div class="rfp-detalhe-cabeca">
+          <button type="button" class="rfp-detalhe-voltar" data-rfp-detalhe-voltar aria-label="Voltar para Minhas solicitações">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="rfp-detalhe-nome">
+            <h3 class="rfp-detalhe-titulo">${esc(String(info.titulo || '').trim() || (cat ? cat.nome : 'Solicitação'))}</h3>
+            <p class="rfp-detalhe-meta">${esc(meta)}</p>
+          </div>
+          ${pedido
+            ? `<button type="button" class="rfp-post-botao" data-rfp-ver="${esc(id)}">Ver propostas</button>`
+            : `<button type="button" class="rfp-post-botao" data-rfp-editar-rascunho="${esc(id)}">Editar rascunho</button>`}
+        </div>
+
+        <section class="rfp-detalhe-sec">
+          <p class="rfp-detalhe-desc">${esc(String(info.descricao || '').trim() || 'Sem descrição.')}</p>
+        </section>
+
+        <section class="rfp-detalhe-sec rfp-detalhe-destaques">
+          ${destaques.map(([svg, valor, rotulo]) => `
+            <div class="rfp-detalhe-destaque">${svg}<p><b>${esc(valor)}</b><span>${esc(rotulo)}</span></p></div>`).join('')}
+        </section>
+
+        <section class="rfp-detalhe-sec rfp-detalhe-linhas">
+          <p><b>Categoria:</b> ${esc(cat ? cat.nome : (info.categoria || traco))}</p>
+          <p><b>Tipo de celebração:</b> ${esc(nomeDaCelebracao(info.tipo_celebracao) || traco)}</p>
+          <p><b>Local:</b> ${esc(local)}</p>
+          <p><b>Orçamento:</b> ${esc(textoDoOrcamento(info.valor_min, info.valor_max, info.faixa))}${temOrcamento ? esc(info.aceita_fora_da_faixa ? ' · aceita propostas fora da faixa' : ' · não aceita propostas fora da faixa') : ''}</p>
+        </section>
+
+        ${tags.length ? `
+          <section class="rfp-detalhe-sec">
+            <h4 class="rfp-detalhe-sub">Subcategorias</h4>
+            <div class="rfp-detalhe-tags">${tags.map((/** @type {string} */ t) => `<span>${esc(t)}</span>`).join('')}</div>
+          </section>` : ''}
+
         ${fotos.length ? `
-          <h4 class="rfp-detalhe-sub">Fotos de referência</h4>
-          <div class="rfp-detalhe-fotos">${fotos.map((/** @type {string} */ u) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a>`).join('')}</div>` : ''}
+          <section class="rfp-detalhe-sec">
+            <h4 class="rfp-detalhe-sub">Fotos de referência</h4>
+            <div class="rfp-detalhe-fotos">${fotos.map((/** @type {string} */ u) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a>`).join('')}</div>
+          </section>` : ''}
+
+        <section class="rfp-detalhe-sec rfp-detalhe-linhas">
+          <h4 class="rfp-detalhe-sub">Atividade nesta solicitação</h4>
+          ${n ? `<p>Propostas: ${n.total}${n.novas ? ` (${n.novas} ${n.novas === 1 ? 'nova' : 'novas'})` : ''}</p><p>Mensagens: ${n.mensagens}</p>` : ''}
+          <p>Limite: ${esc(info.limite_propostas ? `até ${info.limite_propostas} propostas` : 'sem limite de propostas')}</p>
+        </section>
       </div>`;
   }
 
@@ -1337,6 +1366,8 @@
     const detalhe = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-detalhe]'));
     if (detalhe) { mostrarDetalhe(detalhe.dataset.rfpDetalhe || ''); return; }
     if (alvo.closest('[data-rfp-detalhe-voltar]')) { mostrarLista(); return; }
+    const editarDoDetalhe = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-editar-rascunho]'));
+    if (editarDoDetalhe) { editarRascunho(editarDoDetalhe.dataset.rfpEditarRascunho || ''); return; }
     const abaPedidos = /** @type {HTMLElement|null} */ (alvo.closest('[data-pedidos-aba]'));
     if (abaPedidos) { mostrarAba(abaPedidos.dataset.pedidosAba === 'minhas' ? 'minhas' : 'nova'); return; }
     const conversar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-conversar]'));

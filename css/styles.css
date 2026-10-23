@@ -10391,3 +10391,35 @@ html body .rfp-detalhe-sub:not(#love-h-a) { margin: 24px 0 8px; font-size: 14px;
 body[data-theme="dark"] button.rfp-post-titulo.rfp-post-link { color: #EBF4FF !important; }
 body[data-theme="dark"] .rfp-detalhe-titulo, body[data-theme="dark"] .rfp-detalhe-grade dd, body[data-theme="dark"] .rfp-detalhe-sub { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-detalhe-desc { color: #D4D4D8 !important; }
+
+/* Solicitação aberta (modelo da página do job): cabeçalho com a seta numa
+   caixinha à esquerda do título e "Ver propostas" à direita; descrição no
+   topo e blocos separados por linhas finas. */
+html body .rfp-detalhe:not(#love-h-a) { padding: 0; }
+.rfp-detalhe-cabeca { display: flex; align-items: center; gap: 14px; padding: 22px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+html body button.rfp-detalhe-voltar:not(#love-h-a) { width: 36px; height: 36px; margin: 0; padding: 0; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #3F3F46; cursor: pointer; }
+html body button.rfp-detalhe-voltar:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+html body .rfp-detalhe-voltar svg:not(#love-h-a) { width: 18px; height: 18px; }
+.rfp-detalhe-nome { flex: 1; min-width: 0; }
+html body .rfp-detalhe-titulo:not(#love-h-a) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body .rfp-detalhe-meta:not(#love-h-a) { margin: 2px 0 0; }
+.rfp-detalhe-sec { padding: 22px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+.rfp-detalhe-sec:last-child { border-bottom: 0; }
+html body .rfp-detalhe-sec .rfp-detalhe-desc:not(#love-h-a) { font-size: 14px; line-height: 1.65; color: #18181B; }
+.rfp-detalhe-destaques { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.rfp-detalhe-destaque { display: flex; align-items: flex-start; gap: 10px; }
+.rfp-detalhe-destaque svg { width: 20px; height: 20px; flex-shrink: 0; color: #18181B; margin-top: 1px; }
+.rfp-detalhe-destaque p { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.rfp-detalhe-destaque b { font-size: 14px; font-weight: 600; color: #18181B; }
+.rfp-detalhe-destaque span { font-size: 12px; color: #71717A; }
+.rfp-detalhe-linhas p { margin: 0 0 8px; font-size: 14px; color: #3F3F46; }
+.rfp-detalhe-linhas p:last-child { margin-bottom: 0; }
+.rfp-detalhe-linhas b { font-weight: 600; color: #18181B; margin-right: 4px; }
+html body .rfp-detalhe-sec .rfp-detalhe-sub:not(#love-h-a) { margin: 0 0 12px; font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.rfp-detalhe-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.rfp-detalhe-tags span { display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 6px; background: #F4F4F5; font-size: 13px; color: #3F3F46; }
+@media (max-width: 640px) { .rfp-detalhe-destaques { grid-template-columns: minmax(0, 1fr); } .rfp-detalhe-cabeca { flex-wrap: wrap; } }
+body[data-theme="dark"] .rfp-detalhe-cabeca, body[data-theme="dark"] .rfp-detalhe-sec { border-bottom-color: #404040 !important; }
+body[data-theme="dark"] button.rfp-detalhe-voltar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-detalhe-destaque b, body[data-theme="dark"] .rfp-detalhe-destaque svg, body[data-theme="dark"] .rfp-detalhe-linhas b, body[data-theme="dark"] .rfp-detalhe-sec .rfp-detalhe-desc { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-detalhe-tags span { background: #333333 !important; color: #D4D4D8 !important; }

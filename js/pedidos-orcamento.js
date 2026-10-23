@@ -422,7 +422,7 @@
       ${pilulas('tipoCelebracao', CELEBRACOES, dados.tipoCelebracao)}
       ${erroHtml('tipoCelebracao')}
       ${dados.tipoCelebracao === 'outro' ? `
-        <input type="text" class="rfp-campo rfp-campo-outro" data-rfp-input="celebracaoOutro" value="${esc(dados.celebracaoOutro)}" maxlength="60" placeholder="Qual é a celebração? Ex.: Batizado" aria-label="Tipo de celebração">
+        <input type="text" class="rfp-campo rfp-campo-outro" data-rfp-input="celebracaoOutro" value="${esc(dados.celebracaoOutro)}" maxlength="60" placeholder="Qual é a celebração?" aria-label="Tipo de celebração">
         ${erroHtml('celebracaoOutro')}` : ''}
 
       <h4 class="rfp-pergunta">Data do evento</h4>
@@ -459,7 +459,10 @@
       ${pilulas('periodo', PERIODOS, dados.periodo)}
       ${dados.periodo === 'horas' ? `
         <label class="rfp-rotulo rfp-horas">Horas de serviço
-          <input type="number" class="rfp-campo" data-rfp-input="horasServico" min="1" max="24" value="${dados.horasServico ?? ''}" placeholder="Ex.: 6">
+          <span class="rfp-horas-campo">
+            <input type="number" class="rfp-campo" data-rfp-input="horasServico" min="1" max="24" value="${dados.horasServico ?? ''}">
+            <span class="rfp-horas-sufixo" id="rfp-horas-sufixo">${textoDeHoras(dados.horasServico)}</span>
+          </span>
         </label>${erroHtml('horasServico')}` : ''}
       ${erroHtml('periodo')}`;
   }
@@ -546,6 +549,9 @@
     return dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : nomeDaCelebracao(dados.tipoCelebracao);
   }
 
+  /** "1 hora" / "horas" ao lado do número (vazio sem número). @param {number|null} n */
+  const textoDeHoras = (n) => (n ? (Number(n) === 1 ? 'hora' : 'horas') : '');
+
   /** @param {string} iso */
   function formatarData(iso) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return '';
@@ -587,7 +593,12 @@
       if (campo === 'dataFlexivel') { if (el.checked) dados.dataEvento = ''; delete erros.dataEvento; desenhar(0); }
       return;
     }
-    if (campo === 'horasServico') { dados.horasServico = el.value ? Number(el.value) : null; return; }
+    if (campo === 'horasServico') {
+      dados.horasServico = el.value ? Number(el.value) : null;
+      const sufixo = document.getElementById('rfp-horas-sufixo');
+      if (sufixo) sufixo.textContent = textoDeHoras(dados.horasServico);
+      return;
+    }
     if (campo === 'uf') el.value = el.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
     if (campo === 'cep') {
       const num = el.value.replace(/\D/g, '').slice(0, 8);

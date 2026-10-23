@@ -10223,3 +10223,11 @@ html body .rfp-grade-local .rfp-campo-uf:not(#love-h-a) { width: 100%; min-width
 /* UF em drop-down (2 letras): seta própria, sem o visual nativo. */
 html body .rfp-grade-local select.rfp-campo-uf:not(#love-h-a) { appearance: none; -webkit-appearance: none; text-align: left; padding: 0 22px 0 10px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A1A1AA' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 6px center / 14px; cursor: pointer; }
 body[data-theme="dark"] .rfp-grade-local select.rfp-campo-uf { background-color: #333333 !important; color: #FFFFFF !important; border-color: #404040 !important; }
+
+/* Nova solicitação: erros no vermelho do coração de Favoritar (#c7305b);
+   "horas" escrito ao lado do número de horas de serviço. */
+html body #rfp-editor :is(.rfp-erro, .rfp-erro-geral):not(#love-h-a) { color: #c7305b !important; }
+.rfp-horas-campo { display: inline-flex; align-items: center; gap: 10px; }
+html body .rfp-horas-campo .rfp-campo:not(#love-h-a) { width: 88px; min-width: 0; }
+.rfp-horas-sufixo { font-size: 14px; font-weight: 500; color: #3F3F46; }
+body[data-theme="dark"] .rfp-horas-sufixo { color: #D4D4D8 !important; }

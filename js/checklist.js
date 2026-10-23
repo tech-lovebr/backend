@@ -1,7 +1,7 @@
 // @ts-check
 // Checklist do evento (Convidados › Checklist) — planejamento por linha do
-// tempo, no estilo do Zola: tarefas com prazo calculado a partir da data do
-// evento, agrupadas por período (ou por categoria), com progresso, responsável,
+// tempo, no estilo do Zola: tarefas sugeridas conforme o tipo do evento, com
+// prazo calculado a partir da criação e da data do evento, agrupadas por período (ou por categoria), com progresso, responsável,
 // notas/orçamento e atalho para buscar fornecedores.
 //
 // Dados: tabela checklist_tarefas (migration 082). Sem a tabela (ou num evento
@@ -35,44 +35,217 @@
     'Trajes e beleza': 'Trajes, Beleza e Estilo'
   };
 
-  // Tarefas sugeridas: [título, categoria, dias antes do evento, busca no Explorar?]
-  /** @type {[string, string, number, boolean][]} */
-  const MODELO = [
-    ['Definir o orçamento total do evento', 'Financeiro', 180, false],
-    ['Montar a lista de convidados', 'Convidados', 170, false],
-    ['Escolher e reservar o espaço', 'Espaço', 160, true],
-    ['Contratar assessoria ou cerimonialista', 'Assessoria', 150, true],
-    ['Contratar o buffet', 'Gastronomia', 140, true],
-    ['Contratar fotografia e filmagem', 'Mídia', 130, true],
-    ['Contratar banda ou DJ', 'Música', 120, true],
-    ['Enviar o save the date', 'Convidados', 110, false],
-    ['Definir a decoração e a paleta de cores', 'Decoração', 100, true],
-    ['Criar a lista de presentes', 'Presentes', 95, false],
-    ['Agendar a degustação do cardápio', 'Gastronomia', 60, true],
-    ['Contratar bar e bebidas', 'Bebidas', 55, true],
-    ['Encomendar o bolo e os doces', 'Doces', 50, true],
-    ['Enviar os convites', 'Convidados', 45, false],
-    ['Escolher os trajes e agendar as provas', 'Trajes e beleza', 45, true],
-    ['Contratar a equipe de apoio (garçons, recepção, segurança)', 'Equipe', 40, true],
-    ['Agendar cabelo e maquiagem', 'Trajes e beleza', 35, true],
-    ['Fechar a confirmação de presença (RSVP)', 'Convidados', 21, false],
-    ['Montar o mapa de mesas', 'Convidados', 18, false],
-    ['Confirmar o roteiro com a assessoria e os fornecedores', 'Assessoria', 15, false],
-    ['Passar o número final de convidados ao buffet', 'Gastronomia', 10, false],
-    ['Definir a playlist e as músicas principais', 'Música', 10, false],
-    ['Fazer a prova final dos trajes', 'Trajes e beleza', 9, false],
-    ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 5, false],
-    ['Retirar os trajes e os itens alugados', 'Logística', 3, false],
-    ['Fazer o briefing final com a equipe e os fornecedores', 'Assessoria', 2, false],
-    ['Separar documentos, alianças e o kit de emergência', 'Logística', 1, false],
-    ['Aproveitar o seu dia', 'Geral', 0, false],
-    ['Devolver os itens alugados', 'Logística', -3, false],
-    ['Enviar agradecimentos aos convidados', 'Convidados', -7, false],
-    ['Avaliar os fornecedores', 'Fornecedores', -10, false],
-    ['Resgatar o saldo da carteira', 'Financeiro', -14, false]
-  ];
+  // Tarefas sugeridas por tipo de evento: [título, categoria, dias antes do
+  // evento, busca no Explorar?]. A primeira tarefa marca o tempo ideal de
+  // preparação daquele tipo (casamento 6 meses, aniversário 2 meses...).
+  /** @type {Record<string, [string, string, number, boolean][]>} */
+  const MODELOS = {
+    wedding: [
+      ['Definir o orçamento total do casamento', 'Financeiro', 180, false],
+      ['Montar a lista de convidados', 'Convidados', 175, false],
+      ['Escolher a data e reservar o espaço da cerimônia e da festa', 'Espaço', 165, true],
+      ['Contratar assessoria ou cerimonialista', 'Assessoria', 160, true],
+      ['Contratar o buffet', 'Gastronomia', 150, true],
+      ['Contratar fotografia e filmagem', 'Mídia', 140, true],
+      ['Escolher os padrinhos e as madrinhas', 'Convidados', 135, false],
+      ['Contratar banda ou DJ', 'Música', 125, true],
+      ['Escolher o vestido e o traje do noivo', 'Trajes e beleza', 120, true],
+      ['Enviar o save the date', 'Convidados', 110, false],
+      ['Definir a decoração e a paleta de cores', 'Decoração', 100, true],
+      ['Criar a lista de presentes', 'Presentes', 95, false],
+      ['Contratar o celebrante', 'Assessoria', 90, true],
+      ['Encomendar as alianças', 'Geral', 80, false],
+      ['Agendar a degustação do cardápio', 'Gastronomia', 60, true],
+      ['Contratar bar e bebidas', 'Bebidas', 55, true],
+      ['Encomendar o bolo e os bem-casados', 'Doces', 50, true],
+      ['Enviar os convites', 'Convidados', 45, false],
+      ['Contratar a equipe de apoio (garçons, recepção, segurança)', 'Equipe', 40, true],
+      ['Agendar cabelo e maquiagem', 'Trajes e beleza', 35, true],
+      ['Dar entrada nos documentos do casamento civil', 'Geral', 30, false],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 21, false],
+      ['Montar o mapa de mesas', 'Convidados', 18, false],
+      ['Confirmar o roteiro da cerimônia com a assessoria', 'Assessoria', 15, false],
+      ['Passar o número final de convidados ao buffet', 'Gastronomia', 10, false],
+      ['Definir a playlist e a música da entrada', 'Música', 10, false],
+      ['Fazer a prova final dos trajes', 'Trajes e beleza', 9, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 5, false],
+      ['Retirar os trajes e os itens alugados', 'Logística', 3, false],
+      ['Fazer o ensaio da cerimônia', 'Assessoria', 2, false],
+      ['Separar documentos, alianças e o kit de emergência', 'Logística', 1, false],
+      ['Aproveitar o seu casamento', 'Geral', 0, false],
+      ['Devolver os itens alugados', 'Logística', -3, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -7, false],
+      ['Avaliar os fornecedores', 'Fornecedores', -10, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -14, false]
+    ],
+    birthday: [
+      ['Definir o orçamento da festa', 'Financeiro', 60, false],
+      ['Escolher o tema da festa', 'Decoração', 57, false],
+      ['Montar a lista de convidados', 'Convidados', 55, false],
+      ['Reservar o espaço ou salão de festas', 'Espaço', 50, true],
+      ['Contratar o buffet', 'Gastronomia', 45, true],
+      ['Contratar DJ, banda ou animação', 'Música', 40, true],
+      ['Contratar fotografia', 'Mídia', 38, true],
+      ['Contratar a decoração', 'Decoração', 35, true],
+      ['Criar a lista de presentes', 'Presentes', 32, false],
+      ['Enviar os convites', 'Convidados', 30, false],
+      ['Encomendar o bolo e os docinhos', 'Doces', 25, true],
+      ['Contratar bar e bebidas', 'Bebidas', 22, true],
+      ['Escolher a roupa da festa', 'Trajes e beleza', 18, true],
+      ['Encomendar lembrancinhas', 'Decoração', 15, true],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 10, false],
+      ['Passar o número final de convidados ao buffet', 'Gastronomia', 7, false],
+      ['Montar a playlist da festa', 'Música', 5, false],
+      ['Comprar velas e os itens do parabéns', 'Logística', 3, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 2, false],
+      ['Confirmar os horários com os fornecedores', 'Fornecedores', 1, false],
+      ['Aproveitar o seu aniversário', 'Geral', 0, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -3, false],
+      ['Avaliar os fornecedores', 'Fornecedores', -7, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -10, false]
+    ],
+    anniversary: [
+      ['Definir o orçamento da celebração', 'Financeiro', 90, false],
+      ['Decidir o formato: renovação de votos, jantar ou festa', 'Geral', 85, false],
+      ['Montar a lista de convidados', 'Convidados', 80, false],
+      ['Reservar o espaço', 'Espaço', 75, true],
+      ['Contratar o celebrante da renovação de votos', 'Assessoria', 65, true],
+      ['Contratar o buffet', 'Gastronomia', 60, true],
+      ['Contratar fotografia', 'Mídia', 55, true],
+      ['Contratar música ao vivo ou DJ', 'Música', 50, true],
+      ['Reunir fotos da história do casal para a decoração', 'Decoração', 45, false],
+      ['Enviar os convites', 'Convidados', 40, false],
+      ['Criar a lista de presentes', 'Presentes', 38, false],
+      ['Contratar a decoração', 'Decoração', 35, true],
+      ['Encomendar o bolo', 'Doces', 25, true],
+      ['Escolher os trajes do casal', 'Trajes e beleza', 20, true],
+      ['Escrever os votos', 'Geral', 14, false],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 12, false],
+      ['Passar o número final de convidados ao buffet', 'Gastronomia', 7, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 3, false],
+      ['Confirmar o roteiro com os fornecedores', 'Fornecedores', 1, false],
+      ['Aproveitar a celebração', 'Geral', 0, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -5, false],
+      ['Avaliar os fornecedores', 'Fornecedores', -10, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -14, false]
+    ],
+    baby_shower: [
+      ['Definir a data e o orçamento do chá', 'Financeiro', 45, false],
+      ['Escolher o tema do chá de bebê', 'Decoração', 42, false],
+      ['Montar a lista de convidados', 'Convidados', 40, false],
+      ['Reservar o espaço ou preparar a casa', 'Espaço', 38, true],
+      ['Criar a lista de presentes do enxoval', 'Presentes', 35, false],
+      ['Definir as fraldas por tamanho na lista', 'Presentes', 33, false],
+      ['Enviar os convites', 'Convidados', 30, false],
+      ['Contratar o buffet ou definir o cardápio', 'Gastronomia', 28, true],
+      ['Contratar a decoração', 'Decoração', 25, true],
+      ['Encomendar o bolo e os doces temáticos', 'Doces', 21, true],
+      ['Contratar fotografia', 'Mídia', 20, true],
+      ['Planejar as brincadeiras do chá', 'Geral', 14, false],
+      ['Encomendar lembrancinhas', 'Decoração', 12, true],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 7, false],
+      ['Separar o livro de mensagens para o bebê', 'Logística', 3, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 2, false],
+      ['Aproveitar o chá de bebê', 'Geral', 0, false],
+      ['Organizar e lavar os presentes recebidos', 'Logística', -3, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -5, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -10, false]
+    ],
+    bridal_shower: [
+      ['Definir a data e o orçamento do chá', 'Financeiro', 45, false],
+      ['Escolher o tema do chá de panela', 'Decoração', 42, false],
+      ['Montar a lista de convidados', 'Convidados', 40, false],
+      ['Reservar o espaço ou preparar a casa', 'Espaço', 38, true],
+      ['Criar a lista de presentes para a casa nova', 'Presentes', 35, false],
+      ['Enviar os convites', 'Convidados', 30, false],
+      ['Contratar o buffet ou definir o cardápio', 'Gastronomia', 28, true],
+      ['Contratar a decoração', 'Decoração', 25, true],
+      ['Encomendar o bolo e os doces', 'Doces', 21, true],
+      ['Planejar as brincadeiras e as prendas', 'Geral', 14, false],
+      ['Contratar bar e bebidas', 'Bebidas', 12, true],
+      ['Encomendar lembrancinhas', 'Decoração', 10, true],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 7, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 2, false],
+      ['Aproveitar o chá de panela', 'Geral', 0, false],
+      ['Anotar quem deu cada presente', 'Presentes', -1, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -5, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -10, false]
+    ],
+    gender_reveal: [
+      ['Definir a data e o orçamento', 'Financeiro', 30, false],
+      ['Pedir o exame de sexagem e deixar o resultado com alguém de confiança', 'Geral', 28, false],
+      ['Montar a lista de convidados', 'Convidados', 27, false],
+      ['Escolher como será a revelação (balão, bolo, fumaça ou confete)', 'Decoração', 25, false],
+      ['Reservar o espaço ou preparar a casa', 'Espaço', 24, true],
+      ['Criar a lista de presentes', 'Presentes', 22, false],
+      ['Enviar os convites', 'Convidados', 20, false],
+      ['Contratar a decoração', 'Decoração', 18, true],
+      ['Contratar o buffet ou definir o cardápio', 'Gastronomia', 16, true],
+      ['Encomendar o bolo da revelação', 'Doces', 12, true],
+      ['Contratar fotografia e filmagem do momento', 'Mídia', 12, true],
+      ['Montar o bolão de menino ou menina', 'Geral', 8, false],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 5, false],
+      ['Entregar o resultado a quem vai preparar a surpresa', 'Logística', 3, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 2, false],
+      ['Aproveitar a revelação', 'Geral', 0, false],
+      ['Compartilhar as fotos e o vídeo com a família', 'Mídia', -3, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -5, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -10, false]
+    ],
+    corporate: [
+      ['Definir objetivo, público e orçamento do evento', 'Financeiro', 90, false],
+      ['Aprovar o orçamento com a diretoria', 'Financeiro', 85, false],
+      ['Reservar o espaço', 'Espaço', 80, true],
+      ['Montar a lista de convidados', 'Convidados', 75, false],
+      ['Contratar a produção ou assessoria do evento', 'Assessoria', 70, true],
+      ['Contratar o buffet ou coffee break', 'Gastronomia', 60, true],
+      ['Contratar som, telão e iluminação', 'Música', 55, true],
+      ['Contratar fotografia e filmagem', 'Mídia', 50, true],
+      ['Definir a programação e os palestrantes', 'Geral', 45, false],
+      ['Enviar os convites', 'Convidados', 40, false],
+      ['Produzir os materiais com a marca (banners, crachás e brindes)', 'Decoração', 30, true],
+      ['Contratar recepção e segurança', 'Equipe', 25, true],
+      ['Fechar a confirmação de presença', 'Convidados', 14, false],
+      ['Passar o número final de participantes ao buffet', 'Gastronomia', 7, false],
+      ['Fazer o ensaio técnico de som e projeção', 'Logística', 2, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 2, false],
+      ['Fazer o briefing final com a equipe', 'Assessoria', 1, false],
+      ['Realizar o evento', 'Geral', 0, false],
+      ['Enviar a pesquisa de satisfação aos participantes', 'Convidados', -2, false],
+      ['Compartilhar as fotos e os materiais', 'Mídia', -5, false],
+      ['Avaliar os fornecedores', 'Fornecedores', -10, false],
+      ['Fechar a prestação de contas', 'Financeiro', -14, false]
+    ],
+    other: [
+      ['Definir o orçamento do evento', 'Financeiro', 60, false],
+      ['Montar a lista de convidados', 'Convidados', 55, false],
+      ['Reservar o espaço', 'Espaço', 50, true],
+      ['Contratar o buffet', 'Gastronomia', 45, true],
+      ['Contratar a decoração', 'Decoração', 40, true],
+      ['Contratar música ou animação', 'Música', 35, true],
+      ['Contratar fotografia', 'Mídia', 32, true],
+      ['Criar a lista de presentes', 'Presentes', 30, false],
+      ['Enviar os convites', 'Convidados', 28, false],
+      ['Encomendar o bolo e os doces', 'Doces', 21, true],
+      ['Contratar bar e bebidas', 'Bebidas', 18, true],
+      ['Fechar a confirmação de presença (RSVP)', 'Convidados', 10, false],
+      ['Passar o número final de convidados ao buffet', 'Gastronomia', 7, false],
+      ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 3, false],
+      ['Confirmar os horários com os fornecedores', 'Fornecedores', 1, false],
+      ['Aproveitar o evento', 'Geral', 0, false],
+      ['Enviar agradecimentos aos convidados', 'Convidados', -5, false],
+      ['Avaliar os fornecedores', 'Fornecedores', -10, false],
+      ['Resgatar o saldo da carteira', 'Financeiro', -14, false]
+    ]
+  };
+  MODELOS.baby = MODELOS.baby_shower;
 
-  const MAIOR_PRAZO = Math.max(...MODELO.map(m => m[2]));
+  /** Tarefas sugeridas do tipo do evento ativo (tipo desconhecido → "other"). */
+  function modeloDoEvento() {
+    const ev = eventoAtivo();
+    const tipo = ev && ev.type ? String(ev.type) : 'other';
+    return MODELOS[tipo] || MODELOS.other;
+  }
 
   const GRUPOS = [
     ['atrasadas', 'Atrasadas · atenção imediata'],
@@ -126,7 +299,7 @@
     const det = ev.eventDetails || {};
     return dataLocal(det.date || ev.date || '');
   }
-  const chaveLocal = (/** @type {string} */ ev) => `love-checklist-v2-${ev}`;
+  const chaveLocal = (/** @type {string} */ ev) => `love-checklist-v3-${ev}`;
   /** @param {string} ev @returns {Tarefa[]|null} */
   function lerLocal(ev) {
     try { const v = localStorage.getItem(chaveLocal(ev)); return v ? JSON.parse(v) : null; } catch (e) { return null; }
@@ -149,29 +322,32 @@
   }
 
   /**
-   * Prazo de uma tarefa sugerida. O modelo pensa em 6 meses de preparação;
-   * se o evento foi criado com menos tempo, os prazos são distribuídos entre
+   * Prazo de uma tarefa sugerida. Cada tipo de evento tem o seu tempo ideal de
+   * preparação (maior); se o evento foi criado com menos tempo, os prazos são distribuídos entre
    * o dia da criação e o dia do evento (nada nasce atrasado). Tarefas do pós-
    * evento ficam depois do evento.
    * @param {number} dias  dias antes do evento no modelo
+   * @param {number} maior tempo ideal de preparação do tipo de evento
    */
-  function prazoSugerido(dias) {
+  function prazoSugerido(dias, maior) {
     const evento = dataDoEvento();
     if (!evento) return null;
     if (dias <= 0) return isoDe(new Date(evento.getTime() - dias * DIA));
     const criacao = dataDeCriacao();
     const janela = diasEntre(criacao, evento);
-    if (janela >= MAIOR_PRAZO) return isoDe(new Date(evento.getTime() - dias * DIA));
+    if (janela >= maior) return isoDe(new Date(evento.getTime() - dias * DIA));
     if (janela <= 1) return isoDe(evento);
-    const andou = Math.max(1, Math.round(janela * (MAIOR_PRAZO - dias) / MAIOR_PRAZO));
+    const andou = Math.max(1, Math.round(janela * (maior - dias) / maior));
     return isoDe(new Date(criacao.getTime() + Math.min(andou, janela) * DIA));
   }
 
   /** Tarefas sugeridas, com prazo calculado pela criação e pela data do evento. @returns {Omit<Tarefa,'id'>[]} */
   function tarefasSugeridas() {
-    return MODELO.map(([titulo, categoria, dias, busca], i) => ({
+    const modelo = modeloDoEvento();
+    const maior = Math.max(...modelo.map(m => m[2]));
+    return modelo.map(([titulo, categoria, dias, busca], i) => ({
       titulo, categoria,
-      prazo: prazoSugerido(dias),
+      prazo: prazoSugerido(dias, maior),
       concluida: false, responsavel: '', notas: null, orcamento: null,
       busca_fornecedor: busca ? (NO_EXPLORAR[categoria] || null) : null,
       ordem: i

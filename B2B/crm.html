@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=760">
+  <link rel="stylesheet" href="css/styles.css?v=761">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -256,56 +256,83 @@
     </div>
   </aside>
 
-  <!-- Enviar proposta -->
+  <!-- Enviar proposta: pop-up no mesmo formato da caixa da solicitação,
+       em 3 etapas — Produto, Valor e desconto, Detalhes. -->
   <div class="modal-backdrop" id="op-proposta-modal" aria-hidden="true">
-    <div class="modal-card op-proposta-card" role="dialog" aria-modal="true" aria-labelledby="op-proposta-titulo">
-      <button type="button" class="mfa-modal-fechar" data-op-proposta-fechar aria-label="Fechar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
-      </button>
-      <h2 class="mfa-modal-titulo" id="op-proposta-titulo">Enviar proposta</h2>
-      <p class="op-proposta-sub" id="op-proposta-sub"></p>
+    <div class="modal-card op-prop" role="dialog" aria-modal="true" aria-labelledby="op-proposta-titulo">
+      <header class="op-prop-cabeca">
+        <div class="op-prop-cabeca-textos">
+          <h2 class="op-prop-titulo" id="op-proposta-titulo">Enviar proposta</h2>
+          <p class="op-prop-sub" id="op-proposta-sub"></p>
+        </div>
+        <button type="button" class="op-prop-fechar" data-op-proposta-fechar aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </header>
 
-      <form id="op-proposta-form" class="settings-zola-form" novalidate>
-        <div>
-          <label for="op-produto" class="field-label">Produto ofertado <span style="color:#DC2626;">*</span></label>
+      <form id="op-proposta-form" novalidate>
+        <nav class="op-prop-abas" role="tablist">
+          <button type="button" class="op-prop-aba is-ativa" data-op-etapa="1">1. Produto</button>
+          <button type="button" class="op-prop-aba" data-op-etapa="2">2. Valor e desconto</button>
+          <button type="button" class="op-prop-aba" data-op-etapa="3">3. Detalhes</button>
+        </nav>
+
+        <section class="op-prop-sec" data-op-painel-etapa="1">
+          <label for="op-produto" class="op-prop-pergunta">Qual produto seu deseja anexar a essa proposta?</label>
           <select id="op-produto" class="field-select"></select>
-        </div>
-        <div>
-          <label for="op-valor" class="field-label">Valor total <span style="color:#DC2626;">*</span></label>
-          <div class="op-valor-linha">
-            <input id="op-valor" type="text" inputmode="numeric" class="field-input" placeholder="R$ 0,00" autocomplete="off">
-            <span class="op-faixa-pill" id="op-faixa-pill"></span>
-          </div>
+          <p class="op-prop-vazio" id="op-produto-vazio" hidden>Você ainda não tem nenhum produto. <a href="produtos?add=1">Adicione um produto</a></p>
+        </section>
+
+        <section class="op-prop-sec" data-op-painel-etapa="2" hidden>
+          <p class="op-prop-pergunta">Valor da proposta</p>
+          <span class="op-faixa-pill" id="op-faixa-pill"></span>
+          <table class="op-prop-tabela">
+            <tbody>
+              <tr>
+                <th scope="row"><label for="op-valor">Preço do produto</label></th>
+                <td><input id="op-valor" type="text" inputmode="numeric" class="field-input" placeholder="R$ 0,00" autocomplete="off"></td>
+              </tr>
+              <tr>
+                <th scope="row"><label for="op-desconto">Desconto (%)</label></th>
+                <td><input id="op-desconto" type="text" inputmode="decimal" class="field-input" placeholder="0" autocomplete="off"></td>
+              </tr>
+              <tr class="op-prop-linha-desconto">
+                <th scope="row">Valor do desconto</th>
+                <td id="op-desconto-valor">R$ 0,00</td>
+              </tr>
+              <tr class="op-prop-linha-total">
+                <th scope="row">Total da proposta</th>
+                <td id="op-total">R$ 0,00</td>
+              </tr>
+            </tbody>
+          </table>
           <p class="op-alerta-faixa" id="op-alerta-faixa" hidden></p>
-        </div>
-        <div>
-          <label for="op-inclui" class="field-label">O que está incluso <span style="color:#DC2626;">*</span></label>
-          <textarea id="op-inclui" class="field-textarea settings-descricao" maxlength="1000" placeholder="Ex.: cobertura de 8 horas, 2 fotógrafos, álbum impresso 30x30…"></textarea>
-          <p class="settings-descricao-contador" id="op-inclui-contador">0/1000</p>
-        </div>
-        <div>
-          <label for="op-mensagem" class="field-label">Mensagem de apresentação</label>
-          <textarea id="op-mensagem" class="field-textarea settings-descricao" maxlength="1000" placeholder="Conte um pouco sobre o seu trabalho (opcional)"></textarea>
-        </div>
-        <div class="settings-endereco-linha settings-endereco-linha--metade">
+        </section>
+
+        <section class="op-prop-sec" data-op-painel-etapa="3" hidden>
           <div>
-            <label for="op-validade" class="field-label">Validade da proposta</label>
-            <input id="op-validade" type="date" class="field-input">
+            <label for="op-inclui" class="op-prop-pergunta">O que está incluso <span style="color:#DC2626;">*</span></label>
+            <textarea id="op-inclui" class="field-textarea settings-descricao" maxlength="1000"></textarea>
+            <p class="settings-descricao-contador" id="op-inclui-contador">0/1000</p>
           </div>
           <div>
-            <label for="op-prazo" class="field-label">Prazo de entrega</label>
-            <input id="op-prazo" type="text" maxlength="80" class="field-input" placeholder="Ex.: fotos em 30 dias">
+            <label for="op-mensagem" class="op-prop-pergunta">Mensagem de apresentação</label>
+            <textarea id="op-mensagem" class="field-textarea settings-descricao" maxlength="1000" placeholder="Opcional"></textarea>
           </div>
-        </div>
-        <p class="settings-form-msg" id="op-proposta-msg" aria-live="polite" hidden></p>
-        <div>
-          <button type="submit" class="btn-primary op-enviar-btn" id="op-enviar-btn">Enviar proposta</button>
-        </div>
+        </section>
+
+        <p class="settings-form-msg op-prop-msg" id="op-proposta-msg" aria-live="polite" hidden></p>
+
+        <footer class="op-prop-rodape">
+          <button type="button" class="op-prop-voltar" id="op-prop-voltar" hidden>Voltar</button>
+          <button type="button" class="btn-primary op-prop-btn" id="op-prop-continuar">Continuar</button>
+          <button type="submit" class="btn-primary op-prop-btn" id="op-enviar-btn" hidden>Enviar proposta</button>
+        </footer>
       </form>
 
-      <div class="op-enviada" id="op-enviada" hidden>
+      <div class="op-enviada op-prop-sec" id="op-enviada" hidden>
         <p>Proposta enviada. Ela chegou no chat do anfitrião.</p>
-        <a href="chat" class="btn-primary op-enviar-btn" id="op-abrir-conversa">Abrir conversa</a>
+        <a href="chat" class="btn-primary op-prop-btn" id="op-abrir-conversa">Abrir conversa</a>
       </div>
     </div>
   </div>
@@ -322,6 +349,6 @@
   <script src="js/shell.js?v=60"></script>
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="js/crm.js?v=27"></script>
-  <script src="js/oportunidades.js?v=12"></script>
+  <script src="js/oportunidades.js?v=13"></script>
 </body>
 </html>

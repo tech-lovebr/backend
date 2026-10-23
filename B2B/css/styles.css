@@ -10356,3 +10356,35 @@ html body .op-chip-salvas.is-ativo svg:not(#love-h-a) { fill: currentColor; }
 /* Sobre o anfitrião: foto quadrada com cantos arredondados (como os avatares da Love). */
 html body .op-analise-avatar:not(#love-h-a) { width: 40px; height: 40px; border-radius: 8px; }
 @media (max-width: 640px) { html body .op-header-acoes .op-busca:not(#love-h-a) { width: auto; flex: 1 1 auto; } }
+
+/* Enviar proposta: pop-up no formato da caixa da solicitação (título 22px,
+   seções com divisórias finas), em etapas com abas sublinhadas. */
+html body .modal-card.op-prop:not(#love-h-a) { max-width: 560px; width: 100%; padding: 0; border-radius: 10px; overflow: hidden; }
+html body .op-prop-cabeca:not(#love-h-a) { display: flex; align-items: flex-start; gap: 16px; padding: 24px 24px 0; }
+html body .op-prop-cabeca-textos:not(#love-h-a) { flex: 1; min-width: 0; }
+html body .op-prop-titulo:not(#love-h-a) { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+html body .op-prop-sub:not(#love-h-a) { margin: 6px 0 0; font-size: 13px; color: #71717A; }
+html body .op-prop-fechar:not(#love-h-a) { width: 32px; height: 32px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; color: #52525B; cursor: pointer; }
+html body .op-prop-fechar:hover:not(#love-h-a) { color: #181D24; }
+html body .op-prop-abas:not(#love-h-a) { display: flex; gap: 24px; padding: 0 24px; margin-top: 18px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+html body .op-prop-aba:not(#love-h-a) { padding: 0 0 12px; margin-bottom: -1px; border: none; border-bottom: 2px solid transparent; background: none; font-family: inherit; font-size: 13px; font-weight: 600; color: #A1A1AA; cursor: pointer; }
+html body .op-prop-aba.is-ativa:not(#love-h-a) { color: #183b54; border-bottom-color: #183b54; }
+html body .op-prop-sec:not(#love-h-a) { display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; }
+html body .op-prop-sec[hidden]:not(#love-h-a) { display: none; }
+html body .op-prop-pergunta:not(#love-h-a) { display: block; margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; }
+html body .op-prop-vazio:not(#love-h-a) { margin: 0; font-size: 14px; color: #3F3F46; }
+html body .op-prop-vazio a:not(#love-h-a) { font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; }
+html body .op-prop-tabela:not(#love-h-a) { width: 100%; border-collapse: collapse; background: #F4F5F7; border-radius: 10px; overflow: hidden; }
+html body .op-prop-tabela th:not(#love-h-a), html body .op-prop-tabela td:not(#love-h-a) { padding: 12px 16px; font-size: 14px; text-align: left; border-top: 1px solid #E4E4E7; }
+html body .op-prop-tabela tr:first-child th:not(#love-h-a), html body .op-prop-tabela tr:first-child td:not(#love-h-a) { border-top: none; }
+html body .op-prop-tabela th:not(#love-h-a) { font-weight: 500; color: #52525B; width: 50%; }
+html body .op-prop-tabela td:not(#love-h-a) { text-align: right; color: #18181B; font-variant-numeric: tabular-nums; }
+html body .op-prop-tabela td .field-input:not(#love-h-a) { height: 38px; text-align: right; background: #FFFFFF; }
+html body .op-prop-linha-total th:not(#love-h-a), html body .op-prop-linha-total td:not(#love-h-a) { font-weight: 700; color: #18181B; font-size: 15px; }
+html body .op-prop-msg:not(#love-h-a) { margin: 0 24px; }
+html body .op-prop-rodape:not(#love-h-a) { display: flex; align-items: center; justify-content: flex-end; gap: 16px; padding: 16px 24px; border-top: 1px solid rgba(0,0,0,0.06); }
+html body .op-prop-voltar:not(#love-h-a) { margin-right: auto; border: none; background: none; padding: 0; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; }
+html body .op-prop-voltar:hover:not(#love-h-a) { color: #181D24; }
+html body .op-prop-voltar[hidden]:not(#love-h-a), html body .op-prop-btn[hidden]:not(#love-h-a) { display: none; }
+html body .op-prop-btn:not(#love-h-a) { height: 44px; min-width: 140px; justify-content: center; }
+html body #op-produto[hidden]:not(#love-h-a) { display: none; }

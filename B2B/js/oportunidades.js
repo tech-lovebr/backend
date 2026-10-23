@@ -119,7 +119,7 @@ const opMinhaProposta = pedidoId => opPropostas.find(x => x.pedido_id === pedido
 /* O pedido só aparece para quem tem produto cadastrado numa categoria que
    o atende (ex.: pedido de local → produto de Espaços para Locação). */
 async function opCarregarCategoriasDaEmpresa() {
-  const { data: prods } = await supabaseClient.from('products').select('id, name, category').eq('fornecedor_id', opEmpresaId).order('name');
+  const { data: prods } = await supabaseClient.from('products').select('id, name, category, price, extra').eq('fornecedor_id', opEmpresaId).order('name');
   opMeusProdutos = prods || [];
   const cats = new Set();
   opMeusProdutos.forEach(p => opCategoriasDoProduto(p.category).forEach(c => cats.add(c)));
@@ -263,7 +263,6 @@ function opAbrirDetalhe(id) {
   const fotos = p.referencias || [];
   // Perguntas do anfitrião: só se o formulário de criação tiver enviado.
   const perguntas = Array.isArray(p.perguntas) ? p.perguntas.filter(Boolean) : [];
-  const recebidas = Number(p.propostas_recebidas || 0);
   const salva = opSalvos.has(p.id);
   const icone = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const acao = minha
@@ -302,14 +301,6 @@ function opAbrirDetalhe(id) {
             <span>${salva ? 'Vaga salva' : 'Salvar vaga'}</span>
           </button>
           <p class="op-analise-aviso">O envio de proposta conecta você diretamente à fila de análise do anfitrião.</p>
-        </div>
-
-        <div class="op-analise-card">
-          <h4 class="op-analise-card-titulo">Atividade nesta solicitação</h4>
-          <dl class="op-analise-lista">
-            <div><dt>Propostas enviadas</dt><dd>${recebidas < 5 ? 'Menos de 5' : recebidas}</dd></div>
-            <div><dt>Status</dt><dd>${p.status === 'aberto' || !p.status ? 'Aberto para propostas' : 'Fechado'}</dd></div>
-          </dl>
         </div>
 
         <div class="op-analise-card" id="op-analise-anfitriao">
@@ -436,10 +427,63 @@ function opValorDigitado() {
   return d ? Number(d) / 100 : 0;
 }
 
+function opDescontoPct() {
+  const n = Number(String(document.getElementById('op-desconto').value || '').replace(',', '.').replace(/[^\d.]/g, ''));
+  return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0;
+}
+function opTotalProposta() {
+  const base = opValorDigitado();
+  return Math.round(base * (1 - opDescontoPct() / 100) * 100) / 100;
+}
+function opAtualizarTotal() {
+  const base = opValorDigitado();
+  const total = opTotalProposta();
+  document.getElementById('op-desconto-valor').textContent = base - total > 0 ? `− ${opBRL(base - total)}` : opBRL(0);
+  document.getElementById('op-total').textContent = opBRL(total);
+  opChecarFaixa();
+}
+function opPreencherValor(valor) {
+  const campo = document.getElementById('op-valor');
+  campo.value = valor > 0 ? opBRL(valor).replace(/ /g, ' ') : '';
+  opAtualizarTotal();
+}
+
+/* Etapas do pop-up: 1 Produto, 2 Valor e desconto, 3 Detalhes. */
+let opEtapa = 1;
+function opIrParaEtapa(n) {
+  opEtapa = n;
+  document.querySelectorAll('[data-op-etapa]').forEach(b => b.classList.toggle('is-ativa', Number(b.dataset.opEtapa) === n));
+  document.querySelectorAll('[data-op-painel-etapa]').forEach(sec => { sec.hidden = Number(sec.dataset.opPainelEtapa) !== n; });
+  const semProduto = !opMeusProdutos.length;
+  document.getElementById('op-prop-voltar').hidden = n === 1;
+  document.getElementById('op-prop-continuar').hidden = n === 3 || semProduto;
+  document.getElementById('op-enviar-btn').hidden = n !== 3;
+  mostrarMsgOp('');
+  if (n === 2) setTimeout(() => document.getElementById('op-valor').focus(), 30);
+  if (n === 3) setTimeout(() => document.getElementById('op-inclui').focus(), 30);
+}
+function opEtapaValida(n) {
+  if (n >= 1 && !document.getElementById('op-produto').value) { mostrarMsgOp('Escolha qual produto você está ofertando.', true); return false; }
+  if (n >= 2 && !(opTotalProposta() > 0)) { mostrarMsgOp('Informe o preço da proposta.', true); return false; }
+  return true;
+}
+function opAoEscolherProduto() {
+  const pr = opMeusProdutos.find(x => x.id === document.getElementById('op-produto').value);
+  if (!pr) return;
+  // Preço já vem do produto (pode editar); o que está incluso, da lista do produto.
+  opPreencherValor(Number(pr.price) || 0);
+  const inclui = document.getElementById('op-inclui');
+  const lista = (pr.extra && pr.extra.scope && pr.extra.scope.included) || [];
+  if (!inclui.value.trim() && lista.length) {
+    inclui.value = lista.join('\n').slice(0, 1000);
+    document.getElementById('op-inclui-contador').textContent = `${inclui.value.length}/1000`;
+  }
+}
+
 function opChecarFaixa() {
   const p = opPedidoAberto;
   const alerta = document.getElementById('op-alerta-faixa');
-  const valor = opValorDigitado();
+  const valor = opTotalProposta();
   const f = OP_FAIXAS[p && p.faixa];
   const min = p && p.valor_min != null ? Number(p.valor_min) : (f ? f.min : null);
   const max = p && p.valor_max != null ? Number(p.valor_max) : (f ? f.max : null);
@@ -458,7 +502,7 @@ function opAbrirProposta() {
   document.getElementById('op-enviada').hidden = true;
   document.getElementById('op-proposta-form').reset();
   document.getElementById('op-inclui-contador').textContent = '0/1000';
-  document.getElementById('op-proposta-sub').textContent = `${opTitulo(p)} · ${opData(p)} · ${opLocal(p)}`;
+  document.getElementById('op-proposta-sub').textContent = `${opTitulo(p)} · ${opDataCurta(p)} · ${[p.cidade, p.uf].filter(Boolean).join(', ')}`;
   document.getElementById('op-faixa-pill').textContent = p.faixa ? opFaixaTexto(p) : '';
   // Produtos da empresa que atendem a categoria do pedido (sem nenhum, todos).
   const daCategoria = opMeusProdutos.filter(pr => opCategoriasDoProduto(pr.category).includes(p.categoria));
@@ -466,13 +510,14 @@ function opAbrirProposta() {
   const sel = document.getElementById('op-produto');
   sel.innerHTML = (opcoes.length === 1 ? '' : '<option value="">Escolha o produto</option>') +
     opcoes.map(pr => `<option value="${escapeHtml(pr.id)}">${escapeHtml(pr.name || 'Produto')}</option>`).join('');
-  const validade = new Date(Date.now() + 15 * 86400000);
-  document.getElementById('op-validade').value = validade.toISOString().slice(0, 10);
-  mostrarMsgOp('');
-  opChecarFaixa();
+  // Sem produto: só o aviso para adicionar um.
+  sel.hidden = !opMeusProdutos.length;
+  document.getElementById('op-produto-vazio').hidden = opMeusProdutos.length > 0;
+  opPreencherValor(0);
+  if (sel.value) opAoEscolherProduto();
+  opIrParaEtapa(1);
   modal.classList.add('show');
   modal.setAttribute('aria-hidden', 'false');
-  setTimeout(() => document.getElementById('op-valor').focus(), 30);
 }
 
 function opFecharProposta() {
@@ -491,11 +536,12 @@ function mostrarMsgOp(texto, erro) {
 async function opEnviarProposta(e) {
   e.preventDefault();
   const p = opPedidoAberto;
-  const valor = opValorDigitado();
+  if (opEtapa !== 3) return;
+  const valor = opTotalProposta();
   const inclui = document.getElementById('op-inclui').value.trim();
   const produtoId = document.getElementById('op-produto').value;
-  if (!produtoId) return mostrarMsgOp('Escolha qual produto você está ofertando.', true);
-  if (!valor) return mostrarMsgOp('Informe o valor total.', true);
+  if (!produtoId) { opIrParaEtapa(1); return mostrarMsgOp('Escolha qual produto você está ofertando.', true); }
+  if (!valor) { opIrParaEtapa(2); return mostrarMsgOp('Informe o preço da proposta.', true); }
   if (!inclui) return mostrarMsgOp('Descreva o que está incluso.', true);
   const btn = document.getElementById('op-enviar-btn');
   btn.disabled = true;
@@ -506,8 +552,8 @@ async function opEnviarProposta(e) {
     p_valor: valor,
     p_inclui: inclui,
     p_mensagem: document.getElementById('op-mensagem').value.trim() || null,
-    p_validade: document.getElementById('op-validade').value || null,
-    p_prazo: document.getElementById('op-prazo').value.trim() || null
+    p_validade: null,
+    p_prazo: null
   };
   let { data: propostaId, error } = await supabaseClient.rpc('enviar_proposta', { ...params, p_produto: produtoId });
   // Banco ainda sem a migration 079 (RPC sem p_produto): envia do jeito antigo.
@@ -632,8 +678,16 @@ function opLigarEventos() {
   valor.addEventListener('input', () => {
     const d = valor.value.replace(/\D/g, '').slice(0, 11);
     valor.value = d ? opBRL(Number(d) / 100).replace(/ /g, ' ') : '';
-    opChecarFaixa();
+    opAtualizarTotal();
   });
+  document.getElementById('op-desconto').addEventListener('input', opAtualizarTotal);
+  document.getElementById('op-produto').addEventListener('change', opAoEscolherProduto);
+  document.getElementById('op-prop-continuar').addEventListener('click', () => { if (opEtapaValida(opEtapa)) opIrParaEtapa(opEtapa + 1); });
+  document.getElementById('op-prop-voltar').addEventListener('click', () => opIrParaEtapa(Math.max(1, opEtapa - 1)));
+  document.querySelectorAll('[data-op-etapa]').forEach(b => b.addEventListener('click', () => {
+    const n = Number(b.dataset.opEtapa);
+    if (n <= opEtapa || opEtapaValida(n - 1)) opIrParaEtapa(n);
+  }));
   const inclui = document.getElementById('op-inclui');
   inclui.addEventListener('input', () => { document.getElementById('op-inclui-contador').textContent = `${inclui.value.length}/1000`; });
   document.getElementById('op-proposta-form').addEventListener('submit', opEnviarProposta);

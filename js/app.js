@@ -814,6 +814,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const last = profile.first_name ? (profile.last_name || '') : legacyParts.slice(1).join(' ');
     if (firstNameInput) firstNameInput.value = first;
     if (lastNameInput) lastNameInput.value = last;
+    const boasVindas = document.getElementById('conta-boas-vindas-titulo');
+    if (boasVindas) { const nome = `${first} ${last}`.trim(); boasVindas.textContent = nome ? `Olá, ${nome}!` : 'Olá!'; }
     if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
     const telInput = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-phone'));
     if (telInput) telInput.value = profile.phone ? maskBrazilPhone(String(profile.phone)) : '';
@@ -19605,6 +19607,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tituloDaPagina = document.getElementById('account-settings-header-title');
     if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
+    document.getElementById('conta-boas-vindas')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
     if (aba === 'privacidade') refreshMfaStatus();
     document.getElementById('config-painel-preferencias')?.classList.toggle('hidden', aba !== 'preferencias');

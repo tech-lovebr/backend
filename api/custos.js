@@ -22,6 +22,8 @@ const { supabaseAdmin } = require("./_ses");
 
 const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
 const MESES = 12;
+// Plano Pro da Vercel: US$ 20 por mês, que já vêm como crédito de consumo.
+const ASSINATURA_VERCEL_USD = 20;
 const PRECO_PLANO_SUPABASE = { free: 0, pro: 25, team: 599 };
 // Plano atual da Love na Supabase (decisão de 2026-10-23: fica no Free por
 // enquanto). Vale quando a API não deixa ler o plano. Ao mudar para o Pro,
@@ -98,38 +100,76 @@ async function custoVercel(meses) {
       registros = texto.split("\n").filter(l => l.trim()).map(l => JSON.parse(l));
     }
 
-    // Soma por mês e abre por serviço (Build CPU Minutes, Function Storage...),
-    // por projeto e por dia, para o detalhe e a previsão no Admin.
+    // Cada registro é um dia de um serviço num projeto. BilledCost é o que
+    // vira fatura (já descontado o crédito do plano); EffectiveCost é o
+    // consumo antes do crédito. "Pro" é a assinatura, rateada por dia.
     const porMes = mesesZerados(meses);
+    let moeda = "USD";
+    let primeiroDia = null;
+    const linhas = registros.map(c => {
+      if (c.BillingCurrency) moeda = c.BillingCurrency;
+      const dia = String(c.ChargePeriodStart || c.BillingPeriodStart || "").slice(0, 10);
+      if (dia && (!primeiroDia || dia < primeiroDia)) primeiroDia = dia;
+      return {
+        dia,
+        servico: c.ServiceName || c.ChargeDescription || "Outros",
+        cobrado: Number(c.BilledCost) || 0,
+        consumo: Number(c.EffectiveCost ?? c.BilledCost) || 0,
+        uso: Number(c.ConsumedQuantity) || 0,
+        unidade: c.ConsumedUnit || "",
+        projeto: c.Tags?.ProjectName || c.Tags?.ProjectId || ""
+      };
+    });
+    const ehAssinatura = l => l.servico === "Pro";
+
+    // Mês do calendário: cobrado + assinatura rateada.
+    linhas.forEach(l => {
+      const mes = l.dia.slice(0, 7);
+      if (mes in porMes) porMes[mes] += ehAssinatura(l) ? l.consumo : l.cobrado;
+    });
+
+    // Ciclo de cobrança: começa todo mês no dia em que o plano começou.
+    const hoje = new Date().toISOString().slice(0, 10);
+    const diaDoCiclo = Number((primeiroDia || hoje).slice(8, 10));
+    const [a, m] = hoje.split("-").map(Number);
+    let inicioCiclo = new Date(Date.UTC(a, m - 1, diaDoCiclo));
+    if (inicioCiclo.toISOString().slice(0, 10) > hoje) inicioCiclo = new Date(Date.UTC(a, m - 2, diaDoCiclo));
+    const fimCiclo = new Date(Date.UTC(inicioCiclo.getUTCFullYear(), inicioCiclo.getUTCMonth() + 1, diaDoCiclo));
+    const deCiclo = inicioCiclo.toISOString().slice(0, 10);
+    const ateCiclo = fimCiclo.toISOString().slice(0, 10);
+    const noCiclo = linhas.filter(l => l.dia >= deCiclo && l.dia < ateCiclo);
+
     const servicos = {};
     const projetos = {};
-    const dias = {};
-    let moeda = "USD";
-    registros.forEach(c => {
-      const inicio = String(c.ChargePeriodStart || c.BillingPeriodStart || "");
-      const mes = inicio.slice(0, 7);
-      const valor = Number(c.BilledCost ?? c.EffectiveCost ?? 0) || 0;
-      if (c.BillingCurrency) moeda = c.BillingCurrency;
-      if (!(mes in porMes)) return;
-      porMes[mes] += valor;
-      const nome = c.ServiceName || c.ChargeDescription || "Outros";
-      const chave = `${mes}|${nome}`;
-      if (!servicos[chave]) servicos[chave] = { mes, servico: nome, valor: 0, lista: 0, quantidade: 0, unidade: c.PricingUnit || c.ConsumedUnit || "", tipo: c.ChargeCategory || "" };
-      servicos[chave].valor += valor;
-      servicos[chave].lista += Number(c.ListCost ?? c.EffectiveCost ?? valor) || 0;
-      servicos[chave].quantidade += Number(c.PricingQuantity ?? c.ConsumedQuantity ?? 0) || 0;
-      const projeto = c.Tags?.ProjectName || c.Tags?.projectName || c.Tags?.ProjectId || c.ResourceName || "";
-      if (projeto && mes === meses[meses.length - 1]) projetos[projeto] = (projetos[projeto] || 0) + valor;
-      const dia = inicio.slice(0, 10);
-      if (dia) dias[dia] = (dias[dia] || 0) + valor;
+    const diasUso = {};
+    let consumo = 0;
+    let extra = 0;
+    let ultimoDia = deCiclo;
+    noCiclo.forEach(l => {
+      if (l.dia > ultimoDia && (l.consumo || l.cobrado)) ultimoDia = l.dia;
+      if (ehAssinatura(l)) return;
+      consumo += l.consumo;
+      extra += l.cobrado;
+      if (!servicos[l.servico]) servicos[l.servico] = { servico: l.servico, consumo: 0, cobrado: 0, uso: 0, unidade: l.unidade };
+      const sv = servicos[l.servico];
+      sv.consumo += l.consumo; sv.cobrado += l.cobrado; sv.uso += l.uso;
+      if (l.projeto) {
+        if (!projetos[l.projeto]) projetos[l.projeto] = { projeto: l.projeto, consumo: 0, minutos_build: 0 };
+        projetos[l.projeto].consumo += l.consumo;
+        if (l.servico === "Build CPU Minutes") projetos[l.projeto].minutos_build += l.uso;
+      }
+      diasUso[l.dia] = (diasUso[l.dia] || 0) + l.consumo;
     });
-    const exemplo = registros[0] ? Object.keys(registros[0]) : [];
-    return {
-      ...base, moeda, status: "ativo", meses: porMes,
-      servicos: Object.values(servicos).sort((a, b) => b.valor - a.valor),
-      projetos, dias, campos: exemplo,
-      exemplo_registro: registros.find(c => (c.ServiceName || "").includes("Build")) || registros[0] || null
+
+    const ciclo = {
+      inicio: deCiclo, fim: ateCiclo, dados_ate: ultimoDia,
+      plano: "Pro", assinatura: ASSINATURA_VERCEL_USD, credito: ASSINATURA_VERCEL_USD,
+      consumo, extra, total: ASSINATURA_VERCEL_USD + extra,
+      servicos: Object.values(servicos).filter(sv => sv.consumo > 0.0005 || sv.cobrado > 0.0005).sort((x, y) => y.consumo - x.consumo),
+      projetos: Object.values(projetos).filter(p => p.consumo > 0.0005).sort((x, y) => y.consumo - x.consumo),
+      dias: diasUso
     };
+    return { ...base, moeda, status: "ativo", meses: porMes, detalhe: `Plano Pro + consumo além do crédito`, ciclo };
   } catch (e) {
     return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
   }
@@ -276,6 +316,7 @@ async function custoAws(meses) {
     // Fatura inteira da conta (SES, SNS, impostos...), somada por mês.
     const porMes = mesesZerados(meses);
     const doMesAtual = {};
+    const servicosAws = [];
     let moeda = "USD";
     (j.ResultsByTime || []).forEach(p => {
       const mes = String(p.TimePeriod?.Start || "").slice(0, 7);
@@ -284,6 +325,7 @@ async function custoAws(meses) {
         const valor = Number(custo?.Amount) || 0;
         if (custo?.Unit) moeda = custo.Unit;
         if (mes in porMes) porMes[mes] += valor;
+        if (mes in porMes && valor >= 0.0005) servicosAws.push({ mes, servico: String(g.Keys?.[0] || ""), valor });
         if (mes === meses[meses.length - 1] && valor >= 0.005) {
           const nome = String(g.Keys?.[0] || "").replace(/^Amazon |^AWS /, "").replace("Simple Email Service", "SES").replace("Simple Notification Service", "SNS");
           doMesAtual[nome] = (doMesAtual[nome] || 0) + valor;
@@ -292,7 +334,7 @@ async function custoAws(meses) {
     });
     const servicos = Object.entries(doMesAtual).sort((a, b) => b[1] - a[1]).map(([n, v]) => `${n} US$ ${v.toFixed(2)}`);
     const detalhe = servicos.length ? servicos.join(" · ") : "Sem cobrança no mês";
-    return { ...base, moeda, status: "ativo", detalhe, meses: porMes };
+    return { ...base, moeda, status: "ativo", detalhe, meses: porMes, servicos: servicosAws };
   } catch (e) {
     return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
   }

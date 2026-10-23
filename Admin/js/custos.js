@@ -99,8 +99,8 @@ async function buscarCotacao() {
 
 function ultimosMeses() {
   const hoje = new Date();
-  return Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(hoje.getFullYear(), hoje.getMonth() - 5 + i, 1);
+  return Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() - 11 + i, 1);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   });
 }
@@ -164,7 +164,9 @@ function renderTudo() {
 function renderKpis(linhas) {
   const atual = totalNoMes(linhas, mesAtual());
   const anterior = totalNoMes(linhas, mesPassado());
-  const media = MESES.reduce((s, m) => s + totalNoMes(linhas, m), 0) / MESES.length;
+  // Média só dos meses que tiveram custo (antes disso as contas não existiam).
+  const comCusto = MESES.map(m => totalNoMes(linhas, m)).filter(v => v > 0);
+  const media = comCusto.length ? comCusto.reduce((s, v) => s + v, 0) / comCusto.length : 0;
   const variacao = anterior ? ((atual - anterior) / anterior) * 100 : (atual ? 100 : 0);
   const sinal = variacao > 0 ? '+' : '';
 
@@ -370,7 +372,7 @@ function renderTabela() {
       ? `${TIPO[l.tipo]} desde ${formatDate(l.data)}`
       : (l.status === 'ativo' ? (l.detalhe || 'Acumulado do mês') : (l.erro || 'Configure as chaves na Vercel'));
     return `
-      <tr ${l.manual ? `data-manual="${i}"` : 'class="no-hover"'}>
+      <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>
         <td><span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span></td>
         <td><span class="cell-strong">${escapeHtml(l.nome)}</span><span class="cell-sub">${escapeHtml(detalhe)}</span></td>
         <td>${badge(TIPO[l.tipo] || l.tipo)}</td>
@@ -385,6 +387,9 @@ function renderTabela() {
 
   tbody.querySelectorAll('[data-manual]').forEach(tr => tr.addEventListener('click', () => {
     abrirFormulario(lista[Number(tr.dataset.manual)].bruto);
+  }));
+  tbody.querySelectorAll('[data-integracao]').forEach(tr => tr.addEventListener('click', () => {
+    abrirDetalhe(lista[Number(tr.dataset.integracao)]);
   }));
 }
 
@@ -496,4 +501,226 @@ function abrirFormulario(item) {
     toast(editando ? 'Custo atualizado' : 'Custo adicionado');
     renderTudo();
   });
+}
+
+/* ------------------------------------------------------------ Detalhe
+   Clicar num serviço (Vercel, Supabase, Amazon) abre, dentro da própria
+   página, de onde vem o custo, a fatura do ciclo, a previsão e o
+   diagnóstico. */
+
+const SECOES_PRINCIPAIS = ['#kpi-grid', '.custos-graficos', '#abas-custos', '.table-card'];
+
+function abrirDetalhe(l) {
+  SECOES_PRINCIPAIS.forEach(sel => { document.querySelector(sel).hidden = true; });
+  const acoes = document.getElementById('header-actions');
+  if (acoes) acoes.hidden = true;
+
+  const cabecalho = document.querySelector('.header-bar-titulo');
+  if (cabecalho) {
+    cabecalho.innerHTML = `
+      <a class="header-bar-voltar" href="#" title="Voltar" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
+      </a>
+      <h1>${escapeHtml(l.nome)}</h1>`;
+    cabecalho.querySelector('.header-bar-voltar').addEventListener('click', e => { e.preventDefault(); fecharDetalhe(); });
+  }
+
+  const visao = document.getElementById('visao-custos');
+  const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte];
+  visao.innerHTML = l.status !== 'ativo'
+    ? `<div class="card"><div class="card-body"><div class="empty-state"><strong>${l.status === 'erro' ? 'Não foi possível ler os custos' : 'Não conectado'}</strong><p>${escapeHtml(l.erro || 'Configure as chaves na Vercel (projeto love-platform).')}</p></div></div></div>`
+    : (montar ? montar(l) : '');
+  visao.hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function fecharDetalhe() {
+  const visao = document.getElementById('visao-custos');
+  visao.hidden = true;
+  visao.innerHTML = '';
+  SECOES_PRINCIPAIS.forEach(sel => { document.querySelector(sel).hidden = false; });
+  const acoes = document.getElementById('header-actions');
+  if (acoes) acoes.hidden = false;
+  const cabecalho = document.querySelector('.header-bar-titulo');
+  if (cabecalho) cabecalho.innerHTML = '<h1>Custos</h1>';
+  renderGraficoMeses();
+}
+
+/* Pedaços do detalhe */
+
+const usd = v => formatarMoeda(v, 'USD');
+const comReais = v => `${usd(v)}${COTACAO.USD ? ` <span class="cell-muted">≈ ${formatCurrency(v * COTACAO.USD)}</span>` : ''}`;
+const linhaDado = (rotulo, valor) => `<div class="dados-linha"><span class="rotulo">${rotulo}</span><span class="valor">${valor}</span></div>`;
+const dataCurta = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }).replace('.', '');
+const diasEntre = (de, ate) => Math.round((new Date(`${ate}T12:00:00`) - new Date(`${de}T12:00:00`)) / 86400000);
+
+function cardDetalhe(titulo, sub, corpo) {
+  return `<div class="card"><div class="card-head"><div><h2>${titulo}</h2>${sub ? `<p>${sub}</p>` : ''}</div></div><div class="card-body">${corpo}</div></div>`;
+}
+
+function cardDiagnostico(saude, resumo, dicas) {
+  const [rotulo, classe] = { saudavel: ['Saudável', 'badge-success'], atencao: ['Atenção', 'badge-warning'], alto: ['Alto', 'badge-danger'] }[saude];
+  return cardDetalhe('Diagnóstico', '', `
+    <div class="custo-diagnostico">
+      <div class="custo-saude">${badge(rotulo, classe)}</div>
+      <p class="custo-resumo">${resumo}</p>
+      ${dicas.length ? `<p class="custo-dicas-titulo">Como reduzir</p><ol class="custo-dicas">${dicas.map(d => `<li>${d}</li>`).join('')}</ol>` : ''}
+    </div>`);
+}
+
+function tabelaDetalhe(cabecalho, linhas, vazio = 'Nada cobrado ainda') {
+  return `<div class="table-wrap"><table class="data"><thead><tr>${cabecalho.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr></thead>
+    <tbody>${linhas.length ? linhas.join('') : `<tr class="no-hover"><td colspan="${cabecalho.length}" class="cell-muted">${vazio}</td></tr>`}</tbody></table></div>`;
+}
+
+function historicoDoItem(l) {
+  const linhas = MESES.slice().reverse().filter(m => (l.meses?.[m] || 0) > 0).map(m => `
+    <tr class="no-hover"><td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td><td class="valor-dinheiro">${usd(l.meses[m])}</td><td class="valor-dinheiro">${formatCurrency(emReais(l.meses[m], l.moeda))}</td></tr>`);
+  return cardDetalhe('Mês a mês', 'Retroativo dos últimos 12 meses (meses sem cobrança ficam de fora)',
+    tabelaDetalhe(['Mês', 'Dólar', 'Real (cotação de hoje)'], linhas, 'Nenhuma cobrança nos últimos 12 meses'));
+}
+
+const NOME_SERVICO_VERCEL = {
+  'Build CPU Minutes': 'Tempo de máquina montando o site a cada publicação',
+  'Deployment Storage': 'Armazenamento das versões publicadas',
+  'Function Storage': 'Armazenamento das funções /api',
+  'Fluid Active CPU': 'Processamento das funções /api',
+  'Observability Events': 'Eventos de monitoramento (logs)',
+  'Fast Data Transfer': 'Tráfego entregue aos visitantes',
+  'Function Invocations': 'Chamadas às funções /api',
+  'Fluid Provisioned Memory': 'Memória das funções /api',
+  'Fast Origin Transfer': 'Tráfego entre a CDN e as funções',
+  'CDN Requests': 'Requisições na CDN'
+};
+
+const UNIDADE = { minute: 'min de CPU', 'GB-Hr': 'GB-hora', GB: 'GB', 'CPU-Hr': 'CPU-hora', request: 'requisições', event: 'eventos', invocation: 'chamadas' };
+const formatarUso = (q, u) => q ? `${(q >= 10 ? Math.round(q) : Math.round(q * 100) / 100).toLocaleString('pt-BR')} ${UNIDADE[u] || u || ''}`.trim() : '—';
+
+function detalheVercel(l) {
+  const c = l.ciclo;
+  if (!c) return historicoDoItem(l);
+  const hoje = new Date().toISOString().slice(0, 10);
+  const faltam = Math.max(0, diasEntre(hoje, c.fim));
+
+  // Previsão: média dos últimos 7 dias com dados, até o fim do ciclo.
+  const dias = Object.keys(c.dias || {}).sort();
+  const ultimos = dias.slice(-7);
+  const mediaDia = ultimos.length ? ultimos.reduce((s, d) => s + c.dias[d], 0) / ultimos.length : 0;
+  const diasSemDado = Math.max(0, diasEntre(c.dados_ate, c.fim) - 1);
+  const consumoPrevisto = c.consumo + mediaDia * diasSemDado;
+  const extraPrevisto = Math.max(0, consumoPrevisto - c.credito);
+  const faturaPrevista = c.assinatura + extraPrevisto;
+
+  const fatura = cardDetalhe('Fatura do ciclo', `${dataCurta(c.inicio)} a ${dataCurta(c.fim)} · faltam ${faltam} dias`, `
+    <div class="lista-dados">
+      ${linhaDado('Assinatura (plano Pro)', `${comReais(c.assinatura)} por mês`)}
+      ${linhaDado('Crédito de consumo incluso no plano', usd(c.credito))}
+      ${linhaDado('Consumo no ciclo (antes do crédito)', comReais(c.consumo))}
+      ${linhaDado('Crédito usado', `${usd(Math.min(c.consumo, c.credito))} de ${usd(c.credito)}`)}
+      ${linhaDado('Cobrança extra (além do crédito)', comReais(c.extra))}
+      ${linhaDado('<strong>Fatura até agora</strong>', `<strong>${comReais(c.total)}</strong>`)}
+    </div>
+    <p class="custo-nota">Dados até ${dataCurta(c.dados_ate)}. O painel da Vercel soma também as horas de hoje, por isso pode mostrar um pouco mais. A fatura fecha em ${dataCurta(c.fim)}.</p>`);
+
+  const previsao = cardDetalhe('Previsão até o fim do ciclo', `Pela média dos últimos ${ultimos.length} dias`, `
+    <div class="lista-dados">
+      ${linhaDado('Consumo médio por dia', usd(mediaDia))}
+      ${linhaDado('Consumo previsto no ciclo', usd(consumoPrevisto))}
+      ${linhaDado('Cobrança extra prevista', usd(extraPrevisto))}
+      ${linhaDado('<strong>Fatura prevista</strong>', `<strong>${comReais(faturaPrevista)}</strong>`)}
+    </div>`);
+
+  // Diagnóstico
+  const maior = c.servicos[0];
+  const fatia = maior && c.consumo ? maior.consumo / c.consumo : 0;
+  const saude = faturaPrevista <= c.assinatura * 1.1 ? 'saudavel' : (faturaPrevista <= c.assinatura * 2 ? 'atencao' : 'alto');
+  let resumo;
+  let dicas = [];
+  if (maior?.servico === 'Build CPU Minutes' && fatia > 0.5) {
+    const minutos = c.projetos.reduce((s, p) => s + p.minutos_build, 0);
+    resumo = `${Math.round(fatia * 100)}% do consumo é <strong>build</strong>: o tempo de máquina que a Vercel gasta montando o site a cada publicação de código (${Math.round(minutos).toLocaleString('pt-BR')} minutos de CPU neste ciclo). O site no ar (visitas, funções, tráfego) custa centavos. `
+      + 'Não é um custo de uso dos clientes, e sim da configuração dos builds: cada envio de código ao GitHub monta os 3 projetos (love-platform, b2b-platform e admin-platform) numa máquina "Elastic", que chega a 30 processadores, e sem fila.';
+    dicas = [
+      'Em cada projeto da Vercel, <strong>Settings → Build and Deployment → Build Machine</strong>: trocar de Elastic para <strong>Basic</strong> (2 processadores). O site é estático + funções, não precisa de máquina grande.',
+      'Na mesma tela, <strong>On-Demand Concurrent Builds</strong>: trocar "Run all builds immediately" por <strong>Disable</strong>. Os builds entram em fila em vez de ganharem máquina extra.',
+      'Em b2b-platform e admin-platform, ligar <strong>Skip deployments when there are no changes to the root directory</strong>: o projeto só monta quando a pasta dele mudou.',
+      'Juntar mudanças pequenas num envio só, em vez de publicar cada ajuste separado.'
+    ];
+  } else if (maior) {
+    resumo = `O maior custo é ${escapeHtml(NOME_SERVICO_VERCEL[maior.servico] || maior.servico)} (${Math.round(fatia * 100)}% do consumo).`;
+  } else {
+    resumo = 'Só a assinatura do plano neste ciclo.';
+  }
+  if (saude === 'saudavel') resumo += ' O consumo cabe no crédito do plano: a fatura fica no valor da assinatura.';
+  else resumo += ` No ritmo atual, a fatura deve fechar em ${usd(faturaPrevista)}, ${saude === 'alto' ? 'mais que o dobro' : 'acima'} da assinatura de ${usd(c.assinatura)}.`;
+
+  const servicos = c.servicos.map(sv => `
+    <tr class="no-hover">
+      <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
+      <td>${escapeHtml(formatarUso(sv.uso, sv.unidade))}</td>
+      <td class="valor-dinheiro">${usd(sv.consumo)}</td>
+      <td class="valor-dinheiro">${usd(sv.cobrado)}</td>
+      <td>${c.consumo ? Math.round((sv.consumo / c.consumo) * 100) : 0}%</td>
+    </tr>`);
+  const projetos = c.projetos.map(p => `
+    <tr class="no-hover">
+      <td class="cell-strong">${escapeHtml(p.projeto)}</td>
+      <td>${p.minutos_build ? `${Math.round(p.minutos_build).toLocaleString('pt-BR')} min de CPU` : '—'}</td>
+      <td class="valor-dinheiro">${usd(p.consumo)}</td>
+      <td>${c.consumo ? Math.round((p.consumo / c.consumo) * 100) : 0}%</td>
+    </tr>`);
+
+  return `
+    <section class="custo-detalhe">
+      ${fatura}
+      <div class="custo-detalhe-lado">${cardDiagnostico(saude, resumo, dicas)}${previsao}</div>
+    </section>
+    ${cardDetalhe('De onde vem o custo', 'Serviços da Vercel neste ciclo. Consumo é antes do crédito; Cobrado é o que entra na fatura.',
+      tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado', 'Parte'], servicos))}
+    ${cardDetalhe('Por projeto', 'Quanto cada site consumiu neste ciclo', tabelaDetalhe(['Projeto', 'Build', 'Consumo', 'Parte'], projetos))}
+    ${historicoDoItem(l)}`;
+}
+
+function detalheSupabase(l) {
+  const valor = l.meses?.[mesAtual()] || 0;
+  const gratis = valor === 0;
+  const plano = cardDetalhe('Assinatura', escapeHtml(l.detalhe || ''), `
+    <div class="lista-dados">
+      ${linhaDado('Plano', gratis ? 'Free (gratuito)' : escapeHtml(l.detalhe || 'Pago'))}
+      ${linhaDado('Valor por mês', comReais(valor))}
+      ${linhaDado('Banco de dados', gratis ? 'até 500 MB' : 'até 8 GB inclusos')}
+      ${linhaDado('Arquivos (Storage)', gratis ? 'até 1 GB' : 'até 100 GB inclusos')}
+      ${linhaDado('Usuários ativos por mês', gratis ? 'até 50 mil' : 'até 100 mil inclusos')}
+      ${linhaDado('Backup automático', gratis ? 'Não tem' : 'Diário, 7 dias')}
+    </div>
+    <p class="custo-nota">A Supabase não libera a fatura por API: o valor vem do plano. Ao mudar de plano, avise para atualizar aqui.</p>`);
+  const diag = gratis
+    ? cardDiagnostico('saudavel', 'Custo zero. O plano gratuito atende enquanto o banco ficar abaixo de 500 MB e os arquivos abaixo de 1 GB. O ponto fraco é não ter <strong>backup automático</strong>: se algo for apagado por engano, não há como voltar.',
+      ['Acompanhar o tamanho em <strong>Supabase → Settings → Usage</strong>; perto de 80% do limite, é hora do Pro (US$ 25/mês).', 'Antes de ter clientes pagantes, considerar o Pro só pelo backup diário.'])
+    : cardDiagnostico('saudavel', 'Valor fixo do plano, sem cobrança por uso além dos limites inclusos.', []);
+  return `<section class="custo-detalhe">${plano}<div class="custo-detalhe-lado">${diag}</div></section>${historicoDoItem(l)}`;
+}
+
+function detalheAws(l) {
+  const atual = l.meses?.[mesAtual()] || 0;
+  const hoje = new Date();
+  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+  const previsto = hoje.getDate() > 1 ? (atual / (hoje.getDate() - 1)) * diasNoMes : atual;
+  const servicos = (l.servicos || []).slice().sort((a, b) => b.mes.localeCompare(a.mes) || b.valor - a.valor).map(sv => `
+    <tr class="no-hover"><td>${escapeHtml(nomeDoMes(sv.mes))}</td><td class="cell-strong">${escapeHtml(sv.servico)}</td><td class="valor-dinheiro">${usd(sv.valor)}</td></tr>`);
+  const resumo = cardDetalhe('Fatura do mês', escapeHtml(nomeDoMes(mesAtual())), `
+    <div class="lista-dados">
+      ${linhaDado('Assinatura', 'Não tem (paga só o que usa)')}
+      ${linhaDado('Consumo no mês', comReais(atual))}
+      ${linhaDado('Previsão para o mês', comReais(previsto))}
+      ${linhaDado('Preço do e-mail (SES)', 'US$ 0,10 a cada mil e-mails')}
+    </div>
+    <p class="custo-nota">Fatura da conta AWS inteira (Cost Explorer), atualizada uma vez por dia.</p>`);
+  const diag = cardDiagnostico(previsto < 5 ? 'saudavel' : (previsto < 20 ? 'atencao' : 'alto'),
+    previsto < 5
+      ? 'Custo baixo e proporcional ao uso: a Amazon cobra por e-mail enviado, sem mensalidade. Mesmo 10 mil e-mails num mês custam cerca de US$ 1.'
+      : 'O consumo subiu mais que o normal para e-mails. Veja em "De onde vem o custo" qual serviço puxou o valor.',
+    previsto < 5 ? [] : ['Conferir em E-mails quantos disparos saíram no mês.', 'Verificar se algum serviço da AWS ficou ligado sem uso.']);
+  return `<section class="custo-detalhe">${resumo}<div class="custo-detalhe-lado">${diag}</div></section>
+    ${cardDetalhe('De onde vem o custo', 'Serviços da AWS por mês', tabelaDetalhe(['Mês', 'Serviço', 'Valor'], servicos, 'Nenhuma cobrança da AWS ainda'))}`;
 }

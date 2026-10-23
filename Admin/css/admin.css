@@ -3949,3 +3949,17 @@ body[data-page="custos"] table.data tbody tr.no-hover { cursor: default; }
 .email-detalhe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
 .email-detalhe-lado { display: flex; flex-direction: column; gap: 1.25rem; }
 @media (max-width: 960px) { .email-detalhe { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------ Custos · detalhe do serviço */
+body[data-page="custos"] .admin-content > [hidden] { display: none !important; }
+.visao-custos { display: flex; flex-direction: column; gap: 1.25rem; }
+.custo-detalhe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.custo-detalhe-lado { display: flex; flex-direction: column; gap: 1.25rem; }
+@media (max-width: 960px) { .custo-detalhe { grid-template-columns: 1fr; } }
+.custo-nota { margin: .875rem 0 0; font-size: .8125rem; line-height: 1.5; color: var(--text-muted); }
+.custo-saude { margin-bottom: .75rem; }
+.custo-resumo { margin: 0; font-size: .875rem; line-height: 1.6; color: var(--text-main, #27272A); }
+.custo-dicas-titulo { margin: 1rem 0 .5rem; font-size: 11px; font-weight: 500; letter-spacing: .02em; text-transform: uppercase; color: #A1A1AA; }
+.custo-dicas { margin: 0; padding-left: 1.125rem; display: flex; flex-direction: column; gap: .5rem; font-size: .875rem; line-height: 1.55; }
+.visao-custos .table-wrap { margin: -.25rem 0 0; }
+body[data-page="custos"] table.data tbody tr[data-integracao] { cursor: pointer; }

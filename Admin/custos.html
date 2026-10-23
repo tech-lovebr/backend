@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=108">
+  <link rel="stylesheet" href="css/admin.css?v=109">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -46,7 +46,7 @@
         <section class="bloco custos-graficos">
           <div class="card viz-root">
             <div class="viz-head">
-              <div><h2>Custo por mês</h2><p>Últimos 6 meses, em reais</p></div>
+              <div><h2>Custo por mês</h2><p>Últimos 12 meses, em reais</p></div>
               <select class="field-select" id="grafico-serie" style="width:auto"></select>
             </div>
             <div class="viz-body" id="grafico-meses"></div>
@@ -77,10 +77,11 @@
             </table>
           </div>
         </section>
+        <section id="visao-custos" class="visao-custos" hidden></section>
       </main>
     </div>
   </div>
 
-  <script src="js/custos.js?v=2"></script>
+  <script src="js/custos.js?v=3"></script>
 </body>
 </html>

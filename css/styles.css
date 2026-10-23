@@ -10563,3 +10563,18 @@ html body .chk-resp-opcao .chk-avatar:not(#love-h-a) { width: 26px; height: 26px
 body[data-theme="dark"] .chk-resp-pop { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] button.chk-resp-opcao { color: #FFFFFF !important; }
 body[data-theme="dark"] button.chk-resp-opcao:hover { background: #333333 !important; }
+
+/* Checklist: ⋯, Buscar fornecedores e Responsável iguais aos de Minhas
+   solicitações (quadradinho 36px, borda #E4E4E7, cantos 8px). */
+html body button.chk-mais:not(#love-h-a) { width: 36px; height: 36px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #3F3F46; }
+html body button.chk-mais:not(#love-h-a):hover { background: #FFFFFF; border-color: #181D24; color: #181D24; }
+html body .chk-mais svg:not(#love-h-a) { width: 18px; height: 18px; }
+html body button.chk-buscar:not(#love-h-a) { height: 36px; padding: 0 14px; font-size: 13px; color: #18181B; }
+html body button.chk-resp:not(#love-h-a) { width: 36px; height: 36px; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; }
+html body button.chk-resp:not(#love-h-a):hover { border-color: #181D24; }
+html body button.chk-resp .chk-avatar:not(#love-h-a) { width: auto; height: auto; background: transparent; border: 0; border-radius: 0; color: #18181B; font-size: 12px; }
+html body button.chk-resp .chk-avatar.is-vazio:not(#love-h-a) { color: #3F3F46; }
+html body button.chk-resp .chk-avatar svg:not(#love-h-a) { width: 18px; height: 18px; }
+html body button.chk-resp:not(#love-h-a):hover .chk-avatar { color: #181D24; }
+body[data-theme="dark"] :is(button.chk-mais, button.chk-resp) { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] button.chk-resp .chk-avatar { color: #FFFFFF !important; background: transparent !important; }

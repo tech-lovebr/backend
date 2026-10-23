@@ -10997,3 +10997,32 @@ html body #carteira-raiz .cart-tabela-saques th:nth-child(2):not(#love-h-a), htm
 body[data-theme="dark"] #carteira-raiz .cart-lista-titulo, body[data-theme="dark"] .cart-valor-saque { color: #FFFFFF !important; }
 body[data-theme="dark"] button.cart-periodo-btn { background: #252525 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] .cart-periodo-pop { background: #252525 !important; border-color: #404040 !important; }
+
+/* Mapa do evento: linhas das mesas e das cadeiras com a mesma grossura das
+   linhas dos itens (1,5px na tela, mesmo com a planta reduzida para caber) e
+   cadeiras no lugar das bolinhas (encosto para fora; iniciais por cima). */
+html body .floorplan-mesa-core:not(#love-h-a) {
+  border: calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) solid #52525B;
+  box-shadow: none;
+}
+html body .floorplan-el.is-mesa:hover .floorplan-mesa-core:not(#love-h-a) { border-color: #181D24; }
+html body .floorplan-seat-dot:not(#love-h-a) {
+  width: 32px; height: 32px; min-width: 32px; max-width: 32px; min-height: 32px;
+  background: transparent !important; border: 0 !important; border-radius: 6px; box-shadow: none;
+  --cad-fundo: #FFFFFF; --cad-linha: #52525B;
+}
+.floorplan-cadeira { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.floorplan-cadeira * { fill: var(--cad-fundo); stroke: var(--cad-linha); stroke-width: 1.5px; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+html body .floorplan-seat-dot .floorplan-seat-dot-line:not(#love-h-a) { position: relative; z-index: 1; }
+html body .floorplan-seat-dot.is-assigned:not(#love-h-a) { --cad-fundo: #FFFFFF; --cad-linha: #181D24; color: #181D24; }
+html body .floorplan-seat-dot.is-confirmed:not(#love-h-a) { --cad-fundo: #181D24; --cad-linha: #181D24; color: #FFFFFF; }
+html body .floorplan-seat-dot.is-declined:not(#love-h-a) { --cad-fundo: #FEF2F2; --cad-linha: #F87171; color: #F87171; }
+html body .floorplan-seat-dot.tem-restricao:not(#love-h-a) { --cad-fundo: var(--cor-restricao); --cad-linha: var(--cor-restricao-borda); }
+html body .floorplan-seat-dot.is-dragover:not(#love-h-a) { --cad-linha: #537bae; box-shadow: none; }
+body[data-theme="dark"] .floorplan-mesa-core { border-color: #A1A1AA !important; }
+body[data-theme="dark"] .floorplan-seat-dot { --cad-fundo: #252525; --cad-linha: #A1A1AA; }
+body[data-theme="dark"] .floorplan-seat-dot.is-confirmed { --cad-fundo: #EBF4FF; --cad-linha: #EBF4FF; color: #000000 !important; }
+/* Contorno da mesa como sombra interna (borda CSS de 1,5px é arredondada para 1px). */
+html body .floorplan-mesa-core:not(#love-h-a) { border: 0 !important; box-shadow: inset 0 0 0 calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) #52525B !important; }
+html body .floorplan-el.is-mesa:hover .floorplan-mesa-core:not(#love-h-a) { box-shadow: inset 0 0 0 calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) #181D24 !important; }
+body[data-theme="dark"] .floorplan-mesa-core { box-shadow: inset 0 0 0 calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) #A1A1AA !important; }

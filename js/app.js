@@ -11711,6 +11711,7 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.insertBefore(camada, canvas.firstChild);
     }
     camada.style.transform = escalaDaPlanta === 1 ? '' : `scale(${escalaDaPlanta})`;
+    camada.style.setProperty('--escala-planta', String(escalaDaPlanta || 1));
     camada.style.width = `${canvas.clientWidth / escalaDaPlanta}px`;
     // Mesa "perdida" lá embaixo (arrastada para longe): sobe para logo abaixo
     // da área visível / da mesa anterior, para sempre dar para alcançá-la.
@@ -11731,6 +11732,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el.style.top = `${elData.y || 0}px`;
       el.dataset.elId = elData.id;
       if (isMesa && escalaDaMesa(elData) !== 1) el.style.transform = `scale(${escalaDaMesa(elData)})`;
+      if (isMesa) el.style.setProperty('--escala-mesa', String(escalaDaMesa(elData) || 1));
 
       if (isMesa) {
         const core = document.createElement('div');
@@ -11793,6 +11795,10 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!guestName) seatDot.title = 'Lugar vago';
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
+          // Cadeira (modelo de planta baixa): encosto do lado de fora da mesa.
+          let anguloDaCadeira = Math.atan2(seatY - containerSize / 2, seatX - containerSize / 2) * 180 / Math.PI;
+          if (formato !== 'redonda') anguloDaCadeira = Math.round(anguloDaCadeira / 90) * 90;
+          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><path d="M5 9h20v11.5a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 5 20.5Z"/><rect x="5" y="3" width="20" height="6" rx="1.5"/></svg>`);
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {

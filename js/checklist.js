@@ -1,0 +1,592 @@
+// @ts-check
+// Checklist do evento (Convidados › Checklist) — planejamento por linha do
+// tempo, no estilo do Zola: tarefas com prazo calculado a partir da data do
+// evento, agrupadas por período (ou por categoria), com progresso, responsável,
+// notas/orçamento e atalho para buscar fornecedores.
+//
+// Dados: tabela checklist_tarefas (migration 082). Sem a tabela (ou num evento
+// ainda não salvo), as tarefas ficam guardadas no navegador.
+// API: window.LoveChecklist.render()
+(function () {
+  'use strict';
+
+  /**
+   * @typedef {Object} Tarefa
+   * @property {string} id
+   * @property {string} titulo
+   * @property {string} categoria
+   * @property {string|null} prazo          AAAA-MM-DD
+   * @property {boolean} concluida
+   * @property {string|null} responsavel   '' | 'voce' | 'fornecedor:<id>'
+   * @property {string|null} notas
+   * @property {number|null} orcamento
+   * @property {string|null} busca_fornecedor  categoria do Explorar (atalho "Buscar fornecedores")
+   * @property {number} ordem
+   */
+
+  const CATEGORIAS = ['Espaço', 'Gastronomia', 'Bebidas', 'Doces', 'Decoração', 'Música', 'Mídia', 'Assessoria', 'Equipe', 'Trajes e beleza', 'Convidados', 'Presentes', 'Financeiro', 'Logística', 'Fornecedores', 'Geral'];
+
+  // Categoria da tarefa → categoria do Explorar (para "Buscar fornecedores").
+  /** @type {Record<string, string>} */
+  const NO_EXPLORAR = {
+    'Espaço': 'Espaços para Locação', 'Gastronomia': 'Buffet e Gastronomia', 'Doces': 'Buffet e Gastronomia',
+    'Bebidas': 'Bar e Bebidas', 'Decoração': 'Decoração', 'Música': 'Música e Entretenimento',
+    'Mídia': 'Mídia e Audiovisual', 'Assessoria': 'Assessoria e Cerimonialista', 'Equipe': 'Staff e Mão de Obra',
+    'Trajes e beleza': 'Trajes, Beleza e Estilo'
+  };
+
+  // Tarefas sugeridas: [título, categoria, dias antes do evento, busca no Explorar?]
+  /** @type {[string, string, number, boolean][]} */
+  const MODELO = [
+    ['Definir o orçamento total do evento', 'Financeiro', 180, false],
+    ['Montar a lista de convidados', 'Convidados', 170, false],
+    ['Escolher e reservar o espaço', 'Espaço', 160, true],
+    ['Contratar assessoria ou cerimonialista', 'Assessoria', 150, true],
+    ['Contratar o buffet', 'Gastronomia', 140, true],
+    ['Contratar fotografia e filmagem', 'Mídia', 130, true],
+    ['Contratar banda ou DJ', 'Música', 120, true],
+    ['Enviar o save the date', 'Convidados', 110, false],
+    ['Definir a decoração e a paleta de cores', 'Decoração', 100, true],
+    ['Criar a lista de presentes', 'Presentes', 95, false],
+    ['Agendar a degustação do cardápio', 'Gastronomia', 60, true],
+    ['Contratar bar e bebidas', 'Bebidas', 55, true],
+    ['Encomendar o bolo e os doces', 'Doces', 50, true],
+    ['Enviar os convites', 'Convidados', 45, false],
+    ['Escolher os trajes e agendar as provas', 'Trajes e beleza', 45, true],
+    ['Contratar a equipe de apoio (garçons, recepção, segurança)', 'Equipe', 40, true],
+    ['Agendar cabelo e maquiagem', 'Trajes e beleza', 35, true],
+    ['Fechar a confirmação de presença (RSVP)', 'Convidados', 21, false],
+    ['Montar o mapa de mesas', 'Convidados', 18, false],
+    ['Confirmar o roteiro com a assessoria e os fornecedores', 'Assessoria', 15, false],
+    ['Passar o número final de convidados ao buffet', 'Gastronomia', 10, false],
+    ['Definir a playlist e as músicas principais', 'Música', 10, false],
+    ['Fazer a prova final dos trajes', 'Trajes e beleza', 9, false],
+    ['Fazer os pagamentos finais aos fornecedores', 'Financeiro', 5, false],
+    ['Retirar os trajes e os itens alugados', 'Logística', 3, false],
+    ['Fazer o briefing final com a equipe e os fornecedores', 'Assessoria', 2, false],
+    ['Separar documentos, alianças e o kit de emergência', 'Logística', 1, false],
+    ['Aproveitar o seu dia', 'Geral', 0, false],
+    ['Devolver os itens alugados', 'Logística', -3, false],
+    ['Enviar agradecimentos aos convidados', 'Convidados', -7, false],
+    ['Avaliar os fornecedores', 'Fornecedores', -10, false],
+    ['Resgatar o saldo da carteira', 'Financeiro', -14, false]
+  ];
+
+  const GRUPOS = [
+    ['atrasadas', 'Atrasadas · atenção imediata'],
+    ['mais-2m', 'Faltando mais de 2 meses'],
+    ['1-2m', 'Faltando 1 a 2 meses'],
+    ['2-4s', 'Faltando 2 a 4 semanas'],
+    ['1-2s', 'Faltando 1 a 2 semanas'],
+    ['semana', 'Semana do evento'],
+    ['dia', 'No dia do evento e pós-evento'],
+    ['sem-prazo', 'Sem prazo definido']
+  ];
+
+  /** @param {unknown} v */
+  const esc = (v) => String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const DIA = 86400000;
+  /** @param {string|null|undefined} iso @returns {Date|null} */
+  function dataLocal(iso) {
+    if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return null;
+    const [a, m, d] = iso.slice(0, 10).split('-').map(Number);
+    return new Date(a, m - 1, d);
+  }
+  /** @param {Date} d */
+  const isoDe = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const hoje = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  /** @param {Date} a @param {Date} b */
+  const diasEntre = (a, b) => Math.round((b.getTime() - a.getTime()) / DIA);
+  /** @param {Date} d */
+  const dataCurta = (d) => d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }).replace('.', '');
+  const ehUuid = (/** @type {string} */ v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+
+  // --------------------------------------------------------------------------
+  // Estado
+  // --------------------------------------------------------------------------
+  /** @type {Tarefa[]} */
+  let tarefas = [];
+  let eventoCarregado = '';
+  let carregando = false;
+  let semTabela = false;
+  let vista = 'cronograma';
+  let status = 'todas';
+  /** @type {Set<string>|null} */
+  let abertos = null;
+
+  function eventoAtivo() {
+    const w = /** @type {any} */ (window);
+    return typeof w.getLoveActiveEvent === 'function' ? w.getLoveActiveEvent() : null;
+  }
+  function dataDoEvento() {
+    const ev = eventoAtivo();
+    if (!ev) return null;
+    const det = ev.eventDetails || {};
+    return dataLocal(det.date || ev.date || '');
+  }
+  const chaveLocal = (/** @type {string} */ ev) => `love-checklist-${ev}`;
+  /** @param {string} ev @returns {Tarefa[]|null} */
+  function lerLocal(ev) {
+    try { const v = localStorage.getItem(chaveLocal(ev)); return v ? JSON.parse(v) : null; } catch (e) { return null; }
+  }
+  /** @param {string} ev */
+  function gravarLocal(ev) {
+    try { localStorage.setItem(chaveLocal(ev), JSON.stringify(tarefas)); } catch (e) { /* sem espaço */ }
+  }
+  const usaBanco = (/** @type {string} */ ev) => !semTabela && ehUuid(ev) && typeof supabaseClient !== 'undefined';
+  /** @param {any} error */
+  const tabelaFaltando = (error) => !!error && (error.code === 'PGRST205' || error.code === '42P01');
+
+  /** Tarefas sugeridas, com prazo calculado pela data do evento. @returns {Omit<Tarefa,'id'>[]} */
+  function tarefasSugeridas() {
+    const data = dataDoEvento();
+    return MODELO.map(([titulo, categoria, dias, busca], i) => ({
+      titulo, categoria,
+      prazo: data ? isoDe(new Date(data.getTime() - dias * DIA)) : null,
+      concluida: false, responsavel: '', notas: null, orcamento: null,
+      busca_fornecedor: busca ? (NO_EXPLORAR[categoria] || null) : null,
+      ordem: i
+    }));
+  }
+
+  async function carregar() {
+    const ev = eventoAtivo();
+    const id = ev ? String(ev.id) : '';
+    if (!id) { tarefas = []; return; }
+    if (id === eventoCarregado) return;
+    carregando = true;
+    eventoCarregado = id;
+    abertos = null;
+    if (usaBanco(id)) {
+      const { data, error } = await supabaseClient.from('checklist_tarefas').select('*').eq('evento_id', id).order('ordem', { ascending: true });
+      if (!error) {
+        tarefas = data || [];
+        if (!tarefas.length) {
+          const linhas = tarefasSugeridas().map(t => ({ ...t, evento_id: id }));
+          const ins = await supabaseClient.from('checklist_tarefas').insert(linhas).select('*');
+          if (!ins.error) tarefas = ins.data || [];
+        }
+        carregando = false;
+        return;
+      }
+      if (tabelaFaltando(error)) semTabela = true;
+    }
+    const local = lerLocal(id);
+    tarefas = local || tarefasSugeridas().map((t, i) => ({ ...t, id: `local-${Date.now()}-${i}` }));
+    if (!local) gravarLocal(id);
+    carregando = false;
+  }
+
+  /** Salva uma tarefa (nova ou alterada). @param {Tarefa} t @param {boolean} [nova] */
+  async function salvar(t, nova) {
+    const ev = eventoCarregado;
+    if (usaBanco(ev) && !String(t.id).startsWith('local-')) {
+      const { id, ...campos } = t;
+      const resp = nova
+        ? await supabaseClient.from('checklist_tarefas').insert({ ...campos, evento_id: ev }).select('*').single()
+        : await supabaseClient.from('checklist_tarefas').update({ ...campos, updated_at: new Date().toISOString() }).eq('id', id).select('*').single();
+      if (resp.error) { aviso('Não foi possível salvar agora. Tente de novo.'); return false; }
+      if (nova && resp.data) t.id = resp.data.id;
+      return true;
+    }
+    gravarLocal(ev);
+    return true;
+  }
+
+  /** @param {Tarefa} t */
+  async function apagar(t) {
+    const ev = eventoCarregado;
+    if (usaBanco(ev) && !String(t.id).startsWith('local-')) {
+      const { error } = await supabaseClient.from('checklist_tarefas').delete().eq('id', t.id);
+      if (error) { aviso('Não foi possível excluir agora. Tente de novo.'); return false; }
+    }
+    tarefas = tarefas.filter(x => x.id !== t.id);
+    if (!usaBanco(ev)) gravarLocal(ev);
+    return true;
+  }
+
+  // --------------------------------------------------------------------------
+  // Regras de exibição
+  // --------------------------------------------------------------------------
+  /** @param {Tarefa} t */
+  function grupoDe(t) {
+    const prazo = dataLocal(t.prazo);
+    const h = hoje();
+    if (!prazo) return 'sem-prazo';
+    if (!t.concluida && prazo < h) return 'atrasadas';
+    const evento = dataDoEvento();
+    const antes = evento ? diasEntre(prazo, evento) : diasEntre(h, prazo);
+    if (antes > 60) return 'mais-2m';
+    if (antes > 30) return '1-2m';
+    if (antes > 14) return '2-4s';
+    if (antes > 7) return '1-2s';
+    if (antes > 0) return 'semana';
+    return 'dia';
+  }
+
+  /** Grupo do momento (aberto por padrão): o período em que o evento está hoje. */
+  function grupoVigente() {
+    const evento = dataDoEvento();
+    if (!evento) return '';
+    const faltam = diasEntre(hoje(), evento);
+    if (faltam > 60) return 'mais-2m';
+    if (faltam > 30) return '1-2m';
+    if (faltam > 14) return '2-4s';
+    if (faltam > 7) return '1-2s';
+    if (faltam > 0) return 'semana';
+    return 'dia';
+  }
+
+  /** @param {Tarefa} t */
+  function textoDoPrazo(t) {
+    const prazo = dataLocal(t.prazo);
+    if (!prazo) return { texto: 'Sem prazo', atrasada: false };
+    if (t.concluida) return { texto: `Até ${dataCurta(prazo)}`, atrasada: false };
+    const d = diasEntre(hoje(), prazo);
+    if (d < 0) return { texto: d === -1 ? 'Venceu ontem' : `Venceu há ${-d} dias`, atrasada: true };
+    if (d === 0) return { texto: 'Vence hoje', atrasada: true };
+    if (d === 1) return { texto: 'Vence amanhã', atrasada: false };
+    if (d <= 7) return { texto: `Vence em ${d} dias`, atrasada: false };
+    return { texto: `Até ${dataCurta(prazo)}`, atrasada: false };
+  }
+
+  function fornecedores() {
+    const w = /** @type {any} */ (window);
+    return (w.LOVE_DATA && Array.isArray(w.LOVE_DATA.contractedVendors)) ? w.LOVE_DATA.contractedVendors : [];
+  }
+  /** @param {string|null} resp */
+  function nomeDoResponsavel(resp) {
+    if (!resp) return '';
+    if (resp === 'voce') return 'Você';
+    const f = fornecedores().find((/** @type {any} */ v) => `fornecedor:${v.id}` === resp);
+    return f ? String(f.name || 'Fornecedor') : '';
+  }
+  /** @param {string} nome */
+  const iniciais = (nome) => nome === 'Você' ? 'EU' : nome.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+  /** @param {number|null} v */
+  const reais = (v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // --------------------------------------------------------------------------
+  // Desenho
+  // --------------------------------------------------------------------------
+  const ICONE_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const ICONE_SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+  const ICONE_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
+  const ICONE_PESSOA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.2-3.4 3.8-5 7-5s5.8 1.6 7 5"/></svg>';
+
+  /** @param {Tarefa} t */
+  function linhaDaTarefa(t) {
+    const prazo = textoDoPrazo(t);
+    const nome = nomeDoResponsavel(t.responsavel);
+    const extras = [t.orcamento ? reais(t.orcamento) : '', t.notas ? 'Tem notas' : ''].filter(Boolean).join(' · ');
+    const busca = !t.concluida && t.busca_fornecedor;
+    return `
+      <div class="chk-tarefa${t.concluida ? ' is-feita' : ''}" data-chk-id="${esc(t.id)}">
+        <button type="button" class="chk-check" role="checkbox" aria-checked="${t.concluida}" aria-label="Marcar como concluída" data-chk-toggle>${ICONE_CHECK}</button>
+        <div class="chk-corpo">
+          <p class="chk-titulo">${esc(t.titulo)}</p>
+          <div class="chk-meta">
+            <span class="chk-tag">${esc(t.categoria)}</span>
+            <span class="chk-prazo${prazo.atrasada ? ' is-atrasada' : ''}">${esc(prazo.texto)}</span>
+            ${extras ? `<span class="chk-extra">${esc(extras)}</span>` : ''}
+          </div>
+          ${t.notas ? `<p class="chk-notas">${esc(t.notas)}</p>` : ''}
+        </div>
+        <div class="chk-acoes">
+          ${busca ? `<button type="button" class="chk-buscar" data-chk-buscar="${esc(t.busca_fornecedor)}">Buscar fornecedores</button>` : ''}
+          <label class="chk-resp" title="${esc(nome ? `Responsável: ${nome}` : 'Atribuir responsável')}">
+            <span class="chk-avatar${nome ? '' : ' is-vazio'}">${nome ? esc(iniciais(nome)) : ICONE_PESSOA}</span>
+            <select data-chk-resp aria-label="Responsável">
+              <option value=""${!t.responsavel ? ' selected' : ''}>Sem responsável</option>
+              <option value="voce"${t.responsavel === 'voce' ? ' selected' : ''}>Você</option>
+              ${fornecedores().map((/** @type {any} */ v) => `<option value="fornecedor:${esc(v.id)}"${t.responsavel === `fornecedor:${v.id}` ? ' selected' : ''}>${esc(v.name)}</option>`).join('')}
+            </select>
+          </label>
+          <div class="chk-menu-wrap">
+            <button type="button" class="chk-mais" data-chk-menu aria-label="Mais ações">${ICONE_MAIS}</button>
+            <div class="chk-menu" role="menu" hidden>
+              <button type="button" role="menuitem" data-chk-acao="prazo">Editar prazo</button>
+              <button type="button" role="menuitem" data-chk-acao="notas">Adicionar notas e orçamento</button>
+              <button type="button" role="menuitem" data-chk-acao="editar">Editar tarefa</button>
+              <button type="button" role="menuitem" data-chk-acao="excluir">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function desenhar() {
+    const raiz = document.getElementById('event-checklist-list');
+    if (!raiz) return;
+    if (carregando) { raiz.innerHTML = '<p class="chk-carregando">Carregando suas tarefas…</p>'; return; }
+    const h = hoje();
+    const total = tarefas.length;
+    const feitas = tarefas.filter(t => t.concluida).length;
+    const atrasadas = tarefas.filter(t => !t.concluida && dataLocal(t.prazo) && /** @type {Date} */ (dataLocal(t.prazo)) < h).length;
+    const pct = total ? Math.round((feitas / total) * 100) : 0;
+
+    const filtradas = tarefas.filter(t => status === 'todas' || (status === 'pendentes' ? !t.concluida : t.concluida));
+    /** @type {[string, string, Tarefa[]][]} */
+    let grupos;
+    if (vista === 'categoria') {
+      grupos = CATEGORIAS.map(c => /** @type {[string, string, Tarefa[]]} */ ([`cat:${c}`, c, filtradas.filter(t => t.categoria === c)]));
+      const outras = filtradas.filter(t => !CATEGORIAS.includes(t.categoria));
+      if (outras.length) grupos.push(['cat:outras', 'Outras', outras]);
+    } else {
+      grupos = GRUPOS.map(([id, nome]) => /** @type {[string, string, Tarefa[]]} */ ([id, nome, filtradas.filter(t => grupoDe(t) === id)]));
+    }
+    grupos = grupos.filter(g => g[2].length);
+    grupos.forEach(g => g[2].sort((a, b) => String(a.prazo || '9999').localeCompare(String(b.prazo || '9999')) || a.ordem - b.ordem));
+
+    if (!abertos) {
+      abertos = new Set(['atrasadas']);
+      const vigente = grupoVigente();
+      if (vigente) abertos.add(vigente);
+      const primeiro = GRUPOS.find(([id]) => id !== 'atrasadas' && tarefas.some(t => !t.concluida && grupoDe(t) === id));
+      if (primeiro) abertos.add(primeiro[0]);
+      CATEGORIAS.forEach(c => abertos && abertos.add(`cat:${c}`));
+      abertos.add('cat:outras');
+    }
+    const semData = !dataDoEvento();
+
+    raiz.innerHTML = `
+      <p class="chk-aviso" id="chk-aviso" role="status" hidden></p>
+      <section class="chk-progresso">
+        <p class="chk-progresso-texto"><b>Progresso do evento:</b> ${feitas} de ${total} tarefas concluídas (${pct}%)</p>
+        <div class="chk-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
+        <div class="chk-contadores">
+          <span class="chk-contador"><b>${total - feitas}</b> Tarefas pendentes</span>
+          <span class="chk-contador${atrasadas ? ' is-atrasadas' : ''}"><b>${atrasadas}</b> Atrasadas</span>
+          <span class="chk-contador"><b>${feitas}</b> Concluídas</span>
+        </div>
+        ${semData ? '<p class="chk-dica">Defina a data do evento em Informações para organizar as tarefas pelos prazos.</p>' : ''}
+      </section>
+
+      <div class="love-tabs-nav chk-filtros" role="tablist">
+        <button type="button" class="love-tab-item${vista === 'cronograma' ? ' active' : ''}" data-chk-vista="cronograma">Cronograma</button>
+        <button type="button" class="love-tab-item${vista === 'categoria' ? ' active' : ''}" data-chk-vista="categoria">Por categoria</button>
+        <span class="chk-filtros-espaco"></span>
+        <button type="button" class="love-tab-item${status === 'todas' ? ' active' : ''}" data-chk-status="todas">Todas</button>
+        <button type="button" class="love-tab-item${status === 'pendentes' ? ' active' : ''}" data-chk-status="pendentes">Pendentes</button>
+        <button type="button" class="love-tab-item${status === 'concluidas' ? ' active' : ''}" data-chk-status="concluidas">Concluídas</button>
+      </div>
+
+      <div class="chk-lista">
+        ${grupos.length ? grupos.map(([id, nome, lista]) => {
+          const aberto = !!abertos && abertos.has(id);
+          const feitasNoGrupo = lista.filter(t => t.concluida).length;
+          return `
+            <section class="chk-grupo${aberto ? ' is-aberto' : ''}${id === 'atrasadas' ? ' is-atrasadas' : ''}">
+              <button type="button" class="chk-grupo-topo" data-chk-grupo="${esc(id)}" aria-expanded="${aberto}">
+                <span class="chk-grupo-seta">${ICONE_SETA}</span>
+                <span class="chk-grupo-nome">${esc(nome)}</span>
+                <span class="chk-grupo-conta">${feitasNoGrupo} de ${lista.length}</span>
+              </button>
+              ${aberto ? `<div class="chk-grupo-itens">${lista.map(linhaDaTarefa).join('')}</div>` : ''}
+            </section>`;
+        }).join('') : `<p class="chk-vazio">${status === 'concluidas' ? 'Nenhuma tarefa concluída ainda.' : 'Nenhuma tarefa por aqui.'}</p>`}
+      </div>`;
+  }
+
+  /** @param {string} msg */
+  function aviso(msg) {
+    const el = document.getElementById('chk-aviso');
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = !msg;
+    if (msg) setTimeout(() => { el.hidden = true; }, 5000);
+  }
+
+  // --------------------------------------------------------------------------
+  // Pop-up Nova tarefa / Editar tarefa (centralizado, nunca drawer)
+  // --------------------------------------------------------------------------
+  /** @type {Tarefa|null} */
+  let editando = null;
+
+  function modal() {
+    let m = document.getElementById('chk-modal');
+    if (m) return m;
+    m = document.createElement('div');
+    m.id = 'chk-modal';
+    m.className = 'chk-modal';
+    m.hidden = true;
+    m.innerHTML = `
+      <div class="chk-modal-card" role="dialog" aria-modal="true" aria-labelledby="chk-modal-titulo">
+        <h3 id="chk-modal-titulo" class="chk-modal-titulo">Nova tarefa</h3>
+        <form id="chk-form" class="chk-form" novalidate>
+          <label class="chk-campo"><span>Tarefa</span><input type="text" name="titulo" maxlength="140" required></label>
+          <div class="chk-form-linha">
+            <label class="chk-campo"><span>Categoria</span><select name="categoria">${CATEGORIAS.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></label>
+            <label class="chk-campo"><span>Prazo</span><input type="date" name="prazo"></label>
+          </div>
+          <label class="chk-campo"><span>Orçamento <em>(opcional)</em></span><input type="text" name="orcamento" inputmode="decimal" placeholder="R$ 0,00"></label>
+          <label class="chk-campo"><span>Notas <em>(opcional)</em></span><textarea name="notas" rows="3" maxlength="1000"></textarea></label>
+          <p class="chk-form-erro" id="chk-form-erro" hidden></p>
+          <div class="chk-form-acoes">
+            <button type="button" class="chk-cancelar" data-chk-fechar>Cancelar</button>
+            <button type="submit" class="chk-salvar">Salvar</button>
+          </div>
+        </form>
+      </div>`;
+    document.body.appendChild(m);
+    m.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (alvo === m || alvo.closest('[data-chk-fechar]')) fecharModal();
+    });
+    m.querySelector('form')?.addEventListener('submit', (e) => { e.preventDefault(); salvarDoModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && m && !m.hidden) fecharModal(); });
+    return m;
+  }
+
+  /** @param {Tarefa|null} t @param {string} [foco] */
+  function abrirModal(t, foco) {
+    const m = modal();
+    editando = t;
+    const form = /** @type {HTMLFormElement} */ (m.querySelector('form'));
+    const titulo = m.querySelector('#chk-modal-titulo');
+    if (titulo) titulo.textContent = t ? 'Editar tarefa' : 'Nova tarefa';
+    /** @param {string} n @param {string} v */
+    const definir = (n, v) => { const el = /** @type {HTMLInputElement|null} */ (form.elements.namedItem(n)); if (el) el.value = v; };
+    definir('titulo', t ? t.titulo : '');
+    definir('categoria', t ? t.categoria : 'Geral');
+    definir('prazo', t && t.prazo ? t.prazo.slice(0, 10) : '');
+    definir('orcamento', t && t.orcamento ? Number(t.orcamento).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '');
+    definir('notas', t && t.notas ? t.notas : '');
+    const erro = m.querySelector('#chk-form-erro');
+    if (erro) /** @type {HTMLElement} */ (erro).hidden = true;
+    m.hidden = false;
+    document.body.classList.add('chk-modal-aberto');
+    const alvo = /** @type {HTMLElement|null} */ (form.elements.namedItem(foco || 'titulo'));
+    setTimeout(() => alvo && alvo.focus(), 30);
+  }
+
+  function fecharModal() {
+    const m = document.getElementById('chk-modal');
+    if (m) m.hidden = true;
+    document.body.classList.remove('chk-modal-aberto');
+    editando = null;
+  }
+
+  async function salvarDoModal() {
+    const m = modal();
+    const form = /** @type {HTMLFormElement} */ (m.querySelector('form'));
+    const valor = (/** @type {string} */ n) => String((/** @type {HTMLInputElement} */ (form.elements.namedItem(n))).value || '').trim();
+    const erro = /** @type {HTMLElement|null} */ (m.querySelector('#chk-form-erro'));
+    const titulo = valor('titulo');
+    if (!titulo) { if (erro) { erro.textContent = 'Escreva o que precisa ser feito.'; erro.hidden = false; } return; }
+    const num = valor('orcamento').replace(/[^\d,]/g, '').replace(',', '.');
+    const categoria = valor('categoria') || 'Geral';
+    const contratar = /^(contratar|encomendar|reservar|alugar|escolher e reservar)/i.test(titulo);
+    const dados = {
+      titulo, categoria,
+      prazo: valor('prazo') || null,
+      orcamento: num ? Number(num) : null,
+      notas: valor('notas') || null
+    };
+    if (editando) {
+      const t = editando;
+      const antes = { ...t };
+      Object.assign(t, dados);
+      if (!t.busca_fornecedor && contratar) t.busca_fornecedor = NO_EXPLORAR[categoria] || null;
+      if (!(await salvar(t))) { Object.assign(t, antes); return; }
+    } else {
+      /** @type {Tarefa} */
+      const t = { id: `local-${Date.now()}`, ...dados, concluida: false, responsavel: '', busca_fornecedor: contratar ? (NO_EXPLORAR[categoria] || null) : null, ordem: tarefas.length };
+      if (usaBanco(eventoCarregado)) t.id = 'nova';
+      tarefas.push(t);
+      if (!(await salvar(t, true))) { tarefas = tarefas.filter(x => x !== t); return; }
+      if (abertos) { abertos.add(grupoDe(t)); abertos.add(`cat:${t.categoria}`); }
+    }
+    fecharModal();
+    desenhar();
+  }
+
+  // --------------------------------------------------------------------------
+  // Interações
+  // --------------------------------------------------------------------------
+  /** @param {Element} el @returns {Tarefa|null} */
+  function tarefaDe(el) {
+    const linha = /** @type {HTMLElement|null} */ (el.closest('[data-chk-id]'));
+    return linha ? (tarefas.find(t => String(t.id) === linha.dataset.chkId) || null) : null;
+  }
+
+  document.addEventListener('click', async (e) => {
+    const alvo = e.target instanceof Element ? e.target : null;
+    if (!alvo) return;
+    if (alvo.closest('#btn-checklist-nova')) { abrirModal(null); return; }
+    const raiz = alvo.closest('#event-checklist-list');
+    // Fecha menus abertos ao clicar fora.
+    document.querySelectorAll('.chk-menu:not([hidden])').forEach(m => { if (!m.parentElement?.contains(alvo)) /** @type {HTMLElement} */ (m).hidden = true; });
+    if (!raiz) return;
+
+    const v = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-vista]'));
+    if (v) { vista = v.dataset.chkVista || 'cronograma'; desenhar(); return; }
+    const st = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-status]'));
+    if (st) { status = st.dataset.chkStatus || 'todas'; desenhar(); return; }
+    const g = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-grupo]'));
+    if (g && abertos) {
+      const id = g.dataset.chkGrupo || '';
+      if (abertos.has(id)) abertos.delete(id); else abertos.add(id);
+      desenhar();
+      return;
+    }
+    const t = tarefaDe(alvo);
+    if (!t) return;
+    if (alvo.closest('[data-chk-toggle]')) {
+      t.concluida = !t.concluida;
+      desenhar();
+      if (!(await salvar(t))) { t.concluida = !t.concluida; desenhar(); }
+      return;
+    }
+    const buscar = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-buscar]'));
+    if (buscar) {
+      const w = /** @type {any} */ (window);
+      if (w.loveAbrirExplorarNaCategoria) w.loveAbrirExplorarNaCategoria(buscar.dataset.chkBuscar);
+      return;
+    }
+    const btnMenu = alvo.closest('[data-chk-menu]');
+    if (btnMenu) {
+      const menu = /** @type {HTMLElement|null} */ (btnMenu.parentElement && btnMenu.parentElement.querySelector('.chk-menu'));
+      if (menu) menu.hidden = !menu.hidden;
+      return;
+    }
+    const acao = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-acao]'));
+    if (!acao) return;
+    const menu = acao.closest('.chk-menu');
+    if (menu) /** @type {HTMLElement} */ (menu).hidden = true;
+    const tipo = acao.dataset.chkAcao;
+    if (tipo === 'prazo') abrirModal(t, 'prazo');
+    else if (tipo === 'notas') abrirModal(t, 'notas');
+    else if (tipo === 'editar') abrirModal(t, 'titulo');
+    else if (tipo === 'excluir') {
+      const w = /** @type {any} */ (window);
+      const ok = w.confirmarNaLove ? await w.confirmarNaLove({ titulo: 'Excluir esta tarefa?', texto: `"${t.titulo}" sai do seu checklist.`, botao: 'Excluir' }) : false;
+      if (!ok) return;
+      if (await apagar(t)) desenhar();
+    }
+  });
+
+  document.addEventListener('change', async (e) => {
+    const el = /** @type {HTMLSelectElement} */ (e.target);
+    if (!el || !el.matches || !el.matches('#event-checklist-list [data-chk-resp]')) return;
+    const t = tarefaDe(el);
+    if (!t) return;
+    const antes = t.responsavel;
+    t.responsavel = el.value;
+    desenhar();
+    if (!(await salvar(t))) { t.responsavel = antes; desenhar(); }
+  });
+
+  async function render() {
+    const ev = eventoAtivo();
+    const id = ev ? String(ev.id) : '';
+    if (id && id !== eventoCarregado) {
+      carregando = true;
+      desenhar();
+      await carregar();
+    }
+    desenhar();
+  }
+
+  /** @type {any} */ (window).LoveChecklist = { render };
+})();

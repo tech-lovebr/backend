@@ -9747,36 +9747,25 @@ document.addEventListener('DOMContentLoaded', () => {
     return activeEvent.guestListPermissions[vendorId];
   }
 
-  // Checklist do evento (Convidados → Checklist): lista de tarefas por
-  // categoria (mesma árvore do B2B_CATEGORY_TREE) — pra cada uma, escolhe
-  // qual fornecedor contratado é o responsável.
+  // Checklist do evento (Convidados › Checklist): tarefas por período até o
+  // evento, progresso e filtros — tudo em js/checklist.js.
   function renderEventChecklist() {
-    const container = document.getElementById('event-checklist-list');
-    if (!container) return;
-    const activeEvent = getActiveEvent();
-    if (!activeEvent.checklistAssignments) activeEvent.checklistAssignments = {};
-    const vendors = (window.LOVE_DATA && Array.isArray(window.LOVE_DATA.contractedVendors)) ? window.LOVE_DATA.contractedVendors : [];
-    const categories = Object.keys(B2B_CATEGORY_TREE);
-
-    container.innerHTML = categories.map(cat => {
-      const assignedId = activeEvent.checklistAssignments[cat] || '';
-      return `
-        <div class="flex items-center justify-between gap-4 py-3.5">
-          <span class="text-sm font-semibold text-zinc-800">${cat}</span>
-          <select class="field-input checklist-assign-select" style="max-width: 260px;" data-category="${cat}">
-            <option value="">— Ninguém atribuído —</option>
-            ${vendors.map(v => `<option value="${v.id}" ${v.id === assignedId ? 'selected' : ''}>${v.name}</option>`).join('')}
-          </select>
-        </div>
-      `;
-    }).join('');
-
-    container.querySelectorAll('.checklist-assign-select').forEach(select => {
-      select.addEventListener('change', () => {
-        activeEvent.checklistAssignments[select.dataset.category] = select.value || null;
-      });
-    });
+    const w = /** @type {any} */ (window);
+    if (w.LoveChecklist) w.LoveChecklist.render();
   }
+
+  // "Buscar fornecedores" de uma tarefa do checklist: abre o Explorar já
+  // filtrado pela categoria (ex.: Contratar o buffet → Buffet e Gastronomia).
+  window.loveAbrirExplorarNaCategoria = (/** @type {string} */ categoria) => {
+    pendingSubItemId = 'explore';
+    switchRailTab('b2b');
+    switchB2BView('explore');
+    b2bSelectedMainCategory = categoria && B2B_CATEGORY_TREE[categoria] ? categoria : null;
+    b2bSelectedSubcategory = null;
+    currentB2BCategory = 'all';
+    renderB2BExplore();
+    registrarRota(caminhoSubRota('b2b', 'explore'));
+  };
 
   // Permissões de UM fornecedor contratado (Fornecedores → Meus Contratos →
   // fornecedor → aba Configurações) — mesmos dados/estrutura de antes

@@ -8311,6 +8311,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function mostrarCaminhoDaLista(nomeDaLista) {
     const titulo = document.getElementById('gifts-header-title');
     const voltar = document.getElementById('btn-gifts-listas-voltar');
+    // "Adicionar lista completa" fica no cabeçalho só com uma lista aberta.
+    const completa = document.getElementById('btn-gifts-lista-completa');
+    if (completa) completa.hidden = nomeDaLista === null;
     if (nomeDaLista === null) { listaProntaAberta = null; return; }
     if (titulo) titulo.textContent = nomeDaLista;
     if (voltar) { voltar.hidden = false; voltar.setAttribute('aria-label', 'Voltar para Adicione uma lista'); }
@@ -8326,7 +8329,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <section class="lista-detalhe">
         <div class="lista-detalhe-topo">
           <p class="lista-detalhe-resumo">${lista.itens.length} presentes <span aria-hidden="true">·</span> Total da lista: <b>${reaisDaLista(total)}</b></p>
-          <button type="button" class="lista-selecionar" data-adicionar-lista>Adicionar lista completa</button>
         </div>
         <div class="listas-prontas-grade">
           ${lista.itens.map(([titulo, preco, foto], i) => `
@@ -8551,6 +8553,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-gifts-listas-voltar')?.addEventListener('click', () => {
     if (listaProntaAberta) mostrarListasProntas(true);
     else irParaListasProntas(false);
+  });
+  document.getElementById('btn-gifts-lista-completa')?.addEventListener('click', () => {
+    if (listaProntaAberta) adicionarListaPronta(listaProntaAberta);
   });
   document.getElementById('btn-gifts-listas-prontas')?.addEventListener('click', () => {
     const painel = document.getElementById('gifts-listas-prontas');

@@ -10444,3 +10444,6 @@ html body .rfp-detalhe-destaque b:not(#love-h-a) { font-size: 18px; font-weight:
 body[data-theme="dark"] .rfp-detalhe-destaques { background: #2A2A2A !important; }
 body[data-theme="dark"] .rfp-detalhe-destaque { border-left-color: #404040 !important; }
 body[data-theme="dark"] .rfp-detalhe-destaque-rotulo { color: #FFFFFF !important; }
+
+/* "Adicionar lista completa" no cabeçalho da lista pronta aberta. */
+html body #btn-gifts-lista-completa[hidden]:not(#love-h-a) { display: none !important; }

@@ -4,8 +4,10 @@
 //   Saque: saldo total, disponível para saque (com "Solicitar saque") e
 //          pendente; ao lado, o extrato dos presentes comprados e o
 //          histórico de saques (quando, quanto, para qual conta e status).
-//   Contas bancárias: contas Pix/TED cadastradas (clientes.dados_saque.contas)
-//          e o botão Cadastrar (pop-up centralizado).
+//   Contas bancárias: antes da primeira conta, a verificação de identidade
+//          (RG frente e verso, nome, CPF e Pix — migration 086, bucket
+//          privado "documentos"); depois, a tabela das contas
+//          (clientes.dados_saque.contas) e o cadastro dentro da caixa.
 // Saques: tabela saques (migration 085) — o pedido entra como "Solicitado" e
 // a Love processa.
 // API: window.LoveCarteira.render()
@@ -133,7 +135,6 @@
   const ICONE_BUSCA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   const ICONE_CALENDARIO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>';
   const ICONE_BUSCA_ESQ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
-  const ICONE_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
   const SITUACOES = { solicitado: 'Solicitado', processando: 'Em andamento', realizado: 'Realizado', recusado: 'Recusado' };
 
   /** @param {number} v */
@@ -246,9 +247,121 @@
       </section>`;
   }
 
+  // --------------------------------------------------------------------------
+  // Contas bancárias: verificação de identidade (antes da primeira conta),
+  // tabela das contas (padrão Meus convidados, sem busca) e cadastro na caixa.
+  // --------------------------------------------------------------------------
   /** Cadastro de conta aberto dentro da caixa (no lugar da tabela), sem pop-up. */
   let cadastrando = false;
+  /** Verificação de identidade (tabela verificacoes_identidade, migration 086). @type {any} */
+  let verificacao = null;
+  let verificacaoCarregada = false;
+  let semTabelaDeVerificacao = false;
+  /** Passo da verificação aberto na página: '' | 'intro' | 'form'. */
+  let etapaVerif = '';
+  /** @type {File|null} */ let rgFrente = null;
+  /** @type {File|null} */ let rgVerso = null;
 
+  async function carregarVerificacao() {
+    const u = usuario();
+    if (!u || typeof supabaseClient === 'undefined' || semTabelaDeVerificacao) { verificacaoCarregada = true; return; }
+    const { data, error } = await supabaseClient.from('verificacoes_identidade').select('*').eq('cliente_id', u.id).maybeSingle();
+    verificacaoCarregada = true;
+    if (error) { if (error.code === 'PGRST205' || error.code === '42P01') semTabelaDeVerificacao = true; return; }
+    verificacao = data || null;
+  }
+  /** Já mandou os documentos (em análise ou aprovado)? */
+  const documentosEnviados = () => !!verificacao && verificacao.status !== 'recusado';
+
+  const SITUACOES_CONTA = { em_analise: 'Em análise', aprovado: 'Aprovada', recusado: 'Recusada' };
+  const TIPOS_DE_CONTA = { corrente: 'Corrente', poupanca: 'Poupança', pagamento: 'Pagamento' };
+  const NATUREZAS = { pf: 'Pessoa física', pj: 'Pessoa jurídica' };
+
+  const ILUSTRACAO_DOCUMENTOS = `
+    <svg viewBox="0 0 140 140" aria-hidden="true">
+      <circle cx="70" cy="70" r="64" fill="#EBF4FF"/>
+      <circle cx="70" cy="70" r="52" fill="none" stroke="#CFE0F5" stroke-width="2"/>
+      <rect x="40" y="30" width="60" height="76" rx="8" fill="#183b54"/>
+      <rect x="49" y="39" width="42" height="26" rx="5" fill="#27394f"/>
+      <circle cx="70" cy="48" r="7" fill="#FFFFFF"/>
+      <path d="M58 64a12 9 0 0 1 24 0Z" fill="#FFFFFF"/>
+      <rect x="50" y="73" width="40" height="3.5" rx="1.75" fill="#FFFFFF" opacity=".85"/>
+      <rect x="50" y="81" width="32" height="3.5" rx="1.75" fill="#FFFFFF" opacity=".85"/>
+      <rect x="50" y="89" width="36" height="3.5" rx="1.75" fill="#FFFFFF" opacity=".85"/>
+      <circle cx="94" cy="100" r="15" fill="#FFFFFF"/>
+      <circle cx="94" cy="100" r="12" fill="#2F9E62"/>
+      <path d="m88.5 100.2 3.8 3.8 7.4-7.6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  const ICONE_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const ICONE_ENVIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>';
+
+  /** Aviso no lugar da tabela: antes da conta, os documentos. */
+  function htmlAvisoDocumentos() {
+    const recusada = verificacao && verificacao.status === 'recusado';
+    return `
+      <section class="cart-caixa cart-docs-aviso">
+        <div class="cart-docs-ilustra">${ILUSTRACAO_DOCUMENTOS}</div>
+        <div class="cart-docs-texto">
+          <h3>${recusada ? 'Seus documentos precisam ser enviados de novo' : 'Antes de adicionar uma conta bancária, envie seus documentos'}</h3>
+          <p>${recusada && verificacao.motivo ? esc(verificacao.motivo) : 'Para adicionar uma conta e sacar os valores disponíveis, é necessário verificar a sua identidade.'}</p>
+          <button type="button" class="cart-btn-escuro" data-cart-verif="intro">${recusada ? 'Enviar novamente' : 'Enviar documentos'}</button>
+        </div>
+      </section>`;
+  }
+
+  /** Verificação de identidade na própria página (faixa azul + cartão). */
+  function htmlVerificacao() {
+    const corpo = etapaVerif === 'form' ? `
+        <h4 class="cart-verif-titulo">Seus dados e documentos</h4>
+        <div class="cart-form-grade">
+          <label class="cart-campo cart-campo-largo"><span>Nome completo</span><input type="text" data-verif-campo="nome" autocapitalize="words" autocomplete="name"></label>
+          <label class="cart-campo"><span>CPF</span><input type="text" data-verif-campo="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"></label>
+        </div>
+        <p class="cart-campo-rotulo">RG (frente e verso)</p>
+        <div class="cart-verif-arquivos">
+          <label class="cart-arquivo" data-verif-arquivo="frente">
+            <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="frente">
+            ${ICONE_ENVIAR}<b>Frente do RG</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'JPEG, PNG ou PDF'}</span>
+          </label>
+          <label class="cart-arquivo" data-verif-arquivo="verso">
+            <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="verso">
+            ${ICONE_ENVIAR}<b>Verso do RG</b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'JPEG, PNG ou PDF'}</span>
+          </label>
+        </div>
+        <div class="cart-form-grade">
+          <label class="cart-campo"><span>Tipo de chave Pix</span>
+            <select data-verif-campo="pixTipo"><option value="cpf">CPF</option><option value="email">E-mail</option><option value="telefone">Telefone</option><option value="aleatoria">Chave aleatória</option></select>
+          </label>
+          <label class="cart-campo"><span>Chave Pix</span><input type="text" data-verif-campo="pixChave" autocomplete="off"></label>
+        </div>
+        <p class="cart-form-erro" hidden></p>
+        <div class="cart-form-acoes">
+          <button type="button" class="cart-cancelar" data-cart-verif="intro">Voltar</button>
+          <button type="button" class="cart-btn-escuro" data-cart-verif-enviar>Enviar para análise</button>
+        </div>` : `
+        <h4 class="cart-verif-titulo">Verificação de identidade e envio de documentos</h4>
+        <p class="cart-verif-intro">Antes de começar, confira algumas instruções que podem te ajudar:</p>
+        <ul class="cart-verif-lista">
+          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG para enviar a foto da frente e do verso em JPEG, PNG ou PDF;</span></li>
+          <li>${ICONE_CHECK}<span>As fotos devem estar nítidas, sem reflexo e com todos os dados legíveis;</span></li>
+          <li>${ICONE_CHECK}<span>O nome e o CPF precisam ser do titular que vai receber os saques;</span></li>
+          <li>${ICONE_CHECK}<span>Informe uma chave Pix no seu nome para receber os valores.</span></li>
+        </ul>
+        <div class="cart-form-acoes">
+          <button type="button" class="cart-cancelar" data-cart-verif="">Voltar</button>
+          <button type="button" class="cart-btn-escuro" data-cart-verif="form">Começar</button>
+        </div>`;
+    return `
+      <section class="cart-caixa cart-verif">
+        <div class="cart-verif-faixa">
+          <h3>Complete as etapas e tenha seu dinheiro mais seguro na Love!</h3>
+          <p>Depois você já vai poder realizar o seu primeiro saque com segurança.</p>
+        </div>
+        <div class="cart-verif-cartao" data-cart-verif-cartao>${corpo}</div>
+      </section>`;
+  }
+
+  /** Cadastro de conta bancária (dentro da caixa). */
   function htmlFormConta() {
     return `
       <section class="cart-caixa cart-contas cart-contas-form" data-cart-form-conta>
@@ -259,22 +372,16 @@
           </div>
         </div>
         <div class="cart-form-corpo">
-          <div class="love-tabs-nav cart-metodos" role="tablist">
-            <button type="button" class="love-tab-item${metodoNovo === 'pix' ? ' active' : ''}" data-cart-metodo="pix">Pix</button>
-            <button type="button" class="love-tab-item${metodoNovo === 'ted' ? ' active' : ''}" data-cart-metodo="ted">TED</button>
-          </div>
-          <div data-cart-painel="pix" class="cart-form-grade cart-form-pix" ${metodoNovo === 'pix' ? '' : 'hidden'}>
-            <label class="cart-campo"><span>Tipo de chave</span>
-              <select data-cart-campo="pixTipo"><option value="cpf">CPF</option><option value="email">E-mail</option><option value="telefone">Telefone</option><option value="aleatoria">Chave aleatória</option></select>
-            </label>
-            <label class="cart-campo"><span>Chave Pix</span><input type="text" data-cart-campo="pixChave" autocomplete="off"></label>
-          </div>
-          <div data-cart-painel="ted" class="cart-form-grade" ${metodoNovo === 'ted' ? '' : 'hidden'}>
-            <label class="cart-campo cart-campo-largo"><span>Instituição financeira</span><input type="text" data-cart-campo="banco" autocomplete="off"></label>
+          <div class="cart-form-grade">
+            <label class="cart-campo cart-campo-largo"><span>Banco</span><input type="text" data-cart-campo="banco" placeholder="Ex.: Itaú, Nubank, Banco do Brasil" autocomplete="off"></label>
             <label class="cart-campo"><span>Agência</span><input type="text" data-cart-campo="agencia" inputmode="numeric" maxlength="8" autocomplete="off"></label>
             <label class="cart-campo"><span>Conta (com dígito)</span><input type="text" data-cart-campo="conta" maxlength="20" autocomplete="off"></label>
-            <label class="cart-campo"><span>Nome do titular</span><input type="text" data-cart-campo="titular" autocapitalize="words" autocomplete="off"></label>
-            <label class="cart-campo"><span>CPF do titular</span><input type="text" data-cart-campo="cpf" inputmode="numeric" maxlength="14" autocomplete="off"></label>
+            <label class="cart-campo"><span>Tipo de conta</span>
+              <select data-cart-campo="tipo"><option value="corrente">Corrente</option><option value="poupanca">Poupança</option><option value="pagamento">Pagamento</option></select>
+            </label>
+            <label class="cart-campo"><span>Natureza</span>
+              <select data-cart-campo="natureza"><option value="pf">Pessoa física</option><option value="pj">Pessoa jurídica</option></select>
+            </label>
           </div>
           <p class="cart-form-erro" hidden></p>
           <div class="cart-form-acoes">
@@ -285,44 +392,60 @@
       </section>`;
   }
 
+  /** Uma conta em colunas (as antigas só Pix aparecem como Pix). @param {any} c */
+  function colunasDaConta(c) {
+    if (c.metodo === 'pix') return { banco: 'Pix', agencia: '—', conta: (c.pix && c.pix.chave) || '—', tipo: 'Chave Pix', natureza: '—' };
+    const t = c.ted || {};
+    return {
+      banco: t.banco || '—',
+      agencia: t.agencia || '—',
+      conta: t.conta || '—',
+      tipo: (/** @type {any} */ (TIPOS_DE_CONTA))[t.tipo] || 'Corrente',
+      natureza: (/** @type {any} */ (NATUREZAS))[t.natureza] || 'Pessoa física',
+    };
+  }
+
   function htmlContas() {
     if (cadastrando) return htmlFormConta();
+    if (etapaVerif) return htmlVerificacao();
     const lista = contas();
-    const termo = buscaConta.trim().toLowerCase();
-    const filtradas = termo ? lista.filter(c => nomeDaConta(c).toLowerCase().includes(termo) || String((c.ted && c.ted.titular) || '').toLowerCase().includes(termo)) : lista;
+    if (!lista.length && verificacaoCarregada && !documentosEnviados()) return htmlAvisoDocumentos();
+    const emAnalise = verificacao && verificacao.status === 'em_analise';
     return `
-      <section class="cart-caixa cart-contas">
-        <div class="cart-contas-topo">
-          <h3 class="cart-titulo">Contas cadastradas</h3>
-          <button type="button" class="cart-btn-escuro" data-cart-cadastrar>Cadastrar</button>
+      <section class="dash-card love-tabela-caixa cart-caixa cart-contas-tabela">
+        <div class="cart-contas-cab">
+          <div class="cart-contas-cab-texto">
+            <h3 class="cart-titulo">Contas cadastradas</h3>
+            ${emAnalise ? '<span class="cart-status cart-status-solicitado">Documentos em análise</span>' : ''}
+          </div>
+          <button type="button" class="cart-btn-escuro" data-cart-cadastrar>Cadastrar conta</button>
         </div>
-        <div class="cart-contas-barra">
-          <label class="cart-busca">${ICONE_BUSCA}<input type="search" data-cart-busca value="${esc(buscaConta)}" placeholder="Buscar conta bancária" aria-label="Buscar conta bancária"></label>
-          <p class="cart-contagem">Exibindo <b>${filtradas.length}</b> ${filtradas.length === 1 ? 'resultado' : 'resultados'}</p>
-        </div>
-        ${filtradas.length ? `
-          <div class="cart-tabela-rolagem"><table class="cart-tabela">
-            <thead><tr><th>Tipo</th><th>Conta</th><th>Titular</th><th class="cart-col-acoes"></th></tr></thead>
-            <tbody>${filtradas.map(c => `
+        <div class="w-full overflow-x-auto">
+          <table class="love-tabela w-full text-left border-collapse font-sans">
+            <thead><tr><th>Banco</th><th>Agência</th><th>Conta</th><th>Tipo de conta</th><th>Natureza</th><th>Status</th><th class="cart-col-acoes"></th></tr></thead>
+            <tbody>${lista.length ? lista.map(c => {
+              const k = colunasDaConta(c);
+              const st = c.status || 'em_analise';
+              return `
               <tr data-cart-conta="${esc(c.id)}">
-                <td><b>${c.metodo === 'pix' ? 'Pix' : 'TED'}</b></td>
-                <td>${esc(c.metodo === 'pix' ? (c.pix && c.pix.chave) : nomeDaConta(c))}</td>
-                <td>${esc((c.ted && c.ted.titular) || '—')}</td>
-                <td class="cart-col-acoes">
-                  <div class="cart-menu-wrap">
-                    <button type="button" class="cart-mais" data-cart-menu aria-label="Mais ações">${ICONE_MAIS}</button>
-                    <div class="cart-menu" hidden><button type="button" data-cart-remover>Remover</button></div>
-                  </div>
-                </td>
-              </tr>`).join('')}</tbody>
-          </table></div>` : `<p class="cart-faixa-vazia">${lista.length ? 'Nenhuma conta encontrada.' : 'Cadastre uma conta para receber seus pagamentos com segurança e rapidez.'}</p>`}
+                <td><span class="cart-nome">${esc(k.banco)}</span></td>
+                <td>${esc(k.agencia)}</td>
+                <td>${esc(k.conta)}</td>
+                <td>${esc(k.tipo)}</td>
+                <td>${esc(k.natureza)}</td>
+                <td><span class="cart-status cart-conta-${esc(st)}">${esc((/** @type {any} */ (SITUACOES_CONTA))[st] || 'Em análise')}</span></td>
+                <td class="cart-col-acoes"><button type="button" class="cart-remover" data-cart-remover>Remover</button></td>
+              </tr>`;
+            }).join('') : '<tr><td colspan="7" class="cart-vazio cart-contas-vazio">Nenhuma conta cadastrada ainda. Cadastre a conta que vai receber os seus saques.</td></tr>'}</tbody>
+          </table>
+        </div>
       </section>`;
   }
 
   function desenhar() {
     const raiz = document.getElementById('carteira-raiz');
     if (!raiz) return;
-    if (aba !== 'contas') cadastrando = false;
+    if (aba !== 'contas') { cadastrando = false; etapaVerif = ''; }
     raiz.innerHTML = `
       <div class="love-tabs-nav cart-abas" role="tablist">
         <button type="button" class="love-tab-item${aba === 'saque' ? ' active' : ''}" data-cart-aba="saque">Saque</button>
@@ -359,62 +482,126 @@
   function fecharPopups() { document.querySelectorAll('.cart-modal').forEach(m => m.remove()); }
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharPopups(); });
 
-  let metodoNovo = 'pix';
   function abrirCadastro() {
-    metodoNovo = 'pix';
+    // Sem documentos enviados, primeiro a verificação de identidade.
+    if (!documentosEnviados()) { etapaVerif = 'intro'; desenhar(); return; }
     cadastrando = true;
     desenhar();
-    setTimeout(() => /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-cart-campo="pixChave"]'))?.focus(), 30);
+    setTimeout(() => /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-cart-campo="banco"]'))?.focus(), 30);
   }
   function fecharCadastro() { cadastrando = false; desenhar(); }
 
-  // Formulário dentro da caixa: Pix/TED, máscaras, Cancelar e Salvar.
+  // Cadastro da conta e verificação de identidade (dentro da caixa).
   document.addEventListener('click', (e) => {
     const alvo = e.target instanceof Element ? e.target : null;
-    const form = /** @type {HTMLElement|null} */ (alvo && alvo.closest('#carteira-raiz [data-cart-form-conta]'));
-    if (!alvo || !form) return;
-    const met = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-metodo]'));
-    if (met) {
-      metodoNovo = met.dataset.cartMetodo === 'ted' ? 'ted' : 'pix';
-      form.querySelectorAll('[data-cart-metodo]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.cartMetodo === metodoNovo));
-      form.querySelectorAll('[data-cart-painel]').forEach(pn => { /** @type {HTMLElement} */ (pn).hidden = /** @type {HTMLElement} */ (pn).dataset.cartPainel !== metodoNovo; });
+    if (!alvo || !alvo.closest('#carteira-raiz')) return;
+    const passo = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-verif]'));
+    if (passo) {
+      etapaVerif = passo.dataset.cartVerif || '';
+      desenhar();
+      if (etapaVerif === 'form') {
+        const nome = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-verif-campo="nome"]'));
+        const p = w.loveClienteProfile || {};
+        if (nome && !nome.value) nome.value = `${p.first_name || ''} ${p.last_name || ''}`.trim();
+        const cpf = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-verif-campo="cpf"]'));
+        if (cpf && !cpf.value && p.cpf) cpf.value = mascaraCpf(String(p.cpf));
+        nome?.focus();
+      }
+      document.getElementById('carteira-raiz')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
       return;
     }
+    if (alvo.closest('[data-cart-verif-enviar]')) { enviarVerificacao(); return; }
+    const form = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-form-conta]'));
+    if (!form) return;
     if (alvo.closest('[data-cart-cancelar-conta]')) { fecharCadastro(); return; }
     if (alvo.closest('[data-cart-salvar-conta]')) salvarConta(form);
   });
   document.addEventListener('input', (e) => {
     const el = /** @type {HTMLInputElement} */ (e.target);
-    if (!el || !el.matches || !el.matches('#carteira-raiz [data-cart-form-conta] [data-cart-campo]')) return;
-    const campo = el.dataset.cartCampo;
-    const tipo = /** @type {HTMLSelectElement|null} */ (document.querySelector('#carteira-raiz [data-cart-campo="pixTipo"]'));
+    if (!el || !el.matches || !el.matches('#carteira-raiz [data-verif-campo]')) return;
+    const campo = el.dataset.verifCampo;
+    const tipo = /** @type {HTMLSelectElement|null} */ (document.querySelector('#carteira-raiz [data-verif-campo="pixTipo"]'));
     if (campo === 'cpf' || (campo === 'pixChave' && tipo && tipo.value === 'cpf')) el.value = mascaraCpf(el.value);
     if (campo === 'pixChave' && tipo && tipo.value === 'telefone' && typeof w.maskBrazilPhone === 'function') el.value = w.maskBrazilPhone(el.value);
   });
+  // RG frente/verso: guarda o arquivo e mostra o nome (sem redesenhar).
+  document.addEventListener('change', (e) => {
+    const el = /** @type {HTMLInputElement} */ (e.target);
+    if (!el || !el.matches || !el.matches('#carteira-raiz [data-verif-rg]')) return;
+    const lado = el.dataset.verifRg;
+    const arq = el.files && el.files[0] ? el.files[0] : null;
+    const rotulo = document.querySelector(`#carteira-raiz [data-verif-nome="${lado}"]`);
+    const caixa = document.querySelector(`#carteira-raiz [data-verif-arquivo="${lado}"]`);
+    if (arq && (!/^(image\/(jpeg|png)|application\/pdf)$/.test(arq.type) || arq.size > 10 * 1024 * 1024)) {
+      if (rotulo) rotulo.textContent = 'Use JPEG, PNG ou PDF de até 10 MB';
+      el.value = '';
+      return;
+    }
+    if (lado === 'frente') rgFrente = arq; else rgVerso = arq;
+    if (rotulo) rotulo.textContent = arq ? arq.name : 'JPEG, PNG ou PDF';
+    caixa?.classList.toggle('tem-arquivo', !!arq);
+  });
+
+  async function enviarVerificacao() {
+    const cartao = /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-cart-verif-cartao]'));
+    if (!cartao) return;
+    const v = (/** @type {string} */ c) => String((/** @type {HTMLInputElement|null} */ (cartao.querySelector(`[data-verif-campo="${c}"]`)) || { value: '' }).value || '').trim();
+    const erro = /** @type {HTMLElement} */ (cartao.querySelector('.cart-form-erro'));
+    const falhar = (/** @type {string} */ t) => { erro.textContent = t; erro.hidden = false; };
+    const nome = v('nome');
+    const cpf = soDigitos(v('cpf'));
+    const pixTipo = v('pixTipo') || 'cpf';
+    const pixChave = v('pixChave');
+    if (nome.split(/\s+/).length < 2) return falhar('Informe o nome completo.');
+    if (cpf.length !== 11) return falhar('CPF incompleto.');
+    if (!rgFrente || !rgVerso) return falhar('Envie a frente e o verso do RG.');
+    if (!pixChave) return falhar('Informe a chave Pix.');
+    if (pixTipo === 'cpf' && soDigitos(pixChave).length !== 11) return falhar('Chave Pix (CPF) incompleta.');
+    if (pixTipo === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pixChave)) return falhar('Chave Pix (e-mail) inválida.');
+    if (pixTipo === 'telefone' && soDigitos(pixChave).length < 10) return falhar('Chave Pix (telefone) incompleta.');
+    const u = usuario();
+    if (!u || typeof supabaseClient === 'undefined') return falhar('Entre na sua conta para enviar os documentos.');
+    const btn = /** @type {HTMLButtonElement} */ (cartao.querySelector('[data-cart-verif-enviar]'));
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    const pronto = () => { btn.disabled = false; btn.textContent = 'Enviar para análise'; };
+    /** @param {File} arq @param {string} lado */
+    const subir = async (arq, lado) => {
+      const ext = arq.type === 'application/pdf' ? 'pdf' : arq.type === 'image/png' ? 'png' : 'jpg';
+      const caminho = `${u.id}/rg-${lado}-${Date.now()}.${ext}`;
+      const { error } = await supabaseClient.storage.from('documentos').upload(caminho, arq, { contentType: arq.type });
+      if (error) throw error;
+      return caminho;
+    };
+    try {
+      const frente = await subir(rgFrente, 'frente');
+      const verso = await subir(rgVerso, 'verso');
+      const linha = { cliente_id: u.id, nome, cpf, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
+      const { data, error } = await supabaseClient.from('verificacoes_identidade').upsert(linha, { onConflict: 'cliente_id' }).select().maybeSingle();
+      if (error) throw error;
+      verificacao = data || linha;
+    } catch (_) {
+      pronto();
+      return falhar('Não foi possível enviar agora. Tente de novo.');
+    }
+    rgFrente = null; rgVerso = null;
+    etapaVerif = '';
+    desenhar();
+    aviso('Documentos enviados para análise. Já pode cadastrar a sua conta bancária.');
+  }
 
   /** @param {HTMLElement} m */
   async function salvarConta(m) {
     const v = (/** @type {string} */ c) => String((/** @type {HTMLInputElement|null} */ (m.querySelector(`[data-cart-campo="${c}"]`)) || { value: '' }).value || '').trim();
     const erro = /** @type {HTMLElement} */ (m.querySelector('.cart-form-erro'));
     const falhar = (/** @type {string} */ t) => { erro.textContent = t; erro.hidden = false; };
+    const ted = {
+      banco: v('banco'), agencia: v('agencia'), conta: v('conta'),
+      tipo: v('tipo') || 'corrente', natureza: v('natureza') || 'pf',
+      titular: (verificacao && verificacao.nome) || '', cpf: (verificacao && verificacao.cpf) || '',
+    };
+    if (!ted.banco || !ted.agencia || !ted.conta) return falhar('Preencha banco, agência e conta.');
     /** @type {any} */
-    let nova;
-    if (metodoNovo === 'pix') {
-      const tipo = v('pixTipo') || 'cpf';
-      const chave = v('pixChave');
-      if (!chave) return falhar('Informe a chave Pix.');
-      if (tipo === 'cpf' && soDigitos(chave).length !== 11) return falhar('CPF incompleto.');
-      if (tipo === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(chave)) return falhar('E-mail inválido.');
-      if (tipo === 'telefone' && soDigitos(chave).length < 10) return falhar('Telefone incompleto.');
-      nova = { metodo: 'pix', pix: { tipo, chave } };
-    } else {
-      const ted = { banco: v('banco'), agencia: v('agencia'), conta: v('conta'), titular: v('titular'), cpf: v('cpf') };
-      if (!ted.banco || !ted.agencia || !ted.conta || !ted.titular || !ted.cpf) return falhar('Preencha todos os dados bancários.');
-      if (soDigitos(ted.cpf).length !== 11) return falhar('CPF do titular incompleto.');
-      nova = { metodo: 'ted', ted };
-    }
-    nova.id = `conta-${Date.now()}`;
-    nova.criadaEm = new Date().toISOString();
+    const nova = { id: `conta-${Date.now()}`, metodo: 'ted', ted, status: 'em_analise', criadaEm: new Date().toISOString() };
     const btn = /** @type {HTMLButtonElement} */ (m.querySelector('[data-cart-salvar-conta]'));
     btn.disabled = true; btn.textContent = 'Salvando…';
     const ok = await gravarContas([...contas(), nova]);
@@ -422,7 +609,7 @@
     if (!ok) return falhar('Não foi possível salvar agora. Tente de novo.');
     cadastrando = false;
     desenhar();
-    aviso('Conta cadastrada.');
+    aviso('Conta cadastrada. Ela fica em análise até a Love conferir os dados.');
   }
 
   /** Grava a lista (a primeira fica também no formato antigo, para quem ainda lê só ele). @param {any[]} lista */
@@ -439,7 +626,7 @@
 
   function abrirSaque() {
     const n = numeros();
-    const lista = contas();
+    const lista = contas().filter(c => c.status !== 'recusado');
     if (!lista.length) { aba = 'contas'; desenhar(); return; }
     const m = abrirPopup('cart-modal-saque', `
       <h3 class="cart-modal-titulo">Solicitar saque</h3>
@@ -563,6 +750,7 @@
     const ev = evento();
     const id = ev ? String(ev.id) : '';
     desenhar();
+    if (!verificacaoCarregada) { await carregarVerificacao(); desenhar(); }
     if (id !== saquesDoEvento || !saques.length) {
       await carregarSaques();
       desenhar();

@@ -248,7 +248,7 @@ function opAbrirDetalhe(id) {
     : ({ diurno: 'Diurno', noturno: 'Noturno' })[p.periodo] || traco;
   const destaques = [
     ['Data do evento', opDataLonga(p)],
-    ['Convidados', OP_CONVIDADOS_NOME[p.convidados] ? `${OP_CONVIDADOS_NOME[p.convidados]} convidados` : traco],
+    ['Convidados', OP_CONVIDADOS_NOME[p.convidados] || traco],
     ['Horário / duração', periodo],
     ['Orçamento previsto', opFaixaTexto(p)]
   ];

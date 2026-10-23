@@ -1144,7 +1144,7 @@
     const icone = (/** @type {string} */ d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
     const destaques = [
       [icone('<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>'), quando, 'Data do evento'],
-      [icone('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5M16 5.2a3 3 0 0 1 0 5.6M18 14.3c1.7.6 2.8 2.2 3 4.7"/>'), info.convidados ? `${nomeDe(CONVIDADOS, info.convidados)} convidados` : traco, 'Convidados'],
+      [icone('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5M16 5.2a3 3 0 0 1 0 5.6M18 14.3c1.7.6 2.8 2.2 3 4.7"/>'), info.convidados ? (nomeDe(CONVIDADOS, info.convidados) || traco) : traco, 'Convidados'],
       [icone('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'), periodo, 'Horário / duração']
     ];
     caixa.innerHTML = `

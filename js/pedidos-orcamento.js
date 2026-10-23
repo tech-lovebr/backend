@@ -178,6 +178,8 @@
   let publicando = false;
   /** @type {string[]} */
   let previas = [];
+  // O evento já tem data em Informações? Então não mostra "Ainda não temos uma data definida".
+  let eventoTemData = false;
 
   /** @returns {RfpFormData} */
   function rascunhoVazio() {
@@ -191,6 +193,7 @@
   // Começa com o que o evento ativo já sabe (tipo, data e cidade).
   function preencherComOEvento() {
     const evento = typeof window.getLoveActiveEvent === 'function' ? window.getLoveActiveEvent() : null;
+    eventoTemData = false;
     if (!evento) return;
     // Tipo de celebração = tipo do evento (escolhido ao criar o evento).
     const cat = /** @type {any} */ (window).LoveTiposEvento;
@@ -202,7 +205,8 @@
     else { dados.tipoCelebracao = 'outro'; dados.celebracaoOutro = String(evento.tipoNome || 'Evento'); }
     const det = evento.eventDetails || {};
     const data = det.date || evento.date || '';
-    if (/^\d{4}-\d{2}-\d{2}$/.test(data)) dados.dataEvento = data;
+    eventoTemData = /^\d{4}-\d{2}-\d{2}$/.test(data);
+    if (eventoTemData) dados.dataEvento = data;
     if (det.city) dados.cidade = String(det.city);
     if (det.state) dados.uf = String(det.state).slice(0, 2).toUpperCase();
     // Horários do evento (Informações), se já preenchidos.
@@ -244,7 +248,7 @@
   /** Data, local, convidados e horário. @param {Record<string, string>} e */
   function validarLogistica(e) {
     {
-      if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Ainda não temos uma data definida".';
+      if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = eventoTemData ? 'Informe a data do evento.' : 'Informe a data ou marque "Ainda não temos uma data definida".';
       if (!dados.dataFlexivel && dados.dataEvento && dados.dataEvento < hojeIso()) e.dataEvento = 'A data precisa ser hoje ou depois.';
       // Horários: obrigatórios quando a data já está definida.
       if (!dados.dataFlexivel && !dados.horarioInicio) e.horarioInicio = 'Informe o horário de início.';
@@ -398,6 +402,7 @@
       rascunhoId = r.id;
       if (lote.categorias.length === 1) rascunhoIds[lote.categorias[0]] = r.id;
       categoriaEscolhidaAMao = true;
+      eventoTemData = !!dados.dataEvento && !dados.dataFlexivel;
     } else {
       preencherComOEvento();
       if (servicoPedido) {
@@ -1171,7 +1176,7 @@
         ${campo('Horário de início', seletorDeHorario('horarioInicio', semData), 'horarioInicio')}
         ${campo('Horário de término', seletorDeHorario('horarioFim', semData), 'horarioFim')}
       </div>
-      <label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Ainda não temos uma data definida</label>
+      ${eventoTemData && !dados.dataFlexivel ? '' : `<label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Ainda não temos uma data definida</label>`}
       <div class="rfp-ev-grade rfp-ev-local">
         ${campo('UF', `<select class="rfp-campo rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
             <option value=""${dados.uf ? '' : ' selected'}>UF</option>

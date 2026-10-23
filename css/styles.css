@@ -11288,3 +11288,7 @@ body[data-theme="dark"] .rfp-cat-opcao.rfp-cat-opcao-check.ativa { background: #
    cabeçalho e as abas; caixa até o fim da faixa). */
 html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { max-width: none; }
 html body #view-event-os-dashboard #tab-overview.dashboard-tab-content:not(#love-h-a) { max-width: var(--love-conteudo-max); margin-left: auto; margin-right: auto; }
+
+/* Criar solicitação: Continuar apagado (como no Hub) enquanto a etapa não
+   está toda preenchida. */
+html body .rfp-editor .rfp-rodape button.btn-primary:disabled:not(#love-h-a) { opacity: 0.5; cursor: default; pointer-events: none; }

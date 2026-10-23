@@ -313,6 +313,8 @@
     });
     m.addEventListener('input', aoDigitar);
     m.addEventListener('change', aoDigitar);
+    m.addEventListener('input', atualizarBotaoAvancar);
+    m.addEventListener('change', atualizarBotaoAvancar);
     return m;
   }
 
@@ -481,6 +483,24 @@
       avancarBtn.textContent = publicando ? 'Publicando…' : ((modo === 'lote' ? etapa === ETAPAS_DO_FORMULARIO : etapa === ETAPAS.length) ? (formato === 'completo' && lote.categorias.length > 1 ? `Publicar ${lote.categorias.length} solicitações simultâneas` : 'Publicar solicitação') : 'Continuar');
       avancarBtn.disabled = publicando;
     }
+    atualizarBotaoAvancar();
+  }
+
+  /**
+   * Como em Adicionar novo produto do Hub: o Continuar só fica com a cor cheia
+   * (e clicável) quando a etapa está toda preenchida; antes disso fica apagado.
+   */
+  function atualizarBotaoAvancar() {
+    const btn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
+    if (!btn) return;
+    let pronto = true;
+    if (modo === 'lote' && etapa < ETAPAS_DO_FORMULARIO) {
+      // Validação sem efeito colateral (ela abre os serviços com erro).
+      const abertos = { ...lote.abertos };
+      pronto = !Object.keys(validarLote(etapa)).length;
+      lote.abertos = abertos;
+    }
+    btn.disabled = publicando || !pronto;
   }
 
   /**
@@ -1371,6 +1391,7 @@
       if (aviso) aviso.remove();
     }
     if (!publicando && !publicado) agendarRascunho();
+    atualizarBotaoAvancar();
   }
 
   /** Grade compacta de serviços (marcar um ou mais). */

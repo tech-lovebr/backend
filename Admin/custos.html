@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo Love</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-admin.png">
+  <link rel="apple-touch-icon" href="assets/fav-admin.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=104">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js?v=4"></script>
+  <script src="js/shell.js?v=14"></script>
+</head>
+<body data-page="custos" data-title="Custos">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="kpi-grid kpi-grid--tres" id="kpi-grid"></section>
+
+        <section class="bloco custos-graficos">
+          <div class="card viz-root">
+            <div class="viz-head">
+              <div><h2>Custo por mês</h2><p>Últimos 6 meses, em reais</p></div>
+              <select class="field-select" id="grafico-serie" style="width:auto"></select>
+            </div>
+            <div class="viz-body" id="grafico-meses"></div>
+          </div>
+          <div class="card viz-root">
+            <div class="viz-head">
+              <div><h2>Por categoria</h2><p>Mês atual</p></div>
+            </div>
+            <div class="viz-body" id="grafico-categorias"></div>
+          </div>
+        </section>
+
+        <nav class="conteudo-tabs" id="abas-custos" aria-label="Custos">
+          <button type="button" class="conteudo-tab is-active" data-aba="atuais">Custos atuais</button>
+          <button type="button" class="conteudo-tab" data-aba="categorias">Categorias</button>
+          <button type="button" class="conteudo-tab" data-aba="historico">Histórico</button>
+        </nav>
+
+        <section class="card table-card">
+          <div class="table-toolbar">
+            <div class="table-toolbar-esq"><input type="search" class="search-input" id="busca" placeholder="Pesquisar..."></div>
+            <div class="table-toolbar-dir"></div>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead id="thead"></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/custos.js?v=1"></script>
+</body>
+</html>

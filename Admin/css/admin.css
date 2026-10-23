@@ -3822,3 +3822,24 @@ label.editor-btn { cursor: pointer; }
 .drawer-sem-titulo #drawer-subtitle { display: none; }
 .drawer-sem-titulo .drawer-head { justify-content: flex-end; }
 .lista-dados .valor .selo-verificado { margin-left: .375rem; }
+
+/* ------------------------------------------------ Sidebar: subitens com respiro
+   Cadastros, Eventos, Configurações (e Cadastros, Produtos, Configurações)
+   estavam colados um no outro. */
+.admin-nav-children { gap: .3125rem; margin: .3125rem 0 .5rem; }
+
+/* ------------------------------------------------ Settings · Custos */
+.custos-graficos { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 1.25rem; }
+@media (max-width: 960px) { .custos-graficos { grid-template-columns: 1fr; } }
+.custos-graficos .viz-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.custos-grade { stroke: #F0F0F2; stroke-width: 1; stroke-dasharray: 3 3; }
+.custos-eixo { font-size: 11px; font-weight: 500; fill: #A1A1AA; font-variant-numeric: tabular-nums; }
+.custos-linha { fill: none; stroke: var(--primary-color); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.custos-area { fill: var(--primary-color); opacity: .06; }
+.custos-ponto { fill: #FFFFFF; stroke: var(--primary-color); stroke-width: 2; }
+.custos-donut { justify-content: center; }
+#abas-custos { margin-top: 1.5rem; margin-bottom: 24px; }
+.cell-sub { display: block; color: var(--text-muted); font-size: .75rem; font-weight: 400; margin-top: .125rem; }
+.valor-dinheiro { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.field-hint { font-size: .8125rem; color: var(--text-muted); margin: -.25rem 0 0; min-height: 1em; }
+body[data-page="custos"] table.data tbody tr.no-hover { cursor: default; }

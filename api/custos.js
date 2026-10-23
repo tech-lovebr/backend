@@ -1,0 +1,257 @@
+// Vercel Serverless Function — custos de tecnologia para o Admin (Settings).
+// Endpoint: GET /api/custos   (chamado de admin.love.com.br)
+// Header:   Authorization: Bearer <access_token do admin logado>
+//
+// Devolve, mês a mês (últimos 6 meses), o que cada serviço cobrou:
+//   - Vercel (servidor): API de cobrança da Vercel (/v1/billing/charges);
+//   - Supabase (banco de dados): plano da organização pela Management API —
+//     a Supabase não tem API de fatura, então vale o preço do plano (ou o
+//     valor fixo em SUPABASE_CUSTO_MENSAL_USD, quando informado);
+//   - Amazon SES (e-mail): AWS Cost Explorer, serviço "Amazon Simple Email
+//     Service". O usuário IAM precisa da permissão ce:GetCostAndUsage.
+// E a cotação do dia (USD e EUR em reais) para converter tudo.
+//
+// Variáveis de ambiente:
+//   NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY   (conferir o admin)
+//   VERCEL_API_TOKEN, VERCEL_TEAM_ID                      (Vercel)
+//   SUPABASE_ACCESS_TOKEN, SUPABASE_ORG_SLUG (opcional), SUPABASE_CUSTO_MENSAL_USD (opcional)
+//   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY              (já usadas pelo SES)
+
+const crypto = require("crypto");
+const { createClient } = require("@supabase/supabase-js");
+
+const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
+const MESES = 6;
+const PRECO_PLANO_SUPABASE = { free: 0, pro: 25, team: 599 };
+
+// O Cost Explorer cobra US$ 0,01 por consulta: guarda a resposta por 6 horas
+// enquanto a função estiver quente.
+let CACHE = null;
+const VALIDADE_CACHE = 6 * 60 * 60 * 1000;
+
+function cors(req, res) {
+  const origem = req.headers.origin || "";
+  if (ORIGENS_PERMITIDAS.includes(origem)) {
+    res.setHeader("Access-Control-Allow-Origin", origem);
+    res.setHeader("Vary", "Origin");
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+}
+
+/** "2026-10" dos últimos N meses, do mais antigo ao atual. */
+function ultimosMeses() {
+  const hoje = new Date();
+  const lista = [];
+  for (let i = MESES - 1; i >= 0; i--) {
+    const d = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth() - i, 1));
+    lista.push(d.toISOString().slice(0, 7));
+  }
+  return lista;
+}
+
+function mesesZerados(meses) {
+  return Object.fromEntries(meses.map(m => [m, 0]));
+}
+
+/* ------------------------------------------------------------ Cotação */
+
+async function cotacoes() {
+  try {
+    const r = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL");
+    const j = await r.json();
+    return { BRL: 1, USD: Number(j.USDBRL?.bid) || null, EUR: Number(j.EURBRL?.bid) || null };
+  } catch {
+    return { BRL: 1, USD: null, EUR: null };
+  }
+}
+
+/* ------------------------------------------------------------- Vercel */
+
+async function custoVercel(meses) {
+  const base = { fonte: "vercel", nome: "Vercel", categoria: "Servidor", tipo: "recorrente", moeda: "USD" };
+  const token = process.env.VERCEL_API_TOKEN;
+  if (!token) return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
+
+  const de = `${meses[0]}-01T00:00:00.000Z`;
+  const ate = new Date().toISOString();
+  const params = new URLSearchParams({ from: de, to: ate });
+  if (process.env.VERCEL_TEAM_ID) params.set("teamId", process.env.VERCEL_TEAM_ID);
+
+  try {
+    const r = await fetch(`https://api.vercel.com/v1/billing/charges?${params}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const texto = await r.text();
+    if (!r.ok) throw new Error(`Vercel respondeu ${r.status}: ${texto.slice(0, 160)}`);
+
+    // Vem em JSON Lines (um registro FOCUS por linha); aceita também array.
+    let registros;
+    try {
+      const j = JSON.parse(texto);
+      registros = Array.isArray(j) ? j : (j.charges || j.data || []);
+    } catch {
+      registros = texto.split("\n").filter(l => l.trim()).map(l => JSON.parse(l));
+    }
+
+    const porMes = mesesZerados(meses);
+    let moeda = "USD";
+    registros.forEach(c => {
+      const mes = String(c.ChargePeriodStart || c.BillingPeriodStart || "").slice(0, 7);
+      const valor = Number(c.BilledCost ?? c.EffectiveCost ?? 0) || 0;
+      if (c.BillingCurrency) moeda = c.BillingCurrency;
+      if (mes in porMes) porMes[mes] += valor;
+    });
+    return { ...base, moeda, status: "ativo", meses: porMes };
+  } catch (e) {
+    return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
+  }
+}
+
+/* ----------------------------------------------------------- Supabase */
+
+async function custoSupabase(meses) {
+  const base = { fonte: "supabase", nome: "Supabase", categoria: "Banco de dados", tipo: "recorrente", moeda: "USD" };
+  const fixo = process.env.SUPABASE_CUSTO_MENSAL_USD;
+  const token = process.env.SUPABASE_ACCESS_TOKEN;
+
+  const comValor = (valor, extra = {}) => ({
+    ...base, ...extra, status: "ativo",
+    meses: Object.fromEntries(meses.map(m => [m, valor]))
+  });
+
+  if (fixo !== undefined && fixo !== "") return comValor(Number(fixo) || 0, { detalhe: "Valor fixo informado" });
+  if (!token) return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
+
+  try {
+    const cabecalho = { headers: { Authorization: `Bearer ${token}` } };
+    let slug = process.env.SUPABASE_ORG_SLUG;
+    if (!slug) {
+      const r = await fetch("https://api.supabase.com/v1/organizations", cabecalho);
+      if (!r.ok) throw new Error(`Supabase respondeu ${r.status}`);
+      const orgs = await r.json();
+      slug = orgs[0]?.slug || orgs[0]?.id;
+      if (!slug) throw new Error("Nenhuma organização encontrada");
+    }
+    const r = await fetch(`https://api.supabase.com/v1/organizations/${encodeURIComponent(slug)}`, cabecalho);
+    if (!r.ok) throw new Error(`Supabase respondeu ${r.status}`);
+    const org = await r.json();
+    const plano = String(org.plan || "").toLowerCase();
+    if (!(plano in PRECO_PLANO_SUPABASE)) {
+      throw new Error(`Plano "${org.plan}" sem preço fixo; informe SUPABASE_CUSTO_MENSAL_USD`);
+    }
+    return comValor(PRECO_PLANO_SUPABASE[plano], { detalhe: `Plano ${plano}` });
+  } catch (e) {
+    return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
+  }
+}
+
+/* --------------------------------------------- Amazon SES (Cost Explorer) */
+
+function hmac(chave, texto) {
+  return crypto.createHmac("sha256", chave).update(texto, "utf8").digest();
+}
+function sha256(texto) {
+  return crypto.createHash("sha256").update(texto, "utf8").digest("hex");
+}
+
+/** Chamada assinada (SigV4) ao Cost Explorer, sem SDK extra. */
+async function costExplorer(alvo, corpo) {
+  const host = "ce.us-east-1.amazonaws.com";
+  const regiao = "us-east-1";
+  const servico = "ce";
+  const agora = new Date().toISOString().replace(/[:-]|\.\d{3}/g, "");
+  const dia = agora.slice(0, 8);
+  const payload = JSON.stringify(corpo);
+
+  const cabecalhos = {
+    "content-type": "application/x-amz-json-1.1",
+    host,
+    "x-amz-date": agora,
+    "x-amz-target": `AWSInsightsIndexService.${alvo}`
+  };
+  const nomes = Object.keys(cabecalhos).sort();
+  const canonico = [
+    "POST", "/", "",
+    nomes.map(n => `${n}:${cabecalhos[n]}`).join("\n") + "\n",
+    nomes.join(";"),
+    sha256(payload)
+  ].join("\n");
+
+  const escopo = `${dia}/${regiao}/${servico}/aws4_request`;
+  const paraAssinar = ["AWS4-HMAC-SHA256", agora, escopo, sha256(canonico)].join("\n");
+  const kData = hmac(`AWS4${process.env.AWS_SECRET_ACCESS_KEY}`, dia);
+  const kAssinatura = hmac(hmac(hmac(kData, regiao), servico), "aws4_request");
+  const assinatura = crypto.createHmac("sha256", kAssinatura).update(paraAssinar, "utf8").digest("hex");
+
+  const r = await fetch(`https://${host}/`, {
+    method: "POST",
+    headers: {
+      ...cabecalhos,
+      Authorization: `AWS4-HMAC-SHA256 Credential=${process.env.AWS_ACCESS_KEY_ID}/${escopo}, SignedHeaders=${nomes.join(";")}, Signature=${assinatura}`
+    },
+    body: payload
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.message || j.Message || `AWS respondeu ${r.status}`);
+  return j;
+}
+
+async function custoSes(meses) {
+  const base = { fonte: "ses", nome: "Amazon SES", categoria: "E-mail", tipo: "recorrente", moeda: "USD" };
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
+  }
+  try {
+    const amanha = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const j = await costExplorer("GetCostAndUsage", {
+      TimePeriod: { Start: `${meses[0]}-01`, End: amanha },
+      Granularity: "MONTHLY",
+      Metrics: ["UnblendedCost"],
+      Filter: { Dimensions: { Key: "SERVICE", Values: ["Amazon Simple Email Service"] } }
+    });
+    const porMes = mesesZerados(meses);
+    let moeda = "USD";
+    (j.ResultsByTime || []).forEach(p => {
+      const mes = String(p.TimePeriod?.Start || "").slice(0, 7);
+      const custo = p.Total?.UnblendedCost;
+      if (custo?.Unit) moeda = custo.Unit;
+      if (mes in porMes) porMes[mes] += Number(custo?.Amount) || 0;
+    });
+    return { ...base, moeda, status: "ativo", meses: porMes };
+  } catch (e) {
+    return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
+  }
+}
+
+/* ------------------------------------------------------------ Handler */
+
+module.exports = async (req, res) => {
+  cors(req, res);
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "GET") return res.status(405).json({ error: "Método não permitido" });
+
+  const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+  if (!token) return res.status(401).json({ error: "Sem sessão" });
+
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false }
+  });
+  const { data: quem, error: erroSessao } = await supabase.auth.getUser(token);
+  if (erroSessao || !quem?.user) return res.status(401).json({ error: "Sessão inválida" });
+  const { data: admin } = await supabase
+    .from("admins").select("id, active").eq("id", quem.user.id).maybeSingle();
+  if (!admin || admin.active === false) return res.status(403).json({ error: "Acesso só para admins" });
+
+  const forcar = String(req.query?.atualizar || "") === "1";
+  if (!forcar && CACHE && Date.now() - CACHE.em < VALIDADE_CACHE) return res.status(200).json(CACHE.dados);
+
+  const meses = ultimosMeses();
+  const [taxas, vercel, supa, ses] = await Promise.all([
+    cotacoes(), custoVercel(meses), custoSupabase(meses), custoSes(meses)
+  ]);
+
+  const dados = { meses, cotacoes: taxas, itens: [vercel, supa, ses], atualizado_em: new Date().toISOString() };
+  CACHE = { em: Date.now(), dados };
+  return res.status(200).json(dados);
+};

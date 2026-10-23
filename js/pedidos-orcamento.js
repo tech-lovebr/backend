@@ -176,7 +176,7 @@
     return {
       titulo: '', categoria: '', especialidades: [], tipoCelebracao: '', celebracaoOutro: '', dataEvento: '', dataFlexivel: false,
       cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null,
-      faixa: '', valorMin: null, valorMax: null, aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: 5
+      faixa: '', valorMin: null, valorMax: null, aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: null
     };
   }
 
@@ -394,7 +394,14 @@
   }
 
   function avancar() {
-    if (modo === 'lote') { publicarLote(); return; }
+    if (modo === 'lote') {
+      // Etapa 1: serviço(s) + evento · etapa 2: detalhes · etapa 3: imagens e publicar.
+      const e = etapa === 1 ? validarLote(1) : etapa === 2 ? validarLote(2) : {};
+      if (Object.keys(e).length) { erros = e; desenhar(0); focarPrimeiroErro(); return; }
+      if (etapa < ETAPAS_DO_FORMULARIO) { irPara(etapa + 1, 1); window.scrollTo({ top: 0 }); return; }
+      publicarLote();
+      return;
+    }
     erros = validarEtapa(etapa);
     if (Object.keys(erros).length) { desenhar(0); focarPrimeiroErro(); return; }
     if (etapa < ETAPAS.length) return irPara(etapa + 1, 1);
@@ -412,7 +419,7 @@
 
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
-    const textos = modo === 'lote' ? TEXTO_DA_PAGINA : TEXTOS_DAS_ETAPAS[etapa - 1];
+    const textos = modo === 'lote' ? (TEXTOS_DA_PAGINA[etapa - 1] || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
     if (titulo) titulo.textContent = textos.titulo;
@@ -435,7 +442,7 @@
     const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
     if (voltar) voltar.textContent = etapa === 1 ? 'Cancelar' : 'Voltar';
     if (avancarBtn) {
-      avancarBtn.textContent = publicando ? 'Publicando…' : (modo === 'lote' || etapa === ETAPAS.length ? (formato === 'completo' && lote.categorias.length > 1 ? `Publicar ${lote.categorias.length} solicitações simultâneas` : 'Publicar solicitação') : 'Continuar');
+      avancarBtn.textContent = publicando ? 'Publicando…' : ((modo === 'lote' ? etapa === ETAPAS_DO_FORMULARIO : etapa === ETAPAS.length) ? (formato === 'completo' && lote.categorias.length > 1 ? `Publicar ${lote.categorias.length} solicitações simultâneas` : 'Publicar solicitação') : 'Continuar');
       avancarBtn.disabled = publicando;
     }
   }
@@ -1021,6 +1028,7 @@
     return e;
   }
 
+  const ETAPAS_DO_FORMULARIO = 3;
   const TEXTO_DA_PAGINA = { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' };
 
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
@@ -1147,64 +1155,68 @@
       ${erroHtml(`${id}:descricao`)}`;
   }
 
-  /** Seção final comum: imagens de referência, limite de propostas e privacidade. */
+  /** Última etapa (comum): imagens de referência e privacidade. */
   function htmlFinal() {
     const n = lote.categorias.length;
     return `
+      <section class="rfp-secao">${imagensDeReferencia()}</section>
       <section class="rfp-secao">
-        <h4 class="rfp-pergunta">${formato === 'completo' && n > 1 ? 'Quantas propostas você quer receber em cada uma?' : 'Quantas propostas você quer receber?'}</h4>
-        <div class="rfp-pilulas" role="radiogroup">
-          ${LIMITES.map(l => `<button type="button" class="rfp-pilula${l.valor === dados.limitePropostas ? ' ativa' : ''}" role="radio" aria-checked="${l.valor === dados.limitePropostas}" data-rfp-campo="limitePropostas" data-rfp-valor="${l.valor === null ? '' : l.valor}">${esc(l.nome)}</button>`).join('')}
-        </div>
         <div class="rfp-aviso">
           ${ICONE_CADEADO}
           <p>Seu telefone e WhatsApp <b>não são mostrados</b> aos fornecedores. As propostas, a conversa e o fechamento acontecem com segurança dentro da Love.</p>
         </div>
-      </section>
-      <section class="rfp-secao">${imagensDeReferencia()}</section>
-      ${formato === 'completo' && n > 1 ? `<p class="rfp-lote-explica">Cada serviço marcado gera uma solicitação independente, enviada aos profissionais daquela categoria.</p>` : ''}`;
+        ${formato === 'completo' && n > 1 ? `<p class="rfp-lote-explica">Cada serviço marcado gera uma solicitação independente, enviada aos profissionais daquela categoria.</p>` : ''}
+      </section>`;
   }
 
-  /** Serviço específico: serviço, detalhes, dados do evento e orçamento. */
+  /** Dados do evento (tipo de celebração + linha compacta). @param {string} rotulo */
+  const secaoDoEvento = (rotulo) => `
+      <section class="rfp-secao">
+        ${htmlCelebracao()}
+        <h4 class="rfp-pergunta">${rotulo}</h4>
+        ${htmlEventoCompacto()}
+      </section>`;
+
+  /** Serviço avulso, por etapa: 1 serviço + evento · 2 detalhes e orçamento · 3 imagens. */
   function htmlPaginaUnico() {
     const id = lote.categorias[0] || '';
     atualizarTitulos();
-    return `
-      <section class="rfp-secao">
-        <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
-        ${seletorDeServico()}
-        ${erroHtml('categorias')}
-        ${id ? `${blocoTitulo(id)}${blocoTags(id)}${blocoDescricao(id, 'Descreva o que você precisa', 5)}` : ''}
-      </section>
-      <section class="rfp-secao">
-        ${htmlCelebracao()}
-        <h4 class="rfp-pergunta">Dados do evento</h4>
-        ${htmlEventoCompacto()}
-      </section>
-      ${id ? `
+    if (etapa === 1) {
+      return `
+        <section class="rfp-secao">
+          <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
+          ${seletorDeServico()}
+          ${erroHtml('categorias')}
+        </section>
+        ${secaoDoEvento('Dados do evento')}`;
+    }
+    if (etapa === 2 && id) {
+      return `
+        <section class="rfp-secao">
+          ${blocoTitulo(id)}${blocoTags(id)}${blocoDescricao(id, 'Descreva o que você precisa', 5)}
+        </section>
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Orçamento previsto <span class="rfp-opcional">(opcional)</span></h4>
           ${blocoOrcamento(id)}
-        </section>` : ''}
-      ${htmlFinal()}`;
+        </section>`;
+    }
+    return htmlFinal();
   }
 
-  /** Montar evento completo: evento uma vez, vários serviços e uma lista simples. */
+  /** Evento completo, por etapa: 1 evento + serviços · 2 descrição e lista · 3 imagens. */
   function htmlPaginaCompleto() {
     atualizarTitulos();
-    const n = lote.categorias.length;
-    return `
-      <section class="rfp-secao">
-        ${htmlCelebracao()}
-        <h4 class="rfp-pergunta">Dados gerais do evento</h4>
-        ${htmlEventoCompacto()}
-      </section>
-      <section class="rfp-secao">
-        <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
-        ${gradeDeServicos()}
-        ${erroHtml('categorias')}
-      </section>
-      ${n ? `
+    if (etapa === 1) {
+      return `
+        ${secaoDoEvento('Dados gerais do evento')}
+        <section class="rfp-secao">
+          <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
+          ${gradeDeServicos()}
+          ${erroHtml('categorias')}
+        </section>`;
+    }
+    if (etapa === 2) {
+      return `
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Descrição geral</h4>
           <textarea class="rfp-campo rfp-descricao" data-lote-geral maxlength="${DESCRICAO_MAX}" rows="4" placeholder="Conte o estilo do evento, o clima que você imagina e o que é importante para você.">${esc(lote.descricaoGeral)}</textarea>
@@ -1226,13 +1238,21 @@
                 </div>`;
             }).join('')}
           </div>
-        </section>` : ''}
-      ${htmlFinal()}`;
+        </section>`;
+    }
+    return htmlFinal();
   }
 
-  /** O formulário inteiro numa página, conforme o jeito escolhido no topo. */
+  /** Textos do topo de cada etapa. */
+  const TEXTOS_DA_PAGINA = [
+    null,
+    { titulo: 'Descreva o que você precisa', sub: 'Conte os detalhes e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
+    { titulo: 'Imagens de referência', sub: 'Adicione fotos de referência, paleta de cores ou moodboard para ajudar os fornecedores a entenderem seu estilo.' }
+  ];
+
+  /** O formulário da etapa atual (os dois jeitos de começar ficam na etapa 1). */
   function htmlPagina() {
-    return `${htmlModos()}${formato === 'completo' ? htmlPaginaCompleto() : htmlPaginaUnico()}`;
+    return `${etapa === 1 ? htmlModos() : ''}${formato === 'completo' ? htmlPaginaCompleto() : htmlPaginaUnico()}`;
   }
 
   /** Grade compacta de serviços (marcar um ou mais). */
@@ -1465,8 +1485,10 @@
   }
 
   async function publicarLote() {
-    const e = { ...validarLote(1), ...validarLote(2) };
-    if (Object.keys(e).length) { erros = e; desenhar(0); focarPrimeiroErro(); return; }
+    for (const n of [1, 2]) {
+      const e = validarLote(n);
+      if (Object.keys(e).length) { erros = e; irPara(n, -1); erros = e; desenhar(0); focarPrimeiroErro(); return; }
+    }
     const usuario = usuarioLogado();
     if (!usuario || typeof supabaseClient === 'undefined') return mostrarErroGeral('Entre na sua conta para publicar.');
     publicando = true;

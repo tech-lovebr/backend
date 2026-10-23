@@ -11110,3 +11110,7 @@ body[data-theme="dark"] .cart-verif-cartao, body[data-theme="dark"] .cart-arquiv
 html body #recados-raiz .recados-vazio-icone:not(#love-h-a) { display: block; width: 88px; height: auto; margin: 0 auto 16px; color: #3F3F46; }
 body[data-theme="dark"] #recados-raiz .recados-vazio-icone { color: #D4D4D8; }
 body[data-theme="dark"] #recados-raiz .recados-vazio-icone path[fill] { fill: #252525; }
+
+/* Pop-up Criar/Editar presente: sem as linhas horizontais do cabeçalho e do rodapé. */
+html body #drawer-add-gift > div:first-child:not(#love-h-a) { border-bottom: 0 !important; }
+html body #form-add-gift > .gift-campo-salvar:not(#love-h-a) { border-top: 0 !important; }

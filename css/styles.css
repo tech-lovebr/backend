@@ -10423,3 +10423,11 @@ body[data-theme="dark"] .rfp-detalhe-cabeca, body[data-theme="dark"] .rfp-detalh
 body[data-theme="dark"] button.rfp-detalhe-voltar { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-detalhe-destaque b, body[data-theme="dark"] .rfp-detalhe-destaque svg, body[data-theme="dark"] .rfp-detalhe-linhas b, body[data-theme="dark"] .rfp-detalhe-sec .rfp-detalhe-desc { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-detalhe-tags span { background: #333333 !important; color: #D4D4D8 !important; }
+
+/* Seta de voltar da solicitação aberta: idêntica à de "Adicione uma lista"
+   (sem borda, 32px, hover com fundo #F4F6F7). */
+html body button.rfp-detalhe-voltar:not(#love-h-a) { width: 32px; height: 32px; margin: 0 -4px 0 -6px; padding: 0; background: transparent !important; border: 0 !important; border-radius: 8px; color: #18181B !important; }
+html body button.rfp-detalhe-voltar:not(#love-h-a):hover { background: #F4F6F7 !important; color: #18181B !important; }
+html body .rfp-detalhe-voltar svg:not(#love-h-a) { width: 20px; height: 20px; }
+body[data-theme="dark"] button.rfp-detalhe-voltar { background: transparent !important; color: #FFFFFF !important; }
+body[data-theme="dark"] button.rfp-detalhe-voltar:hover { background: #333333 !important; }

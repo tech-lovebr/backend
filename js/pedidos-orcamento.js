@@ -1150,7 +1150,7 @@
             <p class="rfp-detalhe-meta">${esc(meta)}</p>
           </div>
           ${pedido
-            ? `<button type="button" class="rfp-post-botao" data-rfp-ver="${esc(id)}">Ver propostas</button>`
+            ? `<button type="button" class="rfp-post-botao" data-rfp-ver="${esc(id)}">Propostas recebidas</button>`
             : `<button type="button" class="rfp-post-botao" data-rfp-editar-rascunho="${esc(id)}">Editar rascunho</button>`}
         </div>
 

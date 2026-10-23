@@ -10475,3 +10475,34 @@ html body .op-filtrar-campo .op-filtro-select:not(#love-h-a) { width: 100%; heig
 html body .op-filtrar-limpar:not(#love-h-a) { align-self: flex-start; padding: 0; border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 600; color: #52525B; cursor: pointer; }
 html body .op-filtrar-limpar:hover:not(#love-h-a) { color: #181D24; }
 @media (max-width: 640px) { html body .op-filtrar-menu:not(#love-h-a) { width: min(280px, calc(100vw - 32px)); } }
+
+/* Padrão único de caixas e botões claros (igual à plataforma dos anfitriões):
+   linha fina cinza (preto a 6%) + anel bem leve (preto a 3%). */
+:root {
+  --borda-suave: rgba(0, 0, 0, 0.06);
+  --anel-suave: 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+body[data-theme="dark"] {
+  --borda-suave: rgba(255, 255, 255, 0.08);
+  --anel-suave: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* Caixas: cards, caixas de tabela, cards de configurações, cards de produto */
+html body :is(
+  .dash-card, .settings-zola-card, .leads-table-wrap, .finance-stat-card,
+  .product-card, .love-tabela-caixa
+):not(#love-h-a) {
+  border: 1px solid var(--borda-suave) !important;
+  border-radius: 10px;
+  box-shadow: var(--anel-suave) !important;
+}
+
+/* Botões claros: mesma linha e anel; no hover só a borda escurece */
+html body :is(.btn-secondary, .btn-white, .love-tabela-botao):not(#love-h-a):not(:hover):not(:focus-visible):not(:disabled) {
+  border-color: var(--borda-suave) !important;
+  box-shadow: var(--anel-suave) !important;
+}
+html body :is(.btn-secondary, .btn-white, .love-tabela-botao):not(#love-h-a):hover {
+  border-color: #181D24 !important;
+  box-shadow: var(--anel-suave) !important;
+}

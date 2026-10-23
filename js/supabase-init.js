@@ -421,3 +421,63 @@ async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = '
     new ResizeObserver(() => { clearTimeout(espera); espera = setTimeout(desenhar, 120); }).observe(caixa);
   }
 }
+
+/* ==========================================================================
+   Último aparelho usado (modelo do celular, sistema e navegador)
+
+   O Admin mostra no drawer da conta. O navegador só conta o modelo no
+   Android (Chrome/Edge/Samsung, pelas "client hints"); no iPhone a Apple não
+   informa o modelo, então fica "iPhone · iOS 17.5". Guardado no metadado da
+   conta (ultimo_aparelho) só quando muda, para não gravar a cada página.
+   ========================================================================== */
+
+async function descreverAparelho() {
+  const ua = navigator.userAgent || '';
+  let modelo = '';
+  let sistema = '';
+
+  try {
+    const hints = navigator.userAgentData && await navigator.userAgentData.getHighEntropyValues(['model', 'platform', 'platformVersion']);
+    if (hints) {
+      modelo = (hints.model || '').trim();
+      if (hints.platform === 'Android') sistema = `Android ${String(hints.platformVersion || '').split('.')[0]}`.trim();
+      else if (hints.platform === 'Windows') sistema = Number(String(hints.platformVersion || '0').split('.')[0]) >= 13 ? 'Windows 11' : 'Windows 10';
+      else if (hints.platform === 'macOS') sistema = 'Mac';
+      else if (hints.platform === 'Chrome OS') sistema = 'Chromebook';
+    }
+  } catch { /* navegador sem client hints: fica com o user agent */ }
+
+  if (!sistema) {
+    const ios = ua.match(/(iPhone|iPad|iPod).*?OS (\d+)[_.](\d+)/);
+    const android = ua.match(/Android (\d+)/);
+    if (ios) { sistema = `iOS ${ios[2]}.${ios[3]}`; modelo = modelo || ios[1]; }
+    else if (android) sistema = `Android ${android[1]}`;
+    else if (/Windows NT/.test(ua)) sistema = 'Windows';
+    else if (/Mac OS X/.test(ua)) sistema = 'Mac';
+    else if (/Linux/.test(ua)) sistema = 'Linux';
+  }
+
+  // Android antigo/Firefox ainda trazem o modelo no user agent ("; SM-S918B Build").
+  if (!modelo) {
+    const m = ua.match(/Android [\d.]+; (?:[a-z]{2}-[a-z]{2}; )?([^;)]+?)(?: Build|\))/i);
+    if (m && m[1] !== 'K') modelo = m[1].trim();
+  }
+
+  const navegador = (typeof dadosDoDispositivo === 'function' && dadosDoDispositivo().navegador) || '';
+  return [modelo, sistema, navegador].filter(Boolean).join(' · ').slice(0, 120);
+}
+
+async function registrarUltimoAparelho(session) {
+  if (!session || !session.user) return;
+  try {
+    const atual = await descreverAparelho();
+    if (!atual || session.user.user_metadata?.ultimo_aparelho === atual) return;
+    await supabaseClient.auth.updateUser({ data: { ultimo_aparelho: atual } });
+  } catch { /* não atrapalha o uso da plataforma */ }
+}
+
+supabaseClient.auth.onAuthStateChange((evento, session) => {
+  if (evento !== 'SIGNED_IN' && evento !== 'INITIAL_SESSION') return;
+  // Fora do caminho do carregamento da página.
+  setTimeout(() => registrarUltimoAparelho(session), 1500);
+});

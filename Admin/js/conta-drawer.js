@@ -105,6 +105,22 @@ function acessoDaConta(c) {
   };
 }
 
+/** Último aparelho: o que o site/Hub gravou (modelo · sistema · navegador);
+ *  sem isso, o que dá para tirar do user agent da sessão mais recente. */
+function ultimoAparelho(c) {
+  if (c.ultimo_aparelho) return c.ultimo_aparelho;
+  const ua = c.user_agent;
+  if (!ua) return null;
+  const ios = ua.match(/(iPhone|iPad|iPod).*?OS (\d+)[_.](\d+)/);
+  const android = ua.match(/Android (\d+)(?:[.\d]*)?; (?:[a-z]{2}-[a-z]{2}; )?([^;)]+?)(?: Build|\))/i);
+  const sistema = ios ? `${ios[1]} · iOS ${ios[2]}.${ios[3]}`
+    : android ? [android[2] !== 'K' ? android[2].trim() : '', `Android ${android[1]}`].filter(Boolean).join(' · ')
+    : /Windows NT/.test(ua) ? 'Windows'
+    : /Mac OS X/.test(ua) ? 'Mac'
+    : APARELHOS[aparelhoDoUserAgent(ua)];
+  return [sistema, navegadorDoUserAgent(ua)].filter(Boolean).join(' · ');
+}
+
 const ContaDrawer = (() => {
   let CONTAS = null;
   let DADOS = null;
@@ -202,7 +218,8 @@ const ContaDrawer = (() => {
           ${linha('Canal', escapeHtml(origem.rotulo))}
           ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
-          ${acesso ? linha(acesso.exato ? 'Cadastrou-se em' : 'Último aparelho', escapeHtml(acesso.texto)) : ''}
+          ${acesso && acesso.exato ? linha('Cadastrou-se em', escapeHtml(acesso.texto)) : ''}
+          ${ultimoAparelho(c) ? linha('Último aparelho', escapeHtml(ultimoAparelho(c))) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
           ${linha('Sessões', c.sessoes == null ? '—' : formatNumber(c.sessoes))}
           ${linha('Situação', c.bloqueado

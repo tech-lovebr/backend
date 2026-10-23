@@ -37,6 +37,7 @@
    * @property {number|null} horasServico
    * @property {string} horarioInicio        HH:MM (opcional quando sem data)
    * @property {string} horarioFim           HH:MM
+   * @property {string} ambiente             fechado, ar_livre, misto ou a_definir (opcional)
    * @property {RfpBudgetTier|''} faixa       (antigo) faixa pronta
    * @property {number|null} valorMin        "De" (opcional)
    * @property {number|null} valorMax        "Até" (opcional)
@@ -182,7 +183,7 @@
   function rascunhoVazio() {
     return {
       titulo: '', categoria: '', especialidades: [], tipoCelebracao: '', celebracaoOutro: '', dataEvento: '', dataFlexivel: false,
-      cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null, horarioInicio: '', horarioFim: '',
+      cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null, horarioInicio: '', horarioFim: '', ambiente: '',
       faixa: '', valorMin: null, valorMax: null, aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: null
     };
   }
@@ -205,8 +206,8 @@
     if (det.city) dados.cidade = String(det.city);
     if (det.state) dados.uf = String(det.state).slice(0, 2).toUpperCase();
     // Horários do evento (Informações), se já preenchidos.
-    if (/^\d{2}:\d{2}$/.test(String(det.time || ''))) dados.horarioInicio = String(det.time);
-    if (/^\d{2}:\d{2}$/.test(String(det.endTime || ''))) dados.horarioFim = String(det.endTime);
+    if (/^\d{2}:\d{2}$/.test(String(det.time || ''))) dados.horarioInicio = horarioDe5em5(String(det.time));
+    if (/^\d{2}:\d{2}$/.test(String(det.endTime || ''))) dados.horarioFim = horarioDe5em5(String(det.endTime));
   }
 
   // --------------------------------------------------------------------------
@@ -465,7 +466,7 @@
   function avancar() {
     if (modo === 'lote') {
       // Etapa 1: serviço(s) + evento · etapa 2: detalhes · etapa 3: imagens e publicar.
-      const e = etapa === 1 ? validarLote(1) : etapa === 2 ? validarLote(2) : {};
+      const e = etapa < ETAPAS_DO_FORMULARIO ? validarLote(etapa) : {};
       if (Object.keys(e).length) {
         erros = e;
         desenhar(0);
@@ -1136,8 +1137,8 @@
       if (!lote.categorias.length) e.categorias = formato === 'completo' ? 'Escolha pelo menos um serviço.' : 'Escolha o serviço.';
 
     }
-    if (n === 2) {
-      validarLogistica(e);
+    if (n === 2) validarLogistica(e);
+    if (n === 3) {
       lote.categorias.forEach(id => {
         const it = lote.itens[id];
         if (!it) return;
@@ -1153,7 +1154,7 @@
     return e;
   }
 
-  const ETAPAS_DO_FORMULARIO = 3;
+  const ETAPAS_DO_FORMULARIO = 4;
   const TEXTO_DA_PAGINA = { titulo: '', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' };
 
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
@@ -1167,8 +1168,8 @@
     return `
       <div class="rfp-ev-grade rfp-ev-tempo">
         ${campo('Data do evento', `<input type="date" class="rfp-campo" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" ${semData}>`, 'dataEvento')}
-        ${campo('Horário de início', `<input type="time" class="rfp-campo" data-rfp-input="horarioInicio" value="${esc(dados.horarioInicio || '')}" ${semData}>`, 'horarioInicio')}
-        ${campo('Horário de término', `<input type="time" class="rfp-campo" data-rfp-input="horarioFim" value="${esc(dados.horarioFim || '')}" ${semData}>`, 'horarioFim')}
+        ${campo('Horário de início', seletorDeHorario('horarioInicio', semData), 'horarioInicio')}
+        ${campo('Horário de término', seletorDeHorario('horarioFim', semData), 'horarioFim')}
       </div>
       <label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Ainda não temos uma data definida</label>
       <div class="rfp-ev-grade rfp-ev-local">
@@ -1184,7 +1185,36 @@
             <option value=""${dados.convidados ? '' : ' selected'}>Selecione</option>
             ${CONVIDADOS.map(o => `<option value="${o.id}"${dados.convidados === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
           </select>`, 'convidados')}
+        ${campo('Ambiente <span class="rfp-opcional">(opcional)</span>', `<select class="rfp-campo" data-rfp-input="ambiente">
+            <option value=""${dados.ambiente ? '' : ' selected'}>Selecione</option>
+            ${AMBIENTES.map(o => `<option value="${o.id}"${dados.ambiente === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
+          </select>`, 'ambiente')}
       </div>`;
+  }
+
+  // Ambiente do evento (ao lado de Convidados): ajuda decoração, som, foto e
+  // buffet a planejarem estrutura (tenda, iluminação, plano B para chuva).
+  const AMBIENTES = [
+    { id: 'fechado', nome: 'Ambiente fechado' }, { id: 'ar_livre', nome: 'Ao ar livre' },
+    { id: 'misto', nome: 'Fechado e ao ar livre' }, { id: 'a_definir', nome: 'Ainda não sei' }
+  ];
+
+  /** Horários de 5 em 5 minutos (00:00 a 23:55). */
+  const HORARIOS = Array.from({ length: 288 }, (_, i) => `${String(Math.floor(i / 12)).padStart(2, '0')}:${String((i % 12) * 5).padStart(2, '0')}`);
+  /** Arredonda "16:32" para "16:30" (horários do evento cadastrados antes). @param {string} h */
+  const horarioDe5em5 = (h) => {
+    const m = /^(\d{2}):(\d{2})/.exec(h || '');
+    if (!m) return '';
+    const total = Math.round((Number(m[1]) * 60 + Number(m[2])) / 5) * 5 % 1440;
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  };
+  /** Lista de horários de 5 em 5 minutos. @param {'horarioInicio'|'horarioFim'} chave @param {string} semData */
+  function seletorDeHorario(chave, semData) {
+    const atual = horarioDe5em5(dados[chave]);
+    return `<select class="rfp-campo" data-rfp-input="${chave}" ${semData}>
+            <option value=""${atual ? '' : ' selected'}>Selecione</option>
+            ${HORARIOS.map(h => `<option value="${h}"${atual === h ? ' selected' : ''}>${h}</option>`).join('')}
+          </select>`;
   }
 
   /** "Serviço específico" (um serviço) ou "Montar evento completo" (vários). */
@@ -1325,7 +1355,7 @@
         ${htmlEventoCompacto()}
       </section>`;
 
-  /** Serviço avulso, por etapa: 1 serviço + evento · 2 detalhes e orçamento · 3 imagens. */
+  /** Serviço avulso, por etapa: 1 título e serviço · 2 evento · 3 descrição e orçamento · 4 imagens. */
   function htmlPaginaUnico() {
     const id = lote.categorias[0] || '';
     // Sem título gerado automaticamente: o título é o que a pessoa escreve.
@@ -1346,11 +1376,9 @@
           ${id ? blocoTags(id) : ''}
         </section>`;
     }
-    if (etapa === 2 && id) {
+    if (etapa === 2) return `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
+    if (etapa === 3 && id) {
       return `
-        <section class="rfp-secao">
-          ${htmlEventoCompacto()}
-        </section>
         <section class="rfp-secao">
           ${blocoDescricao(id, 'Descreva o que você precisa', 5)}
         </section>
@@ -1362,7 +1390,7 @@
     return htmlFinal();
   }
 
-  /** Evento completo, por etapa: 1 evento + serviços · 2 descrição e lista · 3 imagens. */
+  /** Evento completo, por etapa: 1 serviços · 2 evento · 3 título, descrição e orçamento de cada serviço · 4 imagens. */
   function htmlPaginaCompleto() {
     atualizarTitulos();
     if (etapa === 1) {
@@ -1373,11 +1401,9 @@
           ${erroHtml('categorias')}
         </section>`;
     }
-    if (etapa === 2) {
+    if (etapa === 2) return `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
+    if (etapa === 3) {
       return `
-        <section class="rfp-secao">
-          ${htmlEventoCompacto()}
-        </section>
         <section class="rfp-secao">
           <!-- Cada serviço com o próprio título e a descrição logo abaixo (sem descrição geral nem subcategorias). -->
           <div class="rfp-lote-lista">
@@ -1406,7 +1432,8 @@
   const TEXTOS_DA_PAGINA = [
     // Título grande à esquerda da caixa, como em Adicionar novo produto do Hub.
     { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' },
-    { titulo: 'Conte sobre o seu evento', sub: 'Informe os dados do evento, descreva o que você precisa e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
+    { titulo: 'Conte mais sobre o seu evento', sub: 'Data, horário, local e convidados. Isso ajuda os fornecedores a enviarem propostas realistas.' },
+    { titulo: 'Descreva o que você precisa', sub: 'Conte os detalhes de cada serviço e, se quiser, quanto planeja gastar.' },
     // Etapa 3: o "Imagem de referência" aparece uma vez só, dentro do formulário.
     { titulo: 'Revise e publique', sub: 'Adicione imagens de referência, se quiser, e publique a sua solicitação.' }
   ];
@@ -1710,7 +1737,7 @@
   }
 
   async function publicarLote() {
-    for (const n of [1, 2]) {
+    for (const n of [1, 2, 3]) {
       const e = validarLote(n);
       if (Object.keys(e).length) { erros = e; irPara(n, -1); erros = e; desenhar(0); focarPrimeiroErro(); return; }
     }
@@ -1756,6 +1783,7 @@
           horas_servico: null,
           horario_inicio: dados.dataFlexivel ? null : (dados.horarioInicio || null),
           horario_fim: dados.dataFlexivel ? null : (dados.horarioFim || null),
+          ambiente: dados.ambiente || null,
           faixa: temOrcamento ? 'personalizada' : null,
           valor_min: it.valorMin || null,
           valor_max: it.valorMax || null,
@@ -1767,6 +1795,10 @@
       });
       let { error } = await supabaseClient.from('pedidos_orcamento').insert(linhas);
       // Sem as colunas de horário (migration 094): publica sem elas.
+      if (error && /ambiente/.test(String(error.message || ''))) {
+        linhas = linhas.map(({ ambiente: _a, ...resto }) => resto);
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linhas));
+      }
       if (error && /horario_/.test(String(error.message || ''))) {
         linhas = linhas.map(({ horario_inicio: _i, horario_fim: _f, ...resto }) => resto);
         ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linhas));

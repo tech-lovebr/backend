@@ -246,7 +246,47 @@
       </section>`;
   }
 
+  /** Cadastro de conta aberto dentro da caixa (no lugar da tabela), sem pop-up. */
+  let cadastrando = false;
+
+  function htmlFormConta() {
+    return `
+      <section class="cart-caixa cart-contas cart-contas-form" data-cart-form-conta>
+        <div class="cart-contas-topo">
+          <div>
+            <h3 class="cart-titulo">Cadastrar conta</h3>
+            <p class="cart-form-sub">Para onde a Love vai transferir os seus saques.</p>
+          </div>
+        </div>
+        <div class="cart-form-corpo">
+          <div class="love-tabs-nav cart-metodos" role="tablist">
+            <button type="button" class="love-tab-item${metodoNovo === 'pix' ? ' active' : ''}" data-cart-metodo="pix">Pix</button>
+            <button type="button" class="love-tab-item${metodoNovo === 'ted' ? ' active' : ''}" data-cart-metodo="ted">TED</button>
+          </div>
+          <div data-cart-painel="pix" class="cart-form-grade cart-form-pix" ${metodoNovo === 'pix' ? '' : 'hidden'}>
+            <label class="cart-campo"><span>Tipo de chave</span>
+              <select data-cart-campo="pixTipo"><option value="cpf">CPF</option><option value="email">E-mail</option><option value="telefone">Telefone</option><option value="aleatoria">Chave aleatória</option></select>
+            </label>
+            <label class="cart-campo"><span>Chave Pix</span><input type="text" data-cart-campo="pixChave" autocomplete="off"></label>
+          </div>
+          <div data-cart-painel="ted" class="cart-form-grade" ${metodoNovo === 'ted' ? '' : 'hidden'}>
+            <label class="cart-campo cart-campo-largo"><span>Instituição financeira</span><input type="text" data-cart-campo="banco" autocomplete="off"></label>
+            <label class="cart-campo"><span>Agência</span><input type="text" data-cart-campo="agencia" inputmode="numeric" maxlength="8" autocomplete="off"></label>
+            <label class="cart-campo"><span>Conta (com dígito)</span><input type="text" data-cart-campo="conta" maxlength="20" autocomplete="off"></label>
+            <label class="cart-campo"><span>Nome do titular</span><input type="text" data-cart-campo="titular" autocapitalize="words" autocomplete="off"></label>
+            <label class="cart-campo"><span>CPF do titular</span><input type="text" data-cart-campo="cpf" inputmode="numeric" maxlength="14" autocomplete="off"></label>
+          </div>
+          <p class="cart-form-erro" hidden></p>
+          <div class="cart-form-acoes">
+            <button type="button" class="cart-cancelar" data-cart-cancelar-conta>Cancelar</button>
+            <button type="button" class="cart-btn-escuro" data-cart-salvar-conta>Salvar</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
   function htmlContas() {
+    if (cadastrando) return htmlFormConta();
     const lista = contas();
     const termo = buscaConta.trim().toLowerCase();
     const filtradas = termo ? lista.filter(c => nomeDaConta(c).toLowerCase().includes(termo) || String((c.ted && c.ted.titular) || '').toLowerCase().includes(termo)) : lista;
@@ -282,6 +322,7 @@
   function desenhar() {
     const raiz = document.getElementById('carteira-raiz');
     if (!raiz) return;
+    if (aba !== 'contas') cadastrando = false;
     raiz.innerHTML = `
       <div class="love-tabs-nav cart-abas" role="tablist">
         <button type="button" class="love-tab-item${aba === 'saque' ? ' active' : ''}" data-cart-aba="saque">Saque</button>
@@ -321,50 +362,35 @@
   let metodoNovo = 'pix';
   function abrirCadastro() {
     metodoNovo = 'pix';
-    const m = abrirPopup('cart-modal-conta', `
-      <h3 class="cart-modal-titulo">Cadastrar conta</h3>
-      <p class="cart-modal-sub">Para onde a Love vai transferir os seus saques.</p>
-      <div class="love-tabs-nav cart-metodos" role="tablist">
-        <button type="button" class="love-tab-item active" data-cart-metodo="pix">Pix</button>
-        <button type="button" class="love-tab-item" data-cart-metodo="ted">TED</button>
-      </div>
-      <div data-cart-painel="pix" class="cart-form-grade cart-form-pix">
-        <label class="cart-campo"><span>Tipo de chave</span>
-          <select data-cart-campo="pixTipo"><option value="cpf">CPF</option><option value="email">E-mail</option><option value="telefone">Telefone</option><option value="aleatoria">Chave aleatória</option></select>
-        </label>
-        <label class="cart-campo"><span>Chave Pix</span><input type="text" data-cart-campo="pixChave" autocomplete="off"></label>
-      </div>
-      <div data-cart-painel="ted" class="cart-form-grade" hidden>
-        <label class="cart-campo cart-campo-largo"><span>Instituição financeira</span><input type="text" data-cart-campo="banco" autocomplete="off"></label>
-        <label class="cart-campo"><span>Agência</span><input type="text" data-cart-campo="agencia" inputmode="numeric" maxlength="8" autocomplete="off"></label>
-        <label class="cart-campo"><span>Conta (com dígito)</span><input type="text" data-cart-campo="conta" maxlength="20" autocomplete="off"></label>
-        <label class="cart-campo"><span>Nome do titular</span><input type="text" data-cart-campo="titular" autocapitalize="words" autocomplete="off"></label>
-        <label class="cart-campo"><span>CPF do titular</span><input type="text" data-cart-campo="cpf" inputmode="numeric" maxlength="14" autocomplete="off"></label>
-      </div>
-      <p class="cart-form-erro" hidden></p>
-      <div class="cart-modal-acoes">
-        <button type="button" class="cart-cancelar" data-cart-fechar>Cancelar</button>
-        <button type="button" class="cart-btn-escuro" data-cart-salvar-conta>Salvar</button>
-      </div>`);
-    m.addEventListener('click', (e) => {
-      const alvo = /** @type {HTMLElement} */ (e.target);
-      const met = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-metodo]'));
-      if (met) {
-        metodoNovo = met.dataset.cartMetodo === 'ted' ? 'ted' : 'pix';
-        m.querySelectorAll('[data-cart-metodo]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.cartMetodo === metodoNovo));
-        m.querySelectorAll('[data-cart-painel]').forEach(p => { /** @type {HTMLElement} */ (p).hidden = /** @type {HTMLElement} */ (p).dataset.cartPainel !== metodoNovo; });
-      }
-      if (alvo.closest('[data-cart-salvar-conta]')) salvarConta(m);
-    });
-    m.addEventListener('input', (e) => {
-      const el = /** @type {HTMLInputElement} */ (e.target);
-      const campo = el.dataset.cartCampo;
-      const tipo = /** @type {HTMLSelectElement|null} */ (m.querySelector('[data-cart-campo="pixTipo"]'));
-      if (campo === 'cpf' || (campo === 'pixChave' && tipo && tipo.value === 'cpf')) el.value = mascaraCpf(el.value);
-      if (campo === 'pixChave' && tipo && tipo.value === 'telefone' && typeof w.maskBrazilPhone === 'function') el.value = w.maskBrazilPhone(el.value);
-    });
-    setTimeout(() => /** @type {HTMLElement|null} */ (m.querySelector('[data-cart-campo="pixChave"]'))?.focus(), 30);
+    cadastrando = true;
+    desenhar();
+    setTimeout(() => /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-cart-campo="pixChave"]'))?.focus(), 30);
   }
+  function fecharCadastro() { cadastrando = false; desenhar(); }
+
+  // Formulário dentro da caixa: Pix/TED, máscaras, Cancelar e Salvar.
+  document.addEventListener('click', (e) => {
+    const alvo = e.target instanceof Element ? e.target : null;
+    const form = /** @type {HTMLElement|null} */ (alvo && alvo.closest('#carteira-raiz [data-cart-form-conta]'));
+    if (!alvo || !form) return;
+    const met = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-metodo]'));
+    if (met) {
+      metodoNovo = met.dataset.cartMetodo === 'ted' ? 'ted' : 'pix';
+      form.querySelectorAll('[data-cart-metodo]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.cartMetodo === metodoNovo));
+      form.querySelectorAll('[data-cart-painel]').forEach(pn => { /** @type {HTMLElement} */ (pn).hidden = /** @type {HTMLElement} */ (pn).dataset.cartPainel !== metodoNovo; });
+      return;
+    }
+    if (alvo.closest('[data-cart-cancelar-conta]')) { fecharCadastro(); return; }
+    if (alvo.closest('[data-cart-salvar-conta]')) salvarConta(form);
+  });
+  document.addEventListener('input', (e) => {
+    const el = /** @type {HTMLInputElement} */ (e.target);
+    if (!el || !el.matches || !el.matches('#carteira-raiz [data-cart-form-conta] [data-cart-campo]')) return;
+    const campo = el.dataset.cartCampo;
+    const tipo = /** @type {HTMLSelectElement|null} */ (document.querySelector('#carteira-raiz [data-cart-campo="pixTipo"]'));
+    if (campo === 'cpf' || (campo === 'pixChave' && tipo && tipo.value === 'cpf')) el.value = mascaraCpf(el.value);
+    if (campo === 'pixChave' && tipo && tipo.value === 'telefone' && typeof w.maskBrazilPhone === 'function') el.value = w.maskBrazilPhone(el.value);
+  });
 
   /** @param {HTMLElement} m */
   async function salvarConta(m) {
@@ -394,7 +420,7 @@
     const ok = await gravarContas([...contas(), nova]);
     btn.disabled = false; btn.textContent = 'Salvar';
     if (!ok) return falhar('Não foi possível salvar agora. Tente de novo.');
-    fecharPopups();
+    cadastrando = false;
     desenhar();
     aviso('Conta cadastrada.');
   }

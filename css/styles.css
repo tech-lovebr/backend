@@ -11047,3 +11047,10 @@ html body #recados-raiz td.recados-vazio:not(#love-h-a) { text-align: center !im
 html body #recados-raiz button.recados-link:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 body[data-theme="dark"] #recados-raiz button.recados-link { color: #FFFFFF !important; }
 html body #recados-raiz td.recados-vazio:not(#love-h-a) { line-height: 1.7; }
+
+/* Contas bancárias: Cadastrar conta abre dentro da caixa (no lugar da tabela). */
+.cart-form-sub { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body #carteira-raiz .cart-form-corpo:not(#love-h-a) { display: flex; flex-direction: column; gap: 16px; padding: 4px 24px 24px; max-width: 640px; }
+html body #carteira-raiz .cart-form-corpo .cart-metodos:not(#love-h-a) { margin: 0; }
+html body #carteira-raiz .cart-form-acoes:not(#love-h-a) { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+html body #carteira-raiz .cart-form-acoes .cart-btn-escuro:not(#love-h-a) { margin-top: 0; }

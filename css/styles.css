@@ -11433,3 +11433,22 @@ body[data-theme="dark"] button.ct-titulo, body[data-theme="dark"] button.ct-link
 body[data-theme="dark"] button.ct-botao { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] .ct-linha, body[data-theme="dark"] .ct-atualizacao, body[data-theme="dark"] .ct-numeros > div { border-color: #404040 !important; }
 body[data-theme="dark"] .ct-marco-bola { background: #252525; }
+
+/* Checkout do convite: recado escrito ou em vídeo (js/site-builder.js) */
+.convite-recado { display: flex; flex-direction: column; gap: 0.35rem; }
+.convite-recado-rotulo { margin: 0; font-size: 0.8125rem; font-weight: 600; color: inherit; }
+.convite-recado-rotulo span { font-weight: 400; color: #A1A1AA; }
+.convite-recado-ajuda { margin: 0; font-size: 0.8125rem; color: #71717A; }
+.convite-recado-abas { display: flex; gap: 1.25rem; margin: 0.35rem 0 0.5rem; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+html body button.convite-recado-aba:not(#love-h-a) { margin: 0 0 -1px; padding: 0 0 0.55rem; background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; font: inherit; font-size: 0.8125rem; font-weight: 600; color: #A1A1AA; cursor: pointer; box-shadow: none; }
+html body button.convite-recado-aba.is-ativo:not(#love-h-a) { color: #18181B; border-bottom-color: var(--bx-primary, #183b54); }
+html body .convite-form textarea.convite-recado-texto:not(#love-h-a) { width: 100%; min-height: 84px; resize: none; overflow: hidden; }
+.convite-recado-video-vazio { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem !important; padding: 1.4rem 1rem; border: 1px dashed #D4D4D8; border-radius: 10px; background: #FFFFFF; text-align: center; cursor: pointer; }
+.convite-recado-video-vazio:hover { border-color: #181D24; }
+.convite-recado-video-vazio svg { width: 28px; height: 28px; color: #71717A; }
+.convite-recado-video-vazio b { font-size: 0.875rem; font-weight: 600; color: #18181B; }
+.convite-recado-video-vazio span { font-size: 0.75rem; font-weight: 400; color: #A1A1AA !important; }
+.convite-recado-video video { display: block; width: 100%; max-height: 320px; border-radius: 10px; background: #000; }
+.convite-recado-video-acoes { display: flex; gap: 1rem; margin-top: 0.5rem; }
+html body .convite-recado-video-acoes button:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 0.8125rem; font-weight: 600; color: #3F3F46; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(0, 0, 0, 0.2); }
+html body .convite-recado-video-acoes button:not(#love-h-a):hover { color: #181D24; }

@@ -4580,6 +4580,121 @@ function renderPresentePublico(root, id) {
   voltarPara(root, '#presentes');
 }
 
+/* ==========================================================================
+   Recado para os anfitriões no checkout do convite: escrito (a caixa cresce
+   junto com o texto, sem alça de redimensionar) ou gravado em vídeo (abre a
+   câmera no celular; no computador escolhe um arquivo). O vídeo sobe para o
+   bucket "recados" depois que o presente é registrado e fica ligado à
+   contribuição (anexar_video_ao_recado, migration 097).
+   ========================================================================== */
+const RECADO_VIDEO_MAX_MB = 100;
+
+function htmlRecadoParaAnfitrioes() {
+  return `
+      <div class="convite-recado" data-convite-recado>
+        <p class="convite-recado-rotulo">Mensagem para os anfitriões <span>(opcional)</span></p>
+        <p class="convite-recado-ajuda">Escreva um recado ou grave um vídeo para eles.</p>
+        <div class="convite-recado-abas" role="tablist">
+          <button type="button" class="convite-recado-aba is-ativo" role="tab" aria-selected="true" data-recado-modo="texto">Escrever</button>
+          <button type="button" class="convite-recado-aba" role="tab" aria-selected="false" data-recado-modo="video">Gravar vídeo</button>
+        </div>
+        <div data-recado-painel="texto">
+          <textarea name="mensagem" maxlength="300" rows="3" class="convite-recado-texto" aria-label="Mensagem para os anfitriões" placeholder="Deixe um recado carinhoso"></textarea>
+        </div>
+        <div data-recado-painel="video" hidden>
+          <label class="convite-recado-video-vazio" data-recado-escolher>
+            <input type="file" name="recado_video" accept="video/*" capture="user" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg>
+            <b>Gravar ou escolher um vídeo</b>
+            <span>Até ${RECADO_VIDEO_MAX_MB} MB</span>
+          </label>
+          <div class="convite-recado-video" data-recado-previa hidden>
+            <video controls playsinline preload="metadata"></video>
+            <div class="convite-recado-video-acoes">
+              <button type="button" data-recado-trocar>Gravar outro</button>
+              <button type="button" data-recado-remover>Remover vídeo</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+}
+
+/** Liga o recado do formulário. Devolve { texto(), video(), erro() }. */
+function ligarRecadoParaAnfitrioes(form) {
+  const caixa = form.querySelector('[data-convite-recado]');
+  const textarea = caixa.querySelector('textarea[name="mensagem"]');
+  const input = caixa.querySelector('input[name="recado_video"]');
+  const previa = caixa.querySelector('[data-recado-previa]');
+  const vazio = caixa.querySelector('[data-recado-escolher]');
+  const player = previa.querySelector('video');
+  let modo = 'texto';
+  let arquivo = null;
+  let urlPrevia = '';
+  let erro = '';
+
+  // A caixa cresce junto com o texto.
+  const crescer = () => { textarea.style.height = 'auto'; textarea.style.height = `${textarea.scrollHeight + 2}px`; };
+  textarea.addEventListener('input', crescer);
+
+  caixa.querySelectorAll('[data-recado-modo]').forEach(aba => {
+    aba.addEventListener('click', () => {
+      modo = aba.dataset.recadoModo;
+      caixa.querySelectorAll('[data-recado-modo]').forEach(a => {
+        const ativa = a === aba;
+        a.classList.toggle('is-ativo', ativa);
+        a.setAttribute('aria-selected', String(ativa));
+      });
+      caixa.querySelectorAll('[data-recado-painel]').forEach(p => { p.hidden = p.dataset.recadoPainel !== modo; });
+      if (modo === 'texto') crescer();
+    });
+  });
+
+  const mostrar = () => {
+    if (urlPrevia) { URL.revokeObjectURL(urlPrevia); urlPrevia = ''; }
+    if (arquivo) { urlPrevia = URL.createObjectURL(arquivo); player.src = urlPrevia; }
+    else player.removeAttribute('src');
+    previa.hidden = !arquivo;
+    vazio.hidden = !!arquivo;
+  };
+  input.addEventListener('change', () => {
+    const f = input.files && input.files[0];
+    erro = '';
+    if (f && !/^video\//.test(f.type)) erro = 'Escolha um arquivo de vídeo.';
+    else if (f && f.size > RECADO_VIDEO_MAX_MB * 1024 * 1024) erro = `O vídeo pode ter até ${RECADO_VIDEO_MAX_MB} MB. Grave um vídeo mais curto.`;
+    arquivo = f && !erro ? f : null;
+    mostrar();
+    const erroEl = form.querySelector('.convite-erro');
+    if (erroEl) { erroEl.textContent = erro; erroEl.hidden = !erro; }
+  });
+  caixa.querySelector('[data-recado-trocar]').addEventListener('click', () => input.click());
+  caixa.querySelector('[data-recado-remover]').addEventListener('click', () => { arquivo = null; input.value = ''; mostrar(); });
+
+  return {
+    texto: () => textarea.value.trim() || null,
+    video: () => arquivo,
+    erro: () => erro
+  };
+}
+
+/** Sobe o vídeo do recado e liga às contribuições. Não trava o presente se falhar. */
+async function enviarVideoDoRecado(arquivo, contribuicoes) {
+  if (!arquivo || !contribuicoes.length) return true;
+  try {
+    const ext = (arquivo.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'mp4';
+    const caminho = `video/${conviteSlugPublico || 'convite'}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabaseClient.storage.from('recados').upload(caminho, arquivo, { contentType: arquivo.type || 'video/mp4' });
+    if (error) throw error;
+    const { data } = supabaseClient.storage.from('recados').getPublicUrl(caminho);
+    for (const id of contribuicoes) {
+      await supabaseClient.rpc('anexar_video_ao_recado', { p_contribuicao: id, p_url: data.publicUrl });
+    }
+    return true;
+  } catch (e) {
+    console.error('Erro ao enviar o vídeo do recado:', e);
+    return false;
+  }
+}
+
 function renderCheckoutPublico(root, id) {
   if (id === 'carrinho') return renderCheckoutCarrinho(root);
   const p = presentePublicoPorId(id);
@@ -4624,12 +4739,7 @@ function renderCheckoutPublico(root, id) {
       <label>E-mail
         <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="seu@email.com">
       </label>
-      <label>Telefone <span>(opcional)</span>
-        <input type="tel" name="telefone" maxlength="40" autocomplete="tel" placeholder="(11) 99999-9999">
-      </label>
-      <label>Mensagem para os anfitriões <span>(opcional)</span>
-        <textarea name="mensagem" maxlength="300" rows="3" placeholder="Deixe um recado carinhoso"></textarea>
-      </label>
+${htmlRecadoParaAnfitrioes()}
       <fieldset class="convite-pagamento">
         <legend>Forma de pagamento</legend>
         <label class="convite-pagamento-opcao is-ativo"><input type="radio" name="metodo" value="pix" checked><span>Pix</span></label>
@@ -4643,6 +4753,7 @@ function renderCheckoutPublico(root, id) {
   voltarPara(root, `#presente=${p.id}`);
 
   const form = root.querySelector('[data-convite-checkout]');
+  const recado = ligarRecadoParaAnfitrioes(form);
   const erroEl = form.querySelector('.convite-erro');
   const botao = form.querySelector('button[type="submit"]');
   const valorInput = form.querySelector('input[name="valor"]');
@@ -4676,6 +4787,7 @@ function renderCheckoutPublico(root, id) {
     if (nome.length < 2) { erroEl.textContent = 'Digite seu nome completo.'; erroEl.hidden = false; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroEl.textContent = 'Digite um e-mail válido.'; erroEl.hidden = false; return; }
     if (vaquinha && valor < 1) { erroEl.textContent = 'Escolha um valor de pelo menos R$ 1,00.'; erroEl.hidden = false; return; }
+    if (recado.erro()) { erroEl.textContent = recado.erro(); erroEl.hidden = false; return; }
     const metodo = form.querySelector('input[name="metodo"]:checked')?.value || 'pix';
 
     botao.disabled = true;
@@ -4686,8 +4798,7 @@ function renderCheckoutPublico(root, id) {
       p_valor: valor,
       p_nome: nome,
       p_email: email,
-      p_telefone: form.telefone.value.trim() || null,
-      p_mensagem: form.mensagem.value.trim() || null,
+      p_mensagem: recado.texto(),
       p_metodo: metodo
     });
 
@@ -4703,12 +4814,14 @@ function renderCheckoutPublico(root, id) {
       return;
     }
 
+    let videoOk = true;
+    if (recado.video()) { botao.textContent = 'Enviando o vídeo…'; videoOk = await enviarVideoDoRecado(recado.video(), [data.contribuicao_id]); }
     const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
     root.innerHTML = telaPublicaHtmlBranca('Presentear', `
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presente registrado!</p>
         <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear <strong>${escaparPublico(p.nome)}</strong> com <strong>${brlPublico(Number(data.valor) || valor)}</strong> por ${escaparPublico(nomeMetodo)}.</p>
-        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>
+        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>${videoOk ? '' : '<p>Não conseguimos enviar o seu vídeo agora, mas o presente foi registrado.</p>'}
         <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
       </div>`);
     voltarPara(root, '#presentes');
@@ -4813,12 +4926,7 @@ function renderCheckoutCarrinho(root) {
       <label>E-mail
         <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="seu@email.com">
       </label>
-      <label>Telefone <span>(opcional)</span>
-        <input type="tel" name="telefone" maxlength="40" autocomplete="tel" placeholder="(11) 99999-9999">
-      </label>
-      <label>Mensagem para os anfitriões <span>(opcional)</span>
-        <textarea name="mensagem" maxlength="300" rows="3" placeholder="Deixe um recado carinhoso"></textarea>
-      </label>
+${htmlRecadoParaAnfitrioes()}
       <fieldset class="convite-pagamento">
         <legend>Forma de pagamento</legend>
         <label class="convite-pagamento-opcao is-ativo"><input type="radio" name="metodo" value="pix" checked><span>Pix</span></label>
@@ -4839,6 +4947,7 @@ function renderCheckoutCarrinho(root) {
   });
 
   const form = root.querySelector('[data-convite-checkout]');
+  const recado = ligarRecadoParaAnfitrioes(form);
   const erroEl = form.querySelector('.convite-erro');
   const botao = form.querySelector('button[type="submit"]');
   form.querySelectorAll('input[name="metodo"]').forEach(radio => {
@@ -4854,6 +4963,7 @@ function renderCheckoutCarrinho(root) {
     const email = form.email.value.trim();
     if (nome.length < 2) { erroEl.textContent = 'Digite seu nome completo.'; erroEl.hidden = false; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroEl.textContent = 'Digite um e-mail válido.'; erroEl.hidden = false; return; }
+    if (recado.erro()) { erroEl.textContent = recado.erro(); erroEl.hidden = false; return; }
     const metodo = form.querySelector('input[name="metodo"]:checked')?.value || 'pix';
 
     botao.disabled = true;
@@ -4868,8 +4978,7 @@ function renderCheckoutCarrinho(root) {
         p_valor: valorNoCarrinho(p),
         p_nome: nome,
         p_email: email,
-        p_telefone: form.telefone.value.trim() || null,
-        p_mensagem: form.mensagem.value.trim() || null,
+        p_mensagem: recado.texto(),
         p_metodo: metodo
       });
       if (error || !data || !data.ok) {
@@ -4877,7 +4986,7 @@ function renderCheckoutCarrinho(root) {
         falhou = p;
         break;
       }
-      registrados.push({ p, valor: Number(data.valor) || valorNoCarrinho(p) });
+      registrados.push({ p, valor: Number(data.valor) || valorNoCarrinho(p), id: data.contribuicao_id });
     }
 
     // Os que deram certo saem do carrinho; o que falhou fica para tentar de novo.
@@ -4898,11 +5007,13 @@ function renderCheckoutCarrinho(root) {
 
     const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
     const somaFinal = registrados.reduce((s, r) => s + r.valor, 0);
+    let videoOk = true;
+    if (recado.video()) { botao.textContent = 'Enviando o vídeo…'; videoOk = await enviarVideoDoRecado(recado.video(), registrados.map(r => r.id).filter(Boolean)); }
     root.innerHTML = telaPublicaHtmlBranca('Carrinho', `
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presentes registrados!</p>
         <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear ${registrados.length} ${registrados.length === 1 ? 'presente' : 'presentes'}, no total de <strong>${brlPublico(somaFinal)}</strong>, por ${escaparPublico(nomeMetodo)}.</p>
-        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>
+        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>${videoOk ? '' : '<p>Não conseguimos enviar o seu vídeo agora, mas o presente foi registrado.</p>'}
         <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
       </div>`);
     voltarPara(root, '#presentes');

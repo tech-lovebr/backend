@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261023_contratos">
+  <link rel="stylesheet" href="css/styles.css?v=20261023_recadoVideo">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -1387,10 +1387,11 @@
                     <p id="editor-data-music-status" class="hidden text-[11px] mt-1.5"></p>
                   </div>
                   <!-- Autoplay: marcado = começa sozinha ao abrir o convite; desmarcado = só pelo botão de música -->
-                  <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" id="editor-data-music-autoplay" class="w-4 h-4 accent-[#183b54] cursor-pointer" checked>
+                  <!-- Só a caixinha marca/desmarca (clicar no resto da linha não muda nada) -->
+                  <div class="flex items-center gap-2.5 select-none">
+                    <input type="checkbox" id="editor-data-music-autoplay" class="w-4 h-4 accent-[#183b54] cursor-pointer" aria-label="Autoplay" checked>
                     <span class="text-xs font-bold text-slate-700">Autoplay</span>
-                  </label>
+                  </div>
                 </div>
 
                 <!-- Salvar no fim da página (mesmo salvar do topo), para não precisar subir -->
@@ -5489,12 +5490,12 @@
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
-  <script src="js/app.js?v=20261023_contratos3"></script>
+  <script src="js/app.js?v=20261023_autoplay"></script>
   <script src="js/carteira.js?v=20261023_verificacaoIdentidade"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
   <script src="js/pedidos-orcamento.js?v=20261023_dataDoEvento"></script>
   <script src="js/contratos.js?v=20261023_contratos2"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>
+  <script src="js/site-builder.js?v=20261023_recadoVideo"></script>
 </body>
 </html>

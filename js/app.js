@@ -1507,7 +1507,8 @@ document.addEventListener('DOMContentLoaded', () => {
     gifts: { 'my-gifts': '', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento', 'wallet-statement': 'extrato' },
-    b2b: { explore: '', pedidos: 'pedidos', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
+    // Fornecedores abre em Criar solicitação (/fornecedores); Explorar em /fornecedores/explorar.
+    b2b: { pedidos: '', explore: 'explorar', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
   };
 
   // Ligado enquanto a tela está sendo montada a partir da URL (voltar/avançar
@@ -1843,7 +1844,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (document.body.classList.contains('b2b-chat-mode')) {
         switchB2BView('messages');
       } else {
-        switchB2BView('explore');
+        switchB2BView('pedidos');
       }
       aplicandoRotaDoHistorico = aplicandoAntes;
     } else if (tabKey === 'info-event') {

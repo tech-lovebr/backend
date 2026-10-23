@@ -262,7 +262,7 @@ function renderLeadsTable() {
   tbody.innerHTML = items.map(lead => `
     <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
-      <td class="col-principal"><span class="lead-nome-cel${pedidoDoLead(lead) ? ' tem-origem' : ''}"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}"><span>${escapeHtml(lead.name)}${pedidoDoLead(lead) ? '<span class="lead-origem-tag">Pedido pelo chat</span>' : ''}</span></span></td>
+      <td class="col-principal"><span class="lead-nome-cel${pedidoDoLead(lead) ? ' tem-origem' : ''}"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}"><span><button type="button" class="lead-nome-link" data-open-cliente="${lead.id}">${escapeHtml(lead.name)}</button>${pedidoDoLead(lead) ? '<span class="lead-origem-tag">Pedido pelo chat</span>' : ''}</span></span></td>
       <td>${escapeHtml(lead.tipo_evento || '—')}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
@@ -271,9 +271,14 @@ function renderLeadsTable() {
     </tr>
   `).join('');
 
-  // Só o "ver mais" abre o lead; a linha fica livre para selecionar texto.
+  // Nome e "ver mais" abrem a página do cliente (js/cliente-pagina.js), na
+  // própria tela; a gaveta de edição fica no botão "Editar dados" de lá.
+  const abrirCliente = id => (window.abrirClientePagina ? window.abrirClientePagina(id) : openLeadDrawer(id));
   tbody.querySelectorAll('[data-open-lead]').forEach(btn => {
-    btn.addEventListener('click', () => openLeadDrawer(btn.dataset.openLead));
+    btn.addEventListener('click', () => abrirCliente(btn.dataset.openLead));
+  });
+  tbody.querySelectorAll('[data-open-cliente]').forEach(btn => {
+    btn.addEventListener('click', () => abrirCliente(btn.dataset.openCliente));
   });
   tbody.querySelectorAll('[data-lead-check]').forEach(chk => {
     chk.addEventListener('change', () => {

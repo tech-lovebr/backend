@@ -64,18 +64,42 @@ let opMeusProdutos = [];
 const opBRL = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: Number(v) % 1 ? 2 : 0 });
 const opCategoria = c => OP_CATEGORIAS[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : 'Serviço');
 const opCelebracao = c => OP_CELEBRACOES[c] || c || 'evento';
-const opTitulo = p => `${opCategoria(p.categoria)} para ${opCelebracao(p.tipo_celebracao)}`;
+const opTitulo = p => String((p && p.titulo) || '').trim() || `${opCategoria(p.categoria)} para ${opCelebracao(p.tipo_celebracao)}`;
+// Mesmos nomes de love.com.br › Minhas solicitações.
+const OP_CATEGORIA_NOME = {
+  fotografia: 'Fotografia & Vídeo', buffet: 'Buffet & Gastronomia', espaco: 'Espaço para Eventos', decoracao: 'Decoração & Cenografia',
+  musica: 'Música, Banda & DJ', assessoria: 'Assessoria & Cerimonial', bebidas: 'Bebidas & Bar', doces: 'Doces & Bolo'
+};
+const OP_CELEBRACAO_NOME = {
+  casamento: 'Casamento', aniversario: 'Aniversário', bodas: 'Bodas', noivado: 'Noivado', formatura: 'Formatura',
+  corporativo: 'Evento corporativo', 'chá de bebê': 'Chá de bebê', 'chá revelação': 'Chá revelação', 'chá de panela': 'Chá de panela'
+};
+const OP_CONVIDADOS_NOME = { 'ate-50': 'Até 50', '50-100': '50 a 100', '100-200': '100 a 200', '200-mais': '200+' };
+const OP_FAIXAS_ANTIGAS = {
+  economico: 'Econômico · até R$ 2.500', moderado: 'Moderado · R$ 2.500 a R$ 6.000',
+  premium: 'Premium · R$ 6.000 a R$ 12.000', exclusivo: 'Exclusivo · acima de R$ 12.000'
+};
+const opMilhar = n => Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+// Nome de quem pediu (clientes), carregado junto com os pedidos.
+let opNomesClientes = {};
+const opNomeAnfitriao = p => opNomesClientes[p.cliente_id] || 'Anfitrião(ã)';
+const opDataCurta = p => (p.data_flexivel || !p.data_evento) ? 'Data flexível'
+  : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const opDataLonga = p => (p.data_flexivel || !p.data_evento) ? 'Data flexível'
+  : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
 const opData = p => (p.data_flexivel || !p.data_evento)
   ? 'Data flexível'
   : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
 const opLocal = p => [p.bairro, [p.cidade, p.uf].filter(Boolean).join(' - ')].filter(Boolean).join(', ');
 const opPeriodo = p => p.periodo === 'horas' ? `${p.horas_servico || '?'}h de serviço` : (p.periodo === 'noturno' ? 'Noturno' : (p.periodo === 'diurno' ? 'Diurno' : ''));
 function opFaixaTexto(p) {
-  const f = OP_FAIXAS[p.faixa];
-  const min = p.valor_min != null ? p.valor_min : (f && f.min);
-  const max = p.valor_max != null ? p.valor_max : (f && f.max);
-  const valores = max ? `${opBRL(min)} a ${opBRL(max)}` : `acima de ${opBRL(min)}`;
-  return `${f ? f.nome : 'Faixa'} · ${valores}`;
+  if (OP_FAIXAS_ANTIGAS[p.faixa]) return OP_FAIXAS_ANTIGAS[p.faixa];
+  const temMin = p.valor_min != null && Number(p.valor_min) > 0;
+  const temMax = p.valor_max != null && Number(p.valor_max) > 0;
+  if (temMin && temMax) return `R$ ${opMilhar(p.valor_min)} a R$ ${opMilhar(p.valor_max)}`;
+  if (temMin) return `A partir de R$ ${opMilhar(p.valor_min)}`;
+  if (temMax) return `Até R$ ${opMilhar(p.valor_max)}`;
+  return 'A combinar';
 }
 function opHaQuanto(iso) {
   const min = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
@@ -101,21 +125,33 @@ async function opCarregarCategoriasDaEmpresa() {
   opMinhasCategorias = [...cats];
 }
 
+async function opCarregarNomes(ids) {
+  const faltam = [...new Set(ids.filter(id => id && !opNomesClientes[id]))];
+  if (!faltam.length) return;
+  const { data } = await supabaseClient.from('clientes').select('id, full_name, first_name, last_name, couple_name').in('id', faltam);
+  (data || []).forEach(c => {
+    opNomesClientes[c.id] = String(c.full_name || [c.first_name, c.last_name].filter(Boolean).join(' ') || c.couple_name || '').trim();
+  });
+}
+
 async function opCarregarPedidos() {
-  const { data, error } = await supabaseClient.from('pedidos_orcamento')
-    .select('id, categoria, especialidades, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, convidados, periodo, horas_servico, faixa, valor_min, valor_max, aceita_fora_da_faixa, descricao, referencias, limite_propostas, status, propostas_recebidas, created_at, cliente_id')
+  let { data, error } = await supabaseClient.from('pedidos_orcamento')
+    .select('id, titulo, categoria, especialidades, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, convidados, periodo, horas_servico, faixa, valor_min, valor_max, aceita_fora_da_faixa, descricao, referencias, limite_propostas, status, propostas_recebidas, created_at, cliente_id')
     .eq('status', 'aberto')
     .order('created_at', { ascending: false });
   opPedidos = error ? [] : (data || []);
+  await opCarregarNomes(opPedidos.map(p => p.cliente_id));
   return !error;
 }
 
 async function opCarregarPropostas() {
   const { data, error } = await supabaseClient.from('propostas_pedido')
-    .select('id, pedido_id, valor, inclui, validade, status, conversation_id, created_at, pedido:pedidos_orcamento(id, categoria, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, convidados, cliente_id)')
+    .select('id, pedido_id, valor, inclui, validade, status, conversation_id, created_at, pedido:pedidos_orcamento(id, titulo, categoria, especialidades, descricao, referencias, periodo, horas_servico, faixa, valor_min, valor_max, aceita_fora_da_faixa, status, created_at, tipo_celebracao, data_evento, data_flexivel, cidade, bairro, uf, convidados, cliente_id)')
     .eq('fornecedor_id', opEmpresaId)
     .order('created_at', { ascending: false });
   opPropostas = error ? [] : (data || []);
+  await opCarregarNomes(opPropostas.map(pr => pr.pedido && pr.pedido.cliente_id));
+  opAtualizarCota();
   return !error;
 }
 
@@ -152,7 +188,7 @@ function opPreencherFiltrosDeLocal() {
 function opCardHtml(p) {
   const minha = opMinhaProposta(p.id);
   const foto = (p.referencias || [])[0];
-  const dados = [OP_CONVIDADOS[p.convidados], opPeriodo(p)].filter(Boolean);
+  const icone = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   return `
     <article class="op-card2" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
       <div class="op-card2-imagem">
@@ -160,13 +196,13 @@ function opCardHtml(p) {
         ${opNovo(p) ? '<span class="op-selo-novo op-selo-sobre">Novo</span>' : ''}
       </div>
       <div class="op-card2-corpo">
-        <div class="op-card2-titulo-linha">
-          <h3 class="op-card2-titulo">${escapeHtml(opTitulo(p))}</h3>
-          <span class="op-item-cidade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>${escapeHtml(p.cidade || '')}</span>
-        </div>
-        <p class="op-card2-linha">Anfitrião(ã) · ${escapeHtml(dados.join(' · ') || opCelebracao(p.tipo_celebracao))}</p>
-        <p class="op-card2-linha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/></svg>${escapeHtml(opFaixaTexto(p))}</p>
-        <p class="op-card2-linha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>${escapeHtml(opData(p))} · ${escapeHtml(opContagem(p))}</p>
+        <h3 class="op-card2-titulo">${escapeHtml(opTitulo(p))}</h3>
+        <p class="op-card2-linha">${icone('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/>')}${escapeHtml(opNomeAnfitriao(p))}</p>
+        <p class="op-card2-linha">${icone('<path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/>')}${escapeHtml(opFaixaTexto(p))}</p>
+        <p class="op-card2-linha op-card2-linha-data">
+          <span>${icone('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>')}${escapeHtml(opDataCurta(p))}</span>
+          <span class="op-item-cidade">${icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>')}${escapeHtml(p.cidade || '')}</span>
+        </p>
         <div class="op-card2-acoes">
           <span class="op-card2-ver">Ver pedido</span>
           ${minha ? `<span class="op-status ${OP_STATUS[minha.status].classe} op-card2-status">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''}
@@ -205,27 +241,54 @@ function opAbrirDetalhe(id) {
   if (!p) return;
   opPedidoAberto = p;
   const minha = opMinhaProposta(p.id);
-  const dados = [
-    ['Data', opData(p)], ['Local', opLocal(p)], ['Convidados', OP_CONVIDADOS[p.convidados] || ''],
-    ['Período', opPeriodo(p)], ['Faixa', p.faixa ? opFaixaTexto(p) + (p.aceita_fora_da_faixa ? ' (aceita fora da faixa)' : '') : '']
-  ].filter(([, v]) => v);
+  const traco = '—';
+  const local = [[p.cidade, p.uf].filter(Boolean).join(' - '), p.bairro].filter(Boolean).join(' · ') || traco;
+  const periodo = p.periodo === 'horas'
+    ? `${p.horas_servico || '?'} ${Number(p.horas_servico) === 1 ? 'hora' : 'horas'} de serviço`
+    : ({ diurno: 'Diurno', noturno: 'Noturno' })[p.periodo] || traco;
+  const temOrcamento = !!(p.valor_min || p.valor_max);
+  const publicado = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).replace(/\./g, '') : '';
+  const destaques = [
+    ['Data do evento', opDataLonga(p)],
+    ['Convidados', OP_CONVIDADOS_NOME[p.convidados] ? `${OP_CONVIDADOS_NOME[p.convidados]} convidados` : traco],
+    ['Horário / duração', periodo]
+  ];
+  const tags = p.especialidades || [];
+  const fotos = p.referencias || [];
   document.getElementById('op-detalhe-corpo').innerHTML = `
-    <p class="op-detalhe-quem">Anfitrião(ã) · ${escapeHtml(opCelebracao(p.tipo_celebracao))}${p.created_at ? ` · publicado ${escapeHtml(opHaQuanto(p.created_at))}` : ''}</p>
-    <dl class="op-detalhe-dados">${dados.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl>
-    ${(p.especialidades || []).length ? `<div class="op-tags">${p.especialidades.map(t => `<span class="op-tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-    ${p.descricao ? `<div class="op-detalhe-bloco"><p class="op-detalhe-rotulo">O que o anfitrião precisa</p><p class="op-detalhe-desc">${escapeHtml(p.descricao)}</p></div>` : ''}
-    ${(p.referencias || []).length ? `<div class="op-detalhe-bloco"><p class="op-detalhe-rotulo">Fotos de referência</p><div class="op-fotos">${p.referencias.map(u => `<button type="button" class="op-foto" data-op-foto="${escapeHtml(u)}"><img src="${escapeHtml(u)}" alt="Referência"></button>`).join('')}</div></div>` : ''}
-    <div class="op-detalhe-acao">
-      <button type="button" class="op-detalhe-voltar" data-op-voltar>Voltar</button>
-      ${minha
-        ? `<p class="op-ja-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))} · <span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span></p>`
-        : (p.status === 'aberto' ? '<button type="button" class="btn-primary op-enviar-btn" data-op-enviar>Enviar proposta</button>' : '<p class="op-ja-enviada">Este pedido não recebe mais propostas.</p>')}
+    <div class="op-sol">
+      <div class="op-sol-cabeca">
+        <h3 class="op-sol-titulo">${escapeHtml(opTitulo(p))}</h3>
+        <p class="op-sol-meta">${escapeHtml(opNomeAnfitriao(p))}${publicado ? ` · Publicado em ${escapeHtml(publicado)}` : ''}</p>
+      </div>
+      <section class="op-sol-sec">
+        <h4 class="op-sol-sub">Descrição</h4>
+        <p class="op-sol-desc">${escapeHtml(String(p.descricao || '').trim() || 'Sem descrição.')}</p>
+      </section>
+      <section class="op-sol-destaques">
+        ${destaques.map(([rotulo, valor]) => `<div class="op-sol-destaque"><span>${escapeHtml(rotulo)}</span><b>${escapeHtml(valor)}</b></div>`).join('')}
+      </section>
+      <section class="op-sol-sec op-sol-linhas">
+        <p><b>Anfitrião(ã):</b> ${escapeHtml(opNomeAnfitriao(p))}</p>
+        <p><b>Categoria:</b> ${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</p>
+        <p><b>Tipo de celebração:</b> ${escapeHtml(OP_CELEBRACAO_NOME[p.tipo_celebracao] || p.tipo_celebracao || traco)}</p>
+        <p><b>Local:</b> ${escapeHtml(local)}</p>
+        <p><b>Orçamento:</b> ${escapeHtml(opFaixaTexto(p))}${temOrcamento ? escapeHtml(p.aceita_fora_da_faixa ? ' · aceita propostas fora da faixa' : ' · não aceita propostas fora da faixa') : ''}</p>
+      </section>
+      ${tags.length ? `<section class="op-sol-sec"><h4 class="op-sol-sub">Subcategorias</h4><div class="op-sol-tags">${tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div></section>` : ''}
+      ${fotos.length ? `<section class="op-sol-sec"><h4 class="op-sol-sub">Fotos de referência</h4><div class="op-fotos">${fotos.map(u => `<button type="button" class="op-foto" data-op-foto="${escapeHtml(u)}"><img src="${escapeHtml(u)}" alt="Referência"></button>`).join('')}</div></section>` : ''}
+      <div class="op-detalhe-acao op-sol-acao">
+        <button type="button" class="op-detalhe-voltar" data-op-voltar>Voltar</button>
+        ${minha
+          ? `<p class="op-ja-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))} · <span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span></p>`
+          : (p.status === 'aberto' || !p.status ? '<button type="button" class="btn-primary op-enviar-btn" data-op-enviar>Enviar proposta</button>' : '<p class="op-ja-enviada">Este pedido não recebe mais propostas.</p>')}
+      </div>
     </div>`;
   // Tela cheia: some o resto da página; título do pedido com a seta de voltar.
   document.body.classList.add('op-pedido-aberto');
   document.getElementById('op-pedido-pagina').hidden = false;
   document.getElementById('op-pedido-voltar').hidden = false;
-  document.getElementById('leads-titulo-pagina').textContent = opTitulo(p);
+  document.getElementById('leads-titulo-pagina').textContent = 'Buscar eventos';
   if (new URLSearchParams(location.search).get('pedido') !== p.id) history.replaceState(null, '', `${location.pathname}?pedido=${encodeURIComponent(p.id)}`);
   window.scrollTo({ top: 0 });
   document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
@@ -241,6 +304,13 @@ function opFecharDetalhe() {
 
 /* Limite do plano: depois de 3 (Gratuito) ou 100 (Pro) propostas no mês, a
    vitrine continua aberta, mas "Enviar proposta" mostra este aviso. */
+function opAtualizarCota() {
+  const el = document.getElementById('op-cota');
+  if (!el) return;
+  const limite = opLimiteDoPlano();
+  el.textContent = `${opEnviadasNoMes()} de ${limite} propostas este mês`;
+  el.title = limite >= 100 ? 'Plano Pro: até 100 propostas por mês' : 'Plano Gratuito: até 3 propostas por mês';
+}
 function opEnviadasNoMes() {
   const agora = new Date();
   return opPropostas.filter(pr => { const d = new Date(pr.created_at); return d.getFullYear() === agora.getFullYear() && d.getMonth() === agora.getMonth(); }).length;
@@ -489,6 +559,8 @@ function leadsMostrarAba(aba) {
   if (voltar) voltar.hidden = true;
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
   document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
+  const cota = document.getElementById('op-cota');
+  if (cota) cota.hidden = aba !== 'eventos';
   const titulo = document.getElementById('leads-titulo-pagina');
   if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');

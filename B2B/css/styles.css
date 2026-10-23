@@ -10245,3 +10245,38 @@ html body .op-pedido-caixa .op-detalhe-acao:not(#love-h-a) { display: flex; alig
 html body .op-pedido-caixa .op-detalhe-acao .op-enviar-btn:not(#love-h-a) { width: auto; min-width: 160px; }
 html body .op-detalhe-voltar:not(#love-h-a) { border: none; background: none; padding: 0; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; }
 html body .op-detalhe-voltar:hover:not(#love-h-a) { color: #181D24; }
+
+/* Buscar eventos › card: data à esquerda e a cidade à direita. */
+html body .op-card2-linha-data:not(#love-h-a) { justify-content: space-between; }
+html body .op-card2-linha-data > span:first-child:not(#love-h-a) { display: inline-flex; align-items: center; gap: 0.4rem; }
+html body .op-card2-linha-data .op-item-cidade:not(#love-h-a) { font-size: 0.8125rem; }
+/* Cabeçalho: propostas do mês pelo plano. */
+html body .op-cota:not(#love-h-a) { margin-left: auto; font-size: 0.8125rem; font-weight: 600; color: #52525B; white-space: nowrap; font-variant-numeric: tabular-nums; }
+html body .op-cota[hidden]:not(#love-h-a), html body.op-pedido-aberto .op-cota:not(#love-h-a) { display: none; }
+
+/* Ver pedido: o mesmo layout de love.com.br › Minhas solicitações
+   (cabeça com título, descrição primeiro, faixa cinza com data/convidados/
+   horário, linhas e subcategorias). */
+html body .op-pedido-caixa:not(#love-h-a) { padding: 0; max-width: 48rem; }
+html body .op-sol-cabeca:not(#love-h-a) { padding: 22px 24px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+html body .op-sol-titulo:not(#love-h-a) { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+html body .op-sol-meta:not(#love-h-a) { margin: 2px 0 0; font-size: 13px; color: #71717A; }
+html body .op-sol-sec:not(#love-h-a) { padding: 22px 24px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+html body .op-sol-sub:not(#love-h-a) { margin: 0 0 12px; font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; }
+html body .op-sol-desc:not(#love-h-a) { margin: 0; font-size: 14px; line-height: 1.65; color: #18181B; white-space: pre-line; overflow-wrap: anywhere; }
+html body .op-sol-destaques:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 22px 24px; padding: 18px 0; background: #F4F5F7; border-radius: 10px; }
+html body .op-sol-destaque:not(#love-h-a) { display: flex; flex-direction: column; gap: 6px; padding: 0 22px; border-left: 1px solid #E4E4E7; }
+html body .op-sol-destaque:first-child:not(#love-h-a) { border-left: 0; }
+html body .op-sol-destaque span:not(#love-h-a) { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #18181B; }
+html body .op-sol-destaque b:not(#love-h-a) { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; }
+html body .op-sol-destaques + .op-sol-sec:not(#love-h-a) { border-top: none; }
+html body .op-sol-linhas p:not(#love-h-a) { margin: 0 0 8px; font-size: 14px; color: #3F3F46; }
+html body .op-sol-linhas p:last-child:not(#love-h-a) { margin-bottom: 0; }
+html body .op-sol-linhas b:not(#love-h-a) { font-weight: 600; color: #18181B; margin-right: 4px; }
+html body .op-sol-tags:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 8px; }
+html body .op-sol-tags span:not(#love-h-a) { display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 6px; background: #F4F4F5; font-size: 13px; color: #3F3F46; }
+html body .op-pedido-caixa .op-sol-acao:not(#love-h-a) { margin: 0; padding: 18px 24px; border-top: none; }
+@media (max-width: 640px) {
+  html body .op-sol-destaques:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  html body .op-sol-destaque:not(#love-h-a) { border-left: 0; }
+}

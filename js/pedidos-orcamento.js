@@ -217,9 +217,17 @@
 
   /** Dados do evento (etapa 2 da solicitação; etapa 1 do "Criar várias"). @param {Record<string, string>} e */
   function validarEvento(e) {
+    validarCelebracao(e);
+    validarLogistica(e);
+  }
+  /** @param {Record<string, string>} e */
+  function validarCelebracao(e) {
+    if (!dados.tipoCelebracao) e.tipoCelebracao = 'Escolha o tipo de celebração.';
+    else if (dados.tipoCelebracao === 'outro' && !dados.celebracaoOutro.trim()) e.celebracaoOutro = 'Escreva o tipo de celebração.';
+  }
+  /** Data, local, convidados e horário. @param {Record<string, string>} e */
+  function validarLogistica(e) {
     {
-      if (!dados.tipoCelebracao) e.tipoCelebracao = 'Escolha o tipo de celebração.';
-      else if (dados.tipoCelebracao === 'outro' && !dados.celebracaoOutro.trim()) e.celebracaoOutro = 'Escreva o tipo de celebração.';
       if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Data flexível".';
       if (!dados.dataFlexivel && dados.dataEvento && dados.dataEvento < hojeIso()) e.dataEvento = 'A data precisa ser hoje ou depois.';
       if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
@@ -1012,10 +1020,11 @@
     /** @type {Record<string, string>} */
     const e = {};
     if (n === 1) {
-      validarEvento(e);
-      if (!lote.categorias.length) e.categorias = 'Escolha pelo menos um serviço.';
+      if (!lote.categorias.length) e.categorias = formato === 'completo' ? 'Escolha pelo menos um serviço.' : 'Escolha o serviço.';
+      validarCelebracao(e);
     }
     if (n === 2) {
+      validarLogistica(e);
       const varios = lote.categorias.length > 1;
       lote.categorias.forEach(id => {
         const it = lote.itens[id];
@@ -1192,13 +1201,18 @@
           <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
           ${seletorDeServico()}
           ${erroHtml('categorias')}
+          ${id ? blocoTags(id) : ''}
         </section>
-        ${secaoDoEvento('Dados do evento')}`;
+        <section class="rfp-secao">${htmlCelebracao()}</section>`;
     }
     if (etapa === 2 && id) {
       return `
         <section class="rfp-secao">
-          ${blocoTitulo(id)}${blocoTags(id)}${blocoDescricao(id, 'Descreva o que você precisa', 5)}
+          <h4 class="rfp-pergunta">Dados do evento</h4>
+          ${htmlEventoCompacto()}
+        </section>
+        <section class="rfp-secao">
+          ${blocoTitulo(id)}${blocoDescricao(id, 'Descreva o que você precisa', 5)}
         </section>
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Orçamento previsto <span class="rfp-opcional">(opcional)</span></h4>
@@ -1213,15 +1227,19 @@
     atualizarTitulos();
     if (etapa === 1) {
       return `
-        ${secaoDoEvento('Dados gerais do evento')}
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
           ${gradeDeServicos()}
           ${erroHtml('categorias')}
-        </section>`;
+        </section>
+        <section class="rfp-secao">${htmlCelebracao()}</section>`;
     }
     if (etapa === 2) {
       return `
+        <section class="rfp-secao">
+          <h4 class="rfp-pergunta">Dados gerais do evento</h4>
+          ${htmlEventoCompacto()}
+        </section>
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Descrição geral</h4>
           <textarea class="rfp-campo rfp-descricao" data-lote-geral maxlength="${DESCRICAO_MAX}" rows="4" placeholder="Conte o estilo do evento, o clima que você imagina e o que é importante para você.">${esc(lote.descricaoGeral)}</textarea>
@@ -1237,6 +1255,7 @@
                     <b>${esc(CATEGORIA_CURTA[id] || cat.nome)}</b>
                   </div>
                   ${blocoTitulo(id)}
+                  ${blocoTags(id)}
                   <h4 class="rfp-pergunta">Orçamento <span class="rfp-opcional">(opcional)</span></h4>
                   ${blocoOrcamento(id)}
                   ${blocoDescricao(id, lote.usarGeral ? 'Observações <span class="rfp-opcional">(opcional)</span>' : 'Descrição deste serviço', 3)}
@@ -1251,7 +1270,7 @@
   /** Textos do topo de cada etapa. */
   const TEXTOS_DA_PAGINA = [
     null,
-    { titulo: 'Descreva o que você precisa', sub: 'Conte os detalhes e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
+    { titulo: 'Conte sobre o seu evento', sub: 'Informe os dados do evento, descreva o que você precisa e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
     { titulo: 'Imagens de referência', sub: 'Adicione fotos de referência, paleta de cores ou moodboard para ajudar os fornecedores a entenderem seu estilo.' }
   ];
 

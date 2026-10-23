@@ -200,11 +200,24 @@
 
   /** @param {number} n @returns {Record<string, string>} */
   function validarEtapa(n) {
+    if (modo === 'lote') return validarLote(n);
     /** @type {Record<string, string>} */
     const e = {};
     if (n === 1 && dados.titulo.trim().length < 3) e.titulo = 'Escreva o que você está procurando.';
     if (n === 1 && !dados.categoria) e.categoria = 'Escolha a categoria do serviço.';
-    if (n === 2) {
+    if (n === 2) validarEvento(e);
+    if (n === 3) {
+      if (dados.valorMin != null && dados.valorMax != null && dados.valorMax < dados.valorMin) e.faixa = 'O valor "até" precisa ser maior que o "de".';
+      const tam = dados.descricao.trim().length;
+      if (tam < DESCRICAO_MIN) e.descricao = `Escreva pelo menos ${DESCRICAO_MIN} caracteres (faltam ${DESCRICAO_MIN - tam}).`;
+      if (tam > DESCRICAO_MAX) e.descricao = `No máximo ${DESCRICAO_MAX} caracteres.`;
+    }
+    return e;
+  }
+
+  /** Dados do evento (etapa 2 da solicitação; etapa 1 do "Criar várias"). @param {Record<string, string>} e */
+  function validarEvento(e) {
+    {
       if (!dados.tipoCelebracao) e.tipoCelebracao = 'Escolha o tipo de celebração.';
       else if (dados.tipoCelebracao === 'outro' && !dados.celebracaoOutro.trim()) e.celebracaoOutro = 'Escreva o tipo de celebração.';
       if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Data flexível".';
@@ -215,13 +228,6 @@
       if (!dados.periodo) e.periodo = 'Escolha o período.';
       if (dados.periodo === 'horas' && !(Number(dados.horasServico) >= 1 && Number(dados.horasServico) <= 24)) e.horasServico = 'De 1 a 24 horas.';
     }
-    if (n === 3) {
-      if (dados.valorMin != null && dados.valorMax != null && dados.valorMax < dados.valorMin) e.faixa = 'O valor "até" precisa ser maior que o "de".';
-      const tam = dados.descricao.trim().length;
-      if (tam < DESCRICAO_MIN) e.descricao = `Escreva pelo menos ${DESCRICAO_MIN} caracteres (faltam ${DESCRICAO_MIN - tam}).`;
-      if (tam > DESCRICAO_MAX) e.descricao = `No máximo ${DESCRICAO_MAX} caracteres.`;
-    }
-    return e;
   }
 
   function hojeIso() {
@@ -270,6 +276,7 @@
       const alvo = /** @type {HTMLElement} */ (e.target);
       if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? sair() : irPara(etapa - 1, -1);
       if (alvo.closest('[data-rfp-avancar]')) return avancar();
+      if (modo === 'lote' && cliqueDoLote(alvo)) return;
       if (alvo.closest('[data-rfp-cat-gatilho]')) { categoriaAberta = !categoriaAberta; return desenhar(0); }
       const opcao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-campo]'));
       if (opcao && opcao.dataset.rfpValor !== undefined) return escolher(opcao.dataset.rfpCampo || '', opcao.dataset.rfpValor || '');
@@ -303,7 +310,10 @@
     if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 
-  function abrir() {
+  /** @param {string} [modoNovo] 'uma' (padrão) ou 'lote' ("Criar várias") */
+  function abrir(modoNovo) {
+    modo = modoNovo === 'lote' ? 'lote' : 'uma';
+    lote = loteVazio();
     dados = rascunhoVazio();
     etapa = 1;
     erros = {};
@@ -312,7 +322,7 @@
     categoriaEscolhidaAMao = false;
     rascunhoId = null;
     // "Editar rascunho": continua de onde a pessoa parou (sem as fotos).
-    const r = rascunhoPendente;
+    const r = modo === 'uma' ? rascunhoPendente : null;
     rascunhoPendente = null;
     if (r && r.dados) {
       dados = { ...dados, ...r.dados, referencias: [] };
@@ -338,16 +348,17 @@
     mostrarAba('minhas');
   }
 
-  /** Abas de Criar solicitação: 'nova' (editor) e 'minhas' (lista). @param {'nova'|'minhas'} aba */
+  /** Abas de Criar solicitação: 'nova', 'lote' (Criar várias) e 'minhas' (lista). @param {'nova'|'lote'|'minhas'} aba */
   function mostrarAba(aba) {
     document.querySelectorAll('#pedidos-abas [data-pedidos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.pedidosAba === aba));
     document.getElementById('pedidos-abas')?.classList.remove('hidden');
     const minhas = document.getElementById('pedidos-painel-minhas');
-    if (aba === 'nova') {
+    if (aba === 'nova' || aba === 'lote') {
       if (vendoPropostas) modoPropostas(false);
       minhas?.classList.add('hidden');
       const m = document.getElementById('rfp-editor');
-      if (!m || m.hidden) abrir();
+      const desejado = aba === 'lote' ? 'lote' : 'uma';
+      if (!m || m.hidden || modo !== desejado) { if (m && !m.hidden) fechar(); abrir(desejado); }
       return;
     }
     fechar();
@@ -393,17 +404,17 @@
 
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
-    const textos = TEXTOS_DAS_ETAPAS[etapa - 1];
+    const textos = (modo === 'lote' ? TEXTOS_DO_LOTE : TEXTOS_DAS_ETAPAS)[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
     if (titulo) titulo.textContent = textos.titulo;
     if (sub) { sub.textContent = textos.sub; sub.hidden = !textos.sub; }
     const exemplos = document.getElementById('rfp-exemplos');
-    if (exemplos) exemplos.hidden = etapa !== 1;
+    if (exemplos) exemplos.hidden = etapa !== 1 || modo === 'lote';
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
-      const telas = [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
+      const telas = modo === 'lote' ? [htmlEtapa2, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
       corpo.innerHTML = `<div class="rfp-tela${direcao > 0 ? ' entra-direita' : direcao < 0 ? ' entra-esquerda' : ''}">${telas[etapa - 1]()}</div>`;
       if (direcao) corpo.scrollTop = 0;
     }
@@ -411,7 +422,7 @@
     const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
     if (voltar) voltar.textContent = etapa === 1 ? 'Cancelar' : 'Voltar';
     if (avancarBtn) {
-      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? 'Publicar solicitação' : 'Continuar');
+      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? (modo === 'lote' ? 'Publicar todas as solicitações' : 'Publicar solicitação') : 'Continuar');
       avancarBtn.disabled = publicando;
     }
   }
@@ -646,6 +657,7 @@
   /** @param {Event} e */
   function aoDigitar(e) {
     const el = /** @type {HTMLInputElement} */ (e.target);
+    if (modo === 'lote' && digitacaoDoLote(el)) return;
     if (el.matches('[data-rfp-fotos]')) { if (e.type === 'change') adicionarFotos(Array.from(el.files || [])); return; }
     const campo = el.dataset ? el.dataset.rfpInput : '';
     if (!campo) return;
@@ -772,6 +784,7 @@
   }
 
   async function publicar() {
+    if (modo === 'lote') return publicarLote();
     // Confere tudo de novo antes de mandar.
     for (const n of [1, 2, 3]) {
       const e = validarEtapa(n);
@@ -847,6 +860,320 @@
 
   /** @param {any} error */
   const tabelaAusente = (error) => !!error && (error.code === '42P01' || error.code === 'PGRST205' || /pedidos_orcamento/.test(String(error.message || '')));
+
+  // --------------------------------------------------------------------------
+  // Solicitação em massa ("Criar várias"): os dados do evento uma vez só,
+  // vários serviços de uma vez e um ajuste rápido por serviço. Publica uma
+  // solicitação independente por categoria (aparecem separadas no feed de
+  // cada nicho do Hub), ligadas pelo mesmo lote_id (migration 084).
+  // --------------------------------------------------------------------------
+  const TEXTOS_DO_LOTE = [
+    { titulo: 'Peça vários orçamentos de uma vez', sub: 'Confira os dados do seu evento. Eles valem para todos os serviços que você escolher a seguir.' },
+    { titulo: 'Quais serviços você precisa?', sub: 'Escolha quantos quiser. Cada serviço vira uma solicitação para os fornecedores daquela categoria.' },
+    { titulo: 'Ajuste cada serviço', sub: 'Escreva uma descrição geral e, se quiser, detalhes e orçamento próprios para cada serviço.' },
+    { titulo: 'Revise e publique', sub: 'Confira o resumo e publique todas as solicitações de uma vez.' }
+  ];
+
+  /** Nome curto da categoria (resumo e selos do lote). @type {Record<string, string>} */
+  const CATEGORIA_CURTA = {
+    fotografia: 'Foto e vídeo', buffet: 'Buffet', espaco: 'Espaço', decoracao: 'Decoração',
+    musica: 'DJ e música', assessoria: 'Assessoria', bebidas: 'Bar e bebidas', doces: 'Bolo e doces'
+  };
+
+  /** Dica do campo de detalhes de cada serviço. @type {Record<string, string>} */
+  const DICA_DO_SERVICO = {
+    fotografia: 'Ex.: cobertura da cerimônia e da festa, fotos espontâneas, álbum impresso…',
+    buffet: 'Ex.: jantar para 120 pessoas, opções vegetarianas, serviço de garçons…',
+    espaco: 'Ex.: espaço ao ar livre com área coberta, estacionamento, capacidade para 150 pessoas…',
+    decoracao: 'Ex.: flores naturais em tons claros, iluminação aconchegante, mesa de doces…',
+    musica: 'Ex.: estilos musicais, horário da pista, música na cerimônia…',
+    assessoria: 'Ex.: assessoria completa ou só do dia, roteiro, gestão de fornecedores…',
+    bebidas: 'Ex.: open bar com drinks autorais, cervejas, opções sem álcool…',
+    doces: 'Ex.: bolo de 3 andares, sabores, bem-casados, docinhos finos…'
+  };
+
+  /**
+   * @typedef {Object} ItemDoLote
+   * @property {string} titulo
+   * @property {string[]} especialidades
+   * @property {number|null} valorMin
+   * @property {number|null} valorMax
+   * @property {string} descricao
+   */
+  /** @returns {{ categorias: string[], itens: Record<string, ItemDoLote>, descricaoGeral: string, abertos: Record<string, boolean> }} */
+  const loteVazio = () => ({ categorias: [], itens: {}, descricaoGeral: '', abertos: {} });
+  let modo = 'uma';
+  let lote = loteVazio();
+
+  /** Título sugerido do serviço ("Buffet para casamento"). @param {string} id */
+  function tituloSugerido(id) {
+    const cat = categoriaPorId(/** @type {any} */ (id));
+    const celeb = (dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : nomeDaCelebracao(dados.tipoCelebracao)).toLowerCase();
+    return `${cat ? (CATEGORIA_CURTA[id] || cat.nome) : 'Serviço'}${celeb ? ` para ${celeb}` : ''}`;
+  }
+
+  /** @param {string} id */
+  function alternarCategoriaDoLote(id) {
+    const i = lote.categorias.indexOf(id);
+    if (i >= 0) lote.categorias.splice(i, 1);
+    else {
+      lote.categorias.push(id);
+      if (!lote.itens[id]) lote.itens[id] = { titulo: tituloSugerido(id), especialidades: [], valorMin: null, valorMax: null, descricao: '' };
+    }
+    delete erros.categorias;
+    desenhar(0);
+  }
+
+  /** Descrição que vai para a solicitação: a do serviço ou, sem ela, a geral. @param {string} id */
+  const descricaoDoItem = (id) => (lote.itens[id] && lote.itens[id].descricao.trim()) || lote.descricaoGeral.trim();
+
+  /** @param {number} n @returns {Record<string, string>} */
+  function validarLote(n) {
+    /** @type {Record<string, string>} */
+    const e = {};
+    if (n === 1) validarEvento(e);
+    if (n === 2 && !lote.categorias.length) e.categorias = 'Escolha pelo menos um serviço.';
+    if (n === 3) {
+      lote.categorias.forEach(id => {
+        const it = lote.itens[id];
+        if (!it) return;
+        if (it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
+        if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
+        const tam = descricaoDoItem(id).length;
+        if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = `Escreva a descrição geral ou detalhes deste serviço (mínimo ${DESCRICAO_MIN} caracteres).`;
+        if (tam > DESCRICAO_MAX) e[`${id}:descricao`] = `No máximo ${DESCRICAO_MAX} caracteres.`;
+        if (Object.keys(e).some(k => k.startsWith(`${id}:`))) lote.abertos[id] = true;
+      });
+    }
+    return e;
+  }
+
+  function htmlLote2() {
+    return `
+      <div class="rfp-lote-cats" role="group" aria-label="Serviços">
+        ${CATEGORIAS.map(c => {
+          const on = lote.categorias.includes(c.id);
+          return `
+            <button type="button" class="rfp-lote-cat${on ? ' ativa' : ''}" aria-pressed="${on}" data-lote-cat="${c.id}">
+              <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.icone}</svg></span>
+              <span class="rfp-lote-cat-nome">${esc(c.nome)}</span>
+              <span class="rfp-lote-cat-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+            </button>`;
+        }).join('')}
+      </div>
+      ${erroHtml('categorias')}
+      <p class="rfp-dica">${lote.categorias.length ? `${lote.categorias.length} ${lote.categorias.length === 1 ? 'serviço escolhido' : 'serviços escolhidos'}` : 'Nenhum serviço escolhido ainda.'}</p>`;
+  }
+
+  function htmlLote3() {
+    if (lote.categorias.length && !lote.categorias.some(id => lote.abertos[id])) lote.abertos[lote.categorias[0]] = true;
+    return `
+      <h4 class="rfp-pergunta">Descrição geral</h4>
+      <p class="rfp-ajuda">Vale para todos os serviços que não tiverem detalhes próprios.</p>
+      <textarea class="rfp-campo rfp-descricao" data-lote-geral maxlength="${DESCRICAO_MAX}" rows="4" placeholder="Conte o estilo do evento, o clima que você imagina e o que é importante para você.">${esc(lote.descricaoGeral)}</textarea>
+      <button type="button" class="rfp-lote-copiar" data-lote-copiar>Usar a mesma descrição geral para todos</button>
+
+      <div class="rfp-lote-itens">
+        ${lote.categorias.map(id => {
+          const cat = categoriaPorId(/** @type {any} */ (id));
+          const it = lote.itens[id];
+          if (!cat || !it) return '';
+          const aberto = !!lote.abertos[id];
+          const pronto = it.titulo.trim().length >= 3 && descricaoDoItem(id).length >= DESCRICAO_MIN;
+          const temErro = Object.keys(erros).some(k => k.startsWith(`${id}:`));
+          return `
+            <section class="rfp-lote-item${aberto ? ' is-aberto' : ''}">
+              <button type="button" class="rfp-lote-item-topo" data-lote-acordeao="${id}" aria-expanded="${aberto}">
+                <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${cat.icone}</svg></span>
+                <span class="rfp-lote-item-nome">${esc(cat.nome)}</span>
+                <span class="rfp-lote-item-status${temErro ? ' is-erro' : pronto ? ' is-pronto' : ''}">${temErro ? 'Falta informação' : pronto ? 'Pronto' : 'Usa a descrição geral'}</span>
+                <span class="rfp-lote-item-seta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+              </button>
+              ${aberto ? `
+                <div class="rfp-lote-item-corpo">
+                  <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título</span>
+                    <input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="titulo" maxlength="120" value="${esc(it.titulo)}">
+                  </label>
+                  ${erroHtml(`${id}:titulo`)}
+                  <h4 class="rfp-pergunta">Subcategorias <span class="rfp-opcional">(opcional)</span></h4>
+                  <div class="rfp-tags">
+                    ${cat.tags.map(t => `<button type="button" class="rfp-tag${it.especialidades.includes(t) ? ' ativa' : ''}" aria-pressed="${it.especialidades.includes(t)}" data-lote-tag="${id}" data-lote-tag-valor="${esc(t)}">${esc(t)}</button>`).join('')}
+                  </div>
+                  <h4 class="rfp-pergunta">Orçamento para este serviço <span class="rfp-opcional">(opcional)</span></h4>
+                  <div class="rfp-orcamento">
+                    <label class="rfp-rotulo"><span class="rfp-rotulo-texto">De</span>
+                      <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMin" inputmode="numeric" value="${it.valorMin != null ? milhar(it.valorMin) : ''}" aria-label="Orçamento de"></span>
+                    </label>
+                    <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Até</span>
+                      <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMax" inputmode="numeric" value="${it.valorMax != null ? milhar(it.valorMax) : ''}" aria-label="Orçamento até"></span>
+                    </label>
+                  </div>
+                  <p class="rfp-dica">Em branco, fica aberto a propostas.</p>
+                  ${erroHtml(`${id}:faixa`)}
+                  <h4 class="rfp-pergunta">Detalhes deste serviço <span class="rfp-opcional">(opcional)</span></h4>
+                  <textarea class="rfp-campo rfp-descricao" data-lote-cat-campo="${id}" data-lote-input="descricao" maxlength="${DESCRICAO_MAX}" rows="4" placeholder="${esc(DICA_DO_SERVICO[id] || '')}">${esc(it.descricao)}</textarea>
+                  ${erroHtml(`${id}:descricao`)}
+                </div>` : ''}
+            </section>`;
+        }).join('')}
+      </div>`;
+  }
+
+  function htmlLote4() {
+    const nomes = lote.categorias.map(id => CATEGORIA_CURTA[id] || id);
+    const lista = nomes.length > 1 ? `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}` : nomes.join('');
+    return `
+      <p class="rfp-lote-resumo">Você está publicando <b>${lote.categorias.length} ${lote.categorias.length === 1 ? 'solicitação de orçamento' : 'solicitações de orçamento'}</b> de uma vez (${esc(lista)}).</p>
+      <div class="rfp-lote-revisao">
+        ${lote.categorias.map(id => {
+          const it = lote.itens[id];
+          return `
+            <div class="rfp-lote-revisao-linha">
+              <span class="rfp-lote-revisao-cat">${esc(CATEGORIA_CURTA[id] || id)}</span>
+              <span class="rfp-lote-revisao-titulo">${esc(it.titulo)}</span>
+              <span class="rfp-lote-revisao-valor">${esc(textoDoOrcamento(it.valorMin, it.valorMax))}</span>
+            </div>`;
+        }).join('')}
+      </div>
+      <h4 class="rfp-pergunta">Quantas propostas você quer receber em cada uma?</h4>
+      <div class="rfp-pilulas" role="radiogroup">
+        ${LIMITES.map(l => `<button type="button" class="rfp-pilula${l.valor === dados.limitePropostas ? ' ativa' : ''}" role="radio" aria-checked="${l.valor === dados.limitePropostas}" data-rfp-campo="limitePropostas" data-rfp-valor="${l.valor === null ? '' : l.valor}">${esc(l.nome)}</button>`).join('')}
+      </div>
+      <div class="rfp-aviso">
+        ${ICONE_CADEADO}
+        <p>Seu telefone e WhatsApp <b>não são mostrados</b> aos fornecedores. As propostas, a conversa e o fechamento acontecem com segurança dentro da Love.</p>
+      </div>`;
+  }
+
+  /** Cliques do modo "Criar várias". @param {HTMLElement} alvo @returns {boolean} tratou */
+  function cliqueDoLote(alvo) {
+    const cat = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-cat]'));
+    if (cat) { alternarCategoriaDoLote(cat.dataset.loteCat || ''); return true; }
+    const tag = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-tag]'));
+    if (tag) {
+      const it = lote.itens[tag.dataset.loteTag || ''];
+      const v = tag.dataset.loteTagValor || '';
+      if (it) { const i = it.especialidades.indexOf(v); if (i >= 0) it.especialidades.splice(i, 1); else it.especialidades.push(v); desenhar(0); }
+      return true;
+    }
+    const sanfona = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-acordeao]'));
+    if (sanfona) { const id = sanfona.dataset.loteAcordeao || ''; lote.abertos[id] = !lote.abertos[id]; desenhar(0); return true; }
+    if (alvo.closest('[data-lote-copiar]')) {
+      const geral = lote.descricaoGeral.trim();
+      if (geral) lote.categorias.forEach(id => { if (lote.itens[id]) lote.itens[id].descricao = geral; });
+      Object.keys(erros).forEach(k => { if (k.endsWith(':descricao')) delete erros[k]; });
+      desenhar(0);
+      return true;
+    }
+    return false;
+  }
+
+  /** Digitação do modo "Criar várias". @param {HTMLInputElement} el @returns {boolean} tratou */
+  function digitacaoDoLote(el) {
+    if (el.matches('[data-lote-geral]')) { lote.descricaoGeral = el.value; return true; }
+    const id = el.dataset.loteCatCampo;
+    const campo = el.dataset.loteInput;
+    if (!id || !campo || !lote.itens[id]) return false;
+    const it = /** @type {any} */ (lote.itens[id]);
+    if (campo === 'valorMin' || campo === 'valorMax') {
+      const num = el.value.replace(/\D/g, '').slice(0, 9);
+      it[campo] = num ? Number(num) : null;
+      el.value = num ? milhar(Number(num)) : '';
+      delete erros[`${id}:faixa`];
+      return true;
+    }
+    it[campo] = el.value;
+    return true;
+  }
+
+  async function publicarLote() {
+    for (const n of [1, 2, 3]) {
+      const e = validarLote(n);
+      if (Object.keys(e).length) { erros = e; return irPara(n, -1); }
+    }
+    const usuario = usuarioLogado();
+    if (!usuario || typeof supabaseClient === 'undefined') return mostrarErroGeral('Entre na sua conta para publicar as solicitações.');
+    publicando = true;
+    mostrarErroGeral('');
+    desenhar(0);
+    try {
+      const eventoId = typeof window.getLoveActiveEventId === 'function' ? window.getLoveActiveEventId() : null;
+      const loteId = (window.crypto && typeof window.crypto.randomUUID === 'function') ? window.crypto.randomUUID() : null;
+      /** @type {any[]} */
+      let linhas = lote.categorias.map(id => {
+        const it = lote.itens[id];
+        const temOrcamento = !!(it.valorMin || it.valorMax);
+        return {
+          cliente_id: usuario.id,
+          evento_id: /^[0-9a-f-]{36}$/i.test(String(eventoId || '')) ? eventoId : null,
+          lote_id: loteId,
+          categoria: id,
+          especialidades: it.especialidades,
+          titulo: it.titulo.trim(),
+          tipo_celebracao: dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : dados.tipoCelebracao,
+          data_evento: dados.dataFlexivel ? null : dados.dataEvento,
+          data_flexivel: dados.dataFlexivel,
+          cep: dados.cep || null,
+          cidade: dados.cidade.trim(),
+          bairro: dados.bairro.trim() || null,
+          uf: dados.uf.trim().toUpperCase(),
+          convidados: dados.convidados,
+          periodo: dados.periodo,
+          horas_servico: dados.periodo === 'horas' ? dados.horasServico : null,
+          faixa: temOrcamento ? 'personalizada' : null,
+          valor_min: it.valorMin || null,
+          valor_max: it.valorMax || null,
+          aceita_fora_da_faixa: temOrcamento ? false : true,
+          descricao: descricaoDoItem(id),
+          referencias: [],
+          limite_propostas: dados.limitePropostas
+        };
+      });
+      let { error } = await supabaseClient.from('pedidos_orcamento').insert(linhas);
+      // Bancos sem as colunas novas: publica sem elas (lote_id 084, titulo 078) e
+      // com faixa "personalizada" se ela ainda for obrigatória (080).
+      if (error && /lote_id/.test(String(error.message || ''))) {
+        linhas = linhas.map(({ lote_id: _l, ...resto }) => resto);
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linhas));
+      }
+      if (error && /faixa/.test(String(error.message || ''))) {
+        linhas = linhas.map(l => ({ ...l, faixa: l.faixa || 'personalizada' }));
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linhas));
+      }
+      if (error && /titulo/.test(String(error.message || ''))) {
+        linhas = linhas.map(({ titulo: _t, ...resto }) => resto);
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linhas));
+      }
+      if (error) throw new Error(tabelaAusente(error) ? 'Os pedidos de orçamento ainda não foram ativados no banco.' : 'Não foi possível publicar agora. Tente de novo.');
+      const qtd = linhas.length;
+      publicando = false;
+      publicado = true;
+      sair();
+      avisoNaLista(`${qtd} ${qtd === 1 ? 'solicitação publicada' : 'solicitações publicadas'}. Os fornecedores de cada categoria já podem enviar propostas.`);
+    } catch (err) {
+      publicando = false;
+      desenhar(0);
+      mostrarErroGeral(err instanceof Error ? err.message : 'Não foi possível publicar agora.');
+    }
+  }
+
+  /** Selos do lote em Minhas solicitações ("DJ e música: 3 propostas"). @param {any[]} pedidos @param {string} quando */
+  function linhaDoLote(pedidos, quando) {
+    const selos = pedidos.map(p => {
+      const n = numerosDasPropostas[p.id] || { total: p.propostas_recebidas || 0 };
+      const nome = CATEGORIA_CURTA[p.categoria] || p.categoria;
+      return `<span class="rfp-lote-selo">${esc(nome)}: ${n.total ? `${n.total} ${n.total === 1 ? 'proposta' : 'propostas'}` : 'aguardando'}</span>`;
+    }).join('');
+    return `
+      <div class="rfp-lote-grupo">
+        <div class="rfp-lote-grupo-topo">
+          <p class="rfp-lote-grupo-titulo">Solicitação em lote · ${pedidos.length} serviços</p>
+          <p class="rfp-post-criado">Criada ${esc(haQuanto(quando))} por você</p>
+          <div class="rfp-lote-selos">${selos}</div>
+        </div>
+        ${pedidos.map(p => linhaDaSolicitacao({ tipo: 'pedido', id: p.id, quando: p.created_at, criado: p.created_at, p })).join('')}
+      </div>`;
+  }
 
   // --------------------------------------------------------------------------
   // Rascunhos: o que a pessoa começou e não publicou. Vale como rascunho
@@ -933,7 +1260,7 @@
 
   /** Salva o que está no editor como rascunho (em fila, para não duplicar). */
   function salvarRascunhoAgora() {
-    if (publicando || publicado || !valeComoRascunho()) return;
+    if (modo === 'lote' || publicando || publicado || !valeComoRascunho()) return;
     const conteudo = dadosParaGuardar();
     salvandoRascunho = salvandoRascunho
       .then(async () => { rascunhoId = await guardarRascunho(rascunhoId, conteudo); })
@@ -1105,7 +1432,23 @@
       ...rascunhos.map(r => ({ tipo: 'rascunho', id: r.id, quando: r.updated_at || r.created_at, criado: r.created_at, r })),
       ...pedidos.map(p => ({ tipo: 'pedido', id: p.id, quando: p.created_at, criado: p.created_at, p }))
     ].sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
-    caixa.innerHTML = itens.length ? itens.map(linhaDaSolicitacao).join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
+    // Solicitações do mesmo lote ("Criar várias") ficam juntas, com selos por serviço.
+    /** @type {Record<string, any[]>} */
+    const lotes = {};
+    pedidos.forEach(p => { if (p.lote_id) (lotes[p.lote_id] = lotes[p.lote_id] || []).push(p); });
+    /** @type {Set<string>} */
+    const desenhados = new Set();
+    const partes = itens.map(it => {
+      const pedido = /** @type {any} */ (it).p;
+      const lid = it.tipo === 'pedido' && pedido && pedido.lote_id;
+      if (lid && lotes[lid] && lotes[lid].length > 1) {
+        if (desenhados.has(lid)) return '';
+        desenhados.add(lid);
+        return linhaDoLote(lotes[lid], it.criado);
+      }
+      return linhaDaSolicitacao(it);
+    });
+    caixa.innerHTML = itens.length ? partes.join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
   }
 
   /** Rascunho no mesmo formato de uma solicitação publicada (para os detalhes). @param {any} d */
@@ -1400,7 +1743,7 @@
     const editarDoDetalhe = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-editar-rascunho]'));
     if (editarDoDetalhe) { editarRascunho(editarDoDetalhe.dataset.rfpEditarRascunho || ''); return; }
     const abaPedidos = /** @type {HTMLElement|null} */ (alvo.closest('[data-pedidos-aba]'));
-    if (abaPedidos) { mostrarAba(abaPedidos.dataset.pedidosAba === 'minhas' ? 'minhas' : 'nova'); return; }
+    if (abaPedidos) { const a = abaPedidos.dataset.pedidosAba; mostrarAba(a === 'minhas' ? 'minhas' : a === 'lote' ? 'lote' : 'nova'); return; }
     const conversar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-conversar]'));
     if (conversar) { const w = /** @type {any} */ (window); if (w.loveAbrirChatComFornecedor) w.loveAbrirChatComFornecedor(conversar.dataset.rfpConversar); return; }
     const mudar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-proposta-status]'));

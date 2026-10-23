@@ -11,6 +11,7 @@ const CATEGORIAS_CUSTO = [
   'Infraestrutura', 'Servidor', 'Banco de dados', 'E-mail', 'Ferramentas e APIs',
   'Domínios', 'Marketing', 'Mídia', 'Software e assinaturas', 'Segurança', 'Outros'
 ];
+const EMPRESAS = ['Vercel', 'Supabase', 'Amazon', 'AWS', 'GoDaddy', 'Registro.br', 'Claude Code', 'Gemini', 'Google', 'Microsoft'];
 const MOEDAS = { BRL: 'Real (BRL)', USD: 'Dólar (USD)', EUR: 'Euro (EUR)' };
 const SIMBOLO = { BRL: 'R$', USD: 'US$', EUR: '€' };
 const CORES = ['#183b54', '#2a78d6', '#1baf7a', '#eda100', '#eb6834', '#e87ba4', '#7c5cd6', '#71717A'];
@@ -396,15 +397,33 @@ function abrirFormulario(item) {
   const editando = Boolean(item);
   const hoje = new Date().toISOString().slice(0, 10);
   const categorias = item && !CATEGORIAS_CUSTO.includes(item.categoria) ? [...CATEGORIAS_CUSTO, item.categoria] : CATEGORIAS_CUSTO;
+  const empresaAtual = item?.empresa || '';
+  const empresaOutra = Boolean(empresaAtual) && !EMPRESAS.includes(empresaAtual);
 
   Drawer.open({
     title: editando ? 'Editar custo' : 'Adicionar custo',
-    subtitle: 'Custo manual',
+    semLinha: true,
     body: `
       <form id="form-custo">
         <label class="field">
+          <span class="field-label">Empresa</span>
+          <select class="field-select" name="empresa_lista">
+            <option value="" ${!empresaAtual ? 'selected' : ''} disabled>Selecione</option>
+            ${EMPRESAS.map(e => `<option ${empresaAtual === e ? 'selected' : ''}>${escapeHtml(e)}</option>`).join('')}
+            <option value="__outro" ${empresaOutra ? 'selected' : ''}>Outro</option>
+          </select>
+        </label>
+        <label class="field" id="campo-empresa-outra" ${empresaOutra ? '' : 'hidden'}>
+          <span class="field-label">Nome da empresa</span>
+          <input class="field-input" name="empresa_outra" type="text" value="${escapeHtml(empresaOutra ? empresaAtual : '')}">
+        </label>
+        <label class="field">
           <span class="field-label">Nome</span>
-          <input class="field-input" name="nome" type="text" required placeholder="Ex.: Google Workspace" value="${escapeHtml(item?.nome || '')}">
+          <input class="field-input" name="nome" type="text" required value="${escapeHtml(item?.nome || '')}">
+        </label>
+        <label class="field">
+          <span class="field-label">Descrição do custo</span>
+          <textarea class="field-textarea" name="descricao" rows="3">${escapeHtml(item?.descricao || '')}</textarea>
         </label>
         <div class="field-row">
           <label class="field">
@@ -441,7 +460,7 @@ function abrirFormulario(item) {
       </form>`,
     footer: `
       ${editando ? '<button type="button" class="btn btn-ghost" id="btn-remover-custo" style="margin-right:auto">Remover</button>' : ''}
-      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
+      <button type="button" class="btn-texto" id="btn-cancelar">Cancelar</button>
       <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Adicionar'}</button>`
   });
 
@@ -453,6 +472,11 @@ function abrirFormulario(item) {
     conversao.textContent = moeda === 'BRL' || !valor ? ''
       : (COTACAO[moeda] ? `≈ ${formatCurrency(emReais(valor, moeda))} pela cotação de hoje` : 'Cotação indisponível agora');
   };
+  form.empresa_lista.addEventListener('change', () => {
+    const outro = form.empresa_lista.value === '__outro';
+    document.getElementById('campo-empresa-outra').hidden = !outro;
+    if (outro) form.empresa_outra.focus();
+  });
   form.valor.addEventListener('input', atualizarConversao);
   form.moeda.addEventListener('change', atualizarConversao);
   form.tipo.addEventListener('change', () => {
@@ -473,11 +497,15 @@ function abrirFormulario(item) {
 
   document.getElementById('btn-salvar').addEventListener('click', async () => {
     const d = Object.fromEntries(new FormData(form).entries());
+    const empresa = d.empresa_lista === '__outro' ? (d.empresa_outra || '').trim() : (d.empresa_lista || '');
+    if (!empresa) return toast(d.empresa_lista === '__outro' ? 'Escreva o nome da empresa' : 'Selecione a empresa');
     if (!d.nome.trim()) return toast('Informe o nome do custo');
     if (d.valor === '' || Number(d.valor) < 0) return toast('Informe o valor');
 
     const payload = {
+      empresa,
       nome: d.nome.trim(),
+      descricao: (d.descricao || '').trim() || null,
       valor: Number(d.valor),
       moeda: d.moeda,
       categoria: d.categoria,
@@ -491,7 +519,10 @@ function abrirFormulario(item) {
       : supabaseClient.from('custos').insert(payload).select().single();
     const { data, error } = await consulta;
     Drawer.setFooterBusy(false);
-    if (error) return toast(`Não foi possível salvar: ${error.message}`);
+    if (error) {
+      if (/empresa|descricao/i.test(error.message)) return toast('Falta preparar o banco: rode a migration 095 no Supabase.');
+      return toast(`Não foi possível salvar: ${error.message}`);
+    }
 
     MANUAIS = editando ? MANUAIS.map(c => (c.id === item.id ? data : c)) : [data, ...MANUAIS];
     Drawer.close();

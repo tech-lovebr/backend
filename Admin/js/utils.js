@@ -192,9 +192,11 @@ const Drawer = {
   },
 
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false }) {
+  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false, semLinha = false }) {
     this._build();
     document.getElementById('drawer-panel').classList.toggle('drawer-sem-titulo', semTitulo);
+    // semLinha: cabeçalho só com o título, sem a linha embaixo.
+    document.getElementById('drawer-panel').classList.toggle('drawer-sem-linha', semLinha);
 
     const btnBack = document.getElementById('drawer-back');
     btnBack.hidden = !back;

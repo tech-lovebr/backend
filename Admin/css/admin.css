@@ -3963,3 +3963,9 @@ body[data-page="custos"] .admin-content > [hidden] { display: none !important; }
 .custo-dicas { margin: 0; padding-left: 1.125rem; display: flex; flex-direction: column; gap: .5rem; font-size: .875rem; line-height: 1.55; }
 .visao-custos .table-wrap { margin: -.25rem 0 0; }
 body[data-page="custos"] table.data tbody tr[data-integracao] { cursor: pointer; }
+
+/* Pop-up sem a linha embaixo do título (Adicionar custo). */
+.drawer-sem-linha .drawer-head { border-bottom: 0; padding-bottom: .25rem; }
+.drawer-sem-linha .drawer-head p:empty { display: none; }
+.drawer-sem-linha .drawer-body { padding-top: 1rem; }
+#form-custo .field[hidden] { display: none; }

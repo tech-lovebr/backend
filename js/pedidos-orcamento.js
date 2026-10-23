@@ -324,6 +324,7 @@
     publicado = false;
     categoriaEscolhidaAMao = false;
     rascunhoId = null;
+    rascunhoIds = {};
     // "Editar rascunho": continua de onde a pessoa parou (sem as fotos).
     const r = rascunhoPendente;
     rascunhoPendente = null;
@@ -333,6 +334,7 @@
       lote = loteDosDados(r.dados);
       formato = r.dados.formato === 'completo' || lote.categorias.length > 1 ? 'completo' : 'unico';
       rascunhoId = r.id;
+      if (lote.categorias.length === 1) rascunhoIds[lote.categorias[0]] = r.id;
       categoriaEscolhidaAMao = true;
     } else {
       preencherComOEvento();
@@ -1456,8 +1458,7 @@
   /** "Salvar como rascunho" (etapa de revisão). */
   async function salvarComoRascunho() {
     if (!dados.tipoCelebracao || !lote.categorias.length) return;
-    const conteudo = dadosParaGuardar();
-    salvandoRascunho = salvandoRascunho.then(async () => { rascunhoId = await guardarRascunho(rascunhoId, conteudo); }).catch(() => {});
+    salvandoRascunho = salvandoRascunho.then(guardarRascunhosPorServico).catch(() => {});
     await salvandoRascunho;
     publicado = true; // não salva de novo ao sair
     sair();
@@ -1535,8 +1536,7 @@
       const qtd = linhas.length;
       publicando = false;
       publicado = true;
-      await salvandoRascunho;
-      if (rascunhoId) { await apagarRascunho(rascunhoId); rascunhoId = null; }
+      await apagarRascunhosDoEditor();
       sair();
       avisoNaLista(qtd === 1
         ? 'Solicitação publicada. Os fornecedores da categoria já podem enviar propostas.'
@@ -1652,10 +1652,38 @@
   /** Salva o que está no editor como rascunho (em fila, para não duplicar). */
   function salvarRascunhoAgora() {
     if (publicando || publicado || !valeComoRascunho()) return;
-    const conteudo = dadosParaGuardar();
-    salvandoRascunho = salvandoRascunho
-      .then(async () => { rascunhoId = await guardarRascunho(rascunhoId, conteudo); })
-      .catch(() => {});
+    salvandoRascunho = salvandoRascunho.then(guardarRascunhosPorServico).catch(() => {});
+  }
+
+  /** Rascunho de cada serviço marcado vira um card próprio (como as publicadas). */
+  /** @type {Record<string, string|null>} */
+  let rascunhoIds = {};
+  async function guardarRascunhosPorServico() {
+    const { referencias: _f, ...resto } = dados;
+    for (const id of lote.categorias) {
+      const it = lote.itens[id];
+      if (!it) continue;
+      const conteudo = {
+        ...resto, formato: 'unico',
+        lote: { categorias: [id], itens: { [id]: { ...it, descricao: descricaoDoItem(id) } }, descricaoGeral: '', usarGeral: false }
+      };
+      rascunhoIds[id] = await guardarRascunho(rascunhoIds[id] || null, conteudo);
+    }
+    // Serviço desmarcado: o rascunho dele sai. Rascunho antigo (vários serviços num só) também.
+    for (const id of Object.keys(rascunhoIds)) {
+      if (!lote.categorias.includes(id) && rascunhoIds[id]) { await apagarRascunho(/** @type {string} */ (rascunhoIds[id])); delete rascunhoIds[id]; }
+    }
+    if (rascunhoId && !Object.values(rascunhoIds).includes(rascunhoId)) { await apagarRascunho(rascunhoId); }
+    rascunhoId = null;
+  }
+
+  /** Apaga os rascunhos desta solicitação (depois de publicar). */
+  async function apagarRascunhosDoEditor() {
+    await salvandoRascunho;
+    for (const id of Object.values(rascunhoIds)) if (id) await apagarRascunho(id);
+    if (rascunhoId) await apagarRascunho(rascunhoId);
+    rascunhoIds = {};
+    rascunhoId = null;
   }
 
   /** Solicitação publicada → rascunho com "(cópia)" no título. @param {any} p */
@@ -1828,22 +1856,8 @@
       ...rascunhos.map(r => ({ tipo: 'rascunho', id: r.id, quando: r.updated_at || r.created_at, criado: r.created_at, r })),
       ...pedidos.map(p => ({ tipo: 'pedido', id: p.id, quando: p.created_at, criado: p.created_at, p }))
     ].sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
-    // Solicitações do mesmo lote ("Criar várias") ficam juntas, com selos por serviço.
-    /** @type {Record<string, any[]>} */
-    const lotes = {};
-    pedidos.forEach(p => { if (p.lote_id) (lotes[p.lote_id] = lotes[p.lote_id] || []).push(p); });
-    /** @type {Set<string>} */
-    const desenhados = new Set();
-    const partes = itens.map(it => {
-      const pedido = /** @type {any} */ (it).p;
-      const lid = it.tipo === 'pedido' && pedido && pedido.lote_id;
-      if (lid && lotes[lid] && lotes[lid].length > 1) {
-        if (desenhados.has(lid)) return '';
-        desenhados.add(lid);
-        return linhaDoLote(lotes[lid], it.criado);
-      }
-      return linhaDaSolicitacao(it);
-    });
+    // Cada serviço é uma solicitação própria: um card para cada, mesmo as do mesmo evento completo.
+    const partes = itens.map(it => linhaDaSolicitacao(it));
     caixa.innerHTML = itens.length ? partes.join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
   }
 

@@ -421,12 +421,56 @@ function receitaNoIntervalo(de, ate) {
   return r;
 }
 
-function renderKpis() {
-  const { de, ate } = intervalo();
+/**
+ * Período anterior, para comparar: Hoje → ontem; Este mês → mês passado
+ * (até o mesmo dia); qualquer outro → os mesmos tantos dias logo antes.
+ * "Todo o período" não tem com o que comparar.
+ */
+function periodoAnterior(de, ate) {
+  if (!PERIODO.de) return null;
+  const rotulo = rotuloDoPeriodo();
+  if (rotulo === 'Este mês') {
+    const fimMes = new Date(de.getFullYear(), de.getMonth(), 0).getDate();
+    const dia = Math.min(ate.getDate(), fimMes);
+    return {
+      de: new Date(de.getFullYear(), de.getMonth() - 1, 1),
+      ate: new Date(de.getFullYear(), de.getMonth() - 1, dia, 23, 59, 59, 999),
+      nome: 'mês passado'
+    };
+  }
+  const duracao = ate.getTime() - de.getTime();
+  const dias = Math.round(duracao / DIA_MS);
+  return {
+    de: new Date(de.getTime() - duracao - 1),
+    ate: new Date(de.getTime() - 1),
+    nome: rotulo === 'Hoje' ? 'ontem' : (dias <= 1 ? 'dia anterior' : `${dias} dias anteriores`)
+  };
+}
+
+function numerosDoPeriodo(de, ate) {
   const r = receitaNoIntervalo(de, ate);
   const custo = somar(custosNoIntervalo(de, ate));
-  const lucro = r.receita - custo;
-  const qtd = pagamentos().filter(p => { const t = new Date(p.em); return t >= de && t <= ate; }).length;
+  return { tpv: r.tpv, custo, receita: r.receita, lucro: r.receita - custo };
+}
+
+function renderKpis() {
+  const { de, ate } = intervalo();
+  const atual = numerosDoPeriodo(de, ate);
+  const anterior = periodoAnterior(de, ate);
+  const antes = anterior && numerosDoPeriodo(anterior.de, anterior.ate);
+
+  // Embaixo do valor: quanto foi no período anterior e a variação.
+  const comparacao = chave => {
+    if (!anterior) return 'Desde o início';
+    const a = atual[chave];
+    const b = antes[chave];
+    const prefixo = anterior.nome === 'ontem' ? '' : (/^\d/.test(anterior.nome) ? 'nos ' : 'no ');
+    const base = `${formatCurrency(b)} ${prefixo}${anterior.nome}`;
+    if (!b) return base;
+    const pct = ((a - b) / Math.abs(b)) * 100;
+    const sinal = pct > 0 ? '+' : '';
+    return `${sinal}${Math.round(pct)}% · ${base}`;
+  };
 
   const tile = (label, value, sub) => `
     <div class="kpi">
@@ -436,10 +480,10 @@ function renderKpis() {
     </div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('TPV', formatCurrency(r.tpv), `${formatNumber(qtd)} ${qtd === 1 ? 'pagamento' : 'pagamentos'} em presentes e contratos`),
-    tile('Custo total', formatCurrency(custo), 'Vercel, Supabase, Amazon e custos manuais'),
-    tile('Faturamento bruto', formatCurrency(r.receita), 'Comissões sobre o TPV'),
-    tile('Lucro líquido', formatCurrency(lucro), 'Faturamento bruto − custo total')
+    tile('TPV', formatCurrency(atual.tpv), comparacao('tpv')),
+    tile('Custo total', formatCurrency(atual.custo), comparacao('custo')),
+    tile('Faturamento bruto', formatCurrency(atual.receita), comparacao('receita')),
+    tile('Lucro líquido', formatCurrency(atual.lucro), comparacao('lucro'))
   ].join('');
 }
 

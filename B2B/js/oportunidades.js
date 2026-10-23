@@ -257,7 +257,29 @@ function opCardHtml(p) {
 }
 
 /* Chips de cidade (Todas + "Cidade (UF)" de cada pedido aberto). */
+/* Filtrar por: abre/fecha o menu e mostra quantos filtros estão ligados. */
+function opAtualizarQtdFiltros() {
+  const n = ['op-filtro-categoria', 'op-filtro-cidade', 'op-filtro-orcamento'].filter(id => document.getElementById(id)?.value).length;
+  const qtd = document.getElementById('op-filtrar-qtd');
+  if (qtd) { qtd.textContent = n ? ` (${n})` : ''; qtd.hidden = !n; }
+}
+function opLigarFiltrarPor() {
+  const btn = document.getElementById('op-filtrar-btn');
+  const menu = document.getElementById('op-filtrar-menu');
+  if (!btn || !menu) return;
+  const fechar = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', e => { e.stopPropagation(); menu.hidden = !menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+  document.getElementById('op-filtrar-limpar')?.addEventListener('click', () => {
+    ['op-filtro-categoria', 'op-filtro-cidade', 'op-filtro-orcamento'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    opRenderPedidos();
+  });
+}
+
 function opRenderChips() {
+  opAtualizarQtdFiltros();
   const qtd = document.getElementById('op-salvas-qtd');
   const n = opPedidos.filter(p => opSalvos.has(p.id)).length;
   if (qtd) qtd.textContent = n ? ` (${n})` : '';
@@ -683,6 +705,7 @@ function opLigarEventos() {
   document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
   document.getElementById('op-filtro-categoria').addEventListener('change', opRenderPedidos);
   document.getElementById('op-filtro-orcamento').addEventListener('change', opRenderPedidos);
+  opLigarFiltrarPor();
   document.querySelector('[data-op-salvas]').addEventListener('click', () => { opSoSalvas = !opSoSalvas; opRenderPedidos(); });
   document.querySelector('[data-op-nao-respondidas]').addEventListener('click', () => { opSoNaoRespondidas = !opSoNaoRespondidas; opRenderPedidos(); });
 

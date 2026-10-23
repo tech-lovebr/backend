@@ -10458,3 +10458,20 @@ html body .op-linha-rodape .op-linha-pills:not(#love-h-a) { margin-top: 0; min-w
 @media (max-width: 640px) {
   html body .op-linha-desc:not(#love-h-a) { -webkit-line-clamp: 2; }
 }
+
+/* Oportunidades › "Filtrar por" à direita da busca: menu com Categorias,
+   Cidades e Orçamentos. */
+html body .op-header-acoes:not(#love-h-a) { gap: 8px; }
+html body .op-filtrar:not(#love-h-a) { position: relative; }
+html body .op-filtrar-btn:not(#love-h-a) { height: 38px; gap: 6px; padding: 0 14px; white-space: nowrap; }
+html body .op-filtrar-menu:not(#love-h-a) {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 40; width: 280px; display: flex; flex-direction: column; gap: 12px; padding: 16px;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+html body .op-filtrar-menu[hidden]:not(#love-h-a) { display: none; }
+html body .op-filtrar-campo:not(#love-h-a) { display: flex; flex-direction: column; gap: 6px; }
+html body .op-filtrar-campo > span:not(#love-h-a) { font-size: 12px; font-weight: 600; color: #52525B; }
+html body .op-filtrar-campo .op-filtro-select:not(#love-h-a) { width: 100%; height: 38px; }
+html body .op-filtrar-limpar:not(#love-h-a) { align-self: flex-start; padding: 0; border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 600; color: #52525B; cursor: pointer; }
+html body .op-filtrar-limpar:hover:not(#love-h-a) { color: #181D24; }
+@media (max-width: 640px) { html body .op-filtrar-menu:not(#love-h-a) { width: min(280px, calc(100vw - 32px)); } }

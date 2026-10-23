@@ -252,6 +252,7 @@ module.exports = async (req, res) => {
   ]);
 
   const dados = { meses, cotacoes: taxas, itens: [vercel, supa, ses], atualizado_em: new Date().toISOString() };
-  CACHE = { em: Date.now(), dados };
+  // Com alguma integração em erro, não guarda: a próxima consulta tenta de novo.
+  if (!dados.itens.some(i => i.status === "erro")) CACHE = { em: Date.now(), dados };
   return res.status(200).json(dados);
 };

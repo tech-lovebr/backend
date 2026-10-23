@@ -90,7 +90,7 @@ async function identidade(cliente) {
   for (const nome of [dominio(), enderecoDe(remetentePadrao())]) {
     try {
       const r = await cliente.send(new GetEmailIdentityCommand({ EmailIdentity: nome }));
-      return { nome, verificada: r.VerifiedForSendingStatus === true, conjunto: r.ConfigurationSetAttributes && r.ConfigurationSetAttributes.ConfigurationSetName || null };
+      return { nome, verificada: r.VerifiedForSendingStatus === true, conjunto: r.ConfigurationSetName || (r.ConfigurationSetAttributes && r.ConfigurationSetAttributes.ConfigurationSetName) || null };
     } catch (e) {
       if (!naoExiste(e)) throw e;
     }
@@ -255,7 +255,8 @@ async function custo(dias) {
   } catch (e) {
     dados = { erro: mensagem(e) };
   }
-  CACHE_CUSTO.set(chave, { em: Date.now(), dados });
+  // Erro não fica guardado: depois de liberar a permissão, a próxima consulta já tenta de novo.
+  if (!dados.erro) CACHE_CUSTO.set(chave, { em: Date.now(), dados });
   return dados;
 }
 

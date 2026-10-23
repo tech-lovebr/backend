@@ -82,6 +82,7 @@ const OP_FAIXAS_ANTIGAS = {
 const opMilhar = n => Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
 // Nome de quem pediu (clientes), carregado junto com os pedidos.
 let opNomesClientes = {};
+let opFotosClientes = {};
 const opNomeAnfitriao = p => opNomesClientes[p.cliente_id] || 'Anfitrião(ã)';
 const opDataCurta = p => (p.data_flexivel || !p.data_evento) ? 'Data flexível'
   : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -128,8 +129,9 @@ async function opCarregarCategoriasDaEmpresa() {
 async function opCarregarNomes(ids) {
   const faltam = [...new Set(ids.filter(id => id && !opNomesClientes[id]))];
   if (!faltam.length) return;
-  const { data } = await supabaseClient.from('clientes').select('id, full_name, first_name, last_name, couple_name').in('id', faltam);
+  const { data } = await supabaseClient.from('clientes').select('id, full_name, first_name, last_name, couple_name, avatar_url').in('id', faltam);
   (data || []).forEach(c => {
+    if (c.avatar_url) opFotosClientes[c.id] = c.avatar_url;
     opNomesClientes[c.id] = String(c.full_name || [c.first_name, c.last_name].filter(Boolean).join(' ') || c.couple_name || '').trim();
   });
 }
@@ -165,6 +167,7 @@ function opPedidosFiltrados() {
   const busca = normal(document.getElementById('op-busca')?.value || '');
   return opPedidos.filter(p =>
     opMinhasCategorias.includes(p.categoria) &&
+    (!opSoSalvas || opSalvos.has(p.id)) &&
     (!uf || p.uf === uf) && (!cidade || p.cidade === cidade) &&
     (!busca || normal([opTitulo(p), p.cidade, p.bairro, p.uf, p.descricao, (p.especialidades || []).join(' ')].join(' ')).includes(busca)));
 }
@@ -218,7 +221,9 @@ function opRenderChips() {
   const atual = document.getElementById('op-filtro-cidade').value;
   const cidades = [...new Map(opPedidos.filter(p => p.cidade).map(p => [p.cidade + '|' + p.uf, p])).values()]
     .sort((a, b) => a.cidade.localeCompare(b.cidade, 'pt-BR'));
-  wrap.innerHTML = `<button type="button" class="op-chip${atual ? '' : ' is-ativo'}" data-op-chip="">Todas as cidades</button>` +
+  const salvasAbertas = opPedidos.filter(p => opSalvos.has(p.id)).length;
+  wrap.innerHTML = `<button type="button" class="op-chip op-chip-salvas${opSoSalvas ? ' is-ativo' : ''}" data-op-salvas aria-pressed="${opSoSalvas}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>Salvas${salvasAbertas ? ` (${salvasAbertas})` : ''}</button>` +
+    `<button type="button" class="op-chip${atual || opSoSalvas ? '' : ' is-ativo'}" data-op-chip="">Todas as cidades</button>` +
     cidades.map(p => `<button type="button" class="op-chip${atual === p.cidade ? ' is-ativo' : ''}" data-op-chip="${escapeHtml(p.cidade)}" data-op-chip-uf="${escapeHtml(p.uf || '')}">${escapeHtml(p.cidade)} (${escapeHtml(p.uf || '')})</button>`).join('');
 }
 
@@ -229,7 +234,9 @@ function opRenderPedidos() {
   grade.innerHTML = lista.map(opCardHtml).join('');
   opRenderChips();
   vazio.hidden = lista.length > 0;
-  vazio.textContent = opFiltroCat === 'minha'
+  vazio.textContent = opSoSalvas
+    ? 'Você ainda não salvou nenhuma solicitação. Abra uma e toque em Salvar vaga.'
+    : opFiltroCat === 'minha'
     ? 'Nenhum evento procurando a sua categoria agora. Avisaremos quando chegar um novo.'
     : 'Nenhum pedido aberto com esses filtros agora.';
 }
@@ -308,7 +315,7 @@ function opAbrirDetalhe(id) {
         <div class="op-analise-card" id="op-analise-anfitriao">
           <h4 class="op-analise-card-titulo">Sobre o anfitrião</h4>
           <div class="op-analise-pessoa">
-            <span class="op-analise-avatar">${escapeHtml(opIniciais(opNomeAnfitriao(p)))}</span>
+            <span class="op-analise-avatar">${opFotosClientes[p.cliente_id] ? `<img src="${escapeHtml(opFotosClientes[p.cliente_id])}" alt="">` : escapeHtml(opIniciais(opNomeAnfitriao(p)))}</span>
             <b>${escapeHtml(opNomeAnfitriao(p))}</b>
           </div>
           <ul class="op-analise-fatos" data-op-anfitriao-fatos>
@@ -344,6 +351,7 @@ function opFecharDetalhe() {
 /* -------------------- Salvar vaga --------------------
    Tabela pedidos_salvos (migration 080). Sem ela, guarda neste navegador. */
 let opSalvos = new Set();
+let opSoSalvas = false;
 const opChaveSalvos = () => `op-salvos-${opEmpresaId}`;
 let opSalvosNoBanco = true;
 async function opCarregarSalvos() {
@@ -360,6 +368,7 @@ async function opAlternarSalva() {
   if (!p) return;
   const salvar = !opSalvos.has(p.id);
   if (salvar) opSalvos.add(p.id); else opSalvos.delete(p.id);
+  opRenderChips();
   const btn = document.querySelector('[data-op-salvar]');
   if (btn) {
     btn.classList.toggle('is-salva', salvar);
@@ -405,13 +414,7 @@ async function opPreencherAnfitriao(p) {
   fatos.insertAdjacentHTML('beforeend', mais.join(''));
 }
 
-function opAtualizarCota() {
-  const el = document.getElementById('op-cota');
-  if (!el) return;
-  const limite = opLimiteDoPlano();
-  el.textContent = `${opEnviadasNoMes()} de ${limite} propostas este mês`;
-  el.title = limite >= 100 ? 'Plano Pro: até 100 propostas por mês' : 'Plano Gratuito: até 3 propostas por mês';
-}
+function opAtualizarCota() { /* o contador saiu do cabeçalho */ }
 function opEnviadasNoMes() {
   const agora = new Date();
   return opPropostas.filter(pr => { const d = new Date(pr.created_at); return d.getFullYear() === agora.getFullYear() && d.getMonth() === agora.getMonth(); }).length;
@@ -591,8 +594,10 @@ function opLigarEventos() {
 
   document.getElementById('op-busca')?.addEventListener('input', opRenderPedidos);
   document.getElementById('op-chips').addEventListener('click', e => {
+    if (e.target.closest('[data-op-salvas]')) { opSoSalvas = !opSoSalvas; opRenderPedidos(); return; }
     const chip = e.target.closest('[data-op-chip]');
     if (!chip) return;
+    opSoSalvas = false;
     const ufSel = document.getElementById('op-filtro-uf');
     ufSel.value = chip.dataset.opChipUf || '';
     opPreencherFiltrosDeLocal();
@@ -660,8 +665,8 @@ function leadsMostrarAba(aba) {
   if (voltar) voltar.hidden = true;
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
   document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
-  const cota = document.getElementById('op-cota');
-  if (cota) cota.hidden = aba !== 'eventos';
+  const busca = document.getElementById('op-header-acoes');
+  if (busca) busca.hidden = aba !== 'eventos';
   const titulo = document.getElementById('leads-titulo-pagina');
   if (titulo) titulo.textContent = aba === 'eventos' ? 'Buscar eventos' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');

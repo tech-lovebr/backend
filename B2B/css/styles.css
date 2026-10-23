@@ -10344,3 +10344,15 @@ html body .op-analise-barra:not(#love-h-a) { display: none; }
     background: #FFFFFF; border-top: 1px solid #E4E4E7;
   }
 }
+
+/* Buscar eventos: busca no cabeçalho; some com a solicitação aberta. */
+html body .op-header-acoes[hidden]:not(#love-h-a), html body.op-pedido-aberto .op-header-acoes:not(#love-h-a) { display: none; }
+html body .op-header-acoes .op-busca:not(#love-h-a) { width: 320px; }
+html body .op-toolbar[hidden]:not(#love-h-a) { display: none; }
+/* Chip "Salvas" (vagas salvas) antes das cidades. */
+html body .op-chip-salvas:not(#love-h-a) { display: inline-flex; align-items: center; gap: 6px; }
+html body .op-chip-salvas svg:not(#love-h-a) { width: 15px; height: 15px; }
+html body .op-chip-salvas.is-ativo svg:not(#love-h-a) { fill: currentColor; }
+/* Sobre o anfitrião: foto quadrada com cantos arredondados (como os avatares da Love). */
+html body .op-analise-avatar:not(#love-h-a) { width: 40px; height: 40px; border-radius: 8px; }
+@media (max-width: 640px) { html body .op-header-acoes .op-busca:not(#love-h-a) { width: auto; flex: 1 1 auto; } }

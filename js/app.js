@@ -8274,8 +8274,9 @@ document.addEventListener('DOMContentLoaded', () => {
     painel.hidden = !mostrar;
     grade.classList.toggle('hidden', mostrar);
     if (mostrar) grade.style.setProperty('display', 'none', 'important'); else grade.style.removeProperty('display');
-    const linhaDoTotal = document.getElementById('gifts-total-linha');
-    if (linhaDoTotal) linhaDoTotal.hidden = mostrar;
+    // Barra (busca + total) só na lista de presentes, não nas listas prontas.
+    const barra = document.getElementById('gifts-barra');
+    if (barra) barra.hidden = mostrar;
     botao?.setAttribute('aria-pressed', String(mostrar));
     botao?.classList.toggle('is-ativo', mostrar);
     const voltar = document.getElementById('btn-gifts-listas-voltar');

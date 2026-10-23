@@ -10760,3 +10760,9 @@ html body .rfp-etapa-titulo[hidden]:not(#love-h-a) { display: none; }
 html body #b2b-pedidos-view .rfp-etapa-titulo[hidden] + .rfp-etapa-sub:not(#love-h-a) { margin-top: 0; }
 html body .presentes-vazio-texto b:not(#love-h-a) { font-weight: 700; color: #18181B; }
 body[data-theme="dark"] .presentes-vazio-texto b { color: #FFFFFF !important; }
+
+/* Meus presentes: barra no topo da lista (busca à esquerda, total à direita),
+   igual à de Meus convidados; 24px até os cards. */
+html body #gifts-barra:not(#love-h-a) { margin-bottom: 24px; overflow: visible; }
+html body #gifts-barra[hidden]:not(#love-h-a) { display: none !important; }
+html body #gifts-barra .gifts-total-linha:not(#love-h-a) { margin: 0; font-size: 14px; }

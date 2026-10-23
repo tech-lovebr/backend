@@ -1972,7 +1972,8 @@
     pedidos.forEach(p => { pedidosCarregados[p.id] = p; });
     rascunhosCarregados = {};
     rascunhos.forEach(r => { rascunhosCarregados[r.id] = r; });
-    const ativas = pedidos.filter(p => p.status === 'aberto').length;
+    // O número da aba conta tudo o que aparece na lista: solicitações e rascunhos.
+    const ativas = pedidos.length + rascunhos.length;
     const abaMinhas = document.querySelector('#pedidos-abas [data-pedidos-aba="minhas"]');
     if (abaMinhas) abaMinhas.textContent = ativas ? `Minhas solicitações (${ativas})` : 'Minhas solicitações';
     numerosDasPropostas = {};

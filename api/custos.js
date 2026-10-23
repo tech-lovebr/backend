@@ -130,8 +130,14 @@ async function custoSupabase(meses) {
       const r = await fetch("https://api.supabase.com/v1/organizations", cabecalho);
       if (!r.ok) throw new Error(`Supabase respondeu ${r.status}`);
       const orgs = await r.json();
-      slug = orgs[0]?.slug || orgs[0]?.id;
-      if (!slug) throw new Error("Nenhuma organização encontrada");
+      slug = Array.isArray(orgs) ? (orgs[0]?.slug || orgs[0]?.id) : null;
+      if (!slug) {
+        // Alguns tokens não listam organizações: pega a do projeto.
+        const rp = await fetch("https://api.supabase.com/v1/projects", cabecalho);
+        const projetos = rp.ok ? await rp.json() : [];
+        slug = Array.isArray(projetos) ? (projetos[0]?.organization_slug || projetos[0]?.organization_id) : null;
+        if (!slug) throw new Error(`Token sem acesso à organização (organizações: ${Array.isArray(orgs) ? orgs.length : "?"}, projetos: ${Array.isArray(projetos) ? projetos.length : rp.status})`);
+      }
     }
     const r = await fetch(`https://api.supabase.com/v1/organizations/${encodeURIComponent(slug)}`, cabecalho);
     if (!r.ok) throw new Error(`Supabase respondeu ${r.status}`);

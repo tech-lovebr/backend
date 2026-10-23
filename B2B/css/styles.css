@@ -10514,3 +10514,48 @@ html body :is(.op-lista, .op-analise-principal, .op-analise-card, .op-pedido-cai
   box-shadow: var(--anel-suave) !important;
 }
 html body :is(.op-filtrar-menu, .modal-card, .topbar-dropdown):not(#love-h-a) { border-color: var(--borda-suave); }
+
+/* ==========================================================================
+   Padrão do index (Meus presentes, Recados, Carteira digital) em todo o Hub.
+   Medido lado a lado com love-tabela-caixa / love-tabela do index:
+   - Caixas: fundo branco, linha preto 6%, cantos 10px e SÓ o anel de 3%
+     (sem sombra caída). Cards clicáveis ganham no hover uma sombra bem leve.
+   - Tabelas: cabeçalho #F7F7F8 com linhas de 6% em cima e embaixo,
+     12px 16px; linhas com divisória de 4% entre elas, 14px 16px, texto
+     #18181B; hover #FAFAFA. Sem a moldura dupla (a caixa já tem a linha).
+   - Campos: linha de 6%; foco escurece para #181D24.
+   ========================================================================== */
+html body :is(.dash-card, .dashboard-help-card, .product-card, .plan-card, .verif-card, .nova-empresa-card,
+  .contratos-clientes-list-card, .agenda-notifications-card, .lead-import-card, .finance-stat-card, .wallet-card,
+  .dash-analytics-card, .dash-news-card, .settings-zola-card, .agenda-timeline-panel, .agenda-mini-calendar,
+  .comandos-vazio, .product-pacote-item, .op-lista, .op-analise-principal, .op-analise-card):not(.dash-ads-card):not(.guias-flat-card):not(#love-h-a):not(#love-h-b) {
+  border: 1px solid var(--borda-suave) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--anel-suave) !important;
+}
+html body #products-grid .product-card:not(#love-h-a):not(#love-h-b):hover,
+html body .op-linha:not(#love-h-a):not(#love-h-b):hover { box-shadow: var(--anel-suave), 0 4px 12px rgba(0, 0, 0, 0.05) !important; }
+
+/* Tabela dentro da caixa: sem a segunda moldura. */
+html body .leads-table-wrap:not(#love-h-a):not(#love-h-b) { border: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
+html body .leads-table thead th:not(#love-h-a):not(#love-h-b) {
+  background: #F7F7F8 !important;
+  border-top: 1px solid var(--borda-suave) !important;
+  border-bottom: 1px solid var(--borda-suave) !important;
+  padding-top: 12px !important; padding-bottom: 12px !important;
+  font-size: 13px !important; font-weight: 700 !important; color: #181D24 !important;
+}
+html body .leads-table thead tr:first-child th:not(#love-h-a):not(#love-h-b) { border-top-color: transparent !important; }
+html body .leads-table tbody td:not(#love-h-a):not(#love-h-b) {
+  border-top: 1px solid var(--divisor-suave, rgba(0, 0, 0, 0.04)) !important;
+  border-bottom: 0 !important;
+  padding-top: 14px !important; padding-bottom: 14px !important;
+  font-size: 14px !important; color: #18181B !important; background: #FFFFFF;
+}
+html body .leads-table tbody tr:first-child td:not(#love-h-a):not(#love-h-b) { border-top: 0 !important; }
+html body .leads-table tbody tr:hover td:not(#love-h-a):not(#love-h-b) { background: #FAFAFA !important; }
+:root { --divisor-suave: rgba(0, 0, 0, 0.04); }
+
+/* Campos: mesma linha fina do index. */
+html body :is(.field-input, .field-select, .field-textarea, .tabela-busca input, .op-filtro-select):not(#love-h-a):not(#love-h-b) { border-color: var(--borda-suave) !important; }
+html body :is(.field-input, .field-select, .field-textarea, .tabela-busca input, .op-filtro-select):not(#love-h-a):not(#love-h-b):focus { border-color: #181D24 !important; box-shadow: none !important; }

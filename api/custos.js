@@ -21,7 +21,7 @@ const crypto = require("crypto");
 const { supabaseAdmin } = require("./_ses");
 
 const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
-const MESES = 6;
+const MESES = 12;
 const PRECO_PLANO_SUPABASE = { free: 0, pro: 25, team: 599 };
 // Plano atual da Love na Supabase (decisão de 2026-10-23: fica no Free por
 // enquanto). Vale quando a API não deixa ler o plano. Ao mudar para o Pro,
@@ -98,15 +98,38 @@ async function custoVercel(meses) {
       registros = texto.split("\n").filter(l => l.trim()).map(l => JSON.parse(l));
     }
 
+    // Soma por mês e abre por serviço (Build CPU Minutes, Function Storage...),
+    // por projeto e por dia, para o detalhe e a previsão no Admin.
     const porMes = mesesZerados(meses);
+    const servicos = {};
+    const projetos = {};
+    const dias = {};
     let moeda = "USD";
     registros.forEach(c => {
-      const mes = String(c.ChargePeriodStart || c.BillingPeriodStart || "").slice(0, 7);
+      const inicio = String(c.ChargePeriodStart || c.BillingPeriodStart || "");
+      const mes = inicio.slice(0, 7);
       const valor = Number(c.BilledCost ?? c.EffectiveCost ?? 0) || 0;
       if (c.BillingCurrency) moeda = c.BillingCurrency;
-      if (mes in porMes) porMes[mes] += valor;
+      if (!(mes in porMes)) return;
+      porMes[mes] += valor;
+      const nome = c.ServiceName || c.ChargeDescription || "Outros";
+      const chave = `${mes}|${nome}`;
+      if (!servicos[chave]) servicos[chave] = { mes, servico: nome, valor: 0, lista: 0, quantidade: 0, unidade: c.PricingUnit || c.ConsumedUnit || "", tipo: c.ChargeCategory || "" };
+      servicos[chave].valor += valor;
+      servicos[chave].lista += Number(c.ListCost ?? c.EffectiveCost ?? valor) || 0;
+      servicos[chave].quantidade += Number(c.PricingQuantity ?? c.ConsumedQuantity ?? 0) || 0;
+      const projeto = c.Tags?.ProjectName || c.Tags?.projectName || c.Tags?.ProjectId || c.ResourceName || "";
+      if (projeto && mes === meses[meses.length - 1]) projetos[projeto] = (projetos[projeto] || 0) + valor;
+      const dia = inicio.slice(0, 10);
+      if (dia) dias[dia] = (dias[dia] || 0) + valor;
     });
-    return { ...base, moeda, status: "ativo", meses: porMes };
+    const exemplo = registros[0] ? Object.keys(registros[0]) : [];
+    return {
+      ...base, moeda, status: "ativo", meses: porMes,
+      servicos: Object.values(servicos).sort((a, b) => b.valor - a.valor),
+      projetos, dias, campos: exemplo,
+      exemplo_registro: registros.find(c => (c.ServiceName || "").includes("Build")) || registros[0] || null
+    };
   } catch (e) {
     return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
   }

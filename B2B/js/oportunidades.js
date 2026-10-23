@@ -165,12 +165,36 @@ function opPedidosFiltrados() {
   // Busca sem diferenciar maiúscula nem acento.
   const normal = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
   const busca = normal(document.getElementById('op-busca')?.value || '');
+  const categoria = document.getElementById('op-filtro-categoria')?.value || '';
+  const orcamento = document.getElementById('op-filtro-orcamento')?.value || '';
   return opPedidos.filter(p =>
     opMinhasCategorias.includes(p.categoria) &&
+    (!categoria || p.categoria === categoria) &&
+    (!orcamento || opNaFaixa(p, orcamento)) &&
+    (!opSoNaoRespondidas || !opMinhaProposta(p.id)) &&
     (!opSoSalvas || opSalvos.has(p.id)) &&
     (!uf || p.uf === uf) && (!cidade || p.cidade === cidade) &&
-    (!busca || normal([opTitulo(p), p.cidade, p.bairro, p.uf, p.descricao, (p.especialidades || []).join(' ')].join(' ')).includes(busca)));
+    (!busca || normal([opTitulo(p), OP_CATEGORIA_NOME[p.categoria], p.cidade, p.bairro, p.uf, p.descricao, (p.especialidades || []).join(' ')].join(' ')).includes(busca)));
 }
+
+let opSoNaoRespondidas = false;
+/* Faixa de orçamento do pedido (min/max ou a faixa antiga) cruza com a do filtro? */
+function opNaFaixa(p, filtro) {
+  const [fMin, fMax] = filtro.split('-').map(v => (v === '' ? null : Number(v)));
+  const antiga = OP_FAIXAS[p.faixa];
+  const min = Number(p.valor_min) > 0 ? Number(p.valor_min) : (antiga ? antiga.min : null);
+  const max = Number(p.valor_max) > 0 ? Number(p.valor_max) : (antiga ? antiga.max : null);
+  if (min == null && max == null) return false;
+  const pMin = min == null ? 0 : min;
+  const pMax = max == null ? Infinity : max;
+  return pMax >= fMin && (fMax == null || pMin <= fMax);
+}
+/* Urgente: evento nos próximos 14 dias. */
+const opUrgente = p => {
+  if (p.data_flexivel || !p.data_evento) return false;
+  const dias = (new Date(p.data_evento + 'T00:00:00') - new Date()) / 86400000;
+  return dias >= 0 && dias <= 14;
+};
 
 function opPreencherFiltrosDeLocal() {
   const ufSel = document.getElementById('op-filtro-uf');
@@ -181,8 +205,18 @@ function opPreencherFiltrosDeLocal() {
   ufSel.value = ufs.includes(ufAtual) ? ufAtual : '';
   const cidAtual = cidSel.value;
   const cidades = [...new Set(opPedidos.filter(p => !ufSel.value || p.uf === ufSel.value).map(p => p.cidade).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  cidSel.innerHTML = '<option value="">Todas as cidades</option>' + cidades.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  cidSel.innerHTML = '<option value="">Todas as cidades</option>' + cidades.map(c => {
+    const uf = (opPedidos.find(p => p.cidade === c) || {}).uf;
+    return `<option value="${escapeHtml(c)}">${escapeHtml(c)}${uf ? ` - ${escapeHtml(uf)}` : ''}</option>`;
+  }).join('');
   cidSel.value = cidades.includes(cidAtual) ? cidAtual : '';
+  const catSel = document.getElementById('op-filtro-categoria');
+  if (catSel) {
+    const catAtual = catSel.value;
+    catSel.innerHTML = '<option value="">Todas as categorias</option>' + opMinhasCategorias
+      .map(c => `<option value="${escapeHtml(c)}">${escapeHtml(OP_CATEGORIA_NOME[c] || opCategoria(c))}</option>`).join('');
+    catSel.value = opMinhasCategorias.includes(catAtual) ? catAtual : '';
+  }
 }
 
 /* Card no modelo do Explorar (love.com.br, visão em grade): imagem larga em
@@ -190,41 +224,47 @@ function opPreencherFiltrosDeLocal() {
    cidade ao lado, quem pede, faixa e data, e os botões embaixo. */
 function opCardHtml(p) {
   const minha = opMinhaProposta(p.id);
-  const foto = (p.referencias || [])[0];
+  const salva = opSalvos.has(p.id);
   const icone = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const local = [p.cidade, p.uf].filter(Boolean).join(' - ');
+  const pills = [
+    [icone('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>'), opDataLonga(p)],
+    [icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>'), local],
+    [icone('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5M16 5.2a3 3 0 0 1 0 5.6M18 14.3c1.7.6 2.8 2.2 3 4.7"/>'), OP_CONVIDADOS_NOME[p.convidados] ? `${OP_CONVIDADOS_NOME[p.convidados]} convidados` : ''],
+    [icone('<path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/>'), opFaixaTexto(p) === 'A combinar' ? 'Aberto a negociação' : opFaixaTexto(p)]
+  ].filter(([, t]) => t);
   return `
-    <article class="op-card2" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
-      <div class="op-card2-imagem">
-        ${foto ? `<img src="${escapeHtml(foto)}" alt="" loading="lazy">` : `<span class="op-item-imagem-cat">${escapeHtml(opCategoria(p.categoria))}</span>`}
-        ${opNovo(p) ? '<span class="op-selo-novo op-selo-sobre">Novo</span>' : ''}
+    <article class="op-linha" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
+      <div class="op-linha-topo">
+        <span class="op-analise-badge">${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</span>
+        ${p.created_at ? `<span class="op-linha-quando">Publicado ${escapeHtml(opHaQuanto(p.created_at))}</span>` : ''}
+        ${opNovo(p) ? '<span class="op-linha-selo is-novo">Novo</span>' : ''}
+        ${opUrgente(p) ? '<span class="op-linha-selo is-urgente">Urgente</span>' : ''}
+        <span class="op-linha-quem">${minha
+          ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>`
+          : escapeHtml(opNomeAnfitriao(p))}</span>
+        <button type="button" class="op-linha-salvar${salva ? ' is-salva' : ''}" data-op-salvar-linha="${escapeHtml(p.id)}" aria-pressed="${salva}" aria-label="${salva ? 'Remover das salvas' : 'Salvar vaga'}" data-dica="${salva ? 'Salva' : 'Salvar vaga'}">
+          ${icone('<path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/>')}
+        </button>
       </div>
-      <div class="op-card2-corpo">
-        <h3 class="op-card2-titulo">${escapeHtml(opTitulo(p))}</h3>
-        <p class="op-card2-linha">${icone('<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/>')}${escapeHtml(opNomeAnfitriao(p))}</p>
-        <p class="op-card2-linha">${icone('<path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/>')}${escapeHtml(opFaixaTexto(p))}</p>
-        <p class="op-card2-linha op-card2-linha-data">
-          <span>${icone('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>')}${escapeHtml(opDataCurta(p))}</span>
-          <span class="op-item-cidade">${icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>')}${escapeHtml(p.cidade || '')}</span>
-        </p>
-        <div class="op-card2-acoes">
-          <span class="op-card2-ver">Ver solicitação</span>
-          ${minha ? `<span class="op-status ${OP_STATUS[minha.status].classe} op-card2-status">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''}
-        </div>
+      <h3 class="op-linha-titulo">${escapeHtml(opTitulo(p))}</h3>
+      ${p.descricao ? `<p class="op-linha-desc">${escapeHtml(String(p.descricao).trim())}</p>` : ''}
+      <div class="op-linha-rodape">
+        <div class="op-linha-pills">${pills.map(([svg, t]) => `<span class="op-linha-pill">${svg}${escapeHtml(t)}</span>`).join('')}</div>
+        <span class="btn-secondary op-linha-acao">${minha ? 'Ver detalhes' : 'Ver detalhes e enviar proposta'}</span>
       </div>
     </article>`;
 }
 
 /* Chips de cidade (Todas + "Cidade (UF)" de cada pedido aberto). */
 function opRenderChips() {
-  const wrap = document.getElementById('op-chips');
-  if (!wrap) return;
-  const atual = document.getElementById('op-filtro-cidade').value;
-  const cidades = [...new Map(opPedidos.filter(p => p.cidade).map(p => [p.cidade + '|' + p.uf, p])).values()]
-    .sort((a, b) => a.cidade.localeCompare(b.cidade, 'pt-BR'));
-  const salvasAbertas = opPedidos.filter(p => opSalvos.has(p.id)).length;
-  wrap.innerHTML = `<button type="button" class="op-chip op-chip-salvas${opSoSalvas ? ' is-ativo' : ''}" data-op-salvas aria-pressed="${opSoSalvas}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/></svg>Salvas${salvasAbertas ? ` (${salvasAbertas})` : ''}</button>` +
-    `<button type="button" class="op-chip${atual || opSoSalvas ? '' : ' is-ativo'}" data-op-chip="">Todas as cidades</button>` +
-    cidades.map(p => `<button type="button" class="op-chip${atual === p.cidade ? ' is-ativo' : ''}" data-op-chip="${escapeHtml(p.cidade)}" data-op-chip-uf="${escapeHtml(p.uf || '')}">${escapeHtml(p.cidade)} (${escapeHtml(p.uf || '')})</button>`).join('');
+  const qtd = document.getElementById('op-salvas-qtd');
+  const n = opPedidos.filter(p => opSalvos.has(p.id)).length;
+  if (qtd) qtd.textContent = n ? ` (${n})` : '';
+  document.querySelector('[data-op-salvas]')?.classList.toggle('is-ativo', opSoSalvas);
+  document.querySelector('[data-op-salvas]')?.setAttribute('aria-pressed', String(opSoSalvas));
+  document.querySelector('[data-op-nao-respondidas]')?.classList.toggle('is-ativo', opSoNaoRespondidas);
+  document.querySelector('[data-op-nao-respondidas]')?.setAttribute('aria-pressed', String(opSoNaoRespondidas));
 }
 
 function opRenderPedidos() {
@@ -354,12 +394,13 @@ async function opCarregarSalvos() {
   }
   opSalvos = new Set((data || []).map(x => x.pedido_id));
 }
-async function opAlternarSalva() {
-  const p = opPedidoAberto;
+async function opAlternarSalva(id) {
+  const p = id ? { id } : opPedidoAberto;
   if (!p) return;
   const salvar = !opSalvos.has(p.id);
   if (salvar) opSalvos.add(p.id); else opSalvos.delete(p.id);
   opRenderChips();
+  if (!document.body.classList.contains('op-pedido-aberto')) opRenderPedidos();
   const btn = document.querySelector('[data-op-salvar]');
   if (btn) {
     btn.classList.toggle('is-salva', salvar);
@@ -639,23 +680,20 @@ function opLigarEventos() {
     document.querySelectorAll('[data-op-cat]').forEach(x => x.classList.toggle('active', x === b));
     opRenderPedidos();
   }));
-  document.getElementById('op-filtro-uf').addEventListener('change', () => { opPreencherFiltrosDeLocal(); opRenderPedidos(); });
   document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
+  document.getElementById('op-filtro-categoria').addEventListener('change', opRenderPedidos);
+  document.getElementById('op-filtro-orcamento').addEventListener('change', opRenderPedidos);
+  document.querySelector('[data-op-salvas]').addEventListener('click', () => { opSoSalvas = !opSoSalvas; opRenderPedidos(); });
+  document.querySelector('[data-op-nao-respondidas]').addEventListener('click', () => { opSoNaoRespondidas = !opSoNaoRespondidas; opRenderPedidos(); });
 
   document.getElementById('op-busca')?.addEventListener('input', opRenderPedidos);
-  document.getElementById('op-chips').addEventListener('click', e => {
-    if (e.target.closest('[data-op-salvas]')) { opSoSalvas = !opSoSalvas; opRenderPedidos(); return; }
-    const chip = e.target.closest('[data-op-chip]');
-    if (!chip) return;
-    opSoSalvas = false;
-    const ufSel = document.getElementById('op-filtro-uf');
-    ufSel.value = chip.dataset.opChipUf || '';
-    opPreencherFiltrosDeLocal();
-    document.getElementById('op-filtro-cidade').value = chip.dataset.opChip;
-    opRenderPedidos();
-  });
   const grade = document.getElementById('op-grade');
-  grade.addEventListener('click', e => { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); });
+  grade.addEventListener('click', e => {
+    const salvar = e.target.closest('[data-op-salvar-linha]');
+    if (salvar) { e.stopPropagation(); opAlternarSalva(salvar.dataset.opSalvarLinha); return; }
+    const c = e.target.closest('[data-op-pedido]');
+    if (c) opAbrirDetalhe(c.dataset.opPedido);
+  });
   grade.addEventListener('keydown', e => { if (e.key === 'Enter') { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); } });
 
   document.getElementById('op-pedido-voltar').addEventListener('click', opFecharDetalhe);

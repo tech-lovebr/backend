@@ -10395,3 +10395,66 @@ html body .op-prop-sub:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 6px
 html body .op-prop-sub span:not(#love-h-a) { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 6px; background: #F4F4F5; font-size: 13px; font-weight: 500; color: #3F3F46; }
 html body .op-prop-abas:not(#love-h-a) { gap: 0; }
 html body .op-prop-aba:not(#love-h-a) { flex: 1 1 0; text-align: center; }
+
+/* ==========================================================================
+   Oportunidades em lista (feed): uma por linha, sem imagem — topo com
+   categoria, quando, selos e salvar; título, prévia da descrição, pills de
+   data/local/convidados/orçamento e o rodapé com a ação.
+   ========================================================================== */
+html body .op-filtros:not(#love-h-a) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 16px; }
+html body .op-filtro-select:not(#love-h-a) {
+  height: 36px; padding: 0 30px 0 12px; border: 1px solid #E4E4E7; border-radius: 8px; background-color: #FFFFFF;
+  font-family: inherit; font-size: 13px; font-weight: 500; color: #18181B; cursor: pointer;
+}
+html body .op-filtro-select:hover:not(#love-h-a), html body .op-filtro-select:focus:not(#love-h-a) { border-color: #181D24; outline: none; }
+html body .op-filtros-sep:not(#love-h-a) { width: 1px; height: 20px; margin: 0 4px; background: #E4E4E7; }
+html body .op-filtros .op-chip:not(#love-h-a) { height: 36px; }
+html body .op-lista:not(#love-h-a) { display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; }
+html body .op-lista:empty:not(#love-h-a) { display: none; }
+html body .op-linha:not(#love-h-a) { display: flex; flex-direction: column; gap: 8px; padding: 18px 22px; border-top: 1px solid rgba(0,0,0,0.06); cursor: pointer; transition: background-color .15s ease; outline: none; }
+html body .op-linha:first-child:not(#love-h-a) { border-top: none; }
+html body .op-linha:hover:not(#love-h-a), html body .op-linha:focus-visible:not(#love-h-a) { background: #FAFAFA; }
+html body .op-linha-topo:not(#love-h-a) { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 12px; color: #71717A; }
+html body .op-linha-selo:not(#love-h-a) { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+html body .op-linha-selo.is-novo:not(#love-h-a) { background: #E8EEF3; color: #183b54; }
+html body .op-linha-selo.is-urgente:not(#love-h-a) { background: #FEF3C7; color: #92400E; }
+html body .op-linha-salvar:not(#love-h-a) { margin-left: auto; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; border-radius: 8px; color: #71717A; cursor: pointer; }
+html body .op-linha-salvar:hover:not(#love-h-a) { color: #181D24; }
+html body .op-linha-salvar svg:not(#love-h-a) { width: 20px; height: 20px; }
+html body .op-linha-salvar.is-salva:not(#love-h-a) { color: #183b54; }
+html body .op-linha-salvar.is-salva svg:not(#love-h-a) { fill: #183b54; }
+html body .op-linha-titulo:not(#love-h-a) { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; color: #18181B; }
+html body .op-linha:hover .op-linha-titulo:not(#love-h-a) { text-decoration: underline; text-underline-offset: 3px; }
+html body .op-linha-desc:not(#love-h-a) { margin: 0; font-size: 14px; line-height: 1.5; color: #71717A; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+html body .op-linha-pills:not(#love-h-a) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+html body .op-linha-pill:not(#love-h-a) { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 6px; background: #F4F4F5; font-size: 13px; font-weight: 500; color: #3F3F46; }
+html body .op-linha-pill svg:not(#love-h-a) { width: 15px; height: 15px; color: #71717A; }
+html body .op-linha-rodape:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+html body .op-linha-status:not(#love-h-a) { font-size: 13px; color: #71717A; min-width: 0; }
+html body .op-linha-acao:not(#love-h-a) { flex-shrink: 0; height: 36px; padding: 0 14px; font-size: 13px; font-weight: 600; pointer-events: none; }
+html body .op-linha:hover .op-linha-acao:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+@media (max-width: 640px) {
+  html body .op-linha:not(#love-h-a) { padding: 16px; }
+  html body .op-linha-rodape:not(#love-h-a) { flex-direction: column; align-items: stretch; }
+  html body .op-linha-acao:not(#love-h-a) { width: 100%; height: 44px; justify-content: center; }
+  html body .op-filtro-select:not(#love-h-a) { flex: 1 1 140px; }
+  html body .op-filtros-sep:not(#love-h-a) { display: none; }
+}
+body[data-theme="dark"] .op-lista { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .op-linha:hover { background: #2A2A2A !important; }
+body[data-theme="dark"] .op-linha-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .op-linha-pill { background: #333333 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .op-filtro-select { background-color: #252525 !important; border-color: #404040 !important; color: #F4F4F5 !important; }
+
+/* Lista mais compacta (5–6 por tela): quem pediu sobe para o topo, a
+   prévia fica numa linha e a ação divide a linha com as pílulas. */
+html body .op-linha:not(#love-h-a) { gap: 6px; padding: 14px 20px; }
+html body .op-linha-quem:not(#love-h-a) { color: #52525B; font-weight: 500; }
+html body .op-linha-quem:not(:empty):not(#love-h-a)::before { content: "·"; margin-right: 10px; color: #A1A1AA; }
+html body .op-linha-salvar:not(#love-h-a) { width: 28px; height: 28px; margin-top: -4px; margin-bottom: -4px; }
+html body .op-linha-desc:not(#love-h-a) { -webkit-line-clamp: 1; }
+html body .op-linha-rodape:not(#love-h-a) { margin-top: 2px; align-items: center; }
+html body .op-linha-rodape .op-linha-pills:not(#love-h-a) { margin-top: 0; min-width: 0; }
+@media (max-width: 640px) {
+  html body .op-linha-desc:not(#love-h-a) { -webkit-line-clamp: 2; }
+}

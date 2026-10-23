@@ -10739,3 +10739,13 @@ html body button.floorplan-lista-voltar:not(#love-h-a):hover { background: #F4F6
 .floorplan-lista-voltar svg { width: 18px; height: 18px; }
 body[data-theme="dark"] button.floorplan-lista-mover { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] button.floorplan-lista-voltar { color: #FFFFFF !important; }
+
+/* Cards "Serviço avulso" / "Evento completo": ícone em cima, nome e texto
+   embaixo, bolinha de seleção no canto (modelo da referência). */
+html body button.rfp-modo:not(#love-h-a) { flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px 48px 18px 18px; }
+html body .rfp-modo .rfp-modo-icone:not(#love-h-a) { width: auto; height: auto; background: transparent; border-radius: 0; color: #18181B; }
+html body .rfp-modo .rfp-modo-icone svg:not(#love-h-a) { width: 22px; height: 22px; }
+html body .rfp-modo .rfp-modo-textos b:not(#love-h-a) { font-size: 15px; }
+html body .rfp-modo .rfp-modo-textos span:not(#love-h-a) { font-size: 14px; }
+html body .rfp-modo .rfp-lote-cat-check:not(#love-h-a) { top: 18px; right: 18px; width: 22px; height: 22px; }
+body[data-theme="dark"] .rfp-modo .rfp-modo-icone { background: transparent !important; }

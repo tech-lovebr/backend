@@ -137,7 +137,7 @@
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
   const TITULO_DA_LISTA = 'Minhas solicitações';
-  const TITULO_DA_NOVA = 'Criar solicitação';
+  const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 1000;
   const MAX_FOTOS = 5;
@@ -1021,7 +1021,7 @@
     return e;
   }
 
-  const TEXTO_DA_PAGINA = { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo solicitando vários fornecedores de uma só vez.' };
+  const TEXTO_DA_PAGINA = { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' };
 
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
   function htmlEventoCompacto() {
@@ -1076,8 +1076,8 @@
       </button>`;
     return `
       <div class="rfp-modos" role="radiogroup" aria-label="Como você prefere começar">
-        ${card('unico', 'Serviço específico', 'Contrate um fornecedor pontual (ex.: apenas o DJ, apenas o bolo ou apenas o espaço).', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
-        ${card('completo', 'Montar evento completo', 'Defina os dados do evento uma única vez e selecione todos os profissionais que você precisa.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
+        ${card('unico', 'Serviço avulso', 'Escolha uma categoria e encontre o fornecedor ideal.', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
+        ${card('completo', 'Evento completo', 'Receba todos os orçamentos para o seu evento completo de uma só vez.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
       </div>`;
   }
 

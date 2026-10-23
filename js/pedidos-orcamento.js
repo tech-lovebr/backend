@@ -1139,13 +1139,10 @@
     propostasAbertas = [];
     const ped = pedidosCarregados[id] || {};
     const cat = categoriaPorId(ped.categoria);
-    const quando = ped.data_flexivel || !ped.data_evento ? 'Data flexível' : formatarData(ped.data_evento);
-    const sub = [cat ? cat.nome : '', nomeDaCelebracao(ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
     det.innerHTML = `
       <div class="rfp-propostas-topo">
         <div class="min-w-0">
           <h3 class="rfp-propostas-titulo">${esc(ped.titulo || (cat ? cat.nome : 'Solicitação'))}</h3>
-          ${sub ? `<p class="rfp-propostas-sub">${esc(sub)}</p>` : ''}
         </div>
       </div>
       <div class="love-tabs-nav rfp-propostas-abas" id="rfp-propostas-abas" role="tablist"></div>
@@ -1177,7 +1174,7 @@
       aceitas: propostasAbertas.filter(x => x.status === 'aceita'),
       arquivadas: propostasAbertas.filter(x => x.status === 'recusada')
     };
-    const rotulos = { todas: 'Todas as propostas', mensagens: 'Com mensagens', aceitas: 'Aceitas', arquivadas: 'Recusadas' };
+    const rotulos = { todas: 'Todas as propostas', mensagens: 'Mensagens', aceitas: 'Aceitas', arquivadas: 'Recusadas' };
     abas.innerHTML = Object.entries(rotulos).map(([id, nome]) =>
       `<button type="button" class="love-tab-item${abaDasPropostas === id ? ' active' : ''}" data-rfp-aba-propostas="${id}">${nome} (${grupos[id].length})</button>`).join('');
     const itens = grupos[abaDasPropostas] || [];

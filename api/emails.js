@@ -60,8 +60,10 @@ const credenciais = () => ({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 const regiao = () => process.env.AWS_REGION || "us-east-1";
-const sesv2 = () => new SESv2Client({ region: regiao(), credentials: credenciais() });
-const sns = () => new SNSClient({ region: regiao(), credentials: credenciais() });
+// Tempo-limite curto: a tela do Admin espera esta resposta para mostrar a conexão.
+const LIMITES = { maxAttempts: 2, requestHandler: { connectionTimeout: 3000, requestTimeout: 7000 } };
+const sesv2 = () => new SESv2Client({ region: regiao(), credentials: credenciais(), ...LIMITES });
+const sns = () => new SNSClient({ region: regiao(), credentials: credenciais(), ...LIMITES });
 
 const remetentePadrao = () => process.env.EMAIL_FROM || "Love <contato@love.com.br>";
 const dominio = () => enderecoDe(remetentePadrao()).split("@")[1] || "love.com.br";
@@ -235,7 +237,7 @@ async function custo(dias) {
   const fim = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
   let dados;
   try {
-    const ce = new CostExplorerClient({ region: "us-east-1", credentials: credenciais() });
+    const ce = new CostExplorerClient({ region: "us-east-1", credentials: credenciais(), ...LIMITES });
     const r = await ce.send(new GetCostAndUsageCommand({
       TimePeriod: { Start: inicio, End: fim },
       Granularity: "DAILY",
@@ -245,7 +247,7 @@ async function custo(dias) {
     const usd = (r.ResultsByTime || []).reduce((s, p) => s + (Number(p.Total && p.Total.UnblendedCost && p.Total.UnblendedCost.Amount) || 0), 0);
     let cotacao = null;
     try {
-      const j = await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL")).json();
+      const j = await (await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL", { signal: AbortSignal.timeout(4000) })).json();
       cotacao = Number(j.USDBRL && j.USDBRL.bid) || null;
     } catch { /* sem cotação */ }
     dados = { usd, brl: cotacao ? usd * cotacao : null, cotacao };

@@ -79,7 +79,8 @@ async function chamarApi(metodo, corpo, consulta = '') {
   const r = await fetch(`${API_EMAILS}${consulta}`, {
     method: metodo,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
-    body: corpo ? JSON.stringify(corpo) : undefined
+    body: corpo ? JSON.stringify(corpo) : undefined,
+    signal: AbortSignal.timeout(metodo === 'GET' ? 25000 : 60000)
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
@@ -113,10 +114,12 @@ async function carregarEnvios() {
 }
 
 async function carregarSituacao() {
+  // O quadro aparece na hora; a consulta à AWS completa depois.
+  if (!SITUACAO) { SITUACAO = { verificando: true }; renderConexao(); }
   try {
     SITUACAO = await chamarApi('GET', null, `?dias=${DIAS}`);
   } catch (e) {
-    SITUACAO = { erroApi: e.message };
+    SITUACAO = { erroApi: e.name === 'TimeoutError' ? 'A AWS demorou para responder' : e.message };
   }
   renderConexao();
   renderKpis();
@@ -135,9 +138,14 @@ function renderConexao() {
   const s = SITUACAO || {};
   let html = '';
 
-  if (s.erroApi) {
+  if (s.verificando) {
+    html = `<div class="conexao-texto"><strong>Amazon SES</strong>
+      <p>Verificando a conexão com a sua conta AWS...</p><ul class="conexao-lista" id="conexao-passos"></ul></div>
+      <button type="button" class="btn btn-primary" id="btn-conectar-ses">Conectar Amazon SES</button>`;
+  } else if (s.erroApi) {
     html = `<div class="conexao-texto"><strong>Não foi possível falar com a função de e-mails</strong>
-      <p>${escapeHtml(s.erroApi)}. A /api/emails sobe com o próximo deploy do love.com.br.</p></div>`;
+      <p>${escapeHtml(s.erroApi)}. Você ainda pode tentar conectar.</p><ul class="conexao-lista" id="conexao-passos"></ul></div>
+      <button type="button" class="btn btn-primary" id="btn-conectar-ses">Conectar Amazon SES</button>`;
   } else if (!s.configurado) {
     html = `<div class="conexao-texto"><strong>Amazon SES sem chaves</strong>
       <p>Coloque AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY e EMAIL_FROM nas variáveis da Vercel.</p></div>`;

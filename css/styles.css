@@ -10728,3 +10728,14 @@ body[data-theme="dark"] button.rfp-modo.ativo { border-color: #EBF4FF !important
 body[data-theme="dark"] .rfp-modo-textos b, body[data-theme="dark"] .rfp-lote-linha-topo b { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-modo-icone { background: #333333 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-lote-linha { border-color: #404040 !important; }
+
+/* Lista da mesa: "Mover" à esquerda do X e a tela "< Mover (nome) para" no mesmo pop-up. */
+html body button.floorplan-lista-mover:not(#love-h-a) { height: 28px; padding: 0 10px; margin-right: 2px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 600; color: #3F3F46; cursor: pointer; flex-shrink: 0; }
+html body button.floorplan-lista-mover:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+html body .floorplan-lista-topo-mover:not(#love-h-a) { justify-content: flex-start; gap: 6px; }
+html body .floorplan-lista-topo-mover p:not(#love-h-a) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body button.floorplan-lista-voltar:not(#love-h-a) { width: 28px; height: 28px; margin-left: -6px; padding: 0; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; }
+html body button.floorplan-lista-voltar:not(#love-h-a):hover { background: #F4F6F7; }
+.floorplan-lista-voltar svg { width: 18px; height: 18px; }
+body[data-theme="dark"] button.floorplan-lista-mover { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] button.floorplan-lista-voltar { color: #FFFFFF !important; }

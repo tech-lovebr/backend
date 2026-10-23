@@ -18413,6 +18413,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function mostrarAbaDeContratos(aba) {
     abaDeContratos = aba;
     const solicitacoes = aba === 'solicitacoes';
+    document.getElementById('contratos-abas')?.classList.remove('hidden');
     document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.contratosAba === aba));
     document.getElementById('contratos-painel-solicitacoes')?.classList.toggle('hidden', !solicitacoes);
     document.getElementById('contratos-painel-contratos')?.classList.toggle('hidden', solicitacoes);

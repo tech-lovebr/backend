@@ -299,6 +299,7 @@
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
     if (titulo && pedidosAberto) titulo.textContent = aberta ? TITULO_DA_NOVA : TITULO_DA_LISTA;
     if (voltar) voltar.hidden = true;
+    if (vendoPropostas) { vendoPropostas = false; document.getElementById('contratos-abas')?.classList.remove('hidden'); }
     if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 
@@ -1031,6 +1032,7 @@
   }
 
   async function mostrarLista() {
+    if (vendoPropostas) modoPropostas(false);
     document.getElementById('rfp-lista-wrap')?.classList.remove('hidden');
     document.getElementById('rfp-propostas')?.classList.add('hidden');
     const caixa = document.getElementById('rfp-lista');
@@ -1096,6 +1098,17 @@
   /** @param {number} v */
   const reais = (v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+  let vendoPropostas = false;
+  /** Cabeçalho "Propostas recebidas" com a seta à esquerda; esconde as abas de Contratos. @param {boolean} ligado */
+  function modoPropostas(ligado) {
+    vendoPropostas = ligado;
+    const titulo = document.getElementById('b2b-toolbar-title');
+    const voltar = document.getElementById('btn-rfp-voltar');
+    if (titulo) titulo.textContent = ligado ? 'Propostas recebidas' : 'Contratos';
+    if (voltar) { voltar.hidden = !ligado; voltar.setAttribute('aria-label', 'Voltar para Minhas solicitações'); }
+    document.getElementById('contratos-abas')?.classList.toggle('hidden', ligado);
+  }
+
   /** @param {string} id */
   async function mostrarPropostas(id) {
     const wrap = document.getElementById('rfp-lista-wrap');
@@ -1103,6 +1116,8 @@
     if (!det || typeof supabaseClient === 'undefined') return;
     wrap?.classList.add('hidden');
     det.classList.remove('hidden');
+    modoPropostas(true);
+    window.scrollTo({ top: 0 });
     abaDasPropostas = 'todas';
     propostasAbertas = [];
     const ped = pedidosCarregados[id] || {};
@@ -1111,9 +1126,6 @@
     const sub = [cat ? cat.nome : '', nomeDaCelebracao(ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
     det.innerHTML = `
       <div class="rfp-propostas-topo">
-        <button type="button" class="rfp-voltar-seta" data-rfp-propostas-voltar aria-label="Voltar para as solicitações">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
         <div class="min-w-0">
           <h3 class="rfp-propostas-titulo">${esc(ped.titulo || (cat ? cat.nome : 'Solicitação'))}</h3>
           ${sub ? `<p class="rfp-propostas-sub">${esc(sub)}</p>` : ''}
@@ -1266,7 +1278,8 @@
   });
 
   document.addEventListener('click', (e) => {
-    if (e.target instanceof Element && e.target.closest('#btn-rfp-voltar')) sair();
+    if (!(e.target instanceof Element) || !e.target.closest('#btn-rfp-voltar')) return;
+    if (vendoPropostas) mostrarLista(); else sair();
   });
 
   window.LovePedidos = { abrir, fechar, mostrarLista, CATEGORIAS, FAIXAS };

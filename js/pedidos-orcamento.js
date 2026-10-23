@@ -14,7 +14,7 @@
   'use strict';
 
   /**
-   * @typedef {'fotografia'|'buffet'|'espaco'|'decoracao'|'musica'|'assessoria'|'bebidas'|'doces'} RfpCategory
+   * @typedef {'fotografia'|'buffet'|'espaco'|'decoracao'|'musica'|'assessoria'|'bebidas'|'doces'|'staff'} RfpCategory
    * @typedef {'economico'|'moderado'|'premium'|'exclusivo'} RfpBudgetTier
    * @typedef {string} RfpCelebracao  id da lista (casamento…) ou 'outro'
    * @typedef {'ate-50'|'50-100'|'100-200'|'200-mais'} RfpConvidados
@@ -54,14 +54,17 @@
       tags: ['Ao ar livre', 'Salão fechado', 'Campo', 'Praia', 'Sítio / chácara', 'Fazenda', 'Vinícola', 'Rooftop', 'Casa de festas', 'Restaurante', 'Hotel', 'Igreja / capela', 'Galpão / industrial', 'Jardim', 'Beira de lago', 'Serra / montanha', 'Com hospedagem', 'Com estacionamento', 'Cerimônia no local', 'Acessibilidade', 'Espaço kids'] },
     { id: 'decoracao', nome: 'Decoração e Cenografia', icone: '<path d="M12 21v-7M12 14c-3 0-5-2-5-5 2 0 3.5.8 5 2.5C13.5 9.8 15 9 17 9c0 3-2 5-5 5ZM12 8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>',
       tags: ['Flores naturais', 'Flores permanentes', 'Decoração da cerimônia', 'Decoração da recepção', 'Arco de flores', 'Mesa posta', 'Centro de mesa', 'Mesa de doces', 'Painel / backdrop', 'Arco de balões', 'Iluminação cênica', 'Varal de luzes', 'Mobiliário', 'Tapetes e lounge', 'Tendas', 'Decoração rústica', 'Decoração boho', 'Decoração clássica', 'Decoração temática infantil', 'Letreiro neon', 'Lembrancinhas'] },
-    { id: 'musica', nome: 'Música, Banda e DJ', icone: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+    { id: 'musica', nome: 'Música, banda ou DJ', icone: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
       tags: ['DJ', 'Banda ao vivo', 'Banda de sertanejo', 'Samba e pagode', 'Rock e pop', 'MPB e bossa nova', 'Forró', 'Música eletrônica', 'Voz e violão', 'Quarteto de cordas', 'Violino na cerimônia', 'Saxofonista', 'Coral', 'Música na cerimônia', 'Som e iluminação', 'Telão e projeção', 'Pista de dança', 'Fumaça e efeitos', 'Animação infantil', 'Mestre de cerimônias'] },
     { id: 'assessoria', nome: 'Assessoria e Cerimonial', icone: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2ZM9 13l2 2 4-4"/>',
       tags: ['Assessoria completa', 'Assessoria do dia', 'Assessoria parcial', 'Cerimonialista', 'Celebrante', 'Roteiro e cronograma', 'Gestão de fornecedores', 'Recepcionistas', 'Lista de convidados e RSVP', 'Destination wedding', 'Planejamento de orçamento', 'Seguranças', 'Manobristas', 'Equipe de limpeza'] },
-    { id: 'bebidas', nome: 'Bebidas e Bar', icone: '<path d="M8 3h8l-1 8a3 3 0 0 1-6 0L8 3ZM12 14v7M8 21h8"/>',
+    { id: 'bebidas', nome: 'Bar e bebidas', icone: '<path d="M8 3h8l-1 8a3 3 0 0 1-6 0L8 3ZM12 14v7M8 21h8"/>',
       tags: ['Open bar', 'Drinks autorais', 'Bartender', 'Bar de caipirinhas', 'Gin bar', 'Cervejas especiais', 'Chopp', 'Vinhos e espumantes', 'Whisky bar', 'Drinks sem álcool', 'Sucos naturais', 'Café e espresso', 'Bar de chás', 'Brinde com espumante', 'Gelo e refrigeração', 'Taças e copos'] },
     { id: 'doces', nome: 'Doces e Bolo', icone: '<path d="M4 21h16M5 21v-6h14v6M7 15v-3h10v3M12 12V8M12 8c-1 0-1.5-1-1-2l1-2 1 2c.5 1 0 2-1 2Z"/>',
-      tags: ['Bolo de casamento', 'Bolo de aniversário', 'Bolo cenográfico', 'Naked cake', 'Bolo de andares', 'Bem-casados', 'Doces finos', 'Brigadeiros gourmet', 'Mesa de doces', 'Cupcakes', 'Macarons', 'Pão de mel', 'Bolo no pote', 'Doces temáticos', 'Sem açúcar / sem glúten', 'Carrinho de sorvete', 'Churros', 'Algodão-doce e pipoca', 'Lembrancinhas'] }
+      tags: ['Bolo de casamento', 'Bolo de aniversário', 'Bolo cenográfico', 'Naked cake', 'Bolo de andares', 'Bem-casados', 'Doces finos', 'Brigadeiros gourmet', 'Mesa de doces', 'Cupcakes', 'Macarons', 'Pão de mel', 'Bolo no pote', 'Doces temáticos', 'Sem açúcar / sem glúten', 'Carrinho de sorvete', 'Churros', 'Algodão-doce e pipoca', 'Lembrancinhas'] },
+    // Staff e mão de obra (no Hub: "Staff e Mão de Obra").
+    { id: 'staff', nome: 'Staff e mão de obra', icone: '<circle cx="9" cy="7" r="3"/><path d="M3 21v-1.5A4.5 4.5 0 0 1 7.5 15h3a4.5 4.5 0 0 1 4.5 4.5V21M16 4.13a3 3 0 0 1 0 5.74M21 21v-1.5a4.5 4.5 0 0 0-3-4.24"/>',
+      tags: ['Garçom', 'Bartender', 'Copeira', 'Cozinheiro', 'Segurança', 'Recepcionista', 'Manobrista', 'Limpeza', 'Montadores', 'Carregadores', 'Monitores infantis', 'Coordenador de equipe'] }
   ];
 
   /** @type {{ id: RfpCelebracao, nome: string }[]} */
@@ -83,7 +86,8 @@
     ['decoracao', /\b(decoracao|decorador|decoradora|decorar|flores|florista|cenografia|arranjos?|baloes)\b/],
     ['assessoria', /\b(assessoria|assessor|assessora|cerimonial|cerimonialista|organizador|organizadora|wedding planner|planner)\b/],
     ['bebidas', /\b(bebidas?|bar|bartender|drinks?|open bar|cervejas?|chopp|chope|vinhos?|espumantes?)\b/],
-    ['doces', /\b(doces?|bolo|bolos|brigadeiros?|bem casados?|bem-casados?|confeitaria|confeiteira|confeiteiro|sobremesas?)\b/]
+    ['doces', /\b(doces?|bolo|bolos|brigadeiros?|bem casados?|bem-casados?|confeitaria|confeiteira|confeiteiro|sobremesas?)\b/],
+    ['staff', /\b(staff|garcom|garcons|garconete|copeira|copeiro|seguranca|segurancas|recepcionistas?|manobristas?|limpeza|montadores?|carregadores?|mao de obra|monitores?|equipe de apoio)\b/]
   ];
 
   /** Categoria pelo título (a palavra que aparece primeiro); '' se nenhuma. @param {string} titulo @returns {RfpCategory|''} */
@@ -970,7 +974,7 @@
   /** Nome curto da categoria (títulos, resumo e selos do lote). @type {Record<string, string>} */
   const CATEGORIA_CURTA = {
     fotografia: 'Foto e vídeo', buffet: 'Buffet', espaco: 'Espaço', decoracao: 'Decoração',
-    musica: 'DJ e música', assessoria: 'Assessoria', bebidas: 'Bar e bebidas', doces: 'Bolo e doces'
+    musica: 'DJ e música', assessoria: 'Assessoria', bebidas: 'Bar e bebidas', doces: 'Bolo e doces', staff: 'Staff'
   };
 
   /** Dica do campo de detalhes de cada serviço. @type {Record<string, string>} */
@@ -982,7 +986,8 @@
     musica: 'Ex.: estilos musicais, horário da pista, música na cerimônia…',
     assessoria: 'Ex.: assessoria completa ou só do dia, roteiro, gestão de fornecedores…',
     bebidas: 'Ex.: open bar com drinks autorais, cervejas, opções sem álcool…',
-    doces: 'Ex.: bolo de 3 andares, sabores, bem-casados, docinhos finos…'
+    doces: 'Ex.: bolo de 3 andares, sabores, bem-casados, docinhos finos…',
+    staff: 'Ex.: 6 garçons, 2 seguranças e 1 recepcionista por 8 horas…'
   };
 
   /**

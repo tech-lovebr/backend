@@ -10238,3 +10238,10 @@ html body .op-pedido-caixa .op-detalhe-acao .op-enviar-btn:not(#love-h-a) { heig
   html body .op-pedido-caixa:not(#love-h-a) { padding: 1.25rem; }
 }
 body[data-theme="dark"] .op-pedido-caixa { background: #252525 !important; border-color: #404040 !important; }
+
+/* Pedido aberto: rodapé da caixa com "Voltar" (só texto) à esquerda e
+   "Enviar proposta" (ou o status da proposta) à direita. */
+html body .op-pedido-caixa .op-detalhe-acao:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+html body .op-pedido-caixa .op-detalhe-acao .op-enviar-btn:not(#love-h-a) { width: auto; min-width: 160px; }
+html body .op-detalhe-voltar:not(#love-h-a) { border: none; background: none; padding: 0; font-family: inherit; font-size: 0.875rem; font-weight: 600; color: #52525B; cursor: pointer; }
+html body .op-detalhe-voltar:hover:not(#love-h-a) { color: #181D24; }

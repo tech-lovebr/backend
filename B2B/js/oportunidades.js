@@ -169,9 +169,7 @@ function opCardHtml(p) {
         <p class="op-card2-linha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>${escapeHtml(opData(p))} · ${escapeHtml(opContagem(p))}</p>
         <div class="op-card2-acoes">
           <span class="op-card2-ver">Ver pedido</span>
-          ${minha
-            ? `<span class="op-status ${OP_STATUS[minha.status].classe} op-card2-status">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>`
-            : '<span class="op-card2-cta">Enviar proposta</span>'}
+          ${minha ? `<span class="op-status ${OP_STATUS[minha.status].classe} op-card2-status">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''}
         </div>
       </div>
     </article>`;
@@ -218,6 +216,7 @@ function opAbrirDetalhe(id) {
     ${p.descricao ? `<div class="op-detalhe-bloco"><p class="op-detalhe-rotulo">O que o anfitrião precisa</p><p class="op-detalhe-desc">${escapeHtml(p.descricao)}</p></div>` : ''}
     ${(p.referencias || []).length ? `<div class="op-detalhe-bloco"><p class="op-detalhe-rotulo">Fotos de referência</p><div class="op-fotos">${p.referencias.map(u => `<button type="button" class="op-foto" data-op-foto="${escapeHtml(u)}"><img src="${escapeHtml(u)}" alt="Referência"></button>`).join('')}</div></div>` : ''}
     <div class="op-detalhe-acao">
+      <button type="button" class="op-detalhe-voltar" data-op-voltar>Voltar</button>
       ${minha
         ? `<p class="op-ja-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))} · <span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span></p>`
         : (p.status === 'aberto' ? '<button type="button" class="btn-primary op-enviar-btn" data-op-enviar>Enviar proposta</button>' : '<p class="op-ja-enviada">Este pedido não recebe mais propostas.</p>')}
@@ -436,6 +435,7 @@ function opLigarEventos() {
   document.getElementById('op-pedido-voltar').addEventListener('click', opFecharDetalhe);
   document.getElementById('op-detalhe-corpo').addEventListener('click', e => {
     if (e.target.closest('[data-op-enviar]')) { opAbrirProposta(); return; }
+    if (e.target.closest('[data-op-voltar]')) { opFecharDetalhe(); return; }
     const foto = e.target.closest('[data-op-foto]');
     if (foto) {
       document.getElementById('op-foto-grande').src = foto.dataset.opFoto;

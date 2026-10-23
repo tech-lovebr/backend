@@ -10326,3 +10326,28 @@ html body button.rfp-post-botao:not(#love-h-a):hover { border-color: #181D24; co
 }
 body[data-theme="dark"] .rfp-post p.rfp-post-titulo { color: #FFFFFF !important; }
 body[data-theme="dark"] button.rfp-post-botao { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Remover / Excluir nunca em vermelho: o botão de confirmar dos pop-ups segue
+   o padrão escuro dos outros botões (#181D24, texto branco); botões de
+   remover e itens de menu ficam neutros. */
+html body button.love-confirmar-perigo:not(#love-h-a) { background: #181D24 !important; border-color: #181D24 !important; color: #FFFFFF !important; }
+html body button.love-confirmar-perigo:not(#love-h-a):hover:not(:disabled) { background: #262D36 !important; border-color: #262D36 !important; }
+body[data-theme="dark"] button.love-confirmar-perigo { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }
+html body #btn-confirm-delete-event:not(#love-h-a) { background: #181D24 !important; color: #FFFFFF !important; border-radius: 8px !important; box-shadow: none !important; }
+html body #btn-confirm-delete-event:not(#love-h-a):hover { background: #262D36 !important; }
+html body #btn-trigger-delete-event:not(#love-h-a) { background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; color: #18181B !important; border-radius: 8px !important; box-shadow: none !important; }
+html body #btn-trigger-delete-event:not(#love-h-a):hover { border-color: #181D24 !important; color: #181D24 !important; }
+html body :is(#btn-delete-cover-img, #btn-delete-venue-img, #btn-delete-closing-img):not(#love-h-a):hover { background: #181D24 !important; }
+html body .rfp-menu button[data-rfp-acao="excluir"]:not(#love-h-a) { color: #18181B !important; }
+
+/* Botões e itens de "Remover/Excluir" em toda a plataforma: neutros (texto
+   #18181B, borda #E4E4E7; no hover só escurece para #181D24). Vermelho fica
+   só para mensagens de erro. */
+html body :is(.floorplan-remove-btn, .inspector-list-item-remove, .inspector-list-item-remove-inline, .guest-comment-delete):not(#love-h-a):hover { background: #F4F4F5 !important; color: #181D24 !important; }
+html body :is(.floorplan-seat-assignment-remove, .menu-order-row-delete, .floorplan-acao.acao-excluir):not(#love-h-a):hover { color: #181D24 !important; }
+html body .btn-delete-text-block:not(#love-h-a):hover { background-color: #F4F4F5 !important; color: #181D24 !important; transform: none !important; }
+html body button.color-alpha-remove-btn:not(#love-h-a), html body .color-alpha-remove-btn:not(#love-h-a) { color: #18181B !important; }
+html body :is(button.guest-remove-sim, button.meus-eventos-excluir, button.guest-remove-lixeira, .config-btn-desativar, #view-event-os-dashboard .love-tabela-lixeira):not(#love-h-a) { border-color: #E4E4E7 !important; color: #18181B !important; }
+html body :is(button.guest-remove-sim, button.meus-eventos-excluir, button.guest-remove-lixeira, .config-btn-desativar, #view-event-os-dashboard .love-tabela-lixeira):not(#love-h-a):hover { border-color: #181D24 !important; color: #181D24 !important; background: #FFFFFF !important; }
+html body :is(.conv-menu .conv-menu-perigo, .gift-card-menu button.is-perigo):not(#love-h-a) { color: #18181B !important; }
+body[data-theme="dark"] :is(.conv-menu .conv-menu-perigo, .gift-card-menu button.is-perigo, button.guest-remove-sim, button.meus-eventos-excluir, button.guest-remove-lixeira, .config-btn-desativar, .rfp-menu button) { color: #FFFFFF !important; }

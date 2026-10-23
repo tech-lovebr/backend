@@ -10248,3 +10248,61 @@ html body #gifts-panel-products:has(> #host-gifts-grid:not(.hidden) > .presentes
 html body #host-gifts-grid:not(.hidden):has(> .presentes-vazio):not(#love-h-a) { flex: 1 0 auto; display: flex !important; flex-direction: column; }
 html body #host-gifts-grid > .presentes-vazio:not(#love-h-a) { flex: 1 0 auto; justify-content: center; min-height: 420px; }
 html body #view-event-os-dashboard .dashboard-main-area:has(#tab-gifts.active #host-gifts-grid:not(.hidden) > .presentes-vazio) > .rodape-respiro:not(#love-h-a) { flex-basis: 2rem; height: 2rem; }
+
+/* Contratos › Solicitações: lista no modelo "All job posts" e propostas em
+   cards (modelo "All proposals"). */
+html body #rfp-caixa .rfp-posts:not(#love-h-a) { display: flex; flex-direction: column; }
+.rfp-post { display: grid; grid-template-columns: minmax(0, 1fr) 140px 120px 40px; align-items: start; gap: 16px; padding: 22px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.06); cursor: pointer; }
+.rfp-post:hover { background: #FAFAFA; }
+html body button.rfp-post-titulo:not(#love-h-a) { display: block; max-width: 100%; padding: 0; background: none; border: 0; font-family: inherit; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body button.rfp-post-titulo:not(#love-h-a):hover { text-decoration: underline; text-underline-offset: 3px; }
+.rfp-post-criado { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+.rfp-post-situacao { margin: 14px 0 0; font-size: 13px; color: #3F3F46; }
+.rfp-post-situacao b { font-weight: 600; color: #18181B; }
+.rfp-post-num { display: flex; flex-direction: column; gap: 2px; padding-top: 2px; }
+.rfp-post-num b { font-size: 14px; font-weight: 600; color: #18181B; font-variant-numeric: tabular-nums; }
+.rfp-post-num span { font-size: 13px; color: #71717A; }
+html body button.rfp-post-mais:not(#love-h-a) { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #3F3F46; cursor: pointer; }
+html body button.rfp-post-mais:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+.rfp-post-mais svg { width: 18px; height: 18px; }
+html body .rfp-post .rfp-menu button[data-rfp-acao]:not(#love-h-a) { color: #18181B !important; }
+.rfp-posts-vazio { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 56px 24px; text-align: center; }
+.rfp-posts-vazio p { margin: 0; font-size: 14px; color: #71717A; }
+html body button.rfp-post-criar:not(#love-h-a) { height: 40px; padding: 0 16px; background: #181D24; border: 1px solid #181D24; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer; }
+@media (max-width: 760px) {
+  .rfp-post { grid-template-columns: minmax(0, 1fr) 40px; }
+  .rfp-post-num { display: none; }
+}
+html body .rfp-propostas-abas:not(#love-h-a) { margin-bottom: 24px; }
+.rfp-props { display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; }
+.rfp-prop { padding: 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+.rfp-prop:last-child { border-bottom: 0; }
+.rfp-prop-selos { display: flex; gap: 6px; margin-bottom: 14px; }
+.rfp-selo { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; background: #EBF4FF; color: #183b54; font-size: 12px; font-weight: 600; }
+.rfp-selo-aceita { background: #ECFDF3; color: #067647; }
+.rfp-selo-recusada { background: #F4F4F5; color: #52525B; }
+.rfp-prop-topo { display: flex; align-items: center; gap: 14px; }
+.rfp-prop-foto { width: 52px; height: 52px; border-radius: 999px; object-fit: cover; flex-shrink: 0; background: #F4F4F5; }
+.rfp-prop-inicial { display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; color: #52525B; }
+.rfp-prop-quem { flex: 1; min-width: 0; }
+.rfp-prop-nome { margin: 0; font-size: 15px; font-weight: 600; color: #18181B; }
+.rfp-prop-local { margin: 2px 0 0; font-size: 13px; color: #71717A; }
+.rfp-prop-acoes { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+html body button.rfp-prop-aceitar:not(#love-h-a) { height: 36px; padding: 0 14px; background: #181D24; border: 1px solid #181D24; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #FFFFFF; cursor: pointer; white-space: nowrap; }
+html body button.rfp-prop-aceitar:not(#love-h-a):hover { background: #262D36; }
+html body .rfp-prop-acoes button.rfp-conversar:not(#love-h-a) { height: 36px; }
+.rfp-prop-dados { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 18px 0 0; }
+.rfp-prop-dados p { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.rfp-prop-dados b { font-size: 14px; font-weight: 600; color: #18181B; font-variant-numeric: tabular-nums; }
+.rfp-prop-dados span { font-size: 12px; color: #71717A; }
+.rfp-prop-msg { margin: 16px 0 0; font-size: 14px; line-height: 1.55; color: #3F3F46; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.rfp-prop-inclui { margin: 10px 0 0; font-size: 14px; line-height: 1.55; color: #3F3F46; }
+.rfp-prop-inclui b { font-weight: 600; color: #18181B; }
+html body button.rfp-prop-recusar:not(#love-h-a) { margin-top: 14px; padding: 0; background: none; border: 0; font-family: inherit; font-size: 13px; font-weight: 600; color: #71717A; cursor: pointer; }
+html body button.rfp-prop-recusar:not(#love-h-a):hover { color: #181D24; }
+@media (max-width: 640px) { .rfp-prop-topo { flex-wrap: wrap; } .rfp-prop-acoes { width: 100%; } }
+body[data-theme="dark"] .rfp-post:hover { background: #2A2A2A !important; }
+body[data-theme="dark"] button.rfp-post-titulo, body[data-theme="dark"] .rfp-post-situacao b, body[data-theme="dark"] .rfp-post-num b, body[data-theme="dark"] .rfp-prop-nome, body[data-theme="dark"] .rfp-prop-dados b, body[data-theme="dark"] .rfp-prop-inclui b { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-props { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .rfp-prop, body[data-theme="dark"] .rfp-post { border-bottom-color: #404040 !important; }
+body[data-theme="dark"] button.rfp-post-mais { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

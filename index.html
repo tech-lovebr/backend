@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261022_presentesVazioCheio">
+  <link rel="stylesheet" href="css/styles.css?v=20261022_solicitacoesLista">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3527,23 +3527,9 @@
             <div id="contratos-painel-solicitacoes" class="contratos-painel hidden">
               <div id="rfp-lista-wrap">
                 <p id="rfp-lista-aviso" class="rfp-lista-aviso hidden" role="status"></p>
+                <!-- Solicitações (rascunhos e publicadas), no modelo "All job posts" -->
                 <div class="dash-card love-tabela-caixa" id="rfp-caixa">
-                  <div class="w-full overflow-x-auto">
-                    <table class="love-tabela w-full text-left border-collapse font-sans" id="rfp-tabela">
-                      <thead>
-                        <tr>
-                          <th>Serviço</th>
-                          <th>Evento</th>
-                          <th>Local</th>
-                          <th>Orçamento</th>
-                          <th>Propostas</th>
-                          <th>Situação</th>
-                          <th class="love-tabela-col-acoes love-tabela-col-mais"></th>
-                        </tr>
-                      </thead>
-                      <tbody id="rfp-lista"></tbody>
-                    </table>
-                  </div>
+                  <div id="rfp-lista" class="rfp-posts"></div>
                 </div>
               </div>
               <!-- Clique numa solicitação: fornecedores que enviaram proposta -->
@@ -5622,8 +5608,8 @@
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261022_contratosDeNovo"></script>
-  <script src="js/pedidos-orcamento.js?v=20261022_semVoltar"></script>
+  <script src="js/app.js?v=20261022_solicitacoesLista"></script>
+  <script src="js/pedidos-orcamento.js?v=20261022_solicitacoesLista"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>
 </body>

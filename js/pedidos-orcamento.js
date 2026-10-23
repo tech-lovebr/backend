@@ -137,7 +137,7 @@
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
   const TITULO_DA_LISTA = 'Solicitações de orçamento';
-  const TITULO_DA_NOVA = 'Nova solicitação de orçamento';
+  const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 1000;
   const MAX_FOTOS = 5;
@@ -304,11 +304,22 @@
 
   function abrir() {
     dados = rascunhoVazio();
-    preencherComOEvento();
     etapa = 1;
     erros = {};
     publicando = false;
+    publicado = false;
     categoriaEscolhidaAMao = false;
+    rascunhoId = null;
+    // "Editar rascunho": continua de onde a pessoa parou (sem as fotos).
+    const r = rascunhoPendente;
+    rascunhoPendente = null;
+    if (r && r.dados) {
+      dados = { ...dados, ...r.dados, referencias: [] };
+      rascunhoId = r.id;
+      categoriaEscolhidaAMao = true;
+    } else {
+      preencherComOEvento();
+    }
     previas.forEach(u => URL.revokeObjectURL(u));
     previas = [];
     const m = modal();
@@ -330,6 +341,8 @@
   function fechar() {
     if (publicando) return;
     const m = document.getElementById('rfp-editor');
+    // Saiu sem publicar: o que já preencheu fica como rascunho.
+    if (m && !m.hidden) salvarRascunhoAgora();
     if (m) m.hidden = true;
     document.body.classList.remove('rfp-editor-aberto');
     cabecalho(false);
@@ -341,6 +354,7 @@
     etapa = n;
     erros = {};
     desenhar(direcao);
+    salvarRascunhoAgora();
   }
 
   function avancar() {
@@ -793,6 +807,9 @@
       }
       if (error) throw new Error(tabelaAusente(error) ? 'Os pedidos de orçamento ainda não foram ativados no banco.' : 'Não foi possível publicar agora. Tente de novo.');
       publicando = false;
+      publicado = true;
+      await salvandoRascunho;
+      if (rascunhoId) { await apagarRascunho(rascunhoId); rascunhoId = null; }
       sair();
       avisoNaLista('Solicitação publicada. Os fornecedores da categoria já podem enviar propostas.');
     } catch (err) {
@@ -806,7 +823,123 @@
   const tabelaAusente = (error) => !!error && (error.code === '42P01' || error.code === 'PGRST205' || /pedidos_orcamento/.test(String(error.message || '')));
 
   // --------------------------------------------------------------------------
-  // Lista: Fornecedores › Pedidos de orçamento
+  // Rascunhos: o que a pessoa começou e não publicou. Vale como rascunho
+  // quando já tem título e categoria e passou da etapa 1; salva sozinho a cada
+  // etapa e ao sair. Tabela pedidos_rascunho (migration 081); sem ela, fica
+  // guardado no navegador.
+  // --------------------------------------------------------------------------
+  /** @returns {any} */
+  const usuarioLogado = () => (window.loveClienteSession && window.loveClienteSession.user) || null;
+  /** @param {any} error */
+  const tabelaFaltando = (error) => !!error && (error.code === 'PGRST205' || error.code === '42P01');
+  /** @type {string|null} */
+  let rascunhoId = null;
+  /** @type {any} */
+  let rascunhoPendente = null; // "Editar rascunho": abre o editor com ele
+  let semTabelaDeRascunhos = false;
+  let publicado = false;
+  /** @type {Promise<any>} */
+  let salvandoRascunho = Promise.resolve();
+
+  /** @param {string} uid */
+  const chaveLocal = (uid) => `love-rfp-rascunhos-${uid}`;
+  /** @param {string} uid @returns {any[]} */
+  function lerLocal(uid) {
+    try { return JSON.parse(localStorage.getItem(chaveLocal(uid)) || '[]'); } catch (e) { return []; }
+  }
+  /** @param {string} uid @param {any[]} lista */
+  function gravarLocal(uid, lista) {
+    try { localStorage.setItem(chaveLocal(uid), JSON.stringify(lista)); } catch (e) { /* sem espaço no navegador */ }
+  }
+
+  /** Dados do editor sem as fotos (arquivo não vai para o rascunho). */
+  function dadosParaGuardar() {
+    const { referencias: _fotos, ...resto } = dados;
+    return resto;
+  }
+  const valeComoRascunho = () => !!(dados.titulo.trim() && dados.categoria && etapa >= 2);
+
+  /** @returns {Promise<any[]>} */
+  async function listarRascunhos() {
+    const u = usuarioLogado();
+    if (!u) return [];
+    /** @type {any[]} */
+    let doBanco = [];
+    if (!semTabelaDeRascunhos && typeof supabaseClient !== 'undefined') {
+      const { data, error } = await supabaseClient.from('pedidos_rascunho')
+        .select('id, dados, created_at, updated_at').eq('cliente_id', u.id).order('updated_at', { ascending: false });
+      if (!error) doBanco = data || [];
+      else if (tabelaFaltando(error)) semTabelaDeRascunhos = true;
+    }
+    return [...doBanco, ...lerLocal(u.id)];
+  }
+
+  /** @param {string|null} id @param {any} conteudo @returns {Promise<string|null>} */
+  async function guardarRascunho(id, conteudo) {
+    const u = usuarioLogado();
+    if (!u) return id;
+    const agora = new Date().toISOString();
+    const local = !!id && String(id).startsWith('local-');
+    if (!local && !semTabelaDeRascunhos && typeof supabaseClient !== 'undefined') {
+      const resp = id
+        ? await supabaseClient.from('pedidos_rascunho').update({ dados: conteudo, updated_at: agora }).eq('id', id).select('id').maybeSingle()
+        : await supabaseClient.from('pedidos_rascunho').insert({ cliente_id: u.id, dados: conteudo }).select('id').single();
+      if (!resp.error) return resp.data ? resp.data.id : id;
+      if (!tabelaFaltando(resp.error)) return id;
+      semTabelaDeRascunhos = true;
+    }
+    const lista = lerLocal(u.id);
+    const novoId = local ? /** @type {string} */ (id) : `local-${Date.now()}`;
+    const i = lista.findIndex(r => r.id === novoId);
+    if (i >= 0) lista[i] = { ...lista[i], dados: conteudo, updated_at: agora };
+    else lista.unshift({ id: novoId, dados: conteudo, created_at: agora, updated_at: agora });
+    gravarLocal(u.id, lista);
+    return novoId;
+  }
+
+  /** @param {string} id */
+  async function apagarRascunho(id) {
+    const u = usuarioLogado();
+    if (!u || !id) return;
+    if (String(id).startsWith('local-')) { gravarLocal(u.id, lerLocal(u.id).filter(r => r.id !== id)); return; }
+    if (typeof supabaseClient !== 'undefined') await supabaseClient.from('pedidos_rascunho').delete().eq('id', id);
+  }
+
+  /** Salva o que está no editor como rascunho (em fila, para não duplicar). */
+  function salvarRascunhoAgora() {
+    if (publicando || publicado || !valeComoRascunho()) return;
+    const conteudo = dadosParaGuardar();
+    salvandoRascunho = salvandoRascunho
+      .then(async () => { rascunhoId = await guardarRascunho(rascunhoId, conteudo); })
+      .catch(() => {});
+  }
+
+  /** Solicitação publicada → rascunho com "(cópia)" no título. @param {any} p */
+  function dadosDoPedido(p) {
+    const cat = categoriaPorId(p.categoria);
+    const conhecida = CELEBRACOES.some(c => c.id === p.tipo_celebracao && c.id !== 'outro');
+    const { referencias: _f, ...vazio } = rascunhoVazio();
+    return {
+      ...vazio,
+      titulo: `${String(p.titulo || (cat ? cat.nome : 'Solicitação')).trim()} (cópia)`.slice(0, 120),
+      categoria: p.categoria || '',
+      especialidades: Array.isArray(p.especialidades) ? p.especialidades : [],
+      tipoCelebracao: conhecida ? p.tipo_celebracao : (p.tipo_celebracao ? 'outro' : ''),
+      celebracaoOutro: conhecida ? '' : String(p.tipo_celebracao || ''),
+      dataEvento: p.data_evento || '',
+      dataFlexivel: !!p.data_flexivel,
+      cep: p.cep || '', cidade: p.cidade || '', bairro: p.bairro || '', uf: p.uf || '',
+      convidados: p.convidados || '', periodo: p.periodo || '', horasServico: p.horas_servico ?? null,
+      valorMin: p.valor_min ?? null, valorMax: p.valor_max ?? null,
+      aceitaForaDaFaixa: !!p.aceita_fora_da_faixa,
+      descricao: p.descricao || '',
+      limitePropostas: p.limite_propostas ?? null
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // Contratos › Solicitações: lista no modelo "All job posts" (título, quando
+  // foi criada, situação, propostas e mensagens, menu ⋯).
   // --------------------------------------------------------------------------
 
   /** @param {string} msg */
@@ -818,89 +951,148 @@
     if (msg) setTimeout(() => el.classList.add('hidden'), 6000);
   }
 
-  /** Pedidos da última carga da lista (para o título da tela de propostas). @type {Record<string, any>} */
+  /** @type {Record<string, any>} */
   let pedidosCarregados = {};
+  /** @type {Record<string, any>} */
+  let rascunhosCarregados = {};
+  /** @type {Record<string, { total: number, novas: number, mensagens: number }>} */
+  let numerosDasPropostas = {};
+
+  /** "há 5 min", "há 2 h", "há 3 dias", "em 12 de set. de 2026". @param {string} iso */
+  function haQuanto(iso) {
+    const t = new Date(iso).getTime();
+    if (!Number.isFinite(t)) return '';
+    const min = Math.max(1, Math.round((Date.now() - t) / 60000));
+    if (min < 60) return `há ${min} min`;
+    const h = Math.round(min / 60);
+    if (h < 24) return h === 1 ? 'há 1 hora' : `há ${h} horas`;
+    const d = Math.round(h / 24);
+    if (d < 30) return d === 1 ? 'há 1 dia' : `há ${d} dias`;
+    return `em ${dataCurta(iso)}`;
+  }
+  /** @param {string} iso */
+  const dataCurta = (iso) => {
+    const d = new Date(iso);
+    return Number.isFinite(d.getTime()) ? d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).replace(/\./g, '') : '';
+  };
+
+  /** @param {[string, string][]} opcoes */
+  const menuDaLinha = (opcoes) => `
+    <div class="rfp-menu-wrap">
+      <button type="button" class="rfp-post-mais" data-rfp-menu aria-label="Mais ações">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      </button>
+      <div class="rfp-menu hidden" role="menu">
+        ${opcoes.map(([acao, texto]) => `<button type="button" role="menuitem" data-rfp-acao="${acao}">${esc(texto)}</button>`).join('')}
+      </div>
+    </div>`;
+
+  /** @param {string} texto @param {boolean} [comBotao] */
+  const listaVazia = (texto, comBotao) => `
+    <div class="rfp-posts-vazio">
+      <p>${esc(texto)}</p>
+      ${comBotao ? '<button type="button" class="rfp-post-criar" data-rfp-criar>Criar solicitação</button>' : ''}
+    </div>`;
+
+  /** @param {any} it */
+  function linhaDaSolicitacao(it) {
+    if (it.tipo === 'rascunho') {
+      const d = it.r.dados || {};
+      const cat = categoriaPorId(d.categoria);
+      const titulo = String(d.titulo || '').trim() || (cat ? cat.nome : 'Solicitação sem título');
+      return `
+        <div class="rfp-post" data-rascunho-id="${esc(it.id)}">
+          <div class="rfp-post-info">
+            <button type="button" class="rfp-post-titulo" data-rfp-editar="${esc(it.id)}">${esc(titulo)}</button>
+            <p class="rfp-post-criado">Criada ${esc(haQuanto(it.criado))} por você</p>
+            <p class="rfp-post-situacao"><b>Rascunho</b> · Salvo em ${esc(dataCurta(it.quando))}</p>
+          </div>
+          <div class="rfp-post-num"></div>
+          <div class="rfp-post-num"></div>
+          ${menuDaLinha([['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
+        </div>`;
+    }
+    const p = it.p;
+    const cat = categoriaPorId(p.categoria);
+    const titulo = p.titulo || (cat ? `${cat.nome} para ${nomeDaCelebracao(p.tipo_celebracao).toLowerCase()}` : 'Solicitação');
+    const n = numerosDasPropostas[p.id] || { total: p.propostas_recebidas || 0, novas: 0, mensagens: 0 };
+    const situacao = p.status === 'aberto' ? 'Publicada' : (SITUACOES[/** @type {'fechado'} */ (p.status)] || p.status);
+    return `
+      <div class="rfp-post" data-rfp-id="${esc(p.id)}">
+        <div class="rfp-post-info">
+          <button type="button" class="rfp-post-titulo" data-rfp-ver="${esc(p.id)}">${esc(titulo)}</button>
+          <p class="rfp-post-criado">Criada ${esc(haQuanto(p.created_at))} por você</p>
+          <p class="rfp-post-situacao"><b>${esc(situacao)}</b> · ${esc(dataCurta(p.created_at))}</p>
+        </div>
+        <div class="rfp-post-num"><b>${n.total}${n.novas ? ` (${n.novas} ${n.novas === 1 ? 'nova' : 'novas'})` : ''}</b><span>Propostas</span></div>
+        <div class="rfp-post-num"><b>${n.mensagens}</b><span>Mensagens</span></div>
+        ${menuDaLinha([['duplicar', 'Duplicar'], ['excluir', 'Remover']])}
+      </div>`;
+  }
 
   async function mostrarLista() {
     document.getElementById('rfp-lista-wrap')?.classList.remove('hidden');
     document.getElementById('rfp-propostas')?.classList.add('hidden');
-    const corpo = document.getElementById('rfp-lista');
-    const contagem = document.getElementById('rfp-contagem');
-    if (!corpo) return;
-    const usuario = window.loveClienteSession && window.loveClienteSession.user;
-    if (!usuario || typeof supabaseClient === 'undefined') {
-      corpo.innerHTML = linhaVazia('Entre na sua conta para ver seus pedidos de orçamento.');
-      if (contagem) contagem.textContent = '';
+    const caixa = document.getElementById('rfp-lista');
+    if (!caixa) return;
+    const u = usuarioLogado();
+    if (!u || typeof supabaseClient === 'undefined') {
+      caixa.innerHTML = listaVazia('Entre na sua conta para ver suas solicitações.');
       return;
     }
-    corpo.innerHTML = linhaVazia('Carregando…');
-    const { data, error } = await supabaseClient
-      .from('pedidos_orcamento')
-      .select('*')
-      .eq('cliente_id', usuario.id)
-      .order('created_at', { ascending: false });
-    if (error) {
-      corpo.innerHTML = linhaVazia(tabelaAusente(error) ? 'Os pedidos de orçamento ainda não foram ativados no banco.' : 'Não foi possível carregar seus pedidos agora.');
-      if (contagem) contagem.textContent = '';
+    if (!caixa.children.length) caixa.innerHTML = listaVazia('Carregando…');
+    await salvandoRascunho;
+    const [ped, rascunhos] = await Promise.all([
+      supabaseClient.from('pedidos_orcamento').select('*').eq('cliente_id', u.id).order('created_at', { ascending: false }),
+      listarRascunhos()
+    ]);
+    const falhou = !!ped.error && !tabelaAusente(ped.error);
+    if (falhou && !rascunhos.length) {
+      caixa.innerHTML = listaVazia('Não foi possível carregar suas solicitações agora.');
       return;
     }
-    const linhas = data || [];
+    /** @type {any[]} */
+    const pedidos = (!ped.error && ped.data) || [];
     pedidosCarregados = {};
-    linhas.forEach(p => { pedidosCarregados[p.id] = p; });
-    if (contagem) contagem.textContent = linhas.length === 1 ? '1 pedido' : `${linhas.length} pedidos`;
-    if (!linhas.length) {
-      corpo.innerHTML = '';
-      linhasDaTabela(corpo);
-      return;
+    pedidos.forEach(p => { pedidosCarregados[p.id] = p; });
+    rascunhosCarregados = {};
+    rascunhos.forEach(r => { rascunhosCarregados[r.id] = r; });
+    numerosDasPropostas = {};
+    if (pedidos.length) {
+      const { data: props, error } = await supabaseClient.from('propostas_pedido')
+        .select('pedido_id, status, conversation_id').in('pedido_id', pedidos.map(p => p.id));
+      if (!error) {
+        pedidos.forEach(p => { numerosDasPropostas[p.id] = { total: 0, novas: 0, mensagens: 0 }; });
+        (props || []).forEach(x => {
+          const n = numerosDasPropostas[x.pedido_id];
+          if (!n || x.status === 'retirada') return;
+          n.total++;
+          if (x.status === 'enviada') n.novas++;
+          if (x.conversation_id) n.mensagens++;
+        });
+      }
     }
-    corpo.innerHTML = linhas.map(p => {
-      const cat = categoriaPorId(p.categoria);
-      const quando = p.data_flexivel || !p.data_evento ? 'Data flexível' : formatarData(p.data_evento);
-      const local = [p.bairro, p.cidade].filter(Boolean).join(', ') + (p.uf ? ` - ${p.uf}` : '');
-      const situacao = SITUACOES[/** @type {'aberto'|'fechado'|'cancelado'} */ (p.status)] || p.status;
-      return `
-        <tr data-rfp-id="${esc(p.id)}" class="rfp-linha-clicavel" title="Ver propostas">
-          <td><b class="rfp-col-titulo">${esc(p.titulo || (cat ? cat.nome : p.categoria))}</b>${p.titulo ? `<span class="rfp-col-sub">${esc(cat ? cat.nome : p.categoria)}</span>` : ''}${(p.especialidades || []).length ? `<span class="rfp-col-sub">${esc(p.especialidades.slice(0, 2).join(', '))}${p.especialidades.length > 2 ? ` +${p.especialidades.length - 2}` : ''}</span>` : ''}</td>
-          <td>${esc(nomeDaCelebracao(p.tipo_celebracao))}<span class="rfp-col-sub">${esc(quando)}</span></td>
-          <td>${esc(local)}</td>
-          <td>${esc(textoDoOrcamento(p.valor_min, p.valor_max, p.faixa))}</td>
-          <td class="rfp-col-num">${p.propostas_recebidas || 0}${p.limite_propostas ? ` / ${p.limite_propostas}` : ''}</td>
-          <td><span class="rfp-situacao rfp-situacao-${esc(p.status)}">${esc(situacao)}</span></td>
-          <td class="love-tabela-col-acoes">
-            <div class="rfp-menu-wrap">
-              <button type="button" class="rfp-menu-btn" data-rfp-menu aria-label="Ações do pedido">⋯</button>
-              <div class="rfp-menu hidden" role="menu">
-                ${p.status === 'aberto' ? '<button type="button" role="menuitem" data-rfp-acao="encerrar">Encerrar pedido</button>' : ''}
-                <button type="button" role="menuitem" data-rfp-acao="excluir">Excluir</button>
-              </div>
-            </div>
-          </td>
-        </tr>`;
-    }).join('');
-    linhasDaTabela(corpo);
+    const itens = [
+      ...rascunhos.map(r => ({ tipo: 'rascunho', id: r.id, quando: r.updated_at || r.created_at, criado: r.created_at, r })),
+      ...pedidos.map(p => ({ tipo: 'pedido', id: p.id, quando: p.created_at, criado: p.created_at, p }))
+    ].sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
+    caixa.innerHTML = itens.length ? itens.map(linhaDaSolicitacao).join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
   }
 
-  // Abaixo das linhas, as linhas finas continuam até o fim da caixa (como em Meus convidados).
-  /** @param {HTMLElement} corpo */
-  function linhasDaTabela(corpo) {
-    const tabela = corpo.closest('table');
-    const caixa = tabela && /** @type {HTMLElement|null} */ (tabela.parentElement);
-    if (!tabela || !caixa) return;
-    requestAnimationFrame(() => {
-      const cab = tabela.querySelector('thead');
-      const linhas = Array.from(corpo.querySelectorAll('tr'));
-      const altura = linhas.length ? Math.round(linhas[linhas.length - 1].getBoundingClientRect().height) : 51;
-      const fim = (cab ? cab.getBoundingClientRect().height : 0) + linhas.reduce((t, tr) => t + tr.getBoundingClientRect().height, 0);
-      caixa.classList.add('tabela-com-linhas-vazias');
-      caixa.style.setProperty('--altura-da-linha', `${altura || 51}px`);
-      caixa.style.setProperty('--fim-das-linhas', `${fim}px`);
-    });
+  /** @param {string} id */
+  function editarRascunho(id) {
+    const r = rascunhosCarregados[id];
+    if (!r) return;
+    rascunhoPendente = r;
+    window.dispatchEvent(new CustomEvent('love:rfp-abrir'));
   }
 
   // --------------------------------------------------------------------------
-  // Propostas de uma solicitação: os fornecedores que enviaram orçamento
+  // Propostas de uma solicitação (cards, no modelo "All proposals")
   // --------------------------------------------------------------------------
-  const SITUACOES_DA_PROPOSTA = { enviada: 'Nova', vista: 'Vista', aceita: 'Aceita', recusada: 'Recusada', retirada: 'Retirada' };
+  /** @type {any[]} */
+  let propostasAbertas = [];
+  let abaDasPropostas = 'todas';
   /** @param {number} v */
   const reais = (v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -911,73 +1103,119 @@
     if (!det || typeof supabaseClient === 'undefined') return;
     wrap?.classList.add('hidden');
     det.classList.remove('hidden');
+    abaDasPropostas = 'todas';
+    propostasAbertas = [];
     const ped = pedidosCarregados[id] || {};
     const cat = categoriaPorId(ped.categoria);
     const quando = ped.data_flexivel || !ped.data_evento ? 'Data flexível' : formatarData(ped.data_evento);
-    const sub = [ped.titulo ? (cat ? cat.nome : '') : '', nomeDaCelebracao(ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
-    const linhaUnica = (/** @type {string} */ t) => `<tr><td colspan="6" class="rfp-vazio"><p>${esc(t)}</p></td></tr>`;
+    const sub = [cat ? cat.nome : '', nomeDaCelebracao(ped.tipo_celebracao), quando].filter(Boolean).join(' · ');
     det.innerHTML = `
       <div class="rfp-propostas-topo">
         <button type="button" class="rfp-voltar-seta" data-rfp-propostas-voltar aria-label="Voltar para as solicitações">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
         </button>
         <div class="min-w-0">
-          <h3 class="rfp-propostas-titulo">${esc(ped.titulo || (cat ? cat.nome : (ped.categoria || 'Solicitação')))}</h3>
+          <h3 class="rfp-propostas-titulo">${esc(ped.titulo || (cat ? cat.nome : 'Solicitação'))}</h3>
           ${sub ? `<p class="rfp-propostas-sub">${esc(sub)}</p>` : ''}
         </div>
       </div>
-      <div class="dash-card love-tabela-caixa">
-        <div class="w-full overflow-x-auto">
-          <table class="love-tabela w-full text-left border-collapse font-sans">
-            <thead><tr><th>Fornecedor</th><th>Valor</th><th>O que inclui</th><th>Enviada em</th><th>Situação</th><th class="love-tabela-col-acoes"></th></tr></thead>
-            <tbody id="rfp-propostas-lista">${linhaUnica('Carregando…')}</tbody>
-          </table>
-        </div>
-      </div>`;
-    const corpo = document.getElementById('rfp-propostas-lista');
+      <div class="love-tabs-nav rfp-propostas-abas" id="rfp-propostas-abas" role="tablist"></div>
+      <div class="rfp-props" id="rfp-propostas-lista">${listaVazia('Carregando…')}</div>`;
     const { data, error } = await supabaseClient
       .from('propostas_pedido')
-      .select('id, fornecedor_id, valor, inclui, mensagem, prazo_entrega, status, created_at, fornecedores(company_name, logo_url, avatar_url)')
+      .select('id, fornecedor_id, valor, inclui, mensagem, validade, prazo_entrega, status, created_at, conversation_id, fornecedores(company_name, logo_url, avatar_url, city, state)')
       .eq('pedido_id', id)
-      .order('created_at', { ascending: true });
-    if (!corpo) return;
-    // Sem a tabela de propostas no banco (migration 074), ainda não há propostas.
-    const semTabela = !!error && (error.code === 'PGRST205' || error.code === '42P01');
-    if (error && !semTabela) { corpo.innerHTML = linhaUnica('Não foi possível carregar as propostas agora.'); return; }
-    const lista = (semTabela ? [] : data || []).filter(x => x.status !== 'retirada');
-    if (!lista.length) { corpo.innerHTML = linhaUnica('Nenhum fornecedor enviou proposta ainda.'); linhasDaTabela(corpo); return; }
-    corpo.innerHTML = lista.map(x => {
-      const f = /** @type {any} */ (x.fornecedores) || {};
-      const nome = f.company_name || 'Fornecedor';
-      const foto = f.logo_url || f.avatar_url || '';
-      const enviada = formatarData(String(x.created_at || '').slice(0, 10));
-      return `
-        <tr>
-          <td><span class="rfp-forn">${foto ? `<img src="${esc(foto)}" alt="" class="rfp-forn-foto">` : `<span class="rfp-forn-foto rfp-forn-inicial">${esc(nome.charAt(0).toUpperCase())}</span>`}<b class="rfp-col-titulo">${esc(nome)}</b></span></td>
-          <td class="rfp-col-num">${esc(reais(x.valor))}</td>
-          <td><span class="rfp-col-inclui">${esc(x.inclui)}</span>${x.prazo_entrega ? `<span class="rfp-col-sub">Prazo: ${esc(x.prazo_entrega)}</span>` : ''}</td>
-          <td>${esc(enviada)}</td>
-          <td><span class="rfp-situacao rfp-proposta-${esc(x.status)}">${esc(SITUACOES_DA_PROPOSTA[/** @type {'enviada'} */ (x.status)] || x.status)}</span></td>
-          <td class="love-tabela-col-acoes"><button type="button" class="rfp-conversar" data-rfp-conversar="${esc(x.fornecedor_id)}">Conversar</button></td>
-        </tr>`;
-    }).join('');
-    linhasDaTabela(corpo);
+      .order('created_at', { ascending: false });
+    const lista = document.getElementById('rfp-propostas-lista');
+    if (!lista) return;
+    if (error && !tabelaFaltando(error)) { lista.innerHTML = listaVazia('Não foi possível carregar as propostas agora.'); return; }
+    propostasAbertas = (error ? [] : data || []).filter(x => x.status !== 'retirada');
+    desenharPropostas();
     // Abriu a solicitação: as propostas novas passam a "Vista".
-    if (lista.some(x => x.status === 'enviada')) {
+    if (propostasAbertas.some(x => x.status === 'enviada')) {
       supabaseClient.from('propostas_pedido').update({ status: 'vista' }).eq('pedido_id', id).eq('status', 'enviada').then(() => {});
     }
   }
 
-  /** @param {string} texto */
-  const linhaVazia = (texto) => `<tr><td colspan="7" class="rfp-vazio"><p>${esc(texto)}</p></td></tr>`;
+  function desenharPropostas() {
+    const abas = document.getElementById('rfp-propostas-abas');
+    const lista = document.getElementById('rfp-propostas-lista');
+    if (!abas || !lista) return;
+    /** @type {Record<string, any[]>} */
+    const grupos = {
+      todas: propostasAbertas.filter(x => x.status !== 'recusada'),
+      mensagens: propostasAbertas.filter(x => x.conversation_id && x.status !== 'recusada'),
+      aceitas: propostasAbertas.filter(x => x.status === 'aceita'),
+      arquivadas: propostasAbertas.filter(x => x.status === 'recusada')
+    };
+    const rotulos = { todas: 'Todas as propostas', mensagens: 'Com mensagens', aceitas: 'Aceitas', arquivadas: 'Recusadas' };
+    abas.innerHTML = Object.entries(rotulos).map(([id, nome]) =>
+      `<button type="button" class="love-tab-item${abaDasPropostas === id ? ' active' : ''}" data-rfp-aba-propostas="${id}">${nome} (${grupos[id].length})</button>`).join('');
+    const itens = grupos[abaDasPropostas] || [];
+    if (!itens.length) {
+      lista.innerHTML = listaVazia(abaDasPropostas === 'todas' ? 'Nenhum fornecedor enviou proposta ainda.' : 'Nenhuma proposta aqui.');
+      return;
+    }
+    lista.innerHTML = itens.map(x => {
+      const f = /** @type {any} */ (x.fornecedores) || {};
+      const nome = f.company_name || 'Fornecedor';
+      const foto = f.logo_url || f.avatar_url || '';
+      const local = [f.city, f.state].filter(Boolean).join(' - ');
+      const selo = x.status === 'enviada' ? '<span class="rfp-selo">Nova</span>' : x.status === 'aceita' ? '<span class="rfp-selo rfp-selo-aceita">Aceita</span>' : x.status === 'recusada' ? '<span class="rfp-selo rfp-selo-recusada">Recusada</span>' : '';
+      return `
+        <article class="rfp-prop">
+          ${selo ? `<div class="rfp-prop-selos">${selo}</div>` : ''}
+          <div class="rfp-prop-topo">
+            ${foto ? `<img src="${esc(foto)}" alt="" class="rfp-prop-foto">` : `<span class="rfp-prop-foto rfp-prop-inicial">${esc(nome.charAt(0).toUpperCase())}</span>`}
+            <div class="rfp-prop-quem">
+              <p class="rfp-prop-nome">${esc(nome)}</p>
+              ${local ? `<p class="rfp-prop-local">${esc(local)}</p>` : ''}
+            </div>
+            <div class="rfp-prop-acoes">
+              <button type="button" class="rfp-conversar" data-rfp-conversar="${esc(x.fornecedor_id)}">Conversar</button>
+              ${x.status === 'aceita' || x.status === 'recusada' ? '' : `<button type="button" class="rfp-prop-aceitar" data-rfp-proposta="${esc(x.id)}" data-rfp-proposta-status="aceita">Aceitar proposta</button>`}
+            </div>
+          </div>
+          <div class="rfp-prop-dados">
+            <p><b>${esc(reais(x.valor))}</b><span>Valor total</span></p>
+            ${x.prazo_entrega ? `<p><b>${esc(x.prazo_entrega)}</b><span>Prazo de entrega</span></p>` : ''}
+            ${x.validade ? `<p><b>${esc(formatarData(String(x.validade).slice(0, 10)))}</b><span>Válida até</span></p>` : ''}
+            <p><b>${esc(dataCurta(x.created_at))}</b><span>Enviada</span></p>
+          </div>
+          ${x.mensagem ? `<p class="rfp-prop-msg">${esc(x.mensagem)}</p>` : ''}
+          <p class="rfp-prop-inclui"><b>O que inclui:</b> ${esc(x.inclui)}</p>
+          ${x.status === 'aceita' || x.status === 'recusada' ? '' : `<button type="button" class="rfp-prop-recusar" data-rfp-proposta="${esc(x.id)}" data-rfp-proposta-status="recusada">Recusar proposta</button>`}
+        </article>`;
+    }).join('');
+  }
 
-  // Ações da lista (Novo pedido, menu ⋯, encerrar, excluir).
+  /** @param {string} id @param {'aceita'|'recusada'} status */
+  async function mudarProposta(id, status) {
+    const w = /** @type {any} */ (window);
+    const ok = w.confirmarNaLove ? await w.confirmarNaLove(status === 'aceita'
+      ? { titulo: 'Aceitar esta proposta?', texto: 'O fornecedor é avisado e vocês combinam os próximos passos pelo chat.', botao: 'Aceitar' }
+      : { titulo: 'Recusar esta proposta?', texto: 'O fornecedor é avisado de que a proposta foi recusada.', botao: 'Recusar' }) : true;
+    if (!ok) return;
+    const { error } = await supabaseClient.from('propostas_pedido').update({ status }).eq('id', id);
+    if (error) return;
+    const x = propostasAbertas.find(p => p.id === id);
+    if (x) x.status = status;
+    desenharPropostas();
+  }
+
+  // Ações da lista e das propostas.
   document.addEventListener('click', async (e) => {
     const alvo = e.target instanceof Element ? e.target : null;
     if (!alvo) return;
     if (alvo.closest('[data-rfp-propostas-voltar]')) { mostrarLista(); return; }
+    if (alvo.closest('[data-rfp-criar]')) { window.dispatchEvent(new CustomEvent('love:rfp-abrir')); return; }
     const conversar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-conversar]'));
     if (conversar) { const w = /** @type {any} */ (window); if (w.loveAbrirChatComFornecedor) w.loveAbrirChatComFornecedor(conversar.dataset.rfpConversar); return; }
+    const mudar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-proposta-status]'));
+    if (mudar) { mudarProposta(mudar.dataset.rfpProposta || '', /** @type {any} */ (mudar.dataset.rfpPropostaStatus)); return; }
+    const aba = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-aba-propostas]'));
+    if (aba) { abaDasPropostas = aba.dataset.rfpAbaPropostas || 'todas'; desenharPropostas(); return; }
+
     const abertos = document.querySelectorAll('.rfp-menu:not(.hidden)');
     const btnMenu = alvo.closest('[data-rfp-menu]');
     if (btnMenu) {
@@ -988,25 +1226,43 @@
     }
     const acao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-acao]'));
     abertos.forEach(m => m.classList.add('hidden'));
+    const linha = /** @type {HTMLElement|null} */ (alvo.closest('#rfp-lista .rfp-post'));
     if (!acao) {
-      // Clique na linha (fora do menu ⋯): fornecedores que enviaram proposta.
-      const tr = /** @type {HTMLElement|null} */ (alvo.closest('#rfp-lista tr[data-rfp-id]'));
-      if (tr && !alvo.closest('.rfp-menu-wrap')) mostrarPropostas(tr.dataset.rfpId || '');
+      // Clique na solicitação (fora do menu ⋯): rascunho abre para editar;
+      // publicada mostra as propostas que chegaram.
+      if (!linha || alvo.closest('.rfp-menu-wrap')) return;
+      if (linha.dataset.rfpId) mostrarPropostas(linha.dataset.rfpId);
+      else if (linha.dataset.rascunhoId) editarRascunho(linha.dataset.rascunhoId);
       return;
     }
-    const linha = /** @type {HTMLElement|null} */ (acao.closest('[data-rfp-id]'));
-    const id = linha && linha.dataset.rfpId;
-    if (!id || typeof supabaseClient === 'undefined') return;
-    if (acao.dataset.rfpAcao === 'excluir') {
-      const w = /** @type {any} */ (window);
-      const ok = w.confirmarNaLove ? await w.confirmarNaLove({ titulo: 'Excluir esta solicitação?', texto: 'Os fornecedores deixam de vê-la.', botao: 'Excluir' }) : false;
+    if (!linha || typeof supabaseClient === 'undefined') return;
+    const tipo = acao.dataset.rfpAcao;
+    const w = /** @type {any} */ (window);
+    if (tipo === 'editar') { editarRascunho(linha.dataset.rascunhoId || ''); return; }
+    if (tipo === 'remover-rascunho') {
+      const ok = w.confirmarNaLove ? await w.confirmarNaLove({ titulo: 'Remover este rascunho?', texto: 'O que você preencheu até aqui será apagado.', botao: 'Remover' }) : false;
       if (!ok) return;
+      await apagarRascunho(linha.dataset.rascunhoId || '');
+      avisoNaLista('Rascunho removido.');
+      mostrarLista();
+      return;
     }
-    const { error } = acao.dataset.rfpAcao === 'encerrar'
-      ? await supabaseClient.from('pedidos_orcamento').update({ status: 'fechado' }).eq('id', id)
-      : await supabaseClient.from('pedidos_orcamento').delete().eq('id', id);
-    avisoNaLista(error ? 'Não foi possível concluir agora. Tente de novo.' : (acao.dataset.rfpAcao === 'encerrar' ? 'Pedido encerrado.' : 'Pedido excluído.'));
-    mostrarLista();
+    const id = linha.dataset.rfpId || '';
+    if (tipo === 'duplicar') {
+      const p = pedidosCarregados[id];
+      if (!p) return;
+      await guardarRascunho(null, dadosDoPedido(p));
+      avisoNaLista('Solicitação duplicada. A cópia está como rascunho para você ajustar.');
+      mostrarLista();
+      return;
+    }
+    if (tipo === 'excluir') {
+      const ok = w.confirmarNaLove ? await w.confirmarNaLove({ titulo: 'Remover esta solicitação?', texto: 'Os fornecedores deixam de vê-la.', botao: 'Remover' }) : false;
+      if (!ok) return;
+      const { error } = await supabaseClient.from('pedidos_orcamento').delete().eq('id', id);
+      avisoNaLista(error ? 'Não foi possível remover agora. Tente de novo.' : 'Solicitação removida.');
+      mostrarLista();
+    }
   });
 
   document.addEventListener('click', (e) => {

@@ -18430,6 +18430,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   // Saiu da nova solicitação (Cancelar, seta de voltar ou publicou): vai para
   // Contratos › Solicitações.
+  // "Editar rascunho" / "Criar solicitação" da lista: abre o editor.
+  window.addEventListener('love:rfp-abrir', () => {
+    switchB2BView('pedidos');
+    registrarRota(caminhoSubRota('b2b', 'pedidos'));
+  });
   window.addEventListener('love:rfp-sair', () => {
     abaDeContratos = 'solicitacoes';
     switchB2BView('contracted');

@@ -25,8 +25,9 @@ function ses() {
 }
 
 function supabaseAdmin() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://krpgtixwmxwhtjchcufl.supabase.co';
+  return createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false },
   });
 }

@@ -76,7 +76,8 @@ const jaExiste = (e) => /AlreadyExists/i.test(String(e && e.name)) || /already e
 async function exigirAdmin(req, res) {
   const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
   const db = supabaseAdmin();
-  if (!token || !db) { res.status(401).json({ error: "Sem sessão" }); return null; }
+  if (!db) { res.status(500).json({ error: "Falta a variável SUPABASE_SERVICE_ROLE_KEY na Vercel (projeto do love.com.br)" }); return null; }
+  if (!token) { res.status(401).json({ error: "Sem sessão" }); return null; }
   const { data: quem, error } = await db.auth.getUser(token);
   if (error || !quem || !quem.user) { res.status(401).json({ error: "Sessão inválida" }); return null; }
   const { data: admin } = await db.from("admins").select("id, active").eq("id", quem.user.id).maybeSingle();

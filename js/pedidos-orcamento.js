@@ -331,7 +331,8 @@
     if (titulo && pedidosAberto) titulo.textContent = aberta ? TITULO_DA_NOVA : TITULO_DA_LISTA;
     if (voltar) voltar.hidden = true;
     if (vendoPropostas && aberta) { vendoPropostas = false; document.getElementById('pedidos-abas')?.classList.remove('hidden'); }
-    if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
+    // Sem botão "Criar solicitação" no cabeçalho (a aba Criar solicitação já faz isso).
+    if (criar) criar.classList.add('hidden');
   }
 
   /** Serviço já marcado na próxima abertura (tarefas do Checklist). */

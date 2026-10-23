@@ -1412,8 +1412,8 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'wallet-digital', label: 'Carteira Digital' },
-        { id: 'wallet-budget', label: 'Orçamento' },
-        { id: 'wallet-statement', label: 'Extrato' }
+        { id: 'wallet-budget', label: 'Orçamento' }
+        // Extrato saiu do menu: ele fica no fim da Carteira Digital.
       ]
     },
     b2b: {
@@ -1515,7 +1515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'edit-site': { home: '', data: 'informacoes', about: 'anfitrioes', 'invite-print': 'convite' },
     gifts: { 'my-gifts': '', 'gift-messages': 'recados', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
-    wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento', 'wallet-statement': 'extrato' },
+    wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento' },
     // Fornecedores abre em Criar solicitação (/fornecedores); Explorar em /fornecedores/explorar.
     b2b: { pedidos: '', explore: 'explorar', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
   };
@@ -13473,10 +13473,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (w.LoveCarteira) w.LoveCarteira.render();
       } else if (subId === 'wallet-budget') {
         title.textContent = 'Orçamento';
-        if (desc) {
-          desc.textContent = 'Planeje metas, controle custos comprometidos e gerencie despesas de fornecedores do evento.';
-          desc.classList.remove('hidden');
-        }
+        // Sem subtítulo: o cabeçalho termina na linha, como nas outras telas.
+        if (desc) desc.classList.add('hidden');
         checkAndPromptBudgetSetup();
         renderBudgetExpensesTable();
       } else if (subId === 'wallet-statement') {

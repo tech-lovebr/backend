@@ -57,21 +57,76 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Uma aba só: a barra de abas não diz nada e some.
   document.getElementById('conteudo-tabs').hidden = true;
 
-  addHeaderAction('Banner da home', () => abrirDrawerConteudo('banner'), { icone: null, principal: true });
-  if (PLATAFORMA === 'fornecedor') {
-    addHeaderAction('Workshops', () => abrirDrawerConteudo('workshop'), { icone: null, principal: true });
-  }
-
   BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
-    if (GRUPO_ATUAL === 'faq') abrirFormularioPergunta(null);
-    if (GRUPO_ATUAL === 'servicos') abrirFormularioServico(null);
+    if (VISAO === 'ajuda') abrirFormularioPergunta(null);
+    if (VISAO === 'workshops') abrirFormularioHub({ tipo: 'workshop' });
   }, {
     principal: true,
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
   });
 
+  window.addEventListener('hashchange', () => { VISAO = visaoDaUrl(); render(); window.scrollTo(0, 0); });
   await carregar();
 });
+
+/* ------------------------------------------------------ Atalhos
+   Configurações abre numa grade de caixinhas; cada uma leva à sua tela
+   (#banners, #ajuda, #workshops) ou a outra página (Planos). */
+
+const ATALHOS = [
+  { id: 'banners', titulo: 'Banners', texto: 'Imagens do carrossel da home, com título, texto e link.',
+    icone: '<path d="M15 8h.01" /><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z" /><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5" /><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3" />' },
+  { id: 'ajuda', titulo: 'Central de ajuda', texto: 'Perguntas frequentes por categoria e os primeiros passos.',
+    icone: '<path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 17l0 .01" /><path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4" />' },
+  { id: 'workshops', titulo: 'Workshops', texto: 'Workshops do Hub, que também entram nas notícias do dashboard.', so: 'fornecedor',
+    icone: '<path d="M8 4h11a1 1 0 0 1 1 1v11a1 1 0 0 1 -1 1h-11a1 1 0 0 1 -1 -1v-11a1 1 0 0 1 1 -1z" /><path d="M4 8v11a1 1 0 0 0 1 1h11" /><path d="M11 9l4 2.5l-4 2.5z" />' },
+  { id: 'planos', titulo: 'Planos', texto: 'Planos do Hub: preço, período, empresas por login e o plano de cada conta.',
+    href: `planos.html${PLATAFORMA === 'cliente' ? '?de=cliente' : ''}`,
+    icone: '<path d="M3 8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /><path d="M3 10l18 0" /><path d="M7 15l.01 0" /><path d="M11 15l2 0" />' }
+];
+
+const TITULO_DA_VISAO = { banners: 'Banners', ajuda: 'Central de ajuda', workshops: 'Workshops' };
+
+function visaoDaUrl() {
+  const v = location.hash.slice(1);
+  return ATALHOS.some(a => a.id === v && !a.href && (!a.so || a.so === PLATAFORMA)) ? v : '';
+}
+
+let VISAO = visaoDaUrl();
+
+/** Título da página com a seta de voltar quando está dentro de um atalho. */
+function ajustarCabecalho() {
+  const host = document.querySelector('.header-bar-titulo');
+  if (!host) return;
+  const titulo = TITULO_DA_VISAO[VISAO];
+  host.innerHTML = titulo ? `
+    <a class="header-bar-voltar" href="#" title="Voltar" aria-label="Voltar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
+    </a>
+    <h1>${titulo}</h1>` : '<h1>Configurações</h1>';
+  host.querySelector('.header-bar-voltar')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    history.pushState('', '', location.pathname + location.search);
+    VISAO = '';
+    render();
+  });
+}
+
+function renderAtalhos() {
+  const lista = document.getElementById('conteudo-lista');
+  lista.innerHTML = `
+    <div class="atalhos-grade">
+      ${ATALHOS.filter(a => !a.so || a.so === PLATAFORMA).map(a => `
+        <a class="atalho-card" href="${a.href || '#' + a.id}">
+          <span class="atalho-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${a.icone}</svg></span>
+          <span class="atalho-texto">
+            <strong>${a.titulo}</strong>
+            <span>${a.texto}</span>
+          </span>
+          <svg class="atalho-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6" /></svg>
+        </a>`).join('')}
+    </div>`;
+}
 
 async function carregar() {
   const lista = document.getElementById('conteudo-lista');
@@ -131,18 +186,21 @@ function renderTabs() {
 }
 
 function render() {
-  const grupo = grupoAtual();
-
-  // O carrossel tem os próprios espaços de "adicionar", então o botão do
-  // cabeçalho só faz sentido nas outras abas.
+  ajustarCabecalho();
   if (BOTAO_ADICIONAR) {
-    BOTAO_ADICIONAR.hidden = !grupo.botao;
-    if (grupo.botao) BOTAO_ADICIONAR.querySelector('span').textContent = grupo.botao;
+    const rotulo = { ajuda: 'Adicionar pergunta', workshops: 'Adicionar workshop' }[VISAO];
+    BOTAO_ADICIONAR.hidden = !rotulo;
+    if (rotulo) BOTAO_ADICIONAR.querySelector('span').textContent = rotulo;
   }
-
-  if (grupo.key === 'informacoes') return renderBanners();
-  if (grupo.key === 'faq') return renderFaq();
-  renderServicos();
+  if (!VISAO) return renderAtalhos();
+  if (VISAO === 'banners') return renderBanners();
+  if (VISAO === 'workshops') {
+    const lista = document.getElementById('conteudo-lista');
+    lista.innerHTML = blocoHub('workshop');
+    ligarBlocosHub(lista);
+    return;
+  }
+  renderFaq();
 }
 
 /* ----------------------------------------------------------- Utilidades */
@@ -174,27 +232,6 @@ const proximaPosicao = (lista, campo = 'posicao') =>
 
 /* ------------------------------------------------ Informações (carrossel) */
 
-/* Banner da home e Workshops: abrem num drawer próprio; editar um item abre
-   o formulário com a seta de voltar para a lista, e salvar volta para ela. */
-function abrirDrawerConteudo(tipo) {
-  Drawer.open({
-    title: tipo === 'workshop' ? 'Workshops' : 'Banner da home',
-    subtitle: NOME_PLATAFORMA,
-    body: '<div id="drawer-conteudo-host"></div>',
-    footer: '<button type="button" class="btn btn-ghost" id="btn-fechar-conteudo">Fechar</button>'
-  });
-  document.getElementById('btn-fechar-conteudo').addEventListener('click', () => Drawer.close());
-  const host = document.getElementById('drawer-conteudo-host');
-  if (tipo === 'workshop') {
-    host.innerHTML = blocoHub('workshop');
-    ligarBlocosHub(host);
-  } else {
-    renderBanners(host);
-  }
-}
-
-/* Qual drawer de conteúdo reabrir depois de salvar ou excluir. */
-const DRAWER_DA_TABELA = { conteudo_plataforma: 'banner', hub_conteudo: 'workshop' };
 
 function renderBanners(host) {
   const lista = host || document.getElementById('conteudo-lista');
@@ -237,9 +274,7 @@ function renderBanners(host) {
         ${vagas ? '' : `<p class="cell-muted" style="font-size:.75rem;margin:1rem 0 0">Limite de ${MAX_BANNERS} imagens atingido. Exclua uma para adicionar outra.</p>`}
       </div>
     </div>
-    ${!host && PLATAFORMA === 'fornecedor' ? blocoHub('workshop') : ''}`;
-
-  if (!host && PLATAFORMA === 'fornecedor') ligarBlocosHub(lista);
+`;
 
   lista.querySelectorAll('[data-editar-banner]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioBanner(BANNERS.find(b => b.id === btn.dataset.editarBanner)));
@@ -253,7 +288,6 @@ function abrirFormularioBanner(item) {
   const editando = Boolean(item && item.id);
 
   Drawer.open({
-    back: () => abrirDrawerConteudo('banner'),
     title: editando ? 'Editar imagem do carrossel' : 'Nova imagem do carrossel',
     subtitle: NOME_PLATAFORMA,
     body: `
@@ -356,7 +390,6 @@ function abrirFormularioHub(item) {
   const t = TIPOS_HUB[tipo];
 
   Drawer.open({
-    back: () => abrirDrawerConteudo('workshop'),
     title: editando ? `Editar ${t.singular}` : 'Novo workshop',
     subtitle: NOME_PLATAFORMA,
     body: `
@@ -1064,7 +1097,6 @@ async function gravar(tabela, id, payload) {
   Drawer.close();
   toast(id ? 'Item atualizado.' : 'Item publicado.');
   await carregar();
-  if (DRAWER_DA_TABELA[tabela]) abrirDrawerConteudo(DRAWER_DA_TABELA[tabela]);
 }
 
 async function excluir(tabela, id, nome) {
@@ -1079,6 +1111,5 @@ async function excluir(tabela, id, nome) {
 
   toast('Item excluído.');
   await carregar();
-  if (DRAWER_DA_TABELA[tabela]) abrirDrawerConteudo(DRAWER_DA_TABELA[tabela]);
   return true;
 }

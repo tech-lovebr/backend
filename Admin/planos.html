@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo Love</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-admin.png">
+  <link rel="apple-touch-icon" href="assets/fav-admin.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=105">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js?v=4"></script>
+  <script src="js/shell.js?v=14"></script>
+</head>
+<body data-page="fornecedores-dashboard" data-title="Planos" data-voltar="fornecedores-dashboard.html">
+  <script>
+    // Aberta pelas Configurações de Anfitriões: o voltar e o menu ativo seguem de lá.
+    if (new URLSearchParams(location.search).get("de") === "cliente") {
+      document.body.dataset.page = "clientes-dashboard";
+      document.body.dataset.voltar = "clientes-dashboard.html";
+    }
+  </script>
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <div id="page-controls" hidden>
+          <input type="search" class="search-input" id="busca" placeholder="Buscar por qualquer campo...">
+        </div>
+
+        <section class="card table-card">
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr>
+                <th>ID</th><th>Nome</th><th>Descrição</th><th>Status</th><th>Preço</th><th>Período</th>
+                <th class="col-numero">Empresas</th><th class="col-numero">Assinantes</th>
+              </tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/planos.js?v=1"></script>
+</body>
+</html>

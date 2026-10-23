@@ -11145,3 +11145,12 @@ html body .floorplan-seat-dot .floorplan-seat-dot-line:not(#love-h-a) { max-widt
 
 /* Pop-up Adicionar/Editar convidado: sem a linha horizontal abaixo do título. */
 html body #drawer-add-guest > div:first-child:not(#love-h-a) { border-bottom: 0 !important; }
+
+/* Criar evento › "Ou digite outro tipo": sugestões do catálogo de tipos. */
+.tipo-evento-sugestoes { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30; display: flex; flex-direction: column; padding: 4px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); max-height: 240px; overflow-y: auto; }
+.tipo-evento-sugestoes[hidden] { display: none; }
+html body button.tipo-evento-opcao:not(#love-h-a) { display: block; width: 100%; padding: 8px 10px; background: none; border: 0; border-radius: 6px; font: inherit; font-size: 13px; color: #18181B; text-align: left; cursor: pointer; }
+html body button.tipo-evento-opcao:not(#love-h-a):hover, html body button.tipo-evento-opcao.is-ativa:not(#love-h-a) { background: #F4F4F5; }
+body[data-theme="dark"] .tipo-evento-sugestoes { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] button.tipo-evento-opcao { color: #FFFFFF !important; }
+body[data-theme="dark"] button.tipo-evento-opcao:hover, body[data-theme="dark"] button.tipo-evento-opcao.is-ativa { background: #333333 !important; }

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261023_cadeiraRef">
+  <link rel="stylesheet" href="css/styles.css?v=20261023_tiposEvento">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3892,32 +3892,32 @@
           <!-- Grade de Seleção Rápida de Tipos -->
           <div class="grid grid-cols-2 gap-2.5 max-h-[220px] overflow-y-auto pr-1">
             
-            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="wedding" data-label="Casamento">
+            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="wedding" data-slug="casamento" data-label="Casamento">
               <span class="text-lg">💍</span>
               <span class="text-xs font-bold text-zinc-800 group-hover:text-[#537bae]">Casamento</span>
             </button>
 
-            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="birthday" data-label="Aniversário">
+            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="birthday" data-slug="aniversario" data-label="Aniversário">
               <span class="text-lg">🎂</span>
               <span class="text-xs font-bold text-zinc-800 group-hover:text-[#537bae]">Aniversário</span>
             </button>
 
-            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="baby_shower" data-label="Chá de Bebê">
+            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="baby_shower" data-slug="cha_de_bebe" data-label="Chá de Bebê">
               <span class="text-lg">🍼</span>
               <span class="text-xs font-bold text-zinc-800 group-hover:text-[#537bae]">Chá de Bebê</span>
             </button>
 
-            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="bridal_shower" data-label="Chá de Panela">
+            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="bridal_shower" data-slug="cha_de_panela" data-label="Chá de Panela">
               <span class="text-lg">🫖</span>
               <span class="text-xs font-bold text-zinc-800 group-hover:text-[#537bae]">Chá de Panela</span>
             </button>
 
-            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="gender_reveal" data-label="Chá Revelação">
+            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="gender_reveal" data-slug="cha_revelacao" data-label="Chá Revelação">
               <span class="text-lg">🎈</span>
               <span class="text-xs font-bold text-zinc-800 group-hover:text-[#537bae]">Chá Revelação</span>
             </button>
 
-            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="anniversary" data-label="Bodas">
+            <button type="button" class="btn-select-event-type-card p-3 rounded-xl bg-zinc-50 hover:bg-blue-50/70 border border-zinc-100/80 hover:border-[#537bae] text-left transition-all flex items-center gap-2.5 cursor-pointer group" data-type="anniversary" data-slug="bodas" data-label="Bodas">
               <span class="text-lg">🥂</span>
               <span class="text-xs font-bold text-zinc-800 group-hover:text-[#537bae]">Bodas</span>
             </button>
@@ -3926,7 +3926,8 @@
 
           <!-- Campo Outro tipo customizado -->
           <div class="relative">
-            <input type="text" id="input-custom-event-type" placeholder="Ou digite outro tipo (ex: Batizado, Inauguração)..." class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50 text-xs focus:outline-none focus:ring-1 focus:ring-[#537bae] focus:bg-white text-zinc-800">
+            <input type="text" id="input-custom-event-type" role="combobox" aria-autocomplete="list" aria-controls="tipo-evento-sugestoes" aria-expanded="false" autocomplete="off" placeholder="Ou digite outro tipo (ex: Batizado, 15 anos, Formatura)..." class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 bg-zinc-50 text-xs focus:outline-none focus:ring-1 focus:ring-[#537bae] focus:bg-white text-zinc-800">
+            <div id="tipo-evento-sugestoes" class="tipo-evento-sugestoes" role="listbox" aria-label="Tipos de evento" hidden></div>
           </div>
         </div>
 
@@ -5525,10 +5526,11 @@
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261023_cadeiraRef"></script>
+  <script src="js/tipos-evento.js?v=20261023_tiposEvento"></script>
+  <script src="js/app.js?v=20261023_tiposEvento"></script>
   <script src="js/carteira.js?v=20261023_verificacaoIdentidade"></script>
   <script src="js/checklist.js?v=20261023_checklistLinks3"></script>
-  <script src="js/pedidos-orcamento.js?v=20261023_checklistLinks3"></script>
+  <script src="js/pedidos-orcamento.js?v=20261023_tiposEvento"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>
 </body>

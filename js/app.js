@@ -14688,6 +14688,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const formStep = document.getElementById('create-event-form-step');
   const modalSelectEventType = document.getElementById('modal-select-event-type');
   let selectedNewType = 'wedding';
+  /** Tipo escolhido no catálogo (slug '' = digitado livre). @type {{ slug: string, nome: string }|null} */
+  let selectedTipoEvento = null;
   let createdCoverImageSrc = 'assets/wedding_hero_banner.jpg';
 
   // Transição: Clicar em "+ Criar Evento" abre o modal pop-up de escolha de tipo de evento (estilo Joy)
@@ -14751,6 +14753,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('click', () => {
       const typeKey = card.getAttribute('data-type') || 'wedding';
       const typeLabel = card.getAttribute('data-label') || 'Casamento';
+      selectedTipoEvento = { slug: card.getAttribute('data-slug') || '', nome: typeLabel };
       proceedToEventForm(typeKey, typeLabel);
     });
   });
@@ -14759,18 +14762,74 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputCustomType = document.getElementById('input-custom-event-type');
   const btnSubmitCustomType = document.getElementById('btn-submit-custom-type');
 
+  // "Ou digite outro tipo": sugere os tipos do catálogo enquanto a pessoa
+  // escreve (nome e palavras-chave: "15 anos" → Festa de 15 Anos / Debutante).
+  const caixaSugestoes = document.getElementById('tipo-evento-sugestoes');
+  /** @type {any[]} */
+  let sugestoesTipo = [];
+  let sugestaoAtiva = -1;
+  const tiposEvento = () => /** @type {any} */ (window).LoveTiposEvento || null;
+  /** @param {{ slug: string, nome: string, base?: string }} t */
+  const escolherTipoDoCatalogo = (t) => {
+    selectedTipoEvento = { slug: t.slug, nome: t.nome };
+    fecharSugestoesTipo();
+    if (inputCustomType) /** @type {HTMLInputElement} */ (inputCustomType).value = t.nome;
+    proceedToEventForm(t.base || 'other', t.nome);
+  };
+  function fecharSugestoesTipo() {
+    if (caixaSugestoes) caixaSugestoes.hidden = true;
+    inputCustomType?.setAttribute('aria-expanded', 'false');
+    sugestaoAtiva = -1;
+  }
+  function desenharSugestoesTipo() {
+    if (!caixaSugestoes || !inputCustomType) return;
+    const cat = tiposEvento();
+    sugestoesTipo = cat ? cat.buscar(/** @type {HTMLInputElement} */ (inputCustomType).value, 6) : [];
+    if (!sugestoesTipo.length) { fecharSugestoesTipo(); return; }
+    if (sugestaoAtiva >= sugestoesTipo.length) sugestaoAtiva = sugestoesTipo.length - 1;
+    caixaSugestoes.innerHTML = sugestoesTipo.map((t, i) => `<button type="button" role="option" class="tipo-evento-opcao${i === sugestaoAtiva ? ' is-ativa' : ''}" aria-selected="${i === sugestaoAtiva}" data-tipo-slug="${escaparHtml(t.slug)}">${escaparHtml(t.nome)}</button>`).join('');
+    caixaSugestoes.hidden = false;
+    inputCustomType.setAttribute('aria-expanded', 'true');
+  }
+  caixaSugestoes?.addEventListener('mousedown', (e) => {
+    const op = /** @type {HTMLElement|null} */ (/** @type {HTMLElement} */ (e.target).closest('[data-tipo-slug]'));
+    if (!op) return;
+    e.preventDefault();
+    const t = sugestoesTipo.find(x => x.slug === op.dataset.tipoSlug);
+    if (t) escolherTipoDoCatalogo(t);
+  });
+
   const handleCustomTypeSubmit = () => {
-    const customVal = (inputCustomType && inputCustomType.value.trim()) || 'Evento Especial';
-    proceedToEventForm('custom', customVal);
+    const customVal = (inputCustomType && inputCustomType.value.trim()) || '';
+    const cat = tiposEvento();
+    if (!customVal) { selectedTipoEvento = null; proceedToEventForm('other', 'Evento Especial'); return; }
+    // Igual a um tipo do catálogo (ou a primeira sugestão): usa o tipo; senão, fica o texto livre.
+    const achados = cat ? cat.buscar(customVal, 6) : [];
+    const exato = achados.find((/** @type {any} */ t) => cat.normal(t.nome) === cat.normal(customVal));
+    if (exato) { escolherTipoDoCatalogo(exato); return; }
+    selectedTipoEvento = { slug: '', nome: customVal };
+    fecharSugestoesTipo();
+    proceedToEventForm('other', customVal);
   };
 
   if (btnSubmitCustomType) {
     btnSubmitCustomType.addEventListener('click', handleCustomTypeSubmit);
   }
   if (inputCustomType) {
+    inputCustomType.addEventListener('input', () => { sugestaoAtiva = -1; desenharSugestoesTipo(); });
+    inputCustomType.addEventListener('blur', () => setTimeout(fecharSugestoesTipo, 120));
     inputCustomType.addEventListener('keydown', (e) => {
+      const aberta = caixaSugestoes && !caixaSugestoes.hidden && sugestoesTipo.length;
+      if (aberta && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        e.preventDefault();
+        sugestaoAtiva = (sugestaoAtiva + (e.key === 'ArrowDown' ? 1 : -1) + sugestoesTipo.length) % sugestoesTipo.length;
+        desenharSugestoesTipo();
+        return;
+      }
+      if (e.key === 'Escape') { fecharSugestoesTipo(); return; }
       if (e.key === 'Enter') {
         e.preventDefault();
+        if (aberta && sugestaoAtiva >= 0) { escolherTipoDoCatalogo(sugestoesTipo[sugestaoAtiva]); return; }
         handleCustomTypeSubmit();
       }
     });
@@ -14780,6 +14839,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnEventTypeUnsure = document.getElementById('btn-event-type-unsure');
   if (btnEventTypeUnsure) {
     btnEventTypeUnsure.addEventListener('click', () => {
+      selectedTipoEvento = null;
       proceedToEventForm('custom', 'Novo Evento');
     });
   }
@@ -15203,6 +15263,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const newEvt = {
         type: selectedNewType,
+        // Tipo do catálogo (tipos_evento) e o nome mostrado: guardados no evento
+        // para o Criar solicitação e o Checklist saberem o tipo certo.
+        tipoEvento: selectedTipoEvento ? selectedTipoEvento.slug : '',
+        tipoNome: selectedTipoEvento ? selectedTipoEvento.nome : '',
         title: name,
         hostName: name,
         date: startDate,
@@ -20617,6 +20681,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  /** Tipo-base pelo tipo do catálogo guardado no evento (o banco só aceita 6). @param {any} extra */
+  function tipoBaseDoExtra(extra) {
+    if (!extra || (!extra.tipoEvento && !extra.tipoNome)) return {};
+    const cat = /** @type {any} */ (window).LoveTiposEvento;
+    if (extra.tipoEvento && cat && cat.porSlug(extra.tipoEvento)) return { type: cat.base(extra.tipoEvento) };
+    return extra.tipoEvento ? {} : { type: 'other' };
+  }
+
   function mapEventoRowToEvent(row) {
     const guests = (row.convidados || []).map(mapConvidadoRowToGuest);
     const giftList = (row.presentes || []).map(mapPresenteRowToGift);
@@ -20636,6 +20708,7 @@ document.addEventListener('DOMContentLoaded', () => {
       coverImage: row.cover_image_url,
       status: row.status,
       ...(row.extra || {}),
+      ...tipoBaseDoExtra(row.extra),
       convidadosConfirmados: pessoasNaLista(confirmed),
       convidadosRecusados: declined.length,
       convidadosPendentes: pending.length,

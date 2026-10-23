@@ -184,9 +184,14 @@
   function preencherComOEvento() {
     const evento = typeof window.getLoveActiveEvent === 'function' ? window.getLoveActiveEvent() : null;
     if (!evento) return;
-    /** @type {Record<string, RfpCelebracao>} */
-    const porTipo = { wedding: 'casamento', birthday: 'aniversario', anniversary: 'bodas' };
-    if (porTipo[evento.type]) dados.tipoCelebracao = porTipo[evento.type];
+    // Tipo de celebração = tipo do evento (escolhido ao criar o evento).
+    const cat = /** @type {any} */ (window).LoveTiposEvento;
+    /** @type {Record<string, string>} */
+    const porTipo = { wedding: 'casamento', birthday: 'aniversario', anniversary: 'bodas', baby_shower: 'chá de bebê', baby: 'chá de bebê', gender_reveal: 'chá revelação', bridal_shower: 'chá de panela', corporate: 'corporativo' };
+    const doCatalogo = evento.tipoEvento && cat ? cat.celebracao(evento.tipoEvento) : '';
+    const celeb = doCatalogo || (evento.tipoEvento || evento.tipoNome ? '' : porTipo[evento.type] || '');
+    if (celeb) { dados.tipoCelebracao = /** @type {RfpCelebracao} */ (celeb); dados.celebracaoOutro = ''; }
+    else { dados.tipoCelebracao = 'outro'; dados.celebracaoOutro = String(evento.tipoNome || 'Evento'); }
     const det = evento.eventDetails || {};
     const data = det.date || evento.date || '';
     if (/^\d{4}-\d{2}-\d{2}$/.test(data)) dados.dataEvento = data;
@@ -1039,7 +1044,7 @@
     const e = {};
     if (n === 1) {
       if (!lote.categorias.length) e.categorias = formato === 'completo' ? 'Escolha pelo menos um serviço.' : 'Escolha o serviço.';
-      validarCelebracao(e);
+
     }
     if (n === 2) {
       validarLogistica(e);
@@ -1201,10 +1206,9 @@
       </section>`;
   }
 
-  /** Dados do evento (tipo de celebração + linha compacta). @param {string} rotulo */
+  /** Dados do evento (linha compacta; o tipo de celebração vem do evento). @param {string} rotulo */
   const secaoDoEvento = (rotulo) => `
       <section class="rfp-secao">
-        ${htmlCelebracao()}
         <h4 class="rfp-pergunta">${rotulo}</h4>
         ${htmlEventoCompacto()}
       </section>`;
@@ -1220,8 +1224,7 @@
           ${seletorDeServico()}
           ${erroHtml('categorias')}
           ${id ? blocoTags(id) : ''}
-        </section>
-        <section class="rfp-secao">${htmlCelebracao()}</section>`;
+        </section>`;
     }
     if (etapa === 2 && id) {
       return `
@@ -1249,8 +1252,7 @@
           <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
           ${gradeDeServicos()}
           ${erroHtml('categorias')}
-        </section>
-        <section class="rfp-secao">${htmlCelebracao()}</section>`;
+        </section>`;
     }
     if (etapa === 2) {
       return `
@@ -1313,10 +1315,9 @@
       </div>`;
   }
 
-  // Etapa 1: tipo de celebração primeiro, depois os serviços e os dados do evento.
+  // Etapa 1: os serviços (o tipo de celebração vem do evento).
   function htmlLote1() {
     return `
-      ${htmlCelebracao()}
       <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
       <p class="rfp-ajuda">Escolha um ou mais. Cada serviço vira uma solicitação para os fornecedores daquela categoria.</p>
       <div class="rfp-lote-cats" role="group" aria-label="Serviços">

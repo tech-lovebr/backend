@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261022_solicitacoesLista">
+  <link rel="stylesheet" href="css/styles.css?v=20261022_abasCriarSolicitacao">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3510,21 +3510,14 @@
                SUB-VIEW: PEDIDOS DE ORÇAMENTO (RFP) — o anfitrião diz o que
                precisa e os fornecedores mandam propostas (js/pedidos-orcamento.js)
                =============================================================== -->
-          <div id="b2b-pedidos-view" class="hidden px-6 sm:px-8 py-6 space-y-4 w-full max-w-none">
-            <!-- Nova solicitação: na própria página, uma etapa de cada vez (modelo do Hub) -->
-            <div id="rfp-editor" class="rfp-editor" hidden></div>
-          </div>
-
-          <div id="b2b-contracted-view" class="hidden px-6 sm:px-8 py-6 animate-fade-in w-full max-w-none">
-
-            <!-- Contratos: Solicitações (pedidos de orçamento que a pessoa criou)
-                 e Meus contratos (fornecedores contratados). -->
-            <div class="love-tabs-nav" id="contratos-abas" role="tablist">
-              <button type="button" class="love-tab-item" data-contratos-aba="solicitacoes">Minhas solicitações</button>
-              <button type="button" class="love-tab-item active" data-contratos-aba="contratos">Meus contratos</button>
+          <div id="b2b-pedidos-view" class="hidden px-6 sm:px-8 py-6 w-full max-w-none">
+            <!-- Criar solicitação: abas Criar nova (editor) e Minhas solicitações (lista) -->
+            <div class="love-tabs-nav" id="pedidos-abas" role="tablist">
+              <button type="button" class="love-tab-item active" data-pedidos-aba="nova">Criar nova</button>
+              <button type="button" class="love-tab-item" data-pedidos-aba="minhas">Minhas solicitações</button>
             </div>
 
-            <div id="contratos-painel-solicitacoes" class="contratos-painel hidden">
+            <div id="pedidos-painel-minhas" class="hidden">
               <div id="rfp-lista-wrap">
                 <p id="rfp-lista-aviso" class="rfp-lista-aviso hidden" role="status"></p>
                 <!-- Solicitações (rascunhos e publicadas), no modelo "All job posts" -->
@@ -3536,13 +3529,15 @@
               <div id="rfp-propostas" class="hidden"></div>
             </div>
 
-            <div id="contratos-painel-contratos" class="contratos-painel">
-              <!-- Lista de Fornecedores Contratados (mesmo padrão estético da lista do Explorar) -->
-              <div id="b2b-contracted-list-container" class="w-full flex flex-col divide-y divide-zinc-200/80">
-                <!-- Injetado dinamicamente via JS -->
-              </div>
-            </div>
+            <!-- Nova solicitação: na própria página, uma etapa de cada vez (modelo do Hub) -->
+            <div id="rfp-editor" class="rfp-editor" hidden></div>
+          </div>
 
+          <div id="b2b-contracted-view" class="hidden px-6 sm:px-8 py-6 animate-fade-in w-full max-w-none">
+            <!-- Contratos: só os fornecedores contratados (mesmo padrão estético da lista do Explorar) -->
+            <div id="b2b-contracted-list-container" class="w-full flex flex-col divide-y divide-zinc-200/80">
+              <!-- Injetado dinamicamente via JS -->
+            </div>
           </div>
 
           <!-- ===============================================================
@@ -5608,8 +5603,8 @@
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261022_propostasRecebidas"></script>
-  <script src="js/pedidos-orcamento.js?v=20261022_propostasRecebidas"></script>
+  <script src="js/app.js?v=20261022_abasCriarSolicitacao"></script>
+  <script src="js/pedidos-orcamento.js?v=20261022_abasCriarSolicitacao"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261021_fotoAniversario"></script>
 </body>

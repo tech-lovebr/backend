@@ -10306,3 +10306,10 @@ body[data-theme="dark"] button.rfp-post-titulo, body[data-theme="dark"] .rfp-pos
 body[data-theme="dark"] .rfp-props { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .rfp-prop, body[data-theme="dark"] .rfp-post { border-bottom-color: #404040 !important; }
 body[data-theme="dark"] button.rfp-post-mais { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Criar solicitação: abas Criar nova / Minhas solicitações, com 24px até o
+   conteúdo (editor ou lista); a lista vai até o rodapé. */
+html body #b2b-pedidos-view .rfp-editor:not(#love-h-a) { padding-top: 24px; }
+html body #pedidos-painel-minhas:not(.hidden):not(#love-h-a) { display: flex; flex-direction: column; flex: 1 0 auto; margin-top: 24px; }
+html body #pedidos-abas.hidden + #pedidos-painel-minhas:not(#love-h-a) { margin-top: 0; }
+html body #b2b-pedidos-view:has(#pedidos-abas.hidden) #rfp-propostas:not(#love-h-a) { margin-top: 0; }

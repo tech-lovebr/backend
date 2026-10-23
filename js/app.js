@@ -18343,7 +18343,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
       if (searchBar) searchBar.classList.remove('hidden');
       [exploreView, messagesView, contractedView, insuranceView].forEach(v => v?.classList.add('hidden'));
-      if (window.LovePedidos) window.LovePedidos.abrir();
+      if (window.LovePedidos) window.LovePedidos.mostrarAba('nova');
       return;
     }
 
@@ -18376,7 +18376,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
         if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
         renderB2BContracted();
-        mostrarAbaDeContratos(abaDeContratos);
       } else if (viewId === 'insurance') {
         if (exploreView) exploreView.classList.add('hidden');
         if (contractedView) contractedView.classList.add('hidden');
@@ -18405,42 +18404,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
-
-  // Contratos › abas Solicitações (pedidos de orçamento criados) e Meus contratos.
-  /** @type {'solicitacoes'|'contratos'} */
-  var abaDeContratos = 'contratos'; // var: switchB2BView pode rodar antes desta linha (rota no F5)
-  /** @param {'solicitacoes'|'contratos'} aba */
-  function mostrarAbaDeContratos(aba) {
-    abaDeContratos = aba;
-    const solicitacoes = aba === 'solicitacoes';
-    document.getElementById('contratos-abas')?.classList.remove('hidden');
-    document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.contratosAba === aba));
-    document.getElementById('contratos-painel-solicitacoes')?.classList.toggle('hidden', !solicitacoes);
-    document.getElementById('contratos-painel-contratos')?.classList.toggle('hidden', solicitacoes);
-    // Propostas (solicitações): cabeçalho só com o título, sem a busca de fornecedores.
-    document.getElementById('b2b-toolbar-controls')?.classList.toggle('hidden', solicitacoes);
-    if (solicitacoes && window.LovePedidos) window.LovePedidos.mostrarLista();
-  }
-  document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.addEventListener('click', () => {
-    mostrarAbaDeContratos(/** @type {any} */ (/** @type {HTMLElement} */ (b).dataset.contratosAba));
-  }));
-  // Botão do cabeçalho (aba Solicitações) → Criar solicitação.
-  document.getElementById('btn-rfp-novo')?.addEventListener('click', () => {
-    switchB2BView('pedidos');
-    registrarRota(caminhoSubRota('b2b', 'pedidos'));
-  });
-  // Saiu da nova solicitação (Cancelar, seta de voltar ou publicou): vai para
-  // Contratos › Solicitações.
-  // "Editar rascunho" / "Criar solicitação" da lista: abre o editor.
-  window.addEventListener('love:rfp-abrir', () => {
-    switchB2BView('pedidos');
-    registrarRota(caminhoSubRota('b2b', 'pedidos'));
-  });
-  window.addEventListener('love:rfp-sair', () => {
-    abaDeContratos = 'solicitacoes';
-    switchB2BView('contracted');
-    registrarRota(caminhoSubRota('b2b', 'contracted'));
-  });
 
   // "R$ 28.500,00" → 28500
   function parseValorBRL(texto) {

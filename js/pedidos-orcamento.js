@@ -136,7 +136,7 @@
     { titulo: 'Descreva o que você precisa e o orçamento', sub: 'Conte os detalhes do que você precisa e informe quanto planeja gastar para receber propostas realistas dos fornecedores.' },
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
-  const TITULO_DA_LISTA = 'Solicitações de orçamento';
+  const TITULO_DA_LISTA = 'Minhas solicitações';
   const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 1000;
@@ -299,7 +299,7 @@
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
     if (titulo && pedidosAberto) titulo.textContent = aberta ? TITULO_DA_NOVA : TITULO_DA_LISTA;
     if (voltar) voltar.hidden = true;
-    if (vendoPropostas) { vendoPropostas = false; document.getElementById('contratos-abas')?.classList.remove('hidden'); }
+    if (vendoPropostas && aberta) { vendoPropostas = false; document.getElementById('pedidos-abas')?.classList.remove('hidden'); }
     if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 
@@ -332,11 +332,28 @@
     window.scrollTo({ top: 0 });
   }
 
-  /** Sai da nova solicitação para Contratos › Solicitações (app.js escuta). */
+  /** Sai da nova solicitação para a aba Minhas solicitações. */
   function sair() {
     if (publicando) return;
+    mostrarAba('minhas');
+  }
+
+  /** Abas de Criar solicitação: 'nova' (editor) e 'minhas' (lista). @param {'nova'|'minhas'} aba */
+  function mostrarAba(aba) {
+    document.querySelectorAll('#pedidos-abas [data-pedidos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.pedidosAba === aba));
+    document.getElementById('pedidos-abas')?.classList.remove('hidden');
+    const minhas = document.getElementById('pedidos-painel-minhas');
+    if (aba === 'nova') {
+      if (vendoPropostas) modoPropostas(false);
+      minhas?.classList.add('hidden');
+      const m = document.getElementById('rfp-editor');
+      if (!m || m.hidden) abrir();
+      return;
+    }
     fechar();
-    window.dispatchEvent(new CustomEvent('love:rfp-sair'));
+    minhas?.classList.remove('hidden');
+    cabecalho(false);
+    mostrarLista();
   }
 
   function fechar() {
@@ -886,8 +903,8 @@
         ? await supabaseClient.from('pedidos_rascunho').update({ dados: conteudo, updated_at: agora }).eq('id', id).select('id').maybeSingle()
         : await supabaseClient.from('pedidos_rascunho').insert({ cliente_id: u.id, dados: conteudo }).select('id').single();
       if (!resp.error) return resp.data ? resp.data.id : id;
-      if (!tabelaFaltando(resp.error)) return id;
-      semTabelaDeRascunhos = true;
+      // Sem a tabela ou o banco recusou: guarda no navegador para não perder.
+      if (tabelaFaltando(resp.error)) semTabelaDeRascunhos = true;
     }
     const lista = lerLocal(u.id);
     const novoId = local ? /** @type {string} */ (id) : `local-${Date.now()}`;
@@ -1086,7 +1103,7 @@
     const r = rascunhosCarregados[id];
     if (!r) return;
     rascunhoPendente = r;
-    window.dispatchEvent(new CustomEvent('love:rfp-abrir'));
+    mostrarAba('nova');
   }
 
   // --------------------------------------------------------------------------
@@ -1104,9 +1121,9 @@
     vendoPropostas = ligado;
     const titulo = document.getElementById('b2b-toolbar-title');
     const voltar = document.getElementById('btn-rfp-voltar');
-    if (titulo) titulo.textContent = ligado ? 'Propostas recebidas' : 'Contratos';
+    if (titulo) titulo.textContent = ligado ? 'Propostas recebidas' : TITULO_DA_LISTA;
     if (voltar) { voltar.hidden = !ligado; voltar.setAttribute('aria-label', 'Voltar para Minhas solicitações'); }
-    document.getElementById('contratos-abas')?.classList.toggle('hidden', ligado);
+    document.getElementById('pedidos-abas')?.classList.toggle('hidden', ligado);
   }
 
   /** @param {string} id */
@@ -1220,7 +1237,9 @@
     const alvo = e.target instanceof Element ? e.target : null;
     if (!alvo) return;
     if (alvo.closest('[data-rfp-propostas-voltar]')) { mostrarLista(); return; }
-    if (alvo.closest('[data-rfp-criar]')) { window.dispatchEvent(new CustomEvent('love:rfp-abrir')); return; }
+    if (alvo.closest('[data-rfp-criar]')) { mostrarAba('nova'); return; }
+    const abaPedidos = /** @type {HTMLElement|null} */ (alvo.closest('[data-pedidos-aba]'));
+    if (abaPedidos) { mostrarAba(abaPedidos.dataset.pedidosAba === 'minhas' ? 'minhas' : 'nova'); return; }
     const conversar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-conversar]'));
     if (conversar) { const w = /** @type {any} */ (window); if (w.loveAbrirChatComFornecedor) w.loveAbrirChatComFornecedor(conversar.dataset.rfpConversar); return; }
     const mudar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-proposta-status]'));
@@ -1282,5 +1301,5 @@
     if (vendoPropostas) mostrarLista(); else sair();
   });
 
-  window.LovePedidos = { abrir, fechar, mostrarLista, CATEGORIAS, FAIXAS };
+  window.LovePedidos = { abrir, fechar, mostrarLista, mostrarAba, CATEGORIAS, FAIXAS };
 })();

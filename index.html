@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261023_carteiraSaque">
+  <link rel="stylesheet" href="css/styles.css?v=20261023_recadosRecebidos">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -857,7 +857,7 @@
         </button>
 
         <!-- 2. ÍCONE DE PERSONALIZAR (✏️ Pencil Square - 2º no Desktop) -->
-        <button class="rail-icon-btn mobile-center-edit order-3 md:order-2" data-rail-tab="edit-site" aria-label="Personalizar evento">
+        <button class="rail-icon-btn mobile-center-edit order-3 md:order-4" data-rail-tab="edit-site" aria-label="Personalizar evento">
           <svg class="w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
           </svg>
@@ -871,7 +871,7 @@
         </button>
 
         <!-- 4. CONVIDADOS (👥 - 4º no Desktop, 2º no Mobile) -->
-        <button class="rail-icon-btn order-2 md:order-4" data-rail-tab="rsvp" aria-label="Seus Convidados (RSVP)">
+        <button class="rail-icon-btn order-2 md:order-2" data-rail-tab="rsvp" aria-label="Seus Convidados (RSVP)">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
@@ -1993,6 +1993,11 @@
               <!-- Listas prontas (ícone de lista no cabeçalho): no mesmo espaço dos presentes -->
               <div id="gifts-listas-prontas" hidden></div>
             </div>
+          </div>
+
+          <!-- SUB-PAINEL: RECADOS RECEBIDOS (mensagens dos convidados que presentearam) -->
+          <div id="gifts-panel-messages" class="hidden px-6 sm:px-8 py-6 w-full max-w-none">
+            <div id="recados-raiz"></div>
           </div>
 
           <!-- SUB-PAINEL 2: CONFIGURAÇÕES DA LISTA DE PRESENTES (Estilo Livre / Fundo Branco) -->
@@ -5520,7 +5525,7 @@
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261023_carteiraSaque"></script>
+  <script src="js/app.js?v=20261023_recadosRecebidos"></script>
   <script src="js/carteira.js?v=20261023_carteiraSaque"></script>
   <script src="js/checklist.js?v=20261023_checklistAjuda"></script>
   <script src="js/pedidos-orcamento.js?v=20261023_etapa1Simples"></script>

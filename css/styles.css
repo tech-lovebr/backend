@@ -10907,3 +10907,18 @@ body[data-theme="dark"] :is(.cart-faixa-vazia, .cart-saque-saldo) { background: 
 body[data-theme="dark"] :is(.cart-busca input, .cart-campo input, .cart-campo select, button.cart-mais, button.cart-conta-opcao) { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] button.cart-btn-escuro:not(:disabled) { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }
 body[data-theme="dark"] :is(button.cart-link, button.cart-link-texto) { color: #EBF4FF !important; }
+
+/* Lista de presentes › Recados recebidos: tabela com o recado aberto na
+   própria linha ao clicar no nome. */
+.recados-contagem { margin: 0; font-size: 13px; color: #52525B; }
+html body button.recado-nome:not(#love-h-a) { padding: 0; background: none; border: 0; font-family: inherit; font-size: 14px; font-weight: 600; color: #183b54; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: rgba(24, 59, 84, 0.3); text-underline-offset: 4px; }
+html body button.recado-nome:not(#love-h-a):hover { text-decoration-color: #183b54; }
+.recado-sub { display: block; margin-top: 2px; font-size: 12px; color: #71717A; }
+.recado-data { white-space: nowrap; color: #52525B; }
+.recado-previa { max-width: 420px; color: #52525B; cursor: pointer; }
+.recado-linha.is-aberto > td { border-bottom: 0 !important; }
+.recado-mensagem td { padding-top: 0 !important; }
+.recado-mensagem p { margin: 0 0 4px; padding: 14px 16px; background: #F4F6F7; border-radius: 8px; font-size: 14px; line-height: 1.65; color: #18181B; white-space: pre-line; }
+.recados-vazio { padding: 40px 16px !important; text-align: center; font-size: 13px; color: #71717A; }
+body[data-theme="dark"] button.recado-nome { color: #EBF4FF !important; }
+body[data-theme="dark"] .recado-mensagem p { background: #2A2A2A !important; color: #FFFFFF !important; }

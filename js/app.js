@@ -1390,6 +1390,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'my-gifts', label: 'Meus presentes' },
+        { id: 'gift-messages', label: 'Recados recebidos' },
         { id: 'gift-settings', label: 'Configurações' },
         // Listas prontas: página própria (/presentes/listas), aberta pelo botão "Listas".
         { id: 'gift-lists', label: 'Listas', oculto: true }
@@ -1512,7 +1513,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   const SUB_ROUTES = {
     'edit-site': { home: '', data: 'informacoes', about: 'anfitrioes', 'invite-print': 'convite' },
-    gifts: { 'my-gifts': '', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
+    gifts: { 'my-gifts': '', 'gift-messages': 'recados', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento', 'wallet-statement': 'extrato' },
     // Fornecedores abre em Criar solicitação (/fornecedores); Explorar em /fornecedores/explorar.
@@ -9341,6 +9342,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerTitle = document.getElementById('gifts-header-title');
     const headerSub = document.getElementById('gifts-header-subtitle');
 
+    const panelMessages = document.getElementById('gifts-panel-messages');
+    if (panelMessages) panelMessages.classList.toggle('hidden', subId !== 'gift-messages');
+    if (subId === 'gift-messages') {
+      // Recados recebidos: só a tabela de recados (sem a busca/ação dos presentes no cabeçalho).
+      if (topSearchBar) topSearchBar.classList.add('hidden');
+      if (panelProducts) panelProducts.classList.add('hidden');
+      if (panelSettings) panelSettings.classList.add('hidden');
+      if (summaryStats) summaryStats.classList.add('hidden');
+      if (headerTitle) headerTitle.textContent = 'Recados recebidos';
+      document.getElementById('btn-gifts-listas-voltar')?.setAttribute('hidden', '');
+      renderRecadosRecebidos();
+      return;
+    }
     if (subId === 'gift-settings') {
       if (topSearchBar) topSearchBar.classList.add('hidden');
       if (panelProducts) panelProducts.classList.add('hidden');
@@ -9366,6 +9380,72 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  // ==========================================
+  // LISTA DE PRESENTES › RECADOS RECEBIDOS
+  // Mensagens que os convidados deixam ao presentear (receivedGifts.message).
+  // Clicar no nome abre o recado na própria tabela (sem drawer nem pop-up).
+  // ==========================================
+  let recadosBusca = '';
+  /** @type {Set<string>} */
+  const recadosAbertos = new Set();
+  function renderRecadosRecebidos() {
+    const raiz = document.getElementById('recados-raiz');
+    if (!raiz) return;
+    const ev = getActiveEvent();
+    const recados = ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim());
+    const termo = recadosBusca.trim().toLowerCase();
+    const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const linhas = lista.map(/** @param {any} g */ g => {
+      const id = String(g.id);
+      const aberto = recadosAbertos.has(id);
+      const msg = String(g.message || '');
+      return `
+        <tr class="recado-linha${aberto ? ' is-aberto' : ''}" data-recado-id="${escaparHtml(id)}">
+          <td><button type="button" class="recado-nome" data-recado-abrir aria-expanded="${aberto}">${escaparHtml(g.guestName || 'Convidado')}</button></td>
+          <td>${escaparHtml(g.giftTitle || 'Presente')}<span class="recado-sub">${escaparHtml(brl(g.amount))}</span></td>
+          <td class="recado-data">${escaparHtml(g.date || '—')}</td>
+          <td class="recado-previa">${aberto ? '' : escaparHtml(msg.length > 80 ? msg.slice(0, 80) + '…' : msg)}</td>
+        </tr>
+        ${aberto ? `<tr class="recado-mensagem"><td colspan="4"><p>${escaparHtml(msg)}</p></td></tr>` : ''}`;
+    }).join('');
+    raiz.innerHTML = `
+      <div class="dash-card love-tabela-caixa recados-caixa">
+        <div class="love-tabela-barra">
+          <div class="love-tabela-barra-esq">
+            <div class="love-tabela-busca">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="search" id="recados-busca" value="${escaparHtml(recadosBusca)}" placeholder="Buscar recado..." aria-label="Buscar recado" autocomplete="off">
+            </div>
+          </div>
+          <div class="love-tabela-barra-dir"><p class="recados-contagem">${recados.length} ${recados.length === 1 ? 'recado' : 'recados'}</p></div>
+        </div>
+        <div class="w-full overflow-x-auto">
+          <table class="love-tabela recados-tabela w-full text-left border-collapse font-sans">
+            <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th>Recado</th></tr></thead>
+            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.'}</td></tr>`}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
+  document.addEventListener('click', (e) => {
+    const alvo = e.target instanceof Element ? e.target : null;
+    const linha = alvo && alvo.closest('#recados-raiz .recado-linha');
+    if (!linha || !alvo.closest('[data-recado-abrir], .recado-previa')) return;
+    const id = /** @type {HTMLElement} */ (linha).dataset.recadoId || '';
+    if (recadosAbertos.has(id)) recadosAbertos.delete(id); else recadosAbertos.add(id);
+    renderRecadosRecebidos();
+  });
+  document.addEventListener('input', (e) => {
+    const el = /** @type {HTMLInputElement} */ (e.target);
+    if (!el || el.id !== 'recados-busca') return;
+    recadosBusca = el.value;
+    const pos = el.selectionStart;
+    renderRecadosRecebidos();
+    const novo = /** @type {HTMLInputElement|null} */ (document.getElementById('recados-busca'));
+    if (novo) { novo.focus(); if (pos !== null) novo.setSelectionRange(pos, pos); }
+  });
 
   // Quem paga a taxa dos presentes: "Seus convidados" ou "Você" (o visual
   // de selecionado vem da classe .active no CSS).

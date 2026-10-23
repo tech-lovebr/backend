@@ -11114,3 +11114,27 @@ body[data-theme="dark"] #recados-raiz .recados-vazio-icone path[fill] { fill: #2
 /* Pop-up Criar/Editar presente: sem as linhas horizontais do cabeçalho e do rodapé. */
 html body #drawer-add-gift > div:first-child:not(#love-h-a) { border-bottom: 0 !important; }
 html body #form-add-gift > .gift-campo-salvar:not(#love-h-a) { border-top: 0 !important; }
+
+/* Checklist: título das tarefas prontas é clicável (sem sublinhado) e leva à
+   página da plataforma. */
+html body button.chk-titulo-link:not(#love-h-a) { display: block; padding: 0; margin: 0; background: none; border: 0; font: inherit; text-align: left; cursor: pointer; }
+html body .chk-tarefa:not(.is-feita) button.chk-titulo-link:not(#love-h-a):hover { color: #183b54; }
+
+/* Pop-up Adicionar/Editar tarefa no padrão do pop-up de presente: 880px, duas
+   colunas (campos à esquerda, notas à direita), cabeçalho com o X. */
+html body .chk-modal-card:not(#love-h-a) { max-width: 880px; padding: 0; border: 1px solid var(--borda-suave, rgba(0,0,0,.06)); box-shadow: var(--sombra-overlay, 0 8px 24px rgba(0, 0, 0, 0.08)); max-height: calc(100vh - 48px); overflow-y: auto; }
+.chk-modal-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 24px 14px; }
+html body .chk-modal-cab .chk-modal-titulo:not(#love-h-a) { margin: 0; }
+html body button.chk-modal-x:not(#love-h-a) { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-right: -6px; padding: 0; background: none; border: 0; border-radius: 8px; color: #A1A1AA; cursor: pointer; }
+html body button.chk-modal-x:not(#love-h-a):hover { color: #181D24; }
+.chk-modal-x svg { width: 20px; height: 20px; }
+html body #chk-modal .chk-form:not(#love-h-a) { padding: 18px 24px 22px; }
+.chk-form-colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 32px; align-items: stretch; }
+.chk-form-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+html body #chk-modal .chk-campo-notas:not(#love-h-a) { flex: 1 1 auto; display: flex; flex-direction: column; }
+html body #chk-modal .chk-campo-notas textarea:not(#love-h-a) { flex: 1 1 auto; min-height: 120px; resize: none; }
+@media (max-width: 720px) { .chk-form-colunas { grid-template-columns: minmax(0, 1fr); } }
+html body .chk-modal-card:not(#love-h-a) { min-height: min(563px, calc(100vh - 48px)); display: flex; flex-direction: column; }
+html body #chk-modal .chk-form:not(#love-h-a) { flex: 1 1 auto; display: flex; flex-direction: column; }
+html body #chk-modal .chk-form-colunas:not(#love-h-a) { flex: 1 1 auto; }
+html body #chk-modal .chk-form-acoes:not(#love-h-a) { margin-top: auto; padding-top: 18px; }

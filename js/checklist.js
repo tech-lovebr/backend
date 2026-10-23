@@ -240,6 +240,51 @@
   };
   MODELOS.baby = MODELOS.baby_shower;
 
+  // Tarefas prontas da Love levam à página certa da plataforma (as criadas
+  // pela pessoa não têm link). Contratações abrem Criar solicitação › Serviço
+  // avulso já com o serviço marcado.
+  /** @type {Record<string, string>} */
+  const SERVICO_DA_CATEGORIA = {
+    'Espaço': 'espaco', 'Gastronomia': 'buffet', 'Doces': 'doces', 'Bebidas': 'bebidas', 'Decoração': 'decoracao',
+    'Música': 'musica', 'Mídia': 'fotografia', 'Assessoria': 'assessoria', 'Equipe': 'assessoria'
+  };
+  const TITULOS_PRONTOS = new Set(Object.values(MODELOS).flat().map(m => m[0]));
+  /** @param {Tarefa} t @returns {{ tab?: string, sub?: string, servico?: string, explorar?: string, pagina?: string }|null} */
+  function destinoDaTarefa(t) {
+    if (!t || !TITULOS_PRONTOS.has(t.titulo)) return null;
+    const s = t.titulo.toLowerCase();
+    if (/orçamento/.test(s) && t.categoria === 'Financeiro') return { tab: 'wallet', sub: 'wallet-budget' };
+    if (/saldo da carteira/.test(s)) return { tab: 'wallet', sub: 'wallet-digital' };
+    if (/mapa de mesas/.test(s)) return { tab: 'rsvp', sub: 'tables' };
+    if (/fornecedores|ao buffet/.test(s)) return { tab: 'b2b', sub: 'contracted' };
+    if (/lista de presentes/.test(s)) return { tab: 'gifts', sub: 'my-gifts' };
+    if (/save the date/.test(s)) return { pagina: 'savethedate' };
+    if (/convites/.test(s)) return { pagina: 'convite' };
+    if (/convidados|confirmação de presença|padrinhos|madrinhas/.test(s)) return { tab: 'rsvp', sub: 'all' };
+    const modelo = Object.values(MODELOS).flat().find(m => m[0] === t.titulo);
+    if (modelo && modelo[3]) {
+      const servico = SERVICO_DA_CATEGORIA[t.categoria];
+      if (servico) return { servico };
+      if (NO_EXPLORAR[t.categoria]) return { explorar: NO_EXPLORAR[t.categoria] };
+    }
+    return null;
+  }
+  /** @param {Tarefa} t */
+  function irParaTarefa(t) {
+    const d = destinoDaTarefa(t);
+    const w = /** @type {any} */ (window);
+    if (!d) return;
+    if (d.servico) {
+      if (w.LovePedidos && w.LovePedidos.abrirComServico) w.LovePedidos.abrirComServico(d.servico);
+      if (w.loveIrPara) w.loveIrPara('b2b', 'pedidos');
+      return;
+    }
+    if (d.pagina === 'savethedate' && w.navigateToSaveTheDate) { w.navigateToSaveTheDate(); return; }
+    if (d.pagina === 'convite' && w.navigateToConviteDigital) { w.navigateToConviteDigital(); return; }
+    if (d.explorar) { if (w.loveAbrirExplorarNaCategoria) w.loveAbrirExplorarNaCategoria(d.explorar); return; }
+    if (d.tab && d.sub && w.loveIrPara) w.loveIrPara(d.tab, d.sub);
+  }
+
   /** Tarefas sugeridas do tipo do evento ativo (tipo desconhecido → "other"). */
   function modeloDoEvento() {
     const ev = eventoAtivo();
@@ -493,7 +538,7 @@
       <div class="chk-tarefa${t.concluida ? ' is-feita' : ''}" data-chk-id="${esc(t.id)}">
         <button type="button" class="chk-check" role="checkbox" aria-checked="${t.concluida}" aria-label="Marcar como concluída" data-chk-toggle>${ICONE_CHECK}</button>
         <div class="chk-corpo">
-          <p class="chk-titulo">${esc(t.titulo)}</p>
+          ${destinoDaTarefa(t) ? `<button type="button" class="chk-titulo chk-titulo-link" data-chk-ir>${esc(t.titulo)}</button>` : `<p class="chk-titulo">${esc(t.titulo)}</p>`}
           <div class="chk-meta">
             <span class="chk-tag">${esc(t.categoria)}</span>
             <span class="chk-prazo${prazo.atrasada ? ' is-atrasada' : ''}">${esc(prazo.texto)}</span>
@@ -627,15 +672,24 @@
     m.hidden = true;
     m.innerHTML = `
       <div class="chk-modal-card" role="dialog" aria-modal="true" aria-labelledby="chk-modal-titulo">
-        <h3 id="chk-modal-titulo" class="chk-modal-titulo">Adicionar tarefa</h3>
+        <div class="chk-modal-cab">
+          <h3 id="chk-modal-titulo" class="chk-modal-titulo">Adicionar tarefa</h3>
+          <button type="button" class="chk-modal-x" data-chk-fechar aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
+        </div>
         <form id="chk-form" class="chk-form" novalidate>
-          <label class="chk-campo"><span>Tarefa</span><input type="text" name="titulo" maxlength="140" required></label>
-          <div class="chk-form-linha">
-            <label class="chk-campo"><span>Categoria</span><select name="categoria">${CATEGORIAS.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></label>
-            <label class="chk-campo"><span>Prazo</span><input type="date" name="prazo"></label>
+          <div class="chk-form-colunas">
+            <div class="chk-form-col">
+              <label class="chk-campo"><span>Tarefa</span><input type="text" name="titulo" maxlength="140" required></label>
+              <div class="chk-form-linha">
+                <label class="chk-campo"><span>Categoria</span><select name="categoria">${CATEGORIAS.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></label>
+                <label class="chk-campo"><span>Prazo</span><input type="date" name="prazo"></label>
+              </div>
+              <label class="chk-campo"><span>Orçamento <em>(opcional)</em></span><input type="text" name="orcamento" inputmode="decimal" placeholder="R$ 0,00"></label>
+            </div>
+            <div class="chk-form-col">
+              <label class="chk-campo chk-campo-notas"><span>Notas <em>(opcional)</em></span><textarea name="notas" rows="3" maxlength="1000"></textarea></label>
+            </div>
           </div>
-          <label class="chk-campo"><span>Orçamento <em>(opcional)</em></span><input type="text" name="orcamento" inputmode="decimal" placeholder="R$ 0,00"></label>
-          <label class="chk-campo"><span>Notas <em>(opcional)</em></span><textarea name="notas" rows="3" maxlength="1000"></textarea></label>
           <p class="chk-form-erro" id="chk-form-erro" hidden></p>
           <div class="chk-form-acoes">
             <button type="button" class="chk-cancelar" data-chk-fechar>Cancelar</button>
@@ -753,6 +807,7 @@
       if (!(await salvar(t))) { t.concluida = !t.concluida; desenhar(); }
       return;
     }
+    if (alvo.closest('[data-chk-ir]')) { irParaTarefa(t); return; }
     const buscar = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-buscar]'));
     if (buscar) {
       const w = /** @type {any} */ (window);

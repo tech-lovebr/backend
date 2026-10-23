@@ -281,6 +281,8 @@
         </footer>
       </div>`;
 
+    m.addEventListener('pointerdown', () => { soPreMarcado = false; });
+    m.addEventListener('keydown', () => { soPreMarcado = false; });
     m.addEventListener('click', (e) => {
       const alvo = /** @type {HTMLElement} */ (e.target);
       if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? sair() : irPara(etapa - 1, -1);
@@ -320,7 +322,15 @@
     if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 
+  /** Serviço já marcado na próxima abertura (tarefas do Checklist). */
+  let servicoPedido = '';
+  /** Aberto pelo Checklist e a pessoa ainda não mexeu: não vira rascunho. */
+  let soPreMarcado = false;
+  /** @param {string} id */
+  function abrirComServico(id) { servicoPedido = CATEGORIAS.some(c => c.id === id) ? id : ''; }
+
   function abrir() {
+    soPreMarcado = false;
     modo = 'lote';
     lote = loteVazio();
     formato = 'unico';
@@ -345,7 +355,15 @@
       categoriaEscolhidaAMao = true;
     } else {
       preencherComOEvento();
+      if (servicoPedido) {
+        formato = 'unico';
+        lote.categorias = [servicoPedido];
+        lote.itens[servicoPedido] = itemNovo(servicoPedido);
+        categoriaEscolhidaAMao = true;
+        soPreMarcado = true;
+      }
     }
+    servicoPedido = '';
     previas.forEach(u => URL.revokeObjectURL(u));
     previas = [];
     const m = modal();
@@ -1647,7 +1665,7 @@
     return { ...resto, formato, lote: { categorias: lote.categorias.slice(), itens: lote.itens, descricaoGeral: lote.descricaoGeral, usarGeral: lote.usarGeral } };
   }
   // Vale como rascunho assim que a pessoa escolhe um serviço.
-  const valeComoRascunho = () => lote.categorias.length > 0;
+  const valeComoRascunho = () => lote.categorias.length > 0 && !soPreMarcado;
 
   /** @returns {Promise<any[]>} */
   async function listarRascunhos() {
@@ -2279,5 +2297,5 @@
     if (vendoPropostas) mostrarLista(); else sair();
   });
 
-  window.LovePedidos = { abrir, fechar, mostrarLista, mostrarAba, CATEGORIAS, FAIXAS };
+  window.LovePedidos = { abrir, abrirComServico, fechar, mostrarLista, mostrarAba, CATEGORIAS, FAIXAS };
 })();

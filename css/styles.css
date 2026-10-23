@@ -10351,3 +10351,12 @@ html body :is(button.guest-remove-sim, button.meus-eventos-excluir, button.guest
 html body :is(button.guest-remove-sim, button.meus-eventos-excluir, button.guest-remove-lixeira, .config-btn-desativar, #view-event-os-dashboard .love-tabela-lixeira):not(#love-h-a):hover { border-color: #181D24 !important; color: #181D24 !important; background: #FFFFFF !important; }
 html body :is(.conv-menu .conv-menu-perigo, .gift-card-menu button.is-perigo):not(#love-h-a) { color: #18181B !important; }
 body[data-theme="dark"] :is(.conv-menu .conv-menu-perigo, .gift-card-menu button.is-perigo, button.guest-remove-sim, button.meus-eventos-excluir, button.guest-remove-lixeira, .config-btn-desativar, .rfp-menu button) { color: #FFFFFF !important; }
+
+/* Cancelar nunca dentro de caixa: só texto (cinza; no hover escurece). */
+html body :is(#love-confirmar-cancelar, button.b2b-mensagem-cancelar, button.chat-msg-editor-cancelar, button.org-convite-cancelar, button.rfp-voltar-texto):not(#love-h-a) { background: transparent !important; border: 0 !important; box-shadow: none !important; padding-left: 0.5rem !important; padding-right: 0.5rem !important; color: #52525B !important; font-weight: 600 !important; }
+html body :is(#love-confirmar-cancelar, button.b2b-mensagem-cancelar, button.chat-msg-editor-cancelar, button.org-convite-cancelar, button.rfp-voltar-texto):not(#love-h-a):hover { color: #181D24 !important; background: transparent !important; }
+body[data-theme="dark"] :is(#love-confirmar-cancelar, .b2b-mensagem-cancelar, .chat-msg-editor-cancelar, .org-convite-cancelar, .rfp-voltar-texto) { color: #D4D4D8 !important; background: transparent !important; }
+
+/* Propostas recebidas: as abas Criar nova / Minhas solicitações somem de verdade
+   (o display das abas vencia o .hidden). */
+html body #pedidos-abas.hidden:not(#love-h-a) { display: none !important; }

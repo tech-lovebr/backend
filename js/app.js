@@ -1658,8 +1658,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       abrirSubItem(rota.tab, rota.subId || Object.keys(SUB_ROUTES[rota.tab] || {})[0]);
       if (rota.contratoId) {
-        const contrato = (window.LOVE_DATA.contractedVendors || []).find(v => String(v.id) === String(rota.contratoId));
-        if (contrato) openContractedVendorPage(contrato);
+        openContractedVendorPage({ id: rota.contratoId });
+      } else if (rota.tab === 'b2b' && !document.getElementById('b2b-contracted-vendor-view')?.classList.contains('hidden')) {
+        closeContractedVendorPage();
       }
     } finally {
       aplicandoRotaDoHistorico = false;
@@ -18618,277 +18619,47 @@ document.addEventListener('DOMContentLoaded', () => {
     return Number.isFinite(n) ? n : 0;
   }
 
+  // Contratos = propostas aceitas (js/contratos.js monta a lista e a página).
   function renderB2BContracted() {
     const container = document.getElementById('b2b-contracted-list-container');
     if (!container) return;
-    container.innerHTML = '';
-
-    const contractedList = window.LOVE_DATA.contractedVendors || [];
-
-    if (contractedList.length === 0) {
-      // Mesmo visual das caixas de Benefícios Love: sem linha, com a sombra
-      // leve da regra global de .bg-white.rounded-*.
-      container.innerHTML = `
-        <div class="p-12 text-center bg-white rounded-2xl border border-transparent text-sm text-zinc-500 flex flex-col items-center gap-4">
-          <p>Você ainda não possui fornecedores contratados, que tal explorar?</p>
-          <button type="button" class="btn-contracted-empty-explore px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all cursor-pointer">
-            Explorar Fornecedores
-          </button>
-        </div>
-      `;
-      // Mesmo efeito de clicar em "Explorar" na sub-barra (marca o item e troca a URL).
-      container.querySelector('.btn-contracted-empty-explore')?.addEventListener('click', () => {
-        abrirSubItem('b2b', 'explore');
-      });
-      return;
-    }
-
-    contractedList.forEach(item => {
-      // Mesmo padrão estético (flat, sem caixa) da lista do Explorar — ver
-      // renderB2BExplore() / .b2b-item-card.
-      const card = document.createElement('div');
-      card.className = 'b2b-item-card group flex flex-col md:flex-row gap-6 items-stretch w-full p-6 md:pl-0 first:pt-0 cursor-pointer';
-
-      // Quitação = quanto já foi pago do valor negociado (barra de progresso).
-      const valorPago = item.paidValueNum ?? parseValorBRL(item.paidValue);
-      const valorTotal = item.negotiatedValueNum ?? parseValorBRL(item.negotiatedValue);
-      const quitacao = valorTotal > 0 ? Math.min(100, Math.round((valorPago / valorTotal) * 100)) : 0;
-
-      card.innerHTML = `
-        <div class="relative w-full md:w-80 h-48 rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0">
-          <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-        </div>
-
-        <div class="flex-1 flex flex-col justify-between min-w-0">
-          <div>
-            <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${item.name}">${item.name}</h4>
-            <p class="text-sm text-zinc-500 mt-3 leading-relaxed line-clamp-2 font-sans">${item.service || ''}</p>
-          </div>
-
-          <div class="flex flex-wrap items-end justify-between gap-4 pt-3.5 mt-3.5 border-t border-zinc-100">
-            <div class="flex flex-wrap items-end gap-x-8 gap-y-3 min-w-0">
-              <div>
-                <span class="block text-xs text-zinc-400">Valor do contrato</span>
-                <span class="block text-sm font-semibold text-zinc-800">${item.negotiatedValue || '—'}</span>
-              </div>
-              <div class="w-44">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="text-zinc-400">Quitação</span>
-                  <span class="font-semibold text-zinc-700">${quitacao}%</span>
-                </div>
-                <div class="mt-1.5 h-2 w-full rounded-full bg-zinc-100 overflow-hidden" role="progressbar" aria-label="Quitação do contrato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${quitacao}">
-                  <div class="h-full rounded-full bg-[#537bae]" style="width: ${quitacao}%"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-2.5">
-              <button type="button" class="btn-contracted-chat btn-secondary">
-                <svg fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-                <span>Mensagens</span>
-              </button>
-              <button type="button" class="btn-contracted-actions px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
-                Meu contrato
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      card.querySelector('.btn-contracted-chat')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        switchB2BView('messages');
-      });
-
-      card.querySelector('.btn-contracted-actions')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openContractedVendorPage(item);
-      });
-
-      card.addEventListener('click', () => openContractedVendorPage(item));
-
-      container.appendChild(card);
-    });
+    if (window.LoveContratos) window.LoveContratos.renderLista(container);
   }
 
   let activeContractedVendor = null;
 
-  // Página do fornecedor contratado (Meus Contratos → clique num
-  // fornecedor) — mesmo padrão da página do fornecedor em Explorar, nunca
-  // mais um drawer/pop-up pra essa ação. Submenu Contrato / Configurações.
+  // Página do contrato (Contratos → clique no título ou no fornecedor):
+  // visão geral, atualizações, detalhes e configurações (permissões).
   function openContractedVendorPage(vendor) {
+    if (!vendor) return;
     activeContractedVendor = vendor;
     registrarRota(`/fornecedores/contratos/${encodeURIComponent(vendor.id)}`, { voltarComHistorico: true });
     const listView = document.getElementById('b2b-contracted-view');
     const pageView = document.getElementById('b2b-contracted-vendor-view');
     if (!pageView) return;
-
     if (listView) listView.classList.add('hidden');
     pageView.classList.remove('hidden');
-
-    document.getElementById('contracted-vendor-page-name').textContent = vendor.name;
-    document.getElementById('contracted-vendor-page-category').textContent = vendor.category;
-    document.getElementById('contracted-vendor-page-image').src = vendor.image;
-
-    renderContractedVendorContract(vendor);
-    renderContractedVendorPermissions(vendor);
-    setContractedVendorSubtab('contract');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (window.LoveContratos) window.LoveContratos.renderPagina(String(vendor.id), pageView);
+    window.scrollTo({ top: 0 });
   }
 
   function closeContractedVendorPage() {
     document.getElementById('b2b-contracted-vendor-view')?.classList.add('hidden');
     document.getElementById('b2b-contracted-view')?.classList.remove('hidden');
     activeContractedVendor = null;
+    renderB2BContracted();
   }
 
-  function setContractedVendorSubtab(id) {
-    document.querySelectorAll('.contracted-vendor-subtab').forEach(btn => {
-      const active = btn.dataset.subtab === id;
-      btn.classList.toggle('border-[#181D24]', active);
-      btn.classList.toggle('text-zinc-900', active);
-      btn.classList.toggle('border-transparent', !active);
-      btn.classList.toggle('text-zinc-400', !active);
-    });
-    document.getElementById('contracted-vendor-panel-contract')?.classList.toggle('hidden', id !== 'contract');
-    document.getElementById('contracted-vendor-panel-settings')?.classList.toggle('hidden', id !== 'settings');
-  }
-
-  function renderContractedVendorContract(vendor) {
-    const bodyEl = document.getElementById('contracted-vendor-panel-contract');
-    if (!bodyEl) return;
-
-    const deliverablesHtml = (vendor.deliverables || []).map(d => `
-      <li class="flex items-start gap-2 text-xs text-zinc-700">
-        <span class="text-emerald-500 font-bold mt-0.5">✓</span>
-        <span>${d}</span>
-      </li>
-    `).join('');
-
-    bodyEl.innerHTML = `
-      <!-- 1. Status & Vigência -->
-      <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between gap-3">
-        <div>
-          <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Status do Contrato</span>
-          <span class="text-sm font-bold text-emerald-700 mt-0.5 block flex items-center gap-1.5">
-            <span>🛡️</span> ${vendor.contractStatus}
-          </span>
-        </div>
-        <div class="text-right">
-          <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Data do Evento</span>
-          <span class="text-xs font-bold text-zinc-800 mt-0.5 block">${vendor.eventDate}</span>
-        </div>
-      </div>
-
-      <!-- 2. Serviço Contratado & Entregáveis -->
-      <div class="p-4 rounded-2xl bg-white border border-zinc-200/80 shadow-xs space-y-3">
-        <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
-          <span>📋</span> Escopo do Serviço Contratado
-        </span>
-        <p class="text-xs text-zinc-600 leading-relaxed font-normal">${vendor.service}</p>
-        
-        <div class="pt-2 border-t border-zinc-100 space-y-2">
-          <span class="text-[11px] font-bold text-zinc-700 block">Itens & Cláusulas Inclusas:</span>
-          <ul class="space-y-1.5 pl-1">
-            ${deliverablesHtml}
-          </ul>
-        </div>
-      </div>
-
-      <!-- 3. Responsável & Contato Direto -->
-      <div class="p-4 rounded-2xl bg-white border border-zinc-200/80 shadow-xs space-y-3">
-        <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
-          <span>👤</span> Responsável & Atendimento Direto
-        </span>
-        <div class="flex items-center justify-between gap-3 bg-zinc-50 p-3 rounded-xl border border-zinc-100">
-          <div>
-            <h4 class="font-bold text-zinc-900 text-sm">${vendor.responsibleName}</h4>
-            <p class="text-[11px] text-zinc-500">${vendor.responsibleRole || 'Atendimento'}</p>
-            <p class="text-xs font-medium text-zinc-700 mt-1">${vendor.responsiblePhone} • ${vendor.responsibleEmail}</p>
-          </div>
-          <a href="https://wa.me/5511999999999" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs">
-            <span>WhatsApp</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- 4. Condições Comerciais & Negociado -->
-      <div class="p-4 rounded-2xl bg-white border border-zinc-200/80 shadow-xs space-y-3">
-        <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
-          <span>💳</span> Condições Comerciais & Pagamentos
-        </span>
-        
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div class="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-            <span class="text-[10px] text-zinc-400 block font-medium">Valor Total Negociado</span>
-            <span class="text-base font-black text-zinc-900 mt-0.5 block">${vendor.negotiatedValue}</span>
-          </div>
-          <div class="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
-            <span class="text-[10px] text-zinc-400 block font-medium">Valor Já Quitado</span>
-            <span class="text-base font-black text-[#537bae] mt-0.5 block">${vendor.paidValue || vendor.negotiatedValue}</span>
-          </div>
-        </div>
-
-        <div class="p-3 bg-zinc-50 rounded-xl border border-zinc-100 space-y-1">
-          <span class="text-[10px] text-zinc-400 block font-medium">Condições de Pagamento</span>
-          <span class="text-xs font-semibold text-zinc-800 block">${vendor.paymentTerms}</span>
-        </div>
-      </div>
-
-      <!-- 5. Próximo Marco & Cronograma -->
-      <div class="p-4 rounded-2xl bg-white border border-zinc-200/80 shadow-xs space-y-2">
-        <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
-          <span>📅</span> Próxima Etapa / Marco do Cronograma
-        </span>
-        <div class="p-3 bg-blue-50/60 rounded-xl border border-blue-100 text-xs text-blue-900 font-medium flex items-center gap-2">
-          <span class="text-base">🔔</span>
-          <span>${vendor.nextMilestone}</span>
-        </div>
-      </div>
-
-      <!-- 6. Arquivo do Contrato Anexo -->
-      <div class="p-4 rounded-2xl bg-white border border-zinc-200/80 shadow-xs space-y-3">
-        <span class="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
-          <span>📎</span> Documento Oficial Assinado
-        </span>
-        <div class="flex items-center justify-between p-3 rounded-xl bg-zinc-50 border border-zinc-100 hover:bg-zinc-100/80 transition-colors">
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl">📄</span>
-            <div>
-              <span class="text-xs font-bold text-zinc-800 block">${vendor.contractFile}</span>
-              <span class="text-[10px] text-zinc-400">PDF Autenticado digitalmente • 2.4 MB</span>
-            </div>
-          </div>
-          <button type="button" class="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1" onclick="alert('Download do contrato iniciado!')">
-            <span>Baixar</span>
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  // Inicialização de Listeners da Página de Fornecedor Contratado
-  const btnContractedVendorBack = document.getElementById('btn-contracted-vendor-back');
-  if (btnContractedVendorBack) {
-    btnContractedVendorBack.addEventListener('click', () => {
-      if (history.state?.voltarComHistorico) { history.back(); return; }
-      closeContractedVendorPage();
-      history.replaceState({ loveRoute: '/fornecedores/contratos' }, '', '/fornecedores/contratos');
-    });
-  }
-
-  const btnContractedVendorChat = document.getElementById('btn-contracted-vendor-chat');
-  if (btnContractedVendorChat) {
-    btnContractedVendorChat.addEventListener('click', () => {
-      if (activeContractedVendor) {
-        switchB2BView('messages');
-      }
-    });
-  }
-
-  document.querySelectorAll('.contracted-vendor-subtab').forEach(btn => {
-    btn.addEventListener('click', () => setContractedVendorSubtab(btn.dataset.subtab));
-  });
+  window.loveAbrirContrato = (id) => openContractedVendorPage({ id });
+  window.loveFecharContrato = () => {
+    closeContractedVendorPage();
+    if (history.state?.voltarComHistorico) { history.back(); return; }
+    history.replaceState({ loveRoute: '/fornecedores/contratos' }, '', '/fornecedores/contratos');
+  };
+  window.loveRenderPermissoesDoContratado = (id) => {
+    const v = (window.LOVE_DATA.contractedVendors || []).find(x => String(x.id) === String(id));
+    if (v) renderContractedVendorPermissions(v);
+  };
 
   // ---------------- "Digitando…" entre anfitrião e fornecedor ----------------
   // Realtime Broadcast do Supabase (não grava nada no banco): canal

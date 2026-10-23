@@ -246,7 +246,7 @@
   /** @type {Record<string, string>} */
   const SERVICO_DA_CATEGORIA = {
     'Espaço': 'espaco', 'Gastronomia': 'buffet', 'Doces': 'doces', 'Bebidas': 'bebidas', 'Decoração': 'decoracao',
-    'Música': 'musica', 'Mídia': 'fotografia', 'Assessoria': 'assessoria', 'Equipe': 'assessoria'
+    'Música': 'musica', 'Mídia': 'fotografia', 'Assessoria': 'assessoria', 'Equipe': 'staff'
   };
   const TITULOS_PRONTOS = new Set(Object.values(MODELOS).flat().map(m => m[0]));
   /** @param {Tarefa} t @returns {{ tab?: string, sub?: string, servico?: string, explorar?: string, pagina?: string }|null} */

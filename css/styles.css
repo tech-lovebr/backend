@@ -11038,3 +11038,11 @@ html body #recados-raiz .recados-caixa > .overflow-x-auto:not(#love-h-a) { flex:
 
 /* Cadeira um pouco maior (36px) para as iniciais respirarem; contorno único, sem linha entre encosto e assento. */
 html body .floorplan-seat-dot:not(#love-h-a) { width: 36px; height: 36px; min-width: 36px; max-width: 36px; min-height: 36px; }
+
+/* Recados recebidos vazio: texto no centro da caixa; link para Meus presentes. */
+html body #recados-raiz .recados-caixa .love-tabela:has(.recados-vazio):not(#love-h-a) { height: 100%; }
+html body #recados-raiz .recados-caixa > .overflow-x-auto:not(#love-h-a) { display: flex; flex-direction: column; }
+html body #recados-raiz .recados-caixa .love-tabela:has(.recados-vazio):not(#love-h-a) { flex: 1 0 auto; }
+html body #recados-raiz td.recados-vazio:not(#love-h-a) { text-align: center !important; vertical-align: middle !important; border-bottom: 0 !important; }
+html body #recados-raiz button.recados-link:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+body[data-theme="dark"] #recados-raiz button.recados-link { color: #FFFFFF !important; }

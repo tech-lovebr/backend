@@ -3815,3 +3815,10 @@ label.editor-btn { cursor: pointer; }
 /* Selo da conta: Login Google/Apple em cinza neutro; não verificado em âmbar. */
 .selo-verificado.selo-google { background: #F4F4F5; color: #3F3F46; }
 .selo-verificado.selo-pendente { background: #FEF3C7; color: #92400E; }
+
+/* Drawer sem título (conta do usuário): nome e e-mail entram na lista de
+   dados; o topo fica só com voltar e fechar. */
+.drawer-sem-titulo #drawer-title,
+.drawer-sem-titulo #drawer-subtitle { display: none; }
+.drawer-sem-titulo .drawer-head { justify-content: flex-end; }
+.lista-dados .valor .selo-verificado { margin-left: .375rem; }

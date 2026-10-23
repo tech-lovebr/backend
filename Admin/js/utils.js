@@ -192,8 +192,9 @@ const Drawer = {
   },
 
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, subtitleHtml, body, footer, back }) {
+  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false }) {
     this._build();
+    document.getElementById('drawer-panel').classList.toggle('drawer-sem-titulo', semTitulo);
 
     const btnBack = document.getElementById('drawer-back');
     btnBack.hidden = !back;

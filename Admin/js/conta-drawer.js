@@ -199,6 +199,18 @@ const ContaDrawer = (() => {
     desenhar(conta);
   }
 
+  /* Data de nascimento pedida no cadastro: clientes.birthday (anfitrião) ou
+     fornecedores.birthday (Hub); "AAAA-MM-DD" vira "DD/MM/AAAA". */
+  function dataDeNascimento(c) {
+    const cad = c.origem === 'b2b'
+      ? (DADOS?.fornecedores || []).find(x => x.id === c.id)
+      : (DADOS?.clientes || []).find(x => x.id === c.id);
+    const valor = String(cad?.birthday || '').trim();
+    if (!valor) return null;
+    const iso = valor.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valor;
+  }
+
   function desenhar(c) {
     const semOrigem = c.origem === 'sem_origem';
     const origem = ORIGENS[c.origem] || ORIGENS.sem_origem;
@@ -210,11 +222,16 @@ const ContaDrawer = (() => {
         <span class="valor">${valor}</span>
       </div>`;
 
+    const nascimento = dataDeNascimento(c);
+
     Drawer.open({
       title: c.nome || c.email || 'Conta',
-      subtitleHtml: `${escapeHtml(c.email || '')}${seloDaConta(c)}`,
+      semTitulo: true,
       body: `
         <div class="lista-dados">
+          ${linha('Nome', escapeHtml(c.nome || '—'))}
+          ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}
+          ${linha('Data de nascimento', escapeHtml(nascimento || 'Não informada'))}
           ${linha('Canal', escapeHtml(origem.rotulo))}
           ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}

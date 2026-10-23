@@ -251,7 +251,7 @@ function opCardHtml(p) {
       ${p.descricao ? `<p class="op-linha-desc">${escapeHtml(String(p.descricao).trim())}</p>` : ''}
       <div class="op-linha-rodape">
         <div class="op-linha-pills">${pills.map(([svg, t]) => `<span class="op-linha-pill">${svg}${escapeHtml(t)}</span>`).join('')}</div>
-        <span class="btn-secondary op-linha-acao">${minha ? 'Ver detalhes' : 'Ver detalhes e enviar proposta'}</span>
+        <span class="btn-secondary op-linha-acao">Ver detalhes</span>
       </div>
     </article>`;
 }
@@ -289,11 +289,23 @@ function opRenderChips() {
   document.querySelector('[data-op-nao-respondidas]')?.setAttribute('aria-pressed', String(opSoNaoRespondidas));
 }
 
+/* Páginas de 15 oportunidades. Mudou busca/filtro: volta para a página 1. */
+const OP_POR_PAGINA = 15;
+let opPagina = 1;
+let opChaveFiltros = '';
 function opRenderPedidos() {
   const grade = document.getElementById('op-grade');
   const vazio = document.getElementById('op-vazio');
   const lista = opPedidosFiltrados();
-  grade.innerHTML = lista.map(opCardHtml).join('');
+  const chave = ['op-busca', 'op-filtro-categoria', 'op-filtro-cidade', 'op-filtro-orcamento'].map(id => document.getElementById(id)?.value || '').join('|') + `|${opSoSalvas}|${opSoNaoRespondidas}`;
+  if (chave !== opChaveFiltros) { opChaveFiltros = chave; opPagina = 1; }
+  const paginas = Math.max(1, Math.ceil(lista.length / OP_POR_PAGINA));
+  opPagina = Math.min(Math.max(1, opPagina), paginas);
+  grade.innerHTML = lista.slice((opPagina - 1) * OP_POR_PAGINA, opPagina * OP_POR_PAGINA).map(opCardHtml).join('');
+  const texto = document.getElementById('op-pagina-texto');
+  if (texto) texto.textContent = `Página ${opPagina} de ${paginas}`;
+  document.querySelector('[data-op-pagina="-1"]')?.toggleAttribute('disabled', opPagina <= 1);
+  document.querySelector('[data-op-pagina="1"]')?.toggleAttribute('disabled', opPagina >= paginas);
   opRenderChips();
   vazio.hidden = lista.length > 0;
   vazio.textContent = opSoSalvas
@@ -705,6 +717,14 @@ function opLigarEventos() {
   document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
   document.getElementById('op-filtro-categoria').addEventListener('change', opRenderPedidos);
   document.getElementById('op-filtro-orcamento').addEventListener('change', opRenderPedidos);
+  document.getElementById('op-paginacao')?.addEventListener('click', e => {
+    const btn = e.target.closest('[data-op-pagina]');
+    if (!btn || btn.disabled) return;
+    opPagina += Number(btn.dataset.opPagina);
+    opRenderPedidos();
+    document.querySelector('.b2b-content')?.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   opLigarFiltrarPor();
   document.querySelector('[data-op-salvas]').addEventListener('click', () => { opSoSalvas = !opSoSalvas; opRenderPedidos(); });
   document.querySelector('[data-op-nao-respondidas]').addEventListener('click', () => { opSoNaoRespondidas = !opSoNaoRespondidas; opRenderPedidos(); });

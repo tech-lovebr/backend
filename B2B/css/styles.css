@@ -10559,3 +10559,14 @@ html body .leads-table tbody tr:hover td:not(#love-h-a):not(#love-h-b) { backgro
 /* Campos: mesma linha fina do index. */
 html body :is(.field-input, .field-select, .field-textarea, .tabela-busca input, .op-filtro-select):not(#love-h-a):not(#love-h-b) { border-color: var(--borda-suave) !important; }
 html body :is(.field-input, .field-select, .field-textarea, .tabela-busca input, .op-filtro-select):not(#love-h-a):not(#love-h-b):focus { border-color: #181D24 !important; box-shadow: none !important; }
+
+/* Oportunidades: páginas de 15, navegação no fim da lista (à direita). */
+html body .op-paginacao:not(#love-h-a) { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+html body .op-pagina-texto:not(#love-h-a) { font-size: 13px; font-weight: 500; color: #52525B; font-variant-numeric: tabular-nums; }
+html body .op-pagina-btn:not(#love-h-a) {
+  width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0;
+  background: #FFFFFF; border: 1px solid var(--borda-suave); border-radius: 8px; box-shadow: var(--anel-suave); color: #18181B; cursor: pointer;
+}
+html body .op-pagina-btn:hover:not(:disabled):not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .op-pagina-btn:disabled:not(#love-h-a) { color: #D4D4D8; cursor: default; }
+html body .op-pagina-btn svg:not(#love-h-a) { width: 18px; height: 18px; }

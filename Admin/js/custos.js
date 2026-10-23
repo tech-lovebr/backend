@@ -82,7 +82,7 @@ async function buscarIntegracoes(forcar) {
       itens: [
         { fonte: 'vercel', nome: 'Vercel', categoria: 'Servidor', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado },
         { fonte: 'supabase', nome: 'Supabase', categoria: 'Banco de dados', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado },
-        { fonte: 'aws', nome: 'Amazon AWS', categoria: 'E-mail', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado }
+        { fonte: 'aws', nome: 'Amazon', categoria: 'E-mail', tipo: 'recorrente', moeda: 'USD', status: 'erro', erro: String(e.message || e), meses: zerado }
       ]
     };
   }
@@ -368,13 +368,10 @@ function renderTabela() {
     const original = l.manual ? l.valor : (l.meses?.[mesAtual()] || 0);
     const reais = emReais(original, l.moeda);
     const semCotacao = l.moeda !== 'BRL' && !COTACAO[l.moeda];
-    const detalhe = l.manual
-      ? `${TIPO[l.tipo]} desde ${formatDate(l.data)}`
-      : (l.status === 'ativo' ? (l.detalhe || 'Acumulado do mês') : (l.erro || 'Configure as chaves na Vercel'));
     return `
       <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>
         <td><span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span></td>
-        <td><span class="cell-strong">${escapeHtml(l.nome)}</span><span class="cell-sub">${escapeHtml(detalhe)}</span></td>
+        <td class="cell-strong">${escapeHtml(l.nome)}</td>
         <td>${badge(TIPO[l.tipo] || l.tipo)}</td>
         <td class="valor-dinheiro">
           ${semCotacao ? formatarMoeda(original, l.moeda) : formatCurrency(reais)}

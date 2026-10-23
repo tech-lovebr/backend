@@ -301,7 +301,7 @@ async function costExplorer(alvo, corpo) {
 }
 
 async function custoAws(meses) {
-  const base = { fonte: "aws", nome: "Amazon AWS", categoria: "E-mail", tipo: "recorrente", moeda: "USD" };
+  const base = { fonte: "aws", nome: "Amazon", categoria: "E-mail", tipo: "recorrente", moeda: "USD" };
   if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
     return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
   }

@@ -11802,7 +11802,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Cadeira (modelo de planta baixa): encosto do lado de fora da mesa.
           let anguloDaCadeira = Math.atan2(seatY - containerSize / 2, seatX - containerSize / 2) * 180 / Math.PI;
           if (formato !== 'redonda') anguloDaCadeira = Math.round(anguloDaCadeira / 90) * 90;
-          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><path d="M4.5 3h21A1.5 1.5 0 0 1 27 4.5v3A1.5 1.5 0 0 1 25.5 9H25v11.5a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 5 20.5V9h-.5A1.5 1.5 0 0 1 3 7.5v-3A1.5 1.5 0 0 1 4.5 3Z"/></svg>`);
+          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><rect x="5" y="3" width="20" height="4" rx="2"/><rect x="6" y="9.5" width="18" height="17" rx="3"/></svg>`);
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {

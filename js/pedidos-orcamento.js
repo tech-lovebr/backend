@@ -447,7 +447,8 @@
         <h4 class="rfp-pergunta">Subcategorias <span class="rfp-opcional">(opcional)</span></h4>
         <div class="rfp-tags">
           ${cat.tags.map(t => `<button type="button" class="rfp-tag${dados.especialidades.includes(t) ? ' ativa' : ''}" aria-pressed="${dados.especialidades.includes(t)}" data-rfp-tag="${esc(t)}">${esc(t)}</button>`).join('')}
-        </div>` : ''}`;
+        </div>` : ''}
+      ${imagensDeReferencia()}`;
   }
 
   function htmlEtapa2() {
@@ -524,10 +525,17 @@
       <p class="rfp-contador${tam > 0 && tam < DESCRICAO_MIN ? ' falta' : ''}" id="rfp-contador">${tam}/${DESCRICAO_MAX} · mínimo ${DESCRICAO_MIN}</p>
       ${erroHtml('descricao')}
 
-      <h4 class="rfp-pergunta">Fotos de referência <span class="rfp-opcional">(opcional, até ${MAX_FOTOS})</span></h4>
+      ${imagensDeReferencia()}`;
+  }
+
+  /** Imagens de referência do que a pessoa procura (etapas 1 e 3; a mesma lista, até 5). */
+  function imagensDeReferencia() {
+    return `
+      <h4 class="rfp-pergunta">Imagens de referência <span class="rfp-opcional">(opcional, até ${MAX_FOTOS})</span></h4>
+      <p class="rfp-ajuda">Mostre aos fornecedores o estilo do que você procura: fotos de decoração, bolo, espaço ou o que inspirar você.</p>
       <div class="rfp-fotos">
         ${previas.map((u, i) => `
-          <div class="rfp-foto"><img src="${u}" alt="Referência ${i + 1}"><button type="button" data-rfp-tirar-foto="${i}" aria-label="Remover foto">${ICONE_FECHAR}</button></div>`).join('')}
+          <div class="rfp-foto"><img src="${u}" alt="Referência ${i + 1}"><button type="button" data-rfp-tirar-foto="${i}" aria-label="Remover imagem">${ICONE_FECHAR}</button></div>`).join('')}
         ${dados.referencias.length < MAX_FOTOS ? `
           <label class="rfp-dropzone" id="rfp-dropzone">
             ${ICONE_FOTO}<span>Arraste ou clique para adicionar</span>

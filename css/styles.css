@@ -10583,3 +10583,7 @@ body[data-theme="dark"] button.chk-resp .chk-avatar { color: #FFFFFF !important;
 html body .chk-saiba-mais:not(#love-h-a) { font-size: 14px; font-weight: 600; color: #183b54; text-decoration: underline; text-decoration-color: rgba(24, 59, 84, 0.3); text-underline-offset: 4px; white-space: nowrap; }
 html body .chk-saiba-mais:not(#love-h-a):hover { text-decoration-color: #183b54; }
 body[data-theme="dark"] .chk-saiba-mais { color: #EBF4FF !important; }
+
+/* Nova solicitação: texto de apoio das imagens de referência. */
+.rfp-ajuda { margin: -4px 0 10px; font-size: 13px; line-height: 1.5; color: #71717A; }
+body[data-theme="dark"] .rfp-ajuda { color: #A1A1AA !important; }

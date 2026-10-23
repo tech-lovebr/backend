@@ -222,7 +222,7 @@ function opRenderChips() {
   const cidades = [...new Map(opPedidos.filter(p => p.cidade).map(p => [p.cidade + '|' + p.uf, p])).values()]
     .sort((a, b) => a.cidade.localeCompare(b.cidade, 'pt-BR'));
   const salvasAbertas = opPedidos.filter(p => opSalvos.has(p.id)).length;
-  wrap.innerHTML = `<button type="button" class="op-chip op-chip-salvas${opSoSalvas ? ' is-ativo' : ''}" data-op-salvas aria-pressed="${opSoSalvas}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>Salvas${salvasAbertas ? ` (${salvasAbertas})` : ''}</button>` +
+  wrap.innerHTML = `<button type="button" class="op-chip op-chip-salvas${opSoSalvas ? ' is-ativo' : ''}" data-op-salvas aria-pressed="${opSoSalvas}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/></svg>Salvas${salvasAbertas ? ` (${salvasAbertas})` : ''}</button>` +
     `<button type="button" class="op-chip${atual || opSoSalvas ? '' : ' is-ativo'}" data-op-chip="">Todas as cidades</button>` +
     cidades.map(p => `<button type="button" class="op-chip${atual === p.cidade ? ' is-ativo' : ''}" data-op-chip="${escapeHtml(p.cidade)}" data-op-chip-uf="${escapeHtml(p.uf || '')}">${escapeHtml(p.cidade)} (${escapeHtml(p.uf || '')})</button>`).join('');
 }
@@ -297,7 +297,7 @@ function opAbrirDetalhe(id) {
         <div class="op-analise-card op-analise-acao">
           ${acao}
           <button type="button" class="op-analise-salvar${salva ? ' is-salva' : ''}" data-op-salvar aria-pressed="${salva}">
-            ${icone('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>')}
+            ${icone('<path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/>')}
             <span>${salva ? 'Vaga salva' : 'Salvar vaga'}</span>
           </button>
           <p class="op-analise-aviso">O envio de proposta conecta você diretamente à fila de análise do anfitrião.</p>

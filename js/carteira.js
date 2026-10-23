@@ -40,6 +40,9 @@
   let aba = 'saque';
   let esconder = false;
   let buscaConta = '';
+  /** Lista embaixo dos saldos: extrato (presentes recebidos) ou histórico de saques. */
+  let vista = 'extrato';
+  let buscaLista = '';
   /** @type {any[]} */
   let saques = [];
   let semTabelaDeSaques = false;
@@ -101,6 +104,7 @@
   // --------------------------------------------------------------------------
   const ICONE_OLHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
   const ICONE_BUSCA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+  const ICONE_BUSCA_ESQ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   const ICONE_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
   const SITUACOES = { solicitado: 'Solicitado', processando: 'Em andamento', realizado: 'Realizado', recusado: 'Recusado' };
 
@@ -112,66 +116,89 @@
     const ev = evento();
     const podeSacar = !(ev && ev.souOrganizador);
     const temConta = contas().length > 0;
-    const presentes = presentesComprados();
     return `
       <section class="cart-caixa cart-resumo">
         <div class="cart-resumo-topo">
           <button type="button" class="cart-link" data-cart-esconder>${ICONE_OLHO}<span>${esconder ? 'Mostrar valores' : 'Esconder valores'}</span></button>
         </div>
         <div class="cart-resumo-cols">
-          <div class="cart-resumo-col cart-resumo-total">
-            <p class="cart-numero-grande">${valor(n.total)}</p>
-            <p class="cart-rotulo">Saldo total em conta</p>
-          </div>
           <div class="cart-resumo-col">
             <p class="cart-rotulo">Saldo disponível para saque</p>
             <p class="cart-numero">${valor(n.disponivel)}</p>
             ${podeSacar ? `
-              <button type="button" class="cart-btn-escuro" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}>Solicitar saque</button>
+              <button type="button" class="btn-primary cart-sacar" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}>Solicitar saque</button>
               ${temConta ? '' : '<p class="cart-dica">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas bancárias</button> para sacar.</p>'}` : '<p class="cart-dica">Só o criador do evento pode solicitar saques.</p>'}
+            <button type="button" class="cart-link-texto cart-ver" data-cart-vista="saques" ${vista === 'saques' ? 'aria-current="true"' : ''}>Ver histórico de saques</button>
           </div>
           <div class="cart-resumo-col">
             <p class="cart-rotulo">Saldo pendente</p>
             <p class="cart-numero">${valor(n.pendente)}</p>
             <p class="cart-dica">Saques solicitados, a caminho da sua conta.</p>
+            <button type="button" class="cart-link-texto cart-ver" data-cart-vista="extrato" ${vista === 'extrato' ? 'aria-current="true"' : ''}>Ver extrato completo</button>
           </div>
         </div>
       </section>
+      ${vista === 'saques' ? htmlHistorico() : htmlExtrato()}`;
+  }
 
-      <div class="cart-grade">
-        <section class="cart-caixa">
-          <div class="cart-caixa-topo"><h3 class="cart-titulo">Extrato</h3><p class="cart-sub">Presentes comprados pelos convidados</p></div>
-          ${presentes.length ? `
-            <div class="cart-tabela-rolagem"><table class="cart-tabela">
-              <thead><tr><th>Presente</th><th>Quem comprou</th><th>Quando</th><th class="cart-num">Valor</th></tr></thead>
-              <tbody>${presentes.map(g => `
-                <tr>
-                  <td><b>${esc(g.giftTitle || 'Presente')}</b></td>
-                  <td>${esc(g.guestName || '—')}</td>
-                  <td>${esc(g.date || '—')}</td>
-                  <td class="cart-num cart-entrada">+ ${valor(Number(g.amount) || 0)}</td>
-                </tr>`).join('')}</tbody>
-            </table></div>` : '<p class="cart-vazio">Nenhum presente comprado ainda.</p>'}
-        </section>
+  /** Barra da tabela (busca à esquerda, contagem à direita), como em Meus convidados. @param {string} placeholder @param {string} contagem */
+  const barraDaTabela = (placeholder, contagem) => `
+    <div class="love-tabela-barra">
+      <div class="love-tabela-barra-esq">
+        <div class="love-tabela-busca">
+          ${ICONE_BUSCA_ESQ}
+          <input type="search" data-cart-busca-lista value="${esc(buscaLista)}" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" autocomplete="off">
+        </div>
+      </div>
+      <div class="love-tabela-barra-dir"><p class="cart-contagem">${contagem}</p></div>
+    </div>`;
 
-        <section class="cart-caixa">
-          <div class="cart-caixa-topo"><h3 class="cart-titulo">Histórico de saques</h3><p class="cart-sub">Os saques que você já solicitou</p></div>
-          ${carregandoSaques ? '<p class="cart-vazio">Carregando…</p>' : saques.length ? `
-            <div class="cart-tabela-rolagem"><table class="cart-tabela">
-              <thead><tr><th>Solicitado em</th><th class="cart-num">Valor</th><th>Conta</th><th>Status</th></tr></thead>
-              <tbody>${saques.map(s => {
-                const q = dataHora(s.created_at);
-                return `
-                <tr>
-                  <td><b>${esc(q.dia)}</b><span class="cart-sub-linha">${esc(q.hora)}</span></td>
-                  <td class="cart-num">${valor(Number(s.valor) || 0)}</td>
-                  <td>${esc(nomeDaConta(s.conta))}</td>
-                  <td><span class="cart-status cart-status-${esc(s.status)}">${esc((/** @type {any} */ (SITUACOES))[s.status] || s.status)}</span></td>
-                </tr>`;
-              }).join('')}</tbody>
-            </table></div>` : '<p class="cart-vazio">Nenhum saque solicitado ainda.</p>'}
-        </section>
-      </div>`;
+  /** Extrato: presentes recebidos (quem comprou, o quê, quando e quanto). */
+  function htmlExtrato() {
+    const todos = presentesComprados();
+    const termo = buscaLista.trim().toLowerCase();
+    const lista = termo ? todos.filter(g => `${g.guestName} ${g.giftTitle}`.toLowerCase().includes(termo)) : todos;
+    return `
+      <section class="dash-card love-tabela-caixa cart-lista">
+        ${barraDaTabela('Buscar convidado ou presente...', `${todos.length} ${todos.length === 1 ? 'presente recebido' : 'presentes recebidos'}`)}
+        <div class="w-full overflow-x-auto">
+          <table class="love-tabela w-full text-left border-collapse font-sans">
+            <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th class="cart-num">Valor</th></tr></thead>
+            <tbody>${lista.length ? lista.map(g => `
+              <tr>
+                <td><span class="cart-nome">${esc(g.guestName || 'Convidado')}</span></td>
+                <td>${esc(g.giftTitle || 'Presente')}</td>
+                <td class="cart-data">${esc(g.date || '—')}</td>
+                <td class="cart-num cart-entrada">+ ${valor(Number(g.amount) || 0)}</td>
+              </tr>`).join('') : `<tr><td colspan="4" class="cart-vazio">${todos.length ? 'Nenhum presente encontrado.' : 'Nenhum presente recebido ainda.'}</td></tr>`}</tbody>
+          </table>
+        </div>
+      </section>`;
+  }
+
+  /** Histórico de saques: quando, quanto, para qual conta e status. */
+  function htmlHistorico() {
+    const termo = buscaLista.trim().toLowerCase();
+    const lista = termo ? saques.filter(s => `${nomeDaConta(s.conta)} ${(/** @type {any} */ (SITUACOES))[s.status] || ''}`.toLowerCase().includes(termo)) : saques;
+    return `
+      <section class="dash-card love-tabela-caixa cart-lista">
+        ${barraDaTabela('Buscar saque...', `${saques.length} ${saques.length === 1 ? 'saque' : 'saques'}`)}
+        <div class="w-full overflow-x-auto">
+          <table class="love-tabela w-full text-left border-collapse font-sans">
+            <thead><tr><th>Solicitado em</th><th class="cart-num">Valor</th><th>Conta</th><th>Status</th></tr></thead>
+            <tbody>${carregandoSaques ? '<tr><td colspan="4" class="cart-vazio">Carregando…</td></tr>' : lista.length ? lista.map(s => {
+              const q = dataHora(s.created_at);
+              return `
+              <tr>
+                <td><span class="cart-nome">${esc(q.dia)}</span><span class="cart-sub-linha">${esc(q.hora)}</span></td>
+                <td class="cart-num">${valor(Number(s.valor) || 0)}</td>
+                <td>${esc(nomeDaConta(s.conta))}</td>
+                <td><span class="cart-status cart-status-${esc(s.status)}">${esc((/** @type {any} */ (SITUACOES))[s.status] || s.status)}</span></td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="4" class="cart-vazio">${saques.length ? 'Nenhum saque encontrado.' : 'Nenhum saque solicitado ainda.'}</td></tr>`}</tbody>
+          </table>
+        </div>
+      </section>`;
   }
 
   function htmlContas() {
@@ -421,6 +448,8 @@
     const a = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-aba]'));
     if (a) { aba = a.dataset.cartAba === 'contas' ? 'contas' : 'saque'; desenhar(); return; }
     if (alvo.closest('[data-cart-esconder]')) { esconder = !esconder; desenhar(); return; }
+    const v = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-vista]'));
+    if (v) { vista = v.dataset.cartVista === 'saques' ? 'saques' : 'extrato'; buscaLista = ''; desenhar(); return; }
     if (alvo.closest('[data-cart-cadastrar]')) { abrirCadastro(); return; }
     if (alvo.closest('[data-cart-sacar]')) { abrirSaque(); return; }
     const btnMenu = alvo.closest('[data-cart-menu]');
@@ -435,11 +464,13 @@
   });
   document.addEventListener('input', (e) => {
     const el = /** @type {HTMLInputElement} */ (e.target);
-    if (!el || !el.matches || !el.matches('#carteira-raiz [data-cart-busca]')) return;
-    buscaConta = el.value;
+    if (!el || !el.matches) return;
+    const lista = el.matches('#carteira-raiz [data-cart-busca-lista]');
+    if (!lista && !el.matches('#carteira-raiz [data-cart-busca]')) return;
+    if (lista) buscaLista = el.value; else buscaConta = el.value;
     const pos = el.selectionStart;
     desenhar();
-    const novo = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-cart-busca]'));
+    const novo = /** @type {HTMLInputElement|null} */ (document.querySelector(lista ? '#carteira-raiz [data-cart-busca-lista]' : '#carteira-raiz [data-cart-busca]'));
     if (novo) { novo.focus(); if (pos !== null) novo.setSelectionRange(pos, pos); }
   });
 

@@ -10922,3 +10922,23 @@ html body button.recado-nome:not(#love-h-a):hover { text-decoration-color: #183b
 .recados-vazio { padding: 40px 16px !important; text-align: center; font-size: 13px; color: #71717A; }
 body[data-theme="dark"] button.recado-nome { color: #EBF4FF !important; }
 body[data-theme="dark"] .recado-mensagem p { background: #2A2A2A !important; color: #FFFFFF !important; }
+
+/* Carteira › Saque: dois saldos (disponível e pendente), no estilo do
+   Financeiro do Hub (rótulo 13px cinza, valor 28px na fonte dos títulos), e
+   embaixo uma tabela só — extrato ou histórico de saques —, como Meus convidados. */
+html body #carteira-raiz .cart-resumo:not(#love-h-a) { padding: 16px 24px 24px; }
+html body #carteira-raiz .cart-resumo-cols:not(#love-h-a) { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0; }
+html body #carteira-raiz .cart-resumo-col:not(#love-h-a) { gap: 0; padding: 0 24px; }
+html body #carteira-raiz .cart-resumo-col:first-child:not(#love-h-a) { padding-left: 0; }
+html body #carteira-raiz .cart-rotulo:not(#love-h-a) { font-size: 0.8125rem; font-weight: 500; color: #71717A; }
+html body #carteira-raiz .cart-numero:not(#love-h-a) { margin-top: 4px; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; color: #18181B; line-height: 1.2; font-variant-numeric: tabular-nums; }
+html body #carteira-raiz .cart-dica:not(#love-h-a) { margin-top: 8px; font-size: 0.8125rem; color: #71717A; }
+html body #carteira-raiz button.cart-sacar:not(#love-h-a) { margin-top: 14px; }
+html body #carteira-raiz button.cart-sacar:disabled:not(#love-h-a) { opacity: 0.5; cursor: default; }
+html body #carteira-raiz button.cart-ver:not(#love-h-a) { margin-top: 14px; font-size: 0.8125rem; text-decoration-color: rgba(24, 59, 84, 0.3); text-underline-offset: 4px; }
+html body #carteira-raiz button.cart-ver[aria-current="true"]:not(#love-h-a) { text-decoration-color: #183b54; }
+html body #carteira-raiz .cart-lista:not(#love-h-a) { margin-top: 24px; }
+.cart-nome { font-weight: 600; color: #18181B; }
+.cart-data { white-space: nowrap; }
+body[data-theme="dark"] #carteira-raiz .cart-numero, body[data-theme="dark"] .cart-nome { color: #FFFFFF !important; }
+html body #carteira-raiz .cart-numero:not(#love-h-a), html body #carteira-raiz .cart-numero .cart-valor:not(#love-h-a) { font-weight: 700 !important; }

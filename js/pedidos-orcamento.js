@@ -262,12 +262,14 @@
         </div>
       </div>
       <div class="rfp-coluna">
+        <ol class="rfp-passos" id="rfp-passos" aria-label="Etapas"></ol>
         <div class="rfp-caixa-form">
           <div class="rfp-corpo" id="rfp-corpo"></div>
         </div>
         <footer class="rfp-rodape">
           <p class="rfp-erro-geral hidden" id="rfp-erro-geral" role="alert"></p>
           <button type="button" class="rfp-voltar-texto" data-rfp-voltar>Cancelar</button>
+          <button type="button" class="rfp-rascunho-btn" data-rfp-rascunho hidden>Salvar como rascunho</button>
           <button type="button" class="btn-primary rfp-btn" data-rfp-avancar>Continuar</button>
         </footer>
       </div>`;
@@ -276,6 +278,7 @@
       const alvo = /** @type {HTMLElement} */ (e.target);
       if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? sair() : irPara(etapa - 1, -1);
       if (alvo.closest('[data-rfp-avancar]')) return avancar();
+      if (alvo.closest('[data-rfp-rascunho]')) { salvarComoRascunho(); return; }
       if (modo === 'lote' && cliqueDoLote(alvo)) return;
       if (alvo.closest('[data-rfp-cat-gatilho]')) { categoriaAberta = !categoriaAberta; return desenhar(0); }
       const opcao = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-campo]'));
@@ -310,9 +313,8 @@
     if (criar && pedidosAberto) criar.classList.toggle('hidden', aberta);
   }
 
-  /** @param {string} [modoNovo] 'uma' (padrão) ou 'lote' ("Criar várias") */
-  function abrir(modoNovo) {
-    modo = modoNovo === 'lote' ? 'lote' : 'uma';
+  function abrir() {
+    modo = 'lote';
     lote = loteVazio();
     dados = rascunhoVazio();
     etapa = 1;
@@ -322,10 +324,12 @@
     categoriaEscolhidaAMao = false;
     rascunhoId = null;
     // "Editar rascunho": continua de onde a pessoa parou (sem as fotos).
-    const r = modo === 'uma' ? rascunhoPendente : null;
+    const r = rascunhoPendente;
     rascunhoPendente = null;
     if (r && r.dados) {
-      dados = { ...dados, ...r.dados, referencias: [] };
+      const { lote: _lote, ...resto } = r.dados;
+      dados = { ...dados, ...resto, referencias: [] };
+      lote = loteDosDados(r.dados);
       rascunhoId = r.id;
       categoriaEscolhidaAMao = true;
     } else {
@@ -357,8 +361,7 @@
       if (vendoPropostas) modoPropostas(false);
       minhas?.classList.add('hidden');
       const m = document.getElementById('rfp-editor');
-      const desejado = aba === 'lote' ? 'lote' : 'uma';
-      if (!m || m.hidden || modo !== desejado) { if (m && !m.hidden) fechar(); abrir(desejado); }
+      if (!m || m.hidden) abrir();
       return;
     }
     fechar();
@@ -414,15 +417,19 @@
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
-      const telas = modo === 'lote' ? [htmlEtapa2, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
+      const telas = modo === 'lote' ? [htmlLote1, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
       corpo.innerHTML = `<div class="rfp-tela${direcao > 0 ? ' entra-direita' : direcao < 0 ? ' entra-esquerda' : ''}">${telas[etapa - 1]()}</div>`;
       if (direcao) corpo.scrollTop = 0;
     }
+    const passos = document.getElementById('rfp-passos');
+    if (passos) passos.innerHTML = PASSOS.map((nome, i) => `<li class="${i + 1 < etapa ? 'is-feito' : i + 1 === etapa ? 'is-atual' : ''}"><span>${i + 1}</span>${esc(nome)}</li>`).join('');
+    const rascunhoBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-rascunho]'));
+    if (rascunhoBtn) { rascunhoBtn.hidden = etapa !== ETAPAS.length; rascunhoBtn.disabled = publicando; }
     const voltar = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-voltar]'));
     const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
     if (voltar) voltar.textContent = etapa === 1 ? 'Cancelar' : 'Voltar';
     if (avancarBtn) {
-      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? (modo === 'lote' ? 'Publicar todas as solicitações' : 'Publicar solicitação') : 'Continuar');
+      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? (lote.categorias.length > 1 ? 'Publicar todas as solicitações' : 'Publicar solicitação') : 'Continuar');
       avancarBtn.disabled = publicando;
     }
   }
@@ -462,15 +469,22 @@
       ${imagensDeReferencia()}`;
   }
 
-  function htmlEtapa2() {
+  function htmlEtapa2() { return htmlCelebracao() + htmlLogistica(); }
+
+  /** Tipo de celebração (pílulas + "Outro"). */
+  function htmlCelebracao() {
     return `
       <h4 class="rfp-pergunta">Tipo de celebração</h4>
       ${pilulas('tipoCelebracao', CELEBRACOES, dados.tipoCelebracao)}
       ${erroHtml('tipoCelebracao')}
       ${dados.tipoCelebracao === 'outro' ? `
         <input type="text" class="rfp-campo rfp-campo-outro" data-rfp-input="celebracaoOutro" value="${esc(dados.celebracaoOutro)}" maxlength="60" placeholder="Qual é a celebração?" aria-label="Tipo de celebração">
-        ${erroHtml('celebracaoOutro')}` : ''}
+        ${erroHtml('celebracaoOutro')}` : ''}`;
+  }
 
+  /** Data, local, convidados e horário do evento. */
+  function htmlLogistica() {
+    return `
       <h4 class="rfp-pergunta">Data do evento</h4>
       <div class="rfp-linha">
         <input type="date" class="rfp-campo" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" ${dados.dataFlexivel ? 'disabled' : ''} aria-label="Data do evento">
@@ -862,19 +876,20 @@
   const tabelaAusente = (error) => !!error && (error.code === '42P01' || error.code === 'PGRST205' || /pedidos_orcamento/.test(String(error.message || '')));
 
   // --------------------------------------------------------------------------
-  // Solicitação em massa ("Criar várias"): os dados do evento uma vez só,
-  // vários serviços de uma vez e um ajuste rápido por serviço. Publica uma
-  // solicitação independente por categoria (aparecem separadas no feed de
-  // cada nicho do Hub), ligadas pelo mesmo lote_id (migration 084).
+  // Criar solicitação (um formulário só): tipo de celebração e um ou mais
+  // serviços na etapa 1. Cada serviço vira uma solicitação independente (fica
+  // no feed do nicho certo no Hub); com 2+ serviços, todas saem ligadas pelo
+  // mesmo lote_id (migration 084) e aparecem juntas em Minhas solicitações.
   // --------------------------------------------------------------------------
   const TEXTOS_DO_LOTE = [
-    { titulo: 'Peça vários orçamentos de uma vez', sub: 'Confira os dados do seu evento. Eles valem para todos os serviços que você escolher a seguir.' },
-    { titulo: 'Quais serviços você precisa?', sub: 'Escolha quantos quiser. Cada serviço vira uma solicitação para os fornecedores daquela categoria.' },
-    { titulo: 'Ajuste cada serviço', sub: 'Escreva uma descrição geral e, se quiser, detalhes e orçamento próprios para cada serviço.' },
-    { titulo: 'Revise e publique', sub: 'Confira o resumo e publique todas as solicitações de uma vez.' }
+    { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Conte o tipo de celebração e escolha um ou mais serviços. Os dados do evento valem para todos.' },
+    { titulo: 'Descreva o que você precisa', sub: 'Conte os detalhes e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
+    { titulo: 'Inspirações', sub: 'Adicione fotos de referência, paleta de cores ou moodboard para ajudar os fornecedores a entenderem seu estilo.' },
+    { titulo: 'Revise e publique', sub: '' }
   ];
+  const PASSOS = ['Evento e serviços', 'Detalhes', 'Inspirações', 'Revisão'];
 
-  /** Nome curto da categoria (resumo e selos do lote). @type {Record<string, string>} */
+  /** Nome curto da categoria (títulos, resumo e selos do lote). @type {Record<string, string>} */
   const CATEGORIA_CURTA = {
     fotografia: 'Foto e vídeo', buffet: 'Buffet', espaco: 'Espaço', decoracao: 'Decoração',
     musica: 'DJ e música', assessoria: 'Assessoria', bebidas: 'Bar e bebidas', doces: 'Bolo e doces'
@@ -895,21 +910,30 @@
   /**
    * @typedef {Object} ItemDoLote
    * @property {string} titulo
+   * @property {boolean} tituloEditado
    * @property {string[]} especialidades
    * @property {number|null} valorMin
    * @property {number|null} valorMax
+   * @property {boolean} aceitaForaDaFaixa
    * @property {string} descricao
    */
   /** @returns {{ categorias: string[], itens: Record<string, ItemDoLote>, descricaoGeral: string, abertos: Record<string, boolean> }} */
   const loteVazio = () => ({ categorias: [], itens: {}, descricaoGeral: '', abertos: {} });
-  let modo = 'uma';
+  let modo = 'lote';
   let lote = loteVazio();
 
-  /** Título sugerido do serviço ("Buffet para casamento"). @param {string} id */
+  /** "[Serviço] para [tipo de evento] com [X] convidados". @param {string} id */
   function tituloSugerido(id) {
-    const cat = categoriaPorId(/** @type {any} */ (id));
     const celeb = (dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : nomeDaCelebracao(dados.tipoCelebracao)).toLowerCase();
-    return `${cat ? (CATEGORIA_CURTA[id] || cat.nome) : 'Serviço'}${celeb ? ` para ${celeb}` : ''}`;
+    const conv = nomeDe(CONVIDADOS, dados.convidados);
+    return `${CATEGORIA_CURTA[id] || 'Serviço'}${celeb ? ` para ${celeb}` : ''}${conv ? ` com ${conv.toLowerCase()} convidados` : ''}`;
+  }
+  /** @param {string} id @returns {ItemDoLote} */
+  const itemNovo = (id) => ({ titulo: tituloSugerido(id), tituloEditado: false, especialidades: [], valorMin: null, valorMax: null, aceitaForaDaFaixa: false, descricao: '' });
+
+  /** Títulos que a pessoa não editou acompanham o tipo de evento e os convidados. */
+  function atualizarTitulos() {
+    lote.categorias.forEach(id => { const it = lote.itens[id]; if (it && !it.tituloEditado) it.titulo = tituloSugerido(id); });
   }
 
   /** @param {string} id */
@@ -918,7 +942,7 @@
     if (i >= 0) lote.categorias.splice(i, 1);
     else {
       lote.categorias.push(id);
-      if (!lote.itens[id]) lote.itens[id] = { titulo: tituloSugerido(id), especialidades: [], valorMin: null, valorMax: null, descricao: '' };
+      if (!lote.itens[id]) lote.itens[id] = itemNovo(id);
     }
     delete erros.categorias;
     desenhar(0);
@@ -927,20 +951,48 @@
   /** Descrição que vai para a solicitação: a do serviço ou, sem ela, a geral. @param {string} id */
   const descricaoDoItem = (id) => (lote.itens[id] && lote.itens[id].descricao.trim()) || lote.descricaoGeral.trim();
 
+  /** Rascunho/cópia no formato antigo (um serviço só) → lista de serviços. @param {any} d */
+  function loteDosDados(d) {
+    if (d && d.lote && Array.isArray(d.lote.categorias)) {
+      const l = loteVazio();
+      l.categorias = d.lote.categorias.slice();
+      l.descricaoGeral = d.lote.descricaoGeral || '';
+      l.categorias.forEach((/** @type {string} */ id) => { l.itens[id] = { ...itemNovo(id), ...((d.lote.itens || {})[id] || {}) }; });
+      return l;
+    }
+    const l = loteVazio();
+    if (d && d.categoria) {
+      l.categorias = [d.categoria];
+      l.itens[d.categoria] = {
+        ...itemNovo(d.categoria),
+        titulo: d.titulo || tituloSugerido(d.categoria), tituloEditado: !!d.titulo,
+        especialidades: Array.isArray(d.especialidades) ? d.especialidades : [],
+        valorMin: d.valorMin ?? null, valorMax: d.valorMax ?? null,
+        aceitaForaDaFaixa: !!d.aceitaForaDaFaixa, descricao: d.descricao || ''
+      };
+    }
+    return l;
+  }
+
   /** @param {number} n @returns {Record<string, string>} */
   function validarLote(n) {
     /** @type {Record<string, string>} */
     const e = {};
-    if (n === 1) validarEvento(e);
-    if (n === 2 && !lote.categorias.length) e.categorias = 'Escolha pelo menos um serviço.';
-    if (n === 3) {
+    if (n === 1) {
+      validarEvento(e);
+      if (!lote.categorias.length) e.categorias = 'Escolha pelo menos um serviço.';
+    }
+    if (n === 2) {
+      const varios = lote.categorias.length > 1;
       lote.categorias.forEach(id => {
         const it = lote.itens[id];
         if (!it) return;
         if (it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
         if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
         const tam = descricaoDoItem(id).length;
-        if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = `Escreva a descrição geral ou detalhes deste serviço (mínimo ${DESCRICAO_MIN} caracteres).`;
+        if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = varios
+          ? `Escreva a descrição geral ou detalhes deste serviço (mínimo ${DESCRICAO_MIN} caracteres).`
+          : `Escreva pelo menos ${DESCRICAO_MIN} caracteres (faltam ${DESCRICAO_MIN - tam}).`;
         if (tam > DESCRICAO_MAX) e[`${id}:descricao`] = `No máximo ${DESCRICAO_MAX} caracteres.`;
         if (Object.keys(e).some(k => k.startsWith(`${id}:`))) lote.abertos[id] = true;
       });
@@ -948,8 +1000,12 @@
     return e;
   }
 
-  function htmlLote2() {
+  // Etapa 1: tipo de celebração primeiro, depois os serviços e os dados do evento.
+  function htmlLote1() {
     return `
+      ${htmlCelebracao()}
+      <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
+      <p class="rfp-ajuda">Escolha um ou mais. Cada serviço vira uma solicitação para os fornecedores daquela categoria.</p>
       <div class="rfp-lote-cats" role="group" aria-label="Serviços">
         ${CATEGORIAS.map(c => {
           const on = lote.categorias.includes(c.id);
@@ -962,17 +1018,55 @@
         }).join('')}
       </div>
       ${erroHtml('categorias')}
-      <p class="rfp-dica">${lote.categorias.length ? `${lote.categorias.length} ${lote.categorias.length === 1 ? 'serviço escolhido' : 'serviços escolhidos'}` : 'Nenhum serviço escolhido ainda.'}</p>`;
+      ${htmlLogistica()}`;
   }
 
-  function htmlLote3() {
+  /** Campos de um serviço (título, subcategorias, orçamento e descrição). @param {string} id @param {boolean} unico */
+  function camposDoServico(id, unico) {
+    const cat = categoriaPorId(/** @type {any} */ (id));
+    const it = lote.itens[id];
+    if (!cat || !it) return '';
+    const temOrcamento = !!(it.valorMin || it.valorMax);
+    return `
+      <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título <span class="rfp-opcional">(gerado automaticamente, você pode editar)</span></span>
+        <input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="titulo" maxlength="120" value="${esc(it.titulo)}">
+      </label>
+      ${erroHtml(`${id}:titulo`)}
+      <h4 class="rfp-pergunta">Subcategorias <span class="rfp-opcional">(opcional)</span></h4>
+      <div class="rfp-tags">
+        ${cat.tags.map(t => `<button type="button" class="rfp-tag${it.especialidades.includes(t) ? ' ativa' : ''}" aria-pressed="${it.especialidades.includes(t)}" data-lote-tag="${id}" data-lote-tag-valor="${esc(t)}">${esc(t)}</button>`).join('')}
+      </div>
+      <h4 class="rfp-pergunta">Faixa de orçamento prevista <span class="rfp-opcional">(opcional)</span></h4>
+      <div class="rfp-orcamento">
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">De</span>
+          <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMin" inputmode="numeric" value="${it.valorMin != null ? milhar(it.valorMin) : ''}" aria-label="Orçamento de"></span>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Até</span>
+          <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMax" inputmode="numeric" value="${it.valorMax != null ? milhar(it.valorMax) : ''}" aria-label="Orçamento até"></span>
+        </label>
+      </div>
+      ${temOrcamento ? '' : '<p class="rfp-dica">Em branco, fica aberto a propostas.</p>'}
+      ${erroHtml(`${id}:faixa`)}
+      ${temOrcamento ? `
+        <label class="rfp-toggle">
+          <span>Aceito propostas fora dessa faixa de preço</span>
+          <span class="settings-switch"><input type="checkbox" data-lote-cat-campo="${id}" data-lote-input="aceitaForaDaFaixa" ${it.aceitaForaDaFaixa ? 'checked' : ''}><span class="settings-switch-track"></span></span>
+        </label>` : ''}
+      <h4 class="rfp-pergunta">${unico ? 'Descreva o que você precisa' : 'Detalhes deste serviço <span class="rfp-opcional">(opcional)</span>'}</h4>
+      <textarea class="rfp-campo rfp-descricao" data-lote-cat-campo="${id}" data-lote-input="descricao" maxlength="${DESCRICAO_MAX}" rows="${unico ? 6 : 4}" placeholder="${esc(DICA_DO_SERVICO[id] || '')}">${esc(it.descricao)}</textarea>
+      ${erroHtml(`${id}:descricao`)}`;
+  }
+
+  // Etapa 2: um serviço → campos direto; vários → descrição geral + acordeão.
+  function htmlLote2() {
+    atualizarTitulos();
+    if (lote.categorias.length === 1) return camposDoServico(lote.categorias[0], true);
     if (lote.categorias.length && !lote.categorias.some(id => lote.abertos[id])) lote.abertos[lote.categorias[0]] = true;
     return `
       <h4 class="rfp-pergunta">Descrição geral</h4>
       <p class="rfp-ajuda">Vale para todos os serviços que não tiverem detalhes próprios.</p>
       <textarea class="rfp-campo rfp-descricao" data-lote-geral maxlength="${DESCRICAO_MAX}" rows="4" placeholder="Conte o estilo do evento, o clima que você imagina e o que é importante para você.">${esc(lote.descricaoGeral)}</textarea>
-      <button type="button" class="rfp-lote-copiar" data-lote-copiar>Usar a mesma descrição geral para todos</button>
-
+      <button type="button" class="rfp-lote-copiar" data-lote-copiar>Aplicar a mesma descrição geral para todos</button>
       <div class="rfp-lote-itens">
         ${lote.categorias.map(id => {
           const cat = categoriaPorId(/** @type {any} */ (id));
@@ -989,41 +1083,26 @@
                 <span class="rfp-lote-item-status${temErro ? ' is-erro' : pronto ? ' is-pronto' : ''}">${temErro ? 'Falta informação' : pronto ? 'Pronto' : 'Usa a descrição geral'}</span>
                 <span class="rfp-lote-item-seta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
               </button>
-              ${aberto ? `
-                <div class="rfp-lote-item-corpo">
-                  <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título</span>
-                    <input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="titulo" maxlength="120" value="${esc(it.titulo)}">
-                  </label>
-                  ${erroHtml(`${id}:titulo`)}
-                  <h4 class="rfp-pergunta">Subcategorias <span class="rfp-opcional">(opcional)</span></h4>
-                  <div class="rfp-tags">
-                    ${cat.tags.map(t => `<button type="button" class="rfp-tag${it.especialidades.includes(t) ? ' ativa' : ''}" aria-pressed="${it.especialidades.includes(t)}" data-lote-tag="${id}" data-lote-tag-valor="${esc(t)}">${esc(t)}</button>`).join('')}
-                  </div>
-                  <h4 class="rfp-pergunta">Orçamento para este serviço <span class="rfp-opcional">(opcional)</span></h4>
-                  <div class="rfp-orcamento">
-                    <label class="rfp-rotulo"><span class="rfp-rotulo-texto">De</span>
-                      <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMin" inputmode="numeric" value="${it.valorMin != null ? milhar(it.valorMin) : ''}" aria-label="Orçamento de"></span>
-                    </label>
-                    <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Até</span>
-                      <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMax" inputmode="numeric" value="${it.valorMax != null ? milhar(it.valorMax) : ''}" aria-label="Orçamento até"></span>
-                    </label>
-                  </div>
-                  <p class="rfp-dica">Em branco, fica aberto a propostas.</p>
-                  ${erroHtml(`${id}:faixa`)}
-                  <h4 class="rfp-pergunta">Detalhes deste serviço <span class="rfp-opcional">(opcional)</span></h4>
-                  <textarea class="rfp-campo rfp-descricao" data-lote-cat-campo="${id}" data-lote-input="descricao" maxlength="${DESCRICAO_MAX}" rows="4" placeholder="${esc(DICA_DO_SERVICO[id] || '')}">${esc(it.descricao)}</textarea>
-                  ${erroHtml(`${id}:descricao`)}
-                </div>` : ''}
+              ${aberto ? `<div class="rfp-lote-item-corpo">${camposDoServico(id, false)}</div>` : ''}
             </section>`;
         }).join('')}
       </div>`;
   }
 
+  // Etapa 3: inspirações (imagens de referência valem para todos os serviços).
+  function htmlLote3() {
+    return imagensDeReferencia();
+  }
+
+  // Etapa 4: revisão e publicação.
   function htmlLote4() {
     const nomes = lote.categorias.map(id => CATEGORIA_CURTA[id] || id);
     const lista = nomes.length > 1 ? `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}` : nomes.join('');
+    const qtd = lote.categorias.length;
     return `
-      <p class="rfp-lote-resumo">Você está publicando <b>${lote.categorias.length} ${lote.categorias.length === 1 ? 'solicitação de orçamento' : 'solicitações de orçamento'}</b> de uma vez (${esc(lista)}).</p>
+      <p class="rfp-lote-resumo">${qtd === 1
+        ? `Você está criando <b>1 solicitação de orçamento</b>: ${esc(lista)}.`
+        : `Você está publicando <b>${qtd} solicitações de orçamento</b> de uma vez: ${esc(lista)}.`}</p>
       <div class="rfp-lote-revisao">
         ${lote.categorias.map(id => {
           const it = lote.itens[id];
@@ -1035,17 +1114,19 @@
             </div>`;
         }).join('')}
       </div>
-      <h4 class="rfp-pergunta">Quantas propostas você quer receber em cada uma?</h4>
+      ${dados.referencias.length ? `<p class="rfp-dica">${dados.referencias.length} ${dados.referencias.length === 1 ? 'imagem de referência' : 'imagens de referência'} ${qtd === 1 ? 'vai junto' : 'vão junto em todas'}.</p>` : ''}
+      <h4 class="rfp-pergunta">${qtd === 1 ? 'Quantas propostas você quer receber?' : 'Quantas propostas você quer receber em cada uma?'}</h4>
       <div class="rfp-pilulas" role="radiogroup">
         ${LIMITES.map(l => `<button type="button" class="rfp-pilula${l.valor === dados.limitePropostas ? ' ativa' : ''}" role="radio" aria-checked="${l.valor === dados.limitePropostas}" data-rfp-campo="limitePropostas" data-rfp-valor="${l.valor === null ? '' : l.valor}">${esc(l.nome)}</button>`).join('')}
       </div>
+      <p class="rfp-dica">A solicitação fecha sozinha quando chegar ao limite.</p>
       <div class="rfp-aviso">
         ${ICONE_CADEADO}
         <p>Seu telefone e WhatsApp <b>não são mostrados</b> aos fornecedores. As propostas, a conversa e o fechamento acontecem com segurança dentro da Love.</p>
       </div>`;
   }
 
-  /** Cliques do modo "Criar várias". @param {HTMLElement} alvo @returns {boolean} tratou */
+  /** Cliques do formulário de serviços. @param {HTMLElement} alvo @returns {boolean} tratou */
   function cliqueDoLote(alvo) {
     const cat = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-cat]'));
     if (cat) { alternarCategoriaDoLote(cat.dataset.loteCat || ''); return true; }
@@ -1068,37 +1149,69 @@
     return false;
   }
 
-  /** Digitação do modo "Criar várias". @param {HTMLInputElement} el @returns {boolean} tratou */
+  /** Digitação dos campos de serviço. @param {HTMLInputElement} el @returns {boolean} tratou */
   function digitacaoDoLote(el) {
     if (el.matches('[data-lote-geral]')) { lote.descricaoGeral = el.value; return true; }
     const id = el.dataset.loteCatCampo;
     const campo = el.dataset.loteInput;
     if (!id || !campo || !lote.itens[id]) return false;
     const it = /** @type {any} */ (lote.itens[id]);
+    if (el.type === 'checkbox') { it[campo] = el.checked; return true; }
     if (campo === 'valorMin' || campo === 'valorMax') {
+      const tinha = !!(it.valorMin || it.valorMax);
       const num = el.value.replace(/\D/g, '').slice(0, 9);
       it[campo] = num ? Number(num) : null;
       el.value = num ? milhar(Number(num)) : '';
       delete erros[`${id}:faixa`];
+      // Apareceu/sumiu o "Aceito propostas fora dessa faixa": redesenha mantendo o foco.
+      if (tinha !== !!(it.valorMin || it.valorMax)) {
+        const pos = el.selectionStart;
+        desenhar(0);
+        const novo = /** @type {HTMLInputElement|null} */ (document.querySelector(`[data-lote-cat-campo="${id}"][data-lote-input="${campo}"]`));
+        if (novo) { novo.focus(); if (pos !== null) novo.setSelectionRange(pos, pos); }
+      }
       return true;
     }
+    if (campo === 'titulo') it.tituloEditado = true;
     it[campo] = el.value;
     return true;
   }
 
+  /** "Salvar como rascunho" (etapa de revisão). */
+  async function salvarComoRascunho() {
+    if (!dados.tipoCelebracao || !lote.categorias.length) return;
+    const conteudo = dadosParaGuardar();
+    salvandoRascunho = salvandoRascunho.then(async () => { rascunhoId = await guardarRascunho(rascunhoId, conteudo); }).catch(() => {});
+    await salvandoRascunho;
+    publicado = true; // não salva de novo ao sair
+    sair();
+    avisoNaLista('Rascunho salvo. Você pode continuar quando quiser.');
+  }
+
   async function publicarLote() {
-    for (const n of [1, 2, 3]) {
+    for (const n of [1, 2]) {
       const e = validarLote(n);
       if (Object.keys(e).length) { erros = e; return irPara(n, -1); }
     }
     const usuario = usuarioLogado();
-    if (!usuario || typeof supabaseClient === 'undefined') return mostrarErroGeral('Entre na sua conta para publicar as solicitações.');
+    if (!usuario || typeof supabaseClient === 'undefined') return mostrarErroGeral('Entre na sua conta para publicar.');
     publicando = true;
     mostrarErroGeral('');
     desenhar(0);
     try {
+      // Imagens de referência: sobem uma vez e vão em todas as solicitações.
+      /** @type {string[]} */
+      const urls = [];
+      for (const [i, foto] of dados.referencias.entries()) {
+        const ext = foto.type === 'image/png' ? 'png' : foto.type === 'image/webp' ? 'webp' : 'jpg';
+        const caminho = `pedidos/${usuario.id}/${Date.now()}-${i}.${ext}`;
+        const { error } = await supabaseClient.storage.from('clientes').upload(caminho, foto, { contentType: foto.type });
+        if (error) throw new Error('Não foi possível enviar as imagens de referência.');
+        urls.push(supabaseClient.storage.from('clientes').getPublicUrl(caminho).data.publicUrl);
+      }
       const eventoId = typeof window.getLoveActiveEventId === 'function' ? window.getLoveActiveEventId() : null;
-      const loteId = (window.crypto && typeof window.crypto.randomUUID === 'function') ? window.crypto.randomUUID() : null;
+      const varios = lote.categorias.length > 1;
+      const loteId = varios && window.crypto && typeof window.crypto.randomUUID === 'function' ? window.crypto.randomUUID() : null;
       /** @type {any[]} */
       let linhas = lote.categorias.map(id => {
         const it = lote.itens[id];
@@ -1106,7 +1219,7 @@
         return {
           cliente_id: usuario.id,
           evento_id: /^[0-9a-f-]{36}$/i.test(String(eventoId || '')) ? eventoId : null,
-          lote_id: loteId,
+          ...(loteId ? { lote_id: loteId } : {}),
           categoria: id,
           especialidades: it.especialidades,
           titulo: it.titulo.trim(),
@@ -1123,9 +1236,9 @@
           faixa: temOrcamento ? 'personalizada' : null,
           valor_min: it.valorMin || null,
           valor_max: it.valorMax || null,
-          aceita_fora_da_faixa: temOrcamento ? false : true,
+          aceita_fora_da_faixa: temOrcamento ? it.aceitaForaDaFaixa : true,
           descricao: descricaoDoItem(id),
-          referencias: [],
+          referencias: urls,
           limite_propostas: dados.limitePropostas
         };
       });
@@ -1148,8 +1261,12 @@
       const qtd = linhas.length;
       publicando = false;
       publicado = true;
+      await salvandoRascunho;
+      if (rascunhoId) { await apagarRascunho(rascunhoId); rascunhoId = null; }
       sair();
-      avisoNaLista(`${qtd} ${qtd === 1 ? 'solicitação publicada' : 'solicitações publicadas'}. Os fornecedores de cada categoria já podem enviar propostas.`);
+      avisoNaLista(qtd === 1
+        ? 'Solicitação publicada. Os fornecedores da categoria já podem enviar propostas.'
+        : `${qtd} solicitações publicadas. Os fornecedores de cada categoria já podem enviar propostas.`);
     } catch (err) {
       publicando = false;
       desenhar(0);
@@ -1208,9 +1325,9 @@
   /** Dados do editor sem as fotos (arquivo não vai para o rascunho). */
   function dadosParaGuardar() {
     const { referencias: _fotos, ...resto } = dados;
-    return resto;
+    return { ...resto, lote: { categorias: lote.categorias.slice(), itens: lote.itens, descricaoGeral: lote.descricaoGeral } };
   }
-  const valeComoRascunho = () => !!(dados.titulo.trim() && dados.categoria && etapa >= 2);
+  const valeComoRascunho = () => !!(dados.tipoCelebracao && lote.categorias.length && etapa >= 2);
 
   /** @returns {Promise<any[]>} */
   async function listarRascunhos() {
@@ -1260,7 +1377,7 @@
 
   /** Salva o que está no editor como rascunho (em fila, para não duplicar). */
   function salvarRascunhoAgora() {
-    if (modo === 'lote' || publicando || publicado || !valeComoRascunho()) return;
+    if (publicando || publicado || !valeComoRascunho()) return;
     const conteudo = dadosParaGuardar();
     salvandoRascunho = salvandoRascunho
       .then(async () => { rascunhoId = await guardarRascunho(rascunhoId, conteudo); })
@@ -1351,8 +1468,10 @@
   function linhaDaSolicitacao(it) {
     if (it.tipo === 'rascunho') {
       const d = it.r.dados || {};
-      const cat = categoriaPorId(d.categoria);
-      const titulo = String(d.titulo || '').trim() || (cat ? cat.nome : 'Solicitação sem título');
+      const l = loteDosDados(d);
+      const titulo = l.categorias.length > 1
+        ? `${l.categorias.length} serviços: ${l.categorias.map(id => CATEGORIA_CURTA[id] || id).join(', ')}`
+        : (l.categorias.length ? (String(l.itens[l.categorias[0]].titulo || '').trim() || CATEGORIA_CURTA[l.categorias[0]] || 'Solicitação') : 'Solicitação sem título');
       return `
         <div class="rfp-post" data-rascunho-id="${esc(it.id)}">
           <div class="rfp-post-info">
@@ -1363,7 +1482,7 @@
           <div class="rfp-post-num"></div>
           <div class="rfp-post-num"></div>
           <button type="button" class="rfp-post-botao" data-rfp-acao="editar">Editar rascunho</button>
-          ${menuDaLinha([['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
+          ${menuDaLinha(l.categorias.length > 1 ? [['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']] : [['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
         </div>`;
     }
     const p = it.p;
@@ -1413,6 +1532,9 @@
     pedidos.forEach(p => { pedidosCarregados[p.id] = p; });
     rascunhosCarregados = {};
     rascunhos.forEach(r => { rascunhosCarregados[r.id] = r; });
+    const ativas = pedidos.filter(p => p.status === 'aberto').length;
+    const abaMinhas = document.querySelector('#pedidos-abas [data-pedidos-aba="minhas"]');
+    if (abaMinhas) abaMinhas.textContent = ativas ? `Minhas solicitações (${ativas})` : 'Minhas solicitações';
     numerosDasPropostas = {};
     if (pedidos.length) {
       const { data: props, error } = await supabaseClient.from('propostas_pedido')
@@ -1453,6 +1575,10 @@
 
   /** Rascunho no mesmo formato de uma solicitação publicada (para os detalhes). @param {any} d */
   function infoDoRascunho(d) {
+    const l = loteDosDados(d);
+    const id0 = l.categorias[0] || '';
+    const it = l.itens[id0];
+    if (it) d = { ...d, titulo: l.categorias.length > 1 ? `${l.categorias.length} serviços: ${l.categorias.map(id => CATEGORIA_CURTA[id] || id).join(', ')}` : it.titulo, categoria: id0, especialidades: it.especialidades, valorMin: it.valorMin, valorMax: it.valorMax, aceitaForaDaFaixa: it.aceitaForaDaFaixa, descricao: it.descricao || l.descricaoGeral };
     return {
       titulo: d.titulo, categoria: d.categoria, especialidades: d.especialidades || [],
       tipo_celebracao: d.tipoCelebracao === 'outro' ? d.celebracaoOutro : d.tipoCelebracao,
@@ -1563,7 +1689,13 @@
       if (salvar && novo && typeof supabaseClient !== 'undefined') {
         if (linha.dataset.rascunhoId) {
           const r = rascunhosCarregados[linha.dataset.rascunhoId];
-          if (r) await guardarRascunho(r.id, { ...(r.dados || {}), titulo: novo });
+          if (r) {
+            // Rascunho de um serviço: o título é o do serviço.
+            const d = { ...(r.dados || {}), titulo: novo };
+            const l = loteDosDados(d);
+            if (l.categorias.length === 1) { l.itens[l.categorias[0]].titulo = novo; l.itens[l.categorias[0]].tituloEditado = true; d.lote = { categorias: l.categorias, itens: l.itens, descricaoGeral: l.descricaoGeral }; }
+            await guardarRascunho(r.id, d);
+          }
         } else if (linha.dataset.rfpId) {
           const { error } = await supabaseClient.from('pedidos_orcamento').update({ titulo: novo }).eq('id', linha.dataset.rfpId);
           if (error) avisoNaLista('Não foi possível salvar o título agora. Tente de novo.');

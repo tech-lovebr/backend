@@ -10655,3 +10655,20 @@ body[data-theme="dark"] button.rfp-lote-item-topo, body[data-theme="dark"] .rfp-
 body[data-theme="dark"] :is(.rfp-lote-cat-nome, .rfp-lote-item-nome, .rfp-lote-grupo-titulo, .rfp-lote-revisao-cat, .rfp-lote-resumo b) { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-lote-cat-icone { background: #333333 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] :is(.rfp-lote-itens, .rfp-lote-revisao) { border-color: #404040 !important; }
+
+/* Criar solicitação (formulário único): passos no topo da caixa e
+   "Salvar como rascunho" ao lado de Publicar. */
+.rfp-passos { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 14px; padding: 0; list-style: none; }
+.rfp-passos li { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #A1A1AA; }
+.rfp-passos li span { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; border: 1px solid #E4E4E7; font-size: 11px; font-weight: 700; color: #A1A1AA; background: #FFFFFF; }
+.rfp-passos li.is-atual { color: #18181B; }
+.rfp-passos li.is-atual span { background: #181D24; border-color: #181D24; color: #FFFFFF; }
+.rfp-passos li.is-feito { color: #3F3F46; }
+.rfp-passos li.is-feito span { background: #EBF4FF; border-color: #EBF4FF; color: #183b54; }
+html body button.rfp-rascunho-btn:not(#love-h-a) { height: 44px; padding: 0 16px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #18181B; cursor: pointer; }
+html body button.rfp-rascunho-btn:not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+html body button.rfp-rascunho-btn[hidden]:not(#love-h-a) { display: none; }
+body[data-theme="dark"] .rfp-passos li.is-atual { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-passos li span { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .rfp-passos li.is-atual span { background: #EBF4FF !important; color: #000000 !important; }
+body[data-theme="dark"] button.rfp-rascunho-btn { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }

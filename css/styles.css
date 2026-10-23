@@ -11257,3 +11257,16 @@ html body #b2b-pedidos-view .rfp-modos:not(#love-h-a) { grid-template-columns: m
 body[data-theme="dark"] #b2b-pedidos-view .rfp-etapa-titulo { color: #FFFFFF !important; }
 body[data-theme="dark"] #b2b-pedidos-view .rfp-etapa-sub { color: #A1A1AA !important; }
 body[data-theme="dark"] #b2b-pedidos-view .rfp-caixa-form { border-color: #404040 !important; }
+
+/* Categoria na largura toda (igual a Título e aos cards de cima) e o
+   drop-down de serviços do Evento completo com caixinhas de marcar. */
+html body #b2b-pedidos-view .rfp-secao .rfp-cat-select:not(#love-h-a) { max-width: none; width: 100%; }
+html body .rfp-cat-opcao.rfp-cat-opcao-check:not(#love-h-a) { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+html body .rfp-cat-opcao.rfp-cat-opcao-check.ativa:not(#love-h-a) { background: #FFFFFF; color: #18181B; }
+html body .rfp-cat-opcao.rfp-cat-opcao-check:not(#love-h-a):hover { background: #FAFAFA; }
+.rfp-cat-caixinha { width: 18px; height: 18px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid #D4D4D8; border-radius: 4px; background: #FFFFFF; color: transparent; }
+.rfp-cat-caixinha svg { width: 12px; height: 12px; }
+.rfp-cat-opcao-check.ativa .rfp-cat-caixinha { background: #183b54; border-color: #183b54; color: #FFFFFF; }
+body[data-theme="dark"] .rfp-cat-caixinha { background: #333333 !important; border-color: #52525B !important; }
+body[data-theme="dark"] .rfp-cat-opcao-check.ativa .rfp-cat-caixinha { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }
+body[data-theme="dark"] .rfp-cat-opcao.rfp-cat-opcao-check.ativa { background: #252525 !important; }

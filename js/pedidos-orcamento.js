@@ -1139,7 +1139,7 @@
     return `
       <div class="rfp-modos" role="radiogroup" aria-label="Como você prefere começar">
         ${card('unico', 'Serviço avulso', 'Crie o pedido de serviço e encontre o profissional perfeito.', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
-        ${card('completo', 'Evento completo', 'Monte seu evento completo e receba múltiplos orçamentos de uma só vez.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
+        ${card('completo', 'Evento completo', 'Receba múltiplos orçamentos de uma só vez.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
       </div>`;
   }
 
@@ -1342,17 +1342,26 @@
 
   /** Grade compacta de serviços (marcar um ou mais). */
   function gradeDeServicos() {
+    // Evento completo: drop-down igual ao de Categoria, mas com caixinhas
+    // para marcar vários serviços (fica aberto enquanto a pessoa marca).
+    const marcados = CATEGORIAS.filter(c => lote.categorias.includes(c.id));
+    const resumo = !marcados.length ? 'Selecione os serviços...'
+      : marcados.length <= 2 ? marcados.map(c => CATEGORIA_CURTA[c.id] || c.nome).join(', ')
+      : `${marcados.length} serviços selecionados`;
     return `
-      <div class="rfp-lote-cats" role="group" aria-label="Serviços">
-        ${CATEGORIAS.map(c => {
-          const on = lote.categorias.includes(c.id);
-          return `
-            <button type="button" class="rfp-lote-cat${on ? ' ativa' : ''}" aria-pressed="${on}" data-lote-cat="${c.id}">
-              <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.icone}</svg></span>
-              <span class="rfp-lote-cat-nome">${esc(CATEGORIA_CURTA[c.id] || c.nome)}</span>
-              <span class="rfp-lote-cat-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
-            </button>`;
-        }).join('')}
+      <div class="rfp-cat-select rfp-cat-multi${categoriaAberta ? ' is-open' : ''}">
+        <button type="button" class="rfp-cat-gatilho" data-rfp-cat-gatilho aria-haspopup="listbox" aria-expanded="${categoriaAberta}">
+          <span class="${marcados.length ? '' : 'rfp-cat-vazio'}">${esc(resumo)}</span>
+          <svg class="rfp-cat-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+        </button>
+        ${categoriaAberta ? `
+          <div class="rfp-cat-painel" role="listbox" aria-multiselectable="true">
+            ${CATEGORIAS.map(c => {
+              const on = lote.categorias.includes(c.id);
+              return `<button type="button" class="rfp-cat-opcao rfp-cat-opcao-check${on ? ' ativa' : ''}" role="option" aria-selected="${on}" data-lote-cat="${c.id}">
+                <span class="rfp-cat-caixinha" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>${esc(c.nome)}</button>`;
+            }).join('')}
+          </div>` : ''}
       </div>`;
   }
 

@@ -422,7 +422,7 @@
     const textos = modo === 'lote' ? (TEXTOS_DA_PAGINA[etapa - 1] || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
-    if (titulo) titulo.textContent = textos.titulo;
+    if (titulo) { titulo.textContent = textos.titulo; titulo.hidden = !textos.titulo; }
     if (sub) { sub.textContent = textos.sub; sub.hidden = !textos.sub; }
     const exemplos = document.getElementById('rfp-exemplos');
     if (exemplos) exemplos.hidden = etapa !== 1 || modo === 'lote';
@@ -1029,7 +1029,7 @@
   }
 
   const ETAPAS_DO_FORMULARIO = 3;
-  const TEXTO_DA_PAGINA = { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' };
+  const TEXTO_DA_PAGINA = { titulo: '', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' };
 
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
   function htmlEventoCompacto() {

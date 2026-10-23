@@ -10756,3 +10756,5 @@ html body .rfp-modo .rfp-lote-cat-check svg:not(#love-h-a) { width: 14px; height
 html body button.rfp-modo:not(#love-h-a) { padding-right: 56px; }
 html body #b2b-pedidos-view .rfp-modo .rfp-lote-cat-check:not(#love-h-a) { width: 26px; height: 26px; top: 16px; right: 16px; transform: none; }
 html body #b2b-pedidos-view .rfp-modo .rfp-lote-cat-check svg:not(#love-h-a) { width: 14px; height: 14px; }
+html body .rfp-etapa-titulo[hidden]:not(#love-h-a) { display: none; }
+html body #b2b-pedidos-view .rfp-etapa-titulo[hidden] + .rfp-etapa-sub:not(#love-h-a) { margin-top: 0; }

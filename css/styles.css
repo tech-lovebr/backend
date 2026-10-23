@@ -11117,3 +11117,21 @@ body[data-theme="dark"] .cart-docs-texto h3, body[data-theme="dark"] .cart-verif
 body[data-theme="dark"] .cart-docs-texto p, body[data-theme="dark"] .cart-verif-faixa p, body[data-theme="dark"] .cart-verif-lista li { color: #A1A1AA !important; }
 body[data-theme="dark"] .cart-verif-faixa { background-color: #1E2733 !important; background-image: none !important; }
 body[data-theme="dark"] .cart-verif-cartao, body[data-theme="dark"] .cart-arquivo { background: #252525 !important; border-color: #404040 !important; }
+
+/* Suas informações: a faixa azul passa por trás das abas e do topo da primeira
+   caixa branca; o texto começa na mesma linha da caixa (max-w-3xl centralizado). */
+html body #tab-account-settings:not(#love-h-a) { position: relative; }
+html body .conta-boas-vindas:not(#love-h-a) { position: relative; overflow: visible; padding: 40px 32px 32px; background: none; }
+html body .conta-boas-vindas:not(#love-h-a)::after { content: none; }
+html body .conta-boas-vindas:not(.hidden):not(#love-h-a)::before {
+  content: ''; position: absolute; left: 0; right: 0; z-index: 0; pointer-events: none;
+  top: 0; height: calc(100% + var(--faixa-alem, 150px));
+  background-color: #EBF4FF;
+  background-image: radial-gradient(circle at calc(100% - 100px) 40px, rgba(255, 255, 255, 0.45) 0 180px, transparent 181px), url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27160%27%20height%3D%2728%27%20viewBox%3D%270%200%20160%2028%27%3E%3Cpath%20d%3D%27M0%2014%20C20%204%2060%204%2080%2014%20S140%2024%20160%2014%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-opacity%3D%270.75%27%20stroke-width%3D%271.2%27%2F%3E%3C%2Fsvg%3E");
+  background-size: auto, 160px 28px;
+}
+html body .conta-boas-vindas .conta-boas-vindas-texto:not(#love-h-a) { position: relative; z-index: 1; max-width: 48rem; margin: 0 auto; }
+html body .conta-boas-vindas ~ div:not(#love-h-a) { position: relative; z-index: 1; }
+html body .conta-boas-vindas h3:not(#love-h-a) { font-size: 28px; max-width: 560px; }
+@media (max-width: 640px) { html body .conta-boas-vindas:not(#love-h-a) { padding: 28px 24px 24px; } }
+body[data-theme="dark"] .conta-boas-vindas::before { background: #1E2733 !important; }

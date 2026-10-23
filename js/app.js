@@ -814,8 +814,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const last = profile.first_name ? (profile.last_name || '') : legacyParts.slice(1).join(' ');
     if (firstNameInput) firstNameInput.value = first;
     if (lastNameInput) lastNameInput.value = last;
-    const boasVindas = document.getElementById('conta-boas-vindas-titulo');
-    if (boasVindas) { const nome = `${first} ${last}`.trim(); boasVindas.textContent = nome ? `Olá, ${nome}!` : 'Olá!'; }
     if (emailInput) emailInput.value = window.loveClienteSession?.user?.email || '';
     const telInput = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-phone'));
     if (telInput) telInput.value = profile.phone ? maskBrazilPhone(String(profile.phone)) : '';
@@ -19597,6 +19595,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Suas informações: a faixa azul desce até 64px por trás da primeira caixa branca.
+  function ajustarFaixaDaConta() {
+    const faixa = document.getElementById('conta-boas-vindas');
+    const caixa = document.querySelector('#config-painel-conta .dash-card');
+    if (!faixa || !caixa || faixa.classList.contains('hidden')) return;
+    const alem = caixa.getBoundingClientRect().top - faixa.getBoundingClientRect().bottom + 64;
+    if (alem > 0) faixa.style.setProperty('--faixa-alem', `${Math.round(alem)}px`);
+  }
+  window.addEventListener('resize', ajustarFaixaDaConta);
+
   // Configurações › abas "Minha conta" / "Meus eventos".
   function mostrarAbaDeConfiguracoes(aba) {
     document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.classList.toggle('active', b.dataset.configAba === aba));
@@ -19608,6 +19616,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('conta-boas-vindas')?.classList.toggle('hidden', aba !== 'conta');
+    requestAnimationFrame(ajustarFaixaDaConta); setTimeout(ajustarFaixaDaConta, 150);
     document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
     if (aba === 'privacidade') refreshMfaStatus();
     document.getElementById('config-painel-preferencias')?.classList.toggle('hidden', aba !== 'preferencias');

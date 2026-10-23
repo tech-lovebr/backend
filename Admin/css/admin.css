@@ -3928,3 +3928,12 @@ body[data-page="custos"] table.data tbody tr.no-hover { cursor: default; }
 .email-eventos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .375rem; font-size: .8125rem; }
 .email-eventos li { display: flex; justify-content: space-between; gap: 1rem; }
 .drawer #editor-email, .drawer #editor-template { min-height: 220px; }
+
+/* ------------------------------------------------ E-mails · Layout */
+.layout-email { display: grid; grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 960px) { .layout-email { grid-template-columns: 1fr; } }
+.layout-email-previa iframe { display: block; width: 100%; height: 560px; border: 0; border-top: 1px solid var(--borda-suave, #E4E4E7); background: #FFFFFF; }
+.layout-email-acoes { display: flex; justify-content: flex-end; gap: .625rem; margin-top: .5rem; }
+.campo-cor { display: flex; align-items: center; gap: .5rem; }
+.campo-cor input[type="color"] { flex-shrink: 0; width: 40px; height: 40px; padding: 3px; border: 1px solid var(--borda-suave, #E4E4E7); border-radius: 8px; background: #FFFFFF; cursor: pointer; }
+.campo-cor .field-input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; }

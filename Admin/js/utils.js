@@ -784,7 +784,8 @@ function ligarCamposDeImagem(form, pasta) {
       botao.disabled = false;
       botao.textContent = 'Enviar imagem';
       arquivo.value = '';
-      if (publica) { url.value = publica; mostrar(); }
+      // Avisa o formulário (prévias que escutam "input", como a do layout de e-mail).
+      if (publica) { url.value = publica; mostrar(); url.dispatchEvent(new Event('input', { bubbles: true })); }
     });
   });
 }

@@ -262,21 +262,51 @@ async function custo(dias) {
 
 /* ------------------------------------------------------------------ Enviar */
 
-function layoutLove(corpo) {
+// Layout dos e-mails escritos no Admin (tabela email_layout, aba Layout).
+// A prévia do Admin (Admin/js/emails.js, montarLayoutEmail) monta o mesmo
+// HTML — mudou aqui, mude lá.
+const LAYOUT_PADRAO = { logo_url: null, logo_largura: 120, cor_fundo: "#F4F6F7", cor_destaque: "#183b54", rodape: "Love · love.com.br" };
+
+function corValida(cor, padrao) {
+  return /^#[0-9a-f]{6}$/i.test(String(cor || "")) ? cor : padrao;
+}
+
+function escaparTexto(v) {
+  return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+async function lerLayout() {
+  const db = supabaseAdmin();
+  if (!db) return LAYOUT_PADRAO;
+  try {
+    const { data } = await db.from("email_layout").select("*").eq("id", 1).maybeSingle();
+    return { ...LAYOUT_PADRAO, ...(data || {}) };
+  } catch {
+    return LAYOUT_PADRAO;
+  }
+}
+
+function layoutLove(corpo, layout = LAYOUT_PADRAO) {
+  const fundo = corValida(layout.cor_fundo, LAYOUT_PADRAO.cor_fundo);
+  const destaque = corValida(layout.cor_destaque, LAYOUT_PADRAO.cor_destaque);
+  const largura = Math.min(400, Math.max(40, Number(layout.logo_largura) || 120));
+  const topo = layout.logo_url
+    ? `<img src="${escaparTexto(layout.logo_url)}" alt="Love" width="${largura}" style="display:block;margin:0 auto;width:${largura}px;max-width:100%;height:auto;border:0;">`
+    : `<span style="font-size:22px;font-weight:700;color:${destaque};letter-spacing:-0.5px;">Love</span>`;
+  const rodape = escaparTexto(layout.rodape || "").replace(/\n/g, "<br>");
+  // Links do texto na cor de destaque.
+  const texto = String(corpo || "").replace(/<a\s/gi, `<a style="color:${destaque};" `);
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#f8fafc;padding:24px 0;">
+<body style="margin:0;padding:0;background-color:${fundo};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:${fundo};padding:24px 0;">
     <tr><td align="center">
-      <table width="560" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden;">
-        <tr><td style="padding:24px;text-align:center;border-bottom:1px solid #f1f5f9;">
-          <span style="font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.5px;">Love</span>
-        </td></tr>
-        <tr><td style="padding:28px 24px;color:#334155;font-size:15px;line-height:1.6;">${corpo}</td></tr>
-        <tr><td style="padding:16px 24px;background-color:#f8fafc;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #f1f5f9;">
-          Love · love.com.br
-        </td></tr>
+      <table width="560" border="0" cellspacing="0" cellpadding="0" style="max-width:560px;background-color:#ffffff;border-radius:10px;border:1px solid #E4E4E7;overflow:hidden;">
+        <tr><td style="padding:24px;text-align:center;border-bottom:1px solid #F0F0F2;">${topo}</td></tr>
+        <tr><td style="padding:28px 24px;color:#334155;font-size:15px;line-height:1.6;">${texto}</td></tr>
+        <tr><td style="padding:16px 24px;text-align:center;font-size:12px;line-height:1.5;color:#94a3b8;border-top:1px solid #F0F0F2;">${rodape}</td></tr>
       </table>
     </td></tr>
   </table>
@@ -307,7 +337,7 @@ async function enviar(corpo) {
     return { status: 400, json: { error: `O remetente precisa ser um endereço @${dominio()}` } };
   }
 
-  const html = layoutLove(limparHtml(corpo.html));
+  const html = layoutLove(limparHtml(corpo.html), await lerLayout());
   const resultados = [];
   // Um envio por destinatário: ninguém vê o e-mail dos outros e cada um tem
   // a própria linha (entregue, bounce...) no registro.

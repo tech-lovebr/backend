@@ -24,11 +24,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=106">
+  <link rel="stylesheet" href="css/admin.css?v=107">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/utils.js?v=4"></script>
+  <script src="js/utils.js?v=5"></script>
   <script src="js/shell.js?v=15"></script>
 </head>
 <body data-page="settings" data-title="E-mails" data-voltar="settings.html">
@@ -44,6 +44,7 @@
         <nav class="conteudo-tabs" id="abas-emails" aria-label="E-mails">
           <button type="button" class="conteudo-tab is-active" data-aba="metricas">Métricas</button>
           <button type="button" class="conteudo-tab" data-aba="templates">Templates</button>
+          <button type="button" class="conteudo-tab" data-aba="layout">Layout</button>
         </nav>
 
         <div id="aba-metricas">
@@ -94,6 +95,19 @@
           </section>
         </div>
 
+        <div id="aba-layout" hidden>
+          <section class="layout-email">
+            <div class="card layout-email-form">
+              <div class="card-head"><div><h2>Layout dos e-mails</h2><p>Envolve todo e-mail escrito aqui no Admin: logo no topo, cores e rodapé.</p></div></div>
+              <form class="card-body" id="form-layout"></form>
+            </div>
+            <div class="card layout-email-previa">
+              <div class="card-head"><div><h2>Prévia</h2><p>Como o e-mail chega na caixa de entrada</p></div></div>
+              <iframe id="previa-layout" title="Prévia do e-mail" sandbox=""></iframe>
+            </div>
+          </section>
+        </div>
+
         <div id="aba-templates" hidden>
           <section class="card table-card">
             <div class="table-toolbar">
@@ -113,6 +127,6 @@
   </div>
 
   <script src="js/editor-rico.js?v=7"></script>
-  <script src="js/emails.js?v=3"></script>
+  <script src="js/emails.js?v=4"></script>
 </body>
 </html>

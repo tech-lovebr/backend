@@ -46,13 +46,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelectorAll('#abas-emails [data-aba]').forEach(a => a.classList.toggle('is-active', a === aba));
     document.getElementById('aba-metricas').hidden = aba.dataset.aba !== 'metricas';
     document.getElementById('aba-templates').hidden = aba.dataset.aba !== 'templates';
+    document.getElementById('aba-layout').hidden = aba.dataset.aba !== 'layout';
+    if (aba.dataset.aba === 'layout') atualizarPreviaLayout();
     document.querySelector('.periodo-segmentado')?.toggleAttribute('hidden', aba.dataset.aba !== 'metricas');
   }));
   document.getElementById('busca').addEventListener('input', renderEnvios);
   document.getElementById('filtro-status').addEventListener('change', renderEnvios);
   document.getElementById('busca-templates').addEventListener('input', renderTemplates);
 
-  await Promise.all([carregarEnvios(), carregarSituacao(), carregarTemplates()]);
+  await Promise.all([carregarEnvios(), carregarSituacao(), carregarTemplates(), carregarLayout()]);
 });
 
 /* ------------------------------------------------------------ Período */
@@ -566,4 +568,147 @@ function abrirTemplate(item) {
     toast(editando ? 'Template atualizado' : 'Template criado');
     carregarTemplates();
   });
+}
+
+/* ------------------------------------------------------------ Layout
+   Logo, cores e rodapé que envolvem os e-mails escritos no Admin (tabela
+   email_layout). montarLayoutEmail() é a mesma montagem de layoutLove() em
+   api/emails.js — mudou lá, mude aqui. */
+
+const LAYOUT_PADRAO = { logo_url: '', logo_largura: 120, cor_fundo: '#F4F6F7', cor_destaque: '#183b54', rodape: 'Love · love.com.br' };
+let LAYOUT = { ...LAYOUT_PADRAO };
+
+const PREVIA_CORPO = `
+  <p>Olá, Maria!</p>
+  <p>Este é um exemplo de como os e-mails da Love chegam na caixa de entrada. O texto que você escrever em <strong>Escrever e-mail</strong> entra aqui, no meio da caixa.</p>
+  <p><a href="https://love.com.br">Os links aparecem na cor de destaque</a>.</p>
+  <p>Um abraço,<br>Equipe Love</p>`;
+
+function corHex(cor, padrao) {
+  return /^#[0-9a-f]{6}$/i.test(String(cor || '')) ? cor : padrao;
+}
+
+function montarLayoutEmail(corpo, l) {
+  const fundo = corHex(l.cor_fundo, LAYOUT_PADRAO.cor_fundo);
+  const destaque = corHex(l.cor_destaque, LAYOUT_PADRAO.cor_destaque);
+  const largura = Math.min(400, Math.max(40, Number(l.logo_largura) || 120));
+  const topo = l.logo_url
+    ? `<img src="${escapeHtml(l.logo_url)}" alt="Love" width="${largura}" style="display:block;margin:0 auto;width:${largura}px;max-width:100%;height:auto;border:0;">`
+    : `<span style="font-size:22px;font-weight:700;color:${destaque};letter-spacing:-0.5px;">Love</span>`;
+  const rodape = escapeHtml(l.rodape || '').replace(/\n/g, '<br>');
+  const texto = String(corpo || '').replace(/<a\s/gi, `<a style="color:${destaque};" `);
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background-color:${fundo};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:${fundo};padding:24px 0;">
+    <tr><td align="center">
+      <table width="560" border="0" cellspacing="0" cellpadding="0" style="max-width:560px;background-color:#ffffff;border-radius:10px;border:1px solid #E4E4E7;overflow:hidden;">
+        <tr><td style="padding:24px;text-align:center;border-bottom:1px solid #F0F0F2;">${topo}</td></tr>
+        <tr><td style="padding:28px 24px;color:#334155;font-size:15px;line-height:1.6;">${texto}</td></tr>
+        <tr><td style="padding:16px 24px;text-align:center;font-size:12px;line-height:1.5;color:#94a3b8;border-top:1px solid #F0F0F2;">${rodape}</td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+}
+
+async function carregarLayout() {
+  const r = await safeSelect('email_layout', '*', q => q.eq('id', 1));
+  if (r.error) {
+    document.getElementById('form-layout').innerHTML = `<div class="empty-state"><strong>Banco ainda não está preparado</strong>
+      <p>Rode supabase/migrations/092_email_layout.sql no SQL Editor do Supabase.</p></div>`;
+    return;
+  }
+  LAYOUT = { ...LAYOUT_PADRAO, ...(r.data[0] || {}) };
+  renderFormLayout();
+}
+
+function campoCor(nome, rotulo, valor) {
+  return `
+    <label class="field">
+      <span class="field-label">${rotulo}</span>
+      <span class="campo-cor">
+        <input type="color" data-cor="${nome}" value="${escapeHtml(valor)}" aria-label="${rotulo}">
+        <input class="field-input" name="${nome}" type="text" maxlength="7" value="${escapeHtml(valor)}">
+      </span>
+    </label>`;
+}
+
+function lerFormLayout() {
+  const form = document.getElementById('form-layout');
+  return {
+    logo_url: form.logo_url.value.trim(),
+    logo_largura: Number(form.logo_largura.value) || 120,
+    cor_fundo: form.cor_fundo.value.trim(),
+    cor_destaque: form.cor_destaque.value.trim(),
+    rodape: form.rodape.value
+  };
+}
+
+function atualizarPreviaLayout() {
+  const iframe = document.getElementById('previa-layout');
+  const form = document.getElementById('form-layout');
+  if (!iframe || !form || !form.logo_url) return;
+  iframe.srcdoc = montarLayoutEmail(PREVIA_CORPO, lerFormLayout());
+}
+
+function renderFormLayout() {
+  const form = document.getElementById('form-layout');
+  form.innerHTML = `
+    ${campoImagem('logo_url', 'Logo', LAYOUT.logo_url)}
+    <label class="field">
+      <span class="field-label">Largura do logo (px)</span>
+      <input class="field-input" name="logo_largura" type="number" min="40" max="400" step="10" value="${escapeHtml(LAYOUT.logo_largura)}">
+    </label>
+    <div class="field-row">
+      ${campoCor('cor_fundo', 'Cor do fundo', corHex(LAYOUT.cor_fundo, LAYOUT_PADRAO.cor_fundo))}
+      ${campoCor('cor_destaque', 'Cor de destaque', corHex(LAYOUT.cor_destaque, LAYOUT_PADRAO.cor_destaque))}
+    </div>
+    <label class="field">
+      <span class="field-label">Rodapé</span>
+      <textarea class="field-textarea" name="rodape" rows="3" placeholder="Love · love.com.br">${escapeHtml(LAYOUT.rodape || '')}</textarea>
+    </label>
+    <div class="layout-email-acoes">
+      <button type="button" class="btn btn-ghost" id="btn-layout-padrao">Voltar ao padrão</button>
+      <button type="button" class="btn btn-primary" id="btn-salvar-layout">Salvar layout</button>
+    </div>`;
+
+  ligarCamposDeImagem(form, 'emails');
+
+  // Seletor de cor e o campo de texto andam juntos.
+  form.querySelectorAll('[data-cor]').forEach(seletor => {
+    const texto = form.querySelector(`input[name="${seletor.dataset.cor}"]`);
+    seletor.addEventListener('input', () => { texto.value = seletor.value; atualizarPreviaLayout(); });
+    texto.addEventListener('input', () => { if (/^#[0-9a-f]{6}$/i.test(texto.value)) seletor.value = texto.value; });
+  });
+  form.addEventListener('input', atualizarPreviaLayout);
+
+  document.getElementById('btn-layout-padrao').addEventListener('click', () => {
+    LAYOUT = { ...LAYOUT_PADRAO };
+    renderFormLayout();
+    toast('Padrão aplicado na prévia. Salve para usar.');
+  });
+
+  document.getElementById('btn-salvar-layout').addEventListener('click', async () => {
+    const d = lerFormLayout();
+    if (!/^#[0-9a-f]{6}$/i.test(d.cor_fundo) || !/^#[0-9a-f]{6}$/i.test(d.cor_destaque)) {
+      return toast('Use cores no formato #RRGGBB');
+    }
+    const botao = document.getElementById('btn-salvar-layout');
+    botao.disabled = true;
+    const { error } = await supabaseClient.from('email_layout').upsert({
+      id: 1,
+      logo_url: d.logo_url || null,
+      logo_largura: Math.min(400, Math.max(40, Math.round(d.logo_largura))),
+      cor_fundo: d.cor_fundo,
+      cor_destaque: d.cor_destaque,
+      rodape: d.rodape.trim(),
+      updated_at: new Date().toISOString()
+    });
+    botao.disabled = false;
+    if (error) return toast(`Não foi possível salvar: ${error.message}`);
+    LAYOUT = { ...LAYOUT, ...d };
+    toast('Layout salvo. Os próximos e-mails já saem assim.');
+  });
+
+  atualizarPreviaLayout();
 }

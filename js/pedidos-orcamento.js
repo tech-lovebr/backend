@@ -18,7 +18,7 @@
    * @typedef {'economico'|'moderado'|'premium'|'exclusivo'} RfpBudgetTier
    * @typedef {string} RfpCelebracao  id da lista (casamento…) ou 'outro'
    * @typedef {'ate-50'|'50-100'|'100-200'|'200-mais'} RfpConvidados
-   * @typedef {'diurno'|'noturno'|'horas'} RfpPeriodo
+   * @typedef {'diurno'|'noturno'|'dia_inteiro'|'horas'} RfpPeriodo
    *
    * @typedef {Object} RfpFormData
    * @property {string} titulo               o que a pessoa procura (etapa 1)
@@ -109,7 +109,7 @@
 
   /** @type {{ id: RfpPeriodo, nome: string }[]} */
   const PERIODOS = [
-    { id: 'diurno', nome: 'Diurno' }, { id: 'noturno', nome: 'Noturno' }, { id: 'horas', nome: 'Por horas de serviço' }
+    { id: 'diurno', nome: 'Diurno' }, { id: 'noturno', nome: 'Noturno' }, { id: 'dia_inteiro', nome: 'Dia inteiro' }
   ];
 
   /** @type {{ id: RfpBudgetTier, nome: string, faixa: string, min: number, max: number|null }[]} */
@@ -139,7 +139,7 @@
   const TITULO_DA_LISTA = 'Minhas solicitações';
   const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
   const DESCRICAO_MIN = 50;
-  const DESCRICAO_MAX = 1000;
+  const DESCRICAO_MAX = 600;
   const MAX_FOTOS = 5;
   const MAX_FOTO_BYTES = 5 * 1024 * 1024;
   const SITUACOES = { aberto: 'Aberto', fechado: 'Encerrado', cancelado: 'Cancelado' };
@@ -147,6 +147,7 @@
   const ICONE_FECHAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
   const ICONE_CADEADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
   const ICONE_FOTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>';
+  const ICONE_MAIS_FOTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>';
   const ICONE_MAIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
   /** @param {unknown} v */
@@ -238,8 +239,8 @@
       if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
       if (!UFS.includes(dados.uf.trim().toUpperCase())) e.uf = 'Escolha o estado.';
       if (!dados.convidados) e.convidados = 'Escolha a quantidade de convidados.';
-      if (!dados.periodo) e.periodo = 'Escolha o período.';
-      if (dados.periodo === 'horas' && !(Number(dados.horasServico) >= 1 && Number(dados.horasServico) <= 24)) e.horasServico = 'De 1 a 24 horas.';
+      // "Por horas de serviço" saiu das opções: rascunho antigo escolhe de novo.
+      if (!PERIODOS.some(p => p.id === dados.periodo)) e.periodo = 'Escolha o horário.';
     }
   }
 
@@ -345,6 +346,7 @@
     publicando = false;
     publicado = false;
     categoriaEscolhidaAMao = false;
+    tituloSemServico = '';
     rascunhoId = null;
     rascunhoIds = {};
     // "Editar rascunho": continua de onde a pessoa parou (sem as fotos).
@@ -604,16 +606,18 @@
   /** Imagens de referência do que a pessoa procura (etapas 1 e 3; a mesma lista, até 5). */
   function imagensDeReferencia() {
     return `
-      <h4 class="rfp-pergunta">Imagens de referência <span class="rfp-opcional">(opcional, até ${MAX_FOTOS})</span></h4>
-      <p class="rfp-ajuda">Mostre aos fornecedores o estilo do que você procura: fotos de decoração, bolo, espaço ou o que inspirar você.</p>
-      <div class="rfp-fotos">
+      <h4 class="rfp-pergunta">Imagem de referência <span class="rfp-opcional">(opcional)</span></h4>
+      <p class="rfp-ajuda">Adicione fotos de referência mostrando o estilo que você procura, para ajudar os fornecedores a entenderem o seu estilo.</p>
+      <div class="rfp-fotos-grade">
         ${previas.map((u, i) => `
-          <div class="rfp-foto"><img src="${u}" alt="Referência ${i + 1}"><button type="button" data-rfp-tirar-foto="${i}" aria-label="Remover imagem">${ICONE_FECHAR}</button></div>`).join('')}
+          <div class="rfp-foto-quadro"><img src="${u}" alt="Referência ${i + 1}"><button type="button" class="rfp-foto-remover" data-rfp-tirar-foto="${i}" aria-label="Remover imagem">${ICONE_FECHAR}</button></div>`).join('')}
         ${dados.referencias.length < MAX_FOTOS ? `
-          <label class="rfp-dropzone" id="rfp-dropzone">
-            ${ICONE_FOTO}<span>Arraste ou clique para adicionar</span>
-            <input type="file" accept="image/jpeg,image/png,image/webp" multiple data-rfp-fotos hidden>
-          </label>` : ''}
+          <label class="rfp-foto-adicionar" id="rfp-dropzone" title="Adicionar imagem">
+            <span class="rfp-foto-mais">${ICONE_MAIS_FOTO}</span>
+            <span class="rfp-foto-adicionar-texto">Adicionar</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" multiple data-rfp-fotos id="rfp-fotos-input" hidden>
+          </label>
+          ${Array.from({ length: Math.max(0, MAX_FOTOS - 1 - dados.referencias.length) }, () => '<label class="rfp-foto-vaga" for="rfp-fotos-input" title="Adicionar imagem" aria-hidden="true"></label>').join('')}` : ''}
       </div>
       ${erroHtml('fotos')}`;
   }
@@ -1043,6 +1047,7 @@
     /** @type {Record<string, string>} */
     const e = {};
     if (n === 1) {
+      if (formato !== 'completo' && tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
       if (!lote.categorias.length) e.categorias = formato === 'completo' ? 'Escolha pelo menos um serviço.' : 'Escolha o serviço.';
 
     }
@@ -1052,12 +1057,13 @@
       lote.categorias.forEach(id => {
         const it = lote.itens[id];
         if (!it) return;
-        if (it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
+        // Serviço avulso: o título fica na etapa 1 (validado lá).
+        if (formato === 'completo' && it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
         if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
         const tam = descricaoDoItem(id).length;
         if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = varios
           ? `Escreva a descrição geral ou detalhes deste serviço (mínimo ${DESCRICAO_MIN} caracteres).`
-          : `Escreva pelo menos ${DESCRICAO_MIN} caracteres (faltam ${DESCRICAO_MIN - tam}).`;
+          : `A descrição precisa ter pelo menos ${DESCRICAO_MIN} caracteres.`;
         if (tam > DESCRICAO_MAX) e[`${id}:descricao`] = `No máximo ${DESCRICAO_MAX} caracteres.`;
         if (Object.keys(e).some(k => k.startsWith(`${id}:`))) lote.abertos[id] = true;
       });
@@ -1075,14 +1081,14 @@
         <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Data do evento</span>
           <input type="date" class="rfp-campo" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" ${dados.dataFlexivel ? 'disabled' : ''}>
         </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>
-          <input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Ex.: São Paulo">
-        </label>
         <label class="rfp-rotulo"><span class="rfp-rotulo-texto">UF</span>
           <select class="rfp-campo rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
             <option value=""${dados.uf ? '' : ' selected'}>UF</option>
             ${UFS.map(u => `<option value="${u}"${dados.uf === u ? ' selected' : ''}>${u}</option>`).join('')}
           </select>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>
+          <input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Ex.: São Paulo">
         </label>
         <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Convidados</span>
           <select class="rfp-campo" data-rfp-input="convidados">
@@ -1098,18 +1104,31 @@
         </label>
       </div>
       <label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Data flexível / em definição</label>
-      ${dados.periodo === 'horas' ? `
-        <label class="rfp-rotulo rfp-horas"><span class="rfp-rotulo-texto">Horas de serviço</span>
-          <span class="rfp-horas-campo">
-            <input type="number" class="rfp-campo" data-rfp-input="horasServico" min="1" max="24" value="${dados.horasServico ?? ''}">
-            <span class="rfp-horas-sufixo" id="rfp-horas-sufixo">${textoDeHoras(dados.horasServico)}</span>
-          </span>
-        </label>` : ''}
-      ${['dataEvento', 'cidade', 'uf', 'convidados', 'periodo', 'horasServico'].map(c => erroHtml(c)).join('')}`;
+      ${['dataEvento', 'uf', 'cidade', 'convidados', 'periodo'].map(c => erroHtml(c)).join('')}`;
   }
 
   /** "Serviço específico" (um serviço) ou "Montar evento completo" (vários). */
   let formato = 'unico';
+
+  // Serviço avulso: o título vem antes do serviço. Enquanto não há serviço
+  // escolhido, o texto fica aqui; depois, no título do serviço.
+  let tituloSemServico = '';
+  /** Título do serviço avulso. */
+  function tituloDoUnico() {
+    const id = lote.categorias[0];
+    const it = id ? lote.itens[id] : null;
+    return it ? it.titulo : tituloSemServico;
+  }
+  /** Escolhe o serviço do avulso levando junto o título já escrito. @param {string} id */
+  function escolherServicoUnico(id) {
+    const titulo = tituloDoUnico();
+    lote.categorias = [id];
+    if (!lote.itens[id]) lote.itens[id] = itemNovo(id);
+    lote.itens[id].titulo = titulo;
+    lote.itens[id].tituloEditado = true;
+    tituloSemServico = titulo;
+    delete erros.categorias;
+  }
 
   /** Os dois jeitos de começar (cards no topo). */
   function htmlModos() {
@@ -1146,7 +1165,7 @@
   function blocoTitulo(id) {
     const it = lote.itens[id];
     return `
-      <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título <span class="rfp-opcional">(gerado automaticamente, você pode editar)</span></span>
+      <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título</span>
         <input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="titulo" maxlength="120" value="${esc(it.titulo)}">
       </label>
       ${erroHtml(`${id}:titulo`)}`;
@@ -1188,8 +1207,21 @@
     const it = lote.itens[id];
     return `
       <h4 class="rfp-pergunta">${rotulo}</h4>
-      <textarea class="rfp-campo rfp-descricao" data-lote-cat-campo="${id}" data-lote-input="descricao" maxlength="${DESCRICAO_MAX}" rows="${linhas}" placeholder="${esc(DICA_DO_SERVICO[id] || '')}">${esc(it.descricao)}</textarea>
+      ${caixaDeDescricao(`data-lote-cat-campo="${id}" data-lote-input="descricao"`, it.descricao, linhas)}
       ${erroHtml(`${id}:descricao`)}`;
+  }
+
+  /**
+   * Caixa de descrição: sem exemplo dentro, tamanho fixo, até DESCRICAO_MAX
+   * caracteres e a contagem no canto inferior direito.
+   * @param {string} atributos @param {string} valor @param {number} linhas
+   */
+  function caixaDeDescricao(atributos, valor, linhas) {
+    return `
+      <div class="rfp-desc-caixa">
+        <textarea class="rfp-campo rfp-descricao" ${atributos} maxlength="${DESCRICAO_MAX}" rows="${linhas}">${esc(valor)}</textarea>
+        <span class="rfp-desc-contador" aria-live="polite">${String(valor || '').length}/${DESCRICAO_MAX}</span>
+      </div>`;
   }
 
   /** Última etapa (comum): imagens de referência e privacidade. */
@@ -1216,9 +1248,17 @@
   /** Serviço avulso, por etapa: 1 serviço + evento · 2 detalhes e orçamento · 3 imagens. */
   function htmlPaginaUnico() {
     const id = lote.categorias[0] || '';
-    atualizarTitulos();
+    // Sem título gerado automaticamente: o título é o que a pessoa escreve.
+    const it = id ? lote.itens[id] : null;
+    if (it && !it.tituloEditado) { it.titulo = tituloSemServico; it.tituloEditado = true; }
     if (etapa === 1) {
       return `
+        <section class="rfp-secao">
+          <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título</span>
+            <input type="text" class="rfp-campo" data-rfp-titulo-unico maxlength="120" value="${esc(tituloDoUnico())}">
+          </label>
+          ${erroHtml('titulo')}
+        </section>
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
           ${seletorDeServico()}
@@ -1229,11 +1269,11 @@
     if (etapa === 2 && id) {
       return `
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">Dados do evento</h4>
+          <h4 class="rfp-pergunta">Detalhes do evento</h4>
           ${htmlEventoCompacto()}
         </section>
         <section class="rfp-secao">
-          ${blocoTitulo(id)}${blocoDescricao(id, 'Descreva o que você precisa', 5)}
+          ${blocoDescricao(id, 'Descreva o que você precisa', 5)}
         </section>
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Orçamento previsto <span class="rfp-opcional">(opcional)</span></h4>
@@ -1262,7 +1302,7 @@
         </section>
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Descrição geral</h4>
-          <textarea class="rfp-campo rfp-descricao" data-lote-geral maxlength="${DESCRICAO_MAX}" rows="4" placeholder="Conte o estilo do evento, o clima que você imagina e o que é importante para você.">${esc(lote.descricaoGeral)}</textarea>
+          ${caixaDeDescricao('data-lote-geral', lote.descricaoGeral, 4)}
           <label class="rfp-check rfp-check-geral"><input type="checkbox" data-lote-usar-geral ${lote.usarGeral ? 'checked' : ''}> Usar a mesma descrição geral para todos</label>
           <div class="rfp-lote-lista">
             ${lote.categorias.map(id => {
@@ -1291,7 +1331,8 @@
   const TEXTOS_DA_PAGINA = [
     null,
     { titulo: 'Conte sobre o seu evento', sub: 'Informe os dados do evento, descreva o que você precisa e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
-    { titulo: 'Imagens de referência', sub: 'Adicione fotos de referência, paleta de cores ou moodboard para ajudar os fornecedores a entenderem seu estilo.' }
+    // Etapa 3: o "Imagem de referência" aparece uma vez só, dentro do formulário.
+    { titulo: '', sub: '' }
   ];
 
   /** O formulário da etapa atual (os dois jeitos de começar ficam na etapa 1). */
@@ -1342,7 +1383,7 @@
     if (!cat || !it) return '';
     const temOrcamento = !!(it.valorMin || it.valorMax);
     return `
-      <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título <span class="rfp-opcional">(gerado automaticamente, você pode editar)</span></span>
+      <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título</span>
         <input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="titulo" maxlength="120" value="${esc(it.titulo)}">
       </label>
       ${erroHtml(`${id}:titulo`)}
@@ -1454,11 +1495,9 @@
     }
     const unico = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-unico]'));
     if (unico) {
-      const id = unico.dataset.loteUnico || '';
-      lote.categorias = [id];
-      if (!lote.itens[id]) lote.itens[id] = itemNovo(id);
+      escolherServicoUnico(unico.dataset.loteUnico || '');
+      categoriaEscolhidaAMao = true;
       categoriaAberta = false;
-      delete erros.categorias;
       desenhar(0);
       return true;
     }
@@ -1491,7 +1530,25 @@
       desenhar(0);
       return true;
     }
-    if (el.matches('[data-lote-geral]')) { lote.descricaoGeral = el.value; return true; }
+    if (el.matches('[data-lote-geral]')) { lote.descricaoGeral = el.value; contarDescricao(el); return true; }
+    // Título do serviço avulso: enquanto a pessoa escreve, já descobre e marca
+    // o serviço pelas palavras (ex.: "fotógrafo" → Foto e vídeo).
+    if (el.matches('[data-rfp-titulo-unico]')) {
+      const id = lote.categorias[0];
+      if (id && lote.itens[id]) { lote.itens[id].titulo = el.value; lote.itens[id].tituloEditado = true; }
+      tituloSemServico = el.value;
+      const tinhaErro = !!erros.titulo;
+      delete erros.titulo;
+      const achou = categoriaPeloTitulo(el.value);
+      if ((achou && achou !== id && !categoriaEscolhidaAMao) || tinhaErro) {
+        if (achou && achou !== id && !categoriaEscolhidaAMao) escolherServicoUnico(achou);
+        const pos = el.selectionStart;
+        desenhar(0);
+        const novo = /** @type {HTMLInputElement|null} */ (document.querySelector('[data-rfp-titulo-unico]'));
+        if (novo) { novo.focus(); if (pos !== null) novo.setSelectionRange(pos, pos); }
+      }
+      return true;
+    }
     const id = el.dataset.loteCatCampo;
     const campo = el.dataset.loteInput;
     if (!id || !campo || !lote.itens[id]) return false;
@@ -1514,7 +1571,14 @@
     }
     if (campo === 'titulo') it.tituloEditado = true;
     it[campo] = el.value;
+    if (campo === 'descricao') contarDescricao(el);
     return true;
+  }
+
+  /** Atualiza a contagem de caracteres no canto da caixa de descrição. @param {HTMLInputElement} el */
+  function contarDescricao(el) {
+    const cont = el.parentElement && el.parentElement.querySelector('.rfp-desc-contador');
+    if (cont) cont.textContent = `${el.value.length}/${DESCRICAO_MAX}`;
   }
 
   /** "Salvar como rascunho" (etapa de revisão). */

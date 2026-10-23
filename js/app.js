@@ -9389,8 +9389,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let recadosBusca = '';
   /** @type {Set<string>} */
   const recadosAbertos = new Set();
-  // Envelope com coração (traço à mão), acima do aviso de "sem recados".
-  const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 96 68" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 8.2C30 6.6 66 6.4 86.8 7.8c1.9.2 3 1.5 3 3.4.4 15.4.3 31.4-.3 46.6-.1 1.9-1.4 3.1-3.3 3.2-21.4 1-55.6 1-77.3-.2-1.9-.1-3.2-1.4-3.2-3.3C5.4 42 5.6 26.4 6.4 11.4c.1-1.8 1.3-3 3.1-3.2Z"/><path d="M7.4 10.6c11.6 9.4 23.4 18.2 33.2 25.4M89 10.2C77.8 19.4 66 28.3 56 35.6M7.8 58.2c9.8-7.8 19.4-14.6 27.8-20.4M88.6 58.6c-9.4-7.6-19.2-14.6-27.6-20.6"/><path d="M48 48.6c-6.8-4.6-12.4-9-12.4-14.6 0-3.6 2.8-6.2 6-6.2 2.8 0 4.8 1.6 6.4 4 1.6-2.4 3.6-4 6.4-4 3.2 0 6 2.6 6 6.2 0 5.6-5.6 10-12.4 14.6Z" fill="#FFFFFF"/></svg>';
+  // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
+  const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="m3.2 6.2 8.8 6.6 8.8-6.6M3.2 17.8l5.6-4.6M20.8 17.8l-5.6-4.6"/><path d="M12 16.4c-1.7-1.1-2.9-2.2-2.9-3.4 0-.9.7-1.6 1.5-1.6.6 0 1.1.3 1.4.8.3-.5.8-.8 1.4-.8.8 0 1.5.7 1.5 1.6 0 1.2-1.2 2.3-2.9 3.4Z" fill="#FFFFFF"/></svg>';
   function renderRecadosRecebidos() {
     const raiz = document.getElementById('recados-raiz');
     if (!raiz) return;

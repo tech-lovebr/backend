@@ -10587,3 +10587,18 @@ body[data-theme="dark"] .chk-saiba-mais { color: #EBF4FF !important; }
 /* Nova solicitação: texto de apoio das imagens de referência. */
 .rfp-ajuda { margin: -4px 0 10px; font-size: 13px; line-height: 1.5; color: #71717A; }
 body[data-theme="dark"] .rfp-ajuda { color: #A1A1AA !important; }
+
+/* Propostas recebidas: foto do fornecedor quadrada com cantos arredondados
+   (padrão da Love) e tudo o que o fornecedor preencheu na proposta. */
+html body .rfp-prop-foto:not(#love-h-a) { width: 56px; height: 56px; border-radius: 10px; border: 1px solid rgba(0, 0, 0, 0.06); }
+.rfp-prop-produto-nome { margin: 2px 0 0; font-size: 13px; color: #3F3F46; }
+.rfp-prop-produto { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 12px; background: #FAFAFA; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; }
+.rfp-prop-produto img { width: 56px; height: 42px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.rfp-prop-produto p { margin: 2px 0 0; font-size: 14px; font-weight: 500; color: #18181B; }
+.rfp-prop-rotulo { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #71717A; }
+.rfp-prop-bloco { margin-top: 18px; }
+.rfp-prop-texto { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: #3F3F46; white-space: pre-line; }
+html body .rfp-prop .rfp-prop-dados:not(#love-h-a) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 24px; }
+@media (max-width: 760px) { html body .rfp-prop .rfp-prop-dados:not(#love-h-a) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+body[data-theme="dark"] .rfp-prop-produto { background: #2A2A2A !important; border-color: #404040 !important; }
+body[data-theme="dark"] :is(.rfp-prop-produto p, .rfp-prop-texto) { color: #E4E4E7 !important; }

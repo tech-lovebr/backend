@@ -1284,11 +1284,15 @@
       </div>
       <div class="love-tabs-nav rfp-propostas-abas" id="rfp-propostas-abas" role="tablist"></div>
       <div class="rfp-props" id="rfp-propostas-lista">${listaVazia('Carregando…')}</div>`;
-    const { data, error } = await supabaseClient
+    const base = 'id, fornecedor_id, valor, inclui, mensagem, validade, prazo_entrega, status, created_at, conversation_id, fornecedores(company_name, logo_url, avatar_url, city, state)';
+    let { data, error } = await supabaseClient
       .from('propostas_pedido')
-      .select('id, fornecedor_id, valor, inclui, mensagem, validade, prazo_entrega, status, created_at, conversation_id, fornecedores(company_name, logo_url, avatar_url, city, state)')
+      .select(`${base}, produto_id, products(name, category, cover_image_url, price)`)
       .eq('pedido_id', id)
       .order('created_at', { ascending: false });
+    if (error && !tabelaFaltando(error)) {
+      ({ data, error } = await supabaseClient.from('propostas_pedido').select(base).eq('pedido_id', id).order('created_at', { ascending: false }));
+    }
     const lista = document.getElementById('rfp-propostas-lista');
     if (!lista) return;
     if (error && !tabelaFaltando(error)) { lista.innerHTML = listaVazia('Não foi possível carregar as propostas agora.'); return; }
@@ -1321,10 +1325,12 @@
     }
     lista.innerHTML = itens.map(x => {
       const f = /** @type {any} */ (x.fornecedores) || {};
+      const produto = /** @type {any} */ (x.products) || null;
       const nome = f.company_name || 'Fornecedor';
       const foto = f.logo_url || f.avatar_url || '';
       const local = [f.city, f.state].filter(Boolean).join(' - ');
       const selo = x.status === 'enviada' ? '<span class="rfp-selo">Nova</span>' : x.status === 'aceita' ? '<span class="rfp-selo rfp-selo-aceita">Aceita</span>' : x.status === 'recusada' ? '<span class="rfp-selo rfp-selo-recusada">Recusada</span>' : '';
+      const fechada = x.status === 'aceita' || x.status === 'recusada';
       return `
         <article class="rfp-prop">
           ${selo ? `<div class="rfp-prop-selos">${selo}</div>` : ''}
@@ -1332,22 +1338,38 @@
             ${foto ? `<img src="${esc(foto)}" alt="" class="rfp-prop-foto">` : `<span class="rfp-prop-foto rfp-prop-inicial">${esc(nome.charAt(0).toUpperCase())}</span>`}
             <div class="rfp-prop-quem">
               <p class="rfp-prop-nome">${esc(nome)}</p>
+              ${produto && produto.name ? `<p class="rfp-prop-produto-nome">${esc(produto.name)}</p>` : ''}
               ${local ? `<p class="rfp-prop-local">${esc(local)}</p>` : ''}
             </div>
             <div class="rfp-prop-acoes">
               <button type="button" class="rfp-conversar" data-rfp-conversar="${esc(x.fornecedor_id)}">Conversar</button>
-              ${x.status === 'aceita' || x.status === 'recusada' ? '' : `<button type="button" class="rfp-prop-aceitar" data-rfp-proposta="${esc(x.id)}" data-rfp-proposta-status="aceita">Aceitar proposta</button>`}
+              ${fechada ? '' : `<button type="button" class="rfp-prop-aceitar" data-rfp-proposta="${esc(x.id)}" data-rfp-proposta-status="aceita">Aceitar proposta</button>`}
             </div>
           </div>
+
           <div class="rfp-prop-dados">
-            <p><b>${esc(reais(x.valor))}</b><span>Valor total</span></p>
-            ${x.prazo_entrega ? `<p><b>${esc(x.prazo_entrega)}</b><span>Prazo de entrega</span></p>` : ''}
-            ${x.validade ? `<p><b>${esc(formatarData(String(x.validade).slice(0, 10)))}</b><span>Válida até</span></p>` : ''}
-            <p><b>${esc(dataCurta(x.created_at))}</b><span>Enviada</span></p>
+            <p><b>${esc(reais(x.valor))}</b><span>Valor total da proposta</span></p>
+            <p><b>${esc(x.prazo_entrega || '—')}</b><span>Prazo de entrega</span></p>
+            <p><b>${esc(x.validade ? formatarData(String(x.validade).slice(0, 10)) : '—')}</b><span>Válida até</span></p>
+            <p><b>${esc(haQuanto(x.created_at))}</b><span>Enviada</span></p>
           </div>
-          ${x.mensagem ? `<p class="rfp-prop-msg">${esc(x.mensagem)}</p>` : ''}
-          <p class="rfp-prop-inclui"><b>O que inclui:</b> ${esc(x.inclui)}</p>
-          ${x.status === 'aceita' || x.status === 'recusada' ? '' : `<button type="button" class="rfp-prop-recusar" data-rfp-proposta="${esc(x.id)}" data-rfp-proposta-status="recusada">Recusar proposta</button>`}
+
+          ${produto && produto.name ? `
+            <div class="rfp-prop-produto">
+              ${produto.cover_image_url ? `<img src="${esc(produto.cover_image_url)}" alt="">` : ''}
+              <div><span class="rfp-prop-rotulo">Serviço ofertado</span><p>${esc(produto.name)}${produto.category ? ` · ${esc(produto.category)}` : ''}</p></div>
+            </div>` : ''}
+
+          <div class="rfp-prop-bloco">
+            <span class="rfp-prop-rotulo">O que está incluso</span>
+            <p class="rfp-prop-texto">${esc(x.inclui)}</p>
+          </div>
+          ${x.mensagem ? `
+            <div class="rfp-prop-bloco">
+              <span class="rfp-prop-rotulo">Mensagem do fornecedor</span>
+              <p class="rfp-prop-texto">${esc(x.mensagem)}</p>
+            </div>` : ''}
+          ${fechada ? '' : `<button type="button" class="rfp-prop-recusar" data-rfp-proposta="${esc(x.id)}" data-rfp-proposta-status="recusada">Recusar proposta</button>`}
         </article>`;
     }).join('');
   }

@@ -11026,3 +11026,12 @@ body[data-theme="dark"] .floorplan-seat-dot.is-confirmed { --cad-fundo: #EBF4FF;
 html body .floorplan-mesa-core:not(#love-h-a) { border: 0 !important; box-shadow: inset 0 0 0 calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) #52525B !important; }
 html body .floorplan-el.is-mesa:hover .floorplan-mesa-core:not(#love-h-a) { box-shadow: inset 0 0 0 calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) #181D24 !important; }
 body[data-theme="dark"] .floorplan-mesa-core { box-shadow: inset 0 0 0 calc(1.5px / (var(--escala-planta, 1) * var(--escala-mesa, 1))) #A1A1AA !important; }
+
+/* Recados recebidos: só a tabela (sem a busca/total e o vazio dos presentes),
+   ocupando a altura da tela mesmo vazia, como em Meus convidados. */
+html body #tab-gifts:has(#gifts-panel-messages:not(.hidden)) > div:has(> #gifts-panel-products):not(#love-h-a) { display: none !important; }
+html body #tab-gifts.active:has(#gifts-panel-messages:not(.hidden)):not(#love-h-a) { display: flex !important; flex-direction: column; flex: 1 0 auto; }
+html body #gifts-panel-messages:not(.hidden):not(#love-h-a) { display: flex; flex-direction: column; flex: 1 0 auto; }
+html body #gifts-panel-messages #recados-raiz:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body #recados-raiz .recados-caixa:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 420px; }
+html body #recados-raiz .recados-caixa > .overflow-x-auto:not(#love-h-a) { flex: 1 0 auto; }

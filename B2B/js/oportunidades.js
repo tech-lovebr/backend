@@ -92,7 +92,7 @@ const opData = p => (p.data_flexivel || !p.data_evento)
   ? 'Data flexível'
   : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
 const opLocal = p => [p.bairro, [p.cidade, p.uf].filter(Boolean).join(' - ')].filter(Boolean).join(', ');
-const opPeriodo = p => p.periodo === 'horas' ? `${p.horas_servico || '?'}h de serviço` : (p.periodo === 'noturno' ? 'Noturno' : (p.periodo === 'diurno' ? 'Diurno' : ''));
+const opPeriodo = p => p.periodo === 'horas' ? `${p.horas_servico || '?'}h de serviço` : (p.periodo === 'noturno' ? 'Noturno' : (p.periodo === 'diurno' ? 'Diurno' : (p.periodo === 'dia_inteiro' ? 'Dia inteiro' : '')));
 function opFaixaTexto(p) {
   if (OP_FAIXAS_ANTIGAS[p.faixa]) return OP_FAIXAS_ANTIGAS[p.faixa];
   const temMin = p.valor_min != null && Number(p.valor_min) > 0;
@@ -314,7 +314,7 @@ function opAbrirDetalhe(id) {
   const local = [p.cidade, p.uf].filter(Boolean).join(', ') || traco;
   const periodo = p.periodo === 'horas'
     ? `${p.horas_servico || '?'} ${Number(p.horas_servico) === 1 ? 'hora' : 'horas'} de serviço`
-    : ({ diurno: 'Diurno', noturno: 'Noturno' })[p.periodo] || traco;
+    : ({ diurno: 'Diurno', noturno: 'Noturno', dia_inteiro: 'Dia inteiro' })[p.periodo] || traco;
   const destaques = [
     ['Data do evento', opDataLonga(p)],
     ['Convidados', OP_CONVIDADOS_NOME[p.convidados] || traco],

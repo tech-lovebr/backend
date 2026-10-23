@@ -11212,3 +11212,27 @@ html body .rfp-foto-vaga:hover:not(#love-h-a) { border-color: #A1A1AA; }
 body[data-theme="dark"] .rfp-foto-adicionar, body[data-theme="dark"] .rfp-foto-vaga { background: #1F1F1F !important; border-color: #404040 !important; }
 body[data-theme="dark"] .rfp-foto-mais { background: #333333 !important; border-color: #404040 !important; color: #EBF4FF !important; }
 body[data-theme="dark"] .rfp-foto-quadro { background: #333333 !important; border-color: #404040 !important; }
+
+/* Criar solicitação no mesmo estilo de caixa do Hub (Adicionar novo produto):
+   rótulos 14px/700 pretos, campos 14px/400 com 10px 14px de respiro,
+   24px entre os campos e sem linhas divisórias entre as seções. */
+html body #b2b-pedidos-view .rfp-rotulo-texto:not(#love-h-a),
+html body #b2b-pedidos-view .rfp-pergunta:not(#love-h-a) {
+  font-size: 14px; font-weight: 700; color: #18181B; letter-spacing: -0.025em;
+}
+html body #b2b-pedidos-view .rfp-rotulo:not(#love-h-a) { gap: 9.6px; color: #18181B; }
+html body #b2b-pedidos-view .rfp-pergunta:not(#love-h-a) { margin-bottom: 9.6px; }
+html body #b2b-pedidos-view .rfp-rotulo-texto .rfp-opcional:not(#love-h-a),
+html body #b2b-pedidos-view .rfp-pergunta .rfp-opcional:not(#love-h-a) { font-weight: 400; color: #A1A1AA; letter-spacing: normal; }
+html body #b2b-pedidos-view .rfp-campo:not(#love-h-a),
+html body #b2b-pedidos-view .rfp-cat-gatilho:not(#love-h-a) {
+  height: auto; min-height: 43px; padding: 10px 14px; font-size: 14px; font-weight: 400; letter-spacing: normal;
+  line-height: 21px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; background-color: #FFFFFF; box-shadow: none;
+}
+html body #b2b-pedidos-view .rfp-desc-caixa .rfp-descricao:not(#love-h-a) { padding-bottom: 28px; }
+html body #b2b-pedidos-view .rfp-secao + .rfp-secao:not(#love-h-a) { border-top: 0; padding-top: 0; margin-top: 24px; }
+body[data-theme="dark"] #b2b-pedidos-view .rfp-rotulo-texto,
+body[data-theme="dark"] #b2b-pedidos-view .rfp-pergunta { color: #F4F4F5 !important; }
+html body #b2b-pedidos-view .rfp-moeda .rfp-campo:not(#love-h-a) { padding-left: 36px; }
+body[data-theme="dark"] #b2b-pedidos-view .rfp-secao + .rfp-secao { border-top: 0 !important; }
+html body #b2b-pedidos-view .rfp-cat-gatilho:not(#love-h-a) { height: 43px; min-height: 0; padding: 0 14px; }

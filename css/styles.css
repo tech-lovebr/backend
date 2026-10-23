@@ -10231,3 +10231,10 @@ html body #rfp-editor :is(.rfp-erro, .rfp-erro-geral):not(#love-h-a) { color: #c
 html body .rfp-horas-campo .rfp-campo:not(#love-h-a) { width: 88px; min-width: 0; }
 .rfp-horas-sufixo { font-size: 14px; font-weight: 500; color: #3F3F46; }
 body[data-theme="dark"] .rfp-horas-sufixo { color: #D4D4D8 !important; }
+
+/* Nova solicitação › orçamento: De / Até em reais (opcional). */
+.rfp-orcamento { display: grid; grid-template-columns: repeat(2, minmax(0, 200px)); gap: 12px; }
+.rfp-moeda { position: relative; display: block; }
+.rfp-moeda > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #71717A; pointer-events: none; }
+html body .rfp-moeda .rfp-campo:not(#love-h-a) { padding-left: 36px; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .rfp-orcamento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

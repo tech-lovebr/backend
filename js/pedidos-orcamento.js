@@ -35,7 +35,9 @@
    * @property {RfpConvidados|''} convidados
    * @property {RfpPeriodo|''} periodo
    * @property {number|null} horasServico
-   * @property {RfpBudgetTier|''} faixa
+   * @property {RfpBudgetTier|''} faixa       (antigo) faixa pronta
+   * @property {number|null} valorMin        "De" (opcional)
+   * @property {number|null} valorMax        "Até" (opcional)
    * @property {boolean} aceitaForaDaFaixa
    * @property {string} descricao
    * @property {File[]} referencias          fotos ainda não enviadas
@@ -131,7 +133,7 @@
   const TEXTOS_DAS_ETAPAS = [
     { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: '' },
     { titulo: 'Conte sobre o seu evento', sub: 'Tipo de celebração, data, local, número de convidados e horário.' },
-    { titulo: 'Qual é o seu orçamento?', sub: 'Escolha a faixa de preço e descreva o que você precisa, com fotos de referência se quiser.' },
+    { titulo: 'Descreva o que você precisa e o orçamento', sub: 'Conte os detalhes do que você precisa e informe quanto planeja gastar para receber propostas realistas dos fornecedores.' },
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
   const TITULO_DA_LISTA = 'Solicitações de orçamento';
@@ -174,7 +176,7 @@
     return {
       titulo: '', categoria: '', especialidades: [], tipoCelebracao: '', celebracaoOutro: '', dataEvento: '', dataFlexivel: false,
       cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null,
-      faixa: '', aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: 5
+      faixa: '', valorMin: null, valorMax: null, aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: 5
     };
   }
 
@@ -214,7 +216,7 @@
       if (dados.periodo === 'horas' && !(Number(dados.horasServico) >= 1 && Number(dados.horasServico) <= 24)) e.horasServico = 'De 1 a 24 horas.';
     }
     if (n === 3) {
-      if (!dados.faixa) e.faixa = 'Escolha a faixa de orçamento.';
+      if (dados.valorMin != null && dados.valorMax != null && dados.valorMax < dados.valorMin) e.faixa = 'O valor "até" precisa ser maior que o "de".';
       const tam = dados.descricao.trim().length;
       if (tam < DESCRICAO_MIN) e.descricao = `Escreva pelo menos ${DESCRICAO_MIN} caracteres (faltam ${DESCRICAO_MIN - tam}).`;
       if (tam > DESCRICAO_MAX) e.descricao = `No máximo ${DESCRICAO_MAX} caracteres.`;
@@ -470,12 +472,14 @@
   function htmlEtapa3() {
     const tam = dados.descricao.trim().length;
     return `
-      <h4 class="rfp-pergunta">Faixa de orçamento prevista</h4>
-      <div class="rfp-faixas" role="radiogroup">
-        ${FAIXAS.map(f => `
-          <button type="button" class="rfp-faixa${f.id === dados.faixa ? ' ativa' : ''}" role="radio" aria-checked="${f.id === dados.faixa}" data-rfp-campo="faixa" data-rfp-valor="${f.id}">
-            <b>${esc(f.nome)}</b><span>${esc(f.faixa)}</span>
-          </button>`).join('')}
+      <h4 class="rfp-pergunta">Faixa de orçamento prevista <span class="rfp-opcional">(opcional)</span></h4>
+      <div class="rfp-orcamento">
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">De</span>
+          <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-rfp-input="valorMin" inputmode="numeric" value="${dados.valorMin != null ? milhar(dados.valorMin) : ''}" aria-label="Orçamento de"></span>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Até</span>
+          <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-rfp-input="valorMax" inputmode="numeric" value="${dados.valorMax != null ? milhar(dados.valorMax) : ''}" aria-label="Orçamento até"></span>
+        </label>
       </div>
       ${erroHtml('faixa')}
       <label class="rfp-toggle">
@@ -521,7 +525,6 @@
   // Prévia do card da oportunidade no feed dos fornecedores.
   function cardDoFeed() {
     const cat = categoriaPorId(dados.categoria);
-    const faixa = FAIXAS.find(f => f.id === dados.faixa);
     const quando = dados.dataFlexivel || !dados.dataEvento ? 'Data flexível' : formatarData(dados.dataEvento);
     const local = [dados.bairro, dados.cidade].filter(s => s && s.trim()).join(', ') + (dados.uf ? ` - ${dados.uf.toUpperCase()}` : '');
     const periodo = dados.periodo === 'horas' ? `${dados.horasServico || '?'}h de serviço` : nomeDe(PERIODOS, dados.periodo);
@@ -537,7 +540,7 @@
           <li>${esc(quando)}</li><li>${esc(local)}</li>
           <li>${esc(nomeDe(CONVIDADOS, dados.convidados))} convidados</li><li>${esc(periodo)}</li>
         </ul>
-        <p class="rfp-feed-faixa">${esc(faixa ? `${faixa.nome} · ${faixa.faixa}` : '')}${dados.aceitaForaDaFaixa ? ' · aceita fora da faixa' : ''}</p>
+        <p class="rfp-feed-faixa">${esc(textoDoOrcamento(dados.valorMin, dados.valorMax))}${dados.aceitaForaDaFaixa && (dados.valorMin || dados.valorMax) ? ' · aceita fora da faixa' : ''}</p>
         ${dados.especialidades.length ? `<div class="rfp-feed-tags">${dados.especialidades.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
         <p class="rfp-feed-desc">${esc(desc.length > 220 ? desc.slice(0, 220) + '…' : desc)}</p>
         <p class="rfp-feed-rodape">${dados.referencias.length ? `${dados.referencias.length} foto(s) de referência · ` : ''}${dados.limitePropostas ? `Até ${dados.limitePropostas} propostas` : 'Propostas sem limite'}</p>
@@ -547,6 +550,25 @@
   /** Celebração do rascunho como vai para o banco ("Outro" vira o texto digitado). */
   function celebracaoDoRascunho() {
     return dados.tipoCelebracao === 'outro' ? dados.celebracaoOutro.trim() : nomeDaCelebracao(dados.tipoCelebracao);
+  }
+
+  /** 2500 → "2.500". @param {number} n */
+  const milhar = (n) => Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+
+  /**
+   * Orçamento em texto: "R$ 2.000 a R$ 5.000", "a partir de…", "até…";
+   * pedidos antigos usam a faixa pronta (Econômico, Moderado…).
+   * @param {number|null|undefined} min @param {number|null|undefined} max @param {string} [faixaAntiga]
+   */
+  function textoDoOrcamento(min, max, faixaAntiga) {
+    const temMin = min != null && Number(min) > 0;
+    const temMax = max != null && Number(max) > 0;
+    const antiga = FAIXAS.find(f => f.id === faixaAntiga);
+    if (antiga) return `${antiga.nome} · ${antiga.faixa}`;
+    if (temMin && temMax) return `R$ ${milhar(Number(min))} a R$ ${milhar(Number(max))}`;
+    if (temMin) return `A partir de R$ ${milhar(Number(min))}`;
+    if (temMax) return `Até R$ ${milhar(Number(max))}`;
+    return 'A combinar';
   }
 
   /** "1 hora" / "horas" ao lado do número (vazio sem número). @param {number|null} n */
@@ -591,6 +613,13 @@
     if (el.type === 'checkbox') {
       d[campo] = el.checked;
       if (campo === 'dataFlexivel') { if (el.checked) dados.dataEvento = ''; delete erros.dataEvento; desenhar(0); }
+      return;
+    }
+    if (campo === 'valorMin' || campo === 'valorMax') {
+      const num = el.value.replace(/\D/g, '').slice(0, 9);
+      d[campo] = num ? Number(num) : null;
+      el.value = num ? milhar(Number(num)) : '';
+      if (erros.faixa) delete erros.faixa;
       return;
     }
     if (campo === 'horasServico') {
@@ -724,7 +753,7 @@
         if (error) throw new Error('Não foi possível enviar as fotos de referência.');
         urls.push(supabaseClient.storage.from('clientes').getPublicUrl(caminho).data.publicUrl);
       }
-      const faixa = FAIXAS.find(f => f.id === dados.faixa);
+      const temOrcamento = !!(dados.valorMin || dados.valorMax);
       const eventoId = typeof window.getLoveActiveEventId === 'function' ? window.getLoveActiveEventId() : null;
       const linha = {
         cliente_id: usuario.id,
@@ -742,15 +771,21 @@
         convidados: dados.convidados,
         periodo: dados.periodo,
         horas_servico: dados.periodo === 'horas' ? dados.horasServico : null,
-        faixa: dados.faixa,
-        valor_min: faixa ? faixa.min : null,
-        valor_max: faixa ? faixa.max : null,
-        aceita_fora_da_faixa: dados.aceitaForaDaFaixa,
+        // Faixa livre (De / Até); sem valores, fica sem faixa (migration 080).
+        faixa: /** @type {string|null} */ (temOrcamento ? 'personalizada' : null),
+        valor_min: dados.valorMin || null,
+        valor_max: dados.valorMax || null,
+        aceita_fora_da_faixa: temOrcamento ? dados.aceitaForaDaFaixa : true,
         descricao: dados.descricao.trim(),
         referencias: urls,
         limite_propostas: dados.limitePropostas
       };
       let { error } = await supabaseClient.from('pedidos_orcamento').insert(linha);
+      // Banco ainda exige faixa (antes da migration 080): marca como personalizada.
+      if (error && linha.faixa === null && /faixa/.test(String(error.message || ''))) {
+        linha.faixa = 'personalizada';
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linha));
+      }
       // Banco ainda sem a coluna titulo (migration 078): publica sem ela.
       if (error && /titulo/.test(String(error.message || ''))) {
         const { titulo: _semTitulo, ...semTitulo } = linha;
@@ -820,7 +855,6 @@
     }
     corpo.innerHTML = linhas.map(p => {
       const cat = categoriaPorId(p.categoria);
-      const faixa = FAIXAS.find(f => f.id === p.faixa);
       const quando = p.data_flexivel || !p.data_evento ? 'Data flexível' : formatarData(p.data_evento);
       const local = [p.bairro, p.cidade].filter(Boolean).join(', ') + (p.uf ? ` - ${p.uf}` : '');
       const situacao = SITUACOES[/** @type {'aberto'|'fechado'|'cancelado'} */ (p.status)] || p.status;
@@ -829,7 +863,7 @@
           <td><b class="rfp-col-titulo">${esc(p.titulo || (cat ? cat.nome : p.categoria))}</b>${p.titulo ? `<span class="rfp-col-sub">${esc(cat ? cat.nome : p.categoria)}</span>` : ''}${(p.especialidades || []).length ? `<span class="rfp-col-sub">${esc(p.especialidades.slice(0, 2).join(', '))}${p.especialidades.length > 2 ? ` +${p.especialidades.length - 2}` : ''}</span>` : ''}</td>
           <td>${esc(nomeDaCelebracao(p.tipo_celebracao))}<span class="rfp-col-sub">${esc(quando)}</span></td>
           <td>${esc(local)}</td>
-          <td>${esc(faixa ? faixa.nome : '')}<span class="rfp-col-sub">${esc(faixa ? faixa.faixa : '')}</span></td>
+          <td>${esc(textoDoOrcamento(p.valor_min, p.valor_max, p.faixa))}</td>
           <td class="rfp-col-num">${p.propostas_recebidas || 0}${p.limite_propostas ? ` / ${p.limite_propostas}` : ''}</td>
           <td><span class="rfp-situacao rfp-situacao-${esc(p.status)}">${esc(situacao)}</span></td>
           <td class="love-tabela-col-acoes">

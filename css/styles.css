@@ -10766,3 +10766,24 @@ body[data-theme="dark"] .presentes-vazio-texto b { color: #FFFFFF !important; }
 html body #gifts-barra:not(#love-h-a) { margin-bottom: 24px; overflow: visible; }
 html body #gifts-barra[hidden]:not(#love-h-a) { display: none !important; }
 html body #gifts-barra .gifts-total-linha:not(#love-h-a) { margin: 0; font-size: 14px; }
+
+/* Criar solicitação / Minhas solicitações: abas coladas na caixa logo abaixo
+   (a linha das abas faz o papel da borda de cima), como em Meus convidados.
+   Título/subtítulo da etapa dentro da caixa. */
+html body #b2b-pedidos-view #pedidos-abas:not(#love-h-a) { margin: 0 !important; border-bottom: 1px solid #E4E4E7 !important; }
+#pedidos-abas button.love-tab-item.love-tab-item.love-tab-item { border-radius: 0 !important; }
+html body #b2b-pedidos-view #pedidos-painel-minhas:not(.hidden):not(#love-h-a) { margin-top: 0; }
+html body #pedidos-painel-minhas #rfp-caixa:not(#love-h-a) { border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+html body #rfp-lista-wrap:not(#love-h-a) { display: flex; flex-direction: column; }
+html body #rfp-lista-wrap > #rfp-lista-aviso:not(#love-h-a) { order: 2; margin: 12px 0 0; }
+html body #b2b-pedidos-view .rfp-editor:not(#love-h-a) { padding-top: 0 !important; max-width: none; margin: 0; }
+html body #b2b-pedidos-view .rfp-editor .rfp-intro:not(#love-h-a) { display: none; }
+html body #b2b-pedidos-view .rfp-caixa-form:not(#love-h-a) { border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+html body #pedidos-abas.hidden ~ .rfp-editor .rfp-caixa-form:not(#love-h-a) { border-top: 1px solid #E4E4E7 !important; border-radius: 10px !important; }
+.rfp-etapa-cab { margin-bottom: 24px; }
+html body .rfp-etapa-cab-titulo:not(#love-h-a) { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+.rfp-etapa-cab-sub { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: #52525B; }
+.rfp-modos-sub { margin: 0 0 14px; }
+body[data-theme="dark"] .rfp-etapa-cab-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-etapa-cab-sub { color: #A1A1AA !important; }
+body[data-theme="dark"] #b2b-pedidos-view #pedidos-abas { border-bottom-color: #404040 !important; }

@@ -430,7 +430,11 @@
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
       const telas = modo === 'lote' ? [htmlLote1, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
-      corpo.innerHTML = `<div class="rfp-tela">${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
+      // Título e subtítulo da etapa ficam dentro da caixa (a caixa encosta nas abas, como em Meus convidados).
+      const topo = modo !== 'lote' ? '' : textos.titulo
+        ? `<div class="rfp-etapa-cab"><h3 class="rfp-etapa-cab-titulo">${esc(textos.titulo)}</h3>${textos.sub ? `<p class="rfp-etapa-cab-sub">${esc(textos.sub)}</p>` : ''}</div>`
+        : (textos.sub ? `<p class="rfp-etapa-cab-sub rfp-modos-sub">${esc(textos.sub)}</p>` : '');
+      corpo.innerHTML = `<div class="rfp-tela">${topo}${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
       if (direcao) corpo.scrollTop = 0;
     }
     const passos = document.getElementById('rfp-passos');

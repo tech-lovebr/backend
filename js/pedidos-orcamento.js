@@ -1076,7 +1076,7 @@
     return `
       <div class="rfp-modos" role="radiogroup" aria-label="Como você prefere começar">
         ${card('unico', 'Serviço avulso', 'Crie o pedido de serviço e encontre o profissional perfeito.', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
-        ${card('completo', 'Evento completo', 'Receba todos os orçamentos para o seu evento completo de uma só vez.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
+        ${card('completo', 'Evento completo', 'Monte seu evento completo e receba múltiplos orçamentos de uma só vez.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
       </div>`;
   }
 

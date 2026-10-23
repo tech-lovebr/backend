@@ -72,6 +72,8 @@
     ['Resgatar o saldo da carteira', 'Financeiro', -14, false]
   ];
 
+  const MAIOR_PRAZO = Math.max(...MODELO.map(m => m[2]));
+
   const GRUPOS = [
     ['atrasadas', 'Atrasadas · atenção imediata'],
     ['mais-2m', 'Faltando mais de 2 meses'],
@@ -124,7 +126,7 @@
     const det = ev.eventDetails || {};
     return dataLocal(det.date || ev.date || '');
   }
-  const chaveLocal = (/** @type {string} */ ev) => `love-checklist-${ev}`;
+  const chaveLocal = (/** @type {string} */ ev) => `love-checklist-v2-${ev}`;
   /** @param {string} ev @returns {Tarefa[]|null} */
   function lerLocal(ev) {
     try { const v = localStorage.getItem(chaveLocal(ev)); return v ? JSON.parse(v) : null; } catch (e) { return null; }
@@ -137,12 +139,39 @@
   /** @param {any} error */
   const tabelaFaltando = (error) => !!error && (error.code === 'PGRST205' || error.code === '42P01');
 
-  /** Tarefas sugeridas, com prazo calculado pela data do evento. @returns {Omit<Tarefa,'id'>[]} */
+  /** Dia em que o evento foi criado (sem a informação, hoje). */
+  function dataDeCriacao() {
+    const ev = eventoAtivo();
+    const iso = ev && (ev.createdAt || ev.created_at);
+    const d = iso ? new Date(iso) : hoje();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  /**
+   * Prazo de uma tarefa sugerida. O modelo pensa em 6 meses de preparação;
+   * se o evento foi criado com menos tempo, os prazos são distribuídos entre
+   * o dia da criação e o dia do evento (nada nasce atrasado). Tarefas do pós-
+   * evento ficam depois do evento.
+   * @param {number} dias  dias antes do evento no modelo
+   */
+  function prazoSugerido(dias) {
+    const evento = dataDoEvento();
+    if (!evento) return null;
+    if (dias <= 0) return isoDe(new Date(evento.getTime() - dias * DIA));
+    const criacao = dataDeCriacao();
+    const janela = diasEntre(criacao, evento);
+    if (janela >= MAIOR_PRAZO) return isoDe(new Date(evento.getTime() - dias * DIA));
+    if (janela <= 1) return isoDe(evento);
+    const andou = Math.max(1, Math.round(janela * (MAIOR_PRAZO - dias) / MAIOR_PRAZO));
+    return isoDe(new Date(criacao.getTime() + Math.min(andou, janela) * DIA));
+  }
+
+  /** Tarefas sugeridas, com prazo calculado pela criação e pela data do evento. @returns {Omit<Tarefa,'id'>[]} */
   function tarefasSugeridas() {
-    const data = dataDoEvento();
     return MODELO.map(([titulo, categoria, dias, busca], i) => ({
       titulo, categoria,
-      prazo: data ? isoDe(new Date(data.getTime() - dias * DIA)) : null,
+      prazo: prazoSugerido(dias),
       concluida: false, responsavel: '', notas: null, orcamento: null,
       busca_fornecedor: busca ? (NO_EXPLORAR[categoria] || null) : null,
       ordem: i
@@ -261,6 +290,10 @@
     const f = fornecedores().find((/** @type {any} */ v) => `fornecedor:${v.id}` === resp);
     return f ? String(f.name || 'Fornecedor') : '';
   }
+  /** Quem pode ser responsável: ninguém, você e os fornecedores contratados. @returns {[string, string][]} */
+  function opcoesDeResponsavel() {
+    return [['', 'Sem responsável'], ['voce', 'Você'], ...fornecedores().map((/** @type {any} */ v) => /** @type {[string, string]} */ ([`fornecedor:${v.id}`, String(v.name || 'Fornecedor')]))];
+  }
   /** @param {string} nome */
   const iniciais = (nome) => nome === 'Você' ? 'EU' : nome.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
   /** @param {number|null} v */
@@ -294,14 +327,20 @@
         </div>
         <div class="chk-acoes">
           ${busca ? `<button type="button" class="chk-buscar" data-chk-buscar="${esc(t.busca_fornecedor)}">Buscar fornecedores</button>` : ''}
-          <label class="chk-resp" title="${esc(nome ? `Responsável: ${nome}` : 'Atribuir responsável')}">
-            <span class="chk-avatar${nome ? '' : ' is-vazio'}">${nome ? esc(iniciais(nome)) : ICONE_PESSOA}</span>
-            <select data-chk-resp aria-label="Responsável">
-              <option value=""${!t.responsavel ? ' selected' : ''}>Sem responsável</option>
-              <option value="voce"${t.responsavel === 'voce' ? ' selected' : ''}>Você</option>
-              ${fornecedores().map((/** @type {any} */ v) => `<option value="fornecedor:${esc(v.id)}"${t.responsavel === `fornecedor:${v.id}` ? ' selected' : ''}>${esc(v.name)}</option>`).join('')}
-            </select>
-          </label>
+          <div class="chk-resp-wrap">
+            <button type="button" class="chk-resp" data-chk-resp-abrir aria-haspopup="menu" aria-label="${esc(nome ? `Responsável: ${nome}` : 'Atribuir responsável')}" data-dica="${esc(nome ? `Responsável: ${nome}` : 'Atribuir responsável')}">
+              <span class="chk-avatar${nome ? '' : ' is-vazio'}">${nome ? esc(iniciais(nome)) : ICONE_PESSOA}</span>
+            </button>
+            <div class="chk-resp-pop" role="menu" hidden>
+              <p class="chk-resp-titulo">Responsável</p>
+              ${opcoesDeResponsavel().map(([valor, rotulo]) => `
+                <button type="button" role="menuitemradio" aria-checked="${(t.responsavel || '') === valor}" class="chk-resp-opcao${(t.responsavel || '') === valor ? ' is-ativo' : ''}" data-chk-resp-valor="${esc(valor)}">
+                  <span class="chk-avatar${valor ? '' : ' is-vazio'}">${valor ? esc(iniciais(rotulo)) : ICONE_PESSOA}</span>
+                  <span class="chk-resp-nome">${esc(rotulo)}</span>
+                  ${(t.responsavel || '') === valor ? `<span class="chk-resp-ok">${ICONE_CHECK}</span>` : ''}
+                </button>`).join('')}
+            </div>
+          </div>
           <div class="chk-menu-wrap">
             <button type="button" class="chk-mais" data-chk-menu aria-label="Mais ações">${ICONE_MAIS}</button>
             <div class="chk-menu" role="menu" hidden>
@@ -516,7 +555,7 @@
     if (alvo.closest('#btn-checklist-nova')) { abrirModal(null); return; }
     const raiz = alvo.closest('#event-checklist-list');
     // Fecha menus abertos ao clicar fora.
-    document.querySelectorAll('.chk-menu:not([hidden])').forEach(m => { if (!m.parentElement?.contains(alvo)) /** @type {HTMLElement} */ (m).hidden = true; });
+    document.querySelectorAll('.chk-menu:not([hidden]), .chk-resp-pop:not([hidden])').forEach(m => { if (!m.parentElement?.contains(alvo)) /** @type {HTMLElement} */ (m).hidden = true; });
     if (!raiz) return;
 
     const v = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-vista]'));
@@ -544,6 +583,20 @@
       if (w.loveAbrirExplorarNaCategoria) w.loveAbrirExplorarNaCategoria(buscar.dataset.chkBuscar);
       return;
     }
+    const abrirResp = alvo.closest('[data-chk-resp-abrir]');
+    if (abrirResp) {
+      const pop = /** @type {HTMLElement|null} */ (abrirResp.parentElement && abrirResp.parentElement.querySelector('.chk-resp-pop'));
+      if (pop) pop.hidden = !pop.hidden;
+      return;
+    }
+    const escolha = /** @type {HTMLElement|null} */ (alvo.closest('[data-chk-resp-valor]'));
+    if (escolha) {
+      const antes = t.responsavel;
+      t.responsavel = escolha.dataset.chkRespValor || '';
+      desenhar();
+      if (!(await salvar(t))) { t.responsavel = antes; desenhar(); }
+      return;
+    }
     const btnMenu = alvo.closest('[data-chk-menu]');
     if (btnMenu) {
       const menu = /** @type {HTMLElement|null} */ (btnMenu.parentElement && btnMenu.parentElement.querySelector('.chk-menu'));
@@ -564,17 +617,6 @@
       if (!ok) return;
       if (await apagar(t)) desenhar();
     }
-  });
-
-  document.addEventListener('change', async (e) => {
-    const el = /** @type {HTMLSelectElement} */ (e.target);
-    if (!el || !el.matches || !el.matches('#event-checklist-list [data-chk-resp]')) return;
-    const t = tarefaDe(el);
-    if (!t) return;
-    const antes = t.responsavel;
-    t.responsavel = el.value;
-    desenhar();
-    if (!(await salvar(t))) { t.responsavel = antes; desenhar(); }
   });
 
   async function render() {

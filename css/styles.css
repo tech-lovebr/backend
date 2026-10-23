@@ -10545,3 +10545,21 @@ body[data-theme="dark"] .chk-tarefa.is-feita button.chk-check { background: #EBF
 body[data-theme="dark"] :is(button.chk-buscar, .chk-campo input, .chk-campo select, .chk-campo textarea) { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] button.chk-salvar { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }
 body[data-theme="dark"] .chk-barra span { background: #EBF4FF !important; }
+
+/* Checklist › responsável: menu da própria Love (como Notificações), no lugar
+   da lista do navegador. */
+.chk-resp-wrap { position: relative; }
+html body button.chk-resp:not(#love-h-a) { padding: 0; background: transparent; border: 0; border-radius: 999px; cursor: pointer; display: inline-flex; }
+.chk-resp-pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 240px; max-height: 320px; overflow-y: auto; padding: 6px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.chk-resp-pop[hidden] { display: none; }
+.chk-resp-titulo { margin: 4px 8px 6px; font-size: 11px; font-weight: 500; color: #A1A1AA; }
+html body button.chk-resp-opcao:not(#love-h-a) { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; background: transparent; border: 0; border-radius: 8px; font-family: inherit; font-size: 13px; color: #18181B; text-align: left; cursor: pointer; }
+html body button.chk-resp-opcao:not(#love-h-a):hover { background: #F4F4F5; }
+html body .chk-resp-opcao .chk-avatar:not(#love-h-a) { width: 26px; height: 26px; font-size: 10px; flex-shrink: 0; }
+.chk-resp-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chk-resp-opcao.is-ativo .chk-resp-nome { font-weight: 600; }
+.chk-resp-ok { display: inline-flex; color: #183b54; }
+.chk-resp-ok svg { width: 14px; height: 14px; }
+body[data-theme="dark"] .chk-resp-pop { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] button.chk-resp-opcao { color: #FFFFFF !important; }
+body[data-theme="dark"] button.chk-resp-opcao:hover { background: #333333 !important; }

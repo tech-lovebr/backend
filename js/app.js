@@ -20482,6 +20482,7 @@ document.addEventListener('DOMContentLoaded', () => {
       title: row.titulo,
       hostName: row.host_name,
       date: row.data_evento,
+      createdAt: row.created_at,
       slug: row.slug,
       theme: row.theme,
       coverImage: row.cover_image_url,

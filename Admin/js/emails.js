@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.querySelectorAll('#abas-emails [data-aba]').forEach(aba => aba.addEventListener('click', () => {
     document.querySelectorAll('#abas-emails [data-aba]').forEach(a => a.classList.toggle('is-active', a === aba));
+    ABA_ATUAL = aba.dataset.aba;
     document.getElementById('aba-metricas').hidden = aba.dataset.aba !== 'metricas';
     document.getElementById('aba-templates').hidden = aba.dataset.aba !== 'templates';
     document.getElementById('aba-layout').hidden = aba.dataset.aba !== 'layout';
@@ -352,36 +353,83 @@ function renderEnvios() {
   }));
 }
 
+/* ------------------------------------------------------------ Telas internas
+   Escrever e-mail, template e detalhe de um disparo abrem dentro da própria
+   página (sem pop-up nem drawer): as abas somem, o título ganha a seta de
+   voltar e o conteúdo ocupa a área principal. */
+
+let ABA_ATUAL = 'metricas';
+
+function abrirVisao(titulo, html) {
+  document.getElementById('abas-emails').hidden = true;
+  ['metricas', 'templates', 'layout'].forEach(a => { document.getElementById(`aba-${a}`).hidden = true; });
+  document.getElementById('header-actions').hidden = true;
+
+  const cabecalho = document.querySelector('.header-bar-titulo');
+  cabecalho.innerHTML = `
+    <a class="header-bar-voltar" href="#" title="Voltar" aria-label="Voltar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
+    </a>
+    <h1>${escapeHtml(titulo)}</h1>`;
+  cabecalho.querySelector('.header-bar-voltar').addEventListener('click', (e) => { e.preventDefault(); fecharVisao(); });
+
+  const visao = document.getElementById('visao-emails');
+  visao.innerHTML = html;
+  visao.hidden = false;
+  window.scrollTo(0, 0);
+  return visao;
+}
+
+function fecharVisao() {
+  const visao = document.getElementById('visao-emails');
+  visao.hidden = true;
+  visao.innerHTML = '';
+  document.querySelector('.header-bar-titulo').innerHTML = '<h1>E-mails</h1>';
+  document.getElementById('header-actions').hidden = false;
+  document.getElementById('abas-emails').hidden = false;
+  document.getElementById(`aba-${ABA_ATUAL}`).hidden = false;
+  if (ABA_ATUAL === 'layout') atualizarPreviaLayout();
+}
+
+/* ------------------------------------------------------------ Disparo */
+
 function abrirEnvio(e) {
   const [rotulo, classe] = STATUS_EMAIL[e.status] || [e.status, ''];
   const linha = (rotulo, valor) => valor ? `<div class="dados-linha"><span class="rotulo">${rotulo}</span><span class="valor">${valor}</span></div>` : '';
   const NOME_EVENTO = { send: 'Enviado ao SES', delivery: 'Entregue', bounce: 'Bounce', complaint: 'Denúncia de spam', reject: 'Rejeitado', open: 'Aberto', click: 'Link clicado', deliverydelay: 'Entrega atrasada', renderingfailure: 'Falha ao montar' };
 
-  Drawer.open({
-    title: e.assunto || e.template || 'E-mail',
-    subtitle: e.destinatario,
-    body: `
-      <div class="lista-dados">
-        ${linha('Status', badge(rotulo, classe))}
-        ${linha('Erro', e.erro ? escapeHtml(e.erro) : '')}
-        ${linha('Template', escapeHtml(e.template || ''))}
-        ${linha('Categoria', escapeHtml(e.categoria || ''))}
-        ${linha('Remetente', escapeHtml(e.remetente || ''))}
-        ${linha('Destinatário', escapeHtml(e.destinatario))}
-        ${linha('Provedor', escapeHtml(e.provedor || 'Amazon SES'))}
-        ${linha('Latência', latencia(e.latencia_ms))}
-        ${linha('Enviado em', escapeHtml(formatDateTime(e.created_at)))}
-        ${linha('Entregue em', e.entregue_em ? escapeHtml(formatDateTime(e.entregue_em)) : '')}
-        ${linha('Aberto em', e.aberto_em ? escapeHtml(formatDateTime(e.aberto_em)) : '')}
-        ${linha('Clicado em', e.clicado_em ? escapeHtml(formatDateTime(e.clicado_em)) : '')}
-        ${linha('ID no SES', e.message_id ? `<span class="cell-mono">${escapeHtml(e.message_id)}</span>` : '')}
+  abrirVisao(e.assunto || e.template || 'E-mail', `
+    <section class="email-detalhe">
+      <div class="card">
+        <div class="card-head"><div><h2>Dados do disparo</h2><p>${escapeHtml(e.destinatario)}</p></div></div>
+        <div class="card-body">
+          <div class="lista-dados">
+            ${linha('Status', badge(rotulo, classe))}
+            ${linha('Erro', e.erro ? escapeHtml(e.erro) : '')}
+            ${linha('Template', escapeHtml(e.template || ''))}
+            ${linha('Categoria', escapeHtml(e.categoria || ''))}
+            ${linha('Remetente', escapeHtml(e.remetente || ''))}
+            ${linha('Destinatário', escapeHtml(e.destinatario))}
+            ${linha('Provedor', escapeHtml(e.provedor || 'Amazon SES'))}
+            ${linha('Latência', latencia(e.latencia_ms))}
+            ${linha('Enviado em', escapeHtml(formatDateTime(e.created_at)))}
+            ${linha('Entregue em', e.entregue_em ? escapeHtml(formatDateTime(e.entregue_em)) : '')}
+            ${linha('Aberto em', e.aberto_em ? escapeHtml(formatDateTime(e.aberto_em)) : '')}
+            ${linha('Clicado em', e.clicado_em ? escapeHtml(formatDateTime(e.clicado_em)) : '')}
+            ${linha('ID no SES', e.message_id ? `<span class="cell-mono">${escapeHtml(e.message_id)}</span>` : '')}
+          </div>
+        </div>
       </div>
-      ${e.trecho ? `<p class="drawer-section-title">Extrato</p><p class="email-trecho">${escapeHtml(e.trecho)}</p>` : ''}
-      ${(e.eventos || []).length ? `<p class="drawer-section-title">Eventos da AWS</p>
-        <ul class="email-eventos">${e.eventos.map(ev => `<li><span>${escapeHtml(NOME_EVENTO[ev.tipo] || ev.tipo)}</span><span class="cell-muted">${escapeHtml(formatDateTime(ev.em))}</span></li>`).join('')}</ul>` : ''}`,
-    footer: '<button type="button" class="btn btn-ghost" id="btn-fechar-envio">Fechar</button>'
-  });
-  document.getElementById('btn-fechar-envio').addEventListener('click', () => Drawer.close());
+      <div class="email-detalhe-lado">
+        ${e.trecho ? `<div class="card"><div class="card-head"><div><h2>Extrato</h2></div></div>
+          <div class="card-body"><p class="email-trecho">${escapeHtml(e.trecho)}</p></div></div>` : ''}
+        <div class="card"><div class="card-head"><div><h2>Eventos da AWS</h2></div></div>
+          <div class="card-body">${(e.eventos || []).length
+            ? `<ul class="email-eventos">${e.eventos.map(ev => `<li><span>${escapeHtml(NOME_EVENTO[ev.tipo] || ev.tipo)}</span><span class="cell-muted">${escapeHtml(formatDateTime(ev.em))}</span></li>`).join('')}</ul>`
+            : '<p class="cell-muted" style="margin:0">Nenhum evento recebido ainda.</p>'}</div>
+        </div>
+      </div>
+    </section>`);
 }
 
 /* ------------------------------------------------------------ Escrever */
@@ -391,53 +439,79 @@ function opcoesDeCategoria(atual) {
   return lista.map(c => `<option ${c === (atual || 'Comunicados') ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
 }
 
+/** Editor à esquerda e prévia com o layout salvo à direita. */
+function telaComPrevia(campos, acoes) {
+  return `
+    <section class="layout-email email-composer">
+      <div class="card">
+        <form class="card-body" id="form-visao">${campos}
+          <div class="layout-email-acoes">${acoes}</div>
+        </form>
+      </div>
+      <div class="card layout-email-previa">
+        <div class="card-head"><div><h2>Prévia</h2><p>Como chega na caixa de entrada, com o layout salvo</p></div></div>
+        <iframe id="previa-visao" title="Prévia do e-mail" sandbox=""></iframe>
+      </div>
+    </section>`;
+}
+
+function ligarPrevia(editor, assunto) {
+  const iframe = document.getElementById('previa-visao');
+  const atualizar = () => {
+    const titulo = assunto.value.trim()
+      ? `<p style="margin:0 0 16px;font-size:12px;color:#94a3b8;">Assunto: ${escapeHtml(assunto.value.trim())}</p>` : '';
+    iframe.srcdoc = montarLayoutEmail(titulo + (editor.html() || '<p style="color:#94a3b8">O texto aparece aqui.</p>'), LAYOUT);
+  };
+  let espera = null;
+  const agendar = () => { clearTimeout(espera); espera = setTimeout(atualizar, 200); };
+  document.getElementById('form-visao').addEventListener('input', agendar);
+  document.getElementById('form-visao').addEventListener('keyup', agendar);
+  atualizar();
+  return atualizar;
+}
+
 function abrirEscrever(template) {
   const remetente = SITUACAO?.remetente || 'Love <contato@love.com.br>';
 
-  Drawer.open({
-    title: 'Escrever e-mail',
-    subtitle: `Sai pelo Amazon SES, com o layout da Love`,
-    body: `
-      <form id="form-email">
-        <label class="field">
-          <span class="field-label">Remetente</span>
-          <input class="field-input" name="de" type="text" value="${escapeHtml(remetente)}">
-        </label>
-        <label class="field">
-          <span class="field-label">Para</span>
-          <textarea class="field-textarea" name="para" rows="2" placeholder="email@exemplo.com, outro@exemplo.com"></textarea>
-        </label>
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">Template</span>
-            <select class="field-select" name="template">
-              <option value="">Sem template</option>
-              ${TEMPLATES.map(t => `<option value="${t.id}" ${template?.id === t.id ? 'selected' : ''}>${escapeHtml(t.nome)}</option>`).join('')}
-            </select>
-          </label>
-          <label class="field">
-            <span class="field-label">Categoria</span>
-            <select class="field-select" name="categoria">${opcoesDeCategoria(template?.categoria)}</select>
-          </label>
-        </div>
-        <label class="field">
-          <span class="field-label">Assunto</span>
-          <input class="field-input" name="assunto" type="text" value="${escapeHtml(template?.assunto || '')}">
-        </label>
-        <div class="field">
-          <span class="field-label">Mensagem</span>
-          <div id="editor-email"></div>
-        </div>
-        ${SITUACAO?.conta && !SITUACAO.conta.producao ? '<p class="field-hint">Conta do SES em sandbox: só chega a endereços verificados na AWS.</p>' : ''}
-      </form>`,
-    footer: `
-      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="btn-enviar">Enviar</button>`
-  });
+  abrirVisao('Escrever e-mail', telaComPrevia(`
+    <label class="field">
+      <span class="field-label">Remetente</span>
+      <input class="field-input" name="de" type="text" value="${escapeHtml(remetente)}">
+    </label>
+    <label class="field">
+      <span class="field-label">Para</span>
+      <textarea class="field-textarea" name="para" rows="2" placeholder="email@exemplo.com, outro@exemplo.com"></textarea>
+    </label>
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">Template</span>
+        <select class="field-select" name="template">
+          <option value="">Sem template</option>
+          ${TEMPLATES.map(t => `<option value="${t.id}" ${template?.id === t.id ? 'selected' : ''}>${escapeHtml(t.nome)}</option>`).join('')}
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Categoria</span>
+        <select class="field-select" name="categoria">${opcoesDeCategoria(template?.categoria)}</select>
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Assunto</span>
+      <input class="field-input" name="assunto" type="text" value="${escapeHtml(template?.assunto || '')}">
+    </label>
+    <div class="field">
+      <span class="field-label">Mensagem</span>
+      <div id="editor-email"></div>
+    </div>
+    ${SITUACAO?.conta && !SITUACAO.conta.producao ? '<p class="field-hint">Conta do SES em sandbox: só chega a endereços verificados na AWS.</p>' : ''}`,
+  `<button type="button" class="btn-texto" id="btn-cancelar">Cancelar</button>
+   <button type="button" class="btn btn-primary" id="btn-enviar">Enviar</button>`));
 
-  const form = document.getElementById('form-email');
-  const editor = EditorRico.montar(document.getElementById('editor-email'), { placeholder: 'Escreva o e-mail.', tabela: false });
+  const form = document.getElementById('form-visao');
+  let atualizar = () => {};
+  const editor = EditorRico.montar(document.getElementById('editor-email'), { placeholder: 'Escreva o e-mail.', tabela: false, aoMudar: () => atualizar() });
   editor.definir(template?.html || '');
+  atualizar = ligarPrevia(editor, form.assunto);
 
   form.template.addEventListener('change', () => {
     const t = TEMPLATES.find(x => x.id === form.template.value);
@@ -445,9 +519,10 @@ function abrirEscrever(template) {
     form.assunto.value = t.assunto;
     form.categoria.innerHTML = opcoesDeCategoria(t.categoria);
     editor.definir(t.html);
+    atualizar();
   });
 
-  document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-cancelar').addEventListener('click', fecharVisao);
   document.getElementById('btn-enviar').addEventListener('click', async () => {
     const t = TEMPLATES.find(x => x.id === form.template.value);
     const dados = {
@@ -462,22 +537,27 @@ function abrirEscrever(template) {
     if (!dados.para.trim()) return toast('Informe o destinatário');
     if (!dados.assunto) return toast('Informe o assunto');
 
-    Drawer.setFooterBusy(true);
+    const botao = document.getElementById('btn-enviar');
+    botao.disabled = true;
+    botao.textContent = 'Enviando...';
     try {
       const r = await chamarApi('POST', dados);
-      Drawer.close();
       toast(r.falhas?.length
         ? `${r.enviados} enviado(s); falhou para ${r.falhas.map(f => f.para).join(', ')}`
         : `${r.enviados} e-mail(s) enviado(s)`);
+      fecharVisao();
       carregarEnvios();
     } catch (e) {
       toast(e.message);
+      botao.disabled = false;
+      botao.textContent = 'Enviar';
     }
-    Drawer.setFooterBusy(false);
   });
 }
 
-/* ------------------------------------------------------------ Templates */
+/* ------------------------------------------------------------ Templates
+   Template = o CONTEÚDO de um e-mail que se repete (assunto + texto), para
+   não escrever do zero. Layout = a MOLDURA de todos (logo, cores, rodapé). */
 
 function renderTemplates() {
   const tbody = document.getElementById('tbody-templates');
@@ -501,49 +581,46 @@ function renderTemplates() {
 
 function abrirTemplate(item) {
   const editando = Boolean(item);
-  Drawer.open({
-    title: editando ? 'Editar template' : 'Novo template',
-    subtitle: 'Modelo de e-mail',
-    body: `
-      <form id="form-template">
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">Nome</span>
-            <input class="field-input" name="nome" type="text" placeholder="Ex.: Novidades do mês" value="${escapeHtml(item?.nome || '')}">
-          </label>
-          <label class="field">
-            <span class="field-label">Categoria</span>
-            <select class="field-select" name="categoria">${opcoesDeCategoria(item?.categoria)}</select>
-          </label>
-        </div>
-        <label class="field">
-          <span class="field-label">Assunto</span>
-          <input class="field-input" name="assunto" type="text" value="${escapeHtml(item?.assunto || '')}">
-        </label>
-        <div class="field">
-          <span class="field-label">Mensagem</span>
-          <div id="editor-template"></div>
-        </div>
-      </form>`,
-    footer: `
-      ${editando ? '<button type="button" class="btn btn-ghost" id="btn-remover-template" style="margin-right:auto">Remover</button>' : ''}
-      ${editando ? '<button type="button" class="btn btn-ghost" id="btn-usar-template">Usar no envio</button>' : ''}
-      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="btn-salvar">Salvar</button>`
-  });
 
-  const form = document.getElementById('form-template');
-  const editor = EditorRico.montar(document.getElementById('editor-template'), { placeholder: 'Escreva o modelo.', tabela: false });
+  abrirVisao(editando ? 'Editar template' : 'Novo template', telaComPrevia(`
+    <p class="field-hint" style="margin:0 0 1rem">Um template guarda o assunto e o texto de um e-mail que se repete. Em <strong>Escrever e-mail</strong>, escolha o template e ele preenche tudo.</p>
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">Nome</span>
+        <input class="field-input" name="nome" type="text" placeholder="Ex.: Novidades do mês" value="${escapeHtml(item?.nome || '')}">
+      </label>
+      <label class="field">
+        <span class="field-label">Categoria</span>
+        <select class="field-select" name="categoria">${opcoesDeCategoria(item?.categoria)}</select>
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Assunto</span>
+      <input class="field-input" name="assunto" type="text" value="${escapeHtml(item?.assunto || '')}">
+    </label>
+    <div class="field">
+      <span class="field-label">Mensagem</span>
+      <div id="editor-template"></div>
+    </div>`,
+  `${editando ? '<button type="button" class="btn btn-ghost" id="btn-remover-template" style="margin-right:auto">Remover</button>' : ''}
+   ${editando ? '<button type="button" class="btn btn-ghost" id="btn-usar-template">Usar no envio</button>' : ''}
+   <button type="button" class="btn-texto" id="btn-cancelar">Cancelar</button>
+   <button type="button" class="btn btn-primary" id="btn-salvar">Salvar</button>`));
+
+  const form = document.getElementById('form-visao');
+  let atualizar = () => {};
+  const editor = EditorRico.montar(document.getElementById('editor-template'), { placeholder: 'Escreva o modelo.', tabela: false, aoMudar: () => atualizar() });
   editor.definir(item?.html || '');
+  atualizar = ligarPrevia(editor, form.assunto);
 
-  document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
+  document.getElementById('btn-cancelar').addEventListener('click', fecharVisao);
   document.getElementById('btn-usar-template')?.addEventListener('click', () => abrirEscrever(item));
   document.getElementById('btn-remover-template')?.addEventListener('click', async () => {
     if (!(await confirmar(`Remover o template "${item.nome}"?`, { titulo: 'Remover template', rotulo: 'Remover' }))) return;
     const { error } = await supabaseClient.from('email_templates').delete().eq('id', item.id);
     if (error) return toast(`Não foi possível remover: ${error.message}`);
-    Drawer.close();
     toast('Template removido');
+    fecharVisao();
     carregarTemplates();
   });
 
@@ -558,14 +635,15 @@ function abrirTemplate(item) {
     if (!payload.nome) return toast('Dê um nome ao template');
     if (!payload.assunto) return toast('Informe o assunto');
 
-    Drawer.setFooterBusy(true);
+    const botao = document.getElementById('btn-salvar');
+    botao.disabled = true;
     const { error } = editando
       ? await supabaseClient.from('email_templates').update(payload).eq('id', item.id)
       : await supabaseClient.from('email_templates').insert(payload);
-    Drawer.setFooterBusy(false);
+    botao.disabled = false;
     if (error) return toast(`Não foi possível salvar: ${error.message}`);
-    Drawer.close();
     toast(editando ? 'Template atualizado' : 'Template criado');
+    fecharVisao();
     carregarTemplates();
   });
 }

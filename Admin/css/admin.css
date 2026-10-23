@@ -3937,3 +3937,15 @@ body[data-page="custos"] table.data tbody tr.no-hover { cursor: default; }
 .campo-cor { display: flex; align-items: center; gap: .5rem; }
 .campo-cor input[type="color"] { flex-shrink: 0; width: 40px; height: 40px; padding: 3px; border: 1px solid var(--borda-suave, #E4E4E7); border-radius: 8px; background: #FFFFFF; cursor: pointer; }
 .campo-cor .field-input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; }
+
+/* ------------------------------------------------ E-mails · telas internas */
+.admin-header-actions[hidden] { display: none !important; }
+.btn-texto { border: 0; background: none; padding: .65rem .5rem; font: inherit; font-size: .875rem; font-weight: 500; color: var(--text-muted); cursor: pointer; }
+.btn-texto:hover { color: #181D24; }
+.email-composer .layout-email-previa iframe { height: 640px; }
+.email-composer { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 1100px) { .email-composer { grid-template-columns: 1fr; } }
+.email-composer #editor-email, .email-composer #editor-template { min-height: 280px; }
+.email-detalhe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.email-detalhe-lado { display: flex; flex-direction: column; gap: 1.25rem; }
+@media (max-width: 960px) { .email-detalhe { grid-template-columns: 1fr; } }

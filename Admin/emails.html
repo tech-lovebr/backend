@@ -24,14 +24,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=107">
+  <link rel="stylesheet" href="css/admin.css?v=108">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
   <script src="js/utils.js?v=5"></script>
-  <script src="js/shell.js?v=15"></script>
+  <script src="js/shell.js?v=16"></script>
 </head>
-<body data-page="settings" data-title="E-mails" data-voltar="settings.html">
+<body data-page="emails" data-title="E-mails">
 
   <div class="admin-shell">
     <aside class="admin-sidebar" id="admin-sidebar"></aside>
@@ -108,6 +108,8 @@
           </section>
         </div>
 
+        <div id="visao-emails" hidden></div>
+
         <div id="aba-templates" hidden>
           <section class="card table-card">
             <div class="table-toolbar">
@@ -127,6 +129,6 @@
   </div>
 
   <script src="js/editor-rico.js?v=7"></script>
-  <script src="js/emails.js?v=4"></script>
+  <script src="js/emails.js?v=5"></script>
 </body>
 </html>

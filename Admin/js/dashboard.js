@@ -499,7 +499,7 @@ function renderKpis() {
 const SERIES = [
   { id: 'tpv', rotulo: 'TPV total', cor: '#2a78d6' },
   { id: 'custo', rotulo: 'Custo total', cor: '#64748b' },
-  { id: 'receita', rotulo: 'Fat. bruto', cor: '#1baf7a' }
+  { id: 'receita', rotulo: 'Faturamento bruto', cor: '#1baf7a' }
 ];
 // Nenhuma escolhida: mostra as três. Clicar numa mostra só ela; clicar de
 // novo na mesma volta para as três. Nunca fica sem linha nenhuma.

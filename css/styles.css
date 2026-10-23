@@ -11035,3 +11035,6 @@ html body #gifts-panel-messages:not(.hidden):not(#love-h-a) { display: flex; fle
 html body #gifts-panel-messages #recados-raiz:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
 html body #recados-raiz .recados-caixa:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 420px; }
 html body #recados-raiz .recados-caixa > .overflow-x-auto:not(#love-h-a) { flex: 1 0 auto; }
+
+/* Cadeira um pouco maior (36px) para as iniciais respirarem; contorno único, sem linha entre encosto e assento. */
+html body .floorplan-seat-dot:not(#love-h-a) { width: 36px; height: 36px; min-width: 36px; max-width: 36px; min-height: 36px; }

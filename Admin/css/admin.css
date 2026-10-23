@@ -4002,3 +4002,4 @@ body[data-page="custos"] table.data tbody tr[data-integracao] { cursor: pointer;
 .dash-rosca .viz-fatia { cursor: pointer; }
 .dash-rosca-rotulo { font-size: 10px; font-weight: 600; letter-spacing: .06em; fill: #A1A1AA; font-family: inherit; }
 .dash-rosca-valor { font-size: 17px; font-weight: 700; fill: var(--text); font-family: inherit; font-variant-numeric: tabular-nums; }
+.dash-metrica input:disabled { opacity: .5; cursor: not-allowed; }

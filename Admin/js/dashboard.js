@@ -482,36 +482,34 @@ function fatiasDoTempo(de, ate) {
   return lista;
 }
 
+// Sempre pelo menos uma métrica: a última não tem × nem pode ser desmarcada.
 function montarTopoDoGrafico() {
   const host = document.getElementById('grafico-topo');
+  const ultima = SERIES_VISIVEIS.size === 1;
   const chips = SERIES.filter(s => SERIES_VISIVEIS.has(s.id)).map(s => `
     <span class="dash-chip"><span class="dash-chip-cor" style="background:${s.cor}"></span>${escapeHtml(s.rotulo)}
-      <button type="button" data-tirar="${s.id}" aria-label="Tirar ${escapeHtml(s.rotulo)}">
+      ${ultima ? '' : `<button type="button" data-tirar="${s.id}" aria-label="Tirar ${escapeHtml(s.rotulo)}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+      </button>`}
     </span>`).join('');
   host.innerHTML = `
-    <div class="dash-chips">${chips}${SERIES_VISIVEIS.size ? '<button type="button" class="btn-texto dash-limpar" id="dash-limpar">Limpar</button>' : ''}</div>
+    <div class="dash-chips">${chips}</div>
     <div class="filtro-wrap">
       <button type="button" class="btn btn-ghost dash-metricas" id="btn-metricas" aria-expanded="false">
         Métricas <span class="dash-metricas-n">${SERIES_VISIVEIS.size}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
       </button>
       <div class="filtro-menu dash-metricas-menu" id="menu-metricas" hidden>
-        ${SERIES.map(s => `<label class="dash-metrica"><input type="checkbox" data-serie="${s.id}" ${SERIES_VISIVEIS.has(s.id) ? 'checked' : ''}><span class="dash-chip-cor" style="background:${s.cor}"></span>${escapeHtml(s.rotulo)}</label>`).join('')}
+        ${SERIES.map(s => `<label class="dash-metrica"><input type="checkbox" data-serie="${s.id}" ${SERIES_VISIVEIS.has(s.id) ? 'checked' : ''} ${ultima && SERIES_VISIVEIS.has(s.id) ? 'disabled' : ''}><span class="dash-chip-cor" style="background:${s.cor}"></span>${escapeHtml(s.rotulo)}</label>`).join('')}
       </div>
     </div>`;
 
   host.querySelectorAll('[data-tirar]').forEach(b => b.addEventListener('click', () => {
+    if (SERIES_VISIVEIS.size <= 1) return;
     SERIES_VISIVEIS.delete(b.dataset.tirar);
     montarTopoDoGrafico();
     renderGraficoFinanceiro();
   }));
-  host.querySelector('#dash-limpar')?.addEventListener('click', () => {
-    SERIES_VISIVEIS = new Set();
-    montarTopoDoGrafico();
-    renderGraficoFinanceiro();
-  });
   const botao = host.querySelector('#btn-metricas');
   const menu = host.querySelector('#menu-metricas');
   botao.addEventListener('click', e => {
@@ -521,7 +519,8 @@ function montarTopoDoGrafico() {
   });
   menu.addEventListener('click', e => e.stopPropagation());
   menu.querySelectorAll('[data-serie]').forEach(c => c.addEventListener('change', () => {
-    if (c.checked) SERIES_VISIVEIS.add(c.dataset.serie); else SERIES_VISIVEIS.delete(c.dataset.serie);
+    if (c.checked) SERIES_VISIVEIS.add(c.dataset.serie);
+    else if (SERIES_VISIVEIS.size > 1) SERIES_VISIVEIS.delete(c.dataset.serie);
     montarTopoDoGrafico();
     document.getElementById('menu-metricas').hidden = false;
     renderGraficoFinanceiro();
@@ -552,11 +551,6 @@ function renderGraficoFinanceiro() {
     return { ...f, receita, custo, lucro: receita - custo };
   });
   const series = SERIES.filter(s => SERIES_VISIVEIS.has(s.id));
-
-  if (!series.length) {
-    host.innerHTML = '<div class="empty-state"><strong>Nenhuma métrica escolhida</strong><p>Escolha em Métricas o que mostrar.</p></div>';
-    return;
-  }
 
   const largura = Math.max(host.clientWidth || 640, 300);
   const altura = 300;

@@ -10222,3 +10222,19 @@ html body .hub-confirmar--cancelar-texto .hub-confirmar-acoes .btn-primary:hover
 html body #product-drawer #product-scope-lists .form-section-header + .scope-add-row:not(#love-h-a) { margin-top: 0; }
 html body #product-drawer #product-scope-lists .scope-list:not(:empty):not(#love-h-a) { margin-top: 0.6rem; }
 html body #product-drawer #product-scope-lists .form-section-header.mt-2:not(#love-h-a) { margin-top: 1.5rem; }
+
+/* Buscar eventos › Ver pedido: tela cheia (sem abas nem cards), com a caixa
+   centralizada como em Configurações. */
+html body.op-pedido-aberto #leads-abas:not(#love-h-a),
+html body.op-pedido-aberto [data-leads-painel]:not(#love-h-a),
+html body.op-pedido-aberto #leads-acoes-topo:not(#love-h-a) { display: none !important; }
+html body .op-pedido-pagina[hidden]:not(#love-h-a) { display: none; }
+html body .op-pedido-pagina:not(#love-h-a) { display: flex; justify-content: center; margin-top: 1.5rem; }
+html body .op-pedido-caixa:not(#love-h-a) {
+  width: 100%; max-width: 40rem; padding: 2rem 2.5rem; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px;
+}
+html body .op-pedido-caixa .op-detalhe-acao .op-enviar-btn:not(#love-h-a) { height: 44px; padding: 0 1.4rem; }
+@media (max-width: 640px) {
+  html body .op-pedido-caixa:not(#love-h-a) { padding: 1.25rem; }
+}
+body[data-theme="dark"] .op-pedido-caixa { background: #252525 !important; border-color: #404040 !important; }

@@ -44,6 +44,14 @@ const OP_CATEGORIA_DO_HUB = {
   'Assessoria e Cerimonialista': ['assessoria'],
   'Bar e Bebidas': ['bebidas']
 };
+// Nomes antigos de categoria de produto (mesma lista de js/produtos.js).
+const OP_CATEGORIA_ANTIGA = {
+  'Buffet': 'Buffet e Gastronomia', 'Locação de espaço': 'Espaços para Locação', 'Espaços & Locações': 'Espaços para Locação',
+  'Espaço de Locação': 'Espaços para Locação', 'Foto, Vídeo & Audiovisual': 'Mídia e Audiovisual', 'Mídia': 'Mídia e Audiovisual'
+};
+const opCategoriasDoProduto = cat => OP_CATEGORIA_DO_HUB[OP_CATEGORIA_ANTIGA[cat] || cat] || [];
+// Limite de propostas por mês: Gratuito 3, Pro 100 (o banco confere o mesmo — migration 079).
+const opLimiteDoPlano = () => (typeof isProPlan === 'function' && isProPlan()) ? 100 : 3;
 
 let opEmpresaId = null;
 let opMinhasCategorias = [];
@@ -51,6 +59,7 @@ let opPedidos = [];
 let opPropostas = [];
 let opFiltroCat = 'minha';
 let opPedidoAberto = null;
+let opMeusProdutos = [];
 
 const opBRL = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: Number(v) % 1 ? 2 : 0 });
 const opCategoria = c => OP_CATEGORIAS[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : 'Serviço');
@@ -82,15 +91,13 @@ const opMinhaProposta = pedidoId => opPropostas.find(x => x.pedido_id === pedido
 
 /* -------------------- Dados -------------------- */
 
+/* O pedido só aparece para quem tem produto cadastrado numa categoria que
+   o atende (ex.: pedido de local → produto de Espaços para Locação). */
 async function opCarregarCategoriasDaEmpresa() {
+  const { data: prods } = await supabaseClient.from('products').select('id, name, category').eq('fornecedor_id', opEmpresaId).order('name');
+  opMeusProdutos = prods || [];
   const cats = new Set();
-  const { data: emp } = await supabaseClient.from('fornecedores').select('category').eq('id', opEmpresaId).maybeSingle();
-  if (emp && emp.category) (OP_CATEGORIA_DO_HUB[emp.category] || []).forEach(c => cats.add(c));
-  // Sem categoria na empresa: usa as categorias dos produtos cadastrados.
-  if (!cats.size) {
-    const { data: prods } = await supabaseClient.from('products').select('category').eq('fornecedor_id', opEmpresaId);
-    (prods || []).forEach(p => (OP_CATEGORIA_DO_HUB[p.category] || []).forEach(c => cats.add(c)));
-  }
+  opMeusProdutos.forEach(p => opCategoriasDoProduto(p.category).forEach(c => cats.add(c)));
   opMinhasCategorias = [...cats];
 }
 
@@ -121,7 +128,7 @@ function opPedidosFiltrados() {
   const normal = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
   const busca = normal(document.getElementById('op-busca')?.value || '');
   return opPedidos.filter(p =>
-    (!opMinhasCategorias.length || opMinhasCategorias.includes(p.categoria)) &&
+    opMinhasCategorias.includes(p.categoria) &&
     (!uf || p.uf === uf) && (!cidade || p.cidade === cidade) &&
     (!busca || normal([opTitulo(p), p.cidade, p.bairro, p.uf, p.descricao, (p.especialidades || []).join(' ')].join(' ')).includes(busca)));
 }
@@ -191,9 +198,6 @@ function opRenderPedidos() {
   vazio.textContent = opFiltroCat === 'minha'
     ? 'Nenhum evento procurando a sua categoria agora. Avisaremos quando chegar um novo.'
     : 'Nenhum pedido aberto com esses filtros agora.';
-  const aviso = document.getElementById('op-aviso');
-  aviso.hidden = !(opFiltroCat === 'minha' && !opMinhasCategorias.length);
-  aviso.textContent = 'A sua empresa ainda não tem categoria: mostrando todos os pedidos. Cadastre um produto para ver só os da sua área.';
 }
 
 /* -------------------- Detalhe do pedido -------------------- */
@@ -207,7 +211,6 @@ function opAbrirDetalhe(id) {
     ['Data', opData(p)], ['Local', opLocal(p)], ['Convidados', OP_CONVIDADOS[p.convidados] || ''],
     ['Período', opPeriodo(p)], ['Faixa', p.faixa ? opFaixaTexto(p) + (p.aceita_fora_da_faixa ? ' (aceita fora da faixa)' : '') : '']
   ].filter(([, v]) => v);
-  document.getElementById('op-detalhe-titulo').textContent = opTitulo(p);
   document.getElementById('op-detalhe-corpo').innerHTML = `
     <p class="op-detalhe-quem">Anfitrião(ã) · ${escapeHtml(opCelebracao(p.tipo_celebracao))}${p.created_at ? ` · publicado ${escapeHtml(opHaQuanto(p.created_at))}` : ''}</p>
     <dl class="op-detalhe-dados">${dados.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl>
@@ -219,13 +222,38 @@ function opAbrirDetalhe(id) {
         ? `<p class="op-ja-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))} · <span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span></p>`
         : (p.status === 'aberto' ? '<button type="button" class="btn-primary op-enviar-btn" data-op-enviar>Enviar proposta</button>' : '<p class="op-ja-enviada">Este pedido não recebe mais propostas.</p>')}
     </div>`;
-  document.getElementById('op-detalhe').classList.add('show');
-  document.getElementById('op-detalhe-backdrop').classList.add('show');
+  // Tela cheia: some o resto da página; título do pedido com a seta de voltar.
+  document.body.classList.add('op-pedido-aberto');
+  document.getElementById('op-pedido-pagina').hidden = false;
+  document.getElementById('op-pedido-voltar').hidden = false;
+  document.getElementById('leads-titulo-pagina').textContent = opTitulo(p);
+  if (new URLSearchParams(location.search).get('pedido') !== p.id) history.replaceState(null, '', `${location.pathname}?pedido=${encodeURIComponent(p.id)}`);
+  window.scrollTo({ top: 0 });
+  document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
 }
 
 function opFecharDetalhe() {
-  document.getElementById('op-detalhe').classList.remove('show');
-  document.getElementById('op-detalhe-backdrop').classList.remove('show');
+  if (!document.body.classList.contains('op-pedido-aberto')) return;
+  opPedidoAberto = null;
+  history.replaceState(null, '', location.pathname);
+  const abaAtiva = document.querySelector('[data-leads-aba].active');
+  leadsMostrarAba(abaAtiva ? abaAtiva.dataset.leadsAba : 'eventos');
+}
+
+/* Limite do plano: depois de 3 (Gratuito) ou 100 (Pro) propostas no mês, a
+   vitrine continua aberta, mas "Enviar proposta" mostra este aviso. */
+function opEnviadasNoMes() {
+  const agora = new Date();
+  return opPropostas.filter(pr => { const d = new Date(pr.created_at); return d.getFullYear() === agora.getFullYear() && d.getMonth() === agora.getMonth(); }).length;
+}
+function opAvisarLimite(limite) {
+  const pro = limite >= 100;
+  confirmarNoHub({
+    titulo: 'Limite de propostas atingido',
+    texto: `Seu plano só permite ${limite} envios de propostas por mês.${pro ? '' : ' Com o plano Pro, você pode enviar até 100 propostas por mês.'}`,
+    botao: pro ? 'Entendi' : 'Conhecer o plano Pro',
+    aoConfirmar: () => { if (!pro) window.location.href = 'planos'; }
+  });
 }
 
 /* -------------------- Enviar proposta -------------------- */
@@ -250,6 +278,8 @@ function opChecarFaixa() {
 function opAbrirProposta() {
   const p = opPedidoAberto;
   if (!p) return;
+  const limite = opLimiteDoPlano();
+  if (opEnviadasNoMes() >= limite) { opAvisarLimite(limite); return; }
   const modal = document.getElementById('op-proposta-modal');
   document.getElementById('op-proposta-form').hidden = false;
   document.getElementById('op-enviada').hidden = true;
@@ -257,6 +287,12 @@ function opAbrirProposta() {
   document.getElementById('op-inclui-contador').textContent = '0/1000';
   document.getElementById('op-proposta-sub').textContent = `${opTitulo(p)} · ${opData(p)} · ${opLocal(p)}`;
   document.getElementById('op-faixa-pill').textContent = p.faixa ? opFaixaTexto(p) : '';
+  // Produtos da empresa que atendem a categoria do pedido (sem nenhum, todos).
+  const daCategoria = opMeusProdutos.filter(pr => opCategoriasDoProduto(pr.category).includes(p.categoria));
+  const opcoes = daCategoria.length ? daCategoria : opMeusProdutos;
+  const sel = document.getElementById('op-produto');
+  sel.innerHTML = (opcoes.length === 1 ? '' : '<option value="">Escolha o produto</option>') +
+    opcoes.map(pr => `<option value="${escapeHtml(pr.id)}">${escapeHtml(pr.name || 'Produto')}</option>`).join('');
   const validade = new Date(Date.now() + 15 * 86400000);
   document.getElementById('op-validade').value = validade.toISOString().slice(0, 10);
   mostrarMsgOp('');
@@ -284,12 +320,14 @@ async function opEnviarProposta(e) {
   const p = opPedidoAberto;
   const valor = opValorDigitado();
   const inclui = document.getElementById('op-inclui').value.trim();
+  const produtoId = document.getElementById('op-produto').value;
+  if (!produtoId) return mostrarMsgOp('Escolha qual produto você está ofertando.', true);
   if (!valor) return mostrarMsgOp('Informe o valor total.', true);
   if (!inclui) return mostrarMsgOp('Descreva o que está incluso.', true);
   const btn = document.getElementById('op-enviar-btn');
   btn.disabled = true;
   mostrarMsgOp('');
-  const { data: propostaId, error } = await supabaseClient.rpc('enviar_proposta', {
+  const params = {
     p_pedido: p.id,
     p_fornecedor: opEmpresaId,
     p_valor: valor,
@@ -297,8 +335,18 @@ async function opEnviarProposta(e) {
     p_mensagem: document.getElementById('op-mensagem').value.trim() || null,
     p_validade: document.getElementById('op-validade').value || null,
     p_prazo: document.getElementById('op-prazo').value.trim() || null
-  });
+  };
+  let { data: propostaId, error } = await supabaseClient.rpc('enviar_proposta', { ...params, p_produto: produtoId });
+  // Banco ainda sem a migration 079 (RPC sem p_produto): envia do jeito antigo.
+  if (error && error.code === 'PGRST202') {
+    ({ data: propostaId, error } = await supabaseClient.rpc('enviar_proposta', params));
+  }
   btn.disabled = false;
+  if (error && /LIMITE_PLANO/.test(error.message || '')) {
+    opFecharProposta();
+    opAvisarLimite(opLimiteDoPlano());
+    return;
+  }
   // A RPC devolve mensagens claras ("Você já enviou…", "Este pedido não recebe mais propostas").
   if (error) return mostrarMsgOp(error.message || 'Não foi possível enviar a proposta.', true);
 
@@ -385,8 +433,7 @@ function opLigarEventos() {
   grade.addEventListener('click', e => { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); });
   grade.addEventListener('keydown', e => { if (e.key === 'Enter') { const c = e.target.closest('[data-op-pedido]'); if (c) opAbrirDetalhe(c.dataset.opPedido); } });
 
-  document.querySelectorAll('[data-op-fechar]').forEach(b => b.addEventListener('click', opFecharDetalhe));
-  document.getElementById('op-detalhe-backdrop').addEventListener('click', opFecharDetalhe);
+  document.getElementById('op-pedido-voltar').addEventListener('click', opFecharDetalhe);
   document.getElementById('op-detalhe-corpo').addEventListener('click', e => {
     if (e.target.closest('[data-op-enviar]')) { opAbrirProposta(); return; }
     const foto = e.target.closest('[data-op-foto]');
@@ -403,7 +450,7 @@ function opLigarEventos() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     if (modal.classList.contains('show')) opFecharProposta();
-    else { opFecharDetalhe(); document.getElementById('op-foto-modal').classList.remove('show'); }
+    else document.getElementById('op-foto-modal').classList.remove('show');
   });
   const valor = document.getElementById('op-valor');
   valor.addEventListener('input', () => {
@@ -435,6 +482,11 @@ function opLigarEventos() {
 /* Abas de Leads: Meus leads × Buscar eventos. O título da página segue a aba
    e o "Criar lead" só aparece em Meus leads. */
 function leadsMostrarAba(aba) {
+  document.body.classList.remove('op-pedido-aberto');
+  const pagina = document.getElementById('op-pedido-pagina');
+  if (pagina) pagina.hidden = true;
+  const voltar = document.getElementById('op-pedido-voltar');
+  if (voltar) voltar.hidden = true;
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.classList.toggle('active', b.dataset.leadsAba === aba));
   document.querySelectorAll('[data-leads-painel]').forEach(p => { p.hidden = p.dataset.leadsPainel !== aba; });
   const titulo = document.getElementById('leads-titulo-pagina');
@@ -476,6 +528,8 @@ async function initOportunidades() {
   opPreencherFiltrosDeLocal();
   opRenderPedidos();
   opRenderPropostas();
+  const pedidoNaUrl = new URLSearchParams(location.search).get('pedido');
+  if (pedidoNaUrl) opAbrirDetalhe(pedidoNaUrl);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

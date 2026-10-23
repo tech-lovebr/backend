@@ -567,6 +567,8 @@ async function opEnviarProposta(e) {
     return;
   }
   // A RPC devolve mensagens claras ("Você já enviou…", "Este pedido não recebe mais propostas").
+  // Função ainda não criada no banco (migrations 074 e 079): mensagem clara em vez do erro técnico.
+  if (error && error.code === 'PGRST202') return mostrarMsgOp('O envio de propostas ainda não está disponível. Tente de novo em alguns minutos.', true);
   if (error) return mostrarMsgOp(error.message || 'Não foi possível enviar a proposta.', true);
 
   await Promise.all([opCarregarPropostas(), opCarregarPedidos()]);

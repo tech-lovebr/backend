@@ -43,6 +43,33 @@
   /** Lista embaixo dos saldos: extrato (presentes recebidos) ou histórico de saques. */
   let vista = 'extrato';
   let buscaLista = '';
+  /** Filtro de período das tabelas (AAAA-MM-DD; vazio = todo o período). */
+  let periodo = { de: '', ate: '' };
+  let periodoAberto = false;
+
+  /** Data de um registro ("2026-10-22…", "22/10/2026", "Hoje, às 14:22", "Ontem…"). @param {unknown} v @returns {Date|null} */
+  function dataDoRegistro(v) {
+    const s = String(v || '').trim();
+    if (!s) return null;
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) { const d = new Date(s); return Number.isFinite(d.getTime()) ? d : null; }
+    const m = s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+    const h = new Date(); h.setHours(12, 0, 0, 0);
+    if (/^hoje/i.test(s)) return h;
+    if (/^ontem/i.test(s)) { h.setDate(h.getDate() - 1); return h; }
+    return null;
+  }
+  /** Está no período escolhido? (sem data conhecida, aparece sempre) @param {unknown} v */
+  function noPeriodo(v) {
+    if (!periodo.de && !periodo.ate) return true;
+    const d = dataDoRegistro(v);
+    if (!d) return true;
+    const dia = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    return (!periodo.de || dia >= periodo.de) && (!periodo.ate || dia <= periodo.ate);
+  }
+  /** @param {string} iso */
+  const br = (iso) => iso ? iso.split('-').reverse().join('/') : '';
+  const textoDoPeriodo = () => (periodo.de || periodo.ate) ? `${br(periodo.de) || '…'} - ${br(periodo.ate) || '…'}` : 'Todo o período';
   /** @type {any[]} */
   let saques = [];
   let semTabelaDeSaques = false;
@@ -104,6 +131,7 @@
   // --------------------------------------------------------------------------
   const ICONE_OLHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
   const ICONE_BUSCA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+  const ICONE_CALENDARIO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>';
   const ICONE_BUSCA_ESQ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   const ICONE_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
   const SITUACOES = { solicitado: 'Solicitado', processando: 'Em andamento', realizado: 'Realizado', recusado: 'Recusado' };
@@ -150,25 +178,41 @@
           <input type="search" data-cart-busca-lista value="${esc(buscaLista)}" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" autocomplete="off">
         </div>
       </div>
-      <div class="love-tabela-barra-dir"><p class="cart-contagem">${contagem}</p></div>
+      <div class="love-tabela-barra-dir">
+        <div class="cart-periodo">
+          <button type="button" class="cart-periodo-btn" data-cart-periodo aria-haspopup="dialog" aria-expanded="${periodoAberto}" title="${esc(contagem)}">
+            ${ICONE_CALENDARIO}<span>${esc(textoDoPeriodo())}</span>
+          </button>
+          ${periodoAberto ? `
+            <div class="cart-periodo-pop" role="dialog" aria-label="Escolher período">
+              <label class="cart-campo"><span>De</span><input type="date" data-cart-de value="${esc(periodo.de)}"></label>
+              <label class="cart-campo"><span>Até</span><input type="date" data-cart-ate value="${esc(periodo.ate)}"></label>
+              <div class="cart-periodo-acoes">
+                <button type="button" class="cart-cancelar" data-cart-periodo-limpar>Limpar</button>
+                <button type="button" class="cart-btn-escuro" data-cart-periodo-aplicar>Aplicar</button>
+              </div>
+            </div>` : ''}
+        </div>
+      </div>
     </div>`;
 
   /** Extrato: presentes recebidos (quem comprou, o quê, quando e quanto). */
   function htmlExtrato() {
     const todos = presentesComprados();
     const termo = buscaLista.trim().toLowerCase();
-    const lista = termo ? todos.filter(g => `${g.guestName} ${g.giftTitle}`.toLowerCase().includes(termo)) : todos;
+    const lista = todos.filter(g => noPeriodo(g.date) && (!termo || `${g.guestName} ${g.giftTitle}`.toLowerCase().includes(termo)));
     return `
+      <h3 class="cart-lista-titulo">Extrato completo</h3>
       <section class="dash-card love-tabela-caixa cart-lista">
         ${barraDaTabela('Buscar convidado ou presente...', `${todos.length} ${todos.length === 1 ? 'presente recebido' : 'presentes recebidos'}`)}
         <div class="w-full overflow-x-auto">
           <table class="love-tabela w-full text-left border-collapse font-sans">
-            <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th class="cart-num">Valor</th></tr></thead>
+            <thead><tr><th>Data</th><th>Convidado</th><th>Presente</th><th class="cart-num">Valor</th></tr></thead>
             <tbody>${lista.length ? lista.map(g => `
               <tr>
+                <td class="cart-data">${esc(g.date || '—')}</td>
                 <td><span class="cart-nome">${esc(g.guestName || 'Convidado')}</span></td>
                 <td>${esc(g.giftTitle || 'Presente')}</td>
-                <td class="cart-data">${esc(g.date || '—')}</td>
                 <td class="cart-num cart-entrada">+ ${valor(Number(g.amount) || 0)}</td>
               </tr>`).join('') : `<tr><td colspan="4" class="cart-vazio">${todos.length ? 'Nenhum presente encontrado.' : 'Nenhum presente recebido ainda.'}</td></tr>`}</tbody>
           </table>
@@ -179,19 +223,20 @@
   /** Histórico de saques: quando, quanto, para qual conta e status. */
   function htmlHistorico() {
     const termo = buscaLista.trim().toLowerCase();
-    const lista = termo ? saques.filter(s => `${nomeDaConta(s.conta)} ${(/** @type {any} */ (SITUACOES))[s.status] || ''}`.toLowerCase().includes(termo)) : saques;
+    const lista = saques.filter(s => noPeriodo(s.created_at) && (!termo || `${nomeDaConta(s.conta)} ${(/** @type {any} */ (SITUACOES))[s.status] || ''}`.toLowerCase().includes(termo)));
     return `
+      <h3 class="cart-lista-titulo">Histórico de saques</h3>
       <section class="dash-card love-tabela-caixa cart-lista">
         ${barraDaTabela('Buscar saque...', `${saques.length} ${saques.length === 1 ? 'saque' : 'saques'}`)}
         <div class="w-full overflow-x-auto">
-          <table class="love-tabela w-full text-left border-collapse font-sans">
-            <thead><tr><th>Solicitado em</th><th class="cart-num">Valor</th><th>Conta</th><th>Status</th></tr></thead>
+          <table class="love-tabela w-full text-left border-collapse font-sans cart-tabela-saques">
+            <thead><tr><th>Solicitado em</th><th>Valor</th><th>Conta</th><th>Status</th></tr></thead>
             <tbody>${carregandoSaques ? '<tr><td colspan="4" class="cart-vazio">Carregando…</td></tr>' : lista.length ? lista.map(s => {
               const q = dataHora(s.created_at);
               return `
               <tr>
                 <td><span class="cart-nome">${esc(q.dia)}</span><span class="cart-sub-linha">${esc(q.hora)}</span></td>
-                <td class="cart-num">${valor(Number(s.valor) || 0)}</td>
+                <td class="cart-valor-saque">${valor(Number(s.valor) || 0)}</td>
                 <td>${esc(nomeDaConta(s.conta))}</td>
                 <td><span class="cart-status cart-status-${esc(s.status)}">${esc((/** @type {any} */ (SITUACOES))[s.status] || s.status)}</span></td>
               </tr>`;
@@ -448,6 +493,20 @@
     const a = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-aba]'));
     if (a) { aba = a.dataset.cartAba === 'contas' ? 'contas' : 'saque'; desenhar(); return; }
     if (alvo.closest('[data-cart-esconder]')) { esconder = !esconder; desenhar(); return; }
+    if (alvo.closest('[data-cart-periodo]')) { periodoAberto = !periodoAberto; desenhar(); return; }
+    if (alvo.closest('[data-cart-periodo-limpar]')) { periodo = { de: '', ate: '' }; periodoAberto = false; desenhar(); return; }
+    if (alvo.closest('[data-cart-periodo-aplicar]')) {
+      const de = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-cart-de]'));
+      const ate = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-cart-ate]'));
+      let a = de ? de.value : '';
+      let b = ate ? ate.value : '';
+      if (a && b && a > b) { const t = a; a = b; b = t; }
+      periodo = { de: a, ate: b };
+      periodoAberto = false;
+      desenhar();
+      return;
+    }
+    if (periodoAberto && !alvo.closest('.cart-periodo')) { periodoAberto = false; desenhar(); }
     const v = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-vista]'));
     if (v) { vista = v.dataset.cartVista === 'saques' ? 'saques' : 'extrato'; buscaLista = ''; desenhar(); return; }
     if (alvo.closest('[data-cart-cadastrar]')) { abrirCadastro(); return; }

@@ -10979,3 +10979,21 @@ html body #view-event-os-dashboard [class*="rounded-[var(--radius-card"].bg-whit
   border-color: var(--borda-suave) !important;
   box-shadow: var(--anel-suave) !important;
 }
+
+/* Carteira: título acima da tabela (24px até a caixa), botão de período
+   (calendário) no lugar da contagem e valor perto da data no histórico. */
+html body #carteira-raiz .cart-lista-titulo:not(#love-h-a) { margin: 32px 0 0; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; }
+html body #carteira-raiz .cart-lista-titulo + .cart-lista:not(#love-h-a) { margin-top: 24px; }
+.cart-periodo { position: relative; }
+html body button.cart-periodo-btn:not(#love-h-a) { display: inline-flex; align-items: center; gap: 10px; height: 38px; padding: 0 14px; background: #FFFFFF; border: 1px solid var(--borda-suave, rgba(0,0,0,.06)); border-radius: 8px; box-shadow: var(--anel-suave, 0 0 0 1px rgba(0,0,0,.03)); font-family: inherit; font-size: 14px; color: #18181B; cursor: pointer; white-space: nowrap; font-variant-numeric: tabular-nums; }
+html body button.cart-periodo-btn:not(#love-h-a):hover { border-color: #181D24; }
+.cart-periodo-btn svg { width: 17px; height: 17px; color: #71717A; }
+.cart-periodo-pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 280px; display: flex; flex-direction: column; gap: 10px; padding: 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.cart-periodo-acoes { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 4px; }
+html body .cart-periodo-acoes .cart-btn-escuro:not(#love-h-a) { margin-top: 0; height: 36px; }
+html body #carteira-raiz .cart-tabela-saques th:nth-child(1):not(#love-h-a), html body #carteira-raiz .cart-tabela-saques td:nth-child(1):not(#love-h-a) { width: 170px; }
+html body #carteira-raiz .cart-tabela-saques th:nth-child(2):not(#love-h-a), html body #carteira-raiz .cart-tabela-saques td:nth-child(2):not(#love-h-a) { width: 150px; }
+.cart-valor-saque { white-space: nowrap; font-weight: 600; color: #18181B; font-variant-numeric: tabular-nums; }
+body[data-theme="dark"] #carteira-raiz .cart-lista-titulo, body[data-theme="dark"] .cart-valor-saque { color: #FFFFFF !important; }
+body[data-theme="dark"] button.cart-periodo-btn { background: #252525 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .cart-periodo-pop { background: #252525 !important; border-color: #404040 !important; }

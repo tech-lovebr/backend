@@ -219,7 +219,7 @@ function renderKpis() {
   const valorCusto = custo && !custo.erro
     ? (custo.brl != null ? formatCurrency(custo.brl) : `US$ ${custo.usd.toFixed(4)}`)
     : '—';
-  const subCusto = custo?.erro ? 'Sem permissão ce:GetCostAndUsage'
+  const subCusto = custo?.erro ? (/not enabled/i.test(custo.erro) ? 'Cost Explorer ainda não ativado na AWS' : /not authorized|AccessDenied/i.test(custo.erro) ? 'Sem permissão ce:GetCostAndUsage' : 'Custo indisponível agora')
     : custo ? `US$ ${Number(custo.usd || 0).toFixed(4)} na AWS SES` : 'Carregando...';
 
   const tile = (label, value, sub) => `

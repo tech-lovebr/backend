@@ -1021,14 +1021,14 @@
       return `
         <div class="rfp-post" data-rascunho-id="${esc(it.id)}">
           <div class="rfp-post-info">
-            <p class="rfp-post-titulo">${esc(titulo)}</p>
+            <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(it.id)}">${esc(titulo)}</button>
             <p class="rfp-post-criado">Criada ${esc(haQuanto(it.criado))} por você</p>
             <p class="rfp-post-situacao"><b>Rascunho</b> · Salvo em ${esc(dataCurta(it.quando))}</p>
           </div>
           <div class="rfp-post-num"></div>
           <div class="rfp-post-num"></div>
           <button type="button" class="rfp-post-botao" data-rfp-acao="editar">Editar rascunho</button>
-          ${menuDaLinha([['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
+          ${menuDaLinha([['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
         </div>`;
     }
     const p = it.p;
@@ -1039,14 +1039,14 @@
     return `
       <div class="rfp-post" data-rfp-id="${esc(p.id)}">
         <div class="rfp-post-info">
-          <p class="rfp-post-titulo">${esc(titulo)}</p>
+          <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(p.id)}">${esc(titulo)}</button>
           <p class="rfp-post-criado">Criada ${esc(haQuanto(p.created_at))} por você</p>
           <p class="rfp-post-situacao"><b>${esc(situacao)}</b> · ${esc(dataCurta(p.created_at))}</p>
         </div>
         <div class="rfp-post-num"><b>${n.mensagens}</b><span>Mensagens</span></div>
         <div class="rfp-post-num"><b>${n.total}${n.novas ? ` (${n.novas} ${n.novas === 1 ? 'nova' : 'novas'})` : ''}</b><span>Propostas</span></div>
         <button type="button" class="rfp-post-botao" data-rfp-ver="${esc(p.id)}">Ver propostas</button>
-        ${menuDaLinha([['duplicar', 'Duplicar'], ['excluir', 'Remover']])}
+        ${menuDaLinha([['editar-titulo', 'Editar título'], ['duplicar', 'Duplicar'], ['excluir', 'Remover']])}
       </div>`;
   }
 
@@ -1098,6 +1098,103 @@
       ...pedidos.map(p => ({ tipo: 'pedido', id: p.id, quando: p.created_at, criado: p.created_at, p }))
     ].sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
     caixa.innerHTML = itens.length ? itens.map(linhaDaSolicitacao).join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
+  }
+
+  /** Rascunho no mesmo formato de uma solicitação publicada (para os detalhes). @param {any} d */
+  function infoDoRascunho(d) {
+    return {
+      titulo: d.titulo, categoria: d.categoria, especialidades: d.especialidades || [],
+      tipo_celebracao: d.tipoCelebracao === 'outro' ? d.celebracaoOutro : d.tipoCelebracao,
+      data_evento: d.dataEvento, data_flexivel: d.dataFlexivel, cep: d.cep, cidade: d.cidade, bairro: d.bairro, uf: d.uf,
+      convidados: d.convidados, periodo: d.periodo, horas_servico: d.horasServico,
+      valor_min: d.valorMin, valor_max: d.valorMax, aceita_fora_da_faixa: d.aceitaForaDaFaixa,
+      descricao: d.descricao, referencias: [], limite_propostas: d.limitePropostas
+    };
+  }
+
+  /** Clique no título: a solicitação inteira, na mesma caixa da lista. @param {string} id */
+  function mostrarDetalhe(id) {
+    const caixa = document.getElementById('rfp-lista');
+    if (!caixa) return;
+    const pedido = pedidosCarregados[id];
+    const rascunho = rascunhosCarregados[id];
+    if (!pedido && !rascunho) return;
+    const info = pedido || infoDoRascunho((rascunho && rascunho.dados) || {});
+    const cat = categoriaPorId(info.categoria);
+    const traco = '—';
+    const quando = info.data_flexivel ? 'Data flexível' : (formatarData(info.data_evento || '') || traco);
+    const local = [[info.cidade, info.uf].filter(Boolean).join(' - '), info.bairro, info.cep ? `CEP ${info.cep}` : ''].filter(Boolean).join(' · ') || traco;
+    const periodo = info.periodo === 'horas' ? `${info.horas_servico || '?'} ${textoDeHoras(info.horas_servico) || 'horas'} de serviço` : (nomeDe(PERIODOS, info.periodo) || traco);
+    const temOrcamento = !!(info.valor_min || info.valor_max);
+    const situacao = rascunho ? `Rascunho · Salvo em ${dataCurta(rascunho.updated_at || rascunho.created_at)}`
+      : `${info.status === 'aberto' ? 'Publicada' : (SITUACOES[/** @type {'fechado'} */ (info.status)] || info.status)} · Criada em ${dataCurta(info.created_at)}`;
+    /** @type {[string, string][]} */
+    const linhas = [
+      ['Categoria', cat ? cat.nome : (info.categoria || traco)],
+      ['Subcategorias', (info.especialidades || []).join(', ') || traco],
+      ['Tipo de celebração', nomeDaCelebracao(info.tipo_celebracao) || traco],
+      ['Data do evento', quando],
+      ['Local', local],
+      ['Convidados', info.convidados ? `${nomeDe(CONVIDADOS, info.convidados)} convidados` : traco],
+      ['Horário / duração', periodo],
+      ['Orçamento', textoDoOrcamento(info.valor_min, info.valor_max, info.faixa)],
+      ...(/** @type {[string, string][]} */ (temOrcamento ? [['Propostas fora da faixa', info.aceita_fora_da_faixa ? 'Aceito' : 'Não aceito']] : [])),
+      ['Propostas', info.limite_propostas ? `Até ${info.limite_propostas} propostas` : 'Sem limite']
+    ];
+    const fotos = Array.isArray(info.referencias) ? info.referencias : [];
+    caixa.innerHTML = `
+      <div class="rfp-detalhe">
+        <button type="button" class="rfp-detalhe-voltar" data-rfp-detalhe-voltar>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          <span>Minhas solicitações</span>
+        </button>
+        <h3 class="rfp-detalhe-titulo">${esc(String(info.titulo || '').trim() || (cat ? cat.nome : 'Solicitação'))}</h3>
+        <p class="rfp-detalhe-meta">${esc(situacao)}</p>
+        <dl class="rfp-detalhe-grade">
+          ${linhas.map(([rotulo, valor]) => `<div><dt>${esc(rotulo)}</dt><dd>${esc(valor)}</dd></div>`).join('')}
+        </dl>
+        <h4 class="rfp-detalhe-sub">Descrição</h4>
+        <p class="rfp-detalhe-desc">${esc(String(info.descricao || '').trim() || traco)}</p>
+        ${fotos.length ? `
+          <h4 class="rfp-detalhe-sub">Fotos de referência</h4>
+          <div class="rfp-detalhe-fotos">${fotos.map((/** @type {string} */ u) => `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt=""></a>`).join('')}</div>` : ''}
+      </div>`;
+  }
+
+  /** "Editar título": o título da linha vira um campo; Enter/fora salva, Esc cancela. @param {HTMLElement} linha */
+  function editarTitulo(linha) {
+    const atual = /** @type {HTMLElement|null} */ (linha.querySelector('.rfp-post-titulo'));
+    if (!atual) return;
+    const campo = document.createElement('input');
+    campo.type = 'text';
+    campo.className = 'rfp-campo rfp-post-titulo-input';
+    campo.maxLength = 120;
+    campo.value = (atual.textContent || '').trim();
+    campo.setAttribute('aria-label', 'Título da solicitação');
+    atual.replaceWith(campo);
+    campo.focus();
+    campo.select();
+    let feito = false;
+    const concluir = async (/** @type {boolean} */ salvar) => {
+      if (feito) return;
+      feito = true;
+      const novo = campo.value.trim();
+      if (salvar && novo && typeof supabaseClient !== 'undefined') {
+        if (linha.dataset.rascunhoId) {
+          const r = rascunhosCarregados[linha.dataset.rascunhoId];
+          if (r) await guardarRascunho(r.id, { ...(r.dados || {}), titulo: novo });
+        } else if (linha.dataset.rfpId) {
+          const { error } = await supabaseClient.from('pedidos_orcamento').update({ titulo: novo }).eq('id', linha.dataset.rfpId);
+          if (error) avisoNaLista('Não foi possível salvar o título agora. Tente de novo.');
+        }
+      }
+      mostrarLista();
+    };
+    campo.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') { ev.preventDefault(); concluir(true); }
+      if (ev.key === 'Escape') { ev.preventDefault(); concluir(false); }
+    });
+    campo.addEventListener('blur', () => concluir(true));
   }
 
   /** @param {string} id */
@@ -1237,6 +1334,9 @@
     if (!alvo) return;
     if (alvo.closest('[data-rfp-propostas-voltar]')) { mostrarLista(); return; }
     if (alvo.closest('[data-rfp-criar]')) { mostrarAba('nova'); return; }
+    const detalhe = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-detalhe]'));
+    if (detalhe) { mostrarDetalhe(detalhe.dataset.rfpDetalhe || ''); return; }
+    if (alvo.closest('[data-rfp-detalhe-voltar]')) { mostrarLista(); return; }
     const abaPedidos = /** @type {HTMLElement|null} */ (alvo.closest('[data-pedidos-aba]'));
     if (abaPedidos) { mostrarAba(abaPedidos.dataset.pedidosAba === 'minhas' ? 'minhas' : 'nova'); return; }
     const conversar = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-conversar]'));
@@ -1266,6 +1366,7 @@
     if (!linha || typeof supabaseClient === 'undefined') return;
     const tipo = acao.dataset.rfpAcao;
     const w = /** @type {any} */ (window);
+    if (tipo === 'editar-titulo') { editarTitulo(linha); return; }
     if (tipo === 'editar') { editarRascunho(linha.dataset.rascunhoId || ''); return; }
     if (tipo === 'remover-rascunho') {
       const ok = w.confirmarNaLove ? await w.confirmarNaLove({ titulo: 'Remover este rascunho?', texto: 'O que você preencheu até aqui será apagado.', botao: 'Remover' }) : false;

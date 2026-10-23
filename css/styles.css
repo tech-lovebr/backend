@@ -10368,3 +10368,26 @@ html body button.love-confirmar-perigo:not(#love-h-a):hover:not(:disabled) { bac
 body[data-theme="dark"] button.love-confirmar-perigo { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 html body #btn-confirm-delete-event:not(#love-h-a) { background: #F4F4F5 !important; border: 1px solid #E4E4E7 !important; color: #18181B !important; }
 html body #btn-confirm-delete-event:not(#love-h-a):hover { background: #F4F4F5 !important; border-color: #181D24 !important; color: #181D24 !important; }
+
+/* Minhas solicitações: título como link (só ele), campo de "Editar título" e
+   a solicitação inteira na mesma caixa da lista. */
+html body button.rfp-post-titulo.rfp-post-link:not(#love-h-a) { display: block; max-width: 100%; margin: 0; padding: 0; background: none; border: 0; font-family: inherit; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #183b54; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: underline; text-decoration-color: rgba(24, 59, 84, 0.3); text-underline-offset: 4px; }
+html body button.rfp-post-titulo.rfp-post-link:not(#love-h-a):hover { text-decoration-color: #183b54; }
+html body input.rfp-post-titulo-input:not(#love-h-a) { width: 100%; max-width: 560px; height: 40px; font-size: 16px; font-weight: 600; }
+.rfp-detalhe { padding: 24px; }
+html body button.rfp-detalhe-voltar:not(#love-h-a) { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 16px -4px; padding: 0; background: none; border: 0; font-family: inherit; font-size: 13px; font-weight: 600; color: #52525B; cursor: pointer; }
+html body button.rfp-detalhe-voltar:not(#love-h-a):hover { color: #181D24; }
+.rfp-detalhe-voltar svg { width: 16px; height: 16px; }
+html body .rfp-detalhe-titulo:not(#love-h-a) { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+.rfp-detalhe-meta { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+.rfp-detalhe-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; margin: 24px 0 0; padding: 20px 0 0; border-top: 1px solid rgba(0, 0, 0, 0.06); }
+.rfp-detalhe-grade dt { font-size: 12px; font-weight: 500; color: #71717A; }
+.rfp-detalhe-grade dd { margin: 4px 0 0; font-size: 14px; color: #18181B; }
+html body .rfp-detalhe-sub:not(#love-h-a) { margin: 24px 0 8px; font-size: 14px; font-weight: 600; color: #18181B; }
+.rfp-detalhe-desc { margin: 0; font-size: 14px; line-height: 1.6; color: #3F3F46; white-space: pre-line; }
+.rfp-detalhe-fotos { display: flex; flex-wrap: wrap; gap: 10px; }
+.rfp-detalhe-fotos img { width: 120px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #E4E4E7; display: block; }
+@media (max-width: 640px) { .rfp-detalhe-grade { grid-template-columns: minmax(0, 1fr); } }
+body[data-theme="dark"] button.rfp-post-titulo.rfp-post-link { color: #EBF4FF !important; }
+body[data-theme="dark"] .rfp-detalhe-titulo, body[data-theme="dark"] .rfp-detalhe-grade dd, body[data-theme="dark"] .rfp-detalhe-sub { color: #FFFFFF !important; }
+body[data-theme="dark"] .rfp-detalhe-desc { color: #D4D4D8 !important; }

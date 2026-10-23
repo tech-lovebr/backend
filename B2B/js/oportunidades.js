@@ -103,9 +103,9 @@ function opFaixaTexto(p) {
 }
 function opHaQuanto(iso) {
   const min = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-  if (min < 60) return `há ${min} min`;
+  if (min < 60) return `há ${min} ${min === 1 ? 'minuto' : 'minutos'}`;
   const h = Math.round(min / 60);
-  if (h < 24) return `há ${h} h`;
+  if (h < 24) return `há ${h} ${h === 1 ? 'hora' : 'horas'}`;
   const d = Math.round(h / 24);
   return `há ${d} ${d === 1 ? 'dia' : 'dias'}`;
 }
@@ -204,7 +204,7 @@ function opCardHtml(p) {
           <span class="op-item-cidade">${icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>')}${escapeHtml(p.cidade || '')}</span>
         </p>
         <div class="op-card2-acoes">
-          <span class="op-card2-ver">Ver pedido</span>
+          <span class="op-card2-ver">Ver solicitação</span>
           ${minha ? `<span class="op-status ${OP_STATUS[minha.status].classe} op-card2-status">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''}
         </div>
       </div>
@@ -242,53 +242,90 @@ function opAbrirDetalhe(id) {
   opPedidoAberto = p;
   const minha = opMinhaProposta(p.id);
   const traco = '—';
-  const local = [[p.cidade, p.uf].filter(Boolean).join(' - '), p.bairro].filter(Boolean).join(' · ') || traco;
+  const local = [p.cidade, p.uf].filter(Boolean).join(', ') || traco;
   const periodo = p.periodo === 'horas'
     ? `${p.horas_servico || '?'} ${Number(p.horas_servico) === 1 ? 'hora' : 'horas'} de serviço`
     : ({ diurno: 'Diurno', noturno: 'Noturno' })[p.periodo] || traco;
-  const temOrcamento = !!(p.valor_min || p.valor_max);
-  const publicado = p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }).replace(/\./g, '') : '';
   const destaques = [
     ['Data do evento', opDataLonga(p)],
     ['Convidados', OP_CONVIDADOS_NOME[p.convidados] ? `${OP_CONVIDADOS_NOME[p.convidados]} convidados` : traco],
-    ['Horário / duração', periodo]
+    ['Horário / duração', periodo],
+    ['Orçamento previsto', opFaixaTexto(p)]
   ];
   const tags = p.especialidades || [];
   const fotos = p.referencias || [];
+  // Perguntas do anfitrião: só se o formulário de criação tiver enviado.
+  const perguntas = Array.isArray(p.perguntas) ? p.perguntas.filter(Boolean) : [];
+  const recebidas = Number(p.propostas_recebidas || 0);
+  const salva = opSalvos.has(p.id);
+  const icone = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const acao = minha
+    ? `<p class="op-analise-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))}</p><span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span>`
+    : (p.status === 'aberto' || !p.status
+      ? '<button type="button" class="btn-primary op-analise-enviar" data-op-enviar>Enviar proposta</button>'
+      : '<p class="op-analise-enviada">Esta solicitação não recebe mais propostas.</p>');
   document.getElementById('op-detalhe-corpo').innerHTML = `
-    <div class="op-sol">
-      <div class="op-sol-cabeca">
-        <h3 class="op-sol-titulo">${escapeHtml(opTitulo(p))}</h3>
-        <p class="op-sol-meta">${escapeHtml(opNomeAnfitriao(p))}${publicado ? ` · Publicado em ${escapeHtml(publicado)}` : ''}</p>
+    <div class="op-analise">
+      <div class="op-analise-principal">
+        <header class="op-analise-cabeca">
+          <h3 class="op-analise-titulo">${escapeHtml(opTitulo(p))}</h3>
+          <p class="op-analise-meta">
+            <span class="op-analise-badge">${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</span>
+            ${p.created_at ? `<span>Publicado ${escapeHtml(opHaQuanto(p.created_at))}</span>` : ''}
+            <span class="op-analise-local">${icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>')}${escapeHtml(local)}</span>
+          </p>
+        </header>
+        <section class="op-analise-destaques">
+          ${destaques.map(([rotulo, valor]) => `<div class="op-analise-destaque"><span>${escapeHtml(rotulo)}</span><b>${escapeHtml(valor)}</b></div>`).join('')}
+        </section>
+        <section class="op-analise-sec">
+          <h4 class="op-analise-sub">Descrição da solicitação</h4>
+          <p class="op-analise-desc">${escapeHtml(String(p.descricao || '').trim() || 'Sem descrição.')}</p>
+        </section>
+        ${tags.length ? `<section class="op-analise-sec"><h4 class="op-analise-sub">Subcategorias</h4><div class="op-sol-tags">${tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div></section>` : ''}
+        ${perguntas.length ? `<section class="op-analise-sec"><h4 class="op-analise-sub">Perguntas do anfitrião</h4><ol class="op-analise-perguntas">${perguntas.map(q => `<li>${escapeHtml(String(q))}</li>`).join('')}</ol></section>` : ''}
+        ${fotos.length ? `<section class="op-analise-sec"><h4 class="op-analise-sub">Fotos de referência</h4><div class="op-fotos">${fotos.map(u => `<button type="button" class="op-foto" data-op-foto="${escapeHtml(u)}"><img src="${escapeHtml(u)}" alt="Referência"></button>`).join('')}</div></section>` : ''}
       </div>
-      <section class="op-sol-sec">
-        <h4 class="op-sol-sub">Descrição</h4>
-        <p class="op-sol-desc">${escapeHtml(String(p.descricao || '').trim() || 'Sem descrição.')}</p>
-      </section>
-      <section class="op-sol-destaques">
-        ${destaques.map(([rotulo, valor]) => `<div class="op-sol-destaque"><span>${escapeHtml(rotulo)}</span><b>${escapeHtml(valor)}</b></div>`).join('')}
-      </section>
-      <section class="op-sol-sec op-sol-linhas">
-        <p><b>Anfitrião(ã):</b> ${escapeHtml(opNomeAnfitriao(p))}</p>
-        <p><b>Categoria:</b> ${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</p>
-        <p><b>Tipo de celebração:</b> ${escapeHtml(OP_CELEBRACAO_NOME[p.tipo_celebracao] || p.tipo_celebracao || traco)}</p>
-        <p><b>Local:</b> ${escapeHtml(local)}</p>
-        <p><b>Orçamento:</b> ${escapeHtml(opFaixaTexto(p))}${temOrcamento ? escapeHtml(p.aceita_fora_da_faixa ? ' · aceita propostas fora da faixa' : ' · não aceita propostas fora da faixa') : ''}</p>
-      </section>
-      ${tags.length ? `<section class="op-sol-sec"><h4 class="op-sol-sub">Subcategorias</h4><div class="op-sol-tags">${tags.map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div></section>` : ''}
-      ${fotos.length ? `<section class="op-sol-sec"><h4 class="op-sol-sub">Fotos de referência</h4><div class="op-fotos">${fotos.map(u => `<button type="button" class="op-foto" data-op-foto="${escapeHtml(u)}"><img src="${escapeHtml(u)}" alt="Referência"></button>`).join('')}</div></section>` : ''}
-      <div class="op-detalhe-acao op-sol-acao">
-        <button type="button" class="op-detalhe-voltar" data-op-voltar>Voltar</button>
-        ${minha
-          ? `<p class="op-ja-enviada">Proposta enviada em ${new Date(minha.created_at).toLocaleDateString('pt-BR')} · ${escapeHtml(opBRL(minha.valor))} · <span class="op-status ${OP_STATUS[minha.status].classe}">${OP_STATUS[minha.status].label}</span></p>`
-          : (p.status === 'aberto' || !p.status ? '<button type="button" class="btn-primary op-enviar-btn" data-op-enviar>Enviar proposta</button>' : '<p class="op-ja-enviada">Este pedido não recebe mais propostas.</p>')}
-      </div>
+
+      <aside class="op-analise-lateral">
+        <div class="op-analise-card op-analise-acao">
+          ${acao}
+          <button type="button" class="op-analise-salvar${salva ? ' is-salva' : ''}" data-op-salvar aria-pressed="${salva}">
+            ${icone('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>')}
+            <span>${salva ? 'Vaga salva' : 'Salvar vaga'}</span>
+          </button>
+          <p class="op-analise-aviso">O envio de proposta conecta você diretamente à fila de análise do anfitrião.</p>
+        </div>
+
+        <div class="op-analise-card">
+          <h4 class="op-analise-card-titulo">Atividade nesta solicitação</h4>
+          <dl class="op-analise-lista">
+            <div><dt>Propostas enviadas</dt><dd>${recebidas < 5 ? 'Menos de 5' : recebidas}</dd></div>
+            <div><dt>Status</dt><dd>${p.status === 'aberto' || !p.status ? 'Aberto para propostas' : 'Fechado'}</dd></div>
+          </dl>
+        </div>
+
+        <div class="op-analise-card" id="op-analise-anfitriao">
+          <h4 class="op-analise-card-titulo">Sobre o anfitrião</h4>
+          <div class="op-analise-pessoa">
+            <span class="op-analise-avatar">${escapeHtml(opIniciais(opNomeAnfitriao(p)))}</span>
+            <b>${escapeHtml(opNomeAnfitriao(p))}</b>
+          </div>
+          <ul class="op-analise-fatos" data-op-anfitriao-fatos>
+            <li>${icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>')}${escapeHtml(local)}</li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Celular: o botão fica preso embaixo da tela. -->
+      ${!minha && (p.status === 'aberto' || !p.status) ? '<div class="op-analise-barra"><button type="button" class="btn-primary op-analise-enviar" data-op-enviar>Enviar proposta</button></div>' : ''}
     </div>`;
+  opPreencherAnfitriao(p);
   // Tela cheia: some o resto da página; título do pedido com a seta de voltar.
   document.body.classList.add('op-pedido-aberto');
   document.getElementById('op-pedido-pagina').hidden = false;
   document.getElementById('op-pedido-voltar').hidden = false;
-  document.getElementById('leads-titulo-pagina').textContent = 'Buscar eventos';
+  document.getElementById('leads-titulo-pagina').textContent = 'Análise de solicitação';
   if (new URLSearchParams(location.search).get('pedido') !== p.id) history.replaceState(null, '', `${location.pathname}?pedido=${encodeURIComponent(p.id)}`);
   window.scrollTo({ top: 0 });
   document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
@@ -304,6 +341,70 @@ function opFecharDetalhe() {
 
 /* Limite do plano: depois de 3 (Gratuito) ou 100 (Pro) propostas no mês, a
    vitrine continua aberta, mas "Enviar proposta" mostra este aviso. */
+/* -------------------- Salvar vaga --------------------
+   Tabela pedidos_salvos (migration 080). Sem ela, guarda neste navegador. */
+let opSalvos = new Set();
+const opChaveSalvos = () => `op-salvos-${opEmpresaId}`;
+let opSalvosNoBanco = true;
+async function opCarregarSalvos() {
+  const { data, error } = await supabaseClient.from('pedidos_salvos').select('pedido_id').eq('fornecedor_id', opEmpresaId);
+  if (error) {
+    opSalvosNoBanco = false;
+    try { opSalvos = new Set(JSON.parse(localStorage.getItem(opChaveSalvos()) || '[]')); } catch (e) { opSalvos = new Set(); }
+    return;
+  }
+  opSalvos = new Set((data || []).map(x => x.pedido_id));
+}
+async function opAlternarSalva() {
+  const p = opPedidoAberto;
+  if (!p) return;
+  const salvar = !opSalvos.has(p.id);
+  if (salvar) opSalvos.add(p.id); else opSalvos.delete(p.id);
+  const btn = document.querySelector('[data-op-salvar]');
+  if (btn) {
+    btn.classList.toggle('is-salva', salvar);
+    btn.setAttribute('aria-pressed', String(salvar));
+    btn.querySelector('span').textContent = salvar ? 'Vaga salva' : 'Salvar vaga';
+  }
+  if (opSalvosNoBanco) {
+    const q = salvar
+      ? supabaseClient.from('pedidos_salvos').insert({ fornecedor_id: opEmpresaId, pedido_id: p.id })
+      : supabaseClient.from('pedidos_salvos').delete().eq('fornecedor_id', opEmpresaId).eq('pedido_id', p.id);
+    const { error } = await q;
+    if (!error) return;
+    opSalvosNoBanco = false;
+  }
+  try { localStorage.setItem(opChaveSalvos(), JSON.stringify([...opSalvos])); } catch (e) { /* sem armazenamento */ }
+}
+
+/* -------------------- Sobre o anfitrião --------------------
+   RPC sobre_anfitriao (migration 080): foto, membro desde e se tem CPF e
+   telefone cadastrados, sem expor os números. */
+const opIniciais = nome => String(nome || '').trim().split(/\s+/).filter(Boolean).slice(0, 2).map(x => x[0].toUpperCase()).join('') || 'A';
+async function opPreencherAnfitriao(p) {
+  const { data, error } = await supabaseClient.rpc('sobre_anfitriao', { p_cliente: p.cliente_id });
+  const info = !error && Array.isArray(data) ? data[0] : null;
+  if (!info || !opPedidoAberto || opPedidoAberto.id !== p.id) return;
+  const card = document.getElementById('op-analise-anfitriao');
+  if (!card) return;
+  if (info.avatar_url) {
+    const av = card.querySelector('.op-analise-avatar');
+    av.innerHTML = `<img src="${escapeHtml(info.avatar_url)}" alt="">`;
+  }
+  if (info.nome) card.querySelector('.op-analise-pessoa b').textContent = info.nome;
+  const fatos = card.querySelector('[data-op-anfitriao-fatos]');
+  const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
+  const cal = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>';
+  const mais = [];
+  if (info.tem_cpf) mais.push(`<li class="is-ok">${check}CPF cadastrado</li>`);
+  if (info.tem_telefone) mais.push(`<li class="is-ok">${check}Telefone cadastrado</li>`);
+  if (info.membro_desde) {
+    const desde = new Date(info.membro_desde).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    mais.push(`<li>${cal}Membro desde ${escapeHtml(desde)}</li>`);
+  }
+  fatos.insertAdjacentHTML('beforeend', mais.join(''));
+}
+
 function opAtualizarCota() {
   const el = document.getElementById('op-cota');
   if (!el) return;
@@ -505,7 +606,7 @@ function opLigarEventos() {
   document.getElementById('op-pedido-voltar').addEventListener('click', opFecharDetalhe);
   document.getElementById('op-detalhe-corpo').addEventListener('click', e => {
     if (e.target.closest('[data-op-enviar]')) { opAbrirProposta(); return; }
-    if (e.target.closest('[data-op-voltar]')) { opFecharDetalhe(); return; }
+    if (e.target.closest('[data-op-salvar]')) { opAlternarSalva(); return; }
     const foto = e.target.closest('[data-op-foto]');
     if (foto) {
       document.getElementById('op-foto-grande').src = foto.dataset.opFoto;
@@ -591,7 +692,7 @@ async function initOportunidades() {
     document.getElementById('op-conteudo').hidden = true;
   }
   opLigarEventos();
-  const [okPedidos] = await Promise.all([opCarregarPedidos(), opCarregarPropostas(), opCarregarCategoriasDaEmpresa()]);
+  const [okPedidos] = await Promise.all([opCarregarPedidos(), opCarregarPropostas(), opCarregarCategoriasDaEmpresa(), opCarregarSalvos()]);
   if (!okPedidos) {
     const aviso = document.getElementById('op-aviso');
     aviso.hidden = false;

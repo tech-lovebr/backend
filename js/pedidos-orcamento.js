@@ -435,16 +435,13 @@
           <input type="text" class="rfp-campo" data-rfp-input="cep" value="${esc(dados.cep)}" inputmode="numeric" maxlength="9" placeholder="00000-000">
           <span class="rfp-dica" id="rfp-cep-status"></span>
         </label>
+        <label class="rfp-rotulo rfp-rotulo-uf"><span class="rfp-rotulo-texto">UF</span>
+          <input type="text" class="rfp-campo rfp-campo-uf" data-rfp-input="uf" value="${esc(dados.uf)}" maxlength="2" placeholder="SP">
+          ${erroHtml('uf')}
+        </label>
         <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>
           <input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Ex.: São Paulo">
           ${erroHtml('cidade')}
-        </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Bairro <span class="rfp-opcional">(opcional)</span></span>
-          <input type="text" class="rfp-campo" data-rfp-input="bairro" value="${esc(dados.bairro)}" placeholder="Ex.: Pinheiros">
-        </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">UF</span>
-          <input type="text" class="rfp-campo rfp-campo-uf" data-rfp-input="uf" value="${esc(dados.uf)}" maxlength="2" placeholder="SP">
-          ${erroHtml('uf')}
         </label>
       </div>
 

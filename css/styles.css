@@ -10214,3 +10214,8 @@ body[data-theme="dark"] .rfp-exemplos-titulo { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-exemplos li { color: #A1A1AA !important; }
 /* "Exemplos de título" em negrito (outra regra do .rfp-intro p zerava o peso). */
 html body #rfp-editor .rfp-intro p.rfp-exemplos-titulo:not(#love-h-a) { font-weight: 700 !important; }
+
+/* Nova solicitação › Local: CEP | UF (pequena) | Cidade numa linha só. */
+html body .rfp-grade-local:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 72px minmax(0, 2fr); }
+@media (max-width: 640px) { html body .rfp-grade-local:not(#love-h-a) { grid-template-columns: 72px minmax(0, 1fr); } html body .rfp-grade-local > .rfp-rotulo:first-child:not(#love-h-a) { grid-column: 1 / -1; } }
+html body .rfp-grade-local .rfp-campo-uf:not(#love-h-a) { width: 100%; min-width: 0; text-align: center; }

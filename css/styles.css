@@ -11135,3 +11135,7 @@ html body .conta-boas-vindas ~ div:not(#love-h-a) { position: relative; z-index:
 html body .conta-boas-vindas h3:not(#love-h-a) { font-size: 28px; max-width: 560px; }
 @media (max-width: 640px) { html body .conta-boas-vindas:not(#love-h-a) { padding: 28px 24px 24px; } }
 body[data-theme="dark"] .conta-boas-vindas::before { background: #1E2733 !important; }
+
+/* Suas informações: faixa sem ondinhas e sem título — só a frase. */
+html body .conta-boas-vindas:not(.hidden):not(#love-h-a)::before { background-image: radial-gradient(circle at calc(100% - 100px) 40px, rgba(255, 255, 255, 0.45) 0 180px, transparent 181px); background-size: auto; }
+html body .conta-boas-vindas p:not(#love-h-a) { margin: 0; max-width: 600px; font-size: 16px; line-height: 1.6; color: #3F3F46; }

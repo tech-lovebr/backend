@@ -8750,7 +8750,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         container.innerHTML = `
           <div class="col-span-full presentes-vazio">
-            <p class="presentes-vazio-texto">Sua lista de presentes ainda está vazia.</p>
+            <p class="presentes-vazio-texto">Sua lista está vazia. Que tal adicionar presentes?</p>
             <div class="presentes-vazio-cards">
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="presente">
                 <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>

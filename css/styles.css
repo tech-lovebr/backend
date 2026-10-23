@@ -10431,3 +10431,16 @@ html body button.rfp-detalhe-voltar:not(#love-h-a):hover { background: #F4F6F7 !
 html body .rfp-detalhe-voltar svg:not(#love-h-a) { width: 20px; height: 20px; }
 body[data-theme="dark"] button.rfp-detalhe-voltar { background: transparent !important; color: #FFFFFF !important; }
 body[data-theme="dark"] button.rfp-detalhe-voltar:hover { background: #333333 !important; }
+
+/* Solicitação aberta: Data do evento / Convidados / Horário numa faixa cinza
+   com divisórias (modelo dos números do Admin): rótulo em negrito em cima,
+   valor embaixo, sem ícone. */
+html body .rfp-detalhe-destaques:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 22px 24px; padding: 18px 0; background: #F4F5F7; border: 0; border-radius: 10px; }
+html body .rfp-detalhe-destaque:not(#love-h-a) { display: flex; flex-direction: column; gap: 6px; padding: 0 22px; border-left: 1px solid #E4E4E7; }
+html body .rfp-detalhe-destaque:first-child:not(#love-h-a) { border-left: 0; }
+.rfp-detalhe-destaque-rotulo { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #18181B; }
+html body .rfp-detalhe-destaque b:not(#love-h-a) { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; }
+@media (max-width: 640px) { html body .rfp-detalhe-destaques:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); gap: 14px; } html body .rfp-detalhe-destaque:not(#love-h-a) { border-left: 0; } }
+body[data-theme="dark"] .rfp-detalhe-destaques { background: #2A2A2A !important; }
+body[data-theme="dark"] .rfp-detalhe-destaque { border-left-color: #404040 !important; }
+body[data-theme="dark"] .rfp-detalhe-destaque-rotulo { color: #FFFFFF !important; }

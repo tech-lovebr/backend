@@ -1155,12 +1155,13 @@
         </div>
 
         <section class="rfp-detalhe-sec">
+          <h4 class="rfp-detalhe-sub">Descrição</h4>
           <p class="rfp-detalhe-desc">${esc(String(info.descricao || '').trim() || 'Sem descrição.')}</p>
         </section>
 
         <section class="rfp-detalhe-sec rfp-detalhe-destaques">
-          ${destaques.map(([svg, valor, rotulo]) => `
-            <div class="rfp-detalhe-destaque">${svg}<p><b>${esc(valor)}</b><span>${esc(rotulo)}</span></p></div>`).join('')}
+          ${destaques.map(([_svg, valor, rotulo]) => `
+            <div class="rfp-detalhe-destaque"><span class="rfp-detalhe-destaque-rotulo">${esc(rotulo)}</span><b>${esc(valor)}</b></div>`).join('')}
         </section>
 
         <section class="rfp-detalhe-sec rfp-detalhe-linhas">

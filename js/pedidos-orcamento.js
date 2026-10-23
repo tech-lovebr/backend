@@ -457,15 +457,14 @@
     if (titulo) { titulo.textContent = textos.titulo; titulo.hidden = !textos.titulo; }
     if (sub) { sub.textContent = textos.sub; sub.hidden = !textos.sub; }
     const exemplos = document.getElementById('rfp-exemplos');
-    if (exemplos) exemplos.hidden = etapa !== 1 || modo === 'lote';
+    // Exemplos de título: na etapa 1 do serviço avulso (é onde se escreve o título).
+    if (exemplos) exemplos.hidden = etapa !== 1 || (modo === 'lote' && formato === 'completo');
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
       const telas = modo === 'lote' ? [htmlLote1, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
-      // Título e subtítulo da etapa ficam dentro da caixa (a caixa encosta nas abas, como em Meus convidados).
-      const topo = modo !== 'lote' ? '' : textos.titulo
-        ? `<div class="rfp-etapa-cab"><h3 class="rfp-etapa-cab-titulo">${esc(textos.titulo)}</h3>${textos.sub ? `<p class="rfp-etapa-cab-sub">${esc(textos.sub)}</p>` : ''}</div>`
-        : (textos.sub ? `<p class="rfp-etapa-cab-sub rfp-modos-sub">${esc(textos.sub)}</p>` : '');
+      // Título e subtítulo da etapa ficam à esquerda da caixa (como no Hub).
+      const topo = '';
       corpo.innerHTML = `<div class="rfp-tela">${topo}${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
       if (modo === 'lote' && !publicando && !publicado) agendarRascunho();
       if (direcao) corpo.scrollTop = 0;
@@ -1260,7 +1259,7 @@
           ${erroHtml('titulo')}
         </section>
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
+          <h4 class="rfp-pergunta">Categoria</h4>
           ${seletorDeServico()}
           ${erroHtml('categorias')}
           ${id ? blocoTags(id) : ''}
@@ -1329,10 +1328,11 @@
 
   /** Textos do topo de cada etapa. */
   const TEXTOS_DA_PAGINA = [
-    null,
+    // Título grande à esquerda da caixa, como em Adicionar novo produto do Hub.
+    { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' },
     { titulo: 'Conte sobre o seu evento', sub: 'Informe os dados do evento, descreva o que você precisa e, se quiser, quanto planeja gastar. Isso ajuda os fornecedores a enviarem propostas realistas.' },
     // Etapa 3: o "Imagem de referência" aparece uma vez só, dentro do formulário.
-    { titulo: '', sub: '' }
+    { titulo: 'Revise e publique', sub: 'Adicione imagens de referência, se quiser, e publique a sua solicitação.' }
   ];
 
   /** O formulário da etapa atual (os dois jeitos de começar ficam na etapa 1). */

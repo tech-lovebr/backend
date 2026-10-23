@@ -11236,3 +11236,24 @@ body[data-theme="dark"] #b2b-pedidos-view .rfp-pergunta { color: #F4F4F5 !import
 html body #b2b-pedidos-view .rfp-moeda .rfp-campo:not(#love-h-a) { padding-left: 36px; }
 body[data-theme="dark"] #b2b-pedidos-view .rfp-secao + .rfp-secao { border-top: 0 !important; }
 html body #b2b-pedidos-view .rfp-cat-gatilho:not(#love-h-a) { height: 43px; min-height: 0; padding: 0 14px; }
+
+/* Criar solicitação igual a Adicionar novo produto do Hub: título grande e
+   subtítulo à esquerda, caixa do formulário à direita (com borda inteira,
+   24px abaixo das abas); "Serviço avulso" e "Evento completo" um embaixo do outro. */
+html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) {
+  display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); column-gap: 3rem; align-items: start;
+  max-width: 1040px; margin: 0; padding-top: 24px !important;
+}
+html body #b2b-pedidos-view .rfp-editor .rfp-intro:not(#love-h-a) { display: block; margin: 0; }
+html body #b2b-pedidos-view .rfp-etapa-titulo:not(#love-h-a) { margin: 0.25rem 0 0; font-size: 2rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.03em; color: #18181B; }
+html body #b2b-pedidos-view .rfp-etapa-sub:not(#love-h-a) { margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.6; color: #52525B; }
+html body #b2b-pedidos-view .rfp-caixa-form:not(#love-h-a) { border-top: 1px solid #E4E4E7 !important; border-radius: 10px !important; }
+html body #b2b-pedidos-view .rfp-modos:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 900px) {
+  html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { display: flex; flex-direction: column; }
+  html body #b2b-pedidos-view .rfp-etapa-titulo:not(#love-h-a) { font-size: 1.5rem; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-intro:not(#love-h-a) { margin-bottom: 1rem; }
+}
+body[data-theme="dark"] #b2b-pedidos-view .rfp-etapa-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] #b2b-pedidos-view .rfp-etapa-sub { color: #A1A1AA !important; }
+body[data-theme="dark"] #b2b-pedidos-view .rfp-caixa-form { border-color: #404040 !important; }

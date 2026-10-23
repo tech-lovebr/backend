@@ -11292,3 +11292,27 @@ html body #view-event-os-dashboard #tab-overview.dashboard-tab-content:not(#love
 /* Criar solicitação: Continuar apagado (como no Hub) enquanto a etapa não
    está toda preenchida. */
 html body .rfp-editor .rfp-rodape button.btn-primary:disabled:not(#love-h-a) { opacity: 0.5; cursor: default; pointer-events: none; }
+
+/* Criar solicitação, etapa 2: data e horários numa linha (data inteira
+   visível), depois UF/cidade/bairro e convidados; cada aviso embaixo do campo. */
+html body #b2b-pedidos-view .rfp-ev-grade:not(#love-h-a) { display: grid; gap: 12px; align-items: start; }
+html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: minmax(170px, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); }
+html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: 96px minmax(0, 1.3fr) minmax(0, 1fr); margin-top: 24px; }
+html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin-top: 24px; }
+html body #b2b-pedidos-view .rfp-ev-campo .rfp-campo:not(#love-h-a) { width: 100%; min-width: 0; }
+html body #b2b-pedidos-view .rfp-ev-campo .rfp-erro:not(#love-h-a) { margin: 6px 0 0; }
+html body #b2b-pedidos-view .rfp-ev-campo select.rfp-campo:not(#love-h-a) { appearance: none; -webkit-appearance: none; padding-right: 30px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A1A1AA' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center / 14px; cursor: pointer; }
+html body #b2b-pedidos-view .rfp-ev-campo input:disabled:not(#love-h-a) { background: #F4F4F5; color: #A1A1AA; }
+@media (max-width: 640px) {
+  html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a),
+  html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+  html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: 80px minmax(0, 1fr); }
+}
+/* Orçamento De/Até ocupando a largura toda. */
+html body #b2b-pedidos-view .rfp-orcamento:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; max-width: none; width: 100%; }
+html body #b2b-pedidos-view .rfp-orcamento .rfp-rotulo:not(#love-h-a),
+html body #b2b-pedidos-view .rfp-orcamento .rfp-moeda:not(#love-h-a) { width: 100%; }
+/* Continuar apagado enquanto falta algo, mas clicável (mostra o que falta). */
+html body .rfp-editor .rfp-rodape button.btn-primary.is-incompleto:not(#love-h-a) { opacity: 0.5; }
+html body .rfp-editor .rfp-rodape button.btn-primary.is-incompleto:not(#love-h-a):hover { background: #181D24 !important; }
+html body #rfp-editor .rfp-erro-geral:not(#love-h-a) { font-size: 13px; text-align: left; }

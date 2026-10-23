@@ -35,6 +35,8 @@
    * @property {RfpConvidados|''} convidados
    * @property {RfpPeriodo|''} periodo
    * @property {number|null} horasServico
+   * @property {string} horarioInicio        HH:MM (opcional quando sem data)
+   * @property {string} horarioFim           HH:MM
    * @property {RfpBudgetTier|''} faixa       (antigo) faixa pronta
    * @property {number|null} valorMin        "De" (opcional)
    * @property {number|null} valorMax        "Até" (opcional)
@@ -180,7 +182,7 @@
   function rascunhoVazio() {
     return {
       titulo: '', categoria: '', especialidades: [], tipoCelebracao: '', celebracaoOutro: '', dataEvento: '', dataFlexivel: false,
-      cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null,
+      cep: '', cidade: '', bairro: '', uf: '', convidados: '', periodo: '', horasServico: null, horarioInicio: '', horarioFim: '',
       faixa: '', valorMin: null, valorMax: null, aceitaForaDaFaixa: false, descricao: '', referencias: [], limitePropostas: null
     };
   }
@@ -202,6 +204,9 @@
     if (/^\d{4}-\d{2}-\d{2}$/.test(data)) dados.dataEvento = data;
     if (det.city) dados.cidade = String(det.city);
     if (det.state) dados.uf = String(det.state).slice(0, 2).toUpperCase();
+    // Horários do evento (Informações), se já preenchidos.
+    if (/^\d{2}:\d{2}$/.test(String(det.time || ''))) dados.horarioInicio = String(det.time);
+    if (/^\d{2}:\d{2}$/.test(String(det.endTime || ''))) dados.horarioFim = String(det.endTime);
   }
 
   // --------------------------------------------------------------------------
@@ -238,14 +243,30 @@
   /** Data, local, convidados e horário. @param {Record<string, string>} e */
   function validarLogistica(e) {
     {
-      if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Data flexível".';
+      if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Ainda não temos uma data definida".';
       if (!dados.dataFlexivel && dados.dataEvento && dados.dataEvento < hojeIso()) e.dataEvento = 'A data precisa ser hoje ou depois.';
-      if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
+      // Horários: obrigatórios quando a data já está definida.
+      if (!dados.dataFlexivel && !dados.horarioInicio) e.horarioInicio = 'Informe o horário de início.';
+      if (!dados.dataFlexivel && !dados.horarioFim) e.horarioFim = 'Informe o horário de término.';
       if (!UFS.includes(dados.uf.trim().toUpperCase())) e.uf = 'Escolha o estado.';
+      if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
       if (!dados.convidados) e.convidados = 'Escolha a quantidade de convidados.';
-      // "Por horas de serviço" saiu das opções: rascunho antigo escolhe de novo.
-      if (!PERIODOS.some(p => p.id === dados.periodo)) e.periodo = 'Escolha o horário.';
     }
+  }
+
+  /**
+   * Período do pedido (diurno, noturno ou dia inteiro) a partir dos horários,
+   * para o feed dos fornecedores. Sem data definida: 'a_definir'.
+   * @returns {string}
+   */
+  function periodoDosHorarios() {
+    const min = (/** @type {string} */ h) => { const m = /^(\d{2}):(\d{2})$/.exec(h || ''); return m ? Number(m[1]) * 60 + Number(m[2]) : null; };
+    const ini = min(dados.horarioInicio);
+    const fim = min(dados.horarioFim);
+    if (ini === null || fim === null) return 'a_definir';
+    if (ini >= 17 * 60) return 'noturno';
+    if (fim > ini && fim <= 19 * 60) return 'diurno';
+    return 'dia_inteiro';
   }
 
   function hojeIso() {
@@ -317,6 +338,15 @@
     });
     m.addEventListener('input', aoDigitar);
     m.addEventListener('change', aoDigitar);
+    // Corrigiu um campo com aviso: o aviso some na hora.
+    const tirarAviso = (/** @type {Event} */ e) => {
+      const el = /** @type {HTMLElement} */ (e.target);
+      const bloco = el.closest && el.closest('.rfp-ev-campo');
+      const aviso = bloco && bloco.querySelector('.rfp-erro');
+      if (aviso) { aviso.remove(); delete erros[el.dataset.rfpInput || '']; }
+    };
+    m.addEventListener('input', tirarAviso);
+    m.addEventListener('change', tirarAviso);
     m.addEventListener('input', atualizarBotaoAvancar);
     m.addEventListener('change', atualizarBotaoAvancar);
     return m;
@@ -436,7 +466,14 @@
     if (modo === 'lote') {
       // Etapa 1: serviço(s) + evento · etapa 2: detalhes · etapa 3: imagens e publicar.
       const e = etapa === 1 ? validarLote(1) : etapa === 2 ? validarLote(2) : {};
-      if (Object.keys(e).length) { erros = e; desenhar(0); focarPrimeiroErro(); return; }
+      if (Object.keys(e).length) {
+        erros = e;
+        desenhar(0);
+        mostrarErroGeral(`Falta preencher: ${oQueFalta(e)}.`);
+        focarPrimeiroErro();
+        return;
+      }
+      mostrarErroGeral('');
       if (etapa < ETAPAS_DO_FORMULARIO) { irPara(etapa + 1, 1); window.scrollTo({ top: 0 }); return; }
       publicarLote();
       return;
@@ -449,7 +486,29 @@
 
   function focarPrimeiroErro() {
     const el = document.querySelector('#rfp-corpo .rfp-erro, #rfp-corpo .rfp-lote-item-status.is-erro');
-    if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    // Leva o cursor para o campo do aviso.
+    const bloco = el.closest('.rfp-ev-campo') || el.parentElement;
+    const campo = /** @type {HTMLElement|null} */ (bloco && bloco.querySelector('input:not([type=checkbox]):not([disabled]), select, textarea, .rfp-cat-gatilho'));
+    if (campo) setTimeout(() => campo.focus({ preventScroll: true }), 300);
+  }
+
+  /** Nomes dos campos que faltam, para o aviso do rodapé. @param {Record<string, string>} e */
+  function oQueFalta(e) {
+    /** @type {Record<string, string>} */
+    const nomes = {
+      titulo: 'título', categorias: formato === 'completo' ? 'serviços' : 'categoria', dataEvento: 'data do evento',
+      horarioInicio: 'horário de início', horarioFim: 'horário de término', uf: 'UF', cidade: 'cidade', convidados: 'convidados'
+    };
+    const varios = lote.categorias.length > 1;
+    const lista = Object.keys(e).map(k => {
+      if (nomes[k]) return nomes[k];
+      const [id, campo] = k.split(':');
+      const qual = varios ? ` (${CATEGORIA_CURTA[id] || id})` : '';
+      return ({ titulo: 'título', descricao: 'descrição', faixa: 'orçamento' })[campo] + qual;
+    });
+    return Array.from(new Set(lista)).join(', ');
   }
 
   // --------------------------------------------------------------------------
@@ -505,7 +564,11 @@
       pronto = !Object.keys(validarLote(etapa)).length;
       lote.abertos = abertos;
     }
-    btn.disabled = publicando || !pronto;
+    // Fica apagado enquanto falta algo, mas continua clicável: o clique mostra
+    // o que falta e leva até o campo.
+    btn.disabled = publicando;
+    btn.classList.toggle('is-incompleto', !pronto);
+    if (pronto && etapa < ETAPAS_DO_FORMULARIO) mostrarErroGeral('');
   }
 
   /**
@@ -1034,13 +1097,10 @@
 
   /** Descrição que vai para a solicitação: a do serviço ou, sem ela, a geral. @param {string} id */
   const descricaoDoItem = (id) => {
+    // Não existe mais descrição geral: cada serviço tem a sua. (Rascunho antigo
+    // que só tinha a geral continua usando ela.)
     const proprio = (lote.itens[id] && lote.itens[id].descricao.trim()) || '';
-    if (formato !== 'completo') return proprio || lote.descricaoGeral.trim();
-    // Evento completo: com "usar a mesma descrição geral", a geral vai em todos
-    // (e as observações do serviço entram embaixo).
-    if (!lote.usarGeral) return proprio;
-    const geral = lote.descricaoGeral.trim();
-    return proprio && geral ? `${geral}\n\n${proprio}` : (geral || proprio);
+    return proprio || lote.descricaoGeral.trim();
   };
 
   /** Rascunho/cópia no formato antigo (um serviço só) → lista de serviços. @param {any} d */
@@ -1078,7 +1138,6 @@
     }
     if (n === 2) {
       validarLogistica(e);
-      const varios = lote.categorias.length > 1;
       lote.categorias.forEach(id => {
         const it = lote.itens[id];
         if (!it) return;
@@ -1086,9 +1145,7 @@
         if (formato === 'completo' && it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
         if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
         const tam = descricaoDoItem(id).length;
-        if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = varios
-          ? `Escreva a descrição geral ou detalhes deste serviço (mínimo ${DESCRICAO_MIN} caracteres).`
-          : `A descrição precisa ter pelo menos ${DESCRICAO_MIN} caracteres.`;
+        if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = `A descrição precisa ter pelo menos ${DESCRICAO_MIN} caracteres.`;
         if (tam > DESCRICAO_MAX) e[`${id}:descricao`] = `No máximo ${DESCRICAO_MAX} caracteres.`;
         if (Object.keys(e).some(k => k.startsWith(`${id}:`))) lote.abertos[id] = true;
       });
@@ -1101,35 +1158,33 @@
 
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
   function htmlEventoCompacto() {
+    // Data e horários numa linha (data inteira visível); "Ainda não temos uma
+    // data definida" embaixo; depois UF, cidade e bairro; por fim convidados.
+    // Cada campo mostra o próprio aviso logo abaixo dele.
+    const campo = (/** @type {string} */ rotulo, /** @type {string} */ controle, /** @type {string} */ chave) => `
+        <div class="rfp-ev-campo"><label class="rfp-rotulo"><span class="rfp-rotulo-texto">${rotulo}</span>${controle}</label>${erroHtml(chave)}</div>`;
+    const semData = dados.dataFlexivel ? 'disabled' : '';
     return `
-      <div class="rfp-evento-linha">
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Data do evento</span>
-          <input type="date" class="rfp-campo" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" ${dados.dataFlexivel ? 'disabled' : ''}>
-        </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">UF</span>
-          <select class="rfp-campo rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
+      <div class="rfp-ev-grade rfp-ev-tempo">
+        ${campo('Data do evento', `<input type="date" class="rfp-campo" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" ${semData}>`, 'dataEvento')}
+        ${campo('Horário de início', `<input type="time" class="rfp-campo" data-rfp-input="horarioInicio" value="${esc(dados.horarioInicio || '')}" ${semData}>`, 'horarioInicio')}
+        ${campo('Horário de término', `<input type="time" class="rfp-campo" data-rfp-input="horarioFim" value="${esc(dados.horarioFim || '')}" ${semData}>`, 'horarioFim')}
+      </div>
+      <label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Ainda não temos uma data definida</label>
+      <div class="rfp-ev-grade rfp-ev-local">
+        ${campo('UF', `<select class="rfp-campo rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
             <option value=""${dados.uf ? '' : ' selected'}>UF</option>
             ${UFS.map(u => `<option value="${u}"${dados.uf === u ? ' selected' : ''}>${u}</option>`).join('')}
-          </select>
-        </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>
-          <input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Ex.: São Paulo">
-        </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Convidados</span>
-          <select class="rfp-campo" data-rfp-input="convidados">
+          </select>`, 'uf')}
+        ${campo('Cidade', `<input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}">`, 'cidade')}
+        ${campo('Bairro <span class="rfp-opcional">(opcional)</span>', `<input type="text" class="rfp-campo" data-rfp-input="bairro" value="${esc(dados.bairro)}">`, 'bairro')}
+      </div>
+      <div class="rfp-ev-grade rfp-ev-convidados">
+        ${campo('Convidados', `<select class="rfp-campo" data-rfp-input="convidados">
             <option value=""${dados.convidados ? '' : ' selected'}>Selecione</option>
             ${CONVIDADOS.map(o => `<option value="${o.id}"${dados.convidados === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
-          </select>
-        </label>
-        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Horário</span>
-          <select class="rfp-campo" data-rfp-input="periodo">
-            <option value=""${dados.periodo ? '' : ' selected'}>Selecione</option>
-            ${PERIODOS.map(o => `<option value="${o.id}"${dados.periodo === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
-          </select>
-        </label>
-      </div>
-      <label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Data flexível / em definição</label>
-      ${['dataEvento', 'uf', 'cidade', 'convidados', 'periodo'].map(c => erroHtml(c)).join('')}`;
+          </select>`, 'convidados')}
+      </div>`;
   }
 
   /** "Serviço específico" (um serviço) ou "Montar evento completo" (vários). */
@@ -1294,7 +1349,6 @@
     if (etapa === 2 && id) {
       return `
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">Detalhes do evento</h4>
           ${htmlEventoCompacto()}
         </section>
         <section class="rfp-secao">
@@ -1322,13 +1376,10 @@
     if (etapa === 2) {
       return `
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">Dados gerais do evento</h4>
           ${htmlEventoCompacto()}
         </section>
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">Descrição geral</h4>
-          ${caixaDeDescricao('data-lote-geral', lote.descricaoGeral, 4)}
-          <label class="rfp-check rfp-check-geral"><input type="checkbox" data-lote-usar-geral ${lote.usarGeral ? 'checked' : ''}> Usar a mesma descrição geral para todos</label>
+          <!-- Cada serviço com o próprio título e a descrição logo abaixo (sem descrição geral nem subcategorias). -->
           <div class="rfp-lote-lista">
             ${lote.categorias.map(id => {
               const cat = categoriaPorId(/** @type {any} */ (id));
@@ -1340,10 +1391,9 @@
                     <b>${esc(CATEGORIA_CURTA[id] || cat.nome)}</b>
                   </div>
                   ${blocoTitulo(id)}
-                  ${blocoTags(id)}
+                  ${blocoDescricao(id, 'Descrição', 3)}
                   <h4 class="rfp-pergunta">Orçamento <span class="rfp-opcional">(opcional)</span></h4>
                   ${blocoOrcamento(id)}
-                  ${blocoDescricao(id, lote.usarGeral ? 'Observações <span class="rfp-opcional">(opcional)</span>' : 'Descrição deste serviço', 3)}
                 </div>`;
             }).join('')}
           </div>
@@ -1702,8 +1752,10 @@
           bairro: dados.bairro.trim() || null,
           uf: dados.uf.trim().toUpperCase(),
           convidados: dados.convidados,
-          periodo: dados.periodo,
-          horas_servico: dados.periodo === 'horas' ? dados.horasServico : null,
+          periodo: periodoDosHorarios(),
+          horas_servico: null,
+          horario_inicio: dados.dataFlexivel ? null : (dados.horarioInicio || null),
+          horario_fim: dados.dataFlexivel ? null : (dados.horarioFim || null),
           faixa: temOrcamento ? 'personalizada' : null,
           valor_min: it.valorMin || null,
           valor_max: it.valorMax || null,
@@ -1714,6 +1766,11 @@
         };
       });
       let { error } = await supabaseClient.from('pedidos_orcamento').insert(linhas);
+      // Sem as colunas de horário (migration 094): publica sem elas.
+      if (error && /horario_/.test(String(error.message || ''))) {
+        linhas = linhas.map(({ horario_inicio: _i, horario_fim: _f, ...resto }) => resto);
+        ({ error } = await supabaseClient.from('pedidos_orcamento').insert(linhas));
+      }
       // Bancos sem as colunas novas: publica sem elas (lote_id 084, titulo 078) e
       // com faixa "personalizada" se ela ainda for obrigatória (080).
       if (error && /lote_id/.test(String(error.message || ''))) {

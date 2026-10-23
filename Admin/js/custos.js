@@ -576,7 +576,10 @@ function tabelaDetalhe(cabecalho, linhas, vazio = 'Nada cobrado ainda') {
 function historicoDoItem(l) {
   const linhas = MESES.slice().reverse().filter(m => (l.meses?.[m] || 0) > 0).map(m => `
     <tr class="no-hover"><td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td><td class="valor-dinheiro">${usd(l.meses[m])}</td><td class="valor-dinheiro">${formatCurrency(emReais(l.meses[m], l.moeda))}</td></tr>`);
-  return cardDetalhe('Mês a mês', 'Retroativo dos últimos 12 meses (meses sem cobrança ficam de fora)',
+  const sub = l.fonte === 'vercel'
+    ? 'Retroativo de 12 meses, por mês do calendário: assinatura proporcional aos dias + cobrança extra. Meses sem cobrança ficam de fora.'
+    : 'Retroativo dos últimos 12 meses (meses sem cobrança ficam de fora)';
+  return cardDetalhe('Mês a mês', sub,
     tabelaDetalhe(['Mês', 'Dólar', 'Real (cotação de hoje)'], linhas, 'Nenhuma cobrança nos últimos 12 meses'));
 }
 
@@ -593,14 +596,17 @@ const NOME_SERVICO_VERCEL = {
   'CDN Requests': 'Requisições na CDN'
 };
 
-const UNIDADE = { minute: 'min de CPU', 'GB-Hr': 'GB-hora', GB: 'GB', 'CPU-Hr': 'CPU-hora', request: 'requisições', event: 'eventos', invocation: 'chamadas' };
-const formatarUso = (q, u) => q ? `${(q >= 10 ? Math.round(q) : Math.round(q * 100) / 100).toLocaleString('pt-BR')} ${UNIDADE[u] || u || ''}`.trim() : '—';
+const UNIDADE = { minute: 'min de CPU', gigabyte: 'GB', 'gigabyte-hour': 'GB-hora', hour: 'horas', events: 'eventos', invocations: 'chamadas', requests: 'requisições' };
+// Armazenamento vem um registro por dia: a soma é GB-dia.
+const unidadeDe = sv => (/storage/i.test(sv.servico) && /^gigabyte$/i.test(sv.unidade) ? 'GB-dia' : UNIDADE[String(sv.unidade || '').toLowerCase()] || sv.unidade);
+const formatarUso = (q, u) => q ? `${(q >= 10 ? Math.round(q) : Math.round(q * 100) / 100).toLocaleString('pt-BR')} ${u || ''}`.trim() : '—';
 
 function detalheVercel(l) {
   const c = l.ciclo;
   if (!c) return historicoDoItem(l);
   const hoje = new Date().toISOString().slice(0, 10);
-  const faltam = Math.max(0, diasEntre(hoje, c.fim));
+  const ultimoDia = new Date(new Date(`${c.fim}T12:00:00`).getTime() - 86400000).toISOString().slice(0, 10);
+  const faltam = Math.max(0, diasEntre(hoje, ultimoDia));
 
   // Previsão: média dos últimos 7 dias com dados, até o fim do ciclo.
   const dias = Object.keys(c.dias || {}).sort();
@@ -611,7 +617,7 @@ function detalheVercel(l) {
   const extraPrevisto = Math.max(0, consumoPrevisto - c.credito);
   const faturaPrevista = c.assinatura + extraPrevisto;
 
-  const fatura = cardDetalhe('Fatura do ciclo', `${dataCurta(c.inicio)} a ${dataCurta(c.fim)} · faltam ${faltam} dias`, `
+  const fatura = cardDetalhe('Fatura do ciclo', `${dataCurta(c.inicio)} a ${dataCurta(ultimoDia)} · faltam ${faltam} dias`, `
     <div class="lista-dados">
       ${linhaDado('Assinatura (plano Pro)', `${comReais(c.assinatura)} por mês`)}
       ${linhaDado('Crédito de consumo incluso no plano', usd(c.credito))}
@@ -620,7 +626,7 @@ function detalheVercel(l) {
       ${linhaDado('Cobrança extra (além do crédito)', comReais(c.extra))}
       ${linhaDado('<strong>Fatura até agora</strong>', `<strong>${comReais(c.total)}</strong>`)}
     </div>
-    <p class="custo-nota">Dados até ${dataCurta(c.dados_ate)}. O painel da Vercel soma também as horas de hoje, por isso pode mostrar um pouco mais. A fatura fecha em ${dataCurta(c.fim)}.</p>`);
+    <p class="custo-nota">Dados até ${dataCurta(c.dados_ate)}. O painel da Vercel soma também as horas de hoje, por isso pode mostrar um pouco mais. A fatura fecha em ${dataCurta(ultimoDia)}.</p>`);
 
   const previsao = cardDetalhe('Previsão até o fim do ciclo', `Pela média dos últimos ${ultimos.length} dias`, `
     <div class="lista-dados">
@@ -657,7 +663,7 @@ function detalheVercel(l) {
   const servicos = c.servicos.map(sv => `
     <tr class="no-hover">
       <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
-      <td>${escapeHtml(formatarUso(sv.uso, sv.unidade))}</td>
+      <td>${escapeHtml(formatarUso(sv.uso, unidadeDe(sv)))}</td>
       <td class="valor-dinheiro">${usd(sv.consumo)}</td>
       <td class="valor-dinheiro">${usd(sv.cobrado)}</td>
       <td>${c.consumo ? Math.round((sv.consumo / c.consumo) * 100) : 0}%</td>

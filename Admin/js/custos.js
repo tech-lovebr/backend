@@ -402,6 +402,11 @@ function renderTabela() {
 
 /* ------------------------------------------------------- Custo manual */
 
+/** 1234.5 → "1.234,50" (para o campo de valor). */
+const valorNoCampo = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/** "1.234,50" → 1234.5 */
+const lerValor = texto => Number(String(texto || '').replace(/./g, '').replace(',', '.')) || 0;
+
 function abrirFormulario(item) {
   const editando = Boolean(item);
   const hoje = new Date().toISOString().slice(0, 10);
@@ -436,14 +441,17 @@ function abrirFormulario(item) {
         </label>
         <div class="field-row">
           <label class="field">
-            <span class="field-label">Valor</span>
-            <input class="field-input" name="valor" type="number" min="0" step="0.01" required placeholder="0,00" value="${item?.valor ?? ''}">
-          </label>
-          <label class="field">
             <span class="field-label">Moeda</span>
             <select class="field-select" name="moeda">
               ${Object.entries(MOEDAS).map(([k, v]) => `<option value="${k}" ${(item?.moeda || 'BRL') === k ? 'selected' : ''}>${v}</option>`).join('')}
             </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Valor</span>
+            <span class="campo-dinheiro">
+              <span class="campo-dinheiro-simbolo" id="simbolo-valor">${SIMBOLO[item?.moeda || 'BRL']}</span>
+              <input class="field-input" name="valor" type="text" inputmode="numeric" autocomplete="off" required placeholder="0,00" value="${item?.valor != null ? valorNoCampo(item.valor) : ''}">
+            </span>
           </label>
         </div>
         <label class="field">
@@ -476,8 +484,9 @@ function abrirFormulario(item) {
   const form = document.getElementById('form-custo');
   const conversao = document.getElementById('custo-conversao');
   const atualizarConversao = () => {
-    const valor = Number(form.valor.value) || 0;
+    const valor = lerValor(form.valor.value);
     const moeda = form.moeda.value;
+    document.getElementById('simbolo-valor').textContent = SIMBOLO[moeda] || moeda;
     conversao.textContent = moeda === 'BRL' || !valor ? ''
       : (COTACAO[moeda] ? `≈ ${formatCurrency(emReais(valor, moeda))} pela cotação de hoje` : 'Cotação indisponível agora');
   };
@@ -486,7 +495,12 @@ function abrirFormulario(item) {
     document.getElementById('campo-empresa-outra').hidden = !outro;
     if (outro) form.empresa_outra.focus();
   });
-  form.valor.addEventListener('input', atualizarConversao);
+  // Digita só números; as casas decimais e os pontos de milhar entram sozinhos (1.000,00).
+  form.valor.addEventListener('input', () => {
+    const digitos = form.valor.value.replace(/D/g, '').replace(/^0+(?=d)/, '').slice(0, 13);
+    form.valor.value = digitos ? valorNoCampo(Number(digitos) / 100) : '';
+    atualizarConversao();
+  });
   form.moeda.addEventListener('change', atualizarConversao);
   form.tipo.addEventListener('change', () => {
     document.getElementById('rotulo-data').textContent = form.tipo.value === 'unico' ? 'Data do pagamento' : 'Início da cobrança';
@@ -509,13 +523,13 @@ function abrirFormulario(item) {
     const empresa = d.empresa_lista === '__outro' ? (d.empresa_outra || '').trim() : (d.empresa_lista || '');
     if (!empresa) return toast(d.empresa_lista === '__outro' ? 'Escreva o nome da empresa' : 'Selecione a empresa');
     if (!d.nome.trim()) return toast('Informe o nome do custo');
-    if (d.valor === '' || Number(d.valor) < 0) return toast('Informe o valor');
+    if (!String(d.valor || '').trim()) return toast('Informe o valor');
 
     const payload = {
       empresa,
       nome: d.nome.trim(),
       descricao: (d.descricao || '').trim() || null,
-      valor: Number(d.valor),
+      valor: lerValor(d.valor),
       moeda: d.moeda,
       categoria: d.categoria,
       tipo: d.tipo,

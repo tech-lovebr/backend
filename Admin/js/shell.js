@@ -33,7 +33,7 @@ const NAV_SECTIONS = [
       { page: 'financeiro', href: 'financeiro.html', text: 'Financeiro', icon: 'wallet' },
       { page: 'atendimento', href: 'atendimento.html', text: 'Atendimento', icon: 'chat', badge: 'tickets-abertos' },
       {
-        grupo: 'settings', text: 'Settings', icon: 'settings',
+        grupo: 'settings', text: 'Operacional', icon: 'settings',
         children: [
           { page: 'custos', href: 'custos.html', text: 'Custos' },
           { page: 'emails', href: 'emails.html', text: 'E-mails' }

@@ -4040,3 +4040,8 @@ button.dash-chip.is-apagada .dash-chip-cor { opacity: .4; }
 @media (max-width: 1280px) { .kpi-grid > .kpi { padding: .5rem .875rem; } }
 /* Valor solto (sem variação ao lado) segue o mesmo tamanho e nunca é cortado. */
 .kpi-grid > .kpi > .kpi-value { order: 1; overflow: visible; text-overflow: clip; font-size: clamp(1rem, 1.55vw, 1.375rem); }
+
+/* Campo de dinheiro: símbolo da moeda (R$, US$, €) dentro do campo, antes do valor. */
+.campo-dinheiro { position: relative; display: block; }
+.campo-dinheiro-simbolo { position: absolute; left: .875rem; top: 50%; transform: translateY(-50%); font-size: .875rem; font-weight: 500; color: #71717A; pointer-events: none; }
+.campo-dinheiro .field-input { padding-left: 2.75rem; font-variant-numeric: tabular-nums; }

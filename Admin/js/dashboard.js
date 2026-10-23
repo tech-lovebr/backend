@@ -337,8 +337,9 @@ function pagamentos() {
 
 /** Início e fim do período em datas de verdade ("Todo o período" começa no primeiro registro). */
 function intervalo() {
+  // Até o fim do dia: o custo de hoje entra inteiro, como em Settings → Custos.
   const agora = new Date();
-  const ate = PERIODO.ate && PERIODO.ate < agora ? PERIODO.ate : agora;
+  const ate = PERIODO.ate || new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
   if (PERIODO.de) return { de: PERIODO.de, ate };
   const datas = pagamentos().map(p => new Date(p.em).getTime());
   (DADOS.integracoes || []).forEach(i => Object.entries(i.meses || {}).forEach(([m, v]) => { if (v > 0) datas.push(new Date(`${m}-01T00:00:00`).getTime()); }));

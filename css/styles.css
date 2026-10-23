@@ -11271,16 +11271,14 @@ body[data-theme="dark"] .rfp-cat-caixinha { background: #333333 !important; bord
 body[data-theme="dark"] .rfp-cat-opcao-check.ativa .rfp-cat-caixinha { background: #EBF4FF !important; border-color: #EBF4FF !important; color: #000000 !important; }
 body[data-theme="dark"] .rfp-cat-opcao.rfp-cat-opcao-check.ativa { background: #252525 !important; }
 
-/* Telas grandes: o conteúdo de cada página fica numa faixa centralizada de
-   até 1280px (cabeçalho da página e conteúdo juntos, na mesma linha), em vez
-   de esticar até as bordas. Abaixo disso, continua a margem de 32px. O fundo
-   e a linha do cabeçalho seguem de ponta a ponta. Ficam de fora o editor do
+/* Telas grandes: só o conteúdo de cada página fica numa faixa centralizada
+   de até 1280px (o cabeçalho continua com o título na esquerda e os botões e
+   a busca na direita), em vez de esticar até as bordas. Abaixo disso, continua a margem
+   de 32px. Ficam de fora o editor do
    site e o mapa do evento (usam a tela toda) e Mensagens. */
 :root { --love-conteudo-max: 1280px; }
 @media (min-width: 640px) {
-  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site) > .builder-toolbar:not(#love-h-a),
   html body #view-event-os-dashboard .dashboard-tab-content > [class*="px-8"]:not(#love-h-a),
-  html body #view-event-os-dashboard #b2b-insurance-view > .builder-toolbar:not(#love-h-a),
   html body #view-event-os-dashboard #b2b-insurance-view > [class*="px-8"]:not(#love-h-a) {
     padding-left: max(2rem, calc((100% - var(--love-conteudo-max)) / 2)) !important;
     padding-right: max(2rem, calc((100% - var(--love-conteudo-max)) / 2)) !important;
@@ -11289,5 +11287,4 @@ body[data-theme="dark"] .rfp-cat-opcao.rfp-cat-opcao-check.ativa { background: #
 /* Criar solicitação ocupa a faixa toda (título à esquerda alinhado com o
    cabeçalho e as abas; caixa até o fim da faixa). */
 html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { max-width: none; }
-html body #view-event-os-dashboard #tab-overview.dashboard-tab-content:not(#love-h-a),
-html body #view-event-os-dashboard #tab-info-event.dashboard-tab-content:not(#love-h-a) { max-width: var(--love-conteudo-max); margin-left: auto; margin-right: auto; }
+html body #view-event-os-dashboard #tab-overview.dashboard-tab-content:not(#love-h-a) { max-width: var(--love-conteudo-max); margin-left: auto; margin-right: auto; }

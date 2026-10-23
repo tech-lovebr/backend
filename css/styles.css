@@ -10787,3 +10787,8 @@ html body .rfp-etapa-cab-titulo:not(#love-h-a) { margin: 0; font-size: 20px; fon
 body[data-theme="dark"] .rfp-etapa-cab-titulo { color: #FFFFFF !important; }
 body[data-theme="dark"] .rfp-etapa-cab-sub { color: #A1A1AA !important; }
 body[data-theme="dark"] #b2b-pedidos-view #pedidos-abas { border-bottom-color: #404040 !important; }
+
+/* Minhas solicitações: rascunho com o título em cinza (publicadas na cor primária). */
+html body .rfp-post[data-rascunho-id] button.rfp-post-titulo.rfp-post-link:not(#love-h-a) { color: #A1A1AA; text-decoration-color: rgba(161, 161, 170, 0.4); }
+html body .rfp-post[data-rascunho-id] button.rfp-post-titulo.rfp-post-link:not(#love-h-a):hover { color: #71717A; text-decoration-color: #71717A; }
+body[data-theme="dark"] .rfp-post[data-rascunho-id] button.rfp-post-titulo.rfp-post-link { color: #71717A !important; }

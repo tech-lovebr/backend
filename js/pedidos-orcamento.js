@@ -269,7 +269,6 @@
         <footer class="rfp-rodape">
           <p class="rfp-erro-geral hidden" id="rfp-erro-geral" role="alert"></p>
           <button type="button" class="rfp-voltar-texto" data-rfp-voltar>Cancelar</button>
-          <button type="button" class="rfp-rascunho-btn" data-rfp-rascunho hidden>Salvar rascunho</button>
           <button type="button" class="btn-primary rfp-btn" data-rfp-avancar>Continuar</button>
         </footer>
       </div>`;
@@ -435,6 +434,7 @@
         ? `<div class="rfp-etapa-cab"><h3 class="rfp-etapa-cab-titulo">${esc(textos.titulo)}</h3>${textos.sub ? `<p class="rfp-etapa-cab-sub">${esc(textos.sub)}</p>` : ''}</div>`
         : (textos.sub ? `<p class="rfp-etapa-cab-sub rfp-modos-sub">${esc(textos.sub)}</p>` : '');
       corpo.innerHTML = `<div class="rfp-tela">${topo}${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
+      if (modo === 'lote' && !publicando && !publicado) agendarRascunho();
       if (direcao) corpo.scrollTop = 0;
     }
     const passos = document.getElementById('rfp-passos');
@@ -688,6 +688,7 @@
   /** @param {Event} e */
   function aoDigitar(e) {
     const el = /** @type {HTMLInputElement} */ (e.target);
+    if (modo === 'lote') agendarRascunho();
     if (modo === 'lote' && digitacaoDoLote(el)) return;
     if (el.matches('[data-rfp-fotos]')) { if (e.type === 'change') adicionarFotos(Array.from(el.files || [])); return; }
     const campo = el.dataset ? el.dataset.rfpInput : '';
@@ -1626,7 +1627,8 @@
     const { referencias: _fotos, ...resto } = dados;
     return { ...resto, formato, lote: { categorias: lote.categorias.slice(), itens: lote.itens, descricaoGeral: lote.descricaoGeral, usarGeral: lote.usarGeral } };
   }
-  const valeComoRascunho = () => !!(dados.tipoCelebracao && lote.categorias.length);
+  // Vale como rascunho assim que a pessoa escolhe um serviço.
+  const valeComoRascunho = () => lote.categorias.length > 0;
 
   /** @returns {Promise<any[]>} */
   async function listarRascunhos() {
@@ -1675,7 +1677,16 @@
   }
 
   /** Salva o que está no editor como rascunho (em fila, para não duplicar). */
+  /** Salva o rascunho pouco depois da última mudança (sem botão). */
+  /** @type {ReturnType<typeof setTimeout>|null} */
+  let timerDoRascunho = null;
+  function agendarRascunho() {
+    if (timerDoRascunho) clearTimeout(timerDoRascunho);
+    timerDoRascunho = setTimeout(() => { timerDoRascunho = null; salvarRascunhoAgora(); }, 1200);
+  }
+
   function salvarRascunhoAgora() {
+    if (timerDoRascunho) { clearTimeout(timerDoRascunho); timerDoRascunho = null; }
     if (publicando || publicado || !valeComoRascunho()) return;
     salvandoRascunho = salvandoRascunho.then(guardarRascunhosPorServico).catch(() => {});
   }

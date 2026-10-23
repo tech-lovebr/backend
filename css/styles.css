@@ -11046,3 +11046,4 @@ html body #recados-raiz .recados-caixa .love-tabela:has(.recados-vazio):not(#lov
 html body #recados-raiz td.recados-vazio:not(#love-h-a) { text-align: center !important; vertical-align: middle !important; border-bottom: 0 !important; }
 html body #recados-raiz button.recados-link:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 body[data-theme="dark"] #recados-raiz button.recados-link { color: #FFFFFF !important; }
+html body #recados-raiz td.recados-vazio:not(#love-h-a) { line-height: 1.7; }

@@ -1415,7 +1415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'pedidos', label: 'Criar solicitação' },
         { id: 'explore', label: 'Explorar' },
         { id: 'messages', label: 'Mensagens' },
-        { id: 'contracted', label: 'Contratos' },
+        { id: 'contracted', label: 'Propostas' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
         { id: 'insurance', label: 'Benefícios', oculto: true },
         { id: 'favorites', label: 'Favoritos' }
@@ -18317,7 +18317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'explore': 'Explorar',
         'pedidos': 'Criar solicitação',
         'messages': 'Mensagens',
-        'contracted': 'Contratos',
+        'contracted': 'Propostas',
         'insurance': 'Benefícios',
         'favorites': 'Favoritos'
       };
@@ -18373,7 +18373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (exploreView) exploreView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
-        if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
+        if (toolbarTitle) toolbarTitle.textContent = 'Minhas propostas';
         if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
         renderB2BContracted();
         mostrarAbaDeContratos(abaDeContratos);
@@ -18416,9 +18416,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.contratosAba === aba));
     document.getElementById('contratos-painel-solicitacoes')?.classList.toggle('hidden', !solicitacoes);
     document.getElementById('contratos-painel-contratos')?.classList.toggle('hidden', solicitacoes);
-    // Solicitações: no cabeçalho só o "Criar solicitação" (sem a busca de fornecedores).
+    // Propostas (solicitações): cabeçalho só com o título, sem a busca de fornecedores.
     document.getElementById('b2b-toolbar-controls')?.classList.toggle('hidden', solicitacoes);
-    document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', !solicitacoes);
     if (solicitacoes && window.LovePedidos) window.LovePedidos.mostrarLista();
   }
   document.querySelectorAll('#contratos-abas [data-contratos-aba]').forEach(b => b.addEventListener('click', () => {

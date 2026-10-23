@@ -9389,6 +9389,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let recadosBusca = '';
   /** @type {Set<string>} */
   const recadosAbertos = new Set();
+  // Envelope com coração (traço à mão), acima do aviso de "sem recados".
+  const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 96 68" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 8.2C30 6.6 66 6.4 86.8 7.8c1.9.2 3 1.5 3 3.4.4 15.4.3 31.4-.3 46.6-.1 1.9-1.4 3.1-3.3 3.2-21.4 1-55.6 1-77.3-.2-1.9-.1-3.2-1.4-3.2-3.3C5.4 42 5.6 26.4 6.4 11.4c.1-1.8 1.3-3 3.1-3.2Z"/><path d="M7.4 10.6c11.6 9.4 23.4 18.2 33.2 25.4M89 10.2C77.8 19.4 66 28.3 56 35.6M7.8 58.2c9.8-7.8 19.4-14.6 27.8-20.4M88.6 58.6c-9.4-7.6-19.2-14.6-27.6-20.6"/><path d="M48 48.6c-6.8-4.6-12.4-9-12.4-14.6 0-3.6 2.8-6.2 6-6.2 2.8 0 4.8 1.6 6.4 4 1.6-2.4 3.6-4 6.4-4 3.2 0 6 2.6 6 6.2 0 5.6-5.6 10-12.4 14.6Z" fill="#FFFFFF"/></svg>';
   function renderRecadosRecebidos() {
     const raiz = document.getElementById('recados-raiz');
     if (!raiz) return;
@@ -9425,7 +9427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="w-full overflow-x-auto">
           <table class="love-tabela recados-tabela w-full text-left border-collapse font-sans">
             <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th>Recado</th></tr></thead>
-            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : semPresentes ? 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.<br>Parece que ainda não existe nenhum presente adicionado. <button type="button" class="recados-link" data-recados-ir-presentes>Que tal adicionar um presente?</button>' : 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.'}</td></tr>`}</tbody>
+            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + (semPresentes ? 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.<br>Parece que ainda não existe nenhum presente adicionado. <button type="button" class="recados-link" data-recados-ir-presentes>Que tal adicionar um presente?</button>' : 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.')}</td></tr>`}</tbody>
           </table>
         </div>
       </div>`;

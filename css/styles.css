@@ -11105,3 +11105,8 @@ body[data-theme="dark"] .cart-docs-texto p, body[data-theme="dark"] .cart-verif-
 body[data-theme="dark"] .cart-verif-faixa { background-color: #1E2733 !important; background-image: none !important; }
 body[data-theme="dark"] .cart-verif-cartao, body[data-theme="dark"] .cart-arquivo { background: #252525 !important; border-color: #404040 !important; }
 
+
+/* Recados recebidos vazio: envelope com coração acima do texto. */
+html body #recados-raiz .recados-vazio-icone:not(#love-h-a) { display: block; width: 88px; height: auto; margin: 0 auto 16px; color: #3F3F46; }
+body[data-theme="dark"] #recados-raiz .recados-vazio-icone { color: #D4D4D8; }
+body[data-theme="dark"] #recados-raiz .recados-vazio-icone path[fill] { fill: #252525; }

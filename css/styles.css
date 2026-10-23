@@ -10238,3 +10238,13 @@ body[data-theme="dark"] .rfp-horas-sufixo { color: #D4D4D8 !important; }
 .rfp-moeda > span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #71717A; pointer-events: none; }
 html body .rfp-moeda .rfp-campo:not(#love-h-a) { padding-left: 36px; font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) { .rfp-orcamento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Meus presentes vazio: a caixa ocupa a tela até o rodapé (como a tabela de
+   Meus convidados), com a frase e os dois cards centralizados. */
+html body #view-event-os-dashboard .dashboard-content-wrapper:has(> #tab-gifts.active #host-gifts-grid:not(.hidden) > .presentes-vazio):not(#love-h-a) { display: flex; flex-direction: column; }
+html body #tab-gifts.active:has(#host-gifts-grid:not(.hidden) > .presentes-vazio):not(#love-h-a) { display: flex !important; flex-direction: column; flex: 1 0 auto; }
+html body #tab-gifts.active > div:has(> #gifts-panel-products #host-gifts-grid:not(.hidden) > .presentes-vazio):not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body #gifts-panel-products:has(> #host-gifts-grid:not(.hidden) > .presentes-vazio):not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body #host-gifts-grid:not(.hidden):has(> .presentes-vazio):not(#love-h-a) { flex: 1 0 auto; display: flex !important; flex-direction: column; }
+html body #host-gifts-grid > .presentes-vazio:not(#love-h-a) { flex: 1 0 auto; justify-content: center; min-height: 420px; }
+html body #view-event-os-dashboard .dashboard-main-area:has(#tab-gifts.active #host-gifts-grid:not(.hidden) > .presentes-vazio) > .rodape-respiro:not(#love-h-a) { flex-basis: 2rem; height: 2rem; }

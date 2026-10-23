@@ -722,7 +722,15 @@ function renderCategorias() {
         <text class="donut-legenda" x="${centro}" y="${centro + 24}" text-anchor="middle">${escapeHtml(legenda)}</text>
       </svg>
       <div class="dash-dica" id="rosca-dica" hidden></div>
-    </div>`;
+    </div>
+    <ul class="donut-lista dash-rosca-lista">
+      ${fatias.map(f => `
+        <li>
+          <span class="chave" style="background:${f.cor}"></span>
+          <span class="nome">${escapeHtml(f.rotulo)}</span>
+          <span class="valor">${dinheiro ? formatCurrency(f.valor) : formatNumber(f.valor)} · ${Math.round(f.pct)}%</span>
+        </li>`).join('')}
+    </ul>`;
 
   const dica = host.querySelector('#rosca-dica');
   host.querySelectorAll('[data-fatia]').forEach(arco => {

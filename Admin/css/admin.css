@@ -4005,3 +4005,6 @@ body[data-page="custos"] table.data tbody tr[data-integracao] { cursor: pointer;
 .dash-metrica input:disabled { opacity: .5; cursor: not-allowed; }
 .dash-rosca .dash-dica { min-width: 0; max-width: 100%; }
 .dash-rosca .dash-dica-linha { white-space: normal; }
+/* Legenda da rosca: embaixo, com rolagem quando passa da altura. */
+.dash-rosca { padding: .5rem 0 1rem; }
+.dash-rosca-lista { max-height: 132px; overflow-y: auto; padding-right: .25rem; border-top: 1px solid var(--divisor-suave, #F0F0F2); padding-top: .875rem; }

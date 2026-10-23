@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261023_rascunhoAuto">
+  <link rel="stylesheet" href="css/styles.css?v=20261023_carteiraSaque">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2325,100 +2325,9 @@
             <p id="wallet-header-desc" class="hidden text-sm text-zinc-500 -mt-2"></p>
 
           <!-- SUB-PAINEL 1: CARTEIRA DIGITAL -->
-          <div id="wallet-sub-digital" class="wallet-sub-panel space-y-6">
-            
-            <!-- Cards de Saldo e Resgate -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              
-              <!-- Total Arrecadado -->
-              <div class="wallet-card p-6 rounded-2xl bg-white flex flex-col justify-between space-y-2">
-                <div>
-                  <span class="text-sm font-bold text-zinc-900 block font-sans">Total arrecadado</span>
-                  <div id="wallet-balance-arrecadado" class="text-3xl sm:text-4xl font-black text-zinc-900 mt-1 font-sans">R$ 0,00</div>
-                  <p id="wallet-presentes-comprados" class="text-[11px] text-zinc-500 pt-1 font-sans">Nenhum presente comprado ainda</p>
-                </div>
-              </div>
-
-              <!-- Saldo Disponível -->
-              <div id="wallet-card-saldo-disponivel" class="wallet-card p-6 rounded-2xl bg-[#FAFAFA] flex flex-col justify-between space-y-4">
-                <div>
-                  <span class="text-sm font-bold text-zinc-900 block font-sans">Saldo disponível para saque</span>
-                  <div id="wallet-balance-disponivel" class="text-3xl sm:text-4xl font-black text-zinc-900 mt-1 font-sans">R$ 14.850,00</div>
-                  <p class="text-[11px] text-zinc-500 pt-1 font-sans">Transferência PIX instantânea sem limite de saques</p>
-                </div>
-                <button class="bg-[#181D24] hover:bg-[#0F1216] text-white w-full py-2.5 px-4 font-semibold text-xs rounded-xl btn-trigger-withdraw-pix shadow-2xs flex items-center justify-center gap-2 transition-colors cursor-pointer" style="background-color: #181D24 !important;">
-                  <span>Solicitar Saque</span>
-                </button>
-              </div>
-
-            </div>
-
-            <!-- Dados de saque (acordeão): Pix (tipo + chave) ou TED (dados bancários).
-                 Salvo em clientes.dados_saque (migration 048). -->
-            <details id="wallet-dados-saque" class="wallet-card wallet-saque-acordeao rounded-2xl bg-white">
-              <summary class="wallet-saque-summary">
-                <div>
-                  <h4 class="font-bold text-zinc-900 text-sm">Dados de saque</h4>
-                  <p id="wallet-saque-resumo" class="text-xs text-zinc-500">Cadastre a chave Pix ou a conta para receber seus saques.</p>
-                </div>
-                <svg class="wallet-saque-seta w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
-              </summary>
-
-              <div class="wallet-saque-corpo space-y-4">
-                <!-- Como receber -->
-                <div class="love-tabs-nav" role="tablist">
-                  <button type="button" class="love-tab-item active" data-saque-metodo="pix">Pix</button>
-                  <button type="button" class="love-tab-item" data-saque-metodo="ted">TED</button>
-                </div>
-
-                <!-- Pix: tipo de chave à esquerda, chave à direita -->
-                <div data-saque-painel="pix" class="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-3">
-                  <div>
-                    <label for="saque-pix-tipo" class="block text-xs font-bold text-zinc-700 mb-1.5">Tipo de chave</label>
-                    <select id="saque-pix-tipo" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                      <option value="cpf">CPF</option>
-                      <option value="email">E-mail</option>
-                      <option value="telefone">Telefone</option>
-                      <option value="aleatoria">Chave aleatória</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="saque-pix-chave" class="block text-xs font-bold text-zinc-700 mb-1.5">Chave Pix</label>
-                    <input type="text" id="saque-pix-chave" autocomplete="off" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                  </div>
-                </div>
-
-                <!-- TED: dados bancários -->
-                <div data-saque-painel="ted" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div class="sm:col-span-2">
-                    <label for="saque-ted-banco" class="block text-xs font-bold text-zinc-700 mb-1.5">Instituição financeira</label>
-                    <input type="text" id="saque-ted-banco" autocomplete="off" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                  </div>
-                  <div>
-                    <label for="saque-ted-agencia" class="block text-xs font-bold text-zinc-700 mb-1.5">Agência</label>
-                    <input type="text" id="saque-ted-agencia" inputmode="numeric" maxlength="8" autocomplete="off" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                  </div>
-                  <div>
-                    <label for="saque-ted-conta" class="block text-xs font-bold text-zinc-700 mb-1.5">Conta (com dígito)</label>
-                    <input type="text" id="saque-ted-conta" maxlength="20" autocomplete="off" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                  </div>
-                  <div>
-                    <label for="saque-ted-titular" class="block text-xs font-bold text-zinc-700 mb-1.5">Nome do titular</label>
-                    <input type="text" id="saque-ted-titular" data-nome-proprio autocapitalize="words" autocomplete="off" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                  </div>
-                  <div>
-                    <label for="saque-ted-cpf" class="block text-xs font-bold text-zinc-700 mb-1.5">CPF do titular</label>
-                    <input type="text" id="saque-ted-cpf" inputmode="numeric" maxlength="14" autocomplete="off" class="w-full text-xs sm:text-sm p-3 rounded-lg border border-zinc-200 bg-white focus:outline-none text-zinc-800">
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-end gap-3 pt-1">
-                  <p id="wallet-saque-status" class="hidden text-xs"></p>
-                  <button type="button" id="btn-salvar-dados-saque" class="btn-primary">Salvar</button>
-                </div>
-              </div>
-            </details>
-
+          <!-- Carteira digital: abas Saque e Contas bancárias (js/carteira.js) -->
+          <div id="wallet-sub-digital" class="wallet-sub-panel">
+            <div id="carteira-raiz"></div>
           </div>
 
           <!-- SUB-PAINEL 2: ORÇAMENTO (Budget Planner - 100% Full Bleed Estilo Joy/Referência) -->
@@ -5611,7 +5520,8 @@
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
-  <script src="js/app.js?v=20261023_presentesBarra"></script>
+  <script src="js/app.js?v=20261023_carteiraSaque"></script>
+  <script src="js/carteira.js?v=20261023_carteiraSaque"></script>
   <script src="js/checklist.js?v=20261023_checklistAjuda"></script>
   <script src="js/pedidos-orcamento.js?v=20261023_etapa1Simples"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

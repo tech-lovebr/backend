@@ -13366,6 +13366,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (subId === 'wallet-digital') {
         title.textContent = 'Carteira Digital';
         if (desc) desc.classList.add('hidden');
+        // Abas Saque e Contas bancárias (js/carteira.js).
+        const w = /** @type {any} */ (window);
+        if (w.LoveCarteira) w.LoveCarteira.render();
       } else if (subId === 'wallet-budget') {
         title.textContent = 'Orçamento';
         if (desc) {

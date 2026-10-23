@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=110">
+  <link rel="stylesheet" href="css/admin.css?v=111">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
@@ -43,22 +43,22 @@
 
         <section class="kpi-grid" id="kpi-grid"></section>
 
-        <section class="bloco" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem">
-
+        <section class="bloco dash-graficos">
           <div class="card viz-root">
-            <div class="viz-head">
-              <div><h2>Ranking B2B</h2></div>
-            </div>
-            <div class="viz-body" id="top-fornecedores"></div>
+            <div class="dash-grafico-topo" id="grafico-topo"></div>
+            <div class="viz-body dash-grafico" id="grafico-financeiro"></div>
           </div>
 
           <div class="card viz-root">
             <div class="viz-head">
-              <div><h2>Eventos por categoria</h2></div>
+              <select class="field-select" id="rosca-tipo" aria-label="O que a rosca mostra">
+                <option value="eventos">Eventos por categoria</option>
+                <option value="receita">Receita por origem</option>
+                <option value="custos">Custos por empresa</option>
+              </select>
             </div>
             <div class="viz-body" id="grafico-categorias"></div>
           </div>
-
         </section>
 
         <div class="bloco-cabecalho">
@@ -90,6 +90,6 @@
   </div>
 
   <script src="js/conta-drawer.js?v=5"></script>
-  <script src="js/dashboard.js?v=5"></script>
+  <script src="js/dashboard.js?v=6"></script>
 </body>
 </html>

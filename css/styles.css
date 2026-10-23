@@ -10219,3 +10219,7 @@ html body #rfp-editor .rfp-intro p.rfp-exemplos-titulo:not(#love-h-a) { font-wei
 html body .rfp-grade-local:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 72px minmax(0, 2fr); }
 @media (max-width: 640px) { html body .rfp-grade-local:not(#love-h-a) { grid-template-columns: 72px minmax(0, 1fr); } html body .rfp-grade-local > .rfp-rotulo:first-child:not(#love-h-a) { grid-column: 1 / -1; } }
 html body .rfp-grade-local .rfp-campo-uf:not(#love-h-a) { width: 100%; min-width: 0; text-align: center; }
+
+/* UF em drop-down (2 letras): seta própria, sem o visual nativo. */
+html body .rfp-grade-local select.rfp-campo-uf:not(#love-h-a) { appearance: none; -webkit-appearance: none; text-align: left; padding: 0 22px 0 10px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A1A1AA' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 6px center / 14px; cursor: pointer; }
+body[data-theme="dark"] .rfp-grade-local select.rfp-campo-uf { background-color: #333333 !important; color: #FFFFFF !important; border-color: #404040 !important; }

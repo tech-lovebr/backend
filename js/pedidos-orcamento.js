@@ -122,6 +122,9 @@
   /** @param {RfpCategory} id */
   const fotoDaCategoria = (id) => `/assets/rfp/${id}.jpg`;
 
+  // Estados do Brasil (drop-down de UF na etapa 2).
+  const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+
   const LIMITES = [{ valor: 3, nome: 'Até 3 propostas' }, { valor: 5, nome: 'Até 5 propostas' }, { valor: null, nome: 'Sem limite' }];
   const ETAPAS = ['Tipo de serviço', 'Evento e logística', 'Orçamento e detalhes', 'Publicação'];
   // Título grande e subtítulo de cada etapa (à esquerda da caixa, como em Adicionar novo produto do Hub).
@@ -205,7 +208,7 @@
       if (!dados.dataFlexivel && !dados.dataEvento) e.dataEvento = 'Informe a data ou marque "Data flexível".';
       if (!dados.dataFlexivel && dados.dataEvento && dados.dataEvento < hojeIso()) e.dataEvento = 'A data precisa ser hoje ou depois.';
       if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
-      if (!/^[A-Za-z]{2}$/.test(dados.uf.trim())) e.uf = 'UF com 2 letras.';
+      if (!UFS.includes(dados.uf.trim().toUpperCase())) e.uf = 'Escolha o estado.';
       if (!dados.convidados) e.convidados = 'Escolha a quantidade de convidados.';
       if (!dados.periodo) e.periodo = 'Escolha o período.';
       if (dados.periodo === 'horas' && !(Number(dados.horasServico) >= 1 && Number(dados.horasServico) <= 24)) e.horasServico = 'De 1 a 24 horas.';
@@ -436,7 +439,10 @@
           <span class="rfp-dica" id="rfp-cep-status"></span>
         </label>
         <label class="rfp-rotulo rfp-rotulo-uf"><span class="rfp-rotulo-texto">UF</span>
-          <input type="text" class="rfp-campo rfp-campo-uf" data-rfp-input="uf" value="${esc(dados.uf)}" maxlength="2" placeholder="SP">
+          <select class="rfp-campo rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
+            <option value=""${dados.uf ? '' : ' selected'}>UF</option>
+            ${UFS.map(u => `<option value="${u}"${dados.uf === u ? ' selected' : ''}>${u}</option>`).join('')}
+          </select>
           ${erroHtml('uf')}
         </label>
         <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>

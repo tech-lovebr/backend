@@ -137,7 +137,7 @@
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
   const TITULO_DA_LISTA = 'Minhas solicitações';
-  const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
+  const TITULO_DA_NOVA = 'Criar solicitação';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 1000;
   const MAX_FOTOS = 5;
@@ -269,7 +269,7 @@
         <footer class="rfp-rodape">
           <p class="rfp-erro-geral hidden" id="rfp-erro-geral" role="alert"></p>
           <button type="button" class="rfp-voltar-texto" data-rfp-voltar>Cancelar</button>
-          <button type="button" class="rfp-rascunho-btn" data-rfp-rascunho hidden>Salvar como rascunho</button>
+          <button type="button" class="rfp-rascunho-btn" data-rfp-rascunho hidden>Salvar rascunho</button>
           <button type="button" class="btn-primary rfp-btn" data-rfp-avancar>Continuar</button>
         </footer>
       </div>`;
@@ -316,6 +316,7 @@
   function abrir() {
     modo = 'lote';
     lote = loteVazio();
+    formato = 'unico';
     dados = rascunhoVazio();
     etapa = 1;
     erros = {};
@@ -330,6 +331,7 @@
       const { lote: _lote, ...resto } = r.dados;
       dados = { ...dados, ...resto, referencias: [] };
       lote = loteDosDados(r.dados);
+      formato = r.dados.formato === 'completo' || lote.categorias.length > 1 ? 'completo' : 'unico';
       rascunhoId = r.id;
       categoriaEscolhidaAMao = true;
     } else {
@@ -390,6 +392,7 @@
   }
 
   function avancar() {
+    if (modo === 'lote') { publicarLote(); return; }
     erros = validarEtapa(etapa);
     if (Object.keys(erros).length) { desenhar(0); focarPrimeiroErro(); return; }
     if (etapa < ETAPAS.length) return irPara(etapa + 1, 1);
@@ -397,7 +400,7 @@
   }
 
   function focarPrimeiroErro() {
-    const el = document.querySelector('#rfp-corpo .rfp-erro');
+    const el = document.querySelector('#rfp-corpo .rfp-erro, #rfp-corpo .rfp-lote-item-status.is-erro');
     if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
@@ -407,7 +410,7 @@
 
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
-    const textos = (modo === 'lote' ? TEXTOS_DO_LOTE : TEXTOS_DAS_ETAPAS)[etapa - 1];
+    const textos = modo === 'lote' ? TEXTO_DA_PAGINA : TEXTOS_DAS_ETAPAS[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
     if (titulo) titulo.textContent = textos.titulo;
@@ -418,18 +421,19 @@
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
       const telas = modo === 'lote' ? [htmlLote1, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
-      corpo.innerHTML = `<div class="rfp-tela${direcao > 0 ? ' entra-direita' : direcao < 0 ? ' entra-esquerda' : ''}">${telas[etapa - 1]()}</div>`;
+      corpo.innerHTML = `<div class="rfp-tela">${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
       if (direcao) corpo.scrollTop = 0;
     }
     const passos = document.getElementById('rfp-passos');
-    if (passos) passos.innerHTML = PASSOS.map((nome, i) => `<li class="${i + 1 < etapa ? 'is-feito' : i + 1 === etapa ? 'is-atual' : ''}"><span>${i + 1}</span>${esc(nome)}</li>`).join('');
+    if (passos) passos.hidden = modo === 'lote';
+    if (passos && modo !== 'lote') passos.innerHTML = PASSOS.map((nome, i) => `<li class="${i + 1 < etapa ? 'is-feito' : i + 1 === etapa ? 'is-atual' : ''}"><span>${i + 1}</span>${esc(nome)}</li>`).join('');
     const rascunhoBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-rascunho]'));
-    if (rascunhoBtn) { rascunhoBtn.hidden = etapa !== ETAPAS.length; rascunhoBtn.disabled = publicando; }
+    if (rascunhoBtn) { rascunhoBtn.hidden = modo !== 'lote' && etapa !== ETAPAS.length; rascunhoBtn.disabled = publicando; }
     const voltar = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-voltar]'));
     const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
     if (voltar) voltar.textContent = etapa === 1 ? 'Cancelar' : 'Voltar';
     if (avancarBtn) {
-      avancarBtn.textContent = publicando ? 'Publicando…' : (etapa === ETAPAS.length ? (lote.categorias.length > 1 ? 'Publicar todas as solicitações' : 'Publicar solicitação') : 'Continuar');
+      avancarBtn.textContent = publicando ? 'Publicando…' : (modo === 'lote' || etapa === ETAPAS.length ? (formato === 'completo' && lote.categorias.length > 1 ? `Publicar ${lote.categorias.length} solicitações simultâneas` : 'Publicar solicitação') : 'Continuar');
       avancarBtn.disabled = publicando;
     }
   }
@@ -703,7 +707,13 @@
       return;
     }
     d[campo] = el.value;
-    if (campo === 'titulo' && e.type === 'input') {
+    if ((campo === 'convidados' || campo === 'periodo') && el.tagName === 'SELECT') {
+      if (campo === 'periodo' && el.value !== 'horas') dados.horasServico = null;
+      delete erros[campo];
+      desenhar(0);
+      return;
+    }
+    if (campo === 'descricao') {
       if (erros.titulo) { delete erros.titulo; }
       const achou = categoriaPeloTitulo(el.value);
       if (achou && achou !== dados.categoria && !categoriaEscolhidaAMao) {
@@ -917,8 +927,8 @@
    * @property {boolean} aceitaForaDaFaixa
    * @property {string} descricao
    */
-  /** @returns {{ categorias: string[], itens: Record<string, ItemDoLote>, descricaoGeral: string, abertos: Record<string, boolean> }} */
-  const loteVazio = () => ({ categorias: [], itens: {}, descricaoGeral: '', abertos: {} });
+  /** @returns {{ categorias: string[], itens: Record<string, ItemDoLote>, descricaoGeral: string, usarGeral: boolean, abertos: Record<string, boolean> }} */
+  const loteVazio = () => ({ categorias: [], itens: {}, descricaoGeral: '', usarGeral: true, abertos: {} });
   let modo = 'lote';
   let lote = loteVazio();
 
@@ -949,7 +959,15 @@
   }
 
   /** Descrição que vai para a solicitação: a do serviço ou, sem ela, a geral. @param {string} id */
-  const descricaoDoItem = (id) => (lote.itens[id] && lote.itens[id].descricao.trim()) || lote.descricaoGeral.trim();
+  const descricaoDoItem = (id) => {
+    const proprio = (lote.itens[id] && lote.itens[id].descricao.trim()) || '';
+    if (formato !== 'completo') return proprio || lote.descricaoGeral.trim();
+    // Evento completo: com "usar a mesma descrição geral", a geral vai em todos
+    // (e as observações do serviço entram embaixo).
+    if (!lote.usarGeral) return proprio;
+    const geral = lote.descricaoGeral.trim();
+    return proprio && geral ? `${geral}\n\n${proprio}` : (geral || proprio);
+  };
 
   /** Rascunho/cópia no formato antigo (um serviço só) → lista de serviços. @param {any} d */
   function loteDosDados(d) {
@@ -957,6 +975,7 @@
       const l = loteVazio();
       l.categorias = d.lote.categorias.slice();
       l.descricaoGeral = d.lote.descricaoGeral || '';
+      l.usarGeral = d.lote.usarGeral !== false;
       l.categorias.forEach((/** @type {string} */ id) => { l.itens[id] = { ...itemNovo(id), ...((d.lote.itens || {})[id] || {}) }; });
       return l;
     }
@@ -998,6 +1017,237 @@
       });
     }
     return e;
+  }
+
+  const TEXTO_DA_PAGINA = { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo solicitando vários fornecedores de uma só vez.' };
+
+  /** Data, cidade/UF, convidados e horário numa linha compacta. */
+  function htmlEventoCompacto() {
+    return `
+      <div class="rfp-evento-linha">
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Data do evento</span>
+          <input type="date" class="rfp-campo" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" ${dados.dataFlexivel ? 'disabled' : ''}>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Cidade</span>
+          <input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Ex.: São Paulo">
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">UF</span>
+          <select class="rfp-campo rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
+            <option value=""${dados.uf ? '' : ' selected'}>UF</option>
+            ${UFS.map(u => `<option value="${u}"${dados.uf === u ? ' selected' : ''}>${u}</option>`).join('')}
+          </select>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Convidados</span>
+          <select class="rfp-campo" data-rfp-input="convidados">
+            <option value=""${dados.convidados ? '' : ' selected'}>Selecione</option>
+            ${CONVIDADOS.map(o => `<option value="${o.id}"${dados.convidados === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
+          </select>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Horário</span>
+          <select class="rfp-campo" data-rfp-input="periodo">
+            <option value=""${dados.periodo ? '' : ' selected'}>Selecione</option>
+            ${PERIODOS.map(o => `<option value="${o.id}"${dados.periodo === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Data flexível / em definição</label>
+      ${dados.periodo === 'horas' ? `
+        <label class="rfp-rotulo rfp-horas"><span class="rfp-rotulo-texto">Horas de serviço</span>
+          <span class="rfp-horas-campo">
+            <input type="number" class="rfp-campo" data-rfp-input="horasServico" min="1" max="24" value="${dados.horasServico ?? ''}">
+            <span class="rfp-horas-sufixo" id="rfp-horas-sufixo">${textoDeHoras(dados.horasServico)}</span>
+          </span>
+        </label>` : ''}
+      ${['dataEvento', 'cidade', 'uf', 'convidados', 'periodo', 'horasServico'].map(c => erroHtml(c)).join('')}`;
+  }
+
+  /** "Serviço específico" (um serviço) ou "Montar evento completo" (vários). */
+  let formato = 'unico';
+
+  /** Os dois jeitos de começar (cards no topo). */
+  function htmlModos() {
+    const card = (/** @type {string} */ id, /** @type {string} */ nome, /** @type {string} */ texto, /** @type {string} */ icone) => `
+      <button type="button" class="rfp-modo${formato === id ? ' ativo' : ''}" role="radio" aria-checked="${formato === id}" data-rfp-formato="${id}">
+        <span class="rfp-modo-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icone}</svg></span>
+        <span class="rfp-modo-textos"><b>${nome}</b><span>${texto}</span></span>
+        <span class="rfp-lote-cat-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+      </button>`;
+    return `
+      <div class="rfp-modos" role="radiogroup" aria-label="Como você prefere começar">
+        ${card('unico', 'Serviço específico', 'Contrate um fornecedor pontual (ex.: apenas o DJ, apenas o bolo ou apenas o espaço).', '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/>')}
+        ${card('completo', 'Montar evento completo', 'Defina os dados do evento uma única vez e selecione todos os profissionais que você precisa.', '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>')}
+      </div>`;
+  }
+
+  /** Categoria única (drop-down da Love). */
+  function seletorDeServico() {
+    const id = lote.categorias[0] || '';
+    const cat = id ? categoriaPorId(/** @type {any} */ (id)) : null;
+    return `
+      <div class="rfp-cat-select${categoriaAberta ? ' is-open' : ''}">
+        <button type="button" class="rfp-cat-gatilho" data-rfp-cat-gatilho aria-haspopup="listbox" aria-expanded="${categoriaAberta}">
+          <span class="${cat ? '' : 'rfp-cat-vazio'}">${esc(cat ? cat.nome : 'Selecione o serviço...')}</span>
+          <svg class="rfp-cat-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+        </button>
+        ${categoriaAberta ? `
+          <div class="rfp-cat-painel" role="listbox">
+            ${CATEGORIAS.map(c => `<button type="button" class="rfp-cat-opcao${c.id === id ? ' ativa' : ''}" role="option" aria-selected="${c.id === id}" data-lote-unico="${c.id}">${esc(c.nome)}</button>`).join('')}
+          </div>` : ''}
+      </div>`;
+  }
+
+  /** @param {string} id */
+  function blocoTitulo(id) {
+    const it = lote.itens[id];
+    return `
+      <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título <span class="rfp-opcional">(gerado automaticamente, você pode editar)</span></span>
+        <input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="titulo" maxlength="120" value="${esc(it.titulo)}">
+      </label>
+      ${erroHtml(`${id}:titulo`)}`;
+  }
+  /** @param {string} id */
+  function blocoTags(id) {
+    const cat = categoriaPorId(/** @type {any} */ (id));
+    const it = lote.itens[id];
+    if (!cat) return '';
+    return `
+      <h4 class="rfp-pergunta">Subcategorias <span class="rfp-opcional">(opcional)</span></h4>
+      <div class="rfp-tags">
+        ${cat.tags.map(t => `<button type="button" class="rfp-tag${it.especialidades.includes(t) ? ' ativa' : ''}" aria-pressed="${it.especialidades.includes(t)}" data-lote-tag="${id}" data-lote-tag-valor="${esc(t)}">${esc(t)}</button>`).join('')}
+      </div>`;
+  }
+  /** @param {string} id */
+  function blocoOrcamento(id) {
+    const it = lote.itens[id];
+    const temOrcamento = !!(it.valorMin || it.valorMax);
+    return `
+      <div class="rfp-orcamento">
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">De</span>
+          <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMin" inputmode="numeric" value="${it.valorMin != null ? milhar(it.valorMin) : ''}" aria-label="Orçamento de"></span>
+        </label>
+        <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Até</span>
+          <span class="rfp-moeda"><span>R$</span><input type="text" class="rfp-campo" data-lote-cat-campo="${id}" data-lote-input="valorMax" inputmode="numeric" value="${it.valorMax != null ? milhar(it.valorMax) : ''}" aria-label="Orçamento até"></span>
+        </label>
+      </div>
+      ${temOrcamento ? '' : '<p class="rfp-dica">Em branco, fica aberto a propostas.</p>'}
+      ${erroHtml(`${id}:faixa`)}
+      ${temOrcamento ? `
+        <label class="rfp-toggle">
+          <span>Aceito propostas fora dessa faixa de preço</span>
+          <span class="settings-switch"><input type="checkbox" data-lote-cat-campo="${id}" data-lote-input="aceitaForaDaFaixa" ${it.aceitaForaDaFaixa ? 'checked' : ''}><span class="settings-switch-track"></span></span>
+        </label>` : ''}`;
+  }
+  /** @param {string} id @param {string} rotulo @param {number} linhas */
+  function blocoDescricao(id, rotulo, linhas) {
+    const it = lote.itens[id];
+    return `
+      <h4 class="rfp-pergunta">${rotulo}</h4>
+      <textarea class="rfp-campo rfp-descricao" data-lote-cat-campo="${id}" data-lote-input="descricao" maxlength="${DESCRICAO_MAX}" rows="${linhas}" placeholder="${esc(DICA_DO_SERVICO[id] || '')}">${esc(it.descricao)}</textarea>
+      ${erroHtml(`${id}:descricao`)}`;
+  }
+
+  /** Seção final comum: imagens de referência, limite de propostas e privacidade. */
+  function htmlFinal() {
+    const n = lote.categorias.length;
+    return `
+      <section class="rfp-secao">
+        <h4 class="rfp-pergunta">${formato === 'completo' && n > 1 ? 'Quantas propostas você quer receber em cada uma?' : 'Quantas propostas você quer receber?'}</h4>
+        <div class="rfp-pilulas" role="radiogroup">
+          ${LIMITES.map(l => `<button type="button" class="rfp-pilula${l.valor === dados.limitePropostas ? ' ativa' : ''}" role="radio" aria-checked="${l.valor === dados.limitePropostas}" data-rfp-campo="limitePropostas" data-rfp-valor="${l.valor === null ? '' : l.valor}">${esc(l.nome)}</button>`).join('')}
+        </div>
+        <div class="rfp-aviso">
+          ${ICONE_CADEADO}
+          <p>Seu telefone e WhatsApp <b>não são mostrados</b> aos fornecedores. As propostas, a conversa e o fechamento acontecem com segurança dentro da Love.</p>
+        </div>
+      </section>
+      <section class="rfp-secao">${imagensDeReferencia()}</section>
+      ${formato === 'completo' && n > 1 ? `<p class="rfp-lote-explica">Cada serviço marcado gera uma solicitação independente, enviada aos profissionais daquela categoria.</p>` : ''}`;
+  }
+
+  /** Serviço específico: serviço, detalhes, dados do evento e orçamento. */
+  function htmlPaginaUnico() {
+    const id = lote.categorias[0] || '';
+    atualizarTitulos();
+    return `
+      <section class="rfp-secao">
+        <h4 class="rfp-pergunta">Qual serviço você procura?</h4>
+        ${seletorDeServico()}
+        ${erroHtml('categorias')}
+        ${id ? `${blocoTitulo(id)}${blocoTags(id)}${blocoDescricao(id, 'Descreva o que você precisa', 5)}` : ''}
+      </section>
+      <section class="rfp-secao">
+        ${htmlCelebracao()}
+        <h4 class="rfp-pergunta">Dados do evento</h4>
+        ${htmlEventoCompacto()}
+      </section>
+      ${id ? `
+        <section class="rfp-secao">
+          <h4 class="rfp-pergunta">Orçamento previsto <span class="rfp-opcional">(opcional)</span></h4>
+          ${blocoOrcamento(id)}
+        </section>` : ''}
+      ${htmlFinal()}`;
+  }
+
+  /** Montar evento completo: evento uma vez, vários serviços e uma lista simples. */
+  function htmlPaginaCompleto() {
+    atualizarTitulos();
+    const n = lote.categorias.length;
+    return `
+      <section class="rfp-secao">
+        ${htmlCelebracao()}
+        <h4 class="rfp-pergunta">Dados gerais do evento</h4>
+        ${htmlEventoCompacto()}
+      </section>
+      <section class="rfp-secao">
+        <h4 class="rfp-pergunta">Quais serviços você precisa?</h4>
+        ${gradeDeServicos()}
+        ${erroHtml('categorias')}
+      </section>
+      ${n ? `
+        <section class="rfp-secao">
+          <h4 class="rfp-pergunta">Descrição geral</h4>
+          <textarea class="rfp-campo rfp-descricao" data-lote-geral maxlength="${DESCRICAO_MAX}" rows="4" placeholder="Conte o estilo do evento, o clima que você imagina e o que é importante para você.">${esc(lote.descricaoGeral)}</textarea>
+          <label class="rfp-check rfp-check-geral"><input type="checkbox" data-lote-usar-geral ${lote.usarGeral ? 'checked' : ''}> Usar a mesma descrição geral para todos</label>
+          <div class="rfp-lote-lista">
+            ${lote.categorias.map(id => {
+              const cat = categoriaPorId(/** @type {any} */ (id));
+              if (!cat || !lote.itens[id]) return '';
+              return `
+                <div class="rfp-lote-linha">
+                  <div class="rfp-lote-linha-topo">
+                    <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${cat.icone}</svg></span>
+                    <b>${esc(CATEGORIA_CURTA[id] || cat.nome)}</b>
+                  </div>
+                  ${blocoTitulo(id)}
+                  <h4 class="rfp-pergunta">Orçamento <span class="rfp-opcional">(opcional)</span></h4>
+                  ${blocoOrcamento(id)}
+                  ${blocoDescricao(id, lote.usarGeral ? 'Observações <span class="rfp-opcional">(opcional)</span>' : 'Descrição deste serviço', 3)}
+                </div>`;
+            }).join('')}
+          </div>
+        </section>` : ''}
+      ${htmlFinal()}`;
+  }
+
+  /** O formulário inteiro numa página, conforme o jeito escolhido no topo. */
+  function htmlPagina() {
+    return `${htmlModos()}${formato === 'completo' ? htmlPaginaCompleto() : htmlPaginaUnico()}`;
+  }
+
+  /** Grade compacta de serviços (marcar um ou mais). */
+  function gradeDeServicos() {
+    return `
+      <div class="rfp-lote-cats" role="group" aria-label="Serviços">
+        ${CATEGORIAS.map(c => {
+          const on = lote.categorias.includes(c.id);
+          return `
+            <button type="button" class="rfp-lote-cat${on ? ' ativa' : ''}" aria-pressed="${on}" data-lote-cat="${c.id}">
+              <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${c.icone}</svg></span>
+              <span class="rfp-lote-cat-nome">${esc(CATEGORIA_CURTA[c.id] || c.nome)}</span>
+              <span class="rfp-lote-cat-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+            </button>`;
+        }).join('')}
+      </div>`;
   }
 
   // Etapa 1: tipo de celebração primeiro, depois os serviços e os dados do evento.
@@ -1128,6 +1378,26 @@
 
   /** Cliques do formulário de serviços. @param {HTMLElement} alvo @returns {boolean} tratou */
   function cliqueDoLote(alvo) {
+    const fmt = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-formato]'));
+    if (fmt) {
+      formato = fmt.dataset.rfpFormato === 'completo' ? 'completo' : 'unico';
+      // Voltou para um serviço só: fica com o primeiro marcado.
+      if (formato === 'unico' && lote.categorias.length > 1) lote.categorias = lote.categorias.slice(0, 1);
+      erros = {};
+      categoriaAberta = false;
+      desenhar(0);
+      return true;
+    }
+    const unico = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-unico]'));
+    if (unico) {
+      const id = unico.dataset.loteUnico || '';
+      lote.categorias = [id];
+      if (!lote.itens[id]) lote.itens[id] = itemNovo(id);
+      categoriaAberta = false;
+      delete erros.categorias;
+      desenhar(0);
+      return true;
+    }
     const cat = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-cat]'));
     if (cat) { alternarCategoriaDoLote(cat.dataset.loteCat || ''); return true; }
     const tag = /** @type {HTMLElement|null} */ (alvo.closest('[data-lote-tag]'));
@@ -1151,6 +1421,12 @@
 
   /** Digitação dos campos de serviço. @param {HTMLInputElement} el @returns {boolean} tratou */
   function digitacaoDoLote(el) {
+    if (el.matches('[data-lote-usar-geral]')) {
+      lote.usarGeral = el.checked;
+      Object.keys(erros).forEach(k => { if (k.endsWith(':descricao')) delete erros[k]; });
+      desenhar(0);
+      return true;
+    }
     if (el.matches('[data-lote-geral]')) { lote.descricaoGeral = el.value; return true; }
     const id = el.dataset.loteCatCampo;
     const campo = el.dataset.loteInput;
@@ -1189,10 +1465,8 @@
   }
 
   async function publicarLote() {
-    for (const n of [1, 2]) {
-      const e = validarLote(n);
-      if (Object.keys(e).length) { erros = e; return irPara(n, -1); }
-    }
+    const e = { ...validarLote(1), ...validarLote(2) };
+    if (Object.keys(e).length) { erros = e; desenhar(0); focarPrimeiroErro(); return; }
     const usuario = usuarioLogado();
     if (!usuario || typeof supabaseClient === 'undefined') return mostrarErroGeral('Entre na sua conta para publicar.');
     publicando = true;
@@ -1325,9 +1599,9 @@
   /** Dados do editor sem as fotos (arquivo não vai para o rascunho). */
   function dadosParaGuardar() {
     const { referencias: _fotos, ...resto } = dados;
-    return { ...resto, lote: { categorias: lote.categorias.slice(), itens: lote.itens, descricaoGeral: lote.descricaoGeral } };
+    return { ...resto, formato, lote: { categorias: lote.categorias.slice(), itens: lote.itens, descricaoGeral: lote.descricaoGeral, usarGeral: lote.usarGeral } };
   }
-  const valeComoRascunho = () => !!(dados.tipoCelebracao && lote.categorias.length && etapa >= 2);
+  const valeComoRascunho = () => !!(dados.tipoCelebracao && lote.categorias.length);
 
   /** @returns {Promise<any[]>} */
   async function listarRascunhos() {

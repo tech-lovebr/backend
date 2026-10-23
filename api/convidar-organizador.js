@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ ok: false, erro: "token_invalido" });
   }
 
-  const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY));
 
   const { data: conv, error } = await supabaseAdmin
     .from("eventos_organizadores")

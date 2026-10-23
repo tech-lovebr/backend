@@ -106,7 +106,7 @@ async function responder(req, res) {
   if (!token) return res.status(401).json({ ok: false, erro: "sem_sessao" });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  const chave = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY) || process.env.SUPABASE_SECRET_KEY;
   if (!url || !chave) return res.status(500).json({ ok: false, erro: "servidor_nao_configurado" });
 
   const supabase = createClient(url, chave, {

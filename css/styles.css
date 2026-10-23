@@ -8913,6 +8913,7 @@ html body #floorplan-guests-panel .builder-el-group-title:not(#love-h-a) { text-
 .rfp-tela { animation: rfp-aparece .25s ease; }
 .rfp-tela.entra-direita { animation: rfp-da-direita .3s ease; }
 .rfp-tela.entra-esquerda { animation: rfp-da-esquerda .3s ease; }
+.rfp-tela.sem-animacao { animation: none; }
 @keyframes rfp-aparece { from { opacity: .4; } to { opacity: 1; } }
 @keyframes rfp-da-direita { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
 @keyframes rfp-da-esquerda { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }

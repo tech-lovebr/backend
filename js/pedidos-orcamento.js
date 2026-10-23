@@ -532,7 +532,7 @@
       const telas = modo === 'lote' ? [htmlLote1, htmlLote2, htmlLote3, htmlLote4] : [htmlEtapa1, htmlEtapa2, htmlEtapa3, htmlEtapa4];
       // Título e subtítulo da etapa ficam à esquerda da caixa (como no Hub).
       const topo = '';
-      corpo.innerHTML = `<div class="rfp-tela">${topo}${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
+      corpo.innerHTML = `<div class="rfp-tela${direcao ? '' : ' sem-animacao'}">${topo}${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
       if (modo === 'lote' && !publicando && !publicado) agendarRascunho();
       if (direcao) corpo.scrollTop = 0;
     }

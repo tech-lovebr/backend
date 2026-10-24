@@ -20031,8 +20031,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!j || j.erro) return;
       const endereco = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-endereco'));
       const bairro = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-bairro'));
-      if (endereco && !endereco.value) endereco.value = j.logradouro || '';
-      if (bairro && !bairro.value) bairro.value = j.bairro || '';
+      // CEP novo troca a rua e o bairro (mesmo que já estivessem preenchidos).
+      if (campo.value.replace(/\D/g, '') !== d) return; // a pessoa já digitou outro
+      if (endereco) endereco.value = j.logradouro || '';
+      if (bairro) bairro.value = j.bairro || '';
       if (endereco && endereco.value && document.activeElement === campo) document.getElementById('settings-user-numero')?.focus();
     } catch (err) { /* sem internet ou CEP não encontrado: preenche à mão */ }
   });

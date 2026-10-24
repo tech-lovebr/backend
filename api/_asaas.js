@@ -99,15 +99,40 @@ function statusDaLove(s) {
  * Pagamento confirmado no Asaas → presentes pagos na Love.
  * Usa o id da cobrança guardado em presentes_contribuicoes.gateway_ref.
  */
+/** Divide um total em centavos na proporção dos pesos (a sobra do arredondamento vai no último). */
+function dividir(pesos, total) {
+  const soma = pesos.reduce((s, v) => s + v, 0) || 1;
+  const emCentavos = Math.round(total * 100);
+  const partes = pesos.map(v => Math.floor(emCentavos * v / soma));
+  partes[partes.length - 1] += emCentavos - partes.reduce((s, v) => s + v, 0);
+  return partes.map(c => c / 100);
+}
+
 async function confirmarPagamento(db, pagamentoId) {
-  const { data: itens } = await db.from("presentes_contribuicoes").select("id, status").eq("gateway_ref", pagamentoId);
+  const { data: itens } = await db.from("presentes_contribuicoes").select("id, status, valor, repasse").eq("gateway_ref", pagamentoId);
   let confirmados = 0;
   for (const c of itens || []) {
     if (c.status === "pago") continue;
     const { error } = await db.rpc("confirmar_contribuicao", { p_id: c.id, p_gateway_ref: pagamentoId });
     if (!error) confirmados++;
   }
+  // Comissão da Love = líquido do Asaas (já sem a tarifa) − repasse ao anfitrião.
+  if (confirmados && itens.every(c => c.repasse != null)) {
+    try {
+      const pagamento = await asaas(`/payments/${pagamentoId}`);
+      const liquido = Number(pagamento.netValue);
+      if (liquido > 0) {
+        const repasse = itens.reduce((s, c) => s + Number(c.repasse), 0);
+        const comissoes = dividir(itens.map(c => Number(c.valor)), Math.max(0, liquido - repasse));
+        for (let i = 0; i < itens.length; i++) {
+          await db.from("presentes_contribuicoes").update({ comissao_love: comissoes[i] }).eq("id", itens[i].id);
+        }
+      }
+    } catch (e) {
+      console.error("comissao liquida:", e.message);
+    }
+  }
   return confirmados;
 }
 
-module.exports = { asaas, cifrar, decifrar, usuarioDaRequisicao, chaveDaConta, statusDaLove, confirmarPagamento, BASE };
+module.exports = { asaas, cifrar, decifrar, usuarioDaRequisicao, chaveDaConta, statusDaLove, confirmarPagamento, dividir, BASE };

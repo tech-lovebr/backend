@@ -19,7 +19,7 @@
 // o pagamento confirmado chama confirmar_contribuicao (webhook do Asaas ou a
 // consulta GET acima, que a tela do Pix faz a cada poucos segundos).
 
-const { asaas, confirmarPagamento, BASE } = require("./_asaas");
+const { asaas, confirmarPagamento, dividir, BASE } = require("./_asaas");
 const { contaParaReceber } = require("./_recebimento");
 const { supabaseAdmin } = require("./_ses");
 
@@ -159,7 +159,15 @@ module.exports = async (req, res) => {
         split: [{ walletId: conta.walletId, fixedValue: paraOAnfitriao, description: "Presente pela Love" }],
       },
     });
-    await db.from("presentes_contribuicoes").update({ gateway_ref: cobranca.id }).in("id", ids);
+    // Admin › Financeiro: repasse ao anfitrião e comissão da Love por presente
+    // (a comissão é acertada pelo líquido do Asaas quando o pagamento confirma).
+    const partes = dividir(registrados.map(r => r.valor), paraOAnfitriao);
+    const comissoes = dividir(registrados.map(r => r.valor), centavos(total - paraOAnfitriao));
+    for (let i = 0; i < registrados.length; i++) {
+      await db.from("presentes_contribuicoes")
+        .update({ gateway_ref: cobranca.id, gateway: "asaas", repasse: partes[i], comissao_love: comissoes[i] })
+        .eq("id", registrados[i].id);
+    }
 
     const resposta = { ok: true, metodo, pagamento: cobranca.id, contribuicoes: ids, soma, taxa, total };
     if (metodo === "pix") {

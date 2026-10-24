@@ -4250,3 +4250,13 @@ body.com-faixa .header-bar-link:hover { background: rgba(255, 255, 255, .1); }
 body.com-faixa .admin-header-actions .filtro-menu .btn,
 body.com-faixa .admin-header-actions .filtro-menu .btn span,
 body.com-faixa .admin-header-actions .filtro-menu .btn svg { color: #18181B; }
+
+/* Voltar do cadastro aberto na caixa: só a setinha, no azul do topo, sem caixa. */
+body .painel-linha-cabeca .painel-linha-voltar,
+body .painel-linha-cabeca .painel-linha-voltar:hover,
+body .painel-linha-cabeca .painel-linha-voltar:focus {
+  width: auto; height: auto; padding: 0; margin: 0;
+  border: 0; outline: 0; box-shadow: none; background: transparent; color: #183b54;
+}
+body .painel-linha-cabeca .painel-linha-voltar svg { width: 20px; height: 20px; stroke-width: 2.2; }
+body .painel-linha-cabeca .painel-linha-voltar:hover { opacity: .75; }

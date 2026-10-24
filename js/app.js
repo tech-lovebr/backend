@@ -19502,10 +19502,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Configurações › Preferências: uma linha por aviso, com toggle que salva na
   // hora (sem botão), guardado nos dados da conta (user_metadata.preferencias).
+  // Tudo vem ligado por padrão (Termos/Privacidade avisam); quem desliga fica salvo.
   const PREFERENCIAS_DO_ANFITRIAO = [
-    { grupo: 'email', chave: 'ofertas', titulo: 'Ofertas e promoções', desc: 'Receba ofertas e descontos de parceiros da Love', padrao: false },
-    { grupo: 'email', chave: 'beneficios', titulo: 'Benefícios', desc: 'Vantagens exclusivas para quem organiza o evento na Love', padrao: false },
-    { grupo: 'email', chave: 'viagens', titulo: 'Viagens', desc: 'Ideias e ofertas de lua de mel e destinos', padrao: false },
+    { grupo: 'email', chave: 'ofertas', titulo: 'Ofertas e promoções', desc: 'Receba ofertas e descontos de parceiros da Love', padrao: true },
+    { grupo: 'email', chave: 'beneficios', titulo: 'Benefícios', desc: 'Vantagens exclusivas para quem organiza o evento na Love', padrao: true },
+    { grupo: 'email', chave: 'viagens', titulo: 'Viagens', desc: 'Ideias e ofertas de lua de mel e destinos', padrao: true },
     { grupo: 'presentes', chave: 'whatsapp_presente', titulo: 'Notificação via WhatsApp', desc: 'Avise a cada presente recebido', padrao: true },
     { grupo: 'presentes', chave: 'recado_midia', titulo: 'Recado com foto ou vídeo', desc: 'Os convidados podem gravar um áudio ou anexar fotos e vídeos com os votos', padrao: true }
   ];

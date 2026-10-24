@@ -51,8 +51,14 @@ const NAV_SECTIONS = [
   {
     label: 'CMS',
     items: [
-      { page: 'cms', href: 'cms.html', text: 'Blog', icon: 'artigo' },
-      { page: 'cms-legal', href: 'cms-legal.html', text: 'Legal', icon: 'legal' }
+      {
+        grupo: 'conteudo', text: 'Conteúdo', icon: 'artigo',
+        children: [
+          { page: 'cms', href: 'cms.html', text: 'Blog' },
+          { page: 'cms-notificacoes', href: 'cms-notificacoes.html', text: 'Notificações' },
+          { page: 'cms-legal', href: 'cms-legal.html', text: 'Legal' }
+        ]
+      }
     ]
   }
 ];
@@ -122,6 +128,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const admin = await window.adminReady;
   if (!admin) return;
 
+  // Faixa azul em degradê no topo só nas telas de números (Dashboard, Financeiro, Custos).
+  if (['dashboard', 'financeiro', 'custos'].includes(document.body.dataset.page)) document.body.classList.add('com-faixa');
   renderSidebar();
   renderTopbar(admin);
   renderHeaderBar();
@@ -148,7 +156,7 @@ function renderSidebar() {
   const grupo = (dados) => {
     // Já nasce aberto quando a página atual é uma das filhas — senão você
     // estaria numa tela sem nada no menu indicando onde está.
-    const aberto = dados.children.some(f => f.page === current);
+    const aberto = dados.children.some(f => f.page === current) || (dados.grupo === 'conteudo' && current === 'cms-artigo');
     // A linha inteira abre e fecha os filhos.
     return `
       <div class="admin-nav-grupo-linha">
@@ -175,7 +183,9 @@ function renderSidebar() {
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Ir para o Dashboard">
       <img src="assets/logo-preto.png" alt="Love" class="marca-logo">
     </a>
-    <nav class="admin-nav">${sections}</nav>`;
+    <nav class="admin-nav">${sections}</nav>
+    ${perfilDoRodape(window.adminUser || {})}`;
+  ligarPerfil(host);
 
 
   host.querySelectorAll('[data-grupo]').forEach(botao => {
@@ -258,28 +268,7 @@ function renderTopbar(admin) {
 
     <p class="topbar-empresa">CNPJ 69.386.397/0001-06
       <button type="button" class="topbar-copiar" id="btn-copiar-cnpj" title="Copiar número do CNPJ" aria-label="Copiar número do CNPJ">${ICONE_COPIAR}</button>
-    </p>
-    <a href="cms-notificacoes.html" class="topbar-sino ${document.body.dataset.page === 'cms-notificacoes' ? 'is-active' : ''}" title="Notificações" aria-label="Notificações">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS.sino}</svg>
-    </a>
-    <div class="admin-user sidebar-perfil topbar-perfil">
-      <button type="button" class="sidebar-perfil-botao" id="btn-user-menu"
-              aria-haspopup="true" aria-expanded="false" title="${escapeHtml(admin.email || '')}">
-        <span class="sidebar-perfil-nome">${escapeHtml(admin.email || admin.name || 'Administrador')}</span>
-        <svg class="sidebar-perfil-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
-      </button>
-      <div class="admin-user-menu" id="user-menu" hidden>
-        <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
-
-        <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
-        <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
-        <a href="https://love.com.br" target="_blank" rel="noopener noreferrer" class="admin-user-menu-item admin-user-menu-externo">
-          Homepage
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"/><path d="M11 13l9 -9"/><path d="M15 4h5v5"/></svg>
-        </a>
-        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
-      </div>
-    </div>`;
+    </p>`;
 
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
@@ -296,9 +285,39 @@ function renderTopbar(admin) {
       toast('Não foi possível copiar.');
     }
   });
+}
 
+/* Perfil no rodapé do menu (como na referência): avatar com as iniciais,
+   nome e e-mail; o menu abre para cima. */
+function perfilDoRodape(admin) {
+  const nome = admin.name || (admin.email || 'Administrador').split('@')[0];
+  return `
+    <div class="admin-user sidebar-perfil sidebar-perfil-rodape">
+      <div class="admin-user-menu" id="user-menu" hidden>
+        <p class="admin-user-menu-email">${escapeHtml(admin.email || '')}</p>
+        <a href="configuracoes.html" class="admin-user-menu-item">Configurações</a>
+        <a href="funcoes.html" class="admin-user-menu-item">Funções</a>
+        <a href="https://love.com.br" target="_blank" rel="noopener noreferrer" class="admin-user-menu-item admin-user-menu-externo">
+          Homepage
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"/><path d="M11 13l9 -9"/><path d="M15 4h5v5"/></svg>
+        </a>
+        <button type="button" class="admin-user-menu-item" id="btn-logout">Sair</button>
+      </div>
+      <button type="button" class="sidebar-perfil-botao" id="btn-user-menu" aria-haspopup="true" aria-expanded="false" title="${escapeHtml(admin.email || '')}">
+        <span class="perfil-avatar">${escapeHtml(iniciaisDoAvatar(admin.name || admin.email))}</span>
+        <span class="perfil-textos">
+          <span class="perfil-nome">${escapeHtml(nome)}</span>
+          <span class="perfil-email">${escapeHtml(admin.email || '')}</span>
+        </span>
+        <svg class="perfil-seletor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l4 -4l4 4"/><path d="M16 15l-4 4l-4 -4"/></svg>
+      </button>
+    </div>`;
+}
+
+function ligarPerfil(host) {
   const botaoMenu = host.querySelector('#btn-user-menu');
   const menu = /** @type {HTMLElement} */ (host.querySelector('#user-menu'));
+  if (!botaoMenu || !menu) return;
   const fecharMenu = () => {
     menu.hidden = true;
     botaoMenu.setAttribute('aria-expanded', 'false');

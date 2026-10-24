@@ -405,7 +405,7 @@ function renderTabela() {
 /** 1234.5 → "1.234,50" (para o campo de valor). */
 const valorNoCampo = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 /** "1.234,50" → 1234.5 */
-const lerValor = texto => Number(String(texto || '').replace(/./g, '').replace(',', '.')) || 0;
+const lerValor = texto => Number(String(texto || '').replace(/\./g, '').replace(',', '.')) || 0;
 
 function abrirFormulario(item) {
   const editando = Boolean(item);
@@ -497,7 +497,7 @@ function abrirFormulario(item) {
   });
   // Digita só números; as casas decimais e os pontos de milhar entram sozinhos (1.000,00).
   form.valor.addEventListener('input', () => {
-    const digitos = form.valor.value.replace(/D/g, '').replace(/^0+(?=d)/, '').slice(0, 13);
+    const digitos = form.valor.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 13);
     form.valor.value = digitos ? valorNoCampo(Number(digitos) / 100) : '';
     atualizarConversao();
   });

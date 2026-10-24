@@ -11548,3 +11548,8 @@ html body #view-event-os-dashboard #form-user-settings .field-input.is-faltando:
 .convite-presentes-indisponivel svg { width: 40px; height: 40px; margin-bottom: 8px; color: var(--bx-primary, #183b54); }
 .convite-presentes-indisponivel p { margin: 0; max-width: 320px; }
 .convite-presentes-indisponivel .convite-presentes-indisponivel-titulo { font-size: 1.0625rem; font-weight: 600; color: #18181B; }
+
+/* Aviso "Finalize seu cadastro": título escuro e forte; subtítulo cinza mais claro (vencendo a regra geral de <p> do painel). */
+html body .rc-aviso .rc-aviso-titulo:not(#love-h-a) { color: #18181B !important; font-weight: 600 !important; }
+html body .rc-aviso .rc-aviso-sub:not(#love-h-a) { color: #A1A1AA !important; }
+body[data-theme="dark"] .rc-aviso .rc-aviso-sub { color: #A1A1AA !important; }

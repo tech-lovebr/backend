@@ -11663,3 +11663,4 @@ body[data-theme="dark"] .cart-cal-mes, body[data-theme="dark"] button.cart-cal-a
 body[data-theme="dark"] button.cart-cal-dia.is-meio, body[data-theme="dark"] button.cart-cal-atalho:hover, body[data-theme="dark"] button.cart-cal-dia:hover:not(:disabled) { background: #333333 !important; }
 body[data-theme="dark"] .cart-cal-atalhos { border-color: #404040; }
 body[data-theme="dark"] button.cart-cal-dia.is-inicio, body[data-theme="dark"] button.cart-cal-dia.is-fim { background: #FFFFFF !important; color: #181D24 !important; }
+html body .cart-arquivo[hidden]:not(#love-h-a) { display: none; }

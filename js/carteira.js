@@ -392,11 +392,11 @@
         <div class="cart-verif-arquivos">
           <label class="cart-arquivo" data-verif-arquivo="frente">
             <input type="file" accept="image/jpeg,image/png,image/webp" data-verif-rg="frente">
-            ${ICONE_ENVIAR}<b>Frente do documento</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'Foto em JPEG ou PNG'}</span>
+            ${ICONE_ENVIAR}<b data-verif-frente-rotulo>${docTipo === 'passaporte' ? 'Página com foto do passaporte' : 'Frente do documento'}</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'Foto em JPEG ou PNG'}</span>
           </label>
-          <label class="cart-arquivo" data-verif-arquivo="verso">
+          <label class="cart-arquivo" data-verif-arquivo="verso"${docTipo === 'passaporte' ? ' hidden' : ''}>
             <input type="file" accept="image/jpeg,image/png,image/webp" data-verif-rg="verso">
-            ${ICONE_ENVIAR}<b>Verso do documento<span data-verif-opcional${docTipo === 'passaporte' ? '' : ' hidden'}> (opcional)</span></b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'Foto em JPEG ou PNG'}</span>
+            ${ICONE_ENVIAR}<b>Verso do documento</b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'Foto em JPEG ou PNG'}</span>
           </label>
           <label class="cart-arquivo" data-verif-arquivo="selfie">
             <input type="file" accept="image/jpeg,image/png,image/webp" capture="user" data-verif-rg="selfie">
@@ -417,7 +417,7 @@
         <h4 class="cart-verif-titulo">Verificação de identidade e envio de documentos</h4>
         <p class="cart-verif-intro">Antes de começar, confira algumas instruções que podem te ajudar:</p>
         <ul class="cart-verif-lista">
-          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG, CNH ou passaporte para enviar a foto da frente e do verso, e tire uma selfie segurando o documento;</span></li>
+          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG ou CNH (foto da frente e do verso) ou o passaporte (só a página com foto), e tire uma selfie segurando o documento;</span></li>
           <li>${ICONE_CHECK}<span>As fotos devem estar nítidas, sem reflexo e com todos os dados legíveis;</span></li>
           <li>${ICONE_CHECK}<span>O nome e o CPF precisam ser do titular que vai receber os saques;</span></li>
           <li>${ICONE_CHECK}<span>Informe uma chave Pix no seu nome para receber os valores.</span></li>
@@ -603,13 +603,16 @@
     if (campo === 'cpf' || (campo === 'pixChave' && tipo && tipo.value === 'cpf')) el.value = mascaraCpf(el.value);
     if (campo === 'pixChave' && tipo && tipo.value === 'telefone' && typeof w.maskBrazilPhone === 'function') el.value = w.maskBrazilPhone(el.value);
   });
-  // Tipo de documento: no passaporte o verso vira opcional (sem redesenhar).
+  // Tipo de documento: passaporte é uma foto só (a página com foto), sem verso.
   document.addEventListener('change', (e) => {
     const el = /** @type {HTMLSelectElement} */ (e.target);
     if (!el || !el.matches || !el.matches('#carteira-raiz [data-verif-campo="docTipo"]')) return;
     docTipo = el.value;
-    const opcional = /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-verif-opcional]'));
-    if (opcional) opcional.hidden = docTipo !== 'passaporte';
+    const passaporte = docTipo === 'passaporte';
+    const verso = /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-verif-arquivo="verso"]'));
+    if (verso) verso.hidden = passaporte;
+    const frente = document.querySelector('#carteira-raiz [data-verif-frente-rotulo]');
+    if (frente) frente.textContent = passaporte ? 'Página com foto do passaporte' : 'Frente do documento';
   });
   // Documento frente/verso: guarda o arquivo e mostra o nome (sem redesenhar).
   document.addEventListener('change', (e) => {
@@ -658,7 +661,8 @@
     const pixChave = v('pixChave');
     if (nome.split(/\s+/).length < 2) return falhar('Informe o nome completo.');
     if (cpf.length !== 11) return falhar('CPF incompleto.');
-    if (!rgFrente) return falhar('Envie a frente do documento.');
+    if (docTipo === 'passaporte') rgVerso = null;
+    if (!rgFrente) return falhar(docTipo === 'passaporte' ? 'Envie a foto da página com foto do passaporte.' : 'Envie a frente do documento.');
     if (!rgVerso && docTipo !== 'passaporte') return falhar('Envie o verso do documento.');
     if (!selfieArq) return falhar('Envie a selfie segurando o documento.');
     if (!pixChave) return falhar('Informe a chave Pix.');

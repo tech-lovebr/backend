@@ -4090,7 +4090,7 @@ button.dash-chip.is-apagada .dash-chip-cor { opacity: .4; }
 
 /* Faixa azul: começa no azul do menu do love.com.br (#183b54) e clareia
    para o azul do TPV (#2a78d6) no canto. Cobre o cabeçalho e metade dos cards. */
-body.com-faixa { --faixa-h: 196px; }
+body.com-faixa { --faixa-h: 150px; }
 body.com-faixa .admin-topbar { background: #183b54; border-bottom-color: rgba(255, 255, 255, .08); }
 body.com-faixa .admin-topbar .topbar-empresa { color: rgba(255, 255, 255, .72); }
 body.com-faixa .admin-topbar .topbar-copiar { color: rgba(255, 255, 255, .6); }

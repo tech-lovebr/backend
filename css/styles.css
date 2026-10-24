@@ -11573,3 +11573,13 @@ html body #recados-raiz .recados-paginacao:not(#love-h-a) { margin-top: auto; }
 
 /* Recados: paginação com o mesmo respiro de Meus convidados (16px 24px 20px). */
 html body #recados-raiz .recados-caixa .guests-pagination:not(#love-h-a) { margin-top: auto; padding: 1rem 1.5rem 1.25rem; }
+
+/* Depois de confirmar presença: e-mail, WhatsApp e aceites (opcionais). */
+.convite-rsvp-dados { margin-top: 8px; padding-top: 24px; border-top: 1px solid #E4E4E7; }
+.convite-form .convite-rsvp-dados-titulo { margin: 0; font-size: 0.9375rem; font-weight: 600; color: #18181B; }
+.convite-form label.convite-rsvp-aceite { flex-direction: row; align-items: flex-start; gap: 10px; font-size: 0.875rem; font-weight: 400; line-height: 1.45; color: #3F3F46; cursor: pointer; }
+.convite-form label.convite-rsvp-aceite span { color: #3F3F46; font-weight: 400; }
+.convite-form .convite-rsvp-aceite input { width: 16px; height: 16px; flex-shrink: 0; margin: 2px 0 0; padding: 0; accent-color: var(--bx-primary, #183b54); }
+.convite-form .convite-rsvp-depois { align-self: center; padding: 4px 8px; background: none; border: 0; font: inherit; font-size: 0.875rem; font-weight: 600; color: #71717A; cursor: pointer; }
+.convite-form .convite-rsvp-depois:hover { color: #181D24; }
+.convite-rsvp-dados-ok { margin: 16px 0 0; text-align: center; font-size: 0.9375rem; color: #3F3F46; }

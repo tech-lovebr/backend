@@ -4552,11 +4552,89 @@ function renderConfirmarPresencaPublica(root) {
       return;
     }
     const nome = data.nome || escolhido.nome;
-    form.outerHTML = `
+    const primeiro = escaparPublico(String(nome).split(' ')[0]);
+    const convidadoId = escolhido.id;
+    const tela = document.createElement('div');
+    tela.innerHTML = `
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presença confirmada!</p>
-        <p>Obrigado, ${escaparPublico(String(nome).split(' ')[0])}. Sua presença já aparece na lista dos anfitriões.</p>
-      </div>`;
+        <p>Obrigado, ${primeiro}. Sua presença já aparece na lista dos anfitriões.</p>
+      </div>
+      ${data.chave ? `
+      <form class="convite-form convite-rsvp-dados" data-rsvp-dados novalidate>
+        <p class="convite-rsvp-dados-titulo">Que tal informar alguns dados para ajudar a assessoria?</p>
+        <label>E-mail <span>(opcional)</span>
+          <input type="email" name="email" maxlength="200" autocomplete="email" inputmode="email" placeholder="seu@email.com">
+        </label>
+        <label>WhatsApp <span>(opcional)</span>
+          <input type="tel" name="whatsapp" maxlength="15" autocomplete="tel" inputmode="tel" placeholder="(11) 99999-9999">
+        </label>
+        <label class="convite-rsvp-aceite"><input type="checkbox" name="novidades"><span>Aceito receber novidades sobre o evento</span></label>
+        <label class="convite-rsvp-aceite"><input type="checkbox" name="ofertas"><span>Aceito receber ofertas e descontos da Love Viagens</span></label>
+        <p class="convite-erro" hidden></p>
+        <button type="submit" class="convite-botao">Enviar</button>
+        <button type="button" class="convite-rsvp-depois" data-rsvp-depois>Agora não</button>
+      </form>` : ''}`;
+    form.replaceWith(...tela.childNodes);
+    ligarDadosDoConvidado(root, convidadoId, data.chave, primeiro);
+  });
+}
+
+/* Depois de confirmar: e-mail, WhatsApp e consentimentos (migration 102).
+   Tudo opcional; os aceites começam desmarcados. */
+function ligarDadosDoConvidado(root, convidadoId, chave, primeiro) {
+  const form = root.querySelector('[data-rsvp-dados]');
+  if (!form) return;
+  const erroEl = form.querySelector('.convite-erro');
+  const botao = form.querySelector('button[type="submit"]');
+  const whats = form.querySelector('input[name="whatsapp"]');
+  const soDigitos = v => String(v || '').replace(/\D/g, '');
+
+  whats.addEventListener('input', () => {
+    const d = soDigitos(whats.value).slice(0, 11);
+    whats.value = d.length > 10 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+      : d.length > 6 ? `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
+      : d.length > 2 ? `(${d.slice(0, 2)}) ${d.slice(2)}` : d;
+  });
+
+  const terminar = (texto) => {
+    form.outerHTML = `<p class="convite-rsvp-dados-ok">${texto}</p>`;
+  };
+  form.querySelector('[data-rsvp-depois]').addEventListener('click', () => form.remove());
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erroEl.hidden = true;
+    const email = form.email.value.trim();
+    const numero = soDigitos(whats.value);
+    const mostrarErro = (msg, campo) => { erroEl.textContent = msg; erroEl.hidden = false; if (campo) campo.focus(); };
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return mostrarErro('Digite um e-mail válido.', form.email);
+    if (numero && !(numero.length === 11 || numero.length === 10)) return mostrarErro('Digite o WhatsApp com DDD.', whats);
+    if (!email && !numero && !form.novidades.checked && !form.ofertas.checked) return mostrarErro('Preencha pelo menos um campo ou toque em "Agora não".');
+    if ((form.novidades.checked || form.ofertas.checked) && !email && !numero) return mostrarErro('Para receber novidades, informe o e-mail ou o WhatsApp.', form.email);
+
+    botao.disabled = true;
+    botao.textContent = 'Enviando…';
+    const { data, error } = await supabaseClient.rpc('completar_dados_convidado', {
+      p_slug: conviteSlugPublico,
+      p_convidado_id: convidadoId,
+      p_chave: chave,
+      p_email: email || null,
+      p_whatsapp: numero || null,
+      p_ofertas_love: form.ofertas.checked,
+      p_novidades_evento: form.novidades.checked
+    });
+    if (error || !data || !data.ok) {
+      if (error) console.error('Erro ao salvar dados do convidado:', error);
+      botao.disabled = false;
+      botao.textContent = 'Enviar';
+      const codigo = data && data.erro;
+      return mostrarErro(codigo === 'email_invalido' ? 'Digite um e-mail válido.'
+        : codigo === 'whatsapp_invalido' ? 'Digite o WhatsApp com DDD.'
+        : codigo === 'chave_invalida' ? 'O tempo para enviar acabou. Seus dados não foram salvos, mas sua presença continua confirmada.'
+        : 'Não foi possível enviar agora. Tente de novo em instantes.');
+    }
+    terminar(`Pronto, ${primeiro}! Obrigado pelas informações.`);
   });
 }
 

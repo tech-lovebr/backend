@@ -689,11 +689,11 @@
       // O Asaas aceita um arquivo por documento: frente e verso numa imagem só.
       const juntas = await juntarImagens([rgFrente, rgVerso].filter(Boolean)).catch(() => null);
       const completo = juntas ? await subir(new File([juntas], 'documento.jpg', { type: 'image/jpeg' }), 'completo') : null;
-      const linha = { cliente_id: u.id, nome, cpf, documento_tipo: docTipo, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, selfie, documento_completo: completo, asaas_status: null, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
+      const linha = { cliente_id: u.id, nome, cpf, documento_tipo: docTipo, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, selfie, documento_completo: completo, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
       let { data, error } = await supabaseClient.from('verificacoes_identidade').upsert(linha, { onConflict: 'cliente_id' }).select().maybeSingle();
       // Sem a migration 107 ainda não há as colunas da selfie: grava o resto.
       if (error && (error.code === 'PGRST204' || /column/i.test(error.message || ''))) {
-        const { selfie: _s, documento_completo: _d, asaas_status: _a, ...semColunasNovas } = linha;
+        const { selfie: _s, documento_completo: _d, ...semColunasNovas } = linha;
         ({ data, error } = await supabaseClient.from('verificacoes_identidade').upsert(semColunasNovas, { onConflict: 'cliente_id' }).select().maybeSingle());
       }
       if (error) throw error;

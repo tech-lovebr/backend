@@ -14,7 +14,7 @@
 const crypto = require("crypto");
 const { supabaseAdmin } = require("./_ses");
 const { confirmarPagamento } = require("./_asaas");
-const { enviarDocumentos } = require("./_documentos-asaas");
+const { enviarParaGateways } = require("./_gateways");
 
 function tokenConfere(recebido) {
   const esperado = process.env.ASAAS_WEBHOOK_TOKEN || "";
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     // O Asaas pediu documentos: manda os que a Love já aprovou em Verificações.
     if ((evento.event === "ACCOUNT_STATUS_DOCUMENT_PENDING" || evento.event === "ACCOUNT_STATUS_DOCUMENT_REJECTED") && conta) {
       const { data: dono } = await db.from("contas_recebimento").select("cliente_id").eq("asaas_id", conta).maybeSingle();
-      if (dono) await enviarDocumentos(db, dono.cliente_id).catch(() => null);
+      if (dono) await enviarParaGateways(db, dono.cliente_id, { so: "asaas" }).catch(() => null);
     }
     if ((evento.event === "PAYMENT_RECEIVED" || evento.event === "PAYMENT_CONFIRMED") && evento.payment && evento.payment.id) {
       await confirmarPagamento(db, evento.payment.id);

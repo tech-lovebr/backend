@@ -10,7 +10,7 @@
 
 const { asaas, usuarioDaRequisicao, chaveDaConta, statusDaLove } = require("./_asaas");
 const { lerConta, salvarConta } = require("./_recebimento");
-const { enviarDocumentos } = require("./_documentos-asaas");
+const { enviarParaGateways } = require("./_gateways");
 
 /** O que a tela precisa (nunca devolve chave nem ids do Asaas). */
 function publico(c) {
@@ -31,7 +31,7 @@ async function atualizar(db, clienteId, conta) {
   if (situacao) campos.status = statusDaLove(situacao);
   if (campos.status !== "aprovada") {
     // Documentos já aprovados pela Love vão sozinhos para o Asaas (só os pendentes).
-    await enviarDocumentos(db, clienteId).catch(() => null);
+    await enviarParaGateways(db, clienteId, { so: "asaas" }).catch(() => null);
     const docs = await asaas("/myAccount/documents", { chave }).catch(() => null);
     const comLink = docs && Array.isArray(docs.data) ? docs.data.find(g => g.onboardingUrl && g.status !== "APPROVED") : null;
     if (comLink) {

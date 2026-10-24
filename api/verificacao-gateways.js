@@ -1,11 +1,12 @@
 // Vercel Serverless Function — Admin aprovou a identidade do anfitrião:
-// manda os documentos para a conta digital dele no Asaas.
-// Endpoint: POST /api/verificacao-asaas   { cliente_id }
+// manda os dados e documentos aprovados para os gateways (hoje o Asaas).
+// A pessoa envia uma vez só; cada gateway recebe a mesma cópia.
+// Endpoint: POST /api/verificacao-gateways   { cliente_id }
 // Header:   Authorization: Bearer <access_token de um admin>
-// Chamado pelo Admin (admin.love.com.br › Verificações). Ver api/_documentos-asaas.js.
+// Chamado pelo Admin (admin.love.com.br › Verificações). Ver api/_gateways.js.
 
 const { supabaseAdmin } = require("./_ses");
-const { enviarDocumentos } = require("./_documentos-asaas");
+const { enviarParaGateways } = require("./_gateways");
 
 const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
 
@@ -38,10 +39,10 @@ module.exports = async (req, res) => {
     const clienteId = String((req.body || {}).cliente_id || "");
     if (!/^[0-9a-f-]{36}$/i.test(clienteId)) return res.status(400).json({ ok: false, erro: "cliente_invalido" });
 
-    const resultado = await enviarDocumentos(db, clienteId);
+    const resultado = await enviarParaGateways(db, clienteId);
     return res.status(200).json({ ok: true, ...resultado });
   } catch (e) {
-    console.error("verificacao-asaas:", e.message);
+    console.error("verificacao-gateways:", e.message);
     return res.status(500).json({ ok: false, erro: "falha" });
   }
 };

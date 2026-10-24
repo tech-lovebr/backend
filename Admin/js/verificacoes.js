@@ -36,13 +36,17 @@ const SITUACAO = {
 const PIX = { cpf: 'CPF', cnpj: 'CNPJ', email: 'E-mail', telefone: 'Telefone', aleatoria: 'Chave aleatória' };
 const TIPO_CONTA = { corrente: 'Corrente', poupanca: 'Poupança', pagamento: 'Pagamento' };
 const DOC_TIPO = { rg: 'RG', cnh: 'CNH', passaporte: 'Passaporte' };
-// Como foram os documentos para a conta digital no Asaas (api/_documentos-asaas.js).
-const ASAAS = {
-  enviado: 'Enviados para o Asaas',
-  link: 'O Asaas pediu pelo link dele (o anfitrião faz na Carteira)',
-  aguardando_conta: 'Vão para o Asaas quando a conta digital abrir (na primeira compra)',
-  sem_pendencia: 'O Asaas não pediu documentos',
-  erro: 'Não foi possível enviar ao Asaas'
+// A pessoa envia uma vez só; o que foi aprovado aqui vai para cada gateway
+// (hoje o Asaas; outro entra como contingência sem pedir nada de novo).
+// Como foi cada envio: tabela verificacoes_gateways (api/_gateways.js).
+let ENVIOS = new Map(); // cliente_id → [{ gateway, status, detalhe, ... }]
+const NOME_GATEWAY = { asaas: 'Asaas' };
+const ENVIO = {
+  enviado: 'Documentos enviados',
+  link: 'O gateway pediu pelo link dele (o anfitrião faz na Carteira)',
+  aguardando_conta: 'Vão quando a conta digital abrir (na primeira compra)',
+  sem_pendencia: 'O gateway não pediu documentos',
+  erro: 'Não foi possível enviar'
 };
 
 const soDigitos = v => String(v || '').replace(/\D/g, '');
@@ -75,12 +79,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function carregar() {
-  const [identidades, empresas, clientes, fornecedores] = await Promise.all([
+  const [identidades, empresas, clientes, fornecedores, envios] = await Promise.all([
     safeSelect('verificacoes_identidade', '*'),
     safeSelect('verificacoes_conta', '*'),
     safeSelect('clientes', 'id, email, full_name, first_name, last_name, couple_name, cpf, phone, data_nascimento, dados_saque, created_at'),
-    safeSelect('fornecedores', 'id, company_name, razao_social, email, cnpj, document_type, pix_key, pix_key_type, conta_verificada, created_at')
+    safeSelect('fornecedores', 'id, company_name, razao_social, email, cnpj, document_type, pix_key, pix_key_type, conta_verificada, created_at'),
+    safeSelect('verificacoes_gateways', '*')
   ]);
+
+  ENVIOS = new Map();
+  (envios.data || []).filter(e => e.titular_tipo === 'anfitriao').forEach(e => {
+    if (!ENVIOS.has(e.titular_id)) ENVIOS.set(e.titular_id, []);
+    ENVIOS.get(e.titular_id).push(e);
+  });
 
   CLIENTES = new Map(clientes.data.map(c => [c.id, c]));
   FORNECEDORES = new Map(fornecedores.data.map(f => [f.id, f]));
@@ -300,7 +311,7 @@ function detalheIdentidade(item) {
       ${linhaDado('CPF no cadastro', escapeHtml(c.cpf ? formatarCpf(c.cpf) : 'Não informado'))}
       ${linhaDado('Data de nascimento', escapeHtml(c.data_nascimento ? formatDate(c.data_nascimento) : 'Não informada'))}
       ${linhaDado('Enviado em', escapeHtml(formatDateTime(v.created_at)))}
-      ${v.status === 'aprovado' ? linhaDado('Asaas', escapeHtml(ASAAS[v.asaas_status] || 'Ainda não enviados') + (v.asaas_status === 'erro' && v.asaas_detalhe?.mensagem ? ` <span class="cell-muted">(${escapeHtml(v.asaas_detalhe.mensagem)})</span>` : '')) : ''}
+      ${v.status === 'aprovado' ? linhasDosGateways(v.cliente_id) : ''}
     </div>
     ${conferencias([
       v.selfie ? ['Enviou a selfie segurando o documento: confira se o rosto é o mesmo da foto do documento.', null] : ['Sem selfie (enviado antes da selfie ser pedida). O Asaas pode pedir pelo link dele.', false],
@@ -433,8 +444,8 @@ async function decidir(item, status) {
     return;
   }
   if (status === 'aprovado' && item.tipo === 'identidade') {
-    const r = await mandarAoAsaas(item.bruto.cliente_id);
-    toast(`Identidade aprovada. ${ASAAS[r] || 'Os documentos vão para o Asaas na próxima abertura da Carteira.'}.`);
+    const r = await mandarAosGateways(item.bruto.cliente_id);
+    toast(`Identidade aprovada. ${ENVIO[r] || 'Os documentos vão para o gateway na próxima abertura da Carteira'}.`);
   } else {
     toast(status === 'aprovado' ? 'Solicitação aprovada.' : 'Solicitação reprovada.');
   }
@@ -443,11 +454,20 @@ async function decidir(item, status) {
   refreshVerificacoesBadge();
 }
 
-/** Aprovou a identidade: o servidor manda os mesmos documentos para o Asaas. */
-async function mandarAoAsaas(clienteId) {
+/** Uma linha por gateway: como foram os dados aprovados para cada um. */
+function linhasDosGateways(clienteId) {
+  const envios = ENVIOS.get(clienteId) || [];
+  if (!envios.length) return linhaDado('Gateways', 'Ainda não enviados');
+  return envios.map(e => linhaDado(NOME_GATEWAY[e.gateway] || e.gateway,
+    escapeHtml(ENVIO[e.status] || 'Ainda não enviados') +
+    (e.status === 'erro' && e.detalhe?.mensagem ? ` <span class="cell-muted">(${escapeHtml(e.detalhe.mensagem)})</span>` : ''))).join('');
+}
+
+/** Aprovou a identidade: o servidor manda os mesmos dados aprovados para os gateways. */
+async function mandarAosGateways(clienteId) {
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    const r = await fetch('https://love.com.br/api/verificacao-asaas', {
+    const r = await fetch('https://love.com.br/api/verificacao-gateways', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
       body: JSON.stringify({ cliente_id: clienteId })

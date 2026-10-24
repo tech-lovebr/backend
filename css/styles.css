@@ -11522,3 +11522,9 @@ body[data-theme="dark"] .rc-aviso-titulo, body[data-theme="dark"] .rc-popup-titu
 
 /* Suas informações: "(opcional)" ao lado do rótulo. */
 .conta-opcional { font-weight: 400; color: #A1A1AA; }
+/* Suas informações: endereço largo; número e complemento em caixas menores ao lado. */
+html body .conta-endereco-linha:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 1fr) 96px 140px; gap: 16px; }
+@media (max-width: 640px) {
+  html body .conta-endereco-linha:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 1fr; gap: 1.25rem; }
+  html body .conta-endereco-linha:not(#love-h-a) > :first-child { grid-column: 1 / -1; }
+}

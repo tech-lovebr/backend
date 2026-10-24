@@ -11583,3 +11583,6 @@ html body #recados-raiz .recados-caixa .guests-pagination:not(#love-h-a) { margi
 .convite-form .convite-rsvp-depois { align-self: center; padding: 4px 8px; background: none; border: 0; font: inherit; font-size: 0.875rem; font-weight: 600; color: #71717A; cursor: pointer; }
 .convite-form .convite-rsvp-depois:hover { color: #181D24; }
 .convite-rsvp-dados-ok { margin: 16px 0 0; text-align: center; font-size: 0.9375rem; color: #3F3F46; }
+
+/* Taxa da lista: "(recomendado)" ao lado de Seus convidados. */
+#gifts-panel-settings .gift-fee-titulo .gift-fee-recomendado { font-weight: 500; color: #71717A; }

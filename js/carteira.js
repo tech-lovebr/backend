@@ -48,6 +48,10 @@
   /** Filtro de período das tabelas (AAAA-MM-DD; vazio = todo o período). */
   let periodo = { de: '', ate: '' };
   let periodoAberto = false;
+  // Calendário do período (o mesmo do Dashboard do Admin): seleção em curso e mês à vista.
+  /** @type {Date|null} */ let calDe = null;
+  /** @type {Date|null} */ let calAte = null;
+  let calMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
   /** Data de um registro ("2026-10-22…", "22/10/2026", "Hoje, às 14:22", "Ontem…"). @param {unknown} v @returns {Date|null} */
   function dataDoRegistro(v) {
@@ -71,7 +75,60 @@
   }
   /** @param {string} iso */
   const br = (iso) => iso ? iso.split('-').reverse().join('/') : '';
-  const textoDoPeriodo = () => (periodo.de || periodo.ate) ? `${br(periodo.de) || '…'} - ${br(periodo.ate) || '…'}` : 'Todo o período';
+  /** AAAA-MM-DD ↔ Date (meia-noite local). */
+  const isoDoDia = (/** @type {Date} */ d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const diaDoIso = (/** @type {string} */ iso) => { if (!iso) return null; const [a, m, d] = iso.split('-').map(Number); return new Date(a, m - 1, d); };
+  /** Mesmo rótulo do Admin: Todo o período, Hoje, Este mês, um dia ou um intervalo. */
+  function textoDoPeriodo() {
+    const { de, ate } = periodo;
+    if (!de && !ate) return 'Todo o período';
+    const hoje = isoDoDia(new Date());
+    if (de && ate && de === ate && de === hoje) return 'Hoje';
+    if (de && ate && de === hoje.slice(0, 8) + '01' && ate === hoje) return 'Este mês';
+    if (de && ate && de === ate) return br(de);
+    if (de && ate) return `${br(de)} – ${br(ate)}`;
+    return de ? `A partir de ${br(de)}` : `Até ${br(ate)}`;
+  }
+  const MESES_CAL = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const ATALHOS_CAL = [['hoje', 'Hoje'], ['7', 'Últimos 7 dias'], ['30', 'Últimos 30 dias'], ['mes', 'Este mês'], ['tudo', 'Todo o período']];
+  const SETA_ESQ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6l6 6"/></svg>';
+  const SETA_DIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6l-6 6"/></svg>';
+  const SETA_BAIXO = '<svg class="cart-periodo-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6l6 -6"/></svg>';
+  /** Calendário com atalhos (igual ao filtro de período do Admin). */
+  function htmlCalendario() {
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    const total = new Date(calMes.getFullYear(), calMes.getMonth() + 1, 0).getDate();
+    let dias = '<span></span>'.repeat(calMes.getDay());
+    for (let n = 1; n <= total; n++) {
+      const t = new Date(calMes.getFullYear(), calMes.getMonth(), n).getTime();
+      const cls = ['cart-cal-dia'];
+      if (t === hoje.getTime()) cls.push('is-hoje');
+      if (calDe && t === calDe.getTime()) cls.push('is-inicio');
+      if (calAte && t === calAte.getTime()) cls.push('is-fim');
+      if (calDe && calAte && t > calDe.getTime() && t < calAte.getTime()) cls.push('is-meio');
+      dias += `<button type="button" class="${cls.join(' ')}" data-cal-dia="${t}"${t > hoje.getTime() ? ' disabled' : ''}>${n}</button>`;
+    }
+    const proximo = new Date(calMes.getFullYear(), calMes.getMonth() + 1, 1);
+    const f = (/** @type {Date} */ d) => d.toLocaleDateString('pt-BR');
+    const dica = !calDe ? 'Clique num dia, ou em dois para um intervalo.'
+      : calAte && calAte.getTime() !== calDe.getTime() ? `${f(calDe)} – ${f(calAte)}`
+      : `${f(calDe)} · clique em outro dia para um intervalo`;
+    return `
+      <div class="cart-periodo-pop cart-cal" role="dialog" aria-label="Escolher período">
+        <div class="cart-cal-atalhos">${ATALHOS_CAL.map(([v, r]) => `<button type="button" class="cart-cal-atalho" data-cal-atalho="${v}">${r}</button>`).join('')}</div>
+        <div class="cart-cal-corpo">
+          <div class="cart-cal-topo">
+            <button type="button" class="cart-cal-nav" data-cal-mes="-1" aria-label="Mês anterior">${SETA_ESQ}</button>
+            <span class="cart-cal-mes">${MESES_CAL[calMes.getMonth()]} ${calMes.getFullYear()}</span>
+            <button type="button" class="cart-cal-nav" data-cal-mes="1" aria-label="Próximo mês"${proximo > hoje ? ' disabled' : ''}>${SETA_DIR}</button>
+          </div>
+          <div class="cart-cal-semana">${['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(d => `<span>${d}</span>`).join('')}</div>
+          <div class="cart-cal-dias">${dias}</div>
+          <p class="cart-cal-dica">${dica}</p>
+          <button type="button" class="cart-cal-aplicar" data-cal-aplicar>Aplicar</button>
+        </div>
+      </div>`;
+  }
   /** @type {any[]} */
   let saques = [];
   let semTabelaDeSaques = false;
@@ -181,18 +238,10 @@
       </div>
       <div class="love-tabela-barra-dir">
         <div class="cart-periodo">
-          <button type="button" class="cart-periodo-btn" data-cart-periodo aria-haspopup="dialog" aria-expanded="${periodoAberto}" title="${esc(contagem)}">
-            ${ICONE_CALENDARIO}<span>${esc(textoDoPeriodo())}</span>
+          <button type="button" class="cart-periodo-btn${periodo.de || periodo.ate ? ' is-ativo' : ''}" data-cart-periodo aria-haspopup="dialog" aria-expanded="${periodoAberto}" title="${esc(contagem)}">
+            <span>${esc(textoDoPeriodo())}</span>${SETA_BAIXO}
           </button>
-          ${periodoAberto ? `
-            <div class="cart-periodo-pop" role="dialog" aria-label="Escolher período">
-              <label class="cart-campo"><span>De</span><input type="date" data-cart-de value="${esc(periodo.de)}"></label>
-              <label class="cart-campo"><span>Até</span><input type="date" data-cart-ate value="${esc(periodo.ate)}"></label>
-              <div class="cart-periodo-acoes">
-                <button type="button" class="cart-cancelar" data-cart-periodo-limpar>Limpar</button>
-                <button type="button" class="cart-btn-escuro" data-cart-periodo-aplicar>Aplicar</button>
-              </div>
-            </div>` : ''}
+          ${periodoAberto ? htmlCalendario() : ''}
         </div>
       </div>
     </div>`;
@@ -261,6 +310,9 @@
   let etapaVerif = '';
   /** @type {File|null} */ let rgFrente = null;
   /** @type {File|null} */ let rgVerso = null;
+  // Selfie segurando o documento: vai para o Asaas (IDENTIFICATION_SELFIE)
+  // depois que a Love aprova, para a pessoa não enviar nada duas vezes.
+  /** @type {File|null} */ let selfieArq = null;
   // RG, CNH ou passaporte (no passaporte o verso é opcional).
   let docTipo = 'rg';
 
@@ -277,6 +329,15 @@
 
   const SITUACOES_CONTA = { em_analise: 'Em análise', aprovado: 'Aprovada', recusado: 'Recusada' };
   const TIPOS_DE_CONTA = { corrente: 'Corrente', poupanca: 'Poupança', pagamento: 'Pagamento' };
+  // Código de compensação (COMPE) — é o que o Asaas pede na transferência.
+  const BANCOS = [
+    ['001', 'Banco do Brasil'], ['341', 'Itaú'], ['237', 'Bradesco'], ['104', 'Caixa Econômica Federal'], ['033', 'Santander'],
+    ['260', 'Nubank'], ['077', 'Inter'], ['336', 'C6 Bank'], ['290', 'PagBank'], ['323', 'Mercado Pago'], ['380', 'PicPay'],
+    ['212', 'Banco Original'], ['208', 'BTG Pactual'], ['102', 'XP Investimentos'], ['756', 'Sicoob'], ['748', 'Sicredi'],
+    ['041', 'Banrisul'], ['070', 'BRB'], ['004', 'Banco do Nordeste'], ['021', 'Banestes'], ['047', 'Banese'], ['422', 'Safra'],
+    ['623', 'Banco Pan'], ['121', 'Agibank'], ['536', 'Neon'], ['197', 'Stone'], ['403', 'Cora'], ['461', 'Asaas'],
+    ['218', 'BS2'], ['637', 'Sofisa'], ['389', 'Mercantil do Brasil'], ['707', 'Daycoval'], ['136', 'Unicred'],
+  ];
   const NATUREZAS = { pf: 'Pessoa física', pj: 'Pessoa jurídica' };
 
   const ILUSTRACAO_DOCUMENTOS = `
@@ -330,12 +391,16 @@
         </div>
         <div class="cart-verif-arquivos">
           <label class="cart-arquivo" data-verif-arquivo="frente">
-            <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="frente">
-            ${ICONE_ENVIAR}<b>Frente do documento</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'JPEG, PNG ou PDF'}</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" data-verif-rg="frente">
+            ${ICONE_ENVIAR}<b>Frente do documento</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'Foto em JPEG ou PNG'}</span>
           </label>
           <label class="cart-arquivo" data-verif-arquivo="verso">
-            <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="verso">
-            ${ICONE_ENVIAR}<b>Verso do documento<span data-verif-opcional${docTipo === 'passaporte' ? '' : ' hidden'}> (opcional)</span></b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'JPEG, PNG ou PDF'}</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" data-verif-rg="verso">
+            ${ICONE_ENVIAR}<b>Verso do documento<span data-verif-opcional${docTipo === 'passaporte' ? '' : ' hidden'}> (opcional)</span></b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'Foto em JPEG ou PNG'}</span>
+          </label>
+          <label class="cart-arquivo" data-verif-arquivo="selfie">
+            <input type="file" accept="image/jpeg,image/png,image/webp" capture="user" data-verif-rg="selfie">
+            ${ICONE_ENVIAR}<b>Selfie segurando o documento</b><span data-verif-nome="selfie">${selfieArq ? esc(selfieArq.name) : 'Seu rosto e o documento visíveis'}</span>
           </label>
         </div>
         <div class="cart-form-grade">
@@ -352,7 +417,7 @@
         <h4 class="cart-verif-titulo">Verificação de identidade e envio de documentos</h4>
         <p class="cart-verif-intro">Antes de começar, confira algumas instruções que podem te ajudar:</p>
         <ul class="cart-verif-lista">
-          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG, CNH ou passaporte para enviar a foto da frente e do verso em JPEG, PNG ou PDF;</span></li>
+          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG, CNH ou passaporte para enviar a foto da frente e do verso, e tire uma selfie segurando o documento;</span></li>
           <li>${ICONE_CHECK}<span>As fotos devem estar nítidas, sem reflexo e com todos os dados legíveis;</span></li>
           <li>${ICONE_CHECK}<span>O nome e o CPF precisam ser do titular que vai receber os saques;</span></li>
           <li>${ICONE_CHECK}<span>Informe uma chave Pix no seu nome para receber os valores.</span></li>
@@ -382,16 +447,20 @@
           </div>
         </div>
         <div class="cart-form-corpo">
+          <p class="cart-form-sub cart-titular">Titular: <b>${esc((verificacao && verificacao.nome) || 'você')}</b>${verificacao && verificacao.cpf ? ` · CPF ${esc(mascaraCpf(String(verificacao.cpf)))}` : ''}. A conta precisa estar no seu CPF.</p>
           <div class="cart-form-grade">
-            <label class="cart-campo cart-campo-largo"><span>Banco</span><input type="text" data-cart-campo="banco" placeholder="Ex.: Itaú, Nubank, Banco do Brasil" autocomplete="off"></label>
-            <label class="cart-campo"><span>Agência</span><input type="text" data-cart-campo="agencia" inputmode="numeric" maxlength="8" autocomplete="off"></label>
-            <label class="cart-campo"><span>Conta (com dígito)</span><input type="text" data-cart-campo="conta" maxlength="20" autocomplete="off"></label>
+            <label class="cart-campo cart-campo-largo"><span>Banco</span>
+              <select data-cart-campo="banco">
+                <option value="">Escolha o banco</option>
+                ${BANCOS.map(([codigo, nome]) => `<option value="${codigo}">${codigo} · ${esc(nome)}</option>`).join('')}
+              </select>
+            </label>
+            <label class="cart-campo"><span>Agência (sem dígito)</span><input type="text" data-cart-campo="agencia" inputmode="numeric" maxlength="5" autocomplete="off"></label>
             <label class="cart-campo"><span>Tipo de conta</span>
-              <select data-cart-campo="tipo"><option value="corrente">Corrente</option><option value="poupanca">Poupança</option><option value="pagamento">Pagamento</option></select>
+              <select data-cart-campo="tipo"><option value="corrente">Corrente</option><option value="poupanca">Poupança</option></select>
             </label>
-            <label class="cart-campo"><span>Natureza</span>
-              <select data-cart-campo="natureza"><option value="pf">Pessoa física</option><option value="pj">Pessoa jurídica</option></select>
-            </label>
+            <label class="cart-campo"><span>Conta (sem dígito)</span><input type="text" data-cart-campo="conta" inputmode="numeric" maxlength="13" autocomplete="off"></label>
+            <label class="cart-campo"><span>Dígito</span><input type="text" data-cart-campo="digito" maxlength="2" autocomplete="off"></label>
           </div>
           <p class="cart-form-erro" hidden></p>
           <div class="cart-form-acoes">
@@ -407,9 +476,9 @@
     if (c.metodo === 'pix') return { banco: 'Pix', agencia: '—', conta: (c.pix && c.pix.chave) || '—', tipo: 'Chave Pix', natureza: '—' };
     const t = c.ted || {};
     return {
-      banco: t.banco || '—',
+      banco: t.banco ? `${t.banco_codigo ? `${t.banco_codigo} · ` : ''}${t.banco}` : '—',
       agencia: t.agencia || '—',
-      conta: t.conta || '—',
+      conta: t.conta ? `${t.conta}${t.digito ? `-${t.digito}` : ''}` : '—',
       tipo: (/** @type {any} */ (TIPOS_DE_CONTA))[t.tipo] || 'Corrente',
       natureza: (/** @type {any} */ (NATUREZAS))[t.natureza] || 'Pessoa física',
     };
@@ -550,15 +619,32 @@
     const arq = el.files && el.files[0] ? el.files[0] : null;
     const rotulo = document.querySelector(`#carteira-raiz [data-verif-nome="${lado}"]`);
     const caixa = document.querySelector(`#carteira-raiz [data-verif-arquivo="${lado}"]`);
-    if (arq && (!/^(image\/(jpeg|png)|application\/pdf)$/.test(arq.type) || arq.size > 10 * 1024 * 1024)) {
-      if (rotulo) rotulo.textContent = 'Use JPEG, PNG ou PDF de até 10 MB';
+    if (arq && (!/^image\/(jpeg|png|webp)$/.test(arq.type) || arq.size > 10 * 1024 * 1024)) {
+      if (rotulo) rotulo.textContent = 'Use uma foto em JPEG ou PNG de até 10 MB';
       el.value = '';
       return;
     }
-    if (lado === 'frente') rgFrente = arq; else rgVerso = arq;
-    if (rotulo) rotulo.textContent = arq ? arq.name : 'JPEG, PNG ou PDF';
+    if (lado === 'frente') rgFrente = arq; else if (lado === 'selfie') selfieArq = arq; else rgVerso = arq;
+    if (rotulo) rotulo.textContent = arq ? arq.name : (lado === 'selfie' ? 'Seu rosto e o documento visíveis' : 'Foto em JPEG ou PNG');
     caixa?.classList.toggle('tem-arquivo', !!arq);
   });
+
+  /** Frente e verso numa imagem só (JPEG), uma embaixo da outra. @param {File[]} arquivos @returns {Promise<Blob>} */
+  async function juntarImagens(arquivos) {
+    const imagens = await Promise.all(arquivos.map(a => createImageBitmap(a)));
+    const largura = Math.min(1600, Math.max(...imagens.map(i => i.width)));
+    const alturas = imagens.map(i => Math.round(i.height * largura / i.width));
+    const respiro = 24;
+    const tela = document.createElement('canvas');
+    tela.width = largura;
+    tela.height = alturas.reduce((t2, h) => t2 + h, 0) + respiro * (imagens.length - 1);
+    const ctx = /** @type {CanvasRenderingContext2D} */ (tela.getContext('2d'));
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, tela.width, tela.height);
+    let y = 0;
+    imagens.forEach((img, n) => { ctx.drawImage(img, 0, y, largura, alturas[n]); y += alturas[n] + respiro; });
+    return new Promise((ok, falha) => tela.toBlob(b => (b ? ok(b) : falha(new Error('imagem'))), 'image/jpeg', 0.88));
+  }
 
   async function enviarVerificacao() {
     const cartao = /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-cart-verif-cartao]'));
@@ -574,6 +660,7 @@
     if (cpf.length !== 11) return falhar('CPF incompleto.');
     if (!rgFrente) return falhar('Envie a frente do documento.');
     if (!rgVerso && docTipo !== 'passaporte') return falhar('Envie o verso do documento.');
+    if (!selfieArq) return falhar('Envie a selfie segurando o documento.');
     if (!pixChave) return falhar('Informe a chave Pix.');
     if (pixTipo === 'cpf' && soDigitos(pixChave).length !== 11) return falhar('Chave Pix (CPF) incompleta.');
     if (pixTipo === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pixChave)) return falhar('Chave Pix (e-mail) inválida.');
@@ -585,7 +672,7 @@
     const pronto = () => { btn.disabled = false; btn.textContent = 'Enviar para análise'; };
     /** @param {File} arq @param {string} lado */
     const subir = async (arq, lado) => {
-      const ext = arq.type === 'application/pdf' ? 'pdf' : arq.type === 'image/png' ? 'png' : 'jpg';
+      const ext = arq.type === 'application/pdf' ? 'pdf' : arq.type === 'image/png' ? 'png' : arq.type === 'image/webp' ? 'webp' : 'jpg';
       const caminho = `${u.id}/rg-${lado}-${Date.now()}.${ext}`;
       const { error } = await supabaseClient.storage.from('documentos').upload(caminho, arq, { contentType: arq.type });
       if (error) throw error;
@@ -594,15 +681,24 @@
     try {
       const frente = await subir(rgFrente, 'frente');
       const verso = rgVerso ? await subir(rgVerso, 'verso') : null;
-      const linha = { cliente_id: u.id, nome, cpf, documento_tipo: docTipo, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
-      const { data, error } = await supabaseClient.from('verificacoes_identidade').upsert(linha, { onConflict: 'cliente_id' }).select().maybeSingle();
+      const selfie = await subir(selfieArq, 'selfie');
+      // O Asaas aceita um arquivo por documento: frente e verso numa imagem só.
+      const juntas = await juntarImagens([rgFrente, rgVerso].filter(Boolean)).catch(() => null);
+      const completo = juntas ? await subir(new File([juntas], 'documento.jpg', { type: 'image/jpeg' }), 'completo') : null;
+      const linha = { cliente_id: u.id, nome, cpf, documento_tipo: docTipo, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, selfie, documento_completo: completo, asaas_status: null, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
+      let { data, error } = await supabaseClient.from('verificacoes_identidade').upsert(linha, { onConflict: 'cliente_id' }).select().maybeSingle();
+      // Sem a migration 107 ainda não há as colunas da selfie: grava o resto.
+      if (error && (error.code === 'PGRST204' || /column/i.test(error.message || ''))) {
+        const { selfie: _s, documento_completo: _d, asaas_status: _a, ...semColunasNovas } = linha;
+        ({ data, error } = await supabaseClient.from('verificacoes_identidade').upsert(semColunasNovas, { onConflict: 'cliente_id' }).select().maybeSingle());
+      }
       if (error) throw error;
       verificacao = data || linha;
     } catch (_) {
       pronto();
       return falhar('Não foi possível enviar agora. Tente de novo.');
     }
-    rgFrente = null; rgVerso = null; docTipo = 'rg';
+    rgFrente = null; rgVerso = null; selfieArq = null; docTipo = 'rg';
     etapaVerif = '';
     desenhar();
     aviso('Documentos enviados para análise. Já pode cadastrar a sua conta bancária.');
@@ -613,12 +709,20 @@
     const v = (/** @type {string} */ c) => String((/** @type {HTMLInputElement|null} */ (m.querySelector(`[data-cart-campo="${c}"]`)) || { value: '' }).value || '').trim();
     const erro = /** @type {HTMLElement} */ (m.querySelector('.cart-form-erro'));
     const falhar = (/** @type {string} */ t) => { erro.textContent = t; erro.hidden = false; };
+    // No formato da transferência do Asaas: código do banco, agência e conta
+    // sem dígito, dígito à parte, corrente ou poupança, sempre no CPF do titular.
+    const codigo = v('banco');
+    const banco = BANCOS.find(b => b[0] === codigo);
     const ted = {
-      banco: v('banco'), agencia: v('agencia'), conta: v('conta'),
-      tipo: v('tipo') || 'corrente', natureza: v('natureza') || 'pf',
+      banco: banco ? banco[1] : '', banco_codigo: codigo,
+      agencia: soDigitos(v('agencia')), conta: soDigitos(v('conta')), digito: v('digito').replace(/[^0-9xX]/g, '').toUpperCase(),
+      tipo: v('tipo') === 'poupanca' ? 'poupanca' : 'corrente', natureza: 'pf',
       titular: (verificacao && verificacao.nome) || '', cpf: (verificacao && verificacao.cpf) || '',
     };
-    if (!ted.banco || !ted.agencia || !ted.conta) return falhar('Preencha banco, agência e conta.');
+    if (!banco) return falhar('Escolha o banco.');
+    if (ted.agencia.length < 3) return falhar('Informe a agência, sem o dígito.');
+    if (ted.conta.length < 3) return falhar('Informe o número da conta, sem o dígito.');
+    if (!ted.digito) return falhar('Informe o dígito da conta.');
     /** @type {any} */
     const nova = { id: `conta-${Date.now()}`, metodo: 'ted', ted, status: 'em_analise', criadaEm: new Date().toISOString() };
     const btn = /** @type {HTMLButtonElement} */ (m.querySelector('[data-cart-salvar-conta]'));
@@ -725,15 +829,42 @@
     const a = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-aba]'));
     if (a) { aba = a.dataset.cartAba === 'contas' ? 'contas' : 'saque'; desenhar(); return; }
     if (alvo.closest('[data-cart-esconder]')) { esconder = !esconder; desenhar(); return; }
-    if (alvo.closest('[data-cart-periodo]')) { periodoAberto = !periodoAberto; desenhar(); return; }
-    if (alvo.closest('[data-cart-periodo-limpar]')) { periodo = { de: '', ate: '' }; periodoAberto = false; desenhar(); return; }
-    if (alvo.closest('[data-cart-periodo-aplicar]')) {
-      const de = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-cart-de]'));
-      const ate = /** @type {HTMLInputElement|null} */ (document.querySelector('#carteira-raiz [data-cart-ate]'));
-      let a = de ? de.value : '';
-      let b = ate ? ate.value : '';
-      if (a && b && a > b) { const t = a; a = b; b = t; }
-      periodo = { de: a, ate: b };
+    if (alvo.closest('[data-cart-periodo]')) {
+      periodoAberto = !periodoAberto;
+      if (periodoAberto) {
+        calDe = diaDoIso(periodo.de);
+        calAte = diaDoIso(periodo.ate);
+        const ref = calAte || new Date();
+        calMes = new Date(ref.getFullYear(), ref.getMonth(), 1);
+      }
+      desenhar();
+      return;
+    }
+    const navMes = /** @type {HTMLElement|null} */ (alvo.closest('[data-cal-mes]'));
+    if (navMes) { calMes = new Date(calMes.getFullYear(), calMes.getMonth() + Number(navMes.dataset.calMes), 1); desenhar(); return; }
+    const diaCal = /** @type {HTMLElement|null} */ (alvo.closest('[data-cal-dia]'));
+    if (diaCal) {
+      const d = new Date(Number(diaCal.dataset.calDia));
+      if (!calDe || (calAte && calAte.getTime() !== calDe.getTime())) { calDe = d; calAte = d; }
+      else if (d < calDe) { calAte = calDe; calDe = d; }
+      else calAte = d;
+      desenhar();
+      return;
+    }
+    const atalho = /** @type {HTMLElement|null} */ (alvo.closest('[data-cal-atalho]'));
+    if (atalho) {
+      const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+      const menos = (/** @type {number} */ n) => new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - n);
+      const v = atalho.dataset.calAtalho;
+      const de = v === 'hoje' ? hoje : v === '7' ? menos(6) : v === '30' ? menos(29) : v === 'mes' ? new Date(hoje.getFullYear(), hoje.getMonth(), 1) : null;
+      periodo = de ? { de: isoDoDia(de), ate: isoDoDia(hoje) } : { de: '', ate: '' };
+      periodoAberto = false;
+      desenhar();
+      return;
+    }
+    if (alvo.closest('[data-cal-aplicar]')) {
+      if (!calDe) return;
+      periodo = { de: isoDoDia(calDe), ate: isoDoDia(calAte || calDe) };
       periodoAberto = false;
       desenhar();
       return;

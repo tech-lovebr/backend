@@ -11624,3 +11624,42 @@ html body .cart-verif-faixa p:not(#love-h-a) { color: rgba(255, 255, 255, .8) !i
 body[data-theme="dark"] .cart-verif-faixa:not(#love-h-a) { background-color: #183b54 !important; background-image: radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%), linear-gradient(180deg, #183b54 0%, #1d4664 100%) !important; }
 /* Logotipo branco da Love no título da faixa (a imagem tem respiro em volta). */
 html body .cart-verif-faixa .cart-verif-logo { display: inline-block; height: 0.92em; width: auto; margin: 0 0 0 0.12em; vertical-align: -0.073em; }
+
+/* Carteira › Extrato completo: filtro de período igual ao do Dashboard do Admin
+   (botão com o período e seta; calendário com atalhos, mês e Aplicar). */
+html body button.cart-periodo-btn:not(#love-h-a) { min-width: 132px; justify-content: space-between; gap: 1rem; height: 38px; padding: 0 14px 0 16px; background: #FFFFFF; border: 1px solid #CCD5E0; box-shadow: none; color: #3F3F46; font-size: 14px; font-weight: 600; }
+html body button.cart-periodo-btn:not(#love-h-a):hover { background: #F4F4F5; border-color: #CCD5E0; }
+html body button.cart-periodo-btn.is-ativo:not(#love-h-a) { border-color: #183b54; color: #183b54; }
+.cart-periodo-btn .cart-periodo-seta { width: 15px; height: 15px; color: #667085; transition: transform .2s ease; }
+.cart-periodo-btn[aria-expanded="true"] .cart-periodo-seta { transform: rotate(180deg); }
+html body .cart-periodo-pop.cart-cal:not(#love-h-a) { width: auto; flex-direction: row; gap: .75rem; padding: .75rem; top: calc(100% + .5rem); border-color: #E4E4E7; box-shadow: 0 12px 28px rgba(16, 24, 40, .14); }
+.cart-cal-atalhos { display: flex; flex-direction: column; gap: .125rem; min-width: 128px; padding-right: .75rem; border-right: 1px solid #F0F0F2; }
+html body button.cart-cal-atalho:not(#love-h-a) { border: 0; background: none; padding: .4375rem .5rem; border-radius: 6px; font: inherit; font-size: .8125rem; font-weight: 400; color: #101828; text-align: left; cursor: pointer; white-space: nowrap; }
+html body button.cart-cal-atalho:not(#love-h-a):hover { background: #F4F4F5; }
+.cart-cal-corpo { width: 252px; }
+.cart-cal-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+.cart-cal-mes { font-size: .875rem; font-weight: 600; color: #101828; }
+html body button.cart-cal-nav:not(#love-h-a) { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 6px; background: none; color: #667085; cursor: pointer; padding: 0; }
+html body button.cart-cal-nav:not(#love-h-a):hover:not(:disabled) { border-color: #E4E4E7; color: #181D24; }
+html body button.cart-cal-nav:not(#love-h-a):disabled { opacity: .35; cursor: default; }
+.cart-cal-nav svg { width: 16px; height: 16px; }
+.cart-cal-semana, .cart-cal-dias { display: grid; grid-template-columns: repeat(7, 36px); }
+.cart-cal-semana span { text-align: center; font-size: .6875rem; font-weight: 500; color: #A1A1AA; padding-bottom: .25rem; }
+html body button.cart-cal-dia:not(#love-h-a) { height: 34px; border: 0; background: none; font: inherit; font-size: .8125rem; font-weight: 400; color: #101828; cursor: pointer; border-radius: 6px; font-variant-numeric: tabular-nums; padding: 0; }
+html body button.cart-cal-dia:not(#love-h-a):hover:not(:disabled) { background: #F4F4F5; }
+html body button.cart-cal-dia:not(#love-h-a):disabled { color: #D4D4D8; cursor: default; }
+html body button.cart-cal-dia.is-hoje:not(#love-h-a) { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+html body button.cart-cal-dia.is-meio:not(#love-h-a) { background: #F4F4F5; border-radius: 0; }
+html body button.cart-cal-dia.is-inicio:not(#love-h-a), html body button.cart-cal-dia.is-fim:not(#love-h-a) { background: #181D24; color: #FFFFFF; }
+html body p.cart-cal-dica:not(#love-h-a) { margin: .5rem 0; font-size: .75rem; color: #667085 !important; text-align: center; min-height: 1.1em; }
+html body button.cart-cal-aplicar:not(#love-h-a) { width: 100%; margin-top: .25rem; display: inline-flex; align-items: center; justify-content: center; padding: .65rem 1.25rem; border-radius: 8px; border: 1px solid #E4E4E7; background: #F4F4F5; color: #3F3F46; font: inherit; font-size: .875rem; font-weight: 600; cursor: pointer; }
+html body button.cart-cal-aplicar:not(#love-h-a):hover { background: #E9E9EC; }
+@media (max-width: 640px) {
+  html body .cart-periodo-pop.cart-cal:not(#love-h-a) { flex-direction: column; }
+  .cart-cal-atalhos { flex-direction: row; flex-wrap: wrap; border-right: 0; padding-right: 0; border-bottom: 1px solid #F0F0F2; padding-bottom: .5rem; }
+}
+body[data-theme="dark"] button.cart-periodo-btn { border-color: #404040 !important; }
+body[data-theme="dark"] .cart-cal-mes, body[data-theme="dark"] button.cart-cal-atalho, body[data-theme="dark"] button.cart-cal-dia:not(:disabled):not(.is-inicio):not(.is-fim) { color: #FFFFFF !important; }
+body[data-theme="dark"] button.cart-cal-dia.is-meio, body[data-theme="dark"] button.cart-cal-atalho:hover, body[data-theme="dark"] button.cart-cal-dia:hover:not(:disabled) { background: #333333 !important; }
+body[data-theme="dark"] .cart-cal-atalhos { border-color: #404040; }
+body[data-theme="dark"] button.cart-cal-dia.is-inicio, body[data-theme="dark"] button.cart-cal-dia.is-fim { background: #FFFFFF !important; color: #181D24 !important; }

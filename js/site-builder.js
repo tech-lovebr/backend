@@ -4443,48 +4443,77 @@ function renderPresentesPublicos(root) {
   root.innerHTML = telaPublicaHtml('Lista de Presentes', conteudo);
 }
 
+/* Confirmar presença pela lista de convidados (migration 100): o convidado
+   digita o nome, escolhe o dele entre os nomes como os anfitriões
+   escreveram (busca sem maiúsculas/acentos) e confirma. Na hora ele fica
+   "confirmado" na lista do anfitrião. */
 function renderConfirmarPresencaPublica(root) {
   if (!conviteDadosPublicos) return semDadosPublicos(root, 'Confirmar presença');
 
   root.innerHTML = telaPublicaHtml('Confirmar presença', `
     <form class="convite-form" data-convite-rsvp novalidate>
-      <label>Seu nome completo
-        <input type="text" name="nome" required maxlength="120" autocomplete="name" placeholder="Como está no convite">
+      <label>Seu nome
+        <input type="text" name="nome" maxlength="120" autocomplete="off" placeholder="Digite seu nome" aria-describedby="rsvp-ajuda">
       </label>
-      <label>E-mail <span>(opcional)</span>
-        <input type="email" name="email" maxlength="200" autocomplete="email" placeholder="seu@email.com">
-      </label>
-      <label>Telefone <span>(opcional)</span>
-        <input type="tel" name="telefone" maxlength="40" autocomplete="tel" placeholder="(11) 99999-9999">
-      </label>
+      <p class="convite-rsvp-ajuda" id="rsvp-ajuda">Digite seu nome e escolha como ele está na lista dos anfitriões.</p>
+      <div class="convite-rsvp-opcoes" data-rsvp-opcoes role="listbox" aria-label="Nomes na lista"></div>
       <p class="convite-erro" hidden></p>
-      <button type="submit" class="convite-botao">Confirmar minha presença</button>
+      <button type="submit" class="convite-botao" disabled>Confirmar minha presença</button>
     </form>
   `);
 
   const form = root.querySelector('[data-convite-rsvp]');
+  const input = form.querySelector('input[name="nome"]');
+  const opcoes = form.querySelector('[data-rsvp-opcoes]');
+  const ajuda = form.querySelector('.convite-rsvp-ajuda');
   const erroEl = form.querySelector('.convite-erro');
   const botao = form.querySelector('button[type="submit"]');
+  let escolhido = null; // { id, nome, confirmado }
+  let espera = null;
+  let ultimaBusca = 0;
+
+  const desenhar = (lista) => {
+    opcoes.innerHTML = lista.map(c => `
+      <button type="button" class="convite-rsvp-opcao${escolhido && escolhido.id === c.id ? ' is-ativo' : ''}" role="option" aria-selected="${escolhido && escolhido.id === c.id}" data-rsvp-id="${escaparPublico(c.id)}">
+        <span>${escaparPublico(c.nome)}</span>${c.confirmado ? '<small>Já confirmado</small>' : ''}
+      </button>`).join('');
+    opcoes.querySelectorAll('[data-rsvp-id]').forEach(b => b.addEventListener('click', () => {
+      escolhido = lista.find(c => String(c.id) === b.dataset.rsvpId) || null;
+      botao.disabled = !escolhido;
+      desenhar(lista);
+    }));
+  };
+
+  const buscar = async () => {
+    const termo = input.value.trim();
+    const minha = ++ultimaBusca;
+    erroEl.hidden = true;
+    if (termo.replace(/\s/g, '').length < 3) {
+      escolhido = null; botao.disabled = true; opcoes.innerHTML = '';
+      ajuda.textContent = 'Digite seu nome e escolha como ele está na lista dos anfitriões.';
+      return;
+    }
+    const { data, error } = await supabaseClient.rpc('buscar_convidado_do_convite', { p_slug: conviteSlugPublico, p_busca: termo });
+    if (minha !== ultimaBusca) return; // chegou uma busca mais nova
+    if (error) { console.error('Erro ao buscar convidado:', error); return; }
+    const lista = data || [];
+    if (escolhido && !lista.some(c => c.id === escolhido.id)) { escolhido = null; botao.disabled = true; }
+    if (!escolhido && lista.length === 1) { escolhido = lista[0]; botao.disabled = false; }
+    ajuda.textContent = lista.length
+      ? 'Toque no seu nome para escolher.'
+      : 'Não encontramos esse nome na lista. Tente só o primeiro nome ou fale com os anfitriões.';
+    desenhar(lista);
+  };
+
+  input.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(buscar, 250); });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!escolhido) return;
     erroEl.hidden = true;
-    const nome = form.nome.value.trim();
-    if (nome.length < 2) {
-      erroEl.textContent = 'Digite seu nome completo.';
-      erroEl.hidden = false;
-      return;
-    }
-
     botao.disabled = true;
     botao.textContent = 'Confirmando…';
-    const { data, error } = await supabaseClient.rpc('confirmar_presenca', {
-      p_slug: conviteSlugPublico,
-      p_nome: nome,
-      p_email: form.email.value.trim() || null,
-      p_telefone: form.telefone.value.trim() || null
-    });
-
+    const { data, error } = await supabaseClient.rpc('confirmar_presenca_convidado', { p_slug: conviteSlugPublico, p_convidado_id: escolhido.id });
     if (error || !data || !data.ok) {
       if (error) console.error('Erro ao confirmar presença:', error);
       botao.disabled = false;
@@ -4493,11 +4522,11 @@ function renderConfirmarPresencaPublica(root) {
       erroEl.hidden = false;
       return;
     }
-
+    const nome = data.nome || escolhido.nome;
     form.outerHTML = `
       <div class="convite-sucesso">
         <p class="convite-sucesso-titulo">Presença confirmada!</p>
-        <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Sua presença já aparece na lista dos anfitriões.</p>
+        <p>Obrigado, ${escaparPublico(String(nome).split(' ')[0])}. Sua presença já aparece na lista dos anfitriões.</p>
       </div>`;
   });
 }

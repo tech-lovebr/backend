@@ -11528,3 +11528,14 @@ html body .conta-endereco-linha:not(#love-h-a) { display: grid; grid-template-co
   html body .conta-endereco-linha:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 1fr; gap: 1.25rem; }
   html body .conta-endereco-linha:not(#love-h-a) > :first-child { grid-column: 1 / -1; }
 }
+
+/* Confirmar presença pela lista (convite publicado): nomes como os
+   anfitriões escreveram; o escolhido fica com a borda na cor do convite. */
+.convite-form .convite-rsvp-ajuda { margin: -0.25rem 0 0; font-size: 0.8125rem; line-height: 1.5; color: #71717A; }
+.convite-rsvp-opcoes { display: flex; flex-direction: column; gap: 8px; }
+.convite-rsvp-opcoes:empty { display: none; }
+.convite-form .convite-rsvp-opcao { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 0.8rem 0.9rem; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font: inherit; font-size: 0.9375rem; font-weight: 500; color: #18181B; text-align: left; cursor: pointer; }
+.convite-form .convite-rsvp-opcao:hover { border-color: #A1A1AA; }
+.convite-form .convite-rsvp-opcao.is-ativo { border-color: var(--bx-primary, #183b54); box-shadow: inset 0 0 0 1px var(--bx-primary, #183b54); }
+.convite-form .convite-rsvp-opcao small { flex-shrink: 0; font-size: 11px; font-weight: 500; color: #A1A1AA; }
+.convite-form .convite-botao:disabled { opacity: 0.5; cursor: default; }

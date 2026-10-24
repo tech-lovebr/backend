@@ -8491,7 +8491,7 @@ document.addEventListener('DOMContentLoaded', () => {
       grupos.get(nome).push(g);
     }
     if (!grupos.size) {
-      corpo.innerHTML = '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-10">Nenhuma lista adicionada ainda. Em Meus presentes, use "Adicionar lista".</td></tr>';
+      corpo.innerHTML = '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-10">Nenhuma lista adicionada ainda. Em Meus presentes, use "Adicionar novo".</td></tr>';
       return;
     }
     corpo.innerHTML = [...grupos].map(([nome, presentes]) => {

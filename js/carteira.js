@@ -317,15 +317,15 @@
           <label class="cart-campo cart-campo-largo"><span>Nome completo</span><input type="text" data-verif-campo="nome" autocapitalize="words" autocomplete="name"></label>
           <label class="cart-campo"><span>CPF</span><input type="text" data-verif-campo="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"></label>
         </div>
-        <p class="cart-campo-rotulo">RG (frente e verso)</p>
+        <p class="cart-campo-rotulo">Documento com foto: RG, CNH ou passaporte (frente e verso)</p>
         <div class="cart-verif-arquivos">
           <label class="cart-arquivo" data-verif-arquivo="frente">
             <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="frente">
-            ${ICONE_ENVIAR}<b>Frente do RG</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'JPEG, PNG ou PDF'}</span>
+            ${ICONE_ENVIAR}<b>Frente do documento</b><span data-verif-nome="frente">${rgFrente ? esc(rgFrente.name) : 'JPEG, PNG ou PDF'}</span>
           </label>
           <label class="cart-arquivo" data-verif-arquivo="verso">
             <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="verso">
-            ${ICONE_ENVIAR}<b>Verso do RG</b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'JPEG, PNG ou PDF'}</span>
+            ${ICONE_ENVIAR}<b>Verso do documento</b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'JPEG, PNG ou PDF'}</span>
           </label>
         </div>
         <div class="cart-form-grade">
@@ -342,7 +342,7 @@
         <h4 class="cart-verif-titulo">Verificação de identidade e envio de documentos</h4>
         <p class="cart-verif-intro">Antes de começar, confira algumas instruções que podem te ajudar:</p>
         <ul class="cart-verif-lista">
-          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG para enviar a foto da frente e do verso em JPEG, PNG ou PDF;</span></li>
+          <li>${ICONE_CHECK}<span>Tenha em mãos o seu RG, CNH ou passaporte para enviar a foto da frente e do verso em JPEG, PNG ou PDF;</span></li>
           <li>${ICONE_CHECK}<span>As fotos devem estar nítidas, sem reflexo e com todos os dados legíveis;</span></li>
           <li>${ICONE_CHECK}<span>O nome e o CPF precisam ser do titular que vai receber os saques;</span></li>
           <li>${ICONE_CHECK}<span>Informe uma chave Pix no seu nome para receber os valores.</span></li>
@@ -554,7 +554,7 @@
     const pixChave = v('pixChave');
     if (nome.split(/\s+/).length < 2) return falhar('Informe o nome completo.');
     if (cpf.length !== 11) return falhar('CPF incompleto.');
-    if (!rgFrente || !rgVerso) return falhar('Envie a frente e o verso do RG.');
+    if (!rgFrente || !rgVerso) return falhar('Envie a frente e o verso do documento.');
     if (!pixChave) return falhar('Informe a chave Pix.');
     if (pixTipo === 'cpf' && soDigitos(pixChave).length !== 11) return falhar('Chave Pix (CPF) incompleta.');
     if (pixTipo === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pixChave)) return falhar('Chave Pix (e-mail) inválida.');

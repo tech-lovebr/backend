@@ -10674,3 +10674,42 @@ html body :is(.fin-resumo, .fin-contas):not(#love-h-a):not(#love-h-b) {
   border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
 }
 html body [data-view-panel="receber"]:not(#love-h-a) { padding-top: 24px; }
+
+/* Financeiro › extrato: botão de período no lugar do "Filtrar por", com o
+   mesmo calendário do Dashboard do Admin (atalhos + mês + Aplicar). */
+html body .per-wrap:not(#love-h-a) { position: relative; }
+html body .per-btn:not(#love-h-a) { gap: 8px; }
+html body .per-btn-cal:not(#love-h-a) { width: 16px; height: 16px; }
+html body .per-seta:not(#love-h-a) { width: 15px; height: 15px; color: #71717A; transition: transform .2s ease; }
+html body .per-btn[aria-expanded="true"] .per-seta:not(#love-h-a) { transform: rotate(180deg); }
+html body .per-btn.is-ativo:not(#love-h-a) { border-color: #183b54 !important; color: #183b54; }
+html body .per-menu:not(#love-h-a) {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; display: flex; gap: 12px; padding: 12px;
+  background: #FFFFFF; border: 1px solid var(--borda-suave); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); text-align: left;
+}
+html body .per-menu[hidden]:not(#love-h-a) { display: none; }
+html body .per-atalhos:not(#love-h-a) { display: flex; flex-direction: column; gap: 2px; min-width: 128px; padding-right: 12px; border-right: 1px solid #F0F0F2; }
+html body .per-atalho:not(#love-h-a) { border: 0; background: none; padding: 7px 8px; border-radius: 6px; font: inherit; font-size: 13px; color: #18181B; text-align: left; cursor: pointer; white-space: nowrap; }
+html body .per-atalho:hover:not(#love-h-a) { background: #F4F4F5; }
+html body .per-corpo:not(#love-h-a) { width: 252px; }
+html body .per-topo:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+html body .per-mes:not(#love-h-a) { font-size: 14px; font-weight: 600; color: #18181B; }
+html body .per-nav:not(#love-h-a) { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 6px; background: none; color: #71717A; cursor: pointer; padding: 0; }
+html body .per-nav:hover:not(:disabled):not(#love-h-a) { border-color: #E4E4E7; color: #181D24; }
+html body .per-nav:disabled:not(#love-h-a) { opacity: .35; cursor: default; }
+html body .per-nav svg:not(#love-h-a) { width: 16px; height: 16px; }
+html body :is(.per-semana, .per-dias):not(#love-h-a) { display: grid; grid-template-columns: repeat(7, 36px); }
+html body .per-semana span:not(#love-h-a) { text-align: center; font-size: 11px; font-weight: 500; color: #A1A1AA; padding-bottom: 4px; }
+html body .per-dia:not(#love-h-a) { height: 34px; border: 0; background: none; font: inherit; font-size: 13px; color: #18181B; cursor: pointer; border-radius: 6px; font-variant-numeric: tabular-nums; padding: 0; }
+html body .per-dia:hover:not(:disabled):not(#love-h-a) { background: #F4F4F5; }
+html body .per-dia:disabled:not(#love-h-a) { color: #D4D4D8; cursor: default; }
+html body .per-dia.is-hoje:not(#love-h-a) { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+html body .per-dia.is-meio:not(#love-h-a) { background: #F4F4F5; border-radius: 0; }
+html body .per-dia.is-inicio:not(#love-h-a), html body .per-dia.is-fim:not(#love-h-a) { background: #181D24; color: #FFFFFF; }
+html body .per-dica:not(#love-h-a) { margin: 8px 0; font-size: 12px; color: #71717A; text-align: center; min-height: 1.1em; }
+html body .per-aplicar:not(#love-h-a) { width: 100%; height: 38px; margin-top: 4px; display: inline-flex; align-items: center; justify-content: center; background: #F4F4F5; color: #3F3F46; border: 1px solid #E4E4E7; border-radius: 8px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+html body .per-aplicar:hover:not(#love-h-a) { background: #E9E9EC; }
+@media (max-width: 640px) {
+  html body .per-menu:not(#love-h-a) { flex-direction: column; }
+  html body .per-atalhos:not(#love-h-a) { flex-direction: row; flex-wrap: wrap; border-right: 0; padding-right: 0; border-bottom: 1px solid #F0F0F2; padding-bottom: 8px; }
+}

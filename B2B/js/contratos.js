@@ -236,7 +236,7 @@ function linhasDaListaFinanceira() {
     return bWalletTransactions.map(t => {
       const entrada = t.type === 'credit';
       return {
-        numero: numeroCurto(t.id), data: dataHoraCurta(t.created_at), mes: chaveDoMes(t.created_at),
+        numero: numeroCurto(t.id), data: dataHoraCurta(t.created_at), mes: chaveDoMes(t.created_at), quando: t.created_at,
         descricao: t.description || (entrada ? 'Recebimento' : 'Saque'), tipo: entrada ? 'entrada' : 'saida',
         valor: Number(t.amount) || 0
       };
@@ -244,13 +244,13 @@ function linhasDaListaFinanceira() {
   }
   if (financeListaAtual === 'saques') {
     return bWalletTransactions.filter(t => t.type === 'debit').map(t => ({
-      numero: numeroCurto(t.id), data: dataHoraCurta(t.created_at), mes: chaveDoMes(t.created_at),
+      numero: numeroCurto(t.id), data: dataHoraCurta(t.created_at), mes: chaveDoMes(t.created_at), quando: t.created_at,
       descricao: t.description || 'Saque', valor: Number(t.amount) || 0, situacao: 'Concluído'
     }));
   }
   return bNotasFiscais.map(n => ({
     numero: n.number || '', cliente: n.client || '', valor: Number(n.value || 0),
-    data: dataHoraCurta(n.created_at), mes: chaveDoMes(n.created_at),
+    data: dataHoraCurta(n.created_at), mes: chaveDoMes(n.created_at), quando: n.created_at,
     situacao: n.status === 'emitida' ? 'Emitida' : (n.status || '')
   }));
 }
@@ -258,6 +258,7 @@ function linhasDaListaFinanceira() {
 function linhasFinanceirasFiltradas() {
   const est = financeListaEstado || { busca: '', filtros: {} };
   return linhasDaListaFinanceira().filter(r =>
+    finNoPeriodo(r.quando) &&
     (!est.filtros.tipo || r.tipo === est.filtros.tipo) &&
     (!est.filtros.mes || r.mes === est.filtros.mes) &&
     (!est.filtros.situacao || r.situacao === est.filtros.situacao) &&
@@ -294,8 +295,8 @@ function initBarraListaFinanceira() {
   if (!card || financeListaEstado) return;
   ajustarFiltrosDaLista();
   financeListaEstado = montarBarraTabela(card, {
-    placeholder: 'Buscar nº, descrição ou valor...',
-    filtros: financeListaFiltros,
+    placeholder: 'Buscar descrição ou valor...',
+    filtros: [],
     exportar: () => {
       const rows = linhasFinanceirasFiltradas();
       if (financeListaAtual === 'notas') {
@@ -318,6 +319,140 @@ function initBarraListaFinanceira() {
     },
     aoMudar: () => renderListaFinanceira()
   });
+  montarPeriodoFinanceiro(card.querySelector('.tabela-barra-acoes'));
+}
+
+/* -------------------- Período do extrato --------------------
+   Igual ao filtro de período do Dashboard do Admin: botão com o período
+   ("Todo o período", "Este mês"…) e, ao clicar, atalhos à esquerda e um
+   calendário (um dia ou um intervalo) com "Aplicar". */
+const finPeriodo = { de: null, ate: null };
+function finNoPeriodo(data) {
+  if (!finPeriodo.de && !finPeriodo.ate) return true;
+  if (!data) return false;
+  const t = new Date(data).getTime();
+  return (!finPeriodo.de || t >= finPeriodo.de.getTime()) && (!finPeriodo.ate || t <= finPeriodo.ate.getTime());
+}
+function finRotuloDoPeriodo() {
+  const { de, ate } = finPeriodo;
+  const dia = d => d.toLocaleDateString('pt-BR');
+  if (!de && !ate) return 'Todo o período';
+  const hoje = new Date();
+  if (de && ate && de.getDate() === 1 && de.getMonth() === hoje.getMonth() && de.getFullYear() === hoje.getFullYear() && dia(ate) === dia(hoje)) return 'Este mês';
+  if (de && ate && dia(de) === dia(ate) && dia(de) === dia(hoje)) return 'Hoje';
+  if (de && ate && dia(de) === dia(ate)) return dia(de);
+  if (de && ate) return `${dia(de)} – ${dia(ate)}`;
+  return de ? `A partir de ${dia(de)}` : `Até ${dia(ate)}`;
+}
+function montarPeriodoFinanceiro(host) {
+  if (!host || host.querySelector('.per-wrap')) return;
+  const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const ATALHOS = [['hoje', 'Hoje'], ['7', 'Últimos 7 dias'], ['30', 'Últimos 30 dias'], ['mes', 'Este mês'], ['tudo', 'Todo o período']];
+  const wrap = document.createElement('div');
+  wrap.className = 'per-wrap';
+  wrap.innerHTML = `
+    <button type="button" class="tabela-barra-btn per-btn" aria-expanded="false">
+      <svg class="per-btn-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+      <span class="per-rotulo">${finRotuloDoPeriodo()}</span>
+      <svg class="per-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6l6 -6"/></svg>
+    </button>
+    <div class="per-menu" hidden>
+      <div class="per-atalhos">${ATALHOS.map(([v, r]) => `<button type="button" class="per-atalho" data-per-atalho="${v}">${r}</button>`).join('')}</div>
+      <div class="per-corpo">
+        <div class="per-topo">
+          <button type="button" class="per-nav" data-per-mes="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg></button>
+          <span class="per-mes"></span>
+          <button type="button" class="per-nav" data-per-mes="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></button>
+        </div>
+        <div class="per-semana">${SEMANA.map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="per-dias"></div>
+        <p class="per-dica">Clique num dia, ou em dois para um intervalo.</p>
+        <button type="button" class="per-aplicar">Aplicar</button>
+      </div>
+    </div>`;
+  host.prepend(wrap);
+  const botao = wrap.querySelector('.per-btn');
+  const menu = wrap.querySelector('.per-menu');
+  const dias = wrap.querySelector('.per-dias');
+  const dica = wrap.querySelector('.per-dica');
+  const inicioDoDia = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const fimDoDia = d => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  const hoje = inicioDoDia(new Date());
+  const fmt = d => d.toLocaleDateString('pt-BR');
+  let selDe = null; let selAte = null;
+  let mesVisto = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const desenhar = () => {
+    wrap.querySelector('.per-mes').textContent = `${MESES[mesVisto.getMonth()]} ${mesVisto.getFullYear()}`;
+    const primeiro = new Date(mesVisto.getFullYear(), mesVisto.getMonth(), 1);
+    const total = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + 1, 0).getDate();
+    let html = '<span></span>'.repeat(primeiro.getDay());
+    for (let n = 1; n <= total; n++) {
+      const t = new Date(mesVisto.getFullYear(), mesVisto.getMonth(), n).getTime();
+      const c = ['per-dia'];
+      if (t === hoje.getTime()) c.push('is-hoje');
+      if (selDe && t === selDe.getTime()) c.push('is-inicio');
+      if (selAte && t === selAte.getTime()) c.push('is-fim');
+      if (selDe && selAte && t > selDe.getTime() && t < selAte.getTime()) c.push('is-meio');
+      html += `<button type="button" class="${c.join(' ')}" data-per-dia="${t}" ${t > hoje.getTime() ? 'disabled' : ''}>${n}</button>`;
+    }
+    dias.innerHTML = html;
+    wrap.querySelector('[data-per-mes="1"]').disabled = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + 1, 1) > hoje;
+    dica.textContent = !selDe ? 'Clique num dia, ou em dois para um intervalo.'
+      : selAte && selAte.getTime() !== selDe.getTime() ? `${fmt(selDe)} – ${fmt(selAte)}`
+      : `${fmt(selDe)} · clique em outro dia para um intervalo`;
+  };
+  const fechar = () => { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
+  const aplicar = (de, ate) => {
+    finPeriodo.de = de && inicioDoDia(de);
+    finPeriodo.ate = ate && fimDoDia(ate);
+    wrap.querySelector('.per-rotulo').textContent = finRotuloDoPeriodo();
+    botao.classList.toggle('is-ativo', !!(finPeriodo.de || finPeriodo.ate));
+    fechar();
+    renderListaFinanceira();
+  };
+  botao.addEventListener('click', e => {
+    e.stopPropagation();
+    const abrir = menu.hidden;
+    if (abrir) {
+      selDe = finPeriodo.de && inicioDoDia(finPeriodo.de);
+      selAte = finPeriodo.ate && inicioDoDia(finPeriodo.ate);
+      const ref = selAte || hoje;
+      mesVisto = new Date(ref.getFullYear(), ref.getMonth(), 1);
+      desenhar();
+    }
+    menu.hidden = !abrir;
+    botao.setAttribute('aria-expanded', String(abrir));
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+  wrap.querySelectorAll('[data-per-mes]').forEach(b => b.addEventListener('click', () => {
+    mesVisto = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + Number(b.dataset.perMes), 1);
+    desenhar();
+  }));
+  dias.addEventListener('click', e => {
+    const alvo = e.target.closest('[data-per-dia]');
+    if (!alvo) return;
+    const d = new Date(Number(alvo.dataset.perDia));
+    if (!selDe || (selAte && selAte.getTime() !== selDe.getTime())) { selDe = d; selAte = d; }
+    else if (d < selDe) { selAte = selDe; selDe = d; }
+    else selAte = d;
+    desenhar();
+  });
+  wrap.querySelector('.per-aplicar').addEventListener('click', () => {
+    if (!selDe) { dica.textContent = 'Escolha um dia no calendário.'; return; }
+    aplicar(selDe, selAte || selDe);
+  });
+  wrap.querySelectorAll('[data-per-atalho]').forEach(b => b.addEventListener('click', () => {
+    const v = b.dataset.perAtalho;
+    const menos = n => new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - n);
+    if (v === 'hoje') aplicar(hoje, hoje);
+    else if (v === '7') aplicar(menos(6), hoje);
+    else if (v === '30') aplicar(menos(29), hoje);
+    else if (v === 'mes') aplicar(new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje);
+    else aplicar(null, null);
+  }));
 }
 
 async function renderListaFinanceira() {

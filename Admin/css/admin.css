@@ -4234,3 +4234,15 @@ body.com-faixa .admin-content > .legal-abas .aba-contagem { color: inherit; }
 
 /* Logo do menu centralizado. */
 .admin-sidebar-brand { justify-content: center; padding: 0 1rem; }
+
+/* Botões do topo sobre a faixa: ícone e texto sempre em branco. */
+body.com-faixa .admin-header-actions .btn,
+body.com-faixa .admin-header-actions .btn span,
+body.com-faixa .admin-header-actions .btn svg,
+body.com-faixa .admin-header-actions .btn:hover svg,
+body.com-faixa .header-bar-link,
+body.com-faixa .header-bar-link svg { color: #FFFFFF; }
+body.com-faixa .admin-header-actions .btn.btn-primary,
+body.com-faixa .admin-header-actions .btn.btn-primary span,
+body.com-faixa .admin-header-actions .btn.btn-primary svg { color: #183b54; }
+body.com-faixa .header-bar-link:hover { background: rgba(255, 255, 255, .1); }

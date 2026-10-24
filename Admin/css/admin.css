@@ -4231,3 +4231,6 @@ body.com-faixa .admin-content > .legal-abas .aba-contagem { color: inherit; }
 .painel-linha-pe #btn-fechar { display: none; }
 .btn-ver-mais svg { width: 18px; height: 18px; }
 .painel-linha-pe:not(:has(> :not(#btn-fechar))) { display: none; }
+
+/* Logo do menu centralizado. */
+.admin-sidebar-brand { justify-content: center; padding: 0 1rem; }

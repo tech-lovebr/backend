@@ -10713,3 +10713,98 @@ html body .per-aplicar:hover:not(#love-h-a) { background: #E9E9EC; }
   html body .per-menu:not(#love-h-a) { flex-direction: column; }
   html body .per-atalhos:not(#love-h-a) { flex-direction: row; flex-wrap: wrap; border-right: 0; padding-right: 0; border-bottom: 1px solid #F0F0F2; padding-bottom: 8px; }
 }
+
+/* ==========================================================================
+   Financeiro › Contas bancárias: copiado da Carteira Digital do love.com.br
+   (aviso de documentos, faixa azul + cartão da verificação, cadastro e
+   tabela das contas). Escopo #carteira-raiz = a aba no Hub.
+   ========================================================================== */
+html body button.cart-btn-escuro:not(#love-h-a) { height: 40px; margin-top: 8px; padding: 0 18px; background: #181D24; border: 1px solid #181D24; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer; }
+html body button.cart-btn-escuro:not(#love-h-a):hover:not(:disabled) { background: #262D36; }
+html body button.cart-btn-escuro:not(#love-h-a):disabled { background: #E4E4E7; border-color: #E4E4E7; color: #A1A1AA; cursor: default; }
+.cart-status { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.cart-status-solicitado { background: #EBF4FF; color: #183b54; }
+.cart-status-processando { background: #FEF7E6; color: #92400E; }
+.cart-status-realizado { background: #ECFDF3; color: #067647; }
+.cart-status-recusado { background: #F4F4F5; color: #52525B; }
+.cart-contas { padding-bottom: 8px; }
+.cart-contas-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 24px 0; }
+html body .cart-contas-topo .cart-btn-escuro:not(#love-h-a) { margin-top: 0; }
+.cart-contas-barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; flex-wrap: wrap; }
+.cart-form-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cart-form-pix { grid-template-columns: 160px minmax(0, 1fr); }
+.cart-form-grade[hidden] { display: none; }
+.cart-campo { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: #3F3F46; }
+.cart-campo-largo { grid-column: 1 / -1; }
+html body .cart-campo :is(input, select):not(#love-h-a) { width: 100%; height: 40px; padding: 0 12px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-family: inherit; font-size: 14px; color: #18181B; outline: none; box-shadow: none; }
+html body .cart-campo :is(input, select):not(#love-h-a):focus { border-color: #181D24; }
+.cart-campo-rotulo { margin: 16px 0 8px; font-size: 13px; font-weight: 500; color: #3F3F46; }
+.cart-form-erro { margin: 12px 0 0; font-size: 12px; color: #c7305b; }
+.cart-form-erro[hidden] { display: none; }
+html body button.cart-cancelar:not(#love-h-a) { padding: 0 8px; background: transparent; border: 0; font-family: inherit; font-size: 14px; font-weight: 600; color: #52525B; cursor: pointer; }
+html body button.cart-cancelar:not(#love-h-a):hover { color: #181D24; }
+.cart-form-sub { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body #carteira-raiz .cart-form-corpo:not(#love-h-a) { display: flex; flex-direction: column; gap: 16px; padding: 4px 24px 24px; max-width: 640px; }
+html body #carteira-raiz .cart-form-corpo .cart-metodos:not(#love-h-a) { margin: 0; }
+html body #carteira-raiz .cart-form-acoes:not(#love-h-a) { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+html body #carteira-raiz .cart-form-acoes .cart-btn-escuro:not(#love-h-a) { margin-top: 0; }
+html body #carteira-raiz .cart-contas-cab:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--divisor-suave, rgba(0,0,0,.04)); }
+.cart-contas-cab-texto { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+html body #carteira-raiz .cart-contas-cab .cart-titulo:not(#love-h-a) { margin: 0; font-size: 15px; }
+html body #carteira-raiz .cart-contas-cab .cart-btn-escuro:not(#love-h-a) { margin-top: 0; height: 38px; }
+html body #carteira-raiz .cart-contas-tabela:not(#love-h-a) { display: flex; flex-direction: column; min-height: 420px; }
+html body #carteira-raiz .cart-contas-tabela > .overflow-x-auto:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body #carteira-raiz .cart-contas-tabela .love-tabela:has(.cart-contas-vazio):not(#love-h-a) { flex: 1 0 auto; height: 100%; }
+html body #carteira-raiz td.cart-contas-vazio:not(#love-h-a) { text-align: center !important; vertical-align: middle !important; border-bottom: 0 !important; color: #71717A; }
+html body #carteira-raiz .cart-contas-tabela td:not(#love-h-a) { white-space: nowrap; }
+.cart-conta-em_analise { background: #EBF4FF; color: #183b54; }
+.cart-conta-aprovado { background: #ECFDF3; color: #067647; }
+.cart-conta-recusado { background: #F4F4F5; color: #52525B; }
+html body #carteira-raiz button.cart-remover:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 500; color: #52525B; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(82, 82, 91, 0.35); }
+html body #carteira-raiz button.cart-remover:not(#love-h-a):hover { color: #181D24; text-decoration-color: #181D24; }
+.cart-docs-aviso { display: flex; align-items: center; gap: 40px; padding: 28px 40px; }
+.cart-docs-ilustra { flex: 0 0 140px; width: 140px; height: 140px; }
+.cart-docs-ilustra svg { width: 100%; height: 100%; display: block; }
+html body .cart-docs-texto h3:not(#love-h-a) { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.25; color: #18181B; }
+html body .cart-docs-texto p:not(#love-h-a) { margin: 12px 0 0; font-size: 14px; line-height: 1.6; color: #3F3F46; }
+html body .cart-docs-texto .cart-btn-escuro:not(#love-h-a) { margin-top: 20px; }
+@media (max-width: 640px) { .cart-docs-aviso { flex-direction: column; align-items: flex-start; gap: 20px; padding: 24px; } .cart-docs-ilustra { flex-basis: auto; width: 110px; height: 110px; } }
+html body #carteira-raiz .cart-verif:not(#love-h-a) { overflow: hidden; padding-bottom: 32px; }
+html body .cart-verif-faixa:not(#love-h-a) { padding: 40px 32px 96px; background-color: #EBF4FF; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27160%27%20height%3D%2728%27%20viewBox%3D%270%200%20160%2028%27%3E%3Cpath%20d%3D%27M0%2014%20C20%204%2060%204%2080%2014%20S140%2024%20160%2014%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-opacity%3D%270.75%27%20stroke-width%3D%271.2%27%2F%3E%3C%2Fsvg%3E"); background-size: 160px 28px; }
+html body .cart-verif-faixa h3:not(#love-h-a) { margin: 0; max-width: 560px; font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.25; color: #18181B; }
+html body .cart-verif-faixa p:not(#love-h-a) { margin: 12px 0 0; font-size: 15px; color: #3F3F46; }
+html body .cart-verif-cartao:not(#love-h-a) { position: relative; margin: -64px 32px 0; max-width: 760px; padding: 24px 28px; background: #FFFFFF; border: 1px solid var(--borda-suave, rgba(0,0,0,.06)); border-radius: 10px; box-shadow: var(--anel-suave, 0 0 0 1px rgba(0,0,0,.03)); display: flex; flex-direction: column; gap: 16px; }
+html body .cart-verif-titulo:not(#love-h-a) { margin: 0; padding-bottom: 14px; border-bottom: 1px solid #E4E4E7; font-size: 15px; font-weight: 700; color: #18181B; }
+.cart-verif-intro { margin: 0; font-size: 14px; color: #52525B; }
+.cart-verif-lista { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.cart-verif-lista li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: #3F3F46; line-height: 1.5; }
+.cart-verif-lista svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 2px; color: #183b54; }
+.cart-verif-arquivos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: -8px; }
+html body .cart-arquivo:not(#love-h-a) { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 112px; padding: 16px; border: 1px dashed #D4D4D8; border-radius: 8px; background: #FFFFFF; text-align: center; cursor: pointer; }
+html body .cart-arquivo:not(#love-h-a):hover, html body .cart-arquivo.tem-arquivo:not(#love-h-a) { border-color: #181D24; }
+.cart-arquivo input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.cart-arquivo svg { width: 22px; height: 22px; color: #71717A; }
+.cart-arquivo b { font-size: 13px; font-weight: 600; color: #18181B; }
+.cart-arquivo span { font-size: 12px; color: #71717A; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cart-arquivo.tem-arquivo svg { color: #183b54; }
+@media (max-width: 640px) { html body .cart-verif-faixa:not(#love-h-a) { padding: 28px 24px 88px; } html body .cart-verif-faixa h3:not(#love-h-a) { font-size: 22px; } html body .cart-verif-cartao:not(#love-h-a) { margin: -64px 16px 0; padding: 20px; } .cart-verif-arquivos { grid-template-columns: 1fr; } }
+html body .cart-verif-faixa:not(#love-h-a) {
+  background-color: #183b54;
+  background-image:
+    radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%),
+    linear-gradient(180deg, #183b54 0%, #1d4664 100%);
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+html body .cart-verif-faixa h3:not(#love-h-a) { color: #FFFFFF !important; }
+html body .cart-verif-faixa p:not(#love-h-a) { color: rgba(255, 255, 255, .8) !important; }
+html body .cart-verif-faixa .cart-verif-logo { display: inline-block; height: 0.92em; width: auto; margin: 0 0 0 0.12em; vertical-align: -0.073em; }
+html body .cart-arquivo[hidden]:not(#love-h-a) { display: none; }
+
+/* Contas bancárias no Hub: a caixa encosta nas abas (como na Carteira). */
+html body #carteira-raiz > .cart-caixa:first-child:not(#love-h-a) { border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+.cart-vazio { margin: 0; padding: 28px 24px 32px; font-size: 13px; color: #71717A; }
+.cart-col-acoes { width: 48px; text-align: right !important; }
+html body button.cart-btn-escuro:not(#love-h-a) { height: 40px; margin-top: 8px; padding: 0 18px; background: #181D24; border: 1px solid #181D24; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer; }
+html body button.cart-btn-escuro:not(#love-h-a):hover:not(:disabled) { background: #262D36; }
+html body button.cart-btn-escuro:not(#love-h-a):disabled { background: #E4E4E7; border-color: #E4E4E7; color: #A1A1AA; cursor: default; }

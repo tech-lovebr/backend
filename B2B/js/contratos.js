@@ -149,7 +149,7 @@ function renderFinanceStats() {
   const esconder = document.querySelector('#fin-esconder span');
   if (esconder) esconder.textContent = finEsconder ? 'Mostrar valores' : 'Esconder valores';
 
-  const temConta = !!(typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.pixKey);
+  const temConta = !!((typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.pixKey) || window.b2bTemContaBancaria);
   document.getElementById('fin-dica-conta').hidden = temConta;
   const sacar = document.getElementById('request-withdrawal-btn');
   sacar.disabled = !(disponivel > 0 && temConta);
@@ -962,32 +962,3 @@ function initPaymentLinkModal() {
     });
   });
 }
-
-/* -------------------- Contas bancárias (chave Pix dos saques) -------------------- */
-document.addEventListener('DOMContentLoaded', async () => {
-  const form = document.getElementById('fin-conta-form');
-  if (!form) return;
-  await window.b2bAuthReady;
-  const p = B2B_DATA.professional;
-  const tipo = document.getElementById('fin-pix-tipo');
-  const chave = document.getElementById('fin-pix-chave');
-  const aceite = document.getElementById('fin-pix-aceite');
-  tipo.value = p.pixKeyType || 'cpf';
-  chave.value = p.pixKey || '';
-  aceite.checked = !!p.pixKey;
-  if (typeof wirePixKeyMaskInput === 'function') wirePixKeyMaskInput(chave, () => tipo.value);
-  const msg = (t, erro) => { const el = document.getElementById('fin-conta-msg'); el.textContent = t || ''; el.hidden = !t; el.classList.toggle('is-erro', !!erro); };
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const valor = chave.value.trim();
-    if (!valor) return msg('Preencha a sua chave Pix.', true);
-    if (!aceite.checked) return msg('Marque a confirmação para salvar.', true);
-    const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
-    const { error } = await supabaseClient.from('fornecedores').update({ pix_key: valor, pix_key_type: tipo.value }).eq('id', empresaId(session));
-    if (error) return msg('Não foi possível salvar agora. Tente de novo.', true);
-    p.pixKey = valor;
-    p.pixKeyType = tipo.value;
-    msg('Conta salva. Os saques vão para esta chave Pix.');
-    renderFinanceStats();
-  });
-});

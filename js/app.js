@@ -9429,6 +9429,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Clicar no nome abre o recado na própria tabela (sem drawer nem pop-up).
   // ==========================================
   let recadosBusca = '';
+  // Paginação igual a Meus convidados: "Mostrar 15/25/50" + "Página X de Y".
+  let recadosPorPagina = 15;
+  let recadosPagina = 1;
   /** @type {Set<string>} */
   const recadosAbertos = new Set();
   // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
@@ -9442,7 +9445,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const termo = recadosBusca.trim().toLowerCase();
     const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
     const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    const linhas = lista.map(/** @param {any} g */ g => {
+    const totalPaginas = Math.max(1, Math.ceil(lista.length / recadosPorPagina));
+    recadosPagina = Math.min(Math.max(1, recadosPagina), totalPaginas);
+    const daPagina = lista.slice((recadosPagina - 1) * recadosPorPagina, recadosPagina * recadosPorPagina);
+    const linhas = daPagina.map(/** @param {any} g */ g => {
       const id = String(g.id);
       const aberto = recadosAbertos.has(id);
       const msg = String(g.message || '');
@@ -9472,11 +9478,37 @@ document.addEventListener('DOMContentLoaded', () => {
             <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + (semPresentes ? 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.<br>Parece que ainda não existe nenhum presente adicionado. <button type="button" class="recados-link" data-recados-ir-presentes>Que tal adicionar um presente?</button>' : 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.')}</td></tr>`}</tbody>
           </table>
         </div>
+        <div class="guests-pagination recados-paginacao">
+          <div class="guests-pagination-size">
+            <label for="recados-por-pagina">Mostrar</label>
+            <select id="recados-por-pagina">
+              ${[15, 25, 50].map(n => `<option value="${n}"${n === recadosPorPagina ? ' selected' : ''}>${n}</option>`).join('')}
+            </select>
+          </div>
+          <div class="guests-pagination-nav">
+            <button type="button" class="guests-pagination-btn" data-recados-pagina="-1" aria-label="Página anterior"${recadosPagina <= 1 ? ' disabled' : ''}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg>
+            </button>
+            <span>Página ${recadosPagina} de ${totalPaginas}</span>
+            <button type="button" class="guests-pagination-btn" data-recados-pagina="1" aria-label="Próxima página"${recadosPagina >= totalPaginas ? ' disabled' : ''}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
       </div>`;
   }
+  document.addEventListener('change', (e) => {
+    const el = /** @type {HTMLSelectElement} */ (e.target);
+    if (!el || el.id !== 'recados-por-pagina') return;
+    recadosPorPagina = parseInt(el.value, 10) || 15;
+    recadosPagina = 1;
+    renderRecadosRecebidos();
+  });
   document.addEventListener('click', (e) => {
     const alvo = e.target instanceof Element ? e.target : null;
     if (alvo && alvo.closest('[data-recados-ir-presentes]')) { irParaListasProntas(false); return; }
+    const passo = alvo && alvo.closest('[data-recados-pagina]');
+    if (passo) { recadosPagina += Number(/** @type {HTMLElement} */ (passo).dataset.recadosPagina) || 0; renderRecadosRecebidos(); return; }
     const linha = alvo && alvo.closest('#recados-raiz .recado-linha');
     if (!linha || !alvo.closest('[data-recado-abrir], .recado-previa')) return;
     const id = /** @type {HTMLElement} */ (linha).dataset.recadoId || '';
@@ -9487,6 +9519,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = /** @type {HTMLInputElement} */ (e.target);
     if (!el || el.id !== 'recados-busca') return;
     recadosBusca = el.value;
+    recadosPagina = 1;
     const pos = el.selectionStart;
     renderRecadosRecebidos();
     const novo = /** @type {HTMLInputElement|null} */ (document.getElementById('recados-busca'));

@@ -11553,3 +11553,9 @@ html body #view-event-os-dashboard #form-user-settings .field-input.is-faltando:
 html body .rc-aviso .rc-aviso-titulo:not(#love-h-a) { color: #18181B !important; font-weight: 600 !important; }
 html body .rc-aviso .rc-aviso-sub:not(#love-h-a) { color: #A1A1AA !important; }
 body[data-theme="dark"] .rc-aviso .rc-aviso-sub { color: #A1A1AA !important; }
+
+/* Recados recebidos: como Meus convidados, a página estica até o rodapé e o
+   "Mostrar / Página" fica no pé da caixa, mesmo sem recados. */
+html body #view-event-os-dashboard .dashboard-content-wrapper:has(> #tab-gifts.active #gifts-panel-messages:not(.hidden)):not(#love-h-a) { display: flex; flex-direction: column; }
+html body #view-event-os-dashboard .dashboard-main-area:has(#gifts-panel-messages:not(.hidden)) > .rodape-respiro:not(#love-h-a) { flex-basis: 2rem; height: 2rem; }
+html body #recados-raiz .recados-paginacao:not(#love-h-a) { margin-top: auto; }

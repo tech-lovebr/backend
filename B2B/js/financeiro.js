@@ -74,8 +74,14 @@ function initSalesViewTabs() {
         panel.style.display = panel.dataset.viewPanel === btn.dataset.view ? '' : 'none';
       });
       if (btn.dataset.view === 'notas') renderNotasFiscais();
+      // "Novo orçamento" só aparece na aba Orçamentos.
+      const novo = document.getElementById('orcamento-novo-btn');
+      if (novo) novo.hidden = btn.dataset.view !== 'orcamentos';
     });
   });
+  const novo = document.getElementById('orcamento-novo-btn');
+  const ativa = wrap.querySelector('[data-view].active');
+  if (novo) novo.hidden = !ativa || ativa.dataset.view !== 'orcamentos';
 }
 
 /* -------------------- Notas fiscais -------------------- */
@@ -405,9 +411,10 @@ function orcamentosFiltrados() {
 function renderOrcamentos() {
   const body = document.getElementById('orcamentos-body');
   if (!body) return;
-  const linhas = orcamentosFiltrados();
+  const todas = orcamentosFiltrados();
+  const linhas = paginarLinhas(orcamentosPaginacao, todas);
   if (!linhas.length) {
-    body.innerHTML = `<tr><td colspan="8" class="text-sm text-zinc-500 py-6 text-center">Nenhum orçamento ainda. Clique em "Novo orçamento" para criar o primeiro.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="8" class="tabela-vazia-cheia">Nenhum orçamento ainda. Clique em "Novo orçamento" para criar o primeiro.</td></tr>`;
     return;
   }
   body.innerHTML = linhas.map((r, i) => {
@@ -434,7 +441,9 @@ function renderOrcamentos() {
   });
 }
 
+let orcamentosPaginacao = null;
 function initOrcamentosLista() {
+  orcamentosPaginacao = montarPaginacaoTabela(document.getElementById('orcamentos-table-card'), () => renderOrcamentos());
   orcamentosTabelaEstado = montarBarraTabela(document.getElementById('orcamentos-table-card'), {
     placeholder: 'Buscar cliente ou serviço...',
     filtros: [{ chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(ORCAMENTO_STATUS).map(([k, v]) => [k, v.label]) }],
@@ -447,7 +456,7 @@ function initOrcamentosLista() {
       { titulo: 'Valor', valor: r => (r.valor == null ? '' : r.valor) },
       { titulo: 'Status', valor: r => ORCAMENTO_STATUS[r.status].label }
     ], orcamentosFiltrados()),
-    aoMudar: () => renderOrcamentos()
+    aoMudar: () => { if (orcamentosPaginacao) orcamentosPaginacao.pagina = 1; renderOrcamentos(); }
   });
   document.getElementById('orcamento-novo-btn')?.addEventListener('click', () => abrirPropostaNova());
   document.getElementById('proposal-voltar')?.addEventListener('click', () => voltarParaListaOrcamentos());

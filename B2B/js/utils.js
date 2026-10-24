@@ -1273,3 +1273,56 @@ function ajustarAlturaDoTexto(campo) {
 }
 document.addEventListener('input', (e) => ajustarAlturaDoTexto(e.target));
 document.addEventListener('focusin', (e) => ajustarAlturaDoTexto(e.target));
+
+
+/* ==========================================================================
+   Paginação no rodapé da caixa da tabela, igual ao love.com.br (Meus
+   convidados, Recados): "Mostrar 15/25/50" à esquerda e "Página X de Y"
+   com as setas à direita. montarPaginacaoTabela(caixa, aoMudar) devolve o
+   estado; paginarLinhas(estado, lista) devolve só as linhas da página e
+   atualiza o rodapé. Mudou busca/filtro: estado.pagina = 1.
+   ========================================================================== */
+function montarPaginacaoTabela(caixa, aoMudar) {
+  if (!caixa) return null;
+  const estado = { pagina: 1, porPagina: 15 };
+  const rodape = document.createElement('div');
+  rodape.className = 'guests-pagination tabela-paginacao';
+  rodape.innerHTML = `
+    <div class="guests-pagination-size">
+      <label>Mostrar</label>
+      <select data-pag-tamanho><option value="15">15</option><option value="25">25</option><option value="50">50</option></select>
+    </div>
+    <div class="guests-pagination-nav">
+      <button type="button" class="guests-pagination-btn" data-pag-passo="-1" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
+      <span data-pag-texto>Página 1 de 1</span>
+      <button type="button" class="guests-pagination-btn" data-pag-passo="1" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>
+    </div>`;
+  caixa.appendChild(rodape);
+  caixa.classList.add('tem-paginacao');
+  estado.rodape = rodape;
+  rodape.querySelector('[data-pag-tamanho]').addEventListener('change', e => {
+    estado.porPagina = parseInt(e.target.value, 10) || 15;
+    estado.pagina = 1;
+    aoMudar && aoMudar();
+  });
+  rodape.addEventListener('click', e => {
+    const b = e.target.closest('[data-pag-passo]');
+    if (!b || b.disabled) return;
+    estado.pagina += Number(b.dataset.pagPasso);
+    aoMudar && aoMudar();
+  });
+  return estado;
+}
+
+function paginarLinhas(estado, lista) {
+  if (!estado) return lista;
+  const paginas = Math.max(1, Math.ceil(lista.length / estado.porPagina));
+  estado.pagina = Math.min(Math.max(1, estado.pagina), paginas);
+  const r = estado.rodape;
+  if (r) {
+    r.querySelector('[data-pag-texto]').textContent = `Página ${estado.pagina} de ${paginas}`;
+    r.querySelector('[data-pag-passo="-1"]').disabled = estado.pagina <= 1;
+    r.querySelector('[data-pag-passo="1"]').disabled = estado.pagina >= paginas;
+  }
+  return lista.slice((estado.pagina - 1) * estado.porPagina, estado.pagina * estado.porPagina);
+}

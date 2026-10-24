@@ -60,7 +60,7 @@ function subirBarraDoEditor() {
   criar.className = 'btn-secondary builder-toolbar-btn site-form-criar';
   criar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo';
   criar.addEventListener('click', () => openFormDrawer(null));
-  cabecalho.append(criar);
+  // O "Criar novo" saiu do cabeçalho (fica o da própria lista de formulários).
   document.body.classList.add('site-barra-no-cabecalho');
 }
 

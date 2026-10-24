@@ -10867,3 +10867,32 @@ html body .op-caixa .guests-pagination-btn:disabled:not(#love-h-a) { opacity: .4
   html body .op-post:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) auto 36px; }
   html body .op-post-num:not(#love-h-a) { display: none; }
 }
+
+/* Tabelas com rodapé de páginas e vazias ocupando boa parte da tela
+   (como Meus convidados do love.com.br). */
+html body :is(#orcamentos-table-card, #contratos-clientes-card):not(#love-h-a) { display: flex; flex-direction: column; min-height: calc(100vh - 340px); padding: 0 !important; }
+html body :is(#orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap:not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+html body :is(#orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap > table:not(#love-h-a) { flex: 1 0 auto; }
+html body td.tabela-vazia-cheia:not(#love-h-a) { height: 100%; padding: 64px 16px !important; text-align: center; vertical-align: middle; font-size: 14px; color: #71717A !important; }
+html body .tabela-paginacao:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: auto 0 0; padding: 16px 24px 20px; border-top: 1px solid var(--divisor-suave, rgba(0,0,0,.04)); }
+html body .tabela-paginacao .guests-pagination-size:not(#love-h-a) { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #71717A; }
+html body .tabela-paginacao .guests-pagination-size select:not(#love-h-a) { width: auto; height: 32px; padding: 0 28px 0 10px; border: 1px solid var(--borda-suave); border-radius: 8px; background-color: #FFFFFF; font-family: inherit; font-size: 13px; color: #18181B; }
+html body .tabela-paginacao .guests-pagination-nav:not(#love-h-a) { display: flex; align-items: center; gap: 12px; }
+html body .tabela-paginacao .guests-pagination-nav span:not(#love-h-a) { font-size: 13px; font-weight: 600; color: #3F3F46; white-space: nowrap; }
+html body .tabela-paginacao .guests-pagination-btn:not(#love-h-a) { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--borda-suave); border-radius: 8px; background: #FFFFFF; color: #3F3F46; cursor: pointer; }
+html body .tabela-paginacao .guests-pagination-btn svg:not(#love-h-a) { width: 16px; height: 16px; }
+html body .tabela-paginacao .guests-pagination-btn:hover:not(:disabled):not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .tabela-paginacao .guests-pagination-btn:disabled:not(#love-h-a) { opacity: .4; cursor: default; }
+html body #orcamento-novo-btn[hidden]:not(#love-h-a) { display: none !important; }
+
+/* Meus contratos: o contrato aberto vira uma página dentro da caixa. */
+html body #contratos-clientes-card.mostrando-contrato > :not(.contrato-pagina):not(#love-h-a) { display: none !important; }
+html body .contrato-pagina[hidden]:not(#love-h-a) { display: none; }
+html body .contrato-pagina:not(#love-h-a) { padding: 24px; }
+html body .contrato-pagina-caminho:not(#love-h-a) { margin-bottom: 16px; }
+html body .contrato-pagina .contratos-detalhe:not(#love-h-a) { padding: 0; background: transparent; border: 0; }
+
+/* Editar meu site: a etiqueta "Seção" (arrastar) fica sempre por cima do
+   cabeçalho do site, mesmo na primeira seção. */
+html body #site-builder-root .builder-section:is(:hover, .is-selected):not(#love-h-a) { z-index: 30; }
+html body #site-builder-root .builder-block-toolbar:not(#love-h-a) { z-index: 40; }

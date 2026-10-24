@@ -125,6 +125,8 @@ function renderContratosClientes() {
   if (!body) return;
   let rows = contratosClientesFiltrados();
   rows = rows.slice().sort((a, b) => (a.status === 'quitado' ? 1 : 0) - (b.status === 'quitado' ? 1 : 0));
+  rows = paginarLinhas(contratosPaginacao, rows);
+  renderContratoPagina();
 
   body.innerHTML = rows.length
     ? rows.map(c => {
@@ -139,10 +141,9 @@ function renderContratosClientes() {
         <td>${convidados}</td>
         ${typeof nfMenuHtml === 'function' ? nfMenuHtml(c) : tabelaVerMaisHtml('data-contrato-select', c.id)}
       </tr>
-      ${aberto ? renderContratoDetalheRow(c) : ''}
     `;
     }).join('')
-    : `<tr><td colspan="6" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Nenhum contrato fechado no momento.</td></tr>`;
+    : `<tr><td colspan="6" class="tabela-vazia-cheia">Nenhum contrato fechado no momento.</td></tr>`;
 
   // Clicar na linha (ou no "ver mais") abre/fecha os detalhes logo abaixo.
   body.querySelectorAll('[data-contrato-row]').forEach(tr => {
@@ -211,10 +212,44 @@ function renderContratoDetalheRow(c) {
       </tr>`;
 }
 
+/* Clicar num contrato abre os detalhes como uma página dentro da mesma
+   caixa (a tabela some e volta pelo "Meus contratos" do caminho). */
 function selectContrato(id) {
-  selectedContratoId = selectedContratoId === id ? null : id;
-  renderContratosClientes();
+  selectedContratoId = id;
+  renderContratoPagina();
+  document.getElementById('contratos-clientes-card')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
+
+function renderContratoPagina() {
+  const card = document.getElementById('contratos-clientes-card');
+  if (!card) return;
+  let pagina = document.getElementById('contrato-pagina');
+  if (!pagina) {
+    pagina = document.createElement('div');
+    pagina.id = 'contrato-pagina';
+    pagina.className = 'contrato-pagina';
+    card.appendChild(pagina);
+    pagina.addEventListener('click', e => {
+      if (e.target.closest('[data-contrato-voltar]')) { selectedContratoId = null; renderContratoPagina(); return; }
+      if (e.target.closest('[data-contrato-vermais]')) { openContratoDrawer(); return; }
+      const g = e.target.closest('[data-convidado-select]');
+      if (g) openConvidadoDrawer(g.dataset.convidadoSelect);
+    });
+  }
+  const c = selectedContratoId ? findContrato(selectedContratoId) : null;
+  card.classList.toggle('mostrando-contrato', !!c);
+  pagina.hidden = !c;
+  if (!c) return;
+  pagina.innerHTML = `
+    <nav class="b2b-breadcrumb contrato-pagina-caminho" aria-label="Caminho">
+      <button type="button" class="b2b-breadcrumb-link" data-contrato-voltar>Meus contratos</button>
+      <span class="b2b-breadcrumb-sep" aria-hidden="true">›</span>
+      <span class="b2b-breadcrumb-atual">${escapeHtml(c.client || 'Contrato')}</span>
+    </nav>
+    ${renderContratoDetalheRow(c).replace(/^\s*<tr class="contratos-detalhe-row">\s*<td colspan="6">/, '').replace(/<\/td>\s*<\/tr>\s*$/, '')}`;
+}
+
+let contratosPaginacao = null;
 
 // O painel lateral saiu; os detalhes agora ficam na tabela.
 function renderContratoEventoPanel() {}
@@ -389,6 +424,7 @@ function openContratoDrawer() {
 
 async function initContratosTab() {
   await loadContratosAbertos();
+  contratosPaginacao = montarPaginacaoTabela(document.getElementById('contratos-clientes-card'), () => renderContratosClientes());
   // Barra da tabela: busca, Filtrar por (status e categoria) e Exportar.
   contratosTabelaEstado = montarBarraTabela(document.getElementById('contratos-clientes-card'), {
     placeholder: 'Buscar cliente...',
@@ -405,7 +441,7 @@ async function initContratosTab() {
       { titulo: 'Evento', valor: c => c.evento && c.evento.nome },
       { titulo: 'Data do evento', valor: c => c.evento && c.evento.data }
     ], contratosClientesFiltrados()),
-    aoMudar: () => renderContratosClientes()
+    aoMudar: () => { if (contratosPaginacao) contratosPaginacao.pagina = 1; renderContratosClientes(); }
   });
   renderContratosClientes();
   renderContratoEventoPanel();

@@ -20049,6 +20049,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const formUserSettings = document.getElementById('form-user-settings');
   if (formUserSettings) {
+    // Campo obrigatório marcado volta ao normal assim que a pessoa preenche.
+    const limparFaltando = (/** @type {Event} */ e) => { const el = /** @type {HTMLElement} */ (e.target); if (el && el.classList) el.classList.remove('is-faltando'); };
+    formUserSettings.addEventListener('input', limparFaltando);
+    formUserSettings.addEventListener('change', limparFaltando);
     formUserSettings.addEventListener('submit', async (e) => {
       e.preventDefault();
       const session = window.loveClienteSession;
@@ -20081,6 +20085,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const v = (/** @type {HTMLInputElement|null} */ (document.getElementById(id)))?.value.trim() || '';
         recebimento[coluna] = !v ? null : coluna === 'cep' ? v.replace(/\D/g, '') : coluna === 'renda_mensal' ? Number(v) : v;
       });
+      // Obrigatórios (com *): o que a conta digital dos presentes precisa.
+      /** @type {Array<[string, string]>} */
+      const obrigatorios = [
+        ['settings-user-phone', 'celular'], ['settings-user-cpf', 'CPF'], ['settings-user-nascimento', 'data de nascimento'],
+        ['settings-user-renda', 'renda mensal'], ['settings-user-cep', 'CEP'], ['settings-user-bairro', 'bairro'],
+        ['settings-user-endereco', 'endereço'], ['settings-user-numero', 'número']
+      ];
+      const faltando = obrigatorios.filter(([id]) => !(/** @type {HTMLInputElement|null} */ (document.getElementById(id)))?.value.trim());
+      document.querySelectorAll('#form-user-settings .field-input.is-faltando').forEach(el => el.classList.remove('is-faltando'));
+      if (faltando.length) {
+        faltando.forEach(([id]) => document.getElementById(id)?.classList.add('is-faltando'));
+        const primeiro = document.getElementById(faltando[0][0]);
+        primeiro?.focus();
+        return showSettingsError(faltando.length === 1
+          ? `Preencha o campo obrigatório: ${faltando[0][1]}.`
+          : `Preencha os campos obrigatórios: ${faltando.map(f => f[1]).join(', ')}.`);
+      }
       if (recebimento.cep && recebimento.cep.length !== 8) return showSettingsError('CEP incompleto.');
       if (recebimento.data_nascimento) {
         const idade = (Date.now() - new Date(recebimento.data_nascimento + 'T00:00:00').getTime()) / 31557600000;

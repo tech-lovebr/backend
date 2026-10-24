@@ -11539,3 +11539,6 @@ html body .conta-endereco-linha:not(#love-h-a) { display: grid; grid-template-co
 .convite-form .convite-rsvp-opcao.is-ativo { border-color: var(--bx-primary, #183b54); box-shadow: inset 0 0 0 1px var(--bx-primary, #183b54); }
 .convite-form .convite-rsvp-opcao small { flex-shrink: 0; font-size: 11px; font-weight: 500; color: #A1A1AA; }
 .convite-form .convite-botao:disabled { opacity: 0.5; cursor: default; }
+
+/* Suas informações: campo obrigatório vazio ao salvar. */
+html body #view-event-os-dashboard #form-user-settings .field-input.is-faltando:not(#love-h-a) { border-color: #B42318 !important; }

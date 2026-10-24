@@ -28,7 +28,6 @@
       <div class="rc-aviso">
         <div class="rc-aviso-texto">
           <p class="rc-aviso-titulo">Finalize seu cadastro para receber os presentes</p>
-          <p class="rc-aviso-sub">Complete seus dados em Suas informações para ativar o recebimento. Quando um convidado comprar um presente, o valor cai na sua Carteira e você saca por Pix.</p>
         </div>
         <div class="rc-aviso-acao"><button type="button" class="rc-botao" data-rc-finalizar>Finalizar cadastro</button></div>
       </div>`;

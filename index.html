@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261024_rsvpLista">
+  <link rel="stylesheet" href="css/styles.css?v=20261024_obrigatorios">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3039,21 +3039,21 @@
                         <input type="email" id="settings-user-email" disabled class="field-input">
                       </div>
                       <div>
-                        <label for="settings-user-phone" class="field-label">Número de celular</label>
+                        <label for="settings-user-phone" class="field-label">Número de celular <span class="conta-obrigatorio">*</span></label>
                         <input type="tel" id="settings-user-phone" inputmode="numeric" autocomplete="tel" placeholder="(00) 00000-0000" class="field-input">
                       </div>
                       <div>
-                        <label for="settings-user-cpf" class="field-label">CPF</label>
+                        <label for="settings-user-cpf" class="field-label">CPF <span class="conta-obrigatorio">*</span></label>
                         <input type="text" id="settings-user-cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" class="field-input">
                       </div>
                       <!-- Dados para receber os presentes (conta digital, api/_recebimento.js). -->
                       <div class="conta-nome-linha">
                         <div>
-                          <label for="settings-user-nascimento" class="field-label">Data de nascimento</label>
+                          <label for="settings-user-nascimento" class="field-label">Data de nascimento <span class="conta-obrigatorio">*</span></label>
                           <input type="date" id="settings-user-nascimento" class="field-input">
                         </div>
                         <div>
-                          <label for="settings-user-renda" class="field-label">Renda mensal</label>
+                          <label for="settings-user-renda" class="field-label">Renda mensal <span class="conta-obrigatorio">*</span></label>
                           <select id="settings-user-renda" class="field-input">
                             <option value="">Selecione</option>
                             <option value="1500">Até R$ 1.500</option>
@@ -3067,21 +3067,21 @@
                       </div>
                       <div class="conta-nome-linha">
                         <div>
-                          <label for="settings-user-cep" class="field-label">CEP</label>
+                          <label for="settings-user-cep" class="field-label">CEP <span class="conta-obrigatorio">*</span></label>
                           <input type="text" id="settings-user-cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" class="field-input">
                         </div>
                         <div>
-                          <label for="settings-user-bairro" class="field-label">Bairro</label>
+                          <label for="settings-user-bairro" class="field-label">Bairro <span class="conta-obrigatorio">*</span></label>
                           <input type="text" id="settings-user-bairro" maxlength="80" class="field-input">
                         </div>
                       </div>
                       <div class="conta-endereco-linha">
                         <div>
-                          <label for="settings-user-endereco" class="field-label">Endereço</label>
+                          <label for="settings-user-endereco" class="field-label">Endereço <span class="conta-obrigatorio">*</span></label>
                           <input type="text" id="settings-user-endereco" autocomplete="address-line1" maxlength="120" class="field-input">
                         </div>
                         <div>
-                          <label for="settings-user-numero" class="field-label">Número</label>
+                          <label for="settings-user-numero" class="field-label">Número <span class="conta-obrigatorio">*</span></label>
                           <input type="text" id="settings-user-numero" maxlength="20" class="field-input">
                         </div>
                         <div>
@@ -5535,12 +5535,12 @@
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
-  <script src="js/app.js?v=20261024_googleErro"></script>
+  <script src="js/app.js?v=20261024_obrigatorios"></script>
   <script src="js/carteira.js?v=20261023_verificacaoIdentidade"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
   <script src="js/pedidos-orcamento.js?v=20261023_dataDoEvento"></script>
   <script src="js/contratos.js?v=20261023_contratos2"></script>
-  <script src="js/recebimento.js?v=20261024_cadastroRecebimento"></script>
+  <script src="js/recebimento.js?v=20261024_obrigatorios"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="js/site-builder.js?v=20261024_rsvpLista"></script>
 </body>

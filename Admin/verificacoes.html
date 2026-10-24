@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo Love</title>
+  <meta name="theme-color" content="#183b54">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="assets/fav-admin.png">
+  <link rel="apple-touch-icon" href="assets/fav-admin.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/admin.css?v=135">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/supabase-init.js"></script>
+  <script src="js/utils.js?v=8"></script>
+  <script src="js/shell.js?v=22"></script>
+</head>
+<body data-page="verificacoes" data-title="Verificações">
+
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar"></aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="admin-main">
+      <header class="admin-topbar" id="admin-topbar"></header>
+      <main class="admin-content">
+
+        <section class="kpi-grid" id="kpi-grid"></section>
+
+        <section class="card table-card bloco">
+          <div class="table-toolbar">
+            <div class="table-toolbar-esq"><input type="search" class="search-input" id="busca" placeholder="Pesquisar..."></div>
+            <div class="table-toolbar-dir">
+              <select class="field-select" id="filtro-tipo" style="width:auto">
+                <option value="">Todas as solicitações</option>
+                <option value="identidade">Identidade · saque</option>
+                <option value="conta">Conta bancária</option>
+                <option value="empresa">Verificação da empresa</option>
+              </select>
+              <select class="field-select" id="filtro-status" style="width:auto">
+                <option value="em_analise" selected>Em análise</option>
+                <option value="aprovado">Aprovadas</option>
+                <option value="recusado">Reprovadas</option>
+                <option value="">Todas</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data linhas-estaticas">
+              <thead><tr><th>Data</th><th>Quem</th><th>Solicitação</th><th>Documento</th><th>Status</th><th class="col-acoes"></th></tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div id="visao-verificacao" hidden></div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/verificacoes.js?v=1"></script>
+</body>
+</html>

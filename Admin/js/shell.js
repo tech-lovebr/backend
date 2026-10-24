@@ -32,6 +32,7 @@ const NAV_SECTIONS = [
     items: [
       { page: 'financeiro', href: 'financeiro.html', text: 'Financeiro', icon: 'wallet' },
       { page: 'atendimento', href: 'atendimento.html', text: 'Atendimento', icon: 'chat', badge: 'tickets-abertos' },
+      { page: 'verificacoes', href: 'verificacoes.html', text: 'Verificações', icon: 'identidade', badge: 'verificacoes-pendentes' },
       {
         grupo: 'settings', text: 'Operacional', icon: 'settings',
         children: [
@@ -70,6 +71,7 @@ const ICONS = {
   users: '<path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />',
   calendar: '<path d="M4 5m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z" /><path d="M16 3l0 4" /><path d="M8 3l0 4" /><path d="M4 11l16 0" /><path d="M8 15h2v2h-2z" />',
   wallet: '<path d="M17 8v-3a1 1 0 0 0 -1 -1h-10a2 2 0 0 0 0 4h12a1 1 0 0 1 1 1v3m0 4v3a1 1 0 0 1 -1 1h-12a2 2 0 0 1 -2 -2v-12" /><path d="M20 12v4h-4a2 2 0 0 1 0 -4h4" />',
+  identidade: '<path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /><path d="M9 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M15 8l2 0" /><path d="M15 12l2 0" /><path d="M7 16l10 0" />',
   menu: '<path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" />',
   shield: '<path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" /><path d="M15 19l2 2l4 -4" />',
   plane: '<path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" />',
@@ -135,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderHeaderBar();
   document.body.classList.add('is-ready');
   refreshTicketBadge();
+  refreshVerificacoesBadge();
 });
 
 function renderSidebar() {
@@ -322,6 +325,19 @@ function ligarPerfil(host) {
     await supabaseClient.auth.signOut();
     window.location.replace('login.html');
   });
+}
+
+/** Solicitações de verificação em análise (identidade do anfitrião e empresa do fornecedor). */
+async function refreshVerificacoesBadge() {
+  const el = document.getElementById('verificacoes-pendentes');
+  if (!el) return;
+  const [a, b] = await Promise.all([
+    supabaseClient.from('verificacoes_identidade').select('cliente_id', { count: 'exact', head: true }).eq('status', 'em_analise'),
+    supabaseClient.from('verificacoes_conta').select('id', { count: 'exact', head: true }).eq('status', 'em_analise')
+  ]);
+  const total = (a.count || 0) + (b.count || 0);
+  el.textContent = total > 99 ? '99+' : String(total);
+  el.hidden = !total;
 }
 
 /** Contador de chamados abertos no menu lateral. */

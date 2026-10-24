@@ -11586,3 +11586,26 @@ html body #recados-raiz .recados-caixa .guests-pagination:not(#love-h-a) { margi
 
 /* Taxa da lista: "(recomendado)" ao lado de Seus convidados. */
 #gifts-panel-settings .gift-fee-titulo .gift-fee-recomendado { font-weight: 500; color: #71717A; }
+
+/* Taxa de Serviço e Conveniência (Presentes › Configurações): radio cards. */
+html body #gifts-panel-settings .gift-fee-opcoes:not(#love-h-a) { display: flex; flex-direction: column; gap: 12px; }
+html body #gifts-panel-settings .gift-fee-card:not(#love-h-a) { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; cursor: pointer; outline: none; transition: border-color .15s, background-color .15s, box-shadow .15s; }
+html body #gifts-panel-settings .gift-fee-card:not(#love-h-a):hover { border-color: #A1A1AA; }
+html body #gifts-panel-settings .gift-fee-card.active:not(#love-h-a) { border-color: #183b54; background: #F7F9FB; box-shadow: 0 0 0 3px rgba(24, 59, 84, 0.08); }
+html body #gifts-panel-settings .gift-fee-card:not(#love-h-a):focus-visible { border-color: #183b54; }
+html body #gifts-panel-settings .gift-fee-card:not(#love-h-a) .fee-radio-indicator { width: 18px; height: 18px; margin-top: 1px; border: 1.5px solid #A1A1AA; }
+html body #gifts-panel-settings .gift-fee-card.active:not(#love-h-a) .fee-radio-indicator { border-color: #183b54; }
+html body #gifts-panel-settings .gift-fee-card.active:not(#love-h-a) .fee-radio-indicator::after { width: 8px; height: 8px; background: #183b54; }
+html body #gifts-panel-settings .gift-fee-corpo { min-width: 0; }
+html body #gifts-panel-settings .gift-fee-titulo:not(#love-h-a) { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: #18181B; }
+html body #gifts-panel-settings .gift-fee-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px; background: rgba(24, 59, 84, 0.08); color: #183b54; font-size: 0.75rem; line-height: 1rem; font-weight: 500; letter-spacing: 0; }
+html body #gifts-panel-settings p.gift-fee-descricao:not(#love-h-a) { margin: 6px 0 0; font-size: 0.8125rem; line-height: 1.25rem; color: #52525B !important; }
+html body #gifts-panel-settings p.gift-fee-exemplo:not(#love-h-a) { margin: 6px 0 0; font-size: 0.75rem; line-height: 1.125rem; color: #71717A !important; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-card:not(#love-h-a) { background: #252525; border-color: #404040; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-card.active:not(#love-h-a) { background: #2A2F35; border-color: #8FB3CC; box-shadow: 0 0 0 3px rgba(143, 179, 204, 0.12); }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-card.active:not(#love-h-a) .fee-radio-indicator { border-color: #8FB3CC; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-card.active:not(#love-h-a) .fee-radio-indicator::after { background: #8FB3CC; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-titulo:not(#love-h-a) { color: #FFFFFF; }
+body[data-theme="dark"] #gifts-panel-settings .gift-fee-badge { background: rgba(143, 179, 204, 0.14); color: #C9DAE6; }
+body[data-theme="dark"] #gifts-panel-settings p.gift-fee-descricao:not(#love-h-a) { color: #D4D4D8 !important; }
+body[data-theme="dark"] #gifts-panel-settings p.gift-fee-exemplo:not(#love-h-a) { color: #A1A1AA !important; }

@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261024_recomendado">
+  <link rel="stylesheet" href="css/styles.css?v=20261024_taxaCards">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2030,26 +2030,28 @@
             <!-- 1. QUEM PAGA A TAXA DOS PRESENTES -->
             <div class="space-y-4 pb-8 border-b border-zinc-200/80">
               <div>
-                <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Taxa da Lista de Presentes</h3>
-                <p class="text-xs text-zinc-500 mt-0.5">A Love cobra 10% de taxa de serviço por presente comprado. Escolha quem paga. <a href="/central-de-ajuda" class="gift-saiba-mais" data-ajuda-categoria="present">Saiba mais</a></p>
+                <h3 class="text-base sm:text-lg font-bold text-zinc-900 font-sans tracking-tight">Taxa de Serviço e Conveniência</h3>
+                <p class="text-xs text-zinc-500 mt-0.5">Defina como a taxa de conveniência de 10% será aplicada às transações da sua lista. <a href="/central-de-ajuda" class="gift-saiba-mais" data-ajuda-categoria="present">Saiba como funciona</a></p>
               </div>
 
-              <div class="space-y-3" id="gift-fee-options-container">
-                <!-- Seus convidados pagam a taxa -->
+              <div class="gift-fee-opcoes" id="gift-fee-options-container" role="radiogroup" aria-label="Taxa de serviço e conveniência">
+                <!-- Convidados pagam a taxa (padrão) -->
                 <div class="gift-fee-card active" data-fee-choice="guest" role="radio" aria-checked="true" tabindex="0">
                   <span class="fee-radio-indicator" aria-hidden="true"></span>
-                  <div class="min-w-0">
-                    <h4 class="gift-fee-titulo">Seus convidados <span class="gift-fee-recomendado">(recomendado)</span></h4>
-                    <p class="gift-fee-exemplo">Os 10% já aparecem somados ao preço. Ex.: um presente de R$ 100 aparece por R$ 110 e você recebe R$ 100.</p>
+                  <div class="gift-fee-corpo">
+                    <h4 class="gift-fee-titulo">Repassar taxa aos convidados <span class="gift-fee-badge">Recomendado</span></h4>
+                    <p class="gift-fee-descricao">A taxa de conveniência de 10% é adicionada no checkout do convidado. Você recebe 100% do valor definido para o presente.</p>
+                    <p class="gift-fee-exemplo">Exemplo: Para um presente de R$ 100, o convidado paga R$ 110 e você recebe R$ 100 líquido.</p>
                   </div>
                 </div>
 
-                <!-- Você paga a taxa -->
+                <!-- Anfitrião absorve a taxa -->
                 <div class="gift-fee-card" data-fee-choice="host" role="radio" aria-checked="false" tabindex="0">
                   <span class="fee-radio-indicator" aria-hidden="true"></span>
-                  <div class="min-w-0">
-                    <h4 class="gift-fee-titulo">Você</h4>
-                    <p class="gift-fee-exemplo">O convidado paga o preço do presente. Ex.: um presente de R$ 100 aparece por R$ 100 e você recebe R$ 90.</p>
+                  <div class="gift-fee-corpo">
+                    <h4 class="gift-fee-titulo">Absorver taxa no saldo</h4>
+                    <p class="gift-fee-descricao">O convidado paga exatamente o valor anunciado do presente. A taxa de serviço de 10% é retida no momento do repasse do saldo.</p>
+                    <p class="gift-fee-exemplo">Exemplo: Para um presente de R$ 100, o convidado paga R$ 100 e você recebe R$ 90 líquido.</p>
                   </div>
                 </div>
               </div>

@@ -616,14 +616,30 @@ function abrirDetalhe(l) {
 
   const visao = document.getElementById('visao-custos');
   const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte];
+  DIAGNOSTICO = null;
   visao.innerHTML = l.status !== 'ativo'
     ? `<div class="card"><div class="card-body"><div class="empty-state"><strong>${l.status === 'erro' ? 'Não foi possível ler os custos' : 'Não conectado'}</strong><p>${escapeHtml(l.erro || 'Configure as chaves na Vercel (projeto love-platform).')}</p></div></div></div>`
     : (montar ? montar(l) : '');
   visao.hidden = false;
+
+  document.getElementById('acoes-detalhe')?.remove();
+  if (DIAGNOSTICO) {
+    const acoesDetalhe = document.createElement('div');
+    acoesDetalhe.className = 'admin-header-actions';
+    acoesDetalhe.id = 'acoes-detalhe';
+    acoesDetalhe.innerHTML = `
+      <button type="button" class="btn btn-ghost" id="btn-diagnostico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8l4 -16l3 8h4" /></svg>
+        <span>Diagnóstico</span>
+      </button>`;
+    document.querySelector('.admin-header-bar')?.appendChild(acoesDetalhe);
+    acoesDetalhe.querySelector('#btn-diagnostico').addEventListener('click', () => abrirDiagnostico(l.nome));
+  }
   window.scrollTo(0, 0);
 }
 
 function fecharDetalhe() {
+  document.getElementById('acoes-detalhe')?.remove();
   const visao = document.getElementById('visao-custos');
   visao.hidden = true;
   visao.innerHTML = '';
@@ -647,24 +663,32 @@ function cardDetalhe(titulo, sub, corpo) {
   return `<div class="card"><div class="card-head"><div><h2>${titulo}</h2>${sub ? `<p>${sub}</p>` : ''}</div></div><div class="card-body">${corpo}</div></div>`;
 }
 
+/* Diagnóstico: não fica mais na página. Guarda o texto e vira um botão no
+   topo do detalhe, que abre em pop-up. */
+let DIAGNOSTICO = null;
+const SAUDE = { saudavel: ['Saudável', 'badge-success'], atencao: ['Atenção', 'badge-warning'], alto: ['Alto', 'badge-danger'] };
+
 function cardDiagnostico(saude, resumo, dicas) {
-  const [rotulo, classe] = { saudavel: ['Saudável', 'badge-success'], atencao: ['Atenção', 'badge-warning'], alto: ['Alto', 'badge-danger'] }[saude];
-  // Acordeão: abre fechado, só com o título e a saúde do custo.
-  return `
-    <details class="card custo-acordeao">
-      <summary class="card-head">
-        <div><h2>Diagnóstico</h2></div>
-        <span class="custo-acordeao-dir">${badge(rotulo, classe)}
-          <svg class="custo-acordeao-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
-        </span>
-      </summary>
-      <div class="card-body">
-        <div class="custo-diagnostico">
-          <p class="custo-resumo">${resumo}</p>
-          ${dicas.length ? `<p class="custo-dicas-titulo">Como reduzir</p><ol class="custo-dicas">${dicas.map(d => `<li>${d}</li>`).join('')}</ol>` : ''}
-        </div>
-      </div>
-    </details>`;
+  DIAGNOSTICO = { saude, resumo, dicas };
+  return '';
+}
+
+function abrirDiagnostico(nome) {
+  if (!DIAGNOSTICO) return;
+  const { saude, resumo, dicas } = DIAGNOSTICO;
+  const [rotulo, classe] = SAUDE[saude];
+  Drawer.open({
+    title: `Diagnóstico · ${nome}`,
+    subtitleHtml: badge(rotulo, classe),
+    semLinha: true,
+    body: `
+      <div class="custo-diagnostico">
+        <p class="custo-resumo">${resumo}</p>
+        ${dicas.length ? `<p class="custo-dicas-titulo">Como reduzir</p><ol class="custo-dicas">${dicas.map(d => `<li>${d}</li>`).join('')}</ol>` : ''}
+      </div>`,
+    footer: '<button type="button" class="btn-texto" id="btn-fechar-diagnostico">Fechar</button>'
+  });
+  document.getElementById('btn-fechar-diagnostico').addEventListener('click', () => Drawer.close());
 }
 
 function tabelaDetalhe(cabecalho, linhas, vazio = 'Nada cobrado ainda') {

@@ -29,8 +29,8 @@ const NovoFornecedor = (() => {
       </label>`;
 
     Drawer.open({
-      title: 'Cadastrar empresa',
-      subtitle: 'A empresa recebe um e-mail para confirmar e criar a senha',
+      title: 'Cadastrar fornecedor',
+      subtitle: 'O fornecedor recebe um e-mail para confirmar e criar a senha',
       body: `
         <div class="imagens-empresa">
           <div>
@@ -245,9 +245,9 @@ const NovoFornecedor = (() => {
     if (erroPerfil) {
       toast(`Conta criada, mas o cadastro ficou incompleto: ${erroPerfil.message}`);
     } else if (erroEmail) {
-      toast('Empresa cadastrada, mas o e-mail de senha não saiu. Peça para usar "Esqueci minha senha".');
+      toast('Fornecedor cadastrado, mas o e-mail de senha não saiu. Peça para usar "Esqueci minha senha".');
     } else {
-      toast(`${empresa} cadastrada. O e-mail para confirmar e criar a senha foi enviado.`);
+      toast(`${empresa} cadastrado. O e-mail para confirmar e criar a senha foi enviado.`);
     }
 
     window.location.reload();

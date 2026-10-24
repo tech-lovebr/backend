@@ -4216,3 +4216,18 @@ body.com-faixa .admin-content > .conteudo-tabs .conteudo-tab.is-active,
 body.com-faixa .admin-content > .legal-abas .conteudo-tab.is-active { color: #FFFFFF; border-bottom-color: #FFFFFF; }
 body.com-faixa .admin-content > .conteudo-tabs .aba-contagem,
 body.com-faixa .admin-content > .legal-abas .aba-contagem { color: inherit; }
+
+/* Cadastro aberto na mesma caixa da tabela (Anfitriões e Fornecedores). */
+.painel-linha { padding: 0; overflow: hidden; }
+.painel-linha-cabeca { display: flex; align-items: center; gap: .625rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--divisor-suave, #F0F0F2); }
+.painel-linha-cabeca .painel-linha-voltar { margin-left: -.375rem; color: var(--text-muted); }
+.painel-linha-cabeca .painel-linha-voltar:hover { color: #181D24; background: #F4F4F5; }
+.painel-linha-titulos { min-width: 0; }
+.painel-linha-titulos h2 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -.02em; color: #18181B; }
+.painel-linha-titulos p { margin: .125rem 0 0; font-size: .8125rem; color: var(--text-muted); }
+.painel-linha-corpo { padding: 1.25rem; }
+.painel-linha-pe { display: flex; justify-content: flex-end; gap: .5rem; padding: .875rem 1.25rem; border-top: 1px solid var(--divisor-suave, #F0F0F2); }
+.painel-linha-pe:empty { display: none; }
+.painel-linha-pe #btn-fechar { display: none; }
+.btn-ver-mais svg { width: 18px; height: 18px; }
+.painel-linha-pe:not(:has(> :not(#btn-fechar))) { display: none; }

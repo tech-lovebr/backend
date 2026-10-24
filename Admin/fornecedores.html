@@ -24,14 +24,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=127">
+  <link rel="stylesheet" href="css/admin.css?v=128">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/utils.js?v=7"></script>
+  <script src="js/utils.js?v=8"></script>
   <script src="js/shell.js?v=21"></script>
 </head>
-<body data-page="fornecedores" data-title="Cadastro de empresas">
+<body data-page="fornecedores" data-title="Fornecedores">
 
   <div class="admin-shell">
     <aside class="admin-sidebar" id="admin-sidebar"></aside>
@@ -45,7 +45,7 @@
 
         <!-- Movidos para o cabeçalho da página assim que o shell monta. -->
         <div id="page-controls" hidden>
-          <input type="search" class="search-input" id="busca" placeholder="Buscar empresa ou CNPJ...">
+          <input type="search" class="search-input" id="busca" placeholder="Buscar fornecedor ou CNPJ...">
 
           <div class="filtro-wrap">
             <button type="button" class="btn btn-ghost" id="btn-filtros" aria-expanded="false">
@@ -79,19 +79,21 @@
           <table class="data linhas-estaticas">
             <thead><tr>
               <th class="col-selecao"><input type="checkbox" id="selecionar-todos" aria-label="Selecionar todos"></th>
-              <th class="col-numero">ID</th><th>Empresa</th><th>E-mail</th><th>CNPJ</th><th>Plano</th>
+              <th class="col-numero">ID</th><th>Fornecedor</th><th>E-mail</th><th>CNPJ</th><th>Plano</th>
               <th class="col-numero"><button type="button" class="th-ordenar" id="ordenar-contratos" title="Ordenar por contratos">Contratos <span class="th-seta" aria-hidden="true"></span></button></th><th class="col-acoes"></th>
             </tr></thead>
             <tbody id="tbody"></tbody>
             </table>
           </div>
         </section>
+
+        <div id="visao-conta" hidden></div>
       </main>
     </div>
   </div>
 
-  <script src="js/conta-drawer.js?v=5"></script>
-  <script src="js/novo-fornecedor.js"></script>
-  <script src="js/fornecedores.js?v=5"></script>
+  <script src="js/conta-drawer.js?v=6"></script>
+  <script src="js/novo-fornecedor.js?v=2"></script>
+  <script src="js/fornecedores.js?v=6"></script>
 </body>
 </html>

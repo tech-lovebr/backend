@@ -1,6 +1,10 @@
 /* ==========================================================================
-   LOVE ADMIN — Clientes (contas da plataforma dos noivos)
+   LOVE ADMIN — Anfitriões (contas da plataforma dos noivos)
    ========================================================================== */
+
+// Período pela data de cadastro; abre em "Este mês", como o Dashboard.
+const PERIODO = periodoEsteMes();
+const noPeriodo = c => dentroDoPeriodo(PERIODO, c.created_at);
 
 let CLIENTES = [];
 let EVENTOS = [];
@@ -55,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   addHeaderAction('Exportar', exportar);
   moverControlesParaHeader();
+  filtroDePeriodo(PERIODO, () => { renderKpis(); render(); });
+  ContaDrawer.emLinha({ host: document.getElementById('visao-conta'), esconder: [document.querySelector('.table-card'), document.getElementById('barra-selecao'), document.getElementById('header-actions')] });
   aplicarBuscaDaUrl(document.getElementById('busca'));
 });
 
@@ -63,11 +69,11 @@ function exportar() {
   const lista = filtrar().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
   if (!lista.length) {
-    toast('Nenhum cliente para exportar com a busca atual.');
+    toast('Nenhum anfitrião para exportar com a busca atual.');
     return;
   }
 
-  exportarCSV('clientes', [
+  exportarCSV('anfitrioes', [
     { titulo: 'Conta', valor: c => c.couple_name },
     { titulo: 'E-mail', valor: c => c.email },
     { titulo: 'Telefone', valor: c => c.phone },
@@ -140,9 +146,10 @@ function metricas(id) {
 }
 
 function renderKpis() {
-  const totalEventos = CLIENTES.reduce((s, c) => s + metricas(c.id).eventos, 0);
-  const totalConvidados = CLIENTES.reduce((s, c) => s + metricas(c.id).convidados, 0);
-  const saldoTotal = CLIENTES.reduce((s, c) => {
+  const lista = CLIENTES.filter(noPeriodo);
+  const totalEventos = lista.reduce((s, c) => s + metricas(c.id).eventos, 0);
+  const totalConvidados = lista.reduce((s, c) => s + metricas(c.id).convidados, 0);
+  const saldoTotal = lista.reduce((s, c) => {
     const m = metricas(c.id);
     return s + (m.creditos - m.debitos);
   }, 0);
@@ -151,10 +158,10 @@ function renderKpis() {
     <div class="kpi"><p class="kpi-label">${label}</p><p class="kpi-value">${value}</p><p class="kpi-sub">${sub}</p></div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('Clientes', formatNumber(CLIENTES.length), 'Contas criadas na plataforma'),
+    tile('Anfitriões', formatNumber(lista.length), 'Contas criadas na plataforma'),
     tile('Eventos criados', formatNumber(totalEventos), 'Somando todas as contas'),
     tile('Convidados cadastrados', formatNumber(totalConvidados), 'Em todos os eventos'),
-    tile('Saldo em conta', formatCurrency(saldoTotal), 'Somado de todos os clientes')
+    tile('Saldo em conta', formatCurrency(saldoTotal), 'Somado de todos os anfitriões')
   ].join('');
 }
 
@@ -217,6 +224,7 @@ function filtrar() {
   const categoria = document.getElementById('filtro-categoria').value;
 
   return CLIENTES.filter(c => {
+    if (!noPeriodo(c)) return false;
     if (categoria && !categoriasDe(c.id).has(categoria)) return false;
     if (!termo) return true;
     return [c.couple_name, c.email, c.phone, c.cpf, c.city]
@@ -246,8 +254,8 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 7, 'Nenhum cliente encontrado',
-      CLIENTES.length ? 'Ajuste a busca acima.' : 'Nenhuma conta de cliente foi criada ainda.');
+    renderEmpty(tbody, 7, 'Nenhum anfitrião encontrado',
+      CLIENTES.length ? 'Ajuste a busca ou o período acima.' : 'Nenhuma conta de anfitrião foi criada ainda.');
     return;
   }
 
@@ -280,8 +288,8 @@ function render() {
     });
   });
 
-  // A linha não abre o drawer: dá para selecionar e copiar o texto. Quem
-  // abre é o ícone de três bolinhas no fim da linha.
+  // A linha não abre o cadastro: dá para selecionar e copiar o texto. Quem
+  // abre é o + no fim da linha, na mesma caixa.
   ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   renderBarraDeSelecao();

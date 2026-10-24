@@ -214,8 +214,56 @@ const Drawer = {
     this._built = true;
   },
 
+  /* Na mesma caixa: emLinha = { host, esconder: [elementos] }. O painel é
+     desenhado dentro de host, no lugar do que está em esconder (a tabela). */
+  _linha: null,
+
+  _abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back }) {
+    const { host, esconder = [] } = emLinha;
+    esconder.forEach(el => { if (el) el.hidden = true; });
+    host.innerHTML = `
+      <section class="card painel-linha">
+        <header class="painel-linha-cabeca">
+          <button type="button" class="header-bar-voltar painel-linha-voltar" title="Voltar" aria-label="Voltar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
+          </button>
+          <div class="painel-linha-titulos">
+            <h2>${escapeHtml(title || 'Detalhes')}</h2>
+            ${subtitleHtml ? `<p>${subtitleHtml}</p>` : subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
+          </div>
+        </header>
+        <div class="painel-linha-corpo" id="painel-linha-corpo">${body || ''}</div>
+        ${footer ? `<footer class="painel-linha-pe" id="painel-linha-pe">${footer}</footer>` : ''}
+      </section>`;
+    host.querySelector('.painel-linha-voltar').addEventListener('click', back || (() => Drawer.close()));
+    host.hidden = false;
+    this._linha = emLinha;
+    window.scrollTo(0, 0);
+  },
+
+  _fecharLinha() {
+    const l = this._linha;
+    if (!l) return;
+    l.host.hidden = true;
+    l.host.innerHTML = '';
+    (l.esconder || []).forEach(el => { if (el) el.hidden = false; });
+    this._linha = null;
+  },
+
+  _overlayAberto() {
+    return this._built && document.getElementById('drawer-panel').classList.contains('is-open');
+  },
+
+  /** Corpo do painel aberto (pop-up ou na mesma caixa). */
+  corpo() {
+    return this._overlayAberto() || !this._linha
+      ? document.getElementById('drawer-body')
+      : document.getElementById('painel-linha-corpo');
+  },
+
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false, semLinha = false }) {
+  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false, semLinha = false, emLinha = null }) {
+    if (emLinha) return this._abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back });
     this._build();
     document.getElementById('drawer-panel').classList.toggle('drawer-sem-titulo', semTitulo);
     // semLinha: cabeçalho só com o título, sem a linha embaixo.
@@ -238,17 +286,179 @@ const Drawer = {
   },
 
   close() {
-    if (!this._built) return;
+    // Fecha o pop-up se ele estiver aberto; senão, o painel na mesma caixa.
+    if (!this._overlayAberto()) { this._fecharLinha(); return; }
     document.getElementById('drawer-backdrop').classList.remove('is-open');
     document.getElementById('drawer-panel').classList.remove('is-open');
     document.body.style.overflow = '';
   },
 
   setFooterBusy(busy) {
-    const foot = document.getElementById('drawer-foot');
+    const foot = this._overlayAberto() || !this._linha
+      ? document.getElementById('drawer-foot')
+      : document.getElementById('painel-linha-pe');
     if (foot) foot.querySelectorAll('button').forEach(b => { b.disabled = busy; });
   }
 };
+
+/* ---------------------------------------------------- Filtro de período
+   O mesmo do Dashboard: botão com o período e um calendário com atalhos.
+   `estado` = { de, ate } é atualizado no lugar; aoAplicar redesenha a tela. */
+
+function periodoEsteMes() {
+  const h = new Date();
+  return { de: new Date(h.getFullYear(), h.getMonth(), 1), ate: new Date(h.getFullYear(), h.getMonth(), h.getDate(), 23, 59, 59, 999) };
+}
+
+function dentroDoPeriodo(estado, data) {
+  if (!estado.de && !estado.ate) return true;
+  if (!data) return false;
+  const t = new Date(data).getTime();
+  return (!estado.de || t >= estado.de.getTime()) && (!estado.ate || t <= estado.ate.getTime());
+}
+
+function rotuloDePeriodo(estado) {
+  const { de, ate } = estado;
+  const dia = d => d.toLocaleDateString('pt-BR');
+  if (!de && !ate) return 'Todo o período';
+  const hoje = new Date();
+  if (de && ate && de.getDate() === 1 && de.getMonth() === hoje.getMonth() && de.getFullYear() === hoje.getFullYear()
+      && dia(ate) === dia(hoje)) return 'Este mês';
+  if (de && ate && dia(de) === dia(ate) && dia(de) === dia(hoje)) return 'Hoje';
+  if (de && ate && dia(de) === dia(ate)) return dia(de);
+  if (de && ate) return `${dia(de)} – ${dia(ate)}`;
+  return de ? `A partir de ${dia(de)}` : `Até ${dia(ate)}`;
+}
+
+function filtroDePeriodo(estado, aoAplicar) {
+  const host = document.getElementById('header-actions');
+  if (!host) return;
+
+  const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const ATALHOS = [['hoje', 'Hoje'], ['7', 'Últimos 7 dias'], ['30', 'Últimos 30 dias'], ['mes', 'Este mês'], ['tudo', 'Todo o período']];
+  const formatarDia = d => d.toLocaleDateString('pt-BR');
+  const temPeriodo = () => Boolean(estado.de || estado.ate);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'filtro-wrap';
+  wrap.innerHTML = `
+    <button type="button" class="btn btn-ghost btn-periodo ${temPeriodo() ? 'is-ativo' : ''}" id="btn-periodo" aria-expanded="false" aria-controls="periodo-menu">
+      <span id="periodo-rotulo">${rotuloDePeriodo(estado)}</span>
+      <svg class="btn-periodo-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+    </button>
+
+    <div class="filtro-menu periodo-menu periodo-calendario" id="periodo-menu" hidden>
+      <div class="cal-atalhos">
+        ${ATALHOS.map(([v, r]) => `<button type="button" class="cal-atalho" data-atalho="${v}">${r}</button>`).join('')}
+      </div>
+      <div class="cal-corpo">
+        <div class="cal-topo">
+          <button type="button" class="cal-nav" data-mes="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg></button>
+          <span class="cal-mes" id="cal-mes"></span>
+          <button type="button" class="cal-nav" data-mes="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></button>
+        </div>
+        <div class="cal-semana">${SEMANA.map(d => `<span>${d}</span>`).join('')}</div>
+        <div class="cal-dias" id="cal-dias"></div>
+        <p class="cal-dica" id="cal-dica">Clique num dia, ou em dois para um intervalo.</p>
+        <button type="button" class="btn btn-neutro periodo-aplicar" id="periodo-aplicar">Aplicar</button>
+      </div>
+    </div>`;
+  host.prepend(wrap);
+
+  const botao = wrap.querySelector('#btn-periodo');
+  const menu = /** @type {HTMLElement} */ (wrap.querySelector('#periodo-menu'));
+  const dias = wrap.querySelector('#cal-dias');
+  const dica = wrap.querySelector('#cal-dica');
+  const inicioDoDia = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const fimDoDia = d => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  const hoje = inicioDoDia(new Date());
+
+  /** @type {Date | null} */ let selDe = estado.de && inicioDoDia(estado.de);
+  /** @type {Date | null} */ let selAte = estado.ate && inicioDoDia(estado.ate);
+  let mesVisto = new Date((selAte || hoje).getFullYear(), (selAte || hoje).getMonth(), 1);
+
+  function desenhar() {
+    wrap.querySelector('#cal-mes').textContent = `${MESES[mesVisto.getMonth()]} ${mesVisto.getFullYear()}`;
+    const primeiro = new Date(mesVisto.getFullYear(), mesVisto.getMonth(), 1);
+    const total = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + 1, 0).getDate();
+    let html = '<span></span>'.repeat(primeiro.getDay());
+    for (let n = 1; n <= total; n++) {
+      const t = new Date(mesVisto.getFullYear(), mesVisto.getMonth(), n).getTime();
+      const classes = ['cal-dia'];
+      if (t === hoje.getTime()) classes.push('is-hoje');
+      if (selDe && t === selDe.getTime()) classes.push('is-inicio');
+      if (selAte && t === selAte.getTime()) classes.push('is-fim');
+      if (selDe && selAte && t > selDe.getTime() && t < selAte.getTime()) classes.push('is-meio');
+      html += `<button type="button" class="${classes.join(' ')}" data-dia="${t}" ${t > hoje.getTime() ? 'disabled' : ''}>${n}</button>`;
+    }
+    dias.innerHTML = html;
+    const proximo = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + 1, 1);
+    /** @type {HTMLButtonElement} */ (wrap.querySelector('[data-mes="1"]')).disabled = proximo > hoje;
+    dica.textContent = !selDe ? 'Clique num dia, ou em dois para um intervalo.'
+      : selAte && selAte.getTime() !== selDe.getTime() ? `${formatarDia(selDe)} – ${formatarDia(selAte)}`
+      : `${formatarDia(selDe)} · clique em outro dia para um intervalo`;
+  }
+
+  const fechar = () => { menu.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
+
+  /** @param {Date | null} de @param {Date | null} ate */
+  function aplicar(de, ate) {
+    estado.de = de && inicioDoDia(de);
+    estado.ate = ate && fimDoDia(ate);
+    wrap.querySelector('#periodo-rotulo').textContent = rotuloDePeriodo(estado);
+    botao.classList.toggle('is-ativo', temPeriodo());
+    fechar();
+    aoAplicar();
+  }
+
+  botao.addEventListener('click', e => {
+    e.stopPropagation();
+    const abrir = menu.hidden;
+    if (abrir) {
+      selDe = estado.de && inicioDoDia(estado.de);
+      selAte = estado.ate && inicioDoDia(estado.ate);
+      const ref = selAte || hoje;
+      mesVisto = new Date(ref.getFullYear(), ref.getMonth(), 1);
+      desenhar();
+    }
+    menu.hidden = !abrir;
+    botao.setAttribute('aria-expanded', String(abrir));
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', fechar);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+
+  wrap.querySelectorAll('[data-mes]').forEach(b => b.addEventListener('click', () => {
+    mesVisto = new Date(mesVisto.getFullYear(), mesVisto.getMonth() + Number(/** @type {HTMLElement} */ (b).dataset.mes), 1);
+    desenhar();
+  }));
+
+  dias.addEventListener('click', e => {
+    const alvo = /** @type {HTMLElement} */ (e.target).closest('[data-dia]');
+    if (!alvo) return;
+    const d = new Date(Number(/** @type {HTMLElement} */ (alvo).dataset.dia));
+    if (!selDe || (selAte && selAte.getTime() !== selDe.getTime())) { selDe = d; selAte = d; }
+    else if (d < selDe) { selAte = selDe; selDe = d; }
+    else selAte = d;
+    desenhar();
+  });
+
+  wrap.querySelector('#periodo-aplicar').addEventListener('click', () => {
+    if (!selDe) return toast('Escolha um dia no calendário.');
+    aplicar(selDe, selAte || selDe);
+  });
+
+  wrap.querySelectorAll('[data-atalho]').forEach(b => b.addEventListener('click', () => {
+    const v = /** @type {HTMLElement} */ (b).dataset.atalho;
+    const menos = n => new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - n);
+    if (v === 'hoje') aplicar(hoje, hoje);
+    else if (v === '7') aplicar(menos(6), hoje);
+    else if (v === '30') aplicar(menos(29), hoje);
+    else if (v === 'mes') aplicar(new Date(hoje.getFullYear(), hoje.getMonth(), 1), hoje);
+    else aplicar(null, null);
+  }));
+}
 
 /* ---------------------------------------------------- Estados de tabela */
 
@@ -845,7 +1055,7 @@ function blocoPublicacao(posicao, ativo, rotuloPosicao = 'Posição') {
    drawer abre pelo ícone de três bolinhas no fim da linha. */
 
 const ICONE_COPIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2 2 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>';
-const ICONE_VER_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.25" /><circle cx="12" cy="12" r="2.25" /><circle cx="19" cy="12" r="2.25" /></svg>';
+const ICONE_VER_MAIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>';
 
 /** Valor com botão de copiar à esquerda (e-mail, CNPJ…). */
 function celulaCopiavel(valor, rotulo = 'E-mail') {

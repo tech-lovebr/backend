@@ -122,6 +122,12 @@ function ultimoAparelho(c) {
 }
 
 const ContaDrawer = (() => {
+  // Nos Cadastros o painel abre na mesma caixa da tabela (emLinha); no
+  // Dashboard continua como pop-up.
+  let alvoEmLinha = null;
+  function emLinha(cfg) { alvoEmLinha = cfg; }
+  const abrirPainel = (opcoes) => Drawer.open({ ...opcoes, emLinha: alvoEmLinha });
+
   let CONTAS = null;
   let DADOS = null;
   let carregando = null;
@@ -224,7 +230,7 @@ const ContaDrawer = (() => {
 
     const nascimento = dataDeNascimento(c);
 
-    Drawer.open({
+    abrirPainel({
       title: c.nome || c.email || 'Conta',
       semTitulo: true,
       body: `
@@ -303,7 +309,7 @@ const ContaDrawer = (() => {
      explícito, porque uma é reversível e a outra não. As três saídas ficam
      lado a lado: cancelar, bloquear (ou desbloquear) e excluir. */
   function pedirConfirmacao(c) {
-    const corpo = document.getElementById('drawer-body');
+    const corpo = Drawer.corpo();
     const bloqueada = !!c.bloqueado;
     const acao = bloqueada ? 'Desbloquear' : 'Bloquear';
 
@@ -511,7 +517,7 @@ const ContaDrawer = (() => {
         <ul class="lista-simples">${limpos.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
     };
 
-    Drawer.open({
+    abrirPainel({
       title: produto.name || 'Sem nome',
       subtitle: [TIPOS_DE_OFERTA[extra.offerType] || extra.offerType, produto.category]
         .filter(Boolean).join(' · '),
@@ -802,7 +808,7 @@ const ContaDrawer = (() => {
         <span class="value">${formatNumber(valor)}</span>
       </div>`;
 
-    Drawer.open({
+    abrirPainel({
       title: evento.titulo || 'Sem título',
       subtitle: EVENT_TYPE_LABELS[evento.tipo] || evento.tipo || '',
       back: () => desenhar(conta),
@@ -880,5 +886,5 @@ const ContaDrawer = (() => {
     window.location.reload();
   }
 
-  return { semear, carregar, abrir };
+  return { semear, carregar, abrir, emLinha };
 })();

@@ -6,6 +6,10 @@
 let FORNECEDORES = [];
 let METRICAS = new Map();
 
+// Período pela data de cadastro; abre em "Este mês", como o Dashboard.
+const PERIODO = periodoEsteMes();
+const noPeriodo = f => dentroDoPeriodo(PERIODO, f.created_at);
+
 /** Contas marcadas na tabela, para as ações em massa. */
 let SELECIONADAS = new Set();
 let ORDEM_CONTRATOS = null; // null | 'desc' | 'asc'
@@ -65,6 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>'
   });
   moverControlesParaHeader();
+  filtroDePeriodo(PERIODO, () => { renderKpis(); render(); });
+  ContaDrawer.emLinha({ host: document.getElementById('visao-conta'), esconder: [document.querySelector('.table-card'), document.getElementById('barra-selecao'), document.getElementById('header-actions')] });
   ligarMenuDeFiltros();
   aplicarBuscaDaUrl(document.getElementById('busca'));
 });
@@ -210,7 +216,8 @@ function metricas(id) {
 /* ------------------------------------------------------------------ KPIs */
 
 function renderKpis() {
-  const soma = (campo) => FORNECEDORES.reduce((total, f) => total + metricas(f.id)[campo], 0);
+  const lista = FORNECEDORES.filter(noPeriodo);
+  const soma = (campo) => lista.reduce((total, f) => total + metricas(f.id)[campo], 0);
 
   // TPV: o que efetivamente passou pela plataforma (links de pagamento pagos).
   // Faturamento bruto: tudo que os fornecedores fecharam em contrato, pago ou não.
@@ -227,7 +234,7 @@ function renderKpis() {
   const grade = document.getElementById('kpi-grid');
   grade.classList.add('kpi-grid--tres');
   grade.innerHTML = [
-    tile('Total de fornecedores', formatNumber(FORNECEDORES.length)),
+    tile('Total de fornecedores', formatNumber(lista.length)),
     tile('TPV', formatCurrency(tpv)),
     tile('Faturamento bruto', formatCurrency(faturamentoBruto))
   ].join('');
@@ -256,6 +263,7 @@ function filtrar() {
   const categoria = document.getElementById('filtro-categoria').value;
 
   return FORNECEDORES.filter(f => {
+    if (!noPeriodo(f)) return false;
     if (plano && f.plan !== plano) return false;
     if (categoria && f.category !== categoria) return false;
     if (!termo) return true;
@@ -280,7 +288,7 @@ function render() {
   if (!lista.length) {
     renderBarraDeSelecao();
     renderEmpty(tbody, 8, 'Nenhum fornecedor encontrado',
-      FORNECEDORES.length ? 'Ajuste a busca ou os filtros acima.' : 'Nenhuma conta B2B foi criada ainda.');
+      FORNECEDORES.length ? 'Ajuste a busca, os filtros ou o período acima.' : 'Nenhuma conta B2B foi criada ainda.');
     return;
   }
 
@@ -315,8 +323,8 @@ function render() {
     });
   });
 
-  // A linha não abre o drawer: dá para selecionar e copiar o texto. Quem
-  // abre é o ícone de três bolinhas no fim da linha.
+  // A linha não abre o cadastro: dá para selecionar e copiar o texto. Quem
+  // abre é o + no fim da linha, na mesma caixa.
   ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   renderBarraDeSelecao();

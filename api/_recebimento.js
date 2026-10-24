@@ -203,7 +203,7 @@ async function contaParaReceber(db, clienteId) {
   } catch (e) {
     await salvarConta(db, clienteId, { status: "erro", erro: String(e.message).slice(0, 300) });
     console.error("abrir conta do anfitrião:", e.message, JSON.stringify(e.detalhes || ""));
-    return { erro: "asaas_recusou" };
+    return { erro: "asaas_recusou", detalhe: String(e.message).slice(0, 200) };
   }
 }
 

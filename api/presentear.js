@@ -17,7 +17,7 @@
 // o pagamento confirmado chama confirmar_contribuicao (webhook do Asaas ou a
 // consulta GET acima, que a tela do Pix faz a cada poucos segundos).
 
-const { asaas, confirmarPagamento } = require("./_asaas");
+const { asaas, confirmarPagamento, BASE } = require("./_asaas");
 const { contaParaReceber } = require("./_recebimento");
 const { supabaseAdmin } = require("./_ses");
 
@@ -120,7 +120,8 @@ module.exports = async (req, res) => {
       const mensagem = conta.erro === "abrindo"
         ? "Estamos preparando o recebimento dos anfitriões. Tente de novo em alguns segundos."
         : "Os anfitriões ainda não ativaram o recebimento dos presentes. Tente de novo mais tarde.";
-      return res.status(409).json({ ok: false, erro: "recebimento_inativo", motivo: conta.erro, mensagem });
+      const teste = /sandbox/.test(BASE) ? ` [teste: ${conta.erro}${conta.detalhe ? " — " + conta.detalhe : ""}]` : "";
+      return res.status(409).json({ ok: false, erro: "recebimento_inativo", motivo: conta.erro, mensagem: mensagem + teste });
     }
 
     const soma = centavos(registrados.reduce((s, r) => s + r.valor, 0));
@@ -157,7 +158,12 @@ module.exports = async (req, res) => {
     return res.status(200).json(resposta);
   } catch (e) {
     console.error("presentear:", e.message, JSON.stringify(e.detalhes || ""));
-    return res.status(500).json({ ok: false, erro: "falha", mensagem: "Não foi possível gerar o pagamento agora. Tente de novo em instantes." });
+    // No sandbox a resposta traz o motivo (do Asaas ou do servidor) para o teste.
+    const sandbox = /sandbox/.test(BASE);
+    return res.status(500).json({
+      ok: false, erro: "falha",
+      mensagem: "Não foi possível gerar o pagamento agora. Tente de novo em instantes." + (sandbox ? ` [teste: ${String(e.message).slice(0, 200)}]` : ""),
+    });
   }
 };
 

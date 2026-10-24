@@ -4809,10 +4809,14 @@ async function pagarPresentesPeloConvite(root, pedido) {
       })
     });
     r = await resp.json().catch(() => null);
+    // Resposta que não é JSON (servidor caiu ou demorou demais): guarda o código.
+    if (!r) r = { ok: false, mensagem: `Não foi possível gerar o pagamento agora. Tente de novo em instantes. (erro ${resp.status})` };
   } catch (e) {
-    r = null;
+    console.error('Pagamento do presente:', e);
+    r = { ok: false, mensagem: 'Sem conexão com o servidor. Confira sua internet e tente de novo.' };
   }
-  if (!r || !r.ok) return { ok: false, erro: r && r.erro, mensagem: (r && r.mensagem) || 'Não foi possível gerar o pagamento agora. Tente de novo em instantes.' };
+  if (!r.ok) console.error('Pagamento do presente recusado:', r);
+  if (!r.ok) return { ok: false, erro: r.erro, mensagem: r.mensagem || 'Não foi possível gerar o pagamento agora. Tente de novo em instantes.' };
 
   // O vídeo do recado sobe enquanto a pessoa paga.
   const video = pedido.video ? enviarVideoDoRecado(pedido.video, r.contribuicoes || []) : Promise.resolve(true);

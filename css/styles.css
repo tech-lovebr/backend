@@ -11570,3 +11570,6 @@ html body #recados-raiz .recados-paginacao:not(#love-h-a) { margin-top: auto; }
 .convite-form .convite-rsvp-opcoes .convite-rsvp-opcao:hover,
 .convite-form .convite-rsvp-opcoes .convite-rsvp-opcao:focus-visible { background: #F4F4F5; outline: none; }
 .convite-form .convite-rsvp-nada { margin: 0; padding: 10px 12px; font-size: 0.875rem; font-weight: 400; color: #71717A; }
+
+/* Recados: paginação com o mesmo respiro de Meus convidados (16px 24px 20px). */
+html body #recados-raiz .recados-caixa .guests-pagination:not(#love-h-a) { margin-top: auto; padding: 1rem 1.5rem 1.25rem; }

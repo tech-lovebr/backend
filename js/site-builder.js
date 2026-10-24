@@ -4570,7 +4570,7 @@ function renderConfirmarPresencaPublica(root) {
           <input type="tel" name="whatsapp" maxlength="15" autocomplete="tel" inputmode="tel" placeholder="(11) 99999-9999">
         </label>
         <label class="convite-rsvp-aceite"><input type="checkbox" name="novidades"><span>Aceito receber novidades sobre o evento</span></label>
-        <label class="convite-rsvp-aceite"><input type="checkbox" name="ofertas"><span>Aceito receber ofertas e descontos da Love Viagens</span></label>
+        <label class="convite-rsvp-aceite"><input type="checkbox" name="ofertas"><span>Aceito receber ofertas e descontos da Love, incluindo benefícios, viagens, descontos e notícias sobre organização de eventos</span></label>
         <p class="convite-erro" hidden></p>
         <button type="submit" class="convite-botao">Enviar</button>
         <button type="button" class="convite-rsvp-depois" data-rsvp-depois>Agora não</button>

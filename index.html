@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261024_rfpPaginacao">
+  <link rel="stylesheet" href="css/styles.css?v=20261024_cidadesAbas">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3279,14 +3279,14 @@
                  e ver mais cidades além do que cabe na largura visível. A
                  seta "<" só aparece depois que a fileira é rolada pra
                  direita (ver updateB2BCityScrollArrows em app.js). -->
-            <div class="flex items-center gap-2" id="b2b-city-filter-wrap">
-              <button type="button" id="btn-b2b-city-scroll-prev" class="w-7 h-7 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Ver cidades anteriores">
+            <div class="b2b-cidades-abas" id="b2b-city-filter-wrap">
+              <button type="button" id="btn-b2b-city-scroll-prev" class="b2b-cidades-seta" title="Ver cidades anteriores" aria-label="Ver cidades anteriores">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
               </button>
-              <div class="flex items-center gap-2 overflow-x-auto no-scrollbar min-w-0" style="scroll-behavior:smooth;" id="b2b-city-filter-row">
+              <div class="b2b-cidades-fileira no-scrollbar" style="scroll-behavior:smooth;" id="b2b-city-filter-row" role="tablist" aria-label="Cidades">
                 <!-- Injetado dinamicamente via JS -->
               </div>
-              <button type="button" id="btn-b2b-city-scroll-next" class="w-7 h-7 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer shrink-0" title="Ver mais cidades">
+              <button type="button" id="btn-b2b-city-scroll-next" class="b2b-cidades-seta" title="Ver mais cidades" aria-label="Ver mais cidades">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
               </button>
             </div>
@@ -5549,7 +5549,7 @@
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
-  <script src="js/app.js?v=20261024_adicionarNovo"></script>
+  <script src="js/app.js?v=20261024_cidadesAbas"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
   <script src="js/pedidos-orcamento.js?v=20261024_paginacao"></script>

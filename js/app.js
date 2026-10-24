@@ -16646,7 +16646,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.innerHTML = cidades.map(({ city, uf }) => {
       const active = cidadeNormalizada(b2bSelectedCity) === cidadeNormalizada(city);
       return `
-        <button type="button" class="btn-b2b-city-chip px-3.5 py-1.5 text-xs font-semibold border transition-colors cursor-pointer shrink-0 whitespace-nowrap ${active ? 'bg-[#537bae] text-white border-[#537bae]' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}" data-city="${escaparHtml(city)}">
+        <button type="button" role="tab" aria-selected="${active}" class="btn-b2b-city-chip love-tab-item${active ? ' active' : ''}" data-city="${escaparHtml(city)}">
           ${escaparHtml(city)}${uf ? ` (${escaparHtml(uf)})` : ''}
         </button>
       `;

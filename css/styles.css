@@ -11677,3 +11677,14 @@ body[data-theme="dark"] .rfp-selecao-barra { border-bottom-color: #404040 !impor
 /* Minhas solicitações: paginação igual a Meus convidados (a última linha já tem o divisor). */
 html body #rfp-caixa .rfp-paginacao:not(#love-h-a) { margin-top: 0; padding: 1rem 1.5rem 1.25rem; border-top: 0; }
 html body #rfp-caixa .rfp-paginacao[hidden]:not(#love-h-a) { display: none; }
+
+/* Explorar: cidades como abas (igual a Criar solicitação / Minhas solicitações) e setas sem contorno. */
+.b2b-cidades-abas:not(.hidden) { display: flex; align-items: flex-start; gap: 8px; border-bottom: 1px solid #EAEAEA; }
+.b2b-cidades-fileira { display: flex; align-items: flex-start; gap: 1.5rem; overflow-x: auto; min-width: 0; flex: 1 1 auto; }
+html body .b2b-cidades-fileira button.love-tab-item:not(#love-h-a) { flex-shrink: 0; margin-bottom: -1px !important; }
+html body button.b2b-cidades-seta:not(#love-h-a) { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: #71717A; cursor: pointer; }
+html body button.b2b-cidades-seta.hidden:not(#love-h-a) { display: none; }
+html body button.b2b-cidades-seta:not(#love-h-a):hover { color: #181D24; background: transparent; }
+.b2b-cidades-seta svg { width: 16px; height: 16px; }
+body[data-theme="dark"] .b2b-cidades-abas { border-bottom-color: #404040; }
+body[data-theme="dark"] button.b2b-cidades-seta { color: #A1A1AA !important; }

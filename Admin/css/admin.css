@@ -4188,3 +4188,12 @@ body.com-faixa .admin-header-actions .btn-atualizar:hover { opacity: .8; }
 .kpi-grid > .kpi[data-icone="repasse"] { --icone-kpi: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 17l-18 0'/%3E%3Cpath d='M6 10l-3 -3l3 -3'/%3E%3Cpath d='M3 7l18 0'/%3E%3Cpath d='M18 20l3 -3l-3 -3'/%3E%3C/svg%3E"); }
 /* Média: calendário */
 .kpi-grid > .kpi[data-icone="media"] { --icone-kpi: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z'/%3E%3Cpath d='M16 3v4'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M4 11h16'/%3E%3C/svg%3E"); }
+
+/* "Este mês" sobre a faixa: sempre texto branco e sem borda, mesmo marcado. */
+body.com-faixa #btn-periodo,
+body.com-faixa #btn-periodo.is-ativo,
+body.com-faixa #btn-periodo:hover,
+body.com-faixa #btn-periodo:focus,
+body.com-faixa #btn-periodo[aria-expanded="true"] { background: transparent; border-color: transparent; box-shadow: none; outline: 0; color: #FFFFFF; }
+body.com-faixa #btn-periodo span,
+body.com-faixa #btn-periodo .btn-periodo-seta { color: #FFFFFF; }

@@ -11733,3 +11733,35 @@ body[data-theme="dark"] #wallet-sub-budget .orc-extrato { border-color: #404040;
 body[data-theme="dark"] #wallet-sub-budget .orc-extrato th { background: #2A2A2A; }
 body[data-theme="dark"] #wallet-sub-budget :is(.orc-extrato th, .orc-extrato td, .orc-extrato-titulo) { border-color: #404040; }
 body[data-theme="dark"] #wallet-sub-budget :is(.orc-atrasado, .cart-dica.orc-atrasado) { color: #F97066 !important; }
+
+/* ---- Recados recebidos: a linha inteira abre o recado; ele aparece como
+   uma carta (ou vídeo) no meio da mesma caixa ---- */
+html body #recados-raiz tr.recado-linha:not(#love-h-a) { cursor: pointer; }
+html body #recados-raiz tr.recado-linha:not(#love-h-a):hover > td { background: #FAFAFA; }
+html body #recados-raiz tr.recado-linha:not(#love-h-a):focus-visible { outline: none; }
+html body #recados-raiz tr.recado-linha:not(#love-h-a):focus-visible > td { background: #F4F4F5; }
+html body #recados-raiz .recado-nome:not(#love-h-a) { font-size: 14px; font-weight: 600; color: #18181B; }
+#recados-raiz .recado-tag-video { display: inline-block; padding: 1px 6px; border: 1px solid #E4E4E7; border-radius: 6px; font-size: 11px; font-weight: 500; color: #52525B; white-space: nowrap; }
+html body #recados-raiz .recados-caixa.is-carta:not(#love-h-a) { justify-content: center; }
+#recados-raiz .recado-palco { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; padding: 48px 24px; background: #FAFAFA; border-radius: 10px; }
+#recados-raiz .recado-carta { position: relative; width: 100%; max-width: 520px; padding: 44px 44px 32px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left; }
+#recados-raiz .recado-carta::before { content: ""; position: absolute; top: 0; left: 44px; right: 44px; height: 3px; background: #183b54; border-radius: 0 0 3px 3px; }
+#recados-raiz .recado-carta.tem-video { max-width: 640px; padding-top: 32px; }
+#recados-raiz .recado-video { display: block; width: 100%; max-height: 60vh; margin: 0 0 24px; border-radius: 8px; background: #000; }
+html body #recados-raiz .recado-carta-texto:not(#love-h-a) { margin: 0; font-size: 17px; line-height: 1.8; color: #27272A !important; white-space: pre-line; word-break: break-word; }
+html body #recados-raiz .recado-carta-assinatura:not(#love-h-a) { margin: 28px 0 0; font-size: 15px; font-weight: 600; color: #18181B !important; }
+#recados-raiz .recado-carta-assinatura span { display: block; margin-bottom: 2px; font-size: 13px; font-weight: 400; color: #71717A; }
+html body #recados-raiz .recado-carta-rodape:not(#love-h-a) { margin: 28px 0 0; padding-top: 16px; border-top: 1px solid #F4F4F5; font-size: 11px; font-weight: 500; color: #A1A1AA !important; }
+@media (max-width: 767px) {
+  #recados-raiz .recado-palco { padding: 24px 12px; }
+  #recados-raiz .recado-carta { padding: 32px 22px 24px; }
+  #recados-raiz .recado-carta::before { left: 22px; right: 22px; }
+}
+body[data-theme="dark"] #recados-raiz tr.recado-linha:hover > td { background: #2A2A2A !important; }
+body[data-theme="dark"] #recados-raiz .recado-nome { color: #FFFFFF !important; }
+body[data-theme="dark"] #recados-raiz .recado-palco { background: #1F1F1F; }
+body[data-theme="dark"] #recados-raiz .recado-carta { background: #252525; border-color: #404040; }
+body[data-theme="dark"] #recados-raiz .recado-carta::before { background: #EBF4FF; }
+body[data-theme="dark"] #recados-raiz :is(.recado-carta-texto, .recado-carta-assinatura) { color: #FFFFFF !important; }
+body[data-theme="dark"] #recados-raiz .recado-carta-rodape { border-top-color: #404040; }
+body[data-theme="dark"] #recados-raiz .recado-tag-video { border-color: #404040; color: #D4D4D8; }

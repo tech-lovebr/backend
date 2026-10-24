@@ -9388,6 +9388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const panelMessages = document.getElementById('gifts-panel-messages');
     if (panelMessages) panelMessages.classList.toggle('hidden', subId !== 'gift-messages');
+    if (subId !== 'gift-messages') { recadoAberto = null; document.getElementById('btn-recado-voltar')?.setAttribute('hidden', ''); }
     if (subId === 'gift-messages') {
       // Recados recebidos: só a tabela de recados (sem a busca/ação dos presentes no cabeçalho).
       if (topSearchBar) topSearchBar.classList.add('hidden');
@@ -9436,30 +9437,57 @@ document.addEventListener('DOMContentLoaded', () => {
   let recadosPorPagina = 15;
   let recadosPagina = 1;
   /** @type {Set<string>} */
-  const recadosAbertos = new Set();
+  // Recado aberto (id): aparece como uma carta no meio da caixa. var: lida na troca de aba.
+  /** @type {string|null} */
+  var recadoAberto = null;
+  /** Recados = presentes com mensagem escrita ou vídeo. @param {any} ev */
+  const recadosDoEvento = (ev) => ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim() || g.videoUrl);
   // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
   const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 4.5 12 2.3l3.4 2.2"/><path d="M6 13V5.6a1.1 1.1 0 0 1 1.1-1.1h9.8A1.1 1.1 0 0 1 18 5.6V13"/><path d="M6 8.3 3.6 10a1.5 1.5 0 0 0-.6 1.2V19a1.6 1.6 0 0 0 1.6 1.6h14.8A1.6 1.6 0 0 0 21 19v-7.8a1.5 1.5 0 0 0-.6-1.2L18 8.3"/><path d="M3.4 11l5.7 4.4M20.6 11l-5.7 4.4M3.7 20.1l6.5-5.4a2.8 2.8 0 0 1 3.6 0l6.5 5.4"/><path d="M12 11.2c-1.6-1-2.6-2-2.6-3.1 0-.8.6-1.4 1.3-1.4.6 0 1 .3 1.3.8.3-.5.7-.8 1.3-.8.7 0 1.3.6 1.3 1.4 0 1.1-1 2.1-2.6 3.1Z"/></svg>';
   /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
   function abrirRecadoDoPresente(gift) {
     const ev = getActiveEvent();
-    const recados = ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim());
+    const recados = recadosDoEvento(ev);
     const doPresente = recados.filter(/** @param {any} g */ g => g.giftId === gift.id || (!g.giftId && g.giftTitle === gift.title));
     recadosBusca = '';
-    recadosAbertos.clear();
-    doPresente.forEach(/** @param {any} g */ g => recadosAbertos.add(String(g.id)));
     const primeiro = doPresente.length ? recados.indexOf(doPresente[0]) : -1;
     recadosPagina = primeiro >= 0 ? Math.floor(primeiro / recadosPorPagina) + 1 : 1;
     abrirSubItem('gifts', 'gift-messages');
     registrarRota(caminhoSubRota('gifts', 'gift-messages'));
-    const linha = doPresente.length ? document.querySelector(`#recados-raiz .recado-linha[data-recado-id="${CSS.escape(String(doPresente[0].id))}"]`) : null;
-    if (linha) linha.scrollIntoView({ block: 'center' });
+    if (doPresente.length) { recadoAberto = String(doPresente[0].id); renderRecadosRecebidos(); }
+  }
+
+  /** Recado aberto: a cartinha (ou o vídeo) no meio da caixa. @param {any} g */
+  function cartaDoRecado(g) {
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const msg = String(g.message || '').trim();
+    const video = g.videoUrl ? String(g.videoUrl) : '';
+    return `
+      <div class="recado-palco">
+        <article class="recado-carta${video ? ' tem-video' : ''}">
+          ${video ? `<video class="recado-video" src="${escaparHtml(video)}" controls playsinline preload="metadata"></video>` : ''}
+          ${msg ? `<p class="recado-carta-texto">${escaparHtml(msg)}</p>` : ''}
+          <p class="recado-carta-assinatura"><span>Com carinho,</span>${escaparHtml(g.guestName || 'Convidado')}</p>
+          <p class="recado-carta-rodape">${escaparHtml(g.giftTitle || 'Presente')} · ${escaparHtml(brl(g.amount))} · ${escaparHtml(g.date || '—')}</p>
+        </article>
+      </div>`;
   }
 
   function renderRecadosRecebidos() {
     const raiz = document.getElementById('recados-raiz');
     if (!raiz) return;
     const ev = getActiveEvent();
-    const recados = ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim());
+    const recados = recadosDoEvento(ev);
+    // Título: nome do convidado com a setinha de voltar quando há um recado aberto.
+    const aberto = recadoAberto ? recados.find(/** @param {any} g */ g => String(g.id) === recadoAberto) : null;
+    if (!aberto) recadoAberto = null;
+    const titulo = document.getElementById('gifts-header-title');
+    if (titulo) titulo.textContent = aberto ? (aberto.guestName || 'Convidado') : 'Recados recebidos';
+    document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', !aberto);
+    if (aberto) {
+      raiz.innerHTML = `<div class="dash-card love-tabela-caixa recados-caixa is-carta">${cartaDoRecado(aberto)}</div>`;
+      return;
+    }
     const semPresentes = !((ev && ev.giftList) || []).length;
     const termo = recadosBusca.trim().toLowerCase();
     const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
@@ -9469,16 +9497,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const daPagina = lista.slice((recadosPagina - 1) * recadosPorPagina, recadosPagina * recadosPorPagina);
     const linhas = daPagina.map(/** @param {any} g */ g => {
       const id = String(g.id);
-      const aberto = recadosAbertos.has(id);
-      const msg = String(g.message || '');
+      const msg = String(g.message || '').trim();
+      const previa = msg ? escaparHtml(msg.length > 80 ? msg.slice(0, 80) + '…' : msg) : '<span class="recado-tag-video">Recado em vídeo</span>';
       return `
-        <tr class="recado-linha${aberto ? ' is-aberto' : ''}" data-recado-id="${escaparHtml(id)}">
-          <td><button type="button" class="recado-nome" data-recado-abrir aria-expanded="${aberto}">${escaparHtml(g.guestName || 'Convidado')}</button></td>
+        <tr class="recado-linha" data-recado-id="${escaparHtml(id)}" tabindex="0" aria-label="Abrir o recado de ${escaparHtml(g.guestName || 'Convidado')}">
+          <td><span class="recado-nome">${escaparHtml(g.guestName || 'Convidado')}</span></td>
           <td>${escaparHtml(g.giftTitle || 'Presente')}<span class="recado-sub">${escaparHtml(brl(g.amount))}</span></td>
           <td class="recado-data">${escaparHtml(g.date || '—')}</td>
-          <td class="recado-previa">${aberto ? '' : escaparHtml(msg.length > 80 ? msg.slice(0, 80) + '…' : msg)}</td>
-        </tr>
-        ${aberto ? `<tr class="recado-mensagem"><td colspan="4"><p>${escaparHtml(msg)}</p></td></tr>` : ''}`;
+          <td class="recado-previa">${previa}${msg && g.videoUrl ? ' <span class="recado-tag-video">+ vídeo</span>' : ''}</td>
+        </tr>`;
     }).join('');
     raiz.innerHTML = `
       <div class="dash-card love-tabela-caixa recados-caixa">
@@ -9528,10 +9555,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (alvo && alvo.closest('[data-recados-ir-presentes]')) { irParaListasProntas(false); return; }
     const passo = alvo && alvo.closest('[data-recados-pagina]');
     if (passo) { recadosPagina += Number(/** @type {HTMLElement} */ (passo).dataset.recadosPagina) || 0; renderRecadosRecebidos(); return; }
+    if (alvo && alvo.closest('#btn-recado-voltar')) { recadoAberto = null; renderRecadosRecebidos(); return; }
+    // A linha inteira abre o recado.
     const linha = alvo && alvo.closest('#recados-raiz .recado-linha');
-    if (!linha || !alvo.closest('[data-recado-abrir], .recado-previa')) return;
-    const id = /** @type {HTMLElement} */ (linha).dataset.recadoId || '';
-    if (recadosAbertos.has(id)) recadosAbertos.delete(id); else recadosAbertos.add(id);
+    if (!linha) return;
+    recadoAberto = /** @type {HTMLElement} */ (linha).dataset.recadoId || null;
+    renderRecadosRecebidos();
+    window.scrollTo({ top: 0 });
+  });
+  document.addEventListener('keydown', (e) => {
+    const linha = e.target instanceof Element ? e.target.closest('#recados-raiz .recado-linha') : null;
+    if (!linha || (e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault();
+    recadoAberto = /** @type {HTMLElement} */ (linha).dataset.recadoId || null;
     renderRecadosRecebidos();
   });
   document.addEventListener('input', (e) => {

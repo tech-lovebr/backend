@@ -338,3 +338,27 @@ async function refreshTicketBadge() {
   el.textContent = count > 99 ? '99+' : count;
   el.hidden = false;
 }
+
+/* Ícone de cada caixa de números, escolhido pelo título (TPV, custo,
+   faturamento...). As caixas são redesenhadas a cada filtro, então um
+   observador marca de novo sempre que elas mudam. */
+const ICONE_DO_KPI = [
+  [/tpv/i, 'tpv'],
+  [/custo|mês passado/i, 'custo'],
+  [/média/i, 'media'],
+  [/faturamento/i, 'faturamento'],
+  [/lucro/i, 'lucro'],
+  [/repasse/i, 'repasse']
+];
+function marcarIconesDosKpis() {
+  document.querySelectorAll('.kpi-grid > .kpi').forEach(kpi => {
+    const titulo = kpi.querySelector('.kpi-label')?.textContent || '';
+    const achado = ICONE_DO_KPI.find(([regra]) => regra.test(titulo));
+    const icone = achado ? achado[1] : 'grafico';
+    if (kpi.dataset.icone !== icone) kpi.dataset.icone = icone;
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  marcarIconesDosKpis();
+  new MutationObserver(marcarIconesDosKpis).observe(document.body, { childList: true, subtree: true });
+});

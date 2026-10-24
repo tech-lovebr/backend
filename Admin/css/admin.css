@@ -4197,3 +4197,8 @@ body.com-faixa #btn-periodo:focus,
 body.com-faixa #btn-periodo[aria-expanded="true"] { background: transparent; border-color: transparent; box-shadow: none; outline: 0; color: #FFFFFF; }
 body.com-faixa #btn-periodo span,
 body.com-faixa #btn-periodo .btn-periodo-seta { color: #FFFFFF; }
+
+/* Perfil no rodapé: sem borda; no hover (e aberto) o mesmo fundo do item ativo do menu. */
+.sidebar-perfil-rodape .sidebar-perfil-botao { border: 0; background: transparent; }
+.sidebar-perfil-rodape .sidebar-perfil-botao:hover,
+.sidebar-perfil-rodape .sidebar-perfil-botao[aria-expanded="true"] { background: var(--bg-app); border: 0; }

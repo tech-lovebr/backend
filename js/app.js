@@ -9404,6 +9404,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (summaryStats) summaryStats.classList.add('hidden');
       if (headerTitle) headerTitle.textContent = 'Configurações da Lista';
       renderSuasListas();
+      marcarQuemPagaATaxa();
       if (headerSub) headerSub.textContent = 'Configure taxas, parcelamento sem juros para convidados e preferências.';
     } else {
       if (topSearchBar) topSearchBar.classList.remove('hidden');
@@ -9528,12 +9529,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Quem paga a taxa dos presentes: "Seus convidados" ou "Você" (o visual
   // de selecionado vem da classe .active no CSS).
+  // Taxa de R$ 8 por presente: quem paga fica em eventos.extra.taxaPresentes
+  // ("convidados" | "anfitriao"). O convite publicado e o pagamento
+  // (api/presentear.js) leem daí. Sem escolha, os convidados pagam.
+  function marcarQuemPagaATaxa() {
+    const evt = getActiveEvent();
+    const escolha = evt && evt.taxaPresentes === 'anfitriao' ? 'host' : 'guest';
+    document.querySelectorAll('.gift-fee-card').forEach(c => {
+      const ativo = /** @type {HTMLElement} */ (c).dataset.feeChoice === escolha;
+      c.classList.toggle('active', ativo);
+      c.setAttribute('aria-checked', String(ativo));
+    });
+  }
+  window.loveMarcarQuemPagaATaxa = marcarQuemPagaATaxa;
   document.querySelectorAll('.gift-fee-card').forEach(card => {
     const escolher = () => {
-      document.querySelectorAll('.gift-fee-card').forEach(c => {
-        c.classList.toggle('active', c === card);
-        c.setAttribute('aria-checked', String(c === card));
-      });
+      const evt = getActiveEvent();
+      const valor = /** @type {HTMLElement} */ (card).dataset.feeChoice === 'host' ? 'anfitriao' : 'convidados';
+      if (evt && evt.taxaPresentes !== valor) {
+        evt.taxaPresentes = valor;
+        persistirEventoAtivo();
+      }
+      marcarQuemPagaATaxa();
     };
     card.addEventListener('click', escolher);
     card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); escolher(); } });

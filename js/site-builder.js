@@ -4443,7 +4443,7 @@ function renderPresentesPublicos(root) {
           </div>
           <div class="convite-presente-texto">
             <p class="convite-presente-nome">${escaparPublico(p.nome)}</p>
-            <p class="convite-presente-valor">${p.recebido ? 'Já presenteado' : brl(p.valor)}</p>
+            <p class="convite-presente-valor">${p.recebido ? 'Já presenteado' : brl(p.vaquinha ? p.valor : precoPublico(p.valor))}</p>
             ${(!p.recebido && p.vaquinha) ? `<div class="convite-presente-mini-barra"><div style="width:${progressoDoPresente(p).pct}%"></div></div>` : ''}
             ${p.recebido ? '' : `<button type="button" class="convite-presente-botao" data-convite-ir="#checkout=${escaparPublico(p.id)}">Presentear</button>`}
           </div>
@@ -4651,6 +4651,15 @@ function ligarDadosDoConvidado(root, convidadoId, chave, primeiro) {
 
 const brlPublico = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+// Taxa da Love (R$ 8 por presente, migration 103). Quando os convidados
+// pagam, o preço mostrado já vem com ela somada (sem linha de taxa).
+function taxaEmbutidaPublica() {
+  const t = conviteDadosPublicos && conviteDadosPublicos.taxa;
+  if (!t || t.paga_por === 'anfitriao') return 0;
+  return Number(t.por_presente) || 0;
+}
+const precoPublico = v => Math.round((Number(v || 0) + taxaEmbutidaPublica()) * 100) / 100;
+
 // Checkout e carrinho: sempre com fundo branco, seja qual for a cor do convite.
 function telaPublicaHtmlBranca(titulo, conteudo) { return telaPublicaHtml(titulo, conteudo, { fundoBranco: true }); }
 
@@ -4700,7 +4709,7 @@ function renderPresentePublico(root, id) {
         <div class="convite-vaquinha-trilho"><div class="convite-vaquinha-barra" style="width:${pct}%"></div></div>
         <div class="convite-presente-detalhe-meta"><strong>Meta: ${brlPublico(meta)}</strong><strong>${pct}% da meta</strong></div>
       ` : `
-        <p class="convite-presente-detalhe-preco">${brlPublico(meta)}</p>
+        <p class="convite-presente-detalhe-preco">${brlPublico(precoPublico(meta))}</p>
       `}
       ${botao}
       ${sobre}
@@ -4906,9 +4915,7 @@ function renderAguardandoPagamento(root, pedido, r, videoEnviado) {
   const pix = r.metodo === 'pix' && r.pix;
   const resumo = `
       <div class="convite-pagar-resumo">
-        <div><span>${escaparPublico(pedido.descricao)}</span><strong>${brlPublico(r.soma)}</strong></div>
-        <div><span>Taxa de serviço</span><strong>${brlPublico(r.taxa)}</strong></div>
-        <div class="is-total"><span>Total</span><strong>${brlPublico(r.total)}</strong></div>
+        <div class="is-total"><span>${escaparPublico(pedido.descricao)}</span><strong>${brlPublico(r.total)}</strong></div>
       </div>`;
   const corpo = pix ? `
       <p class="convite-pagar-instrucao">Abra o app do seu banco, escolha pagar com Pix e leia o QR Code ou cole o código.</p>
@@ -4988,7 +4995,7 @@ function renderCheckoutPublico(root, id) {
       <div class="convite-checkout-resumo-foto">${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="">` : ''}</div>
       <div>
         <p class="convite-checkout-resumo-nome">${escaparPublico(p.nome)}</p>
-        <p class="convite-checkout-resumo-valor">${vaquinha ? `Faltam ${brlPublico(falta)} para completar · ${pct}% arrecadado` : brlPublico(meta)}</p>
+        <p class="convite-checkout-resumo-valor">${vaquinha ? `Faltam ${brlPublico(falta)} para completar · ${pct}% arrecadado` : brlPublico(precoPublico(meta))}</p>
       </div>
     </div>
     <form class="convite-form" data-convite-checkout novalidate>
@@ -5154,7 +5161,7 @@ function renderCheckoutCarrinho(root) {
     voltarPara(root, '#presentes');
     return;
   }
-  const total = itens.reduce((s, p) => s + valorNoCarrinho(p), 0);
+  const total = itens.reduce((s, p) => s + precoPublico(valorNoCarrinho(p)), 0);
 
   const conteudo = `
     <div class="convite-carrinho-itens">
@@ -5163,7 +5170,7 @@ function renderCheckoutCarrinho(root) {
           <div class="convite-checkout-resumo-foto">${p.imagem ? `<img src="${escaparPublico(p.imagem)}" alt="">` : ''}</div>
           <div class="convite-carrinho-item-texto">
             <p class="convite-checkout-resumo-nome">${escaparPublico(p.nome)}</p>
-            <p class="convite-checkout-resumo-valor">${brlPublico(valorNoCarrinho(p))}${p.vaquinha ? ' · o que falta na vaquinha' : ''}</p>
+            <p class="convite-checkout-resumo-valor">${brlPublico(precoPublico(valorNoCarrinho(p)))}${p.vaquinha ? ' · o que falta na vaquinha' : ''}</p>
           </div>
           <button type="button" class="convite-carrinho-remover" data-carrinho-remover="${escaparPublico(p.id)}" aria-label="Tirar do carrinho" title="Tirar do carrinho">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>

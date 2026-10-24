@@ -8,9 +8,11 @@
 //
 // Como o dinheiro anda: a cobrança é criada na conta da Love com split do
 // valor do presente direto para a conta digital do anfitrião (walletId da
-// subconta, migration 098). O anfitrião recebe o valor exato do presente;
-// a taxa de serviço (paga pelo convidado) fica com a Love e cobre a tarifa
-// do Asaas. Na primeira compra a conta do anfitrião é aberta na hora
+// subconta, migration 098). A Love cobra R$ 8 por presente (Presentes ›
+// Configurações, eventos.extra.taxaPresentes): se os convidados pagam, os R$ 8
+// vão somados ao preço e o anfitrião recebe o valor cheio; se o anfitrião
+// paga, o convidado paga o preço e o anfitrião recebe o preço − R$ 8. A taxa
+// fica com a Love e cobre a tarifa do Asaas. Na primeira compra a conta do anfitrião é aberta na hora
 // (api/_recebimento.js: precisa dos dados salvos, convidados e presentes).
 //
 // Cada presente vira uma contribuição "pendente" (presentear_pelo_convite);
@@ -24,15 +26,18 @@ const { supabaseAdmin } = require("./_ses");
 const soDigitos = (v) => String(v || "").replace(/\D/g, "");
 const centavos = (v) => Math.round(Number(v || 0) * 100) / 100;
 
-// Taxa de serviço da Love (Presentes › Configurações): 3,89% do presente,
-// nunca menos que a tarifa do Asaas daquele meio (Pix R$ 1,99; cartão à vista
-// 2,99% + R$ 0,49 — preços de tabela, sem promoção) para o split nunca passar
-// do valor líquido da cobrança.
-const TAXA_LOVE = 0.0389;
-function taxaDeServico(valor, metodo) {
-  const porcentagem = valor * TAXA_LOVE;
-  const minimo = metodo === "cartao" ? (valor * 0.0299 + 0.49) / (1 - 0.0299) : 1.99;
-  return centavos(Math.max(porcentagem, minimo) + 0.01);
+// Taxa da Love: R$ 8 por presente. No cartão a tarifa do Asaas (à vista,
+// 2,99% + R$ 0,49, preço de tabela) passa de R$ 8 em compras maiores; aí a
+// taxa sobe até cobrir a tarifa, para o split nunca passar do valor líquido
+// da cobrança (o Asaas recusaria). No Pix (R$ 1,99) os R$ 8 sempre cobrem.
+const TAXA_POR_PRESENTE = 8;
+/** Taxa do pedido. convidadosPagam: a taxa vai somada ao total. */
+function taxaDoPedido(soma, quantidade, metodo, convidadosPagam) {
+  const fixa = TAXA_POR_PRESENTE * quantidade;
+  if (metodo !== "cartao") return centavos(fixa);
+  // Tarifa do cartão sobre o total cobrado (com a taxa somada, se for o caso).
+  const tarifa = convidadosPagam ? (soma * 0.0299 + 0.49) / (1 - 0.0299) : soma * 0.0299 + 0.49;
+  return centavos(Math.max(fixa, Math.ceil((tarifa + 0.01) * 100) / 100));
 }
 
 function cpfValido(cpf) {
@@ -113,7 +118,7 @@ module.exports = async (req, res) => {
 
     // 2. Conta digital do anfitrião (abre na hora se for a primeira compra).
     const { data: c1 } = await db.from("presentes_contribuicoes").select("evento_id").eq("id", ids[0]).single();
-    const { data: evento } = await db.from("eventos").select("cliente_id, titulo").eq("id", c1.evento_id).single();
+    const { data: evento } = await db.from("eventos").select("cliente_id, titulo, extra").eq("id", c1.evento_id).single();
     const conta = await contaParaReceber(db, evento.cliente_id);
     if (!conta.walletId) {
       await cancelar(db, ids);
@@ -125,8 +130,14 @@ module.exports = async (req, res) => {
     }
 
     const soma = centavos(registrados.reduce((s, r) => s + r.valor, 0));
-    const taxa = taxaDeServico(soma, metodo);
-    const total = centavos(soma + taxa);
+    const convidadosPagam = !(evento.extra && evento.extra.taxaPresentes === "anfitriao");
+    const taxa = taxaDoPedido(soma, registrados.length, metodo, convidadosPagam);
+    const total = convidadosPagam ? centavos(soma + taxa) : soma;
+    const paraOAnfitriao = convidadosPagam ? soma : centavos(soma - taxa);
+    if (paraOAnfitriao <= 0) {
+      await cancelar(db, ids);
+      return res.status(400).json({ ok: false, erro: "valor_baixo", mensagem: "Escolha um valor maior para este presente." });
+    }
 
     // 3. Pagador (o Asaas exige CPF) e cobrança com split para o anfitrião.
     const achados = await asaas(`/customers?cpfCnpj=${cpf}&limit=1`).catch(() => null);
@@ -143,7 +154,7 @@ module.exports = async (req, res) => {
         dueDate: hojeNoBrasil(1),
         description: `${registrados.length === 1 ? "Presente" : `${registrados.length} presentes`} para ${evento.titulo || "o evento"} (Love)`.slice(0, 500),
         externalReference: ids[0],
-        split: [{ walletId: conta.walletId, fixedValue: soma, description: "Presente pela Love" }],
+        split: [{ walletId: conta.walletId, fixedValue: paraOAnfitriao, description: "Presente pela Love" }],
       },
     });
     await db.from("presentes_contribuicoes").update({ gateway_ref: cobranca.id }).in("id", ids);
@@ -167,4 +178,4 @@ module.exports = async (req, res) => {
   }
 };
 
-module.exports.taxaDeServico = taxaDeServico;
+module.exports.taxaDoPedido = taxaDoPedido;

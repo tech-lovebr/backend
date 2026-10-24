@@ -4246,3 +4246,7 @@ body.com-faixa .admin-header-actions .btn.btn-primary,
 body.com-faixa .admin-header-actions .btn.btn-primary span,
 body.com-faixa .admin-header-actions .btn.btn-primary svg { color: #183b54; }
 body.com-faixa .header-bar-link:hover { background: rgba(255, 255, 255, .1); }
+/* Botões dentro dos menus que abrem (ex.: Aplicar do calendário) continuam escuros. */
+body.com-faixa .admin-header-actions .filtro-menu .btn,
+body.com-faixa .admin-header-actions .filtro-menu .btn span,
+body.com-faixa .admin-header-actions .filtro-menu .btn svg { color: #18181B; }

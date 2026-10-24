@@ -2,15 +2,15 @@
 // O arquivo começa com "_" para a Vercel não publicar como rota.
 //
 // Regra da Love (custo só quando há dinheiro de verdade):
-//   1. Ao adicionar o primeiro presente, o anfitrião preenche os dados
-//      (salvarDados). Nada é aberto no Asaas; os dados ficam cifrados em
-//      dados_recebimento (migration 099).
+//   1. O anfitrião preenche os dados em Suas informações (tabela clientes,
+//      migration 099). Nada é aberto no Asaas; Meus presentes mostra um
+//      aviso enquanto faltar algum dado.
 //   2. Na primeira compra de um convidado, o servidor abre a conta na hora
 //      (contaParaReceber → abrirConta) e o presente já cai nela pelo split.
 //      Só abre se o anfitrião tiver convidados E presentes cadastrados.
 //   3. No primeiro saque, a verificação facial (documento + selfie).
 
-const { asaas, cifrar, decifrar } = require("./_asaas");
+const { asaas, cifrar } = require("./_asaas");
 
 const soDigitos = (v) => String(v || "").replace(/\D/g, "");
 const URL_DO_SITE = process.env.LOVE_URL || "https://love.com.br";
@@ -93,34 +93,20 @@ async function requisitos(db, clienteId) {
   return { convidados, presentes, ok: convidados > 0 && presentes > 0 };
 }
 
-/* ------------------------------------------------ Dados (passo 1, sem custo) */
+/* ---------------------------------- Dados (Suas informações, tabela clientes) */
 
-async function salvarDados(db, clienteId, dados) {
-  const { erros, conta } = validar(dados || {});
-  if (Object.keys(erros).length) return { ok: false, erros };
-  const { error } = await db.from("dados_recebimento").upsert({
-    cliente_id: clienteId,
-    dados_cifrados: cifrar(JSON.stringify(conta)),
-    cpf_final: conta.cpfCnpj.slice(-4),
-    updated_at: new Date().toISOString(),
-  });
-  if (error) throw new Error(error.message);
-  return { ok: true };
-}
-
+/** Dados do cadastro do anfitrião → corpo do POST /accounts, ou null se faltar algo. */
 async function lerDados(db, clienteId) {
-  const { data } = await db.from("dados_recebimento").select("dados_cifrados").eq("cliente_id", clienteId).maybeSingle();
-  return data ? JSON.parse(decifrar(data.dados_cifrados)) : null;
-}
-
-/** O que a tela do anfitrião pode ver dos dados (para reabrir o formulário). */
-async function dadosParaTela(db, clienteId) {
-  const c = await lerDados(db, clienteId).catch(() => null);
+  const { data: c } = await db.from("clientes")
+    .select("first_name, last_name, full_name, cpf, phone, data_nascimento, renda_mensal, cep, endereco, endereco_numero, endereco_complemento, bairro")
+    .eq("id", clienteId).maybeSingle();
   if (!c) return null;
-  return {
-    nome: c.name, cpf: c.cpfCnpj, nascimento: c.birthDate, celular: c.mobilePhone, renda: String(c.incomeValue),
-    cep: c.postalCode, endereco: c.address, numero: c.addressNumber, complemento: c.complement || "", bairro: c.province,
-  };
+  const { erros, conta } = validar({
+    nome: c.full_name || [c.first_name, c.last_name].filter(Boolean).join(" "),
+    cpf: c.cpf, nascimento: c.data_nascimento, celular: c.phone, renda: c.renda_mensal,
+    cep: c.cep, endereco: c.endereco, numero: c.endereco_numero, complemento: c.endereco_complemento, bairro: c.bairro,
+  });
+  return Object.keys(erros).length ? null : conta;
 }
 
 /* ------------------------------------------ Conta (passo 2, primeira compra) */
@@ -221,4 +207,4 @@ async function contaParaReceber(db, clienteId) {
   }
 }
 
-module.exports = { validar, requisitos, salvarDados, dadosParaTela, lerConta, salvarConta, contaParaReceber };
+module.exports = { validar, requisitos, lerConta, salvarConta, contaParaReceber };

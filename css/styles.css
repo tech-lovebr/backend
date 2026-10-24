@@ -11519,3 +11519,6 @@ body[data-theme="dark"] .rc-aviso-titulo, body[data-theme="dark"] .rc-popup-titu
 .convite-pagar-status { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 13px; font-weight: 500; color: #71717A; }
 .convite-pagar-ponto { width: 8px; height: 8px; border-radius: 999px; background: var(--bx-primary, #183b54); animation: convite-pagar-pulso 1.4s ease-in-out infinite; }
 @keyframes convite-pagar-pulso { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+/* Suas informações: "(opcional)" ao lado do rótulo. */
+.conta-opcional { font-weight: 400; color: #A1A1AA; }

@@ -1,17 +1,15 @@
 // Vercel Serverless Function — recebimento dos presentes do anfitrião (Asaas).
 // Endpoint: /api/asaas-conta   Header: Authorization: Bearer <access_token>
 //
-//   GET                          → { conta, dados } — situação da conta
-//                                  (atualiza com o Asaas) e os dados salvos.
-//   POST { acao: "dados", dados } → salva os dados para receber (sem abrir
-//                                  conta; ela abre na primeira compra — ver
-//                                  api/_recebimento.js).
+//   GET                          → { conta } — situação da conta (atualiza
+//                                  com o Asaas). A conta abre sozinha na
+//                                  primeira compra (api/_recebimento.js).
 //   POST { acao: "verificacao" }  → link da verificação facial (documento +
 //                                  selfie), pedida no primeiro saque.
 // Variáveis: ver api/_asaas.js.
 
 const { asaas, usuarioDaRequisicao, chaveDaConta, statusDaLove } = require("./_asaas");
-const { salvarDados, dadosParaTela, lerConta, salvarConta } = require("./_recebimento");
+const { lerConta, salvarConta } = require("./_recebimento");
 
 /** O que a tela precisa (nunca devolve chave nem ids do Asaas). */
 function publico(c) {
@@ -53,17 +51,11 @@ module.exports = async (req, res) => {
 
     if (req.method === "GET") {
       if (conta && conta.asaas_id) conta = await atualizar(db, usuario.id, conta);
-      return res.status(200).json({ ok: true, conta: publico(conta), dados: await dadosParaTela(db, usuario.id) });
+      return res.status(200).json({ ok: true, conta: publico(conta) });
     }
     if (req.method !== "POST") return res.status(405).json({ ok: false, erro: "metodo_nao_permitido" });
 
-    const { acao, dados } = req.body || {};
-
-    if (acao === "dados") {
-      const r = await salvarDados(db, usuario.id, dados);
-      if (!r.ok) return res.status(400).json({ ok: false, erro: "dados_invalidos", campos: r.erros });
-      return res.status(200).json({ ok: true });
-    }
+    const { acao } = req.body || {};
 
     if (acao === "verificacao") {
       if (!conta || !conta.asaas_id) return res.status(400).json({ ok: false, erro: "conta_inexistente" });

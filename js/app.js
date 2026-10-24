@@ -789,6 +789,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Suas informações › dados que abrem a conta digital dos presentes
+  // (api/_recebimento.js lê de clientes na primeira compra).
+  const CAMPOS_DE_RECEBIMENTO = [
+    ['settings-user-nascimento', 'data_nascimento'],
+    ['settings-user-renda', 'renda_mensal'],
+    ['settings-user-cep', 'cep'],
+    ['settings-user-endereco', 'endereco'],
+    ['settings-user-numero', 'endereco_numero'],
+    ['settings-user-complemento', 'endereco_complemento'],
+    ['settings-user-bairro', 'bairro']
+  ];
+  function mascaraCep(/** @type {string} */ v) {
+    const d = String(v || '').replace(/\D/g, '').slice(0, 8);
+    return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  }
+
+  // Aviso de Meus presentes → Suas informações, já no primeiro campo vazio.
+  window.loveAbrirSuasInformacoes = () => {
+    openAccountSettingsPage({ aba: 'conta' });
+    setTimeout(() => {
+      const ids = ['settings-user-phone', 'settings-user-cpf', ...CAMPOS_DE_RECEBIMENTO.map(c => c[0]).filter(id => id !== 'settings-user-complemento')];
+      const vazio = ids.map(id => /** @type {HTMLInputElement|null} */ (document.getElementById(id))).find(el => el && !el.value);
+      if (vazio) { vazio.scrollIntoView({ block: 'center' }); vazio.focus({ preventScroll: true }); }
+    }, 150);
+  };
+
   function openAccountSettingsPage(opts = {}) {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
     const abaInicial = opts.aba || 'conta';
@@ -819,6 +845,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (telInput) telInput.value = profile.phone ? maskBrazilPhone(String(profile.phone)) : '';
     const cpfInput = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-cpf'));
     if (cpfInput) cpfInput.value = profile.cpf ? mascaraCpf(String(profile.cpf)) : '';
+    // Dados para receber os presentes (migration 099).
+    CAMPOS_DE_RECEBIMENTO.forEach(([id, coluna]) => {
+      const el = /** @type {HTMLInputElement|null} */ (document.getElementById(id));
+      if (!el) return;
+      const v = profile[coluna];
+      el.value = v == null ? '' : coluna === 'cep' ? mascaraCep(String(v)) : coluna === 'renda_mensal' ? String(Math.round(Number(v))) : String(v);
+    });
     document.getElementById('settings-form-error')?.classList.add('hidden');
     document.getElementById('settings-form-ok')?.classList.add('hidden');
     resetSettingsSecurity();
@@ -6329,9 +6362,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.markPlatformTaskAchieved?.('registry');
     if (editingGiftId === gift.id) editingGiftId = data.id;
     gift.id = data.id;
-    // Primeiro presente do dono do evento: pede os dados para receber
-    // (js/recebimento.js). Depois que o modal do presente fecha.
-    if (clienteId === usuarioId) setTimeout(() => window.LoveRecebimento?.pedirDadosSeFaltar(), 700);
     return { error: null };
   }
 
@@ -19990,6 +20020,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const campo = /** @type {HTMLInputElement} */ (e.target);
     campo.value = mascaraCpf(campo.value);
   });
+  // CEP: máscara e endereço/bairro pelo ViaCEP.
+  document.getElementById('settings-user-cep')?.addEventListener('input', async (e) => {
+    const campo = /** @type {HTMLInputElement} */ (e.target);
+    campo.value = mascaraCep(campo.value);
+    const d = campo.value.replace(/\D/g, '');
+    if (d.length !== 8) return;
+    try {
+      const j = await (await fetch(`https://viacep.com.br/ws/${d}/json/`)).json();
+      if (!j || j.erro) return;
+      const endereco = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-endereco'));
+      const bairro = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-bairro'));
+      if (endereco && !endereco.value) endereco.value = j.logradouro || '';
+      if (bairro && !bairro.value) bairro.value = j.bairro || '';
+      if (endereco && endereco.value && document.activeElement === campo) document.getElementById('settings-user-numero')?.focus();
+    } catch (err) { /* sem internet ou CEP não encontrado: preenche à mão */ }
+  });
 
   const formUserSettings = document.getElementById('form-user-settings');
   if (formUserSettings) {
@@ -20019,6 +20065,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const cpfDigitado = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-cpf'))?.value.trim() || '';
       if (telefoneDigitado && !isValidBrazilPhone(telefoneDigitado)) return showSettingsError('Celular incompleto: use (DDD) 9XXXX-XXXX.');
       if (cpfDigitado && cpfDigitado.replace(/\D/g, '').length !== 11) return showSettingsError('CPF incompleto.');
+      /** @type {Record<string, any>} */
+      const recebimento = {};
+      CAMPOS_DE_RECEBIMENTO.forEach(([id, coluna]) => {
+        const v = (/** @type {HTMLInputElement|null} */ (document.getElementById(id)))?.value.trim() || '';
+        recebimento[coluna] = !v ? null : coluna === 'cep' ? v.replace(/\D/g, '') : coluna === 'renda_mensal' ? Number(v) : v;
+      });
+      if (recebimento.cep && recebimento.cep.length !== 8) return showSettingsError('CEP incompleto.');
+      if (recebimento.data_nascimento) {
+        const idade = (Date.now() - new Date(recebimento.data_nascimento + 'T00:00:00').getTime()) / 31557600000;
+        if (!(idade >= 18 && idade < 120)) return showSettingsError('Confira a data de nascimento (é preciso ter 18 anos ou mais).');
+      }
 
       saveBtn.disabled = true;
 
@@ -20028,7 +20085,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const [{ error: profileError }, { error: metaError }] = await Promise.all([
         supabaseClient
           .from('clientes')
-          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name, phone: telefoneDigitado || null, cpf: cpfDigitado || null })
+          .update({ first_name, last_name: last_name || null, full_name, couple_name: full_name, phone: telefoneDigitado || null, cpf: cpfDigitado || null, ...recebimento })
           .eq('id', session.user.id),
         supabaseClient.auth.updateUser({ data: { first_name, last_name, full_name } })
       ]);
@@ -20038,8 +20095,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (profileError || metaError) return showSettingsError('Não foi possível salvar seus dados. Tente novamente.');
 
       if (window.loveClienteProfile) {
-        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name, phone: telefoneDigitado || null, cpf: cpfDigitado || null });
+        Object.assign(window.loveClienteProfile, { first_name, last_name, full_name, couple_name: full_name, phone: telefoneDigitado || null, cpf: cpfDigitado || null, ...recebimento });
       }
+      window.LoveRecebimento?.atualizar();
       atualizarAvatarDoCabecalho();
       const dropdownUsername = document.getElementById('account-dropdown-username');
       if (dropdownUsername) dropdownUsername.textContent = name;

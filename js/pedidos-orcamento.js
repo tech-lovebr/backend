@@ -2190,7 +2190,7 @@
       todas.indeterminate = marcadas > 0 && marcadas < checks.length;
     }
     const lixeira = document.getElementById('btn-rfp-excluir-selecionadas');
-    if (lixeira) lixeira.title = qtd === 1 ? 'Excluir 1 solicitação selecionada' : `Excluir ${qtd} solicitações selecionadas`;
+    if (lixeira) lixeira.title = qtd === 1 ? 'Remover 1 solicitação selecionada' : `Remover ${qtd} solicitações selecionadas`;
   }
 
   document.addEventListener('change', (e) => {
@@ -2221,13 +2221,13 @@
     const rascunhos = chaves.filter(k => k.startsWith('r:')).map(k => k.slice(2));
     const n = chaves.length;
     const ok = w.confirmarNaLove ? await w.confirmarNaLove({
-      titulo: n === 1 ? 'Deseja excluir 1 solicitação selecionada?' : `Deseja excluir ${n} solicitações selecionadas?`,
+      titulo: n === 1 ? 'Deseja remover 1 solicitação selecionada?' : `Deseja remover ${n} solicitações selecionadas?`,
       texto: pedidos.length ? 'As publicadas deixam de aparecer para os fornecedores. Essa ação não pode ser desfeita.' : 'Os rascunhos serão apagados. Essa ação não pode ser desfeita.',
-      botao: 'Excluir',
+      botao: 'Remover',
       aoConfirmar: async () => {
         if (pedidos.length) {
           const { error } = await supabaseClient.from('pedidos_orcamento').delete().in('id', pedidos);
-          if (error) return 'Não foi possível excluir agora. Tente de novo.';
+          if (error) return 'Não foi possível remover agora. Tente de novo.';
           pedidos.forEach(id => selecionadas.delete('p:' + id));
         }
         for (const id of rascunhos) { await apagarRascunho(id); selecionadas.delete('r:' + id); }
@@ -2235,7 +2235,7 @@
       }
     }) : false;
     if (!ok) return;
-    avisoNaLista(n === 1 ? 'Solicitação excluída.' : `${n} solicitações excluídas.`);
+    avisoNaLista(n === 1 ? 'Solicitação removida.' : `${n} solicitações removidas.`);
     mostrarLista();
   }
   document.addEventListener('click', (e) => {

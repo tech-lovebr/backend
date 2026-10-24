@@ -25,6 +25,15 @@ let ABA = 'atuais';
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
+  // Exportar fica no topo, à esquerda de Adicionar custo (o addHeaderAction
+  // mandaria "Exportar" para a barra da tabela).
+  const exportarBtn = document.createElement('button');
+  exportarBtn.type = 'button';
+  exportarBtn.className = 'btn btn-ghost';
+  exportarBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 9l5 -5l5 5" /><path d="M12 4l0 12" /></svg><span>Exportar</span>';
+  exportarBtn.addEventListener('click', exportarRelatorio);
+  document.getElementById('header-actions')?.appendChild(exportarBtn);
+
   addHeaderAction('Adicionar custo', () => abrirFormulario(), {
     principal: true,
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>'
@@ -145,6 +154,35 @@ function linhasDeCusto() {
     meses: Object.fromEntries(MESES.map(m => [m, valorManualNoMes(c, m)]))
   }));
   return [...integracoes, ...manuais];
+}
+
+/* Relatório de custos (CSV): um custo por linha, com o valor de cada mês em
+   reais e o total dos 12 meses; na última linha, o total geral. */
+function exportarRelatorio() {
+  const linhas = linhasDeCusto();
+  if (!linhas.length || !MESES.length) {
+    toast('Ainda não há custos para exportar.');
+    return;
+  }
+  const dinheiro = v => (Number(v) || 0).toFixed(2).replace('.', ',');
+  const totalDaLinha = l => MESES.reduce((s, m) => s + emReais(l.meses?.[m] || 0, l.moeda), 0);
+  const TOTAL = { total: true };
+
+  exportarCSV(`custos-${mesAtual()}`, [
+    { titulo: 'Nome', valor: l => l.total ? 'Total' : l.nome },
+    { titulo: 'Empresa', valor: l => l.bruto?.empresa || (l.manual ? '' : l.nome) },
+    { titulo: 'Descrição', valor: l => l.bruto?.descricao || '' },
+    { titulo: 'Categoria', valor: l => l.categoria || '' },
+    { titulo: 'Tipo', valor: l => TIPO[l.tipo] || l.tipo || '' },
+    { titulo: 'Status', valor: l => l.total ? '' : (STATUS[l.status] || STATUS.ativo)[0] },
+    { titulo: 'Moeda', valor: l => l.moeda || '' },
+    { titulo: `${nomeDoMes(mesAtual())} (moeda original)`, valor: l => l.total ? '' : dinheiro(l.meses?.[mesAtual()] || 0) },
+    ...MESES.map(m => ({
+      titulo: `${nomeDoMes(m)} (R$)`,
+      valor: l => dinheiro(l.total ? totalNoMes(linhas, m) : emReais(l.meses?.[m] || 0, l.moeda))
+    })),
+    { titulo: 'Total 12 meses (R$)', valor: l => dinheiro(l.total ? linhas.reduce((s, x) => s + totalDaLinha(x), 0) : totalDaLinha(l)) }
+  ], [...linhas, TOTAL]);
 }
 
 function totalNoMes(linhas, mes) {

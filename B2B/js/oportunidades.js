@@ -222,38 +222,33 @@ function opPreencherFiltrosDeLocal() {
 /* Card no modelo do Explorar (love.com.br, visão em grade): imagem larga em
    cima (1ª foto de referência ou um fundo com a categoria), título com a
    cidade ao lado, quem pede, faixa e data, e os botões embaixo. */
+/* Linha no modelo de "Minhas solicitações" (love.com.br): título em azul,
+   quem e quando, a situação (categoria, cidade, selos), a data do evento,
+   o orçamento, "Ver detalhes" e o marcador para salvar. */
 function opCardHtml(p) {
   const minha = opMinhaProposta(p.id);
   const salva = opSalvos.has(p.id);
-  const icone = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const orcamento = opFaixaTexto(p) === 'A combinar' ? 'Aberto a negociação' : opFaixaTexto(p);
   const local = [p.cidade, p.uf].filter(Boolean).join(' - ');
-  const pills = [
-    [icone('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>'), opDataLonga(p)],
-    [icone('<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>'), local],
-    [icone('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5M16 5.2a3 3 0 0 1 0 5.6M18 14.3c1.7.6 2.8 2.2 3 4.7"/>'), OP_CONVIDADOS_NOME[p.convidados] ? `${OP_CONVIDADOS_NOME[p.convidados]} convidados` : ''],
-    [icone('<path d="M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z"/><circle cx="8" cy="8" r="1.5"/>'), opFaixaTexto(p) === 'A combinar' ? 'Aberto a negociação' : opFaixaTexto(p)]
-  ].filter(([, t]) => t);
+  const selos = [
+    opNovo(p) ? '<span class="op-linha-selo is-novo">Novo</span>' : '',
+    opUrgente(p) ? '<span class="op-linha-selo is-urgente">Urgente</span>' : '',
+    minha ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>` : ''
+  ].join('');
   return `
-    <article class="op-linha" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
-      <div class="op-linha-topo">
-        <span class="op-analise-badge">${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</span>
-        ${p.created_at ? `<span class="op-linha-quando">Publicado ${escapeHtml(opHaQuanto(p.created_at))}</span>` : ''}
-        ${opNovo(p) ? '<span class="op-linha-selo is-novo">Novo</span>' : ''}
-        ${opUrgente(p) ? '<span class="op-linha-selo is-urgente">Urgente</span>' : ''}
-        <span class="op-linha-quem">${minha
-          ? `<span class="op-status ${OP_STATUS[minha.status].classe}">Proposta ${OP_STATUS[minha.status].label.toLowerCase()}</span>`
-          : escapeHtml(opNomeAnfitriao(p))}</span>
-        <button type="button" class="op-linha-salvar${salva ? ' is-salva' : ''}" data-op-salvar-linha="${escapeHtml(p.id)}" aria-pressed="${salva}" aria-label="${salva ? 'Remover das salvas' : 'Salvar vaga'}" data-dica="${salva ? 'Salva' : 'Salvar vaga'}">
-          ${icone('<path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/>')}
-        </button>
+    <div class="op-post" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
+      <div class="op-post-info">
+        <button type="button" class="op-post-titulo">${escapeHtml(opTitulo(p))}</button>
+        <p class="op-post-criado">Publicada ${escapeHtml(opHaQuanto(p.created_at))} por ${escapeHtml(opNomeAnfitriao(p))}</p>
+        <p class="op-post-situacao"><b>${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</b>${local ? ` · ${escapeHtml(local)}` : ''}${OP_CONVIDADOS_NOME[p.convidados] ? ` · ${escapeHtml(OP_CONVIDADOS_NOME[p.convidados])} convidados` : ''}${selos ? ` <span class="op-post-selos">${selos}</span>` : ''}</p>
       </div>
-      <h3 class="op-linha-titulo">${escapeHtml(opTitulo(p))}</h3>
-      ${p.descricao ? `<p class="op-linha-desc">${escapeHtml(String(p.descricao).trim())}</p>` : ''}
-      <div class="op-linha-rodape">
-        <div class="op-linha-pills">${pills.map(([svg, t]) => `<span class="op-linha-pill">${svg}${escapeHtml(t)}</span>`).join('')}</div>
-        <span class="btn-secondary op-linha-acao">Ver detalhes</span>
-      </div>
-    </article>`;
+      <div class="op-post-num"><b>${escapeHtml(opDataCurta(p))}</b><span>Data do evento</span></div>
+      <div class="op-post-num"><b>${escapeHtml(orcamento)}</b><span>Orçamento</span></div>
+      <button type="button" class="op-post-botao">Ver detalhes</button>
+      <button type="button" class="op-post-salvar${salva ? ' is-salva' : ''}" data-op-salvar-linha="${escapeHtml(p.id)}" aria-pressed="${salva}" aria-label="${salva ? 'Remover das salvas' : 'Salvar vaga'}" data-dica="${salva ? 'Salva' : 'Salvar vaga'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/></svg>
+      </button>
+    </div>`;
 }
 
 /* Chips de cidade (Todas + "Cidade (UF)" de cada pedido aberto). */
@@ -290,7 +285,7 @@ function opRenderChips() {
 }
 
 /* Páginas de 15 oportunidades. Mudou busca/filtro: volta para a página 1. */
-const OP_POR_PAGINA = 15;
+let OP_POR_PAGINA = 15;
 let opPagina = 1;
 let opChaveFiltros = '';
 function opRenderPedidos() {
@@ -717,6 +712,11 @@ function opLigarEventos() {
   document.getElementById('op-filtro-cidade').addEventListener('change', opRenderPedidos);
   document.getElementById('op-filtro-categoria').addEventListener('change', opRenderPedidos);
   document.getElementById('op-filtro-orcamento').addEventListener('change', opRenderPedidos);
+  document.getElementById('op-por-pagina')?.addEventListener('change', e => {
+    OP_POR_PAGINA = parseInt(e.target.value, 10) || 15;
+    opPagina = 1;
+    opRenderPedidos();
+  });
   document.getElementById('op-paginacao')?.addEventListener('click', e => {
     const btn = e.target.closest('[data-op-pagina]');
     if (!btn || btn.disabled) return;

@@ -10808,3 +10808,62 @@ html body #carteira-raiz > .cart-caixa:first-child:not(#love-h-a) { border-top: 
 html body button.cart-btn-escuro:not(#love-h-a) { height: 40px; margin-top: 8px; padding: 0 18px; background: #181D24; border: 1px solid #181D24; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer; }
 html body button.cart-btn-escuro:not(#love-h-a):hover:not(:disabled) { background: #262D36; }
 html body button.cart-btn-escuro:not(#love-h-a):disabled { background: #E4E4E7; border-color: #E4E4E7; color: #A1A1AA; cursor: default; }
+
+/* ==========================================================================
+   Oportunidades no modelo de "Minhas solicitações" (love.com.br): linhas
+   dentro de uma caixa e a paginação no rodapé dela.
+   ========================================================================== */
+html body .op-caixa:not(#love-h-a) { padding: 0 !important; display: flex; flex-direction: column; overflow: visible; }
+html body .op-posts:not(#love-h-a) { display: flex; flex-direction: column; }
+html body .op-posts:empty:not(#love-h-a) { display: none; }
+html body .op-post:not(#love-h-a) {
+  display: grid; grid-template-columns: minmax(0, 1fr) 110px 170px 120px 36px; align-items: center; gap: 16px;
+  padding: 22px 24px; border-bottom: 1px solid var(--borda-suave); cursor: pointer; outline: none;
+}
+html body .op-post:hover:not(#love-h-a), html body .op-post:focus-visible:not(#love-h-a) { background: #FAFAFA; }
+html body button.op-post-titulo:not(#love-h-a) {
+  display: block; max-width: 100%; margin: 0; padding: 0; background: none; border: 0; font-family: inherit; font-size: 18px; font-weight: 600;
+  letter-spacing: -0.02em; color: #183b54; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+html body .op-post:hover button.op-post-titulo:not(#love-h-a) { text-decoration: underline; text-underline-offset: 3px; }
+html body .op-post-criado:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body .op-post-situacao:not(#love-h-a) { margin: 14px 0 0; font-size: 13px; color: #3F3F46; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+html body .op-post-situacao b:not(#love-h-a) { font-weight: 600; color: #18181B; }
+html body .op-post-selos:not(#love-h-a) { display: inline-flex; gap: 6px; margin-left: 6px; }
+html body .op-post-num:not(#love-h-a) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+html body .op-post-num b:not(#love-h-a) { font-size: 14px; font-weight: 600; color: #18181B; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+html body .op-post-num span:not(#love-h-a) { font-size: 13px; color: #71717A; }
+html body button.op-post-botao:not(#love-h-a) {
+  height: 36px; padding: 0 14px; background: #FFFFFF; border: 1px solid var(--borda-suave); box-shadow: var(--anel-suave); border-radius: 8px;
+  font-family: inherit; font-size: 13px; font-weight: 600; color: #18181B; cursor: pointer; white-space: nowrap;
+}
+html body .op-post:hover button.op-post-botao:not(#love-h-a), html body button.op-post-botao:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body button.op-post-salvar:not(#love-h-a) {
+  width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF;
+  border: 1px solid var(--borda-suave); box-shadow: var(--anel-suave); border-radius: 8px; color: #3F3F46; cursor: pointer;
+}
+html body button.op-post-salvar:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body button.op-post-salvar svg:not(#love-h-a) { width: 18px; height: 18px; }
+html body button.op-post-salvar.is-salva:not(#love-h-a) { color: #183b54; }
+html body button.op-post-salvar.is-salva svg:not(#love-h-a) { fill: #183b54; }
+html body .op-vazio-caixa:not(#love-h-a) { margin: 0; padding: 48px 24px; border: 0 !important; background: transparent !important; text-align: center; }
+/* Rodapé: "Mostrar 15" à esquerda e "Página 1 de 1" com as setas à direita. */
+html body .op-caixa .guests-pagination:not(#love-h-a) {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin: 0; padding: 16px 24px 20px; border-top: 0;
+}
+html body .op-caixa .guests-pagination-size:not(#love-h-a) { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #71717A; }
+html body .op-caixa .guests-pagination-size select:not(#love-h-a) { width: auto; height: 32px; padding: 0 28px 0 10px; border: 1px solid var(--borda-suave); border-radius: 8px; background-color: #FFFFFF; font-family: inherit; font-size: 13px; color: #18181B; }
+html body .op-caixa .guests-pagination-nav:not(#love-h-a) { display: flex; align-items: center; gap: 12px; }
+html body .op-caixa .guests-pagination-nav span:not(#love-h-a) { font-size: 13px; font-weight: 600; color: #3F3F46; white-space: nowrap; }
+html body .op-caixa .guests-pagination-btn:not(#love-h-a) {
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0;
+  border: 1px solid var(--borda-suave); border-radius: 8px; background: #FFFFFF; color: #3F3F46; cursor: pointer;
+}
+html body .op-caixa .guests-pagination-btn svg:not(#love-h-a) { width: 16px; height: 16px; }
+html body .op-caixa .guests-pagination-btn:hover:not(:disabled):not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .op-caixa .guests-pagination-btn:disabled:not(#love-h-a) { opacity: .4; cursor: default; }
+@media (max-width: 900px) {
+  html body .op-post:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) auto 36px; }
+  html body .op-post-num:not(#love-h-a) { display: none; }
+}

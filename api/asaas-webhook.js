@@ -7,12 +7,13 @@
 // cada evento é guardado em asaas_eventos (o id evita processar duas vezes)
 // e a resposta é sempre 200 quando o token confere.
 //
-// Por enquanto trata a situação da conta do anfitrião (ACCOUNT_STATUS_*).
-// Pagamentos (PAYMENT_*) e saques (TRANSFER_*) ficam guardados para a
-// próxima etapa da integração.
+// Trata a situação da conta do anfitrião (ACCOUNT_STATUS_*) e o pagamento
+// dos presentes (PAYMENT_RECEIVED / PAYMENT_CONFIRMED → confirmar_contribuicao).
+// Saques (TRANSFER_*) ficam guardados para a próxima etapa.
 
 const crypto = require("crypto");
 const { supabaseAdmin } = require("./_ses");
+const { confirmarPagamento } = require("./_asaas");
 
 function tokenConfere(recebido) {
   const esperado = process.env.ASAAS_WEBHOOK_TOKEN || "";
@@ -50,6 +51,9 @@ module.exports = async (req, res) => {
       if (evento.accountStatus) campos.status_detalhe = evento.accountStatus;
       if (novo === "aprovada") campos.onboarding_url = null;
       await db.from("contas_recebimento").update(campos).eq("asaas_id", conta);
+    }
+    if ((evento.event === "PAYMENT_RECEIVED" || evento.event === "PAYMENT_CONFIRMED") && evento.payment && evento.payment.id) {
+      await confirmarPagamento(db, evento.payment.id);
     }
     return res.status(200).json({ ok: true });
   } catch (e) {

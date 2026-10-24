@@ -95,4 +95,19 @@ function statusDaLove(s) {
   return "em_analise";
 }
 
-module.exports = { asaas, cifrar, decifrar, usuarioDaRequisicao, chaveDaConta, statusDaLove, BASE };
+/**
+ * Pagamento confirmado no Asaas → presentes pagos na Love.
+ * Usa o id da cobrança guardado em presentes_contribuicoes.gateway_ref.
+ */
+async function confirmarPagamento(db, pagamentoId) {
+  const { data: itens } = await db.from("presentes_contribuicoes").select("id, status").eq("gateway_ref", pagamentoId);
+  let confirmados = 0;
+  for (const c of itens || []) {
+    if (c.status === "pago") continue;
+    const { error } = await db.rpc("confirmar_contribuicao", { p_id: c.id, p_gateway_ref: pagamentoId });
+    if (!error) confirmados++;
+  }
+  return confirmados;
+}
+
+module.exports = { asaas, cifrar, decifrar, usuarioDaRequisicao, chaveDaConta, statusDaLove, confirmarPagamento, BASE };

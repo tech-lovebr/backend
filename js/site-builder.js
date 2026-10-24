@@ -4695,6 +4695,135 @@ async function enviarVideoDoRecado(arquivo, contribuicoes) {
   }
 }
 
+/* ==========================================================================
+   Pagamento dos presentes (Asaas, via /api/presentear). O servidor registra
+   os presentes, cria a cobrança com o valor do presente indo direto para a
+   conta digital dos anfitriões e devolve o QR Code do Pix ou o link do
+   cartão. Esta tela espera a confirmação (consulta a cada 4 s) e mostra o
+   obrigado quando o pagamento cai.
+   ========================================================================== */
+const mascaraCpf = v => String(v || '').replace(/\D/g, '').slice(0, 11)
+  .replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+function htmlCampoCpf() {
+  return `
+      <label>CPF
+        <input type="text" name="cpf" required inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00">
+        <span class="convite-campo-ajuda">Pedido pelo banco para emitir o pagamento.</span>
+      </label>`;
+}
+
+function ligarCampoCpf(form) {
+  const input = form.querySelector('input[name="cpf"]');
+  input?.addEventListener('input', () => { input.value = mascaraCpf(input.value); });
+}
+
+function cpfPareceValido(cpf) {
+  const d = String(cpf || '').replace(/\D/g, '');
+  if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false;
+  for (const t of [9, 10]) {
+    let soma = 0;
+    for (let i = 0; i < t; i++) soma += Number(d[i]) * (t + 1 - i);
+    if (((soma * 10) % 11) % 10 !== Number(d[t])) return false;
+  }
+  return true;
+}
+
+/**
+ * Envia a compra e segue para a tela de pagamento.
+ * pedido = { titulo, itens: [{ presente_id, valor }], nome, email, cpf, mensagem, metodo, video, descricao }
+ * Devolve { ok:false, mensagem } se não deu para gerar o pagamento.
+ */
+async function pagarPresentesPeloConvite(root, pedido) {
+  let r;
+  try {
+    const resp = await fetch('/api/presentear', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slug: conviteSlugPublico,
+        itens: pedido.itens,
+        nome: pedido.nome,
+        email: pedido.email,
+        cpf: pedido.cpf,
+        mensagem: pedido.mensagem,
+        metodo: pedido.metodo
+      })
+    });
+    r = await resp.json().catch(() => null);
+  } catch (e) {
+    r = null;
+  }
+  if (!r || !r.ok) return { ok: false, erro: r && r.erro, mensagem: (r && r.mensagem) || 'Não foi possível gerar o pagamento agora. Tente de novo em instantes.' };
+
+  // O vídeo do recado sobe enquanto a pessoa paga.
+  const video = pedido.video ? enviarVideoDoRecado(pedido.video, r.contribuicoes || []) : Promise.resolve(true);
+  renderAguardandoPagamento(root, pedido, r, video);
+  return { ok: true };
+}
+
+function renderAguardandoPagamento(root, pedido, r, videoEnviado) {
+  const pix = r.metodo === 'pix' && r.pix;
+  const resumo = `
+      <div class="convite-pagar-resumo">
+        <div><span>${escaparPublico(pedido.descricao)}</span><strong>${brlPublico(r.soma)}</strong></div>
+        <div><span>Taxa de serviço</span><strong>${brlPublico(r.taxa)}</strong></div>
+        <div class="is-total"><span>Total</span><strong>${brlPublico(r.total)}</strong></div>
+      </div>`;
+  const corpo = pix ? `
+      <p class="convite-pagar-instrucao">Abra o app do seu banco, escolha pagar com Pix e leia o QR Code ou cole o código.</p>
+      <img class="convite-pagar-qr" src="data:image/png;base64,${pix.imagem}" alt="QR Code do Pix" width="220" height="220">
+      <div class="convite-pagar-copia">
+        <input type="text" readonly value="${escaparPublico(pix.copiaECola)}" aria-label="Pix copia e cola">
+        <button type="button" class="convite-botao" data-pagar-copiar>Copiar código</button>
+      </div>` : `
+      <p class="convite-pagar-instrucao">O pagamento com cartão abre numa página segura do banco. Depois de pagar, volte para esta tela.</p>
+      <a class="convite-botao" href="${escaparPublico(r.url)}" target="_blank" rel="noopener">Pagar com cartão</a>`;
+
+  root.innerHTML = telaPublicaHtmlBranca(pedido.titulo, `
+    <div class="convite-pagar">
+      ${resumo}
+      ${corpo}
+      <p class="convite-pagar-status" data-pagar-status><span class="convite-pagar-ponto"></span>Aguardando o pagamento…</p>
+    </div>`);
+  voltarPara(root, '#presentes');
+
+  root.querySelector('[data-pagar-copiar]')?.addEventListener('click', async (e) => {
+    const input = root.querySelector('.convite-pagar-copia input');
+    try { await navigator.clipboard.writeText(input.value); } catch (_) { input.select(); document.execCommand('copy'); }
+    e.currentTarget.textContent = 'Código copiado';
+  });
+  if (!pix && r.url) window.open(r.url, '_blank', 'noopener');
+
+  const tela = root.querySelector('.convite-pagar');
+  const status = root.querySelector('[data-pagar-status]');
+  let tentativas = 0;
+  const consultar = async () => {
+    if (!tela.isConnected) return; // a pessoa saiu da tela
+    tentativas++;
+    try {
+      const resp = await fetch(`/api/presentear?pagamento=${encodeURIComponent(r.pagamento)}`);
+      const s = await resp.json();
+      if (s && s.status === 'pago') return mostrarObrigado(root, pedido, r, await videoEnviado);
+      if (s && s.status === 'cancelado') { status.textContent = 'Este pagamento foi cancelado. Volte para a lista e tente de novo.'; return; }
+    } catch (_) { /* tenta de novo */ }
+    // 4 s nos primeiros 15 min; depois a cada 15 s.
+    setTimeout(consultar, tentativas < 225 ? 4000 : 15000);
+  };
+  setTimeout(consultar, 4000);
+}
+
+function mostrarObrigado(root, pedido, r, videoOk) {
+  if (pedido.aoPagar) pedido.aoPagar();
+  root.innerHTML = telaPublicaHtmlBranca(pedido.titulo, `
+    <div class="convite-sucesso">
+      <p class="convite-sucesso-titulo">Pagamento confirmado!</p>
+      <p>Obrigado, ${escaparPublico(pedido.nome.split(' ')[0])}. Seu presente de <strong>${brlPublico(r.soma)}</strong> já foi para os anfitriões.</p>${videoOk ? '' : '<p>Não conseguimos enviar o seu vídeo agora, mas o presente foi pago.</p>'}
+      <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
+    </div>`);
+  voltarPara(root, '#presentes');
+}
+
 function renderCheckoutPublico(root, id) {
   if (id === 'carrinho') return renderCheckoutCarrinho(root);
   const p = presentePublicoPorId(id);
@@ -4739,15 +4868,15 @@ function renderCheckoutPublico(root, id) {
       <label>E-mail
         <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="seu@email.com">
       </label>
+${htmlCampoCpf()}
 ${htmlRecadoParaAnfitrioes()}
       <fieldset class="convite-pagamento">
         <legend>Forma de pagamento</legend>
         <label class="convite-pagamento-opcao is-ativo"><input type="radio" name="metodo" value="pix" checked><span>Pix</span></label>
         <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="cartao"><span>Cartão de crédito</span></label>
-        <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="apple_pay"><span>Apple Pay</span></label>
       </fieldset>
       <p class="convite-erro" hidden></p>
-      <button type="submit" class="convite-botao">Pagar ${brlPublico(valorInicial)}</button>
+      <button type="submit" class="convite-botao">Continuar para o pagamento</button>
     </form>`;
   root.innerHTML = telaPublicaHtmlBranca('Presentear', conteudo);
   voltarPara(root, `#presente=${p.id}`);
@@ -4758,8 +4887,9 @@ ${htmlRecadoParaAnfitrioes()}
   const botao = form.querySelector('button[type="submit"]');
   const valorInput = form.querySelector('input[name="valor"]');
 
+  ligarCampoCpf(form);
   const valorEscolhido = () => vaquinha ? Math.min(falta, Math.max(0, parseFloat(valorInput.value) || 0)) : meta;
-  const atualizarBotao = () => { botao.textContent = `Pagar ${brlPublico(valorEscolhido())}`; };
+  const atualizarBotao = () => { botao.textContent = 'Continuar para o pagamento'; };
 
   form.querySelectorAll('.convite-valor-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -4786,45 +4916,27 @@ ${htmlRecadoParaAnfitrioes()}
     const valor = valorEscolhido();
     if (nome.length < 2) { erroEl.textContent = 'Digite seu nome completo.'; erroEl.hidden = false; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroEl.textContent = 'Digite um e-mail válido.'; erroEl.hidden = false; return; }
+    if (!cpfPareceValido(form.cpf.value)) { erroEl.textContent = 'Digite um CPF válido.'; erroEl.hidden = false; return; }
     if (vaquinha && valor < 1) { erroEl.textContent = 'Escolha um valor de pelo menos R$ 1,00.'; erroEl.hidden = false; return; }
     if (recado.erro()) { erroEl.textContent = recado.erro(); erroEl.hidden = false; return; }
     const metodo = form.querySelector('input[name="metodo"]:checked')?.value || 'pix';
 
     botao.disabled = true;
-    botao.textContent = 'Registrando…';
-    const { data, error } = await supabaseClient.rpc('presentear_pelo_convite', {
-      p_slug: conviteSlugPublico,
-      p_presente_id: p.id,
-      p_valor: valor,
-      p_nome: nome,
-      p_email: email,
-      p_mensagem: recado.texto(),
-      p_metodo: metodo
+    botao.textContent = 'Gerando o pagamento…';
+    const r = await pagarPresentesPeloConvite(root, {
+      titulo: 'Presentear',
+      descricao: p.nome,
+      itens: [{ presente_id: p.id, valor }],
+      nome, email, cpf: form.cpf.value, metodo,
+      mensagem: recado.texto(),
+      video: recado.video()
     });
-
-    if (error || !data || !data.ok) {
-      if (error) console.error('Erro ao presentear:', error);
+    if (!r.ok) {
       botao.disabled = false;
       atualizarBotao();
-      const codigo = data && data.erro;
-      erroEl.textContent = codigo === 'ja_presenteado'
-        ? 'Esse presente acabou de ser completado por outro convidado. Escolha outro da lista.'
-        : 'Não foi possível registrar agora. Tente de novo em instantes.';
+      erroEl.textContent = r.mensagem;
       erroEl.hidden = false;
-      return;
     }
-
-    let videoOk = true;
-    if (recado.video()) { botao.textContent = 'Enviando o vídeo…'; videoOk = await enviarVideoDoRecado(recado.video(), [data.contribuicao_id]); }
-    const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
-    root.innerHTML = telaPublicaHtmlBranca('Presentear', `
-      <div class="convite-sucesso">
-        <p class="convite-sucesso-titulo">Presente registrado!</p>
-        <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear <strong>${escaparPublico(p.nome)}</strong> com <strong>${brlPublico(Number(data.valor) || valor)}</strong> por ${escaparPublico(nomeMetodo)}.</p>
-        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>${videoOk ? '' : '<p>Não conseguimos enviar o seu vídeo agora, mas o presente foi registrado.</p>'}
-        <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
-      </div>`);
-    voltarPara(root, '#presentes');
   });
 }
 
@@ -4926,15 +5038,15 @@ function renderCheckoutCarrinho(root) {
       <label>E-mail
         <input type="email" name="email" required maxlength="200" autocomplete="email" placeholder="seu@email.com">
       </label>
+${htmlCampoCpf()}
 ${htmlRecadoParaAnfitrioes()}
       <fieldset class="convite-pagamento">
         <legend>Forma de pagamento</legend>
         <label class="convite-pagamento-opcao is-ativo"><input type="radio" name="metodo" value="pix" checked><span>Pix</span></label>
         <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="cartao"><span>Cartão de crédito</span></label>
-        <label class="convite-pagamento-opcao"><input type="radio" name="metodo" value="apple_pay"><span>Apple Pay</span></label>
       </fieldset>
       <p class="convite-erro" hidden></p>
-      <button type="submit" class="convite-botao">Pagar ${brlPublico(total)}</button>
+      <button type="submit" class="convite-botao">Continuar para o pagamento</button>
     </form>`;
   root.innerHTML = telaPublicaHtmlBranca('Carrinho', conteudo);
   voltarPara(root, '#presentes');
@@ -4948,6 +5060,7 @@ ${htmlRecadoParaAnfitrioes()}
 
   const form = root.querySelector('[data-convite-checkout]');
   const recado = ligarRecadoParaAnfitrioes(form);
+  ligarCampoCpf(form);
   const erroEl = form.querySelector('.convite-erro');
   const botao = form.querySelector('button[type="submit"]');
   form.querySelectorAll('input[name="metodo"]').forEach(radio => {
@@ -4963,60 +5076,28 @@ ${htmlRecadoParaAnfitrioes()}
     const email = form.email.value.trim();
     if (nome.length < 2) { erroEl.textContent = 'Digite seu nome completo.'; erroEl.hidden = false; return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { erroEl.textContent = 'Digite um e-mail válido.'; erroEl.hidden = false; return; }
+    if (!cpfPareceValido(form.cpf.value)) { erroEl.textContent = 'Digite um CPF válido.'; erroEl.hidden = false; return; }
     if (recado.erro()) { erroEl.textContent = recado.erro(); erroEl.hidden = false; return; }
     const metodo = form.querySelector('input[name="metodo"]:checked')?.value || 'pix';
 
     botao.disabled = true;
-    botao.textContent = 'Registrando…';
-    // Um registro por presente (mesma função do checkout de um presente só).
-    const registrados = [];
-    let falhou = null;
-    for (const p of itens) {
-      const { data, error } = await supabaseClient.rpc('presentear_pelo_convite', {
-        p_slug: conviteSlugPublico,
-        p_presente_id: p.id,
-        p_valor: valorNoCarrinho(p),
-        p_nome: nome,
-        p_email: email,
-        p_mensagem: recado.texto(),
-        p_metodo: metodo
-      });
-      if (error || !data || !data.ok) {
-        if (error) console.error('Erro ao presentear:', error);
-        falhou = p;
-        break;
-      }
-      registrados.push({ p, valor: Number(data.valor) || valorNoCarrinho(p), id: data.contribuicao_id });
-    }
-
-    // Os que deram certo saem do carrinho; o que falhou fica para tentar de novo.
-    const ids = carrinhoIds();
-    registrados.forEach(r => ids.delete(String(r.p.id)));
-    salvarCarrinho(ids);
-
-    if (falhou) {
+    botao.textContent = 'Gerando o pagamento…';
+    const r = await pagarPresentesPeloConvite(root, {
+      titulo: 'Carrinho',
+      descricao: `${itens.length} ${itens.length === 1 ? 'presente' : 'presentes'}`,
+      itens: itens.map(p => ({ presente_id: p.id, valor: valorNoCarrinho(p) })),
+      nome, email, cpf: form.cpf.value, metodo,
+      mensagem: recado.texto(),
+      video: recado.video(),
+      // Pago: os presentes saem do carrinho.
+      aoPagar: () => { const ids = carrinhoIds(); itens.forEach(p => ids.delete(String(p.id))); salvarCarrinho(ids); }
+    });
+    if (!r.ok) {
       botao.disabled = false;
-      botao.textContent = `Pagar ${brlPublico(total)}`;
-      erroEl.textContent = registrados.length
-        ? `Registramos ${registrados.length} ${registrados.length === 1 ? 'presente' : 'presentes'}, mas "${falhou.nome}" não pôde ser registrado agora. Tente de novo.`
-        : 'Não foi possível registrar agora. Tente de novo em instantes.';
+      botao.textContent = 'Continuar para o pagamento';
+      erroEl.textContent = r.mensagem;
       erroEl.hidden = false;
-      if (registrados.length) renderCheckoutCarrinho(root);
-      return;
     }
-
-    const nomeMetodo = { pix: 'Pix', cartao: 'cartão de crédito', apple_pay: 'Apple Pay' }[metodo] || metodo;
-    const somaFinal = registrados.reduce((s, r) => s + r.valor, 0);
-    let videoOk = true;
-    if (recado.video()) { botao.textContent = 'Enviando o vídeo…'; videoOk = await enviarVideoDoRecado(recado.video(), registrados.map(r => r.id).filter(Boolean)); }
-    root.innerHTML = telaPublicaHtmlBranca('Carrinho', `
-      <div class="convite-sucesso">
-        <p class="convite-sucesso-titulo">Presentes registrados!</p>
-        <p>Obrigado, ${escaparPublico(nome.split(' ')[0])}. Você escolheu presentear ${registrados.length} ${registrados.length === 1 ? 'presente' : 'presentes'}, no total de <strong>${brlPublico(somaFinal)}</strong>, por ${escaparPublico(nomeMetodo)}.</p>
-        <p>Assim que o pagamento for confirmado, os anfitriões serão avisados.</p>${videoOk ? '' : '<p>Não conseguimos enviar o seu vídeo agora, mas o presente foi registrado.</p>'}
-        <button type="button" class="convite-botao" data-convite-ir="#presentes">Voltar para a lista</button>
-      </div>`);
-    voltarPara(root, '#presentes');
   });
 }
 

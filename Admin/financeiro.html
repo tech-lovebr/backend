@@ -28,7 +28,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
-  <script src="js/utils.js?v=6"></script>
+  <script src="js/utils.js?v=7"></script>
   <script src="js/shell.js?v=17"></script>
 </head>
 <body data-page="financeiro" data-title="Financeiro">
@@ -42,6 +42,25 @@
       <main class="admin-content">
 
         <section class="kpi-grid" id="kpi-grid"></section>
+
+        <section class="card table-card bloco">
+          <div class="table-toolbar">
+            <div class="table-toolbar-esq"><input type="search" class="search-input" id="busca-extrato" placeholder="Pesquisar..."></div>
+            <div class="table-toolbar-dir">
+              <select class="field-select" id="filtro-origem-extrato" style="width:auto">
+                <option value="">Todas as origens</option>
+                <option value="presentes">Presentes</option>
+                <option value="contratos">Contratos</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Data</th><th>Origem</th><th>Gateway</th><th>Processado</th><th>Repasse</th><th>Love</th><th>Status</th></tr></thead>
+              <tbody id="tbody-extrato"></tbody>
+            </table>
+          </div>
+        </section>
 
         <section class="card bloco">
           <div class="table-wrap">

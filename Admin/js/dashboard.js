@@ -264,8 +264,8 @@ async function carregarDados() {
     // Só o drawer usa: é ele quem lista os produtos do fornecedor.
     safeSelect('products', '*'),
     // TPV, faturamento e custos do painel.
-    safeSelect('presentes_contribuicoes', 'valor, status, pago_em, created_at'),
-    safeSelect('payment_links', 'amount, status, paid_at, created_at'),
+    safeSelect('presentes_contribuicoes', '*'),
+    safeSelect('payment_links', '*'),
     safeSelect('custos', '*'),
     buscarCustosIntegrados()
   ]);
@@ -311,9 +311,7 @@ async function carregarDados() {
    custos manuais), rateado por dia.
    Lucro líquido: faturamento bruto − custo total. */
 
-// Comissão da Love sobre o que passa pela plataforma.
-const TAXA_PRESENTES = 0.0389; // taxa de processamento dos presentes (3,89%)
-const TAXA_CONTRATOS = 0.0389; // links de pagamento do Hub — confirmar a taxa
+// Comissão da Love: a gravada pelo gateway, ou a padrão (COMISSAO_PADRAO, utils.js).
 
 const API_CUSTOS = 'https://love.com.br/api/custos';
 const DIA_MS = 86400000;
@@ -326,13 +324,7 @@ function renderKpiSkeleton() {
 
 /** Entradas de dinheiro: cada pagamento com data, valor e comissão. */
 function pagamentos() {
-  const presentes = (DADOS.contribuicoes || [])
-    .filter(c => c.status === 'pago')
-    .map(c => ({ origem: 'presentes', em: c.pago_em || c.created_at, valor: Number(c.valor) || 0, taxa: TAXA_PRESENTES }));
-  const contratos = (DADOS.links || [])
-    .filter(l => l.status === 'pago')
-    .map(l => ({ origem: 'contratos', em: l.paid_at || l.created_at, valor: Number(l.amount) || 0, taxa: TAXA_CONTRATOS }));
-  return [...presentes, ...contratos].filter(p => p.em);
+  return pagamentosProcessados(DADOS.contribuicoes, DADOS.links);
 }
 
 /** Início e fim do período em datas de verdade ("Todo o período" começa no primeiro registro). */
@@ -415,8 +407,8 @@ function receitaNoIntervalo(de, ate) {
     const t = new Date(p.em);
     if (t < de || t > ate) return;
     r.tpv += p.valor;
-    r.receita += p.valor * p.taxa;
-    r[p.origem] += p.valor * p.taxa;
+    r.receita += p.comissao;
+    r[p.origem] += p.comissao;
   });
   return r;
 }

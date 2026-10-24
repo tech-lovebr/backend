@@ -94,6 +94,29 @@ function dash(value) {
 
 /* --------------------------------------------------------------- Rótulos */
 
+/* ------------------------------------------- Pagamentos processados
+   Tudo o que passou pela Love e rendeu comissão: presentes pagos pelos
+   convidados e links de pagamento pagos no Hub. Cada um com o gateway que
+   processou, a comissão da Love e o repasse (split) para o anfitrião ou o
+   fornecedor. Sem a comissão gravada pelo gateway, vale a taxa padrão. */
+
+const COMISSAO_PADRAO = { presentes: 0.0389, contratos: 0.0389 };
+const NOME_GATEWAY = { asaas: 'Asaas' };
+const NOME_METODO = { pix: 'Pix', cartao: 'Cartão', apple_pay: 'Apple Pay', boleto: 'Boleto', credit_card: 'Cartão' };
+
+function pagamentosProcessados(contribuicoes, links) {
+  const montar = (origem, x, valor, em) => {
+    const comissao = x.comissao_love != null ? Number(x.comissao_love) : valor * COMISSAO_PADRAO[origem];
+    const repasse = x.repasse != null ? Number(x.repasse) : valor - comissao;
+    return { origem, id: x.id, em, valor, comissao, repasse, gateway: x.gateway || null, metodo: x.metodo || null, estimada: x.comissao_love == null, bruto: x };
+  };
+  const presentes = (contribuicoes || []).filter(c => c.status === 'pago')
+    .map(c => montar('presentes', c, Number(c.valor) || 0, c.pago_em || c.created_at));
+  const contratos = (links || []).filter(l => l.status === 'pago')
+    .map(l => montar('contratos', l, Number(l.amount) || 0, l.paid_at || l.created_at));
+  return [...presentes, ...contratos].filter(p => p.em);
+}
+
 const EVENT_TYPE_LABELS = {
   wedding: 'Casamento',
   baby: 'Chá de bebê',

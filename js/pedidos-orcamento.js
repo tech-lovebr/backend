@@ -2029,6 +2029,9 @@
   let rascunhosCarregados = {};
   /** @type {Record<string, { total: number, novas: number, mensagens: number }>} */
   let numerosDasPropostas = {};
+  // Seleção para excluir em massa: "r:<id>" (rascunho) ou "p:<id>" (publicada).
+  /** @type {Set<string>} */
+  const selecionadas = new Set();
 
   /** "há 5 min", "há 2 h", "há 3 dias", "em 12 de set. de 2026". @param {string} iso */
   function haQuanto(iso) {
@@ -2077,7 +2080,10 @@
       return `
         <div class="rfp-post" data-rascunho-id="${esc(it.id)}">
           <div class="rfp-post-info">
-            <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(it.id)}">${esc(titulo)}</button>
+            <div class="rfp-post-topo">
+              <input type="checkbox" class="gifts-select-all-check rfp-select-check" data-rfp-sel="r:${esc(it.id)}"${selecionadas.has('r:' + it.id) ? ' checked' : ''} aria-label="Selecionar ${esc(titulo)}">
+              <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(it.id)}">${esc(titulo)}</button>
+            </div>
             <p class="rfp-post-criado">Criada ${esc(haQuanto(it.criado))} por você</p>
             <p class="rfp-post-situacao"><b>Rascunho</b> · Salvo em ${esc(dataCurta(it.quando))}</p>
           </div>
@@ -2095,7 +2101,10 @@
     return `
       <div class="rfp-post" data-rfp-id="${esc(p.id)}">
         <div class="rfp-post-info">
-          <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(p.id)}">${esc(titulo)}</button>
+          <div class="rfp-post-topo">
+            <input type="checkbox" class="gifts-select-all-check rfp-select-check" data-rfp-sel="p:${esc(p.id)}"${selecionadas.has('p:' + p.id) ? ' checked' : ''} aria-label="Selecionar ${esc(titulo)}">
+            <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(p.id)}">${esc(titulo)}</button>
+          </div>
           <p class="rfp-post-criado">Criada ${esc(haQuanto(p.created_at))} por você</p>
           <p class="rfp-post-situacao"><b>${esc(situacao)}</b> · ${esc(dataCurta(p.created_at))}</p>
         </div>
@@ -2159,8 +2168,79 @@
     ].sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
     // Cada serviço é uma solicitação própria: um card para cada, mesmo as do mesmo evento completo.
     const partes = itens.map(it => linhaDaSolicitacao(it));
+    // Some da seleção o que não está mais na lista.
+    const existentes = new Set(itens.map(it => (it.tipo === 'rascunho' ? 'r:' : 'p:') + it.id));
+    [...selecionadas].forEach(k => { if (!existentes.has(k)) selecionadas.delete(k); });
     caixa.innerHTML = itens.length ? partes.join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
+    atualizarSelecao();
   }
+
+  /** Barra do topo: aparece com alguma solicitação marcada (quantas + lixeira). */
+  function atualizarSelecao() {
+    const barra = document.getElementById('rfp-selecao-barra');
+    const checks = /** @type {HTMLInputElement[]} */ ([...document.querySelectorAll('#rfp-lista .rfp-select-check')]);
+    const qtd = selecionadas.size;
+    if (barra) barra.hidden = qtd === 0;
+    const cont = document.getElementById('rfp-selecao-contagem');
+    if (cont) cont.textContent = qtd === 1 ? '1 selecionada' : `${qtd} selecionadas`;
+    const todas = /** @type {HTMLInputElement|null} */ (document.getElementById('rfp-select-all'));
+    if (todas) {
+      const marcadas = checks.filter(c => c.checked).length;
+      todas.checked = checks.length > 0 && marcadas === checks.length;
+      todas.indeterminate = marcadas > 0 && marcadas < checks.length;
+    }
+    const lixeira = document.getElementById('btn-rfp-excluir-selecionadas');
+    if (lixeira) lixeira.title = qtd === 1 ? 'Excluir 1 solicitação selecionada' : `Excluir ${qtd} solicitações selecionadas`;
+  }
+
+  document.addEventListener('change', (e) => {
+    const el = /** @type {HTMLInputElement} */ (e.target);
+    if (!el || !el.matches) return;
+    if (el.matches('#rfp-lista .rfp-select-check')) {
+      const k = el.dataset.rfpSel || '';
+      if (el.checked) selecionadas.add(k); else selecionadas.delete(k);
+      atualizarSelecao();
+      return;
+    }
+    if (el.id === 'rfp-select-all') {
+      document.querySelectorAll('#rfp-lista .rfp-select-check').forEach(c => {
+        const check = /** @type {HTMLInputElement} */ (c);
+        check.checked = el.checked;
+        if (el.checked) selecionadas.add(check.dataset.rfpSel || ''); else selecionadas.delete(check.dataset.rfpSel || '');
+      });
+      atualizarSelecao();
+    }
+  });
+
+  /** Lixeira da barra: exclui as marcadas (publicadas e rascunhos). */
+  async function excluirSelecionadas() {
+    const chaves = [...selecionadas];
+    if (!chaves.length || typeof supabaseClient === 'undefined') return;
+    const w = /** @type {any} */ (window);
+    const pedidos = chaves.filter(k => k.startsWith('p:')).map(k => k.slice(2));
+    const rascunhos = chaves.filter(k => k.startsWith('r:')).map(k => k.slice(2));
+    const n = chaves.length;
+    const ok = w.confirmarNaLove ? await w.confirmarNaLove({
+      titulo: n === 1 ? 'Deseja excluir 1 solicitação selecionada?' : `Deseja excluir ${n} solicitações selecionadas?`,
+      texto: pedidos.length ? 'As publicadas deixam de aparecer para os fornecedores. Essa ação não pode ser desfeita.' : 'Os rascunhos serão apagados. Essa ação não pode ser desfeita.',
+      botao: 'Excluir',
+      aoConfirmar: async () => {
+        if (pedidos.length) {
+          const { error } = await supabaseClient.from('pedidos_orcamento').delete().in('id', pedidos);
+          if (error) return 'Não foi possível excluir agora. Tente de novo.';
+          pedidos.forEach(id => selecionadas.delete('p:' + id));
+        }
+        for (const id of rascunhos) { await apagarRascunho(id); selecionadas.delete('r:' + id); }
+        return null;
+      }
+    }) : false;
+    if (!ok) return;
+    avisoNaLista(n === 1 ? 'Solicitação excluída.' : `${n} solicitações excluídas.`);
+    mostrarLista();
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target instanceof Element && e.target.closest('#btn-rfp-excluir-selecionadas')) excluirSelecionadas();
+  });
 
   /** Rascunho no mesmo formato de uma solicitação publicada (para os detalhes). @param {any} d */
   function infoDoRascunho(d) {

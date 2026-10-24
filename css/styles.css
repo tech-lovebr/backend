@@ -11664,3 +11664,13 @@ body[data-theme="dark"] button.cart-cal-dia.is-meio, body[data-theme="dark"] but
 body[data-theme="dark"] .cart-cal-atalhos { border-color: #404040; }
 body[data-theme="dark"] button.cart-cal-dia.is-inicio, body[data-theme="dark"] button.cart-cal-dia.is-fim { background: #FFFFFF !important; color: #181D24 !important; }
 html body .cart-arquivo[hidden]:not(#love-h-a) { display: none; }
+
+/* Minhas solicitações: caixinha à esquerda do título e barra de exclusão em massa. */
+.rfp-post-topo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.rfp-post-topo .rfp-post-titulo { flex: 1 1 auto; min-width: 0; }
+.rfp-post-topo + .rfp-post-criado, .rfp-post-info .rfp-post-topo ~ p { margin-left: 30px; }
+html body .rfp-selecao-barra[hidden]:not(#love-h-a) { display: none; }
+html body .rfp-selecao-barra:not(#love-h-a) { padding: 12px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+.rfp-selecao-todas { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: #18181B; cursor: pointer; font-variant-numeric: tabular-nums; }
+body[data-theme="dark"] .rfp-selecao-todas { color: #FFFFFF; }
+body[data-theme="dark"] .rfp-selecao-barra { border-bottom-color: #404040 !important; }

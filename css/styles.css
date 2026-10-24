@@ -11559,3 +11559,14 @@ body[data-theme="dark"] .rc-aviso .rc-aviso-sub { color: #A1A1AA !important; }
 html body #view-event-os-dashboard .dashboard-content-wrapper:has(> #tab-gifts.active #gifts-panel-messages:not(.hidden)):not(#love-h-a) { display: flex; flex-direction: column; }
 html body #view-event-os-dashboard .dashboard-main-area:has(#gifts-panel-messages:not(.hidden)) > .rodape-respiro:not(#love-h-a) { flex-basis: 2rem; height: 2rem; }
 html body #recados-raiz .recados-paginacao:not(#love-h-a) { margin-top: auto; }
+
+/* Confirmar presença: os nomes aparecem num menu suspenso colado no campo. */
+.convite-form > label[for="rsvp-nome"] { margin-bottom: -0.5rem; }
+.convite-rsvp-campo { position: relative; display: flex; flex-direction: column; }
+.convite-rsvp-campo input { width: 100%; }
+.convite-form .convite-rsvp-opcoes { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 20; display: flex; flex-direction: column; gap: 0; max-height: 280px; overflow-y: auto; padding: 4px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.convite-form .convite-rsvp-opcoes[hidden] { display: none; }
+.convite-form .convite-rsvp-opcoes .convite-rsvp-opcao { padding: 10px 12px; border: 0; border-radius: 6px; box-shadow: none; }
+.convite-form .convite-rsvp-opcoes .convite-rsvp-opcao:hover,
+.convite-form .convite-rsvp-opcoes .convite-rsvp-opcao:focus-visible { background: #F4F4F5; outline: none; }
+.convite-form .convite-rsvp-nada { margin: 0; padding: 10px 12px; font-size: 0.875rem; font-weight: 400; color: #71717A; }

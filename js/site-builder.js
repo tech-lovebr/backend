@@ -4463,11 +4463,12 @@ function renderConfirmarPresencaPublica(root) {
 
   root.innerHTML = telaPublicaHtml('Confirmar presença', `
     <form class="convite-form" data-convite-rsvp novalidate>
-      <label>Seu nome
-        <input type="text" name="nome" maxlength="120" autocomplete="off" placeholder="Digite seu nome" aria-describedby="rsvp-ajuda">
-      </label>
+      <label for="rsvp-nome">Seu nome</label>
+      <div class="convite-rsvp-campo">
+        <input type="text" id="rsvp-nome" name="nome" maxlength="120" autocomplete="off" placeholder="Digite seu nome" role="combobox" aria-expanded="false" aria-controls="rsvp-opcoes" aria-describedby="rsvp-ajuda">
+        <div class="convite-rsvp-opcoes" id="rsvp-opcoes" data-rsvp-opcoes role="listbox" aria-label="Nomes na lista" hidden></div>
+      </div>
       <p class="convite-rsvp-ajuda" id="rsvp-ajuda">Digite seu nome e escolha como ele está na lista dos anfitriões.</p>
-      <div class="convite-rsvp-opcoes" data-rsvp-opcoes role="listbox" aria-label="Nomes na lista"></div>
       <p class="convite-erro" hidden></p>
       <button type="submit" class="convite-botao" disabled>Confirmar minha presença</button>
     </form>
@@ -4483,15 +4484,25 @@ function renderConfirmarPresencaPublica(root) {
   let espera = null;
   let ultimaBusca = 0;
 
+  const fechar = () => { opcoes.hidden = true; input.setAttribute('aria-expanded', 'false'); };
+  const abrir = () => { opcoes.hidden = false; input.setAttribute('aria-expanded', 'true'); };
+
+  // Menu suspenso com os nomes como estão na lista dos anfitriões.
   const desenhar = (lista) => {
-    opcoes.innerHTML = lista.map(c => `
-      <button type="button" class="convite-rsvp-opcao${escolhido && escolhido.id === c.id ? ' is-ativo' : ''}" role="option" aria-selected="${escolhido && escolhido.id === c.id}" data-rsvp-id="${escaparPublico(c.id)}">
-        <span>${escaparPublico(c.nome)}</span>${c.confirmado ? '<small>Já confirmado</small>' : ''}
-      </button>`).join('');
+    opcoes.innerHTML = lista.length
+      ? lista.map(c => `
+        <button type="button" class="convite-rsvp-opcao" role="option" data-rsvp-id="${escaparPublico(c.id)}">
+          <span>${escaparPublico(c.nome)}</span>${c.confirmado ? '<small>Já confirmado</small>' : ''}
+        </button>`).join('')
+      : '<p class="convite-rsvp-nada">Nenhum nome encontrado na lista.</p>';
+    abrir();
     opcoes.querySelectorAll('[data-rsvp-id]').forEach(b => b.addEventListener('click', () => {
       escolhido = lista.find(c => String(c.id) === b.dataset.rsvpId) || null;
-      botao.disabled = !escolhido;
-      desenhar(lista);
+      if (!escolhido) return;
+      input.value = escolhido.nome;
+      botao.disabled = false;
+      ajuda.textContent = escolhido.confirmado ? 'Sua presença já estava confirmada. Pode confirmar de novo se quiser.' : 'Agora é só confirmar.';
+      fechar();
     }));
   };
 
@@ -4500,7 +4511,7 @@ function renderConfirmarPresencaPublica(root) {
     const minha = ++ultimaBusca;
     erroEl.hidden = true;
     if (termo.replace(/\s/g, '').length < 3) {
-      escolhido = null; botao.disabled = true; opcoes.innerHTML = '';
+      fechar(); opcoes.innerHTML = '';
       ajuda.textContent = 'Digite seu nome e escolha como ele está na lista dos anfitriões.';
       return;
     }
@@ -4508,15 +4519,22 @@ function renderConfirmarPresencaPublica(root) {
     if (minha !== ultimaBusca) return; // chegou uma busca mais nova
     if (error) { console.error('Erro ao buscar convidado:', error); return; }
     const lista = data || [];
-    if (escolhido && !lista.some(c => c.id === escolhido.id)) { escolhido = null; botao.disabled = true; }
-    if (!escolhido && lista.length === 1) { escolhido = lista[0]; botao.disabled = false; }
     ajuda.textContent = lista.length
-      ? 'Toque no seu nome para escolher.'
-      : 'Não encontramos esse nome na lista. Tente só o primeiro nome ou fale com os anfitriões.';
+      ? 'Escolha o seu nome na lista.'
+      : 'Não encontramos esse nome. Tente só o primeiro nome ou fale com os anfitriões.';
     desenhar(lista);
   };
 
-  input.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(buscar, 250); });
+  // Digitar de novo desfaz a escolha e busca outra vez.
+  input.addEventListener('input', () => {
+    escolhido = null;
+    botao.disabled = true;
+    clearTimeout(espera);
+    espera = setTimeout(buscar, 250);
+  });
+  input.addEventListener('focus', () => { if (!escolhido && opcoes.innerHTML) abrir(); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+  document.addEventListener('click', (e) => { if (!form.isConnected) return; if (!e.target.closest || !e.target.closest('.convite-rsvp-campo')) fechar(); });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -8,11 +8,11 @@
 //
 // Como o dinheiro anda: a cobrança é criada na conta da Love com split do
 // valor do presente direto para a conta digital do anfitrião (walletId da
-// subconta, migration 098). A Love cobra R$ 8 por presente (Presentes ›
-// Configurações, eventos.extra.taxaPresentes): se os convidados pagam, os R$ 8
-// vão somados ao preço e o anfitrião recebe o valor cheio; se o anfitrião
-// paga, o convidado paga o preço e o anfitrião recebe o preço − R$ 8. A taxa
-// fica com a Love e cobre a tarifa do Asaas. Na primeira compra a conta do anfitrião é aberta na hora
+// subconta, migration 098). A Love cobra 10% de taxa de serviço por presente
+// (Presentes › Configurações, eventos.extra.taxaPresentes): se os convidados
+// pagam, os 10% vão somados ao preço e o anfitrião recebe o valor cheio; se o
+// anfitrião paga, o convidado paga o preço e o anfitrião recebe o preço − 10%.
+// A taxa fica com a Love e cobre a tarifa do Asaas. Na primeira compra a conta do anfitrião é aberta na hora
 // (api/_recebimento.js: precisa dos dados salvos, convidados e presentes).
 //
 // Cada presente vira uma contribuição "pendente" (presentear_pelo_convite);
@@ -26,18 +26,20 @@ const { supabaseAdmin } = require("./_ses");
 const soDigitos = (v) => String(v || "").replace(/\D/g, "");
 const centavos = (v) => Math.round(Number(v || 0) * 100) / 100;
 
-// Taxa da Love: R$ 8 por presente. No cartão a tarifa do Asaas (à vista,
-// 2,99% + R$ 0,49, preço de tabela) passa de R$ 8 em compras maiores; aí a
-// taxa sobe até cobrir a tarifa, para o split nunca passar do valor líquido
-// da cobrança (o Asaas recusaria). No Pix (R$ 1,99) os R$ 8 sempre cobrem.
-const TAXA_POR_PRESENTE = 8;
-/** Taxa do pedido. convidadosPagam: a taxa vai somada ao total. */
-function taxaDoPedido(soma, quantidade, metodo, convidadosPagam) {
-  const fixa = TAXA_POR_PRESENTE * quantidade;
-  if (metodo !== "cartao") return centavos(fixa);
-  // Tarifa do cartão sobre o total cobrado (com a taxa somada, se for o caso).
-  const tarifa = convidadosPagam ? (soma * 0.0299 + 0.49) / (1 - 0.0299) : soma * 0.0299 + 0.49;
-  return centavos(Math.max(fixa, Math.ceil((tarifa + 0.01) * 100) / 100));
+// Taxa de serviço da Love: 10% de cada presente (arredondada no centavo,
+// igual ao preço mostrado no convite). Em presentes muito baratos os 10% não
+// cobrem a tarifa do Asaas (Pix R$ 1,99; cartão à vista 2,99% + R$ 0,49,
+// preços de tabela); aí a taxa sobe até cobrir a tarifa, para o split nunca
+// passar do valor líquido da cobrança (o Asaas recusaria).
+const TAXA_PERCENTUAL = 10;
+/** Taxa do pedido. valores = valor de cada presente; convidadosPagam: a taxa vai somada ao total. */
+function taxaDoPedido(valores, metodo, convidadosPagam) {
+  const soma = valores.reduce((s, v) => s + v, 0);
+  const pct = centavos(valores.reduce((s, v) => s + Math.round(v * TAXA_PERCENTUAL) / 100, 0));
+  const tarifa = metodo === "cartao"
+    ? (convidadosPagam ? (soma * 0.0299 + 0.49) / (1 - 0.0299) : soma * 0.0299 + 0.49)
+    : 1.99;
+  return centavos(Math.max(pct, Math.ceil((tarifa + 0.01) * 100) / 100));
 }
 
 function cpfValido(cpf) {
@@ -131,7 +133,7 @@ module.exports = async (req, res) => {
 
     const soma = centavos(registrados.reduce((s, r) => s + r.valor, 0));
     const convidadosPagam = !(evento.extra && evento.extra.taxaPresentes === "anfitriao");
-    const taxa = taxaDoPedido(soma, registrados.length, metodo, convidadosPagam);
+    const taxa = taxaDoPedido(registrados.map(r => r.valor), metodo, convidadosPagam);
     const total = convidadosPagam ? centavos(soma + taxa) : soma;
     const paraOAnfitriao = convidadosPagam ? soma : centavos(soma - taxa);
     if (paraOAnfitriao <= 0) {

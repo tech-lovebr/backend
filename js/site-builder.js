@@ -4651,14 +4651,16 @@ function ligarDadosDoConvidado(root, convidadoId, chave, primeiro) {
 
 const brlPublico = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// Taxa da Love (R$ 8 por presente, migration 103). Quando os convidados
-// pagam, o preço mostrado já vem com ela somada (sem linha de taxa).
+// Taxa de serviço da Love (10% do presente, migration 104). Quando os
+// convidados pagam, o preço mostrado já vem com ela somada (sem linha de
+// taxa). Mesmo cálculo de api/presentear.js (taxa de cada presente,
+// arredondada no centavo).
 function taxaEmbutidaPublica() {
   const t = conviteDadosPublicos && conviteDadosPublicos.taxa;
   if (!t || t.paga_por === 'anfitriao') return 0;
-  return Number(t.por_presente) || 0;
+  return (Number(t.percentual) || 0) / 100;
 }
-const precoPublico = v => Math.round((Number(v || 0) + taxaEmbutidaPublica()) * 100) / 100;
+const precoPublico = v => { const n = Number(v || 0); return Math.round((n + Math.round(n * taxaEmbutidaPublica() * 100) / 100) * 100) / 100; };
 
 // Checkout e carrinho: sempre com fundo branco, seja qual for a cor do convite.
 function telaPublicaHtmlBranca(titulo, conteudo) { return telaPublicaHtml(titulo, conteudo, { fundoBranco: true }); }

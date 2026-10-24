@@ -10620,3 +10620,48 @@ html body .cli-barra span:not(#love-h-a) { display: block; height: 100%; backgro
 html body .cli-vazio:not(#love-h-a), html body .cli-carregando:not(#love-h-a) { color: #71717A !important; font-size: 14px; }
 html body .cli-pagina .op-analise-principal > .op-analise-sec:first-child:not(#love-h-a) { border-top: none; }
 @media (max-width: 640px) { html body .cli-resumo > div:not(#love-h-a) { grid-template-columns: 1fr; gap: 2px; } }
+
+/* ==========================================================================
+   Financeiro no modelo da Carteira Digital (love.com.br): caixa de resumo
+   com 2 colunas, "Extrato completo" com Extrato/Saques/Notas fiscais em
+   botões com ícone e a aba Contas bancárias.
+   ========================================================================== */
+.cart-caixa { background: #FFFFFF; border: 1px solid var(--borda-suave); border-radius: 10px; box-shadow: var(--anel-suave); }
+.cart-resumo { padding: 16px 24px 28px; }
+.cart-resumo-topo { display: flex; justify-content: flex-end; }
+html body button.cart-link:not(#love-h-a) { display: inline-flex; align-items: center; gap: 6px; padding: 0; background: none; border: 0; font-family: inherit; font-size: 13px; font-weight: 600; color: #183b54; cursor: pointer; }
+html body button.cart-link span:not(#love-h-a) { text-decoration: underline; text-underline-offset: 3px; }
+.cart-link svg { width: 16px; height: 16px; }
+.cart-resumo-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 8px; }
+.cart-resumo-col { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 4px 24px; border-left: 1px solid var(--borda-suave); }
+.cart-resumo-col:first-child { border-left: 0; padding-left: 0; }
+html body .cart-rotulo:not(#love-h-a) { margin: 0; font-size: 13px; font-weight: 500; color: #52525B; }
+html body .cart-numero:not(#love-h-a) { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; font-variant-numeric: tabular-nums; }
+.cart-numero.is-escondido { letter-spacing: 0.08em; }
+html body .cart-dica:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
+html body button.cart-link-texto:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+html body .cart-dica button.cart-link-texto:not(#love-h-a) { font-size: inherit; }
+html body .cart-ver:not(#love-h-a) { margin-top: 8px; }
+html body .cart-sacar:not(#love-h-a) { height: 42px; margin-top: 8px; padding: 0 20px; }
+html body .cart-sacar:disabled:not(#love-h-a) { background: #A1A1AA !important; border-color: #A1A1AA !important; color: #FFFFFF !important; cursor: default; }
+html body .fin-lista-topo:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 32px 0 24px; }
+html body .cart-lista-titulo:not(#love-h-a) { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; }
+html body .fin-lista-botoes:not(#love-h-a) { display: flex; gap: 8px; flex-wrap: wrap; }
+html body .fin-lista-btn:not(#love-h-a) {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; background: #FFFFFF;
+  border: 1px solid var(--borda-suave); border-radius: 8px; box-shadow: var(--anel-suave);
+  font-family: inherit; font-size: 13px; font-weight: 600; color: #3F3F46; cursor: pointer;
+}
+html body .fin-lista-btn:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .fin-lista-btn.is-ativo:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .fin-lista-icone:not(#love-h-a) { display: inline-flex; width: 16px; height: 16px; color: #71717A; }
+html body .fin-lista-icone svg:not(#love-h-a) { width: 16px; height: 16px; }
+html body .fin-lista-btn.is-ativo .fin-lista-icone:not(#love-h-a) { color: #183b54; }
+html body #finance-lista-card .cart-num:not(#love-h-a), html body #finance-lista-card td.finance-valor:not(#love-h-a) { text-align: right; }
+html body .fin-contas:not(#love-h-a) { padding: 24px; max-width: 40rem; }
+html body .cart-titulo:not(#love-h-a) { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; }
+html body .cart-sub:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+@media (max-width: 640px) {
+  .cart-resumo-cols { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .cart-resumo-col { border-left: 0; padding-left: 0; }
+}

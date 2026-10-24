@@ -130,40 +130,56 @@ function formatDateOnly(dateStr) {
 
 /* -------------------- Aba Financeiro -------------------- */
 
+/* Topo do Financeiro no modelo da Carteira Digital (love.com.br):
+   saldo disponível para saque + Solicitar saque, saldo pendente, "Esconder
+   valores" e os atalhos para o histórico de saques e o extrato. */
+let finEsconder = false;
+try { finEsconder = localStorage.getItem('b2b-fin-esconder') === '1'; } catch (e) { /* sem armazenamento */ }
+const finValor = v => (finEsconder ? 'R$ ••••' : formatCurrency(v));
+
 function renderFinanceStats() {
-  const grid = document.getElementById('finance-stat-grid');
-  if (!grid) return;
+  const disp = document.getElementById('fin-saldo-disponivel');
+  if (!disp) return;
+  const disponivel = computeSaldoDisponivel();
+  disp.textContent = finValor(disponivel);
+  disp.classList.toggle('is-escondido', finEsconder);
+  const pend = document.getElementById('fin-saldo-pendente');
+  pend.textContent = finValor(computeSaldoAReceber());
+  pend.classList.toggle('is-escondido', finEsconder);
+  const esconder = document.querySelector('#fin-esconder span');
+  if (esconder) esconder.textContent = finEsconder ? 'Mostrar valores' : 'Esconder valores';
 
-  const saldoAReceber = computeSaldoAReceber();
-  const valorEmAberto = computeValorEmAberto();
-
-  grid.innerHTML = `
-    <div class="dash-card finance-stat-card">
-      <p class="finance-stat-label">Saldo a receber</p>
-      <p class="finance-stat-value">${formatCurrency(saldoAReceber)}</p>
-    </div>
-    <div class="dash-card finance-stat-card finance-acesso-card">
-      <nav class="finance-acesso-lista">
-        ${FINANCE_LISTAS.map(l => `
-          <button type="button" class="finance-acesso-item${l.chave === financeListaAtual ? ' is-ativo' : ''}" data-finance-lista="${l.chave}">
-            <span class="finance-acesso-icone">${l.icone}</span>
-            <span class="finance-acesso-nome">${l.nome}</span>
-            <svg class="finance-acesso-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
-          </button>`).join('')}
-      </nav>
-    </div>
-  `;
-  grid.querySelectorAll('[data-finance-lista]').forEach(btn => {
-    btn.addEventListener('click', () => mostrarListaFinanceira(btn.dataset.financeLista));
-  });
-  renderListaFinanceira();
-
-  const withdrawBtn = document.getElementById('request-withdrawal-btn');
-  // O botão fica na carteira (não é redesenhado): liga uma vez só.
-  if (withdrawBtn && !withdrawBtn.dataset.ligado) {
-    withdrawBtn.dataset.ligado = '1';
-    withdrawBtn.addEventListener('click', openWithdrawalModal);
+  const temConta = !!(typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.pixKey);
+  document.getElementById('fin-dica-conta').hidden = temConta;
+  const sacar = document.getElementById('request-withdrawal-btn');
+  sacar.disabled = !(disponivel > 0 && temConta);
+  if (!sacar.dataset.ligado) {
+    sacar.dataset.ligado = '1';
+    sacar.addEventListener('click', openWithdrawalModal);
+    document.getElementById('fin-esconder')?.addEventListener('click', () => {
+      finEsconder = !finEsconder;
+      try { localStorage.setItem('b2b-fin-esconder', finEsconder ? '1' : '0'); } catch (e) { /* sem armazenamento */ }
+      renderFinanceStats();
+    });
+    document.querySelectorAll('[data-fin-ver]').forEach(b => b.addEventListener('click', () => {
+      mostrarListaFinanceira(b.dataset.finVer);
+      document.getElementById('finance-lista-titulo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }));
+    document.querySelectorAll('[data-fin-aba]').forEach(b => b.addEventListener('click', () => {
+      document.querySelector(`#payments-view-tabs [data-view="${b.dataset.finAba}"]`)?.click();
+    }));
   }
+
+  // Extrato / Saques / Notas fiscais: botões com ícone ao lado do título.
+  const botoes = document.getElementById('finance-lista-botoes');
+  if (botoes) {
+    botoes.innerHTML = FINANCE_LISTAS.map(l => `
+      <button type="button" class="fin-lista-btn${l.chave === financeListaAtual ? ' is-ativo' : ''}" data-finance-lista="${l.chave}" aria-pressed="${l.chave === financeListaAtual}">
+        <span class="fin-lista-icone">${l.icone}</span>${l.nome}
+      </button>`).join('');
+    botoes.querySelectorAll('[data-finance-lista]').forEach(btn => btn.addEventListener('click', () => mostrarListaFinanceira(btn.dataset.financeLista)));
+  }
+  renderListaFinanceira();
 }
 
 /* -------------------- Acesso rápido: Extrato / Saques / Notas fiscais --------------------
@@ -171,9 +187,9 @@ function renderFinanceStats() {
    drawer): Extrato (recebimentos e saques, padrão), Saques (só as saídas)
    e Minhas notas fiscais (as emitidas). */
 const FINANCE_LISTAS = [
-  { chave: 'extrato', nome: 'Extrato', titulo: 'Extrato',
+  { chave: 'extrato', nome: 'Extrato', titulo: 'Extrato completo',
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="2.6"/></svg>' },
-  { chave: 'saques', nome: 'Saques', titulo: 'Saques',
+  { chave: 'saques', nome: 'Saques', titulo: 'Histórico de saques',
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.01M17.5 14.5v.01" stroke-width="2.4"/></svg>' },
   { chave: 'notas', nome: 'Notas fiscais', titulo: 'Minhas notas fiscais',
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/><path d="M12 11v6M14 12.5c-.4-.6-1.1-.9-2-.9-1.1 0-1.9.6-1.9 1.4 0 1.9 4 .9 4 2.8 0 .8-.9 1.4-2.1 1.4-.9 0-1.7-.4-2-1"/></svg>' }
@@ -192,7 +208,7 @@ function mostrarListaFinanceira(chave) {
     const busca = document.querySelector('#finance-lista-card .tabela-busca input');
     if (busca) busca.value = '';
   }
-  document.querySelectorAll('[data-finance-lista]').forEach(b => b.classList.toggle('is-ativo', b.dataset.financeLista === chave));
+  document.querySelectorAll('[data-finance-lista]').forEach(b => { b.classList.toggle('is-ativo', b.dataset.financeLista === chave); b.setAttribute('aria-pressed', String(b.dataset.financeLista === chave)); });
   renderListaFinanceira();
 }
 
@@ -319,12 +335,12 @@ async function renderListaFinanceira() {
   let linhas = [];
   let textoVazio = '';
   if (lista.chave === 'extrato') {
-    colunas = ['Nº', 'Data', 'Descrição', 'Tipo', 'Valor'];
-    linhas = rows.map(r => `<tr><td class="col-id">${escapeHtml(r.numero)}</td><td>${r.data}</td><td>${escapeHtml(r.descricao)}</td><td>${r.tipo === 'entrada' ? 'Entrada' : 'Saída'}</td><td class="finance-valor ${r.tipo === 'entrada' ? 'is-entrada' : 'is-saida'}">${r.tipo === 'entrada' ? '+' : '−'} ${formatCurrency(r.valor)}</td></tr>`);
+    colunas = ['Data', 'Descrição', 'Tipo', 'Valor'];
+    linhas = rows.map(r => `<tr><td>${r.data}</td><td>${escapeHtml(r.descricao)}</td><td>${r.tipo === 'entrada' ? 'Entrada' : 'Saída'}</td><td class="finance-valor ${r.tipo === 'entrada' ? 'is-entrada' : 'is-saida'}">${r.tipo === 'entrada' ? '+' : '−'} ${formatCurrency(r.valor)}</td></tr>`);
     textoVazio = 'Nenhuma movimentação ainda.';
   } else if (lista.chave === 'saques') {
-    colunas = ['Nº', 'Data', 'Descrição', 'Valor', 'Situação'];
-    linhas = rows.map(r => `<tr><td class="col-id">${escapeHtml(r.numero)}</td><td>${r.data}</td><td>${escapeHtml(r.descricao)}</td><td class="finance-valor">${formatCurrency(r.valor)}</td><td>${escapeHtml(r.situacao)}</td></tr>`);
+    colunas = ['Data', 'Descrição', 'Valor', 'Situação'];
+    linhas = rows.map(r => `<tr><td>${r.data}</td><td>${escapeHtml(r.descricao)}</td><td class="finance-valor">${formatCurrency(r.valor)}</td><td>${escapeHtml(r.situacao)}</td></tr>`);
     textoVazio = 'Você ainda não fez nenhum saque.';
   } else {
     colunas = ['Número', 'Cliente', 'Valor', 'Emitida em', 'Situação'];
@@ -332,7 +348,7 @@ async function renderListaFinanceira() {
     textoVazio = 'Nenhuma nota fiscal emitida ainda.';
   }
   if (filtrando) textoVazio = 'Nada encontrado com essa busca ou filtro.';
-  head.innerHTML = `<tr>${colunas.map(c => `<th${c === 'Nº' ? ' class="col-id"' : ''}>${c}</th>`).join('')}</tr>`;
+  head.innerHTML = `<tr>${colunas.map(c => `<th${c === 'Valor' ? ' class="cart-num"' : ''}>${c}</th>`).join('')}</tr>`;
   body.innerHTML = linhas.join('');
   if (vazia) { vazia.textContent = textoVazio; vazia.style.display = linhas.length ? 'none' : ''; }
 }
@@ -811,3 +827,32 @@ function initPaymentLinkModal() {
     });
   });
 }
+
+/* -------------------- Contas bancárias (chave Pix dos saques) -------------------- */
+document.addEventListener('DOMContentLoaded', async () => {
+  const form = document.getElementById('fin-conta-form');
+  if (!form) return;
+  await window.b2bAuthReady;
+  const p = B2B_DATA.professional;
+  const tipo = document.getElementById('fin-pix-tipo');
+  const chave = document.getElementById('fin-pix-chave');
+  const aceite = document.getElementById('fin-pix-aceite');
+  tipo.value = p.pixKeyType || 'cpf';
+  chave.value = p.pixKey || '';
+  aceite.checked = !!p.pixKey;
+  if (typeof wirePixKeyMaskInput === 'function') wirePixKeyMaskInput(chave, () => tipo.value);
+  const msg = (t, erro) => { const el = document.getElementById('fin-conta-msg'); el.textContent = t || ''; el.hidden = !t; el.classList.toggle('is-erro', !!erro); };
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const valor = chave.value.trim();
+    if (!valor) return msg('Preencha a sua chave Pix.', true);
+    if (!aceite.checked) return msg('Marque a confirmação para salvar.', true);
+    const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+    const { error } = await supabaseClient.from('fornecedores').update({ pix_key: valor, pix_key_type: tipo.value }).eq('id', empresaId(session));
+    if (error) return msg('Não foi possível salvar agora. Tente de novo.', true);
+    p.pixKey = valor;
+    p.pixKeyType = tipo.value;
+    msg('Conta salva. Os saques vão para esta chave Pix.');
+    renderFinanceStats();
+  });
+});

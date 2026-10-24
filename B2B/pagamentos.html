@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=769">
+  <link rel="stylesheet" href="css/styles.css?v=770">
 </head>
 <body class="font-sans" data-page="contratos">
   <div class="b2b-shell">
@@ -37,72 +37,40 @@
         <div class="category-tabs-bar" id="payments-view-tabs">
           <button type="button" class="category-tab active" data-view="financeiro">Financeiro</button>
           <button type="button" class="category-tab" data-view="receber">Cobranças</button>
+          <button type="button" class="category-tab" data-view="contas">Contas bancárias</button>
         </div>
 
         <div data-view-panel="financeiro">
-          <!-- Carteira (Saldo / Faturamento, igual era no Dashboard) e, à direita,
-               Saldo a receber e o Acesso rápido (do finance-stat-grid). -->
-          <div class="finance-topo">
-            <div class="dash-card wallet-card">
-              <button type="button" class="wallet-eye-btn wallet-eye-btn-global" id="wallet-eye-btn" aria-label="Mostrar ou ocultar valores">
-                <svg class="wallet-eye-icon-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
-                <svg class="wallet-eye-icon-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12c1.292 4.338 5.31 7.5 10.066 7.5.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.5a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
-              </button>
-
-              <!-- Período do Faturamento: botão + drop-down (atalhos e calendário). -->
-              <div class="wallet-periodo" id="wallet-periodo">
-                <button type="button" class="wallet-periodo-btn" id="wallet-periodo-btn" aria-haspopup="dialog" aria-expanded="false">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
-                  <span id="wallet-periodo-rotulo">Últimos 30 dias</span>
-                </button>
-                <div class="wallet-periodo-menu" id="wallet-periodo-menu" role="dialog" aria-label="Escolher período" hidden>
-                  <div class="wallet-periodo-corpo">
-                    <div class="wallet-periodo-atalhos">
-                      <p>Últimos</p>
-                      <button type="button" data-periodo-dias="1">1d</button>
-                      <button type="button" data-periodo-dias="7">7d</button>
-                      <button type="button" data-periodo-dias="15">15d</button>
-                      <button type="button" data-periodo-dias="30">30d</button>
-                    </div>
-                    <div class="wallet-periodo-cal" id="wallet-periodo-cal"></div>
-                  </div>
-                  <div class="wallet-periodo-rodape">
-                    <button type="button" class="wallet-periodo-cancelar" id="wallet-periodo-cancelar">Cancelar</button>
-                    <button type="button" class="wallet-periodo-aplicar" id="wallet-periodo-aplicar">Aplicar</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="wallet-tabs" id="wallet-tabs">
-                <button type="button" class="wallet-tab active" data-wallet-tab="saldo">Saldo</button>
-                <button type="button" class="wallet-tab" data-wallet-tab="faturamento">Faturamento</button>
-              </div>
-
-              <div class="wallet-panel" data-wallet-panel="saldo">
-                <div class="wallet-panel-row">
-                  <div class="wallet-balance-wrap">
-                    <span class="wallet-balance" id="wallet-saldo-value">—</span>
-                  </div>
-                  <button type="button" class="btn-primary wallet-withdraw-btn" id="request-withdrawal-btn">Solicitar saque</button>
-                </div>
-                <p class="wallet-sub">Saldo pendente: <span id="wallet-saldo-pendente">—</span></p>
-              </div>
-
-              <div class="wallet-panel" data-wallet-panel="faturamento" hidden>
-                <div class="wallet-panel-row">
-                  <div class="wallet-balance-wrap">
-                    <span class="wallet-balance" id="wallet-faturamento-value">—</span>
-                  </div>
-                </div>
-                <p class="wallet-sub"><span id="wallet-faturamento-anterior-rotulo">Período anterior</span>: <span id="wallet-faturamento-anterior">—</span> <span id="wallet-faturamento-delta"></span></p>
-              </div>
-
+          <!-- Mesmo modelo da Carteira Digital do love.com.br: saldo disponível
+               para saque (com Solicitar saque) e saldo pendente; abaixo, o
+               extrato completo. -->
+          <section class="cart-caixa cart-resumo fin-resumo">
+            <div class="cart-resumo-topo">
+              <button type="button" class="cart-link" id="fin-esconder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>Esconder valores</span></button>
             </div>
-            <div class="finance-stat-grid" id="finance-stat-grid"></div>
-          </div>
+            <div class="cart-resumo-cols fin-resumo-cols">
+              <div class="cart-resumo-col">
+                <p class="cart-rotulo">Saldo disponível para saque</p>
+                <p class="cart-numero" id="fin-saldo-disponivel">—</p>
+                <button type="button" class="btn-primary cart-sacar" id="request-withdrawal-btn">Solicitar saque</button>
+                <p class="cart-dica" id="fin-dica-conta" hidden>Cadastre uma conta em <button type="button" class="cart-link-texto" data-fin-aba="contas">Contas bancárias</button> para sacar.</p>
+                <button type="button" class="cart-link-texto cart-ver" data-fin-ver="saques">Ver histórico de saques</button>
+              </div>
+              <div class="cart-resumo-col">
+                <p class="cart-rotulo">Saldo pendente</p>
+                <p class="cart-numero" id="fin-saldo-pendente">—</p>
+                <p class="cart-dica">Pagamentos dos seus clientes a caminho da sua carteira.</p>
+                <button type="button" class="cart-link-texto cart-ver" data-fin-ver="extrato">Ver extrato completo</button>
+              </div>
+            </div>
+          </section>
+          <div id="finance-stat-grid" hidden></div>
 
           <!-- Lista escolhida no Acesso rápido: Extrato (padrão), Saques ou Notas fiscais. -->
-          <h2 class="text-base font-bold text-zinc-900 mb-3" id="finance-lista-titulo">Extrato</h2>
+          <div class="fin-lista-topo">
+            <h3 class="cart-lista-titulo" id="finance-lista-titulo">Extrato completo</h3>
+            <nav class="fin-lista-botoes" id="finance-lista-botoes" aria-label="Escolher lista"></nav>
+          </div>
           <div class="dash-card mb-6" id="finance-lista-card">
             <div class="overflow-x-auto leads-table-wrap">
               <table class="leads-table w-full">
@@ -126,6 +94,41 @@
             </div>
           </div>
           </div>
+        </div>
+
+        <!-- Contas bancárias: a chave Pix que recebe os saques (a mesma de
+             Configurações › Dados bancários). -->
+        <div data-view-panel="contas" style="display:none;">
+          <section class="cart-caixa fin-contas">
+            <form id="fin-conta-form" class="settings-zola-form">
+              <div>
+                <h3 class="cart-titulo">Chave Pix para receber</h3>
+                <p class="cart-sub">Os seus saques caem nesta chave. Use uma chave em nome da sua empresa (CNPJ) ou do responsável.</p>
+              </div>
+              <div class="settings-endereco-linha settings-banco-linha">
+                <div>
+                  <label for="fin-pix-tipo" class="field-label">Tipo de chave <span style="color:#DC2626;">*</span></label>
+                  <select id="fin-pix-tipo" class="field-select">
+                    <option value="cpf">CPF</option>
+                    <option value="cnpj">CNPJ</option>
+                    <option value="telefone">Telefone</option>
+                    <option value="email">E-mail</option>
+                    <option value="aleatoria">Chave aleatória</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="fin-pix-chave" class="field-label">Chave Pix <span style="color:#DC2626;">*</span></label>
+                  <input id="fin-pix-chave" type="text" class="field-input" autocomplete="off">
+                </div>
+              </div>
+              <label class="settings-banco-aceite">
+                <input type="checkbox" id="fin-pix-aceite">
+                <span>Confirmo que a chave Pix está em nome da minha empresa ou do responsável e autorizo a Love a enviar os meus saques para ela.</span>
+              </label>
+              <p class="settings-form-msg" id="fin-conta-msg" aria-live="polite" hidden></p>
+              <div><button type="submit" class="btn-primary cli-btn">Salvar conta</button></div>
+            </form>
+          </section>
         </div>
 
         <div data-view-panel="receber" style="display:none;">
@@ -410,7 +413,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/shell.js?v=60"></script>
-  <script src="js/contratos.js?v=35"></script>
-  <script src="js/carteira.js?v=1"></script>
+  <script src="js/contratos.js?v=36"></script>
 </body>
 </html>

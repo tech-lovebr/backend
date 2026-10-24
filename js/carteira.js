@@ -261,6 +261,8 @@
   let etapaVerif = '';
   /** @type {File|null} */ let rgFrente = null;
   /** @type {File|null} */ let rgVerso = null;
+  // RG, CNH ou passaporte (no passaporte o verso é opcional).
+  let docTipo = 'rg';
 
   async function carregarVerificacao() {
     const u = usuario();
@@ -317,7 +319,15 @@
           <label class="cart-campo cart-campo-largo"><span>Nome completo</span><input type="text" data-verif-campo="nome" autocapitalize="words" autocomplete="name"></label>
           <label class="cart-campo"><span>CPF</span><input type="text" data-verif-campo="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"></label>
         </div>
-        <p class="cart-campo-rotulo">Documento com foto: RG, CNH ou passaporte (frente e verso)</p>
+        <div class="cart-form-grade">
+          <label class="cart-campo"><span>Documento com foto</span>
+            <select data-verif-campo="docTipo">
+              <option value="rg"${docTipo === 'rg' ? ' selected' : ''}>RG</option>
+              <option value="cnh"${docTipo === 'cnh' ? ' selected' : ''}>CNH</option>
+              <option value="passaporte"${docTipo === 'passaporte' ? ' selected' : ''}>Passaporte</option>
+            </select>
+          </label>
+        </div>
         <div class="cart-verif-arquivos">
           <label class="cart-arquivo" data-verif-arquivo="frente">
             <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="frente">
@@ -325,7 +335,7 @@
           </label>
           <label class="cart-arquivo" data-verif-arquivo="verso">
             <input type="file" accept="image/jpeg,image/png,application/pdf" data-verif-rg="verso">
-            ${ICONE_ENVIAR}<b>Verso do documento</b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'JPEG, PNG ou PDF'}</span>
+            ${ICONE_ENVIAR}<b>Verso do documento<span data-verif-opcional${docTipo === 'passaporte' ? '' : ' hidden'}> (opcional)</span></b><span data-verif-nome="verso">${rgVerso ? esc(rgVerso.name) : 'JPEG, PNG ou PDF'}</span>
           </label>
         </div>
         <div class="cart-form-grade">
@@ -524,7 +534,15 @@
     if (campo === 'cpf' || (campo === 'pixChave' && tipo && tipo.value === 'cpf')) el.value = mascaraCpf(el.value);
     if (campo === 'pixChave' && tipo && tipo.value === 'telefone' && typeof w.maskBrazilPhone === 'function') el.value = w.maskBrazilPhone(el.value);
   });
-  // RG frente/verso: guarda o arquivo e mostra o nome (sem redesenhar).
+  // Tipo de documento: no passaporte o verso vira opcional (sem redesenhar).
+  document.addEventListener('change', (e) => {
+    const el = /** @type {HTMLSelectElement} */ (e.target);
+    if (!el || !el.matches || !el.matches('#carteira-raiz [data-verif-campo="docTipo"]')) return;
+    docTipo = el.value;
+    const opcional = /** @type {HTMLElement|null} */ (document.querySelector('#carteira-raiz [data-verif-opcional]'));
+    if (opcional) opcional.hidden = docTipo !== 'passaporte';
+  });
+  // Documento frente/verso: guarda o arquivo e mostra o nome (sem redesenhar).
   document.addEventListener('change', (e) => {
     const el = /** @type {HTMLInputElement} */ (e.target);
     if (!el || !el.matches || !el.matches('#carteira-raiz [data-verif-rg]')) return;
@@ -554,7 +572,8 @@
     const pixChave = v('pixChave');
     if (nome.split(/\s+/).length < 2) return falhar('Informe o nome completo.');
     if (cpf.length !== 11) return falhar('CPF incompleto.');
-    if (!rgFrente || !rgVerso) return falhar('Envie a frente e o verso do documento.');
+    if (!rgFrente) return falhar('Envie a frente do documento.');
+    if (!rgVerso && docTipo !== 'passaporte') return falhar('Envie o verso do documento.');
     if (!pixChave) return falhar('Informe a chave Pix.');
     if (pixTipo === 'cpf' && soDigitos(pixChave).length !== 11) return falhar('Chave Pix (CPF) incompleta.');
     if (pixTipo === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(pixChave)) return falhar('Chave Pix (e-mail) inválida.');
@@ -574,8 +593,8 @@
     };
     try {
       const frente = await subir(rgFrente, 'frente');
-      const verso = await subir(rgVerso, 'verso');
-      const linha = { cliente_id: u.id, nome, cpf, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
+      const verso = rgVerso ? await subir(rgVerso, 'verso') : null;
+      const linha = { cliente_id: u.id, nome, cpf, documento_tipo: docTipo, pix_tipo: pixTipo, pix_chave: pixChave, rg_frente: frente, rg_verso: verso, status: 'em_analise', motivo: null, updated_at: new Date().toISOString() };
       const { data, error } = await supabaseClient.from('verificacoes_identidade').upsert(linha, { onConflict: 'cliente_id' }).select().maybeSingle();
       if (error) throw error;
       verificacao = data || linha;
@@ -583,7 +602,7 @@
       pronto();
       return falhar('Não foi possível enviar agora. Tente de novo.');
     }
-    rgFrente = null; rgVerso = null;
+    rgFrente = null; rgVerso = null; docTipo = 'rg';
     etapaVerif = '';
     desenhar();
     aviso('Documentos enviados para análise. Já pode cadastrar a sua conta bancária.');

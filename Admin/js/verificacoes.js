@@ -35,6 +35,15 @@ const SITUACAO = {
 };
 const PIX = { cpf: 'CPF', cnpj: 'CNPJ', email: 'E-mail', telefone: 'Telefone', aleatoria: 'Chave aleatória' };
 const TIPO_CONTA = { corrente: 'Corrente', poupanca: 'Poupança', pagamento: 'Pagamento' };
+const DOC_TIPO = { rg: 'RG', cnh: 'CNH', passaporte: 'Passaporte' };
+// Como foram os documentos para a conta digital no Asaas (api/_documentos-asaas.js).
+const ASAAS = {
+  enviado: 'Enviados para o Asaas',
+  link: 'O Asaas pediu pelo link dele (o anfitrião faz na Carteira)',
+  aguardando_conta: 'Vão para o Asaas quando a conta digital abrir (na primeira compra)',
+  sem_pendencia: 'O Asaas não pediu documentos',
+  erro: 'Não foi possível enviar ao Asaas'
+};
 
 const soDigitos = v => String(v || '').replace(/\D/g, '');
 const normalizarNome = v => String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -120,7 +129,7 @@ async function carregar() {
         tipo: 'conta',
         papel: 'Anfitrião',
         nome: t.titular || nomeDoCliente(c),
-        documento: `${t.banco || 'Banco'} · Ag. ${t.agencia || '—'} · ${t.conta || '—'}`,
+        documento: `${t.banco_codigo ? `${t.banco_codigo} ` : ''}${t.banco || 'Banco'} · Ag. ${t.agencia || '—'} · ${t.conta || '—'}${t.digito ? `-${t.digito}` : ''}`,
         status: conta.status || 'em_analise',
         motivo: conta.motivo,
         em: conta.analisadaEm || conta.criadaEm || c.created_at,
@@ -284,14 +293,17 @@ function detalheIdentidade(item) {
     <div class="lista-dados">
       ${linhaDado('Nome enviado', escapeHtml(v.nome || '—'))}
       ${linhaDado('CPF enviado', escapeHtml(formatarCpf(v.cpf)))}
+      ${linhaDado('Documento', escapeHtml(DOC_TIPO[v.documento_tipo] || 'RG'))}
       ${linhaDado('Chave Pix', `${escapeHtml(PIX[v.pix_tipo] || v.pix_tipo || '')} · ${escapeHtml(v.pix_chave || '—')}`)}
       ${linhaDado('E-mail da conta', escapeHtml(c.email || '—'))}
       ${linhaDado('Nome no cadastro', escapeHtml(nomeCadastro || '—'))}
       ${linhaDado('CPF no cadastro', escapeHtml(c.cpf ? formatarCpf(c.cpf) : 'Não informado'))}
       ${linhaDado('Data de nascimento', escapeHtml(c.data_nascimento ? formatDate(c.data_nascimento) : 'Não informada'))}
       ${linhaDado('Enviado em', escapeHtml(formatDateTime(v.created_at)))}
+      ${v.status === 'aprovado' ? linhaDado('Asaas', escapeHtml(ASAAS[v.asaas_status] || 'Ainda não enviados') + (v.asaas_status === 'erro' && v.asaas_detalhe?.mensagem ? ` <span class="cell-muted">(${escapeHtml(v.asaas_detalhe.mensagem)})</span>` : '')) : ''}
     </div>
     ${conferencias([
+      v.selfie ? ['Enviou a selfie segurando o documento: confira se o rosto é o mesmo da foto do documento.', null] : ['Sem selfie (enviado antes da selfie ser pedida). O Asaas pode pedir pelo link dele.', false],
       [cpfValido(v.cpf) ? 'O CPF enviado é válido.' : 'O CPF enviado não é válido.', cpfValido(v.cpf)],
       c.cpf
         ? [soDigitos(c.cpf) === soDigitos(v.cpf) ? 'O CPF é o mesmo do cadastro da conta.' : 'O CPF é diferente do cadastro da conta.', soDigitos(c.cpf) === soDigitos(v.cpf)]
@@ -308,7 +320,8 @@ function detalheIdentidade(item) {
     corpo,
     arquivos: [
       { rotulo: 'Documento · frente', bucket: 'documentos', caminho: v.rg_frente },
-      { rotulo: 'Documento · verso', bucket: 'documentos', caminho: v.rg_verso }
+      { rotulo: 'Documento · verso', bucket: 'documentos', caminho: v.rg_verso },
+      { rotulo: 'Selfie segurando o documento', bucket: 'documentos', caminho: v.selfie }
     ].filter(a => a.caminho)
   };
 }
@@ -322,9 +335,9 @@ function detalheConta(item) {
     <div class="lista-dados">
       ${linhaDado('Titular', escapeHtml(t.titular || '—'))}
       ${linhaDado('CPF do titular', escapeHtml(t.cpf ? formatarCpf(t.cpf) : '—'))}
-      ${linhaDado('Banco', escapeHtml(t.banco || '—'))}
+      ${linhaDado('Banco', escapeHtml(t.banco ? `${t.banco_codigo ? `${t.banco_codigo} · ` : ''}${t.banco}` : '—'))}
       ${linhaDado('Agência', escapeHtml(t.agencia || '—'))}
-      ${linhaDado('Conta', escapeHtml(t.conta || '—'))}
+      ${linhaDado('Conta', escapeHtml(t.conta ? `${t.conta}${t.digito ? `-${t.digito}` : ''}` : '—'))}
       ${linhaDado('Tipo de conta', escapeHtml(TIPO_CONTA[t.tipo] || t.tipo || '—'))}
       ${linhaDado('Natureza', t.natureza === 'pj' ? 'Pessoa jurídica' : 'Pessoa física')}
       ${linhaDado('E-mail da conta Love', escapeHtml(c.email || '—'))}
@@ -338,7 +351,8 @@ function detalheConta(item) {
         ? [cpfConta === soDigitos(ident.cpf) ? 'A conta está no CPF do titular verificado.' : 'A conta está em outro CPF.', cpfConta === soDigitos(ident.cpf)]
         : ['Sem CPF do titular para comparar.', null],
       t.natureza === 'pj' ? ['Conta de pessoa jurídica: o saque só pode ir para conta no CPF do anfitrião.', false] : ['Conta de pessoa física.', true],
-      t.tipo === 'pagamento' ? ['Conta de pagamento: o Asaas só transfere para conta corrente ou poupança (ou por Pix).', false] : null
+      t.tipo === 'pagamento' ? ['Conta de pagamento: o Asaas só transfere para conta corrente ou poupança (ou por Pix).', false] : null,
+      t.banco_codigo && t.digito ? ['Banco com código e conta com dígito: no formato que o Asaas pede para transferir.', true] : ['Cadastrada no formato antigo (sem código do banco ou dígito): peça para cadastrar de novo antes do primeiro saque.', false]
     ].filter(Boolean))}`;
   return { corpo, arquivos: [] };
 }
@@ -418,8 +432,29 @@ async function decidir(item, status) {
     toast(`Não foi possível salvar: ${erro.message}`);
     return;
   }
-  toast(status === 'aprovado' ? 'Solicitação aprovada.' : 'Solicitação reprovada.');
+  if (status === 'aprovado' && item.tipo === 'identidade') {
+    const r = await mandarAoAsaas(item.bruto.cliente_id);
+    toast(`Identidade aprovada. ${ASAAS[r] || 'Os documentos vão para o Asaas na próxima abertura da Carteira.'}.`);
+  } else {
+    toast(status === 'aprovado' ? 'Solicitação aprovada.' : 'Solicitação reprovada.');
+  }
   Drawer.close();
   await carregar();
   refreshVerificacoesBadge();
+}
+
+/** Aprovou a identidade: o servidor manda os mesmos documentos para o Asaas. */
+async function mandarAoAsaas(clienteId) {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const r = await fetch('https://love.com.br/api/verificacao-asaas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token || ''}` },
+      body: JSON.stringify({ cliente_id: clienteId })
+    });
+    const j = await r.json().catch(() => ({}));
+    return j.situacao || null;
+  } catch {
+    return null;
+  }
 }

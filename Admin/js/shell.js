@@ -128,8 +128,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const admin = await window.adminReady;
   if (!admin) return;
 
-  // Faixa azul em degradê no topo só nas telas de números (Dashboard, Financeiro, Custos).
-  if (['dashboard', 'financeiro', 'custos'].includes(document.body.dataset.page)) document.body.classList.add('com-faixa');
+  // Faixa azul em degradê no topo de todas as telas.
+  document.body.classList.add('com-faixa');
   renderSidebar();
   renderTopbar(admin);
   renderHeaderBar();

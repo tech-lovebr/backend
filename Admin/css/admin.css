@@ -4202,3 +4202,17 @@ body.com-faixa #btn-periodo .btn-periodo-seta { color: #FFFFFF; }
 .sidebar-perfil-rodape .sidebar-perfil-botao { border: 0; background: transparent; }
 .sidebar-perfil-rodape .sidebar-perfil-botao:hover,
 .sidebar-perfil-rodape .sidebar-perfil-botao[aria-expanded="true"] { background: var(--bg-app); border: 0; }
+
+/* Faixa azul em todas as telas. Onde as abas vêm logo abaixo do título, a
+   faixa desce um pouco mais para cobrir as abas e o começo da caixa. */
+body.com-faixa .admin-content:has(> .admin-header-bar + .conteudo-tabs) { --faixa-h: 212px; }
+body.com-faixa .admin-content > .conteudo-tabs,
+body.com-faixa .admin-content > .legal-abas { border-bottom-color: rgba(255, 255, 255, .16); }
+body.com-faixa .admin-content > .conteudo-tabs .conteudo-tab,
+body.com-faixa .admin-content > .legal-abas .conteudo-tab { color: rgba(255, 255, 255, .68); }
+body.com-faixa .admin-content > .conteudo-tabs .conteudo-tab:hover,
+body.com-faixa .admin-content > .legal-abas .conteudo-tab:hover { color: #FFFFFF; }
+body.com-faixa .admin-content > .conteudo-tabs .conteudo-tab.is-active,
+body.com-faixa .admin-content > .legal-abas .conteudo-tab.is-active { color: #FFFFFF; border-bottom-color: #FFFFFF; }
+body.com-faixa .admin-content > .conteudo-tabs .aba-contagem,
+body.com-faixa .admin-content > .legal-abas .aba-contagem { color: inherit; }

@@ -11623,4 +11623,4 @@ html body .cart-verif-faixa h3:not(#love-h-a) { color: #FFFFFF !important; }
 html body .cart-verif-faixa p:not(#love-h-a) { color: rgba(255, 255, 255, .8) !important; }
 body[data-theme="dark"] .cart-verif-faixa:not(#love-h-a) { background-color: #183b54 !important; background-image: radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%), linear-gradient(180deg, #183b54 0%, #1d4664 100%) !important; }
 /* Logotipo branco da Love no título da faixa (a imagem tem respiro em volta). */
-html body .cart-verif-faixa .cart-verif-logo { display: inline-block; height: 0.98em; width: auto; margin: 0 -0.06em 0 -0.03em; vertical-align: -0.09em; }
+html body .cart-verif-faixa .cart-verif-logo { display: inline-block; height: 1.18em; width: auto; margin: 0 0 0 0.12em; vertical-align: -0.1em; }

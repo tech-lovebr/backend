@@ -264,11 +264,7 @@ function renderTopbar(admin) {
   host.innerHTML = `
     <button type="button" class="btn btn-ghost btn-sm btn-sidebar-toggle" id="btn-toggle-sidebar" aria-label="Abrir menu">
       ${icon('menu')}
-    </button>
-
-    <p class="topbar-empresa">CNPJ 69.386.397/0001-06
-      <button type="button" class="topbar-copiar" id="btn-copiar-cnpj" title="Copiar número do CNPJ" aria-label="Copiar número do CNPJ">${ICONE_COPIAR}</button>
-    </p>`;
+    </button>`;
 
 
   host.querySelector('#btn-toggle-sidebar').addEventListener('click', (e) => {
@@ -277,14 +273,6 @@ function renderTopbar(admin) {
     document.getElementById('sidebar-backdrop')?.classList.toggle('is-open');
   });
 
-  host.querySelector('#btn-copiar-cnpj').addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText('69.386.397/0001-06');
-      toast('CNPJ copiado.');
-    } catch {
-      toast('Não foi possível copiar.');
-    }
-  });
 }
 
 /* Perfil no rodapé do menu (como na referência): avatar com as iniciais,

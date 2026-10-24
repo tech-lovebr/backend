@@ -11674,3 +11674,6 @@ html body .rfp-selecao-barra:not(#love-h-a) { padding: 12px 24px; border-bottom:
 .rfp-selecao-todas { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: #18181B; cursor: pointer; font-variant-numeric: tabular-nums; }
 body[data-theme="dark"] .rfp-selecao-todas { color: #FFFFFF; }
 body[data-theme="dark"] .rfp-selecao-barra { border-bottom-color: #404040 !important; }
+/* Minhas solicitações: paginação igual a Meus convidados (a última linha já tem o divisor). */
+html body #rfp-caixa .rfp-paginacao:not(#love-h-a) { margin-top: 0; padding: 1rem 1.5rem 1.25rem; border-top: 0; }
+html body #rfp-caixa .rfp-paginacao[hidden]:not(#love-h-a) { display: none; }

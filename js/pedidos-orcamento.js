@@ -2032,6 +2032,11 @@
   // Seleção para excluir em massa: "r:<id>" (rascunho) ou "p:<id>" (publicada).
   /** @type {Set<string>} */
   const selecionadas = new Set();
+  // Paginação igual a Meus convidados: 15 por página (ou 25/50).
+  let porPagina = 15;
+  let pagina = 1;
+  /** @type {any[]} */
+  let itensDaLista = [];
 
   /** "há 5 min", "há 2 h", "há 3 dias", "em 12 de set. de 2026". @param {string} iso */
   function haQuanto(iso) {
@@ -2167,13 +2172,59 @@
       ...pedidos.map(p => ({ tipo: 'pedido', id: p.id, quando: p.created_at, criado: p.created_at, p }))
     ].sort((a, b) => String(b.quando).localeCompare(String(a.quando)));
     // Cada serviço é uma solicitação própria: um card para cada, mesmo as do mesmo evento completo.
-    const partes = itens.map(it => linhaDaSolicitacao(it));
     // Some da seleção o que não está mais na lista.
     const existentes = new Set(itens.map(it => (it.tipo === 'rascunho' ? 'r:' : 'p:') + it.id));
     [...selecionadas].forEach(k => { if (!existentes.has(k)) selecionadas.delete(k); });
-    caixa.innerHTML = itens.length ? partes.join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
+    itensDaLista = itens;
+    desenharPagina();
+  }
+
+  /** Lista da página atual + rodapé "Mostrar 15 · Página 1 de 3". */
+  function desenharPagina() {
+    const caixa = document.getElementById('rfp-lista');
+    const rodape = document.getElementById('rfp-paginacao');
+    if (!caixa) return;
+    const total = itensDaLista.length;
+    const paginas = Math.max(1, Math.ceil(total / porPagina));
+    pagina = Math.min(Math.max(1, pagina), paginas);
+    const daPagina = itensDaLista.slice((pagina - 1) * porPagina, pagina * porPagina);
+    caixa.innerHTML = total ? daPagina.map(it => linhaDaSolicitacao(it)).join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
+    if (rodape) {
+      rodape.hidden = !total;
+      rodape.innerHTML = total ? `
+        <div class="guests-pagination-size">
+          <label for="rfp-por-pagina">Mostrar</label>
+          <select id="rfp-por-pagina">
+            ${[15, 25, 50].map(n => `<option value="${n}"${n === porPagina ? ' selected' : ''}>${n}</option>`).join('')}
+          </select>
+        </div>
+        <div class="guests-pagination-nav">
+          <button type="button" class="guests-pagination-btn" data-rfp-pagina="-1" aria-label="Página anterior"${pagina <= 1 ? ' disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg>
+          </button>
+          <span>Página ${pagina} de ${paginas}</span>
+          <button type="button" class="guests-pagination-btn" data-rfp-pagina="1" aria-label="Próxima página"${pagina >= paginas ? ' disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg>
+          </button>
+        </div>` : '';
+    }
     atualizarSelecao();
   }
+
+  document.addEventListener('change', (e) => {
+    const el = /** @type {HTMLSelectElement} */ (e.target);
+    if (!el || el.id !== 'rfp-por-pagina') return;
+    porPagina = parseInt(el.value, 10) || 15;
+    pagina = 1;
+    desenharPagina();
+  });
+  document.addEventListener('click', (e) => {
+    const passo = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-rfp-pagina]')) : null;
+    if (!passo) return;
+    pagina += Number(passo.dataset.rfpPagina) || 0;
+    desenharPagina();
+    document.getElementById('rfp-caixa')?.scrollIntoView({ block: 'start' });
+  });
 
   /** Barra do topo: aparece com alguma solicitação marcada (quantas + lixeira). */
   function atualizarSelecao() {

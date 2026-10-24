@@ -8701,7 +8701,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuDoPresente(); });
 
   /** @param {HTMLElement} botao @param {any} gift */
-  function abrirMenuDoPresente(botao, gift) {
+  function abrirMenuDoPresente(botao, gift, comprado = false) {
     const jaAberto = document.querySelector('.gift-card-menu');
     fecharMenuDoPresente();
     if (jaAberto && /** @type {HTMLElement} */ (jaAberto).dataset.giftId === String(gift.id)) return;
@@ -8709,8 +8709,8 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.className = 'gift-card-menu';
     menu.dataset.giftId = String(gift.id);
     menu.setAttribute('role', 'menu');
-    menu.innerHTML = `
-      <button type="button" role="menuitem" data-acao="editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg><span>Editar presente</span></button>
+    menu.innerHTML = `${comprado ? '' : `
+      <button type="button" role="menuitem" data-acao="editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg><span>Editar presente</span></button>`}
       <button type="button" role="menuitem" data-acao="duplicar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/></svg><span>Duplicar</span></button>
       <button type="button" role="menuitem" data-acao="remover" class="is-perigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg><span>Remover</span></button>`;
     document.body.appendChild(menu);
@@ -8721,7 +8721,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const item = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-acao]')) : null;
       if (!item) return;
       fecharMenuDoPresente();
-      if (item.dataset.acao === 'editar') openGiftDrawerForEdit(gift);
+      if (item.dataset.acao === 'editar' && !comprado) openGiftDrawerForEdit(gift);
       else if (item.dataset.acao === 'duplicar') await duplicarPresente(gift);
       else if (item.dataset.acao === 'remover') await removerPresente(gift);
     });
@@ -8830,7 +8830,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Renderiza os itens de presentes reais no estilo da imagem de referência
     filteredGifts.forEach(gift => {
-      const receivedRecord = (activeEvent.receivedGifts || []).find(r => r.giftTitle === gift.title || r.id === gift.id) || null;
+      const receivedRecord = (activeEvent.receivedGifts || []).find(r => r.giftId === gift.id) || (activeEvent.receivedGifts || []).find(r => !r.giftId && r.giftTitle === gift.title) || null;
       const buyerName = gift.buyerName || (gift.received > 0 ? (receivedRecord?.guestName || 'Convidado') : null);
       const isPurchased = Boolean(buyerName);
 
@@ -8882,15 +8882,17 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // O cartão inteiro abre o editar; as três bolinhas abrem o menu.
+      // Disponível: o cartão abre o editar. Comprado: não edita mais; o
+      // cartão abre o recado de quem deu em Recados recebidos.
       card.classList.add('gift-card-clicavel');
       card.addEventListener('click', (e) => {
         if (e.target instanceof Element && e.target.closest('.gift-card-mais')) return;
-        openGiftDrawerForEdit(gift);
+        if (isPurchased) abrirRecadoDoPresente(gift);
+        else openGiftDrawerForEdit(gift);
       });
       card.querySelector('.gift-card-mais')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        abrirMenuDoPresente(/** @type {HTMLElement} */ (e.currentTarget), gift);
+        abrirMenuDoPresente(/** @type {HTMLElement} */ (e.currentTarget), gift, isPurchased);
       });
 
 
@@ -9437,6 +9439,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const recadosAbertos = new Set();
   // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
   const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 4.5 12 2.3l3.4 2.2"/><path d="M6 13V5.6a1.1 1.1 0 0 1 1.1-1.1h9.8A1.1 1.1 0 0 1 18 5.6V13"/><path d="M6 8.3 3.6 10a1.5 1.5 0 0 0-.6 1.2V19a1.6 1.6 0 0 0 1.6 1.6h14.8A1.6 1.6 0 0 0 21 19v-7.8a1.5 1.5 0 0 0-.6-1.2L18 8.3"/><path d="M3.4 11l5.7 4.4M20.6 11l-5.7 4.4M3.7 20.1l6.5-5.4a2.8 2.8 0 0 1 3.6 0l6.5 5.4"/><path d="M12 11.2c-1.6-1-2.6-2-2.6-3.1 0-.8.6-1.4 1.3-1.4.6 0 1 .3 1.3.8.3-.5.7-.8 1.3-.8.7 0 1.3.6 1.3 1.4 0 1.1-1 2.1-2.6 3.1Z"/></svg>';
+  /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
+  function abrirRecadoDoPresente(gift) {
+    const ev = getActiveEvent();
+    const recados = ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim());
+    const doPresente = recados.filter(/** @param {any} g */ g => g.giftId === gift.id || (!g.giftId && g.giftTitle === gift.title));
+    recadosBusca = '';
+    recadosAbertos.clear();
+    doPresente.forEach(/** @param {any} g */ g => recadosAbertos.add(String(g.id)));
+    const primeiro = doPresente.length ? recados.indexOf(doPresente[0]) : -1;
+    recadosPagina = primeiro >= 0 ? Math.floor(primeiro / recadosPorPagina) + 1 : 1;
+    abrirSubItem('gifts', 'gift-messages');
+    registrarRota(caminhoSubRota('gifts', 'gift-messages'));
+    const linha = doPresente.length ? document.querySelector(`#recados-raiz .recado-linha[data-recado-id="${CSS.escape(String(doPresente[0].id))}"]`) : null;
+    if (linha) linha.scrollIntoView({ block: 'center' });
+  }
+
   function renderRecadosRecebidos() {
     const raiz = document.getElementById('recados-raiz');
     if (!raiz) return;
@@ -20603,6 +20621,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return extra.tipoEvento ? {} : { type: 'other' };
   }
 
+  /** Presentes pagos pelo convite (presentes_contribuicoes) no formato de receivedGifts. @param {any} row */
+  function presentesPagosDoEvento(row) {
+    const porId = new Map((row.presentes || []).map(/** @param {any} p */ p => [p.id, p]));
+    return (row.presentes_contribuicoes || [])
+      .filter(/** @param {any} c */ c => c.status === 'pago')
+      .sort(/** @param {any} a @param {any} b */ (a, b) => String(b.pago_em || b.created_at).localeCompare(String(a.pago_em || a.created_at)))
+      .map(/** @param {any} c */ c => {
+        const p = porId.get(c.presente_id);
+        return {
+          id: c.id,
+          giftId: c.presente_id,
+          giftTitle: (p && p.nome) || 'Presente',
+          guestName: c.nome,
+          date: formatCommentDate(c.pago_em || c.created_at),
+          amount: Number(c.valor) || 0,
+          method: c.metodo === 'cartao' ? 'Cartão de crédito' : 'Pix',
+          message: c.mensagem || '',
+          videoUrl: c.video_url || null,
+          image: (p && p.imagem_url) || null
+        };
+      });
+  }
+
   function mapEventoRowToEvent(row) {
     const guests = (row.convidados || []).map(mapConvidadoRowToGuest);
     const giftList = (row.presentes || []).map(mapPresenteRowToGift);
@@ -20623,6 +20664,8 @@ document.addEventListener('DOMContentLoaded', () => {
       status: row.status,
       ...(row.extra || {}),
       ...tipoBaseDoExtra(row.extra),
+      // Sempre do banco (o que os convidados pagaram), nunca do extra.
+      receivedGifts: presentesPagosDoEvento(row),
       convidadosConfirmados: pessoasNaLista(confirmed),
       convidadosRecusados: declined.length,
       convidadosPendentes: pending.length,
@@ -20652,7 +20695,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function mapEventToEventoRow(evt, clienteId) {
-    const { id, type, title, hostName, date, slug, theme, coverImage, status, guests, giftList, ...rest } = evt;
+    const { id, type, title, hostName, date, slug, theme, coverImage, status, guests, giftList, receivedGifts, ...rest } = evt;
     return {
       cliente_id: clienteId,
       tipo: normalizeEventTypeForDb(type),
@@ -20672,7 +20715,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadEventsFromSupabase(clienteId) {
     const { data: rows, error } = await supabaseClient
       .from('eventos')
-      .select('*, convidados(*), presentes(*)')
+      .select('*, convidados(*), presentes(*), presentes_contribuicoes(*)')
       .eq('cliente_id', clienteId)
       .is('deleted_at', null)
       .order('created_at', { ascending: true });

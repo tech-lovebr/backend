@@ -19542,6 +19542,18 @@ document.addEventListener('DOMContentLoaded', () => {
         prefs[chave] = input.checked;
         const aviso = document.querySelector(`#config-painel-preferencias [data-salvo-de="${chave}"]`);
         const { error } = await supabaseClient.auth.updateUser({ data: { preferencias: { ...prefs } } }).catch(err => ({ error: err }));
+        // E-mails de marketing: tudo desligado = descadastrado (migration 109);
+        // religar qualquer um volta a receber.
+        const pref = PREFERENCIAS_DO_ANFITRIAO.find(p => p.chave === chave);
+        const email = String((user && user.email) || '').toLowerCase();
+        if (!error && pref && pref.grupo === 'email' && email) {
+          const algumLigado = PREFERENCIAS_DO_ANFITRIAO.some(p => p.grupo === 'email' && prefs[p.chave]);
+          const tabela = supabaseClient.from('email_descadastros');
+          const r = algumLigado
+            ? await tabela.delete().eq('email', email)
+            : await tabela.upsert({ email, origem: 'preferencias' }, { onConflict: 'email' });
+          if (r.error) console.error('Erro ao atualizar descadastro:', r.error);
+        }
         if (!aviso) return;
         aviso.textContent = error ? 'Não salvou' : 'Salvo';
         aviso.classList.toggle('is-erro', !!error);

@@ -8,6 +8,8 @@
 // denúncia, abertura e clique chegam depois pela /api/ses-eventos.
 
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
+const { SESv2Client, SendEmailCommand: SendEmailV2Command } = require("@aws-sdk/client-sesv2");
+const { linkDescadastro, estaDescadastrado, comRodapeDeDescadastro } = require("./_descadastro");
 const { createClient } = require("@supabase/supabase-js");
 
 let cliente = null;
@@ -22,6 +24,21 @@ function ses() {
     });
   }
   return cliente;
+}
+
+// Marketing usa a API v2 do SES, que aceita os cabeçalhos List-Unsubscribe.
+let clienteV2 = null;
+function sesV2() {
+  if (!clienteV2) {
+    clienteV2 = new SESv2Client({
+      region: process.env.AWS_REGION || "us-east-1",
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+    });
+  }
+  return clienteV2;
 }
 
 function supabaseAdmin() {
@@ -69,12 +86,23 @@ async function registrar(linha) {
 /**
  * Envia e registra. Devolve { ok, messageId, erro }.
  * @param {{ para: string|string[], assunto: string, html: string, texto?: string,
- *           de?: string, responderPara?: string|string[], template?: string, categoria?: string }} e
+ *           de?: string, responderPara?: string|string[], template?: string, categoria?: string,
+ *           marketing?: boolean }} e
+ * marketing: um destinatário por envio; pula quem se descadastrou e leva o
+ * link "Descadastrar" no rodapé e no cabeçalho List-Unsubscribe.
  */
 async function enviarEmail(e) {
   const de = e.de || process.env.EMAIL_FROM || "Love <contato@love.com.br>";
   const destinatarios = (Array.isArray(e.para) ? e.para : [e.para]).filter(Boolean);
-  const texto = e.texto || textoDoHtml(e.html);
+  let html = e.html;
+  /** @type {string|null} */ let descadastro = null;
+  if (e.marketing) {
+    if (destinatarios.length !== 1) return { ok: false, erro: "E-mail de marketing vai para um destinatário por vez" };
+    if (await estaDescadastrado(supabaseAdmin(), destinatarios[0])) return { ok: false, descadastrado: true, erro: "descadastrado" };
+    descadastro = linkDescadastro(destinatarios[0]);
+    html = comRodapeDeDescadastro(html, descadastro);
+  }
+  const texto = (e.texto || textoDoHtml(html)) + (descadastro ? `\n\nDescadastrar: ${descadastro}` : "");
   const base = {
     remetente: de,
     destinatario: destinatarios.join(", "),
@@ -87,14 +115,31 @@ async function enviarEmail(e) {
 
   const inicio = Date.now();
   try {
-    const r = await ses().send(new SendEmailCommand({
+    const r = descadastro ? await sesV2().send(new SendEmailV2Command({
+      FromEmailAddress: de,
+      Destination: { ToAddresses: destinatarios },
+      ReplyToAddresses: e.responderPara ? [].concat(e.responderPara) : undefined,
+      Content: {
+        Simple: {
+          Subject: { Data: e.assunto, Charset: "UTF-8" },
+          Body: {
+            Html: { Data: html, Charset: "UTF-8" },
+            Text: { Data: texto, Charset: "UTF-8" },
+          },
+          Headers: [
+            { Name: "List-Unsubscribe", Value: `<${descadastro}>` },
+            { Name: "List-Unsubscribe-Post", Value: "List-Unsubscribe=One-Click" },
+          ],
+        },
+      },
+    })) : await ses().send(new SendEmailCommand({
       Source: de,
       Destination: { ToAddresses: destinatarios },
       ReplyToAddresses: e.responderPara ? [].concat(e.responderPara) : undefined,
       Message: {
         Subject: { Data: e.assunto, Charset: "UTF-8" },
         Body: {
-          Html: { Data: e.html, Charset: "UTF-8" },
+          Html: { Data: html, Charset: "UTF-8" },
           Text: { Data: texto, Charset: "UTF-8" },
         },
       },

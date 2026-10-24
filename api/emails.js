@@ -41,6 +41,8 @@ const TOPICO = "love-ses-eventos";
 const DESTINO = "love-sns";
 const EVENTOS = ["SEND", "REJECT", "BOUNCE", "COMPLAINT", "DELIVERY", "OPEN", "CLICK", "DELIVERY_DELAY", "RENDERING_FAILURE"];
 const MAX_DESTINATARIOS = 50;
+// Categorias que são marketing: levam "Descadastrar" e respeitam email_descadastros.
+const CATEGORIAS_DE_MARKETING = ["Marketing", "Novidades"];
 
 const CACHE_CUSTO = new Map();
 const VALIDADE_CUSTO = 6 * 60 * 60 * 1000;
@@ -339,6 +341,9 @@ async function enviar(corpo) {
 
   const html = layoutLove(limparHtml(corpo.html), await lerLayout());
   const resultados = [];
+  // Marketing e Novidades levam o link de descadastro e pulam quem saiu da lista.
+  const categoria = String(corpo.categoria || "").trim() || "Comunicados";
+  const marketing = CATEGORIAS_DE_MARKETING.includes(categoria);
   // Um envio por destinatário: ninguém vê o e-mail dos outros e cada um tem
   // a própria linha (entregue, bounce...) no registro.
   for (const destinatario of para) {
@@ -348,11 +353,16 @@ async function enviar(corpo) {
       assunto: String(corpo.assunto).trim(),
       html,
       template: String(corpo.template || "").trim() || "Escrito no Admin",
-      categoria: String(corpo.categoria || "").trim() || "Comunicados",
+      categoria,
+      marketing,
     });
-    resultados.push({ para: destinatario, ok: r.ok, erro: r.erro || null });
+    resultados.push({ para: destinatario, ok: r.ok, erro: r.erro || null, descadastrado: Boolean(r.descadastrado) });
   }
-  return { status: 200, json: { enviados: resultados.filter(r => r.ok).length, falhas: resultados.filter(r => !r.ok) } };
+  return { status: 200, json: {
+    enviados: resultados.filter(r => r.ok).length,
+    falhas: resultados.filter(r => !r.ok && !r.descadastrado),
+    descadastrados: resultados.filter(r => r.descadastrado).map(r => r.para),
+  } };
 }
 
 /* ----------------------------------------------------------------- Handler */

@@ -27,7 +27,7 @@
     el.innerHTML = `
       <div class="rc-aviso">
         <div class="rc-aviso-texto">
-          <p class="rc-aviso-titulo">Finalize seu cadastro para liberar sua lista de presentes</p>
+          <p class="rc-aviso-titulo">Finalize seu cadastro para receber o valor dos presentes</p>
           <p class="rc-aviso-sub">Seus convidados só verão os presentes depois que você completar seus dados. Leva menos de 2 minutos.</p>
         </div>
         <div class="rc-aviso-acao"><button type="button" class="rc-botao" data-rc-finalizar>Finalizar cadastro</button></div>

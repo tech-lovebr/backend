@@ -10665,3 +10665,12 @@ html body .cart-sub:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #7
   .cart-resumo-cols { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .cart-resumo-col { border-left: 0; padding-left: 0; }
 }
+
+/* Financeiro: as abas (Financeiro, Cobranças, Contas bancárias) grudadas no
+   topo da caixa, como a Carteira Digital do love.com.br — a linha das abas
+   vira a borda de cima da caixa. */
+html body #payments-view-tabs:not(#love-h-a) { margin-bottom: 0 !important; }
+html body :is(.fin-resumo, .fin-contas):not(#love-h-a):not(#love-h-b) {
+  border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
+}
+html body [data-view-panel="receber"]:not(#love-h-a) { padding-top: 24px; }

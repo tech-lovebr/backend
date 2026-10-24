@@ -937,7 +937,15 @@ document.addEventListener('DOMContentLoaded', () => {
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/configuracoes`, queryParams: { prompt: 'select_account' } }
     });
-    if (error) mensagemDaContaGoogle('Não foi possível conectar com o Google agora. Tente de novo em instantes.', true);
+    if (error) {
+      console.error('Conectar com o Google:', error.code || '', error.message, error);
+      // "Manual linking is disabled": falta ligar "Allow manual linking" no
+      // Supabase (Authentication › Sign In / Providers).
+      const desligado = error.code === 'manual_linking_disabled' || /manual linking/i.test(error.message || '');
+      mensagemDaContaGoogle(desligado
+        ? 'Conectar o Google ainda não está disponível. Fale com o suporte da Love.'
+        : 'Não foi possível conectar com o Google agora. Tente de novo em instantes.', true);
+    }
   });
 
   /* Google desconectado em Contas conectadas: se a pessoa entrar de novo pelo

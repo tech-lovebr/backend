@@ -6329,6 +6329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.markPlatformTaskAchieved?.('registry');
     if (editingGiftId === gift.id) editingGiftId = data.id;
     gift.id = data.id;
+    // Primeiro presente do dono do evento: pede os dados para receber
+    // (js/recebimento.js). Depois que o modal do presente fecha.
+    if (clienteId === usuarioId) setTimeout(() => window.LoveRecebimento?.pedirDadosSeFaltar(), 700);
     return { error: null };
   }
 

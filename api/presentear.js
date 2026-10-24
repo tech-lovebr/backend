@@ -10,14 +10,15 @@
 // valor do presente direto para a conta digital do anfitrião (walletId da
 // subconta, migration 098). O anfitrião recebe o valor exato do presente;
 // a taxa de serviço (paga pelo convidado) fica com a Love e cobre a tarifa
-// do Asaas. Só funciona se o anfitrião tiver ativado o recebimento
-// (contas_recebimento.status = "aprovada").
+// do Asaas. Na primeira compra a conta do anfitrião é aberta na hora
+// (api/_recebimento.js: precisa dos dados salvos, convidados e presentes).
 //
 // Cada presente vira uma contribuição "pendente" (presentear_pelo_convite);
 // o pagamento confirmado chama confirmar_contribuicao (webhook do Asaas ou a
 // consulta GET acima, que a tela do Pix faz a cada poucos segundos).
 
 const { asaas, confirmarPagamento } = require("./_asaas");
+const { contaParaReceber } = require("./_recebimento");
 const { supabaseAdmin } = require("./_ses");
 
 const soDigitos = (v) => String(v || "").replace(/\D/g, "");
@@ -110,13 +111,16 @@ module.exports = async (req, res) => {
     }
     const ids = registrados.map(r => r.id);
 
-    // 2. Conta do anfitrião (precisa estar aprovada).
+    // 2. Conta digital do anfitrião (abre na hora se for a primeira compra).
     const { data: c1 } = await db.from("presentes_contribuicoes").select("evento_id").eq("id", ids[0]).single();
     const { data: evento } = await db.from("eventos").select("cliente_id, titulo").eq("id", c1.evento_id).single();
-    const { data: conta } = await db.from("contas_recebimento").select("wallet_id, status").eq("cliente_id", evento.cliente_id).maybeSingle();
-    if (!conta || conta.status !== "aprovada" || !conta.wallet_id) {
+    const conta = await contaParaReceber(db, evento.cliente_id);
+    if (!conta.walletId) {
       await cancelar(db, ids);
-      return res.status(409).json({ ok: false, erro: "recebimento_inativo", mensagem: "Os anfitriões ainda não ativaram o recebimento dos presentes. Tente de novo mais tarde." });
+      const mensagem = conta.erro === "abrindo"
+        ? "Estamos preparando o recebimento dos anfitriões. Tente de novo em alguns segundos."
+        : "Os anfitriões ainda não ativaram o recebimento dos presentes. Tente de novo mais tarde.";
+      return res.status(409).json({ ok: false, erro: "recebimento_inativo", motivo: conta.erro, mensagem });
     }
 
     const soma = centavos(registrados.reduce((s, r) => s + r.valor, 0));
@@ -138,7 +142,7 @@ module.exports = async (req, res) => {
         dueDate: hojeNoBrasil(1),
         description: `${registrados.length === 1 ? "Presente" : `${registrados.length} presentes`} para ${evento.titulo || "o evento"} (Love)`.slice(0, 500),
         externalReference: ids[0],
-        split: [{ walletId: conta.wallet_id, fixedValue: soma, description: "Presente pela Love" }],
+        split: [{ walletId: conta.walletId, fixedValue: soma, description: "Presente pela Love" }],
       },
     });
     await db.from("presentes_contribuicoes").update({ gateway_ref: cobranca.id }).in("id", ids);

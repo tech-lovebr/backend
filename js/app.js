@@ -13563,6 +13563,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (subId !== 'wallet-budget') closeModal(document.getElementById('modal-setup-budget'));
 
     document.body.classList.add('wallet-mode');
+    fecharDespesa();
     const title = document.getElementById('wallet-header-title');
     const desc = document.getElementById('wallet-header-desc');
     const headerActions = document.getElementById('wallet-header-actions');
@@ -14326,27 +14327,56 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
   }
 
+  // var: pode ser lida antes desta linha rodar (troca de aba na abertura).
+  /** @type {string|null} */
+  var despesaAberta = null;
+  const ICONE_MAIS_LINHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+  /** "2026-11-10" é dia, não instante: lê no fuso local. */
+  const diaDaData = (d) => { if (!d) return null; const x = /^\d{4}-\d{2}-\d{2}$/.test(String(d)) ? new Date(String(d) + 'T12:00:00') : new Date(d); return isNaN(x.getTime()) ? null : x; };
+
+  /** Saldo a pagar e data do próximo pagamento de uma despesa. */
+  function situacaoDaDespesa(exp) {
+    const contrato = Number(exp.actual) || 0;
+    const pago = Number(exp.paid) || 0;
+    const falta = Math.max(0, contrato - pago);
+    let proximo = null;
+    if (falta > 0) {
+      const parcelas = (exp.vencimentos || []).filter(p => p && !p.pago && (p.vencimento || p.data || p.dueDate));
+      const datas = parcelas.map(p => diaDaData(p.vencimento || p.data || p.dueDate)).filter(Boolean).sort((x, y) => x - y);
+      proximo = datas[0] || diaDaData(exp.proximoVencimento);
+    }
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    const atrasado = !!(proximo && proximo < hoje);
+    return { contrato, pago, falta, proximo, atrasado };
+  }
+
   function renderBudgetExpensesTable() {
     const tbody = document.getElementById('budget-expenses-tbody');
     if (!tbody) return;
 
-    const expenses = getBudgetExpenses();
-    const brl = v => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    const brl = v => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     let totalEstimated = 0;
     let totalActual = 0;
     let totalPaid = 0;
+    /** @type {Date|null} */ let proximoGeral = null;
+    let atrasadoGeral = false;
 
-    tbody.innerHTML = expenses.length ? expenses.map((exp) => {
-      const estimatedNum = Number(exp.estimated) || 0;
-      const actualNum = Number(exp.actual) || 0;
-      const paidNum = Number(exp.paid) || 0;
-      const falta = Math.max(0, actualNum - paidNum);
-      const pct = actualNum > 0 ? Math.min(100, Math.round((paidNum / actualNum) * 100)) : 0;
-      totalEstimated += estimatedNum;
-      totalActual += actualNum;
-      totalPaid += paidNum;
+    // Organizada pela data: o próximo pagamento primeiro; sem data depois; quitadas no fim.
+    const expenses = getBudgetExpenses().map(exp => ({ exp, s: situacaoDaDespesa(exp) }))
+      .sort((x, y) => {
+        const peso = (o) => o.s.falta <= 0 ? 2 : (o.s.proximo ? 0 : 1);
+        return peso(x) - peso(y) || ((x.s.proximo ? x.s.proximo.getTime() : 0) - (y.s.proximo ? y.s.proximo.getTime() : 0));
+      });
+
+    tbody.innerHTML = expenses.length ? expenses.map(({ exp, s }) => {
+      totalEstimated += Number(exp.estimated) || 0;
+      totalActual += s.contrato;
+      totalPaid += s.pago;
+      if (s.proximo && (!proximoGeral || s.proximo < proximoGeral)) { proximoGeral = s.proximo; atrasadoGeral = s.atrasado; }
       const temFornecedor = exp.vendor && exp.vendor.trim() !== '';
-
+      const data = s.falta <= 0 && s.contrato > 0
+        ? '<span class="orc-quitado">Quitado</span>'
+        : (s.proximo ? `<span class="${s.atrasado ? 'orc-atrasado' : ''}"${s.atrasado ? ' title="Pagamento atrasado"' : ''}>${s.proximo.toLocaleDateString('pt-BR')}</span>` : '—');
       return `
         <tr data-despesa-id="${escaparHtml(exp.id)}">
           <td>
@@ -14358,23 +14388,14 @@ document.addEventListener('DOMContentLoaded', () => {
               ? `<span class="text-zinc-900">${escaparHtml(exp.vendor)}</span>`
               : `<button type="button" class="orcamento-add-fornecedor" data-despesa-fornecedor="${escaparHtml(exp.id)}">+ Adicionar fornecedor</button>`}
           </td>
-          <td class="whitespace-nowrap">${actualNum > 0 ? brl(actualNum) : '—'}</td>
-          <td class="whitespace-nowrap">${paidNum > 0 ? brl(paidNum) : '—'}</td>
-          <td class="whitespace-nowrap">
-            <span class="block">${actualNum > 0 ? brl(falta) : '—'}</span>
-            ${actualNum > 0 ? `<div class="orcamento-barra orcamento-barra--linha" title="${pct}% pago"><div style="width:${pct}%"></div></div>` : ''}
-          </td>
-          <td class="love-tabela-col-mais">${botaoVerMaisHtml('Ver despesa')}</td>
+          <td class="whitespace-nowrap">${s.pago > 0 ? brl(s.pago) : '—'}</td>
+          <td class="whitespace-nowrap">${s.contrato > 0 ? brl(s.falta) : '—'}</td>
+          <td class="whitespace-nowrap">${data}</td>
+          <td class="love-tabela-col-mais"><button type="button" class="love-tabela-mais orc-abrir" data-orc-abrir="${escaparHtml(exp.id)}" title="Ver despesa" aria-label="Ver despesa">${ICONE_MAIS_LINHA}</button></td>
         </tr>`;
     }).join('') : '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-12">Nenhuma despesa ainda. Use "Adicionar despesa" no topo.</td></tr>';
 
-    // Ver mais (⋯) e "+ Adicionar fornecedor" abrem o drawer da despesa.
-    tbody.querySelectorAll('[data-despesa-id]').forEach(tr => {
-      tr.querySelector('.love-tabela-mais')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        abrirDespesaNoDrawer(tr.dataset.despesaId);
-      });
-    });
+    // "+ Adicionar fornecedor" abre o formulário da despesa já no campo do fornecedor.
     tbody.querySelectorAll('[data-despesa-fornecedor]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -14382,7 +14403,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Resumo do topo: orçamento, custo real, saldo pago, saldo a pagar + barra.
+    // Resumo do topo (mesmo estilo da Carteira Digital).
     const activeEv = getActiveEvent();
     let savedTotal = activeEv && activeEv.budgetTotal;
     if (!savedTotal && activeEv) {
@@ -14393,14 +14414,101 @@ document.addEventListener('DOMContentLoaded', () => {
     const due = Math.max(0, totalActual - totalPaid);
     const pctTotal = totalActual > 0 ? Math.min(100, Math.round((totalPaid / totalActual) * 100)) : 0;
     const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-    set('kpi-budget-total', brl(savedTotal));
-    set('kpi-budget-spent', brl(totalActual));
-    set('kpi-budget-paid-total', brl(totalPaid));
-    set('kpi-budget-due', brl(due));
-    set('kpi-budget-pct', `${pctTotal}% pago`);
-    const barra = document.getElementById('kpi-budget-barra');
-    if (barra) barra.style.width = `${pctTotal}%`;
+    set('orc-total', brl(savedTotal));
+    set('orc-custo', brl(totalActual));
+    set('orc-pago', brl(totalPaid));
+    set('orc-a-pagar', brl(due));
+    set('orc-pct', `${pctTotal}% do custo total`);
+    const proximoEl = document.getElementById('orc-proximo');
+    if (proximoEl) {
+      proximoEl.textContent = proximoGeral
+        ? `${atrasadoGeral ? 'Pagamento atrasado desde' : 'Próximo pagamento em'} ${/** @type {Date} */ (proximoGeral).toLocaleDateString('pt-BR')}.`
+        : (due > 0 ? 'Sem data de pagamento definida.' : 'Nenhum pagamento em aberto.');
+      proximoEl.classList.toggle('orc-atrasado', atrasadoGeral);
+    }
+    // Despesa aberta: atualiza junto.
+    if (despesaAberta) desenharDespesa(despesaAberta);
   }
+
+  // ---- Despesa aberta (+): na mesma caixa da tabela, com a setinha de voltar no título ----
+  function pagamentosDaDespesa(exp) {
+    const nome = String(exp.vendor || '').trim().toLowerCase();
+    const lancados = getPagamentos()
+      .filter(p => p.despesaId === exp.id || (!p.despesaId && nome && String(p.fornecedor || '').trim().toLowerCase() === nome))
+      .map(p => ({ data: diaDaData(p.pagoEm || p.criadoEm), valor: Number(p.valor) || 0, origem: p.origem === 'comprovante' ? 'Comprovante' : 'Lançado no orçamento' }));
+    const parcelas = (exp.vencimentos || []).filter(p => p && p.pago)
+      .map(p => ({ data: diaDaData(p.pagoEm || p.vencimento || p.data || p.dueDate), valor: Number(p.valor || p.value) || 0, origem: 'Parcela do contrato' }));
+    return lancados.concat(parcelas).sort((x, y) => (y.data ? y.data.getTime() : 0) - (x.data ? x.data.getTime() : 0));
+  }
+  function desenharDespesa(id) {
+    const caixa = document.getElementById('orc-detalhe');
+    const exp = getBudgetExpenses().find(e => e.id === id);
+    if (!caixa || !exp) { fecharDespesa(); return; }
+    const s = situacaoDaDespesa(exp);
+    const brl = v => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const pagos = pagamentosDaDespesa(exp);
+    const proxima = s.falta <= 0 && s.contrato > 0 ? 'Quitado'
+      : (s.proximo ? `<span class="${s.atrasado ? 'orc-atrasado' : ''}">${s.proximo.toLocaleDateString('pt-BR')}${s.atrasado ? ' · atrasado' : ''}</span>` : '—');
+    const dado = (rotulo, valor) => `<div class="orc-dado"><p class="cart-rotulo">${rotulo}</p><p class="orc-dado-valor">${valor}</p></div>`;
+    caixa.innerHTML = `
+      <div class="orc-detalhe-dados">
+        ${dado('Item', escaparHtml(exp.item || '—'))}
+        ${dado('Fornecedor', escaparHtml(exp.vendor || '—'))}
+        ${dado('Categoria', escaparHtml(exp.category || 'Geral'))}
+        ${dado('Valor do contrato', s.contrato > 0 ? brl(s.contrato) : '—')}
+        ${dado('Saldo pago', brl(s.pago))}
+        ${dado('Saldo a pagar', s.contrato > 0 ? brl(s.falta) : '—')}
+        ${dado('Próximo pagamento', proxima)}
+      </div>
+      ${exp.doContrato ? '<p class="orc-detalhe-nota">Este item vem de um contrato fechado com o fornecedor.</p>' : '<button type="button" class="cart-link-texto orc-editar" data-orc-editar>Editar despesa</button>'}
+      <h3 class="orc-extrato-titulo">Pagamentos feitos</h3>
+      ${pagos.length ? `
+        <table class="orc-extrato w-full text-left border-collapse font-sans">
+          <thead><tr><th>Data</th><th>Origem</th><th class="text-right">Valor</th></tr></thead>
+          <tbody>${pagos.map(p => `<tr><td class="whitespace-nowrap">${p.data ? p.data.toLocaleDateString('pt-BR') : '—'}</td><td>${escaparHtml(p.origem)}</td><td class="text-right whitespace-nowrap">${brl(p.valor)}</td></tr>`).join('')}</tbody>
+        </table>` : '<p class="orc-extrato-vazio">Nenhum pagamento registrado ainda.</p>'}`;
+  }
+  function abrirDespesa(id) {
+    const exp = getBudgetExpenses().find(e => e.id === id);
+    if (!exp) return;
+    despesaAberta = id;
+    document.querySelector('#wallet-sub-budget .budget-table-full-bleed')?.classList.add('is-detalhe');
+    const caixa = document.getElementById('orc-detalhe');
+    if (caixa) caixa.hidden = false;
+    desenharDespesa(id);
+    // Título = o nome do negócio, com a setinha de voltar à esquerda.
+    const titulo = document.getElementById('wallet-header-title');
+    if (titulo) titulo.textContent = exp.vendor || exp.item || 'Despesa';
+    const voltar = document.getElementById('btn-orc-voltar');
+    if (voltar) voltar.hidden = false;
+    document.getElementById('wallet-header-actions')?.classList.add('hidden');
+    document.querySelector('#wallet-sub-budget .orc-resumo')?.classList.add('hidden');
+    window.scrollTo({ top: 0 });
+  }
+  function fecharDespesa() {
+    const estavaAberta = !!despesaAberta;
+    despesaAberta = null;
+    document.querySelector('#wallet-sub-budget .budget-table-full-bleed')?.classList.remove('is-detalhe');
+    const caixa = document.getElementById('orc-detalhe');
+    if (caixa) { caixa.hidden = true; caixa.innerHTML = ''; }
+    const voltar = document.getElementById('btn-orc-voltar');
+    if (voltar) voltar.hidden = true;
+    document.querySelector('#wallet-sub-budget .orc-resumo')?.classList.remove('hidden');
+    const noOrcamento = !document.getElementById('wallet-sub-budget')?.classList.contains('hidden');
+    if (estavaAberta && noOrcamento) {
+      const titulo = document.getElementById('wallet-header-title');
+      if (titulo) titulo.textContent = 'Orçamento';
+      document.getElementById('wallet-header-actions')?.classList.remove('hidden');
+    }
+  }
+  document.addEventListener('click', (e) => {
+    const alvo = e.target instanceof Element ? e.target : null;
+    if (!alvo) return;
+    const abrir = /** @type {HTMLElement|null} */ (alvo.closest('[data-orc-abrir]'));
+    if (abrir) { e.stopPropagation(); abrirDespesa(abrir.dataset.orcAbrir || ''); return; }
+    if (alvo.closest('#btn-orc-voltar')) { fecharDespesa(); return; }
+    if (alvo.closest('[data-orc-editar]') && despesaAberta) abrirDespesaNoDrawer(despesaAberta);
+  });
 
   // ---- Pagamentos (Extrato): tudo que foi pago — comprovantes enviados e
   // pagamentos lançados no orçamento. Guardado por evento no navegador. ----
@@ -14568,9 +14676,6 @@ document.addEventListener('DOMContentLoaded', () => {
       : '<p class="text-sm text-zinc-500">Nenhum pagamento em aberto. Tudo quitado!</p>';
     openModal(modal);
   }
-  const btnCronograma = document.getElementById('btn-cronograma-pagamentos');
-  btnCronograma?.addEventListener('click', abrirCronogramaDePagamentos);
-  btnCronograma?.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirCronogramaDePagamentos(); } });
 
   window.deleteBudgetExpense = function(expId) {
     let expenses = getBudgetExpenses();
@@ -14627,6 +14732,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('expense-estimated-input').value = fmt(exp.estimated);
         document.getElementById('expense-actual-input').value = fmt(exp.actual);
         document.getElementById('expense-paid-input').value = fmt(exp.paid);
+        const proxima = document.getElementById('expense-next-date-input');
+        if (proxima) proxima.value = /^\d{4}-\d{2}-\d{2}/.test(String(exp.proximoVencimento || '')) ? String(exp.proximoVencimento).slice(0, 10) : '';
       }
       form?.querySelectorAll('input, select').forEach(el => { el.disabled = soLeitura; });
       document.getElementById('btn-submit-add-expense')?.classList.toggle('hidden', soLeitura);
@@ -14760,7 +14867,8 @@ document.addEventListener('DOMContentLoaded', () => {
           category: selectCat ? selectCat.value : 'Local',
           estimated: parseMoney(inputEstimated),
           actual: parseMoney(inputActual),
-          paid: parseMoney(inputPaid)
+          paid: parseMoney(inputPaid),
+          proximoVencimento: (/** @type {HTMLInputElement|null} */ (document.getElementById('expense-next-date-input')))?.value || null
         };
 
         const expenses = getBudgetExpensesProprias();

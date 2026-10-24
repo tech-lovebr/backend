@@ -11688,3 +11688,48 @@ html body button.b2b-cidades-seta:not(#love-h-a):hover { color: #181D24; backgro
 .b2b-cidades-seta svg { width: 16px; height: 16px; }
 body[data-theme="dark"] .b2b-cidades-abas { border-bottom-color: #404040; }
 body[data-theme="dark"] button.b2b-cidades-seta { color: #A1A1AA !important; }
+
+/* ---- Orçamento (Financeiro): resumo no mesmo estilo da Carteira Digital,
+   data do próximo pagamento na tabela e a despesa aberta na mesma caixa ---- */
+html body #wallet-sub-budget .orc-resumo:not(#love-h-a) { padding: 16px 24px 24px; margin-bottom: 24px; }
+html body #wallet-sub-budget .cart-resumo-cols:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 0; }
+html body #wallet-sub-budget .cart-resumo-col:not(#love-h-a) { gap: 0; padding: 0 24px; }
+html body #wallet-sub-budget .cart-resumo-col:first-child:not(#love-h-a) { padding-left: 0; }
+html body #wallet-sub-budget .cart-rotulo:not(#love-h-a) { margin: 0; font-size: 0.8125rem; font-weight: 500; color: #71717A !important; }
+html body #wallet-sub-budget .cart-numero:not(#love-h-a) { margin: 4px 0 0; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 1.75rem; font-weight: 700 !important; letter-spacing: -0.02em; color: #18181B !important; line-height: 1.2; font-variant-numeric: tabular-nums; }
+html body #wallet-sub-budget .cart-dica:not(#love-h-a) { margin: 8px 0 0; font-size: 0.8125rem; color: #71717A !important; }
+html body #wallet-sub-budget button.cart-ver:not(#love-h-a) { margin-top: 14px; font-size: 0.8125rem; text-decoration-color: rgba(24, 59, 84, 0.3); text-underline-offset: 4px; }
+html body #wallet-sub-budget button.cart-ver:not(#love-h-a):hover { text-decoration-color: #183b54; }
+html body #wallet-sub-budget .orc-atrasado:not(#love-h-a), html body #wallet-sub-budget .cart-dica.orc-atrasado:not(#love-h-a) { color: #B42318 !important; font-weight: 500; }
+#wallet-sub-budget .orc-quitado { color: #71717A; }
+html body #wallet-sub-budget button.orc-abrir:not(#love-h-a) svg { width: 18px; height: 18px; }
+/* "+" aberto: some a busca e a tabela; a despesa ocupa a caixa. */
+#wallet-sub-budget .budget-table-full-bleed.is-detalhe > .love-tabela-barra,
+#wallet-sub-budget .budget-table-full-bleed.is-detalhe > table,
+#wallet-sub-budget .budget-table-full-bleed.is-detalhe .love-tabela-rolagem,
+#wallet-sub-budget .budget-table-full-bleed.is-detalhe .guests-pagination { display: none !important; }
+#wallet-sub-budget .orc-detalhe[hidden] { display: none !important; }
+#wallet-sub-budget .orc-detalhe { padding: 24px; }
+#wallet-sub-budget .orc-detalhe-dados { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 24px; }
+html body #wallet-sub-budget .orc-dado-valor:not(#love-h-a) { margin: 4px 0 0; font-size: 0.9375rem; font-weight: 600; color: #18181B !important; font-variant-numeric: tabular-nums; word-break: break-word; }
+html body #wallet-sub-budget .orc-detalhe-nota:not(#love-h-a) { margin: 20px 0 0; font-size: 0.8125rem; color: #71717A !important; }
+html body #wallet-sub-budget button.orc-editar:not(#love-h-a) { margin-top: 20px; font-size: 0.8125rem; text-underline-offset: 4px; }
+html body #wallet-sub-budget .orc-extrato-titulo:not(#love-h-a) { margin: 28px 0 12px; padding-top: 24px; border-top: 1px solid #E4E4E7; font-family: Inter, sans-serif; font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+#wallet-sub-budget .orc-extrato { border: 1px solid #E4E4E7; border-radius: 10px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+#wallet-sub-budget .orc-extrato th, #wallet-sub-budget .orc-extrato td { padding: 10px 16px; font-size: 0.8125rem; border-bottom: 1px solid #F4F4F5; }
+#wallet-sub-budget .orc-extrato tbody tr:last-child td { border-bottom: 0; }
+#wallet-sub-budget .orc-extrato th { font-weight: 500; color: #71717A; background: #FAFAFA; }
+#wallet-sub-budget .orc-extrato td { color: #18181B; font-variant-numeric: tabular-nums; }
+html body #wallet-sub-budget .orc-extrato-vazio:not(#love-h-a) { margin: 0; font-size: 0.8125rem; color: #71717A !important; }
+@media (max-width: 767px) {
+  html body #wallet-sub-budget .cart-resumo-cols:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  html body #wallet-sub-budget .cart-resumo-col:not(#love-h-a) { border-left: 0; padding: 0; }
+  #wallet-sub-budget .orc-detalhe { padding: 20px 16px; }
+  #wallet-sub-budget .orc-detalhe-dados { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+body[data-theme="dark"] #wallet-sub-budget :is(.cart-numero, .orc-dado-valor, .orc-extrato-titulo, .orc-extrato td) { color: #FFFFFF !important; }
+body[data-theme="dark"] #wallet-sub-budget :is(.cart-rotulo, .cart-dica, .orc-quitado, .orc-extrato th) { color: #A1A1AA !important; }
+body[data-theme="dark"] #wallet-sub-budget .orc-extrato { border-color: #404040; }
+body[data-theme="dark"] #wallet-sub-budget .orc-extrato th { background: #2A2A2A; }
+body[data-theme="dark"] #wallet-sub-budget :is(.orc-extrato th, .orc-extrato td, .orc-extrato-titulo) { border-color: #404040; }
+body[data-theme="dark"] #wallet-sub-budget :is(.orc-atrasado, .cart-dica.orc-atrasado) { color: #F97066 !important; }

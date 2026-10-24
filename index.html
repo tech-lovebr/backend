@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261024_cidadesAbas">
+  <link rel="stylesheet" href="css/styles.css?v=20261024_orcamento">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2311,7 +2311,13 @@
 
           <!-- Barra de Título (mesmo padrão do Convite Digital / Mapear Mesas / Meus Presentes) -->
           <div class="builder-toolbar">
-            <h2 id="wallet-header-title" class="floorplan-page-name" style="margin:0;">Carteira Digital</h2>
+            <div class="flex items-center gap-2 min-w-0">
+              <!-- Orçamento › despesa aberta: a setinha volta para a tabela -->
+              <button type="button" id="btn-orc-voltar" class="rfp-voltar-seta" aria-label="Voltar para o orçamento" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <h2 id="wallet-header-title" class="floorplan-page-name" style="margin:0;">Carteira Digital</h2>
+            </div>
             <div id="wallet-header-actions" class="hidden flex items-center gap-2.5 flex-shrink-0">
               <button type="button" id="btn-open-add-expense" class="btn-primary flex-shrink-0 hidden">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -2341,46 +2347,27 @@
           <!-- SUB-PAINEL 2: ORÇAMENTO (Budget Planner - 100% Full Bleed Estilo Joy/Referência) -->
           <div id="wallet-sub-budget" class="wallet-sub-panel hidden space-y-6 w-full">
             
-            <!-- Linha Superior: Resumo e Cards de Ações Rápidas (Estilo Joy/Referência) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
-              
-              <!-- Card 1: Métricas de Orçamento -->
-              <div class="orcamento-resumo bg-white p-5 rounded-[10px] flex flex-col justify-between gap-3">
-                <div class="flex items-center justify-between gap-3">
-                  <button type="button" onclick="checkAndPromptBudgetSetup(true)" class="orcamento-resumo-link" title="Definir orçamento">Orçamento total</button>
-                  <span id="kpi-budget-total" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
+            <!-- Resumo no mesmo estilo da Carteira Digital (rótulo, número grande, dica e link) -->
+            <section class="cart-caixa cart-resumo orc-resumo">
+              <div class="cart-resumo-cols orc-resumo-cols">
+                <div class="cart-resumo-col">
+                  <p class="cart-rotulo">Orçamento total</p>
+                  <p class="cart-numero" id="orc-total">R$ 0,00</p>
+                  <p class="cart-dica">Custo total: <span id="orc-custo">R$ 0,00</span></p>
+                  <button type="button" class="cart-link-texto cart-ver" onclick="checkAndPromptBudgetSetup(true)">Definir orçamento</button>
                 </div>
-                <div class="flex items-center justify-between gap-3">
-                  <span class="text-sm text-zinc-600 font-sans">Custo total real</span>
-                  <span id="kpi-budget-spent" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
+                <div class="cart-resumo-col">
+                  <p class="cart-rotulo">Saldo pago</p>
+                  <p class="cart-numero" id="orc-pago">R$ 0,00</p>
+                  <p class="cart-dica" id="orc-pct">0% do custo total</p>
                 </div>
-                <div class="flex items-center justify-between gap-3">
-                  <span class="text-sm text-zinc-600 font-sans">Saldo pago</span>
-                  <span id="kpi-budget-paid-total" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
-                </div>
-                <div>
-                  <div class="flex items-center justify-between gap-3">
-                    <span class="text-sm text-zinc-600 font-sans">Saldo a pagar</span>
-                    <span id="kpi-budget-due" class="text-sm font-bold text-zinc-900 font-sans">R$ 0,00</span>
-                  </div>
-                  <div class="orcamento-barra mt-2" title="Quanto já foi pago do custo total"><div id="kpi-budget-barra" style="width:0%"></div></div>
-                  <p id="kpi-budget-pct" class="text-[11px] text-zinc-500 mt-1 font-sans">0% pago</p>
+                <div class="cart-resumo-col">
+                  <p class="cart-rotulo">Saldo a pagar</p>
+                  <p class="cart-numero" id="orc-a-pagar">R$ 0,00</p>
+                  <p class="cart-dica" id="orc-proximo">Nenhum pagamento agendado.</p>
                 </div>
               </div>
-
-              <!-- Card 2: Cronograma de Pagamentos (abre as próximas parcelas a pagar) -->
-              <div id="btn-cronograma-pagamentos" role="button" tabindex="0" class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-2xs flex items-center gap-4 hover:border-zinc-300 transition-colors cursor-pointer">
-                <div class="w-11 h-11 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-700 flex-shrink-0">
-                  <svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
-                </div>
-                <div class="min-w-0">
-                  <h4 class="text-sm font-bold text-zinc-900 font-sans">Cronograma de pagamentos</h4>
-                  <p class="text-xs text-zinc-500 font-sans mt-0.5 leading-relaxed">Lembrete de quando os pagamentos vencem</p>
-                </div>
-              </div>
-
-            </div>
-
+            </section>
 
             <!-- TABELA 100% FULL-WIDTH SEM CAIXA OU PADDINGS EXTERNOS (Preenchimento Total) -->
             <div class="w-full overflow-x-auto budget-table-full-bleed">
@@ -2389,9 +2376,9 @@
                   <tr>
                     <th>Item</th>
                     <th>Fornecedor</th>
-                    <th>Valor real</th>
                     <th>Saldo pago</th>
                     <th>Saldo a pagar</th>
+                    <th>Próximo pagamento</th>
                     <th class="love-tabela-col-acoes love-tabela-col-mais"></th>
                   </tr>
                 </thead>
@@ -2399,6 +2386,8 @@
                   <!-- Linhas renderizadas dinamicamente via JS -->
                 </tbody>
               </table>
+              <!-- Despesa aberta (+): na mesma caixa, no lugar da tabela -->
+              <div id="orc-detalhe" class="orc-detalhe" hidden></div>
             </div>
 
           </div>
@@ -4952,6 +4941,12 @@
               <input type="text" id="expense-paid-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-emerald-700 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
             </div>
           </div>
+
+          <!-- Próximo pagamento: aparece na tabela do orçamento (vermelho se atrasar) -->
+          <div class="space-y-1.5">
+            <label for="expense-next-date-input" class="block text-xs font-bold text-zinc-700 font-sans">Próximo pagamento</label>
+            <input type="date" id="expense-next-date-input" class="w-full px-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm text-zinc-800 focus:outline-none font-sans bg-white">
+          </div>
         </div>
 
         <!-- Botão Adicionar Despesa com a Cor Secundária (#5c7aaa) -->
@@ -5549,7 +5544,7 @@
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
-  <script src="js/app.js?v=20261024_cidadesAbas"></script>
+  <script src="js/app.js?v=20261024_orcamento"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
   <script src="js/pedidos-orcamento.js?v=20261024_paginacao"></script>

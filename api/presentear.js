@@ -168,6 +168,13 @@ module.exports = async (req, res) => {
         .update({ gateway_ref: cobranca.id, gateway: "asaas", repasse: partes[i], comissao_love: comissoes[i] })
         .eq("id", registrados[i].id);
     }
+    // TPV: parte de cada presente no total pago pelo convidado (migration 105).
+    // Separado: sem a coluna, o resto da compra segue igual.
+    const pagos = dividir(registrados.map(r => r.valor), total);
+    for (let i = 0; i < registrados.length; i++) {
+      const { error } = await db.from("presentes_contribuicoes").update({ valor_pago: pagos[i] }).eq("id", registrados[i].id);
+      if (error) { console.error("valor_pago:", error.message); break; }
+    }
 
     const resposta = { ok: true, metodo, pagamento: cobranca.id, contribuicoes: ids, soma, taxa, total };
     if (metodo === "pix") {

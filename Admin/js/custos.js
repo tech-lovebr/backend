@@ -611,12 +611,22 @@ function cardDetalhe(titulo, sub, corpo) {
 
 function cardDiagnostico(saude, resumo, dicas) {
   const [rotulo, classe] = { saudavel: ['Saudável', 'badge-success'], atencao: ['Atenção', 'badge-warning'], alto: ['Alto', 'badge-danger'] }[saude];
-  return cardDetalhe('Diagnóstico', '', `
-    <div class="custo-diagnostico">
-      <div class="custo-saude">${badge(rotulo, classe)}</div>
-      <p class="custo-resumo">${resumo}</p>
-      ${dicas.length ? `<p class="custo-dicas-titulo">Como reduzir</p><ol class="custo-dicas">${dicas.map(d => `<li>${d}</li>`).join('')}</ol>` : ''}
-    </div>`);
+  // Acordeão: abre fechado, só com o título e a saúde do custo.
+  return `
+    <details class="card custo-acordeao">
+      <summary class="card-head">
+        <div><h2>Diagnóstico</h2></div>
+        <span class="custo-acordeao-dir">${badge(rotulo, classe)}
+          <svg class="custo-acordeao-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6l6 -6"/></svg>
+        </span>
+      </summary>
+      <div class="card-body">
+        <div class="custo-diagnostico">
+          <p class="custo-resumo">${resumo}</p>
+          ${dicas.length ? `<p class="custo-dicas-titulo">Como reduzir</p><ol class="custo-dicas">${dicas.map(d => `<li>${d}</li>`).join('')}</ol>` : ''}
+        </div>
+      </div>
+    </details>`;
 }
 
 function tabelaDetalhe(cabecalho, linhas, vazio = 'Nada cobrado ainda') {
@@ -732,7 +742,7 @@ function detalheVercel(l) {
       ${fatura}
       <div class="custo-detalhe-lado">${cardDiagnostico(saude, resumo, dicas)}${previsao}</div>
     </section>
-    ${cardDetalhe('De onde vem o custo', 'Serviços da Vercel neste ciclo. Consumo é antes do crédito; Cobrado é o que entra na fatura.',
+    ${cardDetalhe('Origem do custo', '',
       tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado', 'Parte'], servicos))}
     ${cardDetalhe('Por projeto', 'Quanto cada site consumiu neste ciclo', tabelaDetalhe(['Projeto', 'Build', 'Consumo', 'Parte'], projetos))}
     ${historicoDoItem(l)}`;
@@ -776,8 +786,8 @@ function detalheAws(l) {
   const diag = cardDiagnostico(previsto < 5 ? 'saudavel' : (previsto < 20 ? 'atencao' : 'alto'),
     previsto < 5
       ? 'Custo baixo e proporcional ao uso: a Amazon cobra por e-mail enviado, sem mensalidade. Mesmo 10 mil e-mails num mês custam cerca de US$ 1.'
-      : 'O consumo subiu mais que o normal para e-mails. Veja em "De onde vem o custo" qual serviço puxou o valor.',
+      : 'O consumo subiu mais que o normal para e-mails. Veja em "Origem do custo" qual serviço puxou o valor.',
     previsto < 5 ? [] : ['Conferir em E-mails quantos disparos saíram no mês.', 'Verificar se algum serviço da AWS ficou ligado sem uso.']);
   return `<section class="custo-detalhe">${resumo}<div class="custo-detalhe-lado">${diag}</div></section>
-    ${cardDetalhe('De onde vem o custo', 'Serviços da AWS por mês', tabelaDetalhe(['Mês', 'Serviço', 'Valor'], servicos, 'Nenhuma cobrança da AWS ainda'))}`;
+    ${cardDetalhe('Origem do custo', '', tabelaDetalhe(['Mês', 'Serviço', 'Valor'], servicos, 'Nenhuma cobrança da AWS ainda'))}`;
 }

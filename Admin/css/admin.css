@@ -4045,3 +4045,12 @@ button.dash-chip.is-apagada .dash-chip-cor { opacity: .4; }
 .campo-dinheiro { position: relative; display: block; }
 .campo-dinheiro-simbolo { position: absolute; left: .875rem; top: 50%; transform: translateY(-50%); font-size: .875rem; font-weight: 500; color: #71717A; pointer-events: none; }
 .campo-dinheiro .field-input { padding-left: 2.75rem; font-variant-numeric: tabular-nums; }
+
+/* Custos: diagnóstico em acordeão, fechado ao abrir o serviço. */
+.custo-acordeao > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.custo-acordeao > summary::-webkit-details-marker { display: none; }
+.custo-acordeao:not([open]) > summary { border-bottom: 0; }
+.custo-acordeao-dir { display: inline-flex; align-items: center; gap: .625rem; }
+.custo-acordeao-seta { width: 16px; height: 16px; color: #71717A; transition: transform .15s ease; }
+.custo-acordeao[open] .custo-acordeao-seta { transform: rotate(180deg); }
+.custo-acordeao > summary:hover .custo-acordeao-seta { color: #181D24; }

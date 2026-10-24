@@ -11542,3 +11542,9 @@ html body .conta-endereco-linha:not(#love-h-a) { display: grid; grid-template-co
 
 /* Suas informações: campo obrigatório vazio ao salvar. */
 html body #view-event-os-dashboard #form-user-settings .field-input.is-faltando:not(#love-h-a) { border-color: #B42318 !important; }
+
+/* Convite publicado: presentes indisponíveis (cadastro do anfitrião incompleto). */
+.convite-presentes-indisponivel { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 16px; text-align: center; font-size: 0.9375rem; line-height: 1.5; color: #71717A; }
+.convite-presentes-indisponivel svg { width: 40px; height: 40px; margin-bottom: 8px; color: var(--bx-primary, #183b54); }
+.convite-presentes-indisponivel p { margin: 0; max-width: 320px; }
+.convite-presentes-indisponivel .convite-presentes-indisponivel-titulo { font-size: 1.0625rem; font-weight: 600; color: #18181B; }

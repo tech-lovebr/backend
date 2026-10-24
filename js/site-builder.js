@@ -4417,6 +4417,17 @@ function renderSobrePublico(root) {
 
 function renderPresentesPublicos(root) {
   if (!conviteDadosPublicos) return semDadosPublicos(root, 'Lista de Presentes');
+  // Anfitrião ainda não finalizou o cadastro (migration 101): sem presentes,
+  // para o convidado não tentar comprar e dar erro.
+  if (conviteDadosPublicos.recebimento_pronto === false) {
+    root.innerHTML = telaPublicaHtml('Lista de Presentes', `
+      <div class="convite-presentes-indisponivel" role="status">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9 3 11 5 12 8c1-3 3-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>
+        <p class="convite-presentes-indisponivel-titulo">A lista de presentes ainda não está disponível</p>
+        <p>Os anfitriões estão finalizando a lista. Volte em breve para escolher um presente.</p>
+      </div>`);
+    return;
+  }
   const presentes = conviteDadosPublicos.presentes || [];
   const brl = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 

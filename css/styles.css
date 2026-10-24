@@ -11452,3 +11452,51 @@ html body .convite-form textarea.convite-recado-texto:not(#love-h-a) { width: 10
 .convite-recado-video-acoes { display: flex; gap: 1rem; margin-top: 0.5rem; }
 html body .convite-recado-video-acoes button:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 0.8125rem; font-weight: 600; color: #3F3F46; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(0, 0, 0, 0.2); }
 html body .convite-recado-video-acoes button:not(#love-h-a):hover { color: #181D24; }
+
+/* ==========================================================================
+   Recebimento dos presentes (js/recebimento.js): aviso em Meus presentes e
+   pop-up "Ativar recebimento" (dados + verificação facial).
+   ========================================================================== */
+#recebimento-aviso:empty { display: none; }
+.rc-aviso { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; padding: 20px 24px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; }
+.rc-aviso-titulo { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: #18181B; }
+.rc-aviso-sub { margin: 4px 0 0; font-size: 14px; line-height: 1.5; color: #71717A; }
+.rc-passos { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 14px 0 0; padding: 0; list-style: none; }
+.rc-passo { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #3F3F46; }
+.rc-passo-bola { width: 20px; height: 20px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #A1A1AA; border-radius: 999px; color: #FFFFFF; background: #FFFFFF; }
+.rc-passo.is-feito { color: #71717A; }
+.rc-passo.is-feito .rc-passo-bola { background: #183b54; border-color: #183b54; }
+.rc-passo-bola svg { width: 12px; height: 12px; }
+html body button.rc-link:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(24, 59, 84, 0.3); }
+.rc-aviso-acao { flex-shrink: 0; }
+html body button.rc-botao:not(#love-h-a) { height: 40px; padding: 0 18px; background: #183b54; border: 1px solid #183b54; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer; white-space: nowrap; box-shadow: none; }
+html body button.rc-botao:not(#love-h-a):hover { background: #122c3f; border-color: #122c3f; }
+html body button.rc-botao:not(#love-h-a):disabled { opacity: 0.5; cursor: default; }
+html body button.rc-cancelar:not(#love-h-a) { padding: 0 6px; height: 40px; background: none; border: 0; font-family: inherit; font-size: 14px; font-weight: 600; color: #52525B; cursor: pointer; }
+html body button.rc-cancelar:not(#love-h-a):hover { color: #181D24; }
+@media (max-width: 700px) {
+  .rc-aviso { flex-direction: column; align-items: stretch; }
+}
+
+.rc-fundo { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.45); }
+.rc-popup { width: 100%; max-width: 560px; max-height: calc(100vh - 32px); overflow-y: auto; background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+.rc-popup-corpo { padding: 28px; }
+html body .rc-popup-titulo:not(#love-h-a) { margin: 0; font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+.rc-popup-sub { margin: 6px 0 20px; font-size: 14px; line-height: 1.5; color: #71717A; }
+.rc-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.rc-campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rc-inteiro { grid-column: 1 / -1; }
+.rc-rotulo { font-size: 14px; font-weight: 600; color: #18181B; }
+html body .rc-campo input:not(#love-h-a), html body .rc-campo select:not(#love-h-a) { width: 100%; height: 43px; padding: 0 14px; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; font-family: inherit; font-size: 14px; color: #18181B; box-shadow: none; outline: none; }
+html body .rc-campo input:not(#love-h-a):focus, html body .rc-campo select:not(#love-h-a):focus { border-color: #181D24; }
+.rc-erro { font-size: 12px; color: #B42318; }
+.rc-erro-geral { margin: 16px 0 0; font-size: 13px; color: #B42318; }
+.rc-nota { margin: 20px 0 0; font-size: 12px; line-height: 1.5; color: #A1A1AA; }
+.rc-preparando { margin: 0; font-size: 14px; color: #52525B; }
+.rc-rodape { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+@media (max-width: 560px) {
+  .rc-form { grid-template-columns: minmax(0, 1fr); }
+  .rc-popup-corpo { padding: 20px; }
+}
+body[data-theme="dark"] .rc-aviso, body[data-theme="dark"] .rc-popup { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .rc-aviso-titulo, body[data-theme="dark"] .rc-popup-titulo, body[data-theme="dark"] .rc-rotulo { color: #FFFFFF !important; }

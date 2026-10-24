@@ -4267,3 +4267,11 @@ body .painel-linha-cabeca .painel-linha-voltar:hover { opacity: .75; }
 .custo-detalhe-lado > .card:only-child { flex: 1; }
 .custo-detalhe-lado:empty { display: none; }
 .custo-detalhe:has(> .custo-detalhe-lado:empty) { grid-template-columns: minmax(0, 1fr); }
+
+/* Abas que ficam abaixo dos cards (fora da faixa azul, ex.: Custos): voltam
+   ao escuro, com a ativa na cor do logo (#1D1D1D). Só as abas logo abaixo do
+   título, sobre a faixa, ficam em branco. */
+body.com-faixa .admin-content > :not(.admin-header-bar) + .conteudo-tabs { border-bottom-color: var(--border); }
+body.com-faixa .admin-content > :not(.admin-header-bar) + .conteudo-tabs .conteudo-tab { color: #71717A; }
+body.com-faixa .admin-content > :not(.admin-header-bar) + .conteudo-tabs .conteudo-tab:hover { color: #1D1D1D; }
+body.com-faixa .admin-content > :not(.admin-header-bar) + .conteudo-tabs .conteudo-tab.is-active { color: #1D1D1D; border-bottom-color: #1D1D1D; }

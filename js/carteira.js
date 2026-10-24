@@ -364,7 +364,7 @@
     return `
       <section class="cart-caixa cart-verif">
         <div class="cart-verif-faixa">
-          <h3>Complete as etapas e tenha seu dinheiro mais seguro na Love!</h3>
+          <h3>Complete as etapas e tenha seu dinheiro mais seguro na <img src="assets/logo-white.png" alt="Love" class="cart-verif-logo">!</h3>
           <p>Depois você já vai poder realizar o seu primeiro saque com segurança.</p>
         </div>
         <div class="cart-verif-cartao" data-cart-verif-cartao>${corpo}</div>

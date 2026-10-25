@@ -12086,3 +12086,17 @@ html body #view-event-os-dashboard .love-tabela-caixa.budget-table-full-bleed:no
   body[data-theme="dark"] .submenu-celular .submenu-celular-item { color: #A1A1AA; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #333333; border-color: #404040; color: #FFFFFF; }
 }
+
+/* Menu lateral: Financeiro sai (abre pelo menu do perfil) e o chat entra no
+   lugar dele, no desktop e na barra de baixo do celular. O botão do
+   Financeiro continua no HTML, escondido, porque o menu do perfil o usa. */
+html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="wallet"]:not(#love-h-a) { display: none !important; }
+html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a) {
+  position: absolute; top: 4px; left: calc(50% + 4px); min-width: 16px; height: 16px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center; border-radius: 6px; pointer-events: none;
+}
+html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: none !important; }
+@media (max-width: 768px) {
+  html body .sidebar-icon-rail .rail-chat-btn:not(#love-h-a) { order: 5 !important; }
+  html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a) { top: 6px; left: calc(50% + 5px); }
+}

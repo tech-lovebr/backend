@@ -19009,7 +19009,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tabB2B.classList.add('active');
     }
     document.querySelectorAll('.rail-icon-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.railTab === 'b2b');
+      btn.classList.toggle('active', viewId === 'messages' ? btn.id === 'btn-dash-header-chat' : btn.dataset.railTab === 'b2b');
     });
 
     const exploreView = document.getElementById('b2b-explore-view');

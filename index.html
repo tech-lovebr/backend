@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261025_saldoHome">
+  <link rel="stylesheet" href="css/styles.css?v=20261025_chatRail">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -726,17 +726,6 @@
       <!-- Right: Chat + Notificações (Ícones adaptativos ao tema) -->
       <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-auto">
         
-        <!-- Botão Mensagens / Chat (balão de conversa - Direciona para o Chat B2B) -->
-        <div class="relative">
-          <button id="btn-dash-header-chat" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Mensagens" aria-label="Mensagens">
-            <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
-            </svg>
-            <span class="badge-header-chat hidden absolute top-0.5 right-0.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold flex items-center justify-center font-sans leading-none shadow-xs" style="background-color: #c7305b !important; color: #FFFFFF !important;">0</span>
-            <span class="sr-only">Mensagens</span>
-          </button>
-        </div>
-
         <!-- Notificações: abre a página própria /notificacoes (ver
              openNotificationsPage em app.js) em vez de um dropdown. -->
         <button id="btn-notifications-menu" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Notificações" aria-label="Notificações">
@@ -887,6 +876,16 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5Zm0 0h-4a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h4M17 14h.01" />
           </svg>
           <span class="rail-rotulo">Financeiro</span>
+        </button>
+
+        <!-- 5b. MENSAGENS (chat com fornecedores) — no lugar do Financeiro, que
+             agora abre pelo menu do perfil. Mesmo id do antigo botão do topo. -->
+        <button id="btn-dash-header-chat" type="button" class="rail-icon-btn rail-chat-btn relative order-4 md:order-5" aria-label="Mensagens">
+          <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
+            </svg>
+          <span class="badge-header-chat rail-chat-selo hidden">0</span>
+          <span class="rail-rotulo">Mensagens</span>
         </button>
 
         <!-- 6. FORNECEDORES (👑 Coroa - 6º no Desktop, 5º no Mobile) -->
@@ -5556,13 +5555,13 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261025_saldoHome"></script>
+  <script src="js/app.js?v=20261025_chatRail"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
-  <script src="js/pedidos-orcamento.js?v=20261025_saldoHome"></script>
+  <script src="js/pedidos-orcamento.js?v=20261025_chatRail"></script>
   <script src="js/contratos.js?v=20261023_contratos2"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261025_saldoHome"></script>
+  <script src="js/site-builder.js?v=20261025_chatRail"></script>
 </body>
 </html>

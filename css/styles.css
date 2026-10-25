@@ -12729,3 +12729,38 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #notifications-list-container .notification-row > div:last-child > div:last-child:not(#love-h-a) { align-items: flex-start !important; padding-top: 2px; }
   html body #btn-notifications-mark-all-read:not(#love-h-a) { height: 40px !important; padding: 0 4px !important; background: transparent !important; border: 0 !important; color: #183b54 !important; font-size: 14px !important; font-weight: 600 !important; }
 }
+
+/* ==========================================================================
+   Celular (só até 768px): Home como app.
+   Ordem: Olá → foto do convite + link do site → Presentes → Convidados →
+   atalhos em bolinhas (Organização e Benefícios, 4 cada).
+   Sem data/local ao lado do nome, sem "Benefícios & Serviços", sem "Mais
+   Recursos" e sem o Guia de primeiros passos. Desktop não muda.
+   ========================================================================== */
+.home-atalhos-celular { display: none; }
+@media (max-width: 768px) {
+  html body #tab-overview > .grid.lg\:grid-cols-12:not(#love-h-a) { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 20px !important; }
+  html body #tab-overview > .grid.lg\:grid-cols-12 > div:not(#love-h-a) { display: contents !important; }
+  html body #tab-overview > .grid.lg\:grid-cols-12 > div > *:not(#love-h-a) { margin: 0 !important; }
+  html body #tab-overview .home-saudacao:not(#love-h-a) { order: 1; }
+  html body #tab-overview #dashboard-promo-carousel:not(#love-h-a) { order: 2; }
+  html body #tab-overview #home-link-convite:not(#love-h-a) { order: 3; margin-top: -8px !important; }
+  html body #tab-overview .home-kpis:not(#love-h-a) { order: 4; }
+  html body #tab-overview #home-atalhos-celular:not(#love-h-a) { order: 5; }
+  html body #tab-overview :is(#dash-hub-event-date-badge, #dash-hub-event-location-badge, .home-beneficios, .home-mais-recursos, #quick-start-guide-widget):not(#love-h-a) { display: none !important; }
+  html body #tab-overview #dash-hub-title:not(#love-h-a) { font-size: 24px !important; letter-spacing: -0.025em; }
+
+  /* Atalhos em bolinhas */
+  .home-atalhos-celular { display: flex; flex-direction: column; gap: 28px; padding-bottom: 8px; font-family: Inter, sans-serif; }
+  .home-atalhos-titulo { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .home-atalhos-titulo h3 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; }
+  .home-atalhos-titulo span { flex: 1 1 auto; height: 1px; background: #E4E4E7; }
+  .home-atalhos-grade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .home-atalho { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0; background: transparent; border: 0; cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+  .home-atalho-bola { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #FFFFFF; background: #183b54; }
+  .is-beneficios .home-atalho-bola { background: #537bae; }
+  .home-atalho-bola svg { width: 28px; height: 28px; }
+  .home-atalho-nome { font-size: 13px; font-weight: 500; line-height: 1.3; color: #18181B; text-align: center; }
+  body[data-theme="dark"] .home-atalhos-titulo h3, body[data-theme="dark"] .home-atalho-nome { color: #FFFFFF; }
+  body[data-theme="dark"] .home-atalhos-titulo span { background: #333333; }
+}

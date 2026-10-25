@@ -10954,3 +10954,6 @@ html body .produtos-barra-caixa .produtos-busca:not(#love-h-a) { width: 280px; m
 html body .produtos-total:not(#love-h-a) { margin: 0; font-size: 14px; color: #52525B; }
 html body .produtos-total b:not(#love-h-a) { color: #18181B; font-weight: 700; }
 html body.produto-editor-aberto .produtos-barra-caixa:not(#love-h-a) { display: none !important; }
+
+/* Suas informações: abas grudadas no topo da caixa (como Meus convidados), sem o espaço do painel entre elas. */
+html body .settings-shell [data-settings-panel] > .settings-info-abas + .settings-info-caixa:not(#love-h-a) { margin-top: -1.5rem !important; }

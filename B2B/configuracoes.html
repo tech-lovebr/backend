@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=778">
+  <link rel="stylesheet" href="css/styles.css?v=779">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -84,7 +84,7 @@
                 <!-- Razão social e CNPJ, depois de preenchidos, não mudam mais;
                      só o nome fantasia (o que os clientes veem) muda. -->
                 <div>
-                  <label for="profile-razao-social" class="field-label">Razão social</label>
+                  <label for="profile-razao-social" class="field-label">Razão social <span style="color:#DC2626;">*</span></label>
                   <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
                 </div>
                 <div>
@@ -114,7 +114,7 @@
                 </div>
                 <div class="settings-endereco-linha settings-endereco-linha--metade">
                   <div data-so-cnpj>
-                    <label for="profile-tipo-empresa" class="field-label">Tipo de empresa</label>
+                    <label for="profile-tipo-empresa" class="field-label">Tipo de empresa <span style="color:#DC2626;">*</span></label>
                     <select id="profile-tipo-empresa" class="field-select">
                       <option value="">Escolha</option>
                       <option value="MEI">MEI</option>
@@ -124,7 +124,7 @@
                     </select>
                   </div>
                   <div>
-                    <label for="profile-faturamento" class="field-label">Faturamento mensal</label>
+                    <label for="profile-faturamento" class="field-label">Faturamento mensal <span style="color:#DC2626;">*</span></label>
                     <select id="profile-faturamento" class="field-select">
                       <option value="">Escolha</option>
                       <option value="5000">Até R$ 5 mil</option>
@@ -138,21 +138,21 @@
                 </div>
                 <div class="settings-endereco-linha settings-endereco-linha--metade">
                   <div>
-                    <label for="profile-cep" class="field-label">CEP</label>
+                    <label for="profile-cep" class="field-label">CEP <span style="color:#DC2626;">*</span></label>
                     <input id="profile-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000" autocomplete="postal-code">
                   </div>
                   <div>
-                    <label for="profile-bairro" class="field-label">Bairro</label>
+                    <label for="profile-bairro" class="field-label">Bairro <span style="color:#DC2626;">*</span></label>
                     <input id="profile-bairro" type="text" class="field-input">
                   </div>
                 </div>
-                <div>
-                  <label for="profile-address" class="field-label">Endereço</label>
-                  <input id="profile-address" type="text" class="field-input" placeholder="Rua, avenida…" autocomplete="address-line1">
-                </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-trio">
                   <div>
-                    <label for="profile-numero" class="field-label">Número</label>
+                    <label for="profile-address" class="field-label">Endereço <span style="color:#DC2626;">*</span></label>
+                    <input id="profile-address" type="text" class="field-input" placeholder="Rua, avenida…" autocomplete="address-line1">
+                  </div>
+                  <div>
+                    <label for="profile-numero" class="field-label">Número <span style="color:#DC2626;">*</span></label>
                     <input id="profile-numero" type="text" class="field-input">
                   </div>
                   <div>
@@ -175,7 +175,7 @@
 
               <!-- Pessoal (responsável pela conta) -->
               <div class="settings-info-painel" data-info-painel="pessoal" hidden>
-                <p class="settings-info-dica">O responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
+                <p class="settings-info-dica">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
                 <div>
                   <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
@@ -190,12 +190,12 @@
                     <input id="profile-resp-cpf" type="text" inputmode="numeric" maxlength="14" class="field-input" placeholder="000.000.000-00">
                   </div>
                   <div>
-                    <label for="profile-birthdate" class="field-label">Data de nascimento</label>
+                    <label for="profile-birthdate" class="field-label">Data de nascimento <span class="obrig-so-cpf" style="color:#DC2626;">*</span></label>
                     <input id="profile-birthdate" type="text" class="field-input" readonly autocomplete="off" placeholder="dd/mm/aaaa">
                   </div>
                 </div>
                 <div>
-                  <label for="profile-phone" class="field-label">Número de celular</label>
+                  <label for="profile-phone" class="field-label">Número de celular <span style="color:#DC2626;">*</span></label>
                   <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
                 </div>
               </div>

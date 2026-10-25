@@ -10957,3 +10957,9 @@ html body.produto-editor-aberto .produtos-barra-caixa:not(#love-h-a) { display: 
 
 /* Suas informações: abas grudadas no topo da caixa (como Meus convidados), sem o espaço do painel entre elas. */
 html body .settings-shell [data-settings-panel] > .settings-info-abas + .settings-info-caixa:not(#love-h-a) { margin-top: -1.5rem !important; }
+
+/* Suas informações: endereço com número e complemento menores na mesma linha;
+   data de nascimento obrigatória só para quem usa CPF (exigência do Asaas). */
+html body .settings-endereco-trio:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 1fr) 96px 140px; gap: 12px; }
+@media (max-width: 640px) { html body .settings-endereco-trio:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 96px; } html body .settings-endereco-trio > :first-child:not(#love-h-a) { grid-column: 1 / -1; } }
+html body:not(.doc-cpf) .obrig-so-cpf:not(#love-h-a) { display: none; }

@@ -14,7 +14,12 @@
    <iframe> no meio do texto, onde o cursor estiver.
    ========================================================================== */
 
-const PLATAFORMA = document.body.dataset.plataforma;
+/* Páginas do CMS (banners.html e ajuda.html): data-visao fixa a tela e
+   ?p=cliente|fornecedor escolhe a plataforma pelas abas no topo. */
+const VISAO_FIXA = document.body.dataset.visao || '';
+const PLATAFORMA = VISAO_FIXA
+  ? (new URLSearchParams(location.search).get('p') === 'fornecedor' ? 'fornecedor' : 'cliente')
+  : document.body.dataset.plataforma;
 
 /** Quantas imagens o carrossel da home aceita. */
 const MAX_BANNERS = 5;
@@ -54,8 +59,9 @@ let GRUPO_ATUAL = GRUPOS[0].key;
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
-  // Uma aba só: a barra de abas não diz nada e some.
-  document.getElementById('conteudo-tabs').hidden = true;
+  // Nas páginas do CMS, as abas trocam a plataforma; nas antigas, somem.
+  if (VISAO_FIXA) renderAbasDaPlataforma();
+  else document.getElementById('conteudo-tabs').hidden = true;
 
   BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
     if (VISAO === 'ajuda') abrirFormularioPergunta(null);
@@ -89,6 +95,10 @@ const ATALHOS = [
 const TITULO_DA_VISAO = { banners: 'Banners', ajuda: 'Central de ajuda', workshops: 'Workshops' };
 
 function visaoDaUrl() {
+  if (VISAO_FIXA) {
+    return VISAO_FIXA === 'banners' && PLATAFORMA === 'fornecedor' && new URLSearchParams(location.search).get('v') === 'workshops'
+      ? 'workshops' : VISAO_FIXA;
+  }
   const v = location.hash.slice(1);
   return ATALHOS.some(a => a.id === v && !a.href && (!a.so || a.so === PLATAFORMA)) ? v : '';
 }
@@ -96,7 +106,21 @@ function visaoDaUrl() {
 let VISAO = visaoDaUrl();
 
 /** Título da página com a seta de voltar quando está dentro de um atalho. */
+/** Abas Anfitriões / Fornecedores (e Workshops do Hub, em Banners). */
+function renderAbasDaPlataforma() {
+  const host = document.getElementById('conteudo-tabs');
+  const v = new URLSearchParams(location.search).get('v');
+  const abas = [
+    ['?p=cliente', 'Anfitriões', PLATAFORMA === 'cliente'],
+    ['?p=fornecedor', 'Fornecedores', PLATAFORMA === 'fornecedor' && v !== 'workshops'],
+    ...(VISAO_FIXA === 'banners' ? [['?p=fornecedor&v=workshops', 'Workshops do Hub', PLATAFORMA === 'fornecedor' && v === 'workshops']] : [])
+  ];
+  host.innerHTML = abas.map(([href, rotulo, ativa]) =>
+    `<a class="conteudo-tab ${ativa ? 'is-active' : ''}" href="${href}">${rotulo}</a>`).join('');
+}
+
 function ajustarCabecalho() {
+  if (VISAO_FIXA) return; // título fixo da página (data-title)
   const host = document.querySelector('.header-bar-titulo');
   if (!host) return;
   const titulo = TITULO_DA_VISAO[VISAO];

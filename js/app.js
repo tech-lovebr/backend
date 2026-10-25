@@ -2793,6 +2793,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => ajustarTextosAutomaticos(document.getElementById('editor-form-data') || document), 0);
       } else if (subId === 'about') {
         title.textContent = 'Co-anfitriões';
+        window.loveFecharConviteOrganizador?.();
         renderHostsTeam();
       } else if (subId === 'invite-online') {
         title.textContent = 'Convite online';
@@ -6961,8 +6962,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.toggle('love-sem-acesso', !areaPermitida(tab));
     });
     document.querySelectorAll('.btn-trigger-withdraw-pix').forEach(b => b.classList.toggle('hidden', souOrganizador));
-    const blocoConvite = document.getElementById('organizadores-convidar');
-    if (blocoConvite) blocoConvite.classList.toggle('hidden', souOrganizador);
+    // Convidar co-anfitrião: só o criador (botão Adicionar novo do cabeçalho).
+    document.getElementById('btn-org-adicionar')?.classList.toggle('hidden', souOrganizador);
     const semCadastro = !!(window.loveClienteProfile && window.loveClienteProfile.colaboradorSemCadastro);
     const btnNovoEvento = document.getElementById('btn-dropdown-create-new-event');
     if (btnNovoEvento) btnNovoEvento.classList.toggle('hidden', semCadastro);
@@ -7206,51 +7207,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailLabel = document.getElementById('host-invite-email-label');
     const feedback = document.getElementById('host-invite-feedback');
 
+    const caixaOrg = document.getElementById('organizadores-caixa');
+    const erroForm = document.getElementById('host-invite-erro');
+    // Erros ficam dentro do formulário; o resultado do envio, em cima da tabela.
     const avisar = (html, erro = false) => {
+      if (erro) {
+        if (erroForm) { erroForm.innerHTML = html; erroForm.classList.remove('hidden'); }
+        return;
+      }
       if (!feedback) return;
       feedback.innerHTML = html;
-      feedback.className = `org-feedback text-xs leading-relaxed ${erro ? 'text-red-600' : 'text-zinc-600'}`;
+      feedback.className = 'org-feedback';
       feedback.classList.remove('hidden');
     };
-    const limparPasso2 = () => {
-      passo2.classList.add('hidden');
-      areasBox.innerHTML = '';
-    };
-    const abrirPasso2 = () => {
-      const email = (inputEmail.value || '').trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { avisar('Digite um e-mail válido.', true); return false; }
-      feedback?.classList.add('hidden');
-      emailLabel.textContent = email;
-      if (!areasBox.children.length) {
-        // "Acesso total" primeiro: marca (ou desmarca) todas as funções de uma vez.
-        areasBox.innerHTML = `
+    const montarAreas = () => {
+      if (areasBox.children.length) return;
+      // "Acesso total" primeiro: marca (ou desmarca) todas as funções de uma vez.
+      areasBox.innerHTML = `
       <label class="org-acesso-total flex items-center gap-2 text-xs text-zinc-700 cursor-pointer select-none">
         <input type="checkbox" class="gifts-select-all-check host-invite-total">
         <span>Acesso total</span>
       </label>` + checklistDeAreasHtml('host-invite-area');
-      }
-      passo2.classList.remove('hidden');
-      return true;
     };
+    const limparPasso2 = () => { areasBox.innerHTML = ''; };
+    const abrirFormulario = () => {
+      feedback?.classList.add('hidden');
+      erroForm?.classList.add('hidden');
+      inputEmail.value = '';
+      emailLabel.textContent = 'a pessoa';
+      limparPasso2();
+      montarAreas();
+      caixaOrg?.classList.add('is-adicionando');
+      inputEmail.focus();
+    };
+    const fecharFormulario = () => {
+      caixaOrg?.classList.remove('is-adicionando');
+      erroForm?.classList.add('hidden');
+      inputEmail.value = '';
+      limparPasso2();
+    };
+    window.loveFecharConviteOrganizador = () => { fecharFormulario(); feedback?.classList.add('hidden'); };
 
-    inputEmail.addEventListener('input', () => { if (!passo2.classList.contains('hidden')) emailLabel.textContent = inputEmail.value.trim(); });
+    inputEmail.addEventListener('input', () => { emailLabel.textContent = inputEmail.value.trim() || 'a pessoa'; erroForm?.classList.add('hidden'); });
     areasBox.addEventListener('change', (e) => {
       const alvo = /** @type {HTMLInputElement} */ (e.target);
       const areas = /** @type {HTMLInputElement[]} */ (Array.from(areasBox.querySelectorAll('.host-invite-area')));
       const total = /** @type {HTMLInputElement|null} */ (areasBox.querySelector('.host-invite-total'));
       if (alvo.classList.contains('host-invite-total')) areas.forEach(c => { c.checked = alvo.checked; });
       else if (total) total.checked = areas.length > 0 && areas.every(c => c.checked);
+      erroForm?.classList.add('hidden');
     });
-    // "Continuar" ao lado do e-mail: abre as funções (o mesmo que dar Enter).
-    document.getElementById('btn-continuar-host-invite')?.addEventListener('click', () => {
-      if (abrirPasso2()) passo2.querySelector('input')?.focus();
-    });
-    document.getElementById('btn-cancel-host-invite')?.addEventListener('click', () => { limparPasso2(); inputEmail.value = ''; feedback?.classList.add('hidden'); });
+    document.getElementById('btn-org-adicionar')?.addEventListener('click', abrirFormulario);
+    document.getElementById('btn-cancel-host-invite')?.addEventListener('click', fecharFormulario);
 
     formInviteHost.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Primeiro Enter: só abre as áreas.
-      if (passo2.classList.contains('hidden')) { abrirPasso2(); return; }
+      erroForm?.classList.add('hidden');
       const ev = getActiveEvent();
       const email = (inputEmail.value || '').trim();
       const permissoes = Array.from(document.querySelectorAll('.host-invite-area:checked')).map(c => c.value);
@@ -7258,13 +7270,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!ev || !ehUuid(ev.id)) return avisar('Salve o evento antes de convidar organizadores.', true);
       if (!permissoes.length) return avisar('Marque pelo menos uma função para a pessoa acessar.', true);
 
-      const btn = document.getElementById('btn-submit-host-invite');
-      if (btn) btn.disabled = true;
-      avisar('Enviando convite…');
+      const btn = /** @type {HTMLButtonElement|null} */ (document.getElementById('btn-submit-host-invite'));
+      if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
       const { data, error } = await supabaseClient.rpc('convidar_organizador', {
         p_evento_id: ev.id, p_email: email, p_papel: 'personalizado', p_permissoes: permissoes, p_nome: null
       });
-      if (btn) btn.disabled = false;
+      if (btn) { btn.disabled = false; btn.textContent = 'Enviar convite'; }
       if (error || !data || !data.ok) {
         if (error) console.error('Erro ao convidar organizador:', error);
         const codigo = data && data.erro;
@@ -7285,8 +7296,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.status === 'aceito') avisar(`${escaparHtml(email)} já organiza este evento — o acesso foi atualizado.`);
       else if (enviado) avisar(`Convite enviado para <strong>${escaparHtml(email)}</strong>.${conta}`);
       else avisar(`Convite criado para <strong>${escaparHtml(email)}</strong>, mas o e-mail não pôde ser enviado. Copie o link e mande para a pessoa: <a href="${escaparHtml(link)}" class="font-semibold text-[#537bae] break-all">${escaparHtml(link)}</a>${conta}`);
-      inputEmail.value = '';
-      limparPasso2();
+      fecharFormulario();
       renderOrganizadores();
     });
   }

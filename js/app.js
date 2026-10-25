@@ -17877,8 +17877,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.loveAtualizarLinkDaHome = atualizarLinkDaHome;
   // Lápis: Personalizar evento › Informações, já no campo do endereço (URL).
   document.getElementById('home-link-editar')?.addEventListener('click', () => {
-    abrirSubItem('edit-site', 'data');
-    registrarRota(caminhoSubRota('edit-site', 'data'));
+    // Troca de página de verdade (sai da Home), não só a seção interna.
+    window.loveIrPara('edit-site', 'data');
     setTimeout(() => {
       const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-event-slug'));
       if (!campo) return;

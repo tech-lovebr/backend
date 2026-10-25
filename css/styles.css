@@ -11934,3 +11934,91 @@ html body #rsvp-empty-state p.rsvp-vazio-titulo:not(#love-h-a) { margin: 0 0 4px
 html body #rsvp-empty-state p[hidden]:not(#love-h-a) { display: none; }
 html body #rsvp-empty-state p + p:not(#love-h-a) { max-width: 420px; }
 body[data-theme="dark"] #rsvp-empty-state .rsvp-vazio-titulo { color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Celular como app (PWA) — só até 768px; o desktop não muda nada.
+   - sem rolagem para os lados; altura real da tela (dvh);
+   - áreas seguras do iPhone/Android (notch em cima, barrinha embaixo);
+   - barra de baixo com 5 atalhos e nome: Início, Convite, Convidados,
+     Presentes e Financeiro;
+   - toques de no mínimo 44px e campos com 16px (o Safari não dá zoom).
+   ========================================================================== */
+.rail-rotulo { display: none; }
+
+@media (max-width: 768px) {
+  :root {
+    --navbar-height-mobile: calc(60px + env(safe-area-inset-top, 0px));
+    --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+  html, body { overflow-x: clip; max-width: 100%; }
+  html body #view-event-os-dashboard:not(#love-h-a) { min-height: 100dvh; overflow-x: clip; }
+
+  /* Topo: desce o conteúdo abaixo do notch / barra de status do PWA. */
+  html body .dashboard-top-navbar:not(#love-h-a) {
+    height: var(--navbar-height-mobile) !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px)) !important;
+    box-sizing: border-box;
+  }
+
+  /* Conteúdo: respiro de app (16px dos lados) e sobra embaixo para a barra. */
+  html body .dashboard-main-area:not(#love-h-a) {
+    min-height: 100dvh;
+    padding-top: calc(var(--navbar-height-mobile) + 1.25rem) !important;
+    padding-bottom: calc(var(--bottom-bar-height-mobile) + 1.5rem) !important;
+    padding-left: max(1rem, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(1rem, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  /* Barra de baixo: 5 atalhos do mesmo tamanho, ícone + nome. */
+  html body .sidebar-icon-rail:not(#love-h-a) {
+    height: var(--bottom-bar-height-mobile) !important;
+    padding: 0 max(0.25rem, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(0.25rem, env(safe-area-inset-left, 0px)) !important;
+    box-shadow: none !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-sizing: border-box;
+  }
+  html body .sidebar-icon-rail > div:first-child:not(#love-h-a) { height: 64px; gap: 0 !important; justify-content: space-between !important; align-items: stretch !important; }
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit:not(#love-h-a) {
+    flex: 1 1 0 !important; width: auto !important; min-width: 44px !important; height: 64px !important; min-height: 44px !important;
+    flex-direction: column !important; gap: 4px; padding: 6px 2px !important;
+    border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important;
+    transform: none !important; color: rgba(255, 255, 255, 0.68) !important;
+  }
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a) svg,
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a) svg *,
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit:not(#love-h-a) svg {
+    width: 22px !important; height: 22px !important; color: currentColor !important; stroke: currentColor !important;
+  }
+  html body .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active:not(#love-h-a) { color: #FFFFFF !important; background: transparent !important; }
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a):hover,
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a):active { background: transparent !important; transform: none !important; }
+  html body .sidebar-icon-rail .rail-rotulo:not(#love-h-a) {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: Inter, sans-serif; font-size: 11px; font-weight: 500; line-height: 1.2; letter-spacing: 0; color: currentColor;
+  }
+  html body .sidebar-icon-rail .rail-icon-btn.active .rail-rotulo:not(#love-h-a) { font-weight: 600; }
+  /* Ordem: Início, Convite, Convidados, Presentes, Financeiro. Fornecedores sai da barra. */
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"]:not(#love-h-a) { order: 1 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="edit-site"]:not(#love-h-a) { order: 2 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="rsvp"]:not(#love-h-a) { order: 3 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="gifts"]:not(#love-h-a) { order: 4 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="wallet"]:not(#love-h-a) { order: 5 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="b2b"]:not(#love-h-a) { display: none !important; }
+  /* Tema escuro: barra escura, ícones claros. */
+  body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn { color: rgba(255, 255, 255, 0.6) !important; }
+  body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn.active { color: #FFFFFF !important; }
+
+  /* Submenu (folha lateral) para acima da barra de baixo. */
+  html body #sidebar-sub-drawer:not(#love-h-a) { top: var(--navbar-height-mobile) !important; bottom: var(--bottom-bar-height-mobile) !important; }
+
+  /* Toque de no mínimo 44px nos botões só de ícone e nos botões de ação. */
+  html body :is(.header-icon-btn, #btn-user-account-menu, .rfp-voltar-seta, .gifts-listas-voltar, .builder-tool-btn, .love-tabela-mais, .guests-pagination-btn, .home-link-botao, .despesa-fechar, .orc-fechar, .modal-sair-fechar, .orc-contador-btn):not(#love-h-a) { min-width: 44px !important; min-height: 44px !important; }
+  html body :is(.btn-primary, .btn-secondary, .btn-white, .btn-brand, .love-tabela-botao, .informacoes-salvar-rodape):not(#love-h-a) { min-height: 44px !important; }
+
+  /* Campos com 16px: o Safari do iPhone não dá zoom ao tocar. */
+  html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea):not(#love-h-a):not(#love-h-b) { font-size: 16px !important; }
+}

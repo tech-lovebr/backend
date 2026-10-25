@@ -17785,8 +17785,16 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) { if (vez === consultaDoLinkDaHome) marcar(false); }
   }
   window.loveAtualizarLinkDaHome = atualizarLinkDaHome;
+  // Lápis: Personalizar evento › Informações, já no campo do endereço (URL).
   document.getElementById('home-link-editar')?.addEventListener('click', () => {
-    /** @type {HTMLElement|null} */ (document.querySelector('[data-rail-tab="edit-site"]'))?.click();
+    abrirSubItem('edit-site', 'data');
+    registrarRota(caminhoSubRota('edit-site', 'data'));
+    setTimeout(() => {
+      const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-event-slug'));
+      if (!campo) return;
+      campo.scrollIntoView({ block: 'center' });
+      campo.focus();
+    }, 150);
   });
   document.getElementById('home-link-abrir')?.addEventListener('click', () => {
     const url = urlDoConviteDaHome();
@@ -17804,7 +17812,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const botao = document.getElementById('home-link-compartilhar');
     try {
       await navigator.clipboard.writeText(url);
-      if (botao) { botao.title = 'Link copiado'; botao.classList.add('is-copiado'); setTimeout(() => { botao.title = 'Compartilhar link'; botao.classList.remove('is-copiado'); }, 1800); }
+      if (botao) { botao.dataset.dica = 'Link copiado'; botao.classList.add('is-copiado'); setTimeout(() => { botao.dataset.dica = 'Compartilhar'; botao.classList.remove('is-copiado'); }, 1800); }
     } catch (e) { window.open(url, '_blank', 'noopener'); }
   });
 

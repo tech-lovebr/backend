@@ -4362,3 +4362,6 @@ body.com-faixa .admin-content > .legal-abas { border-bottom-color: rgba(255, 255
 .table-card.tabela-ate-o-fim:has(.empty-state-centro) > .table-wrap > table { flex: 1; height: 100%; }
 .empty-state-centro { padding: 0 1.25rem; }
 a.conteudo-tab { text-decoration: none; }
+
+/* Notificação em balão: prévia da imagem no detalhe. */
+.balao-previa-imagem { height: 140px; margin-bottom: 1rem; border: 1px solid #E4E4E7; border-radius: var(--radius-card); background: #F4F4F5 center / cover no-repeat; }

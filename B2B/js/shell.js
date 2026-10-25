@@ -727,9 +727,15 @@ function initMobileNav() {
    'todos', 'b2b' e as 'individual' endereçadas a este fornecedor.
    Usado aqui (número do sino, em toda página) e em js/notificacoes.js. */
 async function fetchB2BNotificacoes(userId) {
+  const linhas = await fetchB2BNotificacoesTodas(userId);
+  // Balão (migration 114) não entra no sino: aparece no canto da tela.
+  return linhas.filter(n => n.formato !== 'balao');
+}
+
+async function fetchB2BNotificacoesTodas(userId) {
   const { data, error } = await supabaseClient
     .from('notificacoes')
-    .select('id, titulo, mensagem, link_url, link_label, created_at')
+    .select('*')
     .or(`destino.in.(todos,b2b),and(destino.eq.individual,destinatario_id.eq.${userId})`)
     .lte('created_at', new Date().toISOString())
     .order('created_at', { ascending: false });
@@ -773,6 +779,32 @@ async function initNotifications(unreadSnapshot) {
 
   await refreshChatUnreadBadge();
   subscribeChatUnreadBadge();
+  mostrarBalaoDoHub();
+}
+
+/* Balão de aviso (notificação formato "balão", criada no Admin): cartão no
+   canto inferior esquerdo, ao lado da sidebar, até a pessoa fechar ou clicar.
+   O componente está em js/balao-aviso.js (cópia do de love.com.br). */
+async function mostrarBalaoDoHub() {
+  const userId = window.b2bSession && window.b2bSession.user.id;
+  if (!userId) return;
+  const [linhas, lidas] = await Promise.all([fetchB2BNotificacoesTodas(userId), fetchB2BNotificacoesLidas(userId)]);
+  const baloes = linhas.filter(n => n.formato === 'balao' && !lidas.has(n.id));
+  if (!baloes.length) return;
+  if (!window.LoveBalao) {
+    await new Promise(ok => {
+      const s = document.createElement('script');
+      s.src = 'js/balao-aviso.js?v=1';
+      s.onload = ok; s.onerror = ok;
+      document.head.appendChild(s);
+    });
+  }
+  window.LoveBalao?.mostrar(baloes, {
+    barra: '.b2b-sidebar',
+    aoVer: id => supabaseClient.from('notificacao_leituras')
+      .upsert({ notificacao_id: id, user_id: userId }, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true })
+      .then(() => {}, () => {})
+  });
 }
 
 /* -------------------- Chat: mensagens não lidas -------------------- */

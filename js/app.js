@@ -622,7 +622,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminRows = await fetchAdminNotifications();
     const readIds = userId ? await fetchReadNotificationIds(userId) : new Set();
 
-    const adminItems = adminRows.map(n => {
+    // Balão (migration 114): não entra no sino; aparece no canto da tela
+    // até a pessoa fechar ou clicar (js/balao-aviso.js).
+    const baloes = adminRows.filter(n => n.formato === 'balao' && !readIds.has(n.id));
+    if (baloes.length && window.LoveBalao) {
+      window.LoveBalao.mostrar(baloes, {
+        aoVer: id => markNotificationRead(id),
+        barra: '.sidebar-icon-rail',
+        abrirLink: url => {
+          const tab = RAIL_ROUTE_TO_TAB[url];
+          if (tab) { switchRailTab(tab); return true; }
+          return false;
+        }
+      });
+    }
+
+    const adminItems = adminRows.filter(n => n.formato !== 'balao').map(n => {
       const theme = NOTIFICATION_THEMES[n.tema] || NOTIFICATION_THEMES.padrao;
       const item = {
         kind: 'admin',

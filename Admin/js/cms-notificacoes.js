@@ -5,7 +5,11 @@
    para cada destinatário. Isso mantém o envio barato e permite corrigir ou
    apagar a mensagem depois sem caçar cópias espalhadas.
 
-   Só texto e link — notificação não carrega imagem.
+   Dois formatos (migration 114):
+     • Padrão — aparece no sino, só texto e link;
+     • Balão  — cartão no canto inferior esquerdo da plataforma (anfitriões
+       ou Hub), com imagem, título, texto e um botão. Some para quem fecha
+       ou clica (fica em notificacao_leituras).
 
    Agendar é gravar a data de envio em `created_at`: enquanto ela está no
    futuro, a policy do banco esconde a notificação de todo mundo menos do
@@ -19,7 +23,7 @@ let CONTAS = [];
 
 const PUBLICOS = {
   todos: 'Todos',
-  b2b: 'HUB/B2B',
+  b2b: 'Fornecedores',
   anfitriao: 'Anfitriões',
   individual: 'Individual'
 };
@@ -170,6 +174,7 @@ function render() {
         <td class="col-assunto">
           ${iconeTema(n.tema)}
           <span class="cell-strong">${dash(n.titulo)}</span>
+          ${n.formato === 'balao' ? '<span class="artigo-situacao">— Balão</span>' : ''}
           ${TIPOS[n.tipo] ? `<span class="artigo-situacao">— ${escapeHtml(TIPOS[n.tipo])}</span>` : ''}
         </td>
         <td class="cell-muted">${escapeHtml(resumo(n.mensagem))}</td>
@@ -233,7 +238,9 @@ function abrirDetalhe(id) {
   Drawer.open({
     title: n.titulo,
     body: `
+      ${n.formato === 'balao' && n.imagem_url ? `<div class="balao-previa-imagem" style="background-image:url('${escapeHtml(n.imagem_url)}')"></div>` : ''}
       <div class="lista-dados">
+        ${linha('Formato', n.formato === 'balao' ? 'Balão (canto da tela)' : 'Padrão (sino)')}
         ${linha('Tema', `${iconeTema(n.tema)} ${escapeHtml(TEMAS[n.tema]?.rotulo || 'Padrão')}`)}
         ${linha('Público', n.destino === 'individual'
           ? escapeHtml(nomeDaConta(n.destinatario_id))
@@ -290,6 +297,14 @@ function abrirComposicao() {
     title: 'Nova notificação',
     body: `
       <label class="field">
+        <span class="field-label">Formato <span class="campo-obrigatorio">*</span></span>
+        <select class="field-select" id="nova-formato">
+          <option value="padrao">Padrão — aparece no sino de notificações</option>
+          <option value="balao">Balão — cartão com imagem e botão no canto da tela</option>
+        </select>
+      </label>
+
+      <label class="field">
         <span class="field-label">Destinatário <span class="campo-obrigatorio">*</span></span>
         <select class="field-select" id="nova-destino">
           ${Object.entries(PUBLICOS).map(([valor, rotulo]) =>
@@ -305,7 +320,11 @@ function abrirComposicao() {
         <p class="pessoa-escolhida" id="pessoa-escolhida" hidden></p>
       </div>
 
-      <div class="field">
+      <div id="campos-balao" hidden>
+        ${campoImagem('balao_imagem', 'Imagem <span class="campo-obrigatorio">*</span>', '')}
+      </div>
+
+      <div class="field" id="campo-tema">
         <span class="field-label">Tema</span>
         <div class="tema-opcoes" role="radiogroup" aria-label="Tema">
           ${Object.entries(TEMAS).map(([valor, t], i) => `
@@ -318,7 +337,7 @@ function abrirComposicao() {
       </div>
 
       <label class="field">
-        <span class="field-label">Assunto <span class="campo-obrigatorio">*</span></span>
+        <span class="field-label" id="rotulo-titulo">Assunto <span class="campo-obrigatorio">*</span></span>
         <input class="field-input" id="nova-titulo" type="text" maxlength="80" autocomplete="off">
       </label>
 
@@ -328,16 +347,16 @@ function abrirComposicao() {
       </label>
 
       <label class="field">
-        <span class="field-label">Link</span>
+        <span class="field-label" id="rotulo-link">Link</span>
         <input class="field-input" id="nova-link" type="url" placeholder="https://" autocomplete="off">
       </label>
 
       <label class="field">
-        <span class="field-label">Texto do link</span>
+        <span class="field-label" id="rotulo-link-label">Texto do link</span>
         <input class="field-input" id="nova-link-label" type="text" autocomplete="off">
       </label>
 
-      <label class="field" style="margin-bottom:0">
+      <label class="field" style="margin-bottom:0" id="campo-tipo">
         <span class="field-label">Salvar como</span>
         <select class="field-select" id="nova-tipo">
           <option value="comum">Notificação avulsa</option>
@@ -380,6 +399,21 @@ function abrirComposicao() {
 function ligarComposicao() {
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
   document.getElementById('btn-enviar').addEventListener('click', enviar);
+
+  // Balão: imagem + título + texto + botão; sem tema nem "salvar como".
+  ligarCamposDeImagem(document.getElementById('campos-balao'), 'notificacoes');
+  document.getElementById('nova-formato').addEventListener('change', (e) => {
+    const balao = e.target.value === 'balao';
+    document.getElementById('campos-balao').hidden = !balao;
+    document.getElementById('campo-tema').hidden = balao;
+    document.getElementById('campo-tipo').hidden = balao;
+    document.getElementById('aviso-tipo').hidden = true;
+    if (balao) document.getElementById('nova-tipo').value = 'comum';
+    document.getElementById('rotulo-titulo').innerHTML = `${balao ? 'Título' : 'Assunto'} <span class="campo-obrigatorio">*</span>`;
+    document.getElementById('rotulo-link').innerHTML = balao ? 'Link do botão <span class="campo-obrigatorio">*</span>' : 'Link';
+    document.getElementById('rotulo-link-label').innerHTML = balao ? 'Texto do botão <span class="campo-obrigatorio">*</span>' : 'Texto do link';
+    document.getElementById('nova-mensagem').maxLength = balao ? 160 : 400;
+  });
 
   document.getElementById('nova-quando').addEventListener('change', (e) => {
     const agendar = e.target.value === 'agendar';
@@ -452,8 +486,16 @@ async function enviar() {
   const mensagem = document.getElementById('nova-mensagem').value.trim();
   const link = document.getElementById('nova-link').value.trim();
 
-  if (!titulo) return avisar('Escreva o assunto.', 'nova-titulo');
+  const formato = document.getElementById('nova-formato').value;
+  const balao = formato === 'balao';
+  const imagem = balao ? (document.querySelector('#campos-balao input[name="balao_imagem"]')?.value.trim() || '') : '';
+  const rotuloBotao = document.getElementById('nova-link-label').value.trim();
+
+  if (balao && !imagem) return avisar('Envie a imagem do balão.', 'nova-titulo');
+  if (!titulo) return avisar(balao ? 'Escreva o título.' : 'Escreva o assunto.', 'nova-titulo');
   if (!mensagem) return avisar('Escreva o texto da notificação.', 'nova-mensagem');
+  if (balao && !link) return avisar('Informe o link do botão.', 'nova-link');
+  if (balao && !rotuloBotao) return avisar('Escreva o texto do botão.', 'nova-link-label');
   if (destino === 'individual' && !DESTINATARIO) return avisar('Escolha a pessoa.', 'busca-pessoa');
 
   let envio = null;
@@ -482,7 +524,8 @@ async function enviar() {
     titulo,
     mensagem,
     link_url: link || null,
-    link_label: link ? (document.getElementById('nova-link-label').value.trim() || null) : null,
+    link_label: link ? (rotuloBotao || null) : null,
+    ...(balao ? { formato: 'balao', imagem_url: imagem } : {}),
     destino,
     tipo,
     tema,
@@ -495,6 +538,7 @@ async function enviar() {
   Drawer.setFooterBusy(false);
 
   if (error) {
+    if (/formato|imagem_url/i.test(error.message || '')) return toast('Rode supabase/migrations/114_notificacao_balao.sql no Supabase.');
     const faltaTema = /tema/i.test(error.message || '');
     const faltaColuna = /tipo|fixada|column|schema cache/i.test(error.message || '');
     const duplicada = /duplicate|unique/i.test(error.message || '');

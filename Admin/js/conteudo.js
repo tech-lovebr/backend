@@ -80,8 +80,9 @@ const ATALHOS = [
     icone: '<path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 17l0 .01" /><path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4" />' },
   { id: 'workshops', titulo: 'Workshops', texto: 'Workshops do Hub, que também entram nas notícias do dashboard.', so: 'fornecedor',
     icone: '<path d="M8 4h11a1 1 0 0 1 1 1v11a1 1 0 0 1 -1 1h-11a1 1 0 0 1 -1 -1v-11a1 1 0 0 1 1 -1z" /><path d="M4 8v11a1 1 0 0 0 1 1h11" /><path d="M11 9l4 2.5l-4 2.5z" />' },
-  { id: 'planos', titulo: 'Planos', texto: 'Planos do Hub: preço, período, empresas por login e o plano de cada conta.',
-    href: `planos.html${PLATAFORMA === 'cliente' ? '?de=cliente' : ''}`,
+  // Só fornecedores têm plano; para anfitriões tudo é gratuito.
+  { id: 'planos', titulo: 'Planos', texto: 'Planos do Hub: preço, período, empresas por login e o plano de cada conta.', so: 'fornecedor',
+    href: 'planos.html',
     icone: '<path d="M3 8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" /><path d="M3 10l18 0" /><path d="M7 15l.01 0" /><path d="M11 15l2 0" />' }
 ];
 

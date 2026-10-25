@@ -11922,3 +11922,11 @@ body[data-theme="dark"] #drawer-add-budget-expense :is(.despesa-titulo, .despesa
 body[data-theme="dark"] #drawer-add-budget-expense :is(.despesa-rotulo, .despesa-pag-cab span) { color: #D4D4D8 !important; }
 body[data-theme="dark"] #drawer-add-budget-expense .desp-input { background-color: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 body[data-theme="dark"] #drawer-add-budget-expense .despesa-sugestoes { background: #252525; border-color: #404040; }
+
+/* Meus convidados sem resultado: aviso no meio da caixa (igual a Recados recebidos). */
+html body #tab-rsvp .rsvp-caixa-abaixo-das-abas > .overflow-x-auto:has(> #rsvp-empty-state:not(.hidden)):not(#love-h-a) { display: flex; flex-direction: column; }
+html body #rsvp-empty-state:not(.hidden):not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; min-height: 280px; padding: 40px 16px; text-align: center; }
+html body #rsvp-empty-state p:first-of-type:not(#love-h-a) { margin: 0; font-size: 13px; font-weight: 400; line-height: 1.7; color: #71717A !important; }
+html body #rsvp-empty-state p + p:not(#love-h-a) { margin: 0; font-size: 13px; line-height: 1.7; color: #71717A !important; }
+html body #rsvp-empty-state .rsvp-vazio-icone:not(#love-h-a) { display: block; width: 48px; height: 48px; margin: 0 auto 14px; color: #D4D4D8; }
+body[data-theme="dark"] #rsvp-empty-state .rsvp-vazio-icone { color: #52525B; }

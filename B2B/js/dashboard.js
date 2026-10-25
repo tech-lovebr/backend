@@ -785,7 +785,7 @@ async function renderNewsList() {
         .limit(5),
       supabaseClient
         .from('hub_conteudo')
-        .select('titulo, link_url, ordem')
+        .select('id, titulo, link_url, ordem')
         .eq('tipo', 'workshop')
         .eq('ativo', true)
         .order('ordem', { ascending: true })
@@ -793,7 +793,7 @@ async function renderNewsList() {
     ]);
 
     const noticias = (blog.data || []).map(a => ({ title: a.titulo, url: a.slug ? `https://love.com.br/blog/${a.slug}` : 'https://blog.love.com.br' }));
-    const eventos = (workshops.data || []).map(i => ({ title: i.titulo, url: i.link_url || '#' }));
+    const eventos = (workshops.data || []).map(i => ({ title: i.titulo, url: `workshops?aula=${i.id}` }));
     const lista = [...noticias, ...eventos].slice(0, 6);
     if (lista.length) desenhar(lista);
   } catch (e) { /* mantém a lista fixa */ }

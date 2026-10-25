@@ -8,7 +8,7 @@
      FAQ         → perguntas e respostas por categoria (tabela faq) e os
                    primeiros passos de quem acabou de entrar (primeiros_passos)
      Serviços    → só anfitriões: cards de Benefícios & Serviços da home e
-                   de Benefícios Love (servicos_beneficios)
+                   de Love Benefícios (servicos_beneficios)
 
    A resposta do FAQ é HTML escrito no EditorRico; o vídeo entra como
    <iframe> no meio do texto, onde o cursor estiver.
@@ -17,7 +17,8 @@
 /* Páginas do CMS (banners.html e ajuda.html): data-visao fixa a tela e
    ?p=cliente|fornecedor escolhe a plataforma pelas abas no topo. */
 const VISAO_FIXA = document.body.dataset.visao || '';
-const PLATAFORMA = VISAO_FIXA
+const PLATAFORMA = VISAO_FIXA === 'workshops' ? 'fornecedor' // aulas do Hub
+  : VISAO_FIXA
   ? (new URLSearchParams(location.search).get('p') === 'fornecedor' ? 'fornecedor' : 'cliente')
   : document.body.dataset.plataforma;
 
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   // Nas páginas do CMS, as abas trocam a plataforma; nas antigas, somem.
-  if (VISAO_FIXA) renderAbasDaPlataforma();
+  if (VISAO_FIXA && VISAO_FIXA !== 'workshops') renderAbasDaPlataforma();
   else document.getElementById('conteudo-tabs').hidden = true;
 
   BOTAO_ADICIONAR = addHeaderAction('Adicionar', () => {
@@ -95,10 +96,7 @@ const ATALHOS = [
 const TITULO_DA_VISAO = { banners: 'Banners', ajuda: 'Central de ajuda', workshops: 'Workshops' };
 
 function visaoDaUrl() {
-  if (VISAO_FIXA) {
-    return VISAO_FIXA === 'banners' && PLATAFORMA === 'fornecedor' && new URLSearchParams(location.search).get('v') === 'workshops'
-      ? 'workshops' : VISAO_FIXA;
-  }
+  if (VISAO_FIXA) return VISAO_FIXA;
   const v = location.hash.slice(1);
   return ATALHOS.some(a => a.id === v && !a.href && (!a.so || a.so === PLATAFORMA)) ? v : '';
 }
@@ -106,14 +104,12 @@ function visaoDaUrl() {
 let VISAO = visaoDaUrl();
 
 /** Título da página com a seta de voltar quando está dentro de um atalho. */
-/** Abas Anfitriões / Fornecedores (e Workshops do Hub, em Banners). */
+/** Abas Anfitriões / Fornecedores. */
 function renderAbasDaPlataforma() {
   const host = document.getElementById('conteudo-tabs');
-  const v = new URLSearchParams(location.search).get('v');
   const abas = [
     ['?p=cliente', 'Anfitriões', PLATAFORMA === 'cliente'],
-    ['?p=fornecedor', 'Fornecedores', PLATAFORMA === 'fornecedor' && v !== 'workshops'],
-    ...(VISAO_FIXA === 'banners' ? [['?p=fornecedor&v=workshops', 'Workshops do Hub', PLATAFORMA === 'fornecedor' && v === 'workshops']] : [])
+    ['?p=fornecedor', 'Fornecedores', PLATAFORMA === 'fornecedor']
   ];
   host.innerHTML = abas.map(([href, rotulo, ativa]) =>
     `<a class="conteudo-tab ${ativa ? 'is-active' : ''}" href="${href}">${rotulo}</a>`).join('');
@@ -219,6 +215,7 @@ function render() {
   }
   if (!VISAO) return renderAtalhos();
   if (VISAO === 'banners') return renderBanners();
+  if (VISAO === 'workshops' && VISAO_FIXA === 'workshops') return renderAulas();
   if (VISAO === 'workshops') {
     const lista = document.getElementById('conteudo-lista');
     lista.innerHTML = blocoHub('workshop');
@@ -397,6 +394,39 @@ function blocoHub(tipo) {
     </div>`;
 }
 
+/* Workshops (CMS › Conteúdo › Workshops): cada workshop é uma aula de
+   hub.love.com.br/workshops — vídeo, duração, resumo e conteúdo da aula.
+   Lista em tabela; clicar na linha edita na mesma caixa. */
+function renderAulas() {
+  const lista = document.getElementById('conteudo-lista');
+  const aulas = HUB.filter(i => i.tipo === 'workshop').sort((a, b) => a.ordem - b.ordem);
+  lista.innerHTML = `
+    <section class="card table-card">
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th style="width:64px">Aula</th><th>Título</th><th>Duração</th><th>Vídeo</th><th>Data</th><th>Status</th></tr></thead>
+          <tbody id="tbody-aulas"></tbody>
+        </table>
+      </div>
+    </section>`;
+  const tbody = document.getElementById('tbody-aulas');
+  if (!aulas.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="cell-muted" style="text-align:center;padding:48px 16px">Nenhuma aula ainda. Clique em "Adicionar workshop" no topo para criar a primeira.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = aulas.map((a, i) => `
+    <tr data-aula="${a.id}" style="cursor:pointer">
+      <td class="cell-muted">${i + 1}</td>
+      <td class="cell-strong">${escapeHtml(a.titulo)}</td>
+      <td class="cell-muted">${escapeHtml(a.duracao || '—')}</td>
+      <td class="cell-muted">${a.video_url ? 'Com vídeo' : '—'}</td>
+      <td class="cell-muted">${a.data_evento ? escapeHtml(formatDate(a.data_evento)) : '—'}</td>
+      <td>${a.ativo ? badge('Publicada', 'badge-success') : badge('Rascunho', 'badge-warning')}</td>
+    </tr>`).join('');
+  tbody.querySelectorAll('tr[data-aula]').forEach(tr =>
+    tr.addEventListener('click', () => abrirFormularioHub(HUB.find(x => x.id === tr.dataset.aula))));
+}
+
 function ligarBlocosHub(host) {
   host.querySelectorAll('[data-novo-hub]').forEach(btn => {
     btn.addEventListener('click', () => abrirFormularioHub({ tipo: btn.dataset.novoHub }));
@@ -416,7 +446,7 @@ function abrirFormularioHub(item) {
 
   Drawer.open({
     title: editando ? `Editar ${t.singular}` : 'Novo workshop',
-    subtitle: NOME_PLATAFORMA,
+    subtitle: tipo === 'workshop' ? 'Aula em hub.love.com.br/workshops' : NOME_PLATAFORMA,
     body: `
       <form id="form-conteudo">
         <label class="field">
@@ -424,13 +454,28 @@ function abrirFormularioHub(item) {
           <input class="field-input" name="titulo" type="text" maxlength="140" value="${escapeHtml(item?.titulo || '')}">
         </label>
         <label class="field">
-          <span class="field-label">Descrição</span>
+          <span class="field-label">${tipo === 'workshop' ? 'Resumo da aula' : 'Descrição'}</span>
           <textarea class="field-textarea" name="descricao">${escapeHtml(item?.descricao || '')}</textarea>
         </label>
-        ${campoImagem('imagem_url', 'Imagem', item?.imagem_url)}
+        ${tipo === 'workshop' ? `
         <div class="field-row">
           <label class="field">
-            <span class="field-label">Link</span>
+            <span class="field-label">Vídeo da aula (YouTube ou Vimeo)</span>
+            <input class="field-input" name="video_url" type="url" placeholder="https://youtube.com/watch?v=..." value="${escapeHtml(item?.video_url || '')}">
+          </label>
+          <label class="field" style="flex:0 0 160px">
+            <span class="field-label">Duração</span>
+            <input class="field-input" name="duracao" type="text" maxlength="20" placeholder="45 min" value="${escapeHtml(item?.duracao || '')}">
+          </label>
+        </div>
+        <div class="field">
+          <span class="field-label">Conteúdo da aula</span>
+          <div id="aula-editor"></div>
+        </div>` : ''}
+        ${campoImagem('imagem_url', tipo === 'workshop' ? 'Capa da aula' : 'Imagem', item?.imagem_url)}
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">${tipo === 'workshop' ? 'Material extra (link)' : 'Link'}</span>
             <input class="field-input" name="link_url" type="url" placeholder="https://" value="${escapeHtml(item?.link_url || '')}">
           </label>
           <label class="field" style="flex:0 0 160px">
@@ -441,12 +486,21 @@ function abrirFormularioHub(item) {
         ${blocoPublicacao(item?.ordem ?? proximaPosicao(HUB.filter(i => i.tipo === tipo), 'ordem'), !editando || item.ativo)}
       </form>`,
     footer: `
+      ${editando ? '<button type="button" class="btn btn-ghost" id="btn-excluir-hub" style="margin-right:auto">Excluir</button>' : ''}
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
       <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Publicar'}</button>`
   });
 
   const form = document.getElementById('form-conteudo');
   ligarCamposDeImagem(form, 'hub');
+  const caixaEditor = document.getElementById('aula-editor');
+  const editorAula = caixaEditor && typeof EditorRico !== 'undefined'
+    ? EditorRico.montar(caixaEditor, { placeholder: 'O que a pessoa aprende nesta aula: passos, dicas, materiais…' })
+    : null;
+  if (editorAula) editorAula.definir(item?.conteudo_html || '');
+  document.getElementById('btn-excluir-hub')?.addEventListener('click', async () => {
+    if (await excluir('hub_conteudo', item.id, item.titulo)) Drawer.close();
+  });
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
   document.getElementById('btn-salvar').addEventListener('click', async () => {
     const d = Object.fromEntries(new FormData(form).entries());
@@ -458,6 +512,11 @@ function abrirFormularioHub(item) {
       imagem_url: d.imagem_url.trim() || null,
       link_url: d.link_url.trim() || null,
       data_evento: d.data_evento || null,
+      ...(tipo === 'workshop' ? {
+        video_url: (d.video_url || '').trim() || null,
+        duracao: (d.duracao || '').trim() || null,
+        conteudo_html: editorAula && editorAula.texto().trim() ? editorAula.html() : null
+      } : {}),
       ordem: Number(d.posicao) || 0,
       ativo: d.ativo === 'true'
     });
@@ -937,7 +996,7 @@ function renderServicos() {
     </div>
 
     <div class="bloco-cabecalho" style="margin-top:0">
-      <h2>Benefícios Love</h2>
+      <h2>Love Benefícios</h2>
     </div>
     ${servicos.length
       ? grupos.map(g => `
@@ -945,7 +1004,7 @@ function renderServicos() {
           ${servicos.filter(s => ((s.grupo || '').trim() || 'Sem grupo') === g).map(cardServico).join('')}`).join('')
       : `<div class="card"><div class="empty-state">
           <strong>Nenhum serviço ainda</strong>
-          <p>Clique em "Adicionar" e escolha o tipo "Serviço em Benefícios Love".</p>
+          <p>Clique em "Adicionar" e escolha o tipo "Serviço em Love Benefícios".</p>
         </div></div>`}`;
 
   lista.querySelectorAll('[data-editar-servico]').forEach(btn => {
@@ -970,7 +1029,7 @@ function abrirFormularioServico(item) {
           <span class="field-label">Onde aparece</span>
           <select class="field-select" name="tipo" id="servico-tipo">
             <option value="desconto" ${tipo === 'desconto' ? 'selected' : ''}>Desconto na home (Benefícios &amp; Serviços)</option>
-            <option value="servico" ${tipo === 'servico' ? 'selected' : ''}>Serviço em Benefícios Love</option>
+            <option value="servico" ${tipo === 'servico' ? 'selected' : ''}>Serviço em Love Benefícios</option>
           </select>
         </label>
 
@@ -1008,7 +1067,7 @@ function abrirFormularioServico(item) {
             <textarea class="field-textarea" name="descricao" maxlength="240">${escapeHtml(tipo === 'servico' ? (item?.descricao || '') : '')}</textarea>
           </label>
           <label class="field">
-            <span class="field-label">Grupo (seção em Benefícios Love)</span>
+            <span class="field-label">Grupo (seção em Love Benefícios)</span>
             <input class="field-input" name="grupo" type="text" list="grupos-servico" placeholder="ex.: Para os casais" value="${escapeHtml(item?.grupo || '')}">
             <datalist id="grupos-servico">${grupos.map(g => `<option value="${escapeHtml(g)}">`).join('')}</datalist>
           </label>
@@ -1113,7 +1172,9 @@ async function gravar(tabela, id, payload) {
   Drawer.setFooterBusy(false);
 
   if (error) {
-    toast(/column|schema cache|does not exist/i.test(error.message || '')
+    toast(/video_url|duracao|conteudo_html/i.test(error.message || '')
+      ? 'Rode supabase/migrations/115_workshops_aulas.sql no Supabase.'
+      : /column|schema cache|does not exist/i.test(error.message || '')
       ? 'Rode supabase/migrations/052_faq_plataforma_passos_beneficios_hub.sql no Supabase.'
       : `Não foi possível salvar: ${error.message}`);
     return;

@@ -135,6 +135,11 @@
       "permanent": true
     },
     {
+      "source": "/workshops.html",
+      "destination": "/workshops",
+      "permanent": true
+    },
+    {
       "source": "/notificacoes.html",
       "destination": "/notificacoes",
       "permanent": true
@@ -241,6 +246,10 @@
     {
       "source": "/notificacoes",
       "destination": "/notificacoes.html"
+    },
+    {
+      "source": "/workshops",
+      "destination": "/workshops.html"
     },
     {
       "source": "/nova-empresa",

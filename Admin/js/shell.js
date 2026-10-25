@@ -405,7 +405,8 @@ function esticarTabelas() {
     if (!esticar) { card.style.minHeight = ''; return; }
 
     const conteudo = card.closest('.admin-content');
-    const respiro = parseFloat(getComputedStyle(conteudo).paddingBottom) || 24;
+    const rodape = document.querySelector(".admin-main > .admin-footer");
+    const respiro = (parseFloat(getComputedStyle(conteudo).paddingBottom) || 24) + (rodape ? rodape.getBoundingClientRect().height : 0);
     const topo = card.getBoundingClientRect().top + window.scrollY;
     const altura = Math.max(320, Math.floor(window.innerHeight - topo - respiro));
     card.style.minHeight = `${altura}px`;
@@ -434,4 +435,26 @@ document.addEventListener('DOMContentLoaded', () => {
   new MutationObserver(agendarEsticarTabelas).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
   window.addEventListener('resize', agendarEsticarTabelas);
   window.addEventListener('load', agendarEsticarTabelas);
+});
+
+/* Versão do Admin, no padrão oficial de versões (SemVer: MAIOR.MENOR.CORREÇÃO).
+   A cada atualização publicada, sobe um número:
+     • CORREÇÃO (1.0.0 → 1.0.1): conserto ou ajuste visual, nada novo;
+     • MENOR    (1.0.1 → 1.1.0): função ou tela nova, sem quebrar o que existe;
+     • MAIOR    (1.1.0 → 2.0.0): mudança que muda o jeito de usar o Admin.
+   Ao subir MENOR, a CORREÇÃO volta a 0; ao subir MAIOR, as duas voltam a 0. */
+const VERSAO_ADMIN = '1.0.0';
+
+/* Rodapé igual ao do Hub e da plataforma: © Love Hub Ltda + "Feito com
+   amor…" à esquerda e, no lugar de Privacidade/Termos, a versão do Admin. */
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.querySelector('.admin-main');
+  if (!main || main.querySelector(':scope > .admin-footer')) return;
+  const rodape = document.createElement('footer');
+  rodape.className = 'admin-footer';
+  rodape.innerHTML = `
+    <p>© ${new Date().getFullYear()} Love Hub Ltda. Feito com amor para momentos inesquecíveis.</p>
+    <span class="admin-footer-versao" title="Versão do Admin">Versão ${VERSAO_ADMIN}</span>`;
+  main.appendChild(rodape);
+  agendarEsticarTabelas();
 });

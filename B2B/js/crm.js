@@ -7,6 +7,7 @@ const LEAD_STATUS_ORDER = ['novo', 'conversa', 'proposta', 'fechado'];
 let activeLeadStatus = 'todos';
 let leadSearchQuery = '';
 let leadsTabelaEstado = null;
+let leadsPaginacao = null;
 // Leads marcados nas caixinhas (exclusão em massa).
 const leadsSelecionados = new Set();
 let crmLeads = [];
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     aoMudar: () => renderLeadsTable()
   });
   montarLixeiraDeLeads();
+  renderLeadsTable(); // põe a contagem ao lado da busca, já na barra
 
   // Ao voltar de "Cadastrar serviço" (aberto em outra aba), atualiza a lista
   // de produtos do dropdown sem precisar recarregar a página.
@@ -252,14 +254,20 @@ function renderLeadsTable() {
   [...leadsSelecionados].forEach(id => { if (!existentes.has(id)) leadsSelecionados.delete(id); });
 
   setText('leads-count-label', `${items.length} ${items.length === 1 ? 'lead' : 'leads'}`);
+  // A contagem fica na barra da tabela, logo à direita da busca.
+  const contagem = document.getElementById('leads-count-label');
+  const busca = document.querySelector('#leads-table-card .tabela-barra > .tabela-busca');
+  if (contagem && busca && contagem.previousElementSibling !== busca) busca.after(contagem);
+  if (!leadsPaginacao) leadsPaginacao = montarPaginacaoTabela(document.getElementById('leads-table-card'), () => renderLeadsTable());
+  const daPagina = paginarLinhas(leadsPaginacao, items, JSON.stringify(leadsTabelaEstado ? [leadsTabelaEstado.busca, leadsTabelaEstado.filtros] : []));
 
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-sm text-zinc-500 py-6 text-center">Nenhum lead encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="tabela-vazia-cheia">Nenhum lead encontrado.</td></tr>`;
     atualizarLixeiraDeLeads();
     return;
   }
 
-  tbody.innerHTML = items.map(lead => `
+  tbody.innerHTML = daPagina.map(lead => `
     <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
       <td class="col-principal"><span class="lead-nome-cel${pedidoDoLead(lead) ? ' tem-origem' : ''}"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}"><span><button type="button" class="lead-nome-link" data-open-cliente="${lead.id}">${escapeHtml(lead.name)}</button>${pedidoDoLead(lead) ? '<span class="lead-origem-tag">Pedido pelo chat</span>' : ''}</span></span></td>

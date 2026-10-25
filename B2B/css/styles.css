@@ -10915,3 +10915,42 @@ html body.doc-cpf [data-so-cnpj]:not(#love-h-a) { display: none; }
 
 /* Configurações › Dados bancários: o mesmo fluxo de Contas bancárias, centralizado como as outras caixas. */
 html body [data-settings-panel="banco"] #carteira-raiz:not(#love-h-a) { max-width: 48rem; margin: 0 auto; }
+
+/* ==========================================================================
+   Padrão das caixas de tabela (como Meus convidados do love.com.br): a
+   caixa vai até perto do rodapé; as linhas têm o tamanho normal e, abaixo
+   delas, ficam linhas vazias com a divisória; "Mostrar 15 · Página X de Y"
+   no rodapé da caixa.
+   ========================================================================== */
+html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-table-card, #orcamentos-table-card, #contratos-clientes-card):not(#love-h-a) {
+  display: flex; flex-direction: column; min-height: calc(100vh - 340px); padding: 0 !important;
+}
+html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-table-card, #orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap:not(#love-h-a) {
+  flex: 1 0 auto; display: flex; flex-direction: column;
+}
+html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-table-card, #orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap > table:not(#love-h-a) { flex: 0 0 auto; }
+html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-table-card, #orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap:not(#love-h-a)::after {
+  content: ""; flex: 1 0 auto; min-height: 50px;
+  background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 0, rgba(0, 0, 0, 0.04) 1px, transparent 1px, transparent 50px);
+}
+html body td.tabela-vazia-cheia:not(#love-h-a) { height: auto; padding: 14px 16px !important; text-align: left; font-size: 14px; color: #71717A !important; }
+html body #leads-table-card .tabela-barra > .crm-footer-count:not(#love-h-a) { margin: 0 auto 0 12px; font-size: 13px; color: #71717A; white-space: nowrap; }
+
+/* Oportunidades: a caixa também vai até perto do rodapé. */
+html body .op-caixa:not(#love-h-a) { min-height: calc(100vh - 340px); }
+html body .op-caixa > .op-posts:not(#love-h-a) { flex: 1 0 auto; }
+html body .op-caixa > .op-vazio-caixa:not(#love-h-a) { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; }
+
+/* Seus formulários vazio: caixa até perto do rodapé, texto e botão no meio. */
+html body .forms-vazio:not(#love-h-a) { min-height: calc(100vh - 300px); justify-content: center; }
+
+/* Meus produtos: caixa de busca + quantidade; abas grudadas no topo dela. */
+html body[data-page="produtos"] #category-tabs:not(#love-h-a) { margin-bottom: 0 !important; }
+html body .produtos-barra-caixa:not(#love-h-a) {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin: 0 0 24px; padding: 14px 16px !important; border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
+}
+html body .produtos-barra-caixa .produtos-busca:not(#love-h-a) { width: 280px; max-width: 100%; margin: 0; }
+html body .produtos-total:not(#love-h-a) { margin: 0; font-size: 14px; color: #52525B; }
+html body .produtos-total b:not(#love-h-a) { color: #18181B; font-weight: 700; }
+html body.produto-editor-aberto .produtos-barra-caixa:not(#love-h-a) { display: none !important; }

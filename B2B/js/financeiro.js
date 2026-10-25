@@ -412,7 +412,7 @@ function renderOrcamentos() {
   const body = document.getElementById('orcamentos-body');
   if (!body) return;
   const todas = orcamentosFiltrados();
-  const linhas = paginarLinhas(orcamentosPaginacao, todas);
+  const linhas = paginarLinhas(orcamentosPaginacao, todas, JSON.stringify(orcamentosTabelaEstado ? [orcamentosTabelaEstado.busca, orcamentosTabelaEstado.filtros] : []));
   if (!linhas.length) {
     body.innerHTML = `<tr><td colspan="8" class="tabela-vazia-cheia">Nenhum orçamento ainda. Clique em "Novo orçamento" para criar o primeiro.</td></tr>`;
     return;

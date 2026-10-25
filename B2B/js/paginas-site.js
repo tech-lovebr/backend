@@ -181,7 +181,7 @@ function renderFormsList() {
     list.innerHTML = `
       <div class="op-vazio forms-vazio">
         <p>Você ainda não tem nenhum formulário criado.</p>
-        <button type="button" class="btn-secondary builder-toolbar-btn" data-form-criar><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo</button>
+        <button type="button" class="btn-secondary builder-toolbar-btn" data-form-criar><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo formulário</button>
       </div>`;
     list.querySelector('[data-form-criar]').addEventListener('click', () => openFormDrawer(null));
     return;

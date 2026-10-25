@@ -282,6 +282,8 @@ function productPriceLabel(p) {
 function renderProducts() {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
+  const total = document.getElementById('produtos-total');
+  if (total) total.innerHTML = `<b>${bProducts.length}</b> ${bProducts.length === 1 ? 'produto cadastrado' : 'produtos cadastrados'}`;
 
   const termo = produtosBusca.trim().toLowerCase();
   const items = (activeCategory === 'Todos'

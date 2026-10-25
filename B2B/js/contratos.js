@@ -455,6 +455,7 @@ function montarPeriodoFinanceiro(host) {
   }));
 }
 
+let financeListaPaginacao = null;
 async function renderListaFinanceira() {
   const head = document.getElementById('finance-lista-head');
   const body = document.getElementById('finance-lista-body');
@@ -464,7 +465,9 @@ async function renderListaFinanceira() {
   const lista = FINANCE_LISTAS.find(l => l.chave === financeListaAtual) || FINANCE_LISTAS[0];
   setText('finance-lista-titulo', lista.titulo);
   if (lista.chave === 'notas') { await carregarNotasFiscais(); if (financeListaAtual !== 'notas') return; }
-  const rows = linhasFinanceirasFiltradas();
+  if (!financeListaPaginacao) financeListaPaginacao = montarPaginacaoTabela(document.getElementById('finance-lista-card'), () => renderListaFinanceira());
+  const todasAsLinhas = linhasFinanceirasFiltradas();
+  const rows = paginarLinhas(financeListaPaginacao, todasAsLinhas, JSON.stringify([financeListaAtual, financeListaEstado && financeListaEstado.busca, finPeriodo.de, finPeriodo.ate]));
   const filtrando = !!(financeListaEstado && (financeListaEstado.busca || Object.values(financeListaEstado.filtros).some(Boolean)));
   let colunas = [];
   let linhas = [];

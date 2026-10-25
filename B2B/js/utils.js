@@ -1314,8 +1314,9 @@ function montarPaginacaoTabela(caixa, aoMudar) {
   return estado;
 }
 
-function paginarLinhas(estado, lista) {
+function paginarLinhas(estado, lista, chave) {
   if (!estado) return lista;
+  if (chave !== undefined && chave !== estado.chave) { estado.chave = chave; estado.pagina = 1; }
   const paginas = Math.max(1, Math.ceil(lista.length / estado.porPagina));
   estado.pagina = Math.min(Math.max(1, estado.pagina), paginas);
   const r = estado.rodape;

@@ -125,7 +125,7 @@ function renderContratosClientes() {
   if (!body) return;
   let rows = contratosClientesFiltrados();
   rows = rows.slice().sort((a, b) => (a.status === 'quitado' ? 1 : 0) - (b.status === 'quitado' ? 1 : 0));
-  rows = paginarLinhas(contratosPaginacao, rows);
+  rows = paginarLinhas(contratosPaginacao, rows, JSON.stringify(contratosTabelaEstado ? [contratosTabelaEstado.busca, contratosTabelaEstado.filtros] : []));
   renderContratoPagina();
 
   body.innerHTML = rows.length

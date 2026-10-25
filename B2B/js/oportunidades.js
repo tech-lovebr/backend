@@ -656,14 +656,17 @@ async function opEnviarProposta(e) {
 
 /* -------------------- Minhas propostas -------------------- */
 
+let opPropostasPaginacao = null;
 function opRenderPropostas() {
   const body = document.getElementById('op-propostas-body');
   if (!body) return;
+  if (!opPropostasPaginacao) opPropostasPaginacao = montarPaginacaoTabela(document.getElementById('op-propostas-card'), () => opRenderPropostas());
+  const daPagina = paginarLinhas(opPropostasPaginacao, opPropostas);
   if (!opPropostas.length) {
-    body.innerHTML = '<tr><td colspan="7" class="text-center text-sm text-zinc-500" style="padding:1.5rem 0;">Você ainda não enviou propostas.</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" class="tabela-vazia-cheia">Você ainda não enviou propostas.</td></tr>';
     return;
   }
-  body.innerHTML = opPropostas.map(pr => {
+  body.innerHTML = daPagina.map(pr => {
     const p = pr.pedido || {};
     const st = OP_STATUS[pr.status] || OP_STATUS.enviada;
     const podeRetirar = pr.status === 'enviada' || pr.status === 'vista';

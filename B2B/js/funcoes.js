@@ -36,11 +36,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.b2bPageReady?.();
 });
 
+let equipePaginacao = null;
 function renderTeam() {
   const tbody = document.getElementById('team-table-body');
   if (!tbody) return;
 
-  const lista = equipeFiltrada();
+  const todos = equipeFiltrada();
+  if (!equipePaginacao) equipePaginacao = montarPaginacaoTabela(document.getElementById('team-table-card'), () => renderTeam());
+  const lista = paginarLinhas(equipePaginacao, todos, JSON.stringify(equipeTabelaEstado ? [equipeTabelaEstado.busca, equipeTabelaEstado.filtros] : []));
   tbody.innerHTML = lista.length ? lista.map(m => `
     <tr>
       <td class="col-principal">${escapeHtml(m.name)} ${m.owner ? '<span class="owner-tag">· Você</span>' : ''}</td>
@@ -50,7 +53,7 @@ function renderTeam() {
       <td>${statusLabel(m.status)}</td>
       ${m.owner ? '<td class="tabela-col-acoes"></td>' : tabelaVerMaisHtml('data-edit-member', m.id)}
     </tr>
-  `).join('') : '<tr><td colspan="6" class="text-sm text-zinc-500 py-6 text-center">Nenhum colaborador encontrado.</td></tr>';
+  `).join('') : '<tr><td colspan="6" class="tabela-vazia-cheia">Nenhum colaborador encontrado.</td></tr>';
 
   tbody.querySelectorAll('[data-edit-member]').forEach(btn => {
     btn.addEventListener('click', () => openMemberDrawer(btn.dataset.editMember));

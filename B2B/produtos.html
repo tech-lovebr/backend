@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=776">
+  <link rel="stylesheet" href="css/styles.css?v=777">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -48,10 +48,6 @@
             <h2 class="text-xl font-bold text-zinc-900" id="produtos-titulo-pagina">Meus produtos</h2>
           </div>
           <div class="produtos-header-acoes">
-            <label class="tabela-busca produtos-busca">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
-              <input type="search" id="products-search" placeholder="Buscar por nome ou SKU..." autocomplete="off">
-            </label>
             <button type="button" id="product-add-btn" class="btn-secondary builder-toolbar-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Adicionar novo
@@ -60,6 +56,15 @@
         </div>
 
         <div class="category-tabs-bar" id="category-tabs"></div>
+        <!-- Barra de Meus produtos (modelo da barra de Meus presentes do love.com.br):
+             busca por nome ou SKU à esquerda e a quantidade de produtos à direita. -->
+        <div class="dash-card produtos-barra-caixa" id="produtos-barra-caixa">
+          <label class="tabela-busca produtos-busca">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
+            <input type="search" id="products-search" placeholder="Buscar por nome ou SKU..." autocomplete="off">
+          </label>
+          <p class="produtos-total" id="produtos-total"></p>
+        </div>
 
         <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 
@@ -652,6 +657,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/shell.js?v=60"></script>
-  <script src="js/produtos.js?v=59"></script>
+  <script src="js/produtos.js?v=60"></script>
 </body>
 </html>

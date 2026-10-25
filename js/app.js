@@ -295,6 +295,56 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.mobileBackdrop.addEventListener('click', foldSubDrawer);
   }
 
+  // Celular: a lateral do submenu não aparece; os mesmos itens viram uma barra
+  // segmentada no topo do conteúdo. Ela copia a lista da lateral (que o resto
+  // do código continua preenchendo e marcando) e repassa o toque ao item
+  // original. No desktop a barra fica escondida pelo CSS.
+  (function submenuNoCelular() {
+    const lista = elements.drawerSubItemsList;
+    const area = elements.mainArea;
+    if (!lista || !area) return;
+    const barra = document.createElement('nav');
+    barra.id = 'submenu-celular';
+    barra.className = 'submenu-celular';
+    barra.setAttribute('aria-label', 'Submenu');
+    area.insertBefore(barra, area.firstChild);
+    let agendado = false;
+    const desenhar = () => {
+      agendado = false;
+      const itens = Array.from(lista.querySelectorAll('.sub-drawer-item'))
+        .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none');
+      barra.hidden = itens.length < 2;
+      barra.textContent = '';
+      itens.forEach(orig => {
+        const ativo = orig.classList.contains('active');
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.className = 'submenu-celular-item' + (ativo ? ' is-ativo' : '');
+        if (ativo) botao.setAttribute('aria-current', 'page');
+        const rotulo = document.createElement('span');
+        rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
+        botao.appendChild(rotulo);
+        const contador = orig.querySelector('.badge-recados-count');
+        if (contador && contador.textContent.trim()) {
+          const selo = document.createElement('span');
+          selo.className = 'submenu-celular-selo';
+          selo.textContent = contador.textContent.trim();
+          botao.appendChild(selo);
+        }
+        botao.addEventListener('click', () => /** @type {HTMLElement} */ (orig).click());
+        barra.appendChild(botao);
+      });
+      const atual = /** @type {HTMLElement|null} */ (barra.querySelector('.is-ativo'));
+      if (atual) barra.scrollLeft = Math.max(0, atual.offsetLeft - (barra.clientWidth - atual.offsetWidth) / 2);
+    };
+    new MutationObserver(() => {
+      if (agendado) return;
+      agendado = true;
+      requestAnimationFrame(desenhar);
+    }).observe(lista, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style'] });
+    desenhar();
+  })();
+
   document.querySelectorAll('.modal-backdrop-custom').forEach(modal => {
     modal.classList.remove('open');
     modal.addEventListener('click', (e) => {

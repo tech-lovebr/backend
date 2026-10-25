@@ -12058,3 +12058,31 @@ html body #view-event-os-dashboard .love-tabela-barra-esq > .love-tabela-busca:n
 @media (max-width: 640px) { html body #view-event-os-dashboard .love-tabela-barra-esq > .love-tabela-busca:not(#love-h-a) { max-width: none; } }
 html body #view-event-os-dashboard .love-tabela-rolagem:not(#love-h-a) { width: 100%; max-width: 100%; overflow-x: auto; }
 html body #view-event-os-dashboard .love-tabela-caixa.budget-table-full-bleed:not(#love-h-a) { width: 100% !important; max-width: 100% !important; min-width: 0; }
+
+/* ==========================================================================
+   Celular: submenu como barra segmentada no topo (só até 768px).
+   A lateral do submenu some; no desktop nada muda (a barra fica escondida).
+   ========================================================================== */
+.submenu-celular { display: none; }
+@media (max-width: 768px) {
+  html body #sidebar-sub-drawer:not(#love-h-a),
+  html body #mobile-drawer-backdrop:not(#love-h-a) { display: none !important; }
+  html body #dashboard-main-area > .submenu-celular:not([hidden]):not(#love-h-a) {
+    position: relative; display: flex; gap: 2px; width: 100%; max-width: 100%; box-sizing: border-box;
+    margin: 0 0 16px; padding: 3px; background: #F4F4F5; border: 1px solid rgba(0, 0, 0, 0.04); border-radius: 10px;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  html body #dashboard-main-area > .submenu-celular::-webkit-scrollbar { display: none; }
+  html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
+    flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 38px; padding: 0 14px; background: transparent; border: 1px solid transparent; border-radius: 8px;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1; letter-spacing: -0.01em;
+    color: #52525B; white-space: nowrap; cursor: pointer; box-shadow: none; transform: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html body .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) { background: #FFFFFF; border-color: #E4E4E7; color: #18181B; font-weight: 600; }
+  html body .submenu-celular .submenu-celular-selo:not(#love-h-a) { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; }
+  body[data-theme="dark"] #dashboard-main-area > .submenu-celular { background: #1F1F1F; border-color: #333333; }
+  body[data-theme="dark"] .submenu-celular .submenu-celular-item { color: #A1A1AA; }
+  body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #333333; border-color: #404040; color: #FFFFFF; }
+}

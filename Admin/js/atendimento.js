@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filtro-origem').addEventListener('change', renderLista);
   aplicarBuscaDaUrl(document.getElementById('busca'));
 
-  addHeaderAction('Comandos', abrirBiblioteca, { icone: null, principal: true });
 
   renderContagens();
   renderLista();
@@ -262,17 +261,15 @@ async function abrirConversa(id) {
           ${porEmail && t.assunto ? ` · ${escapeHtml(t.assunto)}` : ''}
         </p>
       </div>
+      <!-- Comandos (respostas prontas) num drop-down ao lado do status;
+           a última opção abre a lista para criar/editar. -->
+      <select class="field-select conversa-comando" id="composer-resposta" aria-label="Usar um comando">
+        ${opcoesDoComando(t)}
+      </select>
       <select class="field-select conversa-status" id="conversa-status" aria-label="Status">
         ${Object.entries(TICKET_STATUS_LABELS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
     </header>
-
-    <div class="conversa-comandos">
-      <select class="field-select" id="composer-resposta" aria-label="Mensagem padrão">
-        <option value="">Usar uma mensagem padrão…</option>
-        ${opcoesDeResposta(t)}
-      </select>
-    </div>
 
     <div class="conversa-thread" id="conversa-thread">
       ${conversa.length ? conversa.map(m => bolha(m, t)).join('') : '<p class="cell-muted" style="font-size:.8125rem">Conversa sem mensagens.</p>'}
@@ -300,7 +297,10 @@ async function abrirConversa(id) {
   ligarAcoesDaLinha(painel, () => {});
   document.getElementById('conversa-status').addEventListener('change', e => salvarCampo(t, { status: e.target.value }));
   document.getElementById('btn-voltar-lista').addEventListener('click', fecharConversa);
-  document.getElementById('composer-resposta').addEventListener('change', e => aplicarResposta(t, e.target.value));
+  document.getElementById('composer-resposta').addEventListener('change', e => {
+    if (e.target.value === '__editar') { e.target.value = ''; return abrirBiblioteca(); }
+    aplicarResposta(t, e.target.value);
+  });
   document.getElementById('btn-enviar').addEventListener('click', () => enviar(t, 'aguardando_cliente'));
   document.getElementById('btn-enviar-resolver').addEventListener('click', () => enviar(t, 'resolvido'));
   document.getElementById('composer-editor').addEventListener('keydown', e => {
@@ -339,6 +339,12 @@ async function salvarCampo(t, campos) {
 
 function publicoServe(r, t) {
   return r.publico === 'todos' || r.publico === t.origem || (t.origem === 'site' && r.publico === 'cliente');
+}
+
+/** Opções do drop-down "Usar um comando…" da conversa. */
+function opcoesDoComando(t) {
+  return '<option value="">Usar um comando…</option>' + opcoesDeResposta(t) +
+    '<option disabled>──────────</option><option value="__editar">Criar ou editar comandos…</option>';
 }
 
 function opcoesDeResposta(t) {
@@ -600,7 +606,7 @@ function editarResposta(r) {
     if (ATUAL) {
       const select = document.getElementById('composer-resposta');
       const t = TICKETS.find(x => x.id === ATUAL);
-      if (select && t) select.innerHTML = '<option value="">Usar uma mensagem padrão…</option>' + opcoesDeResposta(t);
+      if (select && t) select.innerHTML = opcoesDoComando(t);
     }
   });
 }

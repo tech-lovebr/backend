@@ -187,7 +187,16 @@ function render() {
     (a.status === 'em_analise' ? new Date(a.em) - new Date(b.em) : new Date(b.em) - new Date(a.em)));
 
   if (!lista.length) {
-    renderEmpty(tbody, 6, 'Nenhuma solicitação', ITENS.length ? 'Nada encontrado com esses filtros.' : 'Quando um anfitrião ou fornecedor enviar documentos, a solicitação aparece aqui.');
+    // Nada esperando aprovação: aviso no meio da caixa.
+    const semBusca = !document.getElementById('busca').value.trim() && !document.getElementById('filtro-tipo').value;
+    const status = document.getElementById('filtro-status').value;
+    if (semBusca && (status === 'em_analise' || !ITENS.length)) {
+      tbody.innerHTML = `<tr class="no-hover"><td colspan="6" class="empty-state-centro">
+        <div class="empty-state"><strong>Ainda não existe nenhuma verificação para aprovar.</strong><p>Volte novamente mais tarde.</p></div>
+      </td></tr>`;
+      return;
+    }
+    renderEmpty(tbody, 6, 'Nenhuma solicitação', 'Nada encontrado com esses filtros.');
     return;
   }
 

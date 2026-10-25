@@ -4353,3 +4353,12 @@ body.com-faixa .admin-content > .legal-abas { border-bottom-color: rgba(255, 255
 @media (max-width: 640px) {
   .inbox-conversa .conversa-topo { flex-wrap: wrap; }
 }
+
+/* Atendimento: "Usar um comando…" no topo da conversa, ao lado do status. */
+.inbox-conversa .conversa-comando { width: 220px; max-width: 100%; flex-shrink: 0; }
+@media (max-width: 640px) { .inbox-conversa .conversa-comando { width: 100%; } }
+
+/* Verificações sem nada para aprovar: aviso centralizado no meio da caixa. */
+.table-card.tabela-ate-o-fim:has(.empty-state-centro) > .table-wrap { display: flex; flex-direction: column; background-image: none; }
+.table-card.tabela-ate-o-fim:has(.empty-state-centro) > .table-wrap > table { flex: 1; height: 100%; }
+.empty-state-centro { padding: 0 1.25rem; }

@@ -887,6 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
       titleHtml: '',
       bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(g.guestName)}</strong> comprou <strong class="text-zinc-900 font-bold">${escapeNotificationText(g.giftTitle)}</strong>, pelo valor de R$ ${Number(g.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. O saldo já está na sua conta.`,
       time: g.date || '',
+      quando: g.dateIso || '',
       unread: false,
       onClick: () => switchRailTab('gifts')
     }));
@@ -922,6 +923,7 @@ document.addEventListener('DOMContentLoaded', () => {
         titleHtml: escapeNotificationText(n.titulo),
         bodyHtml: escapeNotificationText(n.mensagem),
         time: n.created_at ? formatCommentDate(n.created_at) : '',
+        quando: n.created_at || '',
         unread: !readIds.has(n.id),
         linkUrl: n.link_url || null
       };
@@ -947,6 +949,27 @@ document.addEventListener('DOMContentLoaded', () => {
     badge.classList.toggle('hidden', unreadCount === 0);
   }
 
+  /** Data curta do celular: "25/10/26" e o horário embaixo. @param {any} n */
+  function tempoCurtoDaNotificacao(n) {
+    let d = n.quando ? new Date(n.quando) : null;
+    // Sem a data original: entende o texto já pronto
+    // ("Hoje, às 14:22", "Ontem, às 9:10", "24/08/2026" ou "24/08/2026, 14:22").
+    if (!d || isNaN(d.getTime())) {
+      const texto = String(n.time || '');
+      const hm = texto.match(/(\d{1,2}):(\d{2})/);
+      const dma = texto.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+      d = null;
+      if (dma) d = new Date(Number(dma[3].length === 2 ? `20${dma[3]}` : dma[3]), Number(dma[2]) - 1, Number(dma[1]));
+      else if (/^(hoje|ontem)/i.test(texto)) { d = new Date(); if (/^ontem/i.test(texto)) d.setDate(d.getDate() - 1); }
+      if (!d) return `<span>${texto}</span>`;
+      const so = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+      return hm ? `<span>${so}</span><span>${hm[1].padStart(2, '0')}:${hm[2]}</span>` : `<span>${so}</span>`;
+    }
+    const data = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+    const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `<span>${data}</span><span>${hora}</span>`;
+  }
+
   function renderNotificationsPage() {
     const listEl = document.getElementById('notifications-list-container');
     if (!listEl) return;
@@ -968,7 +991,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
             ${n.unread ? '<span class="w-1.5 h-1.5 rounded-full bg-[#537bae]"></span>' : ''}
-            <span class="text-xs text-zinc-400 whitespace-nowrap font-sans">${n.time}</span>
+            <span class="notif-tempo-longo text-xs text-zinc-400 whitespace-nowrap font-sans">${n.time}</span>
+            <span class="notif-tempo-curto">${tempoCurtoDaNotificacao(n)}</span>
           </div>
         </div>
       </div>
@@ -21898,6 +21922,7 @@ document.addEventListener('DOMContentLoaded', () => {
           giftTitle: (p && p.nome) || 'Presente',
           guestName: c.nome,
           date: formatCommentDate(c.pago_em || c.created_at),
+          dateIso: c.pago_em || c.created_at || '',
           amount: Number(c.valor) || 0,
           method: c.metodo === 'cartao' ? 'Cartão de crédito' : 'Pix',
           message: c.mensagem || '',

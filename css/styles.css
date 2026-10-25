@@ -12684,3 +12684,48 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   body[data-theme="dark"] :is(.menu-celular-conta, .menu-conta-item span, .menu-conta .menu-celular-evento) { border-color: rgba(255, 255, 255, 0.08); }
   body[data-theme="dark"] .menu-conta-fechar { background: rgba(37, 37, 37, 0.72); border-color: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
 }
+
+/* ==========================================================================
+   Celular (só até 768px)
+   - Barra de baixo: caixa flutuante com os mesmos cantos das outras caixas
+     (10px), no cinza de fundo do desktop (#F4F6F7) com vidro fosco; ícones
+     escuros e o ativo na cor primária.
+   - Notificações com cara de app: texto maior e data curta (DD/MM/AA) com o
+     horário embaixo, sobrando mais espaço para o texto.
+   Desktop não muda.
+   ========================================================================== */
+.notif-tempo-curto { display: none; }
+@media (max-width: 768px) {
+  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) {
+    border-radius: 10px !important; padding: 0 6px !important;
+    background: rgba(244, 246, 247, 0.82) !important; border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  }
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a):not(#love-h-b),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit:not(#love-h-a):not(#love-h-b) { border-radius: 8px !important; color: #52525B !important; }
+  html body .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; color: #183b54 !important; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04) !important; }
+  html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a) { border-color: #F4F6F7 !important; }
+  body[data-theme="dark"] .sidebar-icon-rail { background: rgba(30, 30, 30, 0.82) !important; border-color: rgba(255, 255, 255, 0.08) !important; }
+  body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn { color: #A1A1AA !important; }
+  body[data-theme="dark"] .sidebar-icon-rail .rail-icon-btn.active { background: #2A2A2A !important; color: #FFFFFF !important; }
+
+  /* Notificações */
+  html body #notifications-list-container:not(#love-h-a) { margin: 0 -16px !important; max-width: none !important; }
+  html body #notifications-list-container .notification-row:not(#love-h-a) {
+    margin: 0 !important; padding: 14px 16px !important; gap: 12px !important; border-radius: 0 !important;
+  }
+  html body #notifications-list-container .notification-row > div:first-child:not(#love-h-a) { width: 40px; height: 40px; border-radius: 10px !important; }
+  html body #notifications-list-container .notification-row > div:first-child svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body #notifications-list-container .notification-row p:not(#love-h-a) { font-size: 15px !important; line-height: 1.4 !important; }
+  html body #notifications-list-container .notification-row p.font-bold:not(#love-h-a) { font-weight: 600 !important; }
+  html body #notifications-list-container .notification-row > div:last-child:not(#love-h-a) { gap: 10px !important; }
+  html body #notifications-list-container .notif-tempo-longo:not(#love-h-a) { display: none !important; }
+  html body #notifications-list-container .notif-tempo-curto:not(#love-h-a) {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+    font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.2; color: #A1A1AA; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  html body #notifications-list-container .notification-row > div:last-child > div:last-child:not(#love-h-a) { align-items: flex-start !important; padding-top: 2px; }
+  html body #btn-notifications-mark-all-read:not(#love-h-a) { height: 40px !important; padding: 0 4px !important; background: transparent !important; border: 0 !important; color: #183b54 !important; font-size: 14px !important; font-weight: 600 !important; }
+}

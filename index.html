@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261025_setaVoltar">
+  <link rel="stylesheet" href="css/styles.css?v=20261025_menuCelular">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -685,6 +685,15 @@
     <!-- 1. TOP HEADER (Header na cor #333333) -->
     <header class="dashboard-top-navbar fixed top-0 left-0 md:left-[80px] right-0 z-40 px-4 sm:px-6 flex items-center justify-between">
       
+      <!-- Celular: menu (abre a tela cheia) à esquerda e logo no meio -->
+      <button type="button" id="btn-menu-celular" class="menu-celular-botao" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu-celular"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <a href="javascript:void(0)" class="btn-navigate-home logo-celular" aria-label="Love - início">
+          <img class="logo-celular-icone logo-claro" src="assets/iconelove2.png?v=2" alt="" aria-hidden="true">
+          <img class="logo-celular-icone logo-escuro" src="assets/icon-white1.png" alt="" aria-hidden="true">
+          <img class="logo-celular-nome logo-claro" src="assets/love-dark-03.png?v=6" alt="Love">
+          <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png?v=6" alt="Love">
+      </a>
+
       <!-- Left: Logo Love + Seletor de Comemorações + Contador -->
       <div class="flex items-center gap-3 sm:gap-5 min-w-0">
         <!-- Logo Love no Header (love-dark-03.png no Light / Love-white-03.png no Dark) -->
@@ -818,6 +827,41 @@
       </div>
 
     </header>
+
+    <!-- Celular: menu em tela cheia (logo, seus eventos e os itens de Minha conta).
+         Os itens repassam o toque aos botões do menu do perfil (ver app.js). -->
+    <div id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+      <div class="menu-celular-topo">
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <span class="logo-celular">
+          <img class="logo-celular-icone logo-claro" src="assets/iconelove2.png?v=2" alt="" aria-hidden="true">
+          <img class="logo-celular-icone logo-escuro" src="assets/icon-white1.png" alt="" aria-hidden="true">
+          <img class="logo-celular-nome logo-claro" src="assets/love-dark-03.png?v=6" alt="Love">
+          <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png?v=6" alt="Love">
+        </span>
+        <span class="menu-celular-espaco" aria-hidden="true"></span>
+      </div>
+      <div class="menu-celular-corpo">
+        <div class="menu-celular-eventos">
+          <button type="button" class="menu-celular-evento-atual" aria-expanded="false">
+            <span class="menu-celular-evento-textos">
+              <span class="menu-celular-evento-rotulo">Seus eventos</span>
+              <span class="menu-celular-evento-nome"></span>
+            </span>
+            <svg class="menu-celular-evento-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="menu-celular-eventos-lista" hidden></div>
+        </div>
+        <div class="menu-celular-perfil">
+          <span class="menu-celular-avatar love-avatar-box" aria-hidden="true"></span>
+          <div class="min-w-0">
+            <p class="menu-celular-nome"></p>
+            <p class="menu-celular-email"></p>
+          </div>
+        </div>
+        <nav class="menu-celular-itens" aria-label="Minha conta"></nav>
+      </div>
+    </div>
 
     <!-- Backdrop para Drawer no Mobile -->
     <div id="mobile-drawer-backdrop" class="mobile-drawer-backdrop"></div>
@@ -5561,13 +5605,13 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261025_setaVoltar"></script>
+  <script src="js/app.js?v=20261025_menuCelular"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
-  <script src="js/pedidos-orcamento.js?v=20261025_setaVoltar"></script>
-  <script src="js/contratos.js?v=20261025_setaVoltar"></script>
+  <script src="js/pedidos-orcamento.js?v=20261025_menuCelular"></script>
+  <script src="js/contratos.js?v=20261025_menuCelular"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261025_setaVoltar"></script>
+  <script src="js/site-builder.js?v=20261025_menuCelular"></script>
 </body>
 </html>

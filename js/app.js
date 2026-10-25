@@ -299,6 +299,101 @@ document.addEventListener('DOMContentLoaded', () => {
   // segmentada no topo do conteúdo. Ela copia a lista da lateral (que o resto
   // do código continua preenchendo e marcando) e repassa o toque ao item
   // original. No desktop a barra fica escondida pelo CSS.
+  // Celular: o ☰ do topo abre um menu em tela cheia com o logo, a escolha do
+  // evento e os itens de Minha conta. Cada item repassa o toque ao botão
+  // original do menu do perfil (mesmo comportamento do desktop).
+  (function menuDoCelular() {
+    const menu = document.getElementById('menu-celular');
+    const abrirBtn = document.getElementById('btn-menu-celular');
+    if (!menu || !abrirBtn) return;
+    const listaEventos = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-eventos-lista'));
+    const eventoAtual = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-evento-atual'));
+    const itens = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-itens'));
+    const ITENS = [
+      ['btn-account-preview-site', 'Ver meu site'],
+      ['btn-account-wallet', 'Financeiro'],
+      ['btn-account-profile-data', 'Configurações'],
+      ['btn-account-contact-support', 'Falar com o suporte'],
+      ['btn-account-faq', 'Central de ajuda'],
+      ['btn-account-logout', 'Sair']
+    ];
+    const fechar = () => {
+      if (menu.hidden) return;
+      menu.hidden = true;
+      document.body.classList.remove('menu-celular-aberto');
+      abrirBtn.setAttribute('aria-expanded', 'false');
+    };
+    /** Fecha o menu e repassa o toque ao botão original. @param {Element|null} alvo */
+    const repassar = (alvo) => { fechar(); if (alvo instanceof HTMLElement) alvo.click(); };
+    const mostrarEventos = (/** @type {boolean} */ aberto) => {
+      listaEventos.hidden = !aberto;
+      eventoAtual.setAttribute('aria-expanded', String(aberto));
+    };
+    const desenharEventos = () => {
+      listaEventos.innerHTML = '';
+      document.querySelectorAll('#events-switcher-items > *').forEach(orig => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'menu-celular-evento' + (orig.classList.contains('is-active') ? ' is-ativo' : '');
+        const nome = document.createElement('span');
+        nome.textContent = ((orig.querySelector('span') || orig).textContent || '').trim();
+        b.appendChild(nome);
+        if (orig.classList.contains('is-active')) b.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>');
+        b.addEventListener('click', () => repassar(orig));
+        listaEventos.appendChild(b);
+      });
+      const criar = document.createElement('button');
+      criar.type = 'button';
+      criar.className = 'menu-celular-evento is-criar';
+      criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Criar novo evento</span>';
+      criar.addEventListener('click', () => repassar(document.getElementById('btn-dropdown-create-new-event')));
+      listaEventos.appendChild(criar);
+    };
+    const desenharItens = () => {
+      itens.innerHTML = '';
+      ITENS.forEach(([id, rotulo]) => {
+        const orig = document.getElementById(id);
+        if (!orig) return;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'menu-celular-item' + (id === 'btn-account-logout' ? ' is-sair' : '');
+        const icone = orig.querySelector('svg');
+        if (icone) b.appendChild(icone.cloneNode(true));
+        const texto = document.createElement('span');
+        texto.textContent = rotulo;
+        b.appendChild(texto);
+        b.addEventListener('click', () => repassar(orig));
+        itens.appendChild(b);
+      });
+    };
+    const abrir = () => {
+      const titulo = document.getElementById('dash-header-event-title');
+      const nomeEvento = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-evento-nome'));
+      nomeEvento.textContent = titulo ? (titulo.textContent || '').trim() : '';
+      const avatarOrig = document.getElementById('account-dropdown-avatar');
+      const avatar = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-avatar'));
+      avatar.innerHTML = avatarOrig ? avatarOrig.innerHTML : '';
+      if (avatarOrig) avatar.setAttribute('style', avatarOrig.getAttribute('style') || '');
+      const nome = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-nome'));
+      nome.textContent = (document.getElementById('account-dropdown-username')?.textContent || '').trim();
+      const email = /** @type {HTMLElement} */ (menu.querySelector('.menu-celular-email'));
+      email.textContent = (document.getElementById('account-dropdown-email')?.textContent || '').trim();
+      eventoAtual.toggleAttribute('disabled', document.body.classList.contains('first-access-locked'));
+      desenharEventos();
+      desenharItens();
+      mostrarEventos(false);
+      document.getElementById('dropdown-user-account')?.classList.add('hidden');
+      menu.hidden = false;
+      document.body.classList.add('menu-celular-aberto');
+      abrirBtn.setAttribute('aria-expanded', 'true');
+    };
+    abrirBtn.addEventListener('click', (e) => { e.stopPropagation(); abrir(); });
+    menu.querySelector('.menu-celular-fechar')?.addEventListener('click', fechar);
+    eventoAtual.addEventListener('click', () => mostrarEventos(listaEventos.hidden));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
+    window.matchMedia('(max-width: 768px)').addEventListener?.('change', (e) => { if (!e.matches) fechar(); });
+  })();
+
   (function submenuNoCelular() {
     const lista = elements.drawerSubItemsList;
     const area = elements.mainArea;
@@ -355,13 +450,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Desktop: a barra fica escondida no topo (sem mexer na ordem das telas).
       if (!noCelular.matches) { if (barra.parentElement !== area) area.insertBefore(barra, area.firstChild); return; }
       const aba = area.querySelector('.dashboard-tab-content.active');
-      const cabecalho = aba && aba.id !== 'tab-edit-site' ? aba.querySelector(':scope > .builder-toolbar') : null;
+      const cabecalho = aba && aba.id !== 'tab-edit-site' ? aba.querySelector(':scope > .builder-toolbar, :scope > .floorplan-wrap > .floorplan-toolbar') : null;
       if (cabecalho) {
         if (cabecalho.nextElementSibling !== barra) cabecalho.after(barra);
       } else if (barra.parentElement !== area) {
         area.insertBefore(barra, area.firstChild);
       }
-      if (!aba || !cabecalho) return;
+      if (!aba || !cabecalho || !cabecalho.classList.contains('builder-toolbar')) return;
       // Lupa no cabeçalho: no celular a busca da tabela fica escondida e abre por ela.
       let lupa = /** @type {HTMLButtonElement|null} */ (cabecalho.querySelector(':scope > .busca-celular-botao'));
       if (!lupa) {
@@ -9787,6 +9882,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRsvpFilter = 'all';
   let rsvpPageSize = 15;
   let rsvpCurrentPage = 1;
+  // Celular: lista contínua que carrega mais ao chegar perto do fim.
+  const RSVP_LOTE_CELULAR = 40;
+  let rsvpLimiteCelular = RSVP_LOTE_CELULAR;
+  let rsvpChaveCelular = '';
+  let rsvpTotalCelular = 0;
 
   // Sub-seções de Lista de Convidados: Meus convidados / Mapear mesas / Checklist.
   function switchRsvpSubSection(id) {
@@ -9913,7 +10013,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = Math.max(1, Math.ceil(filteredGuests.length / rsvpPageSize));
     if (rsvpCurrentPage > totalPages) rsvpCurrentPage = totalPages;
     const pageStart = (rsvpCurrentPage - 1) * rsvpPageSize;
-    const pageGuests = filteredGuests.slice(pageStart, pageStart + rsvpPageSize);
+    const listaContinua = window.matchMedia('(max-width: 768px)').matches;
+    const chaveLista = `${activeFilter}|${searchKeyword}`;
+    if (chaveLista !== rsvpChaveCelular) { rsvpChaveCelular = chaveLista; rsvpLimiteCelular = RSVP_LOTE_CELULAR; }
+    rsvpTotalCelular = filteredGuests.length;
+    const pageGuests = listaContinua
+      ? filteredGuests.slice(0, rsvpLimiteCelular)
+      : filteredGuests.slice(pageStart, pageStart + rsvpPageSize);
     renderRsvpPagination(filteredGuests.length);
 
     // Extrai só o número da mesa (ex: "Mesa 04 (Família)" -> "04")
@@ -11064,6 +11170,22 @@ document.addEventListener('DOMContentLoaded', () => {
       renderGuestsTable(currentRsvpFilter, inputRsvpSearch ? inputRsvpSearch.value : '');
     });
   }
+  // Celular: perto do fim da lista, carrega mais convidados (sem páginas).
+  let rsvpCarregandoMais = false;
+  document.addEventListener('scroll', () => {
+    if (rsvpCarregandoMais || rsvpLimiteCelular >= rsvpTotalCelular) return;
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (!document.getElementById('tab-rsvp')?.classList.contains('active')) return;
+    const corpo = document.getElementById('rsvp-guests-table-body');
+    if (!corpo || corpo.getBoundingClientRect().bottom > window.innerHeight + 400) return;
+    rsvpCarregandoMais = true;
+    requestAnimationFrame(() => {
+      rsvpLimiteCelular += RSVP_LOTE_CELULAR;
+      renderGuestsTable(currentRsvpFilter, inputRsvpSearch ? /** @type {HTMLInputElement} */ (inputRsvpSearch).value : '');
+      rsvpCarregandoMais = false;
+    });
+  }, { passive: true, capture: true });
+
   const rsvpPagePrevBtn = document.getElementById('rsvp-page-prev');
   const rsvpPageNextBtn = document.getElementById('rsvp-page-next');
   if (rsvpPagePrevBtn) {

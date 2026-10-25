@@ -733,6 +733,8 @@ async function publishBuilderStateRemote(pageKey, state) {
     .from('convite_digital_pages')
     .upsert({ evento_id: eventId, page_key: pageKey, state, published_state: state, published_at: agora, updated_at: agora }, { onConflict: 'evento_id,page_key' });
   if (error) console.error('Erro ao publicar Convite Digital:', error);
+  // Home: a caixinha do link passa para "Publicado".
+  else if (typeof window.loveAtualizarLinkDaHome === 'function') window.loveAtualizarLinkDaHome();
   return { error };
 }
 

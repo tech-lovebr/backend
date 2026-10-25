@@ -2291,6 +2291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (overviewUrl) overviewUrl.textContent = activeEvent.publicUrl || `https://love.com.br/${activeEvent.slug}`;
+    atualizarLinkDaHome();
 
     // 3. Títulos dos Módulos
     const giftsTitle = document.getElementById('gifts-header-title');
@@ -17645,6 +17646,60 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rua) return numero ? `${rua}, ${numero}` : rua;
     return nome;
   }
+
+  // ---- Home: caixinha com o link do convite (abaixo do banner) ----
+  /** Endereço público do convite do evento ativo. */
+  function urlDoConviteDaHome() {
+    const ev = getActiveEvent();
+    if (!ev) return '';
+    return ev.publicUrl || (ev.slug ? `https://love.com.br/${ev.slug}` : '');
+  }
+  var consultaDoLinkDaHome = 0; // var: a Home pode chamar antes desta linha rodar
+  async function atualizarLinkDaHome() {
+    const caixa = document.getElementById('home-link-convite');
+    if (!caixa) return;
+    const url = urlDoConviteDaHome();
+    const link = /** @type {HTMLAnchorElement|null} */ (document.getElementById('home-link-url'));
+    if (link) { link.textContent = url.replace(/^https?:\/\//, '') || 'love.com.br'; link.href = url || '#'; }
+    // Publicado = o convite tem a cópia publicada no banco (botão Publicar).
+    const marcar = (/** @type {boolean} */ publicado) => {
+      caixa.classList.toggle('is-publicado', publicado);
+      const texto = document.getElementById('home-link-status-texto');
+      if (texto) texto.textContent = publicado ? 'Publicado' : 'Não publicado';
+      document.getElementById('home-link-status')?.setAttribute('title', publicado ? 'Convite publicado' : 'Convite ainda não publicado');
+    };
+    const ev = getActiveEvent();
+    const uuid = ev && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ev.id)) ? String(ev.id) : null;
+    if (!uuid || typeof supabaseClient === 'undefined') { marcar(false); return; }
+    const vez = ++consultaDoLinkDaHome;
+    try {
+      const { data } = await supabaseClient.from('convite_digital_pages').select('published_at').eq('evento_id', uuid).eq('page_key', 'convite').maybeSingle();
+      if (vez === consultaDoLinkDaHome) marcar(!!(data && data.published_at));
+    } catch (e) { if (vez === consultaDoLinkDaHome) marcar(false); }
+  }
+  window.loveAtualizarLinkDaHome = atualizarLinkDaHome;
+  document.getElementById('home-link-editar')?.addEventListener('click', () => {
+    /** @type {HTMLElement|null} */ (document.querySelector('[data-rail-tab="edit-site"]'))?.click();
+  });
+  document.getElementById('home-link-abrir')?.addEventListener('click', () => {
+    const url = urlDoConviteDaHome();
+    if (url) window.open(url, '_blank', 'noopener');
+  });
+  document.getElementById('home-link-compartilhar')?.addEventListener('click', async () => {
+    const url = urlDoConviteDaHome();
+    if (!url) return;
+    const ev = getActiveEvent();
+    if (navigator.share) {
+      try { await navigator.share({ title: (ev && ev.title) || 'Convite', url }); } catch (e) { /* cancelado */ }
+      return;
+    }
+    // Sem compartilhar do sistema: copia o link e avisa no próprio botão.
+    const botao = document.getElementById('home-link-compartilhar');
+    try {
+      await navigator.clipboard.writeText(url);
+      if (botao) { botao.title = 'Link copiado'; botao.classList.add('is-copiado'); setTimeout(() => { botao.title = 'Compartilhar link'; botao.classList.remove('is-copiado'); }, 1800); }
+    } catch (e) { window.open(url, '_blank', 'noopener'); }
+  });
 
   function atualizarLocalDaHome() {
     const el = document.getElementById('dash-hub-event-location-text');

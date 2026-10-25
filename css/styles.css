@@ -11812,3 +11812,29 @@ html body #modal-b2b-orcamento .orc-dica:not(#love-h-a) { margin: 6px 0 0; font-
   html body #modal-b2b-orcamento .orc-grade-local > .orc-grade-campo:not(#love-h-a) { grid-column: 1 / -1; }
 }
 body[data-theme="dark"] #modal-b2b-orcamento select.orc-select { background-color: #333333 !important; color: #FFFFFF !important; border-color: #404040 !important; }
+
+/* ---- Home: caixinha do link do convite, entre o banner e o Guia de
+   primeiros passos (status · endereço | editar · compartilhar · abrir) ---- */
+html body .home-link-convite:not(#love-h-a) { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 8px 8px 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; font-family: Inter, sans-serif; }
+.home-link-status { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: 13px; color: #71717A; white-space: nowrap; }
+.home-link-ponto { width: 8px; height: 8px; border-radius: 50%; background: #F79009; }
+.home-link-convite.is-publicado .home-link-ponto { background: #12B76A; }
+html body a.home-link-url:not(#love-h-a) { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; color: #18181B; text-decoration: none; }
+html body a.home-link-url:not(#love-h-a):hover { text-decoration: underline; text-underline-offset: 3px; }
+.home-link-acoes { display: flex; align-items: center; flex-shrink: 0; }
+html body button.home-link-botao:not(#love-h-a) { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; background: transparent; border: 0; border-radius: 8px !important; color: #3F3F46; cursor: pointer; box-shadow: none; }
+html body button.home-link-botao:not(#love-h-a):hover { color: #181D24; background: transparent; }
+html body button.home-link-botao + button.home-link-botao:not(#love-h-a) { margin-left: 2px; }
+html body button.home-link-botao:first-child:not(#love-h-a) { position: relative; margin-right: 6px; }
+html body button.home-link-botao:first-child:not(#love-h-a)::after { content: ""; position: absolute; right: -4px; top: 7px; bottom: 7px; width: 1px; background: #E4E4E7; }
+.home-link-botao svg { width: 17px; height: 17px; }
+html body button.home-link-botao.is-copiado:not(#love-h-a) { color: #12B76A; }
+body[data-theme="dark"] .home-link-convite { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] a.home-link-url { color: #FFFFFF !important; }
+body[data-theme="dark"] .home-link-status, body[data-theme="dark"] button.home-link-botao { color: #A1A1AA !important; }
+body[data-theme="dark"] button.home-link-botao:first-child::after { background: #404040 !important; }
+/* Caixinha estreita: fica só a bolinha do status (o texto vira dica). */
+html body .home-link-convite:not(#love-h-a) { container-type: inline-size; container-name: home-link; }
+@container home-link (max-width: 380px) {
+  #home-link-status-texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

@@ -12372,8 +12372,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    Mapa do evento: cabeçalho antes das abas. Desktop não muda.
    ========================================================================== */
 .menu-celular-botao, .logo-celular { display: none; }
-.menu-celular[hidden] { display: none !important; }
-@media (min-width: 769px) { .menu-celular { display: none !important; } }
+@media (min-width: 769px) { .menu-celular, .menu-celular-fundo, .menu-conta, .menu-conta-fundo { display: none !important; } }
 @media (max-width: 768px) {
   /* Topo */
   html body .dashboard-top-navbar > .logo-celular + div:not(#love-h-a),
@@ -12395,64 +12394,6 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   body[data-theme="dark"] .logo-celular .logo-claro { display: none; }
   body[data-theme="dark"] .logo-celular .logo-escuro { display: block; }
   body[data-theme="dark"] .dashboard-top-navbar > .menu-celular-botao { color: #FFFFFF; }
-
-  /* Menu em tela cheia */
-  body.menu-celular-aberto { overflow: hidden; }
-  .menu-celular {
-    position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: #FFFFFF;
-    font-family: Inter, sans-serif; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  .menu-celular button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .menu-celular-topo { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; height: 60px; padding: 0 max(0.75rem, env(safe-area-inset-right, 0px)) 0 max(0.75rem, env(safe-area-inset-left, 0px)); flex-shrink: 0; }
-  .menu-celular-topo .logo-celular { justify-self: center; }
-  .menu-celular-fechar { width: 44px; height: 44px; margin-left: -10px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #18181B; }
-  .menu-celular-corpo { padding: 12px 16px 32px; }
-
-  .menu-celular-evento-atual {
-    width: 100%; min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px;
-    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; text-align: left; color: #18181B;
-  }
-  .menu-celular-evento-atual:disabled { opacity: 0.5; }
-  .menu-celular-evento-textos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .menu-celular-evento-rotulo { font-size: 11px; font-weight: 500; color: #A1A1AA; }
-  .menu-celular-evento-nome { font-size: 16px; font-weight: 600; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .menu-celular-evento-seta { width: 20px; height: 20px; flex-shrink: 0; color: #71717A; transition: transform .15s ease; }
-  .menu-celular-evento-atual[aria-expanded="true"] .menu-celular-evento-seta { transform: rotate(180deg); }
-  .menu-celular-eventos-lista { margin-top: 8px; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; }
-  .menu-celular-evento {
-    width: 100%; min-height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 14px;
-    background: #FFFFFF; border: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 15px; font-weight: 400; color: #18181B; text-align: left;
-  }
-  .menu-celular-evento:last-child { border-bottom: 0; }
-  .menu-celular-evento > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .menu-celular-evento svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .menu-celular-evento.is-ativo { font-weight: 600; color: #183b54; }
-  .menu-celular-evento.is-criar { justify-content: flex-start; font-weight: 600; color: #183b54; }
-
-  .menu-celular-perfil { display: flex; align-items: center; gap: 12px; padding: 24px 0 8px; }
-  html body .menu-celular-perfil .menu-celular-avatar:not(#love-h-a) { width: 44px; height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #EBF4FF; color: #183b54; font-size: 15px; font-weight: 600; }
-  .menu-celular-perfil .menu-celular-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .menu-celular-nome { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .menu-celular-email { margin: 2px 0 0; font-size: 13px; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .menu-celular-email:empty { display: none; }
-
-  .menu-celular-itens { display: flex; flex-direction: column; }
-  .menu-celular-item {
-    width: 100%; min-height: 54px; display: flex; align-items: center; gap: 14px; padding: 0;
-    background: transparent; border: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 16px; font-weight: 500; color: #18181B; text-align: left;
-  }
-  .menu-celular-item:last-child { border-bottom: 0; }
-  .menu-celular-item svg { width: 22px; height: 22px; flex-shrink: 0; color: #52525B; }
-  .menu-celular-item.is-sair { color: #52525B; }
-
-  body[data-theme="dark"] .menu-celular { background: #1A1A1A; }
-  body[data-theme="dark"] .menu-celular :is(.menu-celular-fechar, .menu-celular-nome, .menu-celular-evento-nome, .menu-celular-item, .menu-celular-evento) { color: #FFFFFF; }
-  body[data-theme="dark"] .menu-celular :is(.menu-celular-evento-atual, .menu-celular-evento) { background: #252525; border-color: #404040; }
-  body[data-theme="dark"] .menu-celular-eventos-lista { border-color: #404040; }
-  body[data-theme="dark"] .menu-celular :is(.menu-celular-item, .menu-celular-evento) { border-bottom-color: rgba(255, 255, 255, 0.08); }
-  body[data-theme="dark"] .menu-celular :is(.menu-celular-evento.is-ativo, .menu-celular-evento.is-criar) { color: #EBF4FF; }
-  body[data-theme="dark"] .menu-celular-item svg { color: #D4D4D8; }
 
   /* Meus convidados: sem lupa; a busca fica sempre à esquerda do RSVP. */
   html body #view-event-os-dashboard #tab-rsvp .builder-toolbar > button.busca-celular-botao:not(#love-h-a) { display: none !important; }
@@ -12482,7 +12423,6 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
     content: ''; display: block; width: 20px; height: 20px;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center / 20px no-repeat;
   }
-  html body .menu-celular-perfil:has(.menu-celular-nome:empty) { display: none; }
 }
 
 /* ==========================================================================
@@ -12626,4 +12566,121 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   body[data-theme="dark"] :is(.planta-gaveta-icone, .planta-fantasma, .mesa-celular-cabeca button, .mesa-celular-mais) { color: #EBF4FF; }
   body[data-theme="dark"] .planta-gaveta-nome { color: #D4D4D8; }
   body[data-theme="dark"] .mesa-celular-formato.is-ativo { border-color: #EBF4FF; color: #EBF4FF; background: #183b54; }
+}
+
+/* ==========================================================================
+   Celular (só até 768px): topo da Home sem a linha embaixo (uma coisa só com
+   a página), logo maior, ☰ e sino maiores em círculos de vidro branco.
+   O ☰ abre a gaveta lateral (logo, seções e a conta embaixo); a conta abre o
+   pop-up de baixo para cima (eventos, itens de Minha conta e Sair).
+   Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Topo */
+  html body .dashboard-top-navbar:not(#love-h-a):not(#love-h-b) { border-bottom: 0 !important; box-shadow: none !important; background: #FFFFFF !important; padding-left: 16px !important; padding-right: 16px !important; }
+  html body .dashboard-top-navbar:not(#love-h-a)::after { display: none !important; }
+  body[data-theme="dark"] .dashboard-top-navbar { background: #1A1A1A !important; }
+  html body .dashboard-top-navbar > .logo-celular:not(#love-h-a) { gap: 8px; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-icone:not(#love-h-a) { height: 30px; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-nome:not(#love-h-a) { height: 23px; }
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a),
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b) {
+    width: 48px !important; height: 48px !important; min-width: 48px !important; margin: 0 !important; padding: 0 !important;
+    display: inline-flex !important; align-items: center !important; justify-content: center !important;
+    border-radius: 50% !important; color: #18181B !important;
+    background: rgba(255, 255, 255, 0.72) !important; border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+  }
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a) svg,
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a) svg { width: 24px !important; height: 24px !important; }
+  html body .dashboard-top-navbar #btn-notifications-menu .badge-header-notifications:not(#love-h-a) { top: 4px !important; right: 4px !important; }
+  body[data-theme="dark"] .dashboard-top-navbar :is(.menu-celular-botao, #btn-notifications-menu) { background: rgba(37, 37, 37, 0.72) !important; border-color: rgba(255, 255, 255, 0.1) !important; color: #FFFFFF !important; }
+
+  /* Gaveta lateral */
+  body.menu-celular-aberto { overflow: hidden; }
+  .menu-celular-fundo, .menu-conta-fundo { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+  .menu-celular-fundo { z-index: 88; }
+  .menu-conta-fundo { z-index: 92; background: rgba(0, 0, 0, 0.2); }
+  .menu-celular-fundo.is-aberta, .menu-conta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
+  .menu-celular {
+    display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
+    width: min(80vw, 330px); background: #FFFFFF; font-family: Inter, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateX(-100%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
+  }
+  .menu-celular.is-aberta { transform: translateX(0); visibility: visible; transition: transform .26s cubic-bezier(.2, .8, .2, 1); }
+  .menu-celular button, .menu-conta button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .menu-celular-topo { display: flex; align-items: center; justify-content: space-between; height: 68px; padding: 0 12px 0 20px; flex-shrink: 0; }
+  .menu-celular-topo .logo-celular { display: flex; gap: 8px; }
+  .menu-celular-topo .logo-celular-icone { height: 28px; }
+  .menu-celular-topo .logo-celular-nome { height: 21px; }
+  .menu-celular-fechar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #18181B; }
+  .menu-celular-fechar svg { width: 24px; height: 24px; }
+  .menu-celular-nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 12px 16px; }
+  .menu-celular-secao { margin: 22px 8px 6px; font-size: 13px; font-weight: 500; color: #A1A1AA; }
+  .menu-celular-link { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 14px; padding: 0 8px; background: transparent; border: 0; border-radius: 8px; font-size: 16px; font-weight: 400; color: #18181B; text-align: left; }
+  .menu-celular-link svg { width: 23px; height: 23px; flex-shrink: 0; color: #3F3F46; }
+  .menu-celular-link.is-ativo { font-weight: 600; color: #183b54; }
+  .menu-celular-link.is-ativo svg { color: #183b54; }
+  .menu-celular-conta {
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0; width: 100%; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+    background: #FFFFFF; border: 0; border-top: 1px solid rgba(0, 0, 0, 0.06); text-align: left;
+  }
+  .menu-celular-conta-textos { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .menu-celular-conta .menu-celular-nome { font-size: 16px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-celular-conta .menu-celular-evento-nome { font-size: 13px; font-weight: 400; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-celular-conta-seta { width: 20px; height: 20px; flex-shrink: 0; color: #A1A1AA; }
+  html body .menu-celular .menu-celular-avatar:not(#love-h-a),
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a) { width: 44px; height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #EBF4FF; color: #183b54; font-size: 15px; font-weight: 600; }
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a) { width: 72px; height: 72px; min-width: 72px; font-size: 24px; }
+  :is(.menu-celular-avatar, .menu-conta-avatar) img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Pop-up da conta (sobe de baixo, por cima da gaveta) */
+  .menu-conta {
+    display: flex; flex-direction: column; position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 94; max-height: calc(100dvh - 72px);
+    padding: 6px 20px calc(16px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-family: Inter, sans-serif;
+    transform: translateY(calc(100% + 16px)); visibility: hidden; transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
+  }
+  .menu-conta.is-aberta { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+  .menu-conta-alca { width: 40px; height: 5px; margin: 4px auto 0; border-radius: 999px; background: #D4D4D8; flex-shrink: 0; }
+  .menu-conta-fechar {
+    position: absolute; top: 14px; left: 14px; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0;
+    border-radius: 50%; color: #52525B; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(0, 0, 0, 0.06);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+  .menu-conta-fechar svg { width: 20px; height: 20px; }
+  .menu-conta-cabeca { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 0 16px; text-align: center; }
+  .menu-conta-nome { margin: 8px 0 0; font-size: 17px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+  .menu-conta-email { margin: 0; font-size: 13px; color: #71717A; }
+  .menu-conta-email:empty { display: none; }
+  .menu-conta-eventos { margin-bottom: 8px; }
+  .menu-conta .menu-celular-evento-atual { width: 100%; min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; text-align: left; color: #18181B; }
+  .menu-conta .menu-celular-evento-atual:disabled { opacity: 0.5; }
+  .menu-conta .menu-celular-evento-textos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .menu-conta .menu-celular-evento-rotulo { font-size: 11px; font-weight: 500; color: #A1A1AA; }
+  .menu-conta .menu-celular-evento-nome { font-size: 16px; font-weight: 600; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-conta .menu-celular-evento-seta { width: 20px; height: 20px; flex-shrink: 0; color: #71717A; transition: transform .15s ease; }
+  .menu-conta .menu-celular-evento-atual[aria-expanded="true"] .menu-celular-evento-seta { transform: rotate(180deg); }
+  .menu-conta .menu-celular-eventos-lista { margin-top: 8px; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; }
+  .menu-conta .menu-celular-evento { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 14px; background: #FFFFFF; border: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 15px; color: #18181B; text-align: left; }
+  .menu-conta .menu-celular-evento:last-child { border-bottom: 0; }
+  .menu-conta .menu-celular-evento > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-conta .menu-celular-evento svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .menu-conta .menu-celular-evento.is-ativo { font-weight: 600; color: #183b54; }
+  .menu-conta .menu-celular-evento.is-criar { justify-content: flex-start; font-weight: 600; color: #183b54; }
+  .menu-conta-itens { display: flex; flex-direction: column; }
+  .menu-conta-item { width: 100%; min-height: 54px; display: flex; align-items: center; gap: 16px; padding: 0 4px; background: transparent; border: 0; font-size: 16px; font-weight: 400; color: #18181B; text-align: left; }
+  .menu-conta-item svg { width: 23px; height: 23px; flex-shrink: 0; color: #3F3F46; }
+  .menu-conta-item span { flex: 1 1 auto; min-height: 54px; display: flex; align-items: center; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+  .menu-conta-sair { margin: 14px auto 0; padding: 8px 16px; background: transparent; border: 0; font-size: 16px; font-weight: 500; color: #183b54; }
+
+  body[data-theme="dark"] :is(.menu-celular, .menu-celular-conta, .menu-conta) { background: #1A1A1A; }
+  body[data-theme="dark"] :is(.menu-celular-fechar, .menu-celular-link, .menu-celular-conta .menu-celular-nome, .menu-conta-nome, .menu-conta-item, .menu-conta .menu-celular-evento, .menu-conta .menu-celular-evento-nome) { color: #FFFFFF; }
+  body[data-theme="dark"] :is(.menu-celular-link svg, .menu-conta-item svg) { color: #D4D4D8; }
+  body[data-theme="dark"] .menu-celular-link.is-ativo, body[data-theme="dark"] .menu-celular-link.is-ativo svg, body[data-theme="dark"] .menu-conta-sair { color: #EBF4FF; }
+  body[data-theme="dark"] :is(.menu-conta .menu-celular-evento-atual, .menu-conta .menu-celular-evento) { background: #252525; border-color: #404040; }
+  body[data-theme="dark"] :is(.menu-celular-conta, .menu-conta-item span, .menu-conta .menu-celular-evento) { border-color: rgba(255, 255, 255, 0.08); }
+  body[data-theme="dark"] .menu-conta-fechar { background: rgba(37, 37, 37, 0.72); border-color: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
 }

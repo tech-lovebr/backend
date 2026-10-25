@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261025_plantaCelular">
+  <link rel="stylesheet" href="css/styles.css?v=20261025_gavetaMenu">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -828,40 +828,52 @@
 
     </header>
 
-    <!-- Celular: menu em tela cheia (logo, seus eventos e os itens de Minha conta).
-         Os itens repassam o toque aos botões do menu do perfil (ver app.js). -->
-    <div id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <!-- Celular: o ☰ abre esta gaveta lateral (logo, todas as seções e, embaixo,
+         a conta). Tocar na conta abre o pop-up de baixo para cima com os eventos,
+         a central de ajuda e o sair. Montado pelo app.js (menuDoCelular). -->
+    <div class="menu-celular-fundo" aria-hidden="true"></div>
+    <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
       <div class="menu-celular-topo">
-        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         <span class="logo-celular">
           <img class="logo-celular-icone logo-claro" src="assets/iconelove2.png?v=2" alt="" aria-hidden="true">
           <img class="logo-celular-icone logo-escuro" src="assets/icon-white1.png" alt="" aria-hidden="true">
           <img class="logo-celular-nome logo-claro" src="assets/love-dark-03.png?v=6" alt="Love">
           <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png?v=6" alt="Love">
         </span>
-        <span class="menu-celular-espaco" aria-hidden="true"></span>
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></button>
       </div>
-      <div class="menu-celular-corpo">
-        <div class="menu-celular-eventos">
-          <button type="button" class="menu-celular-evento-atual" aria-expanded="false">
-            <span class="menu-celular-evento-textos">
-              <span class="menu-celular-evento-rotulo">Seus eventos</span>
-              <span class="menu-celular-evento-nome"></span>
-            </span>
-            <svg class="menu-celular-evento-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
-          <div class="menu-celular-eventos-lista" hidden></div>
-        </div>
-        <div class="menu-celular-perfil">
-          <span class="menu-celular-avatar love-avatar-box" aria-hidden="true"></span>
-          <div class="min-w-0">
-            <p class="menu-celular-nome"></p>
-            <p class="menu-celular-email"></p>
-          </div>
-        </div>
-        <nav class="menu-celular-itens" aria-label="Minha conta"></nav>
+      <nav class="menu-celular-nav" aria-label="Seções"></nav>
+      <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
+        <span class="menu-celular-avatar love-avatar-box" aria-hidden="true"></span>
+        <span class="menu-celular-conta-textos">
+          <span class="menu-celular-nome"></span>
+          <span class="menu-celular-evento-nome"></span>
+        </span>
+        <svg class="menu-celular-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+      </button>
+    </aside>
+    <div class="menu-conta-fundo" aria-hidden="true"></div>
+    <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" aria-hidden="true">
+      <div class="menu-conta-alca" aria-hidden="true"></div>
+      <button type="button" class="menu-conta-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div class="menu-conta-cabeca">
+        <span class="menu-conta-avatar love-avatar-box" aria-hidden="true"></span>
+        <p class="menu-conta-nome"></p>
+        <p class="menu-conta-email"></p>
       </div>
-    </div>
+      <div class="menu-conta-eventos">
+        <button type="button" class="menu-celular-evento-atual" aria-expanded="false">
+          <span class="menu-celular-evento-textos">
+            <span class="menu-celular-evento-rotulo">Seus eventos</span>
+            <span class="menu-celular-evento-nome"></span>
+          </span>
+          <svg class="menu-celular-evento-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="menu-celular-eventos-lista" hidden></div>
+      </div>
+      <nav class="menu-conta-itens" aria-label="Minha conta"></nav>
+      <button type="button" class="menu-conta-sair">Sair</button>
+    </section>
 
     <!-- Backdrop para Drawer no Mobile -->
     <div id="mobile-drawer-backdrop" class="mobile-drawer-backdrop"></div>
@@ -5605,13 +5617,13 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261025_plantaCelular"></script>
+  <script src="js/app.js?v=20261025_gavetaMenu"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
-  <script src="js/pedidos-orcamento.js?v=20261025_plantaCelular"></script>
-  <script src="js/contratos.js?v=20261025_plantaCelular"></script>
+  <script src="js/pedidos-orcamento.js?v=20261025_gavetaMenu"></script>
+  <script src="js/contratos.js?v=20261025_gavetaMenu"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261025_plantaCelular"></script>
+  <script src="js/site-builder.js?v=20261025_gavetaMenu"></script>
 </body>
 </html>

@@ -7362,6 +7362,14 @@ document.addEventListener('DOMContentLoaded', () => {
       </label>`).join('');
   }
 
+  // Celular: avatar com iniciais + primeiro nome leve e o resto em negrito
+  // (igual Meus convidados). No desktop o avatar fica escondido.
+  function nomeDoOrganizadorHtml(nome) {
+    const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+    const iniciais = ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '');
+    return `<span class="org-nome-celula"><span class="org-avatar-celular" aria-hidden="true">${escaparHtml(iniciais.toUpperCase() || '?')}</span><span class="org-nome-texto"><span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}</span></span>`;
+  }
+
   function situacaoDoOrganizadorHtml(o) {
     if (o.criador) return '<span class="org-situacao org-situacao-criador">Criador(a)</span>';
     const aceito = o.status === 'aceito';
@@ -7380,7 +7388,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const link = `${window.location.origin}/organizador?token=${encodeURIComponent(o.token || '')}`;
     return `
       <tr data-organizador-id="${escaparHtml(o.id)}" data-permissoes="${escaparHtml(JSON.stringify(areas))}" data-link="${escaparHtml(link)}" data-aceito="${aceito ? '1' : ''}" data-nome="${escaparHtml(nome)}">
-        <td class="font-semibold text-zinc-900">${escaparHtml(nome)}</td>
+        <td class="font-semibold text-zinc-900">${nomeDoOrganizadorHtml(nome)}</td>
         <td class="text-zinc-600">${escaparHtml(o.email || '')}</td>
         <td class="text-zinc-600">${rotulos ? escaparHtml(rotulos) : '<span class="text-zinc-400">Sem funções liberadas</span>'}</td>
         <td>${situacaoDoOrganizadorHtml(o)}</td>
@@ -7413,7 +7421,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailCriador = ehDono ? (perfil.email || '') : '';
     hostsList.innerHTML = `
       <tr class="org-linha-criador">
-        <td class="font-semibold text-zinc-900">${escaparHtml(nomeCriador)}</td>
+        <td class="font-semibold text-zinc-900">${nomeDoOrganizadorHtml(nomeCriador)}</td>
         <td class="text-zinc-600">${escaparHtml(emailCriador)}</td>
         <td class="text-zinc-600">Todas as funções</td>
         <td>${situacaoDoOrganizadorHtml({ criador: true })}</td>
@@ -7578,6 +7586,19 @@ document.addEventListener('DOMContentLoaded', () => {
       limparPasso2();
     };
     window.loveFecharConviteOrganizador = () => { fecharFormulario(); feedback?.classList.add('hidden'); };
+    const convidarBox = document.getElementById('organizadores-convidar');
+    if (convidarBox && !convidarBox.querySelector('.org-pagina-topo')) {
+      const topo = document.createElement('div');
+      topo.className = 'org-pagina-topo';
+      topo.innerHTML = `<button type="button" class="ficha-voltar org-pagina-voltar" aria-label="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg></button>
+        <h2 class="org-pagina-titulo">Adicionar co-anfitrião</h2>
+        <button type="button" class="org-pagina-enviar">Enviar</button>`;
+      convidarBox.insertBefore(topo, convidarBox.firstChild);
+      topo.querySelector('.org-pagina-voltar')?.addEventListener('click', () => fecharFormulario());
+      topo.querySelector('.org-pagina-enviar')?.addEventListener('click', () => /** @type {HTMLFormElement} */ (formInviteHost).requestSubmit());
+      // Trocar de menu fecha a página.
+      document.addEventListener('click', (ev) => { if (caixaOrg?.classList.contains('is-adicionando') && /** @type {HTMLElement} */ (ev.target).closest('.rail-icon-btn, #submenu-celular')) fecharFormulario(); }, true);
+    }
 
     inputEmail.addEventListener('input', () => { emailLabel.textContent = inputEmail.value.trim() || 'a pessoa'; erroForm?.classList.add('hidden'); });
     areasBox.addEventListener('change', (e) => {

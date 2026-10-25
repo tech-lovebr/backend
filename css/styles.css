@@ -12067,12 +12067,12 @@ html body #view-event-os-dashboard .love-tabela-caixa.budget-table-full-bleed:no
 @media (max-width: 768px) {
   html body #sidebar-sub-drawer:not(#love-h-a),
   html body #mobile-drawer-backdrop:not(#love-h-a) { display: none !important; }
-  html body #dashboard-main-area > .submenu-celular:not([hidden]):not(#love-h-a) {
+  html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a) {
     position: relative; display: flex; gap: 2px; width: 100%; max-width: 100%; box-sizing: border-box;
     margin: 0 0 16px; padding: 3px; background: #F4F4F5; border: 1px solid rgba(0, 0, 0, 0.04); border-radius: 10px;
     overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
   }
-  html body #dashboard-main-area > .submenu-celular::-webkit-scrollbar { display: none; }
+  html body #dashboard-main-area .submenu-celular::-webkit-scrollbar { display: none; }
   html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
     flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     min-height: 38px; padding: 0 14px; background: transparent; border: 1px solid transparent; border-radius: 8px;
@@ -12082,7 +12082,7 @@ html body #view-event-os-dashboard .love-tabela-caixa.budget-table-full-bleed:no
   }
   html body .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) { background: #FFFFFF; border-color: #E4E4E7; color: #18181B; font-weight: 600; }
   html body .submenu-celular .submenu-celular-selo:not(#love-h-a) { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; }
-  body[data-theme="dark"] #dashboard-main-area > .submenu-celular { background: #1F1F1F; border-color: #333333; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular { background: #1F1F1F; border-color: #333333; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item { color: #A1A1AA; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #333333; border-color: #404040; color: #FFFFFF; }
 }
@@ -12108,7 +12108,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
 @media (max-width: 768px) {
   /* Abas grudadas no topo, de ponta a ponta: mesma largura, texto limpo,
      linha cinza embaixo e a linha da cor primária em cima da aba ativa. */
-  html body #dashboard-main-area > .submenu-celular:not([hidden]):not(#love-h-a) {
+  html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a) {
     position: sticky; top: var(--navbar-height-mobile); z-index: 20;
     gap: 0; width: auto; max-width: none;
     margin: -1.25rem calc(-1 * max(1rem, env(safe-area-inset-right, 0px))) 16px calc(-1 * max(1rem, env(safe-area-inset-left, 0px)));
@@ -12123,7 +12123,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
     background: #F7F7F8; border: 0; color: #18181B; font-weight: 600;
     box-shadow: inset 0 3px 0 #183b54;
   }
-  body[data-theme="dark"] #dashboard-main-area > .submenu-celular { background: #1A1A1A !important; border-bottom-color: #333333 !important; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular { background: #1A1A1A !important; border-bottom-color: #333333 !important; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item { background: #1A1A1A !important; color: #A1A1AA !important; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #252525 !important; color: #FFFFFF !important; box-shadow: inset 0 3px 0 #EBF4FF !important; }
 
@@ -12155,4 +12155,60 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
 @media (max-width: 768px) {
   /* Telas sem submenu (Home, avisos, ajuda, configurações...): sem a barra de abas. */
   html body:has(:is(#tab-overview, #tab-create-event-page, #tab-legal-doc, #tab-notifications, #tab-faq, #tab-account-settings, #tab-info-event).active) #submenu-celular:not(#love-h-a) { display: none !important; }
+}
+
+/* ==========================================================================
+   Celular (só até 768px): cabeçalho da página primeiro (título, + e lupa),
+   abas logo abaixo; linha da aba ativa reta; busca abre pela lupa;
+   Meus presentes com 2 por linha. Desktop não muda.
+   ========================================================================== */
+.busca-celular-botao { display: none; }
+@media (max-width: 768px) {
+  /* Cabeçalho compacto: título à esquerda, botões à direita. */
+  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site) > .builder-toolbar:not(#love-h-a) {
+    display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: nowrap !important;
+    min-height: 44px; margin: 0 !important; padding: 0 0 12px !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important;
+  }
+  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site) > .builder-toolbar > :first-child:not(#love-h-a) { flex: 1 1 auto; min-width: 0; }
+
+  /* Abas logo abaixo do cabeçalho, de ponta a ponta. */
+  html body #view-event-os-dashboard .dashboard-tab-content > .submenu-celular:not([hidden]):not(#love-h-a) { margin: 0 -1rem 16px !important; }
+  html body #view-event-os-dashboard .dashboard-tab-content > .submenu-celular:not([hidden]) + *:not(#love-h-a) { padding-top: 0 !important; }
+
+  /* Aba ativa: linha reta da cor primária em cima, sem cantos. */
+  html body #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a),
+  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) { position: relative; border-radius: 0 !important; box-shadow: none !important; }
+  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a)::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #183b54; border-radius: 0;
+  }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo::before { background: #EBF4FF; }
+
+  /* "Adicionar novo" e afins: só o ícone de +. */
+  html body #view-event-os-dashboard :is(#btn-host-add-gift, #btn-host-add-guest, #btn-open-add-expense, #btn-checklist-nova, #btn-rfp-novo):not(.hidden):not([hidden]):not(#love-h-a) {
+    display: inline-flex !important; align-items: center; justify-content: center;
+    width: 44px !important; min-width: 44px !important; height: 44px !important; min-height: 44px !important; padding: 0 !important;
+    font-size: 0 !important; line-height: 0 !important; gap: 0 !important; border-radius: 8px !important;
+  }
+  html body #view-event-os-dashboard :is(#btn-host-add-gift, #btn-host-add-guest, #btn-open-add-expense, #btn-checklist-nova, #btn-rfp-novo):not(#love-h-a) > * { display: none !important; }
+  html body #view-event-os-dashboard :is(#btn-host-add-gift, #btn-host-add-guest, #btn-open-add-expense, #btn-checklist-nova, #btn-rfp-novo):not(#love-h-a)::before {
+    content: ''; display: block; width: 20px; height: 20px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center / 20px no-repeat;
+  }
+
+  /* Lupa ao lado do +. */
+  html body #view-event-os-dashboard .builder-toolbar > button.busca-celular-botao:not([hidden]):not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    width: 44px; height: 44px; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px;
+    color: #18181B; cursor: pointer; box-shadow: none;
+  }
+  html body #view-event-os-dashboard .builder-toolbar > button.busca-celular-botao:not(#love-h-a) svg { width: 20px; height: 20px; }
+  body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar > button.busca-celular-botao { background: #252525; border-color: #404040; color: #FFFFFF; }
+
+  /* Busca da tabela escondida até tocar na lupa. */
+  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site):not(.busca-celular-aberta) .love-tabela-busca:not(#love-h-a) { display: none !important; }
+  html body #view-event-os-dashboard .dashboard-tab-content.busca-celular-aberta .love-tabela-busca:not(#love-h-a) { width: 100% !important; max-width: none !important; }
+
+  /* Meus presentes: 2 por linha. */
+  html body #host-gifts-grid:not(#love-h-a) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; }
 }

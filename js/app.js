@@ -334,14 +334,67 @@ document.addEventListener('DOMContentLoaded', () => {
         botao.addEventListener('click', () => /** @type {HTMLElement} */ (orig).click());
         barra.appendChild(botao);
       });
+      posicionar();
       const atual = /** @type {HTMLElement|null} */ (barra.querySelector('.is-ativo'));
       if (atual) barra.scrollLeft = Math.max(0, atual.offsetLeft - (barra.clientWidth - atual.offsetWidth) / 2);
     };
-    new MutationObserver(() => {
+
+    // Cabeçalho da página primeiro (título, + e lupa) e as abas logo abaixo.
+    // Sem cabeçalho próprio (editor do convite), as abas ficam no topo.
+    const ICONE_LUPA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+    /** Busca da tela aberta (as buscas das tabelas usam .love-tabela-busca). @param {Element} aba */
+    const buscaDaTela = (aba) => /** @type {HTMLElement|undefined} */ (Array.from(aba.querySelectorAll('.love-tabela-busca'))
+      .find(b => b.parentElement && /** @type {HTMLElement} */ (b.parentElement).offsetParent !== null));
+    const abaAtiva = () => (barra.querySelector('.is-ativo') || {}).textContent || '';
+    const noCelular = window.matchMedia('(max-width: 768px)');
+    const posicionar = () => {
+      // Desktop: a barra fica escondida no topo (sem mexer na ordem das telas).
+      if (!noCelular.matches) { if (barra.parentElement !== area) area.insertBefore(barra, area.firstChild); return; }
+      const aba = area.querySelector('.dashboard-tab-content.active');
+      const cabecalho = aba && aba.id !== 'tab-edit-site' ? aba.querySelector(':scope > .builder-toolbar') : null;
+      if (cabecalho) {
+        if (cabecalho.nextElementSibling !== barra) cabecalho.after(barra);
+      } else if (barra.parentElement !== area) {
+        area.insertBefore(barra, area.firstChild);
+      }
+      if (!aba || !cabecalho) return;
+      // Lupa no cabeçalho: no celular a busca da tabela fica escondida e abre por ela.
+      let lupa = /** @type {HTMLButtonElement|null} */ (cabecalho.querySelector(':scope > .busca-celular-botao'));
+      if (!lupa) {
+        lupa = document.createElement('button');
+        lupa.type = 'button';
+        lupa.className = 'busca-celular-botao';
+        lupa.setAttribute('aria-label', 'Pesquisar');
+        lupa.innerHTML = ICONE_LUPA;
+        lupa.addEventListener('click', () => {
+          const abaDaLupa = cabecalho.parentElement;
+          if (!abaDaLupa) return;
+          const busca = buscaDaTela(abaDaLupa);
+          const campo = busca && /** @type {HTMLInputElement|null} */ (busca.querySelector('input'));
+          const abrir = !abaDaLupa.classList.contains('busca-celular-aberta') || !!(campo && campo.value);
+          abaDaLupa.classList.toggle('busca-celular-aberta', abrir || !campo);
+          abaDaLupa.dataset.buscaNaAba = abaAtiva();
+          if (campo && abaDaLupa.classList.contains('busca-celular-aberta')) campo.focus();
+        });
+        cabecalho.appendChild(lupa);
+      }
+      const busca = buscaDaTela(aba);
+      lupa.hidden = !busca;
+      const campo = busca && /** @type {HTMLInputElement|null} */ (busca.querySelector('input'));
+      // Fecha a busca (vazia) só ao trocar de aba.
+      if ((!campo || !campo.value) && /** @type {HTMLElement} */ (aba).dataset.buscaNaAba !== abaAtiva()) aba.classList.remove('busca-celular-aberta');
+    };
+
+    const agendar = () => {
       if (agendado) return;
       agendado = true;
       requestAnimationFrame(desenhar);
-    }).observe(lista, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style'] });
+    };
+    new MutationObserver(agendar).observe(lista, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style'] });
+    // Troca de página ou de seção dentro dela: reposiciona as abas e a lupa.
+    const observarTelas = new MutationObserver(agendar);
+    area.querySelectorAll('.dashboard-tab-content').forEach(aba => observarTelas.observe(aba, { attributes: true, attributeFilter: ['class'] }));
+    noCelular.addEventListener?.('change', agendar);
     desenhar();
   })();
 

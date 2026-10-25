@@ -2,7 +2,8 @@
    LOVE ADMIN — Atendimento (inbox)
 
    Etapa 1 do atendimento automatizado: uma caixa única para conversas de
-   anfitriões, empresas e do site, em duas colunas (lista + conversa). A
+   anfitriões, fornecedores e do site, numa tabela só: clicar numa linha
+   abre a conversa na mesma caixa (a seta volta para a lista). A
    resposta sai de verdade: o servidor (api/atendimento-responder no
    love.com.br) grava, manda por e-mail ao solicitante e avisa na plataforma.
 
@@ -44,8 +45,9 @@ const TICKET_STATUS_CURTO = {
   respondida_bot: 'Robô respondeu', resolvido: 'Resolvido', fechado: 'Resolvido', spam: 'Spam'
 };
 
-const CANAL_LABELS = { formulario: 'Formulário', email: 'E-mail', chat: 'Chat', whatsapp: 'WhatsApp' };
-const ORIGEM_CURTA = { cliente: 'Anfitrião', fornecedor: 'Empresa', site: 'Site' };
+// Hoje só há chat e e-mail; conversas antigas de "formulário" contam como e-mail.
+const CANAL_LABELS = { formulario: 'E-mail', email: 'E-mail', chat: 'Chat', whatsapp: 'WhatsApp' };
+const ORIGEM_CURTA = { cliente: 'Anfitrião', fornecedor: 'Fornecedor', site: 'Site' };
 
 let TICKETS = [];
 let RESPOSTAS = [];
@@ -57,18 +59,14 @@ let RESPOSTA_ESCOLHIDA = null;
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
-  document.getElementById('inbox-itens').innerHTML = '<div class="inbox-carregando"><div class="skeleton" style="width:70%"></div></div>';
+  renderLoading(document.getElementById('tbody'), 6);
 
   const [tickets, respostas] = await Promise.all([
     safeSelect('tickets', '*'),
     safeSelect('respostas_prontas', '*', q => q.order('categoria').order('titulo'))
   ]);
 
-  if (tickets.error) {
-    document.getElementById('inbox-itens').innerHTML =
-      `<div class="empty-state"><strong>Não foi possível carregar</strong><p>${escapeHtml(tickets.error.message || '')}</p></div>`;
-    return;
-  }
+  if (tickets.error) return renderError(document.getElementById('tbody'), 6, tickets.error);
 
   TICKETS = tickets.data;
   RESPOSTAS = respostas.error ? [] : respostas.data;
@@ -84,6 +82,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderContagens();
   renderLista();
 
+  // Resolvida volta a Pendente quando a pessoa escreve de novo (chat ou
+  // e-mail) — quem faz isso é o banco (trigger atualizar_conversa_do_ticket).
+  // A lista se atualiza sozinha para essas conversas reaparecerem.
+  setInterval(atualizarTickets, 30000);
+
   // Link direto para uma conversa: atendimento?id=<uuid>
   const id = new URLSearchParams(location.search).get('id');
   if (id && TICKETS.some(t => t.id === id)) abrirConversa(id);
@@ -91,12 +94,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ------------------------------------------------------------- Lista */
 
+async function atualizarTickets() {
+  if (document.hidden) return;
+  const { data, error } = await safeSelect('tickets', '*');
+  if (error) return;
+  TICKETS = data;
+  renderContagens();
+  renderLista();
+}
+
 const quando = t => t.last_message_at || t.updated_at || t.created_at;
 
 function ligarAbas() {
   document.querySelectorAll('#abas-status [data-aba]').forEach(btn => {
     btn.addEventListener('click', () => {
       ABA_ATUAL = btn.dataset.aba;
+      fecharConversa();
       document.querySelectorAll('#abas-status [data-aba]').forEach(b => b.classList.toggle('is-active', b === btn));
       renderLista();
     });
@@ -126,34 +139,36 @@ function filtrar() {
 }
 
 function renderLista() {
-  const host = document.getElementById('inbox-itens');
+  const tbody = document.getElementById('tbody');
   const lista = filtrar();
 
   if (!lista.length) {
-    host.innerHTML = `<div class="empty-state"><strong>Nenhuma conversa aqui</strong>
-      <p>${TICKETS.length ? 'Troque a aba, a busca ou a origem.' : 'Quando alguém escrever para a Love, a conversa aparece aqui.'}</p></div>`;
+    renderEmpty(tbody, 6, 'Nenhuma conversa aqui',
+      TICKETS.length ? 'Troque a aba, a busca ou a origem.' : 'Quando alguém escrever para a Love, a conversa aparece aqui.');
     return;
   }
 
-  host.innerHTML = lista.map(t => `
-    <button type="button" class="inbox-item ${t.id === ATUAL ? 'is-ativo' : ''} ${t.nao_lido !== false && ABAS.pendentes(t) ? 'is-nao-lido' : ''}" data-id="${t.id}">
-      <span class="inbox-item-topo">
-        <span class="inbox-item-nome">${escapeHtml(t.nome || t.email || 'Sem nome')}</span>
-        <span class="inbox-item-lado">
-          <span class="inbox-item-quando">${escapeHtml(formatRelative(quando(t)))}</span>
-          ${badge(TICKET_STATUS_CURTO[t.status] || TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status])}
-        </span>
-      </span>
-      <span class="inbox-item-assunto">${escapeHtml(t.assunto || '(sem assunto)')}</span>
-      <span class="inbox-item-trecho">${escapeHtml(t.resumo || resumoDe(t.mensagem))}</span>
-      <span class="inbox-item-selos">
-        ${badge(ORIGEM_CURTA[t.origem] || t.origem, '')}
-        ${badge(CANAL_LABELS[t.canal] || 'Formulário', '')}
-        ${t.prioridade === 'alta' ? badge('Alta', 'badge-danger') : ''}
-      </span>
-    </button>`).join('');
+  tbody.innerHTML = lista.map(t => `
+    <tr data-id="${t.id}" class="${t.nao_lido !== false && ABAS.pendentes(t) ? 'is-nao-lido' : ''}">
+      <td class="cell-strong">${escapeHtml(t.nome || t.email || 'Sem nome')}</td>
+      <td class="cell-muted inbox-trecho">${escapeHtml(t.canal === 'chat' ? (t.resumo || resumoDe(t.mensagem, 90)) : (t.assunto || resumoDe(t.mensagem, 90) || '(sem assunto)'))}</td>
+      <td>${escapeHtml(ORIGEM_CURTA[t.origem] || t.origem || '—')}</td>
+      <td>${escapeHtml(CANAL_LABELS[t.canal] || 'E-mail')}</td>
+      <td>${badge(TICKET_STATUS_CURTO[t.status] || TICKET_STATUS_LABELS[t.status] || t.status, TICKET_STATUS_BADGE[t.status])}</td>
+      <td class="cell-muted">${escapeHtml(formatRelative(quando(t)))}</td>
+    </tr>`).join('');
 
-  host.querySelectorAll('[data-id]').forEach(btn => btn.addEventListener('click', () => abrirConversa(btn.dataset.id)));
+  tbody.querySelectorAll('tr[data-id]').forEach(tr => tr.addEventListener('click', () => abrirConversa(tr.dataset.id)));
+}
+
+/** Volta da conversa para a tabela. */
+function fecharConversa() {
+  ATUAL = null;
+  const painel = document.getElementById('inbox-conversa');
+  painel.hidden = true;
+  painel.innerHTML = '';
+  document.getElementById('caixa-conversas').hidden = false;
+  document.getElementById('abas-status').hidden = false;
 }
 
 function resumoDe(texto, limite = 110) {
@@ -171,9 +186,13 @@ async function abrirConversa(id) {
   RESPOSTA_ESCOLHIDA = null;
   renderLista();
 
+  // A conversa abre no lugar da tabela (uma tela só).
   const painel = document.getElementById('inbox-conversa');
+  document.getElementById('caixa-conversas').hidden = true;
+  document.getElementById('abas-status').hidden = true;
+  painel.hidden = false;
   painel.innerHTML = '<div class="inbox-carregando"><div class="skeleton" style="width:60%"></div></div>';
-  painel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  window.scrollTo(0, 0);
 
   // Abrir marca como lida.
   if (t.nao_lido !== false) {
@@ -191,31 +210,33 @@ async function abrirConversa(id) {
     ...mensagens
   ];
 
+  const porEmail = t.canal !== 'chat';
   painel.innerHTML = `
     <header class="conversa-topo">
+      <button type="button" class="conversa-voltar" id="btn-voltar-lista" title="Voltar" aria-label="Voltar para a lista">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
+      </button>
       <div class="conversa-titulo">
-        <h2>${escapeHtml(t.assunto || 'Conversa')}</h2>
+        <h2>${escapeHtml(t.nome || t.email || 'Conversa')}</h2>
         <p>
-          ${escapeHtml(t.protocolo || '')} ·
-          ${escapeHtml(t.nome || '')}
-          ${t.email ? ` · ${celulaCopiavel(t.email, 'E-mail')}` : ''}
+          ${t.email ? celulaCopiavel(t.email, 'E-mail') : ''}
           ${t.telefone ? ` · ${escapeHtml(t.telefone)}` : ''}
+          ${t.protocolo ? ` · ${escapeHtml(t.protocolo)}` : ''}
+          · ${escapeHtml(ORIGEM_CURTA[t.origem] || t.origem || '')} · ${escapeHtml(CANAL_LABELS[t.canal] || 'E-mail')}
+          ${porEmail && t.assunto ? ` · ${escapeHtml(t.assunto)}` : ''}
         </p>
-        <div class="conversa-selos">
-          ${badge(ORIGEM_LABELS[t.origem] || t.origem, '')}
-          ${badge(CANAL_LABELS[t.canal] || 'Formulário', '')}
-          ${t.categoria ? badge(t.categoria, '') : ''}
-        </div>
       </div>
-      <div class="conversa-controles">
-        <select class="field-select" id="conversa-status" aria-label="Status">
-          ${Object.entries(TICKET_STATUS_LABELS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}
-        </select>
-        <select class="field-select" id="conversa-prioridade" aria-label="Prioridade">
-          ${['baixa', 'normal', 'alta'].map(v => `<option value="${v}" ${(t.prioridade || 'normal') === v ? 'selected' : ''}>Prioridade ${v}</option>`).join('')}
-        </select>
-      </div>
+      <select class="field-select conversa-status" id="conversa-status" aria-label="Status">
+        ${Object.entries(TICKET_STATUS_LABELS).map(([v, l]) => `<option value="${v}" ${t.status === v ? 'selected' : ''}>${l}</option>`).join('')}
+      </select>
     </header>
+
+    <div class="conversa-comandos">
+      <select class="field-select" id="composer-resposta" aria-label="Mensagem padrão">
+        <option value="">Usar uma mensagem padrão…</option>
+        ${opcoesDeResposta(t)}
+      </select>
+    </div>
 
     <div class="conversa-thread" id="conversa-thread">
       ${conversa.length ? conversa.map(m => bolha(m, t)).join('') : '<p class="cell-muted" style="font-size:.8125rem">Conversa sem mensagens.</p>'}
@@ -224,18 +245,12 @@ async function abrirConversa(id) {
     ${ehPedidoDeAlteracao(t) ? corpoDaPendencia(t) : ''}
 
     <div class="conversa-composer">
-      <div class="composer-linha">
-        <select class="field-select" id="composer-resposta" aria-label="Resposta pronta">
-          <option value="">Usar um comando…</option>
-          ${opcoesDeResposta(t)}
-        </select>
-        <input class="field-input" id="composer-assunto" type="text" placeholder="Assunto do e-mail (opcional)">
-      </div>
+      ${porEmail ? '<input class="field-input" id="composer-assunto" type="text" placeholder="Assunto do e-mail (opcional)">' : ''}
       <div id="composer-editor"></div>
       <div class="composer-acoes">
         <span class="cell-muted composer-dica">Ctrl+Enter envia. ${t.canal === 'chat'
           ? 'A resposta aparece na hora na conversa Suporte Love da pessoa.'
-          : `A pessoa recebe por e-mail${t.user_id ? ' e na plataforma' : ''}.`}</span>
+          : `A pessoa recebe por e-mail (de contato@love.com.br)${t.user_id ? ' e na plataforma' : ''}.`}</span>
         <button type="button" class="btn btn-ghost" id="btn-enviar-resolver">Enviar e resolver</button>
         <button type="button" class="btn btn-primary" id="btn-enviar">Enviar</button>
       </div>
@@ -248,7 +263,7 @@ async function abrirConversa(id) {
 
   ligarAcoesDaLinha(painel, () => {});
   document.getElementById('conversa-status').addEventListener('change', e => salvarCampo(t, { status: e.target.value }));
-  document.getElementById('conversa-prioridade').addEventListener('change', e => salvarCampo(t, { prioridade: e.target.value }));
+  document.getElementById('btn-voltar-lista').addEventListener('click', fecharConversa);
   document.getElementById('composer-resposta').addEventListener('change', e => aplicarResposta(t, e.target.value));
   document.getElementById('btn-enviar').addEventListener('click', () => enviar(t, 'aguardando_cliente'));
   document.getElementById('btn-enviar-resolver').addEventListener('click', () => enviar(t, 'resolvido'));
@@ -317,7 +332,8 @@ function aplicarResposta(t, id) {
   RESPOSTA_ESCOLHIDA = r ? r.id : null;
   if (!r) return;
   EDITOR.definir(preencherVariaveis(r.corpo_html, t));
-  if (r.assunto) document.getElementById('composer-assunto').value = preencherVariaveis(r.assunto, t).replace(/&amp;/g, '&');
+  const assunto = document.getElementById('composer-assunto');
+  if (r.assunto && assunto) assunto.value = preencherVariaveis(r.assunto, t).replace(/&amp;/g, '&');
   EDITOR.focar();
 }
 
@@ -340,7 +356,7 @@ async function enviar(t, status) {
       body: JSON.stringify({
         ticket_id: t.id,
         body_html: html,
-        assunto: document.getElementById('composer-assunto').value.trim() || null,
+        assunto: document.getElementById('composer-assunto')?.value.trim() || null,
         resposta_pronta_id: RESPOSTA_ESCOLHIDA,
         status
       })
@@ -460,7 +476,7 @@ function editarResposta(r) {
           <label class="field">
             <span class="field-label">Para quem</span>
             <select class="field-select" name="publico">
-              ${[['todos', 'Todos'], ['cliente', 'Anfitriões'], ['fornecedor', 'Empresas']]
+              ${[['todos', 'Todos'], ['cliente', 'Anfitriões'], ['fornecedor', 'Fornecedores']]
                 .map(([v, l]) => `<option value="${v}" ${(r?.publico || 'todos') === v ? 'selected' : ''}>${l}</option>`).join('')}
             </select>
           </label>
@@ -548,7 +564,7 @@ function editarResposta(r) {
     if (ATUAL) {
       const select = document.getElementById('composer-resposta');
       const t = TICKETS.find(x => x.id === ATUAL);
-      if (select && t) select.innerHTML = '<option value="">Usar um comando…</option>' + opcoesDeResposta(t);
+      if (select && t) select.innerHTML = '<option value="">Usar uma mensagem padrão…</option>' + opcoesDeResposta(t);
     }
   });
 }

@@ -24,12 +24,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=138">
+  <link rel="stylesheet" href="css/admin.css?v=139">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/supabase-init.js"></script>
   <script src="js/utils.js?v=8"></script>
-  <script src="js/shell.js?v=25"></script>
+  <script src="js/shell.js?v=26"></script>
 </head>
 <body data-page="atendimento" data-title="Atendimento">
 
@@ -50,32 +50,34 @@
           <button type="button" class="conteudo-tab" data-aba="resolvidos">Resolvidos</button>
         </nav>
 
-        <div class="inbox">
-          <section class="card inbox-lista">
-            <div class="inbox-lista-topo">
-              <input type="search" class="search-input" id="busca" placeholder="Buscar nome, e-mail, protocolo...">
-              <select class="field-select" id="filtro-origem" aria-label="Origem">
+        <!-- Uma caixa só: a tabela de conversas ocupa a largura toda; clicar
+             numa linha abre a conversa no lugar da tabela (seta volta). -->
+        <section class="card table-card" id="caixa-conversas">
+          <div class="table-toolbar">
+            <div class="table-toolbar-esq"><input type="search" class="search-input" id="busca" placeholder="Buscar nome, e-mail, protocolo..."></div>
+            <div class="table-toolbar-dir">
+              <select class="field-select" id="filtro-origem" aria-label="Origem" style="width:auto">
                 <option value="">Todas as origens</option>
                 <option value="cliente">Anfitriões</option>
-                <option value="fornecedor">Empresas</option>
+                <option value="fornecedor">Fornecedores</option>
                 <option value="site">Site</option>
               </select>
             </div>
-            <div class="inbox-itens" id="inbox-itens"></div>
-          </section>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Nome</th><th>Mensagem</th><th>Origem</th><th>Canal</th><th>Status</th><th>Quando</th></tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </section>
 
-          <section class="card inbox-conversa" id="inbox-conversa">
-            <div class="inbox-vazio">
-              <strong>Escolha uma conversa</strong>
-              <p>As mensagens de anfitriões, empresas e do site chegam aqui. Responda com uma resposta pronta ou escreva a sua — a pessoa recebe por e-mail e na plataforma.</p>
-            </div>
-          </section>
-        </div>
+        <section class="card inbox-conversa" id="inbox-conversa" hidden></section>
       </main>
     </div>
   </div>
 
   <script src="js/editor-rico.js?v=7"></script>
-  <script src="js/atendimento.js?v=7"></script>
+  <script src="js/atendimento.js?v=8"></script>
 </body>
 </html>

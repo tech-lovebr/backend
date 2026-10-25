@@ -4330,3 +4330,26 @@ body.com-faixa .admin-content > .legal-abas { border-bottom-color: rgba(255, 255
 .admin-footer p { margin: 0; }
 .admin-footer-versao { color: #18181B; font-variant-numeric: tabular-nums; }
 .admin-main { min-height: 100vh; }
+
+/* Atendimento numa tela só: tabela de largura inteira; a conversa abre no
+   lugar dela, com a seta de voltar, o status ao lado do e-mail e as
+   mensagens padrão antes das mensagens. */
+.inbox-conversa { margin-top: var(--bloco-gap); }
+.inbox-conversa .conversa-topo { align-items: center; flex-wrap: nowrap; justify-content: flex-start; }
+.inbox-conversa .conversa-titulo { flex: 1; }
+.inbox-conversa .conversa-titulo p { margin-bottom: 0; }
+.conversa-voltar {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 32px; height: 32px; padding: 0; border: 0; background: transparent;
+  color: var(--primary-color); cursor: pointer;
+}
+.conversa-voltar svg { width: 20px; height: 20px; }
+.conversa-voltar:hover { color: #181D24; }
+.inbox-conversa .conversa-status { width: auto; flex-shrink: 0; }
+.conversa-comandos { padding: .875rem 1.25rem; border-bottom: 1px solid var(--border); }
+.conversa-comandos .field-select { width: 100%; max-width: 420px; }
+#caixa-conversas tr.is-nao-lido td.cell-strong { font-weight: 700; }
+#caixa-conversas .inbox-trecho { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 640px) {
+  .inbox-conversa .conversa-topo { flex-wrap: wrap; }
+}

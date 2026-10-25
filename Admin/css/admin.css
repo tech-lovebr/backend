@@ -4365,3 +4365,15 @@ a.conteudo-tab { text-decoration: none; }
 
 /* Notificação em balão: prévia da imagem no detalhe. */
 .balao-previa-imagem { height: 140px; margin-bottom: 1rem; border: 1px solid #E4E4E7; border-radius: var(--radius-card); background: #F4F4F5 center / cover no-repeat; }
+
+/* Notificações: cor do ícone pelo formato. */
+.formato-comum       { background: #f4f4f5; color: #52525b; }
+.formato-padrao      { background: #EBF4FF; color: #183b54; }
+.formato-boas_vindas { background: #f0fdf4; color: #15803d; }
+.formato-balao       { background: #fff7ed; color: #ea580c; }
+
+/* Padrão do Admin: o que antes abria em pop-up abre na mesma caixa, no lugar
+   do conteúdo da tela, com o formulário centralizado (utils.js › Drawer). */
+.painel-linha.painel-centro { min-height: calc(100vh - 230px); display: flex; flex-direction: column; }
+.painel-centro .painel-linha-corpo { flex: 1; width: 100%; max-width: 680px; margin: 0 auto; padding: 1.75rem 1.25rem; }
+.painel-centro .painel-linha-pe { padding-inline: max(1.25rem, calc((100% - 680px) / 2 + 1.25rem)); }

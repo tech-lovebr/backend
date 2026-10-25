@@ -218,17 +218,39 @@ const Drawer = {
      desenhado dentro de host, no lugar do que está em esconder (a tabela). */
   _linha: null,
 
+  /* Padrão do Admin: tudo abre na mesma caixa, no lugar do conteúdo da tela
+     (tabela, cards…), com o formulário centralizado — como as Configurações
+     do love.com.br. Pop-up só com { popup: true }. */
+  _alvoAutomatico() {
+    if (this._linha) return this._linha; // já tem painel aberto: troca só o conteúdo
+    const conteudo = document.querySelector('.admin-content');
+    if (!conteudo) return null;
+    let host = document.getElementById('painel-auto');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'painel-auto';
+      host.hidden = true;
+    }
+    const cabecalho = conteudo.querySelector(':scope > .admin-header-bar');
+    const esconder = [...conteudo.children].filter(el =>
+      el !== host && el !== cabecalho && !el.hidden && el.offsetParent !== null);
+    const acoes = document.getElementById('header-actions');
+    if (acoes && !acoes.hidden) esconder.push(acoes);
+    if (cabecalho) cabecalho.after(host); else conteudo.prepend(host);
+    return { host, esconder, auto: true };
+  },
+
   _abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back }) {
     const { host, esconder = [] } = emLinha;
     esconder.forEach(el => { if (el) el.hidden = true; });
     host.innerHTML = `
-      <section class="card painel-linha">
+      <section class="card painel-linha ${emLinha.auto ? 'painel-centro' : ''}">
         <header class="painel-linha-cabeca">
           <button type="button" class="header-bar-voltar painel-linha-voltar" title="Voltar" aria-label="Voltar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
           </button>
           <div class="painel-linha-titulos">
-            <h2>${escapeHtml(title || 'Detalhes')}</h2>
+            <h2 id="painel-linha-titulo">${escapeHtml(title || 'Detalhes')}</h2>
             ${subtitleHtml ? `<p>${subtitleHtml}</p>` : subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
           </div>
         </header>
@@ -254,6 +276,13 @@ const Drawer = {
     return this._built && document.getElementById('drawer-panel').classList.contains('is-open');
   },
 
+  /** Título do painel aberto (pop-up ou na mesma caixa). */
+  titulo() {
+    return this._overlayAberto() || !this._linha
+      ? document.getElementById('drawer-title')
+      : document.getElementById('painel-linha-titulo');
+  },
+
   /** Corpo do painel aberto (pop-up ou na mesma caixa). */
   corpo() {
     return this._overlayAberto() || !this._linha
@@ -262,7 +291,8 @@ const Drawer = {
   },
 
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false, semLinha = false, emLinha = null }) {
+  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false, semLinha = false, emLinha = null, popup = false }) {
+    if (!emLinha && !popup && !this._overlayAberto()) emLinha = this._alvoAutomatico();
     if (emLinha) return this._abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back });
     this._build();
     document.getElementById('drawer-panel').classList.toggle('drawer-sem-titulo', semTitulo);

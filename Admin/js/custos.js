@@ -681,6 +681,7 @@ function abrirDiagnostico(nome) {
     title: `Diagnóstico · ${nome}`,
     subtitleHtml: badge(rotulo, classe),
     semLinha: true,
+    popup: true, // pedido: o diagnóstico abre em pop-up
     body: `
       <div class="custo-diagnostico">
         <p class="custo-resumo">${resumo}</p>

@@ -655,7 +655,7 @@ function abrirDetalhe(id) {
 
   // Cabeçalho: status (etiqueta) à esquerda do nome da empresa, que é
   // clicável e abre o drawer da empresa; embaixo, o nome do serviço.
-  const titulo = document.getElementById('drawer-title');
+  const titulo = Drawer.titulo();
   titulo.innerHTML = `
     <span class="drawer-titulo-linha">
       ${badge(STATUS_SERVICO[status], status === 'ativo' ? 'badge-success' : status === 'inativo' ? 'badge-warning' : '')}

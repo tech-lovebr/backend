@@ -192,12 +192,11 @@ function render() {
         <td class="col-assunto">
           ${iconeFormato(formatoDe(n))}
           <span class="cell-strong">${dash(n.titulo)}</span>
-          ${formatoDe(n) !== 'comum' ? `<span class="artigo-situacao">— ${escapeHtml(FORMATOS[formatoDe(n)].rotulo)}</span>` : ''}
         </td>
         <td class="cell-muted">${escapeHtml(resumo(n.mensagem))}</td>
         <td class="cell-muted">${agendada(n)
           ? `${badge('Agendada', 'badge-warning')} ${escapeHtml(formatDateTime(n.created_at))}`
-          : escapeHtml(formatDate(n.created_at))}</td>
+          : escapeHtml(formatDate(n.created_at))}${foraDoAr(n) ? ` ${badge('Saiu do ar', 'badge-info')}` : ''}</td>
         <td class="col-numero ${views ? '' : 'cell-muted'}">${views ? formatNumber(views) : '—'}</td>
         <td class="col-fixar">
           <button type="button" class="btn-fixar ${n.fixada ? 'is-fixada' : ''}" data-fixar="${n.id}"
@@ -240,6 +239,25 @@ async function fixar(id) {
 
 /* --------------------------------------------------------------- Detalhe */
 
+/** Balão cuja data de saída já passou. */
+const foraDoAr = n => Boolean(n.expira_em) && new Date(n.expira_em) <= new Date();
+
+/** Prévia do balão igual ao que aparece para anfitriões e no Hub (js/balao-aviso.js). */
+function previaDoBalao(n) {
+  return `
+    <div class="balao-previa">
+      <div class="balao-previa-img" style="background-image:url('${escapeHtml(n.imagem_url || '')}')"></div>
+      <div class="balao-previa-corpo">
+        <p class="balao-previa-titulo">${escapeHtml(n.titulo)}</p>
+        <p class="balao-previa-texto">${escapeHtml(n.mensagem)}</p>
+        ${n.link_url ? `<span class="balao-previa-botao">${escapeHtml(n.link_label || 'Ver mais')}</span>` : ''}
+      </div>
+      <span class="balao-previa-fechar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </span>
+    </div>`;
+}
+
 function abrirDetalhe(id) {
   const n = NOTIFICACOES.find(x => x.id === id);
   if (!n) return;
@@ -255,7 +273,7 @@ function abrirDetalhe(id) {
   Drawer.open({
     title: n.titulo,
     body: `
-      ${n.formato === 'balao' && n.imagem_url ? `<div class="balao-previa-imagem" style="background-image:url('${escapeHtml(n.imagem_url)}')"></div>` : ''}
+      ${n.formato === 'balao' ? `<div class="balao-previa-palco">${previaDoBalao(n)}</div>` : ''}
       <div class="lista-dados">
         ${linha('Formato', `${iconeFormato(formatoDe(n))} ${escapeHtml(FORMATOS[formatoDe(n)].rotulo)}`)}
         ${linha('Categoria', `${iconeTema(n.tema)} ${escapeHtml(TEMAS[n.tema]?.rotulo || 'Sem categoria')}`)}
@@ -263,15 +281,17 @@ function abrirDetalhe(id) {
           ? escapeHtml(nomeDaConta(n.destinatario_id))
           : escapeHtml(PUBLICOS[n.destino] || n.destino))}
         ${linha(agendada(n) ? 'Agendada para' : 'Enviada em', escapeHtml(formatDateTime(n.created_at)))}
+        ${n.expira_em ? linha(foraDoAr(n) ? 'Saiu do ar em' : 'Fica no ar até', escapeHtml(formatDateTime(n.expira_em))) : ''}
         ${linha(agendada(n) ? 'Agendada por' : 'Enviada por', escapeHtml(n.autor_nome || '—'))}
         ${linha('Leituras', formatNumber(lidas))}
         ${n.link_url
-          ? linha('Link', `<a href="${escapeHtml(n.link_url)}" target="_blank" rel="noopener" class="link-convite">${escapeHtml(n.link_label || n.link_url)}</a>`)
+          ? linha('Link', `<a href="${escapeHtml(n.link_url)}" target="_blank" rel="noopener" class="link-convite">${escapeHtml(n.link_url)}</a>`)
           : ''}
       </div>
 
+      ${n.formato === 'balao' ? '' : `
       <p class="drawer-section-title">Mensagem</p>
-      <p class="texto-corrido">${escapeHtml(n.mensagem)}</p>`,
+      <p class="texto-corrido">${escapeHtml(n.mensagem)}</p>`}`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-fechar">Fechar</button>
       <button type="button" class="btn btn-danger" id="btn-excluir">Excluir</button>`
@@ -389,6 +409,20 @@ function abrirComposicao() {
         </label>
       </div>
       <p class="cell-muted" style="font-size:.75rem;margin:.375rem 0 0">Horário de Brasília</p>
+      </div>
+
+      <div id="campo-expira" hidden style="margin-top:.875rem">
+      <div class="field-row">
+        <label class="field" style="margin-bottom:0">
+          <span class="field-label">Fica no ar até <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" id="nova-expira-data" type="date">
+        </label>
+        <label class="field" style="margin-bottom:0">
+          <span class="field-label">Horário <span class="campo-obrigatorio">*</span></span>
+          <input class="field-input" id="nova-expira-hora" type="time" value="23:59">
+        </label>
+      </div>
+      <p class="cell-muted" style="font-size:.75rem;margin:.375rem 0 0">Depois disso o balão sai do ar para todo mundo. Horário de Brasília.</p>
       </div>`,
     footer: `
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
@@ -408,6 +442,12 @@ function ligarComposicao() {
   document.getElementById('nova-formato').addEventListener('change', (e) => {
     const balao = e.target.value === 'balao';
     document.getElementById('campos-balao').hidden = !balao;
+    document.getElementById('campo-expira').hidden = !balao;
+    if (balao) {
+      const ate = document.getElementById('nova-expira-data');
+      ate.min = dataLocal(new Date());
+      if (!ate.value) ate.value = dataLocal(new Date(Date.now() + 7 * 864e5));
+    }
     const aviso = document.getElementById('aviso-tipo');
     const existente = ['padrao', 'boas_vindas'].includes(e.target.value) && NOTIFICACOES.find(n => n.tipo === e.target.value);
     aviso.hidden = !existente;
@@ -504,6 +544,17 @@ async function enviar() {
     if (envio <= new Date()) return avisar('Escolha um horário no futuro.', 'nova-hora');
   }
 
+  let expira = null;
+  if (balao) {
+    const data = document.getElementById('nova-expira-data').value;
+    const hora = document.getElementById('nova-expira-hora').value;
+    if (!data) return avisar('Escolha até quando o balão fica no ar.', 'nova-expira-data');
+    if (!hora) return avisar('Escolha o horário em que o balão sai do ar.', 'nova-expira-hora');
+    expira = new Date(`${data}T${hora}:00-03:00`);
+    if (Number.isNaN(expira.getTime())) return avisar('Data de saída inválida.', 'nova-expira-data');
+    if (expira <= (envio || new Date())) return avisar('A saída do ar tem que ser depois do envio.', 'nova-expira-data');
+  }
+
   const jaExiste = tipo !== 'comum' && NOTIFICACOES.find(n => n.tipo === tipo);
   if (jaExiste) {
     toast(`Já existe outra "${jaExiste.titulo}" como ${TIPOS[tipo].toLowerCase()}.`);
@@ -517,7 +568,7 @@ async function enviar() {
     mensagem,
     link_url: link || null,
     link_label: link ? (rotuloBotao || null) : null,
-    ...(balao ? { formato: 'balao', imagem_url: imagem } : {}),
+    ...(balao ? { formato: 'balao', imagem_url: imagem, expira_em: expira.toISOString() } : {}),
     destino,
     tipo,
     tema,
@@ -530,6 +581,7 @@ async function enviar() {
   Drawer.setFooterBusy(false);
 
   if (error) {
+    if (/expira_em/i.test(error.message || '')) return toast('Rode supabase/migrations/116_notificacao_expira_em.sql no Supabase.');
     if (/formato|imagem_url/i.test(error.message || '')) return toast('Rode supabase/migrations/114_notificacao_balao.sql no Supabase.');
     const faltaTema = /tema/i.test(error.message || '');
     const faltaColuna = /tipo|fixada|column|schema cache/i.test(error.message || '');

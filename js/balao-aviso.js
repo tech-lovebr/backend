@@ -6,6 +6,7 @@
    › Nova notificação › Formato: Balão.
 
    Mostra um balão por vez (o mais recente que a pessoa ainda não viu).
+   Balão com expira_em no passado não aparece mais (migration 116).
    Fechar ou clicar no botão chama aoVer(id), que grava a leitura — assim o
    balão não volta.
 
@@ -23,21 +24,24 @@
 (function () {
   const ESTILO = `
     .love-balao { position: fixed; z-index: 70; bottom: 24px; left: 24px; width: 360px; max-width: calc(100vw - 32px);
-      display: flex; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08); font-family: Inter, system-ui, sans-serif;
+      display: flex; background: #FFFFFF; border: 0; border-radius: 10px; overflow: hidden;
+      box-shadow: 0 12px 40px rgba(15,23,32,0.14), 0 2px 8px rgba(15,23,32,0.06); font-family: Inter, system-ui, sans-serif;
       opacity: 0; transform: translateY(12px); transition: opacity .25s ease, transform .25s ease; }
     .love-balao.is-visivel { opacity: 1; transform: none; }
     .love-balao-imagem { flex: 0 0 112px; background: #F4F4F5 center / cover no-repeat; }
     .love-balao-corpo { flex: 1; min-width: 0; padding: 16px 16px 16px 18px; }
-    .love-balao-titulo { margin: 0 24px 6px 0; font-size: 15px; line-height: 1.3; font-weight: 600; color: #18181B; letter-spacing: -0.01em; }
+    .love-balao-titulo { margin: 0 0 6px; font-size: 14px; line-height: 1.3; font-weight: 700; color: #18181B; letter-spacing: -0.01em; }
     .love-balao-texto { margin: 0 0 14px; font-size: 13px; line-height: 1.45; color: #71717A; }
     .love-balao-botao { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 0; border-radius: 8px;
       background: #183b54; color: #FFFFFF; font: 600 13px/1 Inter, system-ui, sans-serif; cursor: pointer; text-decoration: none; }
     .love-balao-botao:hover { background: #122c3f; }
-    .love-balao-fechar { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; padding: 0; border: 0;
-      background: transparent; color: #A1A1AA; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-    .love-balao-fechar:hover { color: #181D24; }
-    .love-balao-fechar svg { width: 16px; height: 16px; }
+    .love-balao-fechar { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; padding: 0; border: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.55); color: #FFFFFF; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .15s ease, background .15s ease; }
+    .love-balao:hover .love-balao-fechar, .love-balao-fechar:focus-visible { opacity: 1; }
+    .love-balao-fechar:hover { background: rgba(0,0,0,0.75); }
+    .love-balao-fechar svg { width: 14px; height: 14px; }
+    @media (hover: none) { .love-balao-fechar { opacity: 1; } }
     @media (max-width: 767px) {
       .love-balao { left: 16px !important; right: 16px; bottom: 96px; width: auto; }
       .love-balao-imagem { flex-basis: 96px; }
@@ -48,7 +52,9 @@
 
   function mostrar(lista, opcoes) {
     const o = opcoes || {};
-    const n = (lista || []).filter(x => x && x.formato === 'balao' && x.imagem_url && !vistos.has(x.id))[0];
+    const agora = Date.now();
+    const n = (lista || []).filter(x => x && x.formato === 'balao' && x.imagem_url && !vistos.has(x.id)
+      && !(x.expira_em && new Date(x.expira_em).getTime() <= agora))[0];
     if (!n || document.querySelector('.love-balao')) return;
 
     if (!document.getElementById('love-balao-estilo')) {

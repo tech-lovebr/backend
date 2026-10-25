@@ -11012,3 +11012,83 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   html body :is(.leads-table-wrap, .overflow-x-auto):not(#love-h-a) { max-width: 100%; -webkit-overflow-scrolling: touch; }
   html body img:not(#love-h-a) { max-width: 100%; }
 }
+
+/* ==========================================================================
+   Hub como app no celular (igual à plataforma dos anfitriões) — SÓ até
+   768px; o desktop não muda.
+   ========================================================================== */
+.submenu-celular { display: none; }
+@media (max-width: 768px) {
+  :root {
+    --navbar-height-mobile: calc(60px + env(safe-area-inset-top, 0px));
+    --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+  html, body { overflow-x: clip; max-width: 100%; }
+  html body .b2b-shell:not(#love-h-a), html body .b2b-main:not(#love-h-a) { min-height: 100dvh; overflow-x: clip; }
+
+  /* Topo: desce abaixo do notch / barra de status. */
+  html body .b2b-topbar:not(#love-h-a) {
+    height: var(--navbar-height-mobile) !important; min-height: 0 !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px)) !important;
+    box-sizing: border-box;
+  }
+
+  /* Conteúdo: 16px dos lados e sobra embaixo para a barra. */
+  html body .b2b-content:not(#love-h-a) {
+    padding-left: max(1rem, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(1rem, env(safe-area-inset-right, 0px)) !important;
+    padding-bottom: calc(var(--bottom-bar-height-mobile) + 1.5rem) !important;
+  }
+
+  /* Barra de baixo: 5 atalhos do mesmo tamanho, ícone + nome; ativo branco. */
+  html body .mobile-bottom-nav:not(#love-h-a) {
+    display: flex !important; align-items: stretch; justify-content: space-between; gap: 0 !important;
+    height: var(--bottom-bar-height-mobile) !important;
+    padding: 0 max(0.25rem, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(0.25rem, env(safe-area-inset-left, 0px)) !important;
+    background: #183b54 !important; border-top: 1px solid rgba(0, 0, 0, 0.06) !important; box-shadow: none !important; box-sizing: border-box;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a) {
+    flex: 1 1 0 !important; width: auto !important; min-width: 44px !important; height: 63px !important; min-height: 44px !important; margin: 0 !important;
+    display: flex !important; flex-direction: column !important; align-items: center; justify-content: center; gap: 4px; padding: 6px 2px !important;
+    border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; transform: none !important;
+    color: rgba(255, 255, 255, 0.68) !important; position: relative;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a) svg { width: 22px !important; height: 22px !important; color: currentColor !important; stroke: currentColor !important; }
+  html body .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a) { color: #FFFFFF !important; background: transparent !important; }
+  html body .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a)::before { display: none !important; }
+  html body .mobile-bottom-nav .mobile-nav-item > span:last-child:not(.nav-badge):not(#love-h-a) {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: Inter, sans-serif; font-size: 11px; font-weight: 500; line-height: 1.2; letter-spacing: 0; color: currentColor;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item.active > span:last-child:not(#love-h-a) { font-weight: 600; }
+  body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item { color: rgba(255, 255, 255, 0.6) !important; }
+  body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item.active { color: #FFFFFF !important; }
+
+  /* Toque mínimo de 44px. */
+  html body :is(.topbar-icon-plain, .topbar-avatar-btn, .produto-voltar, .tabela-ver-mais, .guests-pagination-btn, .op-post-salvar, .op-prop-fechar, .per-nav):not(#love-h-a) { min-width: 44px !important; min-height: 44px !important; }
+  html body :is(.btn-primary, .btn-secondary, .tabela-barra-btn, .cart-btn-escuro, .op-post-botao, .fin-lista-btn, .op-filtrar-btn, .op-analise-salvar):not(#love-h-a) { min-height: 44px !important; }
+
+  /* Campos com 16px: o Safari não dá zoom. */
+  html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea):not(#love-h-a):not(#love-h-b) { font-size: 16px !important; }
+
+  /* Submenu: a lista lateral some; vira a barra segmentada no topo. */
+  html body .settings-shell > #settings-tabs:not(#love-h-a) { display: none !important; }
+  html body .b2b-content > .submenu-celular:not([hidden]):not(#love-h-a) {
+    position: relative; display: flex; flex-shrink: 0; gap: 2px; width: 100%; max-width: 100%; box-sizing: border-box;
+    margin: 0 0 16px; padding: 3px; background: #F4F4F5; border: 1px solid rgba(0, 0, 0, 0.04); border-radius: 10px;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  html body .b2b-content > .submenu-celular::-webkit-scrollbar { display: none; }
+  html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
+    flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 38px; padding: 0 14px; background: transparent; border: 1px solid transparent; border-radius: 8px;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1; letter-spacing: -0.01em;
+    color: #52525B; white-space: nowrap; cursor: pointer; box-shadow: none; transform: none; -webkit-tap-highlight-color: transparent;
+  }
+  html body .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) { background: #FFFFFF; border-color: #E4E4E7; color: #18181B; font-weight: 600; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular { background: #1F1F1F; border-color: #333333; }
+  body[data-theme="dark"] .submenu-celular .submenu-celular-item { color: #A1A1AA; }
+  body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #333333; border-color: #404040; color: #FFFFFF; }
+}

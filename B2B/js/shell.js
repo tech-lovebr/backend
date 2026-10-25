@@ -942,3 +942,62 @@ function renderCommandResults(query) {
     `).join('')}
   `).join('');
 }
+
+
+/* ==========================================================================
+   Celular: submenu como barra segmentada no topo do conteúdo (igual ao app
+   dos anfitriões). A lista lateral do submenu (Configurações, Construtor)
+   some no celular; a barra copia os itens dela e repassa o toque ao item
+   original, então o resto do código não muda. Um item só: a barra não
+   aparece. Muitos: rola para o lado e centraliza o ativo. No desktop ela
+   fica escondida pelo CSS.
+   ========================================================================== */
+function submenuNoCelular(lista, seletor, rotuloDe) {
+  const area = document.querySelector('.b2b-content');
+  if (!lista || !area || area.querySelector(':scope > .submenu-celular')) return;
+  const barra = document.createElement('nav');
+  barra.className = 'submenu-celular';
+  barra.setAttribute('aria-label', 'Submenu');
+  const cabecalho = area.querySelector(':scope > .b2b-header-bar');
+  if (cabecalho) cabecalho.after(barra); else area.insertBefore(barra, area.firstChild);
+  let agendado = false;
+  const desenhar = () => {
+    agendado = false;
+    const itens = Array.from(lista.querySelectorAll(seletor))
+      .filter(i => !i.hidden && !i.classList.contains('hidden') && i.style.display !== 'none');
+    barra.hidden = itens.length < 2;
+    barra.textContent = '';
+    itens.forEach(orig => {
+      const ativo = orig.classList.contains('active') || orig.classList.contains('is-ativo');
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = 'submenu-celular-item' + (ativo ? ' is-ativo' : '');
+      if (ativo) botao.setAttribute('aria-current', 'page');
+      const rotulo = document.createElement('span');
+      rotulo.textContent = rotuloDe(orig);
+      botao.appendChild(rotulo);
+      botao.addEventListener('click', () => orig.click());
+      barra.appendChild(botao);
+    });
+    const atual = barra.querySelector('.is-ativo');
+    if (atual) barra.scrollLeft = Math.max(0, atual.offsetLeft - (barra.clientWidth - atual.offsetWidth) / 2);
+  };
+  new MutationObserver(() => {
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(desenhar);
+  }).observe(lista, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+  desenhar();
+}
+
+function ligarSubmenusNoCelular() {
+  // Configurações: Informações, Sua empresa, Preferências, Privacidade…
+  const config = document.getElementById('settings-tabs');
+  if (config) submenuNoCelular(config, '.category-tab', b => (b.querySelector('span') || b).textContent.trim());
+  // Construtor: Editar meu site / Formulários (a lista fica na sidebar).
+  if (document.body.dataset.page === 'paginas-site') {
+    const sub = document.querySelector('.b2b-sidebar .sidebar-nav-group--construtor .sidebar-subnav');
+    if (sub) submenuNoCelular(sub, '.sidebar-subnav-item', a => a.textContent.trim());
+  }
+}
+document.addEventListener('shell:ready', ligarSubmenusNoCelular);

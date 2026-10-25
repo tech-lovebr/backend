@@ -13781,12 +13781,396 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdown(); });
   }
 
+  // ==========================================================================
+  // Mapa do evento no celular: a planta ocupa a tela (sem a lista de
+  // convidados), o botão flutuante abre a gaveta de mesas e itens (toque para
+  // pôr no meio ou arraste até o lugar) e tocar numa mesa abre a tela dela,
+  // com as opções da mesa e quem está sentado. Mesas e itens se arrastam com
+  // o dedo. No desktop nada disso aparece.
+  // ==========================================================================
+  function iniciarPlantaNoCelular() {
+    const canvas = document.getElementById('floorplan-canvas');
+    const menuItens = document.getElementById('floorplan-add-table-menu');
+    if (!canvas || !menuItens || document.getElementById('planta-fab')) return;
+    const noCelular = window.matchMedia('(max-width: 768px)');
+    const SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>';
+    const XIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+    const MAIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+
+    // ---------- Botão flutuante + gaveta de baixo para cima ----------
+    const fab = document.createElement('button');
+    fab.type = 'button';
+    fab.id = 'planta-fab';
+    fab.className = 'planta-fab';
+    fab.innerHTML = `${MAIS}<span>Adicionar mesas e itens</span>`;
+    const fundo = document.createElement('div');
+    fundo.className = 'planta-gaveta-fundo';
+    const gaveta = document.createElement('section');
+    gaveta.className = 'planta-gaveta';
+    gaveta.setAttribute('aria-label', 'Adicionar mesas e itens');
+    gaveta.setAttribute('aria-hidden', 'true');
+    let corpoGaveta = '';
+    Array.from(menuItens.children).forEach(filho => {
+      if (filho.classList.contains('floorplan-formatos-titulo')) {
+        if (corpoGaveta) corpoGaveta += '</div>';
+        corpoGaveta += `<p class="planta-gaveta-secao">${escaparHtml(filho.textContent || '')}</p><div class="planta-gaveta-grade">`;
+        return;
+      }
+      const b = /** @type {HTMLElement} */ (filho);
+      const icone = b.querySelector('svg');
+      const dado = b.dataset.mesaFormato ? `data-mesa-formato="${escaparHtml(b.dataset.mesaFormato)}"` : `data-planta-item="${escaparHtml(b.dataset.plantaItem || '')}"`;
+      corpoGaveta += `<button type="button" class="planta-gaveta-item" ${dado}><span class="planta-gaveta-icone">${icone ? icone.outerHTML : ''}</span><span class="planta-gaveta-nome">${escaparHtml((b.textContent || '').trim())}</span></button>`;
+    });
+    if (corpoGaveta) corpoGaveta += '</div>';
+    gaveta.innerHTML = `<div class="planta-gaveta-alca" aria-hidden="true"></div>
+      <div class="planta-gaveta-topo"><h3>Adicionar à planta</h3><button type="button" class="planta-gaveta-fechar" aria-label="Fechar">${XIS}</button></div>
+      <p class="planta-gaveta-dica">Toque para pôr no meio da planta ou arraste até o lugar.</p>
+      <div class="planta-gaveta-corpo">${corpoGaveta}</div>`;
+    document.body.append(fab, fundo, gaveta);
+
+    const abrirGaveta = () => {
+      gaveta.classList.add('is-aberta');
+      fundo.classList.add('is-aberta');
+      gaveta.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('planta-gaveta-aberta');
+    };
+    const fecharGaveta = () => {
+      gaveta.classList.remove('is-aberta', 'is-arrastando');
+      fundo.classList.remove('is-aberta');
+      gaveta.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('planta-gaveta-aberta');
+    };
+    fab.addEventListener('click', abrirGaveta);
+    fundo.addEventListener('click', fecharGaveta);
+    gaveta.querySelector('.planta-gaveta-fechar')?.addEventListener('click', fecharGaveta);
+    // Puxar a alça para baixo fecha.
+    const alca = gaveta.querySelector('.planta-gaveta-alca');
+    let alcaY = 0;
+    alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
+    alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fecharGaveta(); });
+
+    /** Põe a mesa/item na planta; com ponto, no lugar onde o dedo soltou. @param {HTMLElement} item @param {{x: number, y: number}|null} ponto */
+    const adicionar = (item, ponto) => {
+      if (item.dataset.mesaFormato) addFloorPlanTableViaButton(item.dataset.mesaFormato);
+      else if (item.dataset.plantaItem) inserirItemNaPlanta(item.dataset.plantaItem);
+      if (!ponto) return;
+      const lista = getFloorPlanElements();
+      const novo = lista[lista.length - 1];
+      if (!novo) return;
+      const w = novo.type === 'mesa' ? 220 : larguraNaPlanta(novo);
+      const h = novo.type === 'mesa' ? 220 : alturaNaPlanta(novo);
+      novo.x = Math.max(0, Math.round(ponto.x - w / 2));
+      novo.y = Math.max(0, Math.round(ponto.y - h / 2));
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+    };
+
+    // Arrastar da gaveta: a gaveta desce, o item segue o dedo e cai na planta.
+    gaveta.querySelectorAll('.planta-gaveta-item').forEach(no => {
+      const item = /** @type {HTMLElement} */ (no);
+      let x0 = 0, y0 = 0, arrastando = false;
+      /** @type {HTMLElement|null} */
+      let fantasma = null;
+      item.addEventListener('touchstart', (e) => {
+        const t = /** @type {TouchEvent} */ (e).touches[0];
+        x0 = t.clientX; y0 = t.clientY; arrastando = false;
+      }, { passive: true });
+      item.addEventListener('touchmove', (e) => {
+        const t = /** @type {TouchEvent} */ (e).touches[0];
+        if (!arrastando && Math.hypot(t.clientX - x0, t.clientY - y0) < 8) return;
+        e.preventDefault();
+        if (!arrastando) {
+          arrastando = true;
+          gaveta.classList.add('is-arrastando');
+          fundo.classList.remove('is-aberta');
+          fantasma = document.createElement('div');
+          fantasma.className = 'planta-fantasma';
+          fantasma.innerHTML = item.querySelector('.planta-gaveta-icone')?.innerHTML || '';
+          document.body.appendChild(fantasma);
+        }
+        if (fantasma) fantasma.style.transform = `translate(${t.clientX - 32}px, ${t.clientY - 32}px)`;
+      }, { passive: false });
+      item.addEventListener('touchend', (e) => {
+        if (!arrastando) return;
+        e.preventDefault();
+        arrastando = false;
+        fantasma?.remove();
+        fantasma = null;
+        const t = /** @type {TouchEvent} */ (e).changedTouches[0];
+        const r = canvas.getBoundingClientRect();
+        const caiuNaPlanta = t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom;
+        fecharGaveta();
+        if (caiuNaPlanta) adicionar(item, { x: (t.clientX - r.left) / escalaDaPlanta, y: (t.clientY - r.top) / escalaDaPlanta });
+      });
+      item.addEventListener('click', () => { fecharGaveta(); adicionar(item, null); });
+    });
+
+    // ---------- Arrastar mesas e itens com o dedo ----------
+    // O toque vira o mesmo arraste do mouse (wireFloorPlanElementDrag).
+    // Toque sem arrastar numa mesa abre a tela da mesa.
+    /** @param {string} tipo @param {Touch} t @param {EventTarget} alvo */
+    const mouse = (tipo, t, alvo) => alvo.dispatchEvent(new MouseEvent(tipo, { bubbles: true, cancelable: true, clientX: t.clientX, clientY: t.clientY, button: 0 }));
+    let toque = /** @type {{id: string, x: number, y: number, moveu: boolean}|null} */ (null);
+    canvas.addEventListener('touchstart', (e) => {
+      if (!noCelular.matches || e.touches.length > 1) return;
+      const alvo = e.target instanceof Element ? e.target.closest('.floorplan-el') : null;
+      if (!(alvo instanceof HTMLElement) || !alvo.dataset.elId) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      toque = { id: alvo.dataset.elId, x: t.clientX, y: t.clientY, moveu: false };
+      mouse('mousedown', t, alvo);
+    }, { passive: false });
+    document.addEventListener('touchmove', (e) => {
+      if (!toque) return;
+      e.preventDefault();
+      const t = e.touches[0];
+      if (Math.hypot(t.clientX - toque.x, t.clientY - toque.y) > 6) toque.moveu = true;
+      mouse('mousemove', t, document);
+    }, { passive: false });
+    const soltar = (/** @type {TouchEvent} */ e) => {
+      if (!toque) return;
+      const atual = toque;
+      toque = null;
+      mouse('mouseup', e.changedTouches[0], document);
+      if (atual.moveu) return;
+      const dado = getFloorPlanElements().find(x => x.id === atual.id);
+      if (dado && dado.type === 'mesa') {
+        plantaSelecionada = null;
+        desenharSelecaoDaPlanta();
+        abrirMesa(atual.id);
+      }
+    };
+    document.addEventListener('touchend', soltar);
+    document.addEventListener('touchcancel', soltar);
+
+    // ---------- Tela da mesa ----------
+    const tela = document.createElement('div');
+    tela.className = 'mesa-celular';
+    tela.setAttribute('role', 'dialog');
+    tela.setAttribute('aria-modal', 'true');
+    tela.hidden = true;
+    document.body.appendChild(tela);
+    let mesaId = '';
+    let escolhendo = false;
+    let buscaEscolha = '';
+
+    const mesaAtual = () => getFloorPlanElements().find(x => x.id === mesaId && x.type === 'mesa');
+    /** @param {string} nome */
+    const iniciais = (nome) => {
+      const partes = nome.trim().split(/\s+/);
+      return ((partes[0] || '')[0] || '').toUpperCase() + (partes.length > 1 ? (partes[partes.length - 1][0] || '').toUpperCase() : '');
+    };
+    /** Salva a mesa depois de mudar algo nela e redesenha a planta. @param {(m: any) => void} mudar */
+    const mudarMesa = (mudar) => {
+      const lista = getFloorPlanElements();
+      const m = lista.find(x => x.id === mesaId);
+      if (!m) return;
+      mudar(m);
+      saveFloorPlanElements(lista);
+      renderFloorPlanCanvas();
+      renderFloorPlanGuestCards();
+      renderGuestsTable();
+    };
+    const fecharMesa = () => {
+      tela.hidden = true;
+      escolhendo = false;
+      document.body.classList.remove('mesa-celular-aberta');
+    };
+    /** @param {string} id */
+    function abrirMesa(id) {
+      mesaId = id;
+      escolhendo = false;
+      buscaEscolha = '';
+      tela.hidden = false;
+      document.body.classList.add('mesa-celular-aberta');
+      desenharMesa();
+      tela.scrollTop = 0;
+    }
+
+    const ICONES_FORMATO = /** @type {Record<string, string>} */ ({});
+    menuItens.querySelectorAll('[data-mesa-formato]').forEach(b => {
+      ICONES_FORMATO[(/** @type {HTMLElement} */ (b)).dataset.mesaFormato || ''] = b.querySelector('svg')?.outerHTML || '';
+    });
+    const NOMES_FORMATO = /** @type {Record<string, string>} */ ({ redonda: 'Redonda', retangular: 'Retangular', quadrada: 'Quadrada', bistro: 'Bistrô' });
+
+    function desenharMesa() {
+      const m = mesaAtual();
+      if (!m) { fecharMesa(); return; }
+      resizeSeatNames(m);
+      const pessoas = pessoasParaMesas();
+      const total = parseInt(m.seats) || 1;
+      const sentados = (m.seatNames || []).map(/** @param {string} n */ n => (n || '').trim());
+      const ocupados = sentados.filter(Boolean).length;
+      const titulo = `Mesa ${escaparHtml(String(m.number))}`;
+
+      if (escolhendo) {
+        // Escolher quem senta nesta mesa: quem já está aqui não aparece.
+        const aqui = new Set(sentados.filter(Boolean).map(/** @param {string} n */ n => n.toLowerCase()));
+        const mesas = getFloorPlanElements().filter(x => x.type === 'mesa');
+        const ondeEsta = (/** @type {string} */ nome) => {
+          const outra = mesas.find(x => (x.seatNames || []).some(/** @param {string} n */ n => (n || '').trim().toLowerCase() === nome.toLowerCase()));
+          return outra ? `Mesa ${outra.number}` : '';
+        };
+        const termo = buscaEscolha.trim().toLowerCase();
+        const lista = pessoas.filter(pp => !aqui.has(pp.name.toLowerCase()) && (!termo || pp.name.toLowerCase().includes(termo)))
+          .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+        tela.innerHTML = `<div class="mesa-celular-topo">
+            <button type="button" class="mesa-celular-icone" data-acao="voltar-escolha" aria-label="Voltar para a mesa">${SETA}</button>
+            <h2>Adicionar à ${titulo}</h2><span class="mesa-celular-espaco"></span>
+          </div>
+          <div class="mesa-celular-corpo">
+            <input type="search" class="mesa-celular-busca" placeholder="Buscar convidado..." value="${escaparHtml(buscaEscolha)}" autocomplete="off">
+            <p class="mesa-celular-contagem">${ocupados} de ${total} lugares ocupados</p>
+            <div class="mesa-celular-lista">${lista.length ? lista.map(pp => {
+              const onde = ondeEsta(pp.name);
+              const sub = [pp.isPrimary ? '' : (pp.host ? `Acompanhante de ${pp.host}` : ''), onde ? `Está na ${onde}` : ''].filter(Boolean).join(' · ');
+              return `<button type="button" class="mesa-celular-pessoa is-escolha" data-escolher="${escaparHtml(pp.name)}">
+                <span class="mesa-celular-avatar">${escaparHtml(iniciais(pp.name))}</span>
+                <span class="mesa-celular-nome"><strong>${escaparHtml(pp.name)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}</span>
+                <span class="mesa-celular-mais">${MAIS}</span>
+              </button>`;
+            }).join('') : '<p class="mesa-celular-vazio">Nenhum convidado para adicionar.</p>'}</div>
+          </div>`;
+        const busca = /** @type {HTMLInputElement|null} */ (tela.querySelector('.mesa-celular-busca'));
+        busca?.addEventListener('input', () => {
+          buscaEscolha = busca.value;
+          const pos = busca.selectionStart;
+          desenharMesa();
+          const nova = /** @type {HTMLInputElement|null} */ (tela.querySelector('.mesa-celular-busca'));
+          if (nova) { nova.focus(); if (pos !== null) nova.setSelectionRange(pos, pos); }
+        });
+        return;
+      }
+
+      const formato = FORMATOS_DE_MESA.includes(m.formato) ? m.formato : 'redonda';
+      const cor = /^#[0-9a-f]{6}$/i.test(m.cor || '') ? m.cor : '#EBF4FF';
+      const lugares = sentados.map((nome, i) => nome
+        ? `<span class="mesa-celular-lugar is-ocupado" title="${escaparHtml(nome)}">${escaparHtml(iniciais(nome))}</span>`
+        : `<button type="button" class="mesa-celular-lugar" data-acao="escolher" aria-label="Lugar ${i + 1} vazio: adicionar convidado">${MAIS}</button>`).join('');
+      const listaPessoas = sentados.map((nome, i) => ({ nome, i })).filter(x => x.nome);
+      tela.innerHTML = `<div class="mesa-celular-topo">
+          <button type="button" class="mesa-celular-icone" data-acao="fechar" aria-label="Voltar para o mapa">${SETA}</button>
+          <h2>${titulo}</h2><span class="mesa-celular-espaco"></span>
+        </div>
+        <div class="mesa-celular-corpo">
+          <div class="mesa-celular-desenho">
+            <div class="mesa-celular-tampo formato-${formato}" style="--cor-da-mesa:${cor}; --cor-texto-da-mesa:${corEhEscura(cor) ? '#FFFFFF' : '#18181B'}">
+              <strong>${ocupados}/${total}</strong><span>lugares ocupados</span>
+            </div>
+            <div class="mesa-celular-lugares">${lugares}</div>
+          </div>
+
+          <div class="mesa-celular-cartao">
+            <label class="mesa-celular-rotulo" for="mesa-celular-nome">Nome da mesa</label>
+            <input type="text" id="mesa-celular-nome" class="mesa-celular-campo" maxlength="50" placeholder="Ex.: Mesa da família" value="${escaparHtml(m.name || '')}">
+            <p class="mesa-celular-rotulo">Formato</p>
+            <div class="mesa-celular-formatos">${FORMATOS_DE_MESA.map(f => `<button type="button" class="mesa-celular-formato${f === formato ? ' is-ativo' : ''}" data-formato="${f}" aria-pressed="${f === formato}">${ICONES_FORMATO[f] || ''}<span>${NOMES_FORMATO[f]}</span></button>`).join('')}</div>
+            <div class="mesa-celular-linha">
+              <span class="mesa-celular-rotulo">Lugares</span>
+              <div class="mesa-celular-passos">
+                <button type="button" data-acao="menos" aria-label="Menos um lugar"${total <= 1 ? ' disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+                <span>${total}</span>
+                <button type="button" data-acao="mais" aria-label="Mais um lugar"${total >= FLOORPLAN_MAX_SEATS ? ' disabled' : ''}>${MAIS}</button>
+              </div>
+            </div>
+            <label class="mesa-celular-linha">
+              <span class="mesa-celular-rotulo">Cor</span>
+              <span class="mesa-celular-cor" style="background:${cor}"><input type="color" value="${cor}" aria-label="Cor da mesa"></span>
+            </label>
+            <div class="mesa-celular-acoes">
+              ${formato === 'retangular' ? '<button type="button" data-acao="girar">Girar</button>' : ''}
+              <button type="button" data-acao="duplicar">Duplicar</button>
+              <button type="button" data-acao="excluir">Excluir mesa</button>
+            </div>
+          </div>
+
+          <div class="mesa-celular-cabeca">
+            <h3>Convidados</h3>
+            <button type="button" data-acao="escolher">Adicionar convidados</button>
+          </div>
+          <div class="mesa-celular-lista">${listaPessoas.length ? listaPessoas.map(({ nome }, n) => {
+            const pp = pessoas.find(x => x.name.toLowerCase() === nome.toLowerCase());
+            const sub = pp && !pp.isPrimary && pp.host ? `Acompanhante de ${pp.host}` : '';
+            return `<div class="mesa-celular-pessoa">
+              <span class="mesa-celular-numero">${n + 1}</span>
+              <span class="mesa-celular-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}</span>
+              <button type="button" class="mesa-celular-tirar" data-tirar="${escaparHtml(nome)}" aria-label="Tirar ${escaparHtml(nome)} desta mesa">${XIS}</button>
+            </div>`;
+          }).join('') : '<p class="mesa-celular-vazio">Ninguém nesta mesa ainda. Toque em um lugar vazio ou em “Adicionar convidados”.</p>'}</div>
+        </div>`;
+
+      const nomeCampo = /** @type {HTMLInputElement|null} */ (tela.querySelector('#mesa-celular-nome'));
+      nomeCampo?.addEventListener('input', () => {
+        const lista = getFloorPlanElements();
+        const mm = lista.find(x => x.id === mesaId);
+        if (!mm) return;
+        mm.name = nomeCampo.value.trim();
+        saveFloorPlanElements(lista);
+        renderFloorPlanCanvas();
+      });
+      const corCampo = /** @type {HTMLInputElement|null} */ (tela.querySelector('.mesa-celular-cor input'));
+      corCampo?.addEventListener('input', () => {
+        mudarMesa(mm => { mm.cor = corCampo.value.toUpperCase(); });
+        desenharMesa();
+      });
+    }
+
+    tela.addEventListener('click', (e) => {
+      const alvo = e.target instanceof Element ? e.target.closest('button') : null;
+      if (!alvo) return;
+      const acao = /** @type {HTMLElement} */ (alvo).dataset.acao;
+      const formato = /** @type {HTMLElement} */ (alvo).dataset.formato;
+      const tirar = /** @type {HTMLElement} */ (alvo).dataset.tirar;
+      const escolher = /** @type {HTMLElement} */ (alvo).dataset.escolher;
+      if (acao === 'fechar') { fecharMesa(); return; }
+      if (acao === 'voltar-escolha') { escolhendo = false; desenharMesa(); return; }
+      if (acao === 'escolher') { escolhendo = true; buscaEscolha = ''; desenharMesa(); tela.scrollTop = 0; return; }
+      if (escolher) {
+        moverPessoasParaMesa([escolher.trim().toLowerCase()], mesaId);
+        escolhendo = false;
+        desenharMesa();
+        return;
+      }
+      if (formato) { mudarMesa(m => { m.formato = formato; }); desenharMesa(); return; }
+      if (acao === 'mais' || acao === 'menos') {
+        mudarMesa(m => {
+          const n = (parseInt(m.seats) || 1) + (acao === 'mais' ? 1 : -1);
+          m.seats = Math.max(1, Math.min(FLOORPLAN_MAX_SEATS, n));
+          resizeSeatNames(m);
+        });
+        desenharMesa();
+        return;
+      }
+      if (tirar) {
+        const nn = tirar.trim().toLowerCase();
+        mudarMesa(m => { m.seatNames = (m.seatNames || []).map(/** @param {string} n */ n => ((n || '').trim().toLowerCase() === nn ? '' : n)); });
+        desenharMesa();
+        return;
+      }
+      if (acao === 'girar' || acao === 'duplicar' || acao === 'excluir') {
+        acaoNaSelecao(acao, mesaId);
+        plantaSelecionada = null;
+        desenharSelecaoDaPlanta();
+        if (acao === 'girar') desenharMesa(); else fecharMesa();
+      }
+    });
+
+    // Saiu do celular ou da tela do mapa: fecha a gaveta e a tela da mesa.
+    noCelular.addEventListener?.('change', () => { if (!noCelular.matches) { fecharGaveta(); fecharMesa(); } });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { fecharGaveta(); fecharMesa(); } });
+    document.addEventListener('click', (e) => {
+      const alvo = e.target instanceof Element ? e.target : null;
+      if (alvo && alvo.closest('.sidebar-icon-rail, #submenu-celular')) { fecharGaveta(); fecharMesa(); }
+    }, true);
+  }
+
   function initFloorPlan() {
     wireFloorPlanCanvasDrop();
     renderFloorPlanGuestCards();
     renderFloorPlanCanvas();
     initFloorPlanTableModal();
     initFloorPlanFilterDropdown();
+    iniciarPlantaNoCelular();
 
     // Expandir: esconde a lista de convidados e a planta ocupa a tela toda
     // (clique de novo para voltar). Esc também volta.
@@ -13805,7 +14189,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       btnExpandir.addEventListener('click', () => expandir(!wrapPlanta.classList.contains('is-expandida')));
       // Setinha ao lado do título (só aparece expandida): volta para a tela reduzida.
-      document.getElementById('btn-floorplan-voltar')?.addEventListener('click', () => expandir(false));
+      document.getElementById('btn-floorplan-recolher')?.addEventListener('click', () => expandir(false));
 
       // Expandida: a lista de convidados flutua sobre a planta. O tracinho
       // minimiza (fica só a barrinha); o quadradinho abre de novo. Dá para

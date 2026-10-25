@@ -12484,3 +12484,146 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   }
   html body .menu-celular-perfil:has(.menu-celular-nome:empty) { display: none; }
 }
+
+/* ==========================================================================
+   Celular (só até 768px)
+   1) Barra de baixo flutuante: pílula de vidro fosco na cor da plataforma,
+      solta das bordas e acima da barrinha do iPhone.
+   2) Mapa do evento: planta na tela toda (sem a lista de convidados), botão
+      flutuante que abre a gaveta de mesas e itens, e a tela da mesa.
+   Desktop não muda.
+   ========================================================================== */
+.planta-fab, .planta-gaveta, .planta-gaveta-fundo, .planta-fantasma, .mesa-celular { display: none; }
+@media (max-width: 768px) {
+  :root { --bottom-bar-height-mobile: calc(76px + env(safe-area-inset-bottom, 0px)); }
+
+  /* 1) Pílula de vidro */
+  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) {
+    top: auto !important; left: 16px !important; right: 16px !important; width: auto !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; height: 64px !important;
+    padding: 0 6px !important; border-radius: 999px !important; border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: rgba(24, 59, 84, 0.78) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important; overflow: visible !important;
+  }
+  html body .sidebar-icon-rail > div:first-child:not(#love-h-a):not(#love-h-b) { height: 62px !important; align-items: center !important; }
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a):not(#love-h-b),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit:not(#love-h-a):not(#love-h-b) {
+    height: 52px !important; min-height: 44px !important; padding: 4px 2px !important; gap: 3px !important; border-radius: 999px !important;
+  }
+  html body .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active:not(#love-h-a):not(#love-h-b) { background: rgba(255, 255, 255, 0.16) !important; color: #FFFFFF !important; }
+  html body .sidebar-icon-rail .rail-icon-btn:not(#love-h-a):not(#love-h-b) svg { width: 21px !important; height: 21px !important; }
+  html body .sidebar-icon-rail .rail-rotulo:not(#love-h-a):not(#love-h-b) { font-size: 10.5px; }
+  body[data-theme="dark"] .sidebar-icon-rail { background: rgba(28, 28, 30, 0.78) !important; }
+
+  /* 2) Mapa do evento */
+  html body #tab-rsvp-tables #floorplan-guests-panel:not(#love-h-a),
+  html body #tab-rsvp-tables .floorplan-toolbar-right:not(#love-h-a) { display: none !important; }
+  html body #tab-rsvp-tables .floorplan-body:not(#love-h-a) { min-height: calc(100dvh - var(--bottom-bar-height-mobile) - 150px); }
+  html body #tab-rsvp-tables #floorplan-canvas:not(#love-h-a) { flex: 1 1 auto; border: 0 !important; border-radius: 0 !important; }
+
+  /* Botão flutuante */
+  .planta-fab {
+    position: fixed; left: 50%; bottom: calc(var(--bottom-bar-height-mobile) + 14px); transform: translateX(-50%); z-index: 48;
+    align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; white-space: nowrap;
+    background: #183b54; color: #FFFFFF; border: 0; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .planta-fab svg { width: 18px; height: 18px; }
+  body:has(#tab-rsvp-tables.active):not(.planta-gaveta-aberta):not(.mesa-celular-aberta):not(.menu-celular-aberto) .planta-fab { display: inline-flex; }
+
+  /* Gaveta (sobe de baixo) */
+  .planta-gaveta-fundo { display: block; position: fixed; inset: 0; z-index: 64; background: rgba(0, 0, 0, 0.25); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+  .planta-gaveta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
+  .planta-gaveta {
+    display: flex; flex-direction: column; position: fixed; left: 0; right: 0; bottom: 0; z-index: 66; max-height: 78dvh;
+    padding: 6px 16px calc(20px + env(safe-area-inset-bottom, 0px)); background: #FFFFFF; border-radius: 10px 10px 0 0;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08); font-family: Inter, sans-serif;
+    transform: translateY(100%); visibility: hidden; transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
+  }
+  .planta-gaveta.is-aberta { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+  .planta-gaveta.is-aberta.is-arrastando { transform: translateY(calc(100% - 40px)); }
+  .planta-gaveta-alca { width: 40px; height: 5px; margin: 4px auto 8px; border-radius: 999px; background: #D4D4D8; flex-shrink: 0; }
+  .planta-gaveta-topo { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .planta-gaveta-topo h3 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+  .planta-gaveta-fechar { width: 40px; height: 40px; margin-right: -8px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #52525B; cursor: pointer; }
+  .planta-gaveta-fechar svg { width: 22px; height: 22px; }
+  .planta-gaveta-dica { margin: 2px 0 8px; font-size: 13px; color: #71717A; flex-shrink: 0; }
+  .planta-gaveta-corpo { overflow-y: auto; -webkit-overflow-scrolling: touch; min-height: 0; }
+  .planta-gaveta-secao { margin: 12px 0 8px; font-size: 11px; font-weight: 500; color: #A1A1AA; text-transform: none; }
+  .planta-gaveta-grade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px; }
+  .planta-gaveta-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; background: transparent; border: 0; cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; font-family: inherit; }
+  .planta-gaveta-icone { width: 100%; aspect-ratio: 1; max-width: 72px; display: flex; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; color: #183b54; }
+  .planta-gaveta-icone svg { width: 38px; height: 38px; }
+  .planta-gaveta-nome { font-size: 12px; font-weight: 500; color: #3F3F46; text-align: center; line-height: 1.25; }
+  .planta-fantasma { display: flex; position: fixed; left: 0; top: 0; z-index: 100; width: 64px; height: 64px; align-items: center; justify-content: center; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; color: #183b54; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); pointer-events: none; }
+  .planta-fantasma svg { width: 40px; height: 40px; }
+
+  /* Tela da mesa */
+  body.mesa-celular-aberta { overflow: hidden; }
+  .mesa-celular { display: block; position: fixed; inset: 0; z-index: 70; overflow-y: auto; -webkit-overflow-scrolling: touch; background: #F6F7F8; font-family: Inter, sans-serif; }
+  .mesa-celular[hidden] { display: none !important; }
+  .mesa-celular button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .mesa-celular-topo { position: sticky; top: 0; z-index: 1; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 4px; padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px; background: #F6F7F8; }
+  .mesa-celular-topo h2 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mesa-celular-icone { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #18181B; }
+  .mesa-celular-icone svg { width: 22px; height: 22px; }
+  .mesa-celular-corpo { padding: 4px 16px calc(32px + env(safe-area-inset-bottom, 0px)); }
+  .mesa-celular-desenho { display: flex; flex-direction: column; align-items: center; padding: 24px 16px 20px; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; background-image: radial-gradient(circle at 1.5px 1.5px, rgba(0, 0, 0, 0.07) 1.5px, transparent 1.6px); background-size: 20px 20px; }
+  .mesa-celular-tampo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 128px; height: 128px; border-radius: 50%; background: var(--cor-da-mesa, #EBF4FF); color: var(--cor-texto-da-mesa, #18181B); border: 1px solid rgba(0, 0, 0, 0.08); }
+  .mesa-celular-tampo.formato-retangular { width: 220px; height: 88px; border-radius: 8px; }
+  .mesa-celular-tampo.formato-quadrada { border-radius: 8px; }
+  .mesa-celular-tampo.formato-bistro { width: 96px; height: 96px; }
+  .mesa-celular-tampo strong { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .mesa-celular-tampo span { font-size: 11px; font-weight: 500; opacity: 0.8; }
+  .mesa-celular-lugares { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }
+  .mesa-celular-lugar { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; background: #FFFFFF; border: 1.5px dashed #A1A1AA; color: #A1A1AA; font-size: 13px; font-weight: 600; }
+  .mesa-celular-lugar svg { width: 16px; height: 16px; }
+  .mesa-celular-lugar.is-ocupado { background: #183b54; border: 0; color: #FFFFFF; }
+  .mesa-celular-cartao { margin-top: 16px; padding: 16px; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; }
+  .mesa-celular-rotulo { display: block; margin: 0 0 6px; font-size: 13px; font-weight: 500; color: #71717A; }
+  .mesa-celular-campo, .mesa-celular-busca { width: 100%; height: 44px; padding: 0 12px; box-sizing: border-box; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font: inherit; font-size: 16px !important; color: #18181B; outline: none; box-shadow: none; }
+  .mesa-celular-campo:focus, .mesa-celular-busca:focus { border-color: #181D24; }
+  .mesa-celular-cartao .mesa-celular-rotulo + .mesa-celular-campo { margin-bottom: 16px; }
+  .mesa-celular-formatos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
+  .mesa-celular-formato { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 2px 8px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #52525B; font-size: 12px; font-weight: 500; }
+  .mesa-celular-formato svg { width: 28px; height: 28px; }
+  .mesa-celular-formato.is-ativo { border-color: #183b54; background: #EBF4FF; color: #183b54; }
+  .mesa-celular-linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; border-top: 1px solid rgba(0, 0, 0, 0.06); }
+  .mesa-celular-linha .mesa-celular-rotulo { margin: 0; font-size: 15px; color: #3F3F46; }
+  .mesa-celular-passos { display: flex; align-items: center; gap: 12px; }
+  .mesa-celular-passos button { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; color: #18181B; }
+  .mesa-celular-passos button:disabled { opacity: 0.4; }
+  .mesa-celular-passos button svg { width: 16px; height: 16px; }
+  .mesa-celular-passos span { min-width: 24px; text-align: center; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; color: #18181B; }
+  .mesa-celular-cor { position: relative; width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.12); overflow: hidden; }
+  .mesa-celular-cor input { position: absolute; inset: -8px; width: calc(100% + 16px); height: calc(100% + 16px); opacity: 0; cursor: pointer; }
+  .mesa-celular-acoes { display: flex; gap: 20px; padding-top: 14px; border-top: 1px solid rgba(0, 0, 0, 0.06); }
+  .mesa-celular-acoes button { padding: 4px 0; background: transparent; border: 0; font-size: 14px; font-weight: 500; color: #3F3F46; }
+  .mesa-celular-cabeca { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 8px; }
+  .mesa-celular-cabeca h3 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+  .mesa-celular-cabeca button { padding: 6px 0; background: transparent; border: 0; font-size: 15px; font-weight: 600; color: #183b54; }
+  .mesa-celular-lista { background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; overflow: hidden; }
+  .mesa-celular-pessoa { width: 100%; display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 6px 8px 6px 14px; box-sizing: border-box; background: #FFFFFF; border: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); text-align: left; }
+  .mesa-celular-pessoa:last-child { border-bottom: 0; }
+  .mesa-celular-numero { width: 18px; flex-shrink: 0; font-size: 14px; color: #A1A1AA; font-variant-numeric: tabular-nums; }
+  .mesa-celular-nome { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .mesa-celular-nome strong { font-size: 15px; font-weight: 500; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mesa-celular-nome span { font-size: 12px; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mesa-celular-tirar { width: 40px; height: 40px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #A1A1AA; }
+  .mesa-celular-tirar svg { width: 18px; height: 18px; }
+  .mesa-celular-avatar { width: 36px; height: 36px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #EBF4FF; color: #183b54; font-size: 13px; font-weight: 600; }
+  .mesa-celular-mais { width: 36px; height: 36px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; color: #183b54; }
+  .mesa-celular-mais svg { width: 20px; height: 20px; }
+  .mesa-celular-busca { margin-bottom: 8px; }
+  .mesa-celular-contagem { margin: 0 0 12px; font-size: 13px; color: #71717A; }
+  .mesa-celular-vazio { margin: 0; padding: 20px 16px; font-size: 14px; color: #71717A; text-align: center; }
+
+  body[data-theme="dark"] :is(.planta-gaveta, .mesa-celular, .mesa-celular-topo) { background: #1A1A1A; }
+  body[data-theme="dark"] :is(.planta-gaveta-icone, .planta-fantasma, .mesa-celular-desenho, .mesa-celular-cartao, .mesa-celular-lista, .mesa-celular-pessoa, .mesa-celular-campo, .mesa-celular-busca, .mesa-celular-formato, .mesa-celular-passos button) { background-color: #252525; border-color: #404040; }
+  body[data-theme="dark"] :is(.planta-gaveta-topo h3, .mesa-celular-topo h2, .mesa-celular-icone, .mesa-celular-nome strong, .mesa-celular-cabeca h3, .mesa-celular-campo, .mesa-celular-busca, .mesa-celular-passos span, .mesa-celular-passos button) { color: #FFFFFF; }
+  body[data-theme="dark"] :is(.planta-gaveta-icone, .planta-fantasma, .mesa-celular-cabeca button, .mesa-celular-mais) { color: #EBF4FF; }
+  body[data-theme="dark"] .planta-gaveta-nome { color: #D4D4D8; }
+  body[data-theme="dark"] .mesa-celular-formato.is-ativo { border-color: #EBF4FF; color: #EBF4FF; background: #183b54; }
+}

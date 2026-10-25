@@ -12033,3 +12033,18 @@ body[data-theme="dark"] #rsvp-empty-state .rsvp-vazio-titulo { color: #FFFFFF !i
   html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { align-items: stretch; }
   html body #b2b-pedidos-view .rfp-editor > .rfp-coluna:not(#love-h-a) { width: 100%; min-width: 0; }
 }
+
+/* Minhas solicitações: a linha se ajusta à largura da caixa (não da janela).
+   Caixa média: some Mensagens/Propostas e o texto vai até o botão.
+   Caixa estreita: o botão desce para baixo do texto. */
+html body #rfp-lista:not(#love-h-a) { container-type: inline-size; container-name: rfp-lista; width: 100%; min-width: 0; }
+@container rfp-lista (max-width: 720px) {
+  html body #rfp-lista .rfp-post:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) auto 36px; }
+  html body #rfp-lista .rfp-post-num:not(#love-h-a) { display: none; }
+}
+@container rfp-lista (max-width: 440px) {
+  html body #rfp-lista .rfp-post:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 36px; row-gap: 12px; padding: 18px 16px; }
+  html body #rfp-lista .rfp-post > .rfp-post-info:not(#love-h-a) { grid-column: 1; grid-row: 1; }
+  html body #rfp-lista .rfp-post > .rfp-menu-wrap:not(#love-h-a) { grid-column: 2; grid-row: 1; align-self: start; }
+  html body #rfp-lista .rfp-post > button.rfp-post-botao:not(#love-h-a) { grid-column: 1 / -1; grid-row: 2; justify-self: start; margin-left: 30px; }
+}

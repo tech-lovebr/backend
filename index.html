@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261024_coanfitriao">
+  <link rel="stylesheet" href="css/styles.css?v=20261024_despesaParcelas">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2324,8 +2324,7 @@
             </div>
             <div id="wallet-header-actions" class="hidden flex items-center gap-2.5 flex-shrink-0">
               <button type="button" id="btn-open-add-expense" class="btn-primary flex-shrink-0 hidden">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                <span>Adicionar despesa</span>
+                <span>Adicionar novo</span>
               </button>
               <button type="button" id="btn-add-comprovante" class="btn-primary flex-shrink-0 hidden">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
@@ -4884,109 +4883,86 @@
        ======================================================================= -->
   <div id="budget-expense-drawer-backdrop" class="budget-expense-drawer-backdrop hidden" style="display: none !important;"></div>
 
-  <aside id="drawer-add-budget-expense" class="budget-expense-drawer hidden" style="display: none !important;" aria-label="Adicionar Despesa">
-    <!-- Header do Drawer: Mesmo padrão de título das páginas com linha horizontal cortando -->
-    <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
-      <div>
-        <h2 id="despesa-drawer-titulo" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar despesa</h2>
-        <p id="despesa-drawer-sub" class="text-xs sm:text-sm text-zinc-500 mt-1 font-sans">Cadastre um item para acompanhar no seu orçamento.</p>
-      </div>
-      <button id="btn-close-add-expense-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
+  <aside id="drawer-add-budget-expense" class="budget-expense-drawer despesa-popup hidden" style="display: none !important;" aria-label="Adicionar despesa">
+    <!-- Mesmo formato do pop-up de Criar presente: 880 × 563, branco, sem linhas. -->
+    <div class="despesa-topo">
+      <h2 id="despesa-drawer-titulo" class="despesa-titulo">Adicionar despesa</h2>
+      <button id="btn-close-add-expense-drawer" type="button" class="despesa-fechar" title="Fechar" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
+    <p id="despesa-drawer-sub" class="despesa-aviso" hidden></p>
 
-    <!-- Conteúdo do Formulário -->
-    <div class="flex-1 overflow-y-auto px-6 sm:px-8 py-6 font-sans">
-      <form id="form-add-budget-expense" class="space-y-5 text-left">
-        
-        <!-- Campo 1: Item -->
-        <div class="space-y-1.5">
-          <label for="expense-item-name" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Item <span class="text-rose-500">*</span></label>
-          <input type="text" id="expense-item-name" required placeholder="Ex: Espaço, Buffet, Fotógrafo..." class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans">
-        </div>
-
-        <!-- Campo 2: Fornecedor (Digitável com Autocomplete de Meus Contratos) -->
-        <div class="relative space-y-1.5">
-          <label for="expense-vendor-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Fornecedor</label>
-          <input type="text" id="expense-vendor-input" autocomplete="off" placeholder="Digite o nome do fornecedor..." class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans">
-          
-          <!-- Dropdown de Sugestões de Meus Contratos -->
-          <div id="expense-vendor-suggestions" class="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl border border-zinc-200 shadow-xl max-h-48 overflow-y-auto hidden z-30 divide-y divide-zinc-100 font-sans">
-            <!-- Injetado dinamicamente via JS -->
+    <form id="form-add-budget-expense" class="despesa-form" novalidate>
+      <div class="despesa-corpo">
+        <!-- Coluna esquerda: o que é -->
+        <div class="despesa-coluna">
+          <label class="despesa-campo" for="expense-item-name"><span class="despesa-rotulo">Item</span>
+            <input type="text" id="expense-item-name" required placeholder="Ex.: Espaço, Buffet, Fotógrafo…" class="desp-input">
+          </label>
+          <div class="despesa-campo despesa-campo-fornecedor">
+            <label for="expense-vendor-input" class="despesa-rotulo">Fornecedor</label>
+            <input type="text" id="expense-vendor-input" autocomplete="off" placeholder="Digite o nome do fornecedor…" class="desp-input">
+            <div id="expense-vendor-suggestions" class="despesa-sugestoes hidden"></div>
+            <p class="despesa-dica">Fornecedores de Meus contratos aparecem como sugestão.</p>
           </div>
-          <p class="text-[10.5px] text-zinc-400 font-sans">Fornecedores de 'Meus contratos' aparecem como sugestão ao digitar.</p>
+          <label class="despesa-campo" for="expense-category-select"><span class="despesa-rotulo">Categoria</span>
+            <select id="expense-category-select" required class="desp-input desp-select">
+              <option value="Espaços para locação">Espaços para locação</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Fotografia e mídia">Fotografia e mídia</option>
+              <option value="Música">Música</option>
+              <option value="Beleza e estética">Beleza e estética</option>
+              <option value="Assessoria">Assessoria</option>
+              <option value="Serviços de bar">Serviços de bar</option>
+              <option value="Decoração">Decoração</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Hospedagem">Hospedagem</option>
+              <option value="Aluguéis gerais">Aluguéis gerais</option>
+              <option value="Acessórios">Acessórios</option>
+              <option value="Vestimenta">Vestimenta</option>
+              <option value="Flores">Flores</option>
+            </select>
+          </label>
         </div>
 
-        <!-- Campo 3: Categoria -->
-        <div class="space-y-1.5">
-          <label for="expense-category-select" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Categoria <span class="text-rose-500">*</span></label>
-          <select id="expense-category-select" required class="w-full text-xs sm:text-sm p-3.5 rounded-[var(--radius-control,12px)] border border-zinc-300 text-zinc-900 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 bg-white font-medium transition-all font-sans cursor-pointer">
-            <option value="Local">Local</option>
-            <option value="Alimentação">Alimentação</option>
-            <option value="Fotografia e mídia">Fotografia e mídia</option>
-            <option value="Música">Música</option>
-            <option value="Beleza e estética">Beleza e estética</option>
-            <option value="Assessoria">Assessoria</option>
-            <option value="Serviços de bar">Serviços de bar</option>
-            <option value="Decoração">Decoração</option>
-            <option value="Transporte">Transporte</option>
-            <option value="Hospedagem">Hospedagem</option>
-            <option value="Aluguéis gerais">Aluguéis gerais</option>
-            <option value="Acessórios">Acessórios</option>
-            <option value="Vestimenta">Vestimenta</option>
-            <option value="Flores">Flores</option>
-          </select>
-        </div>
+        <!-- Coluna direita: quanto e quando -->
+        <div class="despesa-coluna">
+          <div class="despesa-linha-2">
+            <label class="despesa-campo" for="expense-total-input"><span class="despesa-rotulo">Valor total</span>
+              <span class="desp-moeda"><span>R$</span><input type="text" id="expense-total-input" inputmode="numeric" placeholder="0,00" class="desp-input desp-dinheiro"></span>
+            </label>
+            <label class="despesa-campo" for="expense-parcelas-input"><span class="despesa-rotulo">Quantidade de parcelas</span>
+              <input type="number" id="expense-parcelas-input" min="0" max="48" step="1" inputmode="numeric" placeholder="0" class="desp-input">
+            </label>
+          </div>
 
-        <!-- Valores: Estimado, Real e Pago em Grid de 3 Colunas -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-          <!-- Valor Estimado -->
-          <div class="space-y-1.5 hidden">
-            <label for="expense-estimated-input" class="block text-xs font-bold text-zinc-700 uppercase tracking-wider font-sans">Estimado</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
-              <input type="text" id="expense-estimated-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
+          <div class="despesa-pagamentos">
+            <div class="despesa-pag-cab"><span></span><span>Data de pagamento</span><span>Valor</span><span>Pago</span></div>
+            <div class="despesa-pag-linha" data-pag="entrada">
+              <span class="despesa-pag-nome">Entrada</span>
+              <input type="date" id="expense-entrada-data" class="desp-input" aria-label="Data de pagamento da entrada">
+              <span class="desp-moeda"><span>R$</span><input type="text" id="expense-entrada-valor" inputmode="numeric" placeholder="0,00" class="desp-input desp-dinheiro" aria-label="Valor da entrada"></span>
+              <input type="checkbox" id="expense-entrada-pago" class="gifts-select-all-check" aria-label="Entrada já paga">
             </div>
+            <div id="expense-parcelas-lista"></div>
           </div>
 
-          <!-- Valor Real -->
-          <div class="space-y-1.5">
-            <label for="expense-actual-input" class="block text-xs font-bold text-zinc-700 font-sans">Valor real</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
-              <input type="text" id="expense-actual-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
-            </div>
-          </div>
-
-          <!-- Valor Pago -->
-          <div class="space-y-1.5">
-            <label for="expense-paid-input" class="block text-xs font-bold text-zinc-700 font-sans">Saldo pago</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400 font-sans pointer-events-none">R$</span>
-              <input type="text" id="expense-paid-input" placeholder="0,00" class="w-full pl-9 pr-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm font-semibold text-emerald-700 placeholder:text-zinc-400 focus:outline-none focus:border-[#537bae] focus:ring-2 focus:ring-[#537bae]/20 font-sans bg-white">
-            </div>
-          </div>
-
-          <!-- Próximo pagamento: aparece na tabela do orçamento (vermelho se atrasar) -->
-          <div class="space-y-1.5">
-            <label for="expense-next-date-input" class="block text-xs font-bold text-zinc-700 font-sans">Próximo pagamento</label>
-            <input type="date" id="expense-next-date-input" class="w-full px-3 py-3 rounded-[var(--radius-control,12px)] border border-zinc-300 text-xs sm:text-sm text-zinc-800 focus:outline-none font-sans bg-white">
-          </div>
+          <label class="gift-valor-extra despesa-todo-pago" for="expense-todo-pago">
+            <input type="checkbox" id="expense-todo-pago" class="gifts-select-all-check">
+            <span>Esse valor já foi todo pago</span>
+          </label>
+          <p id="expense-erro" class="despesa-erro" hidden></p>
         </div>
+      </div>
 
-        <!-- Botão Adicionar Despesa com a Cor Secundária (#5c7aaa) -->
-        <div class="pt-4 border-t border-zinc-200/80">
-          <button type="submit" id="btn-submit-add-expense" class="btn-primary w-full justify-center">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            <span id="btn-submit-add-expense-texto">Adicionar despesa</span>
-          </button>
-        </div>
-
-      </form>
-    </div>
+      <div class="despesa-rodape gift-rodape-acoes">
+        <button type="button" id="btn-cancel-add-expense" class="gift-voltar-texto">Cancelar</button>
+        <button type="submit" id="btn-submit-add-expense" class="btn-primary gift-salvar-pequeno">
+          <span id="btn-submit-add-expense-texto">Adicionar despesa</span>
+        </button>
+      </div>
+    </form>
   </aside>
 
 
@@ -5572,13 +5548,13 @@
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
-  <script src="js/app.js?v=20261024_coanfitriao"></script>
+  <script src="js/app.js?v=20261024_despesaParcelas"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
-  <script src="js/pedidos-orcamento.js?v=20261024_coanfitriao"></script>
+  <script src="js/pedidos-orcamento.js?v=20261024_despesaParcelas"></script>
   <script src="js/contratos.js?v=20261023_contratos2"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261024_coanfitriao"></script>
+  <script src="js/site-builder.js?v=20261024_despesaParcelas"></script>
 </body>
 </html>

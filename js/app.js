@@ -14305,7 +14305,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const stored = localStorage.getItem(`love_budget_expenses_${activeEv.id}`);
-      if (stored) return JSON.parse(stored);
+      if (stored) return JSON.parse(stored).map(/** @param {any} e */ e => (e && e.category === 'Local' ? Object.assign({}, e, { category: 'Espaços para locação' }) : e));
     } catch (e) {}
 
     return [
@@ -14313,7 +14313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         id: 'exp-1',
         item: 'Espaço Quintal da Villa',
         vendor: 'Villa Bisutti Casa do Ator',
-        category: 'Local',
+        category: 'Espaços para locação',
         estimated: 25000,
         actual: 22000,
         paid: 15000
@@ -14480,11 +14480,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Despesa aberta (+): na mesma caixa da tabela, com a setinha de voltar no título ----
   function pagamentosDaDespesa(exp) {
     const nome = String(exp.vendor || '').trim().toLowerCase();
+    const temParcelas = !exp.doContrato && Array.isArray(exp.vencimentos) && exp.vencimentos.length > 0;
     const lancados = getPagamentos()
       .filter(p => p.despesaId === exp.id || (!p.despesaId && nome && String(p.fornecedor || '').trim().toLowerCase() === nome))
+      .filter(p => !(temParcelas && p.origem === 'orcamento' && p.despesaId === exp.id))
       .map(p => ({ data: diaDaData(p.pagoEm || p.criadoEm), valor: Number(p.valor) || 0, origem: p.origem === 'comprovante' ? 'Comprovante' : 'Lançado no orçamento' }));
     const parcelas = (exp.vencimentos || []).filter(p => p && p.pago)
-      .map(p => ({ data: diaDaData(p.pagoEm || p.vencimento || p.data || p.dueDate), valor: Number(p.valor || p.value) || 0, origem: 'Parcela do contrato' }));
+      .map(p => ({ data: diaDaData(p.pagoEm || p.vencimento || p.data || p.dueDate), valor: Number(p.valor || p.value) || 0, origem: p.tipo === 'entrada' ? 'Entrada' : (p.numero ? `Parcela ${p.numero}` : (exp.doContrato ? 'Parcela do contrato' : 'Parcela')) }));
     return lancados.concat(parcelas).sort((x, y) => (y.data ? y.data.getTime() : 0) - (x.data ? x.data.getTime() : 0));
   }
   function desenharDespesa(id) {
@@ -14740,7 +14742,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputVendor = document.getElementById('expense-vendor-input');
 
     if (inputItem) inputItem.value = decodeURIComponent(encodedItem || '');
-    if (selectCat) selectCat.value = decodeURIComponent(encodedCategory || 'Local');
+    if (selectCat) selectCat.value = decodeURIComponent(encodedCategory || 'Espaços para locação');
     if (inputVendor) {
       inputVendor.value = '';
       inputVendor.focus();
@@ -14758,31 +14760,111 @@ document.addEventListener('DOMContentLoaded', () => {
     const suggestionsBox = document.getElementById('expense-vendor-suggestions');
     const selectCat = document.getElementById('expense-category-select');
 
+    const $ = (/** @type {string} */ id) => /** @type {HTMLInputElement} */ (document.getElementById(id));
+    const lista = document.getElementById('expense-parcelas-lista');
+    const erroEl = document.getElementById('expense-erro');
+    const brl2 = (/** @type {number} */ v) => (Number(v) || 0) ? Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+    const dinheiro = (/** @type {HTMLInputElement|null} */ el) => {
+      if (!el || !el.value) return 0;
+      const v = parseFloat(el.value.replace(/\./g, '').replace(',', '.'));
+      return isNaN(v) ? 0 : v;
+    };
+    /** "2026-11-10" + n meses (mesmo dia; fim do mês se não existir). */
+    const somarMeses = (/** @type {string} */ iso, /** @type {number} */ n) => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+      if (!m) return '';
+      const d = new Date(Number(m[1]), Number(m[2]) - 1 + n, 1);
+      const ultimo = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      d.setDate(Math.min(Number(m[3]), ultimo));
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+    const linhasDeParcela = () => /** @type {HTMLElement[]} */ (Array.from(lista ? lista.querySelectorAll('.despesa-pag-linha') : []));
+
+    /** Uma linha por parcela (data, valor e pago), mantendo o que já foi digitado. */
+    const desenharParcelas = (/** @type {any[]} */ dados) => {
+      if (!lista) return;
+      const n = Math.max(0, Math.min(48, parseInt($('expense-parcelas-input').value, 10) || 0));
+      const atuais = dados || linhasDeParcela().map(l => ({
+        vencimento: /** @type {HTMLInputElement} */ (l.querySelector('[data-p="data"]')).value,
+        valor: dinheiro(l.querySelector('[data-p="valor"]')),
+        pago: /** @type {HTMLInputElement} */ (l.querySelector('[data-p="pago"]')).checked,
+        editado: l.dataset.editado === '1'
+      }));
+      let html = '';
+      for (let i = 0; i < n; i++) {
+        const p = atuais[i] || {};
+        html += `
+          <div class="despesa-pag-linha" data-editado="${p.editado ? '1' : ''}">
+            <span class="despesa-pag-nome">Parcela ${i + 1}</span>
+            <input type="date" class="desp-input" data-p="data" value="${escaparHtml(String(p.vencimento || '').slice(0, 10))}" aria-label="Data da parcela ${i + 1}">
+            <span class="desp-moeda"><span>R$</span><input type="text" class="desp-input desp-dinheiro" data-p="valor" inputmode="numeric" placeholder="0,00" value="${brl2(p.valor)}" aria-label="Valor da parcela ${i + 1}"></span>
+            <input type="checkbox" class="gifts-select-all-check" data-p="pago"${p.pago ? ' checked' : ''} aria-label="Parcela ${i + 1} já paga">
+          </div>`;
+      }
+      lista.innerHTML = html;
+      if (!dados) dividirParcelas();
+    };
+    /** Valor de cada parcela = (total − entrada) ÷ parcelas, sem mexer nas que a pessoa digitou. */
+    const dividirParcelas = () => {
+      const linhas = linhasDeParcela();
+      if (!linhas.length) return;
+      const resto = Math.max(0, dinheiro($('expense-total-input')) - dinheiro($('expense-entrada-valor')));
+      const fixas = linhas.filter(l => l.dataset.editado === '1');
+      const somaFixas = fixas.reduce((s, l) => s + dinheiro(l.querySelector('[data-p="valor"]')), 0);
+      const livres = linhas.filter(l => l.dataset.editado !== '1');
+      if (!livres.length) return;
+      const centavos = Math.max(0, Math.round((resto - somaFixas) * 100));
+      const base = Math.floor(centavos / livres.length);
+      livres.forEach((l, i) => {
+        const c = i === livres.length - 1 ? centavos - base * (livres.length - 1) : base;
+        /** @type {HTMLInputElement} */ (l.querySelector('[data-p="valor"]')).value = brl2(c / 100);
+      });
+    };
+    const marcarTudoPago = () => {
+      const todo = $('expense-todo-pago').checked;
+      if (!todo) return;
+      $('expense-entrada-pago').checked = !!dinheiro($('expense-entrada-valor'));
+      linhasDeParcela().forEach(l => { /** @type {HTMLInputElement} */ (l.querySelector('[data-p="pago"]')).checked = true; });
+    };
+
     const openDrawer = (exp, opts = {}) => {
       if (form) form.reset();
       if (suggestionsBox) suggestionsBox.classList.add('hidden');
+      if (erroEl) erroEl.hidden = true;
       // exp = despesa existente (ver/editar) | nada = nova despesa.
       const editando = exp && exp.id;
       const soLeitura = !!(editando && exp.doContrato);
       if (form) form.dataset.editId = editando ? exp.id : '';
-      const fmt = v => (Number(v) || 0) ? Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
       const titulo = document.getElementById('despesa-drawer-titulo');
       const sub = document.getElementById('despesa-drawer-sub');
       const textoBtn = document.getElementById('btn-submit-add-expense-texto');
       if (titulo) titulo.textContent = editando ? (exp.item || 'Despesa') : 'Adicionar despesa';
-      if (sub) sub.textContent = soLeitura ? 'Este item vem de um contrato fechado com o fornecedor.' : (editando ? 'Veja e atualize esta despesa. Um aumento no saldo pago entra no extrato.' : 'Cadastre um item para acompanhar no seu orçamento.');
+      if (sub) { sub.hidden = !soLeitura; sub.textContent = soLeitura ? 'Este item vem de um contrato fechado com o fornecedor.' : ''; }
       if (textoBtn) textoBtn.textContent = editando ? 'Salvar alterações' : 'Adicionar despesa';
+      if (lista) lista.innerHTML = '';
       if (editando) {
-        document.getElementById('expense-item-name').value = exp.item || '';
+        $('expense-item-name').value = exp.item || '';
         if (inputVendor) inputVendor.value = exp.vendor || '';
-        if (selectCat && exp.category) selectCat.value = exp.category;
-        document.getElementById('expense-estimated-input').value = fmt(exp.estimated);
-        document.getElementById('expense-actual-input').value = fmt(exp.actual);
-        document.getElementById('expense-paid-input').value = fmt(exp.paid);
-        const proxima = document.getElementById('expense-next-date-input');
-        if (proxima) proxima.value = /^\d{4}-\d{2}-\d{2}/.test(String(exp.proximoVencimento || '')) ? String(exp.proximoVencimento).slice(0, 10) : '';
+        if (selectCat && exp.category) selectCat.value = exp.category === 'Local' ? 'Espaços para locação' : exp.category;
+        const total = Number(exp.actual) || Number(exp.estimated) || 0;
+        $('expense-total-input').value = brl2(total);
+        const venc = Array.isArray(exp.vencimentos) ? exp.vencimentos : [];
+        const entrada = venc.find(v => v && v.tipo === 'entrada');
+        const parcelas = venc.filter(v => v && v.tipo !== 'entrada');
+        if (entrada) {
+          $('expense-entrada-valor').value = brl2(entrada.valor || entrada.value);
+          $('expense-entrada-data').value = String(entrada.vencimento || entrada.data || '').slice(0, 10);
+          $('expense-entrada-pago').checked = !!entrada.pago;
+        } else if (!venc.length && (Number(exp.paid) || 0) > 0 && (Number(exp.paid) || 0) < total) {
+          // Despesa antiga (só "saldo pago"): vira uma entrada já paga.
+          $('expense-entrada-valor').value = brl2(exp.paid);
+          $('expense-entrada-pago').checked = true;
+        }
+        $('expense-parcelas-input').value = parcelas.length ? String(parcelas.length) : '';
+        desenharParcelas(parcelas.map(p => ({ vencimento: p.vencimento || p.data || p.dueDate || '', valor: Number(p.valor || p.value) || 0, pago: !!p.pago, editado: true })));
+        $('expense-todo-pago').checked = !!exp.todoPago || (total > 0 && (Number(exp.paid) || 0) >= total);
       }
-      form?.querySelectorAll('input, select').forEach(el => { el.disabled = soLeitura; });
+      form?.querySelectorAll('input, select').forEach(el => { /** @type {HTMLInputElement} */ (el).disabled = soLeitura; });
       document.getElementById('btn-submit-add-expense')?.classList.toggle('hidden', soLeitura);
       if (opts.focoFornecedor) setTimeout(() => inputVendor?.focus(), 50);
       if (backdrop) {
@@ -14814,108 +14896,123 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnOpen) btnOpen.addEventListener('click', () => openDrawer());
     window.__abrirDrawerDespesa = openDrawer;
     if (btnClose) btnClose.addEventListener('click', closeDrawer);
+    document.getElementById('btn-cancel-add-expense')?.addEventListener('click', closeDrawer);
     if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
     if (inputVendor && suggestionsBox) {
       inputVendor.addEventListener('input', (e) => {
-        const query = e.target.value.trim().toLowerCase();
+        const query = /** @type {HTMLInputElement} */ (e.target).value.trim().toLowerCase();
         if (!query) {
           suggestionsBox.classList.add('hidden');
           suggestionsBox.innerHTML = '';
           return;
         }
-
-        const contractedVendors = getContractedVendorsList();
-        const matches = contractedVendors.filter(v => v.name.toLowerCase().includes(query));
-
+        const matches = getContractedVendorsList().filter(v => v.name.toLowerCase().includes(query));
         if (matches.length === 0) {
           suggestionsBox.classList.add('hidden');
           suggestionsBox.innerHTML = '';
           return;
         }
-
         suggestionsBox.innerHTML = matches.map(v => `
-          <div class="px-3.5 py-2.5 hover:bg-zinc-50 cursor-pointer flex items-center justify-between text-xs transition-colors" data-vendor-name="${v.name}" data-vendor-cat="${v.category}">
-            <div>
-              <span class="font-bold text-zinc-900 block">${v.name}</span>
-              ${v.category ? `<span class="text-[10px] text-zinc-500">${v.category}</span>` : ''}
-            </div>
-            <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
-              Meus contratos
-            </span>
-          </div>
-        `).join('');
-
+          <button type="button" class="despesa-sugestao" data-vendor-name="${escaparHtml(v.name)}" data-vendor-cat="${escaparHtml(v.category || '')}">
+            <b>${escaparHtml(v.name)}</b>${v.category ? `<span>${escaparHtml(v.category)}</span>` : ''}
+          </button>`).join('');
         suggestionsBox.querySelectorAll('[data-vendor-name]').forEach(el => {
           el.addEventListener('click', () => {
-            inputVendor.value = el.getAttribute('data-vendor-name');
+            inputVendor.value = el.getAttribute('data-vendor-name') || '';
             const vCat = el.getAttribute('data-vendor-cat');
             if (vCat && selectCat) {
               Array.from(selectCat.options).forEach(opt => {
-                if (vCat.toLowerCase().includes(opt.value.toLowerCase()) || opt.value.toLowerCase().includes(vCat.toLowerCase())) {
-                  selectCat.value = opt.value;
-                }
+                if (vCat.toLowerCase().includes(opt.value.toLowerCase()) || opt.value.toLowerCase().includes(vCat.toLowerCase())) selectCat.value = opt.value;
               });
             }
             suggestionsBox.classList.add('hidden');
           });
         });
-
         suggestionsBox.classList.remove('hidden');
       });
-
       document.addEventListener('click', (e) => {
-        if (!inputVendor.contains(e.target) && !suggestionsBox.contains(e.target)) {
-          suggestionsBox.classList.add('hidden');
-        }
+        if (!inputVendor.contains(/** @type {Node} */ (e.target)) && !suggestionsBox.contains(/** @type {Node} */ (e.target))) suggestionsBox.classList.add('hidden');
       });
     }
 
-    // Formatação monetária nos inputs de valores
-    ['expense-estimated-input', 'expense-actual-input', 'expense-paid-input'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', (e) => {
-          let val = e.target.value.replace(/\D/g, '');
-          if (val) {
-            const num = parseFloat(val) / 100;
-            e.target.value = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          } else {
-            e.target.value = '';
-          }
-        });
+    // Dinheiro: digita só números (centavos à direita).
+    form?.addEventListener('input', (e) => {
+      const el = /** @type {HTMLInputElement} */ (e.target);
+      if (erroEl) erroEl.hidden = true;
+      if (el.classList.contains('desp-dinheiro')) {
+        const val = el.value.replace(/\D/g, '');
+        el.value = val ? (parseFloat(val) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+        if (el.dataset.p === 'valor') /** @type {HTMLElement} */ (el.closest('.despesa-pag-linha')).dataset.editado = '1';
+        if (el.id === 'expense-total-input' || el.id === 'expense-entrada-valor') dividirParcelas();
       }
+      if (el.id === 'expense-parcelas-input') desenharParcelas(undefined);
+    });
+    form?.addEventListener('change', (e) => {
+      const el = /** @type {HTMLInputElement} */ (e.target);
+      // Data da parcela 1 (ou da entrada): as seguintes vazias seguem mês a mês.
+      if (el.type === 'date') {
+        const linhas = linhasDeParcela();
+        const idx = el.id === 'expense-entrada-data' ? -1 : linhas.indexOf(/** @type {HTMLElement} */ (el.closest('.despesa-pag-linha')));
+        if (el.value) {
+          linhas.forEach((l, i) => {
+            if (i <= idx) return;
+            const campo = /** @type {HTMLInputElement} */ (l.querySelector('[data-p="data"]'));
+            if (!campo.value) campo.value = somarMeses(el.value, i - idx);
+          });
+        }
+      }
+      if (el.id === 'expense-todo-pago') marcarTudoPago();
+      else if (el.type === 'checkbox' && !el.checked) $('expense-todo-pago').checked = false;
     });
 
     if (form) {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-
-        const inputItem = document.getElementById('expense-item-name');
-        const inputEstimated = document.getElementById('expense-estimated-input');
-        const inputActual = document.getElementById('expense-actual-input');
-        const inputPaid = document.getElementById('expense-paid-input');
-
-        const itemName = inputItem ? inputItem.value.trim() : '';
-        if (!itemName) return;
-
-        const parseMoney = (inputEl) => {
-          if (!inputEl || !inputEl.value) return 0;
-          const cleaned = inputEl.value.replace(/\./g, '').replace(',', '.');
-          const val = parseFloat(cleaned);
-          return isNaN(val) ? 0 : val;
+        const avisar = (/** @type {string} */ t) => { if (erroEl) { erroEl.textContent = t; erroEl.hidden = false; } };
+        const itemName = $('expense-item-name').value.trim();
+        if (!itemName) { avisar('Escreva o item da despesa.'); $('expense-item-name').focus(); return; }
+        const total = dinheiro($('expense-total-input'));
+        const todoPago = $('expense-todo-pago').checked;
+        const editId = form.dataset.editId || '';
+        const antiga = editId ? getBudgetExpensesProprias().find(x => x.id === editId) : null;
+        const pagoEmAntes = (/** @type {any} */ v) => {
+          const velho = antiga && Array.isArray(antiga.vencimentos) ? antiga.vencimentos.find(/** @param {any} x */ x => x.tipo === v.tipo && (x.numero || 0) === (v.numero || 0)) : null;
+          return velho && velho.pago && velho.pagoEm ? velho.pagoEm : null;
         };
 
-        const editId = form.dataset.editId || '';
+        /** @type {any[]} */
+        const vencimentos = [];
+        const entradaValor = dinheiro($('expense-entrada-valor'));
+        if (entradaValor > 0 || $('expense-entrada-data').value) {
+          vencimentos.push({ tipo: 'entrada', numero: 0, valor: entradaValor, vencimento: $('expense-entrada-data').value || null, pago: todoPago || $('expense-entrada-pago').checked });
+        }
+        linhasDeParcela().forEach((l, i) => {
+          vencimentos.push({
+            tipo: 'parcela', numero: i + 1,
+            valor: dinheiro(l.querySelector('[data-p="valor"]')),
+            vencimento: /** @type {HTMLInputElement} */ (l.querySelector('[data-p="data"]')).value || null,
+            pago: todoPago || /** @type {HTMLInputElement} */ (l.querySelector('[data-p="pago"]')).checked
+          });
+        });
+        // Quando foi pago: o que já estava salvo, a data combinada (se já passou) ou hoje.
+        vencimentos.forEach(v => { if (v.pago) v.pagoEm = pagoEmAntes(v) || (v.vencimento && v.vencimento <= hojeISO() ? v.vencimento : hojeISO()); });
+        const pagoNasParcelas = vencimentos.filter(v => v.pago).reduce((s, v) => s + (Number(v.valor) || 0), 0);
+        const paid = todoPago ? total : Math.min(total || Infinity, pagoNasParcelas);
+        const abertos = vencimentos.filter(v => !v.pago && v.vencimento).map(v => v.vencimento).sort();
+
         const newItem = {
           id: editId || `exp-${Date.now()}`,
           item: itemName,
           vendor: inputVendor ? inputVendor.value.trim() : '',
-          category: selectCat ? selectCat.value : 'Local',
-          estimated: parseMoney(inputEstimated),
-          actual: parseMoney(inputActual),
-          paid: parseMoney(inputPaid),
-          proximoVencimento: (/** @type {HTMLInputElement|null} */ (document.getElementById('expense-next-date-input')))?.value || null
+          category: selectCat ? selectCat.value : 'Espaços para locação',
+          estimated: total,
+          actual: total,
+          paid: Number.isFinite(paid) ? paid : 0,
+          parcelas: linhasDeParcela().length,
+          vencimentos,
+          todoPago,
+          proximoVencimento: abertos[0] || null
         };
 
         const expenses = getBudgetExpensesProprias();
@@ -14924,7 +15021,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (idx >= 0) expenses[idx] = Object.assign({}, expenses[idx], newItem);
         else expenses.unshift(newItem);
         saveBudgetExpenses(expenses);
-        // Pagamento lançado no orçamento também entra no extrato.
+        // Pagamento lançado no orçamento também entra no extrato da Carteira.
         const pagoAgora = Number(newItem.paid) || 0;
         if (pagoAgora > pagoAntes) {
           registrarPagamento({ valor: pagoAgora - pagoAntes, fornecedor: newItem.vendor || newItem.item, descricao: newItem.item, vencimento: null, pagoEm: hojeISO(), comprovante: null, origem: 'orcamento', despesaId: newItem.id });

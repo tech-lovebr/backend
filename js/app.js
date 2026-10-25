@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key !== 'Escape') return;
       if (conta.classList.contains('is-aberta')) fecharConta(); else fechar();
     });
-    window.matchMedia('(max-width: 768px)').addEventListener?.('change', (e) => { if (!e.matches) fechar(); });
+    window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').addEventListener?.('change', (e) => { if (!e.matches) fechar(); });
   })();
 
   (function submenuNoCelular() {
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const buscaDaTela = (aba) => /** @type {HTMLElement|undefined} */ (Array.from(aba.querySelectorAll('.love-tabela-busca'))
       .find(b => b.parentElement && /** @type {HTMLElement} */ (b.parentElement).offsetParent !== null));
     const abaAtiva = () => (barra.querySelector('.is-ativo') || {}).textContent || '';
-    const noCelular = window.matchMedia('(max-width: 768px)');
+    const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
     const posicionar = () => {
       // Desktop: a barra fica escondida no topo (sem mexer na ordem das telas).
       if (!noCelular.matches) { if (barra.parentElement !== area) area.insertBefore(barra, area.firstChild); return; }
@@ -10110,7 +10110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = Math.max(1, Math.ceil(filteredGuests.length / rsvpPageSize));
     if (rsvpCurrentPage > totalPages) rsvpCurrentPage = totalPages;
     const pageStart = (rsvpCurrentPage - 1) * rsvpPageSize;
-    const listaContinua = window.matchMedia('(max-width: 768px)').matches;
+    const listaContinua = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
     const chaveLista = `${activeFilter}|${searchKeyword}`;
     if (chaveLista !== rsvpChaveCelular) { rsvpChaveCelular = chaveLista; rsvpLimiteCelular = RSVP_LOTE_CELULAR; }
     rsvpTotalCelular = filteredGuests.length;
@@ -10217,7 +10217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
           // Celular: abre a ficha do convidado (ver e editar); desktop: o pop-up.
-          if (window.matchMedia('(max-width: 768px)').matches) abrirFichaDoConvidado(guest.id);
+          if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) abrirFichaDoConvidado(guest.id);
           else openAddGuestDrawer(guest.id);
         });
 
@@ -11237,7 +11237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHostAddGuest = document.getElementById('btn-host-add-guest');
   // Celular: o "+" abre a ficha em tela inteira, já em "Adicionar convidado".
-  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => { if (window.matchMedia('(max-width: 768px)').matches) abrirFichaDoConvidado(null); else openAddGuestDrawer(); });
+  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => { if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) abrirFichaDoConvidado(null); else openAddGuestDrawer(); });
   // Mapear mesas › "+ Adicionar" ao lado de Convidados: o mesmo drawer.
   document.getElementById('btn-floorplan-add-guest')?.addEventListener('click', () => openAddGuestDrawer());
   const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');
@@ -11382,7 +11382,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let rsvpCarregandoMais = false;
   document.addEventListener('scroll', () => {
     if (rsvpCarregandoMais || rsvpLimiteCelular >= rsvpTotalCelular) return;
-    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
     if (!document.getElementById('tab-rsvp')?.classList.contains('active')) return;
     const corpo = document.getElementById('rsvp-guests-table-body');
     if (!corpo || corpo.getBoundingClientRect().bottom > window.innerHeight + 400) return;
@@ -12010,7 +12010,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let zoomDaPlanta = 1;
   const ZOOM_MINIMO_DA_PLANTA = 0.5;
   const ZOOM_MAXIMO_DA_PLANTA = 2.5;
-  const plantaNoCelular = () => window.matchMedia('(max-width: 768px)').matches;
+  const plantaNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
   /** @param {HTMLElement} canvas @param {any[]} elements */
   function escalaParaCaber(canvas, elements) {
     // Com zoom no celular a planta fica mais larga que a tela: a conta de
@@ -14035,7 +14035,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('floorplan-canvas');
     const menuItens = document.getElementById('floorplan-add-table-menu');
     if (!canvas || !menuItens || document.getElementById('planta-fab')) return;
-    const noCelular = window.matchMedia('(max-width: 768px)');
+    const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
     const SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>';
     const XIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
     const MAIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';

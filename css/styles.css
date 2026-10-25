@@ -558,7 +558,7 @@ body[data-theme="dark"] .floorplan-sidebar { background: #181D24; }
 }
 .floorplan-seat-assignment-remove:hover { color: #B91C1C; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .floorplan-body { flex-direction: column; }
   .floorplan-sidebar { width: 100%; min-height: 0; border-right: none; border-bottom: 1px solid var(--border-card); }
 }
@@ -1462,7 +1462,7 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
 }
 
 /* Tablets & Desktops (>= 769px) */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   .dashboard-top-navbar {
     height: var(--navbar-height-desktop);
   }
@@ -1474,7 +1474,7 @@ body.first-access-locked .sidebar-icon-rail .rail-icon-btn:hover {
 }
 
 /* Mobile Devices (< 768px) */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .dashboard-top-navbar {
     height: var(--navbar-height-mobile) !important;
     left: 0 !important;
@@ -2265,7 +2265,7 @@ body[data-theme="dark"] .btn-secondary { background-color: #333333 !important; c
   pointer-events: none !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .toast-custom {
     bottom: 80px;
     left: 16px;
@@ -2427,7 +2427,7 @@ body:not([data-theme="dark"]).editor-split-mode #editor-form-column {
 
 /* RESPONSIVIDADE MOBILE (TELAS < 768px):
    Oculta a caixa lateral direita e exibe a prévia direta em tela cheia com edição inline */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   body.editor-split-mode .dashboard-main-area {
     padding-top: var(--navbar-height-mobile) !important;
     padding-bottom: calc(var(--bottom-bar-height, 68px) + 20px) !important;
@@ -2888,7 +2888,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 }
 .builder-quicknav-icon-modern svg { width: 14px; height: 14px; }
 .builder-quicknav-empty-hint { font-size: 0.8125rem; color: #A1A1AA; text-align: center; padding: 0.5rem 0; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-section.builder-quicknav-section { padding: 1.5rem 1rem; }
   .builder-quicknav-btn { font-size: 0.875rem; padding: 0.85rem 1.25rem; }
 }
@@ -2939,7 +2939,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 .builder-giftsblock-card-body p { font-size: 0.6875rem; color: #A1A1AA; margin: 0 0 0.4rem; }
 .builder-giftsblock-card-price { font-size: 0.8125rem; font-weight: 700; color: #18181B; }
 .builder-giftsblock-empty { font-size: 0.8125rem; color: #A1A1AA; text-align: center; padding: 2rem 0; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-section.builder-giftsblock-section { padding: 1.5rem 1rem; }
   .builder-giftsblock-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
@@ -3112,14 +3112,14 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 /* mobile: seção usa altura dinâmica da viewport e padding lateral menor */
 .builder-canvas[data-device="mobile"] .builder-section { min-height: 100dvh; }
 .builder-canvas[data-device="mobile"] .builder-section > .builder-columns-row { max-width: 100%; padding: 0 16px; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-section { min-height: 100dvh; }
   .builder-section > .builder-columns-row { max-width: 100%; padding: 0 16px; }
 }
 
 /* botões: altura mínima de toque no mobile */
 .builder-canvas[data-device="mobile"] .be-button { min-height: 44px; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .be-button { min-height: 44px; }
 }
 
@@ -3977,7 +3977,7 @@ body[data-theme="dark"] .settings-switch-track { background: #4b4b4b !important;
 .builder-body { height: auto; flex: 1; min-height: 0; }
 .builder-section { min-height: 0; justify-content: flex-start; padding: 1.5rem 0; }
 .builder-canvas[data-device="mobile"] .builder-section { min-height: 0; }
-@media (max-width: 768px) { .builder-section { min-height: 0; } }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) { .builder-section { min-height: 0; } }
 .builder-fixed-header, .builder-mobile-menu-root { display: none !important; }
 
 .builder-canvas-end-dropzone {
@@ -4331,7 +4331,7 @@ body.page-mode .dashboard-main-area.full-width {
 }
 
 /* No mobile o rail vira barra inferior (não ocupa coluna à esquerda) — sem recuo aqui */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   body.rsvp-mode .dashboard-main-area,
   body.b2b-mode .dashboard-main-area,
   body.gifts-mode .dashboard-main-area,
@@ -5178,7 +5178,7 @@ body:not([data-theme="dark"]) #sidebar-sub-drawer {
 }
 
 /* Rail de ícones escuro (#181D24) no Light Mode Desktop — não afeta a barra mobile. */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   body:not([data-theme="dark"]) .sidebar-icon-rail,
   body:not([data-theme="dark"]) .sidebar-brand-top {
     background-color: #181D24 !important;
@@ -6790,7 +6790,7 @@ body.rsvp-mode .dashboard-main-area:has(#tab-rsvp-tables.active) > footer {
 .builder-quicknav-icon svg { width: 18px; height: 18px; }
 .builder-quicknav-emoji { font-size: 1.05rem; line-height: 1; }
 .builder-quicknav-icon-modern svg { width: 12px !important; height: 12px !important; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-quicknav-btn { height: 48px !important; min-height: 48px !important; }
 }
 
@@ -8162,7 +8162,7 @@ html body button.std-gerar-ia:not(#love-h-a):hover { border-color: #181D24; colo
 /* Personalizar evento › Organizadores: sem a prévia ao lado (a tabela usa a
    largura toda); convite com e-mail + Continuar; tabela no padrão da plataforma. */
 body.editor-split-mode.organizadores-sem-previa #editor-live-preview-column { display: none !important; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   body.editor-split-mode.organizadores-sem-previa #editor-form-column { display: block !important; }
 }
 .org-convite-linha { display: flex; align-items: center; gap: 8px; max-width: 560px; }
@@ -8775,7 +8775,7 @@ body[data-theme="dark"] #settings-mfa-setup .mfa-popup-caixa { background: #1F1F
 
 /* Central de ajuda: no desktop as categorias ficam no submenu lateral (como os
    outros menus); a lista de categorias dentro da página só aparece no celular. */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   #tab-faq .faq-categorias { display: none !important; }
   #tab-faq .faq-layout { grid-template-columns: minmax(0, 1fr); }
 }
@@ -8824,7 +8824,7 @@ body[data-theme="dark"] #view-event-os-dashboard .builder-toolbar + div > p:firs
 
 /* Configurações: no desktop, "Minha conta" e "Meus eventos" ficam no submenu
    lateral (como os outros menus); as abas no topo da página só no celular. */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   #tab-account-settings > div:has(> #config-abas) { display: none !important; }
 }
 
@@ -9224,7 +9224,7 @@ html body:not([data-theme="dark"]) #view-event-os-dashboard .floorplan-toolbar:n
    ativo do submenu e ícone ativo da barra de ícones na cor do fundo (#F4F6F7). */
 html body:not([data-theme="dark"]) .floorplan-guest-card.is-seated:not(.is-declined):not(#love-h-a):hover { background: #F4F6F7 !important; }
 html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:not(#love-h-a) { background-color: #F4F6F7 !important; }
-@media (min-width: 769px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body:not([data-theme="dark"]) .rail-icon-btn.active:not(#love-h-a) { background-color: #F4F6F7 !important; }
 }
 /* Mais Recursos: botões brancos com borda fina. */
@@ -9345,7 +9345,7 @@ html body #view-event-os-dashboard .dashboard-tab-content > [class*="py-6"]:not(
    naquela tela (2rem na Home; 0 nas telas em "modo" como Convidados/Presentes). */
 html body #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 2rem; --rodape-sangria-dir: 2rem; }
 html body:is(.editor-split-mode, .rsvp-mode, .b2b-mode, .gifts-mode, .wallet-mode, .page-mode, .b2b-chat-mode) #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 0px; --rodape-sangria-dir: 0px; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 1rem; --rodape-sangria-dir: 1rem; }
   html body.b2b-chat-mode #view-event-os-dashboard #dashboard-footer.rodape-logado:not(#love-h-a) { --rodape-sangria-esq: 0px; --rodape-sangria-dir: 0px; }
 }
@@ -10112,7 +10112,7 @@ body[data-theme="dark"] .org-convite-cancelar { color: #D4D4D8 !important; }
 
 /* Personalizar evento › Co-anfitriões: única aba do Personalizar com rodapé
    (Aparência e Informações continuam sem). */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (hover: hover), (min-width: 768px) and (pointer: fine), (min-width: 768px) and (min-height: 501px) {
   html body.editor-split-mode.organizadores-sem-previa #view-event-os-dashboard .dashboard-main-area > footer#dashboard-footer:not(#love-h-a) { display: block !important; }
 }
 html body.editor-split-mode.organizadores-sem-previa #view-event-os-dashboard .dashboard-main-area > .rodape-respiro:not(#love-h-a) { display: block !important; }
@@ -11945,7 +11945,7 @@ body[data-theme="dark"] #rsvp-empty-state .rsvp-vazio-titulo { color: #FFFFFF !i
    ========================================================================== */
 .rail-rotulo { display: none; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   :root {
     --navbar-height-mobile: calc(60px + env(safe-area-inset-top, 0px));
     --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px));
@@ -12064,7 +12064,7 @@ html body #view-event-os-dashboard .love-tabela-caixa.budget-table-full-bleed:no
    A lateral do submenu some; no desktop nada muda (a barra fica escondida).
    ========================================================================== */
 .submenu-celular { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #sidebar-sub-drawer:not(#love-h-a),
   html body #mobile-drawer-backdrop:not(#love-h-a) { display: none !important; }
   html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a) {
@@ -12096,7 +12096,7 @@ html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a) {
   display: flex; align-items: center; justify-content: center; border-radius: 6px; pointer-events: none;
 }
 html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: none !important; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .sidebar-icon-rail .rail-chat-btn:not(#love-h-a) { order: 5 !important; }
   html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a) { top: 6px; left: calc(50% + 5px); }
 }
@@ -12105,7 +12105,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
    Celular (só até 768px): abas do submenu como app (iguais à referência) e
    tela toda branca, sem caixas com borda nem margem de fundo.
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Abas grudadas no topo, de ponta a ponta: mesma largura, texto limpo,
      linha cinza embaixo e a linha da cor primária em cima da aba ativa. */
   html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a) {
@@ -12145,14 +12145,14 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(tr > :first-child):not(#love-h-a) { padding-left: 16px !important; }
   html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(tr > :last-child):not(#love-h-a) { padding-right: 16px !important; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Um respiro só: os 16px da área principal. Os blocos de cada página
      (cabeçalho e conteúdo) não somam margem própria no celular. */
   html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site) > :not(#b2b-messages-view):not(#love-h-a) { padding-left: 0 !important; padding-right: 0 !important; }
   html body #view-event-os-dashboard #tab-rsvp-tables:not(#love-h-a) { padding-left: 0 !important; padding-right: 0 !important; }
   html body #view-event-os-dashboard #b2b-messages-view:not(#love-h-a) { margin-left: -1rem !important; margin-right: -1rem !important; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Telas sem submenu (Home, avisos, ajuda, configurações...): sem a barra de abas. */
   html body:has(:is(#tab-overview, #tab-create-event-page, #tab-legal-doc, #tab-notifications, #tab-faq, #tab-account-settings, #tab-info-event).active) #submenu-celular:not(#love-h-a) { display: none !important; }
 }
@@ -12163,7 +12163,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
    Meus presentes com 2 por linha. Desktop não muda.
    ========================================================================== */
 .busca-celular-botao { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Cabeçalho compacto: título à esquerda, botões à direita. */
   html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site) > .builder-toolbar:not(#love-h-a) {
     display: flex !important; align-items: center !important; gap: 8px !important; flex-wrap: nowrap !important;
@@ -12218,7 +12218,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
    na Home; nas outras telas o cabeçalho da página (título) é o topo. Tudo
    de ponta a ponta, sem caixas.
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body:not(:has(#tab-overview.active)) .dashboard-top-navbar:not(#love-h-a) { display: none !important; }
   html body:not(:has(#tab-overview.active)) { --navbar-height-mobile: env(safe-area-inset-top, 0px); }
 
@@ -12233,7 +12233,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   }
   html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-overview) :is(.dash-card:not(:has(table)), .chk-progresso):not(#love-h-a) { padding-left: 16px !important; padding-right: 16px !important; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #view-event-os-dashboard #tab-rsvp-tables > .floorplan-wrap:not(#love-h-a) { margin-left: -1rem !important; margin-right: -1rem !important; width: auto !important; max-width: none !important; }
 }
 
@@ -12244,8 +12244,8 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
    à esquerda do +; ficha do convidado ao tocar no nome. Desktop não muda.
    ========================================================================== */
 .guest-trilho { display: none; }
-@media (min-width: 769px) { .ficha-convidado { display: none !important; } }
-@media (max-width: 768px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) { .ficha-convidado { display: none !important; } }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Cabeçalho: lupa sem caixa e à esquerda do +. */
   html body #view-event-os-dashboard .builder-toolbar > :first-child:not(#love-h-a) { order: 0; }
   html body #view-event-os-dashboard .builder-toolbar > button.busca-celular-botao:not(#love-h-a) { order: 1; background: transparent !important; border: 0 !important; color: #18181B; }
@@ -12344,7 +12344,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   body[data-theme="dark"] .ficha-convidado :is(.ficha-nome, .ficha-valor, .ficha-cartao h3, .ficha-campo input) { color: #FFFFFF; }
   body[data-theme="dark"] .ficha-convidado .ficha-linha { border-bottom-color: #333333; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-rsvp .love-tabela-barra-dir:not(#love-h-a) { justify-content: flex-end !important; margin-left: auto !important; }
 }
 
@@ -12372,8 +12372,8 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    Mapa do evento: cabeçalho antes das abas. Desktop não muda.
    ========================================================================== */
 .menu-celular-botao, .logo-celular { display: none; }
-@media (min-width: 769px) { .menu-celular, .menu-celular-fundo, .menu-conta, .menu-conta-fundo { display: none !important; } }
-@media (max-width: 768px) {
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) { .menu-celular, .menu-celular-fundo, .menu-conta, .menu-conta-fundo { display: none !important; } }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Topo */
   html body .dashboard-top-navbar > .logo-celular + div:not(#love-h-a),
   html body .dashboard-top-navbar #btn-user-account-menu:not(#love-h-a),
@@ -12434,7 +12434,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    Desktop não muda.
    ========================================================================== */
 .planta-fab, .planta-gaveta, .planta-gaveta-fundo, .planta-fantasma, .mesa-celular { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   :root { --bottom-bar-height-mobile: calc(76px + env(safe-area-inset-bottom, 0px)); }
 
   /* 1) Pílula de vidro */
@@ -12575,7 +12575,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    pop-up de baixo para cima (eventos, itens de Minha conta e Sair).
    Desktop não muda.
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Topo */
   html body .dashboard-top-navbar:not(#love-h-a):not(#love-h-b) { border-bottom: 0 !important; box-shadow: none !important; background: #FFFFFF !important; padding-left: 16px !important; padding-right: 16px !important; }
   html body .dashboard-top-navbar:not(#love-h-a)::after { display: none !important; }
@@ -12695,7 +12695,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    Desktop não muda.
    ========================================================================== */
 .notif-tempo-curto { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) {
     border-radius: 10px !important; padding: 0 6px !important;
     background: rgba(244, 246, 247, 0.82) !important; border: 1px solid rgba(0, 0, 0, 0.06) !important;
@@ -12738,7 +12738,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    Recursos" e sem o Guia de primeiros passos. Desktop não muda.
    ========================================================================== */
 .home-atalhos-celular { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-overview > .grid.lg\:grid-cols-12:not(#love-h-a) { display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 20px !important; }
   html body #tab-overview > .grid.lg\:grid-cols-12 > div:not(#love-h-a) { display: contents !important; }
   html body #tab-overview > .grid.lg\:grid-cols-12 > div > *:not(#love-h-a) { margin: 0 !important; }
@@ -12770,7 +12770,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    botões ☰ e sino — mais transparente, desfoque forte, brilho interno em cima
    e uma borda escura bem leve nas laterais. Logo da Love maior. Desktop não muda.
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b),
   html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b),
   html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b) {
@@ -12814,7 +12814,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    transparente; avatar quadrado com cantos de 10px; acompanhantes e restrição
    alimentar editáveis na própria tela. Desktop não muda.
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .ficha-convidado .ficha-topo { gap: 8px; }
   .ficha-convidado .ficha-voltar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: flex-start; flex-shrink: 0; padding: 0; background: transparent !important; border: 0 !important; box-shadow: none !important; color: #18181B; }
   .ficha-convidado .ficha-voltar svg { width: 24px; height: 24px; }
@@ -12861,7 +12861,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
    botões + / − / centralizar à direita. Desktop não muda.
    ========================================================================== */
 .planta-zoom { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-rsvp-tables .floorplan-body:not(#love-h-a) {
     height: calc(100dvh - var(--bottom-bar-height-mobile) - 150px); min-height: 0;
     overflow: auto; overscroll-behavior: contain; scrollbar-width: none;

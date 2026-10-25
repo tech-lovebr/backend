@@ -11765,3 +11765,30 @@ body[data-theme="dark"] #recados-raiz .recado-carta::before { background: #EBF4F
 body[data-theme="dark"] #recados-raiz :is(.recado-carta-texto, .recado-carta-assinatura) { color: #FFFFFF !important; }
 body[data-theme="dark"] #recados-raiz .recado-carta-rodape { border-top-color: #404040; }
 body[data-theme="dark"] #recados-raiz .recado-tag-video { border-color: #404040; color: #D4D4D8; }
+
+/* ---- Criar solicitação: layout pelo tamanho da caixa (não só da tela).
+   Título ao lado só quando sobra espaço; senão vai para cima da caixa.
+   Data, início e término em 3 colunas iguais; caixa estreita: data em
+   cima e os dois horários lado a lado. Sem bairro. ---- */
+html body #b2b-pedidos-view:not(#love-h-a) { container-type: inline-size; container-name: rfp-pagina; }
+html body #b2b-pedidos-view .rfp-caixa-form:not(#love-h-a) { container-type: inline-size; container-name: rfp-caixa; width: 100%; min-width: 0; box-sizing: border-box; }
+@container rfp-pagina (max-width: 900px) {
+  html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { display: flex; flex-direction: column; }
+  html body #b2b-pedidos-view .rfp-etapa-titulo:not(#love-h-a) { font-size: 1.5rem; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-intro:not(#love-h-a) { margin-bottom: 1rem; }
+}
+html body #b2b-pedidos-view .rfp-ev-grade .rfp-rotulo-texto:not(#love-h-a) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: 96px minmax(0, 1fr); }
+html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@container rfp-caixa (max-width: 560px) {
+  html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  html body #b2b-pedidos-view .rfp-ev-tempo > .rfp-ev-campo:first-child:not(#love-h-a) { grid-column: 1 / -1; }
+}
+@container rfp-caixa (max-width: 380px) {
+  html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: 80px minmax(0, 1fr); }
+  html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+}
+@container rfp-caixa (max-width: 280px) {
+  html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+}

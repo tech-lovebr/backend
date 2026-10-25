@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=779">
+  <link rel="stylesheet" href="css/styles.css?v=780">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -270,26 +270,60 @@
           <!-- Dados da empresa em caixas separadas (como Suas informações):
                1) endereço, descrição e raio; 2) forma e condições de pagamento. -->
           <form id="company-form" class="settings-zola-forms">
-            <!-- O endereço agora é sempre o da empresa (sem "usar o do perfil"). -->
-            <input type="checkbox" id="company-same-address" hidden>
 
             <div class="dash-card settings-zola-card">
               <div class="settings-zola-form">
-                <div>
-                  <label for="company-address" class="field-label">Endereço</label>
-                  <input id="company-address" type="text" class="field-input" placeholder="Rua, número, bairro">
-                </div>
-                <div class="settings-endereco-linha">
-                  <div>
-                    <label for="company-state" class="field-label">Estado</label>
-                    <select id="company-state" class="field-select"></select>
+                <!-- Endereço de atendimento: por padrão, o mesmo de Informações da
+                     empresa (copiado, sem mostrar). Desmarcado, aparecem os campos. -->
+                <label class="settings-check">
+                  <input type="checkbox" id="company-same-address" checked>
+                  <span>O endereço de atendimento é o mesmo de Informações da empresa</span>
+                </label>
+                <div class="settings-endereco-proprio" id="company-endereco-proprio" hidden>
+                  <div class="settings-endereco-trio">
+                    <div>
+                      <label for="company-address" class="field-label">Endereço</label>
+                      <input id="company-address" type="text" class="field-input" placeholder="Rua, avenida…">
+                    </div>
+                    <div>
+                      <label for="company-numero" class="field-label">Número</label>
+                      <input id="company-numero" type="text" class="field-input">
+                    </div>
+                    <div>
+                      <label for="company-complemento" class="field-label">Complemento</label>
+                      <input id="company-complemento" type="text" class="field-input" placeholder="Opcional">
+                    </div>
                   </div>
-                  <div>
-                    <label for="company-city" class="field-label">Cidade</label>
-                    <input id="company-city" type="text" class="field-input" list="company-city-options" placeholder="Cidade">
-                    <datalist id="company-city-options"></datalist>
+                  <div class="settings-endereco-linha settings-endereco-linha--metade">
+                    <div>
+                      <label for="company-cep" class="field-label">CEP</label>
+                      <input id="company-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000">
+                    </div>
+                    <div>
+                      <label for="company-bairro" class="field-label">Bairro</label>
+                      <input id="company-bairro" type="text" class="field-input">
+                    </div>
+                  </div>
+                  <div class="settings-endereco-linha settings-endereco-linha--metade">
+                    <div>
+                      <label for="company-state" class="field-label">Estado</label>
+                      <select id="company-state" class="field-select"></select>
+                    </div>
+                    <div>
+                      <label for="company-city" class="field-label">Cidade</label>
+                      <input id="company-city" type="text" class="field-input" list="company-city-options" placeholder="Cidade">
+                      <datalist id="company-city-options"></datalist>
+                    </div>
                   </div>
                 </div>
+                <label class="settings-check">
+                  <input type="checkbox" id="company-aceita-visitas">
+                  <span>Recebo clientes no meu endereço para reuniões e visitas</span>
+                </label>
+                <label class="settings-check">
+                  <input type="checkbox" id="company-oferece-amostra">
+                  <span>Ofereço prova ou amostra antes da contratação<small>Por exemplo: degustação do bolo, teste de maquiagem ou um trecho do repertório da banda.</small></span>
+                </label>
                 <div>
                   <label for="company-description" class="field-label">Descrição da empresa</label>
                   <textarea id="company-description" class="field-textarea settings-descricao" maxlength="650" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
@@ -318,25 +352,23 @@
                      os juros; 2) só se o fornecedor assumir, até quantas vezes sem
                      juros. Grava em max_installments_no_interest (0 = repassa ao cliente). -->
                 <div class="parcelas-bloco">
-                  <p class="field-label" id="parcelas-quem-rotulo">Juros do parcelamento</p>
-                  <div class="parcelas-opcoes" role="radiogroup" aria-labelledby="parcelas-quem-rotulo">
+                  <div class="parcelas-opcoes" role="radiogroup" aria-label="Juros do parcelamento">
                     <label class="parcelas-card">
                       <input type="radio" name="interest-bearer" value="CLIENT">
                       <span class="parcelas-card-textos">
                         <span class="parcelas-card-titulo">Repassar juros ao cliente</span>
-                        <span class="parcelas-card-sub">O cliente arca com os custos da operadora a partir de 2x.</span>
                       </span>
                     </label>
                     <label class="parcelas-card">
                       <input type="radio" name="interest-bearer" value="SUPPLIER">
                       <span class="parcelas-card-textos">
-                        <span class="parcelas-card-titulo">Assumir os custos (Oferecer sem juros)</span>
-                        <span class="parcelas-card-sub">Você absorve a taxa de parcelamento para incentivar o fechamento.</span>
+                        <span class="parcelas-card-titulo">Assumir os custos</span>
+                        <span class="parcelas-card-sub">Oferecer sem juros</span>
                       </span>
                     </label>
                   </div>
 
-                  <p class="parcelas-info" id="parcelas-info-cliente" hidden>Todas as opções parceladas incluirão juros pagos diretamente pelo cliente.</p>
+                  <p class="parcelas-info" id="parcelas-info-cliente" hidden>Todas as opções de parcelamento incluirão juros pagos diretamente pelo cliente.</p>
 
                   <div class="parcelas-limite" id="parcelas-limite" hidden>
                     <p class="field-label" id="parcelas-limite-rotulo">Até quantas vezes oferecer sem juros?</p>
@@ -366,8 +398,8 @@
                     <input id="company-deposit-percent" type="text" inputmode="numeric" class="field-input" placeholder="Ex: 30%">
                   </div>
                   <div>
-                    <label for="company-deposit-deadline" class="field-label">Restante pago até (dias antes do evento)</label>
-                    <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15">
+                    <label for="company-deposit-deadline" class="field-label">Prazo para quitar o restante</label>
+                    <input id="company-deposit-deadline" type="number" min="0" step="1" class="field-input" placeholder="Ex: 15 dias antes do evento">
                   </div>
                 </div>
 
@@ -604,7 +636,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/shell.js?v=60"></script>
-  <script src="js/configuracoes.js?v=66"></script>
+  <script src="js/configuracoes.js?v=67"></script>
   <script src="js/contas-bancarias.js?v=3"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>

@@ -10963,3 +10963,11 @@ html body .settings-shell [data-settings-panel] > .settings-info-abas + .setting
 html body .settings-endereco-trio:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 1fr) 96px 140px; gap: 12px; }
 @media (max-width: 640px) { html body .settings-endereco-trio:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) 96px; } html body .settings-endereco-trio > :first-child:not(#love-h-a) { grid-column: 1 / -1; } }
 html body:not(.doc-cpf) .obrig-so-cpf:not(#love-h-a) { display: none; }
+
+/* Sua empresa: caixinhas de marcar (endereço igual, visitas, amostra). */
+html body .settings-check:not(#love-h-a) { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; color: #18181B; line-height: 1.45; }
+html body .settings-check input:not(#love-h-a) { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; accent-color: #183b54; cursor: pointer; }
+html body .settings-check small:not(#love-h-a) { display: block; margin-top: 2px; font-size: 12px; color: #71717A; }
+html body .settings-endereco-proprio:not(#love-h-a) { display: flex; flex-direction: column; gap: 1.25rem; }
+html body .settings-endereco-proprio[hidden]:not(#love-h-a) { display: none; }
+html body .parcelas-opcoes .parcelas-card-sub:not(#love-h-a) { margin-top: 2px; }

@@ -359,14 +359,19 @@ function initCompanyForm() {
     }
     [addressInput, stateSelect, cityInput].forEach(el => { el.disabled = useProfile; });
   };
-  // Sem "usar o mesmo endereço do perfil": o endereço é sempre o da empresa.
-  // Quem usava o do perfil começa com ele já preenchido aqui.
-  if (p.useProfileAddress !== false && !p.businessAddress) {
-    sameAddressCheckbox.checked = true;
-    applySameAddressState();
-  }
-  sameAddressCheckbox.checked = false;
-  [addressInput, stateSelect, cityInput].forEach(el => { el.disabled = false; });
+  // "O endereço de atendimento é o mesmo de Informações da empresa": marcado,
+  // os campos somem (o endereço é copiado); desmarcado, aparecem para preencher.
+  const enderecoProprio = document.getElementById('company-endereco-proprio');
+  sameAddressCheckbox.checked = p.useProfileAddress !== false && !p.businessAddress;
+  const mostrarEnderecoProprio = () => {
+    if (enderecoProprio) enderecoProprio.hidden = sameAddressCheckbox.checked;
+    [addressInput, stateSelect, cityInput].forEach(el => { el.disabled = false; });
+  };
+  sameAddressCheckbox.addEventListener('change', mostrarEnderecoProprio);
+  mostrarEnderecoProprio();
+  carregarExtrasDaEmpresa();
+  const cepEmpresa = document.getElementById('company-cep');
+  cepEmpresa?.addEventListener('input', () => { const d = cepEmpresa.value.replace(/\D/g, '').slice(0, 8); cepEmpresa.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
 
   /* -------- Descrição da empresa (cresce com o texto, até 650) -------- */
   const descricaoInput = document.getElementById('company-description');
@@ -515,7 +520,43 @@ function initParcelamento(select, valorSalvo) {
   render();
 }
 
+/* Endereço de atendimento completo, visitas e amostras (migration 111). */
+async function carregarExtrasDaEmpresa() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { data, error } = await supabaseClient.from('fornecedores')
+    .select('business_cep, business_numero, business_complemento, business_bairro, aceita_visitas, oferece_amostra')
+    .eq('id', empresaId(session)).maybeSingle();
+  if (error || !data) return;
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+  set('company-cep', data.business_cep);
+  set('company-numero', data.business_numero);
+  set('company-complemento', data.business_complemento);
+  set('company-bairro', data.business_bairro);
+  const v = document.getElementById('company-aceita-visitas');
+  if (v) v.checked = !!data.aceita_visitas;
+  const a = document.getElementById('company-oferece-amostra');
+  if (a) a.checked = !!data.oferece_amostra;
+}
+
+async function salvarExtrasDaEmpresa() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const mesmo = document.getElementById('company-same-address')?.checked;
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  const { error } = await supabaseClient.from('fornecedores').update({
+    business_cep: mesmo ? null : (v('company-cep').replace(/\D/g, '') || null),
+    business_numero: mesmo ? null : (v('company-numero') || null),
+    business_complemento: mesmo ? null : (v('company-complemento') || null),
+    business_bairro: mesmo ? null : (v('company-bairro') || null),
+    aceita_visitas: !!document.getElementById('company-aceita-visitas')?.checked,
+    oferece_amostra: !!document.getElementById('company-oferece-amostra')?.checked
+  }).eq('id', empresaId(session));
+  if (error) console.warn('Endereço de atendimento/visitas não salvos (rode a migration 111).', error);
+}
+
 async function salvarEmpresaNoBanco(p) {
+  salvarExtrasDaEmpresa();
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 

@@ -40,7 +40,6 @@ const DOC_TIPO = { rg: 'RG', cnh: 'CNH', passaporte: 'Passaporte' };
 // (hoje o Asaas; outro entra como contingência sem pedir nada de novo).
 // Como foi cada envio: tabela verificacoes_gateways (api/_gateways.js).
 let ENVIOS = new Map(); // cliente_id → [{ gateway, status, detalhe, ... }]
-const NOME_GATEWAY = { asaas: 'Asaas' };
 const ENVIO = {
   enviado: 'Documentos enviados',
   link: 'O gateway pediu pelo link dele (o anfitrião faz na Carteira)',

@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
      • MENOR    (1.0.1 → 1.1.0): função ou tela nova, sem quebrar o que existe;
      • MAIOR    (1.1.0 → 2.0.0): mudança que muda o jeito de usar o Admin.
    Ao subir MENOR, a CORREÇÃO volta a 0; ao subir MAIOR, as duas voltam a 0. */
-const VERSAO_ADMIN = '1.2.1';
+const VERSAO_ADMIN = '1.2.2';
 
 /* Rodapé igual ao do Hub e da plataforma: © Love Hub Ltda + "Feito com
    amor…" à esquerda e, no lugar de Privacidade/Termos, a versão do Admin. */

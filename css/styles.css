@@ -11793,3 +11793,22 @@ html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-co
 @container rfp-caixa (max-width: 280px) {
   html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a), html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---- Pedir orçamento (Explorar): mesma grade de 3 colunas de Criar
+   solicitação. Data · Início · Término; Convidados · Local (2 colunas).
+   Caixa estreita: data sozinha e os horários lado a lado; local embaixo. ---- */
+html body #modal-b2b-orcamento .orc-corpo:not(#love-h-a) { container-type: inline-size; container-name: orc-corpo; }
+html body #modal-b2b-orcamento .orc-grade:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+html body #modal-b2b-orcamento .orc-grade-campo:not(#love-h-a) { min-width: 0; }
+html body #modal-b2b-orcamento .orc-grade-campo.hidden:not(#love-h-a) { display: none; }
+html body #modal-b2b-orcamento .orc-grade .orc-label:not(#love-h-a) { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html body #modal-b2b-orcamento .orc-grade-local-campo:not(#love-h-a) { grid-column: span 2; }
+html body #modal-b2b-orcamento .orc-contador .orc-contador-input:not(#love-h-a) { min-width: 0; padding: 0 4px; }
+html body #modal-b2b-orcamento select.orc-select:not(#love-h-a) { appearance: none; -webkit-appearance: none; padding-right: 30px; background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A1A1AA' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center / 14px; cursor: pointer; text-overflow: ellipsis; }
+html body #modal-b2b-orcamento .orc-dica:not(#love-h-a) { margin: 6px 0 0; font-size: 11px; font-weight: 500; color: #A1A1AA !important; }
+@container orc-corpo (max-width: 480px) {
+  html body #modal-b2b-orcamento .orc-grade:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  html body #modal-b2b-orcamento .orc-grade-tempo > .orc-grade-campo:first-child:not(#love-h-a),
+  html body #modal-b2b-orcamento .orc-grade-local > .orc-grade-campo:not(#love-h-a) { grid-column: 1 / -1; }
+}
+body[data-theme="dark"] #modal-b2b-orcamento select.orc-select { background-color: #333333 !important; color: #FFFFFF !important; border-color: #404040 !important; }

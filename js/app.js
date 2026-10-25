@@ -17737,7 +17737,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataISO = ev ? String((ev.eventDetails && ev.eventDetails.date) || ev.date || '').slice(0, 10) : '';
     if (dataEl) dataEl.value = /^\d{4}-\d{2}-\d{2}$/.test(dataISO) ? dataISO : '';
     document.getElementById('orcamento-data-selo')?.classList.toggle('hidden', !(dataEl && dataEl.value));
-    // Tipo de celebração vindo do evento; ambiente e faixa começam em branco.
+    // Horários de 30 em 30 minutos, começando em branco.
+    ['orcamento-inicio', 'orcamento-fim'].forEach(id => {
+      const sel = /** @type {HTMLSelectElement|null} */ (document.getElementById(id));
+      if (!sel) return;
+      const horas = [];
+      for (let m = 0; m < 24 * 60; m += 30) horas.push(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);
+      sel.innerHTML = '<option value="">Selecione</option>' + horas.map(x => `<option value="${x}">${x}</option>`).join('');
+    });
+    // Espaço para locação: o lugar é o próprio espaço, então não pede local.
+    const ehEspaco = !!(svc && CATEGORIAS_DE_ESPACO.includes(normalizarTexto(svc.category)));
+    document.getElementById('orcamento-local-bloco')?.classList.toggle('hidden', ehEspaco);
+    // Tipo de celebração vindo do evento; faixa começa em branco.
     const tipoDoEvento = { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo' }[ev && ev.type] || (ev ? 'Outro' : '');
     modal.querySelectorAll('.orc-pills').forEach(g => {
       const inicial = g.dataset.grupo === 'tipo' ? tipoDoEvento : '';
@@ -17812,6 +17823,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'Pedido de orçamento' + (servico && servico.name ? ` — ${servico.name}` : ''),
       `Evento: ${extras.tipo || tipoDeCelebracaoDoEvento() || 'Outro'}`,
       data ? `Data: ${data}` : '',
+      extras.horario ? `Horário: ${extras.horario}` : '',
       convidados ? `Convidados: ${convidados}` : '',
       local ? `Local: ${local}` : '',
       msg ? `Mensagem: ${msg}` : ''
@@ -17833,10 +17845,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataISO = (document.getElementById('orcamento-data')?.value || '').trim();
     const data = dataDDMMAAAA(dataISO);
     const convidados = parseInt(document.getElementById('orcamento-convidados')?.value, 10) || null;
-    const extras = { tipo: valorDaPill('tipo'), ambiente: valorDaPill('ambiente'), faixa: valorDaPill('faixa') };
+    const inicio = (/** @type {HTMLSelectElement|null} */ (document.getElementById('orcamento-inicio')))?.value || '';
+    const fim = (/** @type {HTMLSelectElement|null} */ (document.getElementById('orcamento-fim')))?.value || '';
+    const horario = inicio && fim ? `${inicio} às ${fim}` : (inicio ? `a partir das ${inicio}` : (fim ? `até ${fim}` : ''));
+    const extras = { tipo: valorDaPill('tipo'), faixa: valorDaPill('faixa'), horario };
     const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();
     const localSel = document.getElementById('orcamento-local');
-    const local = localSel && localSel.value === '__outro'
+    const semLocal = document.getElementById('orcamento-local-bloco')?.classList.contains('hidden');
+    const local = semLocal ? '' : localSel && localSel.value === '__outro'
       ? (document.getElementById('orcamento-local-outro')?.value || '').trim()
       : ((localSel && localSel.value) || '');
     const nome = getGuestCommentAuthorName();

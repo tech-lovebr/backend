@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261024_convidadosNoLocal">
+  <link rel="stylesheet" href="css/styles.css?v=20261024_orcGrade">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -4457,22 +4457,43 @@
           <!-- Serviço clicado: escondido, só para o envio -->
           <select id="orcamento-servico" class="hidden" aria-hidden="true" tabindex="-1"></select>
 
-          <!-- B. Dados essenciais -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label for="orcamento-data" class="orc-label">Data do evento <span id="orcamento-data-selo" class="orc-selo hidden">Data do seu evento</span></label>
+          <!-- B. Dados essenciais: mesma grade de 3 colunas de Criar solicitação.
+               Linha 1: data, início e término. Linha 2: convidados e local
+               (espaço para locação: sem local, o lugar é o próprio espaço). -->
+          <div class="orc-grade orc-grade-tempo">
+            <div class="orc-grade-campo">
+              <label for="orcamento-data" class="orc-label">Data do evento</label>
               <div class="orc-campo-icone">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path stroke-linecap="round" d="M16 3v3M8 3v3M3 9.5h18"/></svg>
                 <input id="orcamento-data" type="date" class="orc-input">
               </div>
+              <p id="orcamento-data-selo" class="orc-dica hidden">Data do seu evento</p>
             </div>
-            <div>
-              <label for="orcamento-convidados" class="orc-label">Número de convidados</label>
+            <div class="orc-grade-campo">
+              <label for="orcamento-inicio" class="orc-label">Horário de início</label>
+              <select id="orcamento-inicio" class="orc-input orc-select"></select>
+            </div>
+            <div class="orc-grade-campo">
+              <label for="orcamento-fim" class="orc-label">Horário de término</label>
+              <select id="orcamento-fim" class="orc-input orc-select"></select>
+            </div>
+          </div>
+          <div class="orc-grade orc-grade-local">
+            <div class="orc-grade-campo">
+              <label for="orcamento-convidados" class="orc-label">Convidados</label>
               <div class="orc-contador">
                 <button type="button" class="orc-contador-btn" data-convidados="-10" aria-label="Menos 10 convidados">−</button>
                 <input id="orcamento-convidados" type="number" min="1" inputmode="numeric" class="orc-input orc-contador-input" placeholder="0">
                 <button type="button" class="orc-contador-btn" data-convidados="10" aria-label="Mais 10 convidados">+</button>
               </div>
+            </div>
+            <div class="orc-grade-campo orc-grade-local-campo" id="orcamento-local-bloco">
+              <label for="orcamento-local" class="orc-label">Local do evento</label>
+              <div class="orc-campo-icone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                <select id="orcamento-local" class="orc-input orc-select"></select>
+              </div>
+              <input id="orcamento-local-outro" type="text" class="orc-input hidden mt-2" placeholder="Rua, número, cidade - UF">
             </div>
           </div>
 
@@ -4483,20 +4504,6 @@
               <button type="button" class="orc-pill" data-valor="Aniversário" role="radio">Aniversário</button>
               <button type="button" class="orc-pill" data-valor="Corporativo" role="radio">Corporativo</button>
               <button type="button" class="orc-pill" data-valor="Outro" role="radio">Outro</button>
-            </div>
-          </div>
-
-          <!-- C. Local e infraestrutura -->
-          <div>
-            <label for="orcamento-local" class="orc-label">Local do evento</label>
-            <div class="orc-campo-icone">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-              <select id="orcamento-local" class="orc-input"></select>
-            </div>
-            <input id="orcamento-local-outro" type="text" class="orc-input hidden mt-2" placeholder="Rua, número, bairro, cidade - UF">
-            <div class="orc-pills mt-2.5" data-grupo="ambiente" role="radiogroup" aria-label="Ambiente">
-              <button type="button" class="orc-pill" data-valor="Espaço coberto" role="radio">Espaço coberto</button>
-              <button type="button" class="orc-pill" data-valor="Ao ar livre / campo" role="radio">Ao ar livre / campo</button>
             </div>
           </div>
 
@@ -5548,10 +5555,10 @@
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
-  <script src="js/app.js?v=20261024_convidadosNoLocal"></script>
+  <script src="js/app.js?v=20261024_orcGrade"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
-  <script src="js/pedidos-orcamento.js?v=20261024_convidadosNoLocal"></script>
+  <script src="js/pedidos-orcamento.js?v=20261024_orcGrade"></script>
   <script src="js/contratos.js?v=20261023_contratos2"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

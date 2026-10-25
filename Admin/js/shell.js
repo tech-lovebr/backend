@@ -378,3 +378,60 @@ document.addEventListener('DOMContentLoaded', () => {
   marcarIconesDosKpis();
   new MutationObserver(marcarIconesDosKpis).observe(document.body, { childList: true, subtree: true });
 });
+
+/* Tabelas até o fim da tela (mesmo padrão de Meus convidados na plataforma):
+   a última caixa de tabela da página desce até perto do fim da tela, mesmo
+   vazia, com a paginação embaixo, e as linhas finas continuam abaixo do
+   último item — mostra que ali cabem novos itens. */
+function visivel(el) { return !!(el && el.offsetParent !== null && getComputedStyle(el).visibility !== 'hidden'); }
+
+/** É a última coisa visível da página? (nada visível depois dela até o fim do conteúdo) */
+function ehUltimaDaPagina(el) {
+  const conteudo = el.closest('.admin-content');
+  if (!conteudo) return false;
+  for (let no = el; no && no !== conteudo; no = no.parentElement) {
+    for (let irmao = no.nextElementSibling; irmao; irmao = irmao.nextElementSibling) {
+      if (visivel(irmao) && irmao.getBoundingClientRect().height > 0) return false;
+    }
+  }
+  return true;
+}
+
+function esticarTabelas() {
+  document.querySelectorAll('.admin-content .table-card').forEach(card => {
+    const wrap = card.querySelector(':scope > .table-wrap');
+    const esticar = wrap && visivel(card) && ehUltimaDaPagina(card);
+    card.classList.toggle('tabela-ate-o-fim', !!esticar);
+    if (!esticar) { card.style.minHeight = ''; return; }
+
+    const conteudo = card.closest('.admin-content');
+    const respiro = parseFloat(getComputedStyle(conteudo).paddingBottom) || 24;
+    const topo = card.getBoundingClientRect().top + window.scrollY;
+    const altura = Math.max(320, Math.floor(window.innerHeight - topo - respiro));
+    card.style.minHeight = `${altura}px`;
+
+    // Onde terminam as linhas de verdade, e a altura de uma linha comum.
+    const linhas = [...wrap.querySelectorAll('tbody > tr')].filter(visivel);
+    const ultima = linhas[linhas.length - 1];
+    const cabeca = wrap.querySelector('thead');
+    const base = wrap.getBoundingClientRect().top;
+    const fim = ultima ? ultima.getBoundingClientRect().bottom - base : (cabeca ? cabeca.getBoundingClientRect().bottom - base : 0);
+    const comum = linhas.filter(tr => !tr.classList.contains('no-hover') && !tr.querySelector('td[colspan]'));
+    const alturaDaLinha = comum.length ? Math.round(comum[comum.length - 1].getBoundingClientRect().height) : 49;
+    wrap.style.setProperty('--fim-das-linhas', `${Math.round(fim)}px`);
+    wrap.style.setProperty('--altura-da-linha', `${alturaDaLinha || 49}px`);
+  });
+}
+
+let esticarAgendado = false;
+function agendarEsticarTabelas() {
+  if (esticarAgendado) return;
+  esticarAgendado = true;
+  requestAnimationFrame(() => { esticarAgendado = false; esticarTabelas(); });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  agendarEsticarTabelas();
+  new MutationObserver(agendarEsticarTabelas).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
+  window.addEventListener('resize', agendarEsticarTabelas);
+  window.addEventListener('load', agendarEsticarTabelas);
+});

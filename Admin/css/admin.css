@@ -4298,3 +4298,16 @@ body.com-faixa .admin-content > :not(.admin-header-bar) + .conteudo-tabs .conteu
 body.com-faixa .admin-content > .legal-ultima-edicao,
 body.com-faixa .admin-content > .legal-ultima-edicao strong { color: #FFFFFF; }
 body.com-faixa .admin-content > .legal-abas { border-bottom-color: rgba(255, 255, 255, .16); }
+
+/* Tabelas até o fim da tela (js/shell.js › esticarTabelas): a caixa vira
+   coluna, a tabela ocupa o espaço e a paginação fica no pé da caixa; abaixo
+   do último item as linhas finas continuam, na mesma altura e cor. */
+.table-card.tabela-ate-o-fim { display: flex; flex-direction: column; }
+.table-card.tabela-ate-o-fim > .table-wrap {
+  flex: 1 1 auto;
+  background-image: repeating-linear-gradient(to bottom, #F2F3F6 0, #F2F3F6 1px, transparent 1px, transparent var(--altura-da-linha, 49px));
+  background-position: 0 var(--fim-das-linhas, 0px);
+  background-size: 100% calc(100% - var(--fim-das-linhas, 0px));
+  background-repeat: no-repeat;
+}
+.table-card.tabela-ate-o-fim > :not(.table-wrap) { flex-shrink: 0; }

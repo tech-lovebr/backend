@@ -3207,7 +3207,6 @@ body[data-theme="dark"] table.data th { color: #FFFFFF !important; }
 .bubble-html ul, .bubble-html ol { margin: .25rem 0 .5rem; padding-left: 1.25rem; }
 .thread-msg.from-admin .bubble-html a { color: #fff; text-decoration: underline; }
 
-.conversa-pendencia { margin: 0 1.25rem; padding: .875rem 1rem; border: 1px solid #E4E4E7; border-radius: var(--radius-card); background: #FFFBEB; }
 
 .conversa-composer { padding: 1rem 1.25rem 1.25rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: .625rem; }
 .composer-linha { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; }

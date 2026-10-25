@@ -275,8 +275,6 @@ async function abrirConversa(id) {
       ${conversa.length ? conversa.map(m => bolha(m, t)).join('') : '<p class="cell-muted" style="font-size:.8125rem">Conversa sem mensagens.</p>'}
     </div>
 
-    ${ehPedidoDeAlteracao(t) ? corpoDaPendencia(t) : ''}
-
     <div class="conversa-composer">
       ${porEmail ? '<input class="field-input" id="composer-assunto" type="text" placeholder="Assunto do e-mail (opcional)">' : ''}
       <div id="composer-editor"></div>
@@ -306,8 +304,6 @@ async function abrirConversa(id) {
   document.getElementById('composer-editor').addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); enviar(t, 'aguardando_cliente'); }
   });
-  document.getElementById('btn-liberar')?.addEventListener('click', () => liberarAlteracao(t));
-  document.getElementById('btn-cancelar-pedido')?.addEventListener('click', () => recusarAlteracao(t));
 }
 
 function bolha(m, t) {
@@ -609,74 +605,4 @@ function editarResposta(r) {
       if (select && t) select.innerHTML = opcoesDoComando(t);
     }
   });
-}
-
-/* --------------------------------------------- Pedido de alteração de dado
-   Fluxo antigo do Hub (nome da empresa / CNPJ travados). Continua
-   funcionando até ser substituído; aparece acima do editor. */
-
-const CAMPOS_LIBERAVEIS = { company: 'Nome da empresa', documento: 'CNPJ / CPF' };
-
-function ehPedidoDeAlteracao(t) {
-  const assunto = (t.assunto || '').trim().toLowerCase();
-  return t.origem === 'fornecedor' && (assunto === 'alteração de dados' || assunto === 'alteração de dado');
-}
-
-function pedidoDoChamado(t) {
-  const extra = t.extra || {};
-  if (extra.campo) {
-    return { campo: extra.campo, label: extra.campo_label || CAMPOS_LIBERAVEIS[extra.campo] || extra.campo, valorAtual: extra.valor_atual || null };
-  }
-  const texto = t.mensagem || '';
-  const nome = texto.match(/campo "([^"]+)"/i)?.[1] || null;
-  const valor = texto.match(/valor atual:\s*([^)]+)\)/i)?.[1]?.trim() || null;
-  return { campo: /cnpj|cpf|documento/i.test(nome || '') ? 'documento' : 'company', label: nome || 'Nome da empresa', valorAtual: valor };
-}
-
-function corpoDaPendencia(t) {
-  const pedido = pedidoDoChamado(t);
-  const resolvido = ['resolvido', 'fechado'].includes(t.status);
-  return `
-    <div class="conversa-pendencia">
-      <p class="drawer-section-title" style="margin-top:0">Pendência: alteração de ${escapeHtml(pedido.label)}</p>
-      <p class="cell-muted" style="font-size:.8125rem;margin:0 0 .75rem">Valor atual: ${pedido.valorAtual ? escapeHtml(pedido.valorAtual) : 'não informado'}</p>
-      ${resolvido
-        ? '<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta pendência já foi tratada.</p>'
-        : `<div style="display:flex;gap:.5rem">
-             <button type="button" class="btn btn-primary btn-sm" id="btn-liberar">Liberar alteração</button>
-             <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-pedido">Recusar</button>
-           </div>`}
-    </div>`;
-}
-
-async function liberarAlteracao(t) {
-  const pedido = pedidoDoChamado(t);
-  document.getElementById('btn-liberar').disabled = true;
-  const { error } = await supabaseClient.from('campos_liberados').insert({
-    fornecedor_id: t.user_id, campo: pedido.campo, ticket_id: t.id, liberado_por: window.adminUser.id
-  });
-  if (error) {
-    document.getElementById('btn-liberar').disabled = false;
-    return toast(`Não foi possível liberar: ${error.message}`);
-  }
-  await concluirPendencia(t, `Alteração de "${pedido.label}" liberada. O campo está editável no seu painel por uma vez.`);
-  toast('Alteração liberada.');
-}
-
-async function recusarAlteracao(t) {
-  const pedido = pedidoDoChamado(t);
-  document.getElementById('btn-cancelar-pedido').disabled = true;
-  await concluirPendencia(t, `A alteração de "${pedido.label}" não foi liberada. Fale com o suporte se precisar reabrir o pedido.`);
-  toast('Pedido recusado.');
-}
-
-async function concluirPendencia(t, mensagem) {
-  await supabaseClient.from('ticket_messages').insert({
-    ticket_id: t.id, author_role: 'admin', author_id: window.adminUser.id,
-    author_name: window.adminUser.name || 'Equipe Love', body: mensagem
-  });
-  await supabaseClient.from('tickets').update({ status: 'resolvido', updated_at: new Date().toISOString() }).eq('id', t.id);
-  t.status = 'resolvido';
-  renderContagens();
-  abrirConversa(t.id);
 }

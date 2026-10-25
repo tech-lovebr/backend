@@ -6728,7 +6728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const td = tds[c.i];
         if (!td) return esc('');
         const clone = td.cloneNode(true);
-        clone.querySelectorAll('button, .love-copiar-email-ok, svg, .guest-tipo-badge, .guest-sub-conector').forEach(el => el.remove());
+        clone.querySelectorAll('button:not(.guest-nome-btn), .love-copiar-email-ok, svg, .guest-tipo-badge, .guest-sub-conector, .guest-trilho').forEach(el => el.remove());
         return esc(clone.textContent);
       }).join(';'));
     });
@@ -6846,7 +6846,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       const exp = document.createElement('button');
       exp.type = 'button';
-      exp.className = 'love-tabela-botao';
+      exp.className = 'love-tabela-botao love-tabela-exportar';
       exp.innerHTML = `${ICONE_EXPORTAR}<span>Exportar</span>`;
       exp.addEventListener('click', () => exportarTabelaVisivelCsv(tabela, (cfg.exportar && cfg.exportar.nome) || cfg.nome || 'tabela'));
       direita.appendChild(exp);
@@ -9969,8 +9969,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
-      attendees.forEach(attendee => {
+      attendees.forEach((attendee, posicao) => {
         const row = document.createElement('tr');
+        // Celular: avatar com iniciais; convidado com acompanhantes fica num
+        // "trilho" contornado (início, meio e fim do grupo).
+        const trilho = attendees.length < 2 ? '' : posicao === 0 ? ' is-inicio' : posicao === attendees.length - 1 ? ' is-fim' : ' is-meio';
+        const nomeLimpo = String(attendee.name || '').trim();
+        const partes = nomeLimpo.split(/\s+/);
+        const generico = !attendee.isPrimary && /^acompanhante$/i.test(nomeLimpo);
+        const iniciais = generico ? '+1' : ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '');
+        const nomeEmPartes = `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;
         // Mesma cor para o convidado e seus acompanhantes (o grupo alterna,
         // não cada linha); o acompanhante aparece como subitem do convidado.
         row.className = `group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
@@ -9980,7 +9988,8 @@ document.addEventListener('DOMContentLoaded', () => {
               ${attendee.isPrimary ? `<input type="checkbox" class="gifts-select-all-check guest-select-check" data-guest-id="${escaparHtml(guest.id)}"${convidadosSelecionados.has(guest.id) ? ' checked' : ''} aria-label="Selecionar ${escaparHtml(guest.name || 'convidado')}">` : '<span class="guest-select-espaco" aria-hidden="true"></span>'}
               ${attendee.isPrimary ? '' : '<span class="guest-sub-conector" aria-hidden="true"></span>'}
               <span class="guest-tipo-badge ${attendee.isPrimary ? 'is-convidado' : 'is-acompanhante'}" title="${attendee.isPrimary ? 'Convidado' : 'Acompanhante'}">${attendee.isPrimary ? 'C' : 'A'}</span>
-              <button type="button" class="guest-nome-btn font-semibold text-zinc-900 block truncate" title="Ver convidado">${attendee.name}</button>
+              <span class="guest-trilho${trilho}" aria-hidden="true"><span class="guest-avatar-celular">${escaparHtml(iniciais.toUpperCase())}</span></span>
+              <button type="button" class="guest-nome-btn font-semibold text-zinc-900 block truncate" title="Ver convidado">${nomeEmPartes}</button>
             </div>
           </td>
           <td>
@@ -10004,7 +10013,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // O nome abre o convidado (a linha continua livre para selecionar/copiar texto).
         row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
-          openAddGuestDrawer(guest.id);
+          // Celular: abre a ficha do convidado (ver e editar); desktop: o pop-up.
+          if (window.matchMedia('(max-width: 768px)').matches) abrirFichaDoConvidado(guest.id);
+          else openAddGuestDrawer(guest.id);
         });
 
         listEl.appendChild(row);
@@ -10012,6 +10023,187 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     atualizarLixeiraDeConvidados();
     alinharLinhasVaziasDaTabela(listEl);
+  }
+
+  // ==========================================
+  // Ficha do convidado (celular): toque no nome abre nome, contato e
+  // respostas; "Editar" deixa nome, telefone e e-mail editáveis.
+  // Acompanhantes e restrição alimentar continuam no formulário completo.
+  // ==========================================
+  const ICONE_FECHAR_FICHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const ICONE_LIMPAR_CAMPO = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm3.53 12.47a.75.75 0 1 1-1.06 1.06L12 13.06l-2.47 2.47a.75.75 0 0 1-1.06-1.06L10.94 12 8.47 9.53a.75.75 0 0 1 1.06-1.06L12 10.94l2.47-2.47a.75.75 0 1 1 1.06 1.06L13.06 12l2.47 2.47Z"/></svg>';
+  /** @type {string|null} */
+  let fichaGuestId = null;
+  let fichaEditando = false;
+
+  function fichaDoConvidado() {
+    let ficha = document.getElementById('ficha-convidado');
+    if (ficha) return ficha;
+    ficha = document.createElement('div');
+    ficha.id = 'ficha-convidado';
+    ficha.className = 'ficha-convidado';
+    ficha.hidden = true;
+    ficha.setAttribute('role', 'dialog');
+    ficha.setAttribute('aria-modal', 'true');
+    ficha.setAttribute('aria-labelledby', 'ficha-nome');
+    ficha.innerHTML = `
+      <div class="ficha-topo">
+        <button type="button" class="ficha-circulo" data-ficha="fechar" aria-label="Fechar">${ICONE_FECHAR_FICHA}</button>
+        <button type="button" class="ficha-texto" data-ficha="cancelar" hidden>Cancelar</button>
+        <button type="button" class="ficha-pilula" data-ficha="editar">Editar</button>
+        <button type="button" class="ficha-pilula is-salvar" data-ficha="salvar" hidden>Salvar</button>
+      </div>
+      <div class="ficha-corpo">
+        <div class="ficha-avatar" id="ficha-avatar"></div>
+        <h2 class="ficha-nome" id="ficha-nome"></h2>
+        <span class="ficha-status" id="ficha-status"></span>
+        <section class="ficha-cartao">
+          <h3>Informações de contato</h3>
+          <div id="ficha-contato"></div>
+        </section>
+        <section class="ficha-cartao">
+          <h3>Respostas</h3>
+          <div id="ficha-respostas"></div>
+        </section>
+        <button type="button" class="ficha-mais" data-ficha="detalhes"><span>Acompanhantes e restrição alimentar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <p class="ficha-erro" id="ficha-erro" hidden></p>
+      </div>`;
+    document.body.appendChild(ficha);
+    ficha.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      const limpar = alvo.closest('[data-limpar]');
+      if (limpar) {
+        const campo = /** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${limpar.getAttribute('data-limpar')}`));
+        if (campo) { campo.value = ''; campo.focus(); }
+        return;
+      }
+      const acao = alvo.closest('[data-ficha]')?.getAttribute('data-ficha');
+      if (acao === 'fechar') fecharFichaDoConvidado();
+      else if (acao === 'editar') { fichaEditando = true; desenharFichaDoConvidado(); ficha.querySelector('input')?.focus(); }
+      else if (acao === 'cancelar') { fichaEditando = false; desenharFichaDoConvidado(); }
+      else if (acao === 'salvar') salvarFichaDoConvidado();
+      else if (acao === 'detalhes') { const id = fichaGuestId; fecharFichaDoConvidado(); if (id) openAddGuestDrawer(id); }
+    });
+    ficha.addEventListener('input', (e) => {
+      const campo = /** @type {HTMLInputElement} */ (e.target);
+      if (campo.id === 'ficha-telefone') campo.value = maskBrazilPhone(campo.value);
+      const erro = document.getElementById('ficha-erro');
+      if (erro) erro.hidden = true;
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !ficha.hidden) fecharFichaDoConvidado(); });
+    // Trocar de menu fecha a ficha.
+    document.addEventListener('click', (e) => { if (!ficha.hidden && /** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular')) fecharFichaDoConvidado(); }, true);
+    return ficha;
+  }
+
+  /** @param {string} id */
+  function abrirFichaDoConvidado(id) {
+    const ficha = fichaDoConvidado();
+    fichaGuestId = id;
+    fichaEditando = false;
+    if (!desenharFichaDoConvidado()) return;
+    ficha.hidden = false;
+    document.body.classList.add('ficha-aberta');
+    const corpo = ficha.querySelector('.ficha-corpo');
+    if (corpo) corpo.scrollTop = 0;
+  }
+
+  function fecharFichaDoConvidado() {
+    const ficha = document.getElementById('ficha-convidado');
+    if (ficha) ficha.hidden = true;
+    document.body.classList.remove('ficha-aberta');
+    fichaGuestId = null;
+    fichaEditando = false;
+  }
+
+  /** @returns {boolean} */
+  function desenharFichaDoConvidado() {
+    const ficha = fichaDoConvidado();
+    const ev = getActiveEvent();
+    const guest = ev && (ev.guests || []).find(g => g.id === fichaGuestId);
+    if (!guest) { fecharFichaDoConvidado(); return false; }
+    const nome = String(guest.name || '').trim();
+    const partes = nome.split(/\s+/);
+    const primeiro = partes[0] || '';
+    const sobrenome = partes.slice(1).join(' ');
+    const iniciais = (primeiro[0] || '') + (sobrenome ? (partes[partes.length - 1][0] || '') : '');
+    const status = { confirmed: 'Confirmado', declined: 'Recusado', pending: 'Pendente' }[guest.status] || 'Pendente';
+
+    /** @type {HTMLElement} */ (ficha.querySelector('#ficha-avatar')).textContent = iniciais.toUpperCase() || '?';
+    /** @type {HTMLElement} */ (ficha.querySelector('#ficha-nome')).textContent = nome || 'Convidado';
+    const selo = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-status'));
+    selo.textContent = status;
+    selo.dataset.status = guest.status || 'pending';
+
+    const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica) => fichaEditando
+      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo"><input id="${id}" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
+      : `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor${valor ? '' : ' is-vazio'}${tipo === 'email' && valor ? ' is-email' : ''}">${escaparHtml(valor || '—')}</span></div>`;
+    /** @type {HTMLElement} */ (ficha.querySelector('#ficha-contato')).innerHTML =
+      linha('Nome', primeiro, 'ficha-primeiro', 'text', 'Nome')
+      + linha('Sobrenome', sobrenome, 'ficha-sobrenome', 'text', 'Sobrenome')
+      + linha('Telefone', guest.phone || '', 'ficha-telefone', 'tel', '(00) 00000-0000')
+      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail');
+
+    const acompanhantes = (guest.companionsNames || []).map(n => String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
+    const resposta = (/** @type {string} */ rotulo, /** @type {string} */ valor) => `<div class="ficha-linha is-resposta"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor">${escaparHtml(valor)}</span></div>`;
+    let restricao = '';
+    try { restricao = textoDaRestricao(guest.restricaoAlimentar) || ''; } catch (e) { restricao = ''; }
+    let relacao = '';
+    try { relacao = formatGuestTitleLabel(guest) || ''; } catch (e) { relacao = ''; }
+    /** @type {HTMLElement} */ (ficha.querySelector('#ficha-respostas')).innerHTML =
+      resposta('Presença', status)
+      + resposta('Acompanhantes', acompanhantes.length ? acompanhantes.join(', ') : 'Nenhum')
+      + resposta('Mesa', guest.table && guest.table !== 'Mesa a Definir' ? guest.table : 'A definir')
+      + resposta('Restrição alimentar', restricao || 'Nenhuma')
+      + (relacao && relacao !== '—' ? resposta('Relação', relacao) : '');
+
+    ficha.classList.toggle('is-editando', fichaEditando);
+    /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="fechar"]')).hidden = fichaEditando;
+    /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="cancelar"]')).hidden = !fichaEditando;
+    /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="editar"]')).hidden = fichaEditando;
+    /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="salvar"]')).hidden = !fichaEditando;
+    /** @type {HTMLElement} */ (ficha.querySelector('#ficha-erro')).hidden = true;
+    return true;
+  }
+
+  async function salvarFichaDoConvidado() {
+    const ficha = fichaDoConvidado();
+    const ev = getActiveEvent();
+    const guest = ev && (ev.guests || []).find(g => g.id === fichaGuestId);
+    if (!guest) return;
+    const valor = (/** @type {string} */ id) => (/** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${id}`))?.value || '').trim();
+    const erro = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-erro'));
+    const avisar = (/** @type {string} */ texto, /** @type {string} */ campo) => { erro.textContent = texto; erro.hidden = false; /** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${campo}`))?.focus(); };
+    const nome = [valor('ficha-primeiro'), valor('ficha-sobrenome')].filter(Boolean).join(' ');
+    const telefone = valor('ficha-telefone');
+    const email = valor('ficha-email');
+    if (nome.length < 3) return avisar('Informe o nome do convidado (pelo menos 3 letras).', 'ficha-primeiro');
+    if (telefone && !isValidBrazilPhone(telefone)) return avisar('Telefone incompleto. Use (DDD) 9XXXX-XXXX.', 'ficha-telefone');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('E-mail inválido.', 'ficha-email');
+
+    const antes = { name: guest.name, phone: guest.phone, email: guest.email };
+    guest.name = nome;
+    guest.phone = telefone;
+    guest.email = email;
+    const botao = /** @type {HTMLButtonElement} */ (ficha.querySelector('[data-ficha="salvar"]'));
+    botao.disabled = true;
+    botao.textContent = 'Salvando…';
+    let falhou = null;
+    try { ({ error: falhou } = await salvarConvidadoNoBanco(guest)); } catch (e) { falhou = e; }
+    botao.disabled = false;
+    botao.textContent = 'Salvar';
+    if (falhou) {
+      Object.assign(guest, antes);
+      erro.textContent = 'Não foi possível salvar. Tente de novo.';
+      erro.hidden = false;
+      return;
+    }
+    fichaEditando = false;
+    desenharFichaDoConvidado();
+    renderGuestsTable();
+    try { renderFloorPlanGuestCards(); } catch (e) { /* planta ainda não montada */ }
+    updateAllCelebrationData();
+    showToast(`Convidado ${nome} atualizado!`, '👤');
   }
 
   // Espaço em branco abaixo dos convidados: continua com as linhas que

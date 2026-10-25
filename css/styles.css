@@ -12807,3 +12807,50 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
   }
 }
+
+/* ==========================================================================
+   Celular (só até 768px): ficha do convidado em tela inteira para ver, editar
+   e adicionar. Seta ← para voltar e título no topo; campos com borda quase
+   transparente; avatar quadrado com cantos de 10px; acompanhantes e restrição
+   alimentar editáveis na própria tela. Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px) {
+  .ficha-convidado .ficha-topo { gap: 8px; }
+  .ficha-convidado .ficha-voltar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: flex-start; flex-shrink: 0; padding: 0; background: transparent !important; border: 0 !important; box-shadow: none !important; color: #18181B; }
+  .ficha-convidado .ficha-voltar svg { width: 24px; height: 24px; }
+  .ficha-convidado .ficha-titulo { flex: 1 1 auto; min-width: 0; margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ficha-convidado .ficha-pilula { margin-left: 0; flex-shrink: 0; }
+  .ficha-convidado .ficha-avatar { border-radius: 10px; }
+  .ficha-convidado.is-novo :is(.ficha-avatar, .ficha-nome, .ficha-status) { display: none !important; }
+  .ficha-convidado.is-novo .ficha-cartao:first-of-type { margin-top: 8px; }
+  .ficha-convidado:not(.is-editando) .ficha-so-edicao { display: none !important; }
+  .ficha-convidado.is-editando .ficha-so-leitura { display: none !important; }
+  .ficha-convidado .ficha-cartao { padding-bottom: 16px; }
+
+  /* Campos: só uma borda quase transparente; o toque escurece de leve. */
+  html body .ficha-convidado .ficha-linha.is-editando:not(#love-h-a) { border-bottom: 0; padding: 8px 0; }
+  html body .ficha-convidado .ficha-campo:not(#love-h-a) { height: 46px; padding: 0 8px 0 12px; border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 8px; background: rgba(255, 255, 255, 0.6); box-sizing: border-box; }
+  html body .ficha-convidado .ficha-campo:focus-within:not(#love-h-a) { border-color: rgba(24, 29, 36, 0.22); }
+  html body .ficha-convidado .ficha-campo input:not(#love-h-a),
+  html body .ficha-convidado .ficha-campo input:focus:not(#love-h-a) { height: 100%; border: 0 !important; box-shadow: none !important; outline: none !important; background: transparent !important; }
+  html body .ficha-convidado .ficha-acomp .ficha-input:not(#love-h-a),
+  html body .ficha-convidado .ficha-restricao .field-input:not(#love-h-a) { width: 100%; height: 46px; padding: 0 12px; border: 1px solid rgba(0, 0, 0, 0.05) !important; border-radius: 8px !important; background: rgba(255, 255, 255, 0.6) !important; box-shadow: none !important; outline: none !important; font: inherit; font-size: 16px !important; color: #18181B; box-sizing: border-box; }
+  html body .ficha-convidado .ficha-acomp .ficha-input:focus:not(#love-h-a),
+  html body .ficha-convidado .ficha-restricao .field-input:focus:not(#love-h-a) { border-color: rgba(24, 29, 36, 0.22) !important; }
+  .ficha-convidado .ficha-acomp .ficha-input::placeholder { color: #C4C4C8; }
+  .ficha-convidado .ficha-restricao { margin-top: 6px; }
+  .ficha-convidado .ficha-restricao .restricao-detalhe .field-input { margin-top: 0; }
+
+  /* Acompanhantes */
+  .ficha-convidado .ficha-acomp { display: flex; flex-direction: column; gap: 8px; padding: 12px 0 14px; border-bottom: 1px solid #EDEDED; }
+  .ficha-convidado .ficha-acomp-topo { display: flex; align-items: center; justify-content: space-between; }
+  .ficha-convidado .ficha-acomp-remover { width: 36px; height: 36px; margin-right: -8px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #71717A; }
+  .ficha-convidado .ficha-acomp-remover svg { width: 18px; height: 18px; }
+  .ficha-convidado .ficha-acomp .ficha-restricao { margin-top: 0; }
+  .ficha-convidado .ficha-add-acomp { width: 100%; height: 46px; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1px dashed rgba(0, 0, 0, 0.14); border-radius: 8px; font-size: 15px; font-weight: 600; color: #183b54; }
+  .ficha-convidado .ficha-add-acomp svg { width: 18px; height: 18px; }
+
+  body[data-theme="dark"] .ficha-convidado :is(.ficha-titulo, .ficha-voltar) { color: #FFFFFF; }
+  body[data-theme="dark"] .ficha-convidado :is(.ficha-campo, .ficha-acomp .ficha-input, .ficha-restricao .field-input) { background: rgba(255, 255, 255, 0.04) !important; border-color: rgba(255, 255, 255, 0.08) !important; color: #FFFFFF; }
+  body[data-theme="dark"] .ficha-convidado .ficha-acomp { border-bottom-color: #333333; }
+}

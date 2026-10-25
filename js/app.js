@@ -10229,15 +10229,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // Ficha do convidado (celular): toque no nome abre nome, contato e
-  // respostas; "Editar" deixa nome, telefone e e-mail editáveis.
-  // Acompanhantes e restrição alimentar continuam no formulário completo.
+  // Ficha do convidado (celular, tela inteira): toque no nome abre nome,
+  // contato e respostas; "Editar" deixa tudo editável na própria tela —
+  // contato, restrição alimentar e acompanhantes. O "+" de adicionar abre a
+  // mesma tela, já em edição ("Adicionar convidado"). Sem pop-up.
   // ==========================================
-  const ICONE_FECHAR_FICHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const ICONE_VOLTAR_FICHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>';
   const ICONE_LIMPAR_CAMPO = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm3.53 12.47a.75.75 0 1 1-1.06 1.06L12 13.06l-2.47 2.47a.75.75 0 0 1-1.06-1.06L10.94 12 8.47 9.53a.75.75 0 0 1 1.06-1.06L12 10.94l2.47-2.47a.75.75 0 1 1 1.06 1.06L13.06 12l2.47 2.47Z"/></svg>';
+  const ICONE_REMOVER_ACOMP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg>';
   /** @type {string|null} */
   let fichaGuestId = null;
   let fichaEditando = false;
+  /** Convidado novo (ainda fora da lista) enquanto a ficha está em "Adicionar". @type {any} */
+  let fichaRascunho = null;
+  /** @type {ReturnType<typeof DietaryRestrictionSelect>|null} */
+  let fichaRestricao = null;
+  /** Restrição de cada acompanhante na ficha. @type {WeakMap<HTMLElement, ReturnType<typeof DietaryRestrictionSelect>>} */
+  const fichaRestricaoDoAcomp = new WeakMap();
 
   function fichaDoConvidado() {
     let ficha = document.getElementById('ficha-convidado');
@@ -10248,27 +10256,39 @@ document.addEventListener('DOMContentLoaded', () => {
     ficha.hidden = true;
     ficha.setAttribute('role', 'dialog');
     ficha.setAttribute('aria-modal', 'true');
-    ficha.setAttribute('aria-labelledby', 'ficha-nome');
+    ficha.setAttribute('aria-labelledby', 'ficha-titulo');
     ficha.innerHTML = `
       <div class="ficha-topo">
-        <button type="button" class="ficha-circulo" data-ficha="fechar" aria-label="Fechar">${ICONE_FECHAR_FICHA}</button>
-        <button type="button" class="ficha-texto" data-ficha="cancelar" hidden>Cancelar</button>
+        <button type="button" class="ficha-voltar" data-ficha="voltar" aria-label="Voltar">${ICONE_VOLTAR_FICHA}</button>
+        <h2 class="ficha-titulo" id="ficha-titulo"></h2>
         <button type="button" class="ficha-pilula" data-ficha="editar">Editar</button>
         <button type="button" class="ficha-pilula is-salvar" data-ficha="salvar" hidden>Salvar</button>
       </div>
       <div class="ficha-corpo">
         <div class="ficha-avatar" id="ficha-avatar"></div>
-        <h2 class="ficha-nome" id="ficha-nome"></h2>
+        <p class="ficha-nome" id="ficha-nome"></p>
         <span class="ficha-status" id="ficha-status"></span>
         <section class="ficha-cartao">
           <h3>Informações de contato</h3>
           <div id="ficha-contato"></div>
         </section>
-        <section class="ficha-cartao">
+        <section class="ficha-cartao ficha-so-leitura">
           <h3>Respostas</h3>
           <div id="ficha-respostas"></div>
         </section>
-        <button type="button" class="ficha-mais" data-ficha="detalhes"><span>Acompanhantes e restrição alimentar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+        <section class="ficha-cartao ficha-so-edicao">
+          <h3>Restrição alimentar</h3>
+          <div class="ficha-restricao" id="ficha-restricao"></div>
+        </section>
+        <section class="ficha-cartao ficha-so-edicao" id="ficha-acompanhantes-cartao">
+          <h3>Acompanhantes</h3>
+          <div id="ficha-acompanhantes"></div>
+          <button type="button" class="ficha-add-acomp" data-ficha="add-acomp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Adicionar acompanhante</span>
+          </button>
+        </section>
+        <button type="button" class="ficha-mais ficha-so-leitura" data-ficha="detalhes"><span>Acompanhantes e restrição alimentar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
         <p class="ficha-erro" id="ficha-erro" hidden></p>
       </div>`;
     document.body.appendChild(ficha);
@@ -10280,12 +10300,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (campo) { campo.value = ''; campo.focus(); }
         return;
       }
+      const remover = alvo.closest('[data-remover-acomp]');
+      if (remover) { remover.closest('.ficha-acomp')?.remove(); numerarAcompanhantesDaFicha(); return; }
       const acao = alvo.closest('[data-ficha]')?.getAttribute('data-ficha');
-      if (acao === 'fechar') fecharFichaDoConvidado();
-      else if (acao === 'editar') { fichaEditando = true; desenharFichaDoConvidado(); ficha.querySelector('input')?.focus(); }
-      else if (acao === 'cancelar') { fichaEditando = false; desenharFichaDoConvidado(); }
+      if (acao === 'voltar') {
+        // Editando um convidado que já existe: volta para a ficha; senão fecha.
+        if (fichaEditando && !fichaRascunho) { fichaEditando = false; desenharFichaDoConvidado(); }
+        else fecharFichaDoConvidado();
+      }
+      else if (acao === 'editar') { fichaEditando = true; desenharFichaDoConvidado(); }
       else if (acao === 'salvar') salvarFichaDoConvidado();
-      else if (acao === 'detalhes') { const id = fichaGuestId; fecharFichaDoConvidado(); if (id) openAddGuestDrawer(id); }
+      else if (acao === 'add-acomp') { const linha = adicionarAcompanhanteNaFicha({}); linha?.querySelector('input')?.focus(); }
+      else if (acao === 'detalhes') {
+        fichaEditando = true;
+        desenharFichaDoConvidado();
+        ficha.querySelector('#ficha-acompanhantes-cartao')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
     });
     ficha.addEventListener('input', (e) => {
       const campo = /** @type {HTMLInputElement} */ (e.target);
@@ -10299,11 +10329,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return ficha;
   }
 
-  /** @param {string} id */
+  /** @param {string|null} id  null = novo convidado (abre já em edição). */
   function abrirFichaDoConvidado(id) {
     const ficha = fichaDoConvidado();
     fichaGuestId = id;
-    fichaEditando = false;
+    fichaRascunho = id ? null : {
+      id: `g-${Date.now()}`, name: '', email: '', phone: '', companions: 0, companionsNames: [], companionsDetailed: [],
+      adults: 1, children: 0, table: 'Mesa a Definir', status: 'pending', giftsBought: [], dietaryRestrictions: '',
+      observationComments: [], relationshipTitle: 'Convidado', relationshipHost: ''
+    };
+    fichaEditando = !id;
     if (!desenharFichaDoConvidado()) return;
     ficha.hidden = false;
     document.body.classList.add('ficha-aberta');
@@ -10316,15 +10351,51 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ficha) ficha.hidden = true;
     document.body.classList.remove('ficha-aberta');
     fichaGuestId = null;
+    fichaRascunho = null;
     fichaEditando = false;
+  }
+
+  function convidadoDaFicha() {
+    if (fichaRascunho) return fichaRascunho;
+    const ev = getActiveEvent();
+    return (ev && (ev.guests || []).find(g => g.id === fichaGuestId)) || null;
+  }
+
+  function numerarAcompanhantesDaFicha() {
+    document.querySelectorAll('#ficha-acompanhantes .ficha-acomp').forEach((l, i) => {
+      const r = l.querySelector('.ficha-acomp-rotulo');
+      if (r) r.textContent = `Acompanhante ${i + 1}`;
+    });
+  }
+
+  /** @param {any} acomp @returns {HTMLElement|null} */
+  function adicionarAcompanhanteNaFicha(acomp) {
+    const lista = document.getElementById('ficha-acompanhantes');
+    if (!lista) return null;
+    const { id, name = '', ageGroup = 'adult' } = acomp || {};
+    const nome = String(name || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+    const linha = document.createElement('div');
+    linha.className = 'ficha-acomp';
+    linha.dataset.id = id || `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    linha.innerHTML = `
+      <div class="ficha-acomp-topo"><span class="ficha-rotulo ficha-acomp-rotulo"></span><button type="button" class="ficha-acomp-remover" data-remover-acomp aria-label="Remover acompanhante">${ICONE_REMOVER_ACOMP}</button></div>
+      <input type="text" class="ficha-input ficha-acomp-nome" value="${escaparHtml(/^acompanhante$/i.test(nome) ? '' : nome)}" placeholder="Nome do acompanhante" autocomplete="off" aria-label="Nome do acompanhante">
+      <select class="ficha-input ficha-acomp-idade" aria-label="Faixa etária">
+        ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([v, r]) => `<option value="${v}"${v === ageGroup ? ' selected' : ''}>${r}</option>`).join('')}
+      </select>
+      <div class="ficha-restricao ficha-acomp-restricao"></div>`;
+    lista.appendChild(linha);
+    fichaRestricaoDoAcomp.set(linha, DietaryRestrictionSelect(/** @type {HTMLElement} */ (linha.querySelector('.ficha-acomp-restricao')), { semRotulo: true, placeholder: 'Restrições alimentares', valor: acomp && acomp.restricaoAlimentar || null }));
+    numerarAcompanhantesDaFicha();
+    return linha;
   }
 
   /** @returns {boolean} */
   function desenharFichaDoConvidado() {
     const ficha = fichaDoConvidado();
-    const ev = getActiveEvent();
-    const guest = ev && (ev.guests || []).find(g => g.id === fichaGuestId);
+    const guest = convidadoDaFicha();
     if (!guest) { fecharFichaDoConvidado(); return false; }
+    const novo = !!fichaRascunho;
     const nome = String(guest.name || '').trim();
     const partes = nome.split(/\s+/);
     const primeiro = partes[0] || '';
@@ -10332,6 +10403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const iniciais = (primeiro[0] || '') + (sobrenome ? (partes[partes.length - 1][0] || '') : '');
     const status = { confirmed: 'Confirmado', declined: 'Recusado', pending: 'Pendente' }[guest.status] || 'Pendente';
 
+    /** @type {HTMLElement} */ (ficha.querySelector('#ficha-titulo')).textContent = novo ? 'Adicionar convidado' : fichaEditando ? 'Editar convidado' : '';
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-avatar')).textContent = iniciais.toUpperCase() || '?';
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-nome')).textContent = nome || 'Convidado';
     const selo = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-status'));
@@ -10339,7 +10411,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selo.dataset.status = guest.status || 'pending';
 
     const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica) => fichaEditando
-      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo"><input id="${id}" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
+      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
       : `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor${valor ? '' : ' is-vazio'}${tipo === 'email' && valor ? ' is-email' : ''}">${escaparHtml(valor || '—')}</span></div>`;
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-contato')).innerHTML =
       linha('Nome', primeiro, 'ficha-primeiro', 'text', 'Nome')
@@ -10347,7 +10419,7 @@ document.addEventListener('DOMContentLoaded', () => {
       + linha('Telefone', guest.phone || '', 'ficha-telefone', 'tel', '(00) 00000-0000')
       + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail');
 
-    const acompanhantes = (guest.companionsNames || []).map(n => String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
+    const acompanhantes = (guest.companionsNames || []).map((/** @type {string} */ n) => String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
     const resposta = (/** @type {string} */ rotulo, /** @type {string} */ valor) => `<div class="ficha-linha is-resposta"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor">${escaparHtml(valor)}</span></div>`;
     let restricao = '';
     try { restricao = textoDaRestricao(guest.restricaoAlimentar) || ''; } catch (e) { restricao = ''; }
@@ -10360,9 +10432,20 @@ document.addEventListener('DOMContentLoaded', () => {
       + resposta('Restrição alimentar', restricao || 'Nenhuma')
       + (relacao && relacao !== '—' ? resposta('Relação', relacao) : '');
 
+    // Edição: restrição do convidado e lista de acompanhantes na própria tela.
+    const listaAcomp = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-acompanhantes'));
+    listaAcomp.innerHTML = '';
+    fichaRestricao = null;
+    if (fichaEditando) {
+      fichaRestricao = DietaryRestrictionSelect(/** @type {HTMLElement} */ (ficha.querySelector('#ficha-restricao')), { semRotulo: true, placeholder: 'Restrições alimentares', valor: guest.restricaoAlimentar || null });
+      const detalhados = (guest.companionsDetailed && guest.companionsDetailed.length)
+        ? guest.companionsDetailed
+        : (guest.companionsNames || []).map((/** @type {string} */ name) => ({ name, ageGroup: 'adult' }));
+      detalhados.forEach((/** @type {any} */ c) => adicionarAcompanhanteNaFicha(c));
+    }
+
     ficha.classList.toggle('is-editando', fichaEditando);
-    /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="fechar"]')).hidden = fichaEditando;
-    /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="cancelar"]')).hidden = !fichaEditando;
+    ficha.classList.toggle('is-novo', novo);
     /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="editar"]')).hidden = fichaEditando;
     /** @type {HTMLElement} */ (ficha.querySelector('[data-ficha="salvar"]')).hidden = !fichaEditando;
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-erro')).hidden = true;
@@ -10372,8 +10455,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function salvarFichaDoConvidado() {
     const ficha = fichaDoConvidado();
     const ev = getActiveEvent();
-    const guest = ev && (ev.guests || []).find(g => g.id === fichaGuestId);
-    if (!guest) return;
+    const guest = convidadoDaFicha();
+    if (!guest || !ev) return;
+    const novo = !!fichaRascunho;
     const valor = (/** @type {string} */ id) => (/** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${id}`))?.value || '').trim();
     const erro = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-erro'));
     const avisar = (/** @type {string} */ texto, /** @type {string} */ campo) => { erro.textContent = texto; erro.hidden = false; /** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${campo}`))?.focus(); };
@@ -10383,30 +10467,56 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nome.length < 3) return avisar('Informe o nome do convidado (pelo menos 3 letras).', 'ficha-primeiro');
     if (telefone && !isValidBrazilPhone(telefone)) return avisar('Telefone incompleto. Use (DDD) 9XXXX-XXXX.', 'ficha-telefone');
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('E-mail inválido.', 'ficha-email');
+    if (fichaRestricao && !fichaRestricao.validar()) return;
+    const linhas = /** @type {HTMLElement[]} */ (Array.from(ficha.querySelectorAll('#ficha-acompanhantes .ficha-acomp')));
+    if (linhas.some(l => { const r = fichaRestricaoDoAcomp.get(l); return r ? !r.validar() : false; })) return;
 
-    const antes = { name: guest.name, phone: guest.phone, email: guest.email };
+    const companionsDetailed = linhas.map(l => ({
+      id: l.dataset.id,
+      name: /** @type {HTMLInputElement} */ (l.querySelector('.ficha-acomp-nome')).value.trim() || 'Acompanhante',
+      ageGroup: /** @type {HTMLSelectElement} */ (l.querySelector('.ficha-acomp-idade')).value,
+      restricaoAlimentar: fichaRestricaoDoAcomp.get(l)?.valor() || { restrictionType: 'NONE' }
+    }));
+    const campos = ['name', 'phone', 'email', 'companionsNames', 'companionsDetailed', 'companions', 'adults', 'children', 'restricaoAlimentar', 'dietaryRestrictions'];
+    /** @type {any} */ const antes = {};
+    campos.forEach(c => { antes[c] = guest[c]; });
+    const acompanhantesAntes = guest.companions || 0;
     guest.name = nome;
     guest.phone = telefone;
     guest.email = email;
+    guest.companionsDetailed = companionsDetailed;
+    guest.companionsNames = companionsDetailed.map(c => c.name);
+    guest.companions = companionsDetailed.length;
+    guest.adults = 1 + companionsDetailed.filter(c => c.ageGroup === 'adult').length;
+    guest.children = companionsDetailed.filter(c => c.ageGroup === 'child' || c.ageGroup === 'baby').length;
+    if (fichaRestricao) {
+      guest.restricaoAlimentar = fichaRestricao.valor();
+      guest.dietaryRestrictions = textoDaRestricao(guest.restricaoAlimentar);
+    }
+
     const botao = /** @type {HTMLButtonElement} */ (ficha.querySelector('[data-ficha="salvar"]'));
     botao.disabled = true;
     botao.textContent = 'Salvando…';
+    if (novo) ev.guests.unshift(guest);
     let falhou = null;
     try { ({ error: falhou } = await salvarConvidadoNoBanco(guest)); } catch (e) { falhou = e; }
     botao.disabled = false;
     botao.textContent = 'Salvar';
     if (falhou) {
+      if (novo) { const i = ev.guests.indexOf(guest); if (i !== -1) ev.guests.splice(i, 1); }
       Object.assign(guest, antes);
       erro.textContent = 'Não foi possível salvar. Tente de novo.';
       erro.hidden = false;
       return;
     }
+    ev.totalConvidados = (ev.totalConvidados || 0) + (novo ? 1 + companionsDetailed.length : companionsDetailed.length - acompanhantesAntes);
+    if (novo) { fichaRascunho = null; fichaGuestId = guest.id; }
     fichaEditando = false;
     desenharFichaDoConvidado();
     renderGuestsTable();
-    try { renderFloorPlanGuestCards(); } catch (e) { /* planta ainda não montada */ }
+    try { renderFloorPlanGuestCards(); renderFloorPlanCanvas(); } catch (e) { /* planta ainda não montada */ }
     updateAllCelebrationData();
-    showToast(`Convidado ${nome} atualizado!`, '👤');
+    showToast(novo ? `Convidado ${nome} adicionado à lista de ${ev.title}!` : `Convidado ${nome} atualizado!`, '👤');
   }
 
   // Espaço em branco abaixo dos convidados: continua com as linhas que
@@ -11126,7 +11236,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const btnHostAddGuest = document.getElementById('btn-host-add-guest');
-  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => openAddGuestDrawer());
+  // Celular: o "+" abre a ficha em tela inteira, já em "Adicionar convidado".
+  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => { if (window.matchMedia('(max-width: 768px)').matches) abrirFichaDoConvidado(null); else openAddGuestDrawer(); });
   // Mapear mesas › "+ Adicionar" ao lado de Convidados: o mesmo drawer.
   document.getElementById('btn-floorplan-add-guest')?.addEventListener('click', () => openAddGuestDrawer());
   const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');

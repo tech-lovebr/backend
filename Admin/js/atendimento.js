@@ -13,6 +13,8 @@
    ========================================================================== */
 
 const API_RESPONDER = 'https://love.com.br/api/atendimento-responder';
+// Traz os e-mails de contato@love.com.br (IMAP do Gmail) para cá.
+const API_EMAIL = 'https://love.com.br/api/atendimento-email';
 
 /* Abas: Pendentes (o que precisa de alguém da equipe), os dois canais e
    o histórico. Spam fica fora de todas, menos de Todos. */
@@ -86,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // e-mail) — quem faz isso é o banco (trigger atualizar_conversa_do_ticket).
   // A lista se atualiza sozinha para essas conversas reaparecerem.
   setInterval(atualizarTickets, 30000);
+  buscarEmails().then(n => { if (n) atualizarTickets(); });
 
   // Link direto para uma conversa: atendimento?id=<uuid>
   const id = new URLSearchParams(location.search).get('id');
@@ -94,8 +97,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /* ------------------------------------------------------------- Lista */
 
+/** Pede ao servidor os e-mails novos da caixa contato@. Devolve quantos entraram. */
+async function buscarEmails() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const r = await fetch(API_EMAIL, { method: 'POST', headers: { Authorization: `Bearer ${session?.access_token || ''}` } });
+    const j = await r.json().catch(() => ({}));
+    avisoDoEmail(j);
+    return (j.novos || 0) + (j.respostas || 0);
+  } catch {
+    return 0;
+  }
+}
+
+/** Aviso discreto na barra da tabela enquanto o e-mail não estiver ligado. */
+function avisoDoEmail(j) {
+  const barra = document.querySelector('#caixa-conversas .table-toolbar-dir');
+  if (!barra) return;
+  let aviso = document.getElementById('aviso-email');
+  const texto = j.configurado === false ? 'E-mail ainda não ligado'
+    : j.erro === 'senha_recusada' ? 'O Gmail recusou a senha de app'
+    : j.erro ? 'Não foi possível ler o e-mail agora' : '';
+  if (!texto) { aviso?.remove(); return; }
+  if (!aviso) {
+    aviso = document.createElement('span');
+    aviso.id = 'aviso-email';
+    aviso.className = 'cell-muted';
+    aviso.style.fontSize = '.75rem';
+    barra.prepend(aviso);
+  }
+  aviso.textContent = texto;
+}
+
 async function atualizarTickets() {
   if (document.hidden) return;
+  await buscarEmails();
   const { data, error } = await safeSelect('tickets', '*');
   if (error) return;
   TICKETS = data;

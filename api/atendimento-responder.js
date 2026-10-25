@@ -12,9 +12,10 @@
 //   5. muda o status (padrão: aguardando_cliente) e conta o uso da resposta
 //      pronta escolhida.
 //
-// Etapa 2 troca o envio do passo 3 pelo SMTP da caixa do Gmail, para a
-// resposta ficar na mesma conversa da caixa de suporte. Por ora sai pelo SES,
-// com Responder-para na caixa de suporte.
+// Passo 3: com SUPORTE_EMAIL_SENHA configurada, sai pelo SMTP do Gmail como
+// contato@love.com.br, respondendo ao último e-mail da pessoa (fica na mesma
+// conversa do Gmail e em Enviados) — api/_email-suporte.js. Sem a senha, sai
+// pelo SES com Responder-para na caixa de suporte.
 //
 // Variáveis de ambiente:
 //   NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
@@ -161,6 +162,30 @@ async function responder(req, res) {
 
   if (!ticket.email) {
     email.motivo = "sem_email";
+  } else if (require("./_email-suporte").configurado()) {
+    try {
+      const { enviarPeloGmail } = require("./_email-suporte");
+      // Responde ao último e-mail da pessoa nesta conversa (mesma conversa no Gmail).
+      const { data: anteriores } = await supabase.from("ticket_messages")
+        .select("email_message_id").eq("ticket_id", ticket.id).not("email_message_id", "is", null)
+        .order("created_at", { ascending: true });
+      const { data: inicio } = await supabase.from("tickets").select("email_message_id").eq("id", ticket.id).maybeSingle();
+      const ids = [inicio && inicio.email_message_id, ...(anteriores || []).map(m => m.email_message_id)].filter(Boolean);
+      const r = await enviarPeloGmail({
+        para: ticket.email,
+        assunto: assuntoEmail,
+        texto: `${texto}
+
+Protocolo ${ticket.protocolo}`,
+        html: layoutDoEmail({ corpoHtml: html, protocolo: ticket.protocolo, suporte }),
+        responderA: ids[ids.length - 1] || null,
+        referencias: ids,
+      });
+      email = { enviado: true, motivo: null, id: r.messageId };
+    } catch (e) {
+      console.error("Atendimento: falha no SMTP do Gmail", e);
+      email = { enviado: false, motivo: "falha_envio", detalhe: String(e && e.message || e) };
+    }
   } else if (!process.env.AWS_ACCESS_KEY_ID || !process.env.EMAIL_FROM) {
     email.motivo = "email_nao_configurado";
   } else {

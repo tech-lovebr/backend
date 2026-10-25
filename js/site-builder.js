@@ -5592,3 +5592,134 @@ window.switchBuilderPage = switchBuilderPage;
 // Mesmo seletor de cor do inspector, usado também no pop-up da mesa (Mapa do evento).
 window.colorSwatchPopoverHtml = colorSwatchPopoverHtml;
 window.wireColorSwatchPopovers = wireColorSwatchPopovers;
+
+/* -------------------- Celular: prévia em tela cheia + gaveta de elementos --------------------
+ * No celular (até 768px, ou deitado) o convite aparece em tela cheia. O botão
+ * flutuante "Adicionar elementos" abre a gaveta de baixo para cima com os
+ * elementos (Título, Texto...): tocar põe o elemento no fim do convite. Tocar
+ * num elemento da prévia abre a mesma gaveta com as opções dele. Arrastar na
+ * prévia rola o convite; para mover um bloco, segure-o um instante.
+ * O desktop não muda. */
+(function construtorNoCelular() {
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const XIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const MAIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+
+  function iniciar() {
+    const raiz = document.getElementById('site-builder-root');
+    const painel = document.getElementById('builder-elements-panel');
+    if (!raiz || !painel || document.getElementById('builder-fab')) return;
+    const lugarOriginal = painel.parentElement;
+
+    const fab = document.createElement('button');
+    fab.type = 'button';
+    fab.id = 'builder-fab';
+    fab.className = 'builder-fab';
+    fab.innerHTML = `${MAIS}<span>Adicionar elementos</span>`;
+    const fundo = document.createElement('div');
+    fundo.className = 'builder-gaveta-fundo';
+    const gaveta = document.createElement('section');
+    gaveta.className = 'builder-gaveta';
+    gaveta.setAttribute('aria-hidden', 'true');
+    gaveta.innerHTML = `<div class="builder-gaveta-alca" aria-hidden="true"></div>
+      <div class="builder-gaveta-topo"><h3 class="builder-gaveta-titulo">Adicionar elementos</h3><button type="button" class="builder-gaveta-fechar" aria-label="Fechar">${XIS}</button></div>
+      <div class="builder-gaveta-corpo"></div>`;
+    const corpo = /** @type {HTMLElement} */ (gaveta.querySelector('.builder-gaveta-corpo'));
+    document.body.append(fab, fundo, gaveta);
+
+    const editando = () => !!painel.querySelector('[data-editor-back]');
+    const abrir = () => {
+      gaveta.classList.add('is-aberta');
+      fundo.classList.add('is-aberta');
+      gaveta.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('builder-gaveta-aberta');
+    };
+    const fechar = () => {
+      gaveta.classList.remove('is-aberta');
+      fundo.classList.remove('is-aberta');
+      gaveta.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('builder-gaveta-aberta');
+      // Fechar com um elemento aberto volta para a lista de elementos.
+      if (editando() && typeof deselect === 'function') deselect();
+    };
+    fab.addEventListener('click', () => { if (editando() && typeof deselect === 'function') deselect(); abrir(); });
+    fundo.addEventListener('click', fechar);
+    gaveta.querySelector('.builder-gaveta-fechar')?.addEventListener('click', fechar);
+    const alca = gaveta.querySelector('.builder-gaveta-alca');
+    let alcaY = 0;
+    alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
+    alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fechar(); });
+
+    // O painel mora na gaveta só no celular; no desktop volta para o lugar dele.
+    const posicionar = () => {
+      if (noCelular.matches) { if (painel.parentElement !== corpo) corpo.appendChild(painel); }
+      else {
+        if (painel.parentElement !== lugarOriginal && lugarOriginal) lugarOriginal.insertBefore(painel, lugarOriginal.firstChild);
+        gaveta.classList.remove('is-aberta');
+        fundo.classList.remove('is-aberta');
+        document.body.classList.remove('builder-gaveta-aberta');
+      }
+    };
+    posicionar();
+    noCelular.addEventListener?.('change', posicionar);
+    window.addEventListener('resize', posicionar);
+
+    // Tocar num elemento da gaveta: entra no fim do convite e abre as opções dele.
+    painel.addEventListener('click', (e) => {
+      if (!noCelular.matches) return;
+      const item = /** @type {HTMLElement|null} */ (/** @type {HTMLElement} */ (e.target).closest('.builder-el-item'));
+      if (!item || !item.dataset.elType || typeof insertElementAt !== 'function') return;
+      e.preventDefault();
+      const tipo = item.dataset.elType;
+      const secoes = (builderState && builderState.sections) || [];
+      const capa = typeof secaoDeCapa === 'function' ? secaoDeCapa() : null;
+      let alvo = tipo === 'secao' ? null : secoes.filter(s => s && s.columns && s.columns.length && !s.isQuickNav && !s.isGiftsBlock && s !== capa).pop();
+      // Sem seção de conteúdo (ou pedindo uma seção): cria uma antes dos botões.
+      let selecionar = null;
+      if (!alvo) {
+        const botoes = secoes.find(s => s.isQuickNav);
+        alvo = createSection();
+        secoes.splice(botoes ? secoes.indexOf(botoes) : secoes.length, 0, alvo);
+        selecionar = { id: alvo.id, kind: 'section' };
+      }
+      if (tipo !== 'secao') {
+        const coluna = alvo.columns[0];
+        const novo = insertElementAt(coluna.id, coluna.elements.length, tipo);
+        if (novo) selecionar = { id: novo.id, kind: 'element' };
+      }
+      if (!selecionar) return;
+      const novo = { id: selecionar.id };
+      pushHistory();
+      renderCanvas();
+      selectElement(selecionar.id, selecionar.kind);
+      requestAnimationFrame(() => document.querySelector(`[data-element-id="${novo.id}"], [data-section-id="${novo.id}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
+    });
+
+    // Painel mudou (elemento escolhido na prévia ou voltou para a lista):
+    // título da gaveta e, ao escolher um elemento, a gaveta abre sozinha.
+    // No celular a prévia rola com o dedo: arrastar blocos só segurando.
+    let estavaEditando = false;
+    let agendado = false;
+    const ajustar = () => {
+      agendado = false;
+      if (!noCelular.matches) return;
+      const agora = editando();
+      const titulo = gaveta.querySelector('.builder-gaveta-titulo');
+      const texto = agora ? 'Editar elemento' : 'Adicionar elementos';
+      if (titulo && titulo.textContent !== texto) titulo.textContent = texto;
+      if (agora && !estavaEditando) abrir();
+      estavaEditando = agora;
+      (typeof sortableInstances !== 'undefined' ? sortableInstances : []).forEach((/** @type {any} */ s) => {
+        if (!s || !s.el || !s.option) return;
+        if (painel.contains(s.el)) s.option('disabled', true);
+        else { s.option('delay', 350); s.option('delayOnTouchOnly', true); }
+      });
+    };
+    const observador = new MutationObserver(() => { if (!agendado) { agendado = true; queueMicrotask(ajustar); } });
+    observador.observe(raiz, { childList: true, subtree: true });
+    observador.observe(gaveta, { childList: true, subtree: true });
+    ajustar();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

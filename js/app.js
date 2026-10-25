@@ -22527,3 +22527,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+/* Celular (até 768px, ou deitado): Convite digital › Informações com a prévia
+ * em tela cheia; o botão flutuante "Editar informações" abre o formulário numa
+ * gaveta de baixo para cima (mesmo jeito do "Adicionar elementos" da
+ * Aparência). O desktop não muda. */
+(function informacoesNoCelular() {
+  const XIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const LAPIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.86 4.49a2.1 2.1 0 1 1 2.97 2.97L8.5 18.79 4.5 19.5l.71-4 11.65-11.01Z"/></svg>';
+  function iniciar() {
+    const form = document.getElementById('editor-form-column');
+    if (!form || document.getElementById('info-fab')) return;
+    const fab = document.createElement('button');
+    fab.type = 'button';
+    fab.id = 'info-fab';
+    fab.className = 'builder-fab info-fab';
+    fab.innerHTML = `${LAPIS}<span>Editar informações</span>`;
+    const fundo = document.createElement('div');
+    fundo.className = 'builder-gaveta-fundo info-gaveta-fundo';
+    const topo = document.createElement('div');
+    topo.className = 'info-gaveta-cabeca';
+    topo.innerHTML = `<div class="builder-gaveta-alca" aria-hidden="true"></div>
+      <div class="builder-gaveta-topo"><h3 class="builder-gaveta-titulo">Informações</h3><button type="button" class="builder-gaveta-fechar" aria-label="Fechar">${XIS}</button></div>`;
+    form.insertBefore(topo, form.firstChild);
+    document.body.append(fab, fundo);
+    const abrir = () => { document.body.classList.add('info-gaveta-aberta'); fundo.classList.add('is-aberta'); form.scrollTop = 0; };
+    const fechar = () => { document.body.classList.remove('info-gaveta-aberta'); fundo.classList.remove('is-aberta'); };
+    fab.addEventListener('click', abrir);
+    fundo.addEventListener('click', fechar);
+    topo.querySelector('.builder-gaveta-fechar')?.addEventListener('click', fechar);
+    const alca = topo.querySelector('.builder-gaveta-alca');
+    let alcaY = 0;
+    alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
+    alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fechar(); });
+    // Trocar de menu fecha a gaveta.
+    document.addEventListener('click', (e) => { if (/** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular')) fechar(); }, true);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

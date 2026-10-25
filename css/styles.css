@@ -12887,3 +12887,120 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   body[data-theme="dark"] .planta-zoom { background: rgba(40, 40, 40, 0.72); border-color: rgba(255, 255, 255, 0.1); }
   body[data-theme="dark"] .planta-zoom button { color: #FFFFFF; }
 }
+
+/* ==========================================================================
+   Celular (até 768px ou deitado): Checklist, Mensagens e editor do convite.
+   - Checklist: contadores em 3 colunas na largura toda; sem as abas
+     Cronograma / Por categoria / Todas / Pendentes / Concluídas.
+   - Mensagens: ocupa a largura toda (sem faixa branca à direita) e sem as
+     abas Explorar / Mensagens / Contratos em cima.
+   - Convite digital: prévia em tela cheia; botão flutuante "Adicionar
+     elementos" abre a gaveta de baixo para cima. Desktop não muda.
+   ========================================================================== */
+.builder-fab, .builder-gaveta, .builder-gaveta-fundo { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Checklist */
+  html body .chk-contadores:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
+  html body .chk-contador:not(#love-h-a) { height: auto; min-height: 64px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.25; }
+  html body .chk-contador b:not(#love-h-a) { font-size: 20px; line-height: 1.1; }
+  html body .chk-filtros:not(#love-h-a) { display: none !important; }
+  html body .chk-lista:not(#love-h-a) { margin-top: 20px; }
+
+  /* Mensagens */
+  html body #tab-b2b #b2b-messages-view:not(#love-h-a) { width: calc(100% + 32px) !important; max-width: none !important; }
+  html body #tab-b2b #b2b-messages-view .b2b-chat-contacts-column:not(#love-h-a) { width: 100% !important; min-width: 0 !important; border-right: 0 !important; }
+  html body #tab-b2b #b2b-chat-search:not(#love-h-a) { height: 44px !important; font-size: 16px !important; border-radius: 8px !important; }
+  html body #tab-b2b #b2b-messages-view .b2b-chat-contacts-column > div:first-child:not(#love-h-a) { height: auto !important; padding: 12px 16px !important; }
+  body:has(#b2b-messages-view:not(.hidden)) #submenu-celular { display: none !important; }
+
+  /* Convite digital: prévia na tela toda */
+  html body #tab-edit-site .builder-narrow-notice:not(#love-h-a) { display: none !important; }
+  html body #tab-edit-site .builder-wrap:not(#love-h-a) { display: flex !important; flex-direction: column; border: 0 !important; border-radius: 0 !important; background: transparent !important; margin: 0 -16px; width: calc(100% + 32px); }
+  html body #tab-edit-site .builder-device-toggle:not(#love-h-a),
+  html body #tab-edit-site .builder-toolbar-divider:not(#love-h-a) { display: none !important; }
+  html body #tab-edit-site .builder-wrap > .builder-toolbar:not(#love-h-a) { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 8px !important; height: auto !important; min-height: 56px; padding: 6px 16px !important; border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important; }
+  html body #tab-edit-site .builder-toolbar-left:not(#love-h-a) { flex: 1 1 auto; min-width: 0; }
+  html body #tab-edit-site .builder-toolbar-right:not(#love-h-a) { display: flex !important; align-items: center; gap: 6px; flex: 0 0 auto; margin: 0 !important; }
+  html body #tab-edit-site .builder-toolbar-right .builder-tool-btn:not(#love-h-a) { width: 40px; height: 40px; }
+  html body #tab-edit-site .builder-toolbar-right .builder-toolbar-btn:not(#love-h-a) { height: 40px; padding: 0 12px !important; font-size: 14px !important; }
+  html body #tab-edit-site .builder-body:not(#love-h-a) { display: block !important; height: auto !important; min-height: 0 !important; }
+  html body #tab-edit-site .builder-canvas-viewport:not(#love-h-a) { width: 100% !important; height: auto !important; padding: 0 !important; overflow: visible !important; background: transparent !important; }
+  html body #tab-edit-site .builder-canvas-frame:not(#love-h-a) { width: 100% !important; max-width: none !important; height: auto !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+  html body #tab-edit-site .builder-canvas-scroll:not(#love-h-a) { height: auto !important; max-height: none !important; overflow: visible !important; }
+  html body #tab-edit-site .builder-canvas:not(#love-h-a) { padding-bottom: calc(var(--bottom-bar-height-mobile, 76px) + 72px) !important; }
+
+  /* Botão flutuante e gaveta */
+  .builder-fab {
+    position: fixed; left: 50%; bottom: calc(var(--bottom-bar-height-mobile, 76px) + 14px); transform: translateX(-50%); z-index: 48;
+    align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; white-space: nowrap;
+    background: #183b54; color: #FFFFFF; border: 0; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .builder-fab svg { width: 18px; height: 18px; }
+  body:has(#tab-edit-site.active #site-builder-root):not(.builder-gaveta-aberta):not(.menu-celular-aberto) .builder-fab { display: inline-flex; }
+  body:has(#tab-edit-site.active .builder-wrap[style*="display: none"]) .builder-fab,
+  body:has(#tab-edit-site.active .builder-wrap.hidden) .builder-fab { display: none !important; }
+  .builder-gaveta-fundo { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.18); opacity: 0; pointer-events: none; transition: opacity .2s ease; display: block; }
+  .builder-gaveta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
+  .builder-gaveta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 61; display: flex; flex-direction: column;
+    max-height: 78dvh; padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: #FFFFFF; border-radius: 10px 10px 0 0; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(105%); transition: transform .25s ease; font-family: Inter, sans-serif;
+  }
+  .builder-gaveta.is-aberta { transform: translateY(0); }
+  .builder-gaveta-alca { width: 40px; height: 5px; margin: 8px auto 2px; border-radius: 3px; background: #E4E4E7; flex-shrink: 0; }
+  .builder-gaveta-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 16px 10px; flex-shrink: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+  .builder-gaveta-titulo { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+  .builder-gaveta-fechar { width: 44px; height: 44px; margin-right: -10px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #52525B; cursor: pointer; }
+  .builder-gaveta-fechar svg { width: 20px; height: 20px; }
+  .builder-gaveta-corpo { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+  html body .builder-gaveta #builder-elements-panel:not(#love-h-a) { position: static !important; width: 100% !important; max-width: none !important; height: auto !important; max-height: none !important; border: 0 !important; overflow: visible !important; background: transparent !important; }
+  html body .builder-gaveta #builder-elements-panel .builder-panel-tab-body:not(#love-h-a) { height: auto !important; max-height: none !important; overflow: visible !important; padding: 8px 16px 20px !important; }
+  html body .builder-gaveta .builder-el-grid:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; }
+  html body .builder-gaveta .builder-el-item:not(#love-h-a) { min-height: 76px; border-radius: 8px !important; font-size: 13px !important; }
+  html body .builder-gaveta .builder-el-item svg:not(#love-h-a) { width: 24px; height: 24px; }
+  body[data-theme="dark"] .builder-gaveta { background: #1c1c1c; }
+  body[data-theme="dark"] .builder-gaveta-titulo { color: #FFFFFF; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Topo do editor no celular: nome da página, ver convite, Salvar e Publicar. */
+  html body #tab-edit-site :is(#builder-undo, #builder-redo):not(#love-h-a) { display: none !important; }
+  html body #tab-edit-site .builder-wrap:not(#love-h-a) { height: auto !important; min-height: 0 !important; }
+  html body #tab-edit-site .builder-page-name:not(#love-h-a) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 17px !important; }
+}
+
+/* Celular: Convite digital › Informações — prévia na tela toda e o formulário
+   numa gaveta de baixo para cima ("Editar informações"). Desktop não muda. */
+.info-gaveta-cabeca { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #classic-editor-toolbar:not(#love-h-a) { flex-wrap: nowrap !important; align-items: center !important; gap: 8px !important; height: auto !important; min-height: 56px; padding: 6px 0 !important; }
+  html body #classic-editor-toolbar :is(#classic-editor-undo, #classic-editor-redo):not(#love-h-a) { display: none !important; }
+  html body #tab-edit-site > .editor-split-wrapper:not(#love-h-a) { flex-direction: column !important; margin: 0 -16px; width: calc(100% + 32px) !important; height: auto !important; border: 0 !important; }
+  html body #tab-edit-site #editor-live-preview-column:not(#love-h-a) { position: static !important; width: 100% !important; height: auto !important; min-height: 0 !important; border: 0 !important; overflow: visible !important; }
+  html body #tab-edit-site #live-preview-container:not(#love-h-a),
+  html body #tab-edit-site #classic-builder-preview:not(#love-h-a) { height: auto !important; max-height: none !important; overflow: visible !important; }
+  html body #tab-edit-site #editor-live-preview-column:not(#love-h-a) { padding-bottom: calc(var(--bottom-bar-height-mobile, 76px) + 72px) !important; }
+
+  /* O formulário vira a gaveta. */
+  body:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column {
+    position: fixed !important; left: 0; right: 0; bottom: 0; top: auto; z-index: 61; width: auto !important; max-height: 82dvh;
+    padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px)) !important; overflow-y: auto !important; overscroll-behavior: contain;
+    background: #FFFFFF; border-radius: 10px 10px 0 0; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(105%); transition: transform .25s ease;
+  }
+  body.info-gaveta-aberta:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column { transform: translateY(0); }
+  body:has(#editor-form-data:not(.hidden)) .info-gaveta-cabeca { display: block; position: sticky; top: 0; z-index: 2; margin: 0 -16px 8px; background: #FFFFFF; }
+  body:has(#editor-form-data:not(.hidden)) #editor-form-data { padding-bottom: 8px !important; }
+  html body #tab-edit-site #editor-form-data :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not(#love-h-a) { font-size: 16px !important; }
+
+  .info-fab { display: none !important; }
+  body:has(#tab-edit-site.active #editor-form-data:not(.hidden)):not(.info-gaveta-aberta):not(.menu-celular-aberto) .info-fab { display: inline-flex !important; }
+  body[data-theme="dark"]:has(#editor-form-data:not(.hidden)) :is(#tab-edit-site #editor-form-column, .info-gaveta-cabeca) { background: #1c1c1c !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* A entrada da aba (fadeInTab, fill forwards) deixa um transform que prende
+     a gaveta fixa dentro da aba: em Informações a aba entra sem ele. */
+  html body #tab-edit-site:has(#editor-form-data:not(.hidden)):not(#love-h-a) { animation: none !important; transform: none !important; }
+  body:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column { left: 0 !important; right: 0 !important; margin: 0 !important; }
+}

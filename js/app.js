@@ -2332,7 +2332,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (kpiInvites) kpiInvites.textContent = `${activeEvent.totalConvidados ?? 0}`;
 
-    if (kpiArrecadado) kpiArrecadado.textContent = `R$ ${activeEvent.wallet.saldoDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    // Saldo arrecadado: a mesma conta da Carteira — soma do que os convidados
+    // pagaram (receivedGifts, vindo do banco). Só sem presentes pagos cai na
+    // carteira antiga (eventos de demonstração).
+    if (kpiArrecadado) {
+      const pagos = (activeEvent.receivedGifts || []).reduce((t, g) => t + (Number(g.amount) || 0), 0);
+      const carteira = activeEvent.wallet || {};
+      const arrecadado = pagos || ((Number(carteira.saldoDisponivel) || 0) + (Number(carteira.totalSacado) || 0));
+      kpiArrecadado.textContent = `R$ ${arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
     if (kpiRsvp) kpiRsvp.textContent = `${activeEvent.convidadosConfirmados}`;
     if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados ?? 0} adultos • ${activeEvent.criancasConfirmadas ?? 0} crianças confirmadas`;
     if (kpiGifts) kpiGifts.textContent = `${activeEvent.presentesRecebidos}`;

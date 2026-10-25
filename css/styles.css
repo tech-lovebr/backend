@@ -12212,3 +12212,27 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   /* Meus presentes: 2 por linha. */
   html body #host-gifts-grid:not(#love-h-a) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; }
 }
+
+/* ==========================================================================
+   Celular (só até 768px): o topo com logotipo, notificações e perfil fica só
+   na Home; nas outras telas o cabeçalho da página (título) é o topo. Tudo
+   de ponta a ponta, sem caixas.
+   ========================================================================== */
+@media (max-width: 768px) {
+  html body:not(:has(#tab-overview.active)) .dashboard-top-navbar:not(#love-h-a) { display: none !important; }
+  html body:not(:has(#tab-overview.active)) { --navbar-height-mobile: env(safe-area-inset-top, 0px); }
+
+  /* Nenhum modo (editor etc.) empurra o conteúdo para o lado no celular. */
+  html body .dashboard-main-area:not(#love-h-a) { margin-left: 0 !important; width: auto !important; max-width: 100% !important; }
+
+  /* Caixas restantes (Configurações, Checklist...): sem borda, de ponta a ponta. */
+  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-overview) :is(.dash-card, .chk-progresso):not(#love-h-a) {
+    margin-left: -1rem !important; margin-right: -1rem !important;
+    width: auto !important; max-width: none !important;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important;
+  }
+  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-overview) :is(.dash-card:not(:has(table)), .chk-progresso):not(#love-h-a) { padding-left: 16px !important; padding-right: 16px !important; }
+}
+@media (max-width: 768px) {
+  html body #view-event-os-dashboard #tab-rsvp-tables > .floorplan-wrap:not(#love-h-a) { margin-left: -1rem !important; margin-right: -1rem !important; width: auto !important; max-width: none !important; }
+}

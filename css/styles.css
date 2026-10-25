@@ -12100,3 +12100,59 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   html body .sidebar-icon-rail .rail-chat-btn:not(#love-h-a) { order: 5 !important; }
   html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a) { top: 6px; left: calc(50% + 5px); }
 }
+
+/* ==========================================================================
+   Celular (só até 768px): abas do submenu como app (iguais à referência) e
+   tela toda branca, sem caixas com borda nem margem de fundo.
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Abas grudadas no topo, de ponta a ponta: mesma largura, texto limpo,
+     linha cinza embaixo e a linha da cor primária em cima da aba ativa. */
+  html body #dashboard-main-area > .submenu-celular:not([hidden]):not(#love-h-a) {
+    position: sticky; top: var(--navbar-height-mobile); z-index: 20;
+    gap: 0; width: auto; max-width: none;
+    margin: -1.25rem calc(-1 * max(1rem, env(safe-area-inset-right, 0px))) 16px calc(-1 * max(1rem, env(safe-area-inset-left, 0px)));
+    padding: 0; background: #FFFFFF; border: 0; border-bottom: 1px solid #E4E4E7; border-radius: 0;
+  }
+  html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
+    flex: 1 0 auto; min-width: 33.333%; min-height: 46px; padding: 0 14px;
+    background: #FFFFFF; border: 0; border-radius: 0; box-shadow: none;
+    font-size: 14px; font-weight: 500; color: #52525B;
+  }
+  html body .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) {
+    background: #F7F7F8; border: 0; color: #18181B; font-weight: 600;
+    box-shadow: inset 0 3px 0 #183b54;
+  }
+  body[data-theme="dark"] #dashboard-main-area > .submenu-celular { background: #1A1A1A !important; border-bottom-color: #333333 !important; }
+  body[data-theme="dark"] .submenu-celular .submenu-celular-item { background: #1A1A1A !important; color: #A1A1AA !important; }
+  body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #252525 !important; color: #FFFFFF !important; box-shadow: inset 0 3px 0 #EBF4FF !important; }
+
+  /* Fundo todo branco. */
+  :root { --bg-dashboard: #FFFFFF; }
+  html body:not([data-theme="dark"]) :is(#view-event-os-dashboard, #dashboard-main-area, .dashboard-content-wrapper):not(#love-h-a) { background: #FFFFFF !important; }
+
+  /* Caixas e tabelas sem borda, sem cantos e sem fundo próprio, de ponta a
+     ponta da tela (as linhas da tabela vão até a borda). */
+  html body #view-event-os-dashboard :is(
+    .love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .cart-caixa, .rfp-caixa-form, .rfp-props,
+    .chk-lista, #organizadores-caixa, #config-eventos-caixa, .dash-card:has(table)
+  ):not(#love-h-a) {
+    margin-left: -1rem !important; margin-right: -1rem !important;
+    width: auto !important; max-width: none !important;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important;
+  }
+  html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(thead, thead tr, thead th):not(#love-h-a) { border-radius: 0 !important; }
+  html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(tr > :first-child):not(#love-h-a) { padding-left: 16px !important; }
+  html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(tr > :last-child):not(#love-h-a) { padding-right: 16px !important; }
+}
+@media (max-width: 768px) {
+  /* Um respiro só: os 16px da área principal. Os blocos de cada página
+     (cabeçalho e conteúdo) não somam margem própria no celular. */
+  html body #view-event-os-dashboard .dashboard-tab-content:not(#tab-edit-site) > :not(#b2b-messages-view):not(#love-h-a) { padding-left: 0 !important; padding-right: 0 !important; }
+  html body #view-event-os-dashboard #tab-rsvp-tables:not(#love-h-a) { padding-left: 0 !important; padding-right: 0 !important; }
+  html body #view-event-os-dashboard #b2b-messages-view:not(#love-h-a) { margin-left: -1rem !important; margin-right: -1rem !important; }
+}
+@media (max-width: 768px) {
+  /* Telas sem submenu (Home, avisos, ajuda, configurações...): sem a barra de abas. */
+  html body:has(:is(#tab-overview, #tab-create-event-page, #tab-legal-doc, #tab-notifications, #tab-faq, #tab-account-settings, #tab-info-event).active) #submenu-celular:not(#love-h-a) { display: none !important; }
+}

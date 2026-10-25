@@ -12764,3 +12764,46 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   body[data-theme="dark"] .home-atalhos-titulo h3, body[data-theme="dark"] .home-atalho-nome { color: #FFFFFF; }
   body[data-theme="dark"] .home-atalhos-titulo span { background: #333333; }
 }
+
+/* ==========================================================================
+   Celular (só até 768px): efeito de vidro de verdade na barra de baixo e nos
+   botões ☰ e sino — mais transparente, desfoque forte, brilho interno em cima
+   e uma borda escura bem leve nas laterais. Logo da Love maior. Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px) {
+  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b),
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b),
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b) {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(244, 246, 247, 0.42) 100%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%); backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid rgba(0, 0, 0, 0.09) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+      inset 0 -8px 16px rgba(255, 255, 255, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.10) !important;
+  }
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b),
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b) {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+      0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  }
+  /* Aba ativa da barra: um vidro mais claro por dentro. */
+  html body .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b),
+  html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active:not(#love-h-a):not(#love-h-b) {
+    background: rgba(255, 255, 255, 0.7) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Logo maior no topo da Home. */
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-icone:not(#love-h-a):not(#love-h-b) { height: 36px; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-nome:not(#love-h-a):not(#love-h-b) { height: 28px; }
+
+  body[data-theme="dark"] :is(.sidebar-icon-rail, .dashboard-top-navbar .menu-celular-botao, .dashboard-top-navbar #btn-notifications-menu) {
+    background: linear-gradient(180deg, rgba(60, 60, 60, 0.55) 0%, rgba(30, 30, 30, 0.45) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  }
+}

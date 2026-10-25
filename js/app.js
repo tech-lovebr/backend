@@ -12006,9 +12006,21 @@ document.addEventListener('DOMContentLoaded', () => {
    * reduzida) — assim tudo aparece, sem nada escondido à direita.
    */
   let escalaDaPlanta = 1;
+  // Celular: zoom da pinça (1 = a planta inteira na largura da tela).
+  let zoomDaPlanta = 1;
+  const ZOOM_MINIMO_DA_PLANTA = 0.5;
+  const ZOOM_MAXIMO_DA_PLANTA = 2.5;
+  const plantaNoCelular = () => window.matchMedia('(max-width: 768px)').matches;
   /** @param {HTMLElement} canvas @param {any[]} elements */
   function escalaParaCaber(canvas, elements) {
-    const largura = canvas.clientWidth || 0;
+    // Com zoom no celular a planta fica mais larga que a tela: a conta de
+    // caber usa a largura da tela, e o zoom multiplica o resultado.
+    const z = zoomDaPlanta || 1;
+    if (z !== 1) return escalaParaCaberSemZoom(canvas.clientWidth / z, elements) * z;
+    return escalaParaCaberSemZoom(canvas.clientWidth || 0, elements);
+  }
+  /** @param {number} largura @param {any[]} elements */
+  function escalaParaCaberSemZoom(largura, elements) {
     if (!largura) return 1;
     // Os itens têm o mesmo tamanho nas duas telas (a expandida só dá mais
     // espaço). A reduzida só encolhe se algum item ficar além da largura dela
@@ -12502,7 +12514,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // mesa mais baixa. Encolhe de novo quando as mesas sobem.
   function ajustarAlturaDaPlanta(canvas, elements) {
     const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + alturaNaPlanta(item)), 0);
-    canvas.style.minHeight = maisBaixa ? `${Math.max(360, (maisBaixa + 16) * escalaDaPlanta)}px` : '';
+    // Com zoom, a planta cresce junto (para dar para arrastar até as bordas).
+    const comZoom = zoomDaPlanta !== 1 && canvas.parentElement ? canvas.parentElement.clientHeight * zoomDaPlanta : 0;
+    canvas.style.minHeight = (maisBaixa || comZoom) ? `${Math.max(360, (maisBaixa + 16) * escalaDaPlanta, comZoom)}px` : '';
     const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
     if (camada) camada.style.height = `${Math.max(canvas.offsetHeight, (maisBaixa + 16) * escalaDaPlanta) / escalaDaPlanta}px`;
   }
@@ -12517,7 +12531,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function trazerMesasPerdidasDeVolta(canvas, elements) {
     // Expandida, a área visível é outra: não mexe em nada (só rola).
-    if (canvas.closest('.floorplan-wrap.is-expandida')) return false;
+    if (canvas.closest('.floorplan-wrap.is-expandida') || zoomDaPlanta !== 1) return false;
     let limite = alturaVisivelDaPlanta(canvas) / escalaDaPlanta;
     let mudou = false;
     elements.slice().sort((a, b) => (parseFloat(a.y) || 0) - (parseFloat(b.y) || 0)).forEach(item => {
@@ -12540,6 +12554,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const elements = getFloorPlanElements();
 
     canvas.querySelectorAll('.floorplan-el, .floorplan-guia').forEach(el => el.remove());
+    // Zoom só existe no celular; a largura da planta acompanha o zoom.
+    if (!plantaNoCelular()) zoomDaPlanta = 1;
+    canvas.style.width = zoomDaPlanta === 1 || !canvas.parentElement ? '' : `${canvas.parentElement.clientWidth * zoomDaPlanta}px`;
+    canvas.classList.toggle('tem-zoom', zoomDaPlanta !== 1);
     if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia' && x.type !== 'config') ? 'none' : 'flex';
     // Camada com todos os elementos, na escala que faz tudo caber na largura.
     escalaDaPlanta = escalaParaCaber(canvas, elements);
@@ -13610,6 +13628,19 @@ document.addEventListener('DOMContentLoaded', () => {
    * @param {string} formato @param {number} i @param {number} n
    * @returns {[number, number]}
    */
+  /** Quantas cadeiras em cada lado da mesa quadrada [cima, baixo, direita, esquerda]. @param {number} n */
+  function cadeirasPorLadoDaMesaQuadrada(n) {
+    const lados = [0, 0, 0, 0];
+    if (n < 8) {
+      const max = Math.max(1, Math.ceil(n / 4));
+      let falta = n;
+      for (let k = 0; k < 4 && falta > 0; k++) { lados[k] = Math.min(max, falta); falta -= lados[k]; }
+      return lados;
+    }
+    for (let k = 0; k < n; k++) lados[k % 4]++;
+    return lados;
+  }
+
   function posicaoDoAssento(formato, i, n) {
     const c = 110;
     if (formato === 'retangular') {
@@ -13625,15 +13656,19 @@ document.addEventListener('DOMContentLoaded', () => {
       return [x, i < emCima ? c - 50 : c + 50];
     }
     if (formato === 'quadrada') {
-      // Distribuídos pelo contorno de um quadrado de 140 de lado.
+      // Cadeiras por lado, sempre alinhadas e com o mesmo espaço entre elas.
+      // Ordem dos lados: cima, baixo, direita, esquerda. Até 7 lugares, cada
+      // lado leva até ⌈n/4⌉ (5 = 2 em cima, 2 embaixo, 1 à direita; 6 = 2, 2
+      // e 2); de 8 em diante divide por igual (9 = 3, 2, 2, 2).
+      const porLado = cadeirasPorLadoDaMesaQuadrada(n);
       const lado = 140;
-      const d = ((i + 0.5) / n) * lado * 4;
-      const s = Math.floor(d / lado);
-      const t = d - s * lado - lado / 2;
-      if (s === 0) return [c + t, c - lado / 2];
-      if (s === 1) return [c + lado / 2, c + t];
-      if (s === 2) return [c - t, c + lado / 2];
-      return [c - lado / 2, c - t];
+      let resto = i, ladoDaCadeira = 0;
+      while (ladoDaCadeira < 3 && resto >= porLado[ladoDaCadeira]) { resto -= porLado[ladoDaCadeira]; ladoDaCadeira++; }
+      const t = ((resto + 0.5) / (porLado[ladoDaCadeira] || 1)) * lado - lado / 2;
+      if (ladoDaCadeira === 0) return [c + t, c - lado / 2];
+      if (ladoDaCadeira === 1) return [c + t, c + lado / 2];
+      if (ladoDaCadeira === 2) return [c + lado / 2, c + t];
+      return [c - lado / 2, c + t];
     }
     const raio = formato === 'bistro' ? 52 : 80;
     const ang = (2 * Math.PI * i / n) - Math.PI / 2;
@@ -14119,6 +14154,100 @@ document.addEventListener('DOMContentLoaded', () => {
     /** @param {string} tipo @param {Touch} t @param {EventTarget} alvo */
     const mouse = (tipo, t, alvo) => alvo.dispatchEvent(new MouseEvent(tipo, { bubbles: true, cancelable: true, clientX: t.clientX, clientY: t.clientY, button: 0 }));
     let toque = /** @type {{id: string, x: number, y: number, moveu: boolean}|null} */ (null);
+
+    // ---------- Pinça (zoom) e arrastar a planta ----------
+    // A planta inteira (mesas com as cadeiras dentro) aumenta e diminui junto.
+    // Durante o gesto só um transform (60fps); ao soltar, redesenha no zoom novo.
+    const corpo = /** @type {HTMLElement} */ (canvas.parentElement);
+    /** Zoom novo mantendo o ponto (px, py) da planta embaixo do ponto (cx, cy) da tela. @param {number} novo @param {number} px @param {number} py @param {number} cx @param {number} cy */
+    const aplicarZoom = (novo, px, py, cx, cy) => {
+      zoomDaPlanta = Math.min(ZOOM_MAXIMO_DA_PLANTA, Math.max(ZOOM_MINIMO_DA_PLANTA, Math.round(novo * 100) / 100));
+      if (Math.abs(zoomDaPlanta - 1) < 0.04) zoomDaPlanta = 1;
+      renderFloorPlanCanvas();
+      const r = canvas.getBoundingClientRect();
+      corpo.scrollLeft += r.left + px * escalaDaPlanta - cx;
+      corpo.scrollTop += r.top + py * escalaDaPlanta - cy;
+    };
+    /** Zoom pelos botões, em volta do meio da tela. @param {number} fator */
+    const zoomNoMeio = (fator) => {
+      const c = corpo.getBoundingClientRect();
+      const r = canvas.getBoundingClientRect();
+      const cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+      aplicarZoom(zoomDaPlanta * fator, (cx - r.left) / escalaDaPlanta, (cy - r.top) / escalaDaPlanta, cx, cy);
+    };
+    const controles = document.createElement('div');
+    controles.className = 'planta-zoom';
+    controles.innerHTML = `<button type="button" data-zoom="mais" aria-label="Aproximar">${MAIS}</button>
+      <button type="button" data-zoom="menos" aria-label="Afastar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+      <button type="button" data-zoom="centro" aria-label="Centralizar a planta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="2.5"/></svg></button>`;
+    document.body.appendChild(controles);
+    controles.addEventListener('click', (e) => {
+      const b = /** @type {HTMLElement} */ (e.target).closest('[data-zoom]');
+      if (!b) return;
+      const qual = b.getAttribute('data-zoom');
+      if (qual === 'mais') zoomNoMeio(1.25);
+      else if (qual === 'menos') zoomNoMeio(0.8);
+      else { zoomDaPlanta = 1; renderFloorPlanCanvas(); corpo.scrollTo({ left: 0, top: 0, behavior: 'smooth' }); }
+    });
+
+    /** @type {{d0: number, m0x: number, m0y: number, px: number, py: number, k: number, m1x: number, m1y: number}|null} */
+    let pinca = null;
+    /** @type {{x0: number, y0: number, sl: number, st: number}|null} */
+    let arrasto = null;
+    /** @param {TouchList} ts */
+    const meio = (ts) => ({ x: (ts[0].clientX + ts[1].clientX) / 2, y: (ts[0].clientY + ts[1].clientY) / 2 });
+    /** @param {TouchList} ts */
+    const distancia = (ts) => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY) || 1;
+    canvas.addEventListener('touchstart', (e) => {
+      if (!noCelular.matches) return;
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        // Segundo dedo: larga o arraste da mesa (se tinha) e vira pinça.
+        if (toque) { mouse('mouseup', e.touches[0], document); toque = null; }
+        arrasto = null;
+        const m = meio(e.touches);
+        const r = canvas.getBoundingClientRect();
+        pinca = { d0: distancia(e.touches), m0x: m.x, m0y: m.y, px: (m.x - r.left) / escalaDaPlanta, py: (m.y - r.top) / escalaDaPlanta, k: 1, m1x: m.x, m1y: m.y };
+        canvas.style.transformOrigin = `${m.x - r.left}px ${m.y - r.top}px`;
+        canvas.style.willChange = 'transform';
+        return;
+      }
+      if (e.touches.length === 1 && !(e.target instanceof Element && e.target.closest('.floorplan-el'))) {
+        const t = e.touches[0];
+        arrasto = { x0: t.clientX, y0: t.clientY, sl: corpo.scrollLeft, st: corpo.scrollTop };
+      }
+    }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => {
+      if (pinca && e.touches.length >= 2) {
+        e.preventDefault();
+        const m = meio(e.touches);
+        const z = Math.min(ZOOM_MAXIMO_DA_PLANTA, Math.max(ZOOM_MINIMO_DA_PLANTA, zoomDaPlanta * distancia(e.touches) / pinca.d0));
+        pinca.k = z / zoomDaPlanta;
+        pinca.m1x = m.x; pinca.m1y = m.y;
+        canvas.style.transform = `translate(${m.x - pinca.m0x}px, ${m.y - pinca.m0y}px) scale(${pinca.k})`;
+        return;
+      }
+      if (arrasto && e.touches.length === 1) {
+        e.preventDefault();
+        const t = e.touches[0];
+        corpo.scrollLeft = arrasto.sl - (t.clientX - arrasto.x0);
+        corpo.scrollTop = arrasto.st - (t.clientY - arrasto.y0);
+      }
+    }, { passive: false });
+    const fimDoGesto = (/** @type {TouchEvent} */ e) => {
+      if (pinca && e.touches.length < 2) {
+        const g = pinca;
+        pinca = null;
+        canvas.style.transform = '';
+        canvas.style.transformOrigin = '';
+        canvas.style.willChange = '';
+        if (Math.abs(g.k - 1) > 0.01 || Math.hypot(g.m1x - g.m0x, g.m1y - g.m0y) > 2) aplicarZoom(zoomDaPlanta * g.k, g.px, g.py, g.m1x, g.m1y);
+      }
+      if (!e.touches.length) arrasto = null;
+    };
+    canvas.addEventListener('touchend', fimDoGesto);
+    canvas.addEventListener('touchcancel', fimDoGesto);
+
     canvas.addEventListener('touchstart', (e) => {
       if (!noCelular.matches || e.touches.length > 1) return;
       const alvo = e.target instanceof Element ? e.target.closest('.floorplan-el') : null;

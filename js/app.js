@@ -9769,7 +9769,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (filteredGuests.length === 0) {
-      if (emptyStateEl) emptyStateEl.classList.remove('hidden');
+      if (emptyStateEl) {
+        // Lista vazia: convida a adicionar; com convidados, só o filtro/busca não achou ninguém.
+        const semNinguem = !(activeEvent.guests || []).length;
+        const tituloVazio = document.getElementById('rsvp-vazio-titulo');
+        const textoVazio = document.getElementById('rsvp-vazio-texto');
+        if (tituloVazio) tituloVazio.textContent = semNinguem ? 'Adicione os seus primeiros convidados' : 'Nenhum convidado encontrado com este filtro.';
+        if (textoVazio) { textoVazio.textContent = 'Cadastre a sua lista de convidados para enviar convites e acompanhar as confirmações de presença em tempo real.'; textoVazio.hidden = !semNinguem; }
+        emptyStateEl.classList.remove('hidden');
+      }
       renderRsvpPagination(0);
       return;
     } else {

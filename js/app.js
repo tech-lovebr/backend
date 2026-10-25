@@ -6739,6 +6739,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     caixa.insertBefore(barra, caixa.firstChild);
 
+    // Tabela solta na caixa (Orçamento, Convite online): ganha a própria rolagem
+    // lateral, para não vazar da borda quando a tela estreita.
+    if (tabela.parentElement === caixa) {
+      const rolagem = document.createElement('div');
+      rolagem.className = 'love-tabela-rolagem';
+      caixa.insertBefore(rolagem, tabela);
+      rolagem.appendChild(tabela);
+    }
+
     // Tabela redesenhada pelo JS: reaplica busca/filtro genéricos.
     if (!cfg.buscaExistente || cfg.filtro && Number.isFinite(cfg.filtro.coluna)) {
       const tbody = tabela.querySelector('tbody');

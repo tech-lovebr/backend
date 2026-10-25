@@ -313,6 +313,10 @@ document.addEventListener('DOMContentLoaded', () => {
       agendado = false;
       const itens = Array.from(lista.querySelectorAll('.sub-drawer-item'))
         .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none');
+      // Só redesenha quando os itens mudam (redesenhar sempre engolia os toques).
+      const assinatura = itens.map(i => (i.classList.contains('active') ? '*' : '') + i.textContent.trim()).join('|');
+      if (assinatura === barra.dataset.assinatura) { posicionar(); return; }
+      barra.dataset.assinatura = assinatura;
       barra.hidden = itens.length < 2;
       barra.textContent = '';
       itens.forEach(orig => {
@@ -382,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lupa.hidden = !busca;
       const campo = busca && /** @type {HTMLInputElement|null} */ (busca.querySelector('input'));
       // Fecha a busca (vazia) só ao trocar de aba.
-      if ((!campo || !campo.value) && /** @type {HTMLElement} */ (aba).dataset.buscaNaAba !== abaAtiva()) aba.classList.remove('busca-celular-aberta');
+      if ((!campo || !campo.value) && /** @type {HTMLElement} */ (aba).dataset.buscaNaAba !== abaAtiva() && aba.classList.contains('busca-celular-aberta')) aba.classList.remove('busca-celular-aberta');
     };
 
     const agendar = () => {

@@ -1165,7 +1165,7 @@
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
   function htmlEventoCompacto() {
     // Data e horários numa linha (data inteira visível); "Ainda não temos uma
-    // data definida" embaixo; depois UF e cidade (sem bairro); por fim convidados.
+    // data definida" embaixo; depois UF, cidade e convidados na mesma linha (sem bairro e sem ambiente).
     // Cada campo mostra o próprio aviso logo abaixo dele.
     const campo = (/** @type {string} */ rotulo, /** @type {string} */ controle, /** @type {string} */ chave) => `
         <div class="rfp-ev-campo"><label class="rfp-rotulo"><span class="rfp-rotulo-texto">${rotulo}</span>${controle}</label>${erroHtml(chave)}</div>`;
@@ -1183,16 +1183,10 @@
             ${UFS.map(u => `<option value="${u}"${dados.uf === u ? ' selected' : ''}>${u}</option>`).join('')}
           </select>`, 'uf')}
         ${campo('Cidade', `<input type="text" class="rfp-campo" data-rfp-input="cidade" value="${esc(dados.cidade)}">`, 'cidade')}
-      </div>
-      <div class="rfp-ev-grade rfp-ev-convidados">
         ${campo('Convidados', `<select class="rfp-campo" data-rfp-input="convidados">
             <option value=""${dados.convidados ? '' : ' selected'}>Selecione</option>
             ${CONVIDADOS.map(o => `<option value="${o.id}"${dados.convidados === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
           </select>`, 'convidados')}
-        ${campo('Ambiente <span class="rfp-opcional">(opcional)</span>', `<select class="rfp-campo" data-rfp-input="ambiente">
-            <option value=""${dados.ambiente ? '' : ' selected'}>Selecione</option>
-            ${AMBIENTES.map(o => `<option value="${o.id}"${dados.ambiente === o.id ? ' selected' : ''}>${esc(o.nome)}</option>`).join('')}
-          </select>`, 'ambiente')}
       </div>`;
   }
 

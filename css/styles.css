@@ -11779,16 +11779,17 @@ html body #b2b-pedidos-view .rfp-caixa-form:not(#love-h-a) { container-type: inl
 }
 html body #b2b-pedidos-view .rfp-ev-grade .rfp-rotulo-texto:not(#love-h-a) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: 96px minmax(0, 1fr); }
+html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); } /* UF, Cidade e Convidados alinhados com Data, Início e Término */
 html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 @container rfp-caixa (max-width: 560px) {
   html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   html body #b2b-pedidos-view .rfp-ev-tempo > .rfp-ev-campo:first-child:not(#love-h-a) { grid-column: 1 / -1; }
+  html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  html body #b2b-pedidos-view .rfp-ev-local > .rfp-ev-campo:last-child:not(#love-h-a) { grid-column: 1 / -1; }
 }
 @container rfp-caixa (max-width: 380px) {
-  html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: 80px minmax(0, 1fr); }
   html body #b2b-pedidos-view .rfp-ev-convidados:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
 }
 @container rfp-caixa (max-width: 280px) {
-  html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+  html body #b2b-pedidos-view .rfp-ev-tempo:not(#love-h-a), html body #b2b-pedidos-view .rfp-ev-local:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
 }

@@ -10971,3 +10971,9 @@ html body .settings-check small:not(#love-h-a) { display: block; margin-top: 2px
 html body .settings-endereco-proprio:not(#love-h-a) { display: flex; flex-direction: column; gap: 1.25rem; }
 html body .settings-endereco-proprio[hidden]:not(#love-h-a) { display: none; }
 html body .parcelas-opcoes .parcelas-card-sub:not(#love-h-a) { margin-top: 2px; }
+
+/* Caixas grudadas nas abas (Meus produtos, Suas informações): a regra geral
+   das caixas devolvia a borda e os cantos de cima — aqui ganha dela. */
+html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
+}

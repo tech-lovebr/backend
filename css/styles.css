@@ -12022,3 +12022,14 @@ body[data-theme="dark"] #rsvp-empty-state .rsvp-vazio-titulo { color: #FFFFFF !i
   /* Campos com 16px: o Safari do iPhone não dá zoom ao tocar. */
   html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select, textarea):not(#love-h-a):not(#love-h-b) { font-size: 16px !important; }
 }
+
+/* Criar solicitação em tablet/celular: textos em cima e a caixa do formulário
+   embaixo, na largura toda (sem encolher para o tamanho do conteúdo). */
+@container rfp-pagina (max-width: 900px) {
+  html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { align-items: stretch; }
+  html body #b2b-pedidos-view .rfp-editor > .rfp-coluna:not(#love-h-a) { width: 100%; min-width: 0; }
+}
+@media (max-width: 900px) {
+  html body #b2b-pedidos-view .rfp-editor:not([hidden]):not(#love-h-a) { align-items: stretch; }
+  html body #b2b-pedidos-view .rfp-editor > .rfp-coluna:not(#love-h-a) { width: 100%; min-width: 0; }
+}

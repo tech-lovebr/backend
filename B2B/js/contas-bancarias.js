@@ -284,7 +284,7 @@
     cadastrando = false;
     desenhar();
     if (typeof showToast === 'function') showToast('Conta cadastrada. Ela fica em análise até a Love conferir os dados.');
-    if (typeof renderFinanceStats === 'function') renderFinanceStats();
+    { const w = /** @type {any} */ (window); if (typeof w.renderFinanceStats === 'function') w.renderFinanceStats(); }
   }
 
   async function removerConta(id) {
@@ -345,7 +345,7 @@
     await carregar();
     desenhar();
     if (typeof showToast === 'function') showToast('Documentos enviados para análise. Já pode cadastrar a sua conta bancária.');
-    if (typeof renderFinanceStats === 'function') renderFinanceStats();
+    { const w = /** @type {any} */ (window); if (typeof w.renderFinanceStats === 'function') w.renderFinanceStats(); }
   }
 
   /* -------------------- Eventos -------------------- */
@@ -401,6 +401,6 @@
     await window.b2bAuthReady;
     await carregar();
     desenhar();
-    if (typeof renderFinanceStats === 'function') renderFinanceStats();
+    { const w = /** @type {any} */ (window); if (typeof w.renderFinanceStats === 'function') w.renderFinanceStats(); }
   });
 })();

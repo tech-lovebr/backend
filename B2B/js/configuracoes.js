@@ -110,6 +110,8 @@ function initProfileForm() {
   wireDocumentMaskInput(document.getElementById('profile-document'), () => B2B_DATA.professional.documentType || 'cnpj');
 
   setProfileDocType(p.documentType || 'cnpj');
+  initAbasDeInformacoes();
+  carregarDadosDaContaDigital();
   renderProfileAvatarPicker();
   renderProfileLogoPicker();
   initStateCityFields(p);
@@ -144,6 +146,7 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     const erroBanco = await salvarPerfilNoBanco(p);
+    if (!erroBanco) await salvarDadosDaContaDigital(birthdatePicker.getValue());
     // Razão social / documento já preenchidos: o banco recusa a troca (migration 077)
     // e o valor anterior volta.
     if (erroBanco && /ALTERACAO_BLOQUEADA/.test(erroBanco.message || '')) {
@@ -169,6 +172,69 @@ function initProfileForm() {
     lockConfiguredFields(p);
     showToast('Perfil atualizado.');
   });
+}
+
+/* -------------------- Informações da empresa × pessoais --------------------
+   Abas sobre a caixa de Suas informações e os dados da conta digital da
+   empresa no Asaas (tipo de empresa, faturamento, endereço completo, CPF e
+   nascimento do responsável — migration 110). */
+function initAbasDeInformacoes() {
+  const abas = document.querySelectorAll('[data-info-aba]');
+  abas.forEach(b => b.addEventListener('click', () => {
+    abas.forEach(x => { const on = x === b; x.classList.toggle('is-ativa', on); x.setAttribute('aria-selected', String(on)); });
+    document.querySelectorAll('[data-info-painel]').forEach(pn => { pn.hidden = pn.dataset.infoPainel !== b.dataset.infoAba; });
+  }));
+  const cep = document.getElementById('profile-cep');
+  cep?.addEventListener('input', () => { const d = cep.value.replace(/\D/g, '').slice(0, 8); cep.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
+  const cpf = document.getElementById('profile-resp-cpf');
+  cpf?.addEventListener('input', () => {
+    const d = cpf.value.replace(/\D/g, '').slice(0, 11);
+    cpf.value = d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  });
+}
+
+async function carregarDadosDaContaDigital() {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { data, error } = await supabaseClient.from('fornecedores')
+    .select('tipo_empresa, faturamento_mensal, cep, endereco_numero, endereco_complemento, bairro, responsavel_cpf, data_nascimento')
+    .eq('id', empresaId(session)).maybeSingle();
+  if (error || !data) return; // migration 110 ainda não rodada
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = v; };
+  set('profile-tipo-empresa', data.tipo_empresa);
+  set('profile-faturamento', data.faturamento_mensal != null ? String(Math.round(Number(data.faturamento_mensal))) : '');
+  set('profile-cep', data.cep);
+  set('profile-numero', data.endereco_numero);
+  set('profile-complemento', data.endereco_complemento);
+  set('profile-bairro', data.bairro);
+  set('profile-resp-cpf', data.responsavel_cpf);
+  if (data.data_nascimento) {
+    const [a, m, d] = String(data.data_nascimento).split('-');
+    const nasc = document.getElementById('profile-birthdate');
+    if (nasc && !nasc.value) nasc.value = `${d}/${m}/${a}`;
+  }
+}
+
+async function salvarDadosDaContaDigital(nascimento) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  let dataNasc = null;
+  const n = String(nascimento || v('profile-birthdate'));
+  const br = n.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (br) dataNasc = `${br[3]}-${br[2]}-${br[1]}`;
+  else if (/^\d{4}-\d{2}-\d{2}$/.test(n)) dataNasc = n;
+  const { error } = await supabaseClient.from('fornecedores').update({
+    tipo_empresa: v('profile-tipo-empresa') || null,
+    faturamento_mensal: v('profile-faturamento') ? Number(v('profile-faturamento')) : null,
+    cep: v('profile-cep').replace(/\D/g, '') || null,
+    endereco_numero: v('profile-numero') || null,
+    endereco_complemento: v('profile-complemento') || null,
+    bairro: v('profile-bairro') || null,
+    responsavel_cpf: v('profile-resp-cpf').replace(/\D/g, '') || null,
+    data_nascimento: dataNasc
+  }).eq('id', empresaId(session));
+  if (error) console.warn('Dados da conta digital não salvos (rode a migration 110).', error);
 }
 
 /* O perfil também vai para o banco, não só para o localStorage. Sem isto,
@@ -692,6 +758,7 @@ function setProfileDocType(type) {
     input.placeholder = '00.000.000/0000-00';
   }
   B2B_DATA.professional.documentType = type;
+  document.body.classList.toggle('doc-cpf', type === 'cpf');
   input.value = formatDocumentValue(input.value, type);
 }
 

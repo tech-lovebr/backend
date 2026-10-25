@@ -10802,7 +10802,7 @@ html body .cart-verif-faixa .cart-verif-logo { display: inline-block; height: 0.
 html body .cart-arquivo[hidden]:not(#love-h-a) { display: none; }
 
 /* Contas bancárias no Hub: a caixa encosta nas abas (como na Carteira). */
-html body #carteira-raiz > .cart-caixa:first-child:not(#love-h-a) { border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+html body [data-view-panel="contas"] #carteira-raiz > .cart-caixa:first-child:not(#love-h-a) { border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
 .cart-vazio { margin: 0; padding: 28px 24px 32px; font-size: 13px; color: #71717A; }
 .cart-col-acoes { width: 48px; text-align: right !important; }
 html body button.cart-btn-escuro:not(#love-h-a) { height: 40px; margin-top: 8px; padding: 0 18px; background: #181D24; border: 1px solid #181D24; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; cursor: pointer; }
@@ -10896,3 +10896,22 @@ html body .contrato-pagina .contratos-detalhe:not(#love-h-a) { padding: 0; backg
    cabeçalho do site, mesmo na primeira seção. */
 html body #site-builder-root .builder-section:is(:hover, .is-selected):not(#love-h-a) { z-index: 30; }
 html body #site-builder-root .builder-block-toolbar:not(#love-h-a) { z-index: 40; }
+
+/* Configurações › Suas informações: abas "Informações da empresa" e
+   "Informações pessoais" (sublinhado na cor primária, como no love.com.br)
+   encostadas na caixa. */
+html body .settings-info-abas:not(#love-h-a) { display: flex; gap: 24px; max-width: 40rem; margin: 0 auto; border-bottom: 1px solid var(--borda-suave); }
+html body .settings-info-aba:not(#love-h-a) {
+  padding: 0 0 12px; margin-bottom: -1px; border: 0; border-bottom: 2px solid transparent; background: none;
+  font-family: inherit; font-size: 14px; font-weight: 600; color: #71717A; cursor: pointer;
+}
+html body .settings-info-aba:hover:not(#love-h-a) { color: #18181B; }
+html body .settings-info-aba.is-ativa:not(#love-h-a) { color: #18181B; border-bottom-color: #183b54; }
+html body .settings-info-caixa:not(#love-h-a) { border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 0 !important; }
+html body .settings-info-painel:not(#love-h-a) { display: flex; flex-direction: column; gap: 1.25rem; }
+html body .settings-info-painel[hidden]:not(#love-h-a) { display: none; }
+html body .settings-info-dica:not(#love-h-a) { margin: 0; font-size: 13px; line-height: 1.5; color: #71717A; }
+html body.doc-cpf [data-so-cnpj]:not(#love-h-a) { display: none; }
+
+/* Configurações › Dados bancários: o mesmo fluxo de Contas bancárias, centralizado como as outras caixas. */
+html body [data-settings-panel="banco"] #carteira-raiz:not(#love-h-a) { max-width: 48rem; margin: 0 auto; }

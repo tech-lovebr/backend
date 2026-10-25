@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=775">
+  <link rel="stylesheet" href="css/styles.css?v=776">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -67,52 +67,136 @@
             </div>
           </div>
 
-          <div class="dash-card settings-zola-card">
+          <!-- Informações da empresa × Informações pessoais (abas como em
+               "Criar solicitação | Minhas solicitações" do love.com.br). São
+               os dados que abrem a conta digital da empresa no Asaas, para
+               receber os contratos e sacar (migration 110). -->
+          <div class="settings-info-abas" role="tablist">
+            <button type="button" class="settings-info-aba is-ativa" data-info-aba="empresa" role="tab" aria-selected="true">Informações da empresa</button>
+            <button type="button" class="settings-info-aba" data-info-aba="pessoal" role="tab" aria-selected="false">Informações pessoais</button>
+          </div>
+
+          <div class="dash-card settings-zola-card settings-info-caixa">
             <form id="profile-form" class="settings-zola-form">
-              <div>
-                <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
-                <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
-              </div>
-              <div>
-                <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
-                <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
-              </div>
-              <div>
-                <label for="profile-phone" class="field-label">Número de celular</label>
-                <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
-              </div>
-              <!-- Razão social: o nome exato do CNPJ. Aparece no "Olá" do Dashboard.
-                   Razão social e CNPJ, depois de preenchidos, não mudam mais;
-                   só o nome fantasia (abaixo, o que os clientes veem) muda. -->
-              <div>
-                <label for="profile-razao-social" class="field-label">Razão social</label>
-                <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
-              </div>
-              <div>
-                <label for="profile-company" class="field-label">Nome fantasia <span style="color:#DC2626;">*</span></label>
-                <div class="field-with-inline-link">
-                  <input id="profile-company" type="text" class="field-input">
-                </div>
-              </div>
-              <!-- Tipo de documento à esquerda e o campo ao lado; só o nome em
-                   cima muda (CNPJ ou CPF). CNPJ vem marcado. -->
-              <div class="settings-doc-linha">
+              <!-- Empresa -->
+              <div class="settings-info-painel" data-info-painel="empresa">
+                <p class="settings-info-dica">Estes dados abrem a conta digital da sua empresa na Love, para receber os contratos e sacar.</p>
+                <!-- Razão social e CNPJ, depois de preenchidos, não mudam mais;
+                     só o nome fantasia (o que os clientes veem) muda. -->
                 <div>
-                  <label class="field-label">Tipo de documento</label>
-                  <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
-                    <button type="button" class="plan-billing-option active" data-doc-type="cnpj">
-                      <span class="plan-billing-option-title">CNPJ</span>
-                    </button>
-                    <button type="button" class="plan-billing-option" data-doc-type="cpf">
-                      <span class="plan-billing-option-title">CPF</span>
-                    </button>
+                  <label for="profile-razao-social" class="field-label">Razão social</label>
+                  <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
+                </div>
+                <div>
+                  <label for="profile-company" class="field-label">Nome fantasia <span style="color:#DC2626;">*</span></label>
+                  <div class="field-with-inline-link">
+                    <input id="profile-company" type="text" class="field-input">
                   </div>
                 </div>
-                <div class="settings-doc-campo">
-                  <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
-                  <div class="field-with-inline-link">
-                    <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
+                <div class="settings-doc-linha">
+                  <div>
+                    <label class="field-label">Tipo de documento</label>
+                    <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
+                      <button type="button" class="plan-billing-option active" data-doc-type="cnpj">
+                        <span class="plan-billing-option-title">CNPJ</span>
+                      </button>
+                      <button type="button" class="plan-billing-option" data-doc-type="cpf">
+                        <span class="plan-billing-option-title">CPF</span>
+                      </button>
+                    </div>
                   </div>
+                  <div class="settings-doc-campo">
+                    <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
+                    <div class="field-with-inline-link">
+                      <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
+                    </div>
+                  </div>
+                </div>
+                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                  <div data-so-cnpj>
+                    <label for="profile-tipo-empresa" class="field-label">Tipo de empresa</label>
+                    <select id="profile-tipo-empresa" class="field-select">
+                      <option value="">Escolha</option>
+                      <option value="MEI">MEI</option>
+                      <option value="LIMITED">Sociedade limitada (Ltda)</option>
+                      <option value="INDIVIDUAL">Empresário individual</option>
+                      <option value="ASSOCIATION">Associação</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="profile-faturamento" class="field-label">Faturamento mensal</label>
+                    <select id="profile-faturamento" class="field-select">
+                      <option value="">Escolha</option>
+                      <option value="5000">Até R$ 5 mil</option>
+                      <option value="10000">R$ 5 mil a R$ 10 mil</option>
+                      <option value="20000">R$ 10 mil a R$ 20 mil</option>
+                      <option value="50000">R$ 20 mil a R$ 50 mil</option>
+                      <option value="100000">R$ 50 mil a R$ 100 mil</option>
+                      <option value="200000">Acima de R$ 100 mil</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                  <div>
+                    <label for="profile-cep" class="field-label">CEP</label>
+                    <input id="profile-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000" autocomplete="postal-code">
+                  </div>
+                  <div>
+                    <label for="profile-bairro" class="field-label">Bairro</label>
+                    <input id="profile-bairro" type="text" class="field-input">
+                  </div>
+                </div>
+                <div>
+                  <label for="profile-address" class="field-label">Endereço</label>
+                  <input id="profile-address" type="text" class="field-input" placeholder="Rua, avenida…" autocomplete="address-line1">
+                </div>
+                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                  <div>
+                    <label for="profile-numero" class="field-label">Número</label>
+                    <input id="profile-numero" type="text" class="field-input">
+                  </div>
+                  <div>
+                    <label for="profile-complemento" class="field-label">Complemento</label>
+                    <input id="profile-complemento" type="text" class="field-input" placeholder="Opcional">
+                  </div>
+                </div>
+                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                  <div>
+                    <label for="profile-state" class="field-label">Estado</label>
+                    <select id="profile-state" class="field-select"></select>
+                  </div>
+                  <div>
+                    <label for="profile-city" class="field-label">Cidade</label>
+                    <input id="profile-city" type="text" class="field-input" list="profile-city-options">
+                    <datalist id="profile-city-options"></datalist>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pessoal (responsável pela conta) -->
+              <div class="settings-info-painel" data-info-painel="pessoal" hidden>
+                <p class="settings-info-dica">O responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
+                <div>
+                  <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
+                  <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
+                </div>
+                <div>
+                  <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
+                  <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
+                </div>
+                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                  <div data-so-cnpj>
+                    <label for="profile-resp-cpf" class="field-label">CPF</label>
+                    <input id="profile-resp-cpf" type="text" inputmode="numeric" maxlength="14" class="field-input" placeholder="000.000.000-00">
+                  </div>
+                  <div>
+                    <label for="profile-birthdate" class="field-label">Data de nascimento</label>
+                    <input id="profile-birthdate" type="text" class="field-input" readonly autocomplete="off" placeholder="dd/mm/aaaa">
+                  </div>
+                </div>
+                <div>
+                  <label for="profile-phone" class="field-label">Número de celular</label>
+                  <input id="profile-phone" type="tel" inputmode="numeric" class="field-input" placeholder="(00) 00000-0000">
                 </div>
               </div>
 
@@ -120,11 +204,6 @@
                    perder o que já foi salvo (o formulário continua mandando). -->
               <div hidden>
                 <input id="profile-name" type="text">
-                <input id="profile-birthdate" type="text" readonly autocomplete="off">
-                <input id="profile-address" type="text">
-                <select id="profile-state"></select>
-                <input id="profile-city" type="text" list="profile-city-options">
-                <datalist id="profile-city-options"></datalist>
                 <textarea id="profile-description" maxlength="650"></textarea>
                 <p id="profile-description-count"></p>
               </div>
@@ -438,53 +517,9 @@
         <!-- Dados bancários: a chave Pix que recebe os saques (modelo Bank
              account info da Zola). -->
         <div data-settings-panel="banco" style="display:none;">
-          <div class="dash-card settings-zola-card settings-banco-intro">
-            <div>
-              <p class="settings-banco-intro-texto">Os seus saques caem na chave Pix cadastrada aqui. Use uma chave em nome da sua empresa (CNPJ) ou do responsável.</p>
-            </div>
-            <span class="settings-banco-intro-icone" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
-            </span>
-          </div>
-
-          <div class="dash-card settings-zola-card">
-            <form id="bank-details-form" class="settings-zola-form">
-              <div>
-                <h2 class="prefs-email-titulo">Chave Pix para receber</h2>
-                <p class="prefs-email-sub">A chave precisa ser de uma conta no Brasil, em nome da empresa ou do responsável.</p>
-              </div>
-              <div class="settings-endereco-linha settings-banco-linha">
-                <div>
-                  <label for="profile-pix-type" class="field-label">Tipo de chave <span style="color:#DC2626;">*</span></label>
-                  <select id="profile-pix-type" class="field-select">
-                    <option value="cpf">CPF</option>
-                    <option value="cnpj">CNPJ</option>
-                    <option value="telefone">Telefone</option>
-                    <option value="email">E-mail</option>
-                    <option value="aleatoria">Chave aleatória</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="profile-pix-key" class="field-label"><span id="profile-pix-key-label">Chave Pix</span> <span style="color:#DC2626;">*</span></label>
-                  <input id="profile-pix-key" type="text" class="field-input" placeholder="000.000.000-00">
-                </div>
-              </div>
-              <p class="settings-campo-nota">Confira a chave antes de salvar: o saque é enviado para ela.</p>
-
-              <label class="settings-banco-aceite">
-                <input type="checkbox" id="bank-details-aceite">
-                <span>Confirmo que a chave Pix está em nome da minha empresa ou do responsável e autorizo a Love a enviar os meus saques para ela.</span>
-              </label>
-
-              <p class="settings-form-msg" id="bank-details-msg" aria-live="polite" hidden></p>
-              <div>
-                <button type="submit" class="btn-primary settings-banco-salvar">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                  Salvar alterações
-                </button>
-              </div>
-            </form>
-          </div>
+          <!-- Mesmo fluxo de Financeiro › Contas bancárias (js/contas-bancarias.js):
+               editar aqui ou lá salva no mesmo lugar. -->
+          <div id="carteira-raiz"></div>
         </div>
         </div>
       </main>
@@ -569,7 +604,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=3"></script>
   <script src="js/shell.js?v=60"></script>
-  <script src="js/configuracoes.js?v=65"></script>
+  <script src="js/configuracoes.js?v=66"></script>
+  <script src="js/contas-bancarias.js?v=3"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

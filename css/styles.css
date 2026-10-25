@@ -12347,3 +12347,20 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
 @media (max-width: 768px) {
   html body #tab-rsvp .love-tabela-barra-dir:not(#love-h-a) { justify-content: flex-end !important; margin-left: auto !important; }
 }
+
+/* ==========================================================================
+   Setas de voltar: a mesma seta (←) em toda a plataforma, sem caixa e sem
+   fundo cinza no hover. Mapa do evento expandido ganha a seta ao lado do
+   título para voltar à tela reduzida.
+   ========================================================================== */
+html body :is(.gifts-listas-voltar, .guest-voltar, .rfp-voltar-seta, button.rfp-detalhe-voltar, .floorplan-lista-voltar, .floorplan-voltar):not(#love-h-a),
+html body .convite-tela:not(.convite-tela-presente) .convite-voltar:not(#love-h-a) {
+  background: transparent !important; border: 0 !important; box-shadow: none !important; color: #18181B !important;
+}
+html body :is(.gifts-listas-voltar, .guest-voltar, .rfp-voltar-seta, button.rfp-detalhe-voltar, .floorplan-lista-voltar, .floorplan-voltar, .convite-voltar):not(#love-h-a):hover { background-color: transparent !important; color: #181D24 !important; }
+body[data-theme="dark"] :is(.gifts-listas-voltar, .guest-voltar, .rfp-voltar-seta, button.rfp-detalhe-voltar, .floorplan-lista-voltar, .floorplan-voltar) { color: #FFFFFF !important; }
+
+.floorplan-toolbar-esq { display: flex; align-items: center; gap: 4px; min-width: 0; }
+html body .floorplan-voltar:not(#love-h-a) { display: none; width: 32px; height: 32px; margin-left: -6px; padding: 0; align-items: center; justify-content: center; cursor: pointer; border-radius: 8px; }
+html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { display: inline-flex; }
+.floorplan-voltar svg { width: 20px; height: 20px; }

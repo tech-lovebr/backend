@@ -66,7 +66,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261025_fichaConvidado">
+  <link rel="stylesheet" href="css/styles.css?v=20261025_setaVoltar">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -882,7 +882,7 @@
              agora abre pelo menu do perfil. Mesmo id do antigo botão do topo. -->
         <button id="btn-dash-header-chat" type="button" class="rail-icon-btn rail-chat-btn relative order-4 md:order-5" aria-label="Mensagens">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
             </svg>
           <span class="badge-header-chat rail-chat-selo hidden">0</span>
           <span class="rail-rotulo">Mensagens</span>
@@ -1953,11 +1953,11 @@
             <div class="flex items-center gap-2 min-w-0">
               <!-- Voltar (só nas listas prontas): volta para Meus presentes -->
               <button type="button" id="btn-gifts-listas-voltar" class="gifts-listas-voltar" aria-label="Voltar para meus presentes" hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
               <!-- Recado aberto: volta para a tabela de recados -->
               <button type="button" id="btn-recado-voltar" class="rfp-voltar-seta" aria-label="Voltar para os recados" hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
               <h2 id="gifts-header-title" class="floorplan-page-name" style="margin:0;">Meus presentes</h2>
             </div>
@@ -2161,7 +2161,13 @@
                barra de título compacta + painel "Convidados" + planta -->
           <div class="floorplan-wrap">
             <div class="floorplan-toolbar">
-              <span class="floorplan-page-name">Mapa do evento</span>
+              <div class="floorplan-toolbar-esq">
+                <!-- Expandida: a setinha volta para a tela reduzida -->
+                <button type="button" id="btn-floorplan-voltar" class="floorplan-voltar" aria-label="Voltar para a tela reduzida" title="Voltar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+                </button>
+                <span class="floorplan-page-name">Mapa do evento</span>
+              </div>
               <div class="floorplan-toolbar-right">
                 <!-- Expandir: esconde a lista de convidados e deixa a planta na tela toda -->
                 <button type="button" id="btn-floorplan-expandir" class="builder-tool-btn floorplan-expandir" data-dica="Expandir" aria-label="Expandir" aria-pressed="false">
@@ -2324,7 +2330,7 @@
             <div class="flex items-center gap-2 min-w-0">
               <!-- Orçamento › despesa aberta: a setinha volta para a tabela -->
               <button type="button" id="btn-orc-voltar" class="rfp-voltar-seta" aria-label="Voltar para o orçamento" hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
               <h2 id="wallet-header-title" class="floorplan-page-name" style="margin:0;">Carteira Digital</h2>
             </div>
@@ -2816,7 +2822,7 @@
             <!-- Barra Superior com Botão Voltar -->
             <div class="mb-6 pb-4 border-b border-zinc-200/80 flex items-center justify-between">
               <button type="button" id="btn-back-to-welcome-step" class="text-xs font-semibold text-zinc-500 hover:text-zinc-900 flex items-center gap-1.5 transition-colors cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
                 <span>Voltar</span>
               </button>
             </div>
@@ -3246,7 +3252,7 @@
             <div class="flex items-center gap-2 min-w-0">
               <!-- Nova solicitação aberta: setinha volta para a tabela -->
               <button type="button" id="btn-rfp-voltar" class="rfp-voltar-seta" aria-label="Voltar para as solicitações" hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
               <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Explorar</h2>
             </div>
@@ -5378,7 +5384,7 @@
     <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white flex-shrink-0">
       <div class="guest-titulo-linha">
         <button type="button" id="btn-guest-voltar" class="guest-voltar" aria-label="Voltar para o convidado" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
         </button>
         <h2 id="add-guest-drawer-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Adicionar Convidado</h2>
       </div>
@@ -5555,13 +5561,13 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261025_fichaConvidado"></script>
+  <script src="js/app.js?v=20261025_setaVoltar"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261023_staff"></script>
-  <script src="js/pedidos-orcamento.js?v=20261025_fichaConvidado"></script>
-  <script src="js/contratos.js?v=20261023_contratos2"></script>
+  <script src="js/pedidos-orcamento.js?v=20261025_setaVoltar"></script>
+  <script src="js/contratos.js?v=20261025_setaVoltar"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261025_fichaConvidado"></script>
+  <script src="js/site-builder.js?v=20261025_setaVoltar"></script>
 </body>
 </html>

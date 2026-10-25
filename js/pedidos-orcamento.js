@@ -2333,7 +2333,7 @@
       <div class="rfp-detalhe">
         <div class="rfp-detalhe-cabeca">
           <button type="button" class="rfp-detalhe-voltar" data-rfp-detalhe-voltar aria-label="Voltar para Minhas solicitações">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
           </button>
           <div class="rfp-detalhe-nome">
             <h3 class="rfp-detalhe-titulo">${esc(String(info.titulo || '').trim() || (cat ? cat.nome : 'Solicitação'))}</h3>

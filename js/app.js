@@ -12091,7 +12091,7 @@ document.addEventListener('DOMContentLoaded', () => {
       b.addEventListener('click', () => {
         const nome = ((/** @type {HTMLElement} */ (b)).dataset.nome || '').trim();
         const mesas = getFloorPlanElements().filter(t => t.type === 'mesa').sort((x, y) => (parseInt(x.number) || 0) - (parseInt(y.number) || 0));
-        const seta = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>';
+        const seta = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>';
         caixa.innerHTML = `<div class="floorplan-lista-topo floorplan-lista-topo-mover"><button type="button" class="floorplan-lista-voltar" aria-label="Voltar para a lista da mesa">${seta}</button><p>Mover ${escaparHtml(nome)} para</p></div>` + mesas.map(m => {
           const ocupados = (m.seatNames || []).filter(/** @param {string} s */ s => s && s.trim()).length;
           const total = parseInt(m.seats) || 1;
@@ -13682,6 +13682,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFloorPlanCanvas();
       };
       btnExpandir.addEventListener('click', () => expandir(!wrapPlanta.classList.contains('is-expandida')));
+      // Setinha ao lado do título (só aparece expandida): volta para a tela reduzida.
+      document.getElementById('btn-floorplan-voltar')?.addEventListener('click', () => expandir(false));
 
       // Expandida: a lista de convidados flutua sobre a planta. O tracinho
       // minimiza (fica só a barrinha); o quadradinho abre de novo. Dá para

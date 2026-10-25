@@ -10977,3 +10977,38 @@ html body .parcelas-opcoes .parcelas-card-sub:not(#love-h-a) { margin-top: 2px; 
 html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
 }
+
+/* ==========================================================================
+   Celular como app (PWA) — SÓ abaixo de 768px; o desktop não muda.
+   - Sem rolagem para os lados; altura pela viewport dinâmica (dvh).
+   - Áreas seguras do iOS/Android: topo (barra de status) e rodapé (o menu
+     inferior já respeita o indicador de home).
+   - Margem lateral de app (16px) e espaço para o menu inferior no fim.
+   - Toques de pelo menos 44 × 44 px nos botões e links principais.
+   - Campos com 16px de letra (o Safari não dá zoom ao focar).
+   ========================================================================== */
+@media (max-width: 768px) {
+  :root { --b2b-content-pad-x: 16px; }
+  html, body { overflow-x: hidden; max-width: 100%; }
+  html body .b2b-shell:not(#love-h-a), html body .b2b-main:not(#love-h-a) { min-height: 100dvh; overflow-x: hidden; }
+  html body .b2b-topbar:not(#love-h-a) { padding-top: env(safe-area-inset-top, 0); height: auto; min-height: calc(64px + env(safe-area-inset-top, 0)); }
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a) { padding-top: calc(var(--b2b-content-pad-y) + env(safe-area-inset-top, 0)); }
+  html body .b2b-content:not(#love-h-a) {
+    padding-left: 16px !important; padding-right: 16px !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0)) !important;
+    overflow-x: hidden;
+  }
+  html body .mobile-bottom-nav:not(#love-h-a) { padding-bottom: env(safe-area-inset-bottom, 0); }
+
+  /* Toque mínimo de 44px. */
+  html body :is(.btn-primary, .btn-secondary, .cart-btn-escuro, .op-post-botao, .fin-lista-btn, .tabela-barra-btn, .op-filtrar-btn, .produto-voltar, .cart-link, .cart-link-texto):not(#love-h-a) { min-height: 44px; }
+  html body :is(.topbar-icon-plain, .topbar-avatar-btn, .tabela-ver-mais, .guests-pagination-btn, .op-post-salvar, .op-pagina-btn, .mobile-nav-item):not(#love-h-a) { min-width: 44px; min-height: 44px; }
+  html body .category-tab:not(#love-h-a), html body .settings-info-aba:not(#love-h-a), html body .op-prop-aba:not(#love-h-a) { min-height: 44px; }
+
+  /* Campos: 16px para o iOS não dar zoom. */
+  html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea):not(#love-h-a) { font-size: 16px !important; }
+
+  /* Nada passa da largura da tela: tabelas rolam dentro da própria caixa. */
+  html body :is(.leads-table-wrap, .overflow-x-auto):not(#love-h-a) { max-width: 100%; -webkit-overflow-scrolling: touch; }
+  html body img:not(#love-h-a) { max-width: 100%; }
+}

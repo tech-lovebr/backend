@@ -123,18 +123,26 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-700 mb-1">Categoria</label>
-              <div class="nova-empresa-categorias" role="radiogroup" aria-label="Categoria da sua empresa">
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Buffet e Gastronomia" required> Buffet e Gastronomia</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Bar e Bebidas" required> Bar e Bebidas</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Espaços para Locação" required> Espaços para Locação</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Staff e Mão de Obra" required> Staff e Mão de Obra</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Mídia e Audiovisual" required> Mídia e Audiovisual</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Música e Entretenimento" required> Música e Entretenimento</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Decoração" required> Decoração</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Assessoria e Cerimonialista" required> Assessoria e Cerimonialista</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Trajes a Rigor" required> Trajes a Rigor</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Beleza e Estilo" required> Beleza e Estilo</label>
-                <label class="nova-empresa-opcao nova-empresa-categoria"><input type="radio" name="signup-category" value="Aluguel de Carros" required> Aluguel de Carros</label>
+              <div class="category-select" id="signup-category-select">
+                <button type="button" class="category-select-trigger" id="signup-category-trigger">
+                  <span id="signup-category-trigger-label">Selecione a categoria...</span>
+                  <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div class="category-select-panel" id="signup-category-panel" hidden>
+                  <div class="category-tree category-tree-flat" id="signup-category-tree">
+                    <div class="category-tree-row" data-category-value="Buffet e Gastronomia">Buffet e Gastronomia</div>
+                    <div class="category-tree-row" data-category-value="Bar e Bebidas">Bar e Bebidas</div>
+                    <div class="category-tree-row" data-category-value="Espaços para Locação">Espaços para Locação</div>
+                    <div class="category-tree-row" data-category-value="Staff e Mão de Obra">Staff e Mão de Obra</div>
+                    <div class="category-tree-row" data-category-value="Mídia e Audiovisual">Mídia e Audiovisual</div>
+                    <div class="category-tree-row" data-category-value="Música e Entretenimento">Música e Entretenimento</div>
+                    <div class="category-tree-row" data-category-value="Decoração">Decoração</div>
+                    <div class="category-tree-row" data-category-value="Assessoria e Cerimonialista">Assessoria e Cerimonialista</div>
+                    <div class="category-tree-row" data-category-value="Trajes a Rigor">Trajes a Rigor</div>
+                    <div class="category-tree-row" data-category-value="Beleza e Estilo">Beleza e Estilo</div>
+                    <div class="category-tree-row" data-category-value="Aluguel de Carros">Aluguel de Carros</div>
+                  </div>
+                </div>
               </div>
             </div>
             <div>
@@ -220,6 +228,45 @@
 
     showAuthView(document.body.dataset.authView);
 
+    /* Dropdown de categoria com a estética da plataforma (mesmo componente de
+       Meus produtos: .category-select/.category-tree), não o <select> nativo
+       do navegador. */
+    let signupCategoryValue = '';
+    const signupCategorySelect = document.getElementById('signup-category-select');
+    const signupCategoryTrigger = document.getElementById('signup-category-trigger');
+    const signupCategoryLabel = document.getElementById('signup-category-trigger-label');
+    const signupCategoryPanel = document.getElementById('signup-category-panel');
+
+    function closeSignupCategoryPanel() {
+      signupCategoryPanel.hidden = true;
+      signupCategorySelect.classList.remove('is-open');
+    }
+
+    signupCategoryTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = signupCategoryPanel.hidden;
+      closeSignupCategoryPanel();
+      if (willOpen) {
+        signupCategoryPanel.hidden = false;
+        signupCategorySelect.classList.add('is-open');
+      }
+    });
+
+    document.getElementById('signup-category-tree').querySelectorAll('[data-category-value]').forEach(row => {
+      row.addEventListener('click', () => {
+        signupCategoryValue = row.dataset.categoryValue;
+        signupCategoryLabel.textContent = signupCategoryValue;
+        document.getElementById('signup-category-tree').querySelectorAll('[data-category-value]').forEach(r => {
+          r.classList.toggle('active', r === row);
+        });
+        closeSignupCategoryPanel();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!signupCategorySelect.contains(e.target)) closeSignupCategoryPanel();
+    });
+
     // Google em janelinha (pop-up) no computador — ver entrarComGoogleHub em js/supabase-init.js.
     document.getElementById('google-login-btn').addEventListener('click', () => {
       entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)$/, 'dashboard'));
@@ -289,13 +336,19 @@
 
     document.getElementById('signup-email-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const category = (document.querySelector('input[name="signup-category"]:checked') || {}).value || '';
       const email = document.getElementById('signup-email').value.trim();
       const password = document.getElementById('signup-password').value;
       const errorEl = document.getElementById('signup-error');
       const submitBtn = document.getElementById('signup-email-btn');
 
       errorEl.classList.add('hidden');
+
+      if (!signupCategoryValue) {
+        errorEl.textContent = 'Escolha a categoria da sua empresa.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
       submitBtn.disabled = true;
 
       const { data: cadastro, error } = await supabaseClient.auth.signUp({
@@ -303,7 +356,7 @@
         password,
         options: {
           emailRedirectTo: window.location.origin + '/dashboard',
-          data: { role: 'fornecedor', category, ...dadosDoDispositivo() }
+          data: { role: 'fornecedor', category: signupCategoryValue, ...dadosDoDispositivo() }
         }
       });
 

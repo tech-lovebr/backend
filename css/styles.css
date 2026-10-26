@@ -11129,6 +11129,7 @@ html body .chk-modal-cab .chk-modal-titulo:not(#love-h-a) { margin: 0; }
 html body button.chk-modal-x:not(#love-h-a) { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-right: -6px; padding: 0; background: none; border: 0; border-radius: 8px; color: #A1A1AA; cursor: pointer; }
 html body button.chk-modal-x:not(#love-h-a):hover { color: #181D24; }
 .chk-modal-x svg { width: 20px; height: 20px; }
+.chk-modal-salvar-topo { display: none; }
 html body #chk-modal .chk-form:not(#love-h-a) { padding: 18px 24px 22px; }
 .chk-form-colunas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 32px; align-items: stretch; }
 .chk-form-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
@@ -11139,6 +11140,50 @@ html body .chk-modal-card:not(#love-h-a) { min-height: min(563px, calc(100vh - 4
 html body #chk-modal .chk-form:not(#love-h-a) { flex: 1 1 auto; display: flex; flex-direction: column; }
 html body #chk-modal .chk-form-colunas:not(#love-h-a) { flex: 1 1 auto; }
 html body #chk-modal .chk-form-acoes:not(#love-h-a) { margin-top: auto; padding-top: 18px; }
+
+/* "Adicionar/Editar tarefa" do Checklist em tela cheia no celular — mesmo
+   visual e posicionamento da ficha de "Adicionar convidado" (Meus
+   Convidados): seta de voltar + título centralizado + Salvar no topo,
+   cartão branco com os campos. Desktop mantém o pop-up centralizado. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .chk-modal:not([hidden]):not(#love-h-a) {
+    position: fixed; inset: 0; bottom: var(--bottom-bar-height-mobile, 64px); z-index: 58;
+    padding: 0; align-items: stretch; justify-content: flex-start;
+    background: linear-gradient(180deg, #EEF1F3 0%, #F6F7F8 40%, #F6F7F8 100%);
+  }
+  html body .chk-modal-card:not(#love-h-a) {
+    width: 100%; max-width: none; height: 100%; min-height: 0; max-height: none;
+    margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent;
+    overflow: hidden;
+  }
+  html body .chk-modal-cab:not(#love-h-a) {
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 8px; flex-shrink: 0;
+  }
+  html body .chk-modal-titulo:not(#love-h-a) {
+    flex: 1 1 auto; min-width: 0; margin: 0; font-size: 17px; font-weight: 600;
+    text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body button.chk-modal-x:not(#love-h-a) {
+    width: 44px; height: 44px; margin-right: 0; background: transparent !important; border: 0 !important; color: #18181B;
+  }
+  html body .chk-modal-x svg:not(#love-h-a) { width: 24px; height: 24px; }
+  html body .chk-modal-salvar-topo:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    height: 44px; padding: 0 18px; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 8px;
+    font-family: inherit; font-size: 16px; font-weight: 600; color: #183b54; cursor: pointer;
+  }
+  html body #chk-modal .chk-form:not(#love-h-a) {
+    padding: 8px 16px 32px; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  html body #chk-modal .chk-form-colunas:not(#love-h-a) {
+    margin-top: 8px; padding: 18px 16px; background: #FFFFFF; border-radius: 10px;
+  }
+  html body #chk-modal .chk-form-acoes:not(#love-h-a) { display: none !important; }
+  body[data-theme="dark"] .chk-modal:not([hidden]) { background: #1A1A1A; }
+  body[data-theme="dark"] #chk-modal .chk-form-colunas { background: #252525; }
+  body[data-theme="dark"] .chk-modal-salvar-topo { background: #252525; border-color: #333333; color: #FFFFFF; }
+  body[data-theme="dark"] .chk-modal-titulo, body[data-theme="dark"] .chk-modal-x { color: #FFFFFF; }
+}
 
 /* Cadeira: assento centralizado na cadeira, iniciais no meio com a mesma margem dos quatro lados. */
 html body .floorplan-seat-dot:not(#love-h-a) { padding: 0; justify-content: center; align-items: center; }
@@ -12141,6 +12186,14 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
     margin-left: -1rem !important; margin-right: -1rem !important;
     width: auto !important; max-width: none !important;
     border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important;
+  }
+  /* .floorplan-wrap: o fundo branco + linha no topo são pensados pro desktop,
+     onde .floorplan-toolbar continua dentro dela — no celular essa toolbar é
+     deslocada pra cima das abas (submenu-celular), deixando esse branco +
+     linha como sobra visual embaixo das abas de Meus Convidados. Não mexe no
+     modo tela cheia (.is-expandida), que precisa continuar opaco. */
+  html body #view-event-os-dashboard .floorplan-wrap:not(.is-expandida):not(#love-h-a) {
+    border: 0 !important; background: transparent !important;
   }
   html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(thead, thead tr, thead th):not(#love-h-a) { border-radius: 0 !important; }
   html body #view-event-os-dashboard :is(.love-tabela-caixa, .rsvp-caixa-abaixo-das-abas, .dash-card:has(table)) :is(tr > :first-child):not(#love-h-a) { padding-left: 16px !important; }

@@ -670,11 +670,20 @@
     m.id = 'chk-modal';
     m.className = 'chk-modal';
     m.hidden = true;
+    // No celular esse pop-up vira tela cheia (igual à ficha de "Adicionar
+    // convidado" em Meus Convidados): seta de voltar à esquerda e Salvar já
+    // no topo, à direita, em vez do X e dos botões lá embaixo (desktop
+    // continua com o pop-up centralizado de sempre).
+    const celular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+    const iconeFechar = celular
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg>';
     m.innerHTML = `
       <div class="chk-modal-card" role="dialog" aria-modal="true" aria-labelledby="chk-modal-titulo">
         <div class="chk-modal-cab">
+          <button type="button" class="chk-modal-x" data-chk-fechar aria-label="Fechar">${iconeFechar}</button>
           <h3 id="chk-modal-titulo" class="chk-modal-titulo">Adicionar tarefa</h3>
-          <button type="button" class="chk-modal-x" data-chk-fechar aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
+          <button type="submit" form="chk-form" class="chk-modal-salvar-topo">Salvar</button>
         </div>
         <form id="chk-form" class="chk-form" novalidate>
           <div class="chk-form-colunas">

@@ -47,7 +47,7 @@ const GRUPOS = [
   { key: 'faq', label: PLATAFORMA === 'cliente' ? 'Ajuda' : 'FAQ', botao: 'Adicionar pergunta' }
 ];
 
-const NOME_PLATAFORMA = PLATAFORMA === 'fornecedor' ? 'Plataforma B2B' : 'Plataforma dos anfitriões';
+const NOME_PLATAFORMA = PLATAFORMA === 'fornecedor' ? 'Plataforma dos fornecedores' : 'Plataforma dos anfitriões';
 
 let BANNERS = [];
 let FAQ = [];

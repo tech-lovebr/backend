@@ -148,7 +148,7 @@ const TICKET_STATUS_BADGE = {
 const ORIGEM_LABELS = {
   site: 'Site público',
   cliente: 'Plataforma (cliente)',
-  fornecedor: 'B2B (fornecedor)'
+  fornecedor: 'Fornecedor'
 };
 
 function badge(text, variant) {

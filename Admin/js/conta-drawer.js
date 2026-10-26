@@ -12,7 +12,7 @@
    ========================================================================== */
 
 const ORIGENS = {
-  b2b: { rotulo: 'HUB/B2B', badge: 'badge-info', plataforma: 'HUB/B2B' },
+  b2b: { rotulo: 'Fornecedor', badge: 'badge-info', plataforma: 'Fornecedores' },
   anfitriao: { rotulo: 'Anfitrião', badge: 'badge-success', plataforma: 'Plataforma principal' },
   sem_origem: { rotulo: 'Sem origem', badge: 'badge-danger', plataforma: 'Não identificada' }
 };
@@ -217,6 +217,21 @@ const ContaDrawer = (() => {
     return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valor;
   }
 
+  /* Quem e a empresa vem antes de tudo no drawer do fornecedor: razao
+     social, documento, responsavel e o segmento em que ela atua. Sem razao
+     social preenchida, o nome da conta ocupa a linha - e o nome da empresa. */
+  function identidadeDoFornecedor(c, linha) {
+    if (c.origem !== 'b2b') return '';
+    const f = (DADOS?.fornecedores || []).find(x => x.id === c.id);
+    if (!f) return '';
+    return [
+      linha('Razão social', escapeHtml(f.razao_social || c.nome || '—')),
+      f.cnpj ? linha('CNPJ', escapeHtml(f.cnpj)) : '',
+      f.contact_name ? linha('Responsável', escapeHtml(f.contact_name)) : '',
+      linha('Categoria', escapeHtml(f.category || 'Não informada'))
+    ].join('');
+  }
+
   function desenhar(c) {
     const semOrigem = c.origem === 'sem_origem';
     const origem = ORIGENS[c.origem] || ORIGENS.sem_origem;
@@ -229,16 +244,19 @@ const ContaDrawer = (() => {
       </div>`;
 
     const nascimento = dataDeNascimento(c);
+    // Em Fornecedores e Anfitriões o canal e o proprio assunto da pagina;
+    // so no dashboard, que mistura os dois, a linha diz alguma coisa.
+    const mostrarCanal = !alvoEmLinha;
 
     abrirPainel({
       title: c.nome || c.email || 'Conta',
       semTitulo: true,
       body: `
         <div class="lista-dados">
-          ${linha('Nome', escapeHtml(c.nome || '—'))}
+          ${identidadeDoFornecedor(c, linha) || linha('Nome', escapeHtml(c.nome || '—'))}
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}
           ${linha('Data de nascimento', escapeHtml(nascimento || 'Não informada'))}
-          ${linha('Canal', escapeHtml(origem.rotulo))}
+          ${mostrarCanal ? linha('Canal', escapeHtml(origem.rotulo)) : ''}
           ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso && acesso.exato ? linha('Cadastrou-se em', escapeHtml(acesso.texto)) : ''}
@@ -268,7 +286,7 @@ const ContaDrawer = (() => {
           </label>
 
           <div style="display:flex;gap:.625rem">
-            <button type="button" class="btn btn-ghost" style="flex:1" data-destino="b2b">É um fornecedor (B2B)</button>
+            <button type="button" class="btn btn-ghost" style="flex:1" data-destino="b2b">É um fornecedor</button>
             <button type="button" class="btn btn-ghost" style="flex:1" data-destino="anfitriao">É um anfitrião</button>
           </div>` : ''}`,
       footer: `
@@ -412,15 +430,11 @@ const ContaDrawer = (() => {
       .reduce((t, x) => t + (Number(x.amount) || 0), 0);
 
     const cadastro = [
-      // Ordem pedida: quem e a empresa primeiro (razao social, documento,
-      // responsavel e o segmento em que ela atua); contato e endereco depois.
-      linhaOpcional('Razão social', f.razao_social),
-      linhaOpcional('CNPJ', f.cnpj),
-      linhaOpcional('Responsável', f.contact_name),
-      linhaOpcional('Categoria', f.category),
+      // Razao social, CNPJ, responsavel e categoria sobem para o topo do
+      // drawer (identidadeDoFornecedor); aqui fica o resto do cadastro.
       linhaOpcional('Telefone', f.phone),
-      linhaOpcional('Endereço', f.address),
-      linhaOpcional('Cidade', [f.city, f.state].filter(Boolean).join(' / ')),
+      // Endereco e cidade na mesma linha: sao a mesma informacao partida em duas.
+      linhaOpcional('Endereço', [f.address, [f.city, f.state].filter(Boolean).join(' / ')].filter(Boolean).join(' · ')),
       linhaDoScore(f),
       blocoDoPlano(f),
       linhaOpcional('Chave Pix', f.pix_key)
@@ -884,7 +898,7 @@ const ContaDrawer = (() => {
     }
 
     Drawer.close();
-    toast(destino === 'b2b' ? 'Conta movida para B2B.' : 'Conta movida para Anfitriões.');
+    toast(destino === 'b2b' ? 'Conta movida para Fornecedores.' : 'Conta movida para Anfitriões.');
     window.location.reload();
   }
 

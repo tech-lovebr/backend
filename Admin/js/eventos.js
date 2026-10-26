@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 11);
+  renderLoading(tbody, 8);
 
   const [eventos, clientes, convidados, presentes] = await Promise.all([
     safeSelect('eventos', '*'),
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     safeSelect('presentes', 'evento_id, valor, status')
   ]);
 
-  if (eventos.error) return renderError(tbody, 11, eventos.error);
+  if (eventos.error) return renderError(tbody, 8, eventos.error);
 
   EVENTOS = eventos.data;
   CLIENTES = new Map(clientes.data.map(c => [c.id, c]));
@@ -123,7 +123,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 11, 'Nenhum evento encontrado',
+    renderEmpty(tbody, 8, 'Nenhum evento encontrado',
       EVENTOS.length
         ? 'Ajuste a busca ou o filtro de categoria.'
         : 'Nenhuma comemoração foi criada ainda. Os eventos aparecem aqui assim que a plataforma dos noivos começar a gravá-los no banco.');
@@ -132,7 +132,6 @@ function render() {
 
   tbody.innerHTML = lista.map(e => {
     const m = metricas(e.id);
-    const cliente = CLIENTES.get(e.cliente_id);
     const marcada = SELECIONADAS.has(e.id);
     return `
       <tr data-id="${e.id}" class="${marcada ? 'is-selecionada' : ''}">
@@ -141,11 +140,8 @@ function render() {
         </td>
         <td class="cell-strong">${dash(e.titulo)}</td>
         <td>${badge(EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—', e.tipo === 'wedding' ? 'badge-info' : 'badge-success')}</td>
-        <td class="cell-muted">${dash(cliente?.couple_name || e.host_name)}</td>
         <td class="cell-muted">${escapeHtml(formatDate(e.data_evento))}</td>
         <td>${formatNumber(m.convidados)}</td>
-        <td>${formatNumber(m.confirmados)}</td>
-        <td>${formatNumber(m.recebidos)}/${formatNumber(m.presentes)}</td>
         <td class="cell-strong">${formatCurrency(m.arrecadado)}</td>
         <td>${e.deleted_at
           ? `<span class="valor-bloqueado">${escapeHtml(rotuloEventoExcluido(e))}</span>`

@@ -1,176 +1,263 @@
 /* ==========================================================================
    LOVE ADMIN — Financeiro
-   Topo: TPV total (tudo o que foi processado) e faturamento bruto (só o que
-   ficou com a Love em comissões de intermediação). Extrato: cada pagamento
-   com a origem, o gateway que processou, o split que foi para o anfitrião
-   ou o fornecedor e o que caiu para a Love. Embaixo, a carteira dos
-   fornecedores e os links de pagamento.
+
+   Topo: TPV total (tudo o que foi processado), faturamento bruto (o take
+   rate que ficou com a Love), custos da plataforma e o lucro líquido entre
+   os dois. Tudo recortado pelo período do cabeçalho, igual ao Dashboard.
+
+   Embaixo dos números, o mesmo gráfico de linha do Dashboard (Financas.
+   desenharGrafico) e um extrato único: cada movimento de dinheiro — presente
+   de evento, cobrança de fornecedor ou saída de carteira — numa linha só,
+   com a origem, se entrou ou saiu, quanto foi processado e quanto virou
+   take rate.
    ========================================================================== */
 
-let LINKS = [];
+// Abre em "Este mês", como o Dashboard; o calendário recorta dia ou intervalo.
+const HOJE_ABERTURA = new Date();
+let PERIODO = {
+  de: new Date(HOJE_ABERTURA.getFullYear(), HOJE_ABERTURA.getMonth(), 1),
+  ate: new Date(HOJE_ABERTURA.getFullYear(), HOJE_ABERTURA.getMonth(), HOJE_ABERTURA.getDate(), 23, 59, 59, 999)
+};
+
 let FORNECEDORES = new Map();
 let EVENTOS = new Map();
-let EXTRATO = [];
+let MOVIMENTOS = [];
+
+const SERIES = [
+  { id: 'tpv', rotulo: 'TPV total', cor: '#2a78d6' },
+  { id: 'custo', rotulo: 'Custos', cor: '#64748b' },
+  { id: 'receita', rotulo: 'Faturamento bruto', cor: '#1baf7a' }
+];
+let SERIE_ESCOLHIDA = null;
+
+const comPeriodo = () => Boolean(PERIODO.de || PERIODO.ate);
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
-  const tbodyExtrato = document.getElementById('tbody-extrato');
-  const tbodyForn = document.getElementById('tbody-fornecedores');
-  const tbodyLinks = document.getElementById('tbody-links');
-  renderLoading(tbodyExtrato, 7);
-  renderLoading(tbodyForn, 7);
-  renderLoading(tbodyLinks, 6);
+  filtroDePeriodo(PERIODO, aplicarPeriodo);
+  document.getElementById('btn-periodo')?.classList.toggle('is-ativo', comPeriodo());
 
-  const [fornecedores, carteira, contratos, links, contribuicoes, eventos] = await Promise.all([
+  renderKpiSkeleton();
+  renderLoading(document.getElementById('tbody-extrato'), 6);
+
+  let largura = window.innerWidth;
+  window.addEventListener('resize', () => {
+    if (Math.abs(window.innerWidth - largura) < 20) return;
+    largura = window.innerWidth;
+    renderGrafico();
+  });
+
+  const [fornecedores, carteira, links, contribuicoes, eventos] = await Promise.all([
     safeSelect('fornecedores', 'id, company_name, plan'),
     safeSelect('wallet_transactions', 'fornecedor_id, type, amount, created_at'),
-    safeSelect('contracts', 'fornecedor_id, valor_total, valor_pago, status'),
     safeSelect('payment_links', '*'),
     safeSelect('presentes_contribuicoes', '*'),
-    safeSelect('eventos', 'id, titulo, host_name, couple_name')
+    safeSelect('eventos', 'id, titulo, host_name, couple_name'),
+    Financas.carregarCustos()
   ]);
 
-  if (fornecedores.error) return renderError(tbodyForn, 7, fornecedores.error);
+  if (fornecedores.error) return renderError(document.getElementById('tbody-extrato'), 6, fornecedores.error);
 
-  FORNECEDORES = new Map(fornecedores.data.map(f => [f.id, f]));
+  FORNECEDORES = new Map((fornecedores.data || []).map(f => [f.id, f]));
   EVENTOS = new Map((eventos.data || []).map(e => [e.id, e]));
-  LINKS = links.data;
-  EXTRATO = pagamentosProcessados(contribuicoes.data, links.data)
-    .sort((a, b) => new Date(b.em) - new Date(a.em));
+  MOVIMENTOS = montarMovimentos(contribuicoes.data, links.data, carteira.data);
 
-  renderKpis();
-  renderExtrato();
-  renderFornecedores(fornecedores.data, carteira.data, contratos.data);
-  renderLinks();
+  renderTudo();
 
   document.getElementById('busca-extrato').addEventListener('input', renderExtrato);
   document.getElementById('filtro-origem-extrato').addEventListener('change', renderExtrato);
-  document.getElementById('filtro-status-link').addEventListener('change', renderLinks);
+  document.getElementById('filtro-tipo-extrato').addEventListener('change', renderExtrato);
 });
 
-function renderKpis() {
-  const tpv = EXTRATO.reduce((s, p) => s + p.valor, 0);
-  const love = EXTRATO.reduce((s, p) => s + p.comissao, 0);
-  const repasse = EXTRATO.reduce((s, p) => s + p.repasse, 0);
+function aplicarPeriodo() {
+  document.getElementById('periodo-rotulo').textContent = rotuloDePeriodo(PERIODO);
+  document.getElementById('btn-periodo').classList.toggle('is-ativo', comPeriodo());
+  renderTudo();
+}
 
-  const tile = (label, value, sub) => `
-    <div class="kpi"><p class="kpi-label">${label}</p><p class="kpi-value">${value}</p><p class="kpi-sub">${sub}</p></div>`;
+function renderTudo() {
+  renderKpis();
+  renderGrafico();
+  renderExtrato();
+}
+
+/* ======================================================== Movimentos ==
+   Uma linha por movimento de dinheiro, de três fontes que antes eram três
+   tabelas. Os créditos da carteira ficam de fora de propósito: eles são o
+   dinheiro das cobranças chegando ao fornecedor, então contá-los também
+   dobraria a mesma entrada. ============================================ */
+
+function montarMovimentos(contribuicoes, links, carteira) {
+  const presentes = (contribuicoes || [])
+    .filter(c => c.status === 'pago' && (c.pago_em || c.created_at))
+    .map(c => {
+      const valor = Number(c.valor) || 0;
+      const evento = EVENTOS.get(c.evento_id);
+      return {
+        em: c.pago_em || c.created_at,
+        origem: 'evento',
+        nome: evento?.titulo || evento?.couple_name || evento?.host_name || 'Evento',
+        sub: c.nome ? `Presente de ${c.nome}` : 'Presente',
+        tipo: 'entrada',
+        valor,
+        takeRate: c.comissao_love != null ? Number(c.comissao_love) : valor * COMISSAO_PADRAO.presentes,
+        estimada: c.comissao_love == null,
+        status: 'pago'
+      };
+    });
+
+  const cobrancas = (links || [])
+    .filter(l => l.created_at || l.paid_at)
+    .map(l => {
+      const valor = Number(l.amount) || 0;
+      const pago = l.status === 'pago';
+      return {
+        em: l.paid_at || l.created_at,
+        origem: 'fornecedor',
+        nome: FORNECEDORES.get(l.fornecedor_id)?.company_name || 'Fornecedor',
+        sub: `Cobrança · ${formatNumber(l.installments || 1)}x`,
+        tipo: 'entrada',
+        valor,
+        // Só o que foi pago rendeu take rate; o pendente ainda não é receita.
+        takeRate: pago ? (l.comissao_love != null ? Number(l.comissao_love) : valor * COMISSAO_PADRAO.contratos) : 0,
+        estimada: pago && l.comissao_love == null,
+        status: pago ? 'pago' : 'pendente'
+      };
+    });
+
+  const saidas = (carteira || [])
+    .filter(t => t.type !== 'credit' && t.created_at)
+    .map(t => ({
+      em: t.created_at,
+      origem: 'fornecedor',
+      nome: FORNECEDORES.get(t.fornecedor_id)?.company_name || 'Fornecedor',
+      sub: 'Saque da carteira',
+      tipo: 'saida',
+      valor: Number(t.amount) || 0,
+      takeRate: 0,
+      estimada: false,
+      status: 'pago'
+    }));
+
+  return [...presentes, ...cobrancas, ...saidas].sort((a, b) => new Date(b.em) - new Date(a.em));
+}
+
+/** Só o que entrou e foi pago conta como processado. */
+const ehProcessado = m => m.tipo === 'entrada' && m.status === 'pago';
+
+function noPeriodo(data) {
+  if (!PERIODO.de && !PERIODO.ate) return true;
+  if (!data) return false;
+  const t = new Date(data).getTime();
+  return (!PERIODO.de || t >= PERIODO.de.getTime()) && (!PERIODO.ate || t <= PERIODO.ate.getTime());
+}
+
+/** Início e fim do período em datas de verdade ("Todo o período" começa no primeiro movimento). */
+function intervalo() {
+  const agora = new Date();
+  const ate = PERIODO.ate || new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+  if (PERIODO.de) return { de: PERIODO.de, ate };
+  const datas = MOVIMENTOS.map(m => new Date(m.em).getTime()).filter(Number.isFinite);
+  const primeiro = datas.length ? new Date(Math.min(...datas)) : new Date(agora.getFullYear(), agora.getMonth(), 1);
+  return { de: new Date(primeiro.getFullYear(), primeiro.getMonth(), primeiro.getDate()), ate };
+}
+
+function receitaNoIntervalo(de, ate) {
+  const r = { tpv: 0, receita: 0 };
+  MOVIMENTOS.forEach(m => {
+    if (!ehProcessado(m)) return;
+    const t = new Date(m.em);
+    if (t < de || t > ate) return;
+    r.tpv += m.valor;
+    r.receita += m.takeRate;
+  });
+  return r;
+}
+
+/* ============================================================== KPIs == */
+
+function renderKpiSkeleton() {
+  document.getElementById('kpi-grid').innerHTML = Array.from({ length: 4 }, () =>
+    `<div class="kpi"><div class="skeleton" style="width:55%"></div><div class="skeleton" style="width:70%;height:26px;margin-top:.625rem"></div></div>`
+  ).join('');
+}
+
+function renderKpis() {
+  const { de, ate } = intervalo();
+  const { tpv, receita } = receitaNoIntervalo(de, ate);
+  const custo = Financas.somar(Financas.custosNoIntervalo(de, ate));
+  const lucro = receita - custo;
+  const pagos = MOVIMENTOS.filter(m => ehProcessado(m) && noPeriodo(m.em)).length;
+
+  const tile = (label, value, sub, cor = '') => `
+    <div class="kpi"><p class="kpi-label">${escapeHtml(label)}</p>
+      <p class="kpi-value"${cor ? ` style="color:${cor}"` : ''}>${value}</p>
+      <p class="kpi-sub">${escapeHtml(sub)}</p></div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('TPV total', formatCurrency(tpv), `${formatNumber(EXTRATO.length)} ${EXTRATO.length === 1 ? 'pagamento processado' : 'pagamentos processados'}`),
-    tile('Faturamento bruto', formatCurrency(love), 'Comissões de intermediação da Love'),
-    tile('Repasses', formatCurrency(repasse), 'Split para anfitriões e fornecedores')
+    tile('TPV total', formatCurrency(tpv), `${formatNumber(pagos)} ${pagos === 1 ? 'pagamento processado' : 'pagamentos processados'}`),
+    tile('Faturamento bruto', formatCurrency(receita), 'Take rate da Love sobre o TPV'),
+    tile('Custos', formatCurrency(custo), 'Servidor, banco, e-mail e custos manuais'),
+    tile('Lucro líquido', formatCurrency(lucro), 'Faturamento bruto − custos',
+      lucro < 0 ? 'var(--danger)' : (lucro > 0 ? 'var(--success)' : ''))
   ].join('');
 }
 
-/** Quem pagou ou recebeu, para a coluna Origem. */
-function origemDoPagamento(p) {
-  if (p.origem === 'presentes') {
-    const e = EVENTOS.get(p.bruto.evento_id);
-    return { tipo: 'Presente', nome: e?.titulo || e?.couple_name || e?.host_name || 'Evento', sub: p.bruto.nome ? `de ${p.bruto.nome}` : '' };
-  }
-  return { tipo: 'Contrato', nome: FORNECEDORES.get(p.bruto.fornecedor_id)?.company_name || 'Fornecedor', sub: `${formatNumber(p.bruto.installments || 1)}x` };
+/* =========================================================== Gráfico == */
+
+function renderGrafico() {
+  Financas.chips(document.getElementById('grafico-topo'), SERIES, SERIE_ESCOLHIDA, escolhida => {
+    SERIE_ESCOLHIDA = escolhida;
+    renderGrafico();
+  });
+
+  const { de, ate } = intervalo();
+  const agora = new Date();
+  Financas.desenharGrafico(document.getElementById('grafico-financeiro'), {
+    de, ate, series: SERIES, escolhida: SERIE_ESCOLHIDA,
+    pontoDe: (ini, fim) => {
+      if (ini > agora) return { tpv: 0, receita: 0, custo: 0 };
+      const r = receitaNoIntervalo(ini, new Date(fim.getTime() - 1));
+      return { ...r, custo: Financas.somar(Financas.custosNoIntervalo(ini, fim)) };
+    }
+  });
 }
+
+/* =========================================================== Extrato == */
+
+const ROTULO_ORIGEM = { evento: 'Evento', fornecedor: 'Fornecedor', assinatura: 'Assinatura' };
 
 function renderExtrato() {
   const tbody = document.getElementById('tbody-extrato');
   const termo = document.getElementById('busca-extrato').value.trim().toLowerCase();
   const origem = document.getElementById('filtro-origem-extrato').value;
+  const tipo = document.getElementById('filtro-tipo-extrato').value;
 
-  const lista = EXTRATO.filter(p => {
-    if (origem && p.origem !== origem) return false;
+  const noRecorte = MOVIMENTOS.filter(m => noPeriodo(m.em));
+  const lista = noRecorte.filter(m => {
+    if (origem && m.origem !== origem) return false;
+    if (tipo && m.tipo !== tipo) return false;
     if (!termo) return true;
-    const o = origemDoPagamento(p);
-    return [o.nome, o.sub, p.gateway, NOME_GATEWAY[p.gateway], p.metodo].some(v => String(v || '').toLowerCase().includes(termo));
+    return [m.nome, m.sub, ROTULO_ORIGEM[m.origem]].some(v => String(v || '').toLowerCase().includes(termo));
   });
 
   if (!lista.length) {
-    renderEmpty(tbody, 7, 'Nenhum pagamento processado',
-      EXTRATO.length ? 'Nada encontrado para essa busca.' : 'Os presentes e contratos pagos aparecem aqui, com o que ficou para a Love.');
+    renderEmpty(tbody, 6, 'Nenhum movimento no período',
+      noRecorte.length ? 'Nada encontrado para essa busca ou filtro.' : 'Presentes, cobranças de fornecedores e saques aparecem aqui.');
     return;
   }
 
-  tbody.innerHTML = lista.map(p => {
-    const o = origemDoPagamento(p);
-    const gateway = p.gateway ? (NOME_GATEWAY[p.gateway] || p.gateway) : '—';
-    const metodo = p.metodo ? (NOME_METODO[p.metodo] || p.metodo) : '';
+  tbody.innerHTML = lista.map(m => {
+    const entrada = m.tipo === 'entrada';
     return `
       <tr class="no-hover">
-        <td class="cell-muted">${escapeHtml(formatDateTime(p.em))}</td>
-        <td><span class="cell-strong">${escapeHtml(o.nome)}</span><span class="cell-sub">${escapeHtml([o.tipo, o.sub].filter(Boolean).join(' · '))}</span></td>
-        <td><span class="cell-strong">${escapeHtml(gateway)}</span>${metodo ? `<span class="cell-sub">${escapeHtml(metodo)}</span>` : ''}</td>
-        <td class="valor-dinheiro">${formatCurrency(p.valor)}</td>
-        <td class="valor-dinheiro cell-muted">${formatCurrency(p.repasse)}</td>
-        <td class="valor-dinheiro cell-strong" title="${p.estimada ? 'Pela taxa padrão: o gateway ainda não informou a comissão' : ''}">${formatCurrency(p.comissao)}</td>
-        <td>${badge('Pago', 'badge-success')}</td>
+        <td class="cell-muted">${escapeHtml(formatDateTime(m.em))}</td>
+        <td><span class="cell-strong">${escapeHtml(m.nome)}</span><span class="cell-sub">${escapeHtml([ROTULO_ORIGEM[m.origem], m.sub].filter(Boolean).join(' · '))}</span></td>
+        <td>${badge(entrada ? 'Entrada' : 'Saída', entrada ? 'badge-success' : 'badge-warning')}</td>
+        <td class="valor-dinheiro"${entrada ? '' : ' style="color:var(--danger)"'}>${entrada ? '' : '− '}${formatCurrency(m.valor)}</td>
+        <td class="valor-dinheiro cell-strong" title="${m.estimada ? 'Pela taxa padrão: o gateway ainda não informou a comissão' : ''}">${m.takeRate ? formatCurrency(m.takeRate) : '—'}</td>
+        <td>${badge(m.status === 'pago' ? 'Pago' : 'Pendente', m.status === 'pago' ? 'badge-success' : 'badge-warning')}</td>
       </tr>`;
   }).join('');
-}
-
-function renderFornecedores(fornecedores, carteira, contratos) {
-  const tbody = document.getElementById('tbody-fornecedores');
-
-  const mapa = new Map();
-  const bucket = (id) => {
-    if (!mapa.has(id)) mapa.set(id, { entradas: 0, saidas: 0, contratos: 0, valorContratos: 0 });
-    return mapa.get(id);
-  };
-
-  carteira.forEach(t => {
-    const b = bucket(t.fornecedor_id);
-    const valor = Number(t.amount) || 0;
-    if (t.type === 'credit') b.entradas += valor; else b.saidas += valor;
-  });
-
-  contratos.forEach(c => {
-    const b = bucket(c.fornecedor_id);
-    b.contratos += 1;
-    b.valorContratos += Number(c.valor_total) || 0;
-  });
-
-  const linhas = fornecedores
-    .map(f => ({ f, m: bucket(f.id) }))
-    .sort((a, b) => b.m.entradas - a.m.entradas);
-
-  if (!linhas.length) {
-    renderEmpty(tbody, 7, 'Nenhum fornecedor', 'Nenhuma conta B2B foi criada ainda.');
-    return;
-  }
-
-  tbody.innerHTML = linhas.map(({ f, m }) => `
-    <tr class="no-hover">
-      <td class="cell-strong">${dash(f.company_name)}</td>
-      <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
-      <td style="color:var(--success);font-weight:600">${formatCurrency(m.entradas)}</td>
-      <td style="color:var(--danger)">${formatCurrency(m.saidas)}</td>
-      <td class="cell-strong">${formatCurrency(m.entradas - m.saidas)}</td>
-      <td>${formatNumber(m.contratos)}</td>
-      <td>${formatCurrency(m.valorContratos)}</td>
-    </tr>`).join('');
-}
-
-function renderLinks() {
-  const tbody = document.getElementById('tbody-links');
-  const filtro = document.getElementById('filtro-status-link').value;
-
-  const lista = LINKS
-    .filter(l => !filtro || l.status === filtro)
-    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
-  if (!lista.length) {
-    renderEmpty(tbody, 6, 'Nenhum link de pagamento',
-      LINKS.length ? 'Nenhum link com esse status.' : 'Os fornecedores ainda não geraram cobranças.');
-    return;
-  }
-
-  tbody.innerHTML = lista.map(l => `
-    <tr class="no-hover">
-      <td class="cell-strong">${dash(FORNECEDORES.get(l.fornecedor_id)?.company_name)}</td>
-      <td class="cell-strong">${formatCurrency(l.amount)}</td>
-      <td class="cell-muted">${formatNumber(l.installments || 1)}x</td>
-      <td>${badge(l.status === 'pago' ? 'Pago' : 'Pendente', l.status === 'pago' ? 'badge-success' : 'badge-warning')}</td>
-      <td class="cell-muted">${escapeHtml(formatDate(l.created_at))}</td>
-      <td class="cell-muted">${escapeHtml(l.paid_at ? formatDate(l.paid_at) : '—')}</td>
-    </tr>`).join('');
 }

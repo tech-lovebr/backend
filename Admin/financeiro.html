@@ -43,46 +43,34 @@
 
         <section class="kpi-grid" id="kpi-grid"></section>
 
+        <section class="bloco">
+          <div class="card viz-root">
+            <div class="dash-grafico-topo" id="grafico-topo"></div>
+            <div class="viz-body dash-grafico" id="grafico-financeiro"></div>
+          </div>
+        </section>
+
         <section class="card table-card bloco">
           <div class="table-toolbar">
             <div class="table-toolbar-esq"><input type="search" class="search-input" id="busca-extrato" placeholder="Pesquisar..."></div>
             <div class="table-toolbar-dir">
               <select class="field-select" id="filtro-origem-extrato" style="width:auto">
                 <option value="">Todas as origens</option>
-                <option value="presentes">Presentes</option>
-                <option value="contratos">Contratos</option>
+                <option value="evento">Evento</option>
+                <option value="fornecedor">Fornecedor</option>
+                <option value="assinatura">Assinatura</option>
+              </select>
+              <select class="field-select" id="filtro-tipo-extrato" style="width:auto">
+                <option value="">Entradas e saídas</option>
+                <option value="entrada">Só entradas</option>
+                <option value="saida">Só saídas</option>
               </select>
             </div>
           </div>
           <div class="table-wrap">
             <table class="data">
-              <thead><tr><th>Data</th><th>Origem</th><th>Gateway</th><th>Processado</th><th>Repasse</th><th>Love</th><th>Status</th></tr></thead>
+              <thead><tr><th>Data</th><th>Origem</th><th>Tipo</th><th>Valor processado</th><th>Take rate</th><th>Status</th></tr></thead>
               <tbody id="tbody-extrato"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="card bloco">
-          <div class="table-wrap">
-            <table class="data">
-              <thead><tr><th>Fornecedor</th><th>Plano</th><th>Entradas</th><th>Saídas</th><th>Saldo</th><th>Contratos</th><th>Valor em contratos</th></tr></thead>
-              <tbody id="tbody-fornecedores"></tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="card bloco">
-          <div class="card-head" style="justify-content:flex-end">
-            <select class="field-select" id="filtro-status-link" style="width:auto">
-              <option value="">Todos</option>
-              <option value="pago">Pagos</option>
-              <option value="pendente">Pendentes</option>
-            </select>
-          </div>
-          <div class="table-wrap">
-            <table class="data">
-              <thead><tr><th>Fornecedor</th><th>Valor</th><th>Parcelas</th><th>Status</th><th>Criado em</th><th>Pago em</th></tr></thead>
-              <tbody id="tbody-links"></tbody>
             </table>
           </div>
         </section>
@@ -90,6 +78,7 @@
     </div>
   </div>
 
-  <script src="js/financeiro.js?v=2"></script>
+  <script src="js/financas.js?v=1"></script>
+  <script src="js/financeiro.js?v=3"></script>
 </body>
 </html>

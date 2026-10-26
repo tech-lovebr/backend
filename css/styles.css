@@ -12102,8 +12102,9 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
 }
 
 /* ==========================================================================
-   Celular (só até 768px): abas do submenu como app (iguais à referência) e
-   tela toda branca, sem caixas com borda nem margem de fundo.
+   Celular (só até 768px): abas do submenu como app (iguais à referência),
+   fundo #F4F6F7 (mesmo do desktop e do B2B), sem caixas com borda nem
+   margem de fundo.
    ========================================================================== */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Abas grudadas no topo, de ponta a ponta: mesma largura, texto limpo,
@@ -12127,9 +12128,9 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   body[data-theme="dark"] .submenu-celular .submenu-celular-item { background: #1A1A1A !important; color: #A1A1AA !important; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #252525 !important; color: #FFFFFF !important; box-shadow: inset 0 3px 0 #EBF4FF !important; }
 
-  /* Fundo todo branco. */
-  :root { --bg-dashboard: #FFFFFF; }
-  html body:not([data-theme="dark"]) :is(#view-event-os-dashboard, #dashboard-main-area, .dashboard-content-wrapper):not(#love-h-a) { background: #FFFFFF !important; }
+  /* Mesmo fundo #F4F6F7 do desktop e do B2B (cards/caixas continuam brancos). */
+  :root { --bg-dashboard: #F4F6F7; }
+  html body:not([data-theme="dark"]) :is(#view-event-os-dashboard, #dashboard-main-area, .dashboard-content-wrapper):not(#love-h-a) { background: #F4F6F7 !important; }
 
   /* Caixas e tabelas sem borda, sem cantos e sem fundo próprio, de ponta a
      ponta da tela (as linhas da tabela vão até a borda). */

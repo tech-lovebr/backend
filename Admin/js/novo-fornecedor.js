@@ -13,6 +13,16 @@
 const NovoFornecedor = (() => {
   const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 
+  /* Segmento da empresa: a mesma arvore do Hub (B2B/js/produtos.js,
+     SUBCATEGORY_MAP). E o que alimenta o "Filtrar por" da lista, entao
+     precisa sair daqui ja escolhido de uma lista fechada. */
+  const CATEGORIAS = [
+    'Assessoria e Cerimonialista', 'Espaços para Locação', 'Buffet e Gastronomia',
+    'Bar e Bebidas', 'Staff e Mão de Obra', 'Mídia e Audiovisual',
+    'Música e Entretenimento', 'Decoração', 'Trajes, Beleza e Estilo',
+    'Aluguel de Carros'
+  ];
+
   let AVATAR_URL = null;
   let CAPA_URL = null;
   let TIPO_DOC = 'cnpj';
@@ -64,6 +74,14 @@ const NovoFornecedor = (() => {
           </label>
           ${campo('novo-documento', 'CNPJ', { placeholder: '00.000.000/0000-00', obrigatorio: true })}
         </div>
+
+        <label class="field">
+          <span class="field-label">Categoria da empresa <span class="campo-obrigatorio">*</span></span>
+          <select class="field-select" id="novo-categoria">
+            <option value="">—</option>
+            ${CATEGORIAS.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('')}
+          </select>
+        </label>
 
         <p class="drawer-section-title">Contato</p>
         ${campo('novo-email', 'E-mail', { tipo: 'email', placeholder: 'contato@empresa.com.br', obrigatorio: true })}
@@ -172,13 +190,15 @@ const NovoFornecedor = (() => {
     const email = valor('novo-email').toLowerCase();
     const telefone = valor('novo-telefone');
     const documento = valor('novo-documento');
+    const categoria = document.getElementById('novo-categoria').value;
 
     const faltando = [
       [!empresa, 'novo-empresa', 'Informe o nome da empresa.'],
       [!nome, 'novo-nome', 'Informe o nome do responsável.'],
       [!email, 'novo-email', 'Informe o e-mail.'],
       [!telefone, 'novo-telefone', 'Informe o celular.'],
-      [!documento, 'novo-documento', `Informe o ${TIPO_DOC.toUpperCase()}.`]
+      [!documento, 'novo-documento', `Informe o ${TIPO_DOC.toUpperCase()}.`],
+      [!categoria, 'novo-categoria', 'Escolha a categoria da empresa.']
     ].find(([vazio]) => vazio);
 
     if (faltando) {
@@ -224,6 +244,7 @@ const NovoFornecedor = (() => {
         phone: telefone,
         document_type: TIPO_DOC,
         cnpj: documento,
+        category: categoria,
         address: valor('novo-endereco') || null,
         state: document.getElementById('novo-estado').value || null,
         city: valor('novo-cidade') || null,

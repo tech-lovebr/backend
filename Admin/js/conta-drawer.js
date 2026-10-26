@@ -412,13 +412,15 @@ const ContaDrawer = (() => {
       .reduce((t, x) => t + (Number(x.amount) || 0), 0);
 
     const cadastro = [
+      // Ordem pedida: quem e a empresa primeiro (razao social, documento,
+      // responsavel e o segmento em que ela atua); contato e endereco depois.
       linhaOpcional('Razão social', f.razao_social),
       linhaOpcional('CNPJ', f.cnpj),
       linhaOpcional('Responsável', f.contact_name),
+      linhaOpcional('Categoria', f.category),
       linhaOpcional('Telefone', f.phone),
       linhaOpcional('Endereço', f.address),
       linhaOpcional('Cidade', [f.city, f.state].filter(Boolean).join(' / ')),
-      linhaOpcional('Categoria', f.category),
       linhaDoScore(f),
       blocoDoPlano(f),
       linhaOpcional('Chave Pix', f.pix_key)

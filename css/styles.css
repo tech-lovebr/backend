@@ -12792,11 +12792,13 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
       inset 0 0 0 1px rgba(255, 255, 255, 0.45),
       0 4px 14px rgba(0, 0, 0, 0.08) !important;
   }
-  /* Aba ativa da barra: um vidro mais claro por dentro. */
+  /* Aba ativa da barra: mesma cor do item ativo no rail do desktop (#F4F6F7, a
+     cor de fundo das telas logadas "vazando" através do ícone ativo). */
   html body .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b),
   html body .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active:not(#love-h-a):not(#love-h-b) {
-    background: rgba(255, 255, 255, 0.7) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+    background: #F4F6F7 !important;
+    color: #333333 !important;
+    box-shadow: none !important;
   }
 
   /* Logo maior no topo da Home. */

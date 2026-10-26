@@ -168,23 +168,36 @@ async function custoVercel(meses) {
     const atual = agregar(noCiclo);
     const ultimoDia = atual.ultimoDia || deCiclo;
 
-    // Ciclo anterior, recortado nos mesmos dias decorridos: comparar um ciclo
-    // pela metade com um ciclo inteiro mostraria queda onde nao houve.
+    // Base de comparacao, sempre recortada nos mesmos dias decorridos: comparar
+    // um ciclo pela metade com um periodo inteiro mostraria queda onde nao houve.
     const diasDecorridos = Math.round((new Date(`${ultimoDia}T12:00:00Z`) - new Date(`${deCiclo}T12:00:00Z`)) / 86400000) + 1;
     // Dia 31 num mes de 30 transbordaria para o mes seguinte: prende no ultimo dia.
     const ultimoDiaDoMes = (ano, mes) => new Date(Date.UTC(ano, mes + 1, 0)).getUTCDate();
-    const anoAnterior = inicioCiclo.getUTCFullYear();
-    const mesAnterior = inicioCiclo.getUTCMonth() - 1;
-    const inicioAnterior = new Date(Date.UTC(anoAnterior, mesAnterior, Math.min(diaDoCiclo, ultimoDiaDoMes(anoAnterior, mesAnterior))));
-    const deAnterior = inicioAnterior.toISOString().slice(0, 10);
-    const ateAnterior = new Date(inicioAnterior.getTime() + diasDecorridos * 86400000).toISOString().slice(0, 10);
-    const anterior = agregar(linhas.filter(l => l.dia >= deAnterior && l.dia < ateAnterior));
-    const temAnterior = linhas.some(l => l.dia >= deAnterior && l.dia < deCiclo);
+    const recorte = (deISO, dias) => {
+      const ate = new Date(new Date(`${deISO}T00:00:00Z`).getTime() + dias * 86400000).toISOString().slice(0, 10);
+      return { de: deISO, ate, dias, linhas: linhas.filter(l => l.dia >= deISO && l.dia < ate) };
+    };
+    const temGasto = r => r.linhas.some(l => !ehAssinatura(l) && (l.consumo || l.cobrado));
+
+    // 1a opcao: o ciclo anterior. 2a: o mes de calendario anterior - serve
+    // quando o ciclo nao comeca no dia 1 e a conta e nova demais para ter um
+    // ciclo fechado atras.
+    const anoCiclo = inicioCiclo.getUTCFullYear();
+    const mesCiclo = inicioCiclo.getUTCMonth() - 1;
+    const deCicloAnterior = new Date(Date.UTC(anoCiclo, mesCiclo, Math.min(diaDoCiclo, ultimoDiaDoMes(anoCiclo, mesCiclo)))).toISOString().slice(0, 10);
+    const deMesAnterior = new Date(Date.UTC(a, m - 2, 1)).toISOString().slice(0, 10);
+
+    const candidatos = [
+      { tipo: "ciclo", rotulo: "ciclo anterior", ...recorte(deCicloAnterior, diasDecorridos) },
+      { tipo: "mes", rotulo: "mês anterior", ...recorte(deMesAnterior, diasDecorridos) }
+    ];
+    const base = candidatos.find(temGasto) || null;
+    const anterior = agregar(base ? base.linhas : []);
 
     const comparado = (lista, chave, campos) => lista.map(item => {
       const antes = anterior[chave][item[campos.id]];
       const saida = { ...item };
-      if (temAnterior) campos.valores.forEach(c => { saida[`${c}_antes`] = antes ? antes[c] : 0; });
+      if (base) campos.valores.forEach(c => { saida[`${c}_antes`] = antes ? antes[c] : 0; });
       return saida;
     });
 
@@ -200,8 +213,11 @@ async function custoVercel(meses) {
         "projetos", { id: "projeto", valores: ["minutos_build", "consumo"] }),
       dias: atual.dias,
       dias_decorridos: diasDecorridos,
-      anterior: temAnterior
-        ? { inicio: deAnterior, dias: diasDecorridos, consumo: anterior.consumo, extra: anterior.extra }
+      // Primeiro dia com cobranca na base da Vercel: explica, na tela, por que
+      // as vezes nao ha periodo anterior para comparar.
+      primeiro_dia: primeiroDia,
+      anterior: base
+        ? { tipo: base.tipo, rotulo: base.rotulo, inicio: base.de, fim: base.ate, dias: diasDecorridos, consumo: anterior.consumo, extra: anterior.extra }
         : null
     };
     return { ...base, moeda, status: "ativo", meses: porMes, detalhe: `Plano Pro + consumo além do crédito`, ciclo };

@@ -2625,6 +2625,15 @@ table.data .badge { margin-left: .375rem; vertical-align: middle; }
 
 .doc-tipo-opcao.is-ativa { background: var(--bg-surface); color: var(--text); }
 
+/* Lado a lado com o campo do documento: o seletor ocupa a coluna inteira e
+   estica ate a altura do input ao lado, para as duas caixas se alinharem. */
+.field-row:has(.doc-tipo) > .field { display: flex; flex-direction: column; }
+.field-row .doc-tipo { display: flex; width: 100%; flex: 1; }
+.field-row .doc-tipo-opcao { flex: 1; }
+
+/* Aviso curto em pop-up (ex.: fornecedor cadastrado). */
+.aviso-popup { margin: 0; font-size: .9375rem; line-height: 1.55; color: var(--text); }
+
 /* ------------------------------------------------------ Notificações */
 
 /* Ícone de fixar na primeira coluna. Apagado até ser usado, e na cor da
@@ -3819,6 +3828,8 @@ label.editor-btn { cursor: pointer; }
    dados; o topo fica só com voltar e fechar. */
 .drawer-sem-titulo #drawer-title,
 .drawer-sem-titulo #drawer-subtitle { display: none; }
+/* Drawer sem subtitulo nao deixa a sobra da linha vazia embaixo do titulo. */
+#drawer-subtitle:empty { display: none; }
 .drawer-sem-titulo .drawer-head { justify-content: flex-end; }
 .lista-dados .valor .selo-verificado { margin-left: .375rem; }
 

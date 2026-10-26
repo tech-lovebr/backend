@@ -30,7 +30,6 @@ const NovoFornecedor = (() => {
 
     Drawer.open({
       title: 'Cadastrar fornecedor',
-      subtitle: 'O fornecedor recebe um e-mail para confirmar e criar a senha',
       body: `
         <div class="imagens-empresa">
           <div>
@@ -55,15 +54,16 @@ const NovoFornecedor = (() => {
         ${campo('novo-empresa', 'Nome da empresa', { placeholder: 'Ex: Sophia Eventos & Decoração', obrigatorio: true })}
         ${campo('novo-nome', 'Nome do responsável', { placeholder: 'Ex: Sophia Ramos', obrigatorio: true })}
 
-        <label class="field">
-          <span class="field-label">Tipo de documento</span>
-          <div class="doc-tipo" id="novo-doc-tipo">
-            <button type="button" class="doc-tipo-opcao is-ativa" data-doc="cnpj">CNPJ</button>
-            <button type="button" class="doc-tipo-opcao" data-doc="cpf">CPF</button>
-          </div>
-        </label>
-
-        ${campo('novo-documento', 'CNPJ', { placeholder: '00.000.000/0000-00', obrigatorio: true })}
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Tipo de documento</span>
+            <div class="doc-tipo" id="novo-doc-tipo">
+              <button type="button" class="doc-tipo-opcao is-ativa" data-doc="cnpj">CNPJ</button>
+              <button type="button" class="doc-tipo-opcao" data-doc="cpf">CPF</button>
+            </div>
+          </label>
+          ${campo('novo-documento', 'CNPJ', { placeholder: '00.000.000/0000-00', obrigatorio: true })}
+        </div>
 
         <p class="drawer-section-title">Contato</p>
         ${campo('novo-email', 'E-mail', { tipo: 'email', placeholder: 'contato@empresa.com.br', obrigatorio: true })}
@@ -244,13 +244,36 @@ const NovoFornecedor = (() => {
 
     if (erroPerfil) {
       toast(`Conta criada, mas o cadastro ficou incompleto: ${erroPerfil.message}`);
-    } else if (erroEmail) {
+      window.location.reload();
+      return;
+    }
+    if (erroEmail) {
       toast('Fornecedor cadastrado, mas o e-mail de senha não saiu. Peça para usar "Esqueci minha senha".');
-    } else {
-      toast(`${empresa} cadastrado. O e-mail para confirmar e criar a senha foi enviado.`);
+      window.location.reload();
+      return;
     }
 
-    window.location.reload();
+    // Pop-up em vez de toast: a lista so recarrega quando ele for fechado,
+    // senao o recarregamento levaria o aviso junto.
+    Drawer.open({
+      title: 'Fornecedor cadastrado',
+      semLinha: true,
+      popup: true,
+      body: '<p class="aviso-popup">O fornecedor recebe um e-mail para confirmar e criar a senha.</p>',
+      footer: '<button type="button" class="btn btn-primary" id="btn-ok-fornecedor">Ok</button>'
+    });
+    // Recarrega por qualquer saida do aviso: Ok, X, fundo ou Esc.
+    let saindo = false;
+    const fechar = () => {
+      if (saindo) return;
+      saindo = true;
+      Drawer.close();
+      window.location.reload();
+    };
+    document.getElementById('btn-ok-fornecedor').addEventListener('click', fechar);
+    document.getElementById('drawer-close')?.addEventListener('click', fechar);
+    document.getElementById('drawer-backdrop')?.addEventListener('click', fechar);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
   }
 
   return { abrir };

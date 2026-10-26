@@ -763,9 +763,14 @@ function detalheVercel(l) {
   const extraPrevisto = Math.max(0, consumoPrevisto - c.credito);
   const faturaPrevista = c.assinatura + extraPrevisto;
 
+  // Quando nao ha periodo anterior na base da Vercel, a tela diz isso em vez
+  // de ficar sem variacao nenhuma e parecer defeito.
   const baseAnterior = c.anterior
-    ? `Mesmos ${c.anterior.dias} dias do ciclo anterior: ${usd(c.anterior.consumo)}`
+    ? `Mesmos ${c.anterior.dias} dias do ${c.anterior.rotulo}: ${usd(c.anterior.consumo)}`
     : '';
+  const comparacao = c.anterior
+    ? `Variação sobre os mesmos ${c.anterior.dias} dias do ${c.anterior.rotulo}`
+    : `Sem período anterior para comparar${c.primeiro_dia ? `: a cobrança da Vercel começa em ${dataCurta(c.primeiro_dia)}` : ''}`;
 
   const fatura = cardDetalhe('Fatura do ciclo', `${dataCurta(c.inicio)} a ${dataCurta(ultimoDia)} · faltam ${faltam} dias`, `
     <div class="lista-dados">
@@ -828,9 +833,9 @@ function detalheVercel(l) {
       ${fatura}
       <div class="custo-detalhe-lado">${cardDiagnostico(saude, resumo, dicas)}${previsao}</div>
     </section>
-    ${cardDetalhe('Origem do custo', c.anterior ? `Variação sobre os mesmos ${c.anterior.dias} dias do ciclo anterior` : '',
+    ${cardDetalhe('Origem do custo', comparacao,
       tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], servicos))}
-    ${cardDetalhe('Por projeto', c.anterior ? `Quanto cada site consumiu neste ciclo, comparado aos mesmos ${c.anterior.dias} dias do ciclo anterior` : 'Quanto cada site consumiu neste ciclo', tabelaDetalhe(['Projeto', 'Build', 'Consumo'], projetos))}
+    ${cardDetalhe('Por projeto', `Quanto cada site consumiu neste ciclo · ${comparacao}`, tabelaDetalhe(['Projeto', 'Build', 'Consumo'], projetos))}
     ${historicoDoItem(l)}`;
 }
 

@@ -36,7 +36,7 @@
 
   <link rel="stylesheet" href="css/styles.css?v=783">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/supabase-init.js?v=3"></script>
+  <script src="js/supabase-init.js?v=4"></script>
 </head>
 <body class="font-sans bg-white" data-auth-view="login">
 
@@ -213,20 +213,20 @@
     document.getElementById('go-to-signup').addEventListener('click', (e) => {
       e.preventDefault();
       showAuthView('signup');
-      history.replaceState(null, '', 'signup.html');
+      history.replaceState(null, '', 'signup');
     });
 
     document.getElementById('go-to-login').addEventListener('click', (e) => {
       e.preventDefault();
       showAuthView('login');
-      history.replaceState(null, '', 'login.html');
+      history.replaceState(null, '', 'login');
     });
 
     showAuthView(document.body.dataset.authView);
 
     // Google em janelinha (pop-up) no computador — ver entrarComGoogleHub em js/supabase-init.js.
     document.getElementById('google-login-btn').addEventListener('click', () => {
-      entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html'));
+      entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)$/, 'dashboard'));
     });
 
     // Voltou do Google com a conta desconectada do Google (Contas conectadas).
@@ -284,11 +284,11 @@
         return;
       }
 
-      window.location.href = 'dashboard.html';
+      window.location.href = 'dashboard';
     });
 
     document.getElementById('google-signup-btn').addEventListener('click', () => {
-      entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)\.html$/, 'dashboard.html'));
+      entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)$/, 'dashboard'));
     });
 
     document.getElementById('signup-email-form').addEventListener('submit', async (e) => {
@@ -307,7 +307,7 @@
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin + '/dashboard.html',
+          emailRedirectTo: window.location.origin + '/dashboard',
           data: { role: 'fornecedor', company_name: company, category, ...dadosDoDispositivo() }
         }
       });
@@ -328,7 +328,7 @@
         return;
       }
 
-      window.location.href = 'dashboard.html';
+      window.location.href = 'dashboard';
     });
 
     /* Aviso de confirmação de e-mail, em cinza, com "Reenviar e-mail". */
@@ -340,7 +340,7 @@
       el.querySelector('[data-reenviar-confirmacao]').addEventListener('click', async (e) => {
         const btn = e.currentTarget;
         btn.disabled = true;
-        const { error } = await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: window.location.origin + '/dashboard.html' } });
+        const { error } = await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: window.location.origin + '/dashboard' } });
         btn.textContent = error ? 'Aguarde um minuto e tente de novo' : 'E-mail reenviado';
       });
     }

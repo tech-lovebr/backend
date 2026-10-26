@@ -1,6 +1,6 @@
 /* ==========================================================================
    LOVE B2B — Leads › Buscar eventos (pedidos de orçamento dos anfitriões)
-   Antes era a página Oportunidades; agora é a 2ª aba de Leads (crm.html).
+   Antes era a página Oportunidades; agora é a 2ª aba de Leads (crm).
    Só aparece para quem tem produto cadastrado (é a categoria do produto que
    filtra os pedidos).
    O anfitrião publica um pedido em love.com.br (pedidos_orcamento, migration

@@ -1209,7 +1209,7 @@ function initDesativarConta() {
       return mostrarMsgForm('settings-desativar-msg', 'Não foi possível desativar agora. Fale com o suporte da Love.', true);
     }
     await supabaseClient.auth.signOut();
-    window.location.href = 'login.html';
+    window.location.href = 'login';
   });
 }
 
@@ -1316,7 +1316,7 @@ function ligarContaGoogle(user, identidadeGoogle, ehGoogle) {
     localStorage.setItem('b2b-reconectando-google', String(Date.now()));
     const { error } = await supabaseClient.auth.linkIdentity({
       provider: 'google',
-      options: { redirectTo: `${location.origin}/dashboard.html`, queryParams: { prompt: 'select_account' } }
+      options: { redirectTo: `${location.origin}/dashboard`, queryParams: { prompt: 'select_account' } }
     });
     if (error) mostrarMsg('Não foi possível conectar com o Google agora. Tente de novo em instantes.', true);
   });

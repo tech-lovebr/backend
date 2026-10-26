@@ -225,7 +225,7 @@ async function bloquearGoogleDesconectado(session) {
   }
   await supabaseClient.auth.unlinkIdentity(google);
   await supabaseClient.auth.signOut();
-  window.location.href = 'login.html?erro=google-desconectado';
+  window.location.href = 'login?erro=google-desconectado';
   return true;
 }
 
@@ -241,7 +241,7 @@ async function initAuthGuard() {
       document.body.classList.add('legal-logged-out');
       return true;
     }
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return false;
   }
 
@@ -310,7 +310,7 @@ async function initAuthGuard() {
 
     if (cliente) {
       await supabaseClient.auth.signOut();
-      window.location.href = 'login.html';
+      window.location.href = 'login';
       return false;
     }
 
@@ -333,7 +333,7 @@ async function initAuthGuard() {
 
   if (fornecedor && fornecedor.status === 'bloqueado') {
     await supabaseClient.auth.signOut();
-    window.location.href = 'login.html';
+    window.location.href = 'login';
     return false;
   }
 
@@ -426,7 +426,7 @@ function initLogout() {
     link.addEventListener('click', async (e) => {
       e.preventDefault();
       await supabaseClient.auth.signOut();
-      window.location.href = 'login.html';
+      window.location.href = 'login';
     });
   });
 }
@@ -917,9 +917,9 @@ function renderCommandResults(query) {
   const q = query.trim().toLowerCase();
 
   const items = [
-    ...commandPaletteData.leads.map(l => ({ label: l.name, meta: l.event_name || '', href: 'crm.html', group: 'Clientes' })),
-    ...commandPaletteData.contracts.map(c => ({ label: c.client_name, meta: `Contrato · ${(c.evento && c.evento.nome) || ''}`, href: 'pagamentos.html', group: 'Contratos' })),
-    ...commandPaletteData.products.map(p => ({ label: p.name, meta: p.category || '', href: 'produtos.html', group: 'Produtos' }))
+    ...commandPaletteData.leads.map(l => ({ label: l.name, meta: l.event_name || '', href: 'crm', group: 'Clientes' })),
+    ...commandPaletteData.contracts.map(c => ({ label: c.client_name, meta: `Contrato · ${(c.evento && c.evento.nome) || ''}`, href: 'pagamentos', group: 'Contratos' })),
+    ...commandPaletteData.products.map(p => ({ label: p.name, meta: p.category || '', href: 'produtos', group: 'Produtos' }))
   ];
 
   const filtered = q ? items.filter(i => i.label.toLowerCase().includes(q) || i.meta.toLowerCase().includes(q)) : items.slice(0, 6);

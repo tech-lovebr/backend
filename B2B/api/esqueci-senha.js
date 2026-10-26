@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
   const { data, error } = await supabaseAdmin.auth.admin.generateLink({
     type: "recovery",
     email,
-    options: { redirectTo: "https://hub.love.com.br/resetar-senha.html" },
+    options: { redirectTo: "https://hub.love.com.br/resetar-senha" },
   });
 
   if (error || !data?.properties?.action_link) {

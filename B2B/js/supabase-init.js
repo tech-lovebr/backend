@@ -39,7 +39,7 @@ function dadosDoDispositivo() {
    Entrar com o Google em janelinha (pop-up), como no love.com.br
 
    No computador abre a tela do Google numa janela pequena por cima do Hub.
-   A volta do Google cai na mesma página de sempre (dashboard.html, que já
+   A volta do Google cai na mesma página de sempre (dashboard, que já
    está liberada no Supabase); como a janela tem nome próprio, ela só avisa
    o Hub e fecha. No celular, ou se o navegador bloquear o pop-up, segue o
    caminho antigo (a página inteira vai para o Google e volta).
@@ -73,7 +73,7 @@ async function entrarComGoogleHub(redirectTo) {
       window.removeEventListener('message', aoReceber);
       clearInterval(vigia);
       // Entrou: o Hub (esta aba) segue para o painel.
-      if (ok) window.location.href = 'dashboard.html';
+      if (ok) window.location.href = 'dashboard';
       resolve({ error: ok ? null : new Error('Login com o Google não concluído') });
     };
     const aoReceber = (e) => {

@@ -329,7 +329,7 @@ async function searchProposalClients(q) {
   });
 
   document.getElementById('proposal-client-add-btn')?.addEventListener('click', () => {
-    window.open('crm.html', '_blank');
+    window.open('crm', '_blank');
     dropdown.hidden = true;
   });
 

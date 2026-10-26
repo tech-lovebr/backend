@@ -5,6 +5,11 @@
   "outputDirectory": ".",
   "redirects": [
     {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/agenda.html",
       "destination": "/agenda",
       "permanent": true

@@ -149,10 +149,10 @@ const TICKET_STATUS_BADGE = {
    SUBCATEGORY_MAP). Cadastro e edição escolhem daqui para o filtro de
    categoria da lista não virar três nomes para a mesma coisa. */
 const CATEGORIAS_FORNECEDOR = [
-  'Assessoria e Cerimonialista', 'Espaços para Locação', 'Buffet e Gastronomia',
-  'Bar e Bebidas', 'Staff e Mão de Obra', 'Mídia e Audiovisual',
-  'Música e Entretenimento', 'Decoração', 'Trajes, Beleza e Estilo',
-  'Aluguel de Carros'
+  'Buffet e Gastronomia', 'Bar e Bebidas', 'Espaços para Locação',
+  'Staff e Mão de Obra', 'Mídia e Audiovisual', 'Música e Entretenimento',
+  'Decoração', 'Assessoria e Cerimonialista', 'Trajes a Rigor',
+  'Beleza e Estilo', 'Aluguel de Carros'
 ];
 
 const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];

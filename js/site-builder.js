@@ -10,6 +10,13 @@ const BUILDER_PUBLISHED_KEY = 'love-site-builder-published';
 const BUILDER_PUBLISHED_STATE_KEY = 'love-site-builder-published-state';
 const PREVIEW_PAGE_URL = '/convite-preview';
 
+// Depois da primeira publicação de uma página (published_at preenchido no
+// banco), o botão "Publicar" some e "Salvar" passa a manter a versão
+// pública em dia sozinho — sem isso, editar depois de publicar exigia
+// clicar em "Publicar" de novo toda vez, só pra repetir o que já tinha ido
+// ao ar. { [pageKey]: boolean }, preenchido por syncBuilderStateFromSupabase.
+let paginasJaPublicadas = {};
+
 /**
  * Link público do evento ativo (love.com.br/<slug>, no domínio atual). Sem
  * slug ainda, cai na prévia.
@@ -717,9 +724,14 @@ function persistBuilderState(silent) {
 async function persistBuilderStateRemote(pageKey, state) {
   const eventId = getActiveEventUuid();
   if (!eventId || typeof supabaseClient === 'undefined') return;
+  const agora = new Date().toISOString();
+  // Página já publicada antes: "Salvar" também mantém a versão pública em
+  // dia sozinho, sem precisar clicar em "Publicar" de novo a cada edição
+  // (esse botão nem aparece mais depois da primeira publicação).
+  const dadosExtras = paginasJaPublicadas[pageKey] ? { published_state: state, published_at: agora } : {};
   const { error } = await supabaseClient
     .from('convite_digital_pages')
-    .upsert({ evento_id: eventId, page_key: pageKey, state, updated_at: new Date().toISOString() }, { onConflict: 'evento_id,page_key' });
+    .upsert({ evento_id: eventId, page_key: pageKey, state, updated_at: agora, ...dadosExtras }, { onConflict: 'evento_id,page_key' });
   if (error) console.error('Erro ao salvar Convite Digital no Supabase:', error);
 }
 
@@ -761,6 +773,7 @@ async function publicarConviteNoAr(btn) {
     btn.textContent = textoOriginal;
     btn.disabled = false;
   }, 2200);
+  return resultado === 'Publicado';
 }
 
 // Cria a primeira linha do Convite Digital de um evento recém-criado
@@ -919,11 +932,14 @@ async function syncBuilderStateFromSupabase(pageKey) {
   if (!eventId || typeof supabaseClient === 'undefined') return;
   const { data: row, error } = await supabaseClient
     .from('convite_digital_pages')
-    .select('state')
+    .select('state, published_at')
     .eq('evento_id', eventId)
     .eq('page_key', pageKey)
     .maybeSingle();
   if (error) { console.error('Erro ao buscar Convite Digital:', error); return; }
+
+  paginasJaPublicadas[pageKey] = !!(row && row.published_at);
+  if (pageKey === currentPageKey) atualizarBotoesDaPagina();
 
   if (row && row.state && Object.keys(row.state).length) {
     localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(row.state));
@@ -1001,12 +1017,14 @@ function switchBuilderPage(pageKey) {
   syncBuilderStateFromSupabase(pageKey);
 }
 
-// Convite Digital: Salvar + Publicar. Save the Date: Salvar + Compartilhar.
+// Convite Digital: Salvar + Publicar (só na primeira vez; depois de
+// publicado uma vez, só Salvar — ver paginasJaPublicadas). Save the Date:
+// Salvar + Compartilhar.
 function atualizarBotoesDaPagina() {
   const ehSaveTheDate = currentPageKey === 'savethedate';
   const raiz = document.getElementById('site-builder-root');
   if (raiz) raiz.dataset.pagina = currentPageKey;
-  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate);
+  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || !!paginasJaPublicadas[currentPageKey]);
   document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
   document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
   document.getElementById('builder-share-menu')?.classList.add('hidden');
@@ -3915,7 +3933,14 @@ function initSiteBuilder() {
     const keys = pagePublishedKeys(currentPageKey);
     localStorage.setItem(keys.flag, '1');
     localStorage.setItem(keys.state, JSON.stringify(builderState));
-    await publicarConviteNoAr(publishBtn);
+    const paginaDoClique = currentPageKey;
+    const sucesso = await publicarConviteNoAr(publishBtn);
+    // Primeira publicação com sucesso: some o "Publicar" dessa página —
+    // dali em diante "Salvar" já mantém a versão pública em dia sozinho.
+    if (sucesso) {
+      paginasJaPublicadas[paginaDoClique] = true;
+      if (paginaDoClique === currentPageKey) atualizarBotoesDaPagina();
+    }
   });
 
   initCompartilharSaveTheDate();

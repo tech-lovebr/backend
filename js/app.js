@@ -477,13 +477,21 @@ document.addEventListener('DOMContentLoaded', () => {
     barra.setAttribute('aria-label', 'Submenu');
     area.insertBefore(barra, area.firstChild);
     let agendado = false;
+    /** @type {Element[]} */
+    let itensAnteriores = [];
     const desenhar = () => {
       agendado = false;
       const itens = Array.from(lista.querySelectorAll('.sub-drawer-item'))
         .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none');
-      // Só redesenha quando os itens mudam (redesenhar sempre engolia os toques).
+      // Só redesenha quando os itens mudam (redesenhar sempre engolia os
+      // toques) — mas "mudam" tem que levar em conta os ELEMENTOS em si, não
+      // só o texto: trocar de aba e voltar recria os .sub-drawer-item do
+      // zero (mesmo texto/estado, elementos novos), e os botões da barra
+      // ficavam presos aos elementos antigos (removidos), parecendo travados.
       const assinatura = itens.map(i => (i.classList.contains('active') ? '*' : '') + i.textContent.trim()).join('|');
-      if (assinatura === barra.dataset.assinatura) { posicionar(); return; }
+      const mesmosElementos = itens.length === itensAnteriores.length && itens.every((el, i) => el === itensAnteriores[i]);
+      if (mesmosElementos && assinatura === barra.dataset.assinatura) { posicionar(); return; }
+      itensAnteriores = itens;
       barra.dataset.assinatura = assinatura;
       barra.hidden = itens.length < 2;
       barra.textContent = '';

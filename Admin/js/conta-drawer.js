@@ -435,7 +435,6 @@ const ContaDrawer = (() => {
       linhaOpcional('Telefone', f.phone),
       // Endereco e cidade na mesma linha: sao a mesma informacao partida em duas.
       linhaOpcional('Endereço', [f.address, [f.city, f.state].filter(Boolean).join(' / ')].filter(Boolean).join(' · ')),
-      linhaDoScore(f),
       blocoDoPlano(f),
       linhaOpcional('Chave Pix', f.pix_key)
     ].join('');
@@ -570,23 +569,6 @@ const ContaDrawer = (() => {
     });
 
     document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
-  }
-
-  /* ---------------------------------------------------------- Score
-
-     Nota interna de 1 a 10. Não se edita à mão: vai ser calculada por regras
-     de negócio (produto com imagem vale X, e assim por diante). Até essas
-     regras existirem, a coluna fica vazia — mostrar "sem nota" é mais honesto
-     que mostrar um zero que ninguém atribuiu. */
-
-  function linhaDoScore(f) {
-    return `
-      <div class="dados-linha">
-        <span class="rotulo">Score</span>
-        <span class="valor">${f.score
-          ? formatNumber(f.score)
-          : '<span class="cell-muted">sem nota</span>'}</span>
-      </div>`;
   }
 
   /* ------------------------------------------------- Plano do fornecedor

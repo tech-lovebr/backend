@@ -720,10 +720,14 @@ const NOME_SERVICO_VERCEL = {
   'CDN Requests': 'Requisições na CDN'
 };
 
-const UNIDADE = { minute: 'min de CPU', gigabyte: 'GB', 'gigabyte-hour': 'GB-hora', hour: 'horas', events: 'eventos', invocations: 'chamadas', requests: 'requisições' };
+const UNIDADE = { minute: 'h de CPU', gigabyte: 'GB', 'gigabyte-hour': 'GB-hora', hour: 'horas', events: 'eventos', invocations: 'chamadas', requests: 'requisições' };
 // Armazenamento vem um registro por dia: a soma é GB-dia.
 const unidadeDe = sv => (/storage/i.test(sv.servico) && /^gigabyte$/i.test(sv.unidade) ? 'GB-dia' : UNIDADE[String(sv.unidade || '').toLowerCase()] || sv.unidade);
 const formatarUso = (q, u) => q ? `${(q >= 10 ? Math.round(q) : Math.round(q * 100) / 100).toLocaleString('pt-BR')} ${u || ''}`.trim() : '—';
+// A Vercel reporta build em minutos de CPU; o painel mostra em horas.
+const emMinutos = sv => /^minute$/i.test(String(sv.unidade || ''));
+const horas = m => (m >= 600 ? Math.round(m / 60) : Math.round(m / 6) / 10).toLocaleString('pt-BR');
+const usoDoServico = sv => (emMinutos(sv) && sv.uso ? `${horas(sv.uso)} ${unidadeDe(sv)}` : formatarUso(sv.uso, unidadeDe(sv)));
 
 function detalheVercel(l) {
   const c = l.ciclo;
@@ -768,7 +772,7 @@ function detalheVercel(l) {
   let dicas = [];
   if (maior?.servico === 'Build CPU Minutes' && fatia > 0.5) {
     const minutos = c.projetos.reduce((s, p) => s + p.minutos_build, 0);
-    resumo = `${Math.round(fatia * 100)}% do consumo é <strong>build</strong>: o tempo de máquina que a Vercel gasta montando o site a cada publicação de código (${Math.round(minutos).toLocaleString('pt-BR')} minutos de CPU neste ciclo). O site no ar (visitas, funções, tráfego) custa centavos. `
+    resumo = `${Math.round(fatia * 100)}% do consumo é <strong>build</strong>: o tempo de máquina que a Vercel gasta montando o site a cada publicação de código (${horas(minutos)} horas de CPU neste ciclo). O site no ar (visitas, funções, tráfego) custa centavos. `
       + 'Não é um custo de uso dos clientes, e sim da configuração dos builds: cada envio de código ao GitHub monta os 3 projetos (love-platform, b2b-platform e admin-platform) numa máquina "Elastic", que chega a 30 processadores, e sem fila.';
     dicas = [
       'Em cada projeto da Vercel, <strong>Settings → Build and Deployment → Build Machine</strong>: trocar de Elastic para <strong>Basic</strong> (2 processadores). O site é estático + funções, não precisa de máquina grande.',
@@ -787,7 +791,7 @@ function detalheVercel(l) {
   const servicos = c.servicos.map(sv => `
     <tr class="no-hover">
       <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
-      <td>${escapeHtml(formatarUso(sv.uso, unidadeDe(sv)))}</td>
+      <td>${escapeHtml(usoDoServico(sv))}</td>
       <td class="valor-dinheiro">${usd(sv.consumo)}</td>
       <td class="valor-dinheiro">${usd(sv.cobrado)}</td>
       <td>${c.consumo ? Math.round((sv.consumo / c.consumo) * 100) : 0}%</td>
@@ -795,7 +799,7 @@ function detalheVercel(l) {
   const projetos = c.projetos.map(p => `
     <tr class="no-hover">
       <td class="cell-strong">${escapeHtml(p.projeto)}</td>
-      <td>${p.minutos_build ? `${Math.round(p.minutos_build).toLocaleString('pt-BR')} min de CPU` : '—'}</td>
+      <td>${p.minutos_build ? `${horas(p.minutos_build)} h de CPU` : '—'}</td>
       <td class="valor-dinheiro">${usd(p.consumo)}</td>
       <td>${c.consumo ? Math.round((p.consumo / c.consumo) * 100) : 0}%</td>
     </tr>`);

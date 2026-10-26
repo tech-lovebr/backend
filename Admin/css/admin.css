@@ -3972,6 +3972,9 @@ body[data-theme="dark"] .custo-var { background: rgba(255, 255, 255, .08); color
 body[data-theme="dark"] .custo-var.is-alta { background: rgba(192, 0, 26, .18); color: #FF8A8A; }
 body[data-theme="dark"] .custo-var.is-queda { background: rgba(21, 128, 61, .2); color: #6EE7A0; }
 body[data-theme="dark"] .custo-var.is-novo { background: rgba(31, 95, 174, .22); color: #8FBCF2; }
+/* Mesma pastilha no KPI do topo: maior, e sem margem porque o .kpi-linha ja tem gap. */
+.custo-var.is-kpi { margin-left: 0; padding: .125rem .375rem; border-radius: 6px; font-size: .75rem; }
+.kpi-linha .custo-var { order: 1; }
 .custo-saude { margin-bottom: .75rem; }
 .custo-resumo { margin: 0; font-size: .875rem; line-height: 1.6; color: var(--text-main, #27272A); }
 .custo-dicas-titulo { margin: 1rem 0 .5rem; font-size: 11px; font-weight: 500; letter-spacing: .02em; text-transform: uppercase; color: #A1A1AA; }

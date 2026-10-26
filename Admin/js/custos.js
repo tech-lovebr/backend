@@ -211,14 +211,10 @@ function renderKpis(linhas) {
     COTACAO.EUR ? `€ 1 = ${formatCurrency(COTACAO.EUR)}` : null
   ].filter(Boolean).join(' · ') || 'Cotação indisponível';
 
-  // Mesmo padrão do Dashboard: título em cima, valor com a variação ao lado
-  // (vermelha se caiu, verde se subiu) e o período anterior embaixo.
-  let variacao = '';
-  if (anterior) {
-    const pct = ((atual - anterior) / anterior) * 100;
-    const classe = pct < 0 ? 'is-negativa' : (pct > 0 ? 'is-positiva' : '');
-    variacao = `<span class="kpi-variacao ${classe}">${pct > 0 ? '+' : ''}${pct.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%</span>`;
-  }
+  // Aqui é despesa, não receita: gastar mais é ruim. A variação usa o mesmo
+  // helper do detalhe — alta em vermelho, queda em verde — para a página não
+  // dizer uma coisa no topo e outra ao abrir o custo.
+  const varMes = variacao(atual, anterior, anterior ? `${nomeDoMes(mesPassado())}: ${formatCurrency(anterior)}` : '', 'is-kpi');
   const tile = (label, value, sub, extra = '') => `
     <div class="kpi">
       <p class="kpi-label">${escapeHtml(label)}</p>
@@ -227,7 +223,7 @@ function renderKpis(linhas) {
     </div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('Custo deste mês', formatCurrency(atual), `P.P: ${formatCurrency(anterior)}`, variacao),
+    tile('Custo deste mês', formatCurrency(atual), `P.P: ${formatCurrency(anterior)}`, varMes),
     tile('Mês passado', formatCurrency(anterior), nomeDoMes(mesPassado())),
     tile('Média mensal', formatCurrency(media), cotacao)
   ].join('');
@@ -661,18 +657,19 @@ const diasEntre = (de, ate) => Math.round((new Date(`${ate}T12:00:00`) - new Dat
 
 // Variacao contra o periodo anterior. Em custo e em uso, subir e ruim:
 // alta em vermelho, queda em verde. `antes` indefinido = sem base de comparacao.
-function variacao(agora, antes, rotulo = '') {
+function variacao(agora, antes, rotulo = '', extra = '') {
   if (antes === undefined || antes === null) return '';
   const a = Number(agora) || 0;
   const b = Number(antes) || 0;
   const titulo = rotulo ? ` title="${escapeHtml(rotulo)}"` : '';
-  if (!b) return a ? `<span class="custo-var is-novo"${titulo}>novo</span>` : '';
+  const base = `custo-var${extra ? ` ${extra}` : ''}`;
+  if (!b) return a ? `<span class="${base} is-novo"${titulo}>novo</span>` : '';
   const pct = ((a - b) / b) * 100;
-  if (Math.abs(pct) < 1) return `<span class="custo-var"${titulo}>estável</span>`;
+  if (Math.abs(pct) < 1) return `<span class="${base}"${titulo}>estável</span>`;
   // Queda de 99,9% nao e "100%": so zera quando zerou de fato.
   const n = a > 0 && pct < 0 ? Math.min(Math.abs(pct), 99) : Math.abs(pct);
   const numero = n >= 10 ? Math.round(n).toLocaleString('pt-BR') : n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-  return `<span class="custo-var ${pct > 0 ? 'is-alta' : 'is-queda'}"${titulo}>${pct > 0 ? '+' : '−'}${numero}%</span>`;
+  return `<span class="${base} ${pct > 0 ? 'is-alta' : 'is-queda'}"${titulo}>${pct > 0 ? '+' : '−'}${numero}%</span>`;
 }
 
 function cardDetalhe(titulo, sub, corpo) {

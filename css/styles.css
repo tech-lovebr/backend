@@ -12340,8 +12340,10 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   body[data-theme="dark"] #tab-rsvp .guests-table button.guest-nome-btn { color: #FFFFFF !important; }
   body[data-theme="dark"] #tab-rsvp .guests-table .guest-trilho { border-color: #FFFFFF !important; }
 
-  /* "RSVP ⌄" no lugar de "Filtrar por". */
-  html body #tab-rsvp .love-tabela-barra:not(#love-h-a) { padding: 8px 16px 12px !important; border-bottom: 1px solid #E4E4E7 !important; }
+  /* "RSVP ⌄" no lugar de "Filtrar por". Margem igual acima e abaixo da busca
+     (contando o respiro que já vem de cima, antes das abas): sem isso, a
+     busca ficava visivelmente mais perto da linha de baixo que da de cima. */
+  html body #tab-rsvp .love-tabela-barra:not(#love-h-a) { padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
   html body #tab-rsvp .love-tabela-filtro-btn:not(#love-h-a) {
     height: 40px !important; min-height: 40px !important; padding: 0 12px 0 16px !important; gap: 6px !important;
     background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; color: #18181B !important;
@@ -12798,10 +12800,16 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #tab-overview > .grid.lg\:grid-cols-12 > div:not(#love-h-a) { display: contents !important; }
   html body #tab-overview > .grid.lg\:grid-cols-12 > div > *:not(#love-h-a) { margin: 0 !important; }
   html body #tab-overview .home-saudacao:not(#love-h-a) { order: 1; }
-  html body #tab-overview #dashboard-promo-carousel:not(#love-h-a) { order: 2; }
-  html body #tab-overview #home-link-convite:not(#love-h-a) { order: 3; margin-top: -8px !important; }
-  html body #tab-overview .home-kpis:not(#love-h-a) { order: 4; }
-  html body #tab-overview #home-atalhos-celular:not(#love-h-a) { order: 5; }
+  /* Card de Presentes antes da imagem; o de Convidados/Confirmados continua
+     abaixo da URL — por isso .home-kpis vira "display:contents" e cada
+     card dentro dela recebe sua própria ordem, em vez de mover as duas
+     juntas. */
+  html body #tab-overview .home-kpis:not(#love-h-a) { display: contents !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) { order: 2; }
+  html body #tab-overview #dashboard-promo-carousel:not(#love-h-a) { order: 3; }
+  html body #tab-overview #home-link-convite:not(#love-h-a) { order: 4; margin-top: -8px !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) { order: 5; }
+  html body #tab-overview #home-atalhos-celular:not(#love-h-a) { order: 6; }
   html body #tab-overview :is(#dash-hub-event-date-badge, #dash-hub-event-location-badge, .home-beneficios, .home-mais-recursos, #quick-start-guide-widget):not(#love-h-a) { display: none !important; }
   html body #tab-overview #dash-hub-title:not(#love-h-a) { font-size: 24px !important; letter-spacing: -0.025em; }
 
@@ -12966,8 +12974,9 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   /* Mensagens */
   html body #tab-b2b #b2b-messages-view:not(#love-h-a) { width: calc(100% + 32px) !important; max-width: none !important; }
   html body #tab-b2b #b2b-messages-view .b2b-chat-contacts-column:not(#love-h-a) { width: 100% !important; min-width: 0 !important; border-right: 0 !important; }
-  html body #tab-b2b #b2b-chat-search:not(#love-h-a) { height: 44px !important; font-size: 16px !important; border-radius: 8px !important; }
-  html body #tab-b2b #b2b-messages-view .b2b-chat-contacts-column > div:first-child:not(#love-h-a) { height: auto !important; padding: 12px 16px !important; }
+  html body #tab-b2b #b2b-chat-search:not(#love-h-a) { height: 40px !important; font-size: 16px !important; border-radius: 8px !important; }
+  /* Mesmo alinhamento/padding da busca de Meus Convidados (.love-tabela-barra). */
+  html body #tab-b2b #b2b-messages-view .b2b-chat-contacts-column > div:first-child:not(#love-h-a) { height: auto !important; padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
   body:has(#b2b-messages-view:not(.hidden)) #submenu-celular { display: none !important; }
 
   /* Convite digital: prévia na tela toda */

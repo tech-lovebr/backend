@@ -653,6 +653,11 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 .btn-danger { background: var(--danger-bg); color: var(--danger); }
 .btn-danger:hover:not(:disabled) { background: #fbd9d5; }
 
+/* Remover custo: ação destrutiva no cabeçalho do detalhe. Discreta como os
+   outros botões do cabeçalho, vermelha só quando a mão chega nela. */
+.btn-remover-custo { color: var(--danger); }
+.btn-remover-custo:hover:not(:disabled) { background: var(--danger-bg); color: var(--danger); }
+
 .btn-sm { padding: .375rem .625rem; font-size: .75rem; }
 
 /* -------------------------------------------------------------- Formulário */

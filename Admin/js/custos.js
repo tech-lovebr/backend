@@ -415,7 +415,7 @@ function renderTabela() {
     return `
       <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>
         <td><span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span></td>
-        <td class="cell-strong">${escapeHtml(l.nome)}</td>
+        <td class="cell-strong">${escapeHtml(nomeDoCusto(l))}</td>
         <td>${badge(TIPO[l.tipo] || l.tipo)}</td>
         <td class="valor-dinheiro">
           ${semCotacao ? formatarMoeda(original, l.moeda) : formatCurrency(reais)}
@@ -427,7 +427,7 @@ function renderTabela() {
   }).join('');
 
   tbody.querySelectorAll('[data-manual]').forEach(tr => tr.addEventListener('click', () => {
-    abrirFormulario(lista[Number(tr.dataset.manual)].bruto);
+    abrirDetalhe(lista[Number(tr.dataset.manual)]);
   }));
   tbody.querySelectorAll('[data-integracao]').forEach(tr => tr.addEventListener('click', () => {
     abrirDetalhe(lista[Number(tr.dataset.integracao)]);
@@ -441,78 +441,77 @@ const valorNoCampo = v => Number(v || 0).toLocaleString('pt-BR', { minimumFracti
 /** "1.234,50" → 1234.5 */
 const lerValor = texto => Number(String(texto || '').replace(/\./g, '').replace(',', '.')) || 0;
 
-function abrirFormulario(item) {
-  const editando = Boolean(item);
+/* Só lança custo novo: um custo já lançado não se edita, se remove e se
+   lança de novo (ver detalheGenerico). */
+function abrirFormulario() {
   const hoje = new Date().toISOString().slice(0, 10);
-  const categorias = item && !CATEGORIAS_CUSTO.includes(item.categoria) ? [...CATEGORIAS_CUSTO, item.categoria] : CATEGORIAS_CUSTO;
-  const empresaAtual = item?.empresa || '';
-  const empresaOutra = Boolean(empresaAtual) && !EMPRESAS.includes(empresaAtual);
+  const categorias = CATEGORIAS_CUSTO;
 
   Drawer.open({
-    title: editando ? 'Editar custo' : 'Adicionar custo',
+    title: 'Adicionar custo',
     semLinha: true,
     body: `
       <form id="form-custo">
         <label class="field">
           <span class="field-label">Empresa</span>
           <select class="field-select" name="empresa_lista">
-            <option value="" ${!empresaAtual ? 'selected' : ''} disabled>Selecione</option>
-            ${EMPRESAS.map(e => `<option ${empresaAtual === e ? 'selected' : ''}>${escapeHtml(e)}</option>`).join('')}
-            <option value="__outro" ${empresaOutra ? 'selected' : ''}>Outro</option>
+            <option value="" selected disabled>Selecione</option>
+            ${EMPRESAS.map(e => `<option>${escapeHtml(e)}</option>`).join('')}
+            <option value="__outro">Outro</option>
           </select>
         </label>
-        <label class="field" id="campo-empresa-outra" ${empresaOutra ? '' : 'hidden'}>
+        <label class="field" id="campo-empresa-outra" hidden>
           <span class="field-label">Nome da empresa</span>
-          <input class="field-input" name="empresa_outra" type="text" value="${escapeHtml(empresaOutra ? empresaAtual : '')}">
+          <input class="field-input" name="empresa_outra" type="text" value="">
         </label>
         <label class="field">
           <span class="field-label">Nome</span>
-          <input class="field-input" name="nome" type="text" required value="${escapeHtml(item?.nome || '')}">
+          <input class="field-input" name="nome" type="text" required value="">
         </label>
         <label class="field">
           <span class="field-label">Descrição do custo</span>
-          <textarea class="field-textarea" name="descricao" rows="3">${escapeHtml(item?.descricao || '')}</textarea>
+          <textarea class="field-textarea" name="descricao" rows="3"></textarea>
         </label>
         <div class="field-row">
           <label class="field">
             <span class="field-label">Moeda</span>
             <select class="field-select" name="moeda">
-              ${Object.entries(MOEDAS).map(([k, v]) => `<option value="${k}" ${(item?.moeda || 'BRL') === k ? 'selected' : ''}>${v}</option>`).join('')}
+              ${Object.entries(MOEDAS).map(([k, v]) => `<option value="${k}" ${k === 'BRL' ? 'selected' : ''}>${v}</option>`).join('')}
             </select>
           </label>
           <label class="field">
             <span class="field-label">Valor</span>
             <span class="campo-dinheiro">
-              <span class="campo-dinheiro-simbolo" id="simbolo-valor">${SIMBOLO[item?.moeda || 'BRL']}</span>
-              <input class="field-input" name="valor" type="text" inputmode="numeric" autocomplete="off" required placeholder="0,00" value="${item?.valor != null ? valorNoCampo(item.valor) : ''}">
+              <span class="campo-dinheiro-simbolo" id="simbolo-valor">${SIMBOLO.BRL}</span>
+              <input class="field-input" name="valor" type="text" inputmode="numeric" autocomplete="off" required placeholder="0,00" value="">
             </span>
           </label>
         </div>
         <label class="field">
           <span class="field-label">Categoria</span>
           <select class="field-select" name="categoria">
-            ${categorias.map(c => `<option ${item?.categoria === c ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}
+            ${categorias.map(c => `<option>${escapeHtml(c)}</option>`).join('')}
           </select>
         </label>
         <div class="field-row">
           <label class="field">
             <span class="field-label">Tipo de custo</span>
             <select class="field-select" name="tipo">
-              <option value="recorrente" ${item?.tipo !== 'unico' ? 'selected' : ''}>Recorrente (mensal)</option>
-              <option value="unico" ${item?.tipo === 'unico' ? 'selected' : ''}>Pagamento único</option>
+              <option value="recorrente" selected>Recorrente (mensal)</option>
+              <option value="unico">Pagamento único</option>
             </select>
           </label>
           <label class="field">
-            <span class="field-label" id="rotulo-data">${item?.tipo === 'unico' ? 'Data do pagamento' : 'Início da cobrança'}</span>
-            <input class="field-input" name="data" type="date" value="${escapeHtml(item?.data || hoje)}">
+            <span class="field-label" id="rotulo-data">Início da cobrança</span>
+            <input class="field-input" name="data" type="date" value="${escapeHtml(hoje)}">
           </label>
         </div>
         <p class="field-hint" id="custo-conversao"></p>
       </form>`,
     footer: `
-      ${editando ? '<button type="button" class="btn btn-ghost" id="btn-remover-custo" style="margin-right:auto">Remover</button>' : ''}
+
       <button type="button" class="btn-texto" id="btn-cancelar">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="btn-salvar">${editando ? 'Salvar' : 'Adicionar'}</button>`
+      <button type="button" class="btn btn-primary" id="btn-salvar">Adicionar</button>`
   });
 
   const form = document.getElementById('form-custo');
@@ -542,16 +541,6 @@ function abrirFormulario(item) {
   atualizarConversao();
 
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
-  document.getElementById('btn-remover-custo')?.addEventListener('click', async () => {
-    if (!(await confirmar(`Remover "${item.nome}" dos custos?`, { titulo: 'Remover custo', rotulo: 'Remover' }))) return;
-    const { error } = await supabaseClient.from('custos').delete().eq('id', item.id);
-    if (error) return toast(`Não foi possível remover: ${error.message}`);
-    MANUAIS = MANUAIS.filter(c => c.id !== item.id);
-    Drawer.close();
-    toast('Custo removido');
-    renderTudo();
-  });
-
   document.getElementById('btn-salvar').addEventListener('click', async () => {
     const d = Object.fromEntries(new FormData(form).entries());
     const empresa = d.empresa_lista === '__outro' ? (d.empresa_outra || '').trim() : (d.empresa_lista || '');
@@ -571,19 +560,16 @@ function abrirFormulario(item) {
     };
 
     Drawer.setFooterBusy(true);
-    const consulta = editando
-      ? supabaseClient.from('custos').update(payload).eq('id', item.id).select().single()
-      : supabaseClient.from('custos').insert(payload).select().single();
-    const { data, error } = await consulta;
+    const { data, error } = await supabaseClient.from('custos').insert(payload).select().single();
     Drawer.setFooterBusy(false);
     if (error) {
       if (/empresa|descricao/i.test(error.message)) return toast('Falta preparar o banco: rode a migration 095 no Supabase.');
       return toast(`Não foi possível salvar: ${error.message}`);
     }
 
-    MANUAIS = editando ? MANUAIS.map(c => (c.id === item.id ? data : c)) : [data, ...MANUAIS];
+    MANUAIS = [data, ...MANUAIS];
     Drawer.close();
-    toast(editando ? 'Custo atualizado' : 'Custo adicionado');
+    toast('Custo adicionado');
     renderTudo();
   });
 }
@@ -606,32 +592,98 @@ function abrirDetalhe(l) {
       <a class="header-bar-voltar" href="#" title="Voltar" aria-label="Voltar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
       </a>
-      <h1>${escapeHtml(l.nome)}</h1>`;
+      <h1>${escapeHtml(nomeDoCusto(l))}</h1>`;
     cabecalho.querySelector('.header-bar-voltar').addEventListener('click', e => { e.preventDefault(); fecharDetalhe(); });
   }
 
   const visao = document.getElementById('visao-custos');
-  const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte];
+  // Sem montador especifico (custo manual, ou fonte que o painel ainda nao
+  // conhece) cai no detalhe generico: melhor mostrar o que se sabe do que
+  // abrir uma tela em branco.
+  const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte] || detalheGenerico;
   DIAGNOSTICO = null;
-  visao.innerHTML = l.status !== 'ativo'
+  visao.innerHTML = l.status !== 'ativo' && !l.manual
     ? `<div class="card"><div class="card-body"><div class="empty-state"><strong>${l.status === 'erro' ? 'Não foi possível ler os custos' : 'Não conectado'}</strong><p>${escapeHtml(l.erro || 'Configure as chaves na Vercel (projeto love-platform).')}</p></div></div></div>`
-    : (montar ? montar(l) : '');
+    : montar(l);
   visao.hidden = false;
 
   document.getElementById('acoes-detalhe')?.remove();
-  if (DIAGNOSTICO) {
-    const acoesDetalhe = document.createElement('div');
-    acoesDetalhe.className = 'admin-header-actions';
-    acoesDetalhe.id = 'acoes-detalhe';
-    acoesDetalhe.innerHTML = `
+  const botoes = [
+    DIAGNOSTICO ? `
       <button type="button" class="btn btn-ghost" id="btn-diagnostico">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8l4 -16l3 8h4" /></svg>
         <span>Diagnóstico</span>
-      </button>`;
+      </button>` : '',
+    l.manual ? `
+      <button type="button" class="btn btn-ghost btn-remover-custo" id="btn-remover-detalhe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
+        <span>Remover</span>
+      </button>` : ''
+  ].filter(Boolean);
+
+  if (botoes.length) {
+    const acoesDetalhe = document.createElement('div');
+    acoesDetalhe.className = 'admin-header-actions';
+    acoesDetalhe.id = 'acoes-detalhe';
+    acoesDetalhe.innerHTML = botoes.join('');
     document.querySelector('.admin-header-bar')?.appendChild(acoesDetalhe);
-    acoesDetalhe.querySelector('#btn-diagnostico').addEventListener('click', () => abrirDiagnostico(l.nome));
+    acoesDetalhe.querySelector('#btn-diagnostico')?.addEventListener('click', () => abrirDiagnostico(nomeDoCusto(l)));
+    acoesDetalhe.querySelector('#btn-remover-detalhe')?.addEventListener('click', () => removerCusto(l));
   }
   window.scrollTo(0, 0);
+}
+
+/** Nome de reserva: linha sem nome gravado não pode ficar muda na tabela. */
+function nomeDoCusto(l) {
+  return String(l.nome || l.bruto?.empresa || l.categoria || '').trim() || 'Custo sem nome';
+}
+
+/* ---------------------------------------------------- Detalhe genérico
+
+   Vale para o custo manual e para qualquer fonte que o painel ainda não
+   saiba desenhar. Só leitura, como os que vêm de API: o que foi lançado
+   não se corrige aqui, se remove e se lança de novo. */
+
+function detalheGenerico(l) {
+  const b = l.bruto || {};
+  const valor = l.manual ? l.valor : (l.meses?.[mesAtual()] || 0);
+  const emBRL = emReais(valor, l.moeda);
+  const [rotuloStatus, classeStatus] = STATUS[l.status] || STATUS.ativo;
+
+  const cartao = cardDetalhe(l.manual ? 'Custo lançado à mão' : 'Custo', escapeHtml(b.descricao || l.detalhe || ''), `
+    <div class="lista-dados">
+      ${linhaDado('Nome', escapeHtml(nomeDoCusto(l)))}
+      ${b.empresa ? linhaDado('Empresa', escapeHtml(b.empresa)) : ''}
+      ${linhaDado('Categoria', escapeHtml(l.categoria || '—'))}
+      ${linhaDado('Tipo', escapeHtml(TIPO[l.tipo] || l.tipo || '—'))}
+      ${linhaDado('Valor', l.moeda && l.moeda !== 'BRL'
+        ? `${formatarMoeda(valor, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emBRL)}</span>`
+        : formatCurrency(emBRL))}
+      ${linhaDado('Moeda', escapeHtml(l.moeda || 'BRL'))}
+      ${b.data ? linhaDado(l.tipo === 'unico' ? 'Data do pagamento' : 'Começou em', escapeHtml(dataCurta(b.data))) : ''}
+      ${linhaDado('Status', badge(rotuloStatus, classeStatus))}
+    </div>`);
+
+  const nota = l.manual
+    ? 'Lançamento manual. Para corrigir um valor, remova e lance de novo — assim o histórico não muda sozinho por baixo dos relatórios já exportados.'
+    : 'Este custo vem de uma integração: o valor é lido da fonte e não se edita nem se remove por aqui.';
+
+  // cardDetalhe, e não cardDiagnostico: isto é uma observação, e acender o
+  // botão "Diagnóstico" no cabeçalho por causa dela seria promessa falsa.
+  return `<section class="custo-detalhe">${cartao}
+    <div class="custo-detalhe-lado">${cardDetalhe('Como funciona', '', `<p class="custo-resumo">${escapeHtml(nota)}</p>`)}</div>
+  </section>${historicoDoItem(l)}`;
+}
+
+async function removerCusto(l) {
+  if (!l.manual || !l.id) return;
+  if (!(await confirmar(`Remover "${nomeDoCusto(l)}" dos custos?`, { titulo: 'Remover custo', rotulo: 'Remover', perigo: true }))) return;
+  const { error } = await supabaseClient.from('custos').delete().eq('id', l.id);
+  if (error) return toast(`Não foi possível remover: ${error.message}`);
+  MANUAIS = MANUAIS.filter(c => c.id !== l.id);
+  fecharDetalhe();
+  toast('Custo removido');
+  renderTudo();
 }
 
 function fecharDetalhe() {
@@ -711,18 +763,28 @@ function tabelaDetalhe(cabecalho, linhas, vazio = 'Nada cobrado ainda') {
 }
 
 function historicoDoItem(l) {
+  // Custo lançado em real não tem "Dólar": a coluna leva o nome da moeda do
+  // próprio custo, e some quando ela já é o real.
+  const moeda = l.moeda || 'BRL';
+  const emReal = moeda === 'BRL';
+  const naMoeda = v => formatarMoeda(v, moeda);
+
   const linhas = MESES.slice().reverse().filter(m => (l.meses?.[m] || 0) > 0).map(m => {
     const i = MESES.indexOf(m);
     const antes = i > 0 ? l.meses?.[MESES[i - 1]] : undefined;
-    const base = antes ? `${nomeDoMes(MESES[i - 1])}: ${usd(antes)}` : '';
+    const base = antes ? `${nomeDoMes(MESES[i - 1])}: ${naMoeda(antes)}` : '';
     return `
-    <tr class="no-hover"><td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td><td class="valor-dinheiro">${usd(l.meses[m])} ${variacao(l.meses[m], antes, base)}</td><td class="valor-dinheiro">${formatCurrency(emReais(l.meses[m], l.moeda))}</td></tr>`;
+    <tr class="no-hover"><td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td><td class="valor-dinheiro">${naMoeda(l.meses[m])} ${variacao(l.meses[m], antes, base)}</td>${emReal ? '' : `<td class="valor-dinheiro">${formatCurrency(emReais(l.meses[m], moeda))}</td>`}</tr>`;
   });
   const sub = l.fonte === 'vercel'
     ? 'Retroativo de 12 meses, por mês do calendário: assinatura proporcional aos dias + cobrança extra. Meses sem cobrança ficam de fora.'
     : 'Retroativo dos últimos 12 meses (meses sem cobrança ficam de fora)';
+  const NOME_MOEDA = { USD: 'Dólar', EUR: 'Euro', BRL: 'Real' };
+  const cabecalho = emReal
+    ? ['Mês', 'Valor']
+    : ['Mês', NOME_MOEDA[moeda] || moeda, 'Real (cotação de hoje)'];
   return cardDetalhe('Mês a mês', sub,
-    tabelaDetalhe(['Mês', 'Dólar', 'Real (cotação de hoje)'], linhas, 'Nenhuma cobrança nos últimos 12 meses'));
+    tabelaDetalhe(cabecalho, linhas, 'Nenhuma cobrança nos últimos 12 meses'));
 }
 
 const NOME_SERVICO_VERCEL = {

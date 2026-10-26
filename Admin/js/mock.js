@@ -47,6 +47,15 @@ function demoSeed() {
     { id: id('evt', 5), cliente_id: id('cli', 4), tipo: 'birthday', titulo: '30 anos da Camila', host_name: 'Camila Duarte', data_evento: '2026-11-08', slug: 'camila-30', status: 'ativo', created_at: diasAtras(9) }
   ];
 
+  // Co-anfitriões convidados pelo anfitrião (eventos_organizadores): é o que
+  // o Admin mostra em "Anfitriões", no lugar do texto livre da capa.
+  const eventos_organizadores = [
+    { id: id('org', 1), evento_id: id('evt', 1), nome: 'Lucas Prado', email: 'lucas.prado@gmail.com', papel: 'anfitriao', status: 'aceito' },
+    { id: id('org', 2), evento_id: id('evt', 1), nome: 'Carla Menezes', email: 'carla@assessoriacm.com.br', papel: 'assessoria', status: 'aceito' },
+    { id: id('org', 3), evento_id: id('evt', 1), nome: '', email: 'designer@studio.com.br', papel: 'designer', status: 'pendente' },
+    { id: id('org', 4), evento_id: id('evt', 5), nome: 'Rafael Duarte', email: 'rafael.duarte@gmail.com', papel: 'anfitriao', status: 'aceito' }
+  ];
+
   // Convidados e presentes em volume, para as contagens ficarem realistas.
   const convidados = [];
   const distribuicao = [
@@ -323,7 +332,7 @@ function demoSeed() {
       { id: 'admin-2', name: 'Juliana Prado', email: 'juliana@love.com.br', role: 'admin', active: true, created_at: diasAtras(120) },
       { id: 'admin-3', name: 'Rodrigo Sales', email: 'rodrigo@love.com.br', role: 'admin', active: false, created_at: diasAtras(45) }
     ],
-    fornecedores, clientes, eventos, convidados, presentes,
+    fornecedores, clientes, eventos, eventos_organizadores, convidados, presentes,
     cliente_wallet_transactions, wallet_transactions,
     contracts, payment_links, notas_fiscais,
     conversations, leads, products,
@@ -444,8 +453,24 @@ function criarClienteDemo() {
   return {
     from: builder,
 
-    /** Só o admin_listar_contas() é usado hoje; monta a visão a partir do seed. */
-    rpc(nome) {
+    /** admin_listar_contas() monta a visão a partir do seed; as demais RPCs
+        com versão aqui mexem no seed como o banco mexeria na tabela. */
+    rpc(nome, args) {
+      if (nome === 'admin_suspender_eventos') {
+        const ids = args?.p_ids || [];
+        const suspender = Boolean(args?.p_suspender);
+        let qtd = 0;
+        (db.eventos || []).forEach(ev => {
+          if (!ids.includes(ev.id)) return;
+          ev.suspenso = suspender;
+          ev.suspenso_em = suspender ? new Date().toISOString() : null;
+          ev.suspenso_motivo = suspender ? (args?.p_motivo || null) : null;
+          qtd += 1;
+        });
+        salvarDemoDB(db);
+        return Promise.resolve({ data: qtd, error: null });
+      }
+
       if (nome !== 'admin_listar_contas') {
         return Promise.resolve({ data: null, error: { message: `rpc ${nome} sem versão de demonstração` } });
       }

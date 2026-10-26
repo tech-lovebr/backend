@@ -6,6 +6,7 @@ let EVENTOS = [];
 let SELECIONADAS = new Set();
 let CLIENTES = new Map();
 let METRICAS = new Map();
+let ORGANIZADORES = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
@@ -13,17 +14,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tbody = document.getElementById('tbody');
   renderLoading(tbody, 8);
 
-  const [eventos, clientes, convidados, presentes] = await Promise.all([
+  const [eventos, clientes, convidados, presentes, organizadores] = await Promise.all([
     safeSelect('eventos', '*'),
     safeSelect('clientes', 'id, couple_name, email'),
     safeSelect('convidados', 'evento_id, status, tipo, extra'),
-    safeSelect('presentes', 'evento_id, valor, status')
+    safeSelect('presentes', 'evento_id, valor, status'),
+    // Co-anfitriões convidados pelo anfitrião na plataforma (migration 054).
+    safeSelect('eventos_organizadores', 'evento_id, nome, email, papel, status')
   ]);
 
   if (eventos.error) return renderError(tbody, 8, eventos.error);
 
   EVENTOS = eventos.data;
   CLIENTES = new Map(clientes.data.map(c => [c.id, c]));
+  ORGANIZADORES = organizadores.error ? [] : (organizadores.data || []);
   METRICAS = montarMetricas(convidados.data, presentes.data);
 
   renderKpis();
@@ -145,7 +149,9 @@ function render() {
         <td class="cell-strong">${formatCurrency(m.arrecadado)}</td>
         <td>${e.deleted_at
           ? `<span class="valor-bloqueado">${escapeHtml(rotuloEventoExcluido(e))}</span>`
-          : badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning')}</td>
+          : e.suspenso
+            ? badge('suspenso', 'badge-danger')
+            : badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning')}</td>
         <td class="col-acoes">
           ${e.deleted_at ? `<button type="button" class="btn btn-ghost btn-sm" data-restaurar="${e.id}">Restaurar</button>` : ''}
           ${botaoVerMais(e.id)}
@@ -179,11 +185,20 @@ function abrirDetalhe(id) {
   const m = metricas(id);
   const cliente = CLIENTES.get(e.cliente_id);
 
-  const campo = (name, label, value, type = 'text') => `
-    <label class="field">
-      <span class="field-label">${label}</span>
-      <input class="field-input" name="${name}" type="${type}" value="${escapeHtml(value ?? '')}">
-    </label>`;
+  // Nada aqui se edita: título, data, categoria e anfitriões são o que o
+  // anfitrião preencheu na plataforma dele. O Admin só suspende.
+  const dado = (rotulo, valorHtml) => `
+    <div class="dados-linha">
+      <span class="rotulo">${escapeHtml(rotulo)}</span>
+      <span class="valor">${valorHtml || '<span class="cell-muted">—</span>'}</span>
+    </div>`;
+
+  const suspenso = Boolean(e.suspenso);
+  const statusChip = e.deleted_at
+    ? `<span class="valor-bloqueado">${escapeHtml(rotuloEventoExcluido(e))}</span>`
+    : suspenso
+      ? badge('Suspenso', 'badge-danger')
+      : badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning');
 
   Drawer.open({
     title: e.titulo || 'Evento',
@@ -205,74 +220,103 @@ function abrirDetalhe(id) {
         <div class="stat-box"><p class="label">Arrecadado</p><p class="value">${formatCurrency(m.arrecadado)}</p></div>
       </div>
 
-      <form id="form-evento">
-        <p class="drawer-section-title">Dados do evento</p>
-        ${campo('titulo', 'Título', e.titulo)}
-        ${campo('host_name', 'Anfitriões', e.host_name)}
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">Categoria</span>
-            <select class="field-select" name="tipo">
-              ${Object.entries(EVENT_TYPE_LABELS)
-                .map(([v, l]) => `<option value="${v}" ${e.tipo === v ? 'selected' : ''}>${l}</option>`).join('')}
-            </select>
-          </label>
-          ${campo('data_evento', 'Data', e.data_evento, 'date')}
-        </div>
-        <div class="field-row">
-          ${campo('slug', 'Link público (slug)', e.slug)}
-          ${campo('theme', 'Tema', e.theme)}
-        </div>
-        <label class="field">
-          <span class="field-label">Status</span>
-          <select class="field-select" name="status">
-            <option value="rascunho" ${e.status === 'rascunho' ? 'selected' : ''}>Rascunho</option>
-            <option value="ativo" ${(e.status || 'ativo') === 'ativo' ? 'selected' : ''}>Ativo</option>
-            <option value="encerrado" ${e.status === 'encerrado' ? 'selected' : ''}>Encerrado</option>
-          </select>
-        </label>
+      <p class="drawer-section-title">Dados do evento</p>
+      <div class="lista-dados">
+        ${dado('Título', escapeHtml(e.titulo || ''))}
+        ${dado('Categoria', badge(EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—', e.tipo === 'wedding' ? 'badge-info' : 'badge-success'))}
+        ${dado('Data', escapeHtml(formatDate(e.data_evento)))}
+        ${dado('Link público', e.slug
+          ? `<a href="https://love.com.br/${escapeHtml(e.slug)}" target="_blank" rel="noopener">love.com.br/${escapeHtml(e.slug)}</a>`
+          : '')}
+        ${dado('Status', statusChip)}
+        ${suspenso && e.suspenso_em ? dado('Suspenso em', escapeHtml(formatDateTime(e.suspenso_em))) : ''}
+        ${suspenso && e.suspenso_motivo ? dado('Motivo', escapeHtml(e.suspenso_motivo)) : ''}
+      </div>
 
-        <p class="cell-muted" style="font-size:.75rem;margin-top:1rem">
-          Criado em ${escapeHtml(formatDateTime(e.created_at))} · ID ${escapeHtml(e.id)}
-        </p>
-      </form>`,
+      ${blocoDeAnfitrioes(e)}
+
+      <p class="cell-muted" style="font-size:.75rem;margin-top:1rem">
+        Criado em ${escapeHtml(formatDateTime(e.created_at))} · ID ${escapeHtml(e.id)}
+      </p>`,
     footer: `
       ${e.deleted_at ? '<button type="button" class="btn btn-neutro" id="btn-restaurar">Restaurar evento</button>' : ''}
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Fechar</button>
-      <button type="button" class="btn btn-primary" id="btn-salvar">Salvar alterações</button>`
+      ${e.deleted_at ? '' : `<button type="button" class="btn ${suspenso ? 'btn-neutro' : 'btn-danger'}" id="btn-suspender">${suspenso ? 'Reativar evento' : 'Suspender evento'}</button>`}`
   });
 
   document.getElementById('btn-cancelar').addEventListener('click', () => Drawer.close());
   document.getElementById('btn-restaurar')?.addEventListener('click', () =>
     restaurarEvento(e, () => { render(); abrirDetalhe(id); }));
-  document.getElementById('btn-salvar').addEventListener('click', () => salvar(id));
+  document.getElementById('btn-suspender')?.addEventListener('click', () => alternarSuspensao(e));
 }
 
-async function salvar(id) {
-  const form = document.getElementById('form-evento');
-  const payload = Object.fromEntries(
-    [...new FormData(form).entries()].map(([k, v]) => [k, String(v).trim() || null])
-  );
+/* Anfitriões: o criador e os co-anfitriões que ele convidou na plataforma
+   (eventos_organizadores). Texto livre de `host_name` não serve aqui — é
+   o que o anfitrião escreveu na capa do convite, não quem organiza. */
+function blocoDeAnfitrioes(e) {
+  const cliente = CLIENTES.get(e.cliente_id);
+  const principal = {
+    nome: cliente?.couple_name || e.host_name || 'Anfitrião',
+    email: cliente?.email || '',
+    papel: 'Criador'
+  };
+  const PAPEL = { anfitriao: 'Anfitrião', designer: 'Designer', assessoria: 'Assessoria', personalizado: 'Personalizado' };
+  const SITUACAO = { pendente: 'convite pendente', recusado: 'recusou', aceito: '' };
 
-  if (!payload.titulo) {
-    toast('O título do evento não pode ficar vazio.');
-    return;
-  }
+  const convidados = ORGANIZADORES
+    .filter(o => o.evento_id === e.id && o.status !== 'removido')
+    .map(o => ({
+      nome: o.nome || o.email || 'Sem nome',
+      email: o.nome ? o.email : '',
+      papel: [PAPEL[o.papel] || o.papel, SITUACAO[o.status] || ''].filter(Boolean).join(' · ')
+    }));
+
+  const linha = p => `
+    <div class="anfitriao-linha">
+      <span class="anfitriao-quem">
+        <strong>${escapeHtml(p.nome)}</strong>
+        ${p.email ? `<span class="cell-sub">${escapeHtml(p.email)}</span>` : ''}
+      </span>
+      ${p.papel ? badge(p.papel, p.papel === 'Criador' ? 'badge-info' : '') : ''}
+    </div>`;
+
+  return `
+    <p class="drawer-section-title">Anfitriões</p>
+    <div class="lista-anfitrioes">
+      ${[principal, ...convidados].map(linha).join('')}
+      ${convidados.length ? '' : '<p class="cell-muted" style="font-size:.8125rem;margin:.25rem 0 0">Nenhum co-anfitrião convidado.</p>'}
+    </div>`;
+}
+
+/* Suspender é o único poder do Admin sobre o evento: o status (rascunho,
+   ativo, encerrado) é do anfitrião. Suspenso tira o site do ar sem apagar
+   nada, e o anfitrião não consegue reverter (migration 118). */
+async function alternarSuspensao(e) {
+  const suspendendo = !e.suspenso;
+  const ok = await confirmar(
+    suspendendo
+      ? `Suspender "${e.titulo || 'este evento'}"? O site do evento sai do ar e o anfitrião não consegue reativar — só o Admin.`
+      : `Reativar "${e.titulo || 'este evento'}"? O site volta ao ar como estava.`,
+    { titulo: suspendendo ? 'Suspender evento' : 'Reativar evento', rotulo: suspendendo ? 'Suspender' : 'Reativar', perigo: suspendendo }
+  );
+  if (!ok) return;
 
   Drawer.setFooterBusy(true);
-  const { error } = await supabaseClient.from('eventos').update(payload).eq('id', id);
+  const { error } = await supabaseClient.rpc('admin_suspender_eventos', { p_ids: [e.id], p_suspender: suspendendo, p_motivo: null });
   Drawer.setFooterBusy(false);
 
   if (error) {
-    toast(`Não foi possível salvar: ${error.message}`);
+    toast(/function|schema cache/i.test(error.message)
+      ? 'Falta preparar o banco: rode a migration 118 no Supabase.'
+      : `Não foi possível salvar: ${error.message}`);
     return;
   }
 
-  Object.assign(EVENTOS.find(e => e.id === id), payload);
+  Object.assign(e, { suspenso: suspendendo, suspenso_em: suspendendo ? new Date().toISOString() : null });
   render();
   renderKpis();
-  Drawer.close();
-  toast('Evento atualizado.');
+  abrirDetalhe(e.id);
+  toast(suspendendo ? 'Evento suspenso.' : 'Evento reativado.');
 }
 
 /* ------------------------------------------------------ Seleção em massa

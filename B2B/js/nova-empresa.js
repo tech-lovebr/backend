@@ -22,7 +22,8 @@ const CATEGORIAS_DA_EMPRESA = [
   'Música e Entretenimento',
   'Decoração',
   'Assessoria e Cerimonialista',
-  'Trajes, Beleza e Estilo'
+  'Trajes a Rigor',
+  'Beleza e Estilo'
 ];
 
 const TOTAL_DE_ETAPAS = 3;

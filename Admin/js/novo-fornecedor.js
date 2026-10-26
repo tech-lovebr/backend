@@ -11,17 +11,11 @@
    ========================================================================== */
 
 const NovoFornecedor = (() => {
-  const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+  const ESTADOS = UFS;
 
-  /* Segmento da empresa: a mesma arvore do Hub (B2B/js/produtos.js,
-     SUBCATEGORY_MAP). E o que alimenta o "Filtrar por" da lista, entao
-     precisa sair daqui ja escolhido de uma lista fechada. */
-  const CATEGORIAS = [
-    'Assessoria e Cerimonialista', 'Espaços para Locação', 'Buffet e Gastronomia',
-    'Bar e Bebidas', 'Staff e Mão de Obra', 'Mídia e Audiovisual',
-    'Música e Entretenimento', 'Decoração', 'Trajes, Beleza e Estilo',
-    'Aluguel de Carros'
-  ];
+  // Lista fechada de segmentos: CATEGORIAS_FORNECEDOR (utils.js), a mesma
+  // que a edição no drawer usa.
+  const CATEGORIAS = CATEGORIAS_FORNECEDOR;
 
   let AVATAR_URL = null;
   let CAPA_URL = null;

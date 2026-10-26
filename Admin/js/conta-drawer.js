@@ -59,6 +59,15 @@ function linhaOpcional(rotulo, valor) {
     </div>`;
 }
 
+/** Linha que sempre aparece e cujo valor já vem como HTML (campos de edição). */
+function linhaFixa(rotulo, html) {
+  return `
+    <div class="dados-linha">
+      <span class="rotulo">${escapeHtml(rotulo)}</span>
+      <span class="valor">${html}</span>
+    </div>`;
+}
+
 /* --------------------------------------------------- Dispositivo e navegador
 
    auth.users não guarda nada disso. Vem de duas fontes, nessa ordem:
@@ -191,6 +200,10 @@ const ContaDrawer = (() => {
   async function abrir(idOuConta) {
     if (!idOuConta) return;
 
+    // Abrir outra conta sempre começa em leitura: o modo de edição é do
+    // cadastro que estava aberto, não do drawer.
+    EDITANDO = false;
+
     await carregar();
 
     const conta = typeof idOuConta === 'string'
@@ -217,19 +230,126 @@ const ContaDrawer = (() => {
     return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valor;
   }
 
+  /* ------------------------------------------------- Edição do cadastro
+
+     O cabeçalho ganha "Editar": os campos que o Admin pode corrigir viram
+     caixas na própria linha, sem trocar de tela. O que não se edita daqui
+     (e-mail, datas de acesso, UID) continua texto — mudar e-mail é mexer na
+     autenticação, não no cadastro. */
+
+  let EDITANDO = false;
+
+  const CAMPOS_EDITAVEIS = [
+    { id: 'razao_social', rotulo: 'Razão social', tipo: 'texto', placeholder: 'Razão social da empresa' },
+    { id: 'cnpj', rotulo: 'CNPJ', tipo: 'texto', placeholder: '00.000.000/0000-00' },
+    { id: 'contact_name', rotulo: 'Responsável', tipo: 'texto', placeholder: 'Nome do responsável' },
+    { id: 'category', rotulo: 'Categoria', tipo: 'categoria' }
+  ];
+
+  const fornecedorDe = id => (DADOS?.fornecedores || []).find(x => x.id === id);
+
+  const campoTexto = (id, valor, placeholder = '', tipo = 'text') =>
+    `<input class="field-input dados-campo" id="ed-${id}" type="${tipo}" value="${escapeHtml(valor || '')}" placeholder="${escapeHtml(placeholder)}">`;
+
+  /* Cadastro antigo pode ter categoria fora da lista de hoje ("Buffet" em
+     vez de "Buffet e Gastronomia"). Ela entra como opção para abrir o modo
+     de edição não apagar o que já estava gravado. */
+  const campoCategoria = valor => {
+    const atual = String(valor || '').trim();
+    const lista = atual && !CATEGORIAS_FORNECEDOR.includes(atual)
+      ? [atual, ...CATEGORIAS_FORNECEDOR]
+      : CATEGORIAS_FORNECEDOR;
+    return `
+      <select class="field-select dados-campo" id="ed-category">
+        <option value="">Não informada</option>
+        ${lista.map(cat => `<option value="${escapeHtml(cat)}"${cat === atual ? ' selected' : ''}>${escapeHtml(cat)}</option>`).join('')}
+      </select>`;
+  };
+
   /* Quem e a empresa vem antes de tudo no drawer do fornecedor: razao
      social, documento, responsavel e o segmento em que ela atua. Sem razao
      social preenchida, o nome da conta ocupa a linha - e o nome da empresa. */
   function identidadeDoFornecedor(c, linha) {
     if (c.origem !== 'b2b') return '';
-    const f = (DADOS?.fornecedores || []).find(x => x.id === c.id);
+    const f = fornecedorDe(c.id);
     if (!f) return '';
+    if (EDITANDO) {
+      return CAMPOS_EDITAVEIS.map(campo => linha(campo.rotulo, campo.tipo === 'categoria'
+        ? campoCategoria(f.category)
+        : campoTexto(campo.id, f[campo.id], campo.placeholder))).join('');
+    }
     return [
       linha('Razão social', escapeHtml(f.razao_social || c.nome || '—')),
       f.cnpj ? linha('CNPJ', escapeHtml(f.cnpj)) : '',
       f.contact_name ? linha('Responsável', escapeHtml(f.contact_name)) : '',
       linha('Categoria', escapeHtml(f.category || 'Não informada'))
     ].join('');
+  }
+
+  /* Situação da conta, no cabeçalho ao lado do nome. Bloqueio da
+     autenticação manda em tudo: uma conta banida não está "ativa" porque o
+     cadastro diz que sim. */
+  function situacaoDaConta(c) {
+    if (c.bloqueado) return { rotulo: 'Desativada', classe: 'badge-danger' };
+    const f = fornecedorDe(c.id);
+    const status = String(f?.status || '').toLowerCase();
+    if (status === 'suspenso' || status === 'suspensa') return { rotulo: 'Suspensa', classe: 'badge-warning' };
+    if (status === 'desativado' || status === 'inativo') return { rotulo: 'Desativada', classe: 'badge-danger' };
+    return { rotulo: 'Ativa', classe: 'badge-success' };
+  }
+
+  /** Botões do cabeçalho: Editar, ou Cancelar + Salvar durante a edição. */
+  function acoesDoCabecalho(c) {
+    if (c.origem !== 'b2b' || !fornecedorDe(c.id)) return '';
+    return EDITANDO
+      ? `<button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-edicao">Cancelar</button>
+         <button type="button" class="btn btn-primary btn-sm" id="btn-salvar-edicao">Salvar</button>`
+      : `<button type="button" class="btn btn-ghost btn-sm" id="btn-editar-conta">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3"/><path d="M13.5 6.5l4 4"/></svg>
+           <span>Editar</span>
+         </button>`;
+  }
+
+  function ligarEdicao(c) {
+    document.getElementById('btn-editar-conta')?.addEventListener('click', () => { EDITANDO = true; desenhar(c); });
+    document.getElementById('btn-cancelar-edicao')?.addEventListener('click', () => { EDITANDO = false; desenhar(c); });
+    document.getElementById('btn-salvar-edicao')?.addEventListener('click', () => salvarEdicao(c));
+  }
+
+  const valorDoCampo = id => {
+    const el = document.getElementById(`ed-${id}`);
+    return el ? el.value.trim() : null;
+  };
+
+  async function salvarEdicao(c) {
+    const f = fornecedorDe(c.id);
+    if (!f) return;
+
+    // Campo vazio grava null: "" deixaria a linha existindo e vazia no banco.
+    const mudancas = {};
+    CAMPOS_EDITAVEIS.forEach(campo => { mudancas[campo.id] = valorDoCampo(campo.id) || null; });
+    mudancas.phone = valorDoCampo('phone') || null;
+    mudancas.address = valorDoCampo('address') || null;
+    mudancas.city = valorDoCampo('city') || null;
+    mudancas.state = valorDoCampo('state') || null;
+    mudancas.birthday = valorDoCampo('birthday') || null;
+
+    const botao = document.getElementById('btn-salvar-edicao');
+    if (botao) botao.disabled = true;
+
+    const { error } = await supabaseClient.from('fornecedores').update(mudancas).eq('id', c.id);
+    if (error) {
+      if (botao) botao.disabled = false;
+      toast(`Não foi possível salvar: ${error.message}`);
+      return;
+    }
+
+    // Atualiza o que já está em memória para o drawer e a lista refletirem
+    // agora, sem recarregar a página.
+    Object.assign(f, mudancas);
+    EDITANDO = false;
+    desenhar(c);
+    toast('Cadastro atualizado.');
   }
 
   function desenhar(c) {
@@ -248,14 +368,20 @@ const ContaDrawer = (() => {
     // so no dashboard, que mistura os dois, a linha diz alguma coisa.
     const mostrarCanal = !alvoEmLinha;
 
+    const situacao = situacaoDaConta(c);
+
     abrirPainel({
       title: c.nome || c.email || 'Conta',
       semTitulo: true,
+      selo: badge(situacao.rotulo, situacao.classe),
+      acoes: acoesDoCabecalho(c),
       body: `
         <div class="lista-dados">
           ${identidadeDoFornecedor(c, linha) || linha('Nome', escapeHtml(c.nome || '—'))}
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}
-          ${linha('Data de nascimento', escapeHtml(nascimento || 'Não informada'))}
+          ${linha('Data de nascimento', EDITANDO && c.origem === 'b2b'
+            ? campoTexto('birthday', fornecedorDe(c.id)?.birthday, '', 'date')
+            : escapeHtml(nascimento || 'Não informada'))}
           ${mostrarCanal ? linha('Canal', escapeHtml(origem.rotulo)) : ''}
           ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
@@ -263,9 +389,6 @@ const ContaDrawer = (() => {
           ${ultimoAparelho(c) ? linha('Último aparelho', escapeHtml(ultimoAparelho(c))) : ''}
           ${linha('Último acesso', escapeHtml(dataHoraCompleta(c.ultimo_acesso) || 'nunca'))}
           ${linha('Sessões', c.sessoes == null ? '—' : formatNumber(c.sessoes))}
-          ${linha('Situação', c.bloqueado
-            ? '<span class="valor-bloqueado">Bloqueada</span>'
-            : 'Ativa')}
           ${linha('UID', `<code class="dados-id">${escapeHtml(c.id)}</code>`)}
         </div>
 
@@ -298,6 +421,7 @@ const ContaDrawer = (() => {
 
     document.getElementById('btn-fechar').addEventListener('click', () => Drawer.close());
     document.getElementById('btn-bloquear').addEventListener('click', () => pedirConfirmacao(c));
+    ligarEdicao(c);
 
     document.querySelectorAll('[data-destino]').forEach(btn => {
       btn.addEventListener('click', () => classificar(c, btn.dataset.destino));
@@ -432,9 +556,21 @@ const ContaDrawer = (() => {
     const cadastro = [
       // Razao social, CNPJ, responsavel e categoria sobem para o topo do
       // drawer (identidadeDoFornecedor); aqui fica o resto do cadastro.
-      linhaOpcional('Telefone', f.phone),
+      EDITANDO
+        ? linhaFixa('Telefone', campoTexto('phone', f.phone, '(00) 00000-0000', 'tel'))
+        : linhaOpcional('Telefone', f.phone),
       // Endereco e cidade na mesma linha: sao a mesma informacao partida em duas.
-      linhaOpcional('Endereço', [f.address, [f.city, f.state].filter(Boolean).join(' / ')].filter(Boolean).join(' · ')),
+      EDITANDO
+        ? linhaFixa('Endereço', `
+            <div class="dados-campo-endereco">
+              ${campoTexto('address', f.address, 'Rua, número, bairro')}
+              ${campoTexto('city', f.city, 'Cidade')}
+              <select class="field-select" id="ed-state">
+                <option value="">UF</option>
+                ${UFS.map(uf => `<option value="${uf}"${uf === f.state ? ' selected' : ''}>${uf}</option>`).join('')}
+              </select>
+            </div>`)
+        : linhaOpcional('Endereço', [f.address, [f.city, f.state].filter(Boolean).join(' / ')].filter(Boolean).join(' · ')),
       blocoDoPlano(f),
       linhaOpcional('Chave Pix', f.pix_key)
     ].join('');

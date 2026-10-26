@@ -4254,6 +4254,22 @@ body.com-faixa .admin-content > .legal-abas .aba-contagem { color: inherit; }
 .painel-linha-titulos { min-width: 0; }
 .painel-linha-titulos h2 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -.02em; color: #18181B; }
 .painel-linha-titulos p { margin: .125rem 0 0; font-size: .8125rem; color: var(--text-muted); }
+
+/* Cabeçalho do drawer: nome da empresa com a situação colada nele, e as
+   ações (Editar / Cancelar + Salvar) empurradas para a ponta direita. */
+.drawer-nome { display: flex; align-items: center; gap: .5rem; min-width: 0; flex-wrap: wrap; }
+.drawer-nome > h2 { min-width: 0; }
+#drawer-selo:empty { display: none; }
+.drawer-cabeca-acoes { display: flex; align-items: center; gap: .5rem; margin-left: auto; flex-shrink: 0; }
+.drawer-cabeca-acoes:empty { display: none; }
+.drawer-cabeca-acoes .btn svg { width: 15px; height: 15px; }
+
+/* Campo de edição dentro da linha de dados: ocupa a coluna do valor sem
+   esticar a linha. */
+.dados-linha .dados-campo { width: 100%; max-width: 320px; }
+.dados-campo-endereco { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 80px; gap: .5rem; max-width: 460px; }
+@media (max-width: 640px) { .dados-campo-endereco { grid-template-columns: 1fr; } }
+.dados-linha:has(.dados-campo), .dados-linha:has(.dados-campo-endereco) { align-items: center; }
 .painel-linha-corpo { padding: 1.25rem; }
 .painel-linha-pe { display: flex; justify-content: flex-end; gap: .5rem; padding: .875rem 1.25rem; border-top: 1px solid var(--divisor-suave, #F0F0F2); }
 .painel-linha-pe:empty { display: none; }

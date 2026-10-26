@@ -145,6 +145,18 @@ const TICKET_STATUS_BADGE = {
   spam: 'badge-danger'
 };
 
+/* Segmento da empresa: a mesma árvore do Hub (B2B/js/produtos.js,
+   SUBCATEGORY_MAP). Cadastro e edição escolhem daqui para o filtro de
+   categoria da lista não virar três nomes para a mesma coisa. */
+const CATEGORIAS_FORNECEDOR = [
+  'Assessoria e Cerimonialista', 'Espaços para Locação', 'Buffet e Gastronomia',
+  'Bar e Bebidas', 'Staff e Mão de Obra', 'Mídia e Audiovisual',
+  'Música e Entretenimento', 'Decoração', 'Trajes, Beleza e Estilo',
+  'Aluguel de Carros'
+];
+
+const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
 const ORIGEM_LABELS = {
   site: 'Site público',
   cliente: 'Plataforma (cliente)',
@@ -198,9 +210,10 @@ const Drawer = {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
         </button>
         <div style="flex:1;min-width:0">
-          <h2 id="drawer-title">Detalhes</h2>
+          <div class="drawer-nome"><h2 id="drawer-title">Detalhes</h2><span id="drawer-selo"></span></div>
           <p id="drawer-subtitle"></p>
         </div>
+        <div class="drawer-cabeca-acoes" id="drawer-acoes"></div>
         <button type="button" class="btn btn-ghost btn-sm" id="drawer-close" aria-label="Fechar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
         </button>
@@ -240,7 +253,7 @@ const Drawer = {
     return { host, esconder, auto: true };
   },
 
-  _abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back }) {
+  _abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back, selo, acoes }) {
     const { host, esconder = [] } = emLinha;
     esconder.forEach(el => { if (el) el.hidden = true; });
     host.innerHTML = `
@@ -250,9 +263,10 @@ const Drawer = {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
           </button>
           <div class="painel-linha-titulos">
-            <h2 id="painel-linha-titulo">${escapeHtml(title || 'Detalhes')}</h2>
+            <div class="drawer-nome"><h2 id="painel-linha-titulo">${escapeHtml(title || 'Detalhes')}</h2><span id="drawer-selo">${selo || ''}</span></div>
             ${subtitleHtml ? `<p>${subtitleHtml}</p>` : subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
           </div>
+          <div class="drawer-cabeca-acoes" id="drawer-acoes">${acoes || ''}</div>
         </header>
         <div class="painel-linha-corpo" id="painel-linha-corpo">${body || ''}</div>
         ${footer ? `<footer class="painel-linha-pe" id="painel-linha-pe">${footer}</footer>` : ''}
@@ -291,9 +305,9 @@ const Drawer = {
   },
 
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, subtitleHtml, body, footer, back, semTitulo = false, semLinha = false, emLinha = null, popup = false }) {
+  open({ title, subtitle, subtitleHtml, body, footer, back, selo, acoes, semTitulo = false, semLinha = false, emLinha = null, popup = false }) {
     if (!emLinha && !popup && !this._overlayAberto()) emLinha = this._alvoAutomatico();
-    if (emLinha) return this._abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back });
+    if (emLinha) return this._abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back, selo, acoes });
     this._build();
     document.getElementById('drawer-panel').classList.toggle('drawer-sem-titulo', semTitulo);
     // semLinha: cabeçalho só com o título, sem a linha embaixo.
@@ -308,6 +322,8 @@ const Drawer = {
     // textContent por padrão; só quem passa subtitleHtml assume o escape.
     if (subtitleHtml) sub.innerHTML = subtitleHtml;
     else sub.textContent = subtitle || '';
+    document.getElementById('drawer-selo').innerHTML = selo || '';
+    document.getElementById('drawer-acoes').innerHTML = acoes || '';
     document.getElementById('drawer-body').innerHTML = body || '';
     document.getElementById('drawer-foot').innerHTML = footer || '';
     document.getElementById('drawer-backdrop').classList.add('is-open');

@@ -511,8 +511,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (atual) barra.scrollLeft = Math.max(0, atual.offsetLeft - (barra.clientWidth - atual.offsetWidth) / 2);
     };
 
-    // Cabeçalho da página primeiro (título, + e lupa) e as abas logo abaixo.
-    // Sem cabeçalho próprio (editor do convite), as abas ficam no topo.
+    // Cabeçalho da página primeiro (título, + e lupa) e as abas logo abaixo —
+    // inclusive no editor do Convite, cujo cabeçalho (seletor de página +
+    // Salvar/Publicar) fica dentro de #site-builder-root.
     const ICONE_LUPA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
     /** Busca da tela aberta (as buscas das tabelas usam .love-tabela-busca). @param {Element} aba */
     const buscaDaTela = (aba) => /** @type {HTMLElement|undefined} */ (Array.from(aba.querySelectorAll('.love-tabela-busca'))
@@ -523,7 +524,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Desktop: a barra fica escondida no topo (sem mexer na ordem das telas).
       if (!noCelular.matches) { if (barra.parentElement !== area) area.insertBefore(barra, area.firstChild); return; }
       const aba = area.querySelector('.dashboard-tab-content.active');
-      const cabecalho = aba && aba.id !== 'tab-edit-site' ? aba.querySelector(':scope > .builder-toolbar, :scope > .floorplan-wrap > .floorplan-toolbar') : null;
+      // :scope > .builder-toolbar também bate com #classic-editor-toolbar (legado,
+      // sempre display:none) — por isso pega o primeiro candidato VISÍVEL, não
+      // simplesmente o primeiro no DOM.
+      const cabecalho = aba ? Array.from(aba.querySelectorAll(':scope > .builder-toolbar, :scope > .floorplan-wrap > .floorplan-toolbar, :scope > #site-builder-root > .builder-toolbar'))
+        .find(el => el.offsetParent !== null) || null : null;
       if (cabecalho) {
         if (cabecalho.nextElementSibling !== barra) cabecalho.after(barra);
       } else if (barra.parentElement !== area) {

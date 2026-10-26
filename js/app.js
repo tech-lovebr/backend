@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .find(b => b.parentElement && /** @type {HTMLElement} */ (b.parentElement).offsetParent !== null));
     const abaAtiva = () => (barra.querySelector('.is-ativo') || {}).textContent || '';
     const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
-    const posicionar = () => {
+    const posicionar = (tentativas) => {
       // Desktop: a barra fica escondida no topo (sem mexer na ordem das telas).
       if (!noCelular.matches) { if (barra.parentElement !== area) area.insertBefore(barra, area.firstChild); return; }
       const aba = area.querySelector('.dashboard-tab-content.active');
@@ -529,6 +529,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // simplesmente o primeiro no DOM.
       const cabecalho = aba ? Array.from(aba.querySelectorAll(':scope > .builder-toolbar, :scope > .floorplan-wrap > .floorplan-toolbar, :scope > #site-builder-root > .builder-toolbar'))
         .find(el => el.offsetParent !== null) || null : null;
+      // O editor do Convite monta #site-builder-root de forma assíncrona — ao
+      // trocar pra essa aba, o cabeçalho pode ainda não existir/estar visível
+      // no instante exato deste cálculo. Tenta de novo por um tempinho antes
+      // de desistir e jogar a barra lá em cima (sem cabeçalho nenhum).
+      if (!cabecalho && aba && aba.id === 'tab-edit-site' && (tentativas === undefined ? 20 : tentativas) > 0) {
+        setTimeout(() => posicionar((tentativas === undefined ? 20 : tentativas) - 1), 50);
+        return;
+      }
       if (cabecalho) {
         if (cabecalho.nextElementSibling !== barra) cabecalho.after(barra);
       } else if (barra.parentElement !== area) {
@@ -565,12 +573,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const agendar = () => {
       if (agendado) return;
       agendado = true;
-      requestAnimationFrame(desenhar);
+      // setTimeout em vez de requestAnimationFrame: rAF pode ficar suspenso
+      // (aba trocando de visibilidade, gesto de navegação em andamento) e,
+      // como "agendado" só volta a false dentro de desenhar(), um rAF que
+      // nunca dispara travava todo reposicionamento futuro da barra.
+      setTimeout(desenhar, 0);
     };
     new MutationObserver(agendar).observe(lista, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style'] });
     // Troca de página ou de seção dentro dela: reposiciona as abas e a lupa.
     const observarTelas = new MutationObserver(agendar);
-    area.querySelectorAll('.dashboard-tab-content').forEach(aba => observarTelas.observe(aba, { attributes: true, attributeFilter: ['class'] }));
+    area.querySelectorAll('.dashboard-tab-content').forEach(aba => {
+      const opcoes = { attributes: true, attributeFilter: ['class'] };
+      // O editor do Convite recria o próprio cabeçalho (#site-builder-root)
+      // ao trocar de sub-seção — sem observar o conteúdo, a barra ficava
+      // "presa" na posição calculada antes dessa recriação.
+      if (aba.id === 'tab-edit-site') { opcoes.childList = true; opcoes.subtree = true; }
+      observarTelas.observe(aba, opcoes);
+    });
     noCelular.addEventListener?.('change', agendar);
     desenhar();
   })();
@@ -7325,11 +7344,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!/function|schema cache/i.test(error.message || '')) console.error('Erro ao carregar eventos organizados:', error);
       return [];
     }
-    return (Array.isArray(data) ? data : []).map(item => Object.assign(mapEventoRowToEvent(item.evento || {}), {
-      souOrganizador: true,
-      papelOrganizador: item.papel,
-      permissoesOrganizador: Array.isArray(item.permissoes) ? item.permissoes : []
-    }));
+    return (Array.isArray(data) ? data : [])
+      .filter(item => !eventoSuspenso(item.evento))
+      .map(item => Object.assign(mapEventoRowToEvent(item.evento || {}), {
+        souOrganizador: true,
+        papelOrganizador: item.papel,
+        permissoesOrganizador: Array.isArray(item.permissoes) ? item.permissoes : []
+      }));
   }
 
   // Perfil mínimo para quem entra só como organizador (sem cadastro de anfitrião).
@@ -22264,6 +22285,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  /* Evento suspenso pelo Admin (migration 118) não aparece para o anfitrião:
+     nem na lista, nem como evento ativo. O filtro é aqui, no JavaScript, e
+     não no `select`, para a plataforma continuar funcionando em bancos onde
+     a coluna ainda não existe — sem a coluna, `suspenso` vem undefined e
+     nada é escondido. */
+  function eventoSuspenso(linha) { return !!linha && linha.suspenso === true; }
+
   // Busca todos os eventos do cliente logado, cada um já com seus convidados
   // e presentes reais (join numa única consulta).
   async function loadEventsFromSupabase(clienteId) {
@@ -22274,7 +22302,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .is('deleted_at', null)
       .order('created_at', { ascending: true });
     if (error) { console.error('Erro ao carregar eventos:', error); return []; }
-    return (rows || []).map(mapEventoRowToEvent);
+    return (rows || []).filter(linha => !eventoSuspenso(linha)).map(mapEventoRowToEvent);
   }
 
   // Expõe o evento ativo pra outros scripts (site-builder.js) sem depender

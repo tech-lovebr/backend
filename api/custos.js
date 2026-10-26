@@ -139,35 +139,70 @@ async function custoVercel(meses) {
     const ateCiclo = fimCiclo.toISOString().slice(0, 10);
     const noCiclo = linhas.filter(l => l.dia >= deCiclo && l.dia < ateCiclo);
 
-    const servicos = {};
-    const projetos = {};
-    const diasUso = {};
-    let consumo = 0;
-    let extra = 0;
-    let ultimoDia = deCiclo;
-    noCiclo.forEach(l => {
-      if (l.dia > ultimoDia && (l.consumo || l.cobrado)) ultimoDia = l.dia;
-      if (ehAssinatura(l)) return;
-      consumo += l.consumo;
-      extra += l.cobrado;
-      if (!servicos[l.servico]) servicos[l.servico] = { servico: l.servico, consumo: 0, cobrado: 0, uso: 0, unidade: l.unidade };
-      const sv = servicos[l.servico];
-      sv.consumo += l.consumo; sv.cobrado += l.cobrado; sv.uso += l.uso;
-      if (l.projeto) {
-        if (!projetos[l.projeto]) projetos[l.projeto] = { projeto: l.projeto, consumo: 0, minutos_build: 0 };
-        projetos[l.projeto].consumo += l.consumo;
-        if (l.servico === "Build CPU Minutes") projetos[l.projeto].minutos_build += l.uso;
-      }
-      diasUso[l.dia] = (diasUso[l.dia] || 0) + l.consumo;
+    // Agrega um intervalo de dias: totais, por servico e por projeto.
+    const agregar = linhasDoIntervalo => {
+      const servicos = {};
+      const projetos = {};
+      const diasUso = {};
+      let consumo = 0;
+      let extra = 0;
+      let ultimoDia = null;
+      linhasDoIntervalo.forEach(l => {
+        if ((l.consumo || l.cobrado) && (!ultimoDia || l.dia > ultimoDia)) ultimoDia = l.dia;
+        if (ehAssinatura(l)) return;
+        consumo += l.consumo;
+        extra += l.cobrado;
+        if (!servicos[l.servico]) servicos[l.servico] = { servico: l.servico, consumo: 0, cobrado: 0, uso: 0, unidade: l.unidade };
+        const sv = servicos[l.servico];
+        sv.consumo += l.consumo; sv.cobrado += l.cobrado; sv.uso += l.uso;
+        if (l.projeto) {
+          if (!projetos[l.projeto]) projetos[l.projeto] = { projeto: l.projeto, consumo: 0, minutos_build: 0 };
+          projetos[l.projeto].consumo += l.consumo;
+          if (l.servico === "Build CPU Minutes") projetos[l.projeto].minutos_build += l.uso;
+        }
+        diasUso[l.dia] = (diasUso[l.dia] || 0) + l.consumo;
+      });
+      return { consumo, extra, servicos, projetos, dias: diasUso, ultimoDia };
+    };
+
+    const atual = agregar(noCiclo);
+    const ultimoDia = atual.ultimoDia || deCiclo;
+
+    // Ciclo anterior, recortado nos mesmos dias decorridos: comparar um ciclo
+    // pela metade com um ciclo inteiro mostraria queda onde nao houve.
+    const diasDecorridos = Math.round((new Date(`${ultimoDia}T12:00:00Z`) - new Date(`${deCiclo}T12:00:00Z`)) / 86400000) + 1;
+    // Dia 31 num mes de 30 transbordaria para o mes seguinte: prende no ultimo dia.
+    const ultimoDiaDoMes = (ano, mes) => new Date(Date.UTC(ano, mes + 1, 0)).getUTCDate();
+    const anoAnterior = inicioCiclo.getUTCFullYear();
+    const mesAnterior = inicioCiclo.getUTCMonth() - 1;
+    const inicioAnterior = new Date(Date.UTC(anoAnterior, mesAnterior, Math.min(diaDoCiclo, ultimoDiaDoMes(anoAnterior, mesAnterior))));
+    const deAnterior = inicioAnterior.toISOString().slice(0, 10);
+    const ateAnterior = new Date(inicioAnterior.getTime() + diasDecorridos * 86400000).toISOString().slice(0, 10);
+    const anterior = agregar(linhas.filter(l => l.dia >= deAnterior && l.dia < ateAnterior));
+    const temAnterior = linhas.some(l => l.dia >= deAnterior && l.dia < deCiclo);
+
+    const comparado = (lista, chave, campos) => lista.map(item => {
+      const antes = anterior[chave][item[campos.id]];
+      const saida = { ...item };
+      if (temAnterior) campos.valores.forEach(c => { saida[`${c}_antes`] = antes ? antes[c] : 0; });
+      return saida;
     });
 
     const ciclo = {
       inicio: deCiclo, fim: ateCiclo, dados_ate: ultimoDia,
       plano: "Pro", assinatura: ASSINATURA_VERCEL_USD, credito: ASSINATURA_VERCEL_USD,
-      consumo, extra, total: ASSINATURA_VERCEL_USD + extra,
-      servicos: Object.values(servicos).filter(sv => sv.consumo > 0.0005 || sv.cobrado > 0.0005).sort((x, y) => y.consumo - x.consumo),
-      projetos: Object.values(projetos).filter(p => p.consumo > 0.0005).sort((x, y) => y.consumo - x.consumo),
-      dias: diasUso
+      consumo: atual.consumo, extra: atual.extra, total: ASSINATURA_VERCEL_USD + atual.extra,
+      servicos: comparado(
+        Object.values(atual.servicos).filter(sv => sv.consumo > 0.0005 || sv.cobrado > 0.0005).sort((x, y) => y.consumo - x.consumo),
+        "servicos", { id: "servico", valores: ["uso", "consumo"] }),
+      projetos: comparado(
+        Object.values(atual.projetos).filter(p => p.consumo > 0.0005).sort((x, y) => y.consumo - x.consumo),
+        "projetos", { id: "projeto", valores: ["minutos_build", "consumo"] }),
+      dias: atual.dias,
+      dias_decorridos: diasDecorridos,
+      anterior: temAnterior
+        ? { inicio: deAnterior, dias: diasDecorridos, consumo: anterior.consumo, extra: anterior.extra }
+        : null
     };
     return { ...base, moeda, status: "ativo", meses: porMes, detalhe: `Plano Pro + consumo além do crédito`, ciclo };
   } catch (e) {

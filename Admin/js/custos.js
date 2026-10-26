@@ -659,6 +659,22 @@ const linhaDado = (rotulo, valor) => `<div class="dados-linha"><span class="rotu
 const dataCurta = iso => new Date(`${iso}T12:00:00`).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }).replace('.', '');
 const diasEntre = (de, ate) => Math.round((new Date(`${ate}T12:00:00`) - new Date(`${de}T12:00:00`)) / 86400000);
 
+// Variacao contra o periodo anterior. Em custo e em uso, subir e ruim:
+// alta em vermelho, queda em verde. `antes` indefinido = sem base de comparacao.
+function variacao(agora, antes, rotulo = '') {
+  if (antes === undefined || antes === null) return '';
+  const a = Number(agora) || 0;
+  const b = Number(antes) || 0;
+  const titulo = rotulo ? ` title="${escapeHtml(rotulo)}"` : '';
+  if (!b) return a ? `<span class="custo-var is-novo"${titulo}>novo</span>` : '';
+  const pct = ((a - b) / b) * 100;
+  if (Math.abs(pct) < 1) return `<span class="custo-var"${titulo}>estável</span>`;
+  // Queda de 99,9% nao e "100%": so zera quando zerou de fato.
+  const n = a > 0 && pct < 0 ? Math.min(Math.abs(pct), 99) : Math.abs(pct);
+  const numero = n >= 10 ? Math.round(n).toLocaleString('pt-BR') : n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  return `<span class="custo-var ${pct > 0 ? 'is-alta' : 'is-queda'}"${titulo}>${pct > 0 ? '+' : '−'}${numero}%</span>`;
+}
+
 function cardDetalhe(titulo, sub, corpo) {
   return `<div class="card"><div class="card-head"><div><h2>${titulo}</h2>${sub ? `<p>${sub}</p>` : ''}</div></div><div class="card-body">${corpo}</div></div>`;
 }
@@ -698,8 +714,13 @@ function tabelaDetalhe(cabecalho, linhas, vazio = 'Nada cobrado ainda') {
 }
 
 function historicoDoItem(l) {
-  const linhas = MESES.slice().reverse().filter(m => (l.meses?.[m] || 0) > 0).map(m => `
-    <tr class="no-hover"><td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td><td class="valor-dinheiro">${usd(l.meses[m])}</td><td class="valor-dinheiro">${formatCurrency(emReais(l.meses[m], l.moeda))}</td></tr>`);
+  const linhas = MESES.slice().reverse().filter(m => (l.meses?.[m] || 0) > 0).map(m => {
+    const i = MESES.indexOf(m);
+    const antes = i > 0 ? l.meses?.[MESES[i - 1]] : undefined;
+    const base = antes ? `${nomeDoMes(MESES[i - 1])}: ${usd(antes)}` : '';
+    return `
+    <tr class="no-hover"><td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td><td class="valor-dinheiro">${usd(l.meses[m])} ${variacao(l.meses[m], antes, base)}</td><td class="valor-dinheiro">${formatCurrency(emReais(l.meses[m], l.moeda))}</td></tr>`;
+  });
   const sub = l.fonte === 'vercel'
     ? 'Retroativo de 12 meses, por mês do calendário: assinatura proporcional aos dias + cobrança extra. Meses sem cobrança ficam de fora.'
     : 'Retroativo dos últimos 12 meses (meses sem cobrança ficam de fora)';
@@ -745,16 +766,19 @@ function detalheVercel(l) {
   const extraPrevisto = Math.max(0, consumoPrevisto - c.credito);
   const faturaPrevista = c.assinatura + extraPrevisto;
 
+  const baseAnterior = c.anterior
+    ? `Mesmos ${c.anterior.dias} dias do ciclo anterior: ${usd(c.anterior.consumo)}`
+    : '';
+
   const fatura = cardDetalhe('Fatura do ciclo', `${dataCurta(c.inicio)} a ${dataCurta(ultimoDia)} · faltam ${faltam} dias`, `
     <div class="lista-dados">
       ${linhaDado('Assinatura (plano Pro)', `${comReais(c.assinatura)} por mês`)}
       ${linhaDado('Crédito de consumo incluso no plano', usd(c.credito))}
-      ${linhaDado('Consumo no ciclo (antes do crédito)', comReais(c.consumo))}
+      ${linhaDado('Consumo no ciclo (antes do crédito)', `${comReais(c.consumo)} ${variacao(c.consumo, c.anterior?.consumo, baseAnterior)}`)}
       ${linhaDado('Crédito usado', `${usd(Math.min(c.consumo, c.credito))} de ${usd(c.credito)}`)}
       ${linhaDado('Cobrança extra (além do crédito)', comReais(c.extra))}
       ${linhaDado('<strong>Fatura até agora</strong>', `<strong>${comReais(c.total)}</strong>`)}
-    </div>
-    <p class="custo-nota">Dados até ${dataCurta(c.dados_ate)}. O painel da Vercel soma também as horas de hoje, por isso pode mostrar um pouco mais. A fatura fecha em ${dataCurta(ultimoDia)}.</p>`);
+    </div>`);
 
   const previsao = cardDetalhe('Previsão até o fim do ciclo', `Pela média dos últimos ${ultimos.length} dias`, `
     <div class="lista-dados">
@@ -791,17 +815,15 @@ function detalheVercel(l) {
   const servicos = c.servicos.map(sv => `
     <tr class="no-hover">
       <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
-      <td>${escapeHtml(usoDoServico(sv))}</td>
-      <td class="valor-dinheiro">${usd(sv.consumo)}</td>
+      <td>${escapeHtml(usoDoServico(sv))} ${variacao(sv.uso, sv.uso_antes, sv.uso_antes === undefined ? '' : `Antes: ${usoDoServico({ ...sv, uso: sv.uso_antes })}`)}</td>
+      <td class="valor-dinheiro">${usd(sv.consumo)} ${variacao(sv.consumo, sv.consumo_antes, sv.consumo_antes === undefined ? '' : `Antes: ${usd(sv.consumo_antes)}`)}</td>
       <td class="valor-dinheiro">${usd(sv.cobrado)}</td>
-      <td>${c.consumo ? Math.round((sv.consumo / c.consumo) * 100) : 0}%</td>
     </tr>`);
   const projetos = c.projetos.map(p => `
     <tr class="no-hover">
       <td class="cell-strong">${escapeHtml(p.projeto)}</td>
-      <td>${p.minutos_build ? `${horas(p.minutos_build)} h de CPU` : '—'}</td>
-      <td class="valor-dinheiro">${usd(p.consumo)}</td>
-      <td>${c.consumo ? Math.round((p.consumo / c.consumo) * 100) : 0}%</td>
+      <td>${p.minutos_build ? `${horas(p.minutos_build)} h de CPU` : '—'} ${variacao(p.minutos_build, p.minutos_build_antes, p.minutos_build_antes === undefined ? '' : `Antes: ${horas(p.minutos_build_antes)} h de CPU`)}</td>
+      <td class="valor-dinheiro">${usd(p.consumo)} ${variacao(p.consumo, p.consumo_antes, p.consumo_antes === undefined ? '' : `Antes: ${usd(p.consumo_antes)}`)}</td>
     </tr>`);
 
   return `
@@ -809,25 +831,25 @@ function detalheVercel(l) {
       ${fatura}
       <div class="custo-detalhe-lado">${cardDiagnostico(saude, resumo, dicas)}${previsao}</div>
     </section>
-    ${cardDetalhe('Origem do custo', '',
-      tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado', 'Parte'], servicos))}
-    ${cardDetalhe('Por projeto', 'Quanto cada site consumiu neste ciclo', tabelaDetalhe(['Projeto', 'Build', 'Consumo', 'Parte'], projetos))}
+    ${cardDetalhe('Origem do custo', c.anterior ? `Variação sobre os mesmos ${c.anterior.dias} dias do ciclo anterior` : '',
+      tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], servicos))}
+    ${cardDetalhe('Por projeto', c.anterior ? `Quanto cada site consumiu neste ciclo, comparado aos mesmos ${c.anterior.dias} dias do ciclo anterior` : 'Quanto cada site consumiu neste ciclo', tabelaDetalhe(['Projeto', 'Build', 'Consumo'], projetos))}
     ${historicoDoItem(l)}`;
 }
 
 function detalheSupabase(l) {
   const valor = l.meses?.[mesAtual()] || 0;
+  const antes = l.meses?.[mesPassado()];
   const gratis = valor === 0;
   const plano = cardDetalhe('Assinatura', escapeHtml(l.detalhe || ''), `
     <div class="lista-dados">
       ${linhaDado('Plano', gratis ? 'Free (gratuito)' : escapeHtml(l.detalhe || 'Pago'))}
-      ${linhaDado('Valor por mês', comReais(valor))}
+      ${linhaDado('Valor por mês', `${comReais(valor)} ${variacao(valor, antes, antes ? `${nomeDoMes(mesPassado())}: ${usd(antes)}` : '')}`)}
       ${linhaDado('Banco de dados', gratis ? 'até 500 MB' : 'até 8 GB inclusos')}
       ${linhaDado('Arquivos (Storage)', gratis ? 'até 1 GB' : 'até 100 GB inclusos')}
       ${linhaDado('Usuários ativos por mês', gratis ? 'até 50 mil' : 'até 100 mil inclusos')}
       ${linhaDado('Backup automático', gratis ? 'Não tem' : 'Diário, 7 dias')}
-    </div>
-    <p class="custo-nota">A Supabase não libera a fatura por API: o valor vem do plano. Ao mudar de plano, avise para atualizar aqui.</p>`);
+    </div>`);
   const diag = gratis
     ? cardDiagnostico('saudavel', 'Custo zero. O plano gratuito atende enquanto o banco ficar abaixo de 500 MB e os arquivos abaixo de 1 GB. O ponto fraco é não ter <strong>backup automático</strong>: se algo for apagado por engano, não há como voltar.',
       ['Acompanhar o tamanho em <strong>Supabase → Settings → Usage</strong>; perto de 80% do limite, é hora do Pro (US$ 25/mês).', 'Antes de ter clientes pagantes, considerar o Pro só pelo backup diário.'])
@@ -840,21 +862,40 @@ function detalheAws(l) {
   const hoje = new Date();
   const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
   const previsto = hoje.getDate() > 1 ? (atual / (hoje.getDate() - 1)) * diasNoMes : atual;
-  const servicos = (l.servicos || []).slice().sort((a, b) => b.mes.localeCompare(a.mes) || b.valor - a.valor).map(sv => `
-    <tr class="no-hover"><td>${escapeHtml(nomeDoMes(sv.mes))}</td><td class="cell-strong">${escapeHtml(sv.servico)}</td><td class="valor-dinheiro">${usd(sv.valor)}</td></tr>`);
+  // O mes corrente esta pela metade; a comparacao usa o mes fechado anterior
+  // na mesma fracao de dias, senao a queda apareceria sempre.
+  const fechadoAntes = l.meses?.[mesPassado()];
+  const fracao = hoje.getDate() > 1 ? (hoje.getDate() - 1) / diasNoMes : 1;
+  const mesmoTrechoAntes = fechadoAntes === undefined ? undefined : fechadoAntes * fracao;
+  const baseAws = fechadoAntes
+    ? `Mesma fração de dias de ${nomeDoMes(mesPassado())}: ${usd(mesmoTrechoAntes)}`
+    : '';
+  // Variacao de cada servico contra o mesmo servico no mes anterior.
+  const porMesServico = {};
+  (l.servicos || []).forEach(sv => { porMesServico[`${sv.mes}|${sv.servico}`] = sv.valor; });
+  const mesAnteriorDe = mes => {
+    const i = MESES.indexOf(mes);
+    return i > 0 ? MESES[i - 1] : null;
+  };
+  const servicos = (l.servicos || []).slice().sort((a, b) => b.mes.localeCompare(a.mes) || b.valor - a.valor).map(sv => {
+    const mesAntes = mesAnteriorDe(sv.mes);
+    const valorAntes = mesAntes ? (porMesServico[`${mesAntes}|${sv.servico}`] || 0) : undefined;
+    const base = mesAntes ? `${nomeDoMes(mesAntes)}: ${usd(valorAntes)}` : '';
+    return `
+    <tr class="no-hover"><td>${escapeHtml(nomeDoMes(sv.mes))}</td><td class="cell-strong">${escapeHtml(sv.servico)}</td><td class="valor-dinheiro">${usd(sv.valor)} ${variacao(sv.valor, valorAntes, base)}</td></tr>`;
+  });
   const resumo = cardDetalhe('Fatura do mês', escapeHtml(nomeDoMes(mesAtual())), `
     <div class="lista-dados">
       ${linhaDado('Assinatura', 'Não tem (paga só o que usa)')}
-      ${linhaDado('Consumo no mês', comReais(atual))}
+      ${linhaDado('Consumo no mês', `${comReais(atual)} ${variacao(atual, mesmoTrechoAntes, baseAws)}`)}
       ${linhaDado('Previsão para o mês', comReais(previsto))}
       ${linhaDado('Preço do e-mail (SES)', 'US$ 0,10 a cada mil e-mails')}
-    </div>
-    <p class="custo-nota">Fatura da conta AWS inteira (Cost Explorer), atualizada uma vez por dia.</p>`);
+    </div>`);
   const diag = cardDiagnostico(previsto < 5 ? 'saudavel' : (previsto < 20 ? 'atencao' : 'alto'),
     previsto < 5
       ? 'Custo baixo e proporcional ao uso: a Amazon cobra por e-mail enviado, sem mensalidade. Mesmo 10 mil e-mails num mês custam cerca de US$ 1.'
       : 'O consumo subiu mais que o normal para e-mails. Veja em "Origem do custo" qual serviço puxou o valor.',
     previsto < 5 ? [] : ['Conferir em E-mails quantos disparos saíram no mês.', 'Verificar se algum serviço da AWS ficou ligado sem uso.']);
   return `<section class="custo-detalhe">${resumo}<div class="custo-detalhe-lado">${diag}</div></section>
-    ${cardDetalhe('Origem do custo', '', tabelaDetalhe(['Mês', 'Serviço', 'Valor'], servicos, 'Nenhuma cobrança da AWS ainda'))}`;
+    ${cardDetalhe('Origem do custo', 'Variação de cada serviço sobre o mês anterior', tabelaDetalhe(['Mês', 'Serviço', 'Valor'], servicos, 'Nenhuma cobrança da AWS ainda'))}`;
 }

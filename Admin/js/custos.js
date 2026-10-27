@@ -54,8 +54,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderGraficoMeses();
   });
 
+  // Mesmo filtro do Dashboard, abrindo em "Este mês".
+  filtroDePeriodo(PERIODO, aplicarPeriodo);
+  document.getElementById('btn-periodo')?.classList.toggle('is-ativo', Boolean(PERIODO.de || PERIODO.ate));
+
   await carregar();
 });
+
+/* ---------------------------------------------------------- Período
+
+   O recorte vale para os números do topo, a rosca e as abas Custos atuais e
+   Categorias. "Histórico" e o gráfico de 12 meses continuam retrospectivos:
+   eles existem justamente para olhar além do período escolhido. */
+
+const HOJE_ABERTURA = new Date();
+let PERIODO = {
+  de: new Date(HOJE_ABERTURA.getFullYear(), HOJE_ABERTURA.getMonth(), 1),
+  ate: new Date(HOJE_ABERTURA.getFullYear(), HOJE_ABERTURA.getMonth(), HOJE_ABERTURA.getDate(), 23, 59, 59, 999)
+};
+
+/** Valor de cada custo no período, já rateado por dia (Financas, utils do Admin). */
+let NO_PERIODO = {};
+/** O mesmo rateio, só do consumo que passou do crédito do plano. */
+let POTENCIAL_PERIODO = {};
+
+function aplicarPeriodo() {
+  document.getElementById('periodo-rotulo').textContent = rotuloDePeriodo(PERIODO);
+  document.getElementById('btn-periodo').classList.toggle('is-ativo', Boolean(PERIODO.de || PERIODO.ate));
+  renderTudo();
+}
+
+/** Começo e fim do período em datas de verdade. */
+function intervalo() {
+  const agora = new Date();
+  const ate = PERIODO.ate || new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+  if (PERIODO.de) return { de: PERIODO.de, ate };
+  const primeiro = MESES[0] ? new Date(`${MESES[0]}-01T00:00:00`) : new Date(agora.getFullYear(), agora.getMonth(), 1);
+  return { de: primeiro, ate };
+}
+
+/** O período imediatamente anterior, do mesmo tamanho, para a comparação. */
+function intervaloAnterior() {
+  const { de, ate } = intervalo();
+  const dias = Math.max(1, Math.round((ate - de) / 86400000) + 1);
+  const fim = new Date(de.getTime() - 1);
+  return { de: new Date(fim.getTime() - dias * 86400000 + 1), ate: fim };
+}
+
+const formatarDiaCurto = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+
+const idDoCusto = l => (l.manual ? `manual:${l.id}` : `integracao:${l.fonte || l.nome}`);
+const valorNoPeriodo = l => NO_PERIODO[idDoCusto(l)]?.valor || 0;
+const originalNoPeriodo = l => NO_PERIODO[idDoCusto(l)]?.original || 0;
 
 /* ------------------------------------------------------------ Dados */
 
@@ -193,6 +243,15 @@ function totalNoMes(linhas, mes) {
 
 function renderTudo() {
   const linhas = linhasDeCusto();
+  // Rateio por dia — a mesma conta do Dashboard, para as duas telas não
+  // mostrarem números diferentes do mesmo período.
+  const { de, ate } = intervalo();
+  // O potencial sai do mesmo rateio, só que sobre `meses_extra` — por isso a
+  // volta extra pelo semear antes de calcular o custo de verdade.
+  Financas.semear({ integracoes: INTEGRACOES.map(i => ({ ...i, meses: i.meses_extra || {} })), custos: [], cotacoes: COTACAO });
+  POTENCIAL_PERIODO = Financas.custosNoIntervaloPorItem(de, ate);
+  Financas.semear({ integracoes: INTEGRACOES, custos: MANUAIS, cotacoes: COTACAO });
+  NO_PERIODO = Financas.custosNoIntervaloPorItem(de, ate);
   renderKpis(linhas);
   montarSeries(linhas);
   renderGraficoMeses();
@@ -201,8 +260,9 @@ function renderTudo() {
 }
 
 function renderKpis(linhas) {
-  const atual = totalNoMes(linhas, mesAtual());
-  const anterior = totalNoMes(linhas, mesPassado());
+  const atual = linhas.reduce((s, l) => s + valorNoPeriodo(l), 0);
+  const antes = intervaloAnterior();
+  const anterior = Financas.somar(Financas.custosNoIntervalo(antes.de, antes.ate));
   // Média só dos meses que tiveram custo (antes disso as contas não existiam).
   const comCusto = MESES.map(m => totalNoMes(linhas, m)).filter(v => v > 0);
   const media = comCusto.length ? comCusto.reduce((s, v) => s + v, 0) / comCusto.length : 0;
@@ -214,7 +274,8 @@ function renderKpis(linhas) {
   // Aqui é despesa, não receita: gastar mais é ruim. A variação usa o mesmo
   // helper do detalhe — alta em vermelho, queda em verde — para a página não
   // dizer uma coisa no topo e outra ao abrir o custo.
-  const varMes = variacao(atual, anterior, anterior ? `${nomeDoMes(mesPassado())}: ${formatCurrency(anterior)}` : '', 'is-kpi');
+  const rotuloAnterior = `${formatarDiaCurto(antes.de)} a ${formatarDiaCurto(antes.ate)}`;
+  const varMes = variacao(atual, anterior, anterior ? `${rotuloAnterior}: ${formatCurrency(anterior)}` : '', 'is-kpi');
   const tile = (label, value, sub, extra = '') => `
     <div class="kpi">
       <p class="kpi-label">${escapeHtml(label)}</p>
@@ -223,8 +284,8 @@ function renderKpis(linhas) {
     </div>`;
 
   document.getElementById('kpi-grid').innerHTML = [
-    tile('Custo deste mês', formatCurrency(atual), `P.P: ${formatCurrency(anterior)}`, varMes),
-    tile('Mês passado', formatCurrency(anterior), nomeDoMes(mesPassado())),
+    tile('Custo no período', formatCurrency(atual), rotuloDePeriodo(PERIODO), varMes),
+    tile('Período anterior', formatCurrency(anterior), rotuloAnterior),
     tile('Média mensal', formatCurrency(media), cotacao)
   ].join('');
 }
@@ -324,8 +385,11 @@ function potencialNoMes(linhas, mes) {
   return linhas.reduce((s, l) => s + potencialDoItem(l, mes), 0);
 }
 
-function potencialDaCategoria(linhas, categoria, mes) {
-  return linhas.filter(l => l.categoria === categoria).reduce((s, l) => s + potencialDoItem(l, mes), 0);
+/** Potencial no período escolhido (a aba Histórico usa o do mês fechado). */
+const potencialNoPeriodo = l => POTENCIAL_PERIODO[idDoCusto(l)]?.valor || 0;
+
+function potencialDaCategoria(linhas, categoria) {
+  return linhas.filter(l => l.categoria === categoria).reduce((s, l) => s + potencialNoPeriodo(l), 0);
 }
 
 const dinheiroOuTraco = v => (v > 0.005 ? formatCurrency(v) : '<span class="cell-muted">—</span>');
@@ -353,9 +417,9 @@ function abrirCategoria(categoria, linhas) {
   abrirPainelDeDetalhe(categoria || 'Sem categoria');
 
   const cartoes = itens.map(l => {
-    const total = emReais(l.meses?.[mes] || 0, l.moeda);
+    const total = valorNoPeriodo(l);
     const servicos = servicosDoItem(l, mes);
-    const pot = potencialDoItem(l, mes);
+    const pot = potencialNoPeriodo(l);
 
     const linhasTabela = servicos.map(sv => `
       <tr class="no-hover">
@@ -367,7 +431,7 @@ function abrirCategoria(categoria, linhas) {
 
     const resumo = `
       <div class="lista-dados">
-        ${linhaDado('Custo no mês', formatCurrency(total))}
+        ${linhaDado('Custo no período', formatCurrency(total))}
         ${l.assinatura_mensal ? linhaDado('Assinatura do plano', `${formatarMoeda(l.assinatura_mensal, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emReais(l.assinatura_mensal, l.moeda))}</span>`) : ''}
         ${linhaDado('Potencial de redução', dinheiroOuTraco(pot))}
       </div>`;
@@ -388,10 +452,10 @@ function abrirCategoria(categoria, linhas) {
   window.scrollTo(0, 0);
 }
 
-function porCategoria(linhas, mes) {
+function porCategoria(linhas) {
   const mapa = new Map();
   linhas.forEach(l => {
-    const v = emReais(l.meses?.[mes] || 0, l.moeda);
+    const v = valorNoPeriodo(l);
     if (!mapa.has(l.categoria)) mapa.set(l.categoria, { categoria: l.categoria, total: 0, itens: 0 });
     const c = mapa.get(l.categoria);
     c.total += v;
@@ -402,11 +466,13 @@ function porCategoria(linhas, mes) {
 
 function renderGraficoCategorias(linhas) {
   const host = document.getElementById('grafico-categorias');
-  const fatias = porCategoria(linhas, mesAtual()).filter(c => c.total > 0);
+  const rotulo = document.getElementById('rosca-periodo');
+  if (rotulo) rotulo.textContent = rotuloDePeriodo(PERIODO);
+  const fatias = porCategoria(linhas).filter(c => c.total > 0);
   const total = fatias.reduce((s, f) => s + f.total, 0);
 
   if (!total) {
-    host.innerHTML = '<div class="empty-state"><strong>Nenhum custo neste mês</strong><p>Os valores aparecem assim que houver cobrança.</p></div>';
+    host.innerHTML = '<div class="empty-state"><strong>Nenhum custo no período</strong><p>Os valores aparecem assim que houver cobrança.</p></div>';
     return;
   }
 
@@ -457,15 +523,15 @@ function renderTabela() {
   const casa = texto => !termo || String(texto || '').toLowerCase().includes(termo);
 
   if (ABA === 'categorias') {
-    thead.innerHTML = '<tr><th>Categoria</th><th class="col-numero">Itens</th><th>Custo do mês</th><th>Potencial de redução</th></tr>';
-    const cats = porCategoria(linhas, mesAtual()).filter(c => casa(c.categoria));
+    thead.innerHTML = '<tr><th>Categoria</th><th class="col-numero">Itens</th><th>Custo no período</th><th>Potencial de redução</th></tr>';
+    const cats = porCategoria(linhas).filter(c => casa(c.categoria));
     if (!cats.length) return renderEmpty(tbody, 4, 'Nenhuma categoria', 'Nada encontrado para essa busca.');
     tbody.innerHTML = cats.map((c, i) => `
       <tr data-categoria="${i}">
         <td class="cell-strong">${escapeHtml(c.categoria || 'Sem categoria')}</td>
         <td class="col-numero">${formatNumber(c.itens)}</td>
         <td class="valor-dinheiro">${formatCurrency(c.total)}</td>
-        <td class="valor-dinheiro">${dinheiroOuTraco(potencialDaCategoria(linhas, c.categoria, mesAtual()))}</td>
+        <td class="valor-dinheiro">${dinheiroOuTraco(potencialDaCategoria(linhas, c.categoria))}</td>
       </tr>`).join('');
     // Clicar destrincha: dentro da categoria, em que cada serviço gastou.
     tbody.querySelectorAll('[data-categoria]').forEach(tr => tr.addEventListener('click', () => {
@@ -503,9 +569,9 @@ function renderTabela() {
 
   tbody.innerHTML = lista.map((l, i) => {
     const [rotulo, classe] = STATUS[l.status] || STATUS.ativo;
-    // Integração mostra o acumulado do mês; manual, o valor cadastrado.
-    const original = l.manual ? l.valor : (l.meses?.[mesAtual()] || 0);
-    const reais = emReais(original, l.moeda);
+    // O que esse custo representou no período escolhido, rateado por dia.
+    const original = originalNoPeriodo(l);
+    const reais = valorNoPeriodo(l);
     const semCotacao = l.moeda !== 'BRL' && !COTACAO[l.moeda];
     return `
       <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>

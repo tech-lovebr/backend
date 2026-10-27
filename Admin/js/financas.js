@@ -55,6 +55,18 @@ const Financas = (() => {
     return BASE;
   }
 
+  /** Para a página que já carregou integrações e custos (Settings › Custos)
+      não buscar tudo de novo só para usar a conta de rateio daqui. */
+  function semear({ integracoes, custos, cotacoes }) {
+    BASE = {
+      integracoes: (integracoes || []).filter(i => i.status === 'ativo'),
+      custos: custos || [],
+      cotacoes: { BRL: 1, ...(cotacoes || {}) }
+    };
+    CACHE_DIA.clear();
+    return BASE;
+  }
+
   const chaveMes = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 
   function emReais(valor, moeda) {
@@ -70,26 +82,38 @@ const Financas = (() => {
     return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
   }
 
-  /** Custo de um dia, em reais, separado por empresa. */
+  /**
+   * Custo de um dia, em reais, item por item. A chave é única por custo
+   * (`integracao:vercel`, `manual:<id>`) porque duas linhas podem ter a
+   * mesma empresa; o nome vem junto para quem agrupa por empresa.
+   */
   function custoDoDia(d) {
     const chave = d.toDateString();
     if (CACHE_DIA.has(chave)) return CACHE_DIA.get(chave);
     const hoje = new Date();
     const itens = {};
+    // Guarda o valor na moeda do custo junto do convertido: a tabela mostra
+    // "US$ 59,42 ≈ R$ 315,92" e não dá para reconverter sem perder centavos.
+    const somar1 = (id, nome, moeda, original) => {
+      if (!original) return;
+      if (!itens[id]) itens[id] = { id, nome, moeda, valor: 0, original: 0 };
+      itens[id].valor += emReais(original, moeda);
+      itens[id].original += original;
+    };
     if (d <= hoje) {
       const mes = chaveMes(d);
       const dias = diasDoRateio(d);
       BASE.integracoes.forEach(i => {
-        const v = emReais(i.meses?.[mes] || 0, i.moeda) / dias;
-        if (v) itens[i.nome] = (itens[i.nome] || 0) + v;
+        somar1(`integracao:${i.fonte || i.nome}`, i.nome, i.moeda, (Number(i.meses?.[mes]) || 0) / dias);
       });
       const iso = `${mes}-${String(d.getDate()).padStart(2, '0')}`;
       BASE.custos.forEach(c => {
         const nome = c.empresa || c.nome;
+        const valor = Number(c.valor) || 0;
         if (c.tipo === 'unico') {
-          if (c.data === iso) itens[nome] = (itens[nome] || 0) + emReais(c.valor, c.moeda);
+          if (c.data === iso) somar1(`manual:${c.id}`, nome, c.moeda, valor);
         } else if (String(c.data || '').slice(0, 7) <= mes) {
-          itens[nome] = (itens[nome] || 0) + emReais(c.valor, c.moeda) / dias;
+          somar1(`manual:${c.id}`, nome, c.moeda, valor / dias);
         }
       });
     }
@@ -97,16 +121,38 @@ const Financas = (() => {
     return itens;
   }
 
-  /** Custo entre dois instantes (frações de dia contam proporcionalmente). */
-  function custosNoIntervalo(de, ate) {
-    const total = {};
+  /** Soma dia a dia entre dois instantes; frações de dia contam proporcionalmente. */
+  function rateioNoIntervalo(de, ate, acumular) {
     let d = new Date(de.getFullYear(), de.getMonth(), de.getDate());
     while (d <= ate) {
       const fimDia = new Date(d.getTime() + DIA_MS);
       const parte = (Math.min(fimDia, ate) - Math.max(d, de)) / DIA_MS;
-      if (parte > 0) Object.entries(custoDoDia(d)).forEach(([k, v]) => { total[k] = (total[k] || 0) + v * parte; });
+      if (parte > 0) Object.values(custoDoDia(d)).forEach(item => acumular(item, parte));
       d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
     }
+  }
+
+  /** Custo entre dois instantes, somado por empresa (para a rosca e o total). */
+  function custosNoIntervalo(de, ate) {
+    const total = {};
+    rateioNoIntervalo(de, ate, (item, parte) => {
+      total[item.nome] = (total[item.nome] || 0) + item.valor * parte;
+    });
+    return total;
+  }
+
+  /**
+   * O mesmo, mas uma entrada por custo, com o valor na moeda original ao
+   * lado do convertido — é o que as tabelas precisam.
+   * @returns {Record<string, { id: string, nome: string, moeda: string, valor: number, original: number }>}
+   */
+  function custosNoIntervaloPorItem(de, ate) {
+    const total = {};
+    rateioNoIntervalo(de, ate, (item, parte) => {
+      if (!total[item.id]) total[item.id] = { id: item.id, nome: item.nome, moeda: item.moeda, valor: 0, original: 0 };
+      total[item.id].valor += item.valor * parte;
+      total[item.id].original += item.original * parte;
+    });
     return total;
   }
 
@@ -243,5 +289,8 @@ const Financas = (() => {
     });
   }
 
-  return { carregarCustos, custoDoDia, custosNoIntervalo, somar, fatiasDoTempo, escalaBonita, chips, desenharGrafico };
+  return {
+    carregarCustos, semear, custoDoDia, custosNoIntervalo, custosNoIntervaloPorItem,
+    somar, fatiasDoTempo, escalaBonita, chips, desenharGrafico
+  };
 })();

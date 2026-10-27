@@ -14335,6 +14335,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('touchend', soltar);
     document.addEventListener('touchcancel', soltar);
 
+    // ---------- Alças de redimensionar/conector com o dedo ----------
+    // Mesmo truque do arraste de mesas e itens acima: as alças (cantos da
+    // caixa de seleção e pontas de linha/conector) só tinham mousedown —
+    // no celular, sem isso, só o menuzinho de baixo (Editar/Girar/Excluir)
+    // respondia ao toque; arrastar uma alça com o dedo não fazia nada.
+    let toqueAlca = /** @type {Element|null} */ (null);
+    canvas.addEventListener('touchstart', (e) => {
+      if (!noCelular.matches || e.touches.length > 1) return;
+      const alvo = e.target instanceof Element ? e.target.closest('.floorplan-alca') : null;
+      if (!alvo) return;
+      e.preventDefault();
+      toqueAlca = alvo;
+      mouse('mousedown', e.touches[0], alvo);
+    }, { passive: false });
+    document.addEventListener('touchmove', (e) => {
+      if (!toqueAlca) return;
+      e.preventDefault();
+      mouse('mousemove', e.touches[0], document);
+    }, { passive: false });
+    const soltarAlca = (/** @type {TouchEvent} */ e) => {
+      if (!toqueAlca) return;
+      toqueAlca = null;
+      mouse('mouseup', e.changedTouches[0], document);
+    };
+    document.addEventListener('touchend', soltarAlca);
+    document.addEventListener('touchcancel', soltarAlca);
+
     // ---------- Tela da mesa ----------
     const tela = document.createElement('div');
     tela.className = 'mesa-celular';

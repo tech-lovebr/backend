@@ -13061,7 +13061,10 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #tab-edit-site .builder-wrap:not(#love-h-a) { display: flex !important; flex-direction: column; border: 0 !important; border-radius: 0 !important; background: transparent !important; margin: 0 -16px; width: calc(100% + 32px); }
   html body #tab-edit-site .builder-device-toggle:not(#love-h-a),
   html body #tab-edit-site .builder-toolbar-divider:not(#love-h-a) { display: none !important; }
-  html body #tab-edit-site .builder-wrap > .builder-toolbar:not(#love-h-a) { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 8px !important; height: auto !important; min-height: 56px; padding: 6px 16px !important; border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important; }
+  /* Mesmo "padding" vertical de Informações/Co-anfitriões (0 em cima, 12px
+     embaixo) — tinha 6px simétrico, deixando os botões (Salvar, seta de
+     redirecionar) mais baixos que os de lá. */
+  html body #tab-edit-site .builder-wrap > .builder-toolbar:not(#love-h-a) { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 8px !important; height: auto !important; min-height: 56px; padding: 0 16px 12px !important; border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important; }
   html body #tab-edit-site .builder-toolbar-left:not(#love-h-a) { flex: 1 1 auto; min-width: 0; }
   html body #tab-edit-site .builder-toolbar-right:not(#love-h-a) { display: flex !important; align-items: center; gap: 6px; flex: 0 0 auto; margin: 0 !important; }
   html body #tab-edit-site .builder-toolbar-right .builder-tool-btn:not(#love-h-a) { width: 40px; height: 40px; }
@@ -13116,6 +13119,12 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
      pra direita. A seta do dropdown (fundo da direita) continua do mesmo
      jeito. */
   html body #tab-edit-site .builder-page-name:not(#love-h-a) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 0; }
+  /* Aparência também precisa entrar sem a animação da aba (fadeInTab, que
+     começa com translateY(6px) e só assenta depois de uns 300ms) — Informações
+     e Co-anfitriões já tinham essa regra, só faltava aqui. Sem isso, o
+     cabeçalho "pulava" 6px pra baixo toda vez que a pessoa entrava em
+     Aparência, parecendo desalinhado de Informações/Co-anfitriões. */
+  html body #tab-edit-site:has(#site-builder-root:not([style*="none"])):not(#love-h-a) { animation: none !important; transform: none !important; }
 }
 
 /* Celular: Convite digital › Informações — prévia na tela toda e o formulário

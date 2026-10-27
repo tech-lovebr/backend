@@ -950,6 +950,42 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') Busca.fechar();
 });
 
+/**
+ * Botão de atualizar do cabeçalho: só o ícone, à direita do filtro de
+ * período quando a página tem um. Gira enquanto `recarregar` não termina e
+ * ignora cliques nesse meio-tempo, para dois cliques seguidos não dispararem
+ * duas cargas.
+ * @param {() => Promise<any>} recarregar
+ * @param {{ aviso?: string, rotulo?: string }} [opcoes]
+ */
+function botaoAtualizar(recarregar, { aviso = '', rotulo = 'Atualizar' } = {}) {
+  const host = document.getElementById('header-actions');
+  if (!host) return null;
+
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'btn btn-ghost btn-atualizar';
+  botao.title = rotulo;
+  botao.setAttribute('aria-label', rotulo);
+  botao.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>';
+
+  const filtro = host.querySelector('.filtro-wrap');
+  if (filtro) filtro.after(botao); else host.prepend(botao);
+
+  botao.addEventListener('click', async () => {
+    if (botao.classList.contains('is-girando')) return;
+    botao.classList.add('is-girando');
+    try {
+      await recarregar();
+      if (aviso) toast(aviso);
+    } finally {
+      botao.classList.remove('is-girando');
+    }
+  });
+
+  return botao;
+}
+
 /** Preenche o campo de busca da página a partir do ?q= da URL. */
 function aplicarBuscaDaUrl(input) {
   const q = new URLSearchParams(location.search).get('q');

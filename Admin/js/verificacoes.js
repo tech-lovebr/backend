@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filtro-status').addEventListener('change', render);
   document.getElementById('filtro-tipo').addEventListener('change', render);
 
+  // O mesmo botão do Dashboard: relê os envios e redesenha a lista.
+  botaoAtualizar(carregar, { aviso: 'Verificações atualizadas.', rotulo: 'Atualizar as verificações' });
+
   await carregar();
 });
 

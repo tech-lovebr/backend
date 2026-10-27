@@ -93,26 +93,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   await carregarDados();
 });
 
-/* Atualizar: só o ícone, à direita do filtro de período. Recarrega os
-   números e a lista de contas mantendo o período escolhido. */
+/* Atualizar: o botão é o mesmo das outras telas (botaoAtualizar, utils.js).
+   Recarrega os números e a lista de contas mantendo o período escolhido. */
 function montarBotaoAtualizar() {
-  const host = document.getElementById('header-actions');
-  if (!host) return;
-  const botao = document.createElement('button');
-  botao.type = 'button';
-  botao.className = 'btn btn-ghost btn-atualizar';
-  botao.title = 'Atualizar';
-  botao.setAttribute('aria-label', 'Atualizar o dashboard');
-  botao.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"/><path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/></svg>';
-  const filtro = host.querySelector('.filtro-wrap');
-  if (filtro) filtro.after(botao); else host.prepend(botao);
-  botao.addEventListener('click', async () => {
-    if (botao.classList.contains('is-girando')) return;
-    botao.classList.add('is-girando');
-    await Promise.all([carregarDados(), carregarContas()]);
-    botao.classList.remove('is-girando');
-    toast('Dashboard atualizado.');
-  });
+  botaoAtualizar(() => Promise.all([carregarDados(), carregarContas()]),
+    { aviso: 'Dashboard atualizado.', rotulo: 'Atualizar o dashboard' });
 }
 
 async function carregarDados() {

@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setInterval(atualizarTickets, 30000);
   buscarEmails().then(n => { if (n) atualizarTickets(); });
 
+  // O mesmo botão do Dashboard: busca e-mails novos e redesenha a lista.
+  botaoAtualizar(atualizarTickets, { aviso: 'Chamados atualizados.', rotulo: 'Atualizar os chamados' });
+
   // Link direto para uma conversa: atendimento?id=<uuid>
   const id = new URLSearchParams(location.search).get('id');
   if (id && TICKETS.some(t => t.id === id)) abrirConversa(id);

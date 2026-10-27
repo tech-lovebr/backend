@@ -10240,13 +10240,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mesma cor para o convidado e seus acompanhantes (o grupo alterna,
         // não cada linha); o acompanhante aparece como subitem do convidado.
         row.className = `group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
+        // Avatar na cor da restrição alimentar (mesma lógica do assento no
+        // Mapa do evento); sem restrição, fica na cor neutra de sempre.
+        const corDaRestricaoDoAvatar = opcaoComCor(attendee.isPrimary ? guest.restricaoAlimentar : attendee.restricaoAlimentar);
+        const estiloDoAvatar = corDaRestricaoDoAvatar ? ` style="--cor-restricao:${corDaRestricaoDoAvatar.fundo || corDaRestricaoDoAvatar.cor}; --cor-restricao-borda:${corDaRestricaoDoAvatar.cor}"` : '';
         row.innerHTML = `
           <td>
             <div class="flex items-center gap-2 min-w-0">
               ${attendee.isPrimary ? `<input type="checkbox" class="gifts-select-all-check guest-select-check" data-guest-id="${escaparHtml(guest.id)}"${convidadosSelecionados.has(guest.id) ? ' checked' : ''} aria-label="Selecionar ${escaparHtml(guest.name || 'convidado')}">` : '<span class="guest-select-espaco" aria-hidden="true"></span>'}
               ${attendee.isPrimary ? '' : '<span class="guest-sub-conector" aria-hidden="true"></span>'}
               <span class="guest-tipo-badge ${attendee.isPrimary ? 'is-convidado' : 'is-acompanhante'}" title="${attendee.isPrimary ? 'Convidado' : 'Acompanhante'}">${attendee.isPrimary ? 'C' : 'A'}</span>
-              <span class="guest-trilho${trilho}" aria-hidden="true"><span class="guest-avatar-celular">${escaparHtml(iniciais.toUpperCase())}</span></span>
+              <span class="guest-trilho${trilho}" aria-hidden="true"><span class="guest-avatar-celular${corDaRestricaoDoAvatar ? ' tem-restricao' : ''}"${estiloDoAvatar}>${escaparHtml(iniciais.toUpperCase())}</span></span>
               <button type="button" class="guest-nome-btn font-semibold text-zinc-900 block truncate" title="Ver convidado">${nomeEmPartes}</button>
             </div>
           </td>
@@ -22645,11 +22649,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* Celular (até 768px, ou deitado): Convite digital › Informações com a prévia
- * em tela cheia; o botão flutuante "Editar informações" abre o formulário numa
- * gaveta de baixo para cima (mesmo jeito do "Adicionar elementos" da
- * Aparência). O desktop não muda. */
+ * em tela cheia; o botão flutuante "Editar informações" abre o formulário em
+ * página inteira (mesmo jeito de editar um convidado). O desktop não muda. */
 (function informacoesNoCelular() {
-  const XIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  const SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>';
   const LAPIS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.86 4.49a2.1 2.1 0 1 1 2.97 2.97L8.5 18.79 4.5 19.5l.71-4 11.65-11.01Z"/></svg>';
   function iniciar() {
     const form = document.getElementById('editor-form-column');
@@ -22659,24 +22662,20 @@ document.addEventListener('DOMContentLoaded', () => {
     fab.id = 'info-fab';
     fab.className = 'builder-fab info-fab';
     fab.innerHTML = `${LAPIS}<span>Editar informações</span>`;
-    const fundo = document.createElement('div');
-    fundo.className = 'builder-gaveta-fundo info-gaveta-fundo';
     const topo = document.createElement('div');
     topo.className = 'info-gaveta-cabeca';
-    topo.innerHTML = `<div class="builder-gaveta-alca" aria-hidden="true"></div>
-      <div class="builder-gaveta-topo"><h3 class="builder-gaveta-titulo">Informações</h3><button type="button" class="builder-gaveta-fechar" aria-label="Fechar">${XIS}</button></div>`;
+    topo.innerHTML = `<div class="builder-gaveta-topo">
+        <button type="button" class="builder-gaveta-fechar" aria-label="Voltar">${SETA}</button>
+        <h3 class="builder-gaveta-titulo">Informações</h3>
+        <span class="builder-gaveta-espaco" aria-hidden="true"></span>
+      </div>`;
     form.insertBefore(topo, form.firstChild);
-    document.body.append(fab, fundo);
-    const abrir = () => { document.body.classList.add('info-gaveta-aberta'); fundo.classList.add('is-aberta'); form.scrollTop = 0; };
-    const fechar = () => { document.body.classList.remove('info-gaveta-aberta'); fundo.classList.remove('is-aberta'); };
+    document.body.appendChild(fab);
+    const abrir = () => { document.body.classList.add('info-gaveta-aberta'); form.scrollTop = 0; };
+    const fechar = () => { document.body.classList.remove('info-gaveta-aberta'); };
     fab.addEventListener('click', abrir);
-    fundo.addEventListener('click', fechar);
     topo.querySelector('.builder-gaveta-fechar')?.addEventListener('click', fechar);
-    const alca = topo.querySelector('.builder-gaveta-alca');
-    let alcaY = 0;
-    alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
-    alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fechar(); });
-    // Trocar de menu fecha a gaveta.
+    // Trocar de menu fecha a página.
     document.addEventListener('click', (e) => { if (/** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular')) fechar(); }, true);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);

@@ -12198,7 +12198,7 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
      margem negativa de -1.25rem (pensada pra colar a barra embaixo da
      navbar padrão, que aqui está escondida): sem essa compensação, ela
      puxava a barra pra cima e cobria o cabeçalho. */
-  html body #tab-edit-site #submenu-celular:not([hidden]):not(#love-h-a) { top: 0 !important; margin-top: 0 !important; }
+  html body #tab-edit-site #submenu-celular:not([hidden]):not(#love-h-a) { top: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important; }
   html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
     flex: 1 0 auto; min-width: 33.333%; min-height: 46px; padding: 0 14px;
     background: #FFFFFF; border: 0; border-radius: 0; box-shadow: none;
@@ -12375,6 +12375,8 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
     background: #EBF4FF; color: #183b54; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0;
   }
   html body #tab-rsvp .guests-table .is-acompanhante-row .guest-avatar-celular:not(#love-h-a) { background: #F4F4F5; color: #71717A; }
+  /* Com restrição alimentar, o avatar fica na cor dela (igual ao assento no Mapa do evento). */
+  html body #tab-rsvp .guests-table .guest-avatar-celular.tem-restricao:not(#love-h-a) { background: var(--cor-restricao) !important; border: 1px solid var(--cor-restricao-borda); color: #18181B !important; }
   html body #tab-rsvp .guests-table button.guest-nome-btn:not(#love-h-a) {
     align-self: center; flex: 1 1 auto; min-width: 0; padding: 12px 0; text-align: left;
     font-family: Inter, sans-serif; font-size: 17px !important; font-weight: 400 !important; color: #18181B !important; text-decoration: none !important;
@@ -13104,21 +13106,25 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #tab-edit-site #classic-builder-preview:not(#love-h-a) { height: auto !important; max-height: none !important; overflow: visible !important; }
   html body #tab-edit-site #editor-live-preview-column:not(#love-h-a) { padding-bottom: calc(var(--bottom-bar-height-mobile, 76px) + 72px) !important; }
 
-  /* O formulário vira a gaveta. */
+  /* O formulário vira a página inteira (igual ao editar convidado): some
+     por completo até abrir, sem gaveta nem fundo escurecido por trás. */
   body:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column {
-    position: fixed !important; left: 0; right: 0; bottom: 0; top: auto; z-index: 61; width: auto !important; max-height: 82dvh;
+    display: none !important; position: fixed !important; left: 0; right: 0; top: 0; bottom: var(--bottom-bar-height-mobile, 76px); z-index: 61; width: auto !important; max-height: none;
     padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px)) !important; overflow-y: auto !important; overscroll-behavior: contain;
-    background: #FFFFFF; border-radius: 10px 10px 0 0; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
-    transform: translateY(105%); transition: transform .25s ease;
+    background: linear-gradient(180deg, #EEF1F3 0%, #F6F7F8 40%, #F6F7F8 100%); border-radius: 0; box-shadow: none;
   }
-  body.info-gaveta-aberta:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column { transform: translateY(0); }
-  body:has(#editor-form-data:not(.hidden)) .info-gaveta-cabeca { display: block; position: sticky; top: 0; z-index: 2; margin: 0 -16px 8px; background: #FFFFFF; }
+  /* Vence o "body.editor-split-mode #editor-form-column { display:none !important }" do desktop. */
+  body.info-gaveta-aberta:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column { display: block !important; }
+  body:has(#editor-form-data:not(.hidden)) .info-gaveta-cabeca { display: block; position: sticky; top: 0; z-index: 2; margin: 0 -16px 8px; background: #EEF1F3; }
+  body:has(#editor-form-data:not(.hidden)) .info-gaveta-cabeca .builder-gaveta-topo { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 4px; padding-top: calc(env(safe-area-inset-top, 0px) + 6px); }
+  body:has(#editor-form-data:not(.hidden)) .info-gaveta-cabeca .builder-gaveta-titulo { text-align: center; }
   body:has(#editor-form-data:not(.hidden)) #editor-form-data { padding-bottom: 8px !important; }
   html body #tab-edit-site #editor-form-data :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not(#love-h-a) { font-size: 16px !important; }
 
   .info-fab { display: none !important; }
   body:has(#tab-edit-site.active #editor-form-data:not(.hidden)):not(.info-gaveta-aberta):not(.menu-celular-aberto) .info-fab { display: inline-flex !important; }
-  body[data-theme="dark"]:has(#editor-form-data:not(.hidden)) :is(#tab-edit-site #editor-form-column, .info-gaveta-cabeca) { background: #1c1c1c !important; }
+  body[data-theme="dark"]:has(#editor-form-data:not(.hidden)) #tab-edit-site #editor-form-column { background: linear-gradient(180deg, #1A1A1A 0%, #141414 100%) !important; }
+  body[data-theme="dark"]:has(#editor-form-data:not(.hidden)) .info-gaveta-cabeca { background: #1A1A1A !important; }
 }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* A entrada da aba (fadeInTab, fill forwards) deixa um transform que prende

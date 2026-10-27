@@ -303,6 +303,91 @@ function curvaSuave(pontos) {
   return d;
 }
 
+/* ------------------------------------------- Potencial de redução
+
+   Não é palpite: é o consumo que passou do que o plano já inclui. Esse
+   pedaço da conta só existe por configuração (máquina de build grande,
+   builds sem fila, projeto que monta sem ter mudado) — mexendo nisso, ele
+   vai a zero sem a plataforma perder nada. Assinatura e consumo dentro do
+   crédito não entram: estão pagos de qualquer jeito.
+
+   Fonte que ainda não informa esse recorte devolve 0, e a tela mostra "—"
+   em vez de um número inventado. */
+
+function potencialDoItem(l, mes) {
+  if (l.manual) return 0;
+  const extra = l.meses_extra?.[mes];
+  return extra ? emReais(extra, l.moeda) : 0;
+}
+
+function potencialNoMes(linhas, mes) {
+  return linhas.reduce((s, l) => s + potencialDoItem(l, mes), 0);
+}
+
+function potencialDaCategoria(linhas, categoria, mes) {
+  return linhas.filter(l => l.categoria === categoria).reduce((s, l) => s + potencialDoItem(l, mes), 0);
+}
+
+const dinheiroOuTraco = v => (v > 0.005 ? formatCurrency(v) : '<span class="cell-muted">—</span>');
+
+/* ----------------------------------------- Destrinchado da categoria
+
+   Clicar numa categoria abre em que cada serviço gastou dentro dela, com o
+   nome que a própria fonte dá (Build CPU Minutes, CDN Requests…) e o quanto
+   foi consumido — é onde se enxerga que a conta do servidor é build, não
+   site no ar. */
+
+function servicosDoItem(l, mes) {
+  if (Array.isArray(l.meses_servicos?.[mes])) return l.meses_servicos[mes];
+  // AWS entrega um registro por mês e serviço.
+  if (Array.isArray(l.servicos) && l.servicos.length && l.servicos[0].mes !== undefined) {
+    return l.servicos.filter(sv => sv.mes === mes)
+      .map(sv => ({ servico: sv.servico, consumo: sv.valor, cobrado: sv.valor, uso: 0, unidade: '' }));
+  }
+  return [];
+}
+
+function abrirCategoria(categoria, linhas) {
+  const mes = mesAtual();
+  const itens = linhas.filter(l => l.categoria === categoria);
+  abrirPainelDeDetalhe(categoria || 'Sem categoria');
+
+  const cartoes = itens.map(l => {
+    const total = emReais(l.meses?.[mes] || 0, l.moeda);
+    const servicos = servicosDoItem(l, mes);
+    const pot = potencialDoItem(l, mes);
+
+    const linhasTabela = servicos.map(sv => `
+      <tr class="no-hover">
+        <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
+        <td>${escapeHtml(usoDoServico(sv))}</td>
+        <td class="valor-dinheiro">${formatarMoeda(sv.consumo, l.moeda)}</td>
+        <td class="valor-dinheiro">${sv.cobrado ? formatarMoeda(sv.cobrado, l.moeda) : '<span class="cell-muted">no plano</span>'}</td>
+      </tr>`);
+
+    const resumo = `
+      <div class="lista-dados">
+        ${linhaDado('Custo no mês', formatCurrency(total))}
+        ${l.assinatura_mensal ? linhaDado('Assinatura do plano', `${formatarMoeda(l.assinatura_mensal, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emReais(l.assinatura_mensal, l.moeda))}</span>`) : ''}
+        ${linhaDado('Potencial de redução', dinheiroOuTraco(pot))}
+      </div>`;
+
+    return cardDetalhe(nomeDoCusto(l), escapeHtml(l.detalhe || ''), `${resumo}
+      ${servicos.length
+        ? tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], linhasTabela)
+        : '<p class="custo-resumo">Esta fonte não detalha o consumo por serviço — o valor vem fechado.</p>'}`);
+  });
+
+  const visao = document.getElementById('visao-custos');
+  DIAGNOSTICO = null;
+  document.getElementById('acoes-detalhe')?.remove();
+  visao.innerHTML = cartoes.length
+    ? cartoes.join('')
+    : '<div class="card"><div class="card-body"><div class="empty-state"><strong>Nada nesta categoria</strong><p>Nenhum custo lançado aqui no mês.</p></div></div></div>';
+  visao.hidden = false;
+  window.scrollTo(0, 0);
+}
+
 function porCategoria(linhas, mes) {
   const mapa = new Map();
   linhas.forEach(l => {
@@ -372,31 +457,41 @@ function renderTabela() {
   const casa = texto => !termo || String(texto || '').toLowerCase().includes(termo);
 
   if (ABA === 'categorias') {
-    thead.innerHTML = '<tr><th>Categoria</th><th class="col-numero">Itens</th><th>Custo do mês</th><th>Participação</th></tr>';
+    thead.innerHTML = '<tr><th>Categoria</th><th class="col-numero">Itens</th><th>Custo do mês</th><th>Potencial de redução</th></tr>';
     const cats = porCategoria(linhas, mesAtual()).filter(c => casa(c.categoria));
-    const total = cats.reduce((s, c) => s + c.total, 0);
     if (!cats.length) return renderEmpty(tbody, 4, 'Nenhuma categoria', 'Nada encontrado para essa busca.');
-    tbody.innerHTML = cats.map(c => `
-      <tr class="no-hover">
-        <td class="cell-strong">${escapeHtml(c.categoria)}</td>
+    tbody.innerHTML = cats.map((c, i) => `
+      <tr data-categoria="${i}">
+        <td class="cell-strong">${escapeHtml(c.categoria || 'Sem categoria')}</td>
         <td class="col-numero">${formatNumber(c.itens)}</td>
         <td class="valor-dinheiro">${formatCurrency(c.total)}</td>
-        <td>${total ? Math.round((c.total / total) * 100) : 0}%</td>
+        <td class="valor-dinheiro">${dinheiroOuTraco(potencialDaCategoria(linhas, c.categoria, mesAtual()))}</td>
       </tr>`).join('');
+    // Clicar destrincha: dentro da categoria, em que cada serviço gastou.
+    tbody.querySelectorAll('[data-categoria]').forEach(tr => tr.addEventListener('click', () => {
+      abrirCategoria(cats[Number(tr.dataset.categoria)].categoria, linhas);
+    }));
     return;
   }
 
   if (ABA === 'historico') {
-    const categorias = [...new Set(linhas.map(l => l.categoria))];
-    thead.innerHTML = `<tr><th>Mês</th>${categorias.map(c => `<th>${escapeHtml(c)}</th>`).join('')}<th>Total</th></tr>`;
+    thead.innerHTML = '<tr><th>Mês</th><th>Custo total</th><th>Variação</th><th title="Quanto desse mês dava para não ter pago: o consumo além do que o plano já inclui">Potencial de redução</th></tr>';
     const meses = MESES.slice().reverse().filter(m => casa(nomeDoMes(m)));
-    if (!meses.length) return renderEmpty(tbody, categorias.length + 2, 'Nenhum mês', 'Nada encontrado para essa busca.');
-    tbody.innerHTML = meses.map(m => `
+    if (!meses.length) return renderEmpty(tbody, 4, 'Nenhum mês', 'Nada encontrado para essa busca.');
+    tbody.innerHTML = meses.map(m => {
+      const i = MESES.indexOf(m);
+      const total = totalNoMes(linhas, m);
+      const antes = i > 0 ? totalNoMes(linhas, MESES[i - 1]) : undefined;
+      const base = antes ? `${nomeDoMes(MESES[i - 1])}: ${formatCurrency(antes)}` : '';
+      const pot = potencialNoMes(linhas, m);
+      return `
       <tr class="no-hover">
         <td class="cell-strong">${escapeHtml(nomeDoMes(m))}</td>
-        ${categorias.map(c => `<td class="valor-dinheiro">${formatCurrency(totalNoMes(linhas.filter(l => l.categoria === c), m))}</td>`).join('')}
-        <td class="cell-strong valor-dinheiro">${formatCurrency(totalNoMes(linhas, m))}</td>
-      </tr>`).join('');
+        <td class="cell-strong valor-dinheiro">${formatCurrency(total)}</td>
+        <td>${variacao(total, antes, base) || '<span class="cell-muted">—</span>'}</td>
+        <td class="valor-dinheiro">${dinheiroOuTraco(pot)}${pot && total ? `<span class="cell-sub">${Math.round((pot / total) * 100)}% do mês</span>` : ''}</td>
+      </tr>`;
+    }).join('');
     return;
   }
 
@@ -581,7 +676,8 @@ function abrirFormulario() {
 
 const SECOES_PRINCIPAIS = ['#kpi-grid', '.custos-graficos', '#abas-custos', '.table-card'];
 
-function abrirDetalhe(l) {
+/** Esconde a tela de custos e põe o título com a seta de voltar. */
+function abrirPainelDeDetalhe(titulo) {
   SECOES_PRINCIPAIS.forEach(sel => { document.querySelector(sel).hidden = true; });
   const acoes = document.getElementById('header-actions');
   if (acoes) acoes.hidden = true;
@@ -592,9 +688,13 @@ function abrirDetalhe(l) {
       <a class="header-bar-voltar" href="#" title="Voltar" aria-label="Voltar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
       </a>
-      <h1>${escapeHtml(nomeDoCusto(l))}</h1>`;
+      <h1>${escapeHtml(titulo)}</h1>`;
     cabecalho.querySelector('.header-bar-voltar').addEventListener('click', e => { e.preventDefault(); fecharDetalhe(); });
   }
+}
+
+function abrirDetalhe(l) {
+  abrirPainelDeDetalhe(nomeDoCusto(l));
 
   const visao = document.getElementById('visao-custos');
   // Sem montador especifico (custo manual, ou fonte que o painel ainda nao

@@ -123,10 +123,28 @@ async function custoVercel(meses) {
     const ehAssinatura = l => l.servico === "Pro";
 
     // Mês do calendário: cobrado + assinatura rateada.
+    // Além do total, guarda o detalhe por serviço e quanto passou do crédito
+    // do plano — é o que o Admin abre ao clicar na categoria e o que ele
+    // chama de "potencial de redução" (o extra só existe por configuração).
+    const porMesServico = {};
+    const extraPorMes = mesesZerados(meses);
     linhas.forEach(l => {
       const mes = l.dia.slice(0, 7);
-      if (mes in porMes) porMes[mes] += ehAssinatura(l) ? l.consumo : l.cobrado;
+      if (!(mes in porMes)) return;
+      porMes[mes] += ehAssinatura(l) ? l.consumo : l.cobrado;
+      if (ehAssinatura(l)) return;
+      extraPorMes[mes] += l.cobrado;
+      if (!porMesServico[mes]) porMesServico[mes] = {};
+      const sv = porMesServico[mes][l.servico]
+        || (porMesServico[mes][l.servico] = { servico: l.servico, consumo: 0, cobrado: 0, uso: 0, unidade: l.unidade });
+      sv.consumo += l.consumo; sv.cobrado += l.cobrado; sv.uso += l.uso;
     });
+
+    // Lista ordenada por consumo, pronta para a tela.
+    const mesesServicos = Object.fromEntries(Object.entries(porMesServico).map(([mes, mapa]) => [
+      mes,
+      Object.values(mapa).filter(sv => sv.consumo > 0.0005 || sv.cobrado > 0.0005).sort((x, y) => y.consumo - x.consumo)
+    ]));
 
     // Ciclo de cobrança: começa todo mês no dia em que o plano começou.
     const hoje = new Date().toISOString().slice(0, 10);
@@ -220,7 +238,14 @@ async function custoVercel(meses) {
         ? { tipo: base.tipo, rotulo: base.rotulo, inicio: base.de, fim: base.ate, dias: diasDecorridos, consumo: anterior.consumo, extra: anterior.extra }
         : null
     };
-    return { ...base, moeda, status: "ativo", meses: porMes, detalhe: `Plano Pro + consumo além do crédito`, ciclo };
+    return {
+      ...base, moeda, status: "ativo", meses: porMes,
+      meses_servicos: mesesServicos,
+      meses_extra: extraPorMes,
+      assinatura_mensal: ASSINATURA_VERCEL_USD,
+      detalhe: `Plano Pro + consumo além do crédito`,
+      ciclo
+    };
   } catch (e) {
     return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
   }

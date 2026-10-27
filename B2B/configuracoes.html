@@ -32,7 +32,9 @@
       <main class="b2b-content">
         <div class="b2b-header-bar">
           <h2 class="text-xl font-bold text-zinc-900" id="settings-titulo-pagina">Suas informações</h2>
-          <!-- Salvar também no cabeçalho (só em Suas informações), botão claro. -->
+          <!-- Salvar também no cabeçalho, em Suas informações e Dados da empresa
+               (js/configuracoes.js troca o form="" conforme a aba ativa). Vira
+               "Salvar alterações" assim que algo é mexido no formulário da aba. -->
           <button type="submit" form="profile-form" class="btn-secondary builder-toolbar-btn header-btn-light settings-salvar-topo" id="settings-salvar-topo">Salvar</button>
         </div>
 
@@ -666,7 +668,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=63"></script>
-  <script src="js/configuracoes.js?v=70"></script>
+  <script src="js/configuracoes.js?v=71"></script>
   <script src="js/contas-bancarias.js?v=3"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>

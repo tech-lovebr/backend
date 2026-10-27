@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await carregarLiberacoes();
   initProfileForm();
   initCompanyForm();
+  initSalvarTopoSujo();
   initPasswordForm();
   initDesativarConta();
   initSecurityRows();
@@ -87,6 +88,16 @@ function initAccordionCards() {
 
 /* -------------------- Abas Perfil / Preferências -------------------- */
 
+// Abas que têm formulário próprio com o botão "Salvar" no cabeçalho —
+// as outras (Preferências, Privacidade, Dados bancários, URLs) salvam
+// sozinhas, sem esse botão.
+const SETTINGS_TABS_COM_SALVAR_TOPO = { perfil: 'profile-form', empresa: 'company-form' };
+
+function resetSalvarTopoLabel() {
+  const salvarTopo = document.getElementById('settings-salvar-topo');
+  if (salvarTopo) salvarTopo.textContent = 'Salvar';
+}
+
 function initSettingsTabs() {
   const wrap = document.getElementById('settings-tabs');
   if (!wrap) return;
@@ -95,20 +106,37 @@ function initSettingsTabs() {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
       // O título da página é o nome da aba escolhida no menu lateral.
       setText('settings-titulo-pagina', btn.dataset.titulo || btn.textContent.trim());
-      const salvarTopo = document.getElementById('settings-salvar-topo');
-      if (salvarTopo) salvarTopo.hidden = btn.dataset.settingsTab !== 'perfil';
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
         panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
       });
-      // Mesmo botão "Salvar alterações" pra Perfil e Minha Empresa — só
-      // muda qual formulário ele envia. Preferências salva sozinha.
-      const saveBtn = document.getElementById('profile-save-top-btn');
-      if (saveBtn) {
+      // Mesmo botão no cabeçalho pra Suas informações e Dados da empresa —
+      // só muda qual formulário ele envia. Volta a dizer "Salvar" (em vez
+      // de "Salvar alterações") a cada troca de aba, já que nada foi
+      // mexido ainda nessa aba.
+      const salvarTopo = document.getElementById('settings-salvar-topo');
+      if (salvarTopo) {
         const tab = btn.dataset.settingsTab;
-        saveBtn.hidden = tab === 'preferencias' || tab === 'urls';
-        saveBtn.setAttribute('form', tab === 'empresa' ? 'company-form' : 'profile-form');
+        const formDaAba = SETTINGS_TABS_COM_SALVAR_TOPO[tab];
+        salvarTopo.hidden = !formDaAba;
+        if (formDaAba) salvarTopo.setAttribute('form', formDaAba);
+        resetSalvarTopoLabel();
       }
     });
+  });
+}
+
+// Enquanto a pessoa mexe no formulário da aba ativa, o botão do cabeçalho
+// vira "Salvar alterações" — sinaliza que tem algo pra salvar. Delegado
+// nos dois formulários (não dá pra saber qual aba vai estar ativa quando
+// isto roda, uma vez só, no carregamento da página).
+function initSalvarTopoSujo() {
+  const salvarTopo = document.getElementById('settings-salvar-topo');
+  if (!salvarTopo) return;
+  ['profile-form', 'company-form'].forEach(formId => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener('input', () => { salvarTopo.textContent = 'Salvar alterações'; });
+    form.addEventListener('change', () => { salvarTopo.textContent = 'Salvar alterações'; });
   });
 }
 
@@ -212,6 +240,7 @@ function initProfileForm() {
     consumirLiberacoes(['razao_social', 'documento']).then(() => lockConfiguredFields(p));
 
     lockConfiguredFields(p);
+    resetSalvarTopoLabel();
     showToast('Perfil atualizado.');
   });
 }
@@ -500,6 +529,7 @@ function initCompanyForm() {
     }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
     salvarEmpresaNoBanco(p);
+    resetSalvarTopoLabel();
     showToast('Informações da empresa atualizadas.');
   });
 

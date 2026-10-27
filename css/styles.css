@@ -13110,8 +13110,12 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   /* Topo do editor no celular: nome da página, ver convite, Salvar e Publicar. */
   html body #tab-edit-site :is(#builder-undo, #builder-redo):not(#love-h-a) { display: none !important; }
   html body #tab-edit-site .builder-wrap:not(#love-h-a) { height: auto !important; min-height: 0 !important; }
-  /* Mesmo tamanho do título de Informações/Co-anfitriões (.floorplan-page-name, 20px) — antes ficava menor (17px), destoando. */
-  html body #tab-edit-site .builder-page-name:not(#love-h-a) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Mesmo tamanho e posição do título de Meus Convidados/Meus Presentes/
+     Informações/Co-anfitriões (.floorplan-page-name, 20px, rente à borda) —
+     antes ficava menor (17px) e com o padding do botão empurrando o texto
+     pra direita. A seta do dropdown (fundo da direita) continua do mesmo
+     jeito. */
+  html body #tab-edit-site .builder-page-name:not(#love-h-a) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 0; }
 }
 
 /* Celular: Convite digital › Informações — prévia na tela toda e o formulário

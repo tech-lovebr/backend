@@ -4276,16 +4276,22 @@
   <div id="gift-drawer-backdrop" class="gift-drawer-backdrop hidden" style="display: none !important;"></div>
 
   <aside id="drawer-add-gift" class="gift-drawer hidden" style="display: none !important;" aria-label="Adicionar Presente">
-    <!-- Header do Drawer: Mesmo estilo dos títulos das páginas com linha horizontal cortando -->
-    <div class="px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
+    <!-- Header do Drawer: Mesmo estilo dos títulos das páginas com linha horizontal cortando.
+         No celular vira tela cheia, igual à ficha de "Adicionar convidado": seta de voltar
+         + título centralizado + Salvar no topo (ver .gift-drawer-salvar-topo no CSS). -->
+    <div class="gift-drawer-cab px-6 sm:px-8 pt-7 pb-5 border-b border-zinc-200/80 flex items-start justify-between bg-white">
       <div>
         <h2 id="drawer-gift-heading-title" class="text-2xl sm:text-3xl font-bold text-zinc-900 font-sans tracking-tight">Criar novo presente</h2>
       </div>
       <button id="btn-close-gift-drawer" type="button" class="p-2 -mr-2 text-zinc-400 hover:text-zinc-700 rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center cursor-pointer" title="Fechar">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="gift-drawer-icone-x w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
+        <svg class="gift-drawer-icone-voltar w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M19 12H5m0 0 7 7m-7-7 7-7"/>
+        </svg>
       </button>
+      <button type="submit" form="form-add-gift" class="gift-drawer-salvar-topo">Salvar</button>
     </div>
 
     <!-- Conteúdo do Formulário -->

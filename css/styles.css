@@ -9802,6 +9802,37 @@ html body #drawer-add-gift.gift-drawer:not(#love-h-a) { max-width: 880px; }
 html body #form-add-gift:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; row-gap: 20px; align-items: start; }
 html body #form-add-gift:not(#love-h-a) > * { grid-column: 1; margin: 0 !important; }
 html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-column: 2; grid-row: 1 / span 8; }
+
+/* Criar/editar presente no celular: tela cheia, igual à ficha de
+   "Adicionar convidado" (Meus Convidados) — seta de voltar + título
+   centralizado + Salvar no topo — em vez do pop-up centralizado flutuante
+   de cima (pensado pro desktop). */
+.gift-drawer-icone-voltar { display: none !important; }
+.gift-drawer-salvar-topo { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .gift-drawer:not(#love-h-a) {
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: var(--bottom-bar-height-mobile, 64px) !important;
+    width: 100% !important; max-width: none !important; height: auto !important; max-height: none !important;
+    transform: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  }
+  html body .gift-drawer-backdrop:not(#love-h-a) { display: none !important; }
+  html body .gift-drawer-cab:not(#love-h-a) {
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px !important; align-items: center !important;
+  }
+  html body .gift-drawer-cab > div:not(#love-h-a) { flex: 1 1 auto; min-width: 0; text-align: center; }
+  html body .gift-drawer-cab #drawer-gift-heading-title:not(#love-h-a) { font-size: 17px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .gift-drawer-icone-x:not(#love-h-a) { display: none; }
+  html body .gift-drawer-icone-voltar:not(#love-h-a) { display: block; }
+  html body #btn-close-gift-drawer:not(#love-h-a) { margin-right: 0 !important; order: -1; }
+  html body .gift-drawer-salvar-topo:not(#love-h-a) {
+    display: inline-flex !important; align-items: center; justify-content: center; flex-shrink: 0;
+    height: 40px; padding: 0 18px; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 8px;
+    font-family: inherit; font-size: 15px; font-weight: 600; color: #183b54; cursor: pointer;
+  }
+  html body #form-add-gift:not(#love-h-a) { display: flex !important; flex-direction: column; }
+  html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-row: auto; }
+  html body .gift-campo-salvar:not(#love-h-a) { display: none !important; }
+}
 html body #form-add-gift:not(#love-h-a) > .gift-campo-salvar { grid-column: 1 / -1; }
 @media (max-width: 720px) {
   html body #form-add-gift:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }

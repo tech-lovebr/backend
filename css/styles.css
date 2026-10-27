@@ -12191,6 +12191,14 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
     margin: -1.25rem calc(-1 * max(1rem, env(safe-area-inset-right, 0px))) 16px calc(-1 * max(1rem, env(safe-area-inset-left, 0px)));
     padding: 0; background: #FFFFFF; border: 0; border-bottom: 1px solid #E4E4E7; border-radius: 0;
   }
+  /* Convite (edit-site): o cabeçalho "Convite digital/Salvar/Publicar" não é
+     sticky (rola junto com a página) e fica logo acima da barra no HTML —
+     então a barra não precisa "grudar" alto (top: 0, só entra em ação se
+     um dia esse cabeçalho passar a ser sticky). O problema real era a
+     margem negativa de -1.25rem (pensada pra colar a barra embaixo da
+     navbar padrão, que aqui está escondida): sem essa compensação, ela
+     puxava a barra pra cima e cobria o cabeçalho. */
+  html body #tab-edit-site #submenu-celular:not([hidden]):not(#love-h-a) { top: 0 !important; margin-top: 0 !important; }
   html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
     flex: 1 0 auto; min-width: 33.333%; min-height: 46px; padding: 0 14px;
     background: #FFFFFF; border: 0; border-radius: 0; box-shadow: none;

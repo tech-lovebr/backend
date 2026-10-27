@@ -74,6 +74,31 @@ const SUBCATEGORY_MAP = {
   'Beleza e Estilo': ['Maquiagem', 'Penteado', 'Dia da Noiva', 'Camarim']
 };
 
+/* Sugere a categoria pela palavra-chave no título do anúncio, igual já
+   funciona no cadastro do index — usa o nome de cada categoria e suas
+   subcategorias/tags como palavras-chave; a correspondência mais longa
+   (mais específica) vence quando o título casa com mais de uma categoria. */
+function detectCategoryFromTitle(titulo) {
+  const texto = String(titulo || '').toLowerCase().trim();
+  if (!texto) return null;
+
+  let categoriaEncontrada = null;
+  let melhorTamanho = 0;
+
+  Object.keys(SUBCATEGORY_MAP).forEach(categoria => {
+    const termos = [categoria, ...(SUBCATEGORY_MAP[categoria] || []), ...((typeof TAGS_POR_CATEGORIA !== 'undefined' && TAGS_POR_CATEGORIA[categoria]) || [])];
+    termos.forEach(termo => {
+      const termoNormalizado = String(termo).toLowerCase();
+      if (termoNormalizado.length >= 2 && texto.includes(termoNormalizado) && termoNormalizado.length > melhorTamanho) {
+        categoriaEncontrada = categoria;
+        melhorTamanho = termoNormalizado.length;
+      }
+    });
+  });
+
+  return categoriaEncontrada;
+}
+
 const VENUE_COMMON_AREA_OPTIONS = [
   'Piscina', 'Salão de festas', 'Jardim', 'Churrasqueira', 'Estacionamento',
   'Cozinha equipada', 'Vestiário', 'Lareira', 'Varanda/Deck', 'Área kids',
@@ -138,6 +163,10 @@ let bProducts = [];
 let currentStep = 1;
 let currentSubcategory = null;
 let currentCategoryExpanded = null;
+// true assim que a pessoa escolhe a categoria com a mão (ou ao editar um
+// produto que já tem categoria salva) — a partir daí o título não sugere
+// mais categoria sozinho, pra não atropelar uma escolha manual.
+let categoriaEscolhidaManualmente = false;
 let currentPricingType = null;
 let currentServiceAreaType = 'city_only';
 let currentScopeIncluded = [];
@@ -1149,6 +1178,7 @@ function renderCategoryTree(filterText) {
       // `wrap.contains(e.target)` vê um nó já desanexado e acha que foi clique
       // fora, fechando o acordeão assim que ele deveria abrir.
       e.stopPropagation();
+      categoriaEscolhidaManualmente = true;
       const cat = row.dataset.categoryRow;
       const subs = SUBCATEGORY_MAP[cat] || [];
       if (select.value !== cat) {
@@ -1170,6 +1200,7 @@ function renderCategoryTree(filterText) {
   wrap.querySelectorAll('[data-subcategory-row]').forEach(row => {
     row.addEventListener('click', (e) => {
       e.stopPropagation();
+      categoriaEscolhidaManualmente = true;
       const sub = row.dataset.subcategoryRow;
       currentSubcategory = currentSubcategory === sub ? null : sub;
       updateCategoryTriggerLabel();
@@ -1393,6 +1424,7 @@ function initProductDrawer() {
   });
 
   const resetDrawerState = () => {
+    categoriaEscolhidaManualmente = false;
     currentCoverImage = null;
     currentCoverMeta = null;
     currentGalleryImages = [];
@@ -1536,6 +1568,20 @@ function initProductDrawer() {
   });
 
   document.getElementById('product-name').addEventListener('input', updateWizardNextButtonState);
+
+  // Sugere a categoria enquanto a pessoa digita o título — só até ela
+  // escolher a categoria com a mão (ver categoriaEscolhidaManualmente).
+  document.getElementById('product-name').addEventListener('input', (e) => {
+    if (categoriaEscolhidaManualmente) return;
+    const categoria = detectCategoryFromTitle(e.target.value);
+    const select = document.getElementById('product-category');
+    if (categoria && select.value !== categoria) {
+      select.value = categoria;
+      currentSubcategory = null;
+      currentCategoryExpanded = null;
+      select.dispatchEvent(new Event('change'));
+    }
+  });
 
   document.getElementById('pricing-type-select')?.addEventListener('change', (e) => {
     currentPricingType = e.target.value || null;
@@ -1767,6 +1813,9 @@ function initProductDrawer() {
 function openProductDrawer(id) {
   const p = bProducts.find(x => x.id === id);
   if (!p) return;
+  // Produto existente já tem categoria salva — editar o título não deve
+  // atropelar a categoria escolhida.
+  categoriaEscolhidaManualmente = true;
   document.getElementById('product-drawer-title').textContent = 'Editar produto ou serviço';
   // Serviço suspenso pela Love: aviso no topo do drawer.
   const avisoSuspenso = document.getElementById('product-suspenso-aviso');

@@ -433,7 +433,7 @@ function initCompanyForm() {
     radiusTicks.innerHTML = RADIUS_STEPS.map(() => '<span class="b2b-range-tick"></span>').join('');
   }
   const updateRadiusLabel = () => {
-    radiusValue.textContent = radiusLabelFor(RADIUS_STEPS[Number(radiusInput.value)]);
+    if (radiusValue) radiusValue.textContent = radiusLabelFor(RADIUS_STEPS[Number(radiusInput.value)]);
     radiusTicks?.querySelectorAll('.b2b-range-tick').forEach((tick, i) => {
       tick.classList.toggle('is-active', i === Number(radiusInput.value));
     });

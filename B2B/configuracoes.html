@@ -42,7 +42,7 @@
         <nav class="category-tabs-bar" id="settings-tabs" aria-label="Configurações">
           <p class="settings-nav-titulo">Configurações</p>
           <button type="button" class="category-tab active" data-settings-tab="perfil" data-titulo="Suas informações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg><span>Informações</span></button>
-          <button type="button" class="category-tab" data-settings-tab="empresa" data-titulo="Dados da empresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/><path d="M5 21V10.85M19 21V10.85"/><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg><span>Sua empresa</span></button>
+          <button type="button" class="category-tab" data-settings-tab="empresa" data-titulo="Dados da empresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/><path d="M5 21V10.85M19 21V10.85"/><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg><span>Dados da empresa</span></button>
           <button type="button" class="category-tab" data-settings-tab="preferencias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h8m4 0h4M4 12h2m4 0h10M4 18h11m4 0h1"/><path d="M14 4v4M8 10v4M17 16v4"/></svg><span>Preferências</span></button>
           <button type="button" class="category-tab" data-settings-tab="seguranca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Privacidade</span></button>
           <button type="button" class="category-tab" data-settings-tab="banco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg><span>Dados bancários</span></button>
@@ -273,73 +273,76 @@
 
             <div class="dash-card settings-zola-card">
               <div class="settings-zola-form">
-                <!-- Endereço de atendimento: por padrão, o mesmo de Informações da
-                     empresa (copiado, sem mostrar). Desmarcado, aparecem os campos. -->
-                <label class="settings-check">
-                  <input type="checkbox" id="company-same-address" checked>
-                  <span>O endereço de atendimento é o mesmo de Informações da empresa</span>
-                </label>
-                <div class="settings-endereco-proprio" id="company-endereco-proprio" hidden>
-                  <div class="settings-endereco-trio">
-                    <div>
-                      <label for="company-address" class="field-label">Endereço</label>
-                      <input id="company-address" type="text" class="field-input" placeholder="Rua, avenida…">
+                <!-- Campos que saíram da tela (escondidos só para não perder o que
+                     já foi salvo): endereço de atendimento próprio, visitas, amostra
+                     (esta última já existe por produto, em Meus produtos). -->
+                <div hidden>
+                  <label class="settings-check">
+                    <input type="checkbox" id="company-same-address" checked>
+                    <span>O endereço de atendimento é o mesmo de Informações da empresa</span>
+                  </label>
+                  <div class="settings-endereco-proprio" id="company-endereco-proprio" hidden>
+                    <div class="settings-endereco-trio">
+                      <div>
+                        <label for="company-address" class="field-label">Endereço</label>
+                        <input id="company-address" type="text" class="field-input" placeholder="Rua, avenida…">
+                      </div>
+                      <div>
+                        <label for="company-numero" class="field-label">Número</label>
+                        <input id="company-numero" type="text" class="field-input">
+                      </div>
+                      <div>
+                        <label for="company-complemento" class="field-label">Complemento</label>
+                        <input id="company-complemento" type="text" class="field-input" placeholder="Opcional">
+                      </div>
                     </div>
-                    <div>
-                      <label for="company-numero" class="field-label">Número</label>
-                      <input id="company-numero" type="text" class="field-input">
+                    <div class="settings-endereco-linha settings-endereco-linha--metade">
+                      <div>
+                        <label for="company-cep" class="field-label">CEP</label>
+                        <input id="company-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000">
+                      </div>
+                      <div>
+                        <label for="company-bairro" class="field-label">Bairro</label>
+                        <input id="company-bairro" type="text" class="field-input">
+                      </div>
                     </div>
-                    <div>
-                      <label for="company-complemento" class="field-label">Complemento</label>
-                      <input id="company-complemento" type="text" class="field-input" placeholder="Opcional">
+                    <div class="settings-endereco-linha settings-endereco-linha--metade">
+                      <div>
+                        <label for="company-state" class="field-label">Estado</label>
+                        <select id="company-state" class="field-select"></select>
+                      </div>
+                      <div>
+                        <label for="company-city" class="field-label">Cidade</label>
+                        <input id="company-city" type="text" class="field-input" list="company-city-options" placeholder="Cidade">
+                        <datalist id="company-city-options"></datalist>
+                      </div>
                     </div>
                   </div>
-                  <div class="settings-endereco-linha settings-endereco-linha--metade">
-                    <div>
-                      <label for="company-cep" class="field-label">CEP</label>
-                      <input id="company-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000">
-                    </div>
-                    <div>
-                      <label for="company-bairro" class="field-label">Bairro</label>
-                      <input id="company-bairro" type="text" class="field-input">
-                    </div>
-                  </div>
-                  <div class="settings-endereco-linha settings-endereco-linha--metade">
-                    <div>
-                      <label for="company-state" class="field-label">Estado</label>
-                      <select id="company-state" class="field-select"></select>
-                    </div>
-                    <div>
-                      <label for="company-city" class="field-label">Cidade</label>
-                      <input id="company-city" type="text" class="field-input" list="company-city-options" placeholder="Cidade">
-                      <datalist id="company-city-options"></datalist>
-                    </div>
-                  </div>
+                  <label class="settings-check">
+                    <input type="checkbox" id="company-aceita-visitas">
+                    <span>Recebo clientes no meu endereço para reuniões e visitas</span>
+                  </label>
+                  <label class="settings-check">
+                    <input type="checkbox" id="company-oferece-amostra">
+                    <span>Ofereço prova ou amostra antes da contratação<small>Por exemplo: degustação do bolo, teste de maquiagem ou um trecho do repertório da banda.</small></span>
+                  </label>
+                  <input type="range" id="company-service-radius" min="0" max="6" step="1" value="0">
                 </div>
-                <label class="settings-check">
-                  <input type="checkbox" id="company-aceita-visitas">
-                  <span>Recebo clientes no meu endereço para reuniões e visitas</span>
-                </label>
-                <label class="settings-check">
-                  <input type="checkbox" id="company-oferece-amostra">
-                  <span>Ofereço prova ou amostra antes da contratação<small>Por exemplo: degustação do bolo, teste de maquiagem ou um trecho do repertório da banda.</small></span>
-                </label>
                 <div>
                   <label for="company-description" class="field-label">Descrição da empresa</label>
                   <textarea id="company-description" class="field-textarea settings-descricao" maxlength="650" placeholder="Conte um pouco sobre o seu trabalho…"></textarea>
                   <p class="settings-descricao-contador" id="company-description-count">0/650</p>
                 </div>
-                <div>
-                  <label for="company-service-radius" class="field-label">Raio de atendimento</label>
-                  <p class="settings-campo-nota">Essa informação não aparece na vitrine para o cliente</p>
-                  <div class="b2b-range-row settings-raio">
-                    <div class="b2b-range-track-wrap">
-                      <input type="range" id="company-service-radius" class="b2b-range-slider" min="0" max="6" step="1" value="0">
-                      <div class="b2b-range-ticks" id="company-service-radius-ticks" hidden></div>
-                    </div>
-                    <span class="b2b-range-value" id="company-service-radius-value">50 km</span>
-                  </div>
-                </div>
+              </div>
+            </div>
+
+            <div class="settings-zola-bloco">
+              <h3 class="settings-secao-titulo settings-secao-titulo--painel">Portfólio</h3>
+            </div>
+            <div class="dash-card settings-zola-card">
+              <div>
+                <label class="field-label">Fotos de trabalhos já realizados</label>
+                <div id="company-portfolio-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 items-start"></div>
               </div>
             </div>
 
@@ -458,22 +461,6 @@
               </div>
             </div>
           </form>
-
-          <!-- Portfólio saiu da tela (escondido só para o JS e as fotos já salvas continuarem). -->
-          <div class="dash-card" hidden>
-            <div class="flex flex-col gap-5">
-              <div class="form-section-header">
-                <span>Portfólio</span>
-              </div>
-
-              <div>
-                <label class="field-label">Fotos de trabalhos já realizados</label>
-                <!-- Cada foto ganha embaixo "Comentários sobre este serviço" (vai
-                     junto da foto em portfolio_images e aparece no carrossel). -->
-                <div id="company-portfolio-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4 items-start"></div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Preferências: só as preferências de e-mail. -->
@@ -679,7 +666,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=63"></script>
-  <script src="js/configuracoes.js?v=69"></script>
+  <script src="js/configuracoes.js?v=70"></script>
   <script src="js/contas-bancarias.js?v=3"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>

@@ -41,7 +41,8 @@ const B2B_DATA = {
     maxInstallmentsNoInterest: 0,
     requiresFullPaymentByEvent: false,
     portfolioImages: [],
-    depoimentos: []
+    depoimentos: [],
+    socialLinks: {}
   },
 
   siteMetrics: {

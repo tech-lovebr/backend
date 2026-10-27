@@ -18,6 +18,48 @@ const PROFILE_STORAGE_KEY = 'b2b-professional-profile';
 const RADIUS_STEPS = [50, 100, 150, 200, 250, 300, 0];
 function radiusLabelFor(km) { return km === 0 ? 'Qualquer distância' : `${km} km`; }
 
+// Redes sociais da empresa — mesmo padrão de ícone→campo de produtos.js
+// (initRedesSociais/preencherRedesSociais), ids com prefixo "company-social-".
+const COMPANY_REDES_SOCIAIS = ['instagram', 'linkedin', 'tiktok', 'facebook', 'youtube'];
+
+function mostrarCampoRedeEmpresa(rede, mostrar) {
+  const campo = document.querySelector(`#company-form [data-rede-campo="${rede}"]`);
+  const btn = document.querySelector(`#company-social-icons [data-rede="${rede}"]`);
+  if (campo) campo.hidden = !mostrar;
+  if (btn) btn.classList.toggle('is-ativo', mostrar);
+}
+
+function initRedesSociaisEmpresa() {
+  document.querySelectorAll('#company-social-icons [data-rede]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rede = btn.dataset.rede;
+      const input = document.getElementById(`company-social-${rede}`);
+      const aberto = !document.querySelector(`#company-form [data-rede-campo="${rede}"]`).hidden;
+      if (aberto && !input.value.trim()) { mostrarCampoRedeEmpresa(rede, false); return; }
+      mostrarCampoRedeEmpresa(rede, true);
+      input.focus();
+    });
+  });
+}
+
+function preencherRedesSociaisEmpresa(social) {
+  COMPANY_REDES_SOCIAIS.forEach(rede => {
+    const input = document.getElementById(`company-social-${rede}`);
+    if (!input) return;
+    input.value = (social && social[rede]) || '';
+    mostrarCampoRedeEmpresa(rede, !!input.value);
+  });
+}
+
+function lerRedesSociaisEmpresa() {
+  const social = {};
+  COMPANY_REDES_SOCIAIS.forEach(rede => {
+    const v = (document.getElementById(`company-social-${rede}`)?.value || '').trim();
+    if (v) social[rede] = v;
+  });
+  return social;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   initSettingsTabs();
@@ -433,8 +475,13 @@ function initCompanyForm() {
     });
   });
 
+  /* -------- Redes sociais -------- */
+  preencherRedesSociaisEmpresa(p.socialLinks);
+  initRedesSociaisEmpresa();
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    p.socialLinks = lerRedesSociaisEmpresa();
     p.useProfileAddress = sameAddressCheckbox.checked;
     p.businessAddress = sameAddressCheckbox.checked ? null : addressInput.value.trim();
     p.businessCity = sameAddressCheckbox.checked ? null : cityInput.value.trim();
@@ -574,7 +621,8 @@ async function salvarEmpresaNoBanco(p) {
       deposit_deadline_days: p.depositDeadlineDays ?? null,
       requires_full_payment_by_event: !!p.requiresFullPaymentByEvent,
       cancellation_policy: p.cancellationPolicy || null,
-      description: p.description || null
+      description: p.description || null,
+      social_links: p.socialLinks || {}
     })
     .eq('id', empresaId(session));
 

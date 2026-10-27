@@ -196,8 +196,27 @@ function valorManualNoMes(c, mes) {
  * Todos os custos numa forma só: { nome, categoria, tipo, moeda, status,
  * meses: { '2026-10': valor na moeda } }, para gráficos e tabelas.
  */
+/* A API devolve nome, categoria e tipo de cada integração, mas se um desses
+   vier vazio a linha fica muda na tabela ("Custo sem nome", pastilha de tipo
+   em branco). Como a fonte já identifica o serviço, dá para preencher aqui
+   em vez de mostrar um custo anônimo. */
+const NOME_DA_FONTE = { vercel: 'Vercel', supabase: 'Supabase', aws: 'Amazon' };
+const CATEGORIA_DA_FONTE = { vercel: 'Servidor', supabase: 'Banco de dados', aws: 'E-mail' };
+
+/** As integrações com os campos que faltaram preenchidos pela fonte. */
+function integracoesNormalizadas() {
+  return INTEGRACOES.map(i => ({
+    ...i,
+    manual: false,
+    nome: i.nome || NOME_DA_FONTE[i.fonte] || i.fonte || '',
+    categoria: i.categoria || CATEGORIA_DA_FONTE[i.fonte] || '',
+    tipo: i.tipo || 'recorrente',
+    status: i.status || 'ativo'
+  }));
+}
+
 function linhasDeCusto() {
-  const integracoes = INTEGRACOES.map(i => ({ ...i, manual: false }));
+  const integracoes = integracoesNormalizadas();
   const manuais = MANUAIS.map(c => ({
     id: c.id, manual: true, nome: c.nome, categoria: c.categoria, tipo: c.tipo, moeda: c.moeda,
     status: 'ativo', valor: Number(c.valor) || 0, data: c.data, bruto: c,
@@ -246,11 +265,14 @@ function renderTudo() {
   // Rateio por dia — a mesma conta do Dashboard, para as duas telas não
   // mostrarem números diferentes do mesmo período.
   const { de, ate } = intervalo();
+  // A mesma lista normalizada: o Financas descarta quem não está "ativo", e
+  // integração sem status ficava de fora da conta — a linha aparecia zerada.
+  const integracoes = integracoesNormalizadas();
   // O potencial sai do mesmo rateio, só que sobre `meses_extra` — por isso a
   // volta extra pelo semear antes de calcular o custo de verdade.
-  Financas.semear({ integracoes: INTEGRACOES.map(i => ({ ...i, meses: i.meses_extra || {} })), custos: [], cotacoes: COTACAO });
+  Financas.semear({ integracoes: integracoes.map(i => ({ ...i, meses: i.meses_extra || {} })), custos: [], cotacoes: COTACAO });
   POTENCIAL_PERIODO = Financas.custosNoIntervaloPorItem(de, ate);
-  Financas.semear({ integracoes: INTEGRACOES, custos: MANUAIS, cotacoes: COTACAO });
+  Financas.semear({ integracoes, custos: MANUAIS, cotacoes: COTACAO });
   NO_PERIODO = Financas.custosNoIntervaloPorItem(de, ate);
   renderKpis(linhas);
   montarSeries(linhas);
@@ -577,13 +599,13 @@ function renderTabela() {
       <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>
         <td><span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span></td>
         <td class="cell-strong">${escapeHtml(nomeDoCusto(l))}</td>
-        <td>${badge(TIPO[l.tipo] || l.tipo)}</td>
+        <td>${l.tipo ? badge(TIPO[l.tipo] || l.tipo) : '<span class="cell-muted">—</span>'}</td>
         <td class="valor-dinheiro">
           ${semCotacao ? formatarMoeda(original, l.moeda) : formatCurrency(reais)}
           ${l.moeda !== 'BRL' ? `<span class="cell-sub">${formatarMoeda(original, l.moeda)}</span>` : ''}
         </td>
         <td>${escapeHtml(l.moeda)}</td>
-        <td>${escapeHtml(l.categoria)}</td>
+        <td>${l.categoria ? escapeHtml(l.categoria) : '<span class="cell-muted">—</span>'}</td>
       </tr>`;
   }).join('');
 
@@ -801,7 +823,11 @@ function abrirDetalhe(l) {
 
 /** Nome de reserva: linha sem nome gravado não pode ficar muda na tabela. */
 function nomeDoCusto(l) {
-  return String(l.nome || l.bruto?.empresa || l.categoria || '').trim() || 'Custo sem nome';
+  const candidatos = [l.nome, l.bruto?.empresa, l.bruto?.descricao, l.categoria, l.fonte];
+  const achado = candidatos.map(v => String(v || '').trim()).find(Boolean);
+  if (!achado) return l.manual ? 'Lançamento sem nome' : 'Integração sem nome';
+  // "vercel" (a fonte) vira "Vercel".
+  return achado === l.fonte ? achado.charAt(0).toUpperCase() + achado.slice(1) : achado;
 }
 
 /* ---------------------------------------------------- Detalhe genérico
@@ -812,8 +838,10 @@ function nomeDoCusto(l) {
 
 function detalheGenerico(l) {
   const b = l.bruto || {};
-  const valor = l.manual ? l.valor : (l.meses?.[mesAtual()] || 0);
-  const emBRL = emReais(valor, l.moeda);
+  // O mesmo valor da lista: o do período escolhido. Antes aqui era o do mês
+  // e o da lista era o do período — dois números para o mesmo custo.
+  const valor = originalNoPeriodo(l);
+  const emBRL = valorNoPeriodo(l);
   const [rotuloStatus, classeStatus] = STATUS[l.status] || STATUS.ativo;
 
   const cartao = cardDetalhe(l.manual ? 'Custo lançado à mão' : 'Custo', escapeHtml(b.descricao || l.detalhe || ''), `
@@ -822,9 +850,12 @@ function detalheGenerico(l) {
       ${b.empresa ? linhaDado('Empresa', escapeHtml(b.empresa)) : ''}
       ${linhaDado('Categoria', escapeHtml(l.categoria || '—'))}
       ${linhaDado('Tipo', escapeHtml(TIPO[l.tipo] || l.tipo || '—'))}
-      ${linhaDado('Valor', l.moeda && l.moeda !== 'BRL'
+      ${linhaDado('Origem', l.manual ? 'Lançado à mão no Admin' : `Integração <code class="dados-id">${escapeHtml(l.fonte || '?')}</code>`)}
+      ${l.id ? linhaDado('ID', `<code class="dados-id">${escapeHtml(l.id)}</code>`) : ''}
+      ${linhaDado(`Valor em ${rotuloDePeriodo(PERIODO).toLowerCase()}`, l.moeda && l.moeda !== 'BRL'
         ? `${formatarMoeda(valor, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emBRL)}</span>`
         : formatCurrency(emBRL))}
+      ${l.manual && b.valor != null ? linhaDado(l.tipo === 'unico' ? 'Valor lançado' : 'Valor por mês', formatarMoeda(b.valor, l.moeda)) : ''}
       ${linhaDado('Moeda', escapeHtml(l.moeda || 'BRL'))}
       ${b.data ? linhaDado(l.tipo === 'unico' ? 'Data do pagamento' : 'Começou em', escapeHtml(dataCurta(b.data))) : ''}
       ${linhaDado('Status', badge(rotuloStatus, classeStatus))}

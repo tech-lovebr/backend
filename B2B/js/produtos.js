@@ -31,12 +31,12 @@ const CATEGORY_LEGACY_ALIASES = {
   'Bar e Coquetelaria': 'Bar e Bebidas',
   'Bebidas': 'Bar e Bebidas',
   'Bar': 'Bar e Bebidas',
-  'Trajes': 'Trajes a Rigor',
+  'Trajes': 'Aluguel de Trajes',
   // Categoria renomeada: "Trajes, Beleza e Estilo" virou duas categorias
-  // (Trajes a Rigor / Beleza e Estilo). Produto antigo salvo com o nome
-  // combinado cai em "Trajes a Rigor" até a pessoa reabrir e salvar de novo
+  // (Aluguel de Trajes / Beleza e Estilo). Produto antigo salvo com o nome
+  // combinado cai em "Aluguel de Trajes" até a pessoa reabrir e salvar de novo
   // escolhendo a categoria certa.
-  'Trajes, Beleza e Estilo': 'Trajes a Rigor',
+  'Trajes, Beleza e Estilo': 'Aluguel de Trajes',
   'Gastronomia & Alimentos': 'Buffet e Gastronomia',
   'Buffet': 'Buffet e Gastronomia',
   'Locação de espaço': 'Espaços para Locação',
@@ -70,7 +70,7 @@ const SUBCATEGORY_MAP = {
   'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Mestre de cerimônias', 'Aluguel de Brinquedos', 'Animação de Festa', 'Recreação Infantil', 'Orquestra', 'Personagens Vivos', 'Mágicos', 'Efeitos Especiais'],
   'Decoração': ['Florais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Esculturas em Balões', 'Lembrancinhas', 'Papelaria'],
   'Assessoria e Cerimonialista': ['Assessoria completa', 'Cerimonial no dia', 'Planejamento', 'Day Coordinator', 'Celebrante'],
-  'Trajes a Rigor': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa', 'Moda Infantil'],
+  'Aluguel de Trajes': ['Aluguel de Roupa', 'Acessórios', 'Ateliê', 'Trajes de Madrinhas', 'Roupas para Festa', 'Moda Infantil'],
   'Beleza e Estilo': ['Maquiagem', 'Penteado', 'Dia da Noiva', 'Camarim']
 };
 
@@ -89,7 +89,7 @@ const PRODUCT_TITLE_PLACEHOLDERS = {
   'Música e Entretenimento': 'Ex: DJ Set Completo com Som e Iluminação',
   'Decoração': 'Ex: Decoração Completa com Backdrop Floral e Lounge',
   'Assessoria e Cerimonialista': 'Ex: Assessoria Completa do Dia do Evento',
-  'Trajes a Rigor': 'Ex: Aluguel de Vestido de Noiva com Provas Inclusas',
+  'Aluguel de Trajes': 'Ex: Aluguel de Vestido de Noiva com Provas Inclusas',
   'Beleza e Estilo': 'Ex: Maquiagem e Penteado para Noiva e Madrinhas',
   'Aluguel de Carros': 'Ex: Locação de Carro Clássico para Cerimônia'
 };
@@ -1958,7 +1958,7 @@ const TAGS_POR_CATEGORIA = {
   'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Voz e violão', 'Quarteto de cordas', 'Samba e pagode', 'Sertanejo', 'Música eletrônica', 'MPB', 'Cerimônia musical', 'Mestre de cerimônias', 'Animação infantil', 'Pista de dança', 'Iluminação cênica', 'Efeitos especiais'],
   'Decoração': ['Clássica', 'Rústica', 'Boho', 'Minimalista', 'Moderna', 'Tropical', 'Romântica', 'Arranjos florais', 'Flores naturais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Painel instagramável', 'Mesa posta', 'Balões'],
   'Assessoria e Cerimonialista': ['Assessoria completa', 'Assessoria do dia', 'Cerimonial', 'Planejamento', 'Destination wedding', 'Celebrante', 'Casamento civil', 'Bilíngue', 'Roteiro do evento', 'Gestão de fornecedores'],
-  'Trajes a Rigor': ['Vestido de noiva', 'Traje masculino', 'Aluguel', 'Sob medida', 'Madrinhas', 'Daminhas e pajens', 'Acessórios'],
+  'Aluguel de Trajes': ['Vestido de noiva', 'Traje masculino', 'Aluguel', 'Sob medida', 'Madrinhas', 'Daminhas e pajens', 'Acessórios'],
   'Beleza e Estilo': ['Maquiagem', 'Penteado', 'Dia da noiva', 'Dia do noivo', 'Atendimento em domicílio']
 };
 

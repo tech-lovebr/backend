@@ -22,7 +22,7 @@ const CATEGORIAS_DA_EMPRESA = [
   'Música e Entretenimento',
   'Decoração',
   'Assessoria e Cerimonialista',
-  'Trajes a Rigor',
+  'Aluguel de Trajes',
   'Beleza e Estilo'
 ];
 

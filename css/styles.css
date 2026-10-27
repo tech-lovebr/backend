@@ -9821,8 +9821,8 @@ html body #form-add-gift:not(#love-h-a) > .gift-campo-imagem { grid-column: 2; g
   }
   html body .gift-drawer-cab > div:not(#love-h-a) { flex: 1 1 auto; min-width: 0; text-align: center; }
   html body .gift-drawer-cab #drawer-gift-heading-title:not(#love-h-a) { font-size: 17px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  html body .gift-drawer-icone-x:not(#love-h-a) { display: none; }
-  html body .gift-drawer-icone-voltar:not(#love-h-a) { display: block; }
+  html body .gift-drawer-icone-x:not(#love-h-a) { display: none !important; }
+  html body .gift-drawer-icone-voltar:not(#love-h-a) { display: block !important; }
   html body #btn-close-gift-drawer:not(#love-h-a) { margin-right: 0 !important; order: -1; }
   html body .gift-drawer-salvar-topo:not(#love-h-a) {
     display: inline-flex !important; align-items: center; justify-content: center; flex-shrink: 0;

@@ -12066,6 +12066,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const ZOOM_MINIMO_DA_PLANTA = 0.5;
   const ZOOM_MAXIMO_DA_PLANTA = 2.5;
   const plantaNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  // Preenchido por iniciarPlantaNoCelular(): abre a gaveta da mesa (editar/convidados) no celular.
+  let abrirMesaNoCelularRef = /** @type {((id: string) => void)|null} */ (null);
   /** @param {HTMLElement} canvas @param {any[]} elements */
   function escalaParaCaber(canvas, elements) {
     // Com zoom no celular a planta fica mais larga que a tela: a conta de
@@ -12912,9 +12914,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const lista = getFloorPlanElements();
     const alvo = lista.find(x => x.id === id);
     if (!alvo) return;
-    if (acao === 'convidados') { if (botao) abrirListaDaMesa(botao, alvo); return; }
+    if (acao === 'convidados') {
+      if (alvo.type === 'mesa' && plantaNoCelular() && abrirMesaNoCelularRef) { abrirMesaNoCelularRef(id); return; }
+      if (botao) abrirListaDaMesa(botao, alvo);
+      return;
+    }
     if (acao === 'editar') {
-      if (alvo.type === 'mesa') openFloorplanTableModal(id);
+      if (alvo.type === 'mesa') {
+        if (plantaNoCelular() && abrirMesaNoCelularRef) abrirMesaNoCelularRef(id);
+        else openFloorplanTableModal(id);
+      }
       else if (alvo.type === 'texto') editarTextoDaPlanta(id);
       return;
     }
@@ -14362,13 +14371,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('touchend', soltarAlca);
     document.addEventListener('touchcancel', soltarAlca);
 
-    // ---------- Tela da mesa ----------
+    // ---------- Tela da mesa (gaveta de baixo para cima, igual à de
+    // "Adicionar mesas e itens") ----------
+    const fundoMesa = document.createElement('div');
+    fundoMesa.className = 'mesa-celular-fundo';
     const tela = document.createElement('div');
     tela.className = 'mesa-celular';
     tela.setAttribute('role', 'dialog');
     tela.setAttribute('aria-modal', 'true');
-    tela.hidden = true;
-    document.body.appendChild(tela);
+    document.body.append(fundoMesa, tela);
     let mesaId = '';
     let escolhendo = false;
     let buscaEscolha = '';
@@ -14391,7 +14402,8 @@ document.addEventListener('DOMContentLoaded', () => {
       renderGuestsTable();
     };
     const fecharMesa = () => {
-      tela.hidden = true;
+      tela.classList.remove('is-aberta', 'is-arrastando');
+      fundoMesa.classList.remove('is-aberta');
       escolhendo = false;
       document.body.classList.remove('mesa-celular-aberta');
     };
@@ -14400,11 +14412,26 @@ document.addEventListener('DOMContentLoaded', () => {
       mesaId = id;
       escolhendo = false;
       buscaEscolha = '';
-      tela.hidden = false;
+      tela.classList.add('is-aberta');
+      fundoMesa.classList.add('is-aberta');
       document.body.classList.add('mesa-celular-aberta');
       desenharMesa();
       tela.scrollTop = 0;
     }
+    abrirMesaNoCelularRef = abrirMesa;
+    fundoMesa.addEventListener('click', fecharMesa);
+    // Puxar a alça para baixo fecha (mesmo gesto da gaveta de adicionar mesas e itens).
+    let alcaMesaY = 0;
+    tela.addEventListener('touchstart', (e) => {
+      const alvo = e.target instanceof Element ? e.target.closest('.mesa-celular-alca') : null;
+      if (!alvo) return;
+      alcaMesaY = /** @type {TouchEvent} */ (e).touches[0].clientY;
+    }, { passive: true });
+    tela.addEventListener('touchend', (e) => {
+      const alvo = e.target instanceof Element ? e.target.closest('.mesa-celular-alca') : null;
+      if (!alvo) return;
+      if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaMesaY > 40) fecharMesa();
+    });
 
     const ICONES_FORMATO = /** @type {Record<string, string>} */ ({});
     menuItens.querySelectorAll('[data-mesa-formato]').forEach(b => {
@@ -14433,7 +14460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const termo = buscaEscolha.trim().toLowerCase();
         const lista = pessoas.filter(pp => !aqui.has(pp.name.toLowerCase()) && (!termo || pp.name.toLowerCase().includes(termo)))
           .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-        tela.innerHTML = `<div class="mesa-celular-topo">
+        tela.innerHTML = `<div class="mesa-celular-alca" aria-hidden="true"></div><div class="mesa-celular-topo">
             <button type="button" class="mesa-celular-icone" data-acao="voltar-escolha" aria-label="Voltar para a mesa">${SETA}</button>
             <h2>Adicionar à ${titulo}</h2><span class="mesa-celular-espaco"></span>
           </div>
@@ -14467,7 +14494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? `<span class="mesa-celular-lugar is-ocupado" title="${escaparHtml(nome)}">${escaparHtml(iniciais(nome))}</span>`
         : `<button type="button" class="mesa-celular-lugar" data-acao="escolher" aria-label="Lugar ${i + 1} vazio: adicionar convidado">${MAIS}</button>`).join('');
       const listaPessoas = sentados.map((nome, i) => ({ nome, i })).filter(x => x.nome);
-      tela.innerHTML = `<div class="mesa-celular-topo">
+      tela.innerHTML = `<div class="mesa-celular-alca" aria-hidden="true"></div><div class="mesa-celular-topo">
           <button type="button" class="mesa-celular-icone" data-acao="fechar" aria-label="Voltar para o mapa">${SETA}</button>
           <h2>${titulo}</h2><span class="mesa-celular-espaco"></span>
         </div>

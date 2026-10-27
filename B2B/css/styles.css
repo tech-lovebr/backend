@@ -9235,15 +9235,26 @@ body[data-theme="dark"] .settings-zola-forms > .settings-zola-card { background:
    parcelas sem juros com o resumo embaixo. */
 html body .parcelas-opcoes:not(#love-h-a) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
 html body .parcelas-card:not(#love-h-a) {
-  display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.9rem 1rem; cursor: pointer;
-  border: 1px solid var(--borda-suave); border-radius: 8px; background: #FFFFFF; transition: border-color .15s ease;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.9rem 1rem; cursor: pointer;
+  border: 1px solid var(--borda-suave); border-radius: 10px; background: #FFFFFF; transition: border-color .15s ease;
 }
 html body .parcelas-card:hover:not(#love-h-a) { border-color: #181D24; }
 html body .parcelas-card:has(input:checked):not(#love-h-a) { border-color: #183b54; box-shadow: inset 0 0 0 1px #183b54; }
-html body .parcelas-card input:not(#love-h-a) { margin: 0.15rem 0 0; accent-color: #183b54; flex-shrink: 0; }
+html body .parcelas-card-input:not(#love-h-a) {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
 html body .parcelas-card-textos:not(#love-h-a) { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
 html body .parcelas-card-titulo:not(#love-h-a) { font-size: 0.875rem; font-weight: 600; color: #18181B; line-height: 1.3; }
 html body .parcelas-card-sub:not(#love-h-a) { font-size: 0.8125rem; color: #71717A; line-height: 1.4; }
+html body .parcelas-card-check:not(#love-h-a) {
+  width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--borda-suave);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+html body .parcelas-card-check svg:not(#love-h-a) { width: 14px; height: 14px; color: #FFFFFF; opacity: 0; transition: opacity .15s ease; }
+html body .parcelas-card:has(input:checked) .parcelas-card-check:not(#love-h-a) { background: #183b54; border-color: #183b54; }
+html body .parcelas-card:has(input:checked) .parcelas-card-check svg:not(#love-h-a) { opacity: 1; }
 html body .parcelas-info:not(#love-h-a) { margin: 0.75rem 0 0; font-size: 0.8125rem; color: #52525B; }
 html body .parcelas-info[hidden]:not(#love-h-a),
 html body .parcelas-limite[hidden]:not(#love-h-a) { display: none; }
@@ -9261,6 +9272,9 @@ html body .parcelas-alerta:not(#love-h-a) {
 }
 body[data-theme="dark"] .parcelas-card, body[data-theme="dark"] .parcelas-pill { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .parcelas-card-titulo, body[data-theme="dark"] .parcelas-pill { color: #FFFFFF !important; }
+body[data-theme="dark"] .parcelas-card-check { border-color: #404040 !important; }
+body[data-theme="dark"] .parcelas-card:has(input:checked) .parcelas-card-check { background: #FFFFFF !important; border-color: #FFFFFF !important; }
+body[data-theme="dark"] .parcelas-card-check svg { color: #181D24 !important; }
 body[data-theme="dark"] .parcelas-pill.is-ativo { background: #FFFFFF !important; color: #181D24 !important; }
 body[data-theme="dark"] .parcelas-alerta { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 @media (max-width: 640px) { html body .parcelas-opcoes:not(#love-h-a) { grid-template-columns: 1fr; } }

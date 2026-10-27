@@ -585,7 +585,7 @@ function renderGraficoCategorias(linhas) {
     const traco = fatias.length > 1 ? Math.max(comp - 2, 0.5) : comp;
     const arco = `<circle cx="${centro}" cy="${centro}" r="${raio}" fill="none" stroke="${CORES[i % CORES.length]}"
       stroke-width="${espessura}" stroke-dasharray="${traco} ${circ - traco}" stroke-dashoffset="${-acumulado}"
-      transform="rotate(-90 ${centro} ${centro})"><title>${escapeHtml(f.categoria)}: ${formatCurrency(f.total)}</title></circle>`;
+      transform="rotate(-90 ${centro} ${centro})"><title>${escapeHtml(f.categoria || 'Sem categoria')}: ${formatCurrency(f.total)}</title></circle>`;
     acumulado += comp;
     return arco;
   }).join('');
@@ -597,7 +597,7 @@ function renderGraficoCategorias(linhas) {
         ${fatias.map((f, i) => `
           <li>
             <span class="chave" style="background:${CORES[i % CORES.length]}"></span>
-            <span class="nome">${escapeHtml(f.categoria)}</span>
+            <span class="nome">${escapeHtml(f.categoria || 'Sem categoria')}</span>
             <span class="valor">${formatCurrency(f.total)} · ${Math.round((f.total / total) * 100)}%</span>
           </li>`).join('')}
       </ul>
@@ -674,7 +674,7 @@ function renderTabela() {
     return `
       <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>
         <td><span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span></td>
-        <td class="cell-strong">${escapeHtml(nomeDoCusto(l))}</td>
+        <td class="cell-strong">${escapeHtml(nomeDoCusto(l))}${origemDoNome(l) ? `<span class="cell-sub">${escapeHtml(origemDoNome(l))}</span>` : ''}</td>
         <td>${l.tipo ? badge(TIPO[l.tipo] || l.tipo) : '<span class="cell-muted">—</span>'}</td>
         <td class="valor-dinheiro">
           ${semCotacao ? formatarMoeda(original, l.moeda) : formatCurrency(reais)}
@@ -907,6 +907,15 @@ function nomeDoCusto(l) {
   if (!achado) return l.manual ? 'Lançamento sem nome' : 'Integração sem nome';
   // "vercel" (a fonte) vira "Vercel".
   return achado === l.fonte ? achado.charAt(0).toUpperCase() + achado.slice(1) : achado;
+}
+
+/* Quando o nome não veio preenchido, a linha diz de onde o custo saiu em vez
+   de só mostrar "sem nome" e deixar a pergunta no ar: integração da API ou
+   lançamento manual com o campo em branco são coisas bem diferentes. */
+function origemDoNome(l) {
+  if (String(l.nome || '').trim()) return '';
+  if (!l.manual) return `Integração ${l.fonte || 'desconhecida'} · a API não mandou o nome`;
+  return 'Lançado à mão, sem nome preenchido';
 }
 
 /* ---------------------------------------------------- Detalhe genérico

@@ -103,6 +103,17 @@ function intervaloAnterior() {
 
 const formatarDiaCurto = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 
+/* "Este mês" dentro de uma frase vira "neste mês"; "Hoje" não leva preposição
+   nenhuma. Sem isto a tela escreve "Custo em este mês". */
+function noPeriodoTexto() {
+  const r = rotuloDePeriodo(PERIODO);
+  if (r === 'Hoje') return 'hoje';
+  if (r === 'Este mês') return 'neste mês';
+  if (r.startsWith('Últimos')) return `nos ${r.toLowerCase()}`;
+  if (r === 'Todo o período') return 'em todo o período';
+  return `em ${r}`;
+}
+
 const idDoCusto = l => (l.manual ? `manual:${l.id}` : `integracao:${l.fonte || l.nome}`);
 const valorNoPeriodo = l => NO_PERIODO[idDoCusto(l)]?.valor || 0;
 const originalNoPeriodo = l => NO_PERIODO[idDoCusto(l)]?.original || 0;
@@ -423,46 +434,111 @@ const dinheiroOuTraco = v => (v > 0.005 ? formatCurrency(v) : '<span class="cell
    foi consumido — é onde se enxerga que a conta do servidor é build, não
    site no ar. */
 
-function servicosDoItem(l, mes) {
-  if (Array.isArray(l.meses_servicos?.[mes])) return l.meses_servicos[mes];
-  // AWS entrega um registro por mês e serviço.
-  if (Array.isArray(l.servicos) && l.servicos.length && l.servicos[0].mes !== undefined) {
-    return l.servicos.filter(sv => sv.mes === mes)
-      .map(sv => ({ servico: sv.servico, consumo: sv.valor, cobrado: sv.valor, uso: 0, unidade: '' }));
+const diaISO = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/** Soma uma lista de serviços dentro de um acumulador por nome. */
+function acumularServicos(destino, lista, fatia = 1) {
+  (lista || []).forEach(sv => {
+    const atual = destino[sv.servico]
+      || (destino[sv.servico] = { servico: sv.servico, consumo: 0, cobrado: 0, uso: 0, unidade: sv.unidade });
+    atual.consumo += (sv.consumo || 0) * fatia;
+    atual.cobrado += (sv.cobrado || 0) * fatia;
+    atual.uso += (sv.uso || 0) * fatia;
+    if (!atual.unidade && sv.unidade) atual.unidade = sv.unidade;
+  });
+}
+
+/**
+ * Onde o dinheiro foi parar dentro de um custo, no período escolhido.
+ * Usa o detalhe por dia quando a API o cobre (resposta exata, inclusive
+ * para "hoje"); fora da janela diária, rateia o detalhe do mês pelos dias
+ * que o período pegou — e avisa que ali é estimativa.
+ * @returns {{ servicos: any[], exato: boolean }}
+ */
+function servicosNoPeriodo(l, de, ate) {
+  const porDia = l.dias_servicos;
+  const desde = l.dias_servicos_desde;
+  const destino = {};
+  let exato = true;
+
+  // AWS entrega um registro por mês e serviço: sempre mensal.
+  const mensalAws = Array.isArray(l.servicos) && l.servicos.length && l.servicos[0].mes !== undefined;
+
+  const porMes = {};
+  let d = new Date(de.getFullYear(), de.getMonth(), de.getDate());
+  while (d <= ate) {
+    const iso = diaISO(d);
+    if (!mensalAws && porDia && desde && iso >= desde) {
+      acumularServicos(destino, porDia[iso] || []);
+    } else {
+      const mes = iso.slice(0, 7);
+      porMes[mes] = (porMes[mes] || 0) + 1;
+      exato = false;
+    }
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
   }
-  return [];
+
+  // Meses que não tinham detalhe diário entram rateados pelos dias pegos.
+  Object.entries(porMes).forEach(([mes, dias]) => {
+    const noMes = new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0).getDate();
+    const fatia = Math.min(1, dias / noMes);
+    if (mensalAws) {
+      acumularServicos(destino, l.servicos.filter(sv => sv.mes === mes)
+        .map(sv => ({ servico: sv.servico, consumo: sv.valor, cobrado: sv.valor, uso: 0, unidade: '' })), fatia);
+    } else {
+      acumularServicos(destino, l.meses_servicos?.[mes] || [], fatia);
+    }
+  });
+
+  const servicos = Object.values(destino)
+    .filter(sv => sv.consumo > 0.0005 || sv.cobrado > 0.0005 || sv.uso > 0)
+    .sort((a, b) => b.consumo - a.consumo);
+
+  // Sem nada rateado, ou tudo rateado mas o mês inteiro dentro do período:
+  // não há aproximação a declarar.
+  return { servicos, exato: exato || mensalAws };
+}
+
+/* Onde o dinheiro foi parar dentro de um custo, no período escolhido: CPU de
+   build, requisições na CDN, tráfego… É o mesmo cartão na aba Categorias e no
+   detalhe do custo, para os dois contarem a mesma história. */
+function cartaoDoPeriodo(l, { titulo = nomeDoCusto(l) } = {}) {
+  const { de, ate } = intervalo();
+  const total = valorNoPeriodo(l);
+  const pot = potencialNoPeriodo(l);
+  const { servicos, exato } = servicosNoPeriodo(l, de, ate);
+  const periodo = noPeriodoTexto();
+
+  const linhasTabela = servicos.map(sv => `
+    <tr class="no-hover">
+      <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
+      <td>${escapeHtml(usoDoServico(sv))}</td>
+      <td class="valor-dinheiro">${formatarMoeda(sv.consumo, l.moeda)}</td>
+      <td class="valor-dinheiro">${sv.cobrado ? formatarMoeda(sv.cobrado, l.moeda) : '<span class="cell-muted">no plano</span>'}</td>
+    </tr>`);
+
+  const resumo = `
+    <div class="lista-dados">
+      ${linhaDado(`Custo ${periodo}`, formatCurrency(total))}
+      ${l.assinatura_mensal ? linhaDado('Assinatura do plano', `${formatarMoeda(l.assinatura_mensal, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emReais(l.assinatura_mensal, l.moeda))}</span> por mês`) : ''}
+      ${linhaDado('Potencial de redução', dinheiroOuTraco(pot))}
+    </div>`;
+
+  const sub = servicos.length
+    ? (exato ? `Onde foi gasto ${periodo}` : `Onde foi gasto ${periodo} · estimado a partir do total do mês`)
+    : escapeHtml(l.detalhe || '');
+
+  return cardDetalhe(titulo, sub, `${resumo}
+    ${servicos.length
+      ? tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], linhasTabela)
+      : '<p class="custo-resumo">Nada consumido neste período, ou esta fonte não detalha o gasto por serviço.</p>'}`);
 }
 
 function abrirCategoria(categoria, linhas) {
-  const mes = mesAtual();
   const itens = linhas.filter(l => l.categoria === categoria);
   abrirPainelDeDetalhe(categoria || 'Sem categoria');
 
-  const cartoes = itens.map(l => {
-    const total = valorNoPeriodo(l);
-    const servicos = servicosDoItem(l, mes);
-    const pot = potencialNoPeriodo(l);
-
-    const linhasTabela = servicos.map(sv => `
-      <tr class="no-hover">
-        <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
-        <td>${escapeHtml(usoDoServico(sv))}</td>
-        <td class="valor-dinheiro">${formatarMoeda(sv.consumo, l.moeda)}</td>
-        <td class="valor-dinheiro">${sv.cobrado ? formatarMoeda(sv.cobrado, l.moeda) : '<span class="cell-muted">no plano</span>'}</td>
-      </tr>`);
-
-    const resumo = `
-      <div class="lista-dados">
-        ${linhaDado('Custo no período', formatCurrency(total))}
-        ${l.assinatura_mensal ? linhaDado('Assinatura do plano', `${formatarMoeda(l.assinatura_mensal, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emReais(l.assinatura_mensal, l.moeda))}</span>`) : ''}
-        ${linhaDado('Potencial de redução', dinheiroOuTraco(pot))}
-      </div>`;
-
-    return cardDetalhe(nomeDoCusto(l), escapeHtml(l.detalhe || ''), `${resumo}
-      ${servicos.length
-        ? tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], linhasTabela)
-        : '<p class="custo-resumo">Esta fonte não detalha o consumo por serviço — o valor vem fechado.</p>'}`);
-  });
+  const cartoes = itens.map(l => cartaoDoPeriodo(l));
 
   const visao = document.getElementById('visao-custos');
   DIAGNOSTICO = null;
@@ -790,9 +866,12 @@ function abrirDetalhe(l) {
   // abrir uma tela em branco.
   const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte] || detalheGenerico;
   DIAGNOSTICO = null;
+  // O período manda: o primeiro cartão responde "onde foi gasto no recorte
+  // que está escolhido lá em cima". O resto do detalhe (fatura, ciclo,
+  // mês a mês) vem depois, porque fala de outra janela de tempo.
   visao.innerHTML = l.status !== 'ativo' && !l.manual
     ? `<div class="card"><div class="card-body"><div class="empty-state"><strong>${l.status === 'erro' ? 'Não foi possível ler os custos' : 'Não conectado'}</strong><p>${escapeHtml(l.erro || 'Configure as chaves na Vercel (projeto love-platform).')}</p></div></div></div>`
-    : montar(l);
+    : cartaoDoPeriodo(l, { titulo: 'Onde foi gasto' }) + montar(l);
   visao.hidden = false;
 
   document.getElementById('acoes-detalhe')?.remove();
@@ -852,7 +931,7 @@ function detalheGenerico(l) {
       ${linhaDado('Tipo', escapeHtml(TIPO[l.tipo] || l.tipo || '—'))}
       ${linhaDado('Origem', l.manual ? 'Lançado à mão no Admin' : `Integração <code class="dados-id">${escapeHtml(l.fonte || '?')}</code>`)}
       ${l.id ? linhaDado('ID', `<code class="dados-id">${escapeHtml(l.id)}</code>`) : ''}
-      ${linhaDado(`Valor em ${rotuloDePeriodo(PERIODO).toLowerCase()}`, l.moeda && l.moeda !== 'BRL'
+      ${linhaDado(`Valor ${noPeriodoTexto()}`, l.moeda && l.moeda !== 'BRL'
         ? `${formatarMoeda(valor, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emBRL)}</span>`
         : formatCurrency(emBRL))}
       ${l.manual && b.valor != null ? linhaDado(l.tipo === 'unico' ? 'Valor lançado' : 'Valor por mês', formatarMoeda(b.valor, l.moeda)) : ''}

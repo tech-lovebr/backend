@@ -146,6 +146,24 @@ async function custoVercel(meses) {
       Object.values(mapa).filter(sv => sv.consumo > 0.0005 || sv.cobrado > 0.0005).sort((x, y) => y.consumo - x.consumo)
     ]));
 
+    // Detalhe por DIA, para o Admin responder "onde gastei hoje?" sem
+    // estimativa. Só uma janela recente: o ano inteiro dia a dia seria quase
+    // um megabyte de JSON em toda carga da tela, e período longo se resolve
+    // bem com o detalhe mensal.
+    const DIAS_DETALHADOS = 92;
+    const corteDetalhe = new Date(Date.now() - DIAS_DETALHADOS * 86400000).toISOString().slice(0, 10);
+    const porDiaServico = {};
+    linhas.forEach(l => {
+      if (ehAssinatura(l) || l.dia < corteDetalhe) return;
+      if (!(l.consumo || l.cobrado || l.uso)) return;
+      if (!porDiaServico[l.dia]) porDiaServico[l.dia] = {};
+      const sv = porDiaServico[l.dia][l.servico]
+        || (porDiaServico[l.dia][l.servico] = { servico: l.servico, consumo: 0, cobrado: 0, uso: 0, unidade: l.unidade });
+      sv.consumo += l.consumo; sv.cobrado += l.cobrado; sv.uso += l.uso;
+    });
+    const diasServicos = Object.fromEntries(Object.entries(porDiaServico)
+      .map(([dia, mapa]) => [dia, Object.values(mapa)]));
+
     // Ciclo de cobrança: começa todo mês no dia em que o plano começou.
     const hoje = new Date().toISOString().slice(0, 10);
     const diaDoCiclo = Number((primeiroDia || hoje).slice(8, 10));
@@ -241,6 +259,8 @@ async function custoVercel(meses) {
     return {
       ...base, moeda, status: "ativo", meses: porMes,
       meses_servicos: mesesServicos,
+      dias_servicos: diasServicos,
+      dias_servicos_desde: corteDetalhe,
       meses_extra: extraPorMes,
       assinatura_mensal: ASSINATURA_VERCEL_USD,
       detalhe: `Plano Pro + consumo além do crédito`,

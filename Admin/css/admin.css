@@ -668,6 +668,10 @@ table.data tbody tr.no-hover:hover td { background: transparent; }
 }
 .anfitriao-quem { min-width: 0; display: flex; flex-direction: column; }
 .anfitriao-quem strong { font-size: .875rem; font-weight: 600; }
+/* O criador abre a conta dele: a linha vira botão, com a seta à direita. */
+button.anfitriao-linha { width: 100%; font: inherit; text-align: left; cursor: pointer; }
+button.anfitriao-linha:hover { border-color: #D4D4D8; background: var(--bg-muted); }
+.anfitriao-seta { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); }
 
 .btn-sm { padding: .375rem .625rem; font-size: .75rem; }
 

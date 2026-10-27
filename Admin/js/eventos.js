@@ -231,13 +231,11 @@ function abrirDetalhe(id) {
         ${dado('Status', statusChip)}
         ${suspenso && e.suspenso_em ? dado('Suspenso em', escapeHtml(formatDateTime(e.suspenso_em))) : ''}
         ${suspenso && e.suspenso_motivo ? dado('Motivo', escapeHtml(e.suspenso_motivo)) : ''}
+        ${dado('Criado em', escapeHtml(formatDateTime(e.created_at)))}
+        ${dado('ID', `<code class="dados-id">${escapeHtml(e.id)}</code>`)}
       </div>
 
-      ${blocoDeAnfitrioes(e)}
-
-      <p class="cell-muted" style="font-size:.75rem;margin-top:1rem">
-        Criado em ${escapeHtml(formatDateTime(e.created_at))} · ID ${escapeHtml(e.id)}
-      </p>`,
+      ${blocoDeAnfitrioes(e)}`,
     footer: `
       ${e.deleted_at ? '<button type="button" class="btn btn-neutro" id="btn-restaurar">Restaurar evento</button>' : ''}
       <button type="button" class="btn btn-ghost" id="btn-cancelar">Fechar</button>
@@ -248,6 +246,11 @@ function abrirDetalhe(id) {
   document.getElementById('btn-restaurar')?.addEventListener('click', () =>
     restaurarEvento(e, () => { render(); abrirDetalhe(id); }));
   document.getElementById('btn-suspender')?.addEventListener('click', () => alternarSuspensao(e));
+
+  // Clicar no criador abre a conta dele; a seta de voltar traz de volta a este evento.
+  document.querySelector('[data-conta]')?.addEventListener('click', ev => {
+    ContaDrawer.abrir(ev.currentTarget.dataset.conta, { voltar: () => abrirDetalhe(id) });
+  });
 }
 
 /* Anfitriões: o criador e os co-anfitriões que ele convidou na plataforma
@@ -271,19 +274,30 @@ function blocoDeAnfitrioes(e) {
       papel: [PAPEL[o.papel] || o.papel, SITUACAO[o.status] || ''].filter(Boolean).join(' · ')
     }));
 
-  const linha = p => `
-    <div class="anfitriao-linha">
+  // Só o criador tem conta de anfitrião para abrir; co-anfitrião convidado
+  // pode nem ter conta ainda (convite pendente), então não vira botão.
+  const abreConta = Boolean(cliente?.id);
+
+  const linha = (p, clicavel) => {
+    const miolo = `
       <span class="anfitriao-quem">
         <strong>${escapeHtml(p.nome)}</strong>
         ${p.email ? `<span class="cell-sub">${escapeHtml(p.email)}</span>` : ''}
       </span>
-      ${p.papel ? badge(p.papel, p.papel === 'Criador' ? 'badge-info' : '') : ''}
-    </div>`;
+      ${p.papel ? badge(p.papel, p.papel === 'Criador' ? 'badge-info' : '') : ''}`;
+    return clicavel
+      ? `<button type="button" class="anfitriao-linha is-clicavel" data-conta="${escapeHtml(cliente.id)}">
+          ${miolo}
+          <svg class="anfitriao-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg>
+        </button>`
+      : `<div class="anfitriao-linha">${miolo}</div>`;
+  };
 
   return `
     <p class="drawer-section-title">Anfitriões</p>
     <div class="lista-anfitrioes">
-      ${[principal, ...convidados].map(linha).join('')}
+      ${linha(principal, abreConta)}
+      ${convidados.map(c => linha(c, false)).join('')}
       ${convidados.length ? '' : '<p class="cell-muted" style="font-size:.8125rem;margin:.25rem 0 0">Nenhum co-anfitrião convidado.</p>'}
     </div>`;
 }

@@ -42,7 +42,9 @@ const B2B_DATA = {
     requiresFullPaymentByEvent: false,
     portfolioImages: [],
     depoimentos: [],
-    socialLinks: {}
+    socialLinks: {},
+    companyAlteradoEm: null,
+    documentoAlteradoEm: null
   },
 
   siteMetrics: {

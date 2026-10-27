@@ -83,11 +83,15 @@
               <!-- Empresa -->
               <div class="settings-info-painel" data-info-painel="empresa">
                 <p class="settings-info-dica">Estes dados abrem a conta digital da sua empresa na Love, para receber os contratos e sacar.</p>
-                <!-- Razão social e CNPJ, depois de preenchidos, não mudam mais;
-                     só o nome fantasia (o que os clientes veem) muda. -->
+                <!-- Razão social e CNPJ, depois de preenchidos, ficam travados;
+                     o "Alterar" ao lado destrava a cada 7 dias (migration 121).
+                     O nome fantasia (o que os clientes veem) muda à vontade. -->
                 <div>
                   <label for="profile-razao-social" class="field-label">Razão social <span style="color:#DC2626;">*</span></label>
-                  <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
+                  <div class="field-with-inline-link">
+                    <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
+                    <a href="#" class="field-request-change-link" id="profile-razao-social-alterar" hidden>Alterar</a>
+                  </div>
                 </div>
                 <div>
                   <label for="profile-company" class="field-label">Nome fantasia <span style="color:#DC2626;">*</span></label>
@@ -111,6 +115,7 @@
                     <label for="profile-document" class="field-label"><span id="profile-document-label">CNPJ</span> <span style="color:#DC2626;">*</span></label>
                     <div class="field-with-inline-link">
                       <input id="profile-document" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00">
+                      <a href="#" class="field-request-change-link" id="profile-document-alterar" hidden>Alterar</a>
                     </div>
                   </div>
                 </div>
@@ -671,8 +676,8 @@
   <script src="js/utils.js?v=33"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
-  <script src="js/shell.js?v=63"></script>
-  <script src="js/configuracoes.js?v=71"></script>
+  <script src="js/shell.js?v=64"></script>
+  <script src="js/configuracoes.js?v=72"></script>
   <script src="js/contas-bancarias.js?v=3"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>

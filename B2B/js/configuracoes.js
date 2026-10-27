@@ -186,6 +186,8 @@ function initProfileForm() {
   renderProfileLogoPicker();
   initStateCityFields(p);
   lockConfiguredFields(p);
+  wireAlterarRazaoSocial(p);
+  wireAlterarDocumento(p);
 
   document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
     btn.addEventListener('click', () => setProfileDocType(btn.dataset.docType));
@@ -217,16 +219,23 @@ function initProfileForm() {
     p.documentNumber = documentNumber;
     const erroBanco = await salvarPerfilNoBanco(p);
     if (!erroBanco) await salvarDadosDaContaDigital(birthdatePicker.getValue());
-    // Razão social / documento já preenchidos: o banco recusa a troca (migration 077)
-    // e o valor anterior volta.
+    // Razão social / documento só podem trocar a cada 7 dias (migration 121);
+    // se o banco recusar (ex.: estado local desatualizado), o valor anterior volta.
     if (erroBanco && /ALTERACAO_BLOQUEADA/.test(erroBanco.message || '')) {
       Object.assign(p, antes);
       document.getElementById('profile-company').value = p.company || '';
       document.getElementById('profile-razao-social').value = p.razaoSocial || '';
       document.getElementById('profile-document').value = p.documentNumber || '';
       lockConfiguredFields(p);
-      showToast('A razão social e o CNPJ não podem ser alterados depois de preenchidos.', true);
+      showToast('A razão social e o CNPJ/CPF só podem ser alterados a cada 7 dias.', true);
       return;
+    }
+    // Mudou razão social/documento de verdade: zera a contagem dos 7 dias
+    // (a data exata vem do banco, mas o trigger grava a mesma coisa: agora).
+    if (!erroBanco) {
+      const agora = new Date().toISOString();
+      if (p.razaoSocial !== antes.razaoSocial) p.companyAlteradoEm = agora;
+      if (p.documentNumber !== antes.documentNumber || p.documentType !== antes.documentType) p.documentoAlteradoEm = agora;
     }
     localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
     if (antes.company && antes.company !== p.company) {
@@ -381,25 +390,81 @@ async function consumirLiberacoes(campos) {
   LIBERACOES = LIBERACOES.filter(l => !campos.includes(l.campo));
 }
 
-/* Razão social e CNPJ/CPF: depois de preenchidos, ficam travados (sem
-   "Alterar"); só o Admin consegue liberar. O nome fantasia muda à vontade.
-   O banco garante a mesma regra (migration 077). */
+/* Razão social e CNPJ/CPF: depois de preenchidos, ficam travados; o "Alterar"
+   ao lado destrava se já passaram 7 dias desde a última troca (ou se o Admin
+   liberou o campo) — senão mostra quanto falta. O banco garante a mesma
+   regra (migration 121). */
 function lockConfiguredFields(p) {
   const razaoInput = document.getElementById('profile-razao-social');
   const documentInput = document.getElementById('profile-document');
+  const razaoAlterar = document.getElementById('profile-razao-social-alterar');
+  const documentAlterar = document.getElementById('profile-document-alterar');
 
-  if (p.razaoSocial && razaoInput && !liberado('razao_social')) {
-    razaoInput.readOnly = true;
-    razaoInput.classList.add('field-locked');
+  const razaoTrava = !!(p.razaoSocial && razaoInput && !liberado('razao_social'));
+  if (razaoInput) {
+    razaoInput.readOnly = razaoTrava;
+    razaoInput.classList.toggle('field-locked', razaoTrava);
   }
+  if (razaoAlterar) razaoAlterar.hidden = !razaoTrava;
 
-  if (p.documentNumber && !liberado('documento')) {
-    documentInput.readOnly = true;
-    documentInput.classList.add('field-locked');
-    document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
-      btn.disabled = true;
-    });
+  const documentoTrava = !!(p.documentNumber && !liberado('documento'));
+  if (documentInput) {
+    documentInput.readOnly = documentoTrava;
+    documentInput.classList.toggle('field-locked', documentoTrava);
   }
+  document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
+    btn.disabled = documentoTrava;
+  });
+  if (documentAlterar) documentAlterar.hidden = !documentoTrava;
+}
+
+/** Dias que ainda faltam pra poder alterar de novo (0 = já pode). */
+function diasParaLiberarAlteracao(alteradoEm) {
+  if (!alteradoEm) return 0;
+  const passados = (Date.now() - new Date(alteradoEm).getTime()) / 86400000;
+  return Math.max(0, Math.ceil(7 - passados));
+}
+
+/* Clique no "Alterar": se já passaram 7 dias (ou o Admin liberou), destrava
+   o campo pra edição; senão mostra quantos dias ainda faltam. */
+function wireAlterarRazaoSocial(p) {
+  const link = document.getElementById('profile-razao-social-alterar');
+  const input = document.getElementById('profile-razao-social');
+  if (!link || !input) return;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const dias = diasParaLiberarAlteracao(p.companyAlteradoEm);
+    if (liberado('razao_social') || dias <= 0) {
+      input.readOnly = false;
+      input.classList.remove('field-locked');
+      link.hidden = true;
+      input.focus();
+      return;
+    }
+    showToast(`Sua razão social só pode ser alterada novamente, daqui ${dias} dia${dias === 1 ? '' : 's'}.`, true);
+  });
+}
+
+function wireAlterarDocumento(p) {
+  const link = document.getElementById('profile-document-alterar');
+  const input = document.getElementById('profile-document');
+  if (!link || !input) return;
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const dias = diasParaLiberarAlteracao(p.documentoAlteradoEm);
+    if (liberado('documento') || dias <= 0) {
+      input.readOnly = false;
+      input.classList.remove('field-locked');
+      link.hidden = true;
+      input.focus();
+      document.getElementById('profile-doc-type-toggle').querySelectorAll('[data-doc-type]').forEach(btn => {
+        btn.disabled = false;
+      });
+      return;
+    }
+    const docLabel = p.documentType === 'cpf' ? 'CPF' : 'CNPJ';
+    showToast(`Seu ${docLabel} só pode ser alterado novamente, daqui ${dias} dia${dias === 1 ? '' : 's'}.`, true);
+  });
 }
 
 

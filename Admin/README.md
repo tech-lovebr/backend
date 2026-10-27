@@ -33,7 +33,7 @@ Admin/
 ├── dashboard.html          # visão geral das duas plataformas
 ├── fornecedores.html       # contas B2B: empresa, CNPJ, categoria, plano, faturamento
 │   └── fornecedores-dashboard.html   # o que é publicado na plataforma B2B
-├── clientes.html           # contas dos noivos: contato, eventos, saldo
+├── anfitrioes.html         # contas dos anfitriões: contato, eventos, saldo
 │   └── clientes-dashboard.html       # o que é publicado na plataforma dos noivos
 ├── eventos.html            # comemorações por categoria, convidados, presentes
 ├── financeiro.html         # carteira dos fornecedores e dos clientes

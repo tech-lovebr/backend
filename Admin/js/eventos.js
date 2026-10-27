@@ -247,9 +247,10 @@ function abrirDetalhe(id) {
     restaurarEvento(e, () => { render(); abrirDetalhe(id); }));
   document.getElementById('btn-suspender')?.addEventListener('click', () => alternarSuspensao(e));
 
-  // Clicar no criador abre a conta dele; a seta de voltar traz de volta a este evento.
+  // Clicar no criador leva para Anfitriões › Cadastros, com o drawer dele
+  // aberto — a mesma tela de quem clica no nome lá, e não uma cópia aqui.
   document.querySelector('[data-conta]')?.addEventListener('click', ev => {
-    ContaDrawer.abrir(ev.currentTarget.dataset.conta, { voltar: () => abrirDetalhe(id) });
+    window.location.href = `anfitrioes.html?conta=${encodeURIComponent(ev.currentTarget.dataset.conta)}`;
   });
 }
 

@@ -4,6 +4,9 @@
   "installCommand": null,
   "outputDirectory": ".",
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/clientes", "destination": "/anfitrioes", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

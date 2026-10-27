@@ -197,15 +197,8 @@ const ContaDrawer = (() => {
     return null;
   }
 
-  /* De onde esta conta foi aberta. Quem abre de outra tela (o drawer do
-     evento, por exemplo) manda `voltar` e o cabeçalho ganha a seta para lá,
-     em vez de fechar tudo e devolver a pessoa para a lista. */
-  let VOLTAR = null;
-
-  async function abrir(idOuConta, opcoes = {}) {
+  async function abrir(idOuConta) {
     if (!idOuConta) return;
-
-    VOLTAR = typeof opcoes.voltar === 'function' ? opcoes.voltar : null;
 
     // Abrir outra conta sempre começa em leitura: o modo de edição é do
     // cadastro que estava aberto, não do drawer.
@@ -382,7 +375,6 @@ const ContaDrawer = (() => {
       semTitulo: true,
       selo: badge(situacao.rotulo, situacao.classe),
       acoes: acoesDoCabecalho(c),
-      back: VOLTAR,
       body: `
         <div class="lista-dados">
           ${identidadeDoFornecedor(c, linha) || linha('Nome', escapeHtml(c.nome || '—'))}

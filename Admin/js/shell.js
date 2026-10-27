@@ -20,7 +20,7 @@ const NAV_SECTIONS = [
       {
         grupo: 'clientes', text: 'Anfitriões', icon: 'users',
         children: [
-          { page: 'clientes', href: 'clientes.html', text: 'Cadastros' },
+          { page: 'anfitrioes', href: 'anfitrioes.html', text: 'Cadastros' },
           { page: 'eventos', href: 'eventos.html', text: 'Eventos' }
         ]
       }

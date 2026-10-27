@@ -890,7 +890,7 @@ const Busca = {
       ...clientes.data.map(c => ({
         grupo: 'Clientes', titulo: c.couple_name,
         sub: [c.email, c.phone].filter(Boolean).join(' · '),
-        href: `clientes.html?q=${encodeURIComponent(c.couple_name || '')}`
+        href: `anfitrioes.html?q=${encodeURIComponent(c.couple_name || '')}`
       })),
       ...eventos.data.map(e => ({
         grupo: 'Eventos', titulo: e.titulo,

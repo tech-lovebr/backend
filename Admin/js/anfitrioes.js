@@ -62,6 +62,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   filtroDePeriodo(PERIODO, () => { renderKpis(); render(); });
   ContaDrawer.emLinha({ host: document.getElementById('visao-conta'), esconder: [document.querySelector('.table-card'), document.getElementById('barra-selecao'), document.getElementById('header-actions')] });
   aplicarBuscaDaUrl(document.getElementById('busca'));
+
+  // Link direto para uma conta: anfitrioes?conta=<uuid>. É por aqui que o
+  // drawer do evento manda quem clica no anfitrião criador.
+  const conta = new URLSearchParams(location.search).get('conta');
+  if (conta) abrirDetalhe(conta);
 });
 
 /** Exporta o que está na tela — com a busca já aplicada. */

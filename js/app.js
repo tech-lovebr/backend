@@ -17772,7 +17772,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Capa e foto da empresa (Configurações › Minha Empresa no Hub).
       capaEmpresa: f.logo_url || '',
       avaliacaoMedia: (b2bAvaliacoesResumo.get(f.id) || {}).media || 0,
-      avaliacaoTotal: (b2bAvaliacoesResumo.get(f.id) || {}).total || 0
+      avaliacaoTotal: (b2bAvaliacoesResumo.get(f.id) || {}).total || 0,
+      // Redes sociais (Configurações › Minha Empresa no Hub).
+      socialLinks: f.social_links || {}
     };
   }
 
@@ -17788,7 +17790,7 @@ document.addEventListener('DOMContentLoaded', () => {
     b2bFornecedoresPromise = (async () => {
       const buscarFornecedores = () => supabaseClient
         .from('fornecedores')
-        .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
+        .select('id, company_name, description, avatar_url, logo_url, address, city, state, usa_endereco_perfil, business_address, business_city, business_state, portfolio_images, status, social_links, products(id, name, category, price, description, active, cover_image_url, gallery, extra)')
         .neq('status', 'bloqueado')
         .order('company_name');
       const [fornecedoresRes, favoritosRes, avaliacoesRes] = await Promise.all([
@@ -18248,6 +18250,24 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) html += estrela(i <= cheias);
     html += `</span><span class="text-zinc-500 text-sm">(${Number(total) || 0})</span>`;
     return html;
+  }
+
+  // Ícones das redes sociais do fornecedor (mesmas de Configurações › Minha
+  // Empresa no Hub, B2B/configuracoes.html) — mostradas na página do
+  // fornecedor, logo abaixo das estrelas de avaliação.
+  const ICONES_REDE_SOCIAL = {
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+    linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 3.36-2.49V9.66a5.71 5.71 0 0 0-.76-.05A5.69 5.69 0 0 0 4.17 15.3 5.69 5.69 0 0 0 9.86 21a5.69 5.69 0 0 0 5.68-5.7V9.01a7.35 7.35 0 0 0 4.29 1.37V7.29s-1.88.09-3.23-1.47Z"/></svg>',
+    facebook: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.53l.38-2.94H13.5V8.69c0-.85.24-1.43 1.46-1.43h1.55V4.63A20.6 20.6 0 0 0 14.25 4.5c-2.24 0-3.78 1.37-3.78 3.88v2.18H7.94v2.94h2.53V21h3.03Z"/></svg>',
+    youtube: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>'
+  };
+  const NOME_REDE_SOCIAL = { instagram: 'Instagram', linkedin: 'LinkedIn', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube' };
+  /** @param {Record<string, string>} socialLinks */
+  function socialLinksHtml(socialLinks) {
+    const redes = Object.keys(ICONES_REDE_SOCIAL).filter(r => (socialLinks || {})[r]);
+    if (!redes.length) return '';
+    return redes.map(r => `<a href="${escaparHtml(socialLinks[r])}" target="_blank" rel="noopener noreferrer" class="b2b-profile-social-btn" title="${NOME_REDE_SOCIAL[r]}" aria-label="${NOME_REDE_SOCIAL[r]}">${ICONES_REDE_SOCIAL[r]}</a>`).join('');
   }
 
   // Lista de avaliações do fornecedor (RPC avaliacoes_do_fornecedor).
@@ -19430,6 +19450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationTextEl = document.getElementById('b2b-profile-location-text');
     const siteLink = document.getElementById('b2b-profile-site-link');
     const ratingWrap = document.getElementById('b2b-profile-rating-wrap');
+    const socialWrap = document.getElementById('b2b-profile-social-wrap');
     const aboutEl = document.getElementById('b2b-profile-about');
     const specialtiesEl = document.getElementById('b2b-profile-specialties');
     const servicesSection = document.getElementById('b2b-profile-services-section');
@@ -19491,6 +19512,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ratingWrap) {
       ratingWrap.classList.remove('hidden');
       ratingWrap.innerHTML = estrelasHtml(item.avaliacaoMedia, item.avaliacaoTotal);
+    }
+    // Redes sociais do fornecedor, logo abaixo das estrelas de avaliação.
+    if (socialWrap) {
+      const socialHtml = socialLinksHtml(item.socialLinks);
+      socialWrap.innerHTML = socialHtml;
+      socialWrap.classList.toggle('hidden', !socialHtml);
     }
     // A lista de avaliações é só da página da empresa (não da do serviço).
     const reviewsSection = document.getElementById('b2b-profile-reviews-section');

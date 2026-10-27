@@ -7438,6 +7438,13 @@ html body button.b2b-profile-empresa-link:not(#love-h-a):hover { color: #416799;
 .b2b-estrela-cheia { color: #F59E0B; }
 .b2b-estrela-vazia { color: #D4D4D8; }
 .b2b-avaliacao { padding: .85rem 1rem; border: 1px solid #EEEEF0; border-radius: 10px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
+/* Redes sociais do fornecedor, logo abaixo das estrelas de avaliação. */
+.b2b-profile-social-links { display: inline-flex; align-items: center; gap: 8px; }
+.b2b-profile-social-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #F4F4F5; color: #52525B; transition: background-color .15s, color .15s; }
+.b2b-profile-social-btn:hover { background: #E4E4E7; color: #18181B; }
+.b2b-profile-social-btn svg { width: 15px; height: 15px; }
+body[data-theme="dark"] .b2b-profile-social-btn { background: #2A2A2A; color: #A1A1AA; }
+body[data-theme="dark"] .b2b-profile-social-btn:hover { background: #333333; color: #FFFFFF; }
 
 /* Perfil do fornecedor: duas colunas (serviços/avaliações | caixa do portfólio) */
 .b2b-perfil-caixa { background: #fff; border: 1px solid #EEEEF0; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); position: sticky; top: 1rem; }

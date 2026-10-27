@@ -461,7 +461,10 @@
 
   /** @param {number} n @param {number} direcao */
   function irPara(n, direcao) {
-    if (n < 1 || n > ETAPAS.length) return;
+    // Evento completo: uma etapa por categoria, então o total muda com quantas
+    // foram marcadas (serviço avulso e a outra ponta continuam com ETAPAS.length).
+    const max = modo === 'lote' ? totalEtapasFormulario() : ETAPAS.length;
+    if (n < 1 || n > max) return;
     etapa = n;
     erros = {};
     desenhar(direcao);
@@ -470,8 +473,9 @@
 
   function avancar() {
     if (modo === 'lote') {
-      // Etapa 1: serviço(s) + evento · etapa 2: detalhes · etapa 3: imagens e publicar.
-      const e = etapa < ETAPAS_DO_FORMULARIO ? validarLote(etapa) : {};
+      // Etapa 1: serviço(s) + evento · uma etapa por categoria · última: imagens e publicar.
+      const total = totalEtapasFormulario();
+      const e = etapa < total ? validarLote(etapa) : {};
       if (Object.keys(e).length) {
         erros = e;
         desenhar(0);
@@ -480,7 +484,7 @@
         return;
       }
       mostrarErroGeral('');
-      if (etapa < ETAPAS_DO_FORMULARIO) { irPara(etapa + 1, 1); window.scrollTo({ top: 0 }); return; }
+      if (etapa < total) { irPara(etapa + 1, 1); window.scrollTo({ top: 0 }); return; }
       publicarLote();
       return;
     }
@@ -523,7 +527,7 @@
 
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
-    const textos = modo === 'lote' ? (TEXTOS_DA_PAGINA[etapa - 1] || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
+    const textos = modo === 'lote' ? (textosDaPagina(etapa) || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
     if (titulo) { titulo.textContent = textos.titulo; titulo.hidden = !textos.titulo; }
@@ -550,7 +554,7 @@
     const avancarBtn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
     if (voltar) voltar.textContent = etapa === 1 ? 'Cancelar' : 'Voltar';
     if (avancarBtn) {
-      avancarBtn.textContent = publicando ? 'Publicando…' : ((modo === 'lote' ? etapa === ETAPAS_DO_FORMULARIO : etapa === ETAPAS.length) ? (formato === 'completo' && lote.categorias.length > 1 ? `Publicar ${lote.categorias.length} solicitações simultâneas` : 'Publicar solicitação') : 'Continuar');
+      avancarBtn.textContent = publicando ? 'Publicando…' : ((modo === 'lote' ? etapa === totalEtapasFormulario() : etapa === ETAPAS.length) ? (formato === 'completo' && lote.categorias.length > 1 ? `Publicar ${lote.categorias.length} solicitações simultâneas` : 'Publicar solicitação') : 'Continuar');
       avancarBtn.disabled = publicando;
     }
     atualizarBotaoAvancar();
@@ -564,7 +568,7 @@
     const btn = /** @type {HTMLButtonElement|null} */ (document.querySelector('#rfp-editor [data-rfp-avancar]'));
     if (!btn) return;
     let pronto = true;
-    if (modo === 'lote' && etapa < ETAPAS_DO_FORMULARIO) {
+    if (modo === 'lote' && etapa < totalEtapasFormulario()) {
       // Validação sem efeito colateral (ela abre os serviços com erro).
       const abertos = { ...lote.abertos };
       pronto = !Object.keys(validarLote(etapa)).length;
@@ -574,7 +578,7 @@
     // o que falta e leva até o campo.
     btn.disabled = publicando;
     btn.classList.toggle('is-incompleto', !pronto);
-    if (pronto && etapa < ETAPAS_DO_FORMULARIO) mostrarErroGeral('');
+    if (pronto && etapa < totalEtapasFormulario()) mostrarErroGeral('');
   }
 
   /**
@@ -1143,24 +1147,46 @@
 
     }
     if (n === 2) validarLogistica(e);
-    if (n === 3) {
-      lote.categorias.forEach(id => {
-        const it = lote.itens[id];
-        if (!it) return;
-        // Serviço avulso: o título fica na etapa 1 (validado lá).
-        if (formato === 'completo' && it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
-        if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
-        const tam = descricaoDoItem(id).length;
-        if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = `A descrição precisa ter pelo menos ${DESCRICAO_MIN} caracteres.`;
-        if (tam > DESCRICAO_MAX) e[`${id}:descricao`] = `No máximo ${DESCRICAO_MAX} caracteres.`;
-        if (Object.keys(e).some(k => k.startsWith(`${id}:`))) lote.abertos[id] = true;
-      });
+    // Evento completo: cada etapa valida só a categoria dela. Serviço avulso
+    // continua validando a única categoria na etapa 3, como sempre.
+    if (formato === 'completo') {
+      const id = categoriaDaEtapa(n);
+      if (id) validarItemDoLote(id, e);
+    } else if (n === 3) {
+      lote.categorias.forEach(id => validarItemDoLote(id, e));
     }
     return e;
+  }
+  /** @param {string} id @param {Record<string, string>} e */
+  function validarItemDoLote(id, e) {
+    const it = lote.itens[id];
+    if (!it) return;
+    // Serviço avulso: o título fica na etapa 1 (validado lá).
+    if (formato === 'completo' && it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
+    if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
+    const tam = descricaoDoItem(id).length;
+    if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = `A descrição precisa ter pelo menos ${DESCRICAO_MIN} caracteres.`;
+    if (tam > DESCRICAO_MAX) e[`${id}:descricao`] = `No máximo ${DESCRICAO_MAX} caracteres.`;
+    if (Object.keys(e).some(k => k.startsWith(`${id}:`))) lote.abertos[id] = true;
   }
 
   const ETAPAS_DO_FORMULARIO = 4;
   const TEXTO_DA_PAGINA = { titulo: '', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' };
+
+  /**
+   * Evento completo: uma etapa por categoria (1 serviços · 2 evento · uma por
+   * categoria · última de revisão) em vez de todas juntas na etapa 3. Serviço
+   * avulso continua com as 4 etapas de sempre (só tem 1 categoria mesmo).
+   */
+  function totalEtapasFormulario() {
+    return formato === 'completo' ? 3 + lote.categorias.length : ETAPAS_DO_FORMULARIO;
+  }
+  /** Qual categoria é editada na etapa `n` (3..2+N) do Evento completo; null fora disso. @param {number} n */
+  function categoriaDaEtapa(n) {
+    if (formato !== 'completo') return null;
+    const i = n - 3;
+    return i >= 0 && i < lote.categorias.length ? lote.categorias[i] : null;
+  }
 
   /** Data, cidade/UF, convidados e horário numa linha compacta. */
   function htmlEventoCompacto() {
@@ -1388,7 +1414,7 @@
     return htmlFinal();
   }
 
-  /** Evento completo, por etapa: 1 serviços · 2 evento · 3 título, descrição e orçamento de cada serviço · 4 imagens. */
+  /** Evento completo, por etapa: 1 serviços · 2 evento · uma etapa por categoria (título, descrição e orçamento) · última de imagens. */
   function htmlPaginaCompleto() {
     atualizarTitulos();
     if (etapa === 1) {
@@ -1400,28 +1426,28 @@
         </section>`;
     }
     if (etapa === 2) return `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
-    if (etapa === 3) {
-      return `
-        <section class="rfp-secao">
-          <!-- Cada serviço com o próprio título e a descrição logo abaixo (sem descrição geral nem subcategorias). -->
-          <div class="rfp-lote-lista">
-            ${lote.categorias.map(id => {
-              const cat = categoriaPorId(/** @type {any} */ (id));
-              if (!cat || !lote.itens[id]) return '';
-              return `
-                <div class="rfp-lote-linha">
-                  <div class="rfp-lote-linha-topo">
-                    <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${cat.icone}</svg></span>
-                    <b>${esc(CATEGORIA_CURTA[id] || cat.nome)}</b>
-                  </div>
-                  ${blocoTitulo(id)}
-                  ${blocoDescricao(id, 'Descrição', 3)}
-                  <h4 class="rfp-pergunta">Orçamento <span class="rfp-opcional">(opcional)</span></h4>
-                  ${blocoOrcamento(id)}
-                </div>`;
-            }).join('')}
-          </div>
-        </section>`;
+    // Cada serviço marcado vira a própria etapa: título, descrição e
+    // orçamento dele, um de cada vez (em vez de todos juntos na mesma página).
+    const idDaEtapa = categoriaDaEtapa(etapa);
+    if (idDaEtapa) {
+      const cat = categoriaPorId(/** @type {any} */ (idDaEtapa));
+      if (cat && lote.itens[idDaEtapa]) {
+        return `
+          <section class="rfp-secao">
+            <div class="rfp-lote-linha-topo rfp-etapa-cat-topo">
+              <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${cat.icone}</svg></span>
+              <b>${esc(CATEGORIA_CURTA[idDaEtapa] || cat.nome)}</b>
+            </div>
+            ${blocoTitulo(idDaEtapa)}
+          </section>
+          <section class="rfp-secao">
+            ${blocoDescricao(idDaEtapa, 'Descreva o que você precisa', 5)}
+          </section>
+          <section class="rfp-secao">
+            <h4 class="rfp-pergunta">Orçamento previsto <span class="rfp-opcional">(opcional)</span></h4>
+            ${blocoOrcamento(idDaEtapa)}
+          </section>`;
+      }
     }
     return htmlFinal();
   }
@@ -1435,6 +1461,20 @@
     // Etapa 3: o "Imagem de referência" aparece uma vez só, dentro do formulário.
     { titulo: 'Revise e publique', sub: 'Adicione imagens de referência, se quiser, e publique a sua solicitação.' }
   ];
+
+  /**
+   * Texto do topo da etapa `n`, com as etapas por categoria do Evento
+   * completo (uma pergunta "Descreva o que você precisa" por serviço).
+   * @param {number} n
+   */
+  function textosDaPagina(n) {
+    if (n === 1) return TEXTOS_DA_PAGINA[0];
+    if (n === 2) return TEXTOS_DA_PAGINA[1];
+    if (n === totalEtapasFormulario()) return TEXTOS_DA_PAGINA[3];
+    const id = categoriaDaEtapa(n);
+    const cat = id && categoriaPorId(/** @type {any} */ (id));
+    return cat ? { titulo: 'Descreva o que você precisa', sub: `Conte os detalhes do que você precisa para ${cat.nome}, e quanto planeja gastar, se quiser.` } : TEXTOS_DA_PAGINA[2];
+  }
 
   /** O formulário da etapa atual (os dois jeitos de começar ficam na etapa 1). */
   function htmlPagina() {

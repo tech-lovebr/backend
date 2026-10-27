@@ -12215,6 +12215,10 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   /* Mesmo fundo #F4F6F7 do desktop e do B2B (cards/caixas continuam brancos). */
   :root { --bg-dashboard: #F4F6F7; }
   html body:not([data-theme="dark"]) :is(#view-event-os-dashboard, #dashboard-main-area, .dashboard-content-wrapper):not(#love-h-a) { background: #F4F6F7 !important; }
+  /* Convite digital/Informações/Co-anfitriões: cabeçalho branco é coisa do
+     desktop (regra fora de media query) — no celular ele deve ficar igual
+     ao de Meus Convidados, no mesmo cinza do resto do dashboard. */
+  html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root > .builder-toolbar:not(#love-h-a) { background: var(--bg-dashboard) !important; border-bottom: 0 !important; }
 
   /* Caixas e tabelas sem borda, sem cantos e sem fundo próprio, de ponta a
      ponta da tela (as linhas da tabela vão até a borda). */

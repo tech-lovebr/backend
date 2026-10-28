@@ -600,7 +600,7 @@
     if (sub) { sub.textContent = textos.sub; sub.hidden = !textos.sub; }
     const exemplos = document.getElementById('rfp-exemplos');
     // Exemplos de título: na etapa 1 do serviço avulso (é onde se escreve o título).
-    if (exemplos) exemplos.hidden = etapa !== 1 || (modo === 'lote' && formato === 'completo');
+    if (exemplos) exemplos.hidden = etapa !== (noCelular() ? 3 : 1) || (modo === 'lote' && formato === 'completo');
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
@@ -1232,7 +1232,7 @@
     /** @type {Record<string, string>} */
     const e = {};
     if (n === 1) {
-      if (formato !== 'completo' && tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
+      if (formato !== 'completo' && !noCelular() && tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
       if (!lote.categorias.length) e.categorias = formato === 'completo' ? 'Escolha pelo menos um serviço.' : 'Escolha o serviço.';
 
     }
@@ -1243,6 +1243,7 @@
       const id = categoriaDaEtapa(n);
       if (id) validarItemDoLote(id, e);
     } else if (n === 3) {
+      if (noCelular() && tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
       lote.categorias.forEach(id => validarItemDoLote(id, e));
     }
     return e;
@@ -1475,14 +1476,16 @@
     // Sem título gerado automaticamente: o título é o que a pessoa escreve.
     const it = id ? lote.itens[id] : null;
     if (it && !it.tituloEditado) { it.titulo = tituloSemServico; it.tituloEditado = true; }
-    if (etapa === 1) {
-      return `
+    const secaoTitulo = `
         <section class="rfp-secao">
           <label class="rfp-rotulo"><span class="rfp-rotulo-texto">Título</span>
             <input type="text" class="rfp-campo" data-rfp-titulo-unico maxlength="120" value="${esc(tituloDoUnico())}">
           </label>
           ${erroHtml('titulo')}
-        </section>
+        </section>`;
+    if (etapa === 1) {
+      return `
+        ${noCelular() ? '' : secaoTitulo}
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Categoria</h4>
           ${seletorDeServico()}
@@ -1493,6 +1496,7 @@
     if (etapa === 2) return noCelular() ? htmlEventoCelular() : `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
     if (etapa === 3 && id) {
       return `
+        ${noCelular() ? secaoTitulo : ''}
         <section class="rfp-secao">
           ${blocoDescricao(id, 'Descreva o que você precisa', 5)}
         </section>
@@ -1812,7 +1816,7 @@
       tituloSemServico = el.value;
       const tinhaErro = !!erros.titulo;
       delete erros.titulo;
-      const achou = categoriaPeloTitulo(el.value);
+      const achou = etapa === 1 ? categoriaPeloTitulo(el.value) : null;
       if ((achou && achou !== id && !categoriaEscolhidaAMao) || tinhaErro) {
         if (achou && achou !== id && !categoriaEscolhidaAMao) escolherServicoUnico(achou);
         const pos = el.selectionStart;

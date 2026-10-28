@@ -13373,7 +13373,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-rsvp .rsvp-total-celular:not(#love-h-a) {
     display: block; margin: 0; padding: 0 16px 12px; font-family: Inter, sans-serif;
-    font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: #18181B;
+    font-size: 17px; font-weight: 600; letter-spacing: 0; color: #18181B;
   }
   html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:not(#love-h-a) td:not(#love-h-a) {
     display: table-cell !important; height: auto !important; padding: 6px 16px !important;

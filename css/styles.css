@@ -13444,3 +13444,15 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #view-event-os-dashboard #tab-edit-site #builder-preview-link:not(#love-h-a) { color: #18181B !important; }
   body[data-theme="dark"] #tab-edit-site #builder-preview-link { color: #FFFFFF !important; }
 }
+
+/* Celular: bússola no cabeçalho de Mensagens (vai para Explorar fornecedores),
+   no estilo dos ícones de Convidados e Presentes. Desktop não muda. */
+.b2b-explorar-celular { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.b2b-chat-mode #view-event-os-dashboard #btn-b2b-explorar-celular:not(#love-h-a) {
+    display: inline-flex !important; align-items: center; justify-content: center; flex: 0 0 auto; margin-left: auto;
+    width: 44px; height: 44px; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body #btn-b2b-explorar-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
+  body[data-theme="dark"] #btn-b2b-explorar-celular { color: #FFFFFF !important; }
+}

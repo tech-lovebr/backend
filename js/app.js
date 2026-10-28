@@ -485,8 +485,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none')
         // Lista de presentes: Configurações sai das abas (ícone ao lado do +).
         .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'gift-settings')
-        // Fornecedores: Explorar (bússola em Mensagens / ☰), Mensagens (barra de baixo) e Favoritos (☰) saem das abas.
-        .filter(i => !['explore', 'messages', 'favorites'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
+        // Fornecedores: Explorar (coroinha em Mensagens / ☰), Mensagens (barra de baixo) e Favoritos (☰) saem das abas; Convidados: Checklist (já está na Home).
+        .filter(i => !['explore', 'messages', 'favorites', 'checklist'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
       // Só redesenha quando os itens mudam (redesenhar sempre engolia os
       // toques) — mas "mudam" tem que levar em conta os ELEMENTOS em si, não
       // só o texto: trocar de aba e voltar recria os .sub-drawer-item do

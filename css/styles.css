@@ -13298,24 +13298,13 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
 }
 
 /* ==========================================================================
-   Celular: ficha do convidado com as iniciais numa caixinha (como o perfil do
-   desktop) à esquerda; nome e status alinhados à esquerda. Mapa do evento:
+   Celular: ficha do convidado com nome, status e iniciais centralizados (o
+   invólucro .ficha-cabeca não muda o layout). Mapa do evento:
    quadriculado sempre de ponta a ponta (também durante a pinça) e botões de
    zoom que não mexem no zoom do navegador. Desktop não muda.
    ========================================================================== */
 .ficha-cabeca, .ficha-cabeca-texto { display: contents; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body .ficha-convidado .ficha-cabeca:not(#love-h-a) { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 8px; }
-  html body .ficha-convidado .ficha-cabeca-texto:not(#love-h-a) { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; flex: 1 1 auto; }
-  html body .ficha-convidado .ficha-avatar:not(#love-h-a) {
-    flex: 0 0 auto; width: 64px; height: 64px; box-sizing: border-box;
-    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px;
-    color: #183b54; font-size: 22px; font-weight: 700; letter-spacing: 0.02em;
-  }
-  html body .ficha-convidado .ficha-nome:not(#love-h-a) { margin: 0; max-width: 100%; text-align: left; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
-  html body .ficha-convidado .ficha-status:not(#love-h-a) { height: 28px; padding: 0 10px; border-radius: 6px; font-size: 13px; }
-  .ficha-convidado.is-novo .ficha-cabeca { display: none !important; }
-  body[data-theme="dark"] .ficha-convidado .ficha-avatar { background: #252525; border-color: #333333; color: #FFFFFF; }
 
   /* Fundo da área do mapa também quadriculado: na pinça nunca aparece branco. */
   html body #tab-rsvp-tables .floorplan-body:not(#love-h-a) {

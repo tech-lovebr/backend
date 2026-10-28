@@ -10262,7 +10262,7 @@ document.addEventListener('DOMContentLoaded', () => {
           letraAnterior = letra;
           const linhaLetra = document.createElement('tr');
           linhaLetra.className = 'guest-letra-linha';
-          linhaLetra.innerHTML = `<td colspan="6">${letra}</td>`;
+          linhaLetra.innerHTML = `<td>${letra}</td>`;
           listEl.appendChild(linhaLetra);
         }
       }

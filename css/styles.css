@@ -13542,3 +13542,9 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #tab-b2b:has(#pedidos-painel-minhas:not(.hidden)) #btn-rfp-lista-celular .rfp-icone-mais:not(#love-h-a) { display: block; }
   body[data-theme="dark"] #btn-rfp-lista-celular { color: #FFFFFF !important; }
 }
+
+/* Celular: Configurações da lista só com a Taxa de Serviço e Conveniência
+   (sem a tabela "Lista adicionada"). Desktop não muda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #gifts-panel-settings > div:has(.suas-listas-caixa):not(#love-h-a) { display: none !important; }
+}

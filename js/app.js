@@ -9998,7 +9998,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const totalPaginas = Math.max(1, Math.ceil(lista.length / recadosPorPagina));
     recadosPagina = Math.min(Math.max(1, recadosPagina), totalPaginas);
-    const daPagina = lista.slice((recadosPagina - 1) * recadosPorPagina, recadosPagina * recadosPorPagina);
+    const daPagina = noCelular ? lista : lista.slice((recadosPagina - 1) * recadosPorPagina, recadosPagina * recadosPorPagina);
     const linhas = daPagina.map(/** @param {any} g */ g => {
       const id = String(g.id);
       const msg = String(g.message || '').trim();
@@ -22921,6 +22921,7 @@ document.addEventListener('DOMContentLoaded', () => {
     noCelular.addEventListener?.('change', arrumar);
     window.addEventListener('resize', arrumar);
     arrumar();
+    document.getElementById('btn-rfp-voltar-explorar-celular')?.addEventListener('click', () => window.loveIrPara?.('b2b', 'explore'));
     document.getElementById('btn-rfp-lista-celular')?.addEventListener('click', () => {
       const lista = document.getElementById('pedidos-painel-minhas');
       const naLista = !!lista && !lista.classList.contains('hidden');

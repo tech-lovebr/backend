@@ -13548,3 +13548,14 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #view-event-os-dashboard #gifts-panel-settings > div:has(.suas-listas-caixa):not(#love-h-a) { display: none !important; }
 }
+
+/* Celular: Recados sem paginação (rolagem contínua); em Criar solicitação,
+   setinha à esquerda do título volta para Encontrar fornecedor. Desktop não muda. */
+html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #gifts-panel-messages .recados-paginacao:not(#love-h-a) { display: none !important; }
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-pedidos-view:not(.hidden)):has(#pedidos-painel-minhas.hidden) #btn-rfp-voltar[hidden] ~ #btn-rfp-voltar-explorar-celular:not(#love-h-a) {
+    display: inline-flex !important; width: 44px !important; height: 44px !important; margin: 0 0 0 -10px !important;
+  }
+  html body #btn-rfp-voltar-explorar-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
+}

@@ -13296,3 +13296,45 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #view-event-os-dashboard #tab-gifts .love-tabela-busca > svg:not(#love-h-a) { left: 12px !important; width: 14px !important; height: 14px !important; }
   body[data-theme="dark"] #tab-gifts #gifts-barra .love-tabela-barra { border-bottom-color: rgba(255,255,255,0.08) !important; }
 }
+
+/* ==========================================================================
+   Celular: ficha do convidado com as iniciais numa caixinha (como o perfil do
+   desktop) à esquerda; nome e status alinhados à esquerda. Mapa do evento:
+   quadriculado sempre de ponta a ponta (também durante a pinça) e botões de
+   zoom que não mexem no zoom do navegador. Desktop não muda.
+   ========================================================================== */
+.ficha-cabeca, .ficha-cabeca-texto { display: contents; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .ficha-convidado .ficha-cabeca:not(#love-h-a) { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 8px; }
+  html body .ficha-convidado .ficha-cabeca-texto:not(#love-h-a) { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; flex: 1 1 auto; }
+  html body .ficha-convidado .ficha-avatar:not(#love-h-a) {
+    flex: 0 0 auto; width: 64px; height: 64px; box-sizing: border-box;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px;
+    color: #183b54; font-size: 22px; font-weight: 700; letter-spacing: 0.02em;
+  }
+  html body .ficha-convidado .ficha-nome:not(#love-h-a) { margin: 0; max-width: 100%; text-align: left; font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
+  html body .ficha-convidado .ficha-status:not(#love-h-a) { height: 28px; padding: 0 10px; border-radius: 6px; font-size: 13px; }
+  .ficha-convidado.is-novo .ficha-cabeca { display: none !important; }
+  body[data-theme="dark"] .ficha-convidado .ficha-avatar { background: #252525; border-color: #333333; color: #FFFFFF; }
+
+  /* Fundo da área do mapa também quadriculado: na pinça nunca aparece branco. */
+  html body #tab-rsvp-tables .floorplan-body:not(#love-h-a) {
+    touch-action: none;
+    background-color: #FAFCFF;
+    background-image:
+      linear-gradient(to right, rgba(229, 231, 235, 0.65) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(229, 231, 235, 0.65) 1px, transparent 1px),
+      linear-gradient(to right, rgba(229, 231, 235, 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(229, 231, 235, 0.35) 1px, transparent 1px);
+    background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+  }
+  body[data-theme="dark"] #tab-rsvp-tables .floorplan-body {
+    background-color: transparent;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.10) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.10) 1px, transparent 1px),
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  }
+  html body .planta-zoom:not(#love-h-a), html body .planta-zoom button:not(#love-h-a) { touch-action: none; -webkit-user-select: none; user-select: none; }
+}

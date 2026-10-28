@@ -10342,9 +10342,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="ficha-pilula is-salvar" data-ficha="salvar" hidden>Salvar</button>
       </div>
       <div class="ficha-corpo">
-        <div class="ficha-avatar" id="ficha-avatar"></div>
-        <p class="ficha-nome" id="ficha-nome"></p>
-        <span class="ficha-status" id="ficha-status"></span>
+        <div class="ficha-cabeca">
+          <div class="ficha-avatar" id="ficha-avatar"></div>
+          <div class="ficha-cabeca-texto">
+            <p class="ficha-nome" id="ficha-nome"></p>
+            <span class="ficha-status" id="ficha-status"></span>
+          </div>
+        </div>
         <section class="ficha-cartao">
           <h3>Informações de contato</h3>
           <div id="ficha-contato"></div>
@@ -12095,7 +12099,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Com zoom no celular a planta fica mais larga que a tela: a conta de
     // caber usa a largura da tela, e o zoom multiplica o resultado.
     const z = zoomDaPlanta || 1;
-    if (z !== 1) return escalaParaCaberSemZoom(canvas.clientWidth / z, elements) * z;
+    if (z !== 1) return escalaParaCaberSemZoom(canvas.parentElement ? canvas.parentElement.clientWidth : canvas.clientWidth / z, elements) * z;
     return escalaParaCaberSemZoom(canvas.clientWidth || 0, elements);
   }
   /** @param {number} largura @param {any[]} elements */
@@ -12594,7 +12598,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function ajustarAlturaDaPlanta(canvas, elements) {
     const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + alturaNaPlanta(item)), 0);
     // Com zoom, a planta cresce junto (para dar para arrastar até as bordas).
-    const comZoom = zoomDaPlanta !== 1 && canvas.parentElement ? canvas.parentElement.clientHeight * zoomDaPlanta : 0;
+    const comZoom = zoomDaPlanta !== 1 && canvas.parentElement ? canvas.parentElement.clientHeight * Math.max(1, zoomDaPlanta) : 0;
     canvas.style.minHeight = (maisBaixa || comZoom) ? `${Math.max(360, (maisBaixa + 16) * escalaDaPlanta, comZoom)}px` : '';
     const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
     if (camada) camada.style.height = `${Math.max(canvas.offsetHeight, (maisBaixa + 16) * escalaDaPlanta) / escalaDaPlanta}px`;
@@ -12635,8 +12639,15 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.querySelectorAll('.floorplan-el, .floorplan-guia').forEach(el => el.remove());
     // Zoom só existe no celular; a largura da planta acompanha o zoom.
     if (!plantaNoCelular()) zoomDaPlanta = 1;
-    canvas.style.width = zoomDaPlanta === 1 || !canvas.parentElement ? '' : `${canvas.parentElement.clientWidth * zoomDaPlanta}px`;
+    // Afastando (zoom < 1) a planta continua ocupando a tela toda: o
+    // quadriculado vai de ponta a ponta e só fica menor, junto com as mesas.
+    canvas.style.width = zoomDaPlanta === 1 || !canvas.parentElement ? '' : `${canvas.parentElement.clientWidth * Math.max(1, zoomDaPlanta)}px`;
     canvas.classList.toggle('tem-zoom', zoomDaPlanta !== 1);
+    if (zoomDaPlanta === 1) canvas.style.removeProperty('background-size');
+    else {
+      const q = (n) => `${Math.round(n * zoomDaPlanta * 100) / 100}px`;
+      canvas.style.setProperty('background-size', `${q(50)} ${q(50)}, ${q(50)} ${q(50)}, ${q(10)} ${q(10)}, ${q(10)} ${q(10)}`, 'important');
+    }
     if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia' && x.type !== 'config') ? 'none' : 'flex';
     // Camada com todos os elementos, na escala que faz tudo caber na largura.
     escalaDaPlanta = escalaParaCaber(canvas, elements);
@@ -14267,6 +14278,12 @@ document.addEventListener('DOMContentLoaded', () => {
       <button type="button" data-zoom="menos" aria-label="Afastar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
       <button type="button" data-zoom="centro" aria-label="Centralizar a planta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="2.5"/></svg></button>`;
     document.body.appendChild(controles);
+    controles.addEventListener('touchend', (e) => {
+      const b = /** @type {HTMLElement} */ (e.target).closest('[data-zoom]');
+      if (!b) return;
+      e.preventDefault();
+      b.click();
+    }, { passive: false });
     controles.addEventListener('click', (e) => {
       const b = /** @type {HTMLElement} */ (e.target).closest('[data-zoom]');
       if (!b) return;
@@ -14357,10 +14374,9 @@ document.addEventListener('DOMContentLoaded', () => {
       mouse('mouseup', e.changedTouches[0], document);
       if (atual.moveu) return;
       const dado = getFloorPlanElements().find(x => x.id === atual.id);
-      if (dado && dado.type === 'mesa') {
-        plantaSelecionada = null;
+      if (dado) {
+        plantaSelecionada = dado.id;
         desenharSelecaoDaPlanta();
-        abrirMesa(atual.id);
       }
     };
     document.addEventListener('touchend', soltar);

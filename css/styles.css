@@ -12292,11 +12292,11 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   html body #view-event-os-dashboard .dashboard-tab-content > .submenu-celular:not([hidden]):not(#love-h-a) { margin: 0 -1rem 16px !important; }
   html body #view-event-os-dashboard .dashboard-tab-content > .submenu-celular:not([hidden]) + *:not(#love-h-a) { padding-top: 0 !important; }
 
-  /* Aba ativa: linha reta da cor primária em cima, sem cantos. */
+  /* Aba ativa: linha reta da cor primária embaixo, sem cantos. */
   html body #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a),
   html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) { position: relative; border-radius: 0 !important; box-shadow: none !important; }
   html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a)::before {
-    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #183b54; border-radius: 0;
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #183b54; border-radius: 0;
   }
   body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo::before { background: #EBF4FF; }
 

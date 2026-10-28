@@ -13456,3 +13456,57 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #btn-b2b-explorar-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
   body[data-theme="dark"] #btn-b2b-explorar-celular { color: #FFFFFF !important; }
 }
+
+/* ==========================================================================
+   Celular: Recados recebidos. Busca no mesmo lugar e altura da de Meus
+   presentes, sem a contagem; lista como Minha lista (iniciais, nome, presente
+   e valor à direita); tocar abre o recado em tela inteira, como a ficha do
+   convidado. Desktop não muda.
+   ========================================================================== */
+.recado-avatar-celular, .recado-celular-presente, .recado-celular-valor { display: none; }
+.recado-celular-texto { display: contents; }
+#recado-ficha[hidden] { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #gifts-panel-messages:not(#love-h-a) { padding: 3px 0 0 !important; }
+  html body #view-event-os-dashboard #gifts-panel-messages .recados-caixa:not(#love-h-a) { margin: 0 -16px !important; width: auto !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+  html body #view-event-os-dashboard .recados-caixa .love-tabela-barra:not(#love-h-a) { padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
+  html body #view-event-os-dashboard .recados-caixa .love-tabela-busca:not(#love-h-a) { width: 100% !important; max-width: none !important; }
+  html body #view-event-os-dashboard .recados-caixa .love-tabela-barra-esq:not(#love-h-a) { flex: 1 1 auto !important; min-width: 0 !important; }
+  html body #view-event-os-dashboard #recados-busca:not(#love-h-a) { height: 40px !important; padding: 0 12px 0 44px !important; font-size: 16px !important; border-radius: 8px !important; }
+  html body #view-event-os-dashboard .recados-caixa .love-tabela-busca > svg:not(#love-h-a) { left: 12px !important; width: 14px !important; height: 14px !important; }
+  html body #view-event-os-dashboard .recados-caixa :is(.love-tabela-barra-dir, .recados-contagem):not(#love-h-a) { display: none !important; }
+
+  /* Lista: iniciais + nome, presente embaixo, valor à direita. */
+  html body .recados-tabela thead:not(#love-h-a),
+  html body .recados-tabela tbody tr.recado-linha > td:not(:first-child):not(#love-h-a) { display: none !important; }
+  html body .recados-tabela:not(#love-h-a) { min-width: 0 !important; width: 100% !important; }
+  html body .recados-tabela tbody tr.recado-linha > td:first-child:not(#love-h-a) {
+    display: flex !important; align-items: center; gap: 14px; min-height: 64px; padding: 8px 16px !important;
+    border: 0 !important; background: transparent !important; height: auto !important;
+  }
+  html body .recados-tabela tbody tr.recado-linha:not(#love-h-a), html body .recados-tabela tbody tr.recado-linha:hover td:not(#love-h-a) { background: transparent !important; }
+  html body .recados-tabela .recado-avatar-celular:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 38px; height: 38px; margin: 0 4px; border-radius: 50%;
+    background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600;
+  }
+  html body .recados-tabela .recado-celular-texto:not(#love-h-a) { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  html body .recados-tabela .recado-nome:not(#love-h-a) { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: Inter, sans-serif; font-size: 17px; font-weight: 400; color: #18181B; }
+  html body .recados-tabela .recado-nome .guest-nome-resto:not(#love-h-a) { font-weight: 600; }
+  html body .recados-tabela .recado-celular-presente:not(#love-h-a) { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: #71717A; }
+  html body .recados-tabela .recado-celular-valor:not(#love-h-a) { display: block; flex: 0 0 auto; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: #18181B; }
+  html body .recados-caixa .tabela-com-linhas-vazias:not(#love-h-a) { background-image: none !important; }
+
+  /* Recado aberto (tela inteira). */
+  html body .recado-ficha .ficha-topo:not(#love-h-a) { justify-content: space-between; }
+  html body .recado-ficha .recado-ficha-espaco:not(#love-h-a) { width: 44px; height: 44px; flex-shrink: 0; }
+  html body .recado-ficha .ficha-status:not(#love-h-a) { color: #71717A; }
+  html body .recado-ficha .recado-ficha-texto:not(#love-h-a) { margin: 4px 0 12px; font-size: 16px; line-height: 1.55; color: #18181B; white-space: pre-wrap; overflow-wrap: anywhere; }
+  html body .recado-ficha .recado-video:not(#love-h-a) { display: block; width: 100%; margin: 8px 0 12px; border-radius: 8px; background: #000; }
+  body[data-theme="dark"] .recados-tabela :is(.recado-nome, .recado-celular-valor) { color: #FFFFFF !important; }
+  body[data-theme="dark"] .recado-ficha .recado-ficha-texto { color: #FFFFFF; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* A linha cabe na tela: tabela vira lista simples. */
+  html body .recados-tabela:not(#love-h-a), html body .recados-tabela tbody:not(#love-h-a), html body .recados-tabela tbody tr.recado-linha:not(#love-h-a) { display: block !important; width: 100% !important; min-width: 0 !important; }
+  html body .recados-tabela tbody tr.recado-linha > td:first-child:not(#love-h-a) { width: 100% !important; box-sizing: border-box; }
+}

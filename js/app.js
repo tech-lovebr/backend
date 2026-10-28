@@ -9909,6 +9909,70 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
   }
 
+  /** @param {string} nome */
+  function iniciaisDoRecado(nome) {
+    const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+    return (((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '')).toUpperCase() || '?';
+  }
+  /** Primeiro nome leve e o resto em negrito (igual Minha lista). @param {string} nome */
+  function nomeDoRecadoHtml(nome) {
+    const partes = String(nome || 'Convidado').trim().split(/\s+/).filter(Boolean);
+    return `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;
+  }
+  /** Celular: o recado aberto em tela inteira (seta ←, iniciais, nome, data, presente e o recado). @param {any} g */
+  function fichaDoRecado(g) {
+    let ficha = document.getElementById('recado-ficha');
+    if (!g) { if (ficha) ficha.hidden = true; return; }
+    if (!ficha) {
+      ficha = document.createElement('div');
+      ficha.id = 'recado-ficha';
+      ficha.className = 'ficha-convidado recado-ficha';
+      ficha.setAttribute('role', 'dialog');
+      ficha.setAttribute('aria-modal', 'true');
+      ficha.setAttribute('aria-labelledby', 'recado-ficha-titulo');
+      document.body.appendChild(ficha);
+      ficha.addEventListener('click', (e) => {
+        if (/** @type {HTMLElement} */ (e.target).closest('[data-recado-ficha-voltar]')) { recadoAberto = null; renderRecadosRecebidos(); }
+      });
+      // Trocar de menu fecha o recado.
+      document.addEventListener('click', (e) => {
+        if (ficha && !ficha.hidden && /** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular, .menu-celular-link')) { recadoAberto = null; ficha.hidden = true; }
+      }, true);
+    }
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const msg = String(g.message || '').trim();
+    const video = g.videoUrl ? String(g.videoUrl) : '';
+    const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor) => `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor">${escaparHtml(valor)}</span></div>`;
+    ficha.innerHTML = `
+      <div class="ficha-topo">
+        <button type="button" class="ficha-voltar" data-recado-ficha-voltar aria-label="Voltar para os recados">${ICONE_VOLTAR_FICHA}</button>
+        <h2 class="ficha-titulo" id="recado-ficha-titulo">Recado</h2>
+        <span class="recado-ficha-espaco" aria-hidden="true"></span>
+      </div>
+      <div class="ficha-corpo">
+        <div class="ficha-cabeca">
+          <div class="ficha-avatar">${escaparHtml(iniciaisDoRecado(g.guestName))}</div>
+          <div class="ficha-cabeca-texto">
+            <p class="ficha-nome">${escaparHtml(g.guestName || 'Convidado')}</p>
+            <span class="ficha-status">${escaparHtml(g.date || '—')}</span>
+          </div>
+        </div>
+        <section class="ficha-cartao">
+          <h3>Presente</h3>
+          ${linha('Presente', g.giftTitle || 'Presente')}
+          ${linha('Valor', brl(g.amount))}
+          ${linha('Comprado em', g.date || '—')}
+        </section>
+        <section class="ficha-cartao recado-ficha-mensagem">
+          <h3>Recado</h3>
+          ${video ? `<video class="recado-video" src="${escaparHtml(video)}" controls playsinline preload="metadata"></video>` : ''}
+          ${msg ? `<p class="recado-ficha-texto">${escaparHtml(msg)}</p>` : ''}
+        </section>
+      </div>`;
+    ficha.hidden = false;
+    /** @type {HTMLElement|null} */ (ficha.querySelector('.ficha-corpo'))?.scrollTo({ top: 0 });
+  }
+
   function renderRecadosRecebidos() {
     const raiz = document.getElementById('recados-raiz');
     if (!raiz) return;
@@ -9920,10 +9984,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const titulo = document.getElementById('gifts-header-title');
     if (titulo) titulo.textContent = aberto ? (aberto.guestName || 'Convidado') : 'Recados recebidos';
     document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', !aberto);
-    if (aberto) {
+    const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+    fichaDoRecado(noCelular ? aberto : null);
+    if (aberto && !noCelular) {
       raiz.innerHTML = `<div class="dash-card love-tabela-caixa recados-caixa is-carta">${cartaDoRecado(aberto)}</div>`;
       return;
     }
+    if (aberto && titulo) titulo.textContent = 'Recados recebidos';
+    document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', noCelular || !aberto);
     const semPresentes = !((ev && ev.giftList) || []).length;
     const termo = recadosBusca.trim().toLowerCase();
     const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
@@ -9937,7 +10005,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const previa = msg ? escaparHtml(msg.length > 80 ? msg.slice(0, 80) + '…' : msg) : '<span class="recado-tag-video">Recado em vídeo</span>';
       return `
         <tr class="recado-linha" data-recado-id="${escaparHtml(id)}" tabindex="0" aria-label="Abrir o recado de ${escaparHtml(g.guestName || 'Convidado')}">
-          <td><span class="recado-nome">${escaparHtml(g.guestName || 'Convidado')}</span></td>
+          <td><span class="recado-avatar-celular" aria-hidden="true">${escaparHtml(iniciaisDoRecado(g.guestName))}</span><span class="recado-celular-texto"><span class="recado-nome">${nomeDoRecadoHtml(g.guestName)}</span><span class="recado-celular-presente">${escaparHtml(g.giftTitle || 'Presente')}</span></span><span class="recado-celular-valor">${escaparHtml(brl(g.amount))}</span></td>
           <td>${escaparHtml(g.giftTitle || 'Presente')}<span class="recado-sub">${escaparHtml(brl(g.amount))}</span></td>
           <td class="recado-data">${escaparHtml(g.date || '—')}</td>
           <td class="recado-previa">${previa}${msg && g.videoUrl ? ' <span class="recado-tag-video">+ vídeo</span>' : ''}</td>

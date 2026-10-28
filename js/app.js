@@ -482,7 +482,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const desenhar = () => {
       agendado = false;
       const itens = Array.from(lista.querySelectorAll('.sub-drawer-item'))
-        .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none');
+        .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none')
+        // Lista de presentes: Configurações sai das abas (ícone ao lado do +).
+        .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'gift-settings');
       // Só redesenha quando os itens mudam (redesenhar sempre engolia os
       // toques) — mas "mudam" tem que levar em conta os ELEMENTOS em si, não
       // só o texto: trocar de aba e voltar recria os .sub-drawer-item do
@@ -2653,7 +2655,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletTitle = document.getElementById('wallet-header-title');
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
-    if (giftsTitle) giftsTitle.textContent = 'Meus presentes';
+    if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
     if (rsvpTitle) rsvpTitle.textContent = 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
@@ -9166,7 +9168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalCountEl = document.getElementById('gifts-total-count');
     const totalValueEl = document.getElementById('gifts-total-value');
 
-    if (headerTitle) headerTitle.textContent = 'Meus presentes';
+    if (headerTitle) headerTitle.textContent = tituloDosPresentes();
     if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
     if (summaryStats) summaryStats.classList.remove('hidden');
 
@@ -9775,6 +9777,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Alternar sub-seção da Lista de Presentes (Meus presentes vs Configurações)
+  // No celular o cabeçalho de Meus presentes se chama "Lista de presentes".
+  function tituloDosPresentes() { return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de presentes' : 'Meus presentes'; }
+  (function tituloDosPresentesAoGirar() {
+    const mq = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+    const trocar = () => {
+      const t = document.getElementById('gifts-header-title');
+      if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
+    };
+    mq.addEventListener?.('change', trocar);
+    trocar();
+  })();
+  document.getElementById('btn-gifts-config-celular')?.addEventListener('click', () => {
+    const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="gift-settings"]'));
+    if (item) item.click(); else switchGiftsSubSection('gift-settings');
+  });
+
   function switchGiftsSubSection(subId) {
     const topSearchBar = document.getElementById('gifts-top-search-bar');
     const panelProducts = document.getElementById('gifts-panel-products');
@@ -9811,13 +9829,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panelProducts) panelProducts.classList.remove('hidden');
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.remove('hidden');
-      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : tituloDosPresentes();
       if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
       const searchInput = document.getElementById('gifts-search-input');
       renderHostGifts(searchInput ? searchInput.value : '');
       // Listas prontas ficam no lugar dos presentes (o item do menu continua "Meus presentes").
       mostrarListasProntas(subId === 'gift-lists');
-      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : tituloDosPresentes();
       if (subId === 'gift-lists') {
         elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.routeSub === 'my-gifts'));
       }

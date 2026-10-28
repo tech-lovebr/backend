@@ -600,7 +600,7 @@
     if (sub) { sub.textContent = textos.sub; sub.hidden = !textos.sub; }
     const exemplos = document.getElementById('rfp-exemplos');
     // Exemplos de título: na etapa 1 do serviço avulso (é onde se escreve o título).
-    if (exemplos) exemplos.hidden = etapa !== (noCelular() ? 3 : 1) || (modo === 'lote' && formato === 'completo');
+    if (exemplos) exemplos.hidden = etapa !== 3 || (modo === 'lote' && formato === 'completo');
 
     const corpo = document.getElementById('rfp-corpo');
     if (corpo) {
@@ -1232,7 +1232,6 @@
     /** @type {Record<string, string>} */
     const e = {};
     if (n === 1) {
-      if (formato !== 'completo' && !noCelular() && tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
       if (!lote.categorias.length) e.categorias = formato === 'completo' ? 'Escolha pelo menos um serviço.' : 'Escolha o serviço.';
 
     }
@@ -1243,7 +1242,7 @@
       const id = categoriaDaEtapa(n);
       if (id) validarItemDoLote(id, e);
     } else if (n === 3) {
-      if (noCelular() && tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
+      if (tituloDoUnico().trim().length < 3) e.titulo = 'Escreva um título para a sua solicitação.';
       lote.categorias.forEach(id => validarItemDoLote(id, e));
     }
     return e;
@@ -1253,7 +1252,6 @@
     const it = lote.itens[id];
     if (!it) return;
     // Serviço avulso: o título fica na etapa 1 (validado lá).
-    if (formato === 'completo' && it.titulo.trim().length < 3) e[`${id}:titulo`] = 'Escreva um título para este serviço.';
     if (it.valorMin != null && it.valorMax != null && it.valorMax < it.valorMin) e[`${id}:faixa`] = 'O valor "até" precisa ser maior que o "de".';
     const tam = descricaoDoItem(id).length;
     if (tam < DESCRICAO_MIN) e[`${id}:descricao`] = `A descrição precisa ter pelo menos ${DESCRICAO_MIN} caracteres.`;
@@ -1485,7 +1483,6 @@
         </section>`;
     if (etapa === 1) {
       return `
-        ${noCelular() ? '' : secaoTitulo}
         <section class="rfp-secao">
           <h4 class="rfp-pergunta">Categoria</h4>
           ${seletorDeServico()}
@@ -1496,7 +1493,7 @@
     if (etapa === 2) return noCelular() ? htmlEventoCelular() : `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
     if (etapa === 3 && id) {
       return `
-        ${noCelular() ? secaoTitulo : ''}
+        ${secaoTitulo}
         <section class="rfp-secao">
           ${blocoDescricao(id, 'Descreva o que você precisa', 5)}
         </section>
@@ -1520,7 +1517,7 @@
         </section>`;
     }
     if (etapa === 2) return noCelular() ? htmlEventoCelular() : `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
-    // Cada serviço marcado vira a própria etapa: título, descrição e
+    // Cada serviço marcado vira a própria etapa: descrição e (o título é gerado sozinho)
     // orçamento dele, um de cada vez (em vez de todos juntos na mesma página).
     const idDaEtapa = categoriaDaEtapa(etapa);
     if (idDaEtapa) {
@@ -1532,7 +1529,6 @@
               <span class="rfp-lote-cat-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${cat.icone}</svg></span>
               <b>${esc(CATEGORIA_CURTA[idDaEtapa] || cat.nome)}</b>
             </div>
-            ${blocoTitulo(idDaEtapa)}
           </section>
           <section class="rfp-secao">
             ${blocoDescricao(idDaEtapa, 'Descreva o que você precisa', 5)}

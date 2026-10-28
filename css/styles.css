@@ -12447,9 +12447,8 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
   .ficha-convidado .ficha-valor { font-size: 16px; color: #18181B; overflow-wrap: anywhere; }
   .ficha-convidado .ficha-valor.is-vazio { color: #A1A1AA; }
   .ficha-convidado .ficha-valor.is-email { color: #183b54; }
-  .ficha-convidado .ficha-linha.is-resposta { flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; }
-  .ficha-convidado .ficha-linha.is-resposta .ficha-rotulo { flex-shrink: 0; font-size: 15px; color: #52525B; }
-  .ficha-convidado .ficha-linha.is-resposta .ficha-valor { font-size: 15px; color: #71717A; text-align: right; }
+  /* Respostas no mesmo alinhamento do contato: rótulo em cima, valor embaixo, tudo à esquerda. */
+  .ficha-convidado .ficha-linha.is-resposta .ficha-valor { text-align: left; }
   .ficha-convidado .ficha-campo { display: flex; align-items: center; gap: 8px; }
   .ficha-convidado .ficha-campo input { flex: 1 1 auto; min-width: 0; height: 26px; padding: 0; background: transparent; border: 0; outline: none; box-shadow: none; font: inherit; font-size: 16px !important; color: #18181B; }
   .ficha-convidado .ficha-campo input::placeholder { color: #C4C4C8; }

@@ -10467,7 +10467,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <div id="ficha-contato"></div>
         </section>
         <section class="ficha-cartao ficha-so-leitura">
-          <h3>Respostas</h3>
           <div id="ficha-respostas"></div>
         </section>
         <section class="ficha-cartao ficha-so-edicao">
@@ -10620,8 +10619,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let relacao = '';
     try { relacao = formatGuestTitleLabel(guest) || ''; } catch (e) { relacao = ''; }
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-respostas')).innerHTML =
-      resposta('Presença', status)
-      + resposta('Acompanhantes', acompanhantes.length ? acompanhantes.join(', ') : 'Nenhum')
+      resposta('Acompanhantes', acompanhantes.length ? acompanhantes.join(', ') : 'Nenhum')
       + resposta('Mesa', guest.table && guest.table !== 'Mesa a Definir' ? guest.table : 'A definir')
       + resposta('Restrição alimentar', restricao || 'Nenhuma')
       + (relacao && relacao !== '—' ? resposta('Relação', relacao) : '');

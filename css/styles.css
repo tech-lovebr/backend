@@ -13363,3 +13363,32 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   body:has(#tab-gifts.active.is-configuracoes) #submenu-celular { display: none !important; }
   body[data-theme="dark"] #tab-gifts .gifts-config-voltar { color: #FFFFFF; }
 }
+
+/* ==========================================================================
+   Celular: lista de convidados em ordem alfabética com a letra de cada grupo
+   (A, B, C…), total de convidados acima da busca e botões de adicionar com
+   ícone de pessoa+ (convidados) e presente+ (presentes). Desktop não muda.
+   ========================================================================== */
+.rsvp-total-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp .rsvp-total-celular:not(#love-h-a) {
+    display: block; margin: 0; padding: 0 16px 12px; font-family: Inter, sans-serif;
+    font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: #18181B;
+  }
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:not(#love-h-a) td:not(#love-h-a) {
+    display: table-cell !important; height: auto !important; padding: 6px 16px !important;
+    background: #F4F4F5 !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 1px solid #E4E4E7 !important;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; line-height: 1.4; color: #71717A;
+  }
+  /* A primeira letra encosta na linha da busca: sem borda dupla. */
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:first-child td:not(#love-h-a) { border-top: 0 !important; }
+  body[data-theme="dark"] #tab-rsvp .rsvp-total-celular { color: #FFFFFF; }
+  body[data-theme="dark"] #tab-rsvp .guests-table tbody tr.guest-letra-linha td { background: #252525 !important; border-color: #333333 !important; color: #A1A1AA; }
+
+  html body #view-event-os-dashboard #btn-host-add-guest:not(#love-h-a)::before {
+    width: 22px; height: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'/%3E%3C/svg%3E") center / 22px no-repeat;
+  }
+  html body #view-event-os-dashboard #btn-host-add-gift:not(#love-h-a)::before {
+    width: 22px; height: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16.5 12v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 20.25V12m6.75-5.25A2.25 2.25 0 1 0 7.5 9h2.25m0-2.25V9m0-2.25A2.25 2.25 0 1 1 12 9H9.75m0 0v12.75M2.25 12h15a.75.75 0 0 0 .75-.75v-1.5a.75.75 0 0 0-.75-.75h-15a.75.75 0 0 0-.75.75v1.5c0 .414.336.75.75.75ZM19.5 1.5v6m-3-3h6'/%3E%3C/svg%3E") center / 22px no-repeat;
+  }
+}

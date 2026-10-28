@@ -13345,3 +13345,8 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body:not([data-theme="dark"]) #tab-rsvp-tables .floorplan-body:not(#love-h-a) { background-color: var(--bg-dashboard) !important; }
   html body #tab-rsvp-tables .floorplan-wrap.is-expandida #floorplan-canvas:not(#love-h-a) { margin-left: 0; margin-top: 0; }
 }
+
+/* Celular: em Presentes só "Total" ao lado da busca (mais espaço para pesquisar). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #gifts-barra .gifts-total-da-lista:not(#love-h-a) { display: none; }
+}

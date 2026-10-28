@@ -13243,3 +13243,19 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   /* Cabeçalho do editor clássico (Informações / Co-anfitriões) alinhado como em Meus convidados. */
   html body #view-event-os-dashboard #tab-edit-site #classic-editor-toolbar:not(#love-h-a) { padding: 0 0 12px !important; }
 }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Aparência e Informações iguais no celular: cabeçalho com a mesma altura
+     (57px), "ver convite" e Salvar do mesmo tamanho e com o mesmo espaço, e a
+     primeira imagem de Informações no mesmo formato da capa de Aparência
+     (366px de altura, começando na mesma linha). */
+  html body #view-event-os-dashboard #tab-edit-site #classic-editor-toolbar:not(#love-h-a) { min-height: 57px !important; box-sizing: border-box; }
+  html body #tab-edit-site .builder-toolbar-right:not(#love-h-a),
+  html body #tab-edit-site #classic-editor-toolbar > div:last-child:not(#love-h-a) { gap: 8px !important; }
+  html body #tab-edit-site :is(#builder-save, #builder-publish, #btn-save-header-edit):not(#love-h-a) { height: 38px !important; padding: 0 14px !important; font-size: 14px !important; }
+  html body #tab-edit-site #classic-builder-preview .convite-tela-capa:not(#love-h-a) { height: 366px !important; margin-top: calc(-1.5rem + 1px) !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Título e botões de Informações/Co-anfitriões na mesma linha de Aparência. */
+  html body #view-event-os-dashboard #tab-edit-site #classic-editor-toolbar:not(#love-h-a) { align-items: flex-start !important; }
+  html body #tab-edit-site #editor-active-sub-title:not(#love-h-a) { min-height: 45px; display: flex; align-items: center; padding-top: 0 !important; padding-bottom: 0 !important; }
+}

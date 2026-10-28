@@ -13259,3 +13259,12 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #view-event-os-dashboard #tab-edit-site #classic-editor-toolbar:not(#love-h-a) { align-items: flex-start !important; }
   html body #tab-edit-site #editor-active-sub-title:not(#love-h-a) { min-height: 45px; display: flex; align-items: center; padding-top: 0 !important; padding-bottom: 0 !important; }
 }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Aparência: a capa (primeira seção) ocupa 100% da largura, como em
+     Informações — sem a borda de 1px da seção (deixava uma linha branca em
+     volta da foto). Seleção vira contorno por dentro, por cima da foto. */
+  html body #site-builder-root .builder-section.is-first-content-section:not(#love-h-a) { border: 0 !important; padding-top: 25px; padding-bottom: 25px; }
+  html body #site-builder-root .builder-section.is-first-content-section.is-selected:not(#love-h-a) { outline: 2px solid var(--primary-blue, #183b54); outline-offset: -2px; }
+  /* Informações acompanha: 368px a partir da mesma linha. */
+  html body #tab-edit-site #classic-builder-preview .convite-tela-capa:not(#love-h-a) { height: 368px !important; margin-top: -1.5rem !important; }
+}

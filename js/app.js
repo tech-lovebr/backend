@@ -22921,7 +22921,10 @@ document.addEventListener('DOMContentLoaded', () => {
     noCelular.addEventListener?.('change', arrumar);
     window.addEventListener('resize', arrumar);
     arrumar();
-    document.getElementById('btn-rfp-voltar-explorar-celular')?.addEventListener('click', () => window.loveIrPara?.('b2b', 'explore'));
+    document.getElementById('btn-rfp-voltar-explorar-celular')?.addEventListener('click', () => {
+      if (/** @type {any} */ (window).LovePedidos?.voltarEtapa?.()) return;
+      window.loveIrPara?.('b2b', 'explore');
+    });
     document.getElementById('btn-rfp-lista-celular')?.addEventListener('click', () => {
       const lista = document.getElementById('pedidos-painel-minhas');
       const naLista = !!lista && !lista.classList.contains('hidden');

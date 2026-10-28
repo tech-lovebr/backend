@@ -13559,3 +13559,69 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   }
   html body #btn-rfp-voltar-explorar-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
 }
+
+/* ==========================================================================
+   Celular: Criar solicitação no estilo de app. Título grande e texto cinza
+   centralizados, perguntas centralizadas, caixas grandes, número de
+   convidados grande com - e +, Continuar largo embaixo (sem Cancelar) e os
+   pontinhos das etapas. Arrastar para o lado troca de etapa. Desktop não muda.
+   ========================================================================== */
+.rfp-pontos { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-pedidos-view .rfp-editor .rfp-intro:not(#love-h-a):not(#love-h-b) { display: block; margin: 8px 0 24px; text-align: center; }
+  html body #b2b-pedidos-view .rfp-etapa-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 30px; font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; color: #18181B; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-etapa-sub:not(#love-h-a):not(#love-h-b) { margin: 10px auto 0; max-width: 340px; font-size: 16px; line-height: 1.5; color: #8E8E93; text-align: center; }
+  html body #b2b-pedidos-view .rfp-caixa-form:not(#love-h-a):not(#love-h-b) { margin: 0 !important; padding: 0 !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-rotulo-texto:not(#love-h-a),
+  html body #b2b-pedidos-view .rfp-editor .rfp-pergunta:not(#love-h-a) { display: block; text-align: center; font-size: 17px !important; font-weight: 600 !important; color: #18181B !important; margin-bottom: 10px; }
+
+  /* Etapa 2: uma pergunta por bloco. */
+  html body #b2b-pedidos-view .rfp-cel-bloco:not(#love-h-a) { margin: 0 0 32px; text-align: center; }
+  html body #b2b-pedidos-view .rfp-cel-pergunta:not(#love-h-a) { margin: 0 0 12px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: #18181B; }
+  html body #b2b-pedidos-view .rfp-cel-ajuda:not(#love-h-a) { margin: -6px 0 12px; font-size: 15px; color: #8E8E93; }
+  html body #b2b-pedidos-view .rfp-cel-caixa:not(#love-h-a) {
+    display: block; width: 100% !important; min-width: 0; height: 56px !important; box-sizing: border-box; margin: 0;
+    padding: 0 16px !important; font-size: 17px !important; font-weight: 500; text-align: center; text-align-last: center; color: #18181B;
+    background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 10px !important; box-shadow: none !important;
+    -webkit-appearance: none; appearance: none;
+  }
+  html body #b2b-pedidos-view input[type="date"].rfp-cel-caixa:not(#love-h-a) { line-height: 54px; }
+  html body #b2b-pedidos-view input[type="date"].rfp-cel-caixa::-webkit-date-and-time-value { text-align: center; }
+  html body #b2b-pedidos-view .rfp-cel-caixa:focus:not(#love-h-a) { border-color: #181D24 !important; outline: none; }
+  html body #b2b-pedidos-view .rfp-cel-caixa:disabled:not(#love-h-a) { color: #A1A1AA; background-color: #F4F4F5 !important; }
+  html body #b2b-pedidos-view .rfp-cel-local:not(#love-h-a) { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 8px; }
+  html body #b2b-pedidos-view .rfp-cel-bloco .rfp-check-flexivel:not(#love-h-a) { justify-content: center; margin-top: 12px; font-size: 15px; }
+  html body #b2b-pedidos-view .rfp-cel-qtd:not(#love-h-a) {
+    display: flex; align-items: center; justify-content: space-between; height: 88px; margin: 0 auto; max-width: 280px; padding: 0 8px; box-sizing: border-box;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px;
+  }
+  html body #b2b-pedidos-view .rfp-cel-qtd:focus-within:not(#love-h-a) { border-color: #181D24; }
+  html body #b2b-pedidos-view .rfp-cel-qtd-numero:not(#love-h-a) {
+    flex: 1 1 auto; min-width: 0; width: 100%; height: 100%; padding: 0; border: 0 !important; background: transparent !important; box-shadow: none !important; outline: none;
+    text-align: center; font-family: Inter, sans-serif; font-size: 44px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: #3F3F46;
+  }
+  html body #b2b-pedidos-view .rfp-cel-qtd-passo:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 44px; height: 44px; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #71717A; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body #b2b-pedidos-view .rfp-cel-qtd-passo svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body #b2b-pedidos-view .rfp-cel-bloco .rfp-erro:not(#love-h-a) { text-align: center; }
+
+  /* Rodapé: só o Continuar largo e os pontinhos. */
+  html body #b2b-pedidos-view .rfp-editor .rfp-rodape:not(#love-h-a):not(#love-h-b) {
+    position: static; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 8px 0 24px !important; background: transparent !important; border: 0 !important;
+  }
+  html body #b2b-pedidos-view .rfp-editor .rfp-voltar-texto:not(#love-h-a) { display: none !important; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-rodape button.btn-primary:not(#love-h-a):not(#love-h-b) {
+    width: 100%; max-width: 340px; min-width: 0; height: 54px !important; flex: 0 0 auto; border-radius: 10px !important; font-size: 17px !important; font-weight: 600;
+  }
+  html body #b2b-pedidos-view .rfp-editor .rfp-erro-geral:not(#love-h-a) { order: -1; text-align: center; }
+  html body #b2b-pedidos-view .rfp-pontos:not(#love-h-a) { display: flex; align-items: center; justify-content: center; gap: 8px; }
+  html body #b2b-pedidos-view .rfp-pontos span:not(#love-h-a) { width: 8px; height: 8px; border-radius: 4px; background: #E4E4E7; transition: width 0.2s ease, background 0.2s ease; }
+  html body #b2b-pedidos-view .rfp-pontos span.is-atual:not(#love-h-a) { width: 24px; background: #181D24; }
+  body[data-theme="dark"] #b2b-pedidos-view :is(.rfp-etapa-titulo, .rfp-cel-pergunta, .rfp-pergunta, .rfp-rotulo-texto) { color: #FFFFFF !important; }
+  body[data-theme="dark"] #b2b-pedidos-view :is(.rfp-cel-caixa, .rfp-cel-qtd) { background-color: #1F1F1F !important; border-color: #404040 !important; color: #FFFFFF; }
+  body[data-theme="dark"] #b2b-pedidos-view .rfp-cel-qtd-numero { color: #FFFFFF; }
+  body[data-theme="dark"] #b2b-pedidos-view .rfp-pontos span { background: #404040; }
+  body[data-theme="dark"] #b2b-pedidos-view .rfp-pontos span.is-atual { background: #FFFFFF; }
+}

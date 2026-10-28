@@ -252,7 +252,7 @@
       if (!dados.dataFlexivel && dados.dataEvento && dados.dataEvento < hojeIso()) e.dataEvento = 'A data precisa ser hoje ou depois.';
       // Horários: obrigatórios quando a data já está definida.
       if (!dados.dataFlexivel && !dados.horarioInicio) e.horarioInicio = 'Informe o horário de início.';
-      if (!dados.dataFlexivel && !dados.horarioFim) e.horarioFim = 'Informe o horário de término.';
+      if (!dados.dataFlexivel && !dados.horarioFim && !noCelular()) e.horarioFim = 'Informe o horário de término.';
       if (!UFS.includes(dados.uf.trim().toUpperCase())) e.uf = 'Escolha o estado.';
       if (!dados.cidade.trim()) e.cidade = 'Informe a cidade.';
       if (!dados.convidados) e.convidados = 'Escolha a quantidade de convidados.';
@@ -277,6 +277,50 @@
   function hojeIso() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  /** Celular: etapas no estilo de app (uma pergunta por bloco, Continuar grande, arrastar para o lado). */
+  const noCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  /** Número de convidados digitado no celular (o pedido guarda a faixa). */
+  let convidadosQtd = 0;
+  /** @param {string} faixa */
+  const qtdDaFaixa = (faixa) => (/** @type {Record<string, number>} */ ({ 'ate-50': 50, '50-100': 100, '100-200': 150, '200-mais': 200 }))[faixa] || 0;
+  /** @param {number} n @returns {any} */
+  const faixaDaQtd = (n) => !n ? '' : n <= 50 ? 'ate-50' : n <= 100 ? '50-100' : n <= 200 ? '100-200' : '200-mais';
+
+  /** Celular, etapa 2: data, horário de início, local e convidados (número grande). */
+  function htmlEventoCelular() {
+    if (!convidadosQtd) convidadosQtd = qtdDaFaixa(dados.convidados) || 100;
+    if (!dados.convidados) dados.convidados = faixaDaQtd(convidadosQtd);
+    const semData = dados.dataFlexivel ? 'disabled' : '';
+    const bloco = (/** @type {string} */ pergunta, /** @type {string} */ ajuda, /** @type {string} */ conteudo) => `
+      <section class="rfp-cel-bloco">
+        <h4 class="rfp-cel-pergunta">${pergunta}</h4>
+        ${ajuda ? `<p class="rfp-cel-ajuda">${ajuda}</p>` : ''}
+        ${conteudo}
+      </section>`;
+    return `
+      ${bloco('Quando é o evento?', '', `
+        <div class="rfp-ev-campo"><input type="date" class="rfp-campo rfp-cel-caixa" data-rfp-input="dataEvento" value="${esc(dados.dataEvento)}" min="${hojeIso()}" aria-label="Data do evento" ${semData}>${erroHtml('dataEvento')}</div>
+        ${eventoTemData && !dados.dataFlexivel ? '' : `<label class="rfp-check rfp-check-flexivel"><input type="checkbox" data-rfp-input="dataFlexivel" ${dados.dataFlexivel ? 'checked' : ''}> Ainda não temos uma data definida</label>`}`)}
+      ${bloco('Que horas começa?', '', `<div class="rfp-ev-campo">${seletorDeHorario('horarioInicio', semData).replace('class="rfp-campo"', 'class="rfp-campo rfp-cel-caixa" aria-label="Horário de início"')}${erroHtml('horarioInicio')}</div>`)}
+      ${bloco('Onde vai ser?', '', `
+        <div class="rfp-cel-local">
+          <div class="rfp-ev-campo"><select class="rfp-campo rfp-cel-caixa rfp-campo-uf" data-rfp-input="uf" aria-label="Estado (UF)">
+            <option value=""${dados.uf ? '' : ' selected'}>UF</option>
+            ${UFS.map(u => `<option value="${u}"${dados.uf === u ? ' selected' : ''}>${u}</option>`).join('')}
+          </select>${erroHtml('uf')}</div>
+          <div class="rfp-ev-campo"><input type="text" class="rfp-campo rfp-cel-caixa" data-rfp-input="cidade" value="${esc(dados.cidade)}" placeholder="Cidade" aria-label="Cidade">${erroHtml('cidade')}</div>
+        </div>`)}
+      ${bloco('Quantos convidados você espera?', 'A maioria dos eventos fica entre 80 e 150.', `
+        <div class="rfp-ev-campo">
+          <div class="rfp-cel-qtd">
+            <button type="button" class="rfp-cel-qtd-passo" data-rfp-qtd-passo="-10" aria-label="Menos 10 convidados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <input type="text" class="rfp-cel-qtd-numero" data-rfp-qtd inputmode="numeric" maxlength="5" value="${convidadosQtd}" aria-label="Quantidade de convidados">
+            <button type="button" class="rfp-cel-qtd-passo" data-rfp-qtd-passo="10" aria-label="Mais 10 convidados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          ${erroHtml('convidados')}
+        </div>`)}`;
   }
 
   /** @param {string} campo */
@@ -314,15 +358,34 @@
           <p class="rfp-erro-geral hidden" id="rfp-erro-geral" role="alert"></p>
           <button type="button" class="rfp-voltar-texto" data-rfp-voltar>Cancelar</button>
           <button type="button" class="btn-primary rfp-btn" data-rfp-avancar>Continuar</button>
+          <div class="rfp-pontos" id="rfp-pontos" aria-hidden="true"></div>
         </footer>
       </div>`;
 
     m.addEventListener('pointerdown', () => { soPreMarcado = false; });
+    // Celular: arrastar para a direita avança; para a esquerda, volta uma etapa.
+    /** @type {{ x: number, y: number } | null} */
+    let toque = null;
+    m.addEventListener('touchstart', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      toque = noCelular() && e.touches.length === 1 && !alvo.closest('.rfp-cat-painel, textarea, .rfp-fotos, .rfp-pilulas') ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+    }, { passive: true });
+    m.addEventListener('touchend', (e) => {
+      if (!toque || publicando) return;
+      const dx = e.changedTouches[0].clientX - toque.x;
+      const dy = e.changedTouches[0].clientY - toque.y;
+      toque = null;
+      if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      if (dx > 0) avancar();
+      else if (etapa > 1) { irPara(etapa - 1, -1); window.scrollTo({ top: 0 }); }
+    }, { passive: true });
     m.addEventListener('keydown', () => { soPreMarcado = false; });
     m.addEventListener('click', (e) => {
       const alvo = /** @type {HTMLElement} */ (e.target);
       if (alvo.closest('[data-rfp-voltar]')) return etapa === 1 ? sair() : irPara(etapa - 1, -1);
       if (alvo.closest('[data-rfp-avancar]')) return avancar();
+      const passo = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-qtd-passo]'));
+      if (passo) return mudarConvidados(convidadosQtd + Number(passo.dataset.rfpQtdPasso || 0));
       if (alvo.closest('[data-rfp-rascunho]')) { salvarComoRascunho(); return; }
       if (modo === 'lote' && cliqueDoLote(alvo)) return;
       if (alvo.closest('[data-rfp-cat-gatilho]')) { categoriaAberta = !categoriaAberta; return desenhar(0); }
@@ -391,6 +454,7 @@
     tituloSemServico = '';
     rascunhoId = null;
     rascunhoIds = {};
+    convidadosQtd = 0;
     // "Editar rascunho": continua de onde a pessoa parou (sem as fotos).
     const r = rascunhoPendente;
     rascunhoPendente = null;
@@ -527,7 +591,9 @@
 
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
-    const textos = modo === 'lote' ? (textosDaPagina(etapa) || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
+    const textos = modo === 'lote' && etapa === 1 && noCelular()
+      ? { titulo: 'Criar nova solicitação', sub: 'Algumas perguntas para encontrarmos o fornecedor perfeito para o seu evento. Lembre-se de adicionar informações claras sobre o que você precisa.' }
+      : modo === 'lote' ? (textosDaPagina(etapa) || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
     if (titulo) { titulo.textContent = textos.titulo; titulo.hidden = !textos.titulo; }
@@ -544,6 +610,11 @@
       corpo.innerHTML = `<div class="rfp-tela${direcao ? '' : ' sem-animacao'}">${topo}${modo === 'lote' ? htmlPagina() : telas[etapa - 1]()}</div>`;
       if (modo === 'lote' && !publicando && !publicado) agendarRascunho();
       if (direcao) corpo.scrollTop = 0;
+    }
+    const pontos = document.getElementById('rfp-pontos');
+    if (pontos) {
+      const total = modo === 'lote' ? totalEtapasFormulario() : ETAPAS.length;
+      pontos.innerHTML = Array.from({ length: total }, (_, i) => `<span class="${i + 1 === etapa ? 'is-atual' : ''}"></span>`).join('');
     }
     const passos = document.getElementById('rfp-passos');
     if (passos) passos.hidden = modo === 'lote';
@@ -822,6 +893,14 @@
     const el = /** @type {HTMLInputElement} */ (e.target);
     if (modo === 'lote') agendarRascunho();
     if (modo === 'lote' && digitacaoDoLote(el)) return;
+    if (el.matches('[data-rfp-qtd]')) {
+      const num = el.value.replace(/\D/g, '').slice(0, 5);
+      el.value = num;
+      convidadosQtd = Number(num) || 0;
+      dados.convidados = faixaDaQtd(convidadosQtd);
+      if (dados.convidados) delete erros.convidados;
+      return;
+    }
     if (el.matches('[data-rfp-fotos]')) { if (e.type === 'change') adicionarFotos(Array.from(el.files || [])); return; }
     const campo = el.dataset ? el.dataset.rfpInput : '';
     if (!campo) return;
@@ -878,6 +957,17 @@
       const cont = document.getElementById('rfp-contador');
       if (cont) { cont.textContent = `${tam}/${DESCRICAO_MAX} · mínimo ${DESCRICAO_MIN}`; cont.classList.toggle('falta', tam > 0 && tam < DESCRICAO_MIN); }
     }
+  }
+
+  /** Botões − / + dos convidados (celular). @param {number} n */
+  function mudarConvidados(n) {
+    convidadosQtd = Math.max(1, Math.min(99999, n));
+    dados.convidados = faixaDaQtd(convidadosQtd);
+    delete erros.convidados;
+    const campo = /** @type {HTMLInputElement|null} */ (document.querySelector('#rfp-editor [data-rfp-qtd]'));
+    if (campo) campo.value = String(convidadosQtd);
+    atualizarBotaoAvancar();
+    agendarRascunho();
   }
 
   // CEP → cidade, bairro e UF (ViaCEP, serviço público dos Correios).
@@ -1400,7 +1490,7 @@
           ${id ? blocoTags(id) : ''}
         </section>`;
     }
-    if (etapa === 2) return `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
+    if (etapa === 2) return noCelular() ? htmlEventoCelular() : `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
     if (etapa === 3 && id) {
       return `
         <section class="rfp-secao">
@@ -1425,7 +1515,7 @@
           ${erroHtml('categorias')}
         </section>`;
     }
-    if (etapa === 2) return `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
+    if (etapa === 2) return noCelular() ? htmlEventoCelular() : `<section class="rfp-secao">${htmlEventoCompacto()}</section>`;
     // Cada serviço marcado vira a própria etapa: título, descrição e
     // orçamento dele, um de cada vez (em vez de todos juntos na mesma página).
     const idDaEtapa = categoriaDaEtapa(etapa);
@@ -2689,5 +2779,14 @@
     if (vendoPropostas) mostrarLista(); else sair();
   });
 
-  window.LovePedidos = { abrir, abrirComServico, fechar, mostrarLista, mostrarAba, CATEGORIAS, FAIXAS };
+  /** Celular: a setinha do cabeçalho volta uma etapa; na 1ª, devolve false (sai para Encontrar fornecedor). */
+  function voltarEtapa() {
+    const m = document.getElementById('rfp-editor');
+    if (!m || m.hidden || etapa <= 1 || publicando) return false;
+    irPara(etapa - 1, -1);
+    window.scrollTo({ top: 0 });
+    return true;
+  }
+
+  window.LovePedidos = { abrir, abrirComServico, fechar, mostrarLista, mostrarAba, voltarEtapa, CATEGORIAS, FAIXAS };
 })();

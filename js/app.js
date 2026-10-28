@@ -13120,13 +13120,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Alças da seleção: arrastar para fora aumenta, para dentro diminui.
   // Mesa e item crescem por igual (na proporção). O centro fica no lugar.
   /** @param {MouseEvent} e @param {string} id */
-  function iniciarRedimensionamento(e, id) {
-    e.preventDefault();
-    e.stopPropagation();
+  /**
+   * Muda o tamanho de um elemento da planta por um fator (1 = como está).
+   * Usado pelas alças (mouse/dedo) e pela pinça no celular.
+   * @param {string} id
+   * @returns {{centroNaTela: () => {x: number, y: number}, mover: (fator: number) => void, terminar: () => void}|null}
+   */
+  function comecarRedimensionamento(id) {
     const canvas = document.getElementById('floorplan-canvas');
     const el = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"]`));
     const alvo = getFloorPlanElements().find(x => x.id === id);
-    if (!canvas || !el || !alvo) return;
+    if (!canvas || !el || !alvo || alvo.type === 'linha') return null;
     const base = canvas.getBoundingClientRect();
     const isMesa = alvo.type === 'mesa';
     const tam0 = isMesa ? { w: 220, h: 220 } : tamanhoDoItem(alvo);
@@ -13135,17 +13139,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const centroX = x0 + tam0.w / 2;
     const centroY = y0 + tam0.h / 2;
     const s = escalaDaPlanta;
-    const dx0 = Math.abs(e.clientX - base.left - centroX * s) || 1;
-    const dy0 = Math.abs(e.clientY - base.top - centroY * s) || 1;
     const escala0 = isMesa ? escalaDaMesa(alvo) : tamanhoDoItem(alvo).escala;
     /** @type {Record<string, any>} */
     let resultado = isMesa ? { escala: escala0 } : { escala: escala0, rotacao: tamanhoDoItem(alvo).rotacao, x: x0, y: y0 };
     document.body.classList.add('planta-redimensionando');
 
-    const mover = (/** @type {MouseEvent} */ ev) => {
-      const dx = Math.abs(ev.clientX - base.left - centroX * s);
-      const dy = Math.abs(ev.clientY - base.top - centroY * s);
-      const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
+    const mover = (/** @type {number} */ fator) => {
       if (isMesa) {
         const escala = Math.round(Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala0 * fator)) * 100) / 100;
         el.style.transform = escala === 1 ? '' : `scale(${escala})`;
@@ -13173,9 +13172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       desenharSelecaoDaPlanta();
     };
-    const soltar = () => {
-      document.removeEventListener('mousemove', mover);
-      document.removeEventListener('mouseup', soltar);
+    const terminar = () => {
       document.body.classList.remove('planta-redimensionando');
       const lista = getFloorPlanElements();
       const t = lista.find(x => x.id === id);
@@ -13184,6 +13181,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isMesa) { delete t.w; delete t.h; delete t.girado; }
       saveFloorPlanElements(lista);
       renderFloorPlanCanvas();
+    };
+    return { centroNaTela: () => ({ x: base.left + centroX * s, y: base.top + centroY * s }), mover, terminar };
+  }
+
+  function iniciarRedimensionamento(e, id) {
+    e.preventDefault();
+    e.stopPropagation();
+    const r = comecarRedimensionamento(id);
+    if (!r) return;
+    const c = r.centroNaTela();
+    const d0 = Math.hypot(Math.abs(e.clientX - c.x) || 1, Math.abs(e.clientY - c.y) || 1);
+    const mover = (/** @type {MouseEvent} */ ev) => r.mover(Math.hypot(Math.abs(ev.clientX - c.x), Math.abs(ev.clientY - c.y)) / d0);
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      r.terminar();
     };
     document.addEventListener('mousemove', mover);
     document.addEventListener('mouseup', soltar);
@@ -14415,6 +14428,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const meio = (ts) => ({ x: (ts[0].clientX + ts[1].clientX) / 2, y: (ts[0].clientY + ts[1].clientY) / 2 });
     /** @param {TouchList} ts */
     const distancia = (ts) => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY) || 1;
+    /** Pinça com um elemento selecionado: muda o tamanho dele. @type {{d0: number, r: ReturnType<typeof comecarRedimensionamento>}|null} */
+    let pincaNoElemento = null;
     canvas.addEventListener('touchstart', (e) => {
       if (!noCelular.matches) return;
       if (e.touches.length === 2) {
@@ -14422,6 +14437,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Segundo dedo: larga o arraste da mesa (se tinha) e vira pinça.
         if (toque) { mouse('mouseup', e.touches[0], document); toque = null; }
         arrasto = null;
+        const redim = plantaSelecionada ? comecarRedimensionamento(plantaSelecionada) : null;
+        if (redim) { pincaNoElemento = { d0: distancia(e.touches), r: redim }; return; }
         const m = meio(e.touches);
         const r = canvas.getBoundingClientRect();
         pinca = { d0: distancia(e.touches), m0x: m.x, m0y: m.y, px: (m.x - r.left) / escalaDaPlanta, py: (m.y - r.top) / escalaDaPlanta, k: 1, m1x: m.x, m1y: m.y };
@@ -14435,6 +14452,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: false });
     canvas.addEventListener('touchmove', (e) => {
+      if (pincaNoElemento && e.touches.length >= 2) {
+        e.preventDefault();
+        pincaNoElemento.r?.mover(distancia(e.touches) / pincaNoElemento.d0);
+        return;
+      }
       if (pinca && e.touches.length >= 2) {
         e.preventDefault();
         const m = meio(e.touches);
@@ -14460,6 +14482,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: false });
     const fimDoGesto = (/** @type {TouchEvent} */ e) => {
+      if (pincaNoElemento && e.touches.length < 2) {
+        const p = pincaNoElemento;
+        pincaNoElemento = null;
+        p.r?.terminar();
+      }
       if (pinca && e.touches.length < 2) {
         const g = pinca;
         pinca = null;

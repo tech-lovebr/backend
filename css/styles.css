@@ -13389,7 +13389,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
     width: 22px; height: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'/%3E%3C/svg%3E") center / 22px no-repeat;
   }
   html body #view-event-os-dashboard #btn-host-add-gift:not(#love-h-a)::before {
-    width: 22px; height: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12h12v8.25a.75.75 0 0 1-.75.75H3.75a.75.75 0 0 1-.75-.75V12Z'/%3E%3Cpath d='M2 9.75A.75.75 0 0 1 2.75 9h12.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75H2.75A.75.75 0 0 1 2 11.25v-1.5Z'/%3E%3Cpath d='M9 9v12'/%3E%3Cpath d='M9 9C7.8 8.8 5.4 8.1 5.4 6.6c0-1 1-1.5 1.9-1.1C8.4 6 9 7.6 9 9Z'/%3E%3Cpath d='M9 9c1.2-.2 3.6-.9 3.6-2.4 0-1-1-1.5-1.9-1.1C9.6 6 9 7.6 9 9Z'/%3E%3Cpath d='M19.5 1.5v7M16 5h7' stroke-width='2.2'/%3E%3C/svg%3E") center / 22px no-repeat;
+    width: 22px; height: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4.5v15m7.5-7.5h-15'/%3E%3C/svg%3E") center / 22px no-repeat;
   }
 }
 

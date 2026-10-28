@@ -13625,3 +13625,42 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   body[data-theme="dark"] #b2b-pedidos-view .rfp-pontos span { background: #404040; }
   body[data-theme="dark"] #b2b-pedidos-view .rfp-pontos span.is-atual { background: #FFFFFF; }
 }
+
+/* ==========================================================================
+   Desktop: Meus convidados como no celular. Iniciais numa bolinha no lugar
+   do "C"/"A", convidado e acompanhantes unidos por um contorno oval (no
+   lugar da arvorezinha) e a letra de cada grupo (A, B, C...).
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #tab-rsvp .guests-table :is(.guest-tipo-badge, .guest-sub-conector):not(#love-h-a) { display: none !important; }
+  html body #tab-rsvp .guests-table tbody tr.group > td:first-child:not(#love-h-a) { padding-top: 0 !important; padding-bottom: 0 !important; }
+  html body #tab-rsvp .guests-table tbody tr.group > td:first-child > div:not(#love-h-a) { align-items: stretch !important; gap: 12px !important; min-height: 52px; }
+  html body #tab-rsvp .guests-table tbody tr.group :is(.guest-select-check, .guest-select-espaco):not(#love-h-a) { align-self: center; }
+  html body #tab-rsvp .guests-table .guest-trilho:not(#love-h-a) {
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 40px; padding: 5px 0; box-sizing: border-box;
+  }
+  html body #tab-rsvp .guests-table .guest-trilho:is(.is-inicio, .is-meio, .is-fim):not(#love-h-a) { border-left: 1.5px solid #18181B; border-right: 1.5px solid #18181B; }
+  html body #tab-rsvp .guests-table .guest-trilho.is-inicio:not(#love-h-a) { border-top: 1.5px solid #18181B; border-radius: 20px 20px 0 0; margin-top: 5px; padding-top: 0; }
+  html body #tab-rsvp .guests-table .guest-trilho.is-fim:not(#love-h-a) { border-bottom: 1.5px solid #18181B; border-radius: 0 0 20px 20px; margin-bottom: 5px; padding-bottom: 0; }
+  /* Cobre a linha divisória entre as pessoas do mesmo grupo (o oval não quebra). */
+  html body #tab-rsvp .guests-table .guest-trilho:is(.is-meio, .is-fim):not(#love-h-a) { margin-top: -1px; }
+  html body #tab-rsvp .guests-table .guest-avatar-celular:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%;
+    background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0;
+  }
+  html body #tab-rsvp .guests-table .is-acompanhante-row .guest-avatar-celular:not(#love-h-a) { background: #F4F4F5; color: #71717A; }
+  html body #tab-rsvp .guests-table .guest-avatar-celular.tem-restricao:not(#love-h-a) { background: var(--cor-restricao) !important; border: 1px solid var(--cor-restricao-borda); color: #18181B !important; }
+  html body #tab-rsvp .guests-table button.guest-nome-btn:not(#love-h-a) { align-self: center; }
+
+  /* Letra de cada grupo. */
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha td:not(#love-h-a) {
+    height: auto !important; padding: 6px 16px !important;
+    background: #F4F4F5 !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 1px solid #E4E4E7 !important;
+    font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; line-height: 1.4; color: #71717A;
+  }
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:first-child td:not(#love-h-a) { border-top: 0 !important; }
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:hover td:not(#love-h-a) { background: #F4F4F5 !important; }
+  body[data-theme="dark"] #tab-rsvp .guests-table .guest-trilho { border-color: #FFFFFF !important; }
+  body[data-theme="dark"] #tab-rsvp .guests-table .guest-avatar-celular:not(.tem-restricao) { background: #1F1F1F; border-color: #404040; color: #EBF4FF; }
+  body[data-theme="dark"] #tab-rsvp .guests-table tbody tr.guest-letra-linha td { background: #252525 !important; border-color: #333333 !important; color: #A1A1AA; }
+}

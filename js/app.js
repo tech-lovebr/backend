@@ -10326,14 +10326,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // linha, sempre com um nome único, compartilhando status e mesa da mesma reserva.
     let letraAnterior = '';
     pageGuests.forEach((guest, indiceGrupo) => {
-      if (listaContinua) {
+      {
         const inicial = (String(guest.name || '').trim()[0] || '#').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
         const letra = /[A-Z]/.test(inicial) ? inicial : '#';
         if (letra !== letraAnterior) {
           letraAnterior = letra;
           const linhaLetra = document.createElement('tr');
           linhaLetra.className = 'guest-letra-linha';
-          linhaLetra.innerHTML = `<td>${letra}</td>`;
+          // Celular: <td> simples (colspan apertava os nomes); desktop: a linha inteira.
+          linhaLetra.innerHTML = listaContinua ? `<td>${letra}</td>` : `<td colspan="6">${letra}</td>`;
           listEl.appendChild(linhaLetra);
         }
       }

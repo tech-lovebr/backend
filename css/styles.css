@@ -13415,3 +13415,50 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
     font-size: 17px !important; font-weight: 600 !important; letter-spacing: -0.01em !important; line-height: 1.3 !important;
   }
 }
+
+/* ==========================================================================
+   Celular: Convite digital / Save the Date. Seletor de página no centro, em
+   azul com a setinha azul; sem Salvar (salva sozinho a cada edição); no
+   Convite, ícone de enviar (pôr no ar); no Save the Date, ícone de
+   compartilhar — os dois no estilo dos ícones de Convidados e Presentes.
+   Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard .cabecalho-centro .builder-page-switcher:not(#love-h-a) {
+    position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important;
+    margin: 0 !important; display: flex; justify-content: center; font-size: 17px;
+  }
+  html body #tab-edit-site #builder-page-select-btn:not(#love-h-a) {
+    min-width: 0 !important; max-width: 100% !important; padding: 6px 22px 6px 4px !important;
+    font-size: inherit !important; font-weight: 600 !important; letter-spacing: -0.01em !important; color: #183b54 !important;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23183b54' stroke-width='2.4'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E") no-repeat right 2px center / 14px !important; border-color: transparent !important;
+  }
+  body[data-theme="dark"] #tab-edit-site #builder-page-select-btn { color: #EBF4FF !important; filter: none; }
+
+  html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a) { display: none !important; }
+  html body #view-event-os-dashboard #tab-edit-site :is(#builder-publish, #builder-share):not(#love-h-a):not(#love-h-b) {
+    position: relative; display: inline-flex !important; align-items: center; justify-content: center;
+    width: 44px !important; min-width: 44px !important; height: 44px !important; padding: 0 !important; margin: 0 !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 8px !important;
+    font-size: 0 !important; line-height: 0 !important; color: transparent !important;
+  }
+  html body #view-event-os-dashboard #tab-edit-site #site-builder-root[data-pagina="savethedate"] #builder-publish:not(#love-h-a):not(#love-h-b),
+  html body #view-event-os-dashboard #tab-edit-site #builder-share-wrap.hidden:not(#love-h-a) { display: none !important; }
+  html body #view-event-os-dashboard #tab-edit-site :is(#builder-publish, #builder-share):not(#love-h-a)::before {
+    content: ''; display: block; width: 22px; height: 22px; background: center / 22px no-repeat;
+  }
+  html body #view-event-os-dashboard #tab-edit-site #builder-publish:not(#love-h-a)::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M4 14v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5'/%3E%3C/svg%3E"); }
+  html body #view-event-os-dashboard #tab-edit-site #builder-share:not(#love-h-a)::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15'/%3E%3C/svg%3E"); }
+  html body #view-event-os-dashboard #tab-edit-site #builder-publish:disabled:not(#love-h-a) { opacity: 0.45; }
+  /* "Publicado" / "Erro ao publicar" num balãozinho embaixo do ícone. */
+  html body #view-event-os-dashboard #tab-edit-site #builder-publish[data-resultado]:not(#love-h-a)::after {
+    content: attr(data-resultado); position: absolute; top: calc(100% + 4px); right: 0; z-index: 5; white-space: nowrap;
+    padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.2; color: #18181B;
+  }
+  body[data-theme="dark"] #tab-edit-site :is(#builder-publish, #builder-share)::before { filter: invert(1); }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #tab-edit-site #builder-preview-link:not(#love-h-a) { color: #18181B !important; }
+  body[data-theme="dark"] #tab-edit-site #builder-preview-link { color: #FFFFFF !important; }
+}

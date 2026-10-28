@@ -22804,13 +22804,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.cabecalho-centro').forEach(tb => {
       if (noCelular.matches && tb.closest('.dashboard-tab-content.active')) return;
       tb.classList.remove('cabecalho-centro');
-      const t = /** @type {HTMLElement|null} */ (tb.querySelector('.floorplan-page-name'));
+      const t = /** @type {HTMLElement|null} */ (tb.querySelector('.floorplan-page-name, .builder-page-switcher'));
       if (t) { t.style.maxWidth = ''; t.style.removeProperty('font-size'); }
     });
     if (!noCelular.matches) return;
     const aba = document.querySelector('#view-event-os-dashboard .dashboard-tab-content.active');
     if (!aba) return;
-    aba.querySelectorAll('.floorplan-page-name').forEach(no => {
+    aba.querySelectorAll('.floorplan-page-name, .builder-page-switcher').forEach(no => {
       const titulo = /** @type {HTMLElement} */ (no);
       const barra = /** @type {HTMLElement|null} */ (titulo.closest('.builder-toolbar, .floorplan-toolbar'));
       if (!barra || !visivel(titulo) && !barra.classList.contains('cabecalho-centro')) return;

@@ -769,9 +769,11 @@ async function publicarConviteNoAr(btn) {
     resultado = 'Erro ao publicar';
   }
   btn.textContent = resultado;
+  btn.dataset.resultado = resultado;
   setTimeout(() => {
     btn.textContent = textoOriginal;
     btn.disabled = false;
+    delete btn.dataset.resultado;
   }, 2200);
   return resultado === 'Publicado';
 }
@@ -1024,7 +1026,8 @@ function atualizarBotoesDaPagina() {
   const ehSaveTheDate = currentPageKey === 'savethedate';
   const raiz = document.getElementById('site-builder-root');
   if (raiz) raiz.dataset.pagina = currentPageKey;
-  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || !!paginasJaPublicadas[currentPageKey]);
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || (!noCelular && !!paginasJaPublicadas[currentPageKey]));
   document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
   document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
   document.getElementById('builder-share-menu')?.classList.add('hidden');
@@ -1149,6 +1152,13 @@ function wireUnsavedChangesGuard() {
 
 function snapshotState() { return JSON.stringify(builderState); }
 
+let salvamentoAutomaticoTimer = 0;
+function agendarSalvamentoAutomatico() {
+  if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
+  clearTimeout(salvamentoAutomaticoTimer);
+  salvamentoAutomaticoTimer = window.setTimeout(() => { if (hasUnsavedChanges) persistBuilderState(true); }, 800);
+}
+
 function pushHistory() {
   if (suppressHistory) return;
   // Sem mudança desde o último passo (ex.: só saiu de um campo): não grava,
@@ -1160,6 +1170,7 @@ function pushHistory() {
   if (historyStack.length > 60) historyStack.shift();
   historyIndex = historyStack.length - 1;
   hasUnsavedChanges = true;
+  agendarSalvamentoAutomatico();
   updateHistoryButtons();
   // Guia de primeiros passos (plataforma): a primeira edição em Aparência
   // risca "Personalizar site do evento".
@@ -1171,6 +1182,7 @@ function undo() {
   historyIndex -= 1;
   builderState = JSON.parse(historyStack[historyIndex]);
   hasUnsavedChanges = true;
+  agendarSalvamentoAutomatico();
   selectedId = null;
   renderCanvas();
   renderLeftPanel();
@@ -1182,6 +1194,7 @@ function redo() {
   historyIndex += 1;
   builderState = JSON.parse(historyStack[historyIndex]);
   hasUnsavedChanges = true;
+  agendarSalvamentoAutomatico();
   selectedId = null;
   renderCanvas();
   renderLeftPanel();

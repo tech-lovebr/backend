@@ -93,12 +93,10 @@ function intervalo() {
   return { de: primeiro, ate };
 }
 
-/** O período imediatamente anterior, do mesmo tamanho, para a comparação. */
+/** Período anterior: os mesmos dias no mês anterior (25/10–28/10 → 25/09–28/09). */
 function intervaloAnterior() {
   const { de, ate } = intervalo();
-  const dias = Math.max(1, Math.round((ate - de) / 86400000) + 1);
-  const fim = new Date(de.getTime() - 1);
-  return { de: new Date(fim.getTime() - dias * 86400000 + 1), ate: fim };
+  return mesmoPeriodoNoMesAnterior(de, ate);
 }
 
 const formatarDiaCurto = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });

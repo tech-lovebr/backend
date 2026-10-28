@@ -264,29 +264,14 @@ function receitaNoIntervalo(de, ate) {
 }
 
 /**
- * Período anterior, para comparar: Hoje → ontem; Este mês → mês passado
- * (até o mesmo dia); qualquer outro → os mesmos tantos dias logo antes.
+ * Período anterior, para comparar: os mesmos dias no mês anterior
+ * (Hoje 28/10 → 28/09; 25/10 a 28/10 → 25/09 a 28/09).
  * "Todo o período" não tem com o que comparar.
  */
 function periodoAnterior(de, ate) {
   if (!PERIODO.de) return null;
-  const rotulo = rotuloDoPeriodo();
-  if (rotulo === 'Este mês') {
-    const fimMes = new Date(de.getFullYear(), de.getMonth(), 0).getDate();
-    const dia = Math.min(ate.getDate(), fimMes);
-    return {
-      de: new Date(de.getFullYear(), de.getMonth() - 1, 1),
-      ate: new Date(de.getFullYear(), de.getMonth() - 1, dia, 23, 59, 59, 999),
-      nome: 'mês passado'
-    };
-  }
-  const duracao = ate.getTime() - de.getTime();
-  const dias = Math.round(duracao / DIA_MS);
-  return {
-    de: new Date(de.getTime() - duracao - 1),
-    ate: new Date(de.getTime() - 1),
-    nome: rotulo === 'Hoje' ? 'ontem' : (dias <= 1 ? 'dia anterior' : `${dias} dias anteriores`)
-  };
+  // Padrão do Admin: os mesmos dias no mês anterior (25/10–28/10 → 25/09–28/09).
+  return mesmoPeriodoNoMesAnterior(de, ate);
 }
 
 function numerosDoPeriodo(de, ate) {

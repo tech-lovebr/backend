@@ -13401,3 +13401,17 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   }
   body[data-theme="dark"] #view-event-os-dashboard :is(#btn-host-add-guest, #btn-host-add-gift)::before { filter: invert(1); }
 }
+
+/* Celular: título do cabeçalho no centro da tela (largura até os botões,
+   calculada em app.js › cabecalhosCentralizadosNoCelular). Desktop não muda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard .cabecalho-centro:not(#love-h-a) { position: relative !important; min-height: 44px; }
+  /* Os botões continuam à direita (o título saiu do fluxo). */
+  html body #view-event-os-dashboard .cabecalho-centro:not(#love-h-a) { justify-content: flex-end !important; }
+  html body #view-event-os-dashboard .cabecalho-centro > :first-child:not(.floorplan-page-name):not(#love-h-a) { margin-right: auto !important; }
+  html body #view-event-os-dashboard .cabecalho-centro .floorplan-page-name:not(#love-h-a) {
+    position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important;
+    margin: 0 !important; text-align: center !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+    font-size: 17px !important; font-weight: 600 !important; letter-spacing: -0.01em !important; line-height: 1.3 !important;
+  }
+}

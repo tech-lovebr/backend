@@ -22791,3 +22791,62 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 })();
+
+// Celular: título dos cabeçalhos sempre no centro da tela (como nos apps).
+// O título fica centralizado e, para não bater nos botões ao lado, a largura
+// dele vai só até o botão mais próximo do centro (texto longo ganha "…").
+(function cabecalhosCentralizadosNoCelular() {
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const visivel = (/** @type {Element} */ e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+  let agendado = false;
+  const ajustar = () => {
+    agendado = false;
+    document.querySelectorAll('.cabecalho-centro').forEach(tb => {
+      if (noCelular.matches && tb.closest('.dashboard-tab-content.active')) return;
+      tb.classList.remove('cabecalho-centro');
+      const t = /** @type {HTMLElement|null} */ (tb.querySelector('.floorplan-page-name'));
+      if (t) { t.style.maxWidth = ''; t.style.removeProperty('font-size'); }
+    });
+    if (!noCelular.matches) return;
+    const aba = document.querySelector('#view-event-os-dashboard .dashboard-tab-content.active');
+    if (!aba) return;
+    aba.querySelectorAll('.floorplan-page-name').forEach(no => {
+      const titulo = /** @type {HTMLElement} */ (no);
+      const barra = /** @type {HTMLElement|null} */ (titulo.closest('.builder-toolbar, .floorplan-toolbar'));
+      if (!barra || !visivel(titulo) && !barra.classList.contains('cabecalho-centro')) return;
+      if (!barra.classList.contains('cabecalho-centro')) barra.classList.add('cabecalho-centro');
+      const r = barra.getBoundingClientRect();
+      if (!r.width) return;
+      const centro = r.left + r.width / 2;
+      let folga = r.width / 2;
+      barra.querySelectorAll('button, a, select, input, .gifts-total-linha').forEach(el => {
+        if (el === titulo || titulo.contains(el) || !visivel(el)) return;
+        const q = el.getBoundingClientRect();
+        if (q.right <= centro) folga = Math.min(folga, centro - q.right);
+        else if (q.left >= centro) folga = Math.min(folga, q.left - centro);
+        else folga = 0;
+      });
+      const largura = `${Math.max(0, Math.floor(folga * 2 - 8))}px`;
+      if (titulo.style.maxWidth !== largura) titulo.style.maxWidth = largura;
+      // Não coube em 17px: diminui a letra só o necessário (até 14px).
+      // (O CSS usa !important, por isso o setProperty com 'important'.)
+      titulo.style.removeProperty('font-size');
+      const natural = titulo.scrollWidth;
+      const caixa = parseFloat(largura);
+      if (natural > caixa && natural > 0) titulo.style.setProperty('font-size', `${Math.max(14, Math.floor(17 * caixa / natural * 2) / 2)}px`, 'important');
+    });
+  };
+  const agendar = () => { if (!agendado) { agendado = true; setTimeout(ajustar, 16); } };
+  const iniciar = () => {
+    const raiz = document.getElementById('view-event-os-dashboard');
+    if (!raiz) return;
+    // Só classe/hidden/estrutura: o max-width que este código escreve (style)
+    // não dispara de novo.
+    new MutationObserver(agendar).observe(raiz, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+    window.addEventListener('resize', agendar);
+    noCelular.addEventListener?.('change', agendar);
+    agendar();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

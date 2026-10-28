@@ -426,7 +426,7 @@
     const voltar = document.getElementById('btn-rfp-voltar');
     const criar = document.getElementById('btn-rfp-novo');
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
-    if (titulo && pedidosAberto) titulo.textContent = aberta ? TITULO_DA_NOVA : TITULO_DA_LISTA;
+    if (titulo && pedidosAberto) titulo.textContent = aberta ? (noCelular() ? 'Criar solicitação' : TITULO_DA_NOVA) : TITULO_DA_LISTA;
     if (voltar) voltar.hidden = true;
     if (vendoPropostas && aberta) { vendoPropostas = false; document.getElementById('pedidos-abas')?.classList.remove('hidden'); }
     // Sem botão "Criar solicitação" no cabeçalho (a aba Criar solicitação já faz isso).

@@ -13350,3 +13350,16 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #gifts-barra .gifts-total-da-lista:not(#love-h-a) { display: none; }
 }
+
+/* Celular: Configurações da lista sem as abas (Meus presentes / Recados) e com
+   a seta de voltar ao lado do título. Desktop não muda. */
+.gifts-config-voltar { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #tab-gifts.is-configuracoes .gifts-config-voltar:not(#love-h-a) {
+    display: inline-flex !important; align-items: center; justify-content: flex-start; flex: 0 0 auto;
+    width: 36px; height: 44px; padding: 0; margin: 0; background: transparent !important; border: 0 !important; color: #18181B; cursor: pointer;
+  }
+  html body #tab-gifts .gifts-config-voltar svg:not(#love-h-a) { width: 24px; height: 24px; }
+  body:has(#tab-gifts.active.is-configuracoes) #submenu-celular { display: none !important; }
+  body[data-theme="dark"] #tab-gifts .gifts-config-voltar { color: #FFFFFF; }
+}

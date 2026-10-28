@@ -9803,8 +9803,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="gift-settings"]'));
     if (item) item.click(); else switchGiftsSubSection('gift-settings');
   });
+  // Seta de voltar em Configurações (celular): volta para Meus presentes.
+  document.getElementById('btn-gifts-config-voltar')?.addEventListener('click', () => {
+    const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="my-gifts"]'));
+    if (item) item.click(); else switchGiftsSubSection('my-gifts');
+  });
 
   function switchGiftsSubSection(subId) {
+    // Celular: em Configurações somem as abas e aparece a seta de voltar.
+    document.getElementById('tab-gifts')?.classList.toggle('is-configuracoes', subId === 'gift-settings');
     const topSearchBar = document.getElementById('gifts-top-search-bar');
     const panelProducts = document.getElementById('gifts-panel-products');
     const panelSettings = document.getElementById('gifts-panel-settings');

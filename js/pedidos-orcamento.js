@@ -363,7 +363,7 @@
       </div>`;
 
     m.addEventListener('pointerdown', () => { soPreMarcado = false; });
-    // Celular: arrastar para a direita avança; para a esquerda, volta uma etapa.
+    // Celular: arrastar para a esquerda avança; para a direita, volta uma etapa (como nos apps).
     /** @type {{ x: number, y: number } | null} */
     let toque = null;
     m.addEventListener('touchstart', (e) => {
@@ -376,7 +376,7 @@
       const dy = e.changedTouches[0].clientY - toque.y;
       toque = null;
       if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      if (dx > 0) avancar();
+      if (dx < 0) avancar();
       else if (etapa > 1) { irPara(etapa - 1, -1); window.scrollTo({ top: 0 }); }
     }, { passive: true });
     m.addEventListener('keydown', () => { soPreMarcado = false; });

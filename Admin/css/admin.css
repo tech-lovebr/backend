@@ -4458,3 +4458,6 @@ a.conteudo-tab { text-decoration: none; }
 .balao-previa:hover .balao-previa-fechar { opacity: 1; }
 .balao-previa-fechar svg { width: 14px; height: 14px; }
 body[data-theme="dark"] .balao-previa-palco { background: rgba(255,255,255,.04); }
+
+/* Custos: linha de total do descritivo do período. */
+.custo-total-linha td { border-top: 1px solid #E4E4E7; }

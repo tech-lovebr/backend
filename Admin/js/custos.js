@@ -529,29 +529,48 @@ function cartaoDoPeriodo(l, { titulo = nomeDoCusto(l) } = {}) {
   const { servicos, exato } = servicosNoPeriodo(l, de, ate);
   const periodo = noPeriodoTexto();
 
-  const linhasTabela = servicos.map(sv => `
+  /* O descritivo é do valor clicado: as linhas somam exatamente o "Custo no
+     período". O que o serviço cobrou além do crédito entra pelo valor
+     cobrado; a assinatura do plano é o restante (rateada pelos dias). O que
+     coube no crédito aparece com o uso, valendo R$ 0. */
+  const emBrl = v => emReais(v, l.moeda);
+  const cobradoTotal = servicos.reduce((s, sv) => s + emBrl(sv.cobrado || 0), 0);
+  const assinatura = l.assinatura_mensal ? Math.max(0, total - cobradoTotal) : 0;
+
+  const linhaValor = (nome, sub, uso, valorBrl, nota = '') => `
     <tr class="no-hover">
-      <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
-      <td>${escapeHtml(usoDoServico(sv))}</td>
-      <td class="valor-dinheiro">${formatarMoeda(sv.consumo, l.moeda)}</td>
-      <td class="valor-dinheiro">${sv.cobrado ? formatarMoeda(sv.cobrado, l.moeda) : '<span class="cell-muted">no plano</span>'}</td>
+      <td><span class="cell-strong">${escapeHtml(nome)}</span>${sub ? `<span class="cell-sub">${escapeHtml(sub)}</span>` : ''}</td>
+      <td>${uso}</td>
+      <td class="valor-dinheiro">${valorBrl > 0.005 ? formatCurrency(valorBrl) : formatCurrency(0)}${nota ? `<span class="cell-sub">${nota}</span>` : ''}</td>
+    </tr>`;
+
+  const linhasTabela = [
+    ...(assinatura > 0.005 ? [linhaValor('Assinatura do plano', 'Proporcional aos dias do período', '—', assinatura,
+      `${formatarMoeda(l.assinatura_mensal, l.moeda)} por mês`)] : []),
+    ...servicos.map(sv => linhaValor(sv.servico, NOME_SERVICO_VERCEL[sv.servico] || '', escapeHtml(usoDoServico(sv)),
+      emBrl(sv.cobrado || 0),
+      sv.cobrado > 0.0005 ? formatarMoeda(sv.cobrado, l.moeda) : (sv.consumo > 0.0005 ? `coberto pelo plano (${formatarMoeda(sv.consumo, l.moeda)})` : '')))
+  ];
+  if (linhasTabela.length) {
+    linhasTabela.push(`
+    <tr class="no-hover custo-total-linha">
+      <td><span class="cell-strong">Total ${escapeHtml(periodo)}</span></td><td></td>
+      <td class="valor-dinheiro"><strong>${formatCurrency(total)}</strong></td>
     </tr>`);
+  }
 
   const resumo = `
     <div class="lista-dados">
-      ${linhaDado(`Custo ${periodo}`, formatCurrency(total))}
-      ${l.assinatura_mensal ? linhaDado('Assinatura do plano', `${formatarMoeda(l.assinatura_mensal, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emReais(l.assinatura_mensal, l.moeda))}</span> por mês`) : ''}
-      ${linhaDado('Potencial de redução', dinheiroOuTraco(pot))}
+      ${linhaDado(`Custo ${periodo}`, `<strong>${formatCurrency(total)}</strong>`)}
+      ${pot > 0.005 ? linhaDado('Potencial de redução', dinheiroOuTraco(pot)) : ''}
     </div>`;
 
-  const sub = servicos.length
-    ? (exato ? `Onde foi gasto ${periodo}` : `Onde foi gasto ${periodo} · estimado a partir do total do mês`)
-    : escapeHtml(l.detalhe || '');
+  const sub = exato ? `Do que é feito o valor ${periodo}` : `Do que é feito o valor ${periodo} · estimado a partir do total do mês`;
 
   return cardDetalhe(titulo, sub, `${resumo}
-    ${servicos.length
-      ? tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], linhasTabela)
-      : '<p class="custo-resumo">Nada consumido neste período, ou esta fonte não detalha o gasto por serviço.</p>'}`);
+    ${linhasTabela.length
+      ? tabelaDetalhe(['Item', 'Uso', 'Valor'], linhasTabela)
+      : `<p class="custo-resumo">${total > 0.005 ? escapeHtml(l.detalhe || 'Esta fonte não detalha o gasto por serviço.') : 'Nada gasto neste período.'}</p>`}`);
 }
 
 function abrirCategoria(categoria, linhas) {
@@ -886,12 +905,14 @@ function abrirDetalhe(l) {
   // abrir uma tela em branco.
   const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte] || detalheGenerico;
   DIAGNOSTICO = null;
-  // O período manda: o primeiro cartão responde "onde foi gasto no recorte
-  // que está escolhido lá em cima". O resto do detalhe (fatura, ciclo,
-  // mês a mês) vem depois, porque fala de outra janela de tempo.
+  // Pedido: o detalhe mostra só do que é feito o valor clicado, no período
+  // escolhido lá em cima. Ciclo, previsão e mês a mês ficam de fora — para
+  // ver mais, troca-se o período. O montador da fonte ainda roda, só para
+  // preparar o Diagnóstico do botão no topo.
+  const detalheDaFonte = montar(l);
   visao.innerHTML = l.status !== 'ativo' && !l.manual
     ? `<div class="card"><div class="card-body"><div class="empty-state"><strong>${l.status === 'erro' ? 'Não foi possível ler os custos' : 'Não conectado'}</strong><p>${escapeHtml(l.erro || 'Configure as chaves na Vercel (projeto love-platform).')}</p></div></div></div>`
-    : cartaoDoPeriodo(l, { titulo: 'Onde foi gasto' }) + montar(l);
+    : cartaoDoPeriodo(l, { titulo: 'Onde foi gasto' }) + (l.manual ? detalheDaFonte : '');
   visao.hidden = false;
 
   document.getElementById('acoes-detalhe')?.remove();

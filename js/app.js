@@ -22890,3 +22890,46 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 })();
+
+// Celular: Fornecedores. A busca ("Buscar fornecedores" + "Em Local") sai do
+// cabeçalho e fica logo abaixo das abas, como em Convidados e Presentes; em
+// Criar solicitação as abas internas somem e "Minhas solicitações" vira o
+// ícone de lista no cabeçalho (lá dentro, o + volta a criar). Desktop não muda.
+(function fornecedoresNoCelular() {
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const iniciar = () => {
+    const aba = document.getElementById('tab-b2b');
+    const cabecalho = document.getElementById('b2b-top-search-bar');
+    const controles = document.getElementById('b2b-toolbar-controls');
+    const busca = document.getElementById('b2b-search-container');
+    const local = document.getElementById('b2b-location-input')?.parentElement;
+    if (!aba || !cabecalho || !controles || !busca || !local) return;
+    const barra = document.createElement('div');
+    barra.id = 'b2b-busca-celular';
+    barra.className = 'b2b-busca-celular';
+    const arrumar = () => {
+      if (noCelular.matches) {
+        if (busca.parentElement !== barra) barra.append(busca, local);
+        if (!barra.parentElement) {
+          // Logo depois das abas (o submenu entra logo depois do cabeçalho).
+          const sub = document.getElementById('submenu-celular');
+          (sub && sub.parentElement === aba ? sub : cabecalho).after(barra);
+        }
+      } else if (busca.parentElement === barra) {
+        controles.append(busca, local);
+        barra.remove();
+      }
+    };
+    noCelular.addEventListener?.('change', arrumar);
+    window.addEventListener('resize', arrumar);
+    arrumar();
+    document.getElementById('btn-rfp-lista-celular')?.addEventListener('click', () => {
+      const lista = document.getElementById('pedidos-painel-minhas');
+      const naLista = !!lista && !lista.classList.contains('hidden');
+      /** @type {any} */ (window).LovePedidos?.mostrarAba(naLista ? 'nova' : 'minhas');
+      window.scrollTo({ top: 0 });
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();

@@ -13338,3 +13338,10 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   }
   html body .planta-zoom:not(#love-h-a), html body .planta-zoom button:not(#love-h-a) { touch-action: none; -webkit-user-select: none; user-select: none; }
 }
+
+/* Celular: o fundo atrás da planta tem a mesma cor da planta (nada de
+   quadrado de outra cor ao afastar). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) #tab-rsvp-tables .floorplan-body:not(#love-h-a) { background-color: var(--bg-dashboard) !important; }
+  html body #tab-rsvp-tables .floorplan-wrap.is-expandida #floorplan-canvas:not(#love-h-a) { margin-left: 0; margin-top: 0; }
+}

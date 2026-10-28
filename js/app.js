@@ -505,6 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ativo) botao.setAttribute('aria-current', 'page');
         const rotulo = document.createElement('span');
         rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && rotulo.textContent === 'Meus convidados') rotulo.textContent = 'Minha lista';
         botao.appendChild(rotulo);
         const contador = orig.querySelector('.badge-recados-count');
         if (contador && contador.textContent.trim()) {
@@ -2270,6 +2271,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Se clicar mais 1 vez no ícone da aba ativa (exceto 'overview' que não possui submenu):
         // Faz o reverso: se o submenu estiver aberto, fecha; se estiver fechado, reabre!
+        if (state.currentTab === tab && tab !== 'overview' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+          const primeira = /** @type {HTMLElement|null} */ (Array.from(elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item') || [])
+            .find(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none') || null);
+          if (primeira && !primeira.classList.contains('active')) primeira.click();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
         if (state.currentTab === tab && tab !== 'overview') {
           const isDrawerOpen = elements.subDrawer && !elements.subDrawer.classList.contains('hidden-drawer');
           if (isDrawerOpen) {
@@ -2656,7 +2664,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
     if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
-    if (rsvpTitle) rsvpTitle.textContent = 'Meus convidados';
+    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Convidados' : 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
@@ -9784,6 +9792,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const trocar = () => {
       const t = document.getElementById('gifts-header-title');
       if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
+      // Meus convidados: no celular o cabeçalho é só "Convidados".
+      const c = document.getElementById('rsvp-header-title');
+      if (c && /^(Meus convidados|Convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Convidados' : 'Meus convidados';
     };
     mq.addEventListener?.('change', trocar);
     trocar();
@@ -14293,7 +14304,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else { zoomDaPlanta = 1; renderFloorPlanCanvas(); corpo.scrollTo({ left: 0, top: 0, behavior: 'smooth' }); }
     });
 
-    /** @type {{d0: number, m0x: number, m0y: number, px: number, py: number, k: number, m1x: number, m1y: number}|null} */
+    /** @type {{d0: number, m0x: number, m0y: number, px: number, py: number, k: number, m1x: number, m1y: number, ox?: number, oy?: number}|null} */
     let pinca = null;
     /** @type {{x0: number, y0: number, sl: number, st: number}|null} */
     let arrasto = null;
@@ -14311,8 +14322,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const m = meio(e.touches);
         const r = canvas.getBoundingClientRect();
         pinca = { d0: distancia(e.touches), m0x: m.x, m0y: m.y, px: (m.x - r.left) / escalaDaPlanta, py: (m.y - r.top) / escalaDaPlanta, k: 1, m1x: m.x, m1y: m.y };
-        canvas.style.transformOrigin = `${m.x - r.left}px ${m.y - r.top}px`;
-        canvas.style.willChange = 'transform';
+        pinca.ox = m.x - r.left; pinca.oy = m.y - r.top;
+        canvas.querySelectorAll('.floorplan-selecao').forEach(s => /** @type {HTMLElement} */ (s).style.visibility = 'hidden');
         return;
       }
       if (e.touches.length === 1 && !(e.target instanceof Element && e.target.closest('.floorplan-el'))) {
@@ -14327,7 +14338,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const z = Math.min(ZOOM_MAXIMO_DA_PLANTA, Math.max(ZOOM_MINIMO_DA_PLANTA, zoomDaPlanta * distancia(e.touches) / pinca.d0));
         pinca.k = z / zoomDaPlanta;
         pinca.m1x = m.x; pinca.m1y = m.y;
-        canvas.style.transform = `translate(${m.x - pinca.m0x}px, ${m.y - pinca.m0y}px) scale(${pinca.k})`;
+        // A camada leva o zoom em volta do ponto da pinça; o quadriculado acompanha.
+        const k = pinca.k;
+        const tx = (m.x - pinca.m0x) + pinca.ox * (1 - k);
+        const ty = (m.y - pinca.m0y) + pinca.oy * (1 - k);
+        const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
+        if (camada) camada.style.transform = `translate(${tx}px, ${ty}px) scale(${escalaDaPlanta * k})`;
+        const q = (n) => `${Math.round(n * zoomDaPlanta * k * 100) / 100}px`;
+        canvas.style.setProperty('background-size', `${q(50)} ${q(50)}, ${q(50)} ${q(50)}, ${q(10)} ${q(10)}, ${q(10)} ${q(10)}`, 'important');
+        canvas.style.setProperty('background-position', `${tx}px ${ty}px`, 'important');
         return;
       }
       if (arrasto && e.touches.length === 1) {
@@ -14341,9 +14360,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pinca && e.touches.length < 2) {
         const g = pinca;
         pinca = null;
-        canvas.style.transform = '';
-        canvas.style.transformOrigin = '';
-        canvas.style.willChange = '';
+        canvas.style.removeProperty('background-position');
+        if (!(Math.abs(g.k - 1) > 0.01 || Math.hypot(g.m1x - g.m0x, g.m1y - g.m0y) > 2)) renderFloorPlanCanvas();
         if (Math.abs(g.k - 1) > 0.01 || Math.hypot(g.m1x - g.m0x, g.m1y - g.m0y) > 2) aplicarZoom(zoomDaPlanta * g.k, g.px, g.py, g.m1x, g.m1y);
       }
       if (!e.touches.length) arrasto = null;

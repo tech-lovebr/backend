@@ -227,13 +227,13 @@ async function custoVercel(meses) {
       { tipo: "ciclo", rotulo: "ciclo anterior", ...recorte(deCicloAnterior, diasDecorridos) },
       { tipo: "mes", rotulo: "mês anterior", ...recorte(deMesAnterior, diasDecorridos) }
     ];
-    const base = candidatos.find(temGasto) || null;
-    const anterior = agregar(base ? base.linhas : []);
+    const baseComparacao = candidatos.find(temGasto) || null; // não chamar de "base": apagaria fonte/nome do item
+    const anterior = agregar(baseComparacao ? baseComparacao.linhas : []);
 
     const comparado = (lista, chave, campos) => lista.map(item => {
       const antes = anterior[chave][item[campos.id]];
       const saida = { ...item };
-      if (base) campos.valores.forEach(c => { saida[`${c}_antes`] = antes ? antes[c] : 0; });
+      if (baseComparacao) campos.valores.forEach(c => { saida[`${c}_antes`] = antes ? antes[c] : 0; });
       return saida;
     });
 
@@ -252,8 +252,8 @@ async function custoVercel(meses) {
       // Primeiro dia com cobranca na base da Vercel: explica, na tela, por que
       // as vezes nao ha periodo anterior para comparar.
       primeiro_dia: primeiroDia,
-      anterior: base
-        ? { tipo: base.tipo, rotulo: base.rotulo, inicio: base.de, fim: base.ate, dias: diasDecorridos, consumo: anterior.consumo, extra: anterior.extra }
+      anterior: baseComparacao
+        ? { tipo: baseComparacao.tipo, rotulo: baseComparacao.rotulo, inicio: baseComparacao.de, fim: baseComparacao.ate, dias: diasDecorridos, consumo: anterior.consumo, extra: anterior.extra }
         : null
     };
     return {

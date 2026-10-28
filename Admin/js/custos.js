@@ -214,16 +214,38 @@ function valorManualNoMes(c, mes) {
 const NOME_DA_FONTE = { vercel: 'Vercel', supabase: 'Supabase', aws: 'Amazon' };
 const CATEGORIA_DA_FONTE = { vercel: 'Servidor', supabase: 'Banco de dados', aws: 'E-mail' };
 
+/* Fonte mesmo quando a API não manda: cada integração tem campos que só ela
+   usa (Vercel: ciclo e serviços por dia; Supabase: plano; AWS: lista de
+   serviços da Amazon). Sem pista nenhuma, vale a ordem fixa da API (Vercel,
+   Supabase, AWS). Assim nenhuma integração aparece sem nome no Custos. */
+const ORDEM_DAS_FONTES = ['vercel', 'supabase', 'aws'];
+
+function fonteDaIntegracao(i, posicao) {
+  if (NOME_DA_FONTE[i.fonte]) return i.fonte;
+  const texto = [i.nome, i.detalhe, i.erro].join(' ').toLowerCase();
+  const pelaPalavra = ORDEM_DAS_FONTES.find(f => texto.includes(f)) || (/amazon/.test(texto) ? 'aws' : '');
+  if (pelaPalavra) return pelaPalavra;
+  if (i.ciclo || i.meses_servicos || i.dias_servicos || i.assinatura_mensal) return 'vercel';
+  if (/plano (free|pro|team)/i.test(i.detalhe || '')) return 'supabase';
+  if (Array.isArray(i.servicos)) return 'aws';
+  return i.fonte || ORDEM_DAS_FONTES[posicao] || '';
+}
+
 /** As integrações com os campos que faltaram preenchidos pela fonte. */
 function integracoesNormalizadas() {
-  return INTEGRACOES.map(i => ({
-    ...i,
-    manual: false,
-    nome: i.nome || NOME_DA_FONTE[i.fonte] || i.fonte || '',
-    categoria: i.categoria || CATEGORIA_DA_FONTE[i.fonte] || '',
-    tipo: i.tipo || 'recorrente',
-    status: i.status || 'ativo'
-  }));
+  return INTEGRACOES.map((i, posicao) => {
+    const fonte = fonteDaIntegracao(i, posicao);
+    return {
+      ...i,
+      fonte,
+      manual: false,
+      nome: i.nome || NOME_DA_FONTE[fonte] || fonte || '',
+      categoria: i.categoria || CATEGORIA_DA_FONTE[fonte] || '',
+      // "ciclo"/"mes" (base de comparação) não é tipo de custo.
+      tipo: TIPO[i.tipo] ? i.tipo : 'recorrente',
+      status: i.status || 'ativo'
+    };
+  });
 }
 
 function linhasDeCusto() {

@@ -21035,13 +21035,30 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.className = 'conv-menu';
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
+      ${btn.classList.contains('conv-acao-mais') ? `${conv.unread > 0 ? '<button type="button" role="menuitem" data-conv-lida>Marcar como lida</button>' : ''}
+      <button type="button" role="menuitem" data-conv-abrir>Abrir conversa</button>` : ''}
       <button type="button" role="menuitem" data-conv-excluir>Excluir</button>`;
     document.body.appendChild(menu);
     const r = btn.getBoundingClientRect();
     menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
     menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
     btn.closest('.conv-item')?.classList.add('menu-aberto');
+    menu.querySelector('[data-conv-lida]')?.addEventListener('click', async () => {
+      fecharMenuConversa(); fecharLinhaDaConversa();
+      conv.unread = 0;
+      renderB2BChatContacts(filtroDaListaDoChat());
+      atualizarContadoresDoChat();
+      const { error } = await supabaseClient.rpc('marcar_conversa_lida', { p_conversation_id: conv.id });
+      if (error) console.error('Erro ao marcar conversa como lida:', error);
+    });
+    menu.querySelector('[data-conv-abrir]')?.addEventListener('click', () => {
+      fecharMenuConversa(); fecharLinhaDaConversa();
+      activeB2BConversationId = conv.id;
+      conv.unread = 0;
+      renderB2BChat();
+    });
     menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
+      fecharLinhaDaConversa();
       fecharMenuConversa();
       confirmarNaLove({
         titulo: 'Excluir conversa?',
@@ -21057,6 +21074,79 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
 
+  // ------------------------------------------------------------------
+  // Celular: arrastar a conversa para a esquerda mostra "Mais" e "Apagar"
+  // (como no WhatsApp). Uma linha aberta por vez; fecha ao tocar fora ou
+  // rolar a lista; o toque só abre a conversa se não houve arraste.
+  // ------------------------------------------------------------------
+  const CHAT_NO_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const LARGURA_ACOES_CONVERSA = 144;
+  /** @type {HTMLElement|null} */
+  let linhaDaConversaAberta = null;
+
+  /** @param {HTMLElement} linha @param {number} x @param {boolean} animar */
+  function moverLinhaDaConversa(linha, x, animar) {
+    const card = /** @type {HTMLElement|null} */ (linha.querySelector('.conv-item'));
+    if (!card) return;
+    card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+    card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+    linha.classList.toggle('is-aberta', x < 0);
+  }
+  function fecharLinhaDaConversa() {
+    if (linhaDaConversaAberta) moverLinhaDaConversa(linhaDaConversaAberta, 0, true);
+    linhaDaConversaAberta = null;
+  }
+
+  /** @param {HTMLElement} linha */
+  function prepararArrasteDaConversa(linha) {
+    const card = /** @type {HTMLElement} */ (linha.querySelector('.conv-item'));
+    let x0 = 0, y0 = 0, inicio = 0, x = 0;
+    /** @type {null|'h'|'v'} */
+    let direcao = null;
+    card.addEventListener('touchstart', (e) => {
+      if (!CHAT_NO_CELULAR.matches || e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      inicio = linha === linhaDaConversaAberta ? -LARGURA_ACOES_CONVERSA : 0;
+      x = inicio; direcao = null; linha.dataset.arrastou = '';
+    }, { passive: true });
+    card.addEventListener('touchmove', (e) => {
+      if (!CHAT_NO_CELULAR.matches || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+      if (!direcao) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        if (direcao === 'h') {
+          linha.dataset.arrastou = '1';
+          if (linhaDaConversaAberta && linhaDaConversaAberta !== linha) fecharLinhaDaConversa();
+          fecharMenuConversa();
+        }
+      }
+      if (direcao !== 'h') return;
+      e.preventDefault();
+      x = Math.max(-LARGURA_ACOES_CONVERSA, Math.min(0, inicio + dx));
+      moverLinhaDaConversa(linha, x, false);
+    }, { passive: false });
+    const soltar = () => {
+      if (direcao !== 'h') return;
+      const abrir = x < -LARGURA_ACOES_CONVERSA / 2;
+      moverLinhaDaConversa(linha, abrir ? -LARGURA_ACOES_CONVERSA : 0, true);
+      linhaDaConversaAberta = abrir ? linha : (linhaDaConversaAberta === linha ? null : linhaDaConversaAberta);
+      direcao = null;
+      // O "click" que vem depois do toque não abre a conversa.
+      setTimeout(() => { linha.dataset.arrastou = ''; }, 350);
+    };
+    card.addEventListener('touchend', soltar);
+    card.addEventListener('touchcancel', soltar);
+  }
+  // Tocar fora da linha aberta (ou rolar a lista) fecha as ações.
+  document.addEventListener('touchstart', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (linhaDaConversaAberta && !(alvo.closest && (linhaDaConversaAberta.contains(alvo) || alvo.closest('.conv-menu')))) fecharLinhaDaConversa();
+  }, { passive: true, capture: true });
+  document.addEventListener('scroll', (e) => {
+    if (linhaDaConversaAberta && /** @type {Element} */ (e.target).id === 'b2b-chat-contacts-list') fecharLinhaDaConversa();
+  }, { passive: true, capture: true });
+
   const ICONE_CONVERSA_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
 
   /** Texto da busca da lista de conversas. */
@@ -21070,6 +21160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!list) return;
 
     list.innerHTML = '';
+    linhaDaConversaAberta = null;
 
     if (!b2bConversationsData.length) {
       list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Fale com um fornecedor pelo Explorar.</div>';
@@ -21132,13 +21223,50 @@ document.addEventListener('DOMContentLoaded', () => {
         abrirMenuConversa(/** @type {HTMLElement} */ (e.currentTarget), conv);
       });
 
+      // Linha: o card por cima e, por trás, as ações que o arraste revela (celular).
+      const linha = document.createElement('div');
+      linha.className = 'conv-linha';
+      linha.appendChild(item);
+      if (!conv.isSuporte) {
+        const acoes = document.createElement('div');
+        acoes.className = 'conv-acoes';
+        acoes.innerHTML = `
+          <button type="button" class="conv-acao conv-acao-mais" data-conv-menu aria-label="Mais opções da conversa">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+            <span>Mais</span>
+          </button>
+          <button type="button" class="conv-acao conv-acao-apagar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+            <span>Apagar</span>
+          </button>`;
+        linha.insertBefore(acoes, item);
+        acoes.querySelector('.conv-acao-mais')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          abrirMenuConversa(/** @type {HTMLElement} */ (e.currentTarget), conv);
+        });
+        acoes.querySelector('.conv-acao-apagar')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaDaConversa();
+          confirmarNaLove({
+            titulo: 'Apagar conversa?',
+            texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
+            botao: 'Apagar',
+            aoConfirmar: () => excluirConversaDaLista(conv.id)
+          });
+        });
+        prepararArrasteDaConversa(linha);
+      }
+
       item.addEventListener('click', () => {
+        // Depois de arrastar, ou com as ações abertas, o toque só fecha a linha.
+        if (linha.dataset.arrastou === '1') return;
+        if (linha.classList.contains('is-aberta')) { fecharLinhaDaConversa(); return; }
         activeB2BConversationId = conv.id;
         conv.unread = 0;
         renderB2BChat();
       });
 
-      list.appendChild(item);
+      list.appendChild(linha);
     });
   }
 

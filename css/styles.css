@@ -14172,3 +14172,38 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body .aviso-computador-celular svg:not(#love-h-a) { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; color: #183b54; }
   body[data-theme="dark"] .aviso-computador-celular { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }
 }
+
+/* ==========================================================================
+   Mensagens no celular: sem os três pontinhos na linha. Arrastar a conversa
+   para a esquerda revela "Mais" e "Apagar" por trás do card (como no
+   WhatsApp). Nome um pouco maior. No computador a linha não muda.
+   ========================================================================== */
+.conv-acoes { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-chat-contacts-list .conv-linha:not(#love-h-a) { position: relative; overflow: hidden; }
+  html body #b2b-chat-contacts-list .conv-linha > .conv-item:not(#love-h-a) {
+    position: relative; z-index: 1; touch-action: pan-y; will-change: transform; background: #FFFFFF;
+    -webkit-user-select: none; user-select: none;
+  }
+  html body #b2b-chat-contacts-list .conv-linha > .conv-item.is-ativa:not(#love-h-a) { background: #EBF4FF; }
+  html body #b2b-chat-contacts-list .conv-acoes:not(#love-h-a) {
+    display: flex; position: absolute; top: 0; right: 0; bottom: 0; width: 144px; z-index: 0;
+  }
+  html body #b2b-chat-contacts-list .conv-acao:not(#love-h-a) {
+    flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    padding: 0; border: 0; border-radius: 0; box-shadow: none; cursor: pointer;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500;
+  }
+  html body #b2b-chat-contacts-list .conv-acao svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body #b2b-chat-contacts-list .conv-acao-mais:not(#love-h-a) { background: #E4E4E7; color: #18181B; }
+  html body #b2b-chat-contacts-list .conv-acao-apagar:not(#love-h-a) { background: #181D24; color: #FFFFFF; }
+  body[data-theme="dark"] #b2b-chat-contacts-list .conv-linha > .conv-item { background: #1A1A1A !important; }
+  body[data-theme="dark"] #b2b-chat-contacts-list .conv-acao-mais { background: #333333 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] #b2b-chat-contacts-list .conv-acao-apagar { background: #EBF4FF !important; color: #181D24 !important; }
+
+  /* Em repouso: sem os três pontinhos; o horário fica à mostra. */
+  html body #b2b-chat-contacts-list .conv-item .conv-item-mais:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #b2b-chat-contacts-list .conv-item .conv-item-hora:not(#love-h-a):not(#love-h-b) { display: inline !important; font-size: 12px; }
+  html body #b2b-chat-contacts-list .conv-item h4:not(#love-h-a) { font-size: 16px !important; line-height: 1.3; }
+  html body #b2b-chat-contacts-list .conv-item p:not(#love-h-a) { font-size: 14px !important; line-height: 1.35; }
+}

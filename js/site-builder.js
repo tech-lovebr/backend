@@ -5928,14 +5928,14 @@ const TEXTOS_DOS_MODELOS = {
 // modelo padrão salvo no banco (o mesmo do desktop).
 const VARIACOES_DOS_MODELOS = {
   wedding: [
-    { id: 'classico', nome: 'Clássico', doBanco: true, fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/bouquet_roses.jpg' },
-    { id: 'jardim', nome: 'Jardim', fundo: '#f1f4ee', destaque: '#4f6b4a', caixa: '#dde6d6', fonte: "'Cormorant Garamond', Georgia, serif", capa: 'assets/presentes/ensaio-casal.jpg', imagem: 'assets/bouquet_roses.jpg' },
-    { id: 'azul', nome: 'Azul noite', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Cinzel', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/presentes/buque-rosas.jpg' }
+    { id: 'classico', nome: 'Clássico', doBanco: true, adicionado: '2026-08-04', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'jardim', nome: 'Jardim', adicionado: '2026-09-15', fundo: '#f1f4ee', destaque: '#4f6b4a', caixa: '#dde6d6', fonte: "'Cormorant Garamond', Georgia, serif", capa: 'assets/presentes/ensaio-casal.jpg', imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'azul', nome: 'Azul noite', adicionado: '2026-10-02', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Cinzel', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/presentes/buque-rosas.jpg' }
   ],
   birthday: [
-    { id: 'festa', nome: 'Festa', fundo: '#fdf3e7', destaque: '#b45309', caixa: '#f8dfbf', fonte: "'Playfair Display', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' },
-    { id: 'elegante', nome: 'Elegante', fundo: '#f4f1ee', destaque: '#3f3f46', caixa: '#e4ded8', fonte: "'Marcellus', Georgia, serif", capa: 'assets/birthday_hero_banner.jpg', imagem: 'assets/presentes/champanhe.jpg' },
-    { id: 'leve', nome: 'Leve', fundo: '#eef4f8', destaque: '#2f6f86', caixa: '#d5e7ef', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' }
+    { id: 'festa', nome: 'Festa', adicionado: '2026-08-20', fundo: '#fdf3e7', destaque: '#b45309', caixa: '#f8dfbf', fonte: "'Playfair Display', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' },
+    { id: 'elegante', nome: 'Elegante', adicionado: '2026-09-28', fundo: '#f4f1ee', destaque: '#3f3f46', caixa: '#e4ded8', fonte: "'Marcellus', Georgia, serif", capa: 'assets/birthday_hero_banner.jpg', imagem: 'assets/presentes/champanhe.jpg' },
+    { id: 'leve', nome: 'Leve', adicionado: '2026-10-10', fundo: '#eef4f8', destaque: '#2f6f86', caixa: '#d5e7ef', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' }
   ]
 };
 
@@ -5945,9 +5945,9 @@ function variacoesDoTipo(tipo) {
   const base = MODELOS_DE_CONVITE[tipo] || { fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4' };
   const capa = (EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding).coverImage;
   return [
-    { id: 'suave', nome: 'Suave', fundo: base.fundo, destaque: base.destaque, caixa: base.caixa, fonte: "'Lora', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' },
-    { id: 'classico', nome: 'Clássico', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Marcellus', Georgia, serif", capa, imagem: 'assets/presentes/champanhe.jpg' },
-    { id: 'azul', nome: 'Azul', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Playfair Display', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' }
+    { id: 'suave', nome: 'Suave', adicionado: '2026-08-12', fundo: base.fundo, destaque: base.destaque, caixa: base.caixa, fonte: "'Lora', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'classico', nome: 'Clássico', adicionado: '2026-09-05', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Marcellus', Georgia, serif", capa, imagem: 'assets/presentes/champanhe.jpg' },
+    { id: 'azul', nome: 'Azul', adicionado: '2026-10-02', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Playfair Display', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' }
   ];
 }
 
@@ -6051,7 +6051,14 @@ function aplicarModeloNoCelular(modelo) {
   if (!paginasJaPublicadas.convite) persistBuilderState(true);
 }
 
-/** Tela "Escolha um modelo" (celular): cartões que passam de lado. */
+/** "Adicionado em 4 de ago. de 2026" (data em que o modelo entrou na loja de modelos). @param {string} iso */
+function dataDoModelo(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+  if (!m) return '';
+  return 'Adicionado em ' + new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/** Tela "Escolher novo modelo" (celular): modelos em grade de duas colunas. */
 async function abrirModelosNoCelular() {
   if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches || currentPageKey !== 'convite') return;
   let tela = document.getElementById('modelos-celular');
@@ -6095,6 +6102,7 @@ async function abrirModelosNoCelular() {
             </span>
           </span>
           <span class="modelos-celular-rotulo">${escapeHtml(m.nome)}</span>
+          <span class="modelos-celular-adicionado">${escapeHtml(dataDoModelo(m.adicionado))}</span>
         </button>`).join('')}
     </div>
     <div class="modelos-celular-pontos" aria-hidden="true">${lista.map((/** @type {any} */ _m, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>

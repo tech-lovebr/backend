@@ -14113,3 +14113,32 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   body[data-theme="dark"] .modelos-celular .modelos-celular-voltar { color: #FFFFFF !important; }
   body[data-theme="dark"] .modelos-celular .modelos-celular-descricao { color: #D4D4D8 !important; }
 }
+
+/* ==========================================================================
+   Celular: (1) Escolher novo modelo em grade de 2 colunas — miniatura com
+   borda fina, nome e a data em que entrou na loja de modelos. (2) Criar/editar
+   presente ocupa a tela toda até embaixo; Salvar igual ao da ficha de
+   Adicionar convidado; caixinhas de marcar (valor extra, vaquinha) maiores.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .modelos-celular .modelos-celular-trilho:not(#love-h-a):not(#love-h-b) {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; overflow: visible; scroll-snap-type: none; padding: 0 16px;
+  }
+  html body .modelos-celular .modelos-celular-cartao:not(#love-h-a):not(#love-h-b) { flex: none; width: auto; gap: 0; min-width: 0; }
+  html body .modelos-celular .modelos-celular-folha:not(#love-h-a):not(#love-h-b) { aspect-ratio: 3 / 4; margin-bottom: 10px; }
+  html body .modelos-celular .modelos-celular-foto:not(#love-h-a):not(#love-h-b) { flex-basis: 48%; }
+  html body .modelos-celular .modelos-celular-texto:not(#love-h-a):not(#love-h-b) { gap: 6px; padding: 8px; }
+  html body .modelos-celular .modelos-celular-nome:not(#love-h-a):not(#love-h-b) { font-size: 14px; letter-spacing: 0.03em; }
+  html body .modelos-celular .modelos-celular-data:not(#love-h-a):not(#love-h-b) { font-size: 9px; }
+  html body .modelos-celular .modelos-celular-rotulo:not(#love-h-a):not(#love-h-b) { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .modelos-celular .modelos-celular-adicionado:not(#love-h-a) { margin-top: 2px; font-size: 13px; line-height: 1.35; color: #A1A1AA; }
+  html body .modelos-celular .modelos-celular-pontos:not(#love-h-a):not(#love-h-b) { display: none; }
+  html body .modelos-celular .modelos-celular-pular:not(#love-h-a):not(#love-h-b) { margin-top: 24px; }
+  body[data-theme="dark"] .modelos-celular .modelos-celular-folha { border-color: #404040 !important; }
+
+  html body .gift-drawer:not(#love-h-a):not(#love-h-b) { bottom: 0 !important; z-index: 70 !important; }
+  html body .gift-drawer > .overflow-y-auto:not(#love-h-a) { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important; }
+  html body .gift-drawer .gift-drawer-salvar-topo:not(#love-h-a):not(#love-h-b) { border-radius: 8px !important; box-shadow: none !important; }
+  html body #form-add-gift .gift-valor-extra .gifts-select-all-check:not(#love-h-a) { width: 24px; height: 24px; border-radius: 6px; }
+  html body #form-add-gift .gift-valor-extra .gifts-select-all-check:not(#love-h-a)::before { width: 13px; height: 13px; }
+}

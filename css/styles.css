@@ -14075,3 +14075,16 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   body[data-theme="dark"] .modelos-celular :is(h2, .modelos-celular-rotulo) { color: #FFFFFF !important; }
   body[data-theme="dark"] .modelos-celular .modelos-celular-topo p { color: #D4D4D8 !important; }
 }
+
+/* ==========================================================================
+   Celular, Home: o topo (logo, sino e menu) não gruda ao rolar; sobe junto
+   com a foto e fica sempre transparente por cima dela. Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { position: absolute !important; top: 0 !important; background: transparent !important; }
+  html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+  html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar #btn-notifications-menu svg *:not(#love-h-a) { stroke: #FFFFFF !important; }
+  html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar > .logo-celular .logo-claro:not(#love-h-a) { display: none !important; }
+  html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar > .logo-celular .logo-escuro:not(#love-h-a) { display: block !important; }
+}

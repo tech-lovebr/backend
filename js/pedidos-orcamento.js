@@ -1374,7 +1374,7 @@
     return `
       <div class="rfp-cat-select${categoriaAberta ? ' is-open' : ''}">
         <button type="button" class="rfp-cat-gatilho" data-rfp-cat-gatilho aria-haspopup="listbox" aria-expanded="${categoriaAberta}">
-          <span class="${cat ? '' : 'rfp-cat-vazio'}">${esc(cat ? cat.nome : 'Selecione o serviço...')}</span>
+          <span class="${cat ? '' : 'rfp-cat-vazio'}">${esc(cat ? cat.nome : (noCelular() ? 'Selecione uma categoria' : 'Selecione o serviço...'))}</span>
           <svg class="rfp-cat-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
         </button>
         ${categoriaAberta ? `

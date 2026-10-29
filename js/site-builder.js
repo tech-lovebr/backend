@@ -970,6 +970,8 @@ async function syncBuilderStateFromSupabase(pageKey) {
   } else {
     persistBuilderStateRemote(pageKey, loadPageState(pageKey));
   }
+  // A Home (celular) mostra a capa do convite: atualiza com a que chegou.
+  if (pageKey === 'convite' && typeof window.loveAtualizarCapaDaHome === 'function') window.loveAtualizarCapaDaHome();
   prepararConviteNoCelular(pageKey);
 }
 

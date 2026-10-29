@@ -13949,3 +13949,46 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   body[data-theme="dark"] .home-aviso-mensagens .home-aviso-mensagens-titulo { color: #FFFFFF !important; }
   body[data-theme="dark"] .home-aviso-mensagens :is(.home-aviso-mensagens-mao, .home-aviso-mensagens-link) { color: #EBF4FF !important; }
 }
+
+/* ==========================================================================
+   Celular, Home: topo como nas outras páginas (logo à esquerda; sino e ☰ à
+   direita, botões simples de 44px sem o círculo de vidro). Foto do convite
+   colada no topo com a caixa "Olá, nome!" e os dias que faltam; depois o
+   link, Convidados e os atalhos. Desktop não muda.
+   ========================================================================== */
+.home-capa-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dashboard-top-navbar > .logo-celular:not(#love-h-a):not(#love-h-b) {
+    position: static; transform: none; order: 0; margin-right: auto; height: 100%;
+  }
+  html body .dashboard-top-navbar > div:has(#btn-notifications-menu):not(#love-h-a) { order: 1; margin: 0 !important; gap: 0 !important; }
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c) { order: 2; margin-left: 10px !important; margin-right: -0px !important; }
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    width: 44px !important; height: 44px !important; min-width: 44px !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important; color: #18181B !important;
+  }
+  body[data-theme="dark"] .dashboard-top-navbar :is(.menu-celular-botao, #btn-notifications-menu) { background: transparent !important; border: 0 !important; color: #FFFFFF !important; }
+
+  /* Foto colada no topo (sem o respiro de cima e de ponta a ponta) */
+  html body #tab-overview.active:not(#love-h-a) { animation: none !important; transform: none !important; }
+  html body #tab-overview .home-capa-celular:not(#love-h-a) { display: block; position: relative; margin: -52px -16px 28px; }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a) {
+    height: 240px; background: #E8EEF4 center / cover no-repeat;
+  }
+  html body #tab-overview .home-capa-celular-caixa:not(#love-h-a) {
+    position: relative; margin: -48px 16px 0; padding: 18px 16px; text-align: center;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px;
+  }
+  html body #tab-overview .home-capa-celular-ola:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 22px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.25; color: #18181B; }
+  html body #tab-overview .home-capa-celular-dias:not(#love-h-a) { margin: 6px 0 0; font-family: Inter, sans-serif; font-size: 15px; color: #52525B; font-variant-numeric: tabular-nums; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-caixa { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-ola { color: #FFFFFF !important; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-dias { color: #D4D4D8 !important; }
+
+  /* Saem: saudação com as pílulas, card de Presentes e o carrossel. */
+  html body #tab-overview .home-saudacao:not(#love-h-a),
+  html body #tab-overview .home-kpis > :first-child:not(#love-h-a),
+  html body #tab-overview #dashboard-promo-carousel:not(#love-h-a) { display: none !important; }
+}

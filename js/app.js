@@ -2531,6 +2531,43 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Formata uma data ISO ("2025-10-18") como "18 de Outubro de 2025"
+  // Celular, Home: a foto do convite (capa) colada no topo, com a caixa
+  // "Olá, nome!" e quantos dias faltam para o evento.
+  function atualizarCapaDaHomeCelular() {
+    const caixa = document.getElementById('home-capa-celular');
+    if (!caixa) return;
+    const ev = getActiveEvent();
+    const ola = document.getElementById('home-capa-celular-ola');
+    const titulo = document.getElementById('dash-hub-title');
+    if (ola) ola.textContent = (titulo && titulo.textContent.replace(/\s+/g, ' ').trim()) || 'Olá!';
+    // Foto: a capa do Convite digital; sem ela, a imagem do evento.
+    let foto = '';
+    try {
+      const w = /** @type {any} */ (window);
+      const chave = typeof w.pageStorageKey === 'function' ? w.pageStorageKey('convite') : '';
+      const convite = chave ? JSON.parse(localStorage.getItem(chave) || 'null') : null;
+      const capa = convite && Array.isArray(convite.sections) ? convite.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock && s.bgImage) : null;
+      if (capa) foto = capa.bgImage;
+    } catch (e) { /* sem convite salvo */ }
+    if (!foto && ev && ev.coverImage) foto = ev.coverImage;
+    const fotoEl = document.getElementById('home-capa-celular-foto');
+    if (fotoEl) fotoEl.style.backgroundImage = foto ? `url("${String(foto).replace(/"/g, '%22')}")` : '';
+    const dias = document.getElementById('home-capa-celular-dias');
+    if (dias) {
+      const iso = ev ? ((ev.eventDetails && ev.eventDetails.date) || ev.date || '') : '';
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+      let texto = '';
+      if (m) {
+        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+        const dia = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        const n = Math.round((dia.getTime() - hoje.getTime()) / 86400000);
+        texto = n > 1 ? `Faltam ${n} dias para o seu evento` : n === 1 ? 'Falta 1 dia para o seu evento' : n === 0 ? 'O seu evento é hoje!' : 'O seu evento já aconteceu';
+      }
+      dias.textContent = texto || 'Defina a data do seu evento';
+    }
+  }
+  window.loveAtualizarCapaDaHome = atualizarCapaDaHomeCelular;
+
   function formatEventDateLong(isoDate) {
     if (!isoDate) return '';
     const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -2594,6 +2631,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? `Olá, <span id="dash-hub-user-first-name">${escaparHtml(firstName)}</span>!`
         : 'Olá!';
     }
+    atualizarCapaDaHomeCelular();
     const hubCoupleName = document.getElementById('dash-hub-couple-name');
     if (hubCoupleName) {
       hubCoupleName.textContent = activeEvent.hostName ? activeEvent.hostName.toLowerCase() : 'gabriel & joana';

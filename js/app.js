@@ -9255,6 +9255,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
     // Quantidade de itens da lista (no lugar do total em reais).
     if (totalValueEl) totalValueEl.textContent = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+    // Celular: "13 itens" acima da busca, igual "28 convidados" em Convidados.
+    const barraDosPresentes = document.getElementById('gifts-barra');
+    if (barraDosPresentes) {
+      let totalCelular = document.getElementById('gifts-total-celular');
+      if (!totalCelular) {
+        totalCelular = document.createElement('p');
+        totalCelular.id = 'gifts-total-celular';
+        totalCelular.className = 'rsvp-total-celular';
+      }
+      if (totalCelular.nextElementSibling !== barraDosPresentes) barraDosPresentes.parentElement?.insertBefore(totalCelular, barraDosPresentes);
+      totalCelular.textContent = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+    }
     void totalValue;
 
     // Seleção só de presentes que ainda existem neste evento.

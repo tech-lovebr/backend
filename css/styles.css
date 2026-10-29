@@ -14157,12 +14157,13 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   }
   body[data-theme="dark"] #view-event-os-dashboard :is(.dashboard-tab-content > .builder-toolbar, #site-builder-root > .builder-toolbar, .floorplan-wrap:not(.is-expandida) > .floorplan-toolbar)::before { background: #1F1F1F !important; }
 
-  html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 0 !important; }
-  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
-  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
-  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before { top: auto; bottom: 0; }
-  body[data-theme="dark"] #dashboard-main-area .submenu-celular:not([hidden]) { background: #1A1A1A !important; border-top-color: #333333 !important; }
-  body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo { background: #1F1F1F !important; }
+  html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 0 !important; }
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
+  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before { top: 0; bottom: auto; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular:not([hidden]) { background: #1F1F1F !important; border-top-color: #333333 !important; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item { background: #1F1F1F !important; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo { background: #1A1A1A !important; }
 
   html body #tab-rsvp-tables .floorplan-wrap:not(.is-expandida) > .aviso-computador-celular:not(#love-h-a) {
     display: flex; align-items: flex-start; gap: 10px; margin: 0 16px 16px; padding: 10px 12px;
@@ -14542,4 +14543,17 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-rsvp .guests-table .guest-acao-fundo:not(#love-h-a) { display: block; position: absolute; top: 0; right: 0; bottom: 0; width: 80px; z-index: 0; background: #E4E4E7; }
   body[data-theme="dark"] #tab-rsvp .guests-table .guest-acao-fundo { background: #333333 !important; }
+}
+
+/* ==========================================================================
+   Celular, Meus presentes: "13 itens" acima da busca, com a mesma letra de
+   "28 convidados" em Convidados (o total ao lado da busca some no celular).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-gifts .rsvp-total-celular:not(#love-h-a) {
+    display: block; margin: 0; padding: 0 0 12px; font-family: Inter, sans-serif;
+    font-size: 17px; font-weight: 600; letter-spacing: 0; color: #18181B;
+  }
+  body[data-theme="dark"] #tab-gifts .rsvp-total-celular { color: #FFFFFF; }
+  html body #gifts-barra .love-tabela-barra-dir:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }

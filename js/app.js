@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ativo) botao.setAttribute('aria-current', 'page');
         const rotulo = document.createElement('span');
         rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
-        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && rotulo.textContent === 'Meus convidados') rotulo.textContent = 'Minha lista';
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Minha lista';
         if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && rotulo.textContent === 'Contratos') rotulo.textContent = 'Meus contratos';
         botao.appendChild(rotulo);
         const contador = orig.querySelector('.badge-recados-count');
@@ -1794,7 +1794,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'all', label: 'Meus convidados' },
+        { id: 'all', label: 'Minha lista' },
         { id: 'tables', label: 'Mapa do evento' },
         { id: 'checklist', label: 'Checklist' }
       ]
@@ -2711,7 +2711,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
     if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
-    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Meus convidados';
+    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Minha lista';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
@@ -9872,7 +9872,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
       // Meus convidados: no celular o cabeçalho é "Lista de convidados".
       const c = document.getElementById('rsvp-header-title');
-      if (c && /^(Meus convidados|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Meus convidados';
+      if (c && /^(Meus convidados|Minha lista|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Minha lista';
     };
     mq.addEventListener?.('change', trocar);
     trocar();

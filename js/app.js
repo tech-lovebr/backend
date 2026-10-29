@@ -21259,12 +21259,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
 
   // ------------------------------------------------------------------
-  // Celular: arrastar a conversa para a esquerda mostra "Mais" e "Apagar"
+  // Celular: arrastar a conversa para a esquerda mostra os três pontinhos
   // (como no WhatsApp). Uma linha aberta por vez; fecha ao tocar fora ou
   // rolar a lista; o toque só abre a conversa se não houve arraste.
   // ------------------------------------------------------------------
   const CHAT_NO_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
-  const LARGURA_ACOES_CONVERSA = 144;
+  const LARGURA_ACOES_CONVERSA = 80;
   /** @type {HTMLElement|null} */
   let linhaDaConversaAberta = null;
 
@@ -21416,27 +21416,12 @@ document.addEventListener('DOMContentLoaded', () => {
         acoes.className = 'conv-acoes';
         acoes.innerHTML = `
           <button type="button" class="conv-acao conv-acao-mais" data-conv-menu aria-label="Mais opções da conversa">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
-            <span>Mais</span>
-          </button>
-          <button type="button" class="conv-acao conv-acao-apagar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
-            <span>Apagar</span>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
           </button>`;
         linha.insertBefore(acoes, item);
         acoes.querySelector('.conv-acao-mais')?.addEventListener('click', (e) => {
           e.stopPropagation();
           abrirMenuConversa(/** @type {HTMLElement} */ (e.currentTarget), conv);
-        });
-        acoes.querySelector('.conv-acao-apagar')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          fecharLinhaDaConversa();
-          confirmarNaLove({
-            titulo: 'Apagar conversa?',
-            texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
-            botao: 'Apagar',
-            aoConfirmar: () => excluirConversaDaLista(conv.id)
-          });
         });
         prepararArrasteDaConversa(linha);
       }

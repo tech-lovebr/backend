@@ -14500,3 +14500,23 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
   /* O editor do convite cortava o branco do cabeçalho acima dele (overflow). */
   html body #tab-edit-site #site-builder-root:not(#love-h-a) { overflow: visible !important; overflow-x: clip !important; }
 }
+
+/* ==========================================================================
+   Celular, Mensagens: a tela do chat ocupa a largura toda (nada cortado),
+   cabeçalho branco de ponta a ponta até o topo, como em Lista de presentes.
+   Arrastar a conversa mostra só os três pontinhos; o menu tem letra maior.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.b2b-chat-mode .dashboard-main-area:not(#love-h-a):not(#love-h-b) { padding-left: 0 !important; padding-right: 0 !important; }
+  html body.b2b-chat-mode .dashboard-main-area > .dashboard-content-wrapper:not(#love-h-a):not(#love-h-b),
+  html body.b2b-chat-mode #tab-b2b:not(#love-h-a):not(#love-h-b) { overflow: visible !important; overflow-x: clip !important; }
+  html body.b2b-chat-mode #tab-b2b #b2b-messages-view:not(#love-h-a):not(#love-h-b) { margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; }
+  html body.b2b-chat-mode #view-event-os-dashboard #tab-b2b > #b2b-top-search-bar:not(#love-h-a):not(#love-h-b) { padding: 0 16px 12px !important; border-bottom: 1px solid #E4E4E7 !important; }
+  body[data-theme="dark"].b2b-chat-mode #tab-b2b > #b2b-top-search-bar { border-bottom-color: #333333 !important; }
+  html body.b2b-chat-mode #tab-b2b #b2b-messages-view .b2b-chat-contacts-column > div:first-child:not(#love-h-a):not(#love-h-b) { padding-top: 16px !important; }
+
+  html body #b2b-chat-contacts-list .conv-acoes:not(#love-h-a):not(#love-h-b) { width: 80px; }
+  html body #b2b-chat-contacts-list .conv-acao svg:not(#love-h-a):not(#love-h-b) { width: 24px; height: 24px; }
+  html body .conv-menu:not(#love-h-a) { min-width: 200px; padding: 6px; }
+  html body .conv-menu button:not(#love-h-a) { min-height: 48px; padding: 0 14px; font-size: 16px; font-weight: 500; }
+}

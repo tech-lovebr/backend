@@ -10231,7 +10231,137 @@ document.addEventListener('DOMContentLoaded', () => {
     return (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' });
   }
 
+  // ------------------------------------------------------------------
+  // Celular: arrastar o convidado para a esquerda revela os três pontinhos
+  // (Editar / Remover convidado). Uma linha aberta por vez; fecha ao tocar
+  // fora ou rolar; o toque só abre a ficha se não houve arraste.
+  // ------------------------------------------------------------------
+  const LARGURA_ACAO_CONVIDADO = 80;
+  /** @type {HTMLElement|null} */
+  let linhaDoConvidadoAberta = null;
+  const convidadosNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+
+  /** @param {HTMLElement} celula @param {number} x @param {boolean} animar */
+  function moverLinhaDoConvidado(celula, x, animar) {
+    const card = /** @type {HTMLElement|null} */ (celula.querySelector('.guest-card-arraste'));
+    if (!card) return;
+    card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+    card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+    celula.classList.toggle('is-aberta', x < 0);
+  }
+  function fecharLinhaDoConvidado() {
+    if (linhaDoConvidadoAberta) moverLinhaDoConvidado(linhaDoConvidadoAberta, 0, true);
+    linhaDoConvidadoAberta = null;
+  }
+  /** @param {HTMLElement} celula @param {HTMLElement} card */
+  function prepararArrasteDoConvidado(celula, card) {
+    let x0 = 0, y0 = 0, inicio = 0, x = 0;
+    /** @type {null|'h'|'v'} */
+    let direcao = null;
+    card.addEventListener('touchstart', (e) => {
+      if (!convidadosNoCelular() || e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      inicio = celula === linhaDoConvidadoAberta ? -LARGURA_ACAO_CONVIDADO : 0;
+      x = inicio; direcao = null; celula.dataset.arrastou = '';
+    }, { passive: true });
+    card.addEventListener('touchmove', (e) => {
+      if (!convidadosNoCelular() || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+      if (!direcao) {
+        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+        direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        if (direcao === 'h') {
+          celula.dataset.arrastou = '1';
+          if (linhaDoConvidadoAberta && linhaDoConvidadoAberta !== celula) fecharLinhaDoConvidado();
+        }
+      }
+      if (direcao !== 'h') return;
+      e.preventDefault();
+      x = Math.max(-LARGURA_ACAO_CONVIDADO, Math.min(0, inicio + dx));
+      moverLinhaDoConvidado(celula, x, false);
+    }, { passive: false });
+    const soltar = () => {
+      if (direcao !== 'h') return;
+      const abrir = x < -LARGURA_ACAO_CONVIDADO / 2;
+      moverLinhaDoConvidado(celula, abrir ? -LARGURA_ACAO_CONVIDADO : 0, true);
+      linhaDoConvidadoAberta = abrir ? celula : (linhaDoConvidadoAberta === celula ? null : linhaDoConvidadoAberta);
+      direcao = null;
+      // O "click" que vem depois do toque não abre a ficha.
+      setTimeout(() => { celula.dataset.arrastou = ''; }, 350);
+    };
+    card.addEventListener('touchend', soltar);
+    card.addEventListener('touchcancel', soltar);
+  }
+  // Tocar fora da linha aberta (ou rolar a página) fecha os três pontinhos.
+  document.addEventListener('touchstart', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (linhaDoConvidadoAberta && !(alvo.closest && (linhaDoConvidadoAberta.contains(alvo) || alvo.closest('.acoes-convidado')))) fecharLinhaDoConvidado();
+  }, { passive: true, capture: true });
+  window.addEventListener('scroll', () => { if (linhaDoConvidadoAberta) fecharLinhaDoConvidado(); }, { passive: true });
+
+  /** Folha de baixo com as ações do convidado (celular). @param {string} guestId */
+  function abrirAcoesDoConvidado(guestId) {
+    const ev = getActiveEvent();
+    const guest = ev && (ev.guests || []).find((/** @type {any} */ g) => g.id === guestId);
+    if (!guest) return;
+    let tela = document.getElementById('acoes-convidado');
+    if (!tela) {
+      tela = document.createElement('div');
+      tela.id = 'acoes-convidado';
+      tela.className = 'acoes-convidado';
+      tela.hidden = true;
+      tela.innerHTML = `
+        <div class="acoes-convidado-fundo" data-acao="cancelar"></div>
+        <div class="acoes-convidado-folha" role="dialog" aria-modal="true" aria-labelledby="acoes-convidado-nome">
+          <p class="acoes-convidado-nome" id="acoes-convidado-nome"></p>
+          <button type="button" class="acoes-convidado-opcao" data-acao="editar">Editar convidado</button>
+          <button type="button" class="acoes-convidado-opcao" data-acao="remover">Remover convidado</button>
+          <button type="button" class="acoes-convidado-cancelar" data-acao="cancelar">Cancelar</button>
+        </div>`;
+      document.body.appendChild(tela);
+      tela.addEventListener('click', (e) => {
+        const alvo = /** @type {HTMLElement} */ (e.target).closest('[data-acao]');
+        if (!alvo || !tela) return;
+        const id = tela.dataset.guestId || '';
+        const acao = /** @type {HTMLElement} */ (alvo).dataset.acao;
+        tela.hidden = true;
+        fecharLinhaDoConvidado();
+        if (acao === 'editar') { abrirFichaDoConvidado(id); fichaEditando = true; desenharFichaDoConvidado(); }
+        else if (acao === 'remover') removerConvidadoComConfirmacao(id);
+      });
+    }
+    tela.dataset.guestId = guestId;
+    const nome = tela.querySelector('#acoes-convidado-nome');
+    if (nome) nome.textContent = guest.name || 'Convidado';
+    tela.hidden = false;
+  }
+
+  /** @param {string} guestId */
+  function removerConvidadoComConfirmacao(guestId) {
+    const ev = getActiveEvent();
+    const guest = ev && (ev.guests || []).find((/** @type {any} */ g) => g.id === guestId);
+    if (!guest) return;
+    const acomp = (guest.companionsNames || []).length;
+    confirmarNaLove({
+      titulo: 'Remover convidado?',
+      texto: `${guest.name || 'Este convidado'}${acomp ? ` e ${acomp === 1 ? 'o acompanhante' : `os ${acomp} acompanhantes`}` : ''} saem da sua lista.`,
+      botao: 'Remover',
+      aoConfirmar: async () => {
+        const { error } = await excluirConvidadoNoBanco(guestId).catch((/** @type {any} */ err) => ({ error: err }));
+        if (error) { showToast('Não foi possível remover o convidado. Tente de novo.', '⚠️'); return; }
+        const idx = ev.guests.findIndex((/** @type {any} */ g) => g.id === guestId);
+        if (idx !== -1) ev.guests.splice(idx, 1);
+        convidadosSelecionados.delete(guestId);
+        renderGuestsTable();
+        renderFloorPlanGuestCards();
+        updateAllCelebrationData();
+        showToast(`Convidado ${guest.name || ''} removido da lista.`, '🗑️');
+      }
+    });
+  }
+
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
+    linhaDoConvidadoAberta = null;
     currentRsvpFilter = activeFilter;
     const listEl = document.getElementById('rsvp-guests-table-body');
     const emptyStateEl = document.getElementById('rsvp-empty-state');
@@ -10463,10 +10593,31 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="guest-col-restricao">${bolinhaDaRestricaoHtml(attendee.isPrimary ? guest.restricaoAlimentar : attendee.restricaoAlimentar)}</td>
         `;
         row.dataset.guestId = guest.id;
+        // Celular: arrastar o convidado para a esquerda mostra os três pontinhos.
+        if (attendee.isPrimary) {
+          const celula = /** @type {HTMLElement|null} */ (row.querySelector('td'));
+          const card = /** @type {HTMLElement|null} */ (celula && celula.querySelector(':scope > div'));
+          if (celula && card) {
+            celula.classList.add('guest-celula-arraste');
+            card.classList.add('guest-card-arraste');
+            const mais = document.createElement('button');
+            mais.type = 'button';
+            mais.className = 'guest-acao-mais';
+            mais.setAttribute('aria-label', `Mais ações de ${guest.name || 'convidado'}`);
+            mais.innerHTML = ICONE_MAIS;
+            mais.addEventListener('click', (e) => { e.stopPropagation(); abrirAcoesDoConvidado(guest.id); });
+            celula.appendChild(mais);
+            prepararArrasteDoConvidado(celula, card);
+          }
+        }
 
         // O nome abre o convidado (a linha continua livre para selecionar/copiar texto).
         row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
+          // Depois de arrastar, ou com os três pontinhos à mostra, o toque só fecha a linha.
+          const celulaDoArraste = /** @type {HTMLElement|null} */ (row.querySelector('.guest-celula-arraste'));
+          if (celulaDoArraste && celulaDoArraste.dataset.arrastou === '1') return;
+          if (celulaDoArraste && celulaDoArraste.classList.contains('is-aberta')) { fecharLinhaDoConvidado(); return; }
           // Celular: abre a ficha do convidado (ver e editar); desktop: o pop-up.
           if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) abrirFichaDoConvidado(guest.id);
           else openAddGuestDrawer(guest.id);
@@ -10578,6 +10729,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (erro) erro.hidden = true;
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !ficha.hidden) fecharFichaDoConvidado(); });
+    // Computador: o fundo escuro do pop-up é o próprio body; clicar nele fecha.
+    document.addEventListener('click', (e) => { if (!ficha.hidden && e.target === document.body) fecharFichaDoConvidado(); });
     // Trocar de menu fecha a ficha.
     document.addEventListener('click', (e) => { if (!ficha.hidden && /** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular')) fecharFichaDoConvidado(); }, true);
     return ficha;
@@ -11491,7 +11644,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHostAddGuest = document.getElementById('btn-host-add-guest');
   // Celular: o "+" abre a ficha em tela inteira, já em "Adicionar convidado".
-  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => { if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) abrirFichaDoConvidado(null); else openAddGuestDrawer(); });
+  // Celular e computador: o bonequinho com + abre a ficha já em "Adicionar
+  // convidado" (no computador ela vira um pop-up centralizado).
+  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => abrirFichaDoConvidado(null));
   // Mapear mesas › "+ Adicionar" ao lado de Convidados: o mesmo drawer.
   document.getElementById('btn-floorplan-add-guest')?.addEventListener('click', () => openAddGuestDrawer());
   const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');

@@ -4461,3 +4461,31 @@ body[data-theme="dark"] .balao-previa-palco { background: rgba(255,255,255,.04);
 
 /* Custos: linha de total do descritivo do período. */
 .custo-total-linha td { border-top: 1px solid #E4E4E7; }
+
+/* ---------------------------------------------- Operacional › Servidor */
+.servidor-corpo { display: flex; flex-direction: column; gap: 24px; margin-top: 24px; }
+.servidor-tabela .card-head { border-bottom: 1px solid var(--divisor-suave, #F4F4F5); }
+.nota-servidor { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 0 6px;
+  border-radius: 6px; font: 700 13px/1 Inter, system-ui, sans-serif; letter-spacing: 0; }
+.nota-servidor.is-grande { min-width: 44px; height: 44px; font-size: 22px; border-radius: 8px; margin-right: 12px; }
+.nota-A { background: #E7F6EC; color: #157F3B; }
+.nota-B { background: #EEF6E4; color: #4D7C0F; }
+.nota-C { background: #FEF6E0; color: #A16207; }
+.nota-D { background: #FDEDE3; color: #C2410C; }
+.nota-F { background: #FDE8E8; color: #B91C1C; }
+.kpi-nota-geral .kpi-linha { align-items: center; }
+.kpi .kpi-linha .nota-servidor:not(.is-grande) { margin-left: 8px; }
+.servidor-menu { position: absolute; z-index: 60; width: 420px; max-width: calc(100vw - 32px); max-height: 70vh; overflow-y: auto;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); padding: 8px 0; }
+.servidor-menu-titulo { margin: 8px 16px 4px; font-size: 11px; font-weight: 500; color: #A1A1AA; text-transform: uppercase; letter-spacing: .04em; }
+.servidor-melhoria { padding: 12px 16px; border-top: 1px solid #F4F4F5; }
+.servidor-melhoria:first-of-type { border-top: 0; }
+.servidor-melhoria-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.servidor-melhoria-nome { margin: 0; font-size: 13px; font-weight: 600; color: #18181B; letter-spacing: -0.01em; }
+.servidor-melhoria-texto { margin: 0 0 10px; font-size: 12.5px; line-height: 1.5; color: #52525B; }
+.servidor-melhoria-manual { margin: 0; font-size: 11px; font-weight: 500; color: #A1A1AA; }
+#modal-texto { white-space: pre-line; }
+body[data-theme="dark"] .servidor-menu { background: #1C2128; border-color: rgba(255,255,255,.08); }
+body[data-theme="dark"] .servidor-melhoria { border-color: rgba(255,255,255,.06); }
+body[data-theme="dark"] .servidor-melhoria-nome { color: #F4F4F5; }
+body[data-theme="dark"] .servidor-melhoria-texto { color: #A1A1AA; }

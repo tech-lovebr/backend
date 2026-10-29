@@ -20537,6 +20537,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function atualizarContadoresDoChat() {
     const total = totalNaoLidasDoChat();
+    // Home (celular): "2 fornecedores te mandaram mensagem!" antes dos atalhos.
+    const aviso = document.getElementById('home-aviso-mensagens');
+    if (aviso) {
+      const fornecedores = b2bConversationsData.filter(c => !c.isSuporte && (c.unread || 0) > 0).length;
+      const titulo = document.getElementById('home-aviso-mensagens-titulo');
+      if (titulo) titulo.textContent = fornecedores === 1 ? '1 fornecedor te mandou mensagem!' : `${fornecedores} fornecedores te mandaram mensagem!`;
+      aviso.hidden = fornecedores === 0;
+    }
     const texto = total > 99 ? '99+' : String(total);
     const badgeHeader = document.querySelector('.badge-header-chat');
     if (badgeHeader) {

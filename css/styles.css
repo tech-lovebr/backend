@@ -14392,3 +14392,26 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   body[data-theme="dark"] .ficha-convidado { border-color: #404040 !important; }
   body[data-theme="dark"] .ficha-convidado :is(.ficha-campo, .ficha-acomp .ficha-input, .ficha-restricao .field-input) { background: #252525 !important; border-color: #404040 !important; }
 }
+
+/* ==========================================================================
+   Ficha do convidado: "Convidado de quem?" e "Relação" ao adicionar e editar
+   (no celular e no pop-up do computador), com a mesma caixa dos outros campos.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .ficha-convidado .ficha-campo.is-escolha:not(#love-h-a) { padding: 0; }
+  html body .ficha-convidado .ficha-campo.is-escolha select:not(#love-h-a) {
+    flex: 1 1 auto; min-width: 0; height: 100%; padding: 0 40px 0 12px; border: 0 !important; border-radius: 8px; box-shadow: none !important; outline: none;
+    -webkit-appearance: none; appearance: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 12px center / 18px no-repeat !important;
+    font-family: inherit; font-size: 16px !important; color: #18181B; cursor: pointer;
+  }
+  body[data-theme="dark"] .ficha-convidado .ficha-campo.is-escolha select { color: #FFFFFF !important; }
+}
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .ficha-convidado .ficha-campo.is-escolha:not(#love-h-a):not(#love-h-b) { padding: 0; }
+  html body .ficha-convidado .ficha-campo.is-escolha select:not(#love-h-a) {
+    flex: 1 1 auto; min-width: 0; height: 100%; padding: 0 40px 0 12px; border: 0 !important; border-radius: 8px; box-shadow: none !important; outline: none;
+    -webkit-appearance: none; appearance: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 12px center / 18px no-repeat !important;
+    font-family: inherit; font-size: 14px !important; color: #18181B; cursor: pointer;
+  }
+  body[data-theme="dark"] .ficha-convidado .ficha-campo.is-escolha select { color: #FFFFFF !important; }
+}

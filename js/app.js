@@ -10797,6 +10797,27 @@ document.addEventListener('DOMContentLoaded', () => {
     return linha;
   }
 
+  /**
+   * "Convidado de quem?" e "Relação" (iguais ao pop-up do computador), só
+   * para adicionar e editar; na leitura a relação aparece nas respostas.
+   * @param {any} guest
+   */
+  function vinculoDaFicha(guest) {
+    let anfitrioes = /** @type {string[]} */ ([]);
+    try { anfitrioes = getClienteHostNames() || []; } catch (e) { anfitrioes = []; }
+    const anfitriao = String(guest.relationshipHost || '');
+    if (anfitriao && !anfitrioes.includes(anfitriao)) anfitrioes = [...anfitrioes, anfitriao];
+    const relacoes = Array.from(/** @type {NodeListOf<HTMLOptionElement>} */ (document.querySelectorAll('#guest-title-input option')))
+      .map(o => ({ valor: o.value, rotulo: o.textContent || o.value }));
+    const relacao = guest.relationshipTitle || 'Convidado';
+    if (!relacoes.some(r => r.valor === relacao)) relacoes.push({ valor: relacao, rotulo: relacao });
+    const opcao = (/** @type {string} */ valor, /** @type {string} */ rotulo, /** @type {string} */ atual) => `<option value="${escaparHtml(valor)}"${valor === atual ? ' selected' : ''}>${escaparHtml(rotulo)}</option>`;
+    const campo = (/** @type {string} */ rotulo, /** @type {string} */ id, /** @type {string} */ opcoes) =>
+      `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo is-escolha"><select id="${id}" class="ficha-input">${opcoes}</select></span></label>`;
+    return campo('Convidado de quem?', 'ficha-anfitriao', opcao('', '—', anfitriao) + anfitrioes.map(n => opcao(n, n, anfitriao)).join(''))
+      + campo('Relação', 'ficha-relacao', relacoes.map(r => opcao(r.valor, r.rotulo, relacao)).join(''));
+  }
+
   /** @returns {boolean} */
   function desenharFichaDoConvidado() {
     const ficha = fichaDoConvidado();
@@ -10824,7 +10845,8 @@ document.addEventListener('DOMContentLoaded', () => {
       linha('Nome', primeiro, 'ficha-primeiro', 'text', 'Nome')
       + linha('Sobrenome', sobrenome, 'ficha-sobrenome', 'text', 'Sobrenome')
       + linha('Telefone', guest.phone || '', 'ficha-telefone', 'tel', '(00) 00000-0000')
-      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail');
+      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail')
+      + (fichaEditando ? vinculoDaFicha(guest) : '');
 
     const acompanhantes = (guest.companionsNames || []).map((/** @type {string} */ n) => String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
     const resposta = (/** @type {string} */ rotulo, /** @type {string} */ valor) => `<div class="ficha-linha is-resposta"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor">${escaparHtml(valor)}</span></div>`;
@@ -10883,13 +10905,17 @@ document.addEventListener('DOMContentLoaded', () => {
       ageGroup: /** @type {HTMLSelectElement} */ (l.querySelector('.ficha-acomp-idade')).value,
       restricaoAlimentar: fichaRestricaoDoAcomp.get(l)?.valor() || { restrictionType: 'NONE' }
     }));
-    const campos = ['name', 'phone', 'email', 'companionsNames', 'companionsDetailed', 'companions', 'adults', 'children', 'restricaoAlimentar', 'dietaryRestrictions'];
+    const campos = ['name', 'phone', 'email', 'companionsNames', 'companionsDetailed', 'companions', 'adults', 'children', 'restricaoAlimentar', 'dietaryRestrictions', 'relationshipHost', 'relationshipTitle'];
     /** @type {any} */ const antes = {};
     campos.forEach(c => { antes[c] = guest[c]; });
     const acompanhantesAntes = guest.companions || 0;
     guest.name = nome;
     guest.phone = telefone;
     guest.email = email;
+    if (ficha.querySelector('#ficha-relacao')) {
+      guest.relationshipHost = valor('ficha-anfitriao');
+      guest.relationshipTitle = valor('ficha-relacao') || 'Convidado';
+    }
     guest.companionsDetailed = companionsDetailed;
     guest.companionsNames = companionsDetailed.map(c => c.name);
     guest.companions = companionsDetailed.length;

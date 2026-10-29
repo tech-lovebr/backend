@@ -13766,3 +13766,14 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #b2b-cards-list-container .b2b-item-card .flex-nowrap > .min-w-0.flex-1:not(#love-h-a) { flex: 1 1 100%; }
   html body #b2b-cards-list-container .b2b-item-card .btn-message-supplier:not(#love-h-a) { height: 44px; padding: 0 20px; font-size: 15px; }
 }
+
+/* ==========================================================================
+   Celular: Convite digital termina com o rodapé ("Feito com Love") encostado
+   na barra de baixo, sem espaço branco (a folga era do botão "Adicionar
+   elementos", que saiu). Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-edit-site.active .builder-canvas:not(#love-h-a):not(#love-h-b) { padding-bottom: 0 !important; }
+  html body #view-event-os-dashboard .dashboard-main-area:has(#tab-edit-site.active #site-builder-root:not(.hidden):not([style*="display: none"])):not(#love-h-a):not(#love-h-b) { padding-bottom: var(--bottom-bar-height-mobile, 64px) !important; }
+  html body #view-event-os-dashboard .dashboard-main-area:has(#tab-edit-site.active #site-builder-root:not(.hidden):not([style*="display: none"])) > .rodape-respiro:not(#love-h-a):not(#love-h-b) { display: none !important; }
+}

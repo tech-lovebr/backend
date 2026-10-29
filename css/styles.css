@@ -14142,3 +14142,33 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #form-add-gift .gift-valor-extra .gifts-select-all-check:not(#love-h-a) { width: 24px; height: 24px; border-radius: 6px; }
   html body #form-add-gift .gift-valor-extra .gifts-select-all-check:not(#love-h-a)::before { width: 13px; height: 13px; }
 }
+
+/* ==========================================================================
+   Celular: cabeçalho das telas branco de ponta a ponta; logo abaixo, uma linha
+   fina e a barra de abas no cinza do fundo; a aba ativa fica branca (cor do
+   cabeçalho) com a linha da cor primária em cima. Mapa do evento com o aviso
+   de que no computador há mais recursos. Desktop não muda.
+   ========================================================================== */
+.aviso-computador-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard :is(.dashboard-tab-content > .builder-toolbar, #site-builder-root > .builder-toolbar, .floorplan-wrap:not(.is-expandida) > .floorplan-toolbar):not(#love-h-a):not(#love-h-b) { position: relative; isolation: isolate; background: transparent !important; border-bottom: 0 !important; }
+  html body #view-event-os-dashboard :is(.dashboard-tab-content > .builder-toolbar, #site-builder-root > .builder-toolbar, .floorplan-wrap:not(.is-expandida) > .floorplan-toolbar):not(#love-h-a):not(#love-h-b)::before {
+    content: ""; position: absolute; z-index: -1; top: -80px; bottom: 0; left: -100vw; right: -100vw; background: #FFFFFF; pointer-events: none;
+  }
+  body[data-theme="dark"] #view-event-os-dashboard :is(.dashboard-tab-content > .builder-toolbar, #site-builder-root > .builder-toolbar, .floorplan-wrap:not(.is-expandida) > .floorplan-toolbar)::before { background: #1F1F1F !important; }
+
+  html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 0 !important; }
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before { top: 0; bottom: auto; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular:not([hidden]) { background: #1A1A1A !important; border-top-color: #333333 !important; }
+  body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo { background: #1F1F1F !important; }
+
+  html body #tab-rsvp-tables .floorplan-wrap:not(.is-expandida) > .aviso-computador-celular:not(#love-h-a) {
+    display: flex; align-items: flex-start; gap: 10px; margin: 0 16px 16px; padding: 10px 12px;
+    border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+    font-family: Inter, sans-serif; font-size: 13px; line-height: 1.45; color: #52525B;
+  }
+  html body .aviso-computador-celular svg:not(#love-h-a) { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; color: #183b54; }
+  body[data-theme="dark"] .aviso-computador-celular { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+}

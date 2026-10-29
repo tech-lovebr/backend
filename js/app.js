@@ -2606,7 +2606,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = activeEvent.title;
     if (elements.dashHeader.countdownBadge) {
       const dias = calcularDiasRestantes(activeEvent.date);
-      elements.dashHeader.countdownBadge.textContent = dias === null ? '' : dias < 0 ? 'Evento realizado' : `Faltam ${dias} dias`;
+      // Mesmo texto da capa da Home no celular.
+      elements.dashHeader.countdownBadge.textContent = dias === null ? ''
+        : dias > 1 ? `Faltam ${dias} dias para o seu evento`
+        : dias === 1 ? 'Falta 1 dia para o seu evento'
+        : dias === 0 ? 'O seu evento é hoje!'
+        : 'O seu evento já aconteceu';
     }
     if (elements.dashHeader.slugBadge) elements.dashHeader.slugBadge.textContent = `love.com.br/${activeEvent.slug}`;
     if (elements.dashHeader.shareUrlInput) {

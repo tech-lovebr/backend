@@ -14557,3 +14557,15 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
   body[data-theme="dark"] #tab-gifts .rsvp-total-celular { color: #FFFFFF; }
   html body #gifts-barra .love-tabela-barra-dir:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
+
+/* ==========================================================================
+   Celular, Mapa do evento: o branco do cabeçalho vai até o topo da tela,
+   como em Convidados e Convite digital (a caixa do mapa cortava o branco).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard .floorplan-wrap:not(.is-expandida):not(#love-h-a):not(#love-h-b) { overflow: visible !important; overflow-x: clip !important; }
+}
+/* Convite digital: o título desce 6px para ficar na mesma altura das outras telas. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-edit-site #site-builder-root > .builder-toolbar:not(#love-h-a):not(#love-h-b) { padding-top: 6px !important; }
+}

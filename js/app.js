@@ -22936,3 +22936,22 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 })();
+
+// Celular: tocar em qualquer menu da barra de baixo sempre volta para o topo
+// (mesmo menu ou outro, inclusive a Home), também nas áreas que rolam por dentro.
+(function barraDeBaixoVoltaAoTopo() {
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  document.addEventListener('click', (e) => {
+    if (!noCelular.matches || !(e.target instanceof Element)) return;
+    const botao = e.target.closest('.rail-icon-btn[data-rail-tab]');
+    if (!botao) return;
+    const subir = () => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.querySelectorAll('#view-event-os-dashboard *').forEach((el) => {
+        if (el.scrollTop > 0 && el.scrollHeight > el.clientHeight) el.scrollTo({ top: 0, behavior: 'instant' });
+      });
+    };
+    subir();
+    setTimeout(subir, 60); // depois que a tela nova aparece
+  }, true);
+})();

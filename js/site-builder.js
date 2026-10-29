@@ -986,20 +986,52 @@ function conviteSemElementos(state) {
  * contagem regressiva; botões; "Com carinho,"). Desktop não muda.
  * @param {string} pageKey
  */
+/** Sequência dos tipos de elemento de cada seção (sem a de presentes). @param {any} state */
+function formatoDoConvite(state) {
+  return (state.sections || []).filter((/** @type {any} */ s) => !s.isGiftsBlock).map((/** @type {any} */ s) => s.isQuickNav ? '[botoes]'
+    : (s.columns || []).map((/** @type {any} */ c) => (c.elements || []).map((/** @type {any} */ e) => e.type).join(',')).join(';')).join('|');
+}
+
 async function prepararConviteNoCelular(pageKey) {
   if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
-  if (pageKey !== 'convite' || currentPageKey !== 'convite' || !conviteSemElementos(builderState)) return;
+  if (pageKey !== 'convite' || currentPageKey !== 'convite') return;
   const ev = getActiveEventForBuilder();
   const tipo = (ev && ev.type) || 'wedding';
   const modelo = (await templatePadraoDoTipo(tipo)) || modeloDeConviteEmCodigo(tipo) || (await templatePadraoDoTipo('wedding'));
   // Enquanto buscava, a pessoa pode ter trocado de página ou começado a editar.
-  if (!modelo || currentPageKey !== 'convite' || !conviteSemElementos(builderState)) return;
+  if (!modelo || currentPageKey !== 'convite' || selectedId) return;
+  migrateQuickNavSection(modelo);
+  tirarElementosDaCapa(modelo);
+  migrateElementDefaults(modelo);
+  if (formatoDoConvite(modelo) === formatoDoConvite(builderState)) return;
+  const vazio = conviteSemElementos(builderState);
   const det = (ev && ev.eventDetails) || {};
   ajustarDatasDoTemplate(modelo, { data: det.date || (ev && ev.date) || '', hora: det.time || '' });
-  // A foto de capa que a pessoa já escolheu continua.
+
+  // O que a pessoa já escreveu/escolheu vai para o elemento do mesmo tipo,
+  // na mesma ordem (1º texto no 1º texto, 1ª imagem na 1ª imagem...).
+  const antigos = /** @type {Record<string, any[]>} */ ({});
+  builderState.sections.filter(s => !s.isQuickNav && !s.isGiftsBlock).forEach(s => (s.columns || []).forEach((/** @type {any} */ c) =>
+    (c.elements || []).forEach((/** @type {any} */ e) => { (antigos[e.type] = antigos[e.type] || []).push(e); })));
+  const usados = /** @type {Record<string, number>} */ ({});
+  const CAMPOS = /** @type {Record<string, string[]>} */ ({ titulo: ['content'], texto: ['content'], botao: ['content', 'href'], imagem: ['src', 'alt'], data: ['targetDate', 'targetTime'], contagem: ['targetDate', 'targetTime'] });
+  modelo.sections.forEach((/** @type {any} */ s) => (s.columns || []).forEach((/** @type {any} */ c) => (c.elements || []).forEach((/** @type {any} */ e) => {
+    const i = usados[e.type] || 0;
+    usados[e.type] = i + 1;
+    const velho = (antigos[e.type] || [])[i];
+    if (!velho) return;
+    (CAMPOS[e.type] || []).forEach(k => { if (velho[k] !== undefined && velho[k] !== '' && velho[k] !== null) e[k] = velho[k]; });
+  })));
+  // Capa, botões e presentes continuam os da pessoa.
   const capaAtual = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
-  const capaNova = modelo.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock);
-  if (capaAtual && capaAtual.bgImage && capaNova) capaNova.bgImage = capaAtual.bgImage;
+  const iCapa = modelo.sections.findIndex((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock);
+  if (capaAtual && iCapa >= 0) { capaAtual.columns = modelo.sections[iCapa].columns; modelo.sections[iCapa] = capaAtual; }
+  const botoesAtuais = builderState.sections.find(s => s.isQuickNav);
+  const iBotoes = modelo.sections.findIndex((/** @type {any} */ s) => s.isQuickNav);
+  if (botoesAtuais && iBotoes >= 0) modelo.sections[iBotoes] = botoesAtuais;
+  const presentes = builderState.sections.filter(s => s.isGiftsBlock);
+  if (presentes.length) modelo.sections.splice(iBotoes >= 0 ? iBotoes + 1 : modelo.sections.length, 0, ...presentes);
+
   builderState.sections = modelo.sections;
   if (modelo.globalStyle) builderState.globalStyle = Object.assign({}, builderState.globalStyle || {}, modelo.globalStyle);
   migrateQuickNavSection(builderState);
@@ -1010,7 +1042,9 @@ async function prepararConviteNoCelular(pageKey) {
   selectedId = null;
   hasUnsavedChanges = true;
   if (document.getElementById('builder-canvas')) { renderLeftPanel(); renderCanvas(); applyGlobalStyleVars(); }
-  persistBuilderState(true);
+  // Convite vazio já fica salvo. Convite com conteúdo só muda de verdade
+  // quando a pessoa tocar em Salvar (o publicado não troca sozinho).
+  if (vazio) persistBuilderState(true);
 }
 
 // Chamado por app.js assim que o anfitrião troca de evento no dropdown —
@@ -1755,7 +1789,97 @@ function renderElementosTab(body) {
   `).join('');
 }
 
+/** Celular, Convite digital: editor só com o essencial (textos padronizados). */
+function construtorNoCelularAtivo() {
+  return currentPageKey === 'convite' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+}
+const TAMANHOS_NO_CELULAR = { titulo: [20, 24, 28, 32, 40, 48, 56], texto: [13, 14, 15, 16, 18, 20, 24] };
+
+/**
+ * Celular: a gaveta pequena de cada elemento. Título/Texto: negrito, itálico,
+ * tamanho (lista) e a caixinha do texto. Data e Contagem: só data e horário.
+ * Botão: texto, cor do botão, cor do texto e link. Botões de navegação: cor
+ * do botão, cor do texto e quais botões aparecem (com o nome de cada um).
+ * Fonte, alinhamento e nível do título ficam sempre os do modelo.
+ * @param {any} sel
+ * @param {HTMLElement} body
+ */
+function renderInspectorCelular(sel, body) {
+  if (sel.kind === 'quicknav') {
+    const qn = sel.obj;
+    body.innerHTML = `
+      <div class="inspector-field inspector-field-row">
+        <span class="inspector-field-label">Cor do botão</span>
+        ${colorSwatchPopoverHtml(qn.buttonBgColor || '#F4F4F5', 'data-quicknav-color="buttonBgColor"')}
+      </div>
+      <div class="inspector-field inspector-field-row">
+        <span class="inspector-field-label">Cor do texto</span>
+        ${colorSwatchPopoverHtml(qn.textColor || '#18181B', 'data-quicknav-color="textColor"')}
+      </div>
+      <span class="inspector-field-label cel-edit-rotulo">Botões</span>
+      <div class="menu-order-list cel-edit-botoes" id="quicknav-order-list">
+        ${qn.buttons.map((/** @type {any} */ btn) => `
+          <div class="menu-order-row" data-quicknav-row="${btn.id}">
+            <input type="text" class="inspector-input" data-quicknav-name="${btn.id}" value="${escapeHtml(btn.label || '')}" placeholder="Nome do botão" aria-label="Nome do botão">
+            <label class="settings-switch" title="Mostrar ou esconder o botão">
+              <input type="checkbox" data-quicknav-visible-toggle="${btn.id}" ${btn.visible !== false ? 'checked' : ''}>
+              <span class="settings-switch-track"></span>
+            </label>
+          </div>`).join('')}
+      </div>`;
+    wireQuickNavInspector(qn, body);
+    return;
+  }
+  const el = sel.obj;
+  const dataEHora = (/** @type {string} */ rotulo) => `
+    ${fieldRow(rotulo, `<input type="date" class="inspector-input" data-bind="prop:targetDate" value="${escapeHtml(el.targetDate || '')}">`)}
+    ${fieldRow('Horário', seletorDeHorarioHtml(el.targetTime, 'Sem horário'))}`;
+  if (el.type === 'titulo' || el.type === 'texto') {
+    const lista = TAMANHOS_NO_CELULAR[/** @type {'titulo'|'texto'} */ (el.type)].slice();
+    const atual = parseInt(cascadedStyleValue(el, 'fontSize'), 10) || (el.type === 'titulo' ? 32 : 16);
+    if (!lista.includes(atual)) { lista.push(atual); lista.sort((a, b) => a - b); }
+    body.innerHTML = `
+      <div class="cel-edit-barra">
+        ${botoesDeEstiloHtml(el, 'inspector-estilo-texto')}
+        <select class="inspector-select cel-edit-tamanho" data-bind="style:fontSize" aria-label="Tamanho da fonte">
+          ${lista.map(n => `<option value="${n}px" ${n === atual ? 'selected' : ''}>${n} px</option>`).join('')}
+        </select>
+      </div>
+      <div class="inspector-rich" data-placeholder="${el.type === 'titulo' ? 'Insira um título' : 'Insira um texto'}" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
+    wireContentTab(el, body);
+    wireTypographyToggles(body, el);
+    return;
+  }
+  if (el.type === 'data') body.innerHTML = dataEHora('Data');
+  else if (el.type === 'contagem') body.innerHTML = dataEHora('Data do evento');
+  else if (el.type === 'botao') {
+    body.innerHTML = `
+      ${fieldRow('Texto do botão', `<input type="text" class="inspector-input" data-bind="prop:content" value="${escapeHtml(el.content || '')}">`)}
+      <div class="inspector-field inspector-field-row">
+        <span class="inspector-field-label">Cor do botão</span>
+        ${colorSwatchPopoverHtml(currentDeviceStyleOrProp(el, 'backgroundColor') || builderState.globalStyle.primaryColor || '#537bae', 'data-bind="style:backgroundColor"')}
+      </div>
+      ${colorFieldHtml(el, 'Cor do texto')}
+      ${fieldRow('Link (URL)', `<input type="text" class="inspector-input" data-bind="prop:href" value="${escapeHtml(el.href || '')}" placeholder="https://">`)}`;
+  } else body.innerHTML = renderContentTab(el);
+  wireContentTab(el, body);
+}
+
 function renderElementEditorPanel(panel, sel) {
+  if (construtorNoCelularAtivo() && (sel.kind === 'element' || sel.kind === 'quicknav')) {
+    const nome = sel.kind === 'quicknav' ? 'Botões' : ((ELEMENT_META[sel.obj.type] || {}).label || 'Elemento');
+    panel.innerHTML = `
+      <div class="inspector-header">
+        <button type="button" class="builder-breadcrumb-back" data-editor-back>${BI.chevronLeft} Voltar</button>
+        <span class="inspector-editing-label" data-cel-titulo="Editar ${escapeHtml(String(nome).toLowerCase())}">${escapeHtml(nome)}</span>
+      </div>
+      <div class="inspector-body cel-edit" id="inspector-body"></div>`;
+    panel.querySelector('[data-editor-back]').addEventListener('click', deselect);
+    const corpoCel = /** @type {HTMLElement} */ (document.getElementById('inspector-body'));
+    renderInspectorCelular(sel, corpoCel);
+    wireColorSwatchPopovers(corpoCel);
+    return;
+  }
   const titleMap = { section: 'Página', column: 'Coluna', quicknav: 'Botões de navegação', giftsblock: 'Meus Presentes', element: (ELEMENT_META[sel.obj.type] || {}).label || 'Elemento' };
   const isTextLike = sel.kind === 'element' && (sel.obj.type === 'titulo' || sel.obj.type === 'texto');
   const textoDoSaveTheDate = isTextLike && currentPageKey === 'savethedate';
@@ -2499,7 +2623,7 @@ function formatEventDate(dateStr, timeStr) {
 function renderElementContent(el, device, mode) {
   const edit = mode === 'edit';
   const style = styleAttr(el, device);
-  const editable = edit ? 'contenteditable="true" data-editable="content"' : '';
+  const editable = edit && !construtorNoCelularAtivo() ? 'contenteditable="true" data-editable="content"' : '';
   const linkGuard = edit ? 'onclick="return false;"' : '';
 
   switch (el.type) {
@@ -2608,7 +2732,7 @@ function renderElementContent(el, device, mode) {
           <span class="be-countdown-unit-label"${textAttr}>${unitLabel}</span>
         </div>`;
       return `<div class="be-countdown" style="${style}${scaleStyle}" data-countdown-target="${targetMs}">
-        ${el.label ? `<p class="be-countdown-label" ${edit ? 'contenteditable="true" data-editable="label"' : ''}${textAttr}>${escapeHtml(el.label)}</p>` : ''}
+        ${el.label ? `<p class="be-countdown-label" ${edit && !construtorNoCelularAtivo() ? 'contenteditable="true" data-editable="label"' : ''}${textAttr}>${escapeHtml(el.label)}</p>` : ''}
         <div class="be-countdown-grid">
           ${unitHtml('data-countdown-days', 'dias')}
           ${unitHtml('data-countdown-hours', 'horas')}
@@ -5784,7 +5908,8 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
       if (!noCelular.matches) return;
       const agora = editando();
       const titulo = gaveta.querySelector('.builder-gaveta-titulo');
-      const texto = 'Editar elemento';
+      const rotulo = /** @type {HTMLElement|null} */ (painel.querySelector('[data-cel-titulo]'));
+      const texto = (rotulo && rotulo.dataset.celTitulo) || 'Editar elemento';
       if (titulo && titulo.textContent !== texto) titulo.textContent = texto;
       if (agora && !estavaEditando) abrir();
       // Sem elemento escolhido não há o que mostrar (a lista de adicionar saiu).

@@ -13873,3 +13873,57 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   body[data-theme="dark"] .orc-celular .orc-cel-barra { background: rgba(235, 244, 255, 0.08) !important; }
   body[data-theme="dark"] #modal-setup-budget, body[data-theme="dark"] #modal-setup-budget > .modal-container-custom { background: #1F1F1F !important; }
 }
+
+/* ==========================================================================
+   Celular: Convite digital com edição enxuta. Gaveta pequena por elemento
+   (Título/Texto: negrito, itálico, tamanho e o texto; Data/Contagem: data e
+   horário; Botões: cores e quais aparecem). Aviso de que no computador há
+   mais recursos, antes da imagem. Desktop não muda.
+   ========================================================================== */
+.builder-aviso-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #site-builder-root:not([data-pagina="savethedate"]) .builder-aviso-celular:not(#love-h-a) {
+    display: flex; align-items: flex-start; gap: 10px; margin: 0 16px 12px; padding: 10px 12px;
+    border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
+    font-family: Inter, sans-serif; font-size: 13px; line-height: 1.45; color: #52525B;
+  }
+  html body .builder-aviso-celular svg:not(#love-h-a) { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; color: #183b54; }
+  body[data-theme="dark"] #site-builder-root .builder-aviso-celular { background: #1F1F1F !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+
+  html body .builder-gaveta .inspector-header:not(#love-h-a),
+  html body .builder-gaveta .inspector-tabs:not(#love-h-a) { display: none !important; }
+  html body .builder-gaveta .inspector-body.cel-edit:not(#love-h-a) { display: flex; flex-direction: column; gap: 14px; padding: 14px 16px 20px !important; }
+  html body .builder-gaveta .cel-edit .inspector-field:not(#love-h-a) { margin: 0 !important; }
+  html body .builder-gaveta .cel-edit .cel-edit-barra:not(#love-h-a) { display: flex; align-items: center; gap: 8px; }
+  html body .builder-gaveta .cel-edit .cel-edit-barra .inspector-segmented:not(#love-h-a) { flex: 0 0 auto; margin: 0 !important; }
+  html body .builder-gaveta .cel-edit .cel-edit-barra .inspector-segmented button:not(#love-h-a) { width: 44px; height: 44px; }
+  html body .builder-gaveta .cel-edit [data-typography-toggle="sombra"]:not(#love-h-a) { display: none !important; }
+  html body .builder-gaveta .cel-edit .cel-edit-tamanho:not(#love-h-a) { flex: 1 1 auto; min-width: 0; height: 44px; font-size: 16px !important; }
+  html body .builder-gaveta .cel-edit .inspector-rich:not(#love-h-a) { min-height: 96px; max-height: 40dvh; overflow-y: auto; font-size: 16px !important; }
+  html body .builder-gaveta .cel-edit :is(input.inspector-input, select.inspector-select):not(#love-h-a) { height: 44px; font-size: 16px !important; }
+  html body .builder-gaveta .cel-edit .cel-edit-rotulo:not(#love-h-a) { margin-bottom: -6px; }
+  html body .builder-gaveta .cel-edit .cel-edit-botoes .menu-order-row:not(#love-h-a) { display: flex; align-items: center; gap: 10px; }
+  html body .builder-gaveta .cel-edit .cel-edit-botoes .inspector-input:not(#love-h-a) { flex: 1 1 auto; min-width: 0; }
+}
+
+/* ==========================================================================
+   Celular: Editar informações do Convite digital sem sair para o lado.
+   Campos menores (44px, cantos de 8px) e sempre do tamanho da coluna — no
+   iPhone os campos de data/hora têm largura própria e passavam da tela.
+   Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-edit-site #editor-form-column:not(#love-h-a) { overflow-x: hidden !important; }
+  html body #tab-edit-site #editor-form-column :is(.grid, .flex) > *:not(#love-h-a) { min-width: 0; }
+  html body #tab-edit-site #editor-form-column :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]):not(#love-h-a) {
+    box-sizing: border-box; max-width: 100%; min-width: 0; border-radius: 8px !important;
+  }
+  html body #tab-edit-site #editor-form-column :is(input, select):not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]):not(#love-h-a) {
+    height: 44px; padding-top: 0 !important; padding-bottom: 0 !important; padding-left: 12px !important; padding-right: 12px !important;
+  }
+  html body #tab-edit-site #editor-form-column :is(input[type="date"], input[type="time"]):not(#love-h-a) {
+    -webkit-appearance: none; appearance: none; display: block; width: 100% !important; text-align: left; line-height: 44px;
+  }
+  html body #tab-edit-site #editor-form-column :is(input[type="date"], input[type="time"])::-webkit-date-and-time-value { text-align: left; }
+  html body #tab-edit-site #editor-form-column textarea:not(#love-h-a) { width: 100% !important; padding: 10px 12px !important; }
+}

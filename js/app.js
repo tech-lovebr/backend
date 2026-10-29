@@ -4919,6 +4919,22 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Alterações salvas com sucesso no convite!', '✨');
   }
 
+  // Evento costuma começar e terminar no mesmo dia: mudar a data do evento
+  // leva a data de término para o mesmo dia (desktop e celular).
+  (function dataDeTerminoAcompanha() {
+    const inicio = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-data-date'));
+    const fim = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-data-end-date'));
+    if (!inicio || !fim) return;
+    const acompanhar = () => {
+      if (!inicio.value || fim.value === inicio.value) return;
+      fim.value = inicio.value;
+      fim.dispatchEvent(new Event('input', { bubbles: true }));
+      fim.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    inicio.addEventListener('input', acompanhar);
+    inicio.addEventListener('change', acompanhar);
+  })();
+
   // Live Listeners para inputs de texto e dados em tempo real
   ['editor-event-title', 'editor-data-event-name', 'editor-hero-headline', 'editor-data-date', 'editor-data-time', 'editor-data-end-date', 'editor-data-end-time', 'editor-data-location', 'editor-data-address', 'editor-data-reference', 'editor-data-dresscode'].forEach(id => {
     const el = document.getElementById(id);

@@ -15373,7 +15373,141 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 8.5 MÓDULO DE ORÇAMENTO & ONBOARDING POPUP
   // ==========================================
+  // ---- Celular: Orçamento em página inteira (botão da Home) ----
+  // Depois do pop-up "Defina seu orçamento" (também em tela cheia), abre
+  // "Seu orçamento": barras de orçamento máximo, custo total e a pagar, e as
+  // despesas por categoria (Custo / A pagar). Desktop não muda.
+  /** @type {string|null} */ var orcCelularVoltarPara = null;
+  var orcCelularPendente = false;
+  /** @type {Set<string>} */ var orcCelularFechadas = new Set();
+  function orcamentoNoCelular() { return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches; }
+  /** @param {any} ev */
+  function orcamentoConfigurado(ev) {
+    let salvo = false;
+    try { salvo = !!ev && localStorage.getItem(`love_budget_configured_${ev.id}`) === 'true'; } catch (e) {}
+    return Boolean(ev && (ev.budgetConfigured || (ev.budgetTotal && ev.budgetTotal > 0) || salvo));
+  }
+  function telaOrcamentoCelular() {
+    let tela = document.getElementById('orc-celular');
+    if (tela) return tela;
+    tela = document.createElement('section');
+    tela.id = 'orc-celular';
+    tela.className = 'orc-celular';
+    tela.hidden = true;
+    tela.setAttribute('role', 'dialog');
+    tela.setAttribute('aria-modal', 'true');
+    tela.setAttribute('aria-labelledby', 'orc-celular-titulo');
+    tela.innerHTML = `
+      <header class="orc-cel-topo">
+        <button type="button" class="orc-cel-icone" data-orc-cel="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
+        <h2 id="orc-celular-titulo">Seu orçamento</h2>
+        <div class="orc-cel-topo-acoes">
+          <button type="button" class="orc-cel-icone" data-orc-cel="adicionar" aria-label="Adicionar despesa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button type="button" class="orc-cel-icone" data-orc-cel="definir" aria-label="Definir orçamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></button>
+        </div>
+      </header>
+      <div class="orc-cel-corpo"></div>`;
+    document.body.appendChild(tela);
+    tela.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement|null} */ (/** @type {HTMLElement} */ (e.target).closest('[data-orc-cel], [data-orc-cel-grupo], [data-orc-cel-despesa]'));
+      if (!alvo) return;
+      const acao = alvo.dataset.orcCel;
+      if (acao === 'fechar') fecharOrcamentoCelular();
+      else if (acao === 'adicionar') document.getElementById('btn-open-add-expense')?.click();
+      else if (acao === 'definir') checkAndPromptBudgetSetup(true);
+      else if (alvo.dataset.orcCelGrupo !== undefined) {
+        const grupo = alvo.dataset.orcCelGrupo || '';
+        if (orcCelularFechadas.has(grupo)) orcCelularFechadas.delete(grupo); else orcCelularFechadas.add(grupo);
+        desenharOrcamentoCelular();
+      } else if (alvo.dataset.orcCelDespesa) abrirDespesaNoDrawer(alvo.dataset.orcCelDespesa);
+    });
+    return tela;
+  }
+  function desenharOrcamentoCelular() {
+    const tela = document.getElementById('orc-celular');
+    if (!tela || tela.hidden) return;
+    const corpo = tela.querySelector('.orc-cel-corpo');
+    if (!corpo) return;
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const itens = getBudgetExpenses().map(exp => ({ exp, s: situacaoDaDespesa(exp) }));
+    let custo = 0, aPagar = 0, estimado = 0;
+    itens.forEach(({ exp, s }) => { custo += s.contrato; aPagar += s.falta; estimado += Number(exp.estimated) || 0; });
+    const ev = getActiveEvent();
+    let maximo = ev && Number(ev.budgetTotal);
+    if (!maximo && ev) { try { maximo = parseInt(localStorage.getItem(`love_budget_total_${ev.id}`) || '', 10); } catch (e) {} }
+    if (!maximo) maximo = estimado || 0;
+    const largura = (/** @type {number} */ v) => maximo > 0 ? Math.max(0, Math.min(100, (v / maximo) * 100)) : 0;
+    const barra = (/** @type {string} */ classe, /** @type {string} */ rotulo, /** @type {number} */ valor, /** @type {number} */ pct, extra = '') => `
+      <div class="orc-cel-barra ${classe}" style="width:${pct.toFixed(1)}%">
+        <span class="orc-cel-barra-rotulo">${rotulo}</span>
+        <span class="orc-cel-barra-valor">${brl(valor)}</span>
+        ${extra}
+      </div>`;
+    /** @type {Map<string, typeof itens>} */
+    const grupos = new Map();
+    itens.forEach(o => {
+      const cat = String(o.exp.category || '').trim() || 'Geral';
+      if (!grupos.has(cat)) grupos.set(cat, []);
+      /** @type {typeof itens} */ (grupos.get(cat)).push(o);
+    });
+    const valor = (/** @type {number} */ v) => `<span class="orc-cel-valor${v > 0 ? '' : ' is-zero'}">${brl(v)}</span>`;
+    corpo.innerHTML = `
+      <section class="orc-cel-resumo" aria-label="Resumo do orçamento">
+        ${barra('is-max', 'Orçamento máximo', maximo, 100, '<button type="button" class="orc-cel-editar" data-orc-cel="definir">Editar</button>')}
+        ${barra('is-custo' + (custo > maximo && maximo > 0 ? ' is-acima' : ''), 'Custo total', custo, largura(custo))}
+        ${barra('is-pagar', 'Total a pagar', aPagar, largura(aPagar))}
+      </section>
+      ${itens.length ? `
+        <div class="orc-cel-colunas" aria-hidden="true"><span></span><span>Custo</span><span>A pagar</span></div>
+        ${Array.from(grupos.entries()).map(([cat, lista]) => {
+          const aberto = !orcCelularFechadas.has(cat);
+          return `
+          <section class="orc-cel-grupo">
+            <button type="button" class="orc-cel-grupo-cab" data-orc-cel-grupo="${escaparHtml(cat)}" aria-expanded="${aberto}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+              <span>${escaparHtml(cat)}</span>
+            </button>
+            ${aberto ? lista.map(({ exp, s }) => `
+              <button type="button" class="orc-cel-linha" data-orc-cel-despesa="${escaparHtml(exp.id)}">
+                <span class="orc-cel-nome">${escaparHtml(exp.item || exp.vendor || 'Despesa')}</span>
+                ${valor(s.contrato)}
+                ${valor(s.falta)}
+              </button>`).join('') : ''}
+          </section>`;
+        }).join('')}` : '<p class="orc-cel-vazio">Nenhuma despesa ainda. Toque em + para adicionar.</p>'}`;
+  }
+  function abrirOrcamentoCelular() {
+    const tela = telaOrcamentoCelular();
+    tela.hidden = false;
+    document.body.classList.add('orc-celular-aberto');
+    desenharOrcamentoCelular();
+    const corpo = tela.querySelector('.orc-cel-corpo');
+    if (corpo) corpo.scrollTop = 0;
+  }
+  function fecharOrcamentoCelular() {
+    const tela = document.getElementById('orc-celular');
+    if (tela) tela.hidden = true;
+    document.body.classList.remove('orc-celular-aberto');
+    orcCelularPendente = false;
+    const volta = orcCelularVoltarPara;
+    orcCelularVoltarPara = null;
+    if (volta && volta !== 'wallet') switchRailTab(volta);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  /** Depois do "Começar" do pop-up: abre (ou atualiza) a página do orçamento. */
+  function aoDefinirOrcamentoCelular() {
+    if (orcCelularPendente) { orcCelularPendente = false; abrirOrcamentoCelular(); }
+    else desenharOrcamentoCelular();
+  }
+  // Celular: o "X" do pop-up em tela cheia volta para onde a pessoa estava.
+  document.getElementById('btn-fechar-setup-orcamento')?.addEventListener('click', () => {
+    closeModal(document.getElementById('modal-setup-budget'));
+    const telaAberta = !!document.getElementById('orc-celular') && !(/** @type {HTMLElement} */ (document.getElementById('orc-celular')).hidden);
+    if (!telaAberta && orcCelularPendente) fecharOrcamentoCelular();
+  });
+
   window.navigateToBudget = function() {
+    const vinhaDe = state.currentTab;
     pendingSubItemId = 'wallet-budget';
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
@@ -15382,6 +15516,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     switchWalletSubSection('wallet-budget', 'Orçamento');
+    if (orcamentoNoCelular()) {
+      orcCelularVoltarPara = vinhaDe;
+      const ev = getActiveEvent();
+      if (!ev || orcamentoConfigurado(ev)) abrirOrcamentoCelular();
+      else orcCelularPendente = true;
+    }
   };
 
   // Home (Mais recursos › Save the Date e o passo "Escolher Save the Date" do
@@ -15570,7 +15710,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  function checkAndPromptBudgetSetup() {
+  /** @param {boolean} [forcar] abre mesmo já definido (Editar, no celular) */
+  function checkAndPromptBudgetSetup(forcar) {
     const activeEv = getActiveEvent();
     if (!activeEv) return;
 
@@ -15580,7 +15721,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.getItem(`love_budget_configured_${activeEv.id}`) === 'true'
     );
 
-    if (isConfigured) {
+    if (isConfigured && !forcar) {
       updateBudgetKPIs();
       return;
     }
@@ -15596,7 +15737,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reqMsg) reqMsg.classList.add('hidden');
     if (inputTotal) {
       inputTotal.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20');
-      inputTotal.value = '';
+      inputTotal.value = forcar && activeEv.budgetTotal ? Number(activeEv.budgetTotal).toLocaleString('pt-BR') : '';
     }
 
     // Localização preenchida se já salva no evento
@@ -15725,6 +15866,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateBudgetKPIs();
         closeModal(modal);
+        aoDefinirOrcamentoCelular();
         showToast('Orçamento definido com sucesso!', '✨');
       });
     }
@@ -15953,6 +16095,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Despesa aberta: atualiza junto.
     if (despesaAberta) desenharDespesa(despesaAberta);
+    desenharOrcamentoCelular();
   }
 
   // ---- Despesa aberta (+): na mesma caixa da tabela, com a setinha de voltar no título ----

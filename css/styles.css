@@ -13777,3 +13777,99 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #view-event-os-dashboard .dashboard-main-area:has(#tab-edit-site.active #site-builder-root:not(.hidden):not([style*="display: none"])):not(#love-h-a):not(#love-h-b) { padding-bottom: var(--bottom-bar-height-mobile, 64px) !important; }
   html body #view-event-os-dashboard .dashboard-main-area:has(#tab-edit-site.active #site-builder-root:not(.hidden):not([style*="display: none"])) > .rodape-respiro:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
+
+/* ==========================================================================
+   Celular: Orçamento pelo botão da Home em página inteira. O pop-up
+   "Defina seu orçamento" ocupa a tela toda; depois dele, "Seu orçamento"
+   com as barras (orçamento máximo, custo total, a pagar) e as despesas por
+   categoria com Custo / A pagar. Desktop não muda.
+   ========================================================================== */
+.orc-celular, .orc-setup-fechar { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .orc-celular:not([hidden]):not(#love-h-a) {
+    display: flex !important; flex-direction: column; position: fixed; inset: 0; z-index: 70; background: #FFFFFF; overflow: hidden;
+    font-family: Inter, sans-serif; color: #18181B;
+  }
+  html body .orc-celular .orc-cel-topo:not(#love-h-a) {
+    flex: 0 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 56px;
+    padding: env(safe-area-inset-top, 0px) 6px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); background: #FFFFFF;
+  }
+  html body .orc-celular .orc-cel-topo h2:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 17px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; text-align: center; white-space: nowrap; }
+  html body .orc-celular .orc-cel-topo-acoes:not(#love-h-a) { display: flex; justify-content: flex-end; }
+  html body .orc-celular .orc-cel-icone:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .orc-celular .orc-cel-icone svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body .orc-celular .orc-cel-corpo:not(#love-h-a) { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Barras do resumo */
+  html body .orc-celular .orc-cel-resumo:not(#love-h-a) { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #E4E4E7; border-radius: 10px; }
+  html body .orc-celular .orc-cel-barra:not(#love-h-a) {
+    position: relative; box-sizing: border-box; min-width: max-content; max-width: 100%; display: flex; flex-direction: column; gap: 2px;
+    padding: 8px 12px; border-radius: 8px;
+  }
+  html body .orc-celular .orc-cel-barra.is-max:not(#love-h-a) { background: rgba(24, 59, 84, 0.14); padding-right: 80px; }
+  html body .orc-celular .orc-cel-barra.is-custo:not(#love-h-a) { background: rgba(24, 59, 84, 0.09); }
+  html body .orc-celular .orc-cel-barra.is-pagar:not(#love-h-a) { background: rgba(24, 59, 84, 0.05); }
+  html body .orc-celular .orc-cel-barra-rotulo:not(#love-h-a) { font-size: 12px; font-weight: 500; color: #52525B; }
+  html body .orc-celular .orc-cel-barra-valor:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; color: #183b54; font-variant-numeric: tabular-nums; }
+  html body .orc-celular .orc-cel-barra.is-acima .orc-cel-barra-valor:not(#love-h-a) { color: #B42318; }
+  html body .orc-celular .orc-cel-editar:not(#love-h-a) {
+    position: absolute; right: 4px; top: 50%; transform: translateY(-50%); height: 44px; padding: 0 10px;
+    background: transparent; border: 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #183b54; cursor: pointer;
+  }
+
+  /* Despesas por categoria */
+  html body .orc-celular .orc-cel-colunas:not(#love-h-a) {
+    display: grid; grid-template-columns: minmax(0, 1fr) 88px 88px; gap: 8px; padding: 20px 12px 8px;
+    font-size: 11px; font-weight: 500; color: #A1A1AA; text-align: right;
+  }
+  html body .orc-celular .orc-cel-grupo:not(#love-h-a) { border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; }
+  html body .orc-celular .orc-cel-grupo + .orc-cel-grupo:not(#love-h-a) { margin-top: 12px; }
+  html body .orc-celular .orc-cel-grupo-cab:not(#love-h-a) {
+    display: flex; align-items: center; gap: 8px; width: 100%; min-height: 48px; padding: 0 12px;
+    background: #FAFAFA; border: 0; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #18181B;
+  }
+  html body .orc-celular .orc-cel-grupo-cab svg:not(#love-h-a) { flex: 0 0 auto; width: 18px; height: 18px; color: #52525B; transition: transform .15s ease; }
+  html body .orc-celular .orc-cel-grupo-cab[aria-expanded="false"] svg:not(#love-h-a) { transform: rotate(180deg); }
+  html body .orc-celular .orc-cel-linha:not(#love-h-a) {
+    display: grid; grid-template-columns: minmax(0, 1fr) 88px 88px; gap: 8px; align-items: center; width: 100%; min-height: 48px; padding: 0 12px;
+    background: #FFFFFF; border: 0; border-top: 1px solid rgba(0, 0, 0, 0.04); text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    font-family: Inter, sans-serif; color: #18181B;
+  }
+  html body .orc-celular .orc-cel-nome:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+  html body .orc-celular .orc-cel-valor:not(#love-h-a) { font-size: 14px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  html body .orc-celular .orc-cel-valor.is-zero:not(#love-h-a) { color: #A1A1AA; }
+  html body .orc-celular .orc-cel-vazio:not(#love-h-a) { margin: 32px 0 0; text-align: center; font-size: 15px; color: #71717A; }
+
+  /* Por cima da página: drawer da despesa e o pop-up de definir. */
+  html body.orc-celular-aberto #budget-expense-drawer-backdrop:not(#love-h-a) { z-index: 94 !important; }
+  html body.orc-celular-aberto #drawer-add-budget-expense:not(#love-h-a) { z-index: 95 !important; }
+
+  /* "Defina seu orçamento" em tela cheia */
+  html body #modal-setup-budget:not(#love-h-a) { z-index: 96 !important; padding: 0 !important; align-items: stretch !important; background: #FFFFFF !important; backdrop-filter: none !important; }
+  html body #modal-setup-budget > .modal-container-custom:not(#love-h-a) {
+    max-width: none !important; width: 100%; height: 100dvh; max-height: none !important; overflow-y: auto !important; border-radius: 0 !important; box-shadow: none !important;
+    padding: calc(56px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body #modal-setup-budget .orc-setup-fechar:not(#love-h-a) {
+    display: inline-flex !important; align-items: center; justify-content: center; position: absolute; top: calc(6px + env(safe-area-inset-top, 0px)); left: 6px; margin: 0 !important;
+    width: 44px; height: 44px; padding: 0; background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer;
+  }
+  html body #modal-setup-budget .orc-setup-fechar svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body #modal-setup-budget h3:not(#love-h-a) { font-size: 24px !important; letter-spacing: -0.025em; }
+  html body #modal-setup-budget input:not(#love-h-a) { height: 44px; font-size: 16px !important; border-radius: 8px !important; border-color: #E4E4E7 !important; box-shadow: none !important; }
+  html body #modal-setup-budget input:focus:not(#love-h-a) { border-color: #181D24 !important; }
+  html body #modal-setup-budget label:not(#love-h-a) { font-size: 13px !important; }
+  html body #modal-setup-budget #btn-submit-budget-setup:not(#love-h-a) { height: 48px; padding: 0 !important; background: #183b54 !important; border-radius: 8px !important; box-shadow: none !important; font-size: 16px !important; font-weight: 600 !important; }
+
+  body[data-theme="dark"] .orc-celular, body[data-theme="dark"] .orc-celular .orc-cel-topo, body[data-theme="dark"] .orc-celular .orc-cel-linha { background: #1F1F1F !important; color: #FFFFFF; }
+  body[data-theme="dark"] .orc-celular .orc-cel-grupo-cab { background: #252525 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .orc-celular :is(.orc-cel-resumo, .orc-cel-grupo) { border-color: #404040 !important; }
+  body[data-theme="dark"] .orc-celular :is(.orc-cel-icone, .orc-cel-topo h2) { color: #FFFFFF !important; }
+  body[data-theme="dark"] .orc-celular :is(.orc-cel-barra-valor, .orc-cel-editar) { color: #EBF4FF !important; }
+  body[data-theme="dark"] .orc-celular .orc-cel-barra { background: rgba(235, 244, 255, 0.08) !important; }
+  body[data-theme="dark"] #modal-setup-budget, body[data-theme="dark"] #modal-setup-budget > .modal-container-custom { background: #1F1F1F !important; }
+}

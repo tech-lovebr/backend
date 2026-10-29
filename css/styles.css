@@ -14266,20 +14266,21 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #tab-rsvp .love-tabela-filtro-btn.is-ativo:not(#love-h-a):not(#love-h-b) { border-color: #183b54 !important; }
   body[data-theme="dark"] #tab-rsvp .love-tabela-filtro-btn::after { filter: invert(1); }
 
-  /* Adicionar convidado: só o bonequinho com +, botão claro de 40px. */
+  /* Adicionar convidado: só o bonequinho com +, sem caixinha em volta;
+     o ícone termina na mesma linha da tabela. */
   html body #view-event-os-dashboard #btn-host-add-guest:not(#love-h-a):not(#love-h-b) {
     display: inline-flex !important; align-items: center; justify-content: center;
-    width: 40px !important; min-width: 40px !important; height: 40px !important; min-height: 40px !important; padding: 0 !important; gap: 0 !important;
-    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+    width: 24px !important; min-width: 24px !important; height: 40px !important; min-height: 40px !important; padding: 0 !important; gap: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
     font-size: 0 !important; line-height: 0 !important; color: #18181B !important;
   }
-  html body #view-event-os-dashboard #btn-host-add-guest:not(#love-h-a):not(#love-h-b):hover { background: #FFFFFF !important; border-color: #181D24 !important; transform: none !important; }
+  html body #view-event-os-dashboard #btn-host-add-guest:not(#love-h-a):not(#love-h-b):hover { background: transparent !important; border: 0 !important; transform: none !important; opacity: 0.7; }
   html body #view-event-os-dashboard #btn-host-add-guest:not(#love-h-a):not(#love-h-b) > * { display: none !important; }
   html body #view-event-os-dashboard #btn-host-add-guest:not(#love-h-a):not(#love-h-b)::before {
     content: ''; display: block; width: 20px; height: 20px;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'/%3E%3C/svg%3E") center / 20px no-repeat;
   }
-  body[data-theme="dark"] #view-event-os-dashboard #btn-host-add-guest { background: #252525 !important; border-color: #404040 !important; }
+  body[data-theme="dark"] #view-event-os-dashboard #btn-host-add-guest { background: transparent !important; border: 0 !important; }
   body[data-theme="dark"] #view-event-os-dashboard #btn-host-add-guest::before { filter: invert(1); }
 
   /* Ficha do convidado (as mesmas regras do celular)… */

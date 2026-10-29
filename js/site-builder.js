@@ -983,70 +983,16 @@ function conviteSemElementos(state) {
 
 /**
  * Celular: as seções do Convite digital já vêm prontas e fixas (sem
- * adicionar, mover ou apagar). Convite vazio ganha o modelo do tipo de
- * evento (o de casamento: capa com foto; textos, data, imagem, "Sobre" e
- * contagem regressiva; botões; "Com carinho,"). Desktop não muda.
+ * adicionar, mover ou apagar). Convite inicial abre a escolha de modelos
+ * do tipo de evento (cartões que passam de lado). Desktop não muda.
  * @param {string} pageKey
  */
-/** Sequência dos tipos de elemento de cada seção (sem a de presentes). @param {any} state */
-function formatoDoConvite(state) {
-  return (state.sections || []).filter((/** @type {any} */ s) => !s.isGiftsBlock).map((/** @type {any} */ s) => s.isQuickNav ? '[botoes]'
-    : (s.columns || []).map((/** @type {any} */ c) => (c.elements || []).map((/** @type {any} */ e) => e.type).join(',')).join(';')).join('|');
-}
-
 async function prepararConviteNoCelular(pageKey) {
   if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
   if (pageKey !== 'convite' || currentPageKey !== 'convite') return;
-  const ev = getActiveEventForBuilder();
-  const tipo = (ev && ev.type) || 'wedding';
-  const modelo = (await templatePadraoDoTipo(tipo)) || modeloDeConviteEmCodigo(tipo) || (await templatePadraoDoTipo('wedding'));
-  // Enquanto buscava, a pessoa pode ter trocado de página ou começado a editar.
-  if (!modelo || currentPageKey !== 'convite' || selectedId) return;
-  migrateQuickNavSection(modelo);
-  tirarElementosDaCapa(modelo);
-  migrateElementDefaults(modelo);
-  if (formatoDoConvite(modelo) === formatoDoConvite(builderState)) return;
-  const vazio = conviteSemElementos(builderState);
-  const det = (ev && ev.eventDetails) || {};
-  ajustarDatasDoTemplate(modelo, { data: det.date || (ev && ev.date) || '', hora: det.time || '' });
-
-  // O que a pessoa já escreveu/escolheu vai para o elemento do mesmo tipo,
-  // na mesma ordem (1º texto no 1º texto, 1ª imagem na 1ª imagem...).
-  const antigos = /** @type {Record<string, any[]>} */ ({});
-  builderState.sections.filter(s => !s.isQuickNav && !s.isGiftsBlock).forEach(s => (s.columns || []).forEach((/** @type {any} */ c) =>
-    (c.elements || []).forEach((/** @type {any} */ e) => { (antigos[e.type] = antigos[e.type] || []).push(e); })));
-  const usados = /** @type {Record<string, number>} */ ({});
-  const CAMPOS = /** @type {Record<string, string[]>} */ ({ titulo: ['content'], texto: ['content'], botao: ['content', 'href'], imagem: ['src', 'alt'], data: ['targetDate', 'targetTime'], contagem: ['targetDate', 'targetTime'] });
-  modelo.sections.forEach((/** @type {any} */ s) => (s.columns || []).forEach((/** @type {any} */ c) => (c.elements || []).forEach((/** @type {any} */ e) => {
-    const i = usados[e.type] || 0;
-    usados[e.type] = i + 1;
-    const velho = (antigos[e.type] || [])[i];
-    if (!velho) return;
-    (CAMPOS[e.type] || []).forEach(k => { if (velho[k] !== undefined && velho[k] !== '' && velho[k] !== null) e[k] = velho[k]; });
-  })));
-  // Capa, botões e presentes continuam os da pessoa.
-  const capaAtual = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
-  const iCapa = modelo.sections.findIndex((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock);
-  if (capaAtual && iCapa >= 0) { capaAtual.columns = modelo.sections[iCapa].columns; modelo.sections[iCapa] = capaAtual; }
-  const botoesAtuais = builderState.sections.find(s => s.isQuickNav);
-  const iBotoes = modelo.sections.findIndex((/** @type {any} */ s) => s.isQuickNav);
-  if (botoesAtuais && iBotoes >= 0) modelo.sections[iBotoes] = botoesAtuais;
-  const presentes = builderState.sections.filter(s => s.isGiftsBlock);
-  if (presentes.length) modelo.sections.splice(iBotoes >= 0 ? iBotoes + 1 : modelo.sections.length, 0, ...presentes);
-
-  builderState.sections = modelo.sections;
-  if (modelo.globalStyle) builderState.globalStyle = Object.assign({}, builderState.globalStyle || {}, modelo.globalStyle);
-  migrateQuickNavSection(builderState);
-  tirarElementosDaCapa(builderState);
-  migrateElementDefaults(builderState);
-  historyStack = [snapshotState()];
-  historyIndex = 0;
-  selectedId = null;
-  hasUnsavedChanges = true;
-  if (document.getElementById('builder-canvas')) { renderLeftPanel(); renderCanvas(); applyGlobalStyleVars(); }
-  // Convite vazio já fica salvo. Convite com conteúdo só muda de verdade
-  // quando a pessoa tocar em Salvar (o publicado não troca sozinho).
-  if (vazio) persistBuilderState(true);
+  // Convite inicial (nunca publicado e sem modelo escolhido): antes de editar,
+  // a pessoa escolhe um dos modelos do tipo do evento.
+  if (!paginasJaPublicadas.convite && !(builderState && builderState.modeloEscolhido)) abrirModelosNoCelular();
 }
 
 // Chamado por app.js assim que o anfitrião troca de evento no dropdown —
@@ -1791,6 +1737,30 @@ function renderElementosTab(body) {
   `).join('');
 }
 
+/**
+ * Celular: tocar na imagem abre na hora o seletor do aparelho (Fototeca,
+ * Tirar foto ou Escolher arquivo), igual à foto da capa.
+ * @param {any} el
+ */
+function trocarFotoNoCelular(el) {
+  let input = /** @type {HTMLInputElement|null} */ (document.getElementById('builder-foto-celular'));
+  if (!input) {
+    input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.id = 'builder-foto-celular';
+    input.hidden = true;
+    document.body.appendChild(input);
+  }
+  input.value = '';
+  input.onchange = () => {
+    const file = input && input.files && input.files[0];
+    if (!file) return;
+    readFileAsDataUrl(file, (/** @type {string} */ dataUrl) => { el.src = dataUrl; pushHistory(); renderCanvasOnly(); });
+  };
+  input.click();
+}
+
 /** Celular, Convite digital: editor só com o essencial (textos padronizados). */
 function construtorNoCelularAtivo() {
   return currentPageKey === 'convite' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
@@ -1868,6 +1838,16 @@ function renderInspectorCelular(sel, body) {
 }
 
 function renderElementEditorPanel(panel, sel) {
+  if (construtorNoCelularAtivo() && sel.kind === 'element' && (sel.obj.type === 'titulo' || sel.obj.type === 'texto')) {
+    // Escreve direto na caixinha do próprio convite (sem gaveta).
+    panel.innerHTML = '';
+    return;
+  }
+  if (construtorNoCelularAtivo() && sel.kind === 'element' && sel.obj.type === 'imagem') {
+    panel.innerHTML = '';
+    trocarFotoNoCelular(sel.obj);
+    return;
+  }
   if (construtorNoCelularAtivo() && (sel.kind === 'element' || sel.kind === 'quicknav')) {
     const nome = sel.kind === 'quicknav' ? 'Botões' : ((ELEMENT_META[sel.obj.type] || {}).label || 'Elemento');
     panel.innerHTML = `
@@ -2625,7 +2605,7 @@ function formatEventDate(dateStr, timeStr) {
 function renderElementContent(el, device, mode) {
   const edit = mode === 'edit';
   const style = styleAttr(el, device);
-  const editable = edit && !construtorNoCelularAtivo() ? 'contenteditable="true" data-editable="content"' : '';
+  const editable = edit && !(construtorNoCelularAtivo() && el.type === 'botao') ? 'contenteditable="true" data-editable="content"' : '';
   const linkGuard = edit ? 'onclick="return false;"' : '';
 
   switch (el.type) {
@@ -2734,7 +2714,7 @@ function renderElementContent(el, device, mode) {
           <span class="be-countdown-unit-label"${textAttr}>${unitLabel}</span>
         </div>`;
       return `<div class="be-countdown" style="${style}${scaleStyle}" data-countdown-target="${targetMs}">
-        ${el.label ? `<p class="be-countdown-label" ${edit && !construtorNoCelularAtivo() ? 'contenteditable="true" data-editable="label"' : ''}${textAttr}>${escapeHtml(el.label)}</p>` : ''}
+        ${el.label ? `<p class="be-countdown-label" ${edit ? 'contenteditable="true" data-editable="label"' : ''}${textAttr}>${escapeHtml(el.label)}</p>` : ''}
         <div class="be-countdown-grid">
           ${unitHtml('data-countdown-days', 'dias')}
           ${unitHtml('data-countdown-hours', 'horas')}
@@ -5935,3 +5915,208 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 })();
+
+
+/* -------------------- Celular: modelos prontos do Convite digital -------------------- */
+
+// Textos de cada tipo de evento (o resto vem do MODELOS_DE_CONVITE).
+const TEXTOS_DOS_MODELOS = {
+  wedding: { abertura: 'É com imensa alegria,', convite: 'que convidamos você para celebrar o casamento de', sobre: 'Sobre a Cerimônia' },
+  birthday: { abertura: 'Vamos celebrar juntos!', convite: 'Você está convidado(a) para o aniversário de', sobre: 'Sobre a festa' }
+};
+// Três modelos por tipo: paleta, fonte e fotos. No casamento, o primeiro é o
+// modelo padrão salvo no banco (o mesmo do desktop).
+const VARIACOES_DOS_MODELOS = {
+  wedding: [
+    { id: 'classico', nome: 'Clássico', doBanco: true, fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'jardim', nome: 'Jardim', fundo: '#f1f4ee', destaque: '#4f6b4a', caixa: '#dde6d6', fonte: "'Cormorant Garamond', Georgia, serif", capa: 'assets/presentes/ensaio-casal.jpg', imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'azul', nome: 'Azul noite', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Cinzel', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/presentes/buque-rosas.jpg' }
+  ],
+  birthday: [
+    { id: 'festa', nome: 'Festa', fundo: '#fdf3e7', destaque: '#b45309', caixa: '#f8dfbf', fonte: "'Playfair Display', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' },
+    { id: 'elegante', nome: 'Elegante', fundo: '#f4f1ee', destaque: '#3f3f46', caixa: '#e4ded8', fonte: "'Marcellus', Georgia, serif", capa: 'assets/birthday_hero_banner.jpg', imagem: 'assets/presentes/champanhe.jpg' },
+    { id: 'leve', nome: 'Leve', fundo: '#eef4f8', destaque: '#2f6f86', caixa: '#d5e7ef', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' }
+  ]
+};
+
+/** Os três modelos de um tipo de evento (tipos sem lista própria ganham três paletas). @param {string} tipo */
+function variacoesDoTipo(tipo) {
+  if (VARIACOES_DOS_MODELOS[tipo]) return VARIACOES_DOS_MODELOS[tipo];
+  const base = MODELOS_DE_CONVITE[tipo] || { fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4' };
+  const capa = (EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding).coverImage;
+  return [
+    { id: 'suave', nome: 'Suave', fundo: base.fundo, destaque: base.destaque, caixa: base.caixa, fonte: "'Lora', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'classico', nome: 'Clássico', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Marcellus', Georgia, serif", capa, imagem: 'assets/presentes/champanhe.jpg' },
+    { id: 'azul', nome: 'Azul', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Playfair Display', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' }
+  ];
+}
+
+/**
+ * Monta o convite de um modelo: capa com foto; abertura, convite, nome,
+ * "A realizar-se", data, imagem, "Sobre…", contagem; botões; "Com carinho,".
+ * @param {string} tipo @param {any} v
+ */
+function conviteDoModelo(tipo, v) {
+  const t = TEXTOS_DOS_MODELOS[tipo] || MODELOS_DE_CONVITE[tipo] || TEXTOS_DOS_MODELOS.wedding;
+  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
+  /** @param {string} tipoEl @param {object} props @param {object} [mobile] */
+  const el = (tipoEl, props, mobile) => {
+    const novo = Object.assign(createElement(tipoEl), props || {});
+    if (mobile) novo.styles.mobile = Object.assign({}, novo.styles.mobile || {}, mobile);
+    if (novo.styles && novo.styles.desktop) {
+      novo.styles.desktop.textAlign = 'center';
+      if (mobile && /** @type {any} */ (mobile).fontFamily) novo.styles.desktop.fontFamily = /** @type {any} */ (mobile).fontFamily;
+    }
+    return novo;
+  };
+  const tituloDeSecao = (/** @type {string} */ texto) => el('titulo', { content: texto }, { fontSize: '20px', fontFamily: v.fonte, fontWeight: '400', lineHeight: '1', color: v.destaque });
+  const capa = createSection();
+  capa.bgImage = v.capa;
+  const principal = createSection();
+  principal.bg = v.fundo;
+  principal.columns[0].elements = [
+    el('texto', { content: t.abertura }, { fontSize: '15px', fontStyle: 'italic', fontFamily: v.fonte }),
+    el('texto', { content: t.convite }, { fontSize: '15px', fontStyle: 'italic', fontFamily: v.fonte }),
+    el('titulo', { content: '' }, { fontFamily: v.fonte, color: v.destaque }),
+    el('texto', { content: 'A realizar-se' }, { color: v.destaque, fontSize: '17px', fontFamily: v.fonte }),
+    el('data', { showLines: true, textColor: v.destaque, fontFamily: v.fonte }),
+    el('imagem', { src: v.imagem }),
+    tituloDeSecao(t.sobre),
+    el('texto', { content: '' }),
+    tituloDeSecao('Contagem Regressiva'),
+    el('contagem', { label: '', showBox: true, textColor: v.destaque, boxBgColor: v.caixa, fontFamily: v.fonte })
+  ];
+  const botoes = defaultQuickNavSection();
+  botoes.buttonBgColor = v.caixa;
+  botoes.iconStyle = 'moderno';
+  botoes.textColor = '#18181B';
+  botoes.iconColor = '#18181B';
+  const fim = createSection();
+  fim.bg = v.fundo;
+  fim.columns[0].elements = [
+    el('titulo', { content: 'Com carinho,' }, { fontFamily: v.fonte, color: v.destaque }),
+    el('texto', { content: '' })
+  ];
+  const state = defaultPageState();
+  state.globalStyle.primaryColor = v.destaque || tmpl.primaryColor;
+  state.sections = [capa, principal, botoes, fim];
+  return state;
+}
+
+/** Nome do evento para pôr no título e nas miniaturas. */
+function nomeParaOModelo() {
+  const ev = getActiveEventForBuilder();
+  const nome = String((ev && (ev.hostName || ev.title)) || '').trim();
+  return nome || 'Seu nome';
+}
+
+let modelosDoCelularCache = /** @type {{ tipo: string, lista: any[] } | null} */ (null);
+/** @param {string} tipo */
+async function modelosDoCelular(tipo) {
+  if (modelosDoCelularCache && modelosDoCelularCache.tipo === tipo) return modelosDoCelularCache.lista;
+  const doBanco = await templatePadraoDoTipo(tipo);
+  const lista = variacoesDoTipo(tipo).map((v, i) => {
+    const state = v.doBanco && doBanco ? JSON.parse(JSON.stringify(doBanco)) : conviteDoModelo(tipo, v);
+    // Miniatura com a capa de verdade do modelo do banco.
+    const capaDoBanco = v.doBanco && doBanco ? (doBanco.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock && s.bgImage) || {}).bgImage : '';
+    return Object.assign({}, v, { state, capaMiniatura: capaDoBanco || v.capa, ordem: i });
+  });
+  modelosDoCelularCache = { tipo, lista };
+  return lista;
+}
+
+/** Aplica um modelo no convite (o nome do evento já vai no título). @param {any} modelo */
+function aplicarModeloNoCelular(modelo) {
+  const novo = JSON.parse(JSON.stringify(modelo.state));
+  const ev = getActiveEventForBuilder();
+  const det = (ev && ev.eventDetails) || {};
+  ajustarDatasDoTemplate(novo, { data: det.date || (ev && ev.date) || '', hora: det.time || '' });
+  const nome = nomeParaOModelo();
+  for (const s of novo.sections) {
+    const titulo = (s.columns || []).flatMap((/** @type {any} */ c) => c.elements || []).find((/** @type {any} */ e) => e.type === 'titulo' && !String(e.content || '').trim());
+    if (titulo) { titulo.content = escapeHtml(nome); break; }
+  }
+  builderState.sections = novo.sections;
+  if (novo.globalStyle) builderState.globalStyle = Object.assign({}, builderState.globalStyle || {}, novo.globalStyle);
+  builderState.modeloEscolhido = modelo.id;
+  migrateQuickNavSection(builderState);
+  tirarElementosDaCapa(builderState);
+  migrateElementDefaults(builderState);
+  historyStack = [snapshotState()];
+  historyIndex = 0;
+  selectedId = null;
+  hasUnsavedChanges = true;
+  if (document.getElementById('builder-canvas')) { renderLeftPanel(); renderCanvas(); applyGlobalStyleVars(); }
+  // Convite ainda não publicado: já fica salvo. Publicado: só ao tocar em Salvar.
+  if (!paginasJaPublicadas.convite) persistBuilderState(true);
+}
+
+/** Tela "Escolha um modelo" (celular): cartões que passam de lado. */
+async function abrirModelosNoCelular() {
+  if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches || currentPageKey !== 'convite') return;
+  let tela = document.getElementById('modelos-celular');
+  if (!tela) {
+    tela = document.createElement('section');
+    tela.id = 'modelos-celular';
+    tela.className = 'modelos-celular';
+    tela.setAttribute('role', 'dialog');
+    tela.setAttribute('aria-modal', 'true');
+    tela.setAttribute('aria-labelledby', 'modelos-celular-titulo');
+    document.body.appendChild(tela);
+  }
+  const ev = getActiveEventForBuilder();
+  const tipo = (ev && ev.type) || 'wedding';
+  tela.hidden = false;
+  document.body.classList.add('modelos-celular-aberto');
+  tela.innerHTML = '<p class="modelos-celular-carregando">Carregando modelos…</p>';
+  const lista = await modelosDoCelular(tipo);
+  if (tela.hidden) return;
+  const nome = escapeHtml(nomeParaOModelo());
+  const det = (ev && ev.eventDetails) || {};
+  const quando = formatEventDate(det.date || (ev && ev.date) || '', '').date || 'DD . MÊS . AAAA';
+  const temConteudo = !conviteSemElementos(builderState);
+  tela.innerHTML = `
+    <div class="modelos-celular-topo">
+      <h2 id="modelos-celular-titulo">Escolha um modelo</h2>
+      <p>Toque no modelo para começar. Depois é só trocar os textos e as fotos.</p>
+    </div>
+    <div class="modelos-celular-trilho" tabindex="0">
+      ${lista.map((/** @type {any} */ m) => `
+        <button type="button" class="modelos-celular-cartao" data-modelo="${m.id}">
+          <span class="modelos-celular-folha" style="background:${m.fundo}">
+            <span class="modelos-celular-foto" style="background-image:url('${String(m.capaMiniatura).replace(/'/g, '%27')}')"></span>
+            <span class="modelos-celular-texto" style="font-family:${m.fonte};color:${m.destaque}">
+              <span class="modelos-celular-nome">${nome}</span>
+              <span class="modelos-celular-data">${escapeHtml(quando)}</span>
+            </span>
+          </span>
+          <span class="modelos-celular-rotulo">${escapeHtml(m.nome)}</span>
+        </button>`).join('')}
+    </div>
+    <div class="modelos-celular-pontos" aria-hidden="true">${lista.map((/** @type {any} */ _m, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>
+    ${temConteudo ? '<button type="button" class="modelos-celular-pular" data-modelos-pular>Continuar com o convite atual</button>' : ''}`;
+  const trilho = /** @type {HTMLElement} */ (tela.querySelector('.modelos-celular-trilho'));
+  const pontos = Array.from(tela.querySelectorAll('.modelos-celular-pontos span'));
+  trilho.addEventListener('scroll', () => {
+    const cartao = /** @type {HTMLElement|null} */ (trilho.querySelector('.modelos-celular-cartao'));
+    const passo = cartao ? cartao.offsetWidth + 12 : 1;
+    const i = Math.round(trilho.scrollLeft / passo);
+    pontos.forEach((p, j) => p.classList.toggle('is-ativo', j === i));
+  }, { passive: true });
+  const fechar = () => {
+    if (!tela) return;
+    tela.hidden = true;
+    document.body.classList.remove('modelos-celular-aberto');
+  };
+  tela.querySelectorAll('[data-modelo]').forEach(b => b.addEventListener('click', () => {
+    const m = lista.find((/** @type {any} */ x) => x.id === /** @type {HTMLElement} */ (b).dataset.modelo);
+    if (m) aplicarModeloNoCelular(m);
+    fechar();
+  }));
+  tela.querySelector('[data-modelos-pular]')?.addEventListener('click', () => {
+    builderState.modeloEscolhido = 'proprio';
+    if (!paginasJaPublicadas.convite) persistBuilderState(true);
+    fechar();
+  });
+}
+window.abrirModelosNoCelular = abrirModelosNoCelular;

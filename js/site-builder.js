@@ -970,6 +970,47 @@ async function syncBuilderStateFromSupabase(pageKey) {
   } else {
     persistBuilderStateRemote(pageKey, loadPageState(pageKey));
   }
+  prepararConviteNoCelular(pageKey);
+}
+
+/** O convite ainda não tem nenhum elemento (só capa e botões)? @param {any} state */
+function conviteSemElementos(state) {
+  return !!state && Array.isArray(state.sections) && !state.sections.some(s => !s.isQuickNav && !s.isGiftsBlock
+    && (s.columns || []).some(c => (c.elements || []).length));
+}
+
+/**
+ * Celular: as seções do Convite digital já vêm prontas e fixas (sem
+ * adicionar, mover ou apagar). Convite vazio ganha o modelo do tipo de
+ * evento (o de casamento: capa com foto; textos, data, imagem, "Sobre" e
+ * contagem regressiva; botões; "Com carinho,"). Desktop não muda.
+ * @param {string} pageKey
+ */
+async function prepararConviteNoCelular(pageKey) {
+  if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
+  if (pageKey !== 'convite' || currentPageKey !== 'convite' || !conviteSemElementos(builderState)) return;
+  const ev = getActiveEventForBuilder();
+  const tipo = (ev && ev.type) || 'wedding';
+  const modelo = (await templatePadraoDoTipo(tipo)) || modeloDeConviteEmCodigo(tipo) || (await templatePadraoDoTipo('wedding'));
+  // Enquanto buscava, a pessoa pode ter trocado de página ou começado a editar.
+  if (!modelo || currentPageKey !== 'convite' || !conviteSemElementos(builderState)) return;
+  const det = (ev && ev.eventDetails) || {};
+  ajustarDatasDoTemplate(modelo, { data: det.date || (ev && ev.date) || '', hora: det.time || '' });
+  // A foto de capa que a pessoa já escolheu continua.
+  const capaAtual = builderState.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
+  const capaNova = modelo.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock);
+  if (capaAtual && capaAtual.bgImage && capaNova) capaNova.bgImage = capaAtual.bgImage;
+  builderState.sections = modelo.sections;
+  if (modelo.globalStyle) builderState.globalStyle = Object.assign({}, builderState.globalStyle || {}, modelo.globalStyle);
+  migrateQuickNavSection(builderState);
+  tirarElementosDaCapa(builderState);
+  migrateElementDefaults(builderState);
+  historyStack = [snapshotState()];
+  historyIndex = 0;
+  selectedId = null;
+  hasUnsavedChanges = true;
+  if (document.getElementById('builder-canvas')) { renderLeftPanel(); renderCanvas(); applyGlobalStyleVars(); }
+  persistBuilderState(true);
 }
 
 // Chamado por app.js assim que o anfitrião troca de evento no dropdown —
@@ -5743,14 +5784,20 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
       if (!noCelular.matches) return;
       const agora = editando();
       const titulo = gaveta.querySelector('.builder-gaveta-titulo');
-      const texto = agora ? 'Editar elemento' : 'Adicionar elementos';
+      const texto = 'Editar elemento';
       if (titulo && titulo.textContent !== texto) titulo.textContent = texto;
       if (agora && !estavaEditando) abrir();
+      // Sem elemento escolhido não há o que mostrar (a lista de adicionar saiu).
+      if (!agora && estavaEditando && gaveta.classList.contains('is-aberta')) {
+        gaveta.classList.remove('is-aberta');
+        fundo.classList.remove('is-aberta');
+        gaveta.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('builder-gaveta-aberta');
+      }
       estavaEditando = agora;
+      // Seções e elementos fixos: nada se arrasta no celular.
       (typeof sortableInstances !== 'undefined' ? sortableInstances : []).forEach((/** @type {any} */ s) => {
-        if (!s || !s.el || !s.option) return;
-        if (painel.contains(s.el)) s.option('disabled', true);
-        else { s.option('delay', 350); s.option('delayOnTouchOnly', true); }
+        if (s && s.el && s.option) s.option('disabled', true);
       });
     };
     const observador = new MutationObserver(() => { if (!agendado) { agendado = true; queueMicrotask(ajustar); } });

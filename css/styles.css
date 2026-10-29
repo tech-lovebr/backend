@@ -13670,3 +13670,16 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .submenu-celular:not(:has(> :nth-child(4))) .submenu-celular-item:not(#love-h-a):not(#love-h-b) { flex: 1 1 0 !important; min-width: 0 !important; }
 }
+
+/* ==========================================================================
+   Celular: Convite digital com as seções fixas. Sem o botão "Adicionar
+   elementos", sem as barrinhas de mover/duplicar/apagar das seções e dos
+   elementos e sem as áreas de nova seção; tocar num elemento só abre a
+   edição dele (sem o "Voltar" para a lista de elementos). Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #builder-fab:not(#love-h-a),
+  html body #builder-canvas .builder-block-toolbar:not(#love-h-a),
+  html body #builder-canvas .builder-new-section-dropzone:not(#love-h-a),
+  html body .builder-gaveta .builder-breadcrumb-back:not(#love-h-a) { display: none !important; }
+}

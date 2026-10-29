@@ -13992,3 +13992,35 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #tab-overview .home-kpis > :first-child:not(#love-h-a),
   html body #tab-overview #dashboard-promo-carousel:not(#love-h-a) { display: none !important; }
 }
+
+/* ==========================================================================
+   Celular, Home (modelo de app): foto do convite atrás do topo (logo e
+   ícones brancos por cima, topo branco de novo ao rolar); caixa com "Olá,
+   nome!", os dias que faltam e os atalhos (Checklist, Pedir orçamento,
+   Orçamento, Meu site, Mapear mesas, Save the date). Desktop não muda.
+   ========================================================================== */
+.home-capa-celular-atalhos { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview .home-capa-celular:not(#love-h-a):not(#love-h-b) { margin-top: calc(-112px - env(safe-area-inset-top, 0px)); }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a):not(#love-h-b) { height: calc(300px + env(safe-area-inset-top, 0px)); position: relative; }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a)::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 120px; background: linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0) 100%);
+  }
+  html body #tab-overview .home-capa-celular-caixa:not(#love-h-a):not(#love-h-b) { margin-top: -56px; padding: 20px 12px 18px; }
+
+  /* Topo transparente sobre a foto */
+  html body:has(#tab-overview.active):not(.home-rolou):not(.menu-celular-aberto) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; transition: background-color .2s ease; }
+  html body:has(#tab-overview.active):not(.home-rolou):not(.menu-celular-aberto) .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body:has(#tab-overview.active):not(.home-rolou):not(.menu-celular-aberto) .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+  html body:has(#tab-overview.active):not(.home-rolou):not(.menu-celular-aberto) .dashboard-top-navbar #btn-notifications-menu svg *:not(#love-h-a) { stroke: #FFFFFF !important; }
+  html body:has(#tab-overview.active):not(.home-rolou):not(.menu-celular-aberto) .dashboard-top-navbar > .logo-celular .logo-claro:not(#love-h-a) { display: none !important; }
+  html body:has(#tab-overview.active):not(.home-rolou):not(.menu-celular-aberto) .dashboard-top-navbar > .logo-celular .logo-escuro:not(#love-h-a) { display: block !important; }
+
+  /* Atalhos dentro da caixa */
+  html body #tab-overview .home-capa-celular-atalhos:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 8px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0, 0, 0, 0.06); }
+  html body #tab-overview .home-capa-celular-atalhos .home-atalho:not(#love-h-a) { min-height: 44px; }
+  html body #tab-overview .home-capa-celular-atalhos .home-atalho-bola:not(#love-h-a) { width: 56px; height: 56px; background: #EAF0F5; color: #183b54; }
+  html body #tab-overview .home-capa-celular-atalhos .home-atalho-bola svg:not(#love-h-a) { width: 26px; height: 26px; }
+  html body #tab-overview .home-capa-celular-atalhos .home-atalho-nome:not(#love-h-a) { font-size: 13px; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-atalhos .home-atalho-bola { background: #252525 !important; color: #EBF4FF !important; }
+}

@@ -2567,6 +2567,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   window.loveAtualizarCapaDaHome = atualizarCapaDaHomeCelular;
+  // Topo da Home (celular) por cima da foto: transparente até rolar a página.
+  (function topoDaHomeSobreAFoto() {
+    const conferir = () => { document.body.classList.toggle('home-rolou', window.scrollY > 150); };
+    window.addEventListener('scroll', conferir, { passive: true });
+    conferir();
+  })();
 
   function formatEventDateLong(isoDate) {
     if (!isoDate) return '';

@@ -14627,3 +14627,14 @@ body[data-theme="dark"] .convite-tela-capa.is-vazia { background: #252525; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a):not(#love-h-b) { display: flex !important; order: 5; }
 }
+
+/* ==========================================================================
+   Computador, Meus convidados: sem as abas em cima, a caixa da tabela volta
+   a ter borda e cantos arredondados no topo, iguais aos de baixo.
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #tab-rsvp #rsvp-status-tabs + .rsvp-caixa-abaixo-das-abas:not(#love-h-a):not(#love-h-b) {
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important; border-top-left-radius: 10px !important; border-top-right-radius: 10px !important;
+  }
+  body[data-theme="dark"] #tab-rsvp #rsvp-status-tabs + .rsvp-caixa-abaixo-das-abas { border-top-color: rgba(255, 255, 255, 0.08) !important; }
+}

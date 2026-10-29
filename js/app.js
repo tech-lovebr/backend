@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ativo) botao.setAttribute('aria-current', 'page');
         const rotulo = document.createElement('span');
         rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
-        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Minha lista';
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Meus convidados';
         if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && rotulo.textContent === 'Contratos') rotulo.textContent = 'Meus contratos';
         botao.appendChild(rotulo);
         const contador = orig.querySelector('.badge-recados-count');
@@ -1794,7 +1794,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'all', label: 'Minha lista' },
+        { id: 'all', label: 'Meus convidados' },
         { id: 'tables', label: 'Mapa do evento' },
         { id: 'checklist', label: 'Checklist' }
       ]
@@ -2716,7 +2716,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
     if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
-    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Minha lista';
+    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
@@ -9877,7 +9877,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
       // Meus convidados: no celular o cabeçalho é "Lista de convidados".
       const c = document.getElementById('rsvp-header-title');
-      if (c && /^(Meus convidados|Minha lista|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Minha lista';
+      if (c && /^(Meus convidados|Minha lista|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Meus convidados';
     };
     mq.addEventListener?.('change', trocar);
     trocar();
@@ -9994,7 +9994,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
     return (((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '')).toUpperCase() || '?';
   }
-  /** Primeiro nome leve e o resto em negrito (igual Minha lista). @param {string} nome */
+  /** Primeiro nome leve e o resto em negrito (igual Meus convidados). @param {string} nome */
   function nomeDoRecadoHtml(nome) {
     const partes = String(nome || 'Convidado').trim().split(/\s+/).filter(Boolean);
     return `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;

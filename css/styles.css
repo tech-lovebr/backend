@@ -14160,7 +14160,7 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 0 !important; }
   html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
   html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
-  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before { top: 0; bottom: auto; }
+  html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before { top: auto; bottom: 0; }
   body[data-theme="dark"] #dashboard-main-area .submenu-celular:not([hidden]) { background: #1A1A1A !important; border-top-color: #333333 !important; }
   body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo { background: #1F1F1F !important; }
 
@@ -14466,4 +14466,37 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
   html body:has(#drawer-add-gift.open):not(#love-h-a) { overflow: hidden !important; }
   html body #drawer-add-gift .overflow-y-auto:not(#love-h-a) { overscroll-behavior: contain; }
   html body #drawer-add-gift #gift-image-dropzone:not(#love-h-a) { aspect-ratio: auto !important; height: 150px; }
+}
+
+/* ==========================================================================
+   Celular: editar presente com os textos das caixinhas maiores ("Permitir
+   valor extra no presente" e "Habilitar vaquinha") e "Alterar imagem" igual
+   ao da capa do Convite digital (toque abre Fototeca / Tirar foto / Arquivo).
+   Convite digital: o branco do cabeçalho vai até o topo da tela, como em
+   Informações e Co-anfitriões. Desktop não muda.
+   ========================================================================== */
+.gift-texto-celular, .gift-alterar-imagem-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #form-add-gift .gift-texto-computador:not(#love-h-a) { display: none !important; }
+  html body #form-add-gift .gift-texto-celular:not(#love-h-a) { display: inline !important; }
+  html body #form-add-gift .gift-valor-extra:not(#love-h-a) { align-items: center; gap: 12px; font-size: 16px !important; line-height: 1.35; color: #18181B; }
+  html body #form-add-gift .gift-contribuicao-coletiva:not(#love-h-a) { align-items: flex-start; }
+  html body #form-add-gift .gift-contribuicao-coletiva .gifts-select-all-check:not(#love-h-a) { margin-top: 0; }
+  html body #form-add-gift .gift-contribuicao-texto > span:first-child:not(#love-h-a) { font-size: 16px; line-height: 1.35; color: #18181B; }
+  html body #form-add-gift .gift-contribuicao-descricao:not(#love-h-a) { font-size: 14px !important; line-height: 1.45; text-align: left !important; }
+  html body #form-add-gift .gift-contribuicao-texto:not(#love-h-a) { text-align: left !important; }
+  body[data-theme="dark"] #form-add-gift :is(.gift-valor-extra, .gift-contribuicao-texto > span:first-child) { color: #FFFFFF !important; }
+
+  html body #gift-image-change-overlay:not(#love-h-a) { display: none !important; }
+  html body #gift-image-dropzone #gift-image-preview-img:not(.hidden) ~ .gift-alterar-imagem-celular:not(#love-h-a) {
+    display: flex; position: absolute; inset: 0; margin: auto; width: fit-content; height: fit-content; z-index: 6;
+    align-items: center; gap: 0.45rem; padding: 0.65rem 1.15rem; border-radius: 999px;
+    background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.4); color: #FFFFFF;
+    font-family: Inter, sans-serif; font-size: 0.8125rem; font-weight: 600; pointer-events: none;
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  }
+  html body #gift-image-dropzone .gift-alterar-imagem-celular svg:not(#love-h-a) { width: 15px; height: 15px; }
+
+  /* O editor do convite cortava o branco do cabeçalho acima dele (overflow). */
+  html body #tab-edit-site #site-builder-root:not(#love-h-a) { overflow: visible !important; overflow-x: clip !important; }
 }

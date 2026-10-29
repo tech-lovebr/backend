@@ -14415,3 +14415,55 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   }
   body[data-theme="dark"] .ficha-convidado .ficha-campo.is-escolha select { color: #FFFFFF !important; }
 }
+
+/* ==========================================================================
+   Meus presentes (celular e computador): grade de ponta a ponta, presentes
+   colados um no outro (só um fio do fundo entre eles), sem caixas com cantos
+   arredondados. Foto quadrada, selo "Comprado" na foto, categoria em
+   maiúsculas acima do nome e o valor na cor primária. Acima: "N itens".
+   ========================================================================== */
+html body #view-event-os-dashboard #host-gifts-grid:not(#love-h-a):not(#love-h-b) { gap: 2px !important; }
+html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a):not(#love-h-b),
+html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a):not(#love-h-b):hover {
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important; justify-content: flex-start !important;
+}
+html body #host-gifts-grid > .group > div:first-child:not(#love-h-a) { height: auto !important; aspect-ratio: 1 / 1; background: #F4F4F5 !important; }
+html body #host-gifts-grid > .group img:not(#love-h-a) { transform: none !important; transition: none !important; }
+html body #host-gifts-grid > .group > div:last-child:not(#love-h-a) { justify-content: flex-start !important; padding: 12px 14px 18px !important; }
+html body #host-gifts-grid > .group > div:last-child > * + *:not(#love-h-a) { margin-top: 2px !important; }
+html body #host-gifts-grid > .group > div:last-child > div:first-child:not(#love-h-a) { display: flex; flex-direction: column; }
+html body #host-gifts-grid > .group > div:last-child > div:first-child > p:not(#love-h-a) {
+  order: -1; margin: 0 0 6px !important; font-family: Inter, sans-serif; font-size: 12px !important; font-weight: 500 !important;
+  letter-spacing: 0.06em; text-transform: uppercase; color: #71717A !important;
+}
+html body #host-gifts-grid > .group h4:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 15px !important; font-weight: 400 !important; line-height: 1.35; letter-spacing: 0 !important; color: #18181B !important; }
+html body #host-gifts-grid > .group > div:last-child > div:last-child > p:first-child:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 15px !important; font-weight: 500 !important; color: #183b54 !important; font-variant-numeric: tabular-nums; }
+html body #host-gifts-grid > .group .gift-situacao:not(#love-h-a),
+html body #host-gifts-grid > .group .gift-received-buyer:not(#love-h-a) { display: none !important; }
+html body #host-gifts-grid .gift-selo-comprado:not(#love-h-a) {
+  position: absolute; top: 8px; left: 8px; z-index: 2; padding: 3px 8px; border-radius: 6px; background: #183b54; color: #FFFFFF;
+  font-family: Inter, sans-serif; font-size: 11px; font-weight: 600; line-height: 1.4; pointer-events: none;
+}
+html body #gifts-barra #gifts-total-value:not(#love-h-a) { font-weight: 500; color: #18181B; }
+body[data-theme="dark"] #view-event-os-dashboard #host-gifts-grid > .group { background: #1F1F1F !important; }
+body[data-theme="dark"] #host-gifts-grid > .group > div:first-child { background: #252525 !important; }
+body[data-theme="dark"] #host-gifts-grid > .group h4 { color: #FFFFFF !important; }
+body[data-theme="dark"] #host-gifts-grid > .group > div:last-child > div:last-child > p:first-child { color: #EBF4FF !important; }
+body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* De ponta a ponta da tela. */
+  html body #view-event-os-dashboard #host-gifts-grid:not(#love-h-a):not(#love-h-b) { margin-left: -16px !important; margin-right: -16px !important; width: calc(100% + 32px) !important; max-width: none !important; }
+  html body #host-gifts-grid > .group > div:last-child:not(#love-h-a):not(#love-h-b) { padding: 12px 12px 16px !important; }
+  /* "N itens" à esquerda, como no app. */
+  html body #view-event-os-dashboard #tab-gifts #gifts-barra .love-tabela-barra:not(#love-h-a):not(#love-h-b) { justify-content: flex-start !important; padding-bottom: 12px !important; border-bottom: 0 !important; }
+  html body #gifts-barra .love-tabela-barra-dir:not(#love-h-a) { order: -1; margin: 0 !important; }
+  html body #gifts-barra .gifts-total-linha:not(#love-h-a):not(#love-h-b) { font-size: 15px; }
+  html body #gifts-barra #gifts-total-value:not(#love-h-a):not(#love-h-b) { font-weight: 400; }
+
+  /* Editar presente: a página de trás não rola junto e a foto ocupa menos
+     altura, para tudo caber na tela sem rolagem à toa. */
+  html body:has(#drawer-add-gift.open):not(#love-h-a) { overflow: hidden !important; }
+  html body #drawer-add-gift .overflow-y-auto:not(#love-h-a) { overscroll-behavior: contain; }
+  html body #drawer-add-gift #gift-image-dropzone:not(#love-h-a) { aspect-ratio: auto !important; height: 150px; }
+}

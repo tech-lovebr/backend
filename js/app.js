@@ -9253,7 +9253,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalValue = giftList.reduce((acc, g) => acc + (parseFloat(g.price) || 0), 0);
 
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
-    if (totalValueEl) totalValueEl.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Quantidade de itens da lista (no lugar do total em reais).
+    if (totalValueEl) totalValueEl.textContent = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+    void totalValue;
 
     // Seleção só de presentes que ainda existem neste evento.
     const idsDaLista = new Set(giftList.map(g => g.id));
@@ -9321,6 +9323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? `<img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full flex items-center justify-center bg-zinc-100 text-zinc-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div>'}
           
+          ${isPurchased ? '<span class="gift-selo-comprado">Comprado</span>' : ''}
           ${isPurchased ? `
             <!-- Nome do Convidado no canto inferior esquerdo, sem fundo, com sombra para legibilidade -->
             <div class="gift-received-buyer absolute bottom-2 left-3 z-10 text-white text-xs font-bold font-sans max-w-[85%] truncate pointer-events-none" style="text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 1px 6px rgba(0,0,0,0.6);">

@@ -14569,3 +14569,36 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-edit-site #site-builder-root > .builder-toolbar:not(#love-h-a):not(#love-h-b) { padding-top: 6px !important; }
 }
+
+/* ==========================================================================
+   Celular: arrastar para o lado revela dois botões retos, de ponta a ponta
+   da altura da linha (sem margem, sem cantos arredondados), como no app:
+   Convidados -> Editar e Remover (na altura do grupo com os acompanhantes);
+   Mensagens  -> Abrir e Remover. Remover nunca em vermelho.
+   Editar presente: as duas caixinhas alinhadas (celular e computador).
+   ========================================================================== */
+.guest-acoes { display: none; }
+html body #form-add-gift > .gift-valor-extra:not(#love-h-a):not(#love-h-b) { align-self: stretch !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp .guests-table tbody td.guest-celula-arraste:not(#love-h-a):not(#love-h-b) { overflow: visible !important; }
+  html body #tab-rsvp .guests-table .guest-acao-mais:not(#love-h-a):not(#love-h-b),
+  html body #tab-rsvp .guests-table .guest-acao-fundo:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #tab-rsvp .guests-table .guest-acoes:not(#love-h-a):not(#love-h-b) {
+    display: flex; position: absolute; top: 0; right: 0; width: 160px; height: 100%; z-index: 0; margin: 0; padding: 0; gap: 0 !important;
+  }
+  html body #tab-rsvp .guests-table tbody td.guest-celula-arraste > .guest-card-arraste:not(#love-h-a):not(#love-h-b) { z-index: 1; }
+  /* A célula do acompanhante não fica por cima dos botões do convidado. */
+  html body #tab-rsvp .guests-table tbody tr.is-acompanhante-row td.guest-celula-arraste:not(#love-h-a):not(#love-h-b) { position: static !important; }
+
+  html body :is(#tab-rsvp .guests-table .guest-acao, #b2b-chat-contacts-list .conv-acao):not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    height: 100%; min-width: 0; margin: 0 !important; padding: 0 !important;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; outline: none;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; line-height: 1; color: #FFFFFF !important; cursor: pointer;
+  }
+  html body :is(#tab-rsvp .guests-table .guest-acao, #b2b-chat-contacts-list .conv-acao) svg:not(#love-h-a):not(#love-h-b) { width: 22px; height: 22px; }
+  html body :is(#tab-rsvp .guests-table .guest-acao-editar, #b2b-chat-contacts-list .conv-acao-abrir):not(#love-h-a):not(#love-h-b) { background: #333333 !important; }
+  html body :is(#tab-rsvp .guests-table .guest-acao-remover, #b2b-chat-contacts-list .conv-acao-remover):not(#love-h-a):not(#love-h-b) { background: #183b54 !important; }
+
+  html body #b2b-chat-contacts-list .conv-acoes:not(#love-h-a):not(#love-h-b) { width: 160px; margin: 0; padding: 0; border-radius: 0; }
+}

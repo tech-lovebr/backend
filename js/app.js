@@ -10251,7 +10251,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // (Editar / Remover convidado). Uma linha aberta por vez; fecha ao tocar
   // fora ou rolar; o toque só abre a ficha se não houve arraste.
   // ------------------------------------------------------------------
-  const LARGURA_ACAO_CONVIDADO = 80;
+  const LARGURA_ACAO_CONVIDADO = 160;
   /** @type {HTMLElement|null} */
   let linhaDoConvidadoAberta = null;
   const convidadosNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
@@ -10270,6 +10270,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   /** @param {HTMLElement} celula @param {number} x @param {boolean} animar */
   function moverLinhaDoConvidado(celula, x, animar) {
+    // Editar/Remover ocupam a altura do grupo todo (convidado + acompanhantes).
+    const acoes = /** @type {HTMLElement|null} */ (celula.querySelector('.guest-acoes'));
+    if (acoes) acoes.style.height = `${celulasDoGrupo(celula).reduce((soma, c) => soma + (c.closest('tr')?.getBoundingClientRect().height || 0), 0)}px`;
     celulasDoGrupo(celula).forEach((c) => {
       const card = /** @type {HTMLElement|null} */ (c.querySelector('.guest-card-arraste'));
       if (!card) return;
@@ -10321,49 +10324,12 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('touchend', soltar);
     card.addEventListener('touchcancel', soltar);
   }
-  // Tocar fora da linha aberta (ou rolar a página) fecha os três pontinhos.
+  // Tocar fora da linha aberta (ou rolar a página) fecha Editar/Remover.
   document.addEventListener('touchstart', (e) => {
     const alvo = /** @type {Element} */ (e.target);
     if (linhaDoConvidadoAberta && !(alvo.closest && (linhaDoConvidadoAberta.contains(alvo) || alvo.closest('.acoes-convidado')))) fecharLinhaDoConvidado();
   }, { passive: true, capture: true });
   window.addEventListener('scroll', () => { if (linhaDoConvidadoAberta) fecharLinhaDoConvidado(); }, { passive: true });
-
-  /** Folha de baixo com as ações do convidado (celular). @param {string} guestId */
-  function abrirAcoesDoConvidado(guestId) {
-    const ev = getActiveEvent();
-    const guest = ev && (ev.guests || []).find((/** @type {any} */ g) => g.id === guestId);
-    if (!guest) return;
-    let tela = document.getElementById('acoes-convidado');
-    if (!tela) {
-      tela = document.createElement('div');
-      tela.id = 'acoes-convidado';
-      tela.className = 'acoes-convidado';
-      tela.hidden = true;
-      tela.innerHTML = `
-        <div class="acoes-convidado-fundo" data-acao="cancelar"></div>
-        <div class="acoes-convidado-folha" role="dialog" aria-modal="true" aria-labelledby="acoes-convidado-nome">
-          <p class="acoes-convidado-nome" id="acoes-convidado-nome"></p>
-          <button type="button" class="acoes-convidado-opcao" data-acao="editar">Editar convidado</button>
-          <button type="button" class="acoes-convidado-opcao" data-acao="remover">Remover convidado</button>
-          <button type="button" class="acoes-convidado-cancelar" data-acao="cancelar">Cancelar</button>
-        </div>`;
-      document.body.appendChild(tela);
-      tela.addEventListener('click', (e) => {
-        const alvo = /** @type {HTMLElement} */ (e.target).closest('[data-acao]');
-        if (!alvo || !tela) return;
-        const id = tela.dataset.guestId || '';
-        const acao = /** @type {HTMLElement} */ (alvo).dataset.acao;
-        tela.hidden = true;
-        fecharLinhaDoConvidado();
-        if (acao === 'editar') { abrirFichaDoConvidado(id); fichaEditando = true; desenharFichaDoConvidado(); }
-        else if (acao === 'remover') removerConvidadoComConfirmacao(id);
-      });
-    }
-    tela.dataset.guestId = guestId;
-    const nome = tela.querySelector('#acoes-convidado-nome');
-    if (nome) nome.textContent = guest.name || 'Convidado';
-    tela.hidden = false;
-  }
 
   /** @param {string} guestId */
   function removerConvidadoComConfirmacao(guestId) {
@@ -10629,18 +10595,28 @@ document.addEventListener('DOMContentLoaded', () => {
           if (celula && card) {
             celula.classList.add('guest-celula-arraste');
             card.classList.add('guest-card-arraste');
-            const mais = document.createElement('button');
-            mais.type = 'button';
-            mais.className = 'guest-acao-mais';
-            mais.setAttribute('aria-label', `Mais ações de ${guest.name || 'convidado'}`);
-            mais.innerHTML = ICONE_MAIS;
-            mais.addEventListener('click', (e) => { e.stopPropagation(); abrirAcoesDoConvidado(guest.id); });
-            celula.appendChild(mais);
+            // Arrastar revela Editar e Remover (botões retos, como no app).
+            const acoes = document.createElement('div');
+            acoes.className = 'guest-acoes';
+            acoes.innerHTML = `
+              <button type="button" class="guest-acao guest-acao-editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Editar</span></button>
+              <button type="button" class="guest-acao guest-acao-remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Remover</span></button>`;
+            acoes.querySelector('.guest-acao-editar')?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              fecharLinhaDoConvidado();
+              abrirFichaDoConvidado(guest.id); fichaEditando = true; desenharFichaDoConvidado();
+            });
+            acoes.querySelector('.guest-acao-remover')?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              fecharLinhaDoConvidado();
+              removerConvidadoComConfirmacao(guest.id);
+            });
+            celula.appendChild(acoes);
             prepararArrasteDoConvidado(celula, card);
           }
         } else {
-          // Acompanhante: arrasta junto com o convidado; os três pontinhos
-          // ficam só na linha do convidado (aqui, só o fundo da faixa).
+          // Acompanhante: arrasta junto com o convidado; Editar e Remover
+          // ficam na linha do convidado, com a altura do grupo todo.
           const celula = /** @type {HTMLElement|null} */ (row.querySelector('td'));
           const card = /** @type {HTMLElement|null} */ (celula && celula.querySelector(':scope > div'));
           const principal = /** @type {HTMLElement|null} */ (Array.from(listEl.querySelectorAll('td.guest-celula-arraste'))
@@ -10648,10 +10624,6 @@ document.addEventListener('DOMContentLoaded', () => {
           if (celula && card && principal) {
             celula.classList.add('guest-celula-arraste');
             card.classList.add('guest-card-arraste');
-            const fundo = document.createElement('span');
-            fundo.className = 'guest-acao-fundo';
-            fundo.setAttribute('aria-hidden', 'true');
-            celula.appendChild(fundo);
             prepararArrasteDoConvidado(principal, card);
           }
         }
@@ -21302,12 +21274,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
 
   // ------------------------------------------------------------------
-  // Celular: arrastar a conversa para a esquerda mostra os três pontinhos
+  // Celular: arrastar a conversa para a esquerda mostra Abrir e Remover
   // (como no WhatsApp). Uma linha aberta por vez; fecha ao tocar fora ou
   // rolar a lista; o toque só abre a conversa se não houve arraste.
   // ------------------------------------------------------------------
   const CHAT_NO_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
-  const LARGURA_ACOES_CONVERSA = 80;
+  const LARGURA_ACOES_CONVERSA = 160;
   /** @type {HTMLElement|null} */
   let linhaDaConversaAberta = null;
 
@@ -21458,13 +21430,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const acoes = document.createElement('div');
         acoes.className = 'conv-acoes';
         acoes.innerHTML = `
-          <button type="button" class="conv-acao conv-acao-mais" data-conv-menu aria-label="Mais opções da conversa">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
-          </button>`;
+          <button type="button" class="conv-acao conv-acao-abrir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span>Abrir</span></button>
+          <button type="button" class="conv-acao conv-acao-remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Remover</span></button>`;
         linha.insertBefore(acoes, item);
-        acoes.querySelector('.conv-acao-mais')?.addEventListener('click', (e) => {
+        acoes.querySelector('.conv-acao-abrir')?.addEventListener('click', (e) => {
           e.stopPropagation();
-          abrirMenuConversa(/** @type {HTMLElement} */ (e.currentTarget), conv);
+          fecharLinhaDaConversa();
+          activeB2BConversationId = conv.id;
+          conv.unread = 0;
+          renderB2BChat();
+        });
+        acoes.querySelector('.conv-acao-remover')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaDaConversa();
+          confirmarNaLove({
+            titulo: 'Remover conversa?',
+            texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
+            botao: 'Remover',
+            aoConfirmar: () => excluirConversaDaLista(conv.id)
+          });
         });
         prepararArrasteDaConversa(linha);
       }

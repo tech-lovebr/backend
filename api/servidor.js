@@ -250,7 +250,7 @@ function melhorias({ sites, banco, regiaoBanco, projetos, regiaoAtual }) {
       id: "regiao-funcoes", impacto: "alto", aplicavel: Boolean(plataforma),
       titulo: `Levar as funções /api para ${NOME_REGIAO[ideal] || ideal}`,
       texto: `As funções rodam em ${NOME_REGIAO[regiaoFuncoes] || regiaoFuncoes} (${regiaoFuncoes}) e o banco está em ${NOME_REGIAO[regiaoBanco.regiao] || regiaoBanco.regiao}. Cada consulta atravessa essa distância. Com as funções em ${ideal}, ao lado do banco, cada chamada da plataforma fica mais rápida.`,
-      projetos: ["love-platform"], mudanca: { serverlessFunctionRegion: ideal, resourceConfig: { functionDefaultRegions: [ideal] } }
+      projetos: ["love-platform"], mudanca: [{ resourceConfig: { functionDefaultRegions: [ideal] } }, { serverlessFunctionRegion: ideal }]
     });
   }
   if (regiaoBanco.regiao && regiaoBanco.regiao !== "sa-east-1") {
@@ -267,7 +267,7 @@ function melhorias({ sites, banco, regiaoBanco, projetos, regiaoAtual }) {
       id: "maquina-build", impacto: "medio", aplicavel: true,
       titulo: "Máquina de build Basic",
       texto: `${maquinaGrande.map(p => p.nome).join(", ")} ${maquinaGrande.length > 1 ? "montam" : "monta"} em máquina ${maquinaGrande.map(p => p.maquina_build).join("/")}. O site é estático + funções: a Basic dá conta e o build é a maior parte da conta da Vercel.`,
-      projetos: maquinaGrande.map(p => p.nome), mudanca: { resourceConfig: { buildMachineType: "basic", buildMachineSelection: "fixed" } }
+      projetos: maquinaGrande.map(p => p.nome), mudanca: [{ resourceConfig: { buildMachineType: "basic" } }, { resourceConfig: { buildMachineSelection: "fixed" } }, { resourceConfig: { buildMachineSelection: "fixed", buildMachineType: "basic" } }]
     });
   }
 
@@ -415,9 +415,19 @@ async function aplicar(req, res, db) {
     const m = atual.melhorias.find(x => x.id === id && x.aplicavel);
     if (!m) { resultados.push({ id, ok: false, erro: "Essa melhoria não está mais pendente" }); continue; }
     for (const projeto of m.projetos) {
-      const r = await vercel(`/v9/projects/${encodeURIComponent(projeto)}`, { method: "PATCH", body: JSON.stringify(m.mudanca) });
-      const texto = r.ok ? "" : (await r.text()).slice(0, 300);
-      resultados.push({ id, projeto, ok: r.ok, erro: r.ok ? "" : `Vercel respondeu ${r.status}: ${texto}` });
+      /* A Vercel recusa alguns campos juntos ("Cannot specify ..."): tenta cada forma da mudança até uma passar. */
+      const tentativas = Array.isArray(m.mudanca) ? m.mudanca : [m.mudanca];
+      let ok = false, erro = "";
+      for (const corpoPatch of tentativas) {
+        const r = await vercel(`/v9/projects/${encodeURIComponent(projeto)}`, { method: "PATCH", body: JSON.stringify(corpoPatch) });
+        if (r.ok) { ok = true; erro = ""; break; }
+        const bruto = await r.text();
+        let msg = bruto;
+        try { const j = JSON.parse(bruto); msg = j?.error?.message || j?.message || bruto; } catch (_) {}
+        erro = `Vercel respondeu ${r.status}: ${String(msg).slice(0, 300)}`;
+        if (r.status === 401 || r.status === 403 || r.status === 404) break;
+      }
+      resultados.push({ id, projeto, ok, erro });
     }
   }
   return res.status(200).json({ resultados });

@@ -85,7 +85,7 @@ async function medirNavegador() {
 
 async function carregar() {
   const kpis = document.getElementById('kpi-grid');
-  kpis.innerHTML = '<div class="kpi"><p class="kpi-label">Medindo…</p><p class="kpi-sub">Sites, API e banco, três vezes cada</p></div>';
+  kpis.innerHTML = '<div class="kpi"><p class="kpi-label">Medindo…</p></div>';
   document.getElementById('servidor-corpo').innerHTML = '';
   if (BOTAO_APLICAR) BOTAO_APLICAR.hidden = true;
 
@@ -213,7 +213,7 @@ function render() {
 
   document.getElementById('servidor-corpo').innerHTML = `
     ${regiao}
-    ${tabela('Medições', `Medido em ${escapeHtml(formatDateTime(d.medido_em))} · três vezes cada, vale a do meio`, ['Item', 'Medição', 'Nota', 'Referência'], medicoes, '')}
+    ${tabela('Medições', `Medido em ${escapeHtml(formatDateTime(d.medido_em))}`, ['Item', 'Medição', 'Nota', 'Referência'], medicoes, '')}
     ${tabela('Projetos na Vercel', 'Configuração de cada projeto e os builds dos últimos 7 dias', ['Projeto', 'Região das funções', 'Máquina de build', 'Builds em paralelo', 'Pula build sem mudança', 'Builds (7 dias)', 'Build médio', 'Nota'], projetos, 'Sem acesso à Vercel')}
     ${tabela('Uso nos últimos 7 dias', 'CPU das funções, chamadas, build e tráfego, pela cobrança da Vercel', ['Serviço', 'Uso', 'Consumo'], uso, escapeHtml(d.uso.erro || 'Nada consumido'))}`;
   if (typeof agendarEsticarTabelas === 'function') agendarEsticarTabelas();

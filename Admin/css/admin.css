@@ -4489,3 +4489,23 @@ body[data-theme="dark"] .servidor-menu { background: #1C2128; border-color: rgba
 body[data-theme="dark"] .servidor-melhoria { border-color: rgba(255,255,255,.06); }
 body[data-theme="dark"] .servidor-melhoria-nome { color: #F4F4F5; }
 body[data-theme="dark"] .servidor-melhoria-texto { color: #A1A1AA; }
+
+/* Carregar tudo junto (js/carregamento.js): a página só aparece quando
+   todos os dados chegaram; enquanto isso, um indicador discreto no centro. */
+html.carregando-tudo .admin-content { visibility: hidden; }
+html.carregando-tudo .admin-main { position: relative; }
+html.carregando-tudo .admin-main::after {
+  content: "";
+  position: absolute;
+  top: 38vh;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  border: 2px solid #E4E4E7;
+  border-top-color: #183b54;
+  border-radius: 50%;
+  animation: carregando-tudo-gira .7s linear infinite;
+}
+body[data-theme="dark"] .admin-main::after { border-color: rgba(255,255,255,.12); border-top-color: #fff; }
+@keyframes carregando-tudo-gira { to { transform: rotate(360deg); } }

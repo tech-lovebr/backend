@@ -2711,7 +2711,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
     if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
-    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Convidados' : 'Meus convidados';
+    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
@@ -9870,9 +9870,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const trocar = () => {
       const t = document.getElementById('gifts-header-title');
       if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
-      // Meus convidados: no celular o cabeçalho é só "Convidados".
+      // Meus convidados: no celular o cabeçalho é "Lista de convidados".
       const c = document.getElementById('rsvp-header-title');
-      if (c && /^(Meus convidados|Convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Convidados' : 'Meus convidados';
+      if (c && /^(Meus convidados|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Meus convidados';
     };
     mq.addEventListener?.('change', trocar);
     trocar();

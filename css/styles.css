@@ -14618,3 +14618,11 @@ body[data-theme="dark"] .convite-tela-capa.is-vazia { background: #252525; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .convite-tela-capa.tem-alterar-imagem .informacoes-imagem-btn:not(#love-h-a) { opacity: 1; }
 }
+
+/* ==========================================================================
+   Celular, Home: o Guia de primeiros passos (igual ao do computador) volta,
+   logo depois da seção de Benefícios.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview #quick-start-guide-widget:not(#love-h-a):not(#love-h-b) { display: block !important; order: 7; padding: 20px !important; }
+}

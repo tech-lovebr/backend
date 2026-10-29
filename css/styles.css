@@ -13725,3 +13725,44 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #view-event-os-dashboard #tab-b2b:has(#b2b-explore-view:not(.hidden)) #btn-b2b-cidade-celular:not(#love-h-a) { font-size: 14px; gap: 3px; max-width: 40%; }
   html body #btn-b2b-cidade-celular svg:not(#love-h-a) { width: 16px; height: 16px; }
 }
+
+/* ==========================================================================
+   Celular: Encontrar fornecedor. No card, só o botão Mensagem; o favoritar
+   vai para o canto de cima da capa e o título e a empresa aparecem inteiros.
+   Na página do serviço, Compartilhar, Favoritar, Mensagem e Solicitar ficam
+   abaixo da foto e do nome; o endereço sai de baixo do nome e vai para o
+   Sobre. Desktop não muda.
+   ========================================================================== */
+.b2b-fav-capa, .b2b-perfil-sobre-endereco { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Card */
+  html body #b2b-cards-list-container .b2b-item-card .btn-hire-supplier:not(#love-h-a),
+  html body #b2b-cards-list-container .b2b-item-card .btn-toggle-card-fav:not(.b2b-fav-capa):not(#love-h-a) { display: none !important; }
+  html body #b2b-cards-list-container .b2b-item-card .b2b-fav-capa:not(#love-h-a) {
+    display: inline-flex !important; align-items: center; justify-content: center; position: absolute; top: 10px; right: 10px; z-index: 2;
+    width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: #FFFFFF; color: #A1A1AA;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body #b2b-cards-list-container .b2b-item-card .b2b-fav-capa svg:not(#love-h-a) { width: 18px; height: 18px; }
+  html body #b2b-cards-list-container .b2b-item-card h4:not(#love-h-a),
+  html body #b2b-cards-list-container .b2b-item-card h4 + p:not(#love-h-a) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+
+  /* Página do serviço: ações abaixo da foto e do nome. */
+  html body #b2b-vendor-profile-view:not(.hidden):not(#love-h-a) { display: flex !important; flex-direction: column; }
+  html body #b2b-vendor-profile-view > *:not(#love-h-a) { order: 5; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-topo:not(#love-h-a) { display: contents !important; }
+  html body #b2b-vendor-profile-view #b2b-profile-breadcrumb:not(#love-h-a) { order: 0; margin-bottom: 16px; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-capa:not(#love-h-a) { order: 1; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca:not(#love-h-a) { order: 2; }
+  html body #b2b-vendor-profile-view .b2b-perfil-acoes:not(#love-h-a) { order: 3; display: flex !important; gap: 8px !important; margin-top: 16px; width: 100%; }
+  html body #b2b-vendor-profile-view .b2b-perfil-acoes > :is(#btn-b2b-profile-share, #btn-b2b-profile-favorite):not(#love-h-a) { flex: 0 0 44px; width: 44px !important; height: 44px !important; }
+  html body #b2b-vendor-profile-view .b2b-perfil-acoes > :is(#btn-b2b-profile-message, #btn-b2b-profile-hire):not(#love-h-a) { flex: 1 1 0; min-width: 0; height: 44px !important; justify-content: center; font-size: 15px !important; }
+  html body #b2b-vendor-profile-view #b2b-profile-location:not(#love-h-a) { display: none !important; }
+  html body #b2b-vendor-profile-view .b2b-perfil-sobre-endereco:not(.hidden):not(#love-h-a) { display: block !important; margin: 12px 0 0; font-size: 14px; color: #52525B; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Título e empresa na largura toda; Mensagem logo abaixo. */
+  html body #b2b-cards-list-container .b2b-item-card .flex-nowrap:not(#love-h-a) { flex-wrap: wrap !important; row-gap: 12px; }
+  html body #b2b-cards-list-container .b2b-item-card .flex-nowrap > .min-w-0.flex-1:not(#love-h-a) { flex: 1 1 100%; }
+  html body #b2b-cards-list-container .b2b-item-card .btn-message-supplier:not(#love-h-a) { height: 44px; padding: 0 20px; font-size: 15px; }
+}

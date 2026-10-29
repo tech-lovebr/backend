@@ -18814,6 +18814,8 @@ document.addEventListener('DOMContentLoaded', () => {
           ${(item.cardImage || item.image)
             ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
+          <!-- Celular: favoritar no canto de cima da capa -->
+          <button type="button" class="btn-toggle-card-fav b2b-fav-capa" aria-label="Favoritar"><svg class="${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
         </div>
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
@@ -18869,11 +18871,11 @@ document.addEventListener('DOMContentLoaded', () => {
         openB2BVendorProfile(item, servicoDestaque(item));
       });
 
-      card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
+      card.querySelectorAll('.btn-toggle-card-fav').forEach(botao => botao.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleB2BFavorite(item);
         renderB2BExplore();
-      });
+      }));
 
       card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -19757,6 +19759,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     if (locationTextEl) locationTextEl.textContent = enderecoCompleto(item);
+    const enderecoNoSobre = document.getElementById('b2b-profile-sobre-endereco');
+    if (enderecoNoSobre) {
+      const endereco = enderecoCompleto(item);
+      enderecoNoSobre.textContent = endereco || '';
+      enderecoNoSobre.classList.toggle('hidden', !endereco);
+    }
     renderB2BProfileBreadcrumb(item, servicoAtual);
 
     // "Acessar site" só aparece se o fornecedor publicou um site próprio

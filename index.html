@@ -69,7 +69,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261029_cidade2">
+  <link rel="stylesheet" href="css/styles.css?v=20261029_cardsexplorar2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -3458,11 +3458,11 @@
           <div id="b2b-vendor-profile-view" class="hidden px-6 sm:px-8 py-6 w-full max-w-none">
 
             <!-- Topo: voltar + ações -->
-            <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+            <div class="b2b-perfil-topo flex items-center justify-between gap-3 mb-5 flex-wrap">
               <!-- Caminho percorrido: Explorar › Serviço › Empresa (cada parte
                    anterior é clicável e volta para ela). -->
               <nav id="b2b-profile-breadcrumb" class="b2b-breadcrumb" aria-label="Caminho"></nav>
-              <div class="flex items-center gap-2 flex-shrink-0">
+              <div class="b2b-perfil-acoes flex items-center gap-2 flex-shrink-0">
                 <button type="button" id="btn-b2b-profile-share" data-dica="Compartilhar" aria-label="Compartilhar" class="w-10 h-10 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer">
                   <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.5V9c-5.5 0-9 2.5-10 10.5 2-3.7 5-5.5 10-5.5v4.5L21 11.5Z"/></svg>
                 </button>
@@ -3479,13 +3479,13 @@
             </div>
 
             <!-- Capa -->
-            <div class="relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50">
+            <div class="b2b-perfil-capa relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50">
               <img id="b2b-profile-cover-img" src="" alt="" class="w-full h-full object-cover">
             </div>
 
             <!-- Foto de perfil abaixo da capa, alinhada à esquerda; ao lado,
                  nome em negrito, função e endereço completo. -->
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-5">
+            <div class="b2b-perfil-cabeca flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-5">
               <div class="flex items-start gap-4 min-w-0">
                 <img id="b2b-profile-avatar-img" src="" alt="" class="w-20 h-20 rounded-2xl border border-zinc-200 object-cover bg-white flex-shrink-0">
                 <div class="min-w-0 pt-1">
@@ -3510,6 +3510,8 @@
             <div class="mt-6 pt-6 border-t border-zinc-100">
               <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-2">Sobre</h3>
               <p id="b2b-profile-about" class="text-sm text-zinc-600 leading-relaxed max-w-3xl"></p>
+              <!-- Celular: o endereço fica aqui (sai de baixo do nome) -->
+              <p id="b2b-profile-sobre-endereco" class="b2b-perfil-sobre-endereco hidden"></p>
               <p id="b2b-profile-specialties" class="text-sm text-zinc-500 mt-3 max-w-3xl"></p>
             </div>
 
@@ -5700,7 +5702,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261029_cidade2"></script>
+  <script src="js/app.js?v=20261029_cardsexplorar"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261026_telacheia"></script>
   <script src="js/pedidos-orcamento.js?v=20261029_selcategoria"></script>

@@ -10244,13 +10244,27 @@ document.addEventListener('DOMContentLoaded', () => {
   let linhaDoConvidadoAberta = null;
   const convidadosNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
 
+  /**
+   * O convidado e os acompanhantes dele andam juntos (mesmo data-guest-id).
+   * @param {HTMLElement} celula
+   * @returns {HTMLElement[]}
+   */
+  function celulasDoGrupo(celula) {
+    const id = celula.closest('tr')?.dataset.guestId;
+    const corpo = celula.closest('tbody');
+    if (!id || !corpo) return [celula];
+    return /** @type {HTMLElement[]} */ (Array.from(corpo.querySelectorAll('td.guest-celula-arraste')))
+      .filter(c => c.closest('tr')?.dataset.guestId === id);
+  }
   /** @param {HTMLElement} celula @param {number} x @param {boolean} animar */
   function moverLinhaDoConvidado(celula, x, animar) {
-    const card = /** @type {HTMLElement|null} */ (celula.querySelector('.guest-card-arraste'));
-    if (!card) return;
-    card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
-    card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
-    celula.classList.toggle('is-aberta', x < 0);
+    celulasDoGrupo(celula).forEach((c) => {
+      const card = /** @type {HTMLElement|null} */ (c.querySelector('.guest-card-arraste'));
+      if (!card) return;
+      card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+      card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+      c.classList.toggle('is-aberta', x < 0);
+    });
   }
   function fecharLinhaDoConvidado() {
     if (linhaDoConvidadoAberta) moverLinhaDoConvidado(linhaDoConvidadoAberta, 0, true);
@@ -10612,13 +10626,30 @@ document.addEventListener('DOMContentLoaded', () => {
             celula.appendChild(mais);
             prepararArrasteDoConvidado(celula, card);
           }
+        } else {
+          // Acompanhante: arrasta junto com o convidado; os três pontinhos
+          // ficam só na linha do convidado (aqui, só o fundo da faixa).
+          const celula = /** @type {HTMLElement|null} */ (row.querySelector('td'));
+          const card = /** @type {HTMLElement|null} */ (celula && celula.querySelector(':scope > div'));
+          const principal = /** @type {HTMLElement|null} */ (Array.from(listEl.querySelectorAll('td.guest-celula-arraste'))
+            .find(c => /** @type {HTMLElement} */ (c.closest('tr')).dataset.guestId === guest.id && !c.closest('tr')?.classList.contains('is-acompanhante-row')) || null);
+          if (celula && card && principal) {
+            celula.classList.add('guest-celula-arraste');
+            card.classList.add('guest-card-arraste');
+            const fundo = document.createElement('span');
+            fundo.className = 'guest-acao-fundo';
+            fundo.setAttribute('aria-hidden', 'true');
+            celula.appendChild(fundo);
+            prepararArrasteDoConvidado(principal, card);
+          }
         }
 
         // O nome abre o convidado (a linha continua livre para selecionar/copiar texto).
         row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
           // Depois de arrastar, ou com os três pontinhos à mostra, o toque só fecha a linha.
-          const celulaDoArraste = /** @type {HTMLElement|null} */ (row.querySelector('.guest-celula-arraste'));
+          const celulaDoArraste = /** @type {HTMLElement|null} */ (Array.from(listEl.querySelectorAll('td.guest-celula-arraste'))
+            .find(c => /** @type {HTMLElement} */ (c.closest('tr')).dataset.guestId === guest.id && !c.closest('tr')?.classList.contains('is-acompanhante-row')) || null);
           if (celulaDoArraste && celulaDoArraste.dataset.arrastou === '1') return;
           if (celulaDoArraste && celulaDoArraste.classList.contains('is-aberta')) { fecharLinhaDoConvidado(); return; }
           // Celular: abre a ficha do convidado (ver e editar); desktop: o pop-up.

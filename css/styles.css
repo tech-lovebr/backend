@@ -14533,3 +14533,13 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
   body[data-theme="dark"].b2b-chat-mode .dashboard-main-area > .dashboard-content-wrapper,
   body[data-theme="dark"].b2b-chat-mode #tab-b2b { background: #1F1F1F !important; }
 }
+
+/* ==========================================================================
+   Celular, Meus convidados: o acompanhante arrasta junto com o convidado;
+   os três pontinhos aparecem só uma vez, na linha do convidado.
+   ========================================================================== */
+.guest-acao-fundo { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp .guests-table .guest-acao-fundo:not(#love-h-a) { display: block; position: absolute; top: 0; right: 0; bottom: 0; width: 80px; z-index: 0; background: #E4E4E7; }
+  body[data-theme="dark"] #tab-rsvp .guests-table .guest-acao-fundo { background: #333333 !important; }
+}

@@ -4509,33 +4509,76 @@ function telaPublicaHtml(titulo, conteudo, { comCapa = false, fundoBranco = fals
         </button>
         <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
       </div>
-      ${comCapa ? capaDoConviteHtml() : ''}
+      ${comCapa ? capaDasInformacoesHtml() : ''}
       ${conteudo}
     </div>
   ` + renderFixedFooterHtml();
 }
 
-// Mesma foto de capa do convite (primeira seção de conteúdo), para as telas
-// internas que mostram a imagem logo abaixo do título.
-function capaDoConviteHtml() {
+// Foto da tela Informações: própria dela (conv.informacoesImagem), escolhida
+// em Informações com "Alterar imagem". Não tem relação com a capa do convite.
+function capaDasInformacoesHtml() {
   const conv = estadoDoConvite();
-  const secao = (conv && conv.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock && !s.hidden);
-  const imagem = secao && secao.bgImage;
+  const imagem = conv && conv.informacoesImagem;
   if (!imagem) return '';
-  // Mesmas camadas da capa em Aparência: cor por cima da foto e transição
-  // (degradê) em cima ou embaixo — assim a capa fica igual em todas as telas.
-  const camadas = [];
-  if (secao.overlayColor) {
-    const opacidade = secao.overlayOpacity !== undefined ? secao.overlayOpacity : 1;
-    camadas.push(`<div class="convite-tela-capa-camada" style="inset:0;background-color:${escaparPublico(secao.overlayColor)};opacity:${Number(opacidade) || 0};"></div>`);
+  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt=""></div>`;
+}
+
+// Prévia de Informações (computador e celular): "Alterar imagem" sobre a foto,
+// igual ao da capa em Convite digital. Sem foto, uma caixa com "Adicionar imagem".
+function ligarImagemDasInformacoes(container) {
+  const tela = container.querySelector('.convite-tela');
+  if (!tela) return;
+  let capa = tela.querySelector(':scope > .convite-tela-capa');
+  if (!capa) {
+    capa = document.createElement('div');
+    capa.className = 'convite-tela-capa is-vazia';
+    tela.insertBefore(capa, tela.firstChild);
   }
-  const corTransicao = secao.fadeColor === '' ? '' : (secao.fadeColor || '#ffffff');
-  if (corTransicao && (secao.fadePosition === 'top' || secao.fadePosition === 'bottom')) {
-    const emCima = secao.fadePosition === 'top';
-    const c = escaparPublico(corTransicao);
-    camadas.push(`<div class="convite-tela-capa-camada" style="left:0;right:0;height:45%;${emCima ? 'top:0' : 'bottom:0'};background:linear-gradient(to ${emCima ? 'bottom' : 'top'}, ${c} 0%, ${c} 35%, ${c}00 100%);"></div>`);
+  capa.classList.add('tem-alterar-imagem');
+  const temImagem = !capa.classList.contains('is-vazia');
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'builder-first-section-cover-btn informacoes-imagem-btn';
+  botao.title = temImagem ? 'Alterar imagem' : 'Adicionar imagem';
+  botao.innerHTML = `${BI.image}<span>${temImagem ? 'Alterar imagem' : 'Adicionar imagem'}</span>`;
+  capa.appendChild(botao);
+
+  let entrada = /** @type {HTMLInputElement|null} */ (document.getElementById('informacoes-imagem-input'));
+  if (!entrada) {
+    entrada = document.createElement('input');
+    entrada.type = 'file';
+    entrada.accept = 'image/*';
+    entrada.id = 'informacoes-imagem-input';
+    entrada.className = 'hidden';
+    document.body.appendChild(entrada);
   }
-  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt="">${camadas.join('')}</div>`;
+  const input = entrada;
+  botao.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    input.onchange = () => {
+      const arquivo = input.files && input.files[0];
+      if (!arquivo) return;
+      const leitor = new FileReader();
+      leitor.onload = (ev) => {
+        const conv = estadoDoConvite();
+        if (!conv) return;
+        conv.informacoesImagem = ev.target.result;
+        // Grava junto com o convite (mesmo caminho da capa), sem mexer nela.
+        if (conv === builderState) {
+          persistBuilderState(false);
+        } else {
+          try { localStorage.setItem(pageStorageKey('convite'), JSON.stringify(conv)); } catch (err) { /* sem armazenamento */ }
+          persistBuilderStateRemote('convite', conv);
+        }
+        renderInformacoesPreview();
+      };
+      leitor.readAsDataURL(arquivo);
+      input.value = '';
+    };
+    input.click();
+  });
 }
 
 function semDadosPublicos(root, titulo) {
@@ -5643,6 +5686,7 @@ function renderInformacoesPreview() {
   container.innerHTML = telaInformacoesHtml(ev);
   // Prévia: sem o título "Informações" e a setinha de voltar (só no convite publicado).
   container.querySelector('.convite-tela-topo')?.remove();
+  ligarImagemDasInformacoes(container);
 }
 
 // "Av. Duquesa de Goiás, 825" + "São Paulo" + "SP" → "Av. Duquesa de Goiás, 825, São Paulo - SP"

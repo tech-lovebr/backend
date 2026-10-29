@@ -14602,3 +14602,19 @@ html body #form-add-gift > .gift-valor-extra:not(#love-h-a):not(#love-h-b) { ali
 
   html body #b2b-chat-contacts-list .conv-acoes:not(#love-h-a):not(#love-h-b) { width: 160px; margin: 0; padding: 0; border-radius: 0; }
 }
+
+/* ==========================================================================
+   Informações (prévia, computador e celular): foto própria da tela, com
+   "Alterar imagem" igual ao da capa em Convite digital. Sem foto, caixa
+   cinza (mesma altura da foto) com "Adicionar imagem". No computador, com foto, o botão aparece
+   ao passar o mouse (como na capa); no celular fica sempre visível.
+   ========================================================================== */
+.convite-tela-capa.tem-alterar-imagem { position: relative; }
+.convite-tela-capa.is-vazia { background: #F4F4F5; }
+.convite-tela-capa.tem-alterar-imagem:not(.is-vazia) .informacoes-imagem-btn { opacity: 0; }
+.convite-tela-capa.tem-alterar-imagem:not(.is-vazia):hover .informacoes-imagem-btn,
+.convite-tela-capa.tem-alterar-imagem .informacoes-imagem-btn:focus-visible { opacity: 1; }
+body[data-theme="dark"] .convite-tela-capa.is-vazia { background: #252525; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .convite-tela-capa.tem-alterar-imagem .informacoes-imagem-btn:not(#love-h-a) { opacity: 1; }
+}

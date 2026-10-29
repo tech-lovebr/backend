@@ -14520,3 +14520,16 @@ body[data-theme="dark"] #gifts-barra #gifts-total-value { color: #FFFFFF; }
   html body .conv-menu:not(#love-h-a) { min-width: 200px; padding: 6px; }
   html body .conv-menu button:not(#love-h-a) { min-height: 48px; padding: 0 14px; font-size: 16px; font-weight: 500; }
 }
+
+/* ==========================================================================
+   Celular, Mensagens: o espaço acima do cabeçalho também é branco (sem
+   depender do prolongamento ::before, que alguns navegadores cortam).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.b2b-chat-mode .dashboard-main-area:not(#love-h-a):not(#love-h-b),
+  html body.b2b-chat-mode .dashboard-main-area > .dashboard-content-wrapper:not(#love-h-a):not(#love-h-b),
+  html body.b2b-chat-mode #tab-b2b:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  body[data-theme="dark"].b2b-chat-mode .dashboard-main-area,
+  body[data-theme="dark"].b2b-chat-mode .dashboard-main-area > .dashboard-content-wrapper,
+  body[data-theme="dark"].b2b-chat-mode #tab-b2b { background: #1F1F1F !important; }
+}

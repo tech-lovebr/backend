@@ -6077,9 +6077,13 @@ async function abrirModelosNoCelular() {
   const temConteudo = !conviteSemElementos(builderState);
   tela.innerHTML = `
     <div class="modelos-celular-topo">
-      <h2 id="modelos-celular-titulo">Escolha um modelo</h2>
-      <p>Toque no modelo para começar. Depois é só trocar os textos e as fotos.</p>
+      <button type="button" class="modelos-celular-voltar" data-modelos-voltar aria-label="Voltar">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+      </button>
+      <h2 id="modelos-celular-titulo">Escolher novo modelo</h2>
+      <span class="modelos-celular-espaco" aria-hidden="true"></span>
     </div>
+    <p class="modelos-celular-descricao">Toque no modelo para começar. Depois é só trocar os textos e as fotos.</p>
     <div class="modelos-celular-trilho" tabindex="0">
       ${lista.map((/** @type {any} */ m) => `
         <button type="button" class="modelos-celular-cartao" data-modelo="${m.id}">
@@ -6113,6 +6117,7 @@ async function abrirModelosNoCelular() {
     if (m) aplicarModeloNoCelular(m);
     fechar();
   }));
+  tela.querySelector('[data-modelos-voltar]')?.addEventListener('click', fechar);
   tela.querySelector('[data-modelos-pular]')?.addEventListener('click', () => {
     builderState.modeloEscolhido = 'proprio';
     if (!paginasJaPublicadas.convite) persistBuilderState(true);

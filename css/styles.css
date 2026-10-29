@@ -14088,3 +14088,28 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar > .logo-celular .logo-claro:not(#love-h-a) { display: none !important; }
   html body:has(#tab-overview.active):not(.menu-celular-aberto) .dashboard-top-navbar > .logo-celular .logo-escuro:not(#love-h-a) { display: block !important; }
 }
+
+/* ==========================================================================
+   Celular, Convite digital: "Escolher novo modelo" com o mesmo cabeçalho da
+   ficha de Adicionar convidado (seta de voltar 44px, título 17px centralizado).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .modelos-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { padding-top: 0; }
+  html body .modelos-celular .modelos-celular-topo:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 8px;
+  }
+  html body .modelos-celular .modelos-celular-voltar:not(#love-h-a) {
+    width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: flex-start; flex-shrink: 0;
+    padding: 0; background: transparent; border: 0; box-shadow: none; color: #18181B; cursor: pointer;
+  }
+  html body .modelos-celular .modelos-celular-voltar svg:not(#love-h-a) { width: 24px; height: 24px; }
+  html body .modelos-celular .modelos-celular-espaco:not(#love-h-a) { width: 44px; height: 44px; flex-shrink: 0; }
+  html body .modelos-celular .modelos-celular-topo h2:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-width: 0; margin: 0; font-size: 17px !important; font-weight: 600 !important; letter-spacing: -0.025em; color: #18181B;
+    text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body .modelos-celular .modelos-celular-descricao:not(#love-h-a) { margin: 8px 16px 20px; font-size: 15px; line-height: 1.45; color: #52525B; text-align: center; }
+  body[data-theme="dark"] .modelos-celular .modelos-celular-voltar { color: #FFFFFF !important; }
+  body[data-theme="dark"] .modelos-celular .modelos-celular-descricao { color: #D4D4D8 !important; }
+}

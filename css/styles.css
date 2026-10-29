@@ -13683,3 +13683,45 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #builder-canvas .builder-new-section-dropzone:not(#love-h-a),
   html body .builder-gaveta .builder-breadcrumb-back:not(#love-h-a) { display: none !important; }
 }
+
+/* ==========================================================================
+   Celular: Encontrar fornecedor sem o "Em local" na barra de busca; a cidade
+   fica no cabeçalho, à direita (ícone de local + "São Paulo, SP"). Tocar
+   abre uma caixinha para trocar a cidade. Desktop não muda.
+   ========================================================================== */
+.b2b-cidade-celular, .b2b-cidade-caixa { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-busca-celular > div:last-child:not(#b2b-search-container):not(#love-h-a) { display: none !important; }
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-explore-view:not(.hidden)) #btn-b2b-cidade-celular:not(#love-h-a) {
+    display: inline-flex !important; align-items: center; gap: 4px; flex: 0 1 auto; min-width: 0; max-width: 46%; margin-left: auto;
+    height: 44px; padding: 0 2px 0 6px; background: transparent; border: 0; border-radius: 8px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #183b54;
+  }
+  html body.b2b-chat-mode #btn-b2b-cidade-celular:not(#love-h-a) { display: none !important; }
+  html body #btn-b2b-cidade-celular svg:not(#love-h-a) { flex: 0 0 auto; width: 18px; height: 18px; }
+  html body #btn-b2b-cidade-celular span:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body .b2b-cidade-caixa:not([hidden]):not(#love-h-a) {
+    display: flex !important; flex-direction: column; position: fixed; right: 16px; left: 16px; z-index: 80; max-height: 60vh; padding: 8px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+  html body .b2b-cidade-caixa .b2b-cidade-campo:not(#love-h-a) {
+    flex: 0 0 auto; height: 44px; padding: 0 12px; font-size: 16px; color: #18181B;
+    border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 8px; background: #FFFFFF; outline: none; box-shadow: none;
+  }
+  html body .b2b-cidade-caixa .b2b-cidade-campo:focus:not(#love-h-a) { border-color: #181D24; }
+  html body .b2b-cidade-caixa .b2b-cidade-lista:not(#love-h-a) { margin-top: 6px; overflow-y: auto; }
+  html body .b2b-cidade-caixa .b2b-cidade-opcao:not(#love-h-a) {
+    display: block; width: 100%; min-height: 44px; padding: 0 12px; text-align: left; background: transparent; border: 0; border-radius: 8px;
+    font-family: Inter, sans-serif; font-size: 16px; color: #18181B; cursor: pointer;
+  }
+  html body .b2b-cidade-caixa .b2b-cidade-opcao.is-ativa:not(#love-h-a) { font-weight: 600; color: #183b54; }
+  body[data-theme="dark"] #btn-b2b-cidade-celular { color: #EBF4FF !important; }
+  body[data-theme="dark"] .b2b-cidade-caixa { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"] .b2b-cidade-caixa :is(.b2b-cidade-campo, .b2b-cidade-opcao) { background: transparent; color: #FFFFFF; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Título e cidade na mesma linha. */
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-explore-view:not(.hidden)) #b2b-toolbar-title:not(#love-h-a) { white-space: nowrap; }
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-explore-view:not(.hidden)) #btn-b2b-cidade-celular:not(#love-h-a) { font-size: 14px; gap: 3px; max-width: 40%; }
+  html body #btn-b2b-cidade-celular svg:not(#love-h-a) { width: 16px; height: 16px; }
+}

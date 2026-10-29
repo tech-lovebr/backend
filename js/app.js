@@ -18195,7 +18195,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function aplicarCidadePadraoVitrine() {
     // Explorar mostra todas as cidades; só filtra quando a pessoa escolhe uma.
     if (b2bCityChosenByUser) return;
-    b2bSelectedCity = null;
+    b2bSelectedCity = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'São Paulo' : null;
   }
 
   // Alternância Lista / Grid do Explorar — lista é o padrão.
@@ -18365,12 +18365,91 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
+  /** "São Paulo, SP" (cidade + UF) ou "Todas as cidades". */
+  function textoDaCidadeCelular() {
+    if (!b2bSelectedCity) return 'Todas as cidades';
+    const achada = cidadesDaVitrine().find(c => cidadeNormalizada(c.city) === cidadeNormalizada(b2bSelectedCity));
+    const uf = achada && achada.uf ? achada.uf : (cidadeNormalizada(b2bSelectedCity) === cidadeNormalizada('São Paulo') ? 'SP' : '');
+    return uf ? `${b2bSelectedCity}, ${uf}` : b2bSelectedCity;
+  }
+
+  // Celular: tocar na cidade do cabeçalho abre uma caixinha para trocar
+  // (digitar ou escolher uma das cidades com fornecedor).
+  (function ligarCidadeDoCelular() {
+    const botao = document.getElementById('btn-b2b-cidade-celular');
+    if (!botao || botao.dataset.ligado) return;
+    botao.dataset.ligado = '1';
+    const caixa = document.createElement('div');
+    caixa.id = 'b2b-cidade-caixa';
+    caixa.className = 'b2b-cidade-caixa';
+    caixa.setAttribute('role', 'dialog');
+    caixa.setAttribute('aria-label', 'Trocar a cidade');
+    caixa.hidden = true;
+    document.body.appendChild(caixa);
+    const fechar = () => { caixa.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
+    const escolher = (/** @type {string|null} */ cidade) => {
+      b2bCityChosenByUser = true;
+      b2bSelectedCity = cidade;
+      renderB2BCityFilter();
+      renderB2BExplore();
+      fechar();
+    };
+    const desenharLista = (/** @type {string} */ termo) => {
+      const alvo = cidadeNormalizada(termo || '');
+      const cidades = cidadesDaVitrine().filter(c => !alvo || cidadeNormalizada(c.city).includes(alvo));
+      const lista = /** @type {HTMLElement} */ (caixa.querySelector('.b2b-cidade-lista'));
+      lista.innerHTML = (alvo ? '' : `<button type="button" class="b2b-cidade-opcao${b2bSelectedCity ? '' : ' is-ativa'}" data-cidade="">Todas as cidades</button>`)
+        + cidades.map(c => `<button type="button" class="b2b-cidade-opcao${cidadeNormalizada(c.city) === cidadeNormalizada(b2bSelectedCity || '') ? ' is-ativa' : ''}" data-cidade="${escaparHtml(c.city)}">${escaparHtml(c.city)}${c.uf ? `, ${escaparHtml(c.uf)}` : ''}</button>`).join('')
+        + (alvo && !cidades.length ? `<button type="button" class="b2b-cidade-opcao" data-cidade-digitada>Buscar em "${escaparHtml(termo.trim())}"</button>` : '');
+    };
+    botao.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!caixa.hidden) { fechar(); return; }
+      caixa.innerHTML = `
+        <input type="text" class="b2b-cidade-campo" placeholder="Digite a cidade" autocomplete="off" aria-label="Cidade">
+        <div class="b2b-cidade-lista"></div>`;
+      desenharLista('');
+      const r = botao.getBoundingClientRect();
+      caixa.style.top = `${Math.round(r.bottom + 6)}px`;
+      caixa.hidden = false;
+      botao.setAttribute('aria-expanded', 'true');
+      const campo = /** @type {HTMLInputElement} */ (caixa.querySelector('.b2b-cidade-campo'));
+      campo.addEventListener('input', () => desenharLista(campo.value));
+      campo.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') { fechar(); return; }
+        if (ev.key !== 'Enter') return;
+        ev.preventDefault();
+        if (campo.value.trim()) { aplicarCidadeDigitada(campo.value); fechar(); }
+      });
+      setTimeout(() => campo.focus(), 50);
+    });
+    caixa.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const opcao = /** @type {HTMLElement|null} */ (/** @type {HTMLElement} */ (e.target).closest('.b2b-cidade-opcao'));
+      if (!opcao) return;
+      if (opcao.hasAttribute('data-cidade-digitada')) {
+        const campo = /** @type {HTMLInputElement|null} */ (caixa.querySelector('.b2b-cidade-campo'));
+        aplicarCidadeDigitada(campo ? campo.value : '');
+        fechar();
+        return;
+      }
+      escolher(opcao.dataset.cidade || null);
+    });
+    document.addEventListener('click', () => { if (!caixa.hidden) fechar(); });
+    // Já começa mostrando a cidade padrão (São Paulo), antes de os fornecedores chegarem.
+    aplicarCidadePadraoVitrine();
+    const nome = document.getElementById('b2b-cidade-celular-nome');
+    if (nome) nome.textContent = textoDaCidadeCelular();
+  })();
+
   function renderB2BCityFilter() {
     const row = document.getElementById('b2b-city-filter-row');
     if (!row) return;
     // O campo "Local" mostra a cidade que está filtrando (se não estiver sendo digitado).
     const campoLocal = document.getElementById('b2b-location-input');
     if (campoLocal && document.activeElement !== campoLocal) campoLocal.value = b2bSelectedCity || '';
+    const nomeCidadeCelular = document.getElementById('b2b-cidade-celular-nome');
+    if (nomeCidadeCelular) nomeCidadeCelular.textContent = textoDaCidadeCelular();
 
     const cidades = cidadesDaVitrine();
     // Só as cidades que têm fornecedor na vitrine; sem nenhuma, a barra some.

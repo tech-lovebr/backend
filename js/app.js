@@ -9324,7 +9324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="lista-pronta-qtd">Crie um presente do zero</span>
               </button>
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="lista">
-                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/lista-pronta.lottie" autoplay loop aria-hidden="true"></dotlottie-wc>
+                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/lista-pronta.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar lista pronta</strong>
                 <span class="lista-pronta-qtd">Escolha uma das nossas listas</span>
               </button>
@@ -9981,7 +9981,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const recadosDoEvento = (ev) => ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim() || g.videoUrl);
   // Recados vazios: animação Lottie salva na Love (assets/lottie). O player
   // (dotlottie-wc) só é baixado quando essa tela aparece.
-  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie?v=4" autoplay loop aria-hidden="true"></dotlottie-wc>';
+  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie?v=5" autoplay loop aria-hidden="true"></dotlottie-wc>';
   function carregarPlayerLottie() {
     if (customElements.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
     const s = document.createElement('script');

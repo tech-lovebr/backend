@@ -7906,6 +7906,30 @@ document.addEventListener('DOMContentLoaded', () => {
       <p class="gift-vaquinha-info">Total arrecadado: <strong>${brl(arrecadado)}</strong></p>`;
   }
 
+  // Desktop: sem pop-up. A ficha de criar/editar presente abre dentro da própria
+  // caixa de Meus presentes, ocupando o espaço da lista; ao fechar, a lista volta.
+  const MQ_DESKTOP_PRESENTE = '(min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px)';
+  /** @param {HTMLElement|null} drawer @returns {boolean} true quando abriu dentro da página */
+  function abrirPresenteNaPagina(drawer) {
+    const painel = document.getElementById('gifts-panel-products');
+    if (!drawer || !painel || !window.matchMedia(MQ_DESKTOP_PRESENTE).matches) return false;
+    const d = /** @type {any} */ (drawer);
+    if (!d.__casaOriginal) d.__casaOriginal = { pai: drawer.parentElement, depois: drawer.nextSibling };
+    painel.appendChild(drawer);
+    drawer.classList.add('na-pagina');
+    document.getElementById('tab-gifts')?.classList.add('presente-na-pagina');
+    window.scrollTo({ top: 0 });
+    return true;
+  }
+  /** @param {HTMLElement|null} drawer */
+  function devolverPresenteDaPagina(drawer) {
+    document.getElementById('tab-gifts')?.classList.remove('presente-na-pagina');
+    if (!drawer || !drawer.classList.contains('na-pagina')) return;
+    drawer.classList.remove('na-pagina');
+    const casa = /** @type {any} */ (drawer).__casaOriginal;
+    if (casa && casa.pai) casa.pai.insertBefore(drawer, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+  }
+
   function openGiftDrawer() {
     editingGiftId = null;
     const formAddGift = document.getElementById('form-add-gift');
@@ -7930,7 +7954,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
-    if (backdrop) {
+    if (backdrop && !abrirPresenteNaPagina(drawer)) {
       backdrop.classList.remove('hidden');
       backdrop.style.setProperty('display', 'block', 'important');
       backdrop.classList.add('open');
@@ -7972,7 +7996,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
-    if (backdrop) {
+    if (backdrop && !abrirPresenteNaPagina(drawer)) {
       backdrop.classList.remove('hidden');
       backdrop.style.setProperty('display', 'block', 'important');
       backdrop.classList.add('open');
@@ -7986,6 +8010,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeGiftDrawer() {
     editingGiftId = null;
+    devolverPresenteDaPagina(document.getElementById('drawer-add-gift'));
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
     if (drawer) {
@@ -8826,10 +8851,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('gifts-top-search-bar')?.classList.toggle('gifts-acoes-escondidas', mostrar);
     if (!mostrar) return;
     const cardCriarDoZero = `<button type="button" class="lista-pronta-card lista-pronta-criar" data-criar-presente>
-        <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+        <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/adicionar-presente.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>
         <strong>Adicionar presente</strong>
         <span class="lista-pronta-qtd">Crie um presente do zero</span>
       </button>`;
+    carregarPlayerLottie();
     // Uma grade só, sem títulos de seção: só "Escolha entre uma das listas".
     painel.innerHTML = `
       <section class="listas-prontas-secao">

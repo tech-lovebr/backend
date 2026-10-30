@@ -86,8 +86,8 @@ function initWalletPeriodo() {
     const esq = mesBase;
     const dir = new Date(esq.getFullYear(), esq.getMonth() + 1, 1);
     cal.innerHTML = `
-      <button type="button" class="wp-nav wp-nav-ant" data-nav="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6"/></svg></button>
-      <button type="button" class="wp-nav wp-nav-prox" data-nav="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg></button>
+      <button type="button" class="wp-nav wp-nav-ant" data-nav="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6"/></svg></button>
+      <button type="button" class="wp-nav wp-nav-prox" data-nav="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg></button>
       ${desenharMes(esq.getFullYear(), esq.getMonth())}${desenharMes(dir.getFullYear(), dir.getMonth())}`;
     menu.querySelectorAll('[data-periodo-dias]').forEach(b => b.classList.toggle('is-ativo', !!rascunho && rascunho.dias === Number(b.dataset.periodoDias)));
   };

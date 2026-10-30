@@ -43,7 +43,7 @@ function subirBarraDoEditor() {
   if (!cabecalho || !titulo || !seletor || !botaoSeletor || !aparelhos || !acoes) return;
 
   botaoSeletor.prepend(titulo);
-  botaoSeletor.insertAdjacentHTML('beforeend', '<svg class="site-seletor-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>');
+  botaoSeletor.insertAdjacentHTML('beforeend', '<svg class="site-seletor-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>');
   cabecalho.prepend(seletor);
 
   const direita = document.createElement('div');
@@ -58,7 +58,7 @@ function subirBarraDoEditor() {
   criar.type = 'button';
   criar.id = 'form-criar-topo';
   criar.className = 'btn-secondary builder-toolbar-btn site-form-criar';
-  criar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo';
+  criar.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo';
   criar.addEventListener('click', () => openFormDrawer(null));
   // O "Criar novo" saiu do cabeçalho (fica o da própria lista de formulários).
   document.body.classList.add('site-barra-no-cabecalho');
@@ -152,13 +152,13 @@ function renderFormsList() {
       </div>
       <div class="form-list-item-actions">
         <button type="button" class="form-list-item-btn" data-edit-form="${form.id}" aria-label="Editar formulário">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" /></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" /></svg>
         </button>
         <button type="button" class="form-list-item-btn" data-view-responses="${form.id}" aria-label="Ver respostas" title="Ver respostas">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-7.5 9.75-7.5 9.75 7.5 9.75 7.5-3.75 7.5-9.75 7.5-9.75-7.5-9.75-7.5Z" /><circle cx="12" cy="12" r="3" /></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-7.5 9.75-7.5 9.75 7.5 9.75 7.5-3.75 7.5-9.75 7.5-9.75-7.5-9.75-7.5Z" /><circle cx="12" cy="12" r="3" /></svg>
         </button>
         <button type="button" class="form-list-item-btn" data-delete-form="${form.id}" aria-label="Excluir formulário">
-          <svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+          <svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
         </button>
       </div>
     </div>
@@ -181,7 +181,7 @@ function renderFormsList() {
     list.innerHTML = `
       <div class="op-vazio forms-vazio">
         <p>Você ainda não tem nenhum formulário criado.</p>
-        <button type="button" class="btn-secondary builder-toolbar-btn" data-form-criar><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo formulário</button>
+        <button type="button" class="btn-secondary builder-toolbar-btn" data-form-criar><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo formulário</button>
       </div>`;
     list.querySelector('[data-form-criar]').addEventListener('click', () => openFormDrawer(null));
     return;
@@ -440,7 +440,7 @@ function renderDrawerFields() {
             ${BI.duplicate}
           </button>
           <button type="button" class="form-field-icon-btn form-field-icon-btn-danger" data-field-remove title="Excluir pergunta" aria-label="Excluir pergunta">
-            <svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+            <svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
           </button>
         </div>
         <label class="form-field-required-toggle">
@@ -539,7 +539,7 @@ function renderFieldBody(field) {
             <span class="${markerClass}"></span>
             <input type="text" class="form-field-option-input" value="${escapeHtml(opt)}" placeholder="Opção ${i + 1}" data-option-input>
             <button type="button" class="form-field-option-remove" data-option-remove aria-label="Remover opção">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>
           </div>
         `).join('')}

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
   // Barra da tabela: busca, Filtrar por (função e status) e Exportar.
   equipeTabelaEstado = montarBarraTabela(document.getElementById('team-table-card'), {
-    placeholder: 'Buscar colaborador ou e-mail...',
+    placeholder: 'Pesquisar colaborador ou e-mail...',
     filtros: [
       { chave: 'funcao', rotulo: 'Função', opcoes: () => [...new Set(B2B_DATA.team.map(m => m.role).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'status', rotulo: 'Status', opcoes: () => [...new Set(B2B_DATA.team.map(m => m.status).filter(Boolean))].map(v => [v, statusLabel(v)]) }

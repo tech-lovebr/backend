@@ -240,7 +240,7 @@ function initDashboardPaymentLinkModal() {
       <div class="payment-link-result-box">
         <span class="payment-link-result-url">${escapeHtml(url)}</span>
         <button type="button" class="payment-link-result-send" id="payment-link-result-send" title="Copiar link" aria-label="Copiar link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
         </button>
       </div>
     `;
@@ -462,9 +462,9 @@ function initAnalyticsPeriodPopover() {
     const dica = !rangeStart ? 'Escolha o primeiro dia' : !rangeEnd ? 'Agora o último dia' : `${curto(rangeStart)} a ${curto(rangeEnd)}`;
     cal.innerHTML = `
       <div class="mini-cal-header">
-        <button type="button" class="mini-cal-nav-btn" data-range-prev aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
+        <button type="button" class="mini-cal-nav-btn" data-range-prev aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
         <span class="mini-cal-month-label">${mes} de ${year}</span>
-        <button type="button" class="mini-cal-nav-btn" data-range-next aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
+        <button type="button" class="mini-cal-nav-btn" data-range-next aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
       </div>
       <div class="mini-cal-weekdays"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
       <div class="mini-cal-grid">${dias}</div>
@@ -649,7 +649,7 @@ async function renderSaldoTotal() {
     <svg viewBox="0 0 ${L} ${A}" preserveAspectRatio="none">
       <defs><linearGradient id="dash-saldo-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EBEBEC"/><stop offset="1" stop-color="#FAFAFA"/></linearGradient></defs>
       <path d="${linha} L${L},${A} L0,${A} Z" fill="url(#dash-saldo-grad)"/>
-      <path d="${linha}" fill="none" stroke="#D4D4D8" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+      <path d="${linha}" fill="none" stroke="#D4D4D8" stroke-width="1.75" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
       <line x1="0" y1="${A - 0.5}" x2="${L}" y2="${A - 0.5}" stroke="#D4D4D8" stroke-width="1" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>
     </svg>
     <span class="dash-saldo-ponto" hidden></span>

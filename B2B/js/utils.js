@@ -320,9 +320,9 @@ function initDatePicker(input, initialIso) {
   popover.style.display = 'none';
   popover.innerHTML = `
     <div class="mini-cal-header">
-      <button type="button" class="mini-cal-nav-btn" data-dp-prev aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
+      <button type="button" class="mini-cal-nav-btn" data-dp-prev aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
       <button type="button" class="mini-cal-month-label-btn" data-dp-label>—</button>
-      <button type="button" class="mini-cal-nav-btn" data-dp-next aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
+      <button type="button" class="mini-cal-nav-btn" data-dp-next aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
     </div>
     <div class="dp-body" data-dp-body>
       <div class="mini-cal-weekdays" data-dp-weekdays><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
@@ -947,7 +947,7 @@ function showToast(message, isError = false) {
 const TABELA_ICONE_FUNIL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5Z"/></svg>';
 const TABELA_ICONE_EXPORTAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 0-4.5 4.5M12 3l4.5 4.5"/><path d="M3 15v3.75A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V15"/></svg>';
 const TABELA_ICONE_IMPORTAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M3 15v3.75A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V15"/></svg>';
-const TABELA_ICONE_BUSCA = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>';
+const TABELA_ICONE_BUSCA = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>';
 const TABELA_ICONE_VER_MAIS = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
 const TABELA_ICONE_COPIAR = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
 
@@ -992,7 +992,7 @@ function tabelaExportarCSV(nomeArquivo, colunas, linhas) {
 
 /* Monta a barra no topo da caixa (card) da tabela.
    opts: {
-     placeholder: 'Buscar ...',
+     placeholder: 'Pesquisar ...',
      filtros: [{ chave, rotulo, opcoes: () => [[valor, texto], ...] }],
      importar: () => {} (opcional),
      exportar: () => {},
@@ -1006,7 +1006,7 @@ function montarBarraTabela(card, opts) {
   barra.className = 'tabela-barra';
   const temFiltros = (opts.filtros || []).length > 0;
   barra.innerHTML = `
-    <label class="tabela-busca">${TABELA_ICONE_BUSCA}<input type="search" placeholder="${escapeHtml(opts.placeholder || 'Buscar...')}" autocomplete="off"></label>
+    <label class="tabela-busca">${TABELA_ICONE_BUSCA}<input type="search" placeholder="${escapeHtml(opts.placeholder || 'Pesquisar...')}" autocomplete="off"></label>
     <div class="tabela-barra-acoes">
       ${temFiltros ? `<div class="tabela-filtro-wrap">
         <button type="button" class="tabela-barra-btn" data-tabela-filtrar>${TABELA_ICONE_FUNIL}<span>Filtrar por</span><span class="tabela-filtro-contador" hidden></span></button>
@@ -1293,9 +1293,9 @@ function montarPaginacaoTabela(caixa, aoMudar) {
       <select data-pag-tamanho><option value="15">15</option><option value="25">25</option><option value="50">50</option></select>
     </div>
     <div class="guests-pagination-nav">
-      <button type="button" class="guests-pagination-btn" data-pag-passo="-1" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
+      <button type="button" class="guests-pagination-btn" data-pag-passo="-1" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
       <span data-pag-texto>Página 1 de 1</span>
-      <button type="button" class="guests-pagination-btn" data-pag-passo="1" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>
+      <button type="button" class="guests-pagination-btn" data-pag-passo="1" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>
     </div>`;
   caixa.appendChild(rodape);
   caixa.classList.add('tem-paginacao');

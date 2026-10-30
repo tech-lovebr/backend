@@ -40,7 +40,7 @@
   const ILUSTRACAO_DOCUMENTOS = `
     <svg viewBox="0 0 140 140" aria-hidden="true">
       <circle cx="70" cy="70" r="64" fill="#EBF4FF"/>
-      <circle cx="70" cy="70" r="52" fill="none" stroke="#CFE0F5" stroke-width="2"/>
+      <circle cx="70" cy="70" r="52" fill="none" stroke="#CFE0F5" stroke-width="1.75"/>
       <rect x="40" y="30" width="60" height="76" rx="8" fill="#183b54"/>
       <rect x="49" y="39" width="42" height="26" rx="5" fill="#27394f"/>
       <circle cx="70" cy="48" r="7" fill="#FFFFFF"/>
@@ -50,9 +50,9 @@
       <rect x="50" y="89" width="36" height="3.5" rx="1.75" fill="#FFFFFF" opacity=".85"/>
       <circle cx="94" cy="100" r="15" fill="#FFFFFF"/>
       <circle cx="94" cy="100" r="12" fill="#2F9E62"/>
-      <path d="m88.5 100.2 3.8 3.8 7.4-7.6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m88.5 100.2 3.8 3.8 7.4-7.6" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
-  const ICONE_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const ICONE_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
   const ICONE_ENVIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>';
 
   /* -------------------- Dados -------------------- */

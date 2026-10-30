@@ -138,7 +138,7 @@ function renderNotasFiscais() {
 function initNotasFiscaisActions() {
   // Barra da tabela: busca, Filtrar por (mês) e Exportar.
   notasFiscaisEstado = montarBarraTabela(document.getElementById('notas-fiscais-card'), {
-    placeholder: 'Buscar cliente ou nº da nota...',
+    placeholder: 'Pesquisar cliente ou nº da nota...',
     filtros: [{ chave: 'mes', rotulo: 'Mês', opcoes: () => [...new Set(bNotasFiscais.map(mesDaNota).filter(Boolean))].sort().reverse()
       .map(m => { const [y, mm] = m.split('-'); return [m, `${capitalize(new Date(+y, +mm - 1, 1).toLocaleDateString('pt-BR', { month: 'long' }))} de ${y}`]; }) }],
     exportar: () => tabelaExportarCSV('notas-fiscais', [
@@ -445,7 +445,7 @@ let orcamentosPaginacao = null;
 function initOrcamentosLista() {
   orcamentosPaginacao = montarPaginacaoTabela(document.getElementById('orcamentos-table-card'), () => renderOrcamentos());
   orcamentosTabelaEstado = montarBarraTabela(document.getElementById('orcamentos-table-card'), {
-    placeholder: 'Buscar cliente ou serviço...',
+    placeholder: 'Pesquisar cliente ou serviço...',
     filtros: [{ chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(ORCAMENTO_STATUS).map(([k, v]) => [k, v.label]) }],
     exportar: () => tabelaExportarCSV('orcamentos', [
       { titulo: 'Nº', valor: r => r.numero || '' },
@@ -815,7 +815,7 @@ function addProposalItemRow() {
   row.dataset.rowId = rowId;
   row.innerHTML = `
     <td><span class="proposal-item-index">${body.children.length + 1}</span></td>
-    <td><input type="text" class="proposal-cell-input" list="proposal-product-options" data-item-name placeholder="Buscar item"></td>
+    <td><input type="text" class="proposal-cell-input" list="proposal-product-options" data-item-name placeholder="Pesquisar item"></td>
     <td><input type="text" class="proposal-cell-input" data-item-code style="width:80px;"></td>
     <td><input type="text" class="proposal-cell-input" data-item-unit style="width:50px;"></td>
     <td><input type="number" min="0" class="proposal-cell-input" data-item-qty style="width:60px;" value="1"></td>
@@ -824,12 +824,12 @@ function addProposalItemRow() {
     <td><span class="proposal-cell-total" data-item-total>R$ 0</span></td>
     <td>
       <button type="button" class="proposal-item-icon-btn" title="Detalhes do item">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5m0-8h.01"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5m0-8h.01"/></svg>
       </button>
     </td>
     <td>
       <button type="button" class="proposal-item-icon-btn proposal-item-remove-btn" data-remove-item title="Remover item">
-        <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+        <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
       </button>
     </td>
   `;

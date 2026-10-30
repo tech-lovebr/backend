@@ -43,13 +43,13 @@
         <div class="b2b-header-bar">
           <div class="produto-titulo-wrap">
             <button type="button" class="produto-voltar" id="produto-voltar" aria-label="Voltar para Meus produtos" data-dica="Voltar" hidden>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></svg>
             </button>
             <h2 class="text-xl font-bold text-zinc-900" id="produtos-titulo-pagina">Meus produtos</h2>
           </div>
           <div class="produtos-header-acoes">
             <button type="button" id="product-add-btn" class="btn-secondary builder-toolbar-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
               Adicionar novo
             </button>
           </div>
@@ -60,8 +60,8 @@
              busca por nome ou SKU à esquerda e a quantidade de produtos à direita. -->
         <div class="dash-card produtos-barra-caixa" id="produtos-barra-caixa">
           <label class="tabela-busca produtos-busca">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
-            <input type="search" id="products-search" placeholder="Buscar por nome ou SKU..." autocomplete="off">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
+            <input type="search" id="products-search" placeholder="Pesquisar produto ou SKU..." autocomplete="off">
           </label>
           <p class="produtos-total" id="produtos-total"></p>
         </div>
@@ -85,7 +85,7 @@
               </div>
             </div>
             <button type="button" class="form-drawer-close" id="product-drawer-close" aria-label="Fechar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
@@ -111,14 +111,14 @@
                   <div class="category-select" id="product-category-select">
                     <button type="button" class="category-select-trigger" id="product-category-trigger">
                       <span id="product-category-trigger-label">Selecione a categoria...</span>
-                      <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                      <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <div class="category-select-panel" id="product-category-panel" hidden>
                       <div class="relative" style="padding:0.5rem 0.5rem 0;" hidden><!-- busca de categoria escondida (o JS ainda usa o campo) -->
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-400">
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
-                        <input type="text" id="product-category-search" class="field-input" style="padding-left:2.25rem;" placeholder="Buscar categoria...">
+                        <input type="text" id="product-category-search" class="field-input" style="padding-left:2.25rem;" placeholder="Pesquisar categoria...">
                       </div>
                       <div class="category-tree category-tree-flat" id="product-category-tree"></div>
                     </div>
@@ -598,7 +598,7 @@
               <!-- Só ao editar: texto pequeno à esquerda; abre o pop-up de confirmação. -->
               <button type="button" id="produto-deletar-link" class="produto-deletar-link">Deletar produto</button>
               <button type="button" id="product-drawer-delete-btn" class="btn-secondary" aria-label="Remover" title="Remover" hidden>
-                <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+                <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
               </button>
               <button type="button" id="product-drawer-duplicate-btn" class="btn-secondary" hidden>Duplicar anúncio</button>
               <button type="button" id="product-wizard-back-btn" class="btn-secondary" hidden>Voltar</button>
@@ -636,7 +636,7 @@
   <div class="modal-backdrop" id="product-cover-crop-modal">
     <div class="modal-card logo-adjust-modal-card">
       <button type="button" class="logo-adjust-modal-close" data-cover-crop-close aria-label="Fechar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
       <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar imagem de capa</h2>
       <p class="text-sm text-zinc-500 mb-4">A imagem começa inteira. Aumente o zoom e arraste até preencher o quadro — o que está no quadro é o que aparece na capa.</p>
@@ -654,11 +654,11 @@
   </div>
 
   <script src="js/data.js?v=19"></script>
-  <script src="js/utils.js?v=33"></script>
+  <script src="js/utils.js?v=34"></script>
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
-  <script src="js/shell.js?v=65"></script>
-  <script src="js/produtos.js?v=62"></script>
+  <script src="js/shell.js?v=66"></script>
+  <script src="js/produtos.js?v=63"></script>
 </body>
 </html>

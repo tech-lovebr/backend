@@ -795,7 +795,7 @@ async function mostrarBalaoDoHub() {
   if (!window.LoveBalao) {
     await new Promise(ok => {
       const s = document.createElement('script');
-      s.src = 'js/balao-aviso.js?v=2';
+      s.src = 'js/balao-aviso.js?v=3';
       s.onload = ok; s.onerror = ok;
       document.head.appendChild(s);
     });
@@ -1067,7 +1067,7 @@ function montarMenuDoCelular() {
     <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
       <div class="menu-celular-topo">
         ${logo}
-        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></button>
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></button>
       </div>
       <nav class="menu-celular-nav" aria-label="Seções"></nav>
       <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
@@ -1076,13 +1076,13 @@ function montarMenuDoCelular() {
           <span class="menu-celular-nome"></span>
           <span class="menu-celular-empresa-nome"></span>
         </span>
-        <svg class="menu-celular-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+        <svg class="menu-celular-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
       </button>
     </aside>
     <div class="menu-conta-fundo" aria-hidden="true"></div>
     <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" aria-hidden="true">
       <div class="menu-conta-alca" aria-hidden="true"></div>
-      <button type="button" class="menu-conta-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button type="button" class="menu-conta-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div class="menu-conta-cabeca">
         <span class="menu-conta-avatar" aria-hidden="true"></span>
         <p class="menu-conta-nome"></p>
@@ -1094,7 +1094,7 @@ function montarMenuDoCelular() {
             <span class="menu-celular-empresa-rotulo">Suas empresas</span>
             <span class="menu-celular-empresa-nome"></span>
           </span>
-          <svg class="menu-celular-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          <svg class="menu-celular-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
         <div class="menu-celular-empresas-lista" hidden></div>
       </div>
@@ -1213,14 +1213,14 @@ function montarMenuDoCelular() {
       const nome = document.createElement('span');
       nome.textContent = (orig.querySelector('.profile-empresa-nome')?.textContent || '').trim();
       b.appendChild(nome);
-      if (ativa) b.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>');
+      if (ativa) b.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>');
       b.addEventListener('click', () => repassar(orig));
       listaEmpresas.appendChild(b);
     });
     const criar = document.createElement('button');
     criar.type = 'button';
     criar.className = 'menu-celular-empresa is-criar';
-    criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Adicionar empresa</span>';
+    criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Adicionar empresa</span>';
     criar.addEventListener('click', () => repassar(document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa')));
     listaEmpresas.appendChild(criar);
   };

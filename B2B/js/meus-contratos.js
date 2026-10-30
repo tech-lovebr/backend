@@ -348,7 +348,7 @@ function renderConvidadoActivityEntry(entry) {
         <p class="task-activity-line">
           <strong>${escapeHtml(entry.user)}</strong> adicionou um comentário
           <button type="button" class="task-activity-comment-delete" data-comment-id="${entry.id}" title="Apagar comentário" aria-label="Apagar comentário">
-            <svg stroke-linejoin="round" stroke-linecap="round" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+            <svg stroke-linejoin="round" stroke-linecap="round" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
           </button>
         </p>
         <p class="task-activity-comment-text">${escapeHtml(entry.text || '')}</p>
@@ -427,7 +427,7 @@ async function initContratosTab() {
   contratosPaginacao = montarPaginacaoTabela(document.getElementById('contratos-clientes-card'), () => renderContratosClientes());
   // Barra da tabela: busca, Filtrar por (status e categoria) e Exportar.
   contratosTabelaEstado = montarBarraTabela(document.getElementById('contratos-clientes-card'), {
-    placeholder: 'Buscar cliente...',
+    placeholder: 'Pesquisar cliente...',
     filtros: [
       { chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(CONTRATO_STATUS_LABELS).map(([k, v]) => [k, v.label]) },
       { chave: 'categoria', rotulo: 'Categoria', opcoes: () => [...new Set((bContratosAbertos || []).map(c => c.categoria).filter(Boolean))].sort().map(v => [v, v]) }

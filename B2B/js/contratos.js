@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFinanceStats();
   // Barras das tabelas (busca, Filtrar por, Exportar) — padrão do Admin.
   financeContratosEstado = montarBarraTabela(document.getElementById('finance-contratos-card'), {
-    placeholder: 'Buscar cliente...',
+    placeholder: 'Pesquisar cliente...',
     filtros: [{ chave: 'status', rotulo: 'Quitação', opcoes: () => Object.entries(CONTRATO_STATUS_INFO).map(([k, v]) => [k, v.label]) }],
     exportar: () => tabelaExportarCSV('gestao-de-pagamentos', [
       { titulo: 'Cliente', valor: r => r.client_name },
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     aoMudar: () => renderContratosAbertos()
   });
   paymentLinksEstado = montarBarraTabela(document.getElementById('payment-links-card'), {
-    placeholder: 'Buscar por valor ou data...',
+    placeholder: 'Pesquisar por valor ou data...',
     filtros: [{ chave: 'situacao', rotulo: 'Situação', opcoes: () => [['pago', 'Pago'], ['pendente', 'Aguardando pagamento']] }],
     exportar: () => tabelaExportarCSV('links-de-cobranca', [
       { titulo: 'Criado em', valor: l => formatLinkDate(l.created_at) },
@@ -188,9 +188,9 @@ function renderFinanceStats() {
    e Minhas notas fiscais (as emitidas). */
 const FINANCE_LISTAS = [
   { chave: 'extrato', nome: 'Extrato', titulo: 'Extrato completo',
-    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="2.6"/></svg>' },
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" stroke-width="1.75"/></svg>' },
   { chave: 'saques', nome: 'Saques', titulo: 'Histórico de saques',
-    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.01M17.5 14.5v.01" stroke-width="2.4"/></svg>' },
+    icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.01M17.5 14.5v.01" stroke-width="1.75"/></svg>' },
   { chave: 'notas', nome: 'Notas fiscais', titulo: 'Minhas notas fiscais',
     icone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/><path d="M12 11v6M14 12.5c-.4-.6-1.1-.9-2-.9-1.1 0-1.9.6-1.9 1.4 0 1.9 4 .9 4 2.8 0 .8-.9 1.4-2.1 1.4-.9 0-1.7-.4-2-1"/></svg>' }
 ];
@@ -284,7 +284,7 @@ function ajustarFiltrosDaLista() {
     const contador = card && card.querySelector('.tabela-filtro-contador');
     if (contador) contador.hidden = true;
     card?.querySelector('[data-tabela-filtrar]')?.classList.remove('is-ativo');
-    const placeholder = financeListaAtual === 'notas' ? 'Buscar nº da nota ou cliente...' : 'Buscar nº, descrição ou valor...';
+    const placeholder = financeListaAtual === 'notas' ? 'Pesquisar nº da nota ou cliente...' : 'Pesquisar nº, descrição ou valor...';
     const busca = card && card.querySelector('.tabela-busca input');
     if (busca) busca.placeholder = placeholder;
   }
@@ -295,7 +295,7 @@ function initBarraListaFinanceira() {
   if (!card || financeListaEstado) return;
   ajustarFiltrosDaLista();
   financeListaEstado = montarBarraTabela(card, {
-    placeholder: 'Buscar descrição ou valor...',
+    placeholder: 'Pesquisar descrição ou valor...',
     filtros: [],
     exportar: () => {
       const rows = linhasFinanceirasFiltradas();
@@ -355,15 +355,15 @@ function montarPeriodoFinanceiro(host) {
     <button type="button" class="tabela-barra-btn per-btn" aria-expanded="false">
       <svg class="per-btn-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
       <span class="per-rotulo">${finRotuloDoPeriodo()}</span>
-      <svg class="per-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6l6 -6"/></svg>
+      <svg class="per-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6l6 -6"/></svg>
     </button>
     <div class="per-menu" hidden>
       <div class="per-atalhos">${ATALHOS.map(([v, r]) => `<button type="button" class="per-atalho" data-per-atalho="${v}">${r}</button>`).join('')}</div>
       <div class="per-corpo">
         <div class="per-topo">
-          <button type="button" class="per-nav" data-per-mes="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg></button>
+          <button type="button" class="per-nav" data-per-mes="-1" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg></button>
           <span class="per-mes"></span>
-          <button type="button" class="per-nav" data-per-mes="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></button>
+          <button type="button" class="per-nav" data-per-mes="1" aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg></button>
         </div>
         <div class="per-semana">${SEMANA.map(d => `<span>${d}</span>`).join('')}</div>
         <div class="per-dias"></div>
@@ -955,7 +955,7 @@ function initPaymentLinkModal() {
       <div class="payment-link-result-box">
         <span class="payment-link-result-url">${escapeHtml(url)}</span>
         <button type="button" class="payment-link-result-send" id="payment-link-result-send" title="Copiar link" aria-label="Copiar link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
         </button>
       </div>
     `;

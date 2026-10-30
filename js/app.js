@@ -12934,7 +12934,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let plantaAntesDoPopup = null;
   const FLOORPLAN_TYPE_META = {};
   FLOORPLAN_ELEMENT_TYPES.forEach(t => { FLOORPLAN_TYPE_META[t.type] = t; });
-  const FLOORPLAN_MAX_SEATS = 24;
+  const FLOORPLAN_MAX_SEATS = 12; // máximo de cadeiras por mesa (desktop e celular)
 
   let floorplanActiveTableId = null;
 

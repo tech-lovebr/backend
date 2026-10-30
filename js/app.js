@@ -1421,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { categoria: 'Meu Evento', pergunta: 'Como adiciono uma tarefa?', resposta: 'Clique em Adicionar tarefa, no topo do Checklist. Escreva o que precisa ser feito, escolha a categoria e, se quiser, informe o prazo, o orçamento e notas.' },
     { categoria: 'Meu Evento', pergunta: 'Como marco uma tarefa como concluída?', resposta: 'Clique no círculo ao lado da tarefa. Ela fica riscada e passa a contar no progresso do evento. Para desmarcar, clique de novo.' },
     { categoria: 'Meu Evento', pergunta: 'Posso definir um responsável para cada tarefa?', resposta: 'Sim. Clique no quadradinho de responsável da tarefa e escolha você ou um dos fornecedores contratados.' },
-    { categoria: 'Meu Evento', pergunta: 'O que é o botão Buscar fornecedores?', resposta: 'Ele aparece nas tarefas de contratação, como Contratar o buffet. Ao clicar, você vai para Fornecedores › Explorar já filtrado pela categoria da tarefa.' },
+    { categoria: 'Meu Evento', pergunta: 'O que é o botão Pesquisar fornecedores?', resposta: 'Ele aparece nas tarefas de contratação, como Contratar o buffet. Ao clicar, você vai para Fornecedores › Explorar já filtrado pela categoria da tarefa.' },
     { categoria: 'Meu Evento', pergunta: 'Quem vê o meu Checklist?', resposta: 'Você e os co-anfitriões do evento. As alterações ficam salvas e aparecem para todos que organizam o evento com você.' },
     { categoria: 'Meu Evento', pergunta: 'Posso ver as tarefas por categoria?', resposta: 'Sim. No topo da lista, troque Cronograma por Por categoria. Você também pode filtrar por Todas, Pendentes ou Concluídas.' },
     { categoria: 'Fornecedores', pergunta: 'Como contratar um fornecedor pela Love?', resposta: 'Em Fornecedores, encontre quem você procura, abra o perfil e use "Contratar" ou peça um orçamento. Os contratados ficam reunidos em Contratados.' },
@@ -7116,7 +7116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       const wrap = document.createElement('div');
       wrap.className = 'love-tabela-busca';
-      wrap.innerHTML = `${ICONE_BUSCA}<input type="search" placeholder="${escaparHtml(cfg.placeholder || 'Buscar...')}" aria-label="Buscar">`;
+      wrap.innerHTML = `${ICONE_BUSCA}<input type="search" placeholder="${escaparHtml(cfg.placeholder || 'Pesquisar...')}" aria-label="Pesquisar">`;
       wrap.querySelector('input').addEventListener('input', (e) => {
         tabela.dataset.busca = e.target.value;
         aplicarFiltroDaTabela(tabela);
@@ -7331,7 +7331,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (buscaConvidados) {
         const input = buscaConvidados.querySelector('input');
-        if (input && !input.placeholder) input.placeholder = 'Buscar convidado...';
+        if (input && !input.placeholder) input.placeholder = 'Pesquisar convidado...';
       }
     }
 
@@ -7339,7 +7339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaExtrato = document.getElementById('wallet-transactions-list')?.closest('table');
     if (tabelaExtrato) {
       montarBarraDaTabela(tabelaExtrato, {
-        placeholder: 'Buscar no extrato...',
+        placeholder: 'Pesquisar no extrato...',
         filtro: { coluna: 2 },
         exportar: document.getElementById('btn-wallet-export')
       });
@@ -7350,7 +7350,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabelaOrcamento) {
       montarBarraDaTabela(tabelaOrcamento, {
         caixa: tabelaOrcamento.closest('.budget-table-full-bleed') || tabelaOrcamento.parentElement,
-        placeholder: 'Buscar item ou fornecedor...',
+        placeholder: 'Pesquisar item ou fornecedor...',
         filtro: { coluna: 1, rotuloTodos: 'Todos os fornecedores' },
         nome: 'orcamento'
       });
@@ -7361,7 +7361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabelaConvites) {
       montarBarraDaTabela(tabelaConvites, {
         caixa: tabelaConvites.parentElement,
-        placeholder: 'Buscar convidado...',
+        placeholder: 'Pesquisar convidado...',
         filtro: { coluna: 2 },
         nome: 'convites-online'
       });
@@ -10121,11 +10121,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!linhas && !recados.length) carregarPlayerLottie();
     raiz.innerHTML = `
       <div class="dash-card love-tabela-caixa recados-caixa">
+        <p class="rsvp-total-celular recados-total-celular">${recados.length} ${recados.length === 1 ? 'recado' : 'recados'}</p>
         <div class="love-tabela-barra">
           <div class="love-tabela-barra-esq">
             <div class="love-tabela-busca">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-              <input type="search" id="recados-busca" value="${escaparHtml(recadosBusca)}" placeholder="Buscar recado..." aria-label="Buscar recado" autocomplete="off">
+              <input type="search" id="recados-busca" value="${escaparHtml(recadosBusca)}" placeholder="Pesquisar recado..." aria-label="Pesquisar recado" autocomplete="off">
             </div>
           </div>
           <div class="love-tabela-barra-dir"><p class="recados-contagem">${recados.length} ${recados.length === 1 ? 'recado' : 'recados'}</p></div>
@@ -11150,7 +11151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (w.LoveChecklist) w.LoveChecklist.render();
   }
 
-  // "Buscar fornecedores" de uma tarefa do checklist: abre o Explorar já
+  // "Pesquisar fornecedores" de uma tarefa do checklist: abre o Explorar já
   // filtrado pela categoria (ex.: Contratar o buffet → Buffet e Gastronomia).
   // Atalho para abrir uma página da plataforma (ex.: tarefas prontas do Checklist).
   document.getElementById('btn-b2b-explorar-celular')?.addEventListener('click', () => window.loveIrPara?.('b2b', 'explore'));
@@ -15353,7 +15354,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2>Adicionar à ${titulo}</h2><span class="mesa-celular-espaco"></span>
           </div>
           <div class="mesa-celular-corpo">
-            <input type="search" class="mesa-celular-busca" placeholder="Buscar convidado..." value="${escaparHtml(buscaEscolha)}" autocomplete="off">
+            <input type="search" class="mesa-celular-busca" placeholder="Pesquisar convidado..." value="${escaparHtml(buscaEscolha)}" autocomplete="off">
             <p class="mesa-celular-contagem">${ocupados} de ${total} lugares ocupados</p>
             <div class="mesa-celular-lista">${lista.length ? lista.map(pp => {
               const onde = ondeEsta(pp.name);
@@ -19251,7 +19252,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const lista = /** @type {HTMLElement} */ (caixa.querySelector('.b2b-cidade-lista'));
       lista.innerHTML = (alvo ? '' : `<button type="button" class="b2b-cidade-opcao${b2bSelectedCity ? '' : ' is-ativa'}" data-cidade="">Todas as cidades</button>`)
         + cidades.map(c => `<button type="button" class="b2b-cidade-opcao${cidadeNormalizada(c.city) === cidadeNormalizada(b2bSelectedCity || '') ? ' is-ativa' : ''}" data-cidade="${escaparHtml(c.city)}">${escaparHtml(c.city)}${c.uf ? `, ${escaparHtml(c.uf)}` : ''}</button>`).join('')
-        + (alvo && !cidades.length ? `<button type="button" class="b2b-cidade-opcao" data-cidade-digitada>Buscar em "${escaparHtml(termo.trim())}"</button>` : '');
+        + (alvo && !cidades.length ? `<button type="button" class="b2b-cidade-opcao" data-cidade-digitada>Pesquisar em "${escaparHtml(termo.trim())}"</button>` : '');
     };
     botao.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -21470,7 +21471,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
       if (toolbarTitle) toolbarTitle.textContent = 'Mensagens';
-      if (searchInput) searchInput.placeholder = 'Buscar nas conversas...';
+      if (searchInput) searchInput.placeholder = 'Pesquisar nas conversas...';
       if (exploreView) exploreView.classList.add('hidden');
       if (contractedView) contractedView.classList.add('hidden');
       if (insuranceView) insuranceView.classList.add('hidden');
@@ -21490,7 +21491,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
         if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
-        if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
+        if (searchInput) searchInput.placeholder = 'Pesquisar fornecedores';
         renderB2BContracted();
       } else if (viewId === 'insurance') {
         if (exploreView) exploreView.classList.add('hidden');
@@ -21501,7 +21502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contractedView) contractedView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (exploreView) exploreView.classList.remove('hidden');
-        if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
+        if (searchInput) searchInput.placeholder = 'Pesquisar fornecedores';
         const categoryTabs = document.getElementById('b2b-category-tabs');
         // Favoritos não tem o filtro de cidades (a barra só existe no Explorar).
         document.getElementById('b2b-city-filter-wrap')?.classList.toggle('hidden', viewId === 'favorites');
@@ -22546,7 +22547,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lixeira.id = 'btn-config-eventos-excluir';
     lixeira.className = 'love-tabela-lixeira hidden';
     lixeira.innerHTML = '<svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6.5h16"/><path d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
-    montarBarraDaTabela(tabela, { caixa: document.getElementById('config-eventos-caixa'), placeholder: 'Buscar evento...', nome: 'eventos', extras: [lixeira] });
+    montarBarraDaTabela(tabela, { caixa: document.getElementById('config-eventos-caixa'), placeholder: 'Pesquisar evento...', nome: 'eventos', extras: [lixeira] });
     lixeira.addEventListener('click', async () => {
       const ids = [...eventosSelecionados];
       if (!ids.length || lixeira.disabled) return;
@@ -23984,7 +23985,7 @@ document.addEventListener('DOMContentLoaded', () => {
   else iniciar();
 })();
 
-// Celular: Fornecedores. A busca ("Buscar fornecedores" + "Em Local") sai do
+// Celular: Fornecedores. A busca ("Pesquisar fornecedores" + "Em Local") sai do
 // cabeçalho e fica logo abaixo das abas, como em Convidados e Presentes; em
 // Criar solicitação as abas internas somem e "Minhas solicitações" vira o
 // ícone de lista no cabeçalho (lá dentro, o + volta a criar). Desktop não muda.

@@ -15147,3 +15147,9 @@ html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { di
   html body #recados-raiz .recados-tabela:has(.recados-vazio) :is(tbody, tr, td):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; box-shadow: none !important; }
   body[data-theme="dark"] #recados-raiz .recados-tabela:has(.recados-vazio) { background: #252525 !important; border-color: #404040 !important; }
 }
+
+/* Celular, Recados recebidos: "N recados" acima da busca, alinhado com ela
+   (como "N itens" em Meus presentes). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #recados-raiz .recados-total-celular:not(#love-h-a):not(#love-h-b) { padding: 0 16px 12px; }
+}

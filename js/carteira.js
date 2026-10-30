@@ -254,7 +254,7 @@
     return `
       <h3 class="cart-lista-titulo">Extrato completo</h3>
       <section class="dash-card love-tabela-caixa cart-lista">
-        ${barraDaTabela('Buscar convidado ou presente...', `${todos.length} ${todos.length === 1 ? 'presente recebido' : 'presentes recebidos'}`)}
+        ${barraDaTabela('Pesquisar convidado ou presente...', `${todos.length} ${todos.length === 1 ? 'presente recebido' : 'presentes recebidos'}`)}
         <div class="w-full overflow-x-auto">
           <table class="love-tabela w-full text-left border-collapse font-sans">
             <thead><tr><th>Data</th><th>Convidado</th><th>Presente</th><th class="cart-num">Valor</th></tr></thead>
@@ -277,7 +277,7 @@
     return `
       <h3 class="cart-lista-titulo">Histórico de saques</h3>
       <section class="dash-card love-tabela-caixa cart-lista">
-        ${barraDaTabela('Buscar saque...', `${saques.length} ${saques.length === 1 ? 'saque' : 'saques'}`)}
+        ${barraDaTabela('Pesquisar saque...', `${saques.length} ${saques.length === 1 ? 'saque' : 'saques'}`)}
         <div class="w-full overflow-x-auto">
           <table class="love-tabela w-full text-left border-collapse font-sans cart-tabela-saques">
             <thead><tr><th>Solicitado em</th><th>Valor</th><th>Conta</th><th>Status</th></tr></thead>

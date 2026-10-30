@@ -21911,6 +21911,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return campo ? campo.value : '';
   }
 
+  /** Celular: "N conversas" acima da pesquisa, como no Hub. */
+  function atualizarTotalDoChat(/** @type {number} */ n) {
+    const el = document.getElementById('b2b-chat-total-celular');
+    if (el) el.textContent = `${n} ${n === 1 ? 'conversa' : 'conversas'}`;
+  }
+
   function renderB2BChatContacts(filterQuery = buscaDoChat()) {
     const list = document.getElementById('b2b-chat-contacts-list');
     if (!list) return;
@@ -21920,6 +21926,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!b2bConversationsData.length) {
       list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Fale com um fornecedor pelo Explorar.</div>';
+      atualizarTotalDoChat(0);
       return;
     }
 
@@ -21941,9 +21948,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa encontrada.</div>';
+      atualizarTotalDoChat(0);
       return;
     }
 
+    atualizarTotalDoChat(filtered.length);
     filtered.forEach(conv => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');

@@ -12220,3 +12220,21 @@ html body .produtos-vazio:not(.produtos-vazio-busca):not(#love-h-a):not(#love-h-
   display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center;
 }
 html body .produtos-vazio:not(.produtos-vazio-busca) > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }
+
+/* Fixar menu (computador): botão ao lado do logotipo. Fixado, o menu fica
+   aberto (256px) e o conteúdo vai para a direita; desafixado, volta a abrir
+   só ao passar o mouse, por cima do conteúdo. */
+html body .sidebar-fixar:not(#love-h-a) { display: none; }
+html body.sidebar-hover-mode:not(.sidebar-collapsed) .sidebar-brand-top > .sidebar-fixar:not(#love-h-a):not(#love-h-b) {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 32px; height: 32px; margin-left: auto; padding: 0; cursor: pointer;
+  background: transparent; border: 0; border-radius: 8px; outline: none; box-shadow: none;
+  color: rgba(255, 255, 255, 0.55); transition: color .15s ease;
+}
+html body .sidebar-brand-top > .sidebar-fixar svg:not(#love-h-a) { width: 18px; height: 18px; transition: transform .15s ease; }
+html body .sidebar-brand-top > .sidebar-fixar:not(#love-h-a):hover,
+html body .sidebar-brand-top > .sidebar-fixar:not(#love-h-a):focus-visible { color: #FFFFFF; }
+html body .sidebar-brand-top > .sidebar-fixar[aria-pressed="true"]:not(#love-h-a) { color: #FFFFFF; }
+html body .sidebar-brand-top > .sidebar-fixar[aria-pressed="true"] svg:not(#love-h-a) { transform: rotate(45deg); fill: currentColor; }
+html body.sidebar-hover-mode.sidebar-fixo .b2b-main:not(#love-h-a) { margin-left: var(--sidebar-width); }
+html body.sidebar-hover-mode.sidebar-fixo .b2b-sidebar:not(#love-h-a) { box-shadow: none; }

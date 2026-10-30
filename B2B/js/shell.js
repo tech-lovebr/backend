@@ -23,10 +23,14 @@ document.body.dataset.theme = 'light';
 // Computador (mouse): o menu fica sempre recolhido e abre ao passar o mouse
 // (ver initSidebarHover). Telas de toque mantêm o recolher/expandir salvo.
 const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
-if (SIDEBAR_HOVER || localStorage.getItem('b2b-sidebar-collapsed') === '1') {
+// Menu fixado (botão ao lado do logotipo): fica sempre aberto e o conteúdo
+// vai para a direita, em vez de abrir só com o mouse.
+const SIDEBAR_FIXO = SIDEBAR_HOVER && localStorage.getItem('b2b-sidebar-fixo') === '1';
+if ((SIDEBAR_HOVER && !SIDEBAR_FIXO) || (!SIDEBAR_HOVER && localStorage.getItem('b2b-sidebar-collapsed') === '1')) {
   document.body.classList.add('sidebar-collapsed');
 }
 if (SIDEBAR_HOVER) document.body.classList.add('sidebar-hover-mode');
+if (SIDEBAR_FIXO) document.body.classList.add('sidebar-fixo');
 
 // Ao navegar de uma página do próprio B2B para outra (clicou num link do
 // sidebar, por exemplo), a página já tem a transição nativa do navegador
@@ -536,7 +540,29 @@ function initSidebarHover() {
   if (!sidebar) return;
   let abrir = null;
   let fechar = null;
+  const fixar = document.getElementById('sidebar-fixar');
+  const marcarFixar = () => {
+    const fixo = document.body.classList.contains('sidebar-fixo');
+    const rotulo = fixo ? 'Desafixar menu' : 'Fixar menu';
+    if (!fixar) return;
+    fixar.setAttribute('aria-pressed', fixo ? 'true' : 'false');
+    fixar.setAttribute('aria-label', rotulo);
+    fixar.dataset.dica = rotulo;
+  };
+  marcarFixar();
+  fixar?.addEventListener('click', () => {
+    const fixo = !document.body.classList.contains('sidebar-fixo');
+    document.body.classList.toggle('sidebar-fixo', fixo);
+    // Ao desafixar com o mouse em cima, o menu continua aberto por cima do
+    // conteúdo e recolhe quando o mouse sair.
+    document.body.classList.toggle('sidebar-flutuando', !fixo);
+    document.body.classList.remove('sidebar-collapsed');
+    try { localStorage.setItem('b2b-sidebar-fixo', fixo ? '1' : '0'); } catch (e) { /* sem armazenamento */ }
+    marcarFixar();
+    window.dispatchEvent(new Event('resize'));
+  });
   sidebar.addEventListener('mouseenter', () => {
+    if (document.body.classList.contains('sidebar-fixo')) return;
     clearTimeout(fechar);
     abrir = setTimeout(() => {
       document.body.classList.add('sidebar-flutuando');
@@ -544,6 +570,7 @@ function initSidebarHover() {
     }, 80);
   });
   sidebar.addEventListener('mouseleave', () => {
+    if (document.body.classList.contains('sidebar-fixo')) return;
     clearTimeout(abrir);
     fechar = setTimeout(() => {
       document.body.classList.add('sidebar-collapsed');

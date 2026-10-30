@@ -11691,11 +11691,166 @@ document.addEventListener('DOMContentLoaded', () => {
     activeDrawerGuestId = null;
   }
 
+  // ------------------------------------------------------------------
+  // Celular: menu "Adicionar manualmente" / "Importar contatos". Importar abre
+  // os contatos do celular (Contact Picker, Android/Chrome); onde o navegador
+  // não deixa (Safari do iPhone), escolhe um arquivo de contatos (.vcf).
+  // ------------------------------------------------------------------
+  const MQ_CELULAR_CONVIDADOS = '(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)';
+  /** @type {HTMLElement|null} */
+  let menuAddConvidado = null;
+  /** @type {HTMLElement|null} */
+  let ancoraMenuAddConvidado = null;
+  function fecharMenuAddConvidado() {
+    menuAddConvidado?.remove();
+    menuAddConvidado = null;
+    ancoraMenuAddConvidado = null;
+  }
+  document.addEventListener('pointerdown', (e) => {
+    const alvo = /** @type {Node} */ (e.target);
+    if (menuAddConvidado && !menuAddConvidado.contains(alvo) && !(ancoraMenuAddConvidado && ancoraMenuAddConvidado.contains(alvo))) fecharMenuAddConvidado();
+  }, true);
+  window.addEventListener('scroll', () => { if (menuAddConvidado) fecharMenuAddConvidado(); }, { passive: true, capture: true });
+
+  /** @param {HTMLElement} ancora @param {{ naHome?: boolean }} [opcoes] */
+  function abrirMenuAddConvidado(ancora, opcoes = {}) {
+    if (menuAddConvidado) { fecharMenuAddConvidado(); return; }
+    const naHome = !!opcoes.naHome;
+    const menu = document.createElement('div');
+    menu.className = 'menu-add-convidado';
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = `
+      <button type="button" role="menuitem" data-add="manual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+        <span>Adicionar manualmente</span>
+      </button>
+      <button type="button" role="menuitem" data-add="contatos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>
+        <span>Importar contatos</span>
+      </button>`;
+    document.body.appendChild(menu);
+    menuAddConvidado = menu;
+    ancoraMenuAddConvidado = ancora;
+    // Embaixo do botão (ou em cima, se não couber); botão largo: centralizado.
+    const r = ancora.getBoundingClientRect();
+    const larg = menu.offsetWidth, alt = menu.offsetHeight;
+    let topo = r.bottom + 6;
+    if (topo + alt > window.innerHeight - 8) topo = Math.max(8, r.top - alt - 6);
+    const esquerda = r.width > 200 ? r.left + (r.width - larg) / 2 : r.right - larg;
+    menu.style.top = `${Math.round(topo)}px`;
+    menu.style.left = `${Math.round(Math.min(Math.max(8, esquerda), window.innerWidth - larg - 8))}px`;
+
+    menu.querySelector('[data-add="manual"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      if (naHome) { window.loveIrPara?.('rsvp', 'all'); setTimeout(() => abrirFichaDoConvidado(null), 80); }
+      else abrirFichaDoConvidado(null);
+    });
+    menu.querySelector('[data-add="contatos"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      importarContatosParaALista(naHome);
+    });
+  }
+
+  /** Abre o seletor de arquivo de contatos (.vcf). @returns {Promise<string|null>} */
+  function escolherArquivoDeContatos() {
+    return new Promise((resolve) => {
+      const entrada = document.createElement('input');
+      entrada.type = 'file';
+      entrada.accept = '.vcf,text/vcard,text/x-vcard';
+      entrada.hidden = true;
+      document.body.appendChild(entrada);
+      const fim = (/** @type {string|null} */ v) => { entrada.remove(); resolve(v); };
+      entrada.addEventListener('change', async () => {
+        const f = entrada.files && entrada.files[0];
+        if (!f) return fim(null);
+        try { fim(await f.text()); } catch (e) { fim(null); }
+      });
+      entrada.addEventListener('cancel', () => fim(null));
+      entrada.click();
+    });
+  }
+
+  /** Contatos de um arquivo vCard → [nome, telefone, e-mail]. @param {string} texto @returns {string[][]} */
+  function contatosDoVcf(texto) {
+    const desdobrado = texto.replace(/\r\n/g, '\n').replace(/\n[ \t]/g, '');
+    const limpar = (/** @type {string} */ v) => v.replace(/\\([,;\\])/g, '$1').replace(/\\n/gi, ' ').trim();
+    /** @type {string[][]} */
+    const linhas = [];
+    desdobrado.split(/BEGIN:VCARD/i).slice(1).forEach((cartao) => {
+      const campo = (/** @type {string} */ nome) => {
+        const m = cartao.match(new RegExp(`^(?:item\\d+\\.)?${nome}(?:[;:][^\\n]*?)?:(.*)$`, 'im'));
+        return m ? limpar(m[1]) : '';
+      };
+      let nome = campo('FN');
+      if (!nome) {
+        const partes = campo('N').split(';');
+        nome = [partes[3], partes[1], partes[2], partes[0]].filter(Boolean).join(' ').trim();
+      }
+      if (nome) linhas.push([nome, campo('TEL'), campo('EMAIL')]);
+    });
+    return linhas;
+  }
+
+  /** @param {boolean} irParaLista */
+  async function importarContatosParaALista(irParaLista) {
+    const ev = getActiveEvent();
+    if (!ev) return;
+    if (!Array.isArray(ev.guests)) ev.guests = [];
+    /** @type {string[][]} */
+    let linhas = [];
+    const nav = /** @type {any} */ (navigator);
+    if (nav.contacts && typeof nav.contacts.select === 'function') {
+      try {
+        const lista = await nav.contacts.select(['name', 'tel', 'email'], { multiple: true });
+        linhas = (lista || []).map((/** @type {any} */ c) => [(c.name || [])[0] || '', (c.tel || [])[0] || '', (c.email || [])[0] || '']);
+      } catch (err) { console.error('Não foi possível abrir os contatos:', err); return; }
+    } else {
+      const texto = await escolherArquivoDeContatos();
+      if (texto === null) return;
+      linhas = contatosDoVcf(texto);
+    }
+    if (!linhas.length) return;
+    // Telefone do celular vem com +55 / 0 na frente: fica só DDD + número.
+    linhas = linhas.map(([nome, tel, email]) => {
+      let d = String(tel || '').replace(/\D/g, '');
+      if (d.length >= 12 && d.startsWith('55')) d = d.slice(2);
+      if (d.length >= 11 && d.startsWith('0')) d = d.replace(/^0+/, '');
+      return [nome, d, email];
+    });
+    const novos = convidadosDoCsv([['Nome', 'Telefone', 'E-mail'], ...linhas], ev.guests);
+    let falhas = 0;
+    for (const g of novos) {
+      ev.guests.push(g);
+      const { error } = await salvarConvidadoNoBanco(g).catch(err => ({ error: err }));
+      if (error) { falhas++; ev.guests.splice(ev.guests.indexOf(g), 1); }
+    }
+    renderGuestsTable();
+    renderFloorPlanGuestCards();
+    updateAllCelebrationData();
+    if (irParaLista) window.loveIrPara?.('rsvp', 'all');
+    // Retorno na linha "N convidados" acima da busca, por alguns segundos.
+    const ok = novos.length - falhas;
+    setTimeout(() => {
+      const linha = document.getElementById('rsvp-total-celular');
+      if (!linha) return;
+      const antes = linha.textContent;
+      linha.textContent = ok ? `${ok} ${ok === 1 ? 'convidado importado' : 'convidados importados'}` : 'Nenhum contato novo para importar';
+      setTimeout(() => { linha.textContent = antes; }, 4000);
+    }, 300);
+  }
+
   const btnHostAddGuest = document.getElementById('btn-host-add-guest');
   // Celular: o "+" abre a ficha em tela inteira, já em "Adicionar convidado".
   // Celular e computador: o bonequinho com + abre a ficha já em "Adicionar
   // convidado" (no computador ela vira um pop-up centralizado).
-  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => abrirFichaDoConvidado(null));
+  // No celular ele pergunta antes: adicionar manualmente ou importar contatos.
+  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => {
+    if (window.matchMedia(MQ_CELULAR_CONVIDADOS).matches) abrirMenuAddConvidado(btnHostAddGuest);
+    else abrirFichaDoConvidado(null);
+  });
+  // Home (celular): "Continuar" da caixa "Monte sua lista..." abre o mesmo menu.
+  const btnHomeContatos = document.getElementById('home-contatos-continuar');
+  if (btnHomeContatos) btnHomeContatos.addEventListener('click', () => abrirMenuAddConvidado(btnHomeContatos, { naHome: true }));
   // Mapear mesas › "+ Adicionar" ao lado de Convidados: o mesmo drawer.
   document.getElementById('btn-floorplan-add-guest')?.addEventListener('click', () => openAddGuestDrawer());
   const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');

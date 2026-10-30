@@ -14732,3 +14732,38 @@ body[data-theme="dark"] .hc-chegando { box-shadow: 0 0 0 3px #1F1F1F; }
 body[data-theme="dark"] .ajuda-contatos-folha { background: #1F1F1F; color: #FFFFFF; }
 body[data-theme="dark"] .ajuda-contatos-folha :is(p, .ajuda-contatos-arquivo) { color: #A1A1AA; }
 body[data-theme="dark"] .ajuda-contatos-folha ol { color: #FFFFFF; }
+
+/* Ajuda dos contatos do iPhone: passo a passo com o desenho de cada tela dos Ajustes. */
+.ajuda-contatos-folha { max-height: 92vh; overflow-y: auto; }
+.ajuda-passos {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 4px -20px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.ajuda-passos::-webkit-scrollbar { display: none; }
+.ajuda-passo { flex: 0 0 100%; box-sizing: border-box; padding: 0 20px; scroll-snap-align: start; }
+.ajuda-passo-num { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; color: #183b54; letter-spacing: 0.02em; }
+.ajuda-contatos-folha .ajuda-passo-texto { min-height: 66px; margin: 0 0 12px; font-size: 15px; line-height: 1.45; color: #18181B; }
+.ajuda-pontos { display: flex; justify-content: center; gap: 6px; margin: 14px 0 16px; }
+.ajuda-pontos span { width: 6px; height: 6px; border-radius: 3px; background: #D4D4D8; transition: width .2s ease, background-color .2s ease; }
+.ajuda-pontos span.is-atual { width: 16px; background: #183b54; }
+
+.ios-tela { padding: 10px 10px 12px; background: #F2F2F7; border-radius: 10px; font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif; }
+.ios-topo { position: relative; display: flex; align-items: center; justify-content: center; height: 22px; margin-bottom: 8px; }
+.ios-voltar { position: absolute; left: 0; font-size: 13px; color: #0A84FF; }
+.ios-titulo { max-width: 58%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; font-weight: 600; color: #000000; }
+.ios-dica { display: block; margin: -2px 0 6px; text-align: center; font-size: 11px; font-weight: 600; color: #183b54; }
+.ios-grupo { background: #FFFFFF; border-radius: 10px; }
+.ios-linha { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border-bottom: 1px solid #E5E5EA; font-size: 13px; color: #000000; }
+.ios-linha:last-child { border-bottom: 0; }
+.ios-linha.is-destaque { position: relative; z-index: 1; border-bottom-color: transparent; border-radius: 8px; background: #EBF4FF; box-shadow: inset 0 0 0 2px #183b54; font-weight: 600; }
+.ios-icone { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; border-radius: 6px; color: #FFFFFF; }
+.ios-icone svg { width: 14px; height: 14px; }
+.ios-texto { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ios-barra { flex: 0 1 55%; height: 8px; margin-right: auto; border-radius: 4px; background: #E5E5EA; }
+.ios-seta { margin-left: auto; font-size: 18px; line-height: 1; color: #C7C7CC; }
+.ios-chave { position: relative; width: 34px; height: 20px; flex-shrink: 0; margin-left: auto; border-radius: 10px; background: #E9E9EA; }
+.ios-chave::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+.ios-chave.is-ligada { background: #34C759; }
+.ios-chave.is-ligada::after { left: 16px; }
+body[data-theme="dark"] .ajuda-contatos-folha .ajuda-passo-texto { color: #FFFFFF; }
+body[data-theme="dark"] .ajuda-passo-num, body[data-theme="dark"] .ios-dica { color: #A9C1DD; }
+body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }

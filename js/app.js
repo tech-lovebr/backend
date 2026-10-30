@@ -11809,6 +11809,75 @@ document.addEventListener('DOMContentLoaded', () => {
   function mostrarAjudaDosContatos(irParaLista) {
     document.getElementById('ajuda-contatos')?.remove();
     const ehIphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // Desenho simplificado de cada tela dos Ajustes, com a opção a tocar destacada.
+    const ico = (/** @type {string} */ d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const ICO = {
+      geral: ico('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>'),
+      tela: ico('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/>'),
+      bateria: ico('<rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/>'),
+      apps: ico('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>'),
+      msg: ico('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/>'),
+      musica: ico('<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>'),
+      safari: ico('<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>'),
+      telefone: ico('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>')
+    };
+    /** @param {{ texto: string, icone?: string, cor?: string, destaque?: boolean, chave?: boolean|null, seta?: boolean, barra?: boolean }} o */
+    const linha = (o) => `
+      <div class="ios-linha${o.destaque ? ' is-destaque' : ''}">
+        ${o.icone ? `<span class="ios-icone" style="background:${o.cor}">${o.icone}</span>` : ''}
+        ${o.barra ? '<span class="ios-barra"></span>' : `<span class="ios-texto">${o.texto}</span>`}
+        ${o.chave !== undefined && o.chave !== null ? `<span class="ios-chave${o.chave ? ' is-ligada' : ''}"></span>` : (o.seta === false ? '' : '<span class="ios-seta">›</span>')}
+      </div>`;
+    const telaIos = (/** @type {string} */ titulo, /** @type {string} */ voltar, /** @type {string} */ linhas, dica = '') => `
+      <div class="ios-tela" aria-hidden="true">
+        <div class="ios-topo">${voltar ? `<span class="ios-voltar">‹ ${voltar}</span>` : ''}<span class="ios-titulo">${titulo}</span></div>
+        ${dica ? `<span class="ios-dica">${dica}</span>` : ''}
+        <div class="ios-grupo">${linhas}</div>
+      </div>`;
+    const PASSOS = [
+      {
+        texto: 'Abra o app <strong>Ajustes</strong> do iPhone, role até o fim da lista e toque em <strong>Apps</strong>.',
+        tela: telaIos('Ajustes', '',
+          linha({ texto: 'Geral', icone: ICO.geral, cor: '#8E8E93' })
+          + linha({ texto: 'Tela e Brilho', icone: ICO.tela, cor: '#0A84FF' })
+          + linha({ texto: 'Bateria', icone: ICO.bateria, cor: '#34C759' })
+          + linha({ texto: 'Apps', icone: ICO.apps, cor: '#5E5CE6', destaque: true }), 'Lá no fim da lista ↓')
+      },
+      {
+        texto: 'Na lista de apps (em ordem alfabética), toque em <strong>Safari</strong>.',
+        tela: telaIos('Apps', 'Ajustes',
+          linha({ texto: 'Mensagens', icone: ICO.msg, cor: '#34C759' })
+          + linha({ texto: 'Música', icone: ICO.musica, cor: '#FF2D55' })
+          + linha({ texto: 'Safari', icone: ICO.safari, cor: '#0A84FF', destaque: true })
+          + linha({ texto: 'Telefone', icone: ICO.telefone, cor: '#34C759' }))
+      },
+      {
+        texto: 'Dentro do Safari, role a tela até lá embaixo e toque em <strong>Avançado</strong>, a última opção.',
+        tela: telaIos('Safari', 'Apps',
+          linha({ texto: 'Privacidade e Segurança', seta: false })
+          + linha({ texto: 'Limpar Histórico e Dados', seta: false })
+          + linha({ texto: 'Configurações dos Sites' })
+          + linha({ texto: 'Avançado', destaque: true }), 'Role até o fim ↓')
+      },
+      {
+        texto: 'Em Avançado, toque em <strong>Sinalizações de destaque</strong>.',
+        tela: telaIos('Avançado', 'Safari',
+          linha({ texto: 'Dados dos Sites' })
+          + linha({ texto: 'JavaScript', chave: true })
+          + linha({ texto: 'Web Inspector', chave: false })
+          + linha({ texto: 'Sinalizações de destaque', destaque: true }))
+      },
+      {
+        texto: 'Ative <strong>Contact Picker API</strong> (procure na letra C). Depois volte e toque em <strong>Importar contatos</strong> de novo.',
+        tela: telaIos('Sinalizações de destaque', 'Avançado',
+          linha({ texto: '', barra: true, chave: true })
+          + linha({ texto: 'Contact Picker API', chave: true, destaque: true })
+          + linha({ texto: '', barra: true, chave: false })
+          + linha({ texto: '', barra: true, chave: true }))
+      }
+    ];
+
     const tela = document.createElement('div');
     tela.id = 'ajuda-contatos';
     tela.className = 'ajuda-contatos';
@@ -11817,20 +11886,42 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="ajuda-contatos-folha" role="dialog" aria-modal="true" aria-labelledby="ajuda-contatos-titulo">
         <h3 id="ajuda-contatos-titulo">${ehIphone ? 'Abrir os contatos do iPhone' : 'Abrir os contatos do celular'}</h3>
         ${ehIphone ? `
-          <p>O Safari só deixa a Love abrir seus contatos com um ajuste ligado. É rápido:</p>
-          <ol>
-            <li>Abra <strong>Ajustes › Apps › Safari › Avançado › Feature Flags</strong>.</li>
-            <li>Ative <strong>Contact Picker API</strong>.</li>
-            <li>Volte aqui e toque em <strong>Importar contatos</strong> de novo.</li>
-          </ol>` : `
-          <p>Este navegador não deixa abrir a agenda do celular. Abra a Love no <strong>Chrome</strong> para escolher seus contatos.</p>`}
-        <button type="button" class="ajuda-contatos-ok" data-fechar>Entendi</button>
+          <p>O Safari só deixa a Love abrir seus contatos com um ajuste ligado. Leva menos de um minuto e só precisa ser feito uma vez.</p>
+          <div class="ajuda-passos">
+            ${PASSOS.map((p, i) => `
+              <div class="ajuda-passo">
+                <span class="ajuda-passo-num">Passo ${i + 1} de ${PASSOS.length}</span>
+                <p class="ajuda-passo-texto">${p.texto}</p>
+                ${p.tela}
+              </div>`).join('')}
+          </div>
+          <div class="ajuda-pontos">${PASSOS.map((_, i) => `<span class="${i === 0 ? 'is-atual' : ''}"></span>`).join('')}</div>
+          <button type="button" class="ajuda-contatos-ok" data-avancar>Próximo</button>` : `
+          <p>Este navegador não deixa abrir a agenda do celular. Abra a Love no <strong>Chrome</strong> para escolher seus contatos.</p>
+          <button type="button" class="ajuda-contatos-ok" data-fechar>Entendi</button>`}
         <button type="button" class="ajuda-contatos-arquivo" data-arquivo>Prefiro escolher um arquivo de contatos (.vcf)</button>
       </div>`;
     document.body.appendChild(tela);
+
+    // Passo a passo: arrastar para o lado ou "Próximo"; no último vira "Entendi".
+    const trilho = /** @type {HTMLElement|null} */ (tela.querySelector('.ajuda-passos'));
+    const botao = /** @type {HTMLElement|null} */ (tela.querySelector('[data-avancar]'));
+    const pontos = Array.from(tela.querySelectorAll('.ajuda-pontos span'));
+    const passoAtual = () => (trilho ? Math.round(trilho.scrollLeft / Math.max(1, trilho.clientWidth)) : 0);
+    const atualizar = () => {
+      const i = passoAtual();
+      pontos.forEach((p, n) => p.classList.toggle('is-atual', n === i));
+      if (botao) botao.textContent = i >= PASSOS.length - 1 ? 'Entendi' : 'Próximo';
+    };
+    trilho?.addEventListener('scroll', atualizar, { passive: true });
     tela.addEventListener('click', (e) => {
       const alvo = /** @type {HTMLElement} */ (e.target);
       if (alvo.closest('[data-arquivo]')) { tela.remove(); importarContatosParaALista(irParaLista, true); }
+      else if (alvo.closest('[data-avancar]') && trilho) {
+        const i = passoAtual();
+        if (i >= PASSOS.length - 1) tela.remove();
+        else trilho.scrollTo({ left: (i + 1) * trilho.clientWidth, behavior: 'smooth' });
+      }
       else if (alvo.closest('[data-fechar]')) tela.remove();
     });
   }

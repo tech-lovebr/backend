@@ -824,7 +824,10 @@ function alinharCarrosselComSaldo() {
   const saldo = document.querySelector('.dash-saldo-total');
   const atalhos = document.querySelector('.dashboard-quick-actions');
   if (!card || !saldo || !atalhos) return;
-  const ladoALado = window.matchMedia('(min-width: 1024px)').matches;
+  const ladoALado = window.matchMedia('(min-width: 1024px)').matches
+    // Na Home do desktop os atalhos sobem para a caixa do "Olá": o saldo
+    // fica baixo e o banner achataria. Aí ele fica no tamanho próprio (16:9).
+    && !atalhos.closest('.dash-home-caixa');
   if (!ladoALado) { card.style.height = ''; card.classList.remove('altura-alinhada'); return; }
   // Altura = do topo do carrossel até onde começa "Sua agenda", menos o
   // espaço entre os blocos: assim "Analytics" começa na mesma linha.

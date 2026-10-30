@@ -12167,3 +12167,49 @@ body[data-theme="dark"] .produtos-vazio-criar-icone { background: #333333 !impor
    antialiased }): sem isso, no Mac o texto do Hub fica mais grosso que o do
    index com o mesmo peso (ex.: o "Olá, empresa!" da Home). */
 html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* Sua agenda (Dashboard): o dia de hoje com o mesmo fundo das bolinhas dos
+   atalhos (Cobrar, Orçamento, Financeiro, Construtor), desktop e celular. */
+html body .day-strip-cell.today:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; }
+html body .day-strip-cell.today:not(#love-h-a) :is(.dow, .dom) { color: #183b54 !important; }
+html body .day-strip-cell.today:not(#love-h-a) .day-strip-dot { background: #183b54 !important; }
+body[data-theme="dark"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #252525 !important; }
+body[data-theme="dark"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b) :is(.dow, .dom) { color: #EBF4FF !important; }
+body[data-theme="dark"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b) .day-strip-dot { background: #EBF4FF !important; }
+
+/* Telas vazias ocupando o espaço até o rodapé, como Meus presentes do
+   anfitrião: Meus produtos, Oportunidades, Propostas enviadas e Clientes.
+   A caixa cresce (flex) e o aviso fica no meio dela. Só no desktop. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content > :is(#products-grid:has(> .produtos-vazio), [data-leads-painel]:not([hidden]):has(#op-sem-produtos:not([hidden]), #op-vazio:not([hidden]), td.tabela-vazia-cheia)):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex !important; flex-direction: column;
+  }
+  html body #products-grid > .produtos-vazio:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; justify-content: center; min-height: 420px; }
+
+  /* Oportunidades sem produto: caixa branca cheia, aviso no meio. */
+  html body [data-leads-painel] > #op-sem-produtos:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: 420px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-style: solid; border-radius: 10px;
+  }
+  /* Oportunidades sem pedidos: a caixa da lista cresce e o aviso fica no meio. */
+  html body [data-leads-painel] > #op-conteudo:has(#op-vazio:not([hidden])):not([hidden]):not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+  html body #op-conteudo > .op-caixa:has(> #op-vazio:not([hidden])):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 420px; }
+  html body .op-caixa > #op-vazio:not([hidden]):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; text-align: center; }
+  html body .op-caixa:has(> #op-vazio:not([hidden])) > .op-posts:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; }
+
+  /* Propostas enviadas e Clientes vazios: a tabela vai até o rodapé, sem as
+     linhas de fundo, e o aviso no meio. */
+  html body :is(#op-propostas-card, #leads-table-card):has(td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; min-height: 420px; }
+  html body :is(#op-propostas-card, #leads-table-card):has(td.tabela-vazia-cheia) > .leads-table-wrap:not(#love-h-a):not(#love-h-b)::after { display: none; }
+  html body :is(#op-propostas-card, #leads-table-card):has(td.tabela-vazia-cheia) > .leads-table-wrap > table:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; }
+  html body :is(#op-propostas-card, #leads-table-card) td.tabela-vazia-cheia:not(#love-h-a):not(#love-h-b) { padding: 48px 16px !important; text-align: center; vertical-align: middle; }
+
+  body[data-theme="dark"] [data-leads-painel] > #op-sem-produtos:not([hidden]) { background: #252525 !important; border-color: #404040 !important; }
+}
+/* Caixas de tabela sem padding: a tabela começa no topo da caixa (antes o
+   cabeçalho de Propostas enviadas subia 24px por cima das abas). */
+html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-table-card, #orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap:first-child:not(#love-h-a):not(#love-h-b) { margin: 0; }
+/* Com a tela vazia ocupando a página, o respiro até o rodapé é de 32px. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content:has(> #products-grid > .produtos-vazio, [data-leads-painel]:not([hidden]) :is(#op-sem-produtos:not([hidden]), #op-conteudo:not([hidden]) #op-vazio:not([hidden]), td.tabela-vazia-cheia)) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
+}

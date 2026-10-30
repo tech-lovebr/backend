@@ -12213,3 +12213,10 @@ html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body .b2b-content:has(> #products-grid > .produtos-vazio, [data-leads-painel]:not([hidden]) :is(#op-sem-produtos:not([hidden]), #op-conteudo:not([hidden]) #op-vazio:not([hidden]), td.tabela-vazia-cheia)) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
 }
+
+/* Meus produtos vazio: a caixa pontilhada "Cadastrar novo produto" com a
+   mesma largura do texto de cima. */
+html body .produtos-vazio:not(.produtos-vazio-busca):not(#love-h-a):not(#love-h-b) {
+  display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center;
+}
+html body .produtos-vazio:not(.produtos-vazio-busca) > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }

@@ -298,6 +298,18 @@ function initBarraListaFinanceira() {
   ajustarFiltrosDaLista();
   financeListaEstado = montarBarraTabela(card, {
     placeholder: 'Pesquisar descrição ou valor...',
+    celular: {
+      nome: 2,
+      semIniciais: true,
+      get info() { return financeListaAtual === 'extrato' ? 4 : 3; },
+      get singular() { return financeListaAtual === 'notas' ? 'nota' : financeListaAtual === 'saques' ? 'saque' : 'lançamento'; },
+      get plural() { return financeListaAtual === 'notas' ? 'notas' : financeListaAtual === 'saques' ? 'saques' : 'lançamentos'; },
+      get vazio() {
+        if (financeListaAtual === 'notas') return { titulo: 'Nenhuma nota ainda', texto: 'As notas fiscais emitidas aparecem aqui.', nenhum: 'Nenhuma nota encontrada' };
+        if (financeListaAtual === 'saques') return { titulo: 'Nenhum saque ainda', texto: 'Os saques que você pedir aparecem aqui.' };
+        return { titulo: 'Nenhum lançamento ainda', texto: 'Entradas e saídas do seu saldo aparecem aqui.' };
+      }
+    },
     filtros: [],
     exportar: () => {
       const rows = linhasFinanceirasFiltradas();

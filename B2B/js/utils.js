@@ -1523,8 +1523,9 @@ function desenharVazioNoCelular(card, cfg, n) {
     card.insertBefore(caixa, barra ? barra.nextSibling : card.firstChild);
   }
   caixa.hidden = false;
-  if (caixa.dataset.modo === modo) return;
-  caixa.dataset.modo = modo;
+  const chave = modo + '|' + (modo === 'busca' ? (v.nenhum || cfg.singular) : v.titulo);
+  if (caixa.dataset.modo === chave) return;
+  caixa.dataset.modo = chave;
   if (modo === 'busca') {
     caixa.innerHTML = `<p class="vazio-celular-nenhum">${escapeHtml(v.nenhum || `Nenhum ${cfg.singular} encontrado`)}</p>`;
     return;

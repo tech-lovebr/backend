@@ -1990,6 +1990,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function abrirSubItem(tab, subId) {
+    ajustarAnimacoesVisiveisLogo();
     if (!subId) return;
     if (!areaPermitida(tab, subId)) return;
     fecharTodosOsDrawers();
@@ -2061,6 +2062,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function switchRailTab(tabKey) {
+    ajustarAnimacoesVisiveisLogo();
     // Se o usuário ainda não criou seu primeiro evento, bloqueia o acesso aos outros menus
     if (!state.hasEventCreated) {
       showToast('Crie seu primeiro evento para desbloquear os menus do painel.', '🔒');
@@ -10016,6 +10018,43 @@ document.addEventListener('DOMContentLoaded', () => {
     s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
     document.head.appendChild(s);
   }
+  // Animação que carregou com a página escondida fica com o desenho no tamanho
+  // padrão (300x150) e aparece achatada ao voltar. Sempre que uma delas
+  // ganha tamanho na tela, ela refaz o desenho no tamanho certo.
+  /** Refaz o desenho das animações que estão visíveis (logo depois de trocar de página/aba). */
+  function ajustarAnimacoesVisiveisLogo() {
+    const ajustar = () => document.querySelectorAll('dotlottie-wc').forEach(el => {
+      const player = /** @type {any} */ (el).dotLottie;
+      if (!player || typeof player.resize !== 'function' || !el.getClientRects().length) return;
+      const tela = el.shadowRoot && el.shadowRoot.querySelector('canvas');
+      const r = el.getBoundingClientRect();
+      if (tela && r.width && Math.abs(tela.width / tela.height - r.width / r.height) > 0.01) player.resize();
+    });
+    setTimeout(ajustar, 0);
+    setTimeout(ajustar, 350);
+  }
+  (function vigiarTamanhoDasAnimacoes() {
+    if (typeof ResizeObserver === 'undefined' || typeof MutationObserver === 'undefined') return;
+    const vigia = new ResizeObserver(itens => itens.forEach(item => {
+      if (!item.contentRect.width || !item.contentRect.height) return;
+      const player = /** @type {any} */ (item.target).dotLottie;
+      if (player && typeof player.resize === 'function') player.resize();
+    }));
+    const vistos = new WeakSet();
+    const observar = (/** @type {ParentNode} */ raiz) => raiz.querySelectorAll('dotlottie-wc').forEach(el => {
+      if (vistos.has(el)) return;
+      vistos.add(el);
+      vigia.observe(el);
+    });
+    observar(document);
+    new MutationObserver(mudancas => {
+      for (const m of mudancas) m.addedNodes.forEach(n => {
+        if (!(n instanceof Element)) return;
+        if (n.tagName === 'DOTLOTTIE-WC') observar(/** @type {ParentNode} */ (n.parentNode || document));
+        else if (n.querySelector('dotlottie-wc')) observar(n);
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  })();
   /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
   function abrirRecadoDoPresente(gift) {
     const ev = getActiveEvent();

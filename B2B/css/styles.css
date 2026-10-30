@@ -11980,3 +11980,82 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
       #1C2125 !important;
   }
 }
+
+/* ==========================================================================
+   Desktop, Dashboard como a Home do anfitrião (js: homeDoDesktop):
+   faixa azul de 260px (azul do sidebar em degradê, como no Admin) no lugar
+   da foto; caixa por cima (-80px, 32px das bordas) com "Olá, empresa!"
+   26/600 + data à esquerda e os atalhos redondos à direita; saldo na caixa
+   no formato de Presentes. Para voltar ao desktop antigo, apagar este bloco
+   e a função homeDoDesktop em js/dashboard.js.
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="dashboard"] .dashboard-greeting.home-desktop:not(#love-h-a):not(#love-h-b) {
+    display: block; position: relative; margin: 0 0 28px; padding: 180px 32px 0;
+  }
+  html body[data-page="dashboard"] .dashboard-greeting.home-desktop > :not(.dash-home-faixa):not(.dash-home-caixa):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] .dash-home-faixa:not(#love-h-a) {
+    position: absolute; top: 0; left: 0; right: 0; height: 260px; border-radius: 10px;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%),
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%);
+  }
+  html body[data-page="dashboard"] .dash-home-caixa:not(#love-h-a) {
+    position: relative; padding: 24px 28px;
+    display: grid; grid-template-columns: minmax(220px, auto) 1fr; align-items: center; gap: 12px 32px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa > .dashboard-greeting-text:not(#love-h-a) { display: contents; }
+  html body[data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b) {
+    grid-column: 1; align-self: end; margin: 0; font-family: Inter, sans-serif !important; font-size: 26px !important; font-weight: 600 !important;
+    letter-spacing: -0.025em !important; line-height: 1.2; color: #18181B; white-space: normal;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa #greeting-date:not(#love-h-a):not(#love-h-b) {
+    display: block !important; grid-column: 1; align-self: start; margin: -6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
+    grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+    margin: 0; padding: 0 0 0 32px; background: transparent; border: 0; border-left: 1px solid rgba(0, 0, 0, 0.06); border-radius: 0;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex !important; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
+    width: auto; height: auto; min-height: 0; padding: 0; margin: 0; cursor: pointer;
+    background: transparent !important; border: 0 !important; border-radius: 0; box-shadow: none !important; outline: none;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center; transition: color .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
+    box-sizing: border-box; width: 56px; height: 56px; padding: 16px; border-radius: 50%; flex-shrink: 0;
+    background: #EAF0F5; color: #183b54; box-shadow: inset 0 0 0 1px transparent; transition: box-shadow .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover { color: #181D24; }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover svg { box-shadow: inset 0 0 0 1px #183b54; }
+
+  /* Saldo: caixa como a de Presentes */
+  html body[data-page="dashboard"] .dashboard-side-stack > .dash-saldo-total:not(#love-h-a):not(#love-h-b) {
+    padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; overflow: hidden;
+  }
+  html body[data-page="dashboard"] .dash-saldo-total > :not(.dash-saldo-celular):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] .dash-saldo-celular:not(#love-h-a) { display: block; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas:not(#love-h-a) { display: grid; grid-template-columns: 1fr 1fr; padding: 24px 0 20px; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
+  html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a) {
+    font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: center; height: 42px; margin: 0 20px 20px; padding: 0 16px;
+    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; transition: background-color .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):hover { background: #122c3f; }
+
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa,
+  body[data-theme="dark"][data-page="dashboard"] .dashboard-side-stack > .dash-saldo-total { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-title { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="dashboard"] :is(.dash-home-caixa #greeting-date, .dash-home-caixa .dashboard-quick-action-btn, .dash-saldo-celular-nome) { color: #D4D4D8 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa .dashboard-quick-actions { border-left-color: #333333 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg { background: #252525 !important; color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-valor { color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-colunas > div + div { border-left-color: #333333 !important; }
+}

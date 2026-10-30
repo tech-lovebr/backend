@@ -850,3 +850,42 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', ajustar);
   window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', ajustar);
 })();
+
+/* Desktop: Home como a do anfitrião (b5e1d5f0). Faixa azul (o azul do
+   sidebar em degradê, como no Admin) no lugar da foto e, por cima dela, a
+   caixa com "Olá, empresa!" + data à esquerda e os atalhos redondos à
+   direita. No celular tudo volta para o lugar (lá a caixa é montada por CSS). */
+(function homeDoDesktop() {
+  const ola = document.querySelector('.dashboard-greeting');
+  const texto = ola && ola.querySelector('.dashboard-greeting-text');
+  const atalhos = document.querySelector('.dashboard-quick-actions');
+  if (!ola || !texto || !atalhos || typeof MQ_CELULAR_HUB === 'undefined') return;
+  const casaTexto = { pai: texto.parentElement, depois: texto.nextSibling };
+  const casaAtalhos = { pai: atalhos.parentElement, depois: atalhos.nextSibling };
+  const faixa = document.createElement('div');
+  faixa.className = 'dash-home-faixa';
+  faixa.setAttribute('aria-hidden', 'true');
+  const caixa = document.createElement('div');
+  caixa.className = 'dash-home-caixa';
+  const devolver = (el, casa) => casa.pai.insertBefore(el, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+  const ajustar = () => {
+    if (!hubNoCelular()) {
+      if (caixa.parentElement === ola) return;
+      ola.prepend(faixa);
+      faixa.after(caixa);
+      caixa.append(texto, atalhos);
+      ola.classList.add('home-desktop');
+    } else if (caixa.parentElement === ola) {
+      ola.classList.remove('home-desktop');
+      devolver(texto, casaTexto);
+      devolver(atalhos, casaAtalhos);
+      faixa.remove();
+      caixa.remove();
+    }
+  };
+  ajustar();
+  document.addEventListener('DOMContentLoaded', ajustar);
+  window.addEventListener('load', ajustar);
+  window.addEventListener('resize', ajustar);
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', ajustar);
+})();

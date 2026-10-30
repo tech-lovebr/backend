@@ -432,6 +432,7 @@ async function initContratosTab() {
   // Barra da tabela: busca, Filtrar por (status e categoria) e Exportar.
   contratosTabelaEstado = montarBarraTabela(document.getElementById('contratos-clientes-card'), {
     placeholder: 'Pesquisar cliente...',
+    celular: { nome: 1, info: 4, singular: 'cliente', plural: 'clientes' },
     filtros: [
       { chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(CONTRATO_STATUS_LABELS).map(([k, v]) => [k, v.label]) },
       { chave: 'categoria', rotulo: 'Categoria', opcoes: () => [...new Set((bContratosAbertos || []).map(c => c.categoria).filter(Boolean))].sort().map(v => [v, v]) }

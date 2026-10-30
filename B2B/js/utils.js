@@ -1032,7 +1032,7 @@ function montarBarraTabela(card, opts) {
     <label class="tabela-busca">${TABELA_ICONE_BUSCA}<input type="search" placeholder="${escapeHtml(opts.placeholder || 'Pesquisar...')}" autocomplete="off"></label>
     <div class="tabela-barra-acoes">
       ${temFiltros ? `<div class="tabela-filtro-wrap">
-        <button type="button" class="tabela-barra-btn" data-tabela-filtrar>${TABELA_ICONE_FUNIL}<span>Filtrar por</span><span class="tabela-filtro-contador" hidden></span></button>
+        <button type="button" class="tabela-barra-btn" data-tabela-filtrar data-rotulo-celular="${escapeHtml((opts.celular && opts.celular.filtroRotulo) || opts.filtros[0].rotulo)}">${TABELA_ICONE_FUNIL}<span>Filtrar por</span><span class="tabela-filtro-contador" hidden></span></button>
         <div class="tabela-filtro-menu" hidden></div>
       </div>` : ''}
       ${opts.importar ? `<button type="button" class="tabela-barra-btn" data-tabela-importar>${TABELA_ICONE_IMPORTAR}<span>Importar</span></button>` : ''}
@@ -1042,6 +1042,11 @@ function montarBarraTabela(card, opts) {
   card.insertBefore(barra, card.firstChild);
 
   const avisar = () => { if (opts.aoMudar) opts.aoMudar(estado); };
+  if (opts.celular) {
+    listaNoCelular(card, opts.celular);
+    // Girou o celular / mudou a largura: redesenha (com ou sem páginas).
+    window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', avisar);
+  }
   barra.querySelector('.tabela-busca input').addEventListener('input', (e) => {
     estado.busca = e.target.value.trim().toLowerCase();
     avisar();
@@ -1348,5 +1353,82 @@ function paginarLinhas(estado, lista, chave) {
     r.querySelector('[data-pag-passo="-1"]').disabled = estado.pagina <= 1;
     r.querySelector('[data-pag-passo="1"]').disabled = estado.pagina >= paginas;
   }
+  // Celular: lista contínua, sem páginas (o rodapé some pelo CSS).
+  if (hubNoCelular()) return lista;
   return lista.slice((estado.pagina - 1) * estado.porPagina, estado.pagina * estado.porPagina);
 }
+
+/* ==========================================================================
+   Celular: listas do Hub como Meus convidados do anfitrião
+   - "N clientes" acima da busca;
+   - linha só com as iniciais, o nome e uma informação curta à direita;
+   - o filtro vira "Rótulo ⌄" ao lado da busca (sem "Filtrar por");
+   - sem Importar/Exportar e sem páginas (uma rolagem só).
+   listaNoCelular(card, { nome: 2, info: 6, singular: 'cliente', plural: 'clientes' })
+   nome/info: número da coluna (1 = primeira). O desktop não muda: as marcas
+   (classes e iniciais) só aparecem no CSS do celular.
+   ========================================================================== */
+const MQ_CELULAR_HUB = '(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)';
+function hubNoCelular() {
+  return !!(window.matchMedia && window.matchMedia(MQ_CELULAR_HUB).matches);
+}
+
+function iniciaisDoNome(nome) {
+  const partes = String(nome || '').replace(/[^\p{L}\p{N}\s]/gu, ' ').trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return '?';
+  const a = partes[0][0] || '';
+  const b = partes.length > 1 ? (partes[partes.length - 1][0] || '') : '';
+  return (a + b).toUpperCase();
+}
+
+function listaNoCelular(card, cfg) {
+  if (!card || card.dataset.listaCelular) return;
+  const tbody = card.querySelector('tbody');
+  if (!tbody) return;
+  card.dataset.listaCelular = '1';
+  card.classList.add('lista-celular');
+
+  let total = card.querySelector(':scope > .tabela-total-celular');
+  if (!total) {
+    total = document.createElement('p');
+    total.className = 'tabela-total-celular';
+    card.insertBefore(total, card.firstChild);
+  }
+
+  const marcar = () => {
+    let n = 0;
+    tbody.querySelectorAll(':scope > tr').forEach(tr => {
+      const tds = tr.querySelectorAll(':scope > td');
+      if (tds.length < 2) { tr.classList.add('lc-vazia'); return; }
+      n++;
+      tr.classList.add('lc-linha');
+      const tdNome = tds[(cfg.nome || 1) - 1];
+      const tdInfo = cfg.info ? tds[cfg.info - 1] : null;
+      if (tdNome && !tdNome.classList.contains('lc-nome')) {
+        tdNome.classList.add('lc-nome');
+        if (cfg.semIniciais) { if (tdInfo) tdInfo.classList.add('lc-info'); return; }
+        const fonte = (cfg.nomeSel && tdNome.querySelector(cfg.nomeSel)) || tdNome;
+        const nome = (fonte.textContent || '').trim();
+        const ini = document.createElement('span');
+        ini.className = 'lc-iniciais';
+        ini.setAttribute('aria-hidden', 'true');
+        ini.textContent = iniciaisDoNome(nome);
+        tdNome.insertBefore(ini, tdNome.firstChild);
+      }
+      if (tdInfo) tdInfo.classList.add('lc-info');
+    });
+    const texto = `${n} ${n === 1 ? cfg.singular : cfg.plural}`;
+    if (total.textContent !== texto) total.textContent = texto;
+  };
+  marcar();
+  new MutationObserver(marcar).observe(tbody, { childList: true });
+}
+
+/* Celular: tocar na linha abre o mesmo que o nome / o "ver mais" abriria. */
+document.addEventListener('click', (e) => {
+  if (!hubNoCelular()) return;
+  const tr = e.target.closest('.lista-celular tr.lc-linha');
+  if (!tr || e.target.closest('button, a, input, select, label, textarea')) return;
+  const alvo = tr.querySelector('.lc-nome button, .lc-nome a, .tabela-ver-mais');
+  if (alvo) alvo.click();
+});

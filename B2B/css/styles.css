@@ -11405,3 +11405,104 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   body[data-theme="dark"] #b2b-toast.toast[data-tipo="neutro"]:not(#love-h-a) { background: #2A2A2A !important; color: #FFFFFF; }
   body[data-theme="dark"] #b2b-toast.toast[data-tipo="sucesso"]:not(#love-h-a) { background: #1E7A55 !important; color: #FFFFFF; }
 }
+
+/* ==========================================================================
+   Celular do Hub: listas como Meus convidados do anfitrião (js/utils.js:
+   listaNoCelular). Caixa de ponta a ponta sem borda, "N clientes" acima da
+   busca, filtro "Rótulo ⌄" ao lado dela, linha com iniciais + nome + uma
+   informação à direita, sem Importar/Exportar e sem páginas.
+   ========================================================================== */
+.tabela-total-celular, .lc-iniciais { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content .dash-card.lista-celular:not(#love-h-a):not(#love-h-b) {
+    margin-left: -16px !important; margin-right: -16px !important; border: 0 !important; border-radius: 0 !important;
+    box-shadow: none !important; background: #FFFFFF !important; padding: 16px 0 0 !important; overflow: visible !important;
+  }
+  html body .dash-card.lista-celular > .tabela-total-celular:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 0; padding: 0 16px 12px; font-family: Inter, sans-serif;
+    font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+  }
+  /* Barra: busca e o filtro na mesma linha, linha fina embaixo. */
+  html body .dash-card.lista-celular > .tabela-barra:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-wrap: nowrap !important; align-items: center; gap: 8px;
+    padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7;
+  }
+  html body .dash-card.lista-celular .tabela-busca:not(#love-h-a):not(#love-h-b) { flex: 1 1 0 !important; width: auto !important; max-width: none !important; min-width: 0; }
+  html body .dash-card.lista-celular .tabela-busca input:not(#love-h-a):not(#love-h-b) { height: 40px !important; font-size: 16px !important; border-radius: 8px !important; border-color: #E4E4E7 !important; }
+  html body .dash-card.lista-celular .tabela-barra-acoes:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; flex-wrap: nowrap; }
+  html body .dash-card.lista-celular :is([data-tabela-importar], [data-tabela-exportar], .tabela-lixeira-btn):not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular > .tabela-barra > :not(.tabela-busca):not(.tabela-barra-acoes):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b) {
+    height: 40px !important; min-height: 40px !important; padding: 0 12px 0 16px !important; gap: 6px !important;
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; color: #18181B !important;
+  }
+  html body .dash-card.lista-celular [data-tabela-filtrar] > :not(.tabela-filtro-contador):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b)::before {
+    content: attr(data-rotulo-celular); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 500;
+  }
+  html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b)::after {
+    content: ''; width: 18px; height: 18px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 18px no-repeat;
+  }
+  html body .dash-card.lista-celular .tabela-filtro-menu:not(#love-h-a):not(#love-h-b) { right: 0; max-width: calc(100vw - 32px); }
+
+  /* Tabela vira lista. */
+  html body .dash-card.lista-celular > :is(.overflow-x-auto, .leads-table-wrap):not(#love-h-a):not(#love-h-b) { overflow: visible !important; border-radius: 0 !important; }
+  html body .dash-card.lista-celular table:not(#love-h-a):not(#love-h-b) { min-width: 0 !important; width: 100% !important; display: block; }
+  html body .dash-card.lista-celular thead:not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular .tabela-paginacao:not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular tr.lc-linha > td:not(.lc-nome):not(.lc-info):not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular .lc-nome :is(input[type="checkbox"], .lead-origem-tag, .tabela-copiar-email):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular tbody:not(#love-h-a):not(#love-h-b) { display: block; background-image: none !important; }
+  html body .dash-card.lista-celular tr.lc-linha:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 0 16px; box-sizing: border-box;
+    background: #FFFFFF !important; border: 0 !important; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .dash-card.lista-celular tr.lc-linha > td:not(#love-h-a):not(#love-h-b) { padding: 0 !important; border: 0 !important; height: auto !important; background: transparent !important; }
+  html body .dash-card.lista-celular tr.lc-linha > td.lc-nome:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; padding: 11px 0 !important;
+    font-family: Inter, sans-serif; font-size: 17px !important; font-weight: 400 !important; color: #18181B !important;
+    white-space: nowrap; overflow: hidden;
+  }
+  html body .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais):not(#love-h-a):not(#love-h-b) {
+    font-size: 17px !important; font-weight: 400 !important; color: #18181B !important; text-decoration: none !important;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; background: transparent !important; padding: 0 !important; border: 0 !important;
+  }
+  html body .dash-card.lista-celular .lc-iniciais:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%;
+    background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0;
+  }
+  html body .dash-card.lista-celular tr.lc-linha > td.lc-info:not(#love-h-a):not(#love-h-b) {
+    display: block !important; flex: 0 0 auto; max-width: 42%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: Inter, sans-serif; font-size: 13px !important; color: #71717A !important;
+  }
+  html body .dash-card.lista-celular tr.lc-vazia > td:not(#love-h-a):not(#love-h-b) { display: block; border: 0 !important; }
+
+  body[data-theme="dark"] .b2b-content .dash-card.lista-celular,
+  body[data-theme="dark"] .dash-card.lista-celular tr.lc-linha { background: #1F1F1F !important; }
+  body[data-theme="dark"] .dash-card.lista-celular > .tabela-total-celular { color: #A1A1AA; }
+  body[data-theme="dark"] .dash-card.lista-celular > .tabela-barra { border-bottom-color: #333333; }
+  body[data-theme="dark"] .dash-card.lista-celular td.lc-nome,
+  body[data-theme="dark"] .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais) { color: #FFFFFF !important; }
+  body[data-theme="dark"] .dash-card.lista-celular .lc-iniciais { background: #2A2A2A; border-color: #404040; color: #FFFFFF; }
+  body[data-theme="dark"] .dash-card.lista-celular [data-tabela-filtrar] { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .dash-card.lista-celular [data-tabela-filtrar]::after { filter: invert(1); }
+}
+
+/* Celular, Meus produtos: "N produtos cadastrados" acima da busca, caixa sem borda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content #produtos-barra-caixa:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-direction: column; align-items: stretch; gap: 12px;
+    margin-left: -16px !important; margin-right: -16px !important; padding: 16px !important;
+    border: 0 !important; border-bottom: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important;
+  }
+  html body #produtos-barra-caixa .produtos-total:not(#love-h-a):not(#love-h-b) {
+    order: -1; margin: 0; font-family: Inter, sans-serif; font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+  }
+  html body #produtos-barra-caixa .produtos-total b:not(#love-h-a) { font-weight: 600; color: inherit; }
+  html body #produtos-barra-caixa .tabela-busca:not(#love-h-a):not(#love-h-b) { width: 100% !important; max-width: none !important; }
+  html body #produtos-barra-caixa .tabela-busca input:not(#love-h-a):not(#love-h-b) { height: 40px !important; font-size: 16px !important; border-color: #E4E4E7 !important; }
+  body[data-theme="dark"] .b2b-content #produtos-barra-caixa { background: #1F1F1F !important; border-bottom-color: #333333 !important; }
+  body[data-theme="dark"] #produtos-barra-caixa .produtos-total { color: #A1A1AA; }
+}

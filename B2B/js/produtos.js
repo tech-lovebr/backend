@@ -328,13 +328,24 @@ function renderProducts() {
     .filter(p => !termo || [p.name, p.sku, ...(p.packages || []).map(k => k.sku)].some(v => String(v || '').toLowerCase().includes(termo)));
 
   if (!items.length) {
+    // Busca sem resultado: só o aviso. Sem nenhum produto: a caixa cheia de
+    // Meus presentes no anfitrião, com o cartão pontilhado de cadastrar.
+    if (termo) {
+      grid.innerHTML = `<div class="produtos-vazio produtos-vazio-busca" style="grid-column:1/-1;"><p class="produtos-vazio-texto">Nenhum produto encontrado para "${escapeHtml(produtosBusca.trim())}".</p></div>`;
+      return;
+    }
     grid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1;">
-        <div class="empty-state-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5 12 2.25 3 7.5m18 0-9 5.25M21 7.5v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+      <div class="produtos-vazio" style="grid-column:1/-1;">
+        <p class="produtos-vazio-texto">Você ainda não tem nenhum produto cadastrado. <b>Que tal cadastrar um novo?</b></p>
+        <div class="produtos-vazio-cards">
+          <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
+            <span class="produtos-vazio-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+            <strong>Cadastrar novo produto</strong>
+            <span class="produtos-vazio-criar-sub">Crie um produto ou serviço do zero</span>
+          </button>
         </div>
-        <p class="text-sm font-medium text-zinc-700">${termo ? 'Nenhum item encontrado.' : 'Nenhum item nessa categoria ainda.'}</p>
       </div>`;
+    grid.querySelector('[data-produto-vazio-criar]')?.addEventListener('click', () => document.getElementById('product-add-btn')?.click());
     return;
   }
 

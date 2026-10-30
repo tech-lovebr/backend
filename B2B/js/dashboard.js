@@ -402,8 +402,13 @@ async function renderAnalyticsCard() {
     : { data: [] };
   const allLeads = leads || [];
 
-  const leadsAtivos = allLeads.filter(l => l.status !== 'fechado').length;
-  setText('analytics-leads', leadsAtivos.toLocaleString('pt-BR'));
+  // Leads ativos: todo anfitrião para quem a empresa mandou proposta em
+  // Oportunidades (propostas_pedido, migration 074), contado uma vez só.
+  const { data: propostas, error: erroPropostas } = session
+    ? await supabaseClient.from('propostas_pedido').select('pedido_id, pedido:pedidos_orcamento(cliente_id)').eq('fornecedor_id', empresaId(session))
+    : { data: [] };
+  const pessoas = new Set((erroPropostas ? [] : (propostas || [])).map(p => (p.pedido && p.pedido.cliente_id) || p.pedido_id));
+  setText('analytics-leads', pessoas.size.toLocaleString('pt-BR'));
 
   const totalLeads = allLeads.length;
   const closedLeads = allLeads.filter(l => l.status === 'fechado').length;

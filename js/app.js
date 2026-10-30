@@ -9981,7 +9981,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const recadosDoEvento = (ev) => ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim() || g.videoUrl);
   // Recados vazios: animação Lottie salva na Love (assets/lottie). O player
   // (dotlottie-wc) só é baixado quando essa tela aparece.
-  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>';
+  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie?v=4" autoplay loop aria-hidden="true"></dotlottie-wc>';
   function carregarPlayerLottie() {
     if (customElements.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
     const s = document.createElement('script');

@@ -15100,3 +15100,9 @@ body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
 /* Mapa do evento: a cor da restrição alimentar fica só dentro do assento
    (o desenho), sem pintar o quadrado de fundo maior em volta. */
 html body .floorplan-seat-dot.tem-restricao:not(#love-h-a):not(#love-h-b) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+
+/* Celular, Editar convidado: sem o topo com iniciais, nome e situação
+   (o nome já está nos campos logo abaixo), como em Adicionar convidado. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .ficha-convidado.is-editando .ficha-cabeca:not(#love-h-a):not(#love-h-b) { display: none !important; }
+}

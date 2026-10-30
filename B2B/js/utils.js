@@ -1544,3 +1544,74 @@ document.addEventListener('click', (e) => {
   const alvo = tr.querySelector('.lc-nome button, .lc-nome a, .tabela-ver-mais');
   if (alvo) alvo.click();
 });
+
+/* ==========================================================================
+   Celular: todo Adicionar/Editar (gavetas .form-drawer) abre em tela cheia,
+   como a ficha do convidado do anfitrião: cabeçalho branco com a seta de
+   voltar (botão de 44px a 10px da borda), o título e "Salvar" claro com o
+   texto na cor primária. O "Salvar" do cabeçalho aperta o botão de salvar
+   que já existe na gaveta (que some no celular, junto com o Cancelar).
+   O desktop não muda: os botões novos só aparecem no CSS do celular.
+   ========================================================================== */
+const ICONE_FICHA_VOLTAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+
+function visivelNaFicha(el) {
+  return !!el && !el.hidden && !el.closest('[hidden]') && getComputedStyle(el).display !== 'none';
+}
+function salvarDaFicha(drawer) {
+  const candidatos = drawer.querySelectorAll('.form-drawer-body button[type="submit"], .form-drawer-footer .btn-primary, .form-drawer-body form .btn-primary');
+  return Array.from(candidatos).find(b => !b.classList.contains('btn-comentar') && !b.hidden && !b.closest('[hidden]')) || null;
+}
+
+function prepararFichaDoCelular(drawer) {
+  if (!drawer || drawer.dataset.fichaCelular || drawer.id === 'product-drawer') return;
+  const header = drawer.querySelector(':scope > .form-drawer-header');
+  if (!header) return;
+  drawer.dataset.fichaCelular = '1';
+  drawer.classList.add('ficha-celular');
+
+  const voltar = document.createElement('button');
+  voltar.type = 'button';
+  voltar.className = 'ficha-voltar-celular';
+  voltar.setAttribute('aria-label', 'Voltar');
+  voltar.innerHTML = ICONE_FICHA_VOLTAR;
+  voltar.addEventListener('click', () => {
+    const fechar = header.querySelector('.form-drawer-close') || drawer.querySelector('[id$="-cancel"]');
+    if (fechar) fechar.click();
+  });
+  header.insertBefore(voltar, header.firstChild);
+
+  const salvar = document.createElement('button');
+  salvar.type = 'button';
+  salvar.className = 'ficha-salvar-celular';
+  salvar.textContent = 'Salvar';
+  salvar.hidden = true;
+  salvar.addEventListener('click', () => {
+    const alvo = salvarDaFicha(drawer);
+    if (alvo) alvo.click();
+  });
+  header.appendChild(salvar);
+
+  // Marca o salvar original (some no celular) e mostra/esconde o do cabeçalho.
+  let alvoAtual = null;
+  const atualizar = () => {
+    const alvo = salvarDaFicha(drawer);
+    if (alvo === alvoAtual) return; // sem isso o observador se chamaria sem parar
+    if (alvoAtual) alvoAtual.classList.remove('ficha-salvar-alvo');
+    alvoAtual = alvo;
+    if (alvo) {
+      alvo.classList.add('ficha-salvar-alvo');
+      const texto = (alvo.textContent || '').trim();
+      salvar.textContent = texto && texto.length <= 18 ? texto : 'Salvar';
+    }
+    salvar.hidden = !alvo;
+  };
+  atualizar();
+  new MutationObserver(atualizar).observe(drawer, { subtree: true, attributes: true, attributeFilter: ['hidden', 'class'], childList: true });
+}
+
+function prepararFichasDoCelular() {
+  document.querySelectorAll('.form-drawer').forEach(prepararFichaDoCelular);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepararFichasDoCelular);
+else prepararFichasDoCelular();

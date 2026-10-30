@@ -11601,3 +11601,95 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   body[data-theme="dark"][data-page="chat"] #chat-search-input { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
   body[data-theme="dark"][data-page="chat"] .chat-voltar-celular { color: #FFFFFF; }
 }
+
+/* ==========================================================================
+   Celular do Hub: Adicionar/Editar em tela cheia (js/utils.js:
+   prepararFichaDoCelular), como #drawer-add-gift / .ficha-convidado do
+   anfitrião. Cabeçalho branco (seta de 20px num botão de 44px a 10px da
+   borda, título 20/700, "Salvar" claro com texto na primária); corpo
+   #F4F6F7 sem caixas brancas; campos brancos de 46px, 1px #E4E4E7, 8px,
+   letra de 16px; 16px de margem lateral e 24px entre as seções.
+   ========================================================================== */
+.ficha-voltar-celular, .ficha-salvar-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .form-drawer.ficha-celular:not(#love-h-a):not(#love-h-b) {
+    top: 0; right: 0; bottom: 0; left: 0; width: 100%; max-width: none !important; height: 100dvh;
+    border-radius: 0 !important; box-shadow: none !important; background: #F4F6F7 !important; z-index: 120;
+  }
+  html body .form-drawer.ficha-celular > .form-drawer-header:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; gap: 4px; min-height: 0; height: calc(60px + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 16px 0 10px !important; background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important;
+    position: relative; flex-shrink: 0;
+  }
+  html body .form-drawer.ficha-celular > .form-drawer-header > .form-drawer-close:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .form-drawer.ficha-celular .form-drawer-header-main:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-width: 0; padding: 0 !important; background: transparent !important; border-radius: 0 !important; backdrop-filter: none;
+  }
+  html body .form-drawer.ficha-celular .form-drawer-header-main > :not(h1):not(h2):not(h3):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .form-drawer.ficha-celular .form-drawer-header :is(h1, h2, h3):not(#love-h-a):not(#love-h-b) {
+    margin: 0 !important; font-family: 'Plus Jakarta Sans', Inter, sans-serif; font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important;
+    letter-spacing: -0.4px; color: #18181B !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body .ficha-voltar-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .ficha-voltar-celular svg:not(#love-h-a) { width: 20px; height: 20px; }
+  html body .ficha-salvar-celular:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; height: 40px; padding: 0 16px; margin: 0 0 0 8px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: none;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .ficha-salvar-celular:active:not(#love-h-a) { border-color: #181D24; }
+
+  /* Corpo: cinza, sem caixas brancas, 16px de lado e 24px entre as seções. */
+  html body .form-drawer.ficha-celular > .form-drawer-body:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 24px 16px calc(32px + env(safe-area-inset-bottom, 0px)) !important; background: #F4F6F7 !important; border: 0 !important; border-radius: 0 !important;
+  }
+  html body .form-drawer.ficha-celular .form-drawer-body :is(form, .space-y-4, .space-y-5):not(#love-h-a) { display: flex; flex-direction: column; gap: 24px; }
+  html body .form-drawer.ficha-celular .form-drawer-body :is(form, .space-y-4, .space-y-5) > *:not(#love-h-a) { margin-top: 0 !important; margin-bottom: 0 !important; }
+  html body .form-drawer.ficha-celular .form-drawer-body :is(.dash-card, .task-drawer-comment-card, .form-field-card, .lead-origem):not(#love-h-a):not(#love-h-b) {
+    background: transparent !important; border: 0 !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important;
+  }
+  html body .form-drawer.ficha-celular .form-drawer-body .grid.grid-cols-2:not(#love-h-a):not(#love-h-b) { grid-template-columns: 1fr !important; gap: 24px !important; }
+  html body .form-drawer.ficha-celular .field-label:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #71717A; margin-bottom: 6px; }
+  html body .form-drawer.ficha-celular :is(.field-input, .field-select, input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], input[type="search"], select):not(.ficha-salvar-celular):not(#love-h-a):not(#love-h-b) {
+    height: 46px !important; min-height: 46px; padding-left: 12px; padding-right: 12px; font-size: 16px !important;
+    background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body .form-drawer.ficha-celular :is(textarea, .field-textarea):not(#love-h-a):not(#love-h-b) {
+    font-size: 16px !important; background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body .form-drawer.ficha-celular :is(input, select, textarea):focus:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; outline: none !important; box-shadow: none !important; }
+
+  /* O Salvar/Cancelar de baixo foi para o cabeçalho (a seta faz o Cancelar). */
+  html body .form-drawer.ficha-celular :is(.ficha-salvar-alvo, [id$="-cancel"]):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .form-drawer.ficha-celular > .form-drawer-footer:not(:has(button:not(.ficha-salvar-alvo):not([id$="-cancel"]):not([hidden]))):not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  body[data-theme="dark"] .form-drawer.ficha-celular,
+  body[data-theme="dark"] .form-drawer.ficha-celular > .form-drawer-body { background: #1A1A1A !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular > .form-drawer-header { background: #1F1F1F !important; border-bottom-color: #333333 !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular .form-drawer-header :is(h1, h2, h3),
+  body[data-theme="dark"] .ficha-voltar-celular { color: #FFFFFF !important; }
+  body[data-theme="dark"] .ficha-salvar-celular { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular :is(.field-input, .field-select, input, select, textarea) { background-color: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular .field-label { color: #A1A1AA; }
+}
+
+/* Celular do Hub: sem pop-ups. As janelas (.modal-card) viram tela cheia no
+   fundo cinza, com os campos no padrão das fichas; só as confirmações
+   ("Remover...?", "Alterações não salvas") continuam pequenas. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card:not(#love-h-a):not(#love-h-b) {
+    position: fixed; inset: 0; width: 100% !important; max-width: none !important; height: 100dvh; max-height: none !important; margin: 0 !important;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 16px calc(32px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #F4F6F7 !important; transform: none !important; z-index: 120;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card :is(.field-input, .field-select):not(#love-h-a):not(#love-h-b) {
+    height: 46px !important; font-size: 16px !important; background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card :is(textarea, .field-textarea):not(#love-h-a):not(#love-h-b) { font-size: 16px !important; }
+  body[data-theme="dark"] .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card { background: #1A1A1A !important; }
+}

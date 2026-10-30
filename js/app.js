@@ -9979,7 +9979,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
   // Recados vazios: animação Lottie (cartinha) no lugar do ícone. O player
   // (dotlottie-wc) só é baixado quando essa tela aparece.
-  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="https://lottie.host/76100b0d-2777-4935-b5f5-a218c8fa63c5/ENogsbhX5K.lottie" autoplay loop aria-hidden="true"></dotlottie-wc>';
+  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie" autoplay loop aria-hidden="true"></dotlottie-wc>';
   function carregarPlayerLottie() {
     if (customElements.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
     const s = document.createElement('script');

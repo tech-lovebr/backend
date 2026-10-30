@@ -300,6 +300,8 @@ function opRenderPedidos() {
   grade.innerHTML = lista.slice((opPagina - 1) * OP_POR_PAGINA, opPagina * OP_POR_PAGINA).map(opCardHtml).join('');
   const texto = document.getElementById('op-pagina-texto');
   if (texto) texto.textContent = `Página ${opPagina} de ${paginas}`;
+  const total = document.getElementById('op-total-celular');
+  if (total) total.textContent = `${lista.length} ${lista.length === 1 ? 'oportunidade' : 'oportunidades'}`;
   document.querySelector('[data-op-pagina="-1"]')?.toggleAttribute('disabled', opPagina <= 1);
   document.querySelector('[data-op-pagina="1"]')?.toggleAttribute('disabled', opPagina >= paginas);
   opRenderChips();
@@ -770,7 +772,45 @@ function opLigarArrasteParaProposta(grade) {
   grade.addEventListener('touchcancel', fim);
 }
 
+/* Celular: a busca sai do cabeçalho e vai para o topo da caixa da lista,
+   como em Clientes (contagem em cima; busca e "Filtrar por" lado a lado).
+   No desktop volta para o cabeçalho. */
+const OP_MQ_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+function opPosicionarBusca() {
+  const busca = document.querySelector('#op-header-acoes .op-busca, #op-barra-celular .op-busca');
+  const filtrar = document.getElementById('op-filtrar');
+  const filtrarBtn = document.getElementById('op-filtrar-btn');
+  const acoes = document.getElementById('op-header-acoes');
+  const caixa = document.getElementById('op-caixa');
+  if (!busca || !filtrar || !filtrarBtn || !acoes || !caixa) return;
+  let barra = document.getElementById('op-barra-celular');
+  if (OP_MQ_CELULAR.matches) {
+    if (!barra) {
+      const total = document.createElement('p');
+      total.className = 'tabela-total-celular';
+      total.id = 'op-total-celular';
+      barra = document.createElement('div');
+      barra.className = 'tabela-barra op-barra-celular';
+      barra.id = 'op-barra-celular';
+      barra.innerHTML = '<div class="tabela-barra-acoes"></div>';
+      caixa.prepend(total, barra);
+    }
+    barra.prepend(busca);
+    barra.querySelector('.tabela-barra-acoes')?.append(filtrar);
+    caixa.classList.add('lista-celular');
+    // Mesmo botão de Clientes: "Filtrar ⌄" com borda (o rótulo vem do atributo).
+    filtrarBtn.setAttribute('data-tabela-filtrar', '');
+    filtrarBtn.setAttribute('data-rotulo-celular', 'Filtrar');
+  } else {
+    acoes.append(busca, filtrar);
+    caixa.classList.remove('lista-celular');
+    filtrarBtn.removeAttribute('data-tabela-filtrar');
+  }
+}
+OP_MQ_CELULAR.addEventListener?.('change', opPosicionarBusca);
+
 function opLigarEventos() {
+  opPosicionarBusca();
   document.querySelectorAll('[data-op-aba]').forEach(b => b.addEventListener('click', () => opMostrarAba(b.dataset.opAba)));
   document.querySelectorAll('[data-op-cat]').forEach(b => b.addEventListener('click', () => {
     opFiltroCat = b.dataset.opCat;

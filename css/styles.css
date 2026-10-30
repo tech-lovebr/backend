@@ -15134,7 +15134,7 @@ html body .floorplan-seat-dot.tem-restricao:not(#love-h-a):not(#love-h-b) { back
 }
 
 /* Recados vazios: animação Lottie da cartinha no lugar do ícone (desktop e celular). */
-html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { display: block; width: 140px; height: 140px; margin: 0 auto 12px; }
+html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { display: block; width: 96px; height: 96px; margin: 0 auto 12px; }
 
 /* Celular, Recados recebidos vazio: a caixa branca ocupa todo o espaço,
    igual a Meus presentes vazio (fundo branco, borda fina, cantos de 10px);
@@ -15180,7 +15180,7 @@ html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { di
 }
 
 /* Meus convidados vazio: animação (SVG animado) no lugar do ícone, como em Recados. */
-html body #rsvp-empty-state .rsvp-vazio-animado:not(#love-h-a):not(#love-h-b) { width: 140px; height: 140px; margin: 0 auto 12px; }
+html body #rsvp-empty-state .rsvp-vazio-animado:not(#love-h-a):not(#love-h-b) { width: 96px; height: 96px; margin: 0 auto 12px; }
 
 /* Meus presentes vazio: "Adicionar lista pronta" com a animação Lottie no
    lugar do ícone, sem a bolinha em volta. */
@@ -15283,4 +15283,4 @@ html body #gifts-listas-prontas .lista-pronta-lottie:not(#love-h-a) { display: b
 
 /* Mapa do evento vazio: ícone animado de adicionar no lugar da moldura,
    no mesmo tamanho, cor (#D4D4D8) e traço (2,5px) do de Meus convidados. */
-html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#love-h-b) { display: block; width: 140px; height: 140px; margin: 0 auto 4px; flex-shrink: 0; }
+html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#love-h-b) { display: block; width: 96px; height: 96px; margin: 0 auto 4px; flex-shrink: 0; }

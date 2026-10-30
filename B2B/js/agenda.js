@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initWorkViewTabs();
   await initKanbanBoard();
   initTaskDrawer();
+  fichaNaPaginaNoDesktop('task-drawer', '[data-view-panel="quadro"]');
+  fichaNaPaginaNoDesktop('event-drawer', { painel: '[data-view-panel="agenda"]', fechar: '#event-drawer-close' });
   initShareBoardModal();
   await loadAgendaLeads();
   await initAgendaCalendar();

@@ -11839,18 +11839,23 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body .com-ficha-na-pagina > :not(.na-pagina):not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
   html body.ficha-na-pagina-aberta .drawer-backdrop:not(#love-h-a):not(#love-h-b) { display: none !important; }
-  html body .form-drawer.na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  html body :is(.form-drawer, .agenda-evento-popup, .modal-card).na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     position: static !important; inset: auto !important; transform: none !important; translate: none !important; z-index: auto !important;
     width: 100% !important; max-width: none !important; height: auto !important; max-height: none !important;
     border: 1px solid rgba(0, 0, 0, 0.06) !important; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03) !important; border-radius: 10px !important;
     overflow: visible !important; background: #FFFFFF !important; transition: none !important;
   }
   html body .form-drawer.na-pagina > *:not(#love-h-a):not(#love-h-b) { max-height: none !important; overflow: visible !important; }
+  html body .modal-backdrop.ficha-movida:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .escondido-pela-ficha:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+  html body .agenda-evento-popup.na-pagina .agenda-evento-alca:not(#love-h-a) { visibility: hidden; }
+  html body .agenda-evento-popup.na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: block !important; padding: 0.5rem 1.5rem 1.5rem !important; }
+  html body .modal-card.na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding: 1.5rem !important; margin: 0 !important; }
   /* Cancelar é só texto. */
   html body .form-drawer.na-pagina [id$="-cancel"]:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     background: transparent !important; border-color: transparent !important; box-shadow: none !important; padding-left: 8px !important; padding-right: 8px !important;
   }
-  body[data-theme="dark"] .form-drawer.na-pagina { background: #252525 !important; border-color: #404040 !important; }
+  body[data-theme="dark"] :is(.form-drawer, .agenda-evento-popup, .modal-card).na-pagina { background: #252525 !important; border-color: #404040 !important; }
 }
 
 /* Dashboard no celular, ordem aprovada: Saldo, Ações rápidas, Sua agenda,

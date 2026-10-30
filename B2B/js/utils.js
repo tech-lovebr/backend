@@ -1804,44 +1804,71 @@ async function escolherContatosDoCelular() {
 
 /* ==========================================================================
    Desktop: ficha dentro da página (sem pop-up), como Criar presente no
-   anfitrião (abrirPresenteNaPagina). Quando a gaveta abre (.show), ela entra
-   na caixa da página, ocupando a largura toda no lugar da lista; ao fechar,
+   anfitrião (abrirPresenteNaPagina). Quando a janela abre (.show), a ficha
+   entra na caixa da página, na largura toda e no lugar da lista; ao fechar,
    volta para o lugar de origem.
+   opts (texto) = seletor do painel cujo resto some enquanto a ficha está aberta.
+   opts (objeto):
+     painel   — idem acima;
+     depoisDe — a ficha entra logo depois deste elemento, que some;
+     mover    — seletor, dentro da janela, da parte que vai para a página
+                (ex.: o .modal-card de um .modal-backdrop);
+     fechar   — botão que fecha (padrão: .form-drawer-close).
    ========================================================================== */
-function fichaNaPaginaNoDesktop(drawerId, painelSel) {
-  const drawer = document.getElementById(drawerId);
-  if (!drawer) return;
-  const casa = { pai: drawer.parentElement, depois: drawer.nextSibling };
+function fichaNaPaginaNoDesktop(janelaId, opts) {
+  const janela = document.getElementById(janelaId);
+  if (!janela) return;
+  if (typeof opts === 'string') opts = { painel: opts };
+  const ficha = (opts.mover && janela.querySelector(opts.mover)) || janela;
+  const casa = { pai: ficha.parentElement, depois: ficha.nextSibling };
+  let escondido = null;
+  let painelAtual = null;
+
+  const fechar = () => {
+    const botao = (opts.fechar && document.querySelector(opts.fechar)) || ficha.querySelector('.form-drawer-close');
+    botao?.click();
+  };
   const devolver = () => {
-    if (!drawer.classList.contains('na-pagina')) return;
-    const painel = drawer.parentElement;
-    painel?.classList.remove('com-ficha-na-pagina');
+    if (!ficha.classList.contains('na-pagina')) return;
+    painelAtual?.classList.remove('com-ficha-na-pagina');
+    if (escondido) { escondido.classList.remove('escondido-pela-ficha'); escondido = null; }
     document.body.classList.remove('ficha-na-pagina-aberta');
-    drawer.classList.remove('na-pagina');
-    casa.pai.insertBefore(drawer, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+    ficha.classList.remove('na-pagina');
+    janela.classList.remove('ficha-movida');
+    casa.pai.insertBefore(ficha, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
   };
   const levar = () => {
-    if (drawer.classList.contains('na-pagina') || hubNoCelular()) return;
-    const painel = document.querySelector(painelSel);
-    if (!painel || !painel.checkVisibility?.()) return;
-    painel.appendChild(drawer);
-    drawer.classList.add('na-pagina');
-    // Trocou de aba com a ficha aberta: fecha a ficha.
-    if (!painel.__vigiaFicha) {
-      painel.__vigiaFicha = new MutationObserver(() => {
-        if (painel.hidden && drawer.classList.contains('na-pagina')) drawer.querySelector('.form-drawer-close')?.click();
-      });
-      painel.__vigiaFicha.observe(painel, { attributes: true, attributeFilter: ['hidden'] });
+    if (ficha.classList.contains('na-pagina') || hubNoCelular()) return;
+    const ref = document.querySelector(opts.painel || opts.depoisDe);
+    if (!ref || !ref.checkVisibility?.()) return;
+    if (opts.painel) {
+      ref.appendChild(ficha);
+      ref.classList.add('com-ficha-na-pagina');
+      painelAtual = ref;
+    } else {
+      ref.after(ficha);
+      ref.classList.add('escondido-pela-ficha');
+      escondido = ref;
+      painelAtual = null;
     }
-    painel.classList.add('com-ficha-na-pagina');
+    ficha.classList.add('na-pagina');
+    if (ficha !== janela) janela.classList.add('ficha-movida');
     document.body.classList.add('ficha-na-pagina-aberta');
     document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
     window.scrollTo({ top: 0 });
+    // Trocou de aba com a ficha aberta: fecha a ficha.
+    const aba = ficha.parentElement.closest('[data-view-panel], [data-leads-painel], [data-tab-panel]');
+    if (aba && !aba.__vigiaFicha) {
+      aba.__vigiaFicha = new MutationObserver(() => {
+        if (ficha.classList.contains('na-pagina') && ficha.parentElement.closest('[data-view-panel], [data-leads-painel], [data-tab-panel]') === aba && !aba.checkVisibility()) fechar();
+      });
+      aba.__vigiaFicha.observe(aba, { attributes: true, attributeFilter: ['hidden', 'style'] });
+    }
   };
   new MutationObserver(() => {
-    if (drawer.classList.contains('show')) levar(); else devolver();
-  }).observe(drawer, { attributes: true, attributeFilter: ['class'] });
+    if (janela.classList.contains('show')) levar(); else devolver();
+  }).observe(janela, { attributes: true, attributeFilter: ['class'] });
   window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', () => {
-    if (hubNoCelular()) devolver(); else if (drawer.classList.contains('show')) levar();
+    if (hubNoCelular()) devolver(); else if (janela.classList.contains('show')) levar();
   });
 }

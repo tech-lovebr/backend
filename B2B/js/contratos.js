@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderContratosAbertos();
   renderPaymentLinksList();
   initPaymentLinkModal();
+  fichaNaPaginaNoDesktop('payment-link-modal', { painel: '[data-view-panel="receber"]', mover: '.modal-card', fechar: '#payment-link-modal-close' });
   initWithdrawalModal();
   initChargeDrawer();
   window.b2bPageReady?.();

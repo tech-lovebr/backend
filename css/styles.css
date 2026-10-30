@@ -15115,3 +15115,10 @@ html body .floorplan-seat-dot.tem-restricao:not(#love-h-a):not(#love-h-b) { back
   html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="edit-site"]:not(#love-h-a):not(#love-h-b) { order: 4 !important; }
   html body .sidebar-icon-rail .rail-chat-btn:not(#love-h-a):not(#love-h-b) { order: 5 !important; }
 }
+
+/* Desktop, barra lateral: item ativo em azul clarinho, a mesma cor do ícone
+   do logo no topo da barra (icon-white1.png, #EBF4FF), ícone na primária. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background-color: #EBF4FF !important; color: #183b54 !important; }
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) :is(svg, svg *) { color: #183b54 !important; stroke: #183b54 !important; }
+}

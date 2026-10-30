@@ -9319,7 +9319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="presentes-vazio-texto">Sua lista está vazia. <b>Que tal adicionar presentes?</b></p>
             <div class="presentes-vazio-cards">
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="presente">
-                <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/adicionar-presente.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar presente</strong>
                 <span class="lista-pronta-qtd">Crie um presente do zero</span>
               </button>

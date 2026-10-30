@@ -57,6 +57,7 @@ let opEmpresaId = null;
 let opMinhasCategorias = [];
 let opPedidos = [];
 let opPropostas = [];
+let opSemProdutos = false;
 let opFiltroCat = 'minha';
 let opPedidoAberto = null;
 let opMeusProdutos = [];
@@ -662,6 +663,14 @@ function opRenderPropostas() {
   if (!body) return;
   if (!opPropostasPaginacao) opPropostasPaginacao = montarPaginacaoTabela(document.getElementById('op-propostas-card'), () => opRenderPropostas());
   const daPagina = paginarLinhas(opPropostasPaginacao, opPropostas);
+  // Sem produto e sem propostas: o aviso para cadastrar um produto no lugar da tabela.
+  const semProduto = opSemProdutos && !opPropostas.length;
+  const avisoSemProduto = document.getElementById('op-propostas-sem-produtos');
+  if (avisoSemProduto) {
+    avisoSemProduto.hidden = !semProduto;
+    document.getElementById('op-propostas-card').hidden = semProduto;
+    if (semProduto && typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
+  }
   if (!opPropostas.length) {
     body.innerHTML = '<tr><td colspan="7" class="tabela-vazia-cheia">Você ainda não enviou propostas.</td></tr>';
     return;
@@ -836,7 +845,8 @@ async function initOportunidades() {
   // Sem produto cadastrado: só a mensagem para cadastrar um.
   // Sem produto cadastrado: Buscar eventos mostra só a mensagem para
   // cadastrar um (Minhas propostas continua funcionando).
-  if (!(await opTemProdutos())) {
+  opSemProdutos = !(await opTemProdutos());
+  if (opSemProdutos) {
     document.getElementById('op-sem-produtos').hidden = false;
     if (typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
     document.getElementById('op-conteudo').hidden = true;

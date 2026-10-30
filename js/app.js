@@ -13521,10 +13521,10 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!guestName) seatDot.title = 'Lugar vago';
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
-          // Cadeira (modelo de planta baixa): encosto do lado de fora da mesa.
+          // Assento: quadrado com cantos arredondados (padrão da Love).
           let anguloDaCadeira = Math.atan2(seatY - containerSize / 2, seatX - containerSize / 2) * 180 / Math.PI;
           if (formato !== 'redonda') anguloDaCadeira = Math.round(anguloDaCadeira / 90) * 90;
-          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><path d="M5.2 5.2h19.6l-.9 18.5a1.7 1.7 0 0 1-1.7 1.6H7.8a1.7 1.7 0 0 1-1.7-1.6Z"/><path d="M3.8 5.9Q15 2.7 26.2 5.9V3.9Q15 .7 3.8 3.9Z"/></svg>`);
+          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><rect x="3.5" y="3.5" width="23" height="23" rx="6"/></svg>`);
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {

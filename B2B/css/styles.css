@@ -12238,3 +12238,7 @@ html body .sidebar-brand-top > .sidebar-fixar[aria-pressed="true"]:not(#love-h-a
 html body .sidebar-brand-top > .sidebar-fixar[aria-pressed="true"] svg:not(#love-h-a) { transform: rotate(45deg); fill: currentColor; }
 html body.sidebar-hover-mode.sidebar-fixo .b2b-main:not(#love-h-a) { margin-left: var(--sidebar-width); }
 html body.sidebar-hover-mode.sidebar-fixo .b2b-sidebar:not(#love-h-a) { box-shadow: none; }
+
+/* Meus produtos vazio: ícone animado no lugar do "+", no tamanho, cor e
+   traço dos ícones de Adicionar presente do anfitrião (64px, #D4D4D8, 2px). */
+html body .produtos-vazio-criar .produtos-vazio-lottie:not(#love-h-a) { display: block; width: 64px; height: 64px; margin: 0 auto 6px; }

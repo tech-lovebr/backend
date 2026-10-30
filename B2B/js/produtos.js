@@ -339,12 +339,13 @@ function renderProducts() {
         <p class="produtos-vazio-texto">Você ainda não tem nenhum produto cadastrado. <b>Que tal cadastrar um novo?</b></p>
         <div class="produtos-vazio-cards">
           <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
-            <span class="produtos-vazio-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+            <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
             <strong>Cadastrar novo produto</strong>
             <span class="produtos-vazio-criar-sub">Crie um produto ou serviço do zero</span>
           </button>
         </div>
       </div>`;
+    if (typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
     grid.querySelector('[data-produto-vazio-criar]')?.addEventListener('click', () => document.getElementById('product-add-btn')?.click());
     return;
   }

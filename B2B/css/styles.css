@@ -11852,3 +11852,17 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   }
   body[data-theme="dark"] .form-drawer.na-pagina { background: #252525 !important; border-color: #404040 !important; }
 }
+
+/* Dashboard no celular, ordem aprovada: Saldo, Ações rápidas, Sua agenda,
+   Analytics, Notícias e eventos e, por último, Precisa de ajuda?
+   As duas pilhas viram uma só (display: contents) para poder reordenar. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack:not(#love-h-a) { display: contents; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > :not(#love-h-a) { order: 10; min-width: 0; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-saldo-total:not(#love-h-a) { order: 1; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-quick-actions:not(#love-h-a) { order: 2; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(#agenda-list):not(#love-h-a) { order: 3; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-analytics-card):not(#love-h-a) { order: 4; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-news-card):not(#love-h-a) { order: 5; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-help-section:not(#love-h-a) { order: 6; margin-top: 0; }
+}

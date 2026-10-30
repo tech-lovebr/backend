@@ -14691,3 +14691,13 @@ body[data-theme="dark"] :is(.hc-celular, .hc-celular::before) { border-color: #4
 body[data-theme="dark"] .hc-celular::before, body[data-theme="dark"] .hc-barra { background: #404040; }
 body[data-theme="dark"] .hc-vazio { background: #2A2A2A; color: #52525B; }
 body[data-theme="dark"] .hc-chegando { box-shadow: 0 0 0 3px #1F1F1F; }
+
+/* ==========================================================================
+   Celular, Meus convidados: Remover no vermelho do coração de favoritar
+   (Fornecedores); Editar e Remover somem por completo com a linha fechada
+   (nenhum risco fica aparecendo embaixo).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp .guests-table .guest-acao-remover:not(#love-h-a):not(#love-h-b) { background: #c7305b !important; }
+  html body #tab-rsvp .guests-table .guest-acoes:not(.is-visivel):not(#love-h-a):not(#love-h-b) { visibility: hidden; }
+}

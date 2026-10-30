@@ -10277,8 +10277,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function moverLinhaDoConvidado(celula, x, animar) {
     // Editar/Remover ocupam a altura do grupo todo (convidado + acompanhantes).
     const acoes = /** @type {HTMLElement|null} */ (celula.querySelector('.guest-acoes'));
-    if (acoes) acoes.style.height = `${celulasDoGrupo(celula).reduce((soma, c) => soma + (c.closest('tr')?.getBoundingClientRect().height || 0), 0)}px`;
-    celulasDoGrupo(celula).forEach((c) => {
+    // A faixa vai só até o fim do último card (passava 1px para a linha
+    // divisória e ficava um risco escuro) e some quando a linha fecha.
+    const grupo = celulasDoGrupo(celula);
+    const ultimoCard = /** @type {HTMLElement|null|undefined} */ (grupo[grupo.length - 1]?.querySelector('.guest-card-arraste'));
+    if (acoes && ultimoCard) {
+      acoes.style.height = '0px';
+      acoes.style.height = `${Math.max(0, Math.floor(ultimoCard.getBoundingClientRect().bottom - acoes.getBoundingClientRect().top))}px`;
+      if (x < 0) acoes.classList.add('is-visivel');
+      else if (!animar) acoes.classList.remove('is-visivel');
+      else setTimeout(() => { if (!celula.classList.contains('is-aberta')) acoes.classList.remove('is-visivel'); }, 420);
+    }
+    grupo.forEach((c) => {
       const card = /** @type {HTMLElement|null} */ (c.querySelector('.guest-card-arraste'));
       if (!card) return;
       card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';

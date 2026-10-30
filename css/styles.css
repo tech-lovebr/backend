@@ -15298,13 +15298,20 @@ html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#lov
   body[data-theme="dark"] #tab-b2b #b2b-messages-view .chat-total-celular { color: #FFFFFF !important; }
 }
 
-/* Celular: rodapé (© Love Hub Ltda., Privacidade e Termos) só na Home. */
+/* Celular: rodapé só na Home, copiado do Hub — linha fina em cima,
+   © Love Hub Ltda. à esquerda e Privacidade / Termos à direita, 12px. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body #view-event-os-dashboard:has(#tab-overview.active:not(.hidden)) #dashboard-footer.rodape-logado:not(#love-h-a):not(#love-h-b) {
-    display: block !important; padding: 16px !important; margin-top: 8px !important;
+  html body #view-event-os-dashboard:has(#tab-overview.active:not(.hidden)) #dashboard-footer.rodape-logado:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: block !important; flex-shrink: 0; margin-top: 8px !important; padding: 20px 16px 24px !important;
+    background: transparent !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important;
   }
   html body #view-event-os-dashboard:not(:has(#tab-overview.active:not(.hidden))) #dashboard-footer.rodape-logado:not(#love-h-a):not(#love-h-b) { display: none !important; }
-  html body #dashboard-footer .rodape-logado-linha:not(#love-h-a):not(#love-h-b) { flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 12px; }
-  html body #dashboard-footer .rodape-logado-links:not(#love-h-a):not(#love-h-b) { flex-wrap: nowrap; gap: 12px; margin-left: auto; }
-  html body #dashboard-footer :is(.rodape-logado-texto, .rodape-logado-links a):not(#love-h-a):not(#love-h-b) { white-space: nowrap; }
+  html body #dashboard-footer .rodape-logado-linha:not(#love-h-a):not(#love-h-b) { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+  html body #dashboard-footer .rodape-logado-texto:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 12px !important; color: #71717A !important; white-space: nowrap; }
+  html body #dashboard-footer .rodape-logado-links:not(#love-h-a):not(#love-h-b) { display: flex; flex-wrap: nowrap; justify-content: flex-end; gap: 16px; margin: 0 0 0 auto; }
+  html body #dashboard-footer .rodape-logado-links a:not(#love-h-a):not(#love-h-b) { font-size: 12px !important; font-weight: 500 !important; color: #52525B !important; text-decoration: none !important; white-space: nowrap; }
+  html body #view-event-os-dashboard:has(#tab-overview.active:not(.hidden)) .dashboard-main-area > .rodape-respiro:not(#love-h-a):not(#love-h-b) { flex-basis: 16px !important; height: 16px !important; }
+  body[data-theme="dark"] #view-event-os-dashboard #dashboard-footer.rodape-logado { border-top-color: #333333 !important; }
+  body[data-theme="dark"] #dashboard-footer .rodape-logado-texto { color: #A1A1AA !important; }
+  body[data-theme="dark"] #dashboard-footer .rodape-logado-links a { color: #D4D4D8 !important; }
 }

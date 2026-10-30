@@ -12376,3 +12376,45 @@ html body .dash-ads-carousel:not(#love-h-a) { touch-action: pan-y; }
   html body .op-filtrar-campo:not(#love-h-a):not(#love-h-b) { gap: 6px; }
   html body .op-filtrar-campo .op-filtro-select:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; height: 40px; }
 }
+
+/* Celular: as abas de Oportunidades/Propostas/Clientes, Gestão (Minha agenda/
+   Minhas tarefas), Contratos e Financeiro no mesmo formato da barra de
+   submenus do anfitrião (.submenu-celular): de ponta a ponta, grudada no
+   topo, mesma largura, texto limpo e a linha da primária em cima da ativa. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: sticky; top: -20px; z-index: 20;
+    display: flex; flex-shrink: 0; gap: 0 !important; width: auto; max-width: none; box-sizing: border-box;
+    margin: 0 -16px 16px !important; padding: 0 !important;
+    background: #FFFFFF !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs)::-webkit-scrollbar { display: none; }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: relative; flex: 1 0 auto !important; min-width: 0 !important; min-height: 46px; height: auto !important; display: inline-flex; align-items: center; justify-content: center;
+    margin: 0 !important; padding: 0 6px !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none;
+    background: #FFFFFF !important; color: #52525B !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important; letter-spacing: -0.01em !important;
+    white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background: #F4F6F7 !important; color: #18181B !important; font-weight: 600 !important;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active:not(#love-h-a):not(#love-h-b)::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #183b54; border-radius: 0;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab:not(#love-h-a)::after { display: none !important; }
+  /* O que vem logo antes das abas (cabeçalho ou descrição) fica sem margem embaixo. */
+  html body .b2b-content > :has(+ :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs)):not(#love-h-a):not(#love-h-b) { margin-bottom: 0 !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) { background: #1F1F1F !important; border-top-color: #333333 !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab { background: #1F1F1F !important; color: #A1A1AA !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active { background: #1A1A1A !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active::before { background: #EBF4FF; }
+}
+
+/* Mensagens: atalho para Oportunidades só no cabeçalho do celular. */
+.chat-oportunidades-btn { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content > .b2b-header-bar > a.chat-oportunidades-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: inline-flex !important; align-items: center; text-decoration: none; }
+}

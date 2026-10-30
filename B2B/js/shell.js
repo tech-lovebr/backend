@@ -1167,28 +1167,43 @@ function montarMenuDoCelular() {
   const linha = (/** @type {string} */ href, /** @type {string} */ rotulo, /** @type {string} */ ic, /** @type {boolean} */ ativo) =>
     `<a href="${escapeHtml(href)}" class="menu-celular-link${ativo ? ' is-ativo' : ''}"${ativo ? ' aria-current="page"' : ''}>${ic}<span>${escapeHtml(rotulo)}</span></a>`;
 
-  // Todas as seções da sidebar, na mesma ordem; o Construtor vira um título
-  // com Editar meu site e Formulários embaixo; Workshops e Dúvidas no fim.
+  // Seções da sidebar: primeiro os itens soltos (Dashboard, Produtos,
+  // Clientes, Contratos, Financeiro); depois as categorias, cada uma com o
+  // título e os itens embaixo — Construtor (Editar meu site, Formulários),
+  // Gestão (Tarefas, Agenda) — e, no fim, Mais (Workshops, Dúvidas).
+  const ICONE_TAREFAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5L7.5 17"/></svg>';
+  const ICONE_AGENDA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
   const desenharNav = () => {
     const sidebar = document.querySelector('.b2b-sidebar');
     if (!sidebar) return;
-    let html = '';
+    let soltos = '';
+    let categorias = '';
     sidebar.querySelectorAll('.sidebar-nav > .sidebar-nav-item[data-page], .sidebar-nav > .sidebar-nav-group').forEach(el => {
       if (el.classList.contains('sidebar-nav-group')) {
         const titulo = (el.querySelector('.sidebar-nav-text')?.textContent || '').trim();
         const ic = icone(el.querySelector('.sidebar-nav-toggle'));
         const aba = new URLSearchParams(location.search).get('tab') || 'editar';
-        html += `<p class="menu-celular-secao">${escapeHtml(titulo)}</p>`;
+        categorias += `<p class="menu-celular-secao">${escapeHtml(titulo)}</p>`;
         el.querySelectorAll('.sidebar-subnav-item').forEach(sub => {
           const a = /** @type {HTMLAnchorElement} */ (sub);
           const ativo = pagina === 'paginas-site' && a.dataset.construtorAba === aba;
-          html += linha(a.getAttribute('href') || '', (a.textContent || '').trim(), ic, ativo);
+          categorias += linha(a.getAttribute('href') || '', (a.textContent || '').trim(), ic, ativo);
         });
         return;
       }
       const a = /** @type {HTMLAnchorElement} */ (el);
-      html += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
+      if (a.dataset.page === 'agenda') {
+        // Gestão: Tarefas e Agenda separados (abrem a aba certa da página).
+        const abaAtiva = document.querySelector('#work-view-tabs .category-tab.active')?.getAttribute('data-view') || new URLSearchParams(location.search).get('view') || 'agenda';
+        const naGestao = pagina === 'agenda';
+        categorias += '<p class="menu-celular-secao">Gestão</p>';
+        categorias += linha('agenda?view=quadro', 'Tarefas', ICONE_TAREFAS, naGestao && abaAtiva === 'quadro');
+        categorias += linha('agenda?view=agenda', 'Agenda', ICONE_AGENDA, naGestao && abaAtiva === 'agenda');
+        return;
+      }
+      soltos += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
     });
+    let html = soltos + categorias;
     const extras = Array.from(sidebar.querySelectorAll('.sidebar-bottom > .sidebar-nav-item[data-page]'));
     if (extras.length) {
       html += '<p class="menu-celular-secao">Mais</p>';

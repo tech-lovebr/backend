@@ -592,7 +592,7 @@
   /** @param {number} direcao  1 = avançou, -1 = voltou, 0 = só redesenho */
   function desenhar(direcao) {
     const textos = modo === 'lote' && etapa === 1 && noCelular()
-      ? { titulo: 'Criar nova solicitação', sub: 'Algumas perguntas para encontrarmos o fornecedor perfeito para o seu evento. Lembre-se de adicionar informações claras sobre o que você precisa.' }
+      ? { titulo: 'Vamos encontrar um novo fornecedor?', sub: 'Responda algumas perguntas para criarmos uma solicitação de orçamento. Lembre-se de adicionar informações claras sobre o que você precisa.' }
       : modo === 'lote' ? (textosDaPagina(etapa) || TEXTO_DA_PAGINA) : TEXTOS_DAS_ETAPAS[etapa - 1];
     const titulo = document.getElementById('rfp-etapa-titulo');
     const sub = document.getElementById('rfp-etapa-sub');
@@ -1484,7 +1484,7 @@
     if (etapa === 1) {
       return `
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">Categoria</h4>
+          <h4 class="rfp-pergunta">${noCelular() ? 'Qual serviço você precisa?' : 'Categoria'}</h4>
           ${seletorDeServico()}
           ${erroHtml('categorias')}
           ${id ? blocoTags(id) : ''}

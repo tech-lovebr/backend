@@ -79,6 +79,9 @@ function initSalesViewTabs() {
       if (novo) novo.hidden = btn.dataset.view !== 'orcamentos';
     });
   });
+  // vendas?aba=orcamentos (atalho Orçamento da Home) abre direto em Orçamentos.
+  const abaPedida = new URLSearchParams(location.search).get('aba');
+  wrap.querySelector(`[data-view="${abaPedida}"]`)?.click();
   const novo = document.getElementById('orcamento-novo-btn');
   const ativa = wrap.querySelector('[data-view].active');
   if (novo) novo.hidden = !ativa || ativa.dataset.view !== 'orcamentos';

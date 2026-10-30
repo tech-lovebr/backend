@@ -824,6 +824,11 @@ function leadsMostrarAba(aba) {
   if (titulo) titulo.textContent = aba === 'eventos' ? 'Oportunidades' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');
   if (acoes) acoes.hidden = aba !== 'leads';
+  // Ícone animado carregado com a aba escondida nasce com tamanho zero (pequeno
+  // e borrado): ao mostrar a aba, redesenha no tamanho certo.
+  requestAnimationFrame(() => document.querySelectorAll(`[data-leads-painel="${aba}"] dotlottie-wc`).forEach(l => {
+    try { l.dotLottie?.resize?.(); } catch (_) {}
+  }));
 }
 
 async function opTemProdutos() {

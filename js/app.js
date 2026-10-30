@@ -9978,18 +9978,8 @@ document.addEventListener('DOMContentLoaded', () => {
   var recadoAberto = null;
   /** Recados = presentes com mensagem escrita ou vídeo. @param {any} ev */
   const recadosDoEvento = (ev) => ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim() || g.videoUrl);
-  // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
-  // Recados vazios: animação Lottie (cartinha) no lugar do ícone. O player
-  // (dotlottie-wc) só é baixado quando essa tela aparece.
-  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>';
-  function carregarPlayerLottie() {
-    if (customElements.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
-    const s = document.createElement('script');
-    s.type = 'module';
-    s.id = 'love-dotlottie-wc';
-    s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
-    document.head.appendChild(s);
-  }
+  // Recados vazios: animação "Love Chat" (SVG animado, toca sozinho) acima do aviso.
+  const ICONE_RECADO_VAZIO = '<img class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.svg" alt="" aria-hidden="true" width="140" height="140">';
   /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
   function abrirRecadoDoPresente(gift) {
     const ev = getActiveEvent();
@@ -10120,7 +10110,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="recado-previa">${previa}${msg && g.videoUrl ? ' <span class="recado-tag-video">+ vídeo</span>' : ''}</td>
         </tr>`;
     }).join('');
-    if (!linhas && !recados.length) carregarPlayerLottie();
     raiz.innerHTML = `
       <div class="dash-card love-tabela-caixa recados-caixa">
         <p class="rsvp-total-celular recados-total-celular">${recados.length} ${recados.length === 1 ? 'recado' : 'recados'}</p>

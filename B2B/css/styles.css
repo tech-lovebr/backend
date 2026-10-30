@@ -12002,7 +12002,7 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   }
   html body[data-page="dashboard"] .dash-home-caixa:not(#love-h-a) {
     position: relative; padding: 24px 28px;
-    display: grid; grid-template-columns: minmax(220px, auto) 1fr; align-items: center; gap: 12px 32px;
+    display: grid; grid-template-columns: minmax(150px, 1fr) minmax(248px, 505px); align-items: center; gap: 12px 32px;
     background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left;
   }
   html body[data-page="dashboard"] .dash-home-caixa > .dashboard-greeting-text:not(#love-h-a) { display: contents; }
@@ -12014,7 +12014,7 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
     display: block !important; grid-column: 1; align-self: start; margin: -6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
   }
   html body[data-page="dashboard"] .dash-home-caixa > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
-    grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+    grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(4, minmax(56px, 112px)); justify-content: end; gap: 8px;
     margin: 0; padding: 0 0 0 32px; background: transparent; border: 0; border-left: 1px solid rgba(0, 0, 0, 0.06); border-radius: 0;
   }
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
@@ -12162,3 +12162,8 @@ html body .produtos-vazio-criar-sub:not(#love-h-a) { margin-top: 2px; font-size:
 body[data-theme="dark"] .produtos-vazio, body[data-theme="dark"] .produtos-vazio-criar { background: #252525 !important; border-color: #404040 !important; }
 body[data-theme="dark"] .produtos-vazio-texto b, body[data-theme="dark"] .produtos-vazio-criar strong { color: #FFFFFF !important; }
 body[data-theme="dark"] .produtos-vazio-criar-icone { background: #333333 !important; color: #FFFFFF !important; }
+
+/* Letras suavizadas como no anfitrião (html { -webkit-font-smoothing:
+   antialiased }): sem isso, no Mac o texto do Hub fica mais grosso que o do
+   index com o mesmo peso (ex.: o "Olá, empresa!" da Home). */
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }

@@ -15178,3 +15178,6 @@ html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { di
   }
   html body #builder-toast.toast.show:not(#love-h-a) { transform: translateY(0); }
 }
+
+/* Meus convidados vazio: animação (SVG animado) no lugar do ícone, como em Recados. */
+html body #rsvp-empty-state .rsvp-vazio-animado:not(#love-h-a):not(#love-h-b) { width: 140px; height: 140px; margin: 0 auto 12px; }

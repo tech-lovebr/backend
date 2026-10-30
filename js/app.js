@@ -10502,6 +10502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const textoVazio = document.getElementById('rsvp-vazio-texto');
         if (tituloVazio) tituloVazio.textContent = semNinguem ? 'Adicione os seus primeiros convidados' : 'Nenhum convidado encontrado com este filtro.';
         if (textoVazio) { textoVazio.textContent = 'Cadastre a sua lista de convidados para enviar convites e acompanhar as confirmações de presença em tempo real.'; textoVazio.hidden = !semNinguem; }
+        if (semNinguem) carregarPlayerLottie();
         emptyStateEl.classList.remove('hidden');
       }
       renderRsvpPagination(0);

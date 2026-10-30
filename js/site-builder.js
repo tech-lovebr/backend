@@ -6152,13 +6152,6 @@ function aplicarModeloNoCelular(modelo) {
   if (!paginasJaPublicadas.convite) persistBuilderState(true);
 }
 
-/** "Adicionado em 4 de ago. de 2026" (data em que o modelo entrou na loja de modelos). @param {string} iso */
-function dataDoModelo(iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
-  if (!m) return '';
-  return 'Adicionado em ' + new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
 /** Tela "Escolher novo modelo" (celular): modelos em grade de duas colunas. */
 async function abrirModelosNoCelular() {
   if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches || currentPageKey !== 'convite') return;
@@ -6203,11 +6196,9 @@ async function abrirModelosNoCelular() {
             </span>
           </span>
           <span class="modelos-celular-rotulo">${escapeHtml(m.nome)}</span>
-          <span class="modelos-celular-adicionado">${escapeHtml(dataDoModelo(m.adicionado))}</span>
         </button>`).join('')}
     </div>
-    <div class="modelos-celular-pontos" aria-hidden="true">${lista.map((/** @type {any} */ _m, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>
-    ${temConteudo ? '<button type="button" class="modelos-celular-pular" data-modelos-pular>Continuar com o convite atual</button>' : ''}`;
+    <div class="modelos-celular-pontos" aria-hidden="true">${lista.map((/** @type {any} */ _m, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>`;
   const trilho = /** @type {HTMLElement} */ (tela.querySelector('.modelos-celular-trilho'));
   const pontos = Array.from(tela.querySelectorAll('.modelos-celular-pontos span'));
   trilho.addEventListener('scroll', () => {
@@ -6226,10 +6217,12 @@ async function abrirModelosNoCelular() {
     if (m) aplicarModeloNoCelular(m);
     fechar();
   }));
-  tela.querySelector('[data-modelos-voltar]')?.addEventListener('click', fechar);
-  tela.querySelector('[data-modelos-pular]')?.addEventListener('click', () => {
-    builderState.modeloEscolhido = 'proprio';
-    if (!paginasJaPublicadas.convite) persistBuilderState(true);
+  // Voltar: com convite já montado, segue com ele (a tela não abre sozinha de novo).
+  tela.querySelector('[data-modelos-voltar]')?.addEventListener('click', () => {
+    if (temConteudo && !builderState.modeloEscolhido) {
+      builderState.modeloEscolhido = 'proprio';
+      if (!paginasJaPublicadas.convite) persistBuilderState(true);
+    }
     fechar();
   });
 }

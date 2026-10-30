@@ -447,7 +447,7 @@ function initOrcamentosLista() {
   orcamentosPaginacao = montarPaginacaoTabela(document.getElementById('orcamentos-table-card'), () => renderOrcamentos());
   orcamentosTabelaEstado = montarBarraTabela(document.getElementById('orcamentos-table-card'), {
     placeholder: 'Pesquisar cliente ou serviço...',
-    celular: { nome: 2, info: 6, singular: 'orçamento', plural: 'orçamentos' },
+    celular: { nome: 2, info: 6, singular: 'orçamento', plural: 'orçamentos', editarSel: '[data-orcamento-linha]', rotuloEditar: 'Abrir' },
     filtros: [{ chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(ORCAMENTO_STATUS).map(([k, v]) => [k, v.label]) }],
     exportar: () => tabelaExportarCSV('orcamentos', [
       { titulo: 'Nº', valor: r => r.numero || '' },

@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=790">
+  <link rel="stylesheet" href="css/styles.css?v=794">
 </head>
 <body class="font-sans" data-page="chat">
 
@@ -51,6 +51,7 @@
             <!-- Header da Lista -->
             <!-- Mesma altura fixa (64px) do cabeçalho da conversa à direita,
                  pra linha de baixo das duas colunas ficar alinhada. -->
+            <p class="chat-total-celular" id="chat-total-celular"></p>
             <div class="b2b-chat-contacts-header px-4 h-[64px] flex items-center border-b border-zinc-200 flex-shrink-0">
               <!-- Busca de Contatos -->
               <div class="relative w-full">
@@ -69,11 +70,12 @@
           </div>
 
           <!-- COLUNA DIREITA: JANELA DO CHAT ATIVO -->
-          <div class="flex-1 flex flex-col bg-white min-w-0 h-full">
+          <div class="chat-coluna-conversa flex-1 flex flex-col bg-white min-w-0 h-full">
             
             <!-- Chat Header -->
             <div class="px-6 py-3.5 bg-white border-b border-zinc-200 flex items-center justify-between flex-shrink-0 h-[64px]">
               <div class="flex items-center gap-3.5 min-w-0">
+                <button type="button" class="chat-voltar-celular" id="chat-voltar-celular" aria-label="Voltar para as conversas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
                 <div class="relative flex-shrink-0">
                   <span id="chat-header-avatar" class="w-10 h-10 b2b-avatar-square border border-zinc-200"></span>
                   <span id="chat-header-online-dot" class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
@@ -143,7 +145,7 @@
   </div>
 
   <script src="js/data.js?v=19"></script>
-  <script src="js/utils.js?v=36"></script>
+  <script src="js/utils.js?v=39"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=66"></script>
@@ -202,7 +204,7 @@
     </div>
   </aside>
 
-  <script src="js/mensagens.js?v=30"></script>
+  <script src="js/mensagens.js?v=31"></script>
   <script src="js/chat-modelos.js?v=11"></script>
 </body>
 </html>

@@ -1402,6 +1402,24 @@ function listaNoCelular(card, cfg) {
       if (tds.length < 2) { tr.classList.add('lc-vazia'); return; }
       n++;
       tr.classList.add('lc-linha');
+      const podeEditar = !!(cfg.editarSel && tr.querySelector(cfg.editarSel));
+      if ((podeEditar || cfg.remover) && !tr.querySelector(':scope > .lc-acoes')) {
+        const td = document.createElement('td');
+        td.className = 'lc-acoes';
+        td.innerHTML = acoesDoArrasteHtml(podeEditar, !!cfg.remover, cfg.rotuloEditar || 'Editar');
+        tr.appendChild(td);
+        td.querySelector('.lc-acao-editar')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaArrastada();
+          tr.querySelector(cfg.editarSel)?.click();
+        });
+        td.querySelector('.lc-acao-remover')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaArrastada();
+          cfg.remover(tr);
+        });
+        prepararArrasteDaLinha(tr, tr);
+      }
       const tdNome = tds[(cfg.nome || 1) - 1];
       const tdInfo = cfg.info ? tds[cfg.info - 1] : null;
       if (tdNome && !tdNome.classList.contains('lc-nome')) {
@@ -1423,6 +1441,100 @@ function listaNoCelular(card, cfg) {
   marcar();
   new MutationObserver(marcar).observe(tbody, { childList: true });
 }
+
+/* ==========================================================================
+   Celular: arrastar a linha para a esquerda mostra Editar (#183b54) e
+   Remover (#c7305b), como Mensagens no anfitrião (moverLinhaDaConversa).
+   Botões retos da altura da linha, ícone no meio; passou da metade, fica
+   aberta, senão volta. Uma linha aberta por vez; tocar fora fecha. Fechada,
+   as ações ficam fora da caixa (não aparece nenhuma faixa).
+   prepararArrasteDaLinha(linha, card): "card" é o que anda; as ações ficam
+   em .lc-acoes / .conv-acoes dentro da linha.
+   ========================================================================== */
+const ICONE_ACAO_EDITAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.9 4.6a2 2 0 0 1 2.8 2.8L8.5 18.6 4 20l1.4-4.5L16.9 4.6Z"/></svg>';
+const ICONE_ACAO_ABRIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>';
+const ICONE_ACAO_REMOVER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+const LARGURA_ACAO_ARRASTE = 80;
+
+function acoesDoArrasteHtml(editar, remover, rotuloEditar = 'Editar') {
+  const icone = rotuloEditar === 'Abrir' ? ICONE_ACAO_ABRIR : ICONE_ACAO_EDITAR;
+  return (editar ? `<button type="button" class="lc-acao lc-acao-editar" aria-label="${escapeHtml(rotuloEditar)}" title="${escapeHtml(rotuloEditar)}">${icone}</button>` : '')
+    + (remover ? `<button type="button" class="lc-acao lc-acao-remover" aria-label="Remover" title="Remover">${ICONE_ACAO_REMOVER}</button>` : '');
+}
+
+let linhaArrastadaAberta = null;
+function larguraDasAcoes(linha) {
+  return (linha.querySelectorAll('.lc-acao').length || 1) * LARGURA_ACAO_ARRASTE;
+}
+function moverLinhaArrastada(linha, x, animar) {
+  const card = linha._cardDoArraste || linha;
+  // "translate" (e não "transform"): a camada do Hub zera o transform das linhas.
+  card.style.transition = animar ? 'translate .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+  card.style.translate = x ? `${x}px 0` : '';
+  linha.classList.toggle('is-aberta', x < 0);
+  if (x < 0) linha.classList.add('acoes-visiveis');
+  else if (!animar) linha.classList.remove('acoes-visiveis');
+  else setTimeout(() => { if (!linha.classList.contains('is-aberta')) linha.classList.remove('acoes-visiveis'); }, 420);
+}
+function fecharLinhaArrastada() {
+  if (linhaArrastadaAberta) moverLinhaArrastada(linhaArrastadaAberta, 0, true);
+  linhaArrastadaAberta = null;
+}
+function prepararArrasteDaLinha(linha, card) {
+  if (linha._cardDoArraste) return;
+  linha._cardDoArraste = card;
+  linha.classList.add('tem-arraste');
+  let x0 = 0, y0 = 0, inicio = 0, x = 0, direcao = null;
+  card.addEventListener('touchstart', (e) => {
+    if (!hubNoCelular() || e.touches.length !== 1) return;
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    inicio = linha === linhaArrastadaAberta ? -larguraDasAcoes(linha) : 0;
+    x = inicio; direcao = null; linha.dataset.arrastou = '';
+  }, { passive: true });
+  card.addEventListener('touchmove', (e) => {
+    if (!hubNoCelular() || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+    if (!direcao) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      if (direcao === 'h') {
+        linha.dataset.arrastou = '1';
+        if (linhaArrastadaAberta && linhaArrastadaAberta !== linha) fecharLinhaArrastada();
+      }
+    }
+    if (direcao !== 'h') return;
+    e.preventDefault();
+    const largura = larguraDasAcoes(linha);
+    x = Math.max(-largura, Math.min(0, inicio + dx));
+    moverLinhaArrastada(linha, x, false);
+  }, { passive: false });
+  const soltar = () => {
+    if (direcao !== 'h') return;
+    const largura = larguraDasAcoes(linha);
+    const abrir = x < -largura / 2;
+    moverLinhaArrastada(linha, abrir ? -largura : 0, true);
+    linhaArrastadaAberta = abrir ? linha : (linhaArrastadaAberta === linha ? null : linhaArrastadaAberta);
+    direcao = null;
+    // O "click" que vem logo depois do arraste não abre a linha.
+    setTimeout(() => { linha.dataset.arrastou = ''; }, 350);
+  };
+  card.addEventListener('touchend', soltar);
+  card.addEventListener('touchcancel', soltar);
+}
+// Tocar fora da linha aberta (ou rolar a página) fecha as ações.
+document.addEventListener('touchstart', (e) => {
+  if (linhaArrastadaAberta && !linhaArrastadaAberta.contains(e.target)) fecharLinhaArrastada();
+}, { passive: true, capture: true });
+document.addEventListener('scroll', () => { if (linhaArrastadaAberta) fecharLinhaArrastada(); }, { passive: true, capture: true });
+// Tocou numa linha aberta (fora dos botões): só fecha.
+document.addEventListener('click', (e) => {
+  const linha = e.target.closest && e.target.closest('.tem-arraste');
+  if (!linha) return;
+  if (linha.dataset.arrastou || (linha === linhaArrastadaAberta && !e.target.closest('.lc-acao, .conv-acao'))) {
+    e.preventDefault(); e.stopPropagation();
+    if (!linha.dataset.arrastou) fecharLinhaArrastada();
+  }
+}, true);
 
 /* Celular: tocar na linha abre o mesmo que o nome / o "ver mais" abriria. */
 document.addEventListener('click', (e) => {

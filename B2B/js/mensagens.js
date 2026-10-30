@@ -456,6 +456,7 @@ function renderContactsList(searchQuery = '') {
 
   if (!b2bConversations.length) {
     listEl.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Quando um cliente falar com você, ela aparece aqui.</div>';
+    atualizarTotalDoChat(0);
     return;
   }
 
@@ -475,6 +476,7 @@ function renderContactsList(searchQuery = '') {
 
   if (filtered.length === 0) {
     listEl.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa encontrada.</div>';
+    atualizarTotalDoChat(0);
     return;
   }
 
@@ -519,11 +521,60 @@ function renderContactsList(searchQuery = '') {
       renderContactsList(document.getElementById('chat-search-input') ? document.getElementById('chat-search-input').value : '');
       renderActiveChat();
       markActiveConversationRead();
+      abrirConversaNoCelular();
     });
 
-    listEl.appendChild(item);
+    // Celular: a linha tem, por trás, Abrir e Remover (arrastar para a esquerda).
+    if (typeof hubNoCelular === 'function' && hubNoCelular() && !conv.isSuporte) {
+      const linha = document.createElement('div');
+      linha.className = 'conv-linha';
+      const acoes = document.createElement('div');
+      acoes.className = 'conv-acoes';
+      acoes.innerHTML = acoesDoArrasteHtml(true, true, 'Abrir');
+      linha.append(acoes, item);
+      acoes.querySelector('.lc-acao-editar').addEventListener('click', (e) => {
+        e.stopPropagation();
+        fecharLinhaArrastada();
+        item.click();
+      });
+      acoes.querySelector('.lc-acao-remover').addEventListener('click', (e) => {
+        e.stopPropagation();
+        fecharLinhaArrastada();
+        confirmarNoHub({
+          titulo: 'Remover conversa?',
+          texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
+          botao: 'Remover',
+          aoConfirmar: () => { excluirConversaDaLista(conv.id); showToast('Conversa removida.'); }
+        });
+      });
+      prepararArrasteDaLinha(linha, item);
+      listEl.appendChild(linha);
+    } else {
+      listEl.appendChild(item);
+    }
   });
+  atualizarTotalDoChat(filtered.length);
 }
+
+/* Celular: "N conversas" acima da busca. */
+function atualizarTotalDoChat(n) {
+  const el = document.getElementById('chat-total-celular');
+  if (el) el.textContent = `${n} ${n === 1 ? 'conversa' : 'conversas'}`;
+}
+
+/* Celular: a conversa abre em tela cheia, com a seta para voltar à lista. */
+function abrirConversaNoCelular() {
+  if (typeof hubNoCelular !== 'function' || !hubNoCelular()) return;
+  document.body.classList.add('chat-conversa-aberta');
+  const msgs = document.getElementById('chat-messages');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+function voltarParaConversasNoCelular() {
+  document.body.classList.remove('chat-conversa-aberta');
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest && e.target.closest('#chat-voltar-celular')) voltarParaConversasNoCelular();
+});
 
 function renderActiveChat() {
   const container = document.getElementById('chat-messages');

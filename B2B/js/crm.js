@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Importar e Exportar (o que está filtrado/buscado no momento).
   leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
     placeholder: 'Pesquisar cliente, e-mail ou CPF...',
-    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', nomeSel: '.lead-nome-link', filtroRotulo: 'Evento' },
+    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
     filtros: [
       { chave: 'tipo', rotulo: 'Tipo do evento', opcoes: () => [...new Set(crmLeads.map(l => l.tipo_evento).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },
@@ -367,6 +367,26 @@ async function excluirLeadsSelecionados() {
       leadsSelecionados.clear();
       renderLeadsTable();
       showToast(n === 1 ? 'Lead excluído.' : `${n} leads excluídos.`);
+    }
+  });
+}
+
+/* Celular: "Remover" do arrastar a linha para a esquerda. */
+function excluirLeadDaLinha(tr) {
+  const id = tr.querySelector('[data-open-lead]')?.dataset.openLead;
+  const lead = crmLeads.find(l => String(l.id) === String(id));
+  if (!lead) return;
+  confirmarNoHub({
+    titulo: `Remover ${lead.name}?`,
+    texto: 'O cliente sai da sua lista. Essa ação não pode ser desfeita.',
+    botao: 'Remover',
+    aoConfirmar: async () => {
+      const { error } = await supabaseClient.from('leads').delete().eq('id', lead.id);
+      if (error) throw new Error('Não foi possível remover o cliente. Tente de novo.');
+      crmLeads = crmLeads.filter(l => l.id !== lead.id);
+      leadsSelecionados.delete(lead.id);
+      renderLeadsTable();
+      showToast('Cliente removido.');
     }
   });
 }

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   paymentLinksEstado = montarBarraTabela(document.getElementById('payment-links-card'), {
     placeholder: 'Pesquisar por valor ou data...',
-    celular: { nome: 2, info: 4, singular: 'link', plural: 'links', semIniciais: true },
+    celular: { nome: 2, info: 4, singular: 'link', plural: 'links', semIniciais: true, editarSel: '[data-link-row]', rotuloEditar: 'Abrir' },
     filtros: [{ chave: 'situacao', rotulo: 'Situação', opcoes: () => [['pago', 'Pago'], ['pendente', 'Aguardando pagamento']] }],
     exportar: () => tabelaExportarCSV('links-de-cobranca', [
       { titulo: 'Criado em', valor: l => formatLinkDate(l.created_at) },

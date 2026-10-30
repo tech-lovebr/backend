@@ -11452,7 +11452,7 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   html body .dash-card.lista-celular table:not(#love-h-a):not(#love-h-b) { min-width: 0 !important; width: 100% !important; display: block; }
   html body .dash-card.lista-celular thead:not(#love-h-a):not(#love-h-b),
   html body .dash-card.lista-celular .tabela-paginacao:not(#love-h-a):not(#love-h-b),
-  html body .dash-card.lista-celular tr.lc-linha > td:not(.lc-nome):not(.lc-info):not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular tr.lc-linha > td:not(.lc-nome):not(.lc-info):not(.lc-acoes):not(#love-h-a):not(#love-h-b),
   html body .dash-card.lista-celular .lc-nome :is(input[type="checkbox"], .lead-origem-tag, .tabela-copiar-email):not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body .dash-card.lista-celular tbody:not(#love-h-a):not(#love-h-b) { display: block; background-image: none !important; }
   html body .dash-card.lista-celular tr.lc-linha:not(#love-h-a):not(#love-h-b) {
@@ -11505,4 +11505,99 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   html body #produtos-barra-caixa .tabela-busca input:not(#love-h-a):not(#love-h-b) { height: 40px !important; font-size: 16px !important; border-color: #E4E4E7 !important; }
   body[data-theme="dark"] .b2b-content #produtos-barra-caixa { background: #1F1F1F !important; border-bottom-color: #333333 !important; }
   body[data-theme="dark"] #produtos-barra-caixa .produtos-total { color: #A1A1AA; }
+}
+
+/* ==========================================================================
+   Celular do Hub: arrastar a linha para a esquerda mostra Editar/Abrir
+   (#183b54) e Remover (#c7305b), retos e da altura da linha, ícone no meio
+   (js/utils.js: prepararArrasteDaLinha). Fechada, as ações ficam fora da
+   caixa: nenhuma faixa aparece.
+   ========================================================================== */
+.lc-acoes { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dash-card.lista-celular tbody:not(#love-h-a):not(#love-h-b) { overflow-x: clip; }
+  html body .dash-card.lista-celular tr.lc-linha.tem-arraste:not(#love-h-a):not(#love-h-b) {
+    position: relative; touch-action: pan-y; will-change: transform; -webkit-user-select: none; user-select: none;
+  }
+  html body .dash-card.lista-celular tr.lc-linha > td.lc-acoes:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; position: absolute; top: 0; bottom: 0; left: 100%; padding: 0 !important; margin: 0;
+  }
+  html body .dash-card.lista-celular tr.lc-linha:not(.acoes-visiveis) > td.lc-acoes:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
+  html body .lc-acao:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: center; width: 80px; height: 100%; padding: 0; margin: 0;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; color: #FFFFFF !important; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html body .lc-acao svg:not(#love-h-a):not(#love-h-b) { width: 22px; height: 22px; }
+  html body .lc-acao-editar:not(#love-h-a):not(#love-h-b) { background: #183b54 !important; }
+  html body .lc-acao-remover:not(#love-h-a):not(#love-h-b) { background: #c7305b !important; }
+  body[data-theme="dark"] .lc-acao-editar { background: #183b54 !important; }
+  body[data-theme="dark"] .lc-acao-remover { background: #c7305b !important; }
+}
+
+/* ==========================================================================
+   Celular do Hub, Mensagens: de ponta a ponta, "N conversas" acima da busca,
+   linha com avatar, nome e prévia; arrastar mostra Abrir/Remover; a
+   conversa abre em tela cheia com a seta para voltar (js/mensagens.js).
+   ========================================================================== */
+.chat-voltar-celular, .chat-total-celular, .conv-acoes { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="chat"] .chat-shell:not(#love-h-a):not(#love-h-b) { margin: 0 -16px !important; width: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important; }
+  html body[data-page="chat"] .b2b-chat-contacts-column:not(#love-h-a):not(#love-h-b) { width: 100% !important; min-width: 0 !important; border-right: 0 !important; }
+  html body[data-page="chat"] .chat-total-celular:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 0; padding: 16px 16px 12px; font-family: Inter, sans-serif;
+    font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+  }
+  html body[data-page="chat"] .b2b-chat-contacts-header:not(#love-h-a):not(#love-h-b) { height: auto !important; padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
+  html body[data-page="chat"] #chat-search-input:not(#love-h-a):not(#love-h-b) {
+    height: 40px !important; font-size: 16px !important; border-radius: 8px !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; padding-left: 36px !important;
+  }
+  html body[data-page="chat"] #chat-search-input:focus:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; }
+
+  /* Linhas */
+  html body #conv-list .conv-item:not(#love-h-a):not(#love-h-b) {
+    border-left: 0 !important; padding: 12px 16px !important; gap: 12px !important; align-items: center !important; min-height: 72px; box-sizing: border-box;
+    background: #FFFFFF; -webkit-tap-highlight-color: transparent;
+  }
+  html body #conv-list .conv-item.active:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  html body #conv-list .conv-item .b2b-avatar-square:not(#love-h-a):not(#love-h-b) { width: 44px !important; height: 44px !important; border-radius: 50% !important; }
+  html body #conv-list .conv-item h4:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 16px !important; font-weight: 600 !important; color: #18181B !important; }
+  html body #conv-list .conv-item p:not(#love-h-a):not(#love-h-b) { font-size: 14px !important; line-height: 1.35 !important; }
+  html body #conv-list .conv-item p.text-zinc-500:not(#love-h-a):not(#love-h-b) { color: #71717A !important; }
+  html body #conv-list .conv-item-mais:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  /* Arrastar: o card anda por cima de Abrir/Remover. */
+  html body #conv-list .conv-linha:not(#love-h-a):not(#love-h-b) { position: relative; overflow: hidden; }
+  html body #conv-list .conv-linha > .conv-item:not(#love-h-a):not(#love-h-b) {
+    position: relative; z-index: 1; touch-action: pan-y; will-change: translate; -webkit-user-select: none; user-select: none;
+  }
+  html body #conv-list .conv-linha > .conv-acoes:not(#love-h-a):not(#love-h-b) { display: flex; position: absolute; top: 0; right: 0; bottom: 0; z-index: 0; }
+  html body #conv-list .conv-linha:not(.acoes-visiveis) > .conv-acoes:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
+
+  /* Conversa aberta: tela cheia, sem o título, a lista e a barra de baixo. */
+  html body[data-page="chat"]:not(.chat-conversa-aberta) .chat-coluna-conversa:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="chat"].chat-conversa-aberta :is(.b2b-chat-contacts-column, .mobile-bottom-nav):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="chat"].chat-conversa-aberta .chat-coluna-conversa:not(#love-h-a):not(#love-h-b) {
+    position: fixed; inset: 0; z-index: 70; height: 100dvh !important; padding-top: env(safe-area-inset-top, 0px); background: #FFFFFF;
+  }
+  html body[data-page="chat"] .chat-coluna-conversa > div:first-child:not(#love-h-a):not(#love-h-b) { height: 60px !important; padding: 0 16px 0 10px !important; }
+  html body[data-page="chat"] .chat-coluna-conversa > div:first-child > div:first-child:not(#love-h-a):not(#love-h-b) { gap: 8px !important; }
+  html body[data-page="chat"] .chat-voltar-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body[data-page="chat"] .chat-voltar-celular svg:not(#love-h-a) { width: 20px; height: 20px; }
+  html body[data-page="chat"] #chat-header-name:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 16px !important; font-weight: 600 !important; }
+  html body[data-page="chat"] #chat-messages:not(#love-h-a):not(#love-h-b) { padding: 16px !important; }
+  html body[data-page="chat"] .chat-coluna-conversa > div:last-child:not(#love-h-a):not(#love-h-b) { padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) !important; }
+  html body[data-page="chat"] #chat-input:not(#love-h-a):not(#love-h-b) { font-size: 16px !important; height: 44px; border-radius: 8px !important; }
+
+  body[data-theme="dark"][data-page="chat"] .chat-shell,
+  body[data-theme="dark"] #conv-list .conv-item,
+  body[data-theme="dark"][data-page="chat"].chat-conversa-aberta .chat-coluna-conversa { background: #1F1F1F !important; }
+  body[data-theme="dark"][data-page="chat"] .chat-total-celular { color: #A1A1AA; }
+  body[data-theme="dark"] #conv-list .conv-item h4 { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="chat"] .b2b-chat-contacts-header { border-bottom-color: #333333 !important; }
+  body[data-theme="dark"][data-page="chat"] #chat-search-input { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="chat"] .chat-voltar-celular { color: #FFFFFF; }
 }

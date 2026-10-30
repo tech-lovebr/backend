@@ -29,6 +29,15 @@ function formatNotificationTime(iso) {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+/* Celular: data curta "25/10/26" e o horário embaixo (como no anfitrião). */
+function tempoCurtoDaNotificacao(iso) {
+  const d = iso ? new Date(iso) : null;
+  if (!d || isNaN(d.getTime())) return '';
+  const data = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return `<span>${data}</span><span>${hora}</span>`;
+}
+
 function unreadNotificationsCount() {
   return notificationsCache.filter(n => n.unread).length;
 }
@@ -44,6 +53,7 @@ async function loadNotificationsFeed() {
     linkUrl: n.link_url || null,
     linkLabel: n.link_label || null,
     time: n.created_at ? formatNotificationTime(n.created_at) : '',
+    quando: n.created_at || '',
     unread: !lidas.has(n.id)
   }));
   renderNotificationsPage();
@@ -100,7 +110,8 @@ function renderNotificationsPage() {
         </div>
         <div class="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
           ${n.unread ? '<span class="notification-row-dot"></span>' : ''}
-          <span class="text-xs text-zinc-400 whitespace-nowrap">${escapeHtml(n.time)}</span>
+          <span class="notif-tempo-longo text-xs text-zinc-400 whitespace-nowrap">${escapeHtml(n.time)}</span>
+          <span class="notif-tempo-curto">${tempoCurtoDaNotificacao(n.quando)}</span>
         </div>
       </div>
     </div>

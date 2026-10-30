@@ -3293,7 +3293,7 @@ body[data-theme="dark"] .metric-ring { background: conic-gradient(var(--ring-col
 
 /* Responsive */
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .conv-list { width: 240px; }
   .bubble { max-width: 80%; }
 }
@@ -3647,7 +3647,7 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
 .mobile-nav-overlay { display: none; }
 .mobile-nav-sheet { display: none; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .b2b-sidebar { display: none; }
   .b2b-main { margin-left: 0; background-color: var(--bg-dashboard); }
   body[data-theme="dark"] .b2b-main { background-color: #1C2125 !important; }
@@ -4573,17 +4573,17 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
   background: #ffffff;
   border-color: transparent;
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row > .builder-column { padding: 20px; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-section { min-height: 100dvh; }
   .builder-section > .builder-columns-row { max-width: 100%; padding: 0 16px; }
 }
 
 /* botões: altura mínima de toque no mobile */
 .builder-canvas[data-device="mobile"] .be-button { min-height: 44px; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .be-button { min-height: 44px; }
 }
 
@@ -6202,7 +6202,7 @@ body[data-theme="dark"] .agenda-notif-item:hover { background: #1c1c1c !importan
 }
 .agenda-event-delete-btn:hover { text-decoration: underline; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .agenda-calendar-layout { grid-template-columns: 1fr; }
 }
 
@@ -6279,7 +6279,7 @@ body[data-theme="dark"] .agenda-timeline-lines-col { border-left-color: #404040 
 
 .contratos-drawer-box { white-space: normal; line-height: 1.5; min-height: unset; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .contratos-clientes-layout { grid-template-columns: 1fr; }
 }
 
@@ -7685,7 +7685,7 @@ body[data-theme="dark"] .dashboard-help-header .dashboard-help-title { color: #F
 
 /* Painel › Precisa de ajuda?: duas caixas (Canais de suporte e Central de ajuda). */
 .dashboard-help-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (max-width: 768px) { .dashboard-help-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) { .dashboard-help-grid { grid-template-columns: 1fr; } }
 a.guide-link { display: block; text-decoration: none; }
 
 /* Lápis da imagem de perfil/capa: fundo branco translúcido (com um leve
@@ -8332,7 +8332,7 @@ body.sidebar-flutuando .b2b-sidebar { box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 8p
    com a mesma largura, ocupando a linha toda. */
 html body .dashboard-quick-actions:not(#love-h-a) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
 html body .dashboard-quick-actions .dashboard-quick-action-btn:not(#love-h-a) { width: 100%; justify-content: center; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .dashboard-quick-actions:not(#love-h-a) { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
 }
 /* Painel: sem a data no canto superior direito. */
@@ -11001,7 +11001,7 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
    - Toques de pelo menos 44 × 44 px nos botões e links principais.
    - Campos com 16px de letra (o Safari não dá zoom ao focar).
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   :root { --b2b-content-pad-x: 16px; }
   html, body { overflow-x: hidden; max-width: 100%; }
   html body .b2b-shell:not(#love-h-a), html body .b2b-main:not(#love-h-a) { min-height: 100dvh; overflow-x: hidden; }
@@ -11032,7 +11032,7 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
    768px; o desktop não muda.
    ========================================================================== */
 .submenu-celular { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   :root {
     --navbar-height-mobile: calc(60px + env(safe-area-inset-top, 0px));
     --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px));
@@ -11105,4 +11105,284 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   body[data-theme="dark"] .b2b-content > .submenu-celular { background: #1F1F1F; border-color: #333333; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item { color: #A1A1AA; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #333333; border-color: #404040; color: #FFFFFF; }
+}
+
+/* ==========================================================================
+   Celular do Hub igual ao do anfitrião (valores medidos no anfitrião a 375px):
+   barra de baixo, cabeçalho das telas, abas do submenu e menu (☰) com a
+   conta. Só no celular (inclusive deitado); o desktop não muda.
+   ========================================================================== */
+.menu-celular-botao, .logo-celular, .notif-tempo-curto { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  .menu-celular, .menu-celular-fundo, .menu-conta, .menu-conta-fundo { display: none !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  :root { --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Base do layout de celular (também com o celular deitado). */
+  html body .b2b-sidebar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .b2b-main:not(#love-h-a):not(#love-h-b) { margin-left: 0 !important; }
+  html body .b2b-footer:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  /* Altura da tela em dvh (não pula com a barra do navegador). Quem rola é a
+     caixa do conteúdo, como no desktop; as abas grudam no topo dela. */
+  html body :is(.b2b-shell, .b2b-main):not(#love-h-a):not(#love-h-b) { height: 100dvh !important; }
+
+  /* ---------- Barra de baixo: fixa, de ponta a ponta, vidro claro ---------- */
+  html body .mobile-bottom-nav:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 0 !important;
+    position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important; width: 100% !important;
+    height: var(--bottom-bar-height-mobile) !important; z-index: 70 !important;
+    padding: 0 6px env(safe-area-inset-bottom, 0px) !important; box-sizing: border-box !important;
+    border-radius: 0 !important; border: 1px solid rgba(0, 0, 0, 0.09) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(244, 246, 247, 0.42) 100%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%); backdrop-filter: blur(24px) saturate(190%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+      inset 0 -8px 16px rgba(255, 255, 255, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.10) !important;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 0 !important; width: auto !important; min-width: 0 !important; height: 52px !important; min-height: 44px !important; margin: 0 !important;
+    display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 3px !important;
+    padding: 4px 2px !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; box-shadow: none !important; transform: none !important;
+    color: #52525B !important; position: relative; -webkit-tap-highlight-color: transparent;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) svg {
+    width: 21px !important; height: 21px !important; flex-shrink: 0;
+    color: currentColor !important; stroke: currentColor !important; stroke-width: 2.15px !important;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b) svg { stroke-width: 2.25px !important; }
+  html body .mobile-bottom-nav .mobile-nav-item > span:last-child:not(.nav-badge):not(#love-h-a):not(#love-h-b) {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 10.5px !important; font-weight: 500 !important; line-height: 1.2 !important; letter-spacing: normal !important; color: currentColor !important;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item.active > span:last-child:not(.nav-badge):not(#love-h-a):not(#love-h-b) { font-weight: 600 !important; }
+  html body:not([data-theme="dark"]) .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b) { background: #EBF4FF !important; color: #183b54 !important; box-shadow: none !important; }
+  html body .mobile-bottom-nav .mobile-nav-item .nav-badge:not(#love-h-a):not(#love-h-b) { top: 2px; right: calc(50% - 20px); }
+  body[data-theme="dark"] .mobile-bottom-nav {
+    background: linear-gradient(180deg, rgba(60, 60, 60, 0.55) 0%, rgba(30, 30, 30, 0.45) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  }
+  body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item { color: #A1A1AA !important; }
+  body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item.active { background: #2A2A2A !important; color: #FFFFFF !important; }
+
+  /* ---------- Topo: só no Dashboard (logo à esquerda; sino e ☰ à direita) ---------- */
+  html body:not([data-page="dashboard"]) .b2b-topbar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] .b2b-topbar:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center !important; gap: 0 !important; position: relative !important; top: auto !important; z-index: 40;
+    height: calc(60px + env(safe-area-inset-top, 0px)) !important; min-height: 0 !important;
+    padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)) !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important; box-sizing: border-box;
+  }
+  html body[data-page="dashboard"] .b2b-topbar > :is(.topbar-account-wrap, .topbar-search-trigger):not(#love-h-a):not(#love-h-b),
+  html body[data-page="dashboard"] .b2b-topbar #topbar-icon-group > :not(:has(#notif-trigger)):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] .b2b-topbar > .logo-celular:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; gap: 8px; order: 0; margin-right: auto; height: 100%; cursor: pointer; text-decoration: none;
+  }
+  html body .b2b-topbar > .logo-celular .logo-celular-icone:not(#love-h-a) { height: 36px; width: auto; }
+  html body .b2b-topbar > .logo-celular .logo-celular-nome:not(#love-h-a) { height: 28px; width: auto; }
+  .logo-celular .logo-escuro { display: none; }
+  body[data-theme="dark"] .logo-celular .logo-claro { display: none; }
+  body[data-theme="dark"] .logo-celular .logo-escuro { display: block; }
+  html body[data-page="dashboard"] .b2b-topbar #topbar-icon-group:not(#love-h-a):not(#love-h-b) { order: 1; display: flex !important; align-items: center; gap: 0 !important; margin: 0 !important; }
+  html body[data-page="dashboard"] .b2b-topbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b) { order: 2; margin-left: 10px !important; }
+  html body[data-page="dashboard"] .b2b-topbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b),
+  html body[data-page="dashboard"] .b2b-topbar #notif-trigger:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex !important; align-items: center !important; justify-content: center !important; position: relative;
+    width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important; color: #18181B !important; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body[data-page="dashboard"] .b2b-topbar > .menu-celular-botao:not(#love-h-a) svg { width: 24px !important; height: 24px !important; stroke-width: 2px; }
+  html body[data-page="dashboard"] .b2b-topbar #notif-trigger:not(#love-h-a) svg { width: 24px !important; height: 24px !important; stroke-width: 2.15px !important; }
+  html body[data-page="dashboard"] .b2b-topbar #notif-trigger .topbar-icon-badge:not(#love-h-a):not(#love-h-b) { top: 4px !important; right: 4px !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-topbar :is(.menu-celular-botao, #notif-trigger) { background: transparent !important; border: 0 !important; color: #FFFFFF !important; }
+  /* O sino/perfil não vão mais para dentro do "Olá" (agora estão no topo e no ☰). */
+  html body[data-page="dashboard"] :is(.dashboard-greeting-mobile-avatar, .dashboard-greeting-mobile-icons):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a):not(#love-h-b) { padding-top: 0 !important; }
+
+  /* ---------- Cabeçalho das outras telas: branco até o topo, título 20/700 ---------- */
+  html body:not([data-page="dashboard"]) .b2b-content:not(#love-h-a):not(#love-h-b) { padding-top: calc(20px + env(safe-area-inset-top, 0px)) !important; }
+  html body .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b) {
+    position: relative; isolation: isolate; z-index: 30;
+    display: flex !important; align-items: center !important; flex-wrap: wrap !important; column-gap: 8px !important; row-gap: 12px !important;
+    min-height: 0 !important; flex-shrink: 0 !important; box-sizing: border-box;
+    margin: calc(-20px - env(safe-area-inset-top, 0px)) -16px 16px !important;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 18px max(16px, env(safe-area-inset-left, 0px)) !important;
+    background: #FFFFFF !important; border: 0 !important; box-shadow: none !important;
+  }
+  html body .b2b-content > .b2b-header-bar > :first-child:not(#love-h-a):not(#love-h-b) { flex: 1 1 auto; min-width: 0; }
+  html body .b2b-content > .b2b-header-bar :is(h1, h2):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex; align-items: center; min-height: 44px; margin: 0 !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important; letter-spacing: -0.4px !important; color: #18181B !important;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  html body .b2b-content > .b2b-header-bar .produto-titulo-wrap:not(#love-h-a):not(#love-h-b) { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  /* Seta de voltar: ícone de 20px, botão de 44px a 10px da borda; título em 62px. */
+  html body .b2b-content > .b2b-header-bar .produto-voltar:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    display: inline-flex !important; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important; margin: 0 0 0 -6px !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #18181B !important;
+  }
+  html body .b2b-content > .b2b-header-bar .produto-voltar:not(#love-h-a):not(#love-h-b) svg { width: 20px !important; height: 20px !important; stroke-width: 2 !important; }
+  /* Botões do cabeçalho: só o ícone escuro, sem caixa, 44px, à direita. */
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):has(svg):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: relative; flex: 0 0 auto; width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important;
+    padding: 0 !important; gap: 0 !important; justify-content: center !important; font-size: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #18181B !important;
+  }
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):has(svg) > :not(svg):not(.op-filtrar-qtd):not(#love-h-a) { display: none !important; }
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):has(svg):not(#love-h-a) svg { width: 22px !important; height: 22px !important; color: currentColor !important; }
+  html body .b2b-content > .b2b-header-bar .op-filtrar-qtd:not([hidden]):not(#love-h-a) { position: absolute; top: 4px; right: 2px; font-size: 10px !important; }
+  /* Sem ícone (Salvar, Marcar todas como lidas): texto na cor primária, sem caixa. */
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):not(:has(svg)):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 0 0 auto; height: 44px !important; min-height: 44px !important; padding: 0 4px !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important;
+    color: #183b54 !important; font-size: 14px !important; font-weight: 600 !important;
+  }
+  /* Busca do cabeçalho: linha de baixo, largura toda. */
+  html body .b2b-content > .b2b-header-bar :is(.produtos-header-acoes, .op-header-acoes):not(#love-h-a):not(#love-h-b) { display: contents !important; }
+  html body .b2b-content > .b2b-header-bar .tabela-busca:not(#love-h-a):not(#love-h-b) { order: 5; flex: 1 1 100% !important; width: 100% !important; max-width: none !important; }
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar { background: #1F1F1F !important; }
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar :is(h1, h2),
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar :is(.produto-voltar, .btn-primary:has(svg), .btn-secondary:has(svg)) { color: #FFFFFF !important; }
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):not(:has(svg)) { color: #EBF4FF !important; }
+
+  /* ---------- Abas do submenu: grudadas no topo, mesma largura, linha em cima ---------- */
+  html body .settings-shell > #settings-tabs:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .b2b-content > .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    position: sticky; top: -20px; z-index: 20; /* encosta no topo (o conteúdo tem 20px de respiro em cima) */
+    display: flex; flex-shrink: 0; gap: 0; width: auto; max-width: none; box-sizing: border-box;
+    margin: -16px -16px 16px !important; padding: 0;
+    background: #FFFFFF !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  html body .b2b-content > .submenu-celular::-webkit-scrollbar { display: none; }
+  html body .b2b-content > .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) {
+    position: relative; flex: 1 0 auto; min-width: 33.333%; min-height: 46px; display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 14px; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none;
+    background: #FFFFFF !important; color: #52525B !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important; letter-spacing: -0.01em !important;
+    white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .b2b-content > .submenu-celular:not(:has(> :nth-child(4))) .submenu-celular-item:not(#love-h-a):not(#love-h-b) { flex: 1 1 0 !important; min-width: 0 !important; }
+  html body .b2b-content > .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; color: #18181B !important; font-weight: 600 !important; }
+  html body .b2b-content > .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #183b54; border-radius: 0;
+  }
+  /* O cabeçalho fica sem a margem de baixo quando as abas vêm logo depois. */
+  html body .b2b-content > .b2b-header-bar:has(+ .submenu-celular:not([hidden])):not(#love-h-a):not(#love-h-b) { margin-bottom: 0 !important; }
+  html body .b2b-content > .b2b-header-bar + .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular:not([hidden]) { background: #1F1F1F !important; border-top-color: #333333 !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular .submenu-celular-item { background: #1F1F1F !important; color: #A1A1AA !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular .submenu-celular-item.is-ativo { background: #1A1A1A !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular .submenu-celular-item.is-ativo::before { background: #EBF4FF; }
+
+  /* ---------- Menu (☰): gaveta lateral com as seções e a conta embaixo ---------- */
+  body.menu-celular-aberto { overflow: hidden; }
+  .menu-celular-fundo, .menu-conta-fundo { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+  .menu-celular-fundo { z-index: 88; }
+  .menu-conta-fundo { z-index: 92; background: rgba(0, 0, 0, 0.2); }
+  .menu-celular-fundo.is-aberta, .menu-conta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
+  .menu-celular {
+    display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
+    width: min(80vw, 330px); background: #FFFFFF; font-family: Inter, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateX(-100%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
+  }
+  .menu-celular.is-aberta { transform: translateX(0); visibility: visible; transition: transform .26s cubic-bezier(.2, .8, .2, 1); }
+  .menu-celular button, .menu-conta button, .menu-celular a, .menu-conta a { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; }
+  .menu-celular-topo { display: flex; align-items: center; justify-content: space-between; height: 68px; padding: 0 12px 0 20px; flex-shrink: 0; }
+  .menu-celular-topo .logo-celular { display: flex; align-items: center; gap: 8px; }
+  .menu-celular-topo .logo-celular-icone { height: 28px; width: auto; }
+  .menu-celular-topo .logo-celular-nome { height: 21px; width: auto; }
+  .menu-celular-fechar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #18181B; }
+  .menu-celular-fechar svg { width: 24px; height: 24px; }
+  .menu-celular-nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 12px 16px; }
+  .menu-celular-secao { margin: 22px 8px 6px; font-size: 13px; font-weight: 500; color: #A1A1AA; }
+  .menu-celular-link { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 14px; padding: 0 8px; background: transparent; border: 0; border-radius: 8px; font-size: 16px; font-weight: 400; color: #18181B; text-align: left; }
+  .menu-celular-link svg { width: 23px; height: 23px; flex-shrink: 0; color: #3F3F46; }
+  .menu-celular-link.is-ativo { font-weight: 600; color: #183b54; }
+  .menu-celular-link.is-ativo svg { color: #183b54; }
+  .menu-celular-conta {
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0; width: 100%; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+    background: #FFFFFF; border: 0; border-top: 1px solid rgba(0, 0, 0, 0.06); text-align: left;
+  }
+  .menu-celular-conta-textos { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .menu-celular-conta .menu-celular-nome { font-size: 16px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-celular-conta .menu-celular-empresa-nome { font-size: 13px; font-weight: 400; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-celular-conta-seta { width: 20px; height: 20px; flex-shrink: 0; color: #A1A1AA; }
+  html body .menu-celular .menu-celular-avatar:not(#love-h-a),
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a) { width: 44px; height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #EBF4FF; color: #183b54; font-size: 15px; font-weight: 600; }
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a) { width: 72px; height: 72px; min-width: 72px; font-size: 24px; }
+  :is(.menu-celular-avatar, .menu-conta-avatar) :is(img, .b2b-avatar, svg) { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 50%; }
+
+  /* Pop-up da conta (sobe de baixo, por cima da gaveta) */
+  .menu-conta {
+    display: flex; flex-direction: column; position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 94; max-height: calc(100dvh - 72px);
+    padding: 6px 20px calc(16px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-family: Inter, sans-serif;
+    transform: translateY(calc(100% + 16px)); visibility: hidden; transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
+  }
+  .menu-conta.is-aberta { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+  .menu-conta-alca { width: 40px; height: 5px; margin: 4px auto 0; border-radius: 999px; background: #D4D4D8; flex-shrink: 0; }
+  .menu-conta-fechar {
+    position: absolute; top: 14px; left: 14px; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0;
+    border-radius: 50%; color: #52525B; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(0, 0, 0, 0.06);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+  .menu-conta-fechar svg { width: 20px; height: 20px; }
+  .menu-conta-cabeca { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 0 16px; text-align: center; }
+  .menu-conta-nome { margin: 8px 0 0; font-size: 17px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+  .menu-conta-email { margin: 0; font-size: 13px; color: #71717A; }
+  .menu-conta-email:empty { display: none; }
+  .menu-conta-empresas { margin-bottom: 8px; }
+  .menu-conta .menu-celular-empresa-atual { width: 100%; min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; text-align: left; color: #18181B; }
+  .menu-conta .menu-celular-empresa-textos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .menu-conta .menu-celular-empresa-rotulo { font-size: 11px; font-weight: 500; color: #A1A1AA; }
+  .menu-conta .menu-celular-empresa-atual .menu-celular-empresa-nome { font-size: 16px; font-weight: 600; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-conta .menu-celular-empresa-seta { width: 20px; height: 20px; flex-shrink: 0; color: #71717A; transition: transform .15s ease; }
+  .menu-conta .menu-celular-empresa-atual[aria-expanded="true"] .menu-celular-empresa-seta { transform: rotate(180deg); }
+  .menu-conta .menu-celular-empresas-lista { margin-top: 8px; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; }
+  .menu-conta .menu-celular-empresa { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 14px; background: #FFFFFF; border: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 15px; color: #18181B; text-align: left; }
+  .menu-conta .menu-celular-empresa:last-child { border-bottom: 0; }
+  .menu-conta .menu-celular-empresa > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-conta .menu-celular-empresa svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .menu-conta .menu-celular-empresa.is-ativo { font-weight: 600; color: #183b54; }
+  .menu-conta .menu-celular-empresa.is-criar { justify-content: flex-start; font-weight: 600; color: #183b54; }
+  .menu-conta-itens { display: flex; flex-direction: column; }
+  .menu-conta-item { width: 100%; min-height: 54px; display: flex; align-items: center; gap: 16px; padding: 0 4px; background: transparent; border: 0; font-size: 16px; font-weight: 400; color: #18181B; text-align: left; }
+  .menu-conta-item svg { width: 23px; height: 23px; flex-shrink: 0; color: #3F3F46; }
+  .menu-conta-item span { flex: 1 1 auto; min-height: 54px; display: flex; align-items: center; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+  .menu-conta-sair { margin: 14px auto 0; padding: 8px 16px; background: transparent; border: 0; font-size: 16px; font-weight: 500; color: #183b54; }
+  body[data-theme="dark"] :is(.menu-celular, .menu-celular-conta, .menu-conta) { background: #1A1A1A; }
+  body[data-theme="dark"] :is(.menu-celular-fechar, .menu-celular-link, .menu-celular-conta .menu-celular-nome, .menu-conta-nome, .menu-conta-item, .menu-conta .menu-celular-empresa, .menu-conta .menu-celular-empresa-atual .menu-celular-empresa-nome) { color: #FFFFFF; }
+  body[data-theme="dark"] :is(.menu-celular-link svg, .menu-conta-item svg) { color: #D4D4D8; }
+  body[data-theme="dark"] .menu-celular-link.is-ativo, body[data-theme="dark"] .menu-celular-link.is-ativo svg, body[data-theme="dark"] .menu-conta-sair { color: #EBF4FF; }
+  body[data-theme="dark"] :is(.menu-conta .menu-celular-empresa-atual, .menu-conta .menu-celular-empresa) { background: #252525; border-color: #404040; }
+  body[data-theme="dark"] :is(.menu-celular-conta, .menu-conta-item span, .menu-conta .menu-celular-empresa) { border-color: rgba(255, 255, 255, 0.08); }
+  body[data-theme="dark"] .menu-conta-fechar { background: rgba(37, 37, 37, 0.72); border-color: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
+  /* O perfil do topo vira só o ☰ no celular (a conta abre pela gaveta). */
+  html body .profile-dropdown:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  /* ---------- Notificações com texto de app e data curta DD/MM/AA ---------- */
+  html body #notifications-list:not(#love-h-a) { margin: 0 -16px !important; max-width: none !important; }
+  html body #notifications-list .notification-row:not(#love-h-a) { margin: 0 !important; padding: 14px 16px !important; gap: 12px !important; border-radius: 0 !important; }
+  html body #notifications-list .notification-row > div:first-child:not(#love-h-a) { width: 40px; height: 40px; min-width: 40px; border-radius: 10px !important; }
+  html body #notifications-list .notification-row > div:first-child svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body #notifications-list .notification-row p:not(#love-h-a) { font-size: 15px !important; line-height: 1.4 !important; }
+  html body #notifications-list .notification-row p.font-bold:not(#love-h-a) { font-weight: 600 !important; }
+  html body #notifications-list .notification-row > div:last-child:not(#love-h-a) { gap: 10px !important; }
+  html body #notifications-list .notif-tempo-longo:not(#love-h-a) { display: none !important; }
+  html body #notifications-list .notif-tempo-curto:not(#love-h-a) {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+    font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.2; color: #A1A1AA; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  html body #notifications-list .notification-row > div:last-child > div:last-child:not(#love-h-a) { align-items: flex-start !important; padding-top: 2px; }
 }

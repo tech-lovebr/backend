@@ -962,10 +962,19 @@ function submenuNoCelular(lista, seletor, rotuloDe) {
   const cabecalho = area.querySelector(':scope > .b2b-header-bar');
   if (cabecalho) cabecalho.after(barra); else area.insertBefore(barra, area.firstChild);
   let agendado = false;
+  /** @type {Element[]} */
+  let itensAnteriores = [];
   const desenhar = () => {
     agendado = false;
     const itens = Array.from(lista.querySelectorAll(seletor))
       .filter(i => !i.hidden && !i.classList.contains('hidden') && i.style.display !== 'none');
+    // Só redesenha quando algo muda (itens, textos ou a aba ativa): redesenhar
+    // sempre recria os botões e engole o toque (como no anfitrião, e1e315be).
+    const assinatura = itens.map(i => ((i.classList.contains('active') || i.classList.contains('is-ativo')) ? '*' : '') + rotuloDe(i)).join('|');
+    const mesmosElementos = itens.length === itensAnteriores.length && itens.every((el, i) => el === itensAnteriores[i]);
+    if (mesmosElementos && assinatura === barra.dataset.assinatura) return;
+    itensAnteriores = itens;
+    barra.dataset.assinatura = assinatura;
     barra.hidden = itens.length < 2;
     barra.textContent = '';
     itens.forEach(orig => {
@@ -986,7 +995,8 @@ function submenuNoCelular(lista, seletor, rotuloDe) {
   new MutationObserver(() => {
     if (agendado) return;
     agendado = true;
-    requestAnimationFrame(desenhar);
+    // Junta as mudanças do mesmo toque e redesenha uma vez só.
+    Promise.resolve().then(desenhar);
   }).observe(lista, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
   desenhar();
 }
@@ -1002,3 +1012,276 @@ function ligarSubmenusNoCelular() {
   }
 }
 document.addEventListener('shell:ready', ligarSubmenusNoCelular);
+
+/* ==========================================================================
+   Celular (mesma media query do anfitrião, inclusive com o celular deitado).
+   ========================================================================== */
+const MQ_CELULAR = '(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)';
+const noCelular = () => window.matchMedia(MQ_CELULAR).matches;
+/* Volta ao topo na hora: a janela e a caixa do conteúdo (quem rola no Hub). */
+const irAoTopo = () => {
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  document.querySelector('.b2b-content')?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+};
+
+/* Barra de baixo: tocar em qualquer item sempre começa a página do topo; tocar
+   de novo no item já ativo volta ao topo e à primeira aba daquela seção
+   (fecha a tela aberta por dentro, como o pedido ou o produto, pela seta). */
+function ligarBarraDeBaixo() {
+  const barra = document.querySelector('.mobile-bottom-nav');
+  if (!barra) return;
+  barra.addEventListener('click', (e) => {
+    const item = e.target instanceof Element ? e.target.closest('.mobile-nav-item') : null;
+    if (!item || !noCelular()) return;
+    irAoTopo();
+    if (!item.classList.contains('active')) return;
+    e.preventDefault();
+    const visivel = (/** @type {Element|null|undefined} */ el) => el instanceof HTMLElement && el.offsetParent !== null;
+    const voltar = Array.from(document.querySelectorAll('.b2b-content > .b2b-header-bar .produto-voltar')).find(visivel);
+    if (voltar instanceof HTMLElement) voltar.click();
+    const primeiraAba = [
+      ...document.querySelectorAll('.b2b-content > .submenu-celular:not([hidden]) .submenu-celular-item'),
+      ...document.querySelectorAll('.b2b-content .category-tabs-bar .category-tab')
+    ].find(visivel);
+    if (primeiraAba instanceof HTMLElement && !primeiraAba.classList.contains('is-ativo') && !primeiraAba.classList.contains('active')) primeiraAba.click();
+    setTimeout(irAoTopo, 0);
+  });
+}
+
+/* Menu do celular (☰ no topo do Dashboard): gaveta lateral com todas as
+   seções do Hub e, embaixo, a conta. Tocar na conta abre o pop-up de baixo
+   para cima com as empresas, os itens da conta e Sair, que repassam o toque
+   aos itens do menu do perfil (mesmo comportamento do desktop).
+   Copiado do menu do celular do anfitrião (js/app.js, menuDoCelular). */
+function montarMenuDoCelular() {
+  const abrirBtn = document.getElementById('btn-menu-celular');
+  if (!abrirBtn || document.getElementById('menu-celular')) return;
+  const logo = `<span class="logo-celular">
+      <img class="logo-celular-icone logo-claro" src="assets/iconelove2.png?v=5" alt="" aria-hidden="true">
+      <img class="logo-celular-icone logo-escuro" src="assets/icon-white1.png?v=5" alt="" aria-hidden="true">
+      <img class="logo-celular-nome logo-claro" src="assets/Love-dark-03.png" alt="Love">
+      <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png" alt="Love">
+    </span>`;
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="menu-celular-fundo" aria-hidden="true"></div>
+    <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+      <div class="menu-celular-topo">
+        ${logo}
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></button>
+      </div>
+      <nav class="menu-celular-nav" aria-label="Seções"></nav>
+      <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
+        <span class="menu-celular-avatar" aria-hidden="true"></span>
+        <span class="menu-celular-conta-textos">
+          <span class="menu-celular-nome"></span>
+          <span class="menu-celular-empresa-nome"></span>
+        </span>
+        <svg class="menu-celular-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+      </button>
+    </aside>
+    <div class="menu-conta-fundo" aria-hidden="true"></div>
+    <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" aria-hidden="true">
+      <div class="menu-conta-alca" aria-hidden="true"></div>
+      <button type="button" class="menu-conta-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div class="menu-conta-cabeca">
+        <span class="menu-conta-avatar" aria-hidden="true"></span>
+        <p class="menu-conta-nome"></p>
+        <p class="menu-conta-email"></p>
+      </div>
+      <div class="menu-conta-empresas">
+        <button type="button" class="menu-celular-empresa-atual" aria-expanded="false">
+          <span class="menu-celular-empresa-textos">
+            <span class="menu-celular-empresa-rotulo">Suas empresas</span>
+            <span class="menu-celular-empresa-nome"></span>
+          </span>
+          <svg class="menu-celular-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="menu-celular-empresas-lista" hidden></div>
+      </div>
+      <nav class="menu-conta-itens" aria-label="Minha conta"></nav>
+      <button type="button" class="menu-conta-sair">Sair</button>
+    </section>`);
+
+  const gaveta = /** @type {HTMLElement} */ (document.getElementById('menu-celular'));
+  const fundo = /** @type {HTMLElement} */ (document.querySelector('.menu-celular-fundo'));
+  const conta = /** @type {HTMLElement} */ (document.querySelector('.menu-conta'));
+  const contaFundo = /** @type {HTMLElement} */ (document.querySelector('.menu-conta-fundo'));
+  const nav = /** @type {HTMLElement} */ (gaveta.querySelector('.menu-celular-nav'));
+  const listaEmpresas = /** @type {HTMLElement} */ (conta.querySelector('.menu-celular-empresas-lista'));
+  const empresaAtual = /** @type {HTMLElement} */ (conta.querySelector('.menu-celular-empresa-atual'));
+  const itensConta = /** @type {HTMLElement} */ (conta.querySelector('.menu-conta-itens'));
+
+  const abertos = (/** @type {Element} */ el, /** @type {boolean} */ ligado) => {
+    el.classList.toggle('is-aberta', ligado);
+    el.setAttribute('aria-hidden', String(!ligado));
+  };
+  const fecharConta = () => { abertos(conta, false); abertos(contaFundo, false); };
+  const fechar = () => {
+    fecharConta();
+    abertos(gaveta, false);
+    abertos(fundo, false);
+    document.body.classList.remove('menu-celular-aberto');
+    abrirBtn.setAttribute('aria-expanded', 'false');
+  };
+  /** Fecha tudo e repassa o toque ao item original. @param {Element|null} alvo */
+  const repassar = (alvo) => { fechar(); if (alvo instanceof HTMLElement) alvo.click(); };
+  const texto = (/** @type {string} */ id) => ((document.getElementById(id)?.textContent) || '').trim().replace(/^—$/, '');
+  /** Ícone da sidebar, no traço do menu do anfitrião (1.5). @param {Element|null} origem */
+  const icone = (origem) => {
+    const svg = origem && origem.querySelector('svg');
+    if (!svg) return '';
+    const copia = /** @type {SVGElement} */ (svg.cloneNode(true));
+    copia.setAttribute('stroke-width', '1.5');
+    copia.setAttribute('aria-hidden', 'true');
+    copia.removeAttribute('class');
+    return copia.outerHTML;
+  };
+  const pagina = document.body.dataset.page || '';
+  const linha = (/** @type {string} */ href, /** @type {string} */ rotulo, /** @type {string} */ ic, /** @type {boolean} */ ativo) =>
+    `<a href="${escapeHtml(href)}" class="menu-celular-link${ativo ? ' is-ativo' : ''}"${ativo ? ' aria-current="page"' : ''}>${ic}<span>${escapeHtml(rotulo)}</span></a>`;
+
+  // Todas as seções da sidebar, na mesma ordem; o Construtor vira um título
+  // com Editar meu site e Formulários embaixo; Workshops e Dúvidas no fim.
+  const desenharNav = () => {
+    const sidebar = document.querySelector('.b2b-sidebar');
+    if (!sidebar) return;
+    let html = '';
+    sidebar.querySelectorAll('.sidebar-nav > .sidebar-nav-item[data-page], .sidebar-nav > .sidebar-nav-group').forEach(el => {
+      if (el.classList.contains('sidebar-nav-group')) {
+        const titulo = (el.querySelector('.sidebar-nav-text')?.textContent || '').trim();
+        const ic = icone(el.querySelector('.sidebar-nav-toggle'));
+        const aba = new URLSearchParams(location.search).get('tab') || 'editar';
+        html += `<p class="menu-celular-secao">${escapeHtml(titulo)}</p>`;
+        el.querySelectorAll('.sidebar-subnav-item').forEach(sub => {
+          const a = /** @type {HTMLAnchorElement} */ (sub);
+          const ativo = pagina === 'paginas-site' && a.dataset.construtorAba === aba;
+          html += linha(a.getAttribute('href') || '', (a.textContent || '').trim(), ic, ativo);
+        });
+        return;
+      }
+      const a = /** @type {HTMLAnchorElement} */ (el);
+      html += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
+    });
+    const extras = Array.from(sidebar.querySelectorAll('.sidebar-bottom > .sidebar-nav-item[data-page]'));
+    if (extras.length) {
+      html += '<p class="menu-celular-secao">Mais</p>';
+      extras.forEach(el => {
+        const a = /** @type {HTMLAnchorElement} */ (el);
+        html += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
+      });
+    }
+    nav.innerHTML = html;
+  };
+  nav.addEventListener('click', (e) => {
+    const link = e.target instanceof Element ? e.target.closest('.menu-celular-link') : null;
+    if (!link) return;
+    fechar();
+    if (link.classList.contains('is-ativo')) { e.preventDefault(); irAoTopo(); }
+  });
+
+  const copiarAvatar = (/** @type {Element|null} */ destino) => {
+    const orig = document.getElementById('topbar-user-avatar');
+    if (destino instanceof HTMLElement) destino.innerHTML = orig ? orig.innerHTML : '';
+  };
+  const preencherConta = () => {
+    const empresa = texto('topbar-account-name');
+    const nome = texto('profile-dropdown-name');
+    const email = texto('profile-dropdown-email');
+    const empresaAtiva = (document.querySelector('#profile-empresas .profile-empresa-item.is-ativa .profile-empresa-nome')?.textContent || '').trim() || empresa;
+    gaveta.querySelectorAll('.menu-celular-nome').forEach(n => { n.textContent = empresa || nome || 'Minha conta'; });
+    gaveta.querySelectorAll('.menu-celular-empresa-nome').forEach(n => { n.textContent = nome && nome !== empresa ? nome : email; });
+    const nomeConta = conta.querySelector('.menu-conta-nome');
+    if (nomeConta) nomeConta.textContent = nome || empresa || 'Minha conta';
+    const emailConta = conta.querySelector('.menu-conta-email');
+    if (emailConta) emailConta.textContent = email;
+    const atual = empresaAtual.querySelector('.menu-celular-empresa-nome');
+    if (atual) atual.textContent = empresaAtiva;
+    copiarAvatar(gaveta.querySelector('.menu-celular-avatar'));
+    copiarAvatar(conta.querySelector('.menu-conta-avatar'));
+  };
+  const mostrarEmpresas = (/** @type {boolean} */ aberto) => {
+    listaEmpresas.hidden = !aberto;
+    empresaAtual.setAttribute('aria-expanded', String(aberto));
+  };
+  const desenharEmpresas = () => {
+    listaEmpresas.innerHTML = '';
+    document.querySelectorAll('#profile-empresas .profile-empresa-item').forEach(orig => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      const ativa = orig.classList.contains('is-ativa');
+      b.className = 'menu-celular-empresa' + (ativa ? ' is-ativo' : '');
+      const nome = document.createElement('span');
+      nome.textContent = (orig.querySelector('.profile-empresa-nome')?.textContent || '').trim();
+      b.appendChild(nome);
+      if (ativa) b.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>');
+      b.addEventListener('click', () => repassar(orig));
+      listaEmpresas.appendChild(b);
+    });
+    const criar = document.createElement('button');
+    criar.type = 'button';
+    criar.className = 'menu-celular-empresa is-criar';
+    criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Adicionar empresa</span>';
+    criar.addEventListener('click', () => repassar(document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa')));
+    listaEmpresas.appendChild(criar);
+  };
+  const desenharItensConta = () => {
+    itensConta.innerHTML = '';
+    document.querySelectorAll('#avatar-dropdown > .topbar-dropdown-item:not(.topbar-item-adicionar-empresa):not(.topbar-item-sair)').forEach(orig => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'menu-conta-item';
+      const ic = orig.querySelector('svg');
+      if (ic) {
+        const copia = /** @type {SVGElement} */ (ic.cloneNode(true));
+        copia.removeAttribute('class');
+        b.appendChild(copia);
+      }
+      const t = document.createElement('span');
+      t.textContent = (orig.textContent || '').trim();
+      b.appendChild(t);
+      b.addEventListener('click', () => repassar(orig));
+      itensConta.appendChild(b);
+    });
+  };
+
+  const abrir = () => {
+    desenharNav();
+    preencherConta();
+    abertos(gaveta, true);
+    abertos(fundo, true);
+    document.body.classList.add('menu-celular-aberto');
+    abrirBtn.setAttribute('aria-expanded', 'true');
+  };
+  const abrirConta = () => {
+    preencherConta();
+    desenharEmpresas();
+    desenharItensConta();
+    mostrarEmpresas(false);
+    abertos(contaFundo, true);
+    abertos(conta, true);
+  };
+
+  abrirBtn.addEventListener('click', (e) => { e.stopPropagation(); abrir(); });
+  gaveta.querySelector('.menu-celular-fechar')?.addEventListener('click', fechar);
+  fundo.addEventListener('click', fechar);
+  gaveta.querySelector('.menu-celular-conta')?.addEventListener('click', abrirConta);
+  conta.querySelector('.menu-conta-fechar')?.addEventListener('click', fecharConta);
+  contaFundo.addEventListener('click', fecharConta);
+  conta.querySelector('.menu-conta-sair')?.addEventListener('click', () => repassar(document.querySelector('#avatar-dropdown [data-logout]')));
+  empresaAtual.addEventListener('click', () => mostrarEmpresas(listaEmpresas.hidden));
+  // Puxar a alça do pop-up para baixo fecha.
+  const alca = conta.querySelector('.menu-conta-alca');
+  let alcaY = 0;
+  alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
+  alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fecharConta(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (conta.classList.contains('is-aberta')) fecharConta(); else fechar();
+  });
+  window.matchMedia(MQ_CELULAR).addEventListener?.('change', (e) => { if (!e.matches) fechar(); });
+}
+
+document.addEventListener('shell:ready', () => {
+  ligarBarraDeBaixo();
+  montarMenuDoCelular();
+});

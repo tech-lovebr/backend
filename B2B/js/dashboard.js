@@ -36,22 +36,17 @@ function initMobileGreetingHeader() {
   const servicesLink = iconGroup.querySelector('a[href="produtos"]');
   if (!avatarWrap || !notifWrap || !servicesLink) return;
 
-  const mq = window.matchMedia('(max-width: 768px)');
+  // Celular: o sino e o ☰ agora ficam no topo (como no anfitrião) e o perfil
+  // abre pelo ☰, então nada mais é movido para dentro do "Olá" — os ícones
+  // ficam sempre no topbar, na ordem de sempre.
+  iconGroup.appendChild(servicesLink);
+  iconGroup.appendChild(notifWrap);
+  iconGroup.appendChild(avatarWrap);
   const apply = () => {
-    if (mq.matches) {
-      avatarSlot.appendChild(avatarWrap);
-      iconsSlot.appendChild(servicesLink);
-      iconsSlot.appendChild(notifWrap);
-    } else {
-      iconGroup.appendChild(servicesLink);
-      iconGroup.appendChild(notifWrap);
-      iconGroup.appendChild(avatarWrap);
-    }
     fitGreetingTitleToOneLine();
     sizeMobileAvatarToGreetingText();
   };
   apply();
-  mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply);
   window.addEventListener('resize', () => {
     fitGreetingTitleToOneLine();
     sizeMobileAvatarToGreetingText();

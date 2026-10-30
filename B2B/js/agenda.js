@@ -1416,7 +1416,7 @@ async function submitEventForm(e) {
       created_by: currentUserName()
     });
     if (error) { showToast('Não foi possível adicionar o evento.', true); return; }
-    showToast('Evento adicionado à agenda.');
+    avisarAdicionado(title, 'Evento adicionado à agenda.');
   }
 
   agendaEvents = await loadAgendaEvents();

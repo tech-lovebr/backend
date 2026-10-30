@@ -367,8 +367,10 @@ async function submitConvidadoComment() {
   if (!found) return;
   if (!found.guest.comentarios) found.guest.comentarios = [];
   found.guest.comentarios.push({ id: 'com-' + Date.now(), user: currentVendorName(), text, at: new Date().toISOString() });
+  const { error } = await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  if (error) { found.guest.comentarios.pop(); showToast('Não foi possível salvar o comentário.', true); return; }
   input.value = '';
-  await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  showToast('Comentário salvo.');
   renderConvidadoDrawer();
 }
 
@@ -377,7 +379,9 @@ async function deleteConvidadoComment(commentId) {
   const found = findConvidadoGlobal(activeConvidadoId);
   if (!found) return;
   found.guest.comentarios = (found.guest.comentarios || []).filter(entry => entry.id !== commentId);
-  await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  const { error } = await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  if (error) { showToast('Não foi possível remover o comentário.', true); return; }
+  showToast('Comentário removido.');
   renderConvidadoDrawer();
 }
 

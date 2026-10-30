@@ -921,19 +921,42 @@ function computeAutoFillCrop(bbox, frameAspectRatio) {
 }
 
 let toastTimer = null;
-function showToast(message, isError = false) {
+function showToast(message, isError = false, tipo) {
   let toast = document.getElementById('b2b-toast');
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'b2b-toast';
     toast.className = 'toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
     document.body.appendChild(toast);
   }
+  // No celular o aviso fica no topo; "sucesso" (algo adicionado) fica verde lá.
+  toast.dataset.tipo = isError ? 'erro' : (tipo || 'neutro');
   toast.style.background = isError ? '#B91C1C' : '#18181B';
-  toast.textContent = message;
+  if (tipo === 'sucesso') {
+    toast.innerHTML = '<svg class="toast-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span></span>';
+    toast.querySelector('span').textContent = message;
+  } else {
+    toast.textContent = message;
+  }
   toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+/* Celular: aviso verde de "adicionado" com o nome ("Ana S. foi adicionado"),
+   como no anfitrião. No computador continua o aviso de antes (textoNoComputador). */
+function nomeCurtoDoAviso(nome) {
+  const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return '';
+  return partes.length > 1 ? `${partes[0]} ${(partes[partes.length - 1][0] || '').toUpperCase()}.` : partes[0];
+}
+function avisarAdicionado(nome, textoNoComputador) {
+  const celular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  if (!celular) { showToast(textoNoComputador || 'Adicionado.'); return; }
+  const curto = nomeCurtoDoAviso(nome);
+  showToast(curto ? `${curto} foi adicionado` : 'Adicionado', false, 'sucesso');
 }
 
 /* ==========================================================================

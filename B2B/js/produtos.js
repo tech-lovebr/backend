@@ -1795,7 +1795,7 @@ function initProductDrawer() {
         } else {
           const { error } = await supabaseClient.from('products').insert({ fornecedor_id: empresaId(session), ...row });
           if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
-          showToast('Produto adicionado à vitrine.');
+          avisarAdicionado(name, 'Produto adicionado à vitrine.');
         }
         await loadProducts();
         renderCategoryTabs();

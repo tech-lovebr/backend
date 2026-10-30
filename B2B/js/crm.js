@@ -479,7 +479,7 @@ function initLeadDrawer() {
       showToast(form.dataset.editId ? 'Não foi possível atualizar o lead.' : 'Não foi possível adicionar o lead.', true);
       return;
     }
-    showToast(form.dataset.editId ? 'Lead atualizado.' : 'Lead adicionado.');
+    if (form.dataset.editId) showToast('Lead atualizado.'); else avisarAdicionado(name, 'Lead adicionado.');
 
     await loadLeads();
     close();

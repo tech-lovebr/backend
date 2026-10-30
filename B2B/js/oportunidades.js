@@ -695,7 +695,9 @@ function opRenderPropostas() {
 
 async function opRetirar(id) {
   const { error } = await supabaseClient.from('propostas_pedido').update({ status: 'retirada' }).eq('id', id);
-  if (!error) { await opCarregarPropostas(); opRenderPropostas(); opRenderPedidos(); }
+  if (error) { showToast('Não foi possível retirar a proposta.', true); return; }
+  await opCarregarPropostas(); opRenderPropostas(); opRenderPedidos();
+  showToast('Proposta retirada.');
 }
 
 /* -------------------- Abas, filtros e eventos -------------------- */

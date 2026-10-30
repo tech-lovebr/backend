@@ -15082,3 +15082,9 @@ body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
   body[data-theme="dark"] .mesa-celular-situacao.is-confirmed { background: rgba(47, 203, 126, 0.16); color: #5FE0A0; }
   body[data-theme="dark"] .mesa-celular-situacao.is-declined { background: rgba(199, 48, 91, 0.18); color: #F08AA8; }
 }
+
+/* Celular, arrastar a linha: Editar (Convidados) e Abrir (Mensagens) no azul
+   da barra lateral do desktop (#183b54) em vez do cinza. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body :is(#tab-rsvp .guests-table .guest-acao-editar, #b2b-chat-contacts-list .conv-acao-abrir):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #183b54 !important; color: #FFFFFF !important; }
+}

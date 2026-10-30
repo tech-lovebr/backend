@@ -1801,3 +1801,47 @@ async function escolherContatosDoCelular() {
     entrada.click();
   });
 }
+
+/* ==========================================================================
+   Desktop: ficha dentro da página (sem pop-up), como Criar presente no
+   anfitrião (abrirPresenteNaPagina). Quando a gaveta abre (.show), ela entra
+   na caixa da página, ocupando a largura toda no lugar da lista; ao fechar,
+   volta para o lugar de origem.
+   ========================================================================== */
+function fichaNaPaginaNoDesktop(drawerId, painelSel) {
+  const drawer = document.getElementById(drawerId);
+  if (!drawer) return;
+  const casa = { pai: drawer.parentElement, depois: drawer.nextSibling };
+  const devolver = () => {
+    if (!drawer.classList.contains('na-pagina')) return;
+    const painel = drawer.parentElement;
+    painel?.classList.remove('com-ficha-na-pagina');
+    document.body.classList.remove('ficha-na-pagina-aberta');
+    drawer.classList.remove('na-pagina');
+    casa.pai.insertBefore(drawer, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+  };
+  const levar = () => {
+    if (drawer.classList.contains('na-pagina') || hubNoCelular()) return;
+    const painel = document.querySelector(painelSel);
+    if (!painel || !painel.checkVisibility?.()) return;
+    painel.appendChild(drawer);
+    drawer.classList.add('na-pagina');
+    // Trocou de aba com a ficha aberta: fecha a ficha.
+    if (!painel.__vigiaFicha) {
+      painel.__vigiaFicha = new MutationObserver(() => {
+        if (painel.hidden && drawer.classList.contains('na-pagina')) drawer.querySelector('.form-drawer-close')?.click();
+      });
+      painel.__vigiaFicha.observe(painel, { attributes: true, attributeFilter: ['hidden'] });
+    }
+    painel.classList.add('com-ficha-na-pagina');
+    document.body.classList.add('ficha-na-pagina-aberta');
+    document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
+  };
+  new MutationObserver(() => {
+    if (drawer.classList.contains('show')) levar(); else devolver();
+  }).observe(drawer, { attributes: true, attributeFilter: ['class'] });
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', () => {
+    if (hubNoCelular()) devolver(); else if (drawer.classList.contains('show')) levar();
+  });
+}

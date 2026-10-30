@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderLeadStatusTabs();
   renderLeadsTable();
   initLeadDrawer();
+  fichaNaPaginaNoDesktop('lead-drawer', '[data-leads-painel="leads"]');
   initLeadEmailAutocomplete();
   initLeadImport();
 

@@ -9977,7 +9977,17 @@ document.addEventListener('DOMContentLoaded', () => {
   /** Recados = presentes com mensagem escrita ou vídeo. @param {any} ev */
   const recadosDoEvento = (ev) => ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim() || g.videoUrl);
   // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
-  const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 4.5 12 2.3l3.4 2.2"/><path d="M6 13V5.6a1.1 1.1 0 0 1 1.1-1.1h9.8A1.1 1.1 0 0 1 18 5.6V13"/><path d="M6 8.3 3.6 10a1.5 1.5 0 0 0-.6 1.2V19a1.6 1.6 0 0 0 1.6 1.6h14.8A1.6 1.6 0 0 0 21 19v-7.8a1.5 1.5 0 0 0-.6-1.2L18 8.3"/><path d="M3.4 11l5.7 4.4M20.6 11l-5.7 4.4M3.7 20.1l6.5-5.4a2.8 2.8 0 0 1 3.6 0l6.5 5.4"/><path d="M12 11.2c-1.6-1-2.6-2-2.6-3.1 0-.8.6-1.4 1.3-1.4.6 0 1 .3 1.3.8.3-.5.7-.8 1.3-.8.7 0 1.3.6 1.3 1.4 0 1.1-1 2.1-2.6 3.1Z"/></svg>';
+  // Recados vazios: animação Lottie (cartinha) no lugar do ícone. O player
+  // (dotlottie-wc) só é baixado quando essa tela aparece.
+  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="https://lottie.host/76100b0d-2777-4935-b5f5-a218c8fa63c5/ENogsbhX5K.lottie" autoplay loop aria-hidden="true"></dotlottie-wc>';
+  function carregarPlayerLottie() {
+    if (customElements.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.id = 'love-dotlottie-wc';
+    s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
+    document.head.appendChild(s);
+  }
   /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
   function abrirRecadoDoPresente(gift) {
     const ev = getActiveEvent();
@@ -10108,6 +10118,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="recado-previa">${previa}${msg && g.videoUrl ? ' <span class="recado-tag-video">+ vídeo</span>' : ''}</td>
         </tr>`;
     }).join('');
+    if (!linhas && !recados.length) carregarPlayerLottie();
     raiz.innerHTML = `
       <div class="dash-card love-tabela-caixa recados-caixa">
         <div class="love-tabela-barra">

@@ -15132,3 +15132,6 @@ html body .floorplan-seat-dot.tem-restricao:not(#love-h-a):not(#love-h-b) { back
   html body #recados-raiz .recados-tabela:has(.recados-vazio) tr:not(#love-h-a):not(#love-h-b) { display: block; width: 100%; border: 0 !important; background: transparent !important; }
   html body #recados-raiz td.recados-vazio:not(#love-h-a):not(#love-h-b) { display: block; width: 100%; max-width: 300px; margin: 0 auto; padding: 24px 16px !important; box-sizing: border-box; font-size: 14px; }
 }
+
+/* Recados vazios: animação Lottie da cartinha no lugar do ícone (desktop e celular). */
+html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { display: block; width: 140px; height: 140px; margin: 0 auto 12px; }

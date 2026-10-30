@@ -1484,7 +1484,7 @@
     if (etapa === 1) {
       return `
         <section class="rfp-secao">
-          <h4 class="rfp-pergunta">${noCelular() ? 'Qual serviço você precisa?' : 'Categoria'}</h4>
+          <h4 class="rfp-pergunta">Qual serviço você precisa?</h4>
           ${seletorDeServico()}
           ${erroHtml('categorias')}
           ${id ? blocoTags(id) : ''}
@@ -1545,7 +1545,7 @@
   /** Textos do topo de cada etapa. */
   const TEXTOS_DA_PAGINA = [
     // Título grande à esquerda da caixa, como em Adicionar novo produto do Hub.
-    { titulo: 'Encontre um fornecedor perfeito para o seu evento', sub: 'Escolha como prefere começar: cotar um serviço pontual ou montar o evento completo.' },
+    { titulo: 'Vamos encontrar um novo fornecedor?', sub: 'Responda algumas perguntas para criarmos uma solicitação de orçamento. Lembre-se de adicionar informações claras sobre o que você precisa.' },
     { titulo: 'Conte mais sobre o seu evento', sub: 'Data, horário, local e convidados. Isso ajuda os fornecedores a enviarem propostas realistas.' },
     { titulo: 'Descreva o que você precisa', sub: 'Conte os detalhes de cada serviço e, se quiser, quanto planeja gastar.' },
     // Etapa 3: o "Imagem de referência" aparece uma vez só, dentro do formulário.

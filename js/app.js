@@ -1805,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'wallet-digital', label: 'Carteira Digital' },
-        { id: 'wallet-budget', label: 'Orçamento' }
+        { id: 'wallet-budget', label: 'Gerenciar despesas' }
         // Extrato saiu do menu: ele fica no fim da Carteira Digital.
       ]
     },
@@ -15855,7 +15855,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const w = /** @type {any} */ (window);
         if (w.LoveCarteira) w.LoveCarteira.render();
       } else if (subId === 'wallet-budget') {
-        title.textContent = 'Orçamento';
+        title.textContent = 'Gerenciar despesas';
         // Sem subtítulo: o cabeçalho termina na linha, como nas outras telas.
         if (desc) desc.classList.add('hidden');
         checkAndPromptBudgetSetup();
@@ -16147,7 +16147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tela.innerHTML = `
       <header class="orc-cel-topo">
         <button type="button" class="orc-cel-icone" data-orc-cel="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
-        <h2 id="orc-celular-titulo">Seu orçamento</h2>
+        <h2 id="orc-celular-titulo">Gerenciar despesas</h2>
         <div class="orc-cel-topo-acoes">
           <button type="button" class="orc-cel-icone" data-orc-cel="adicionar" aria-label="Adicionar despesa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
           <button type="button" class="orc-cel-icone" data-orc-cel="definir" aria-label="Definir orçamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></button>
@@ -16259,10 +16259,10 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Orçamento'));
+        b.classList.toggle('active', b.textContent.includes('Gerenciar despesas'));
       });
     }
-    switchWalletSubSection('wallet-budget', 'Orçamento');
+    switchWalletSubSection('wallet-budget', 'Gerenciar despesas');
     if (orcamentoNoCelular()) {
       orcCelularVoltarPara = vinhaDe;
       const ev = getActiveEvent();
@@ -16914,7 +16914,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const noOrcamento = !document.getElementById('wallet-sub-budget')?.classList.contains('hidden');
     if (estavaAberta && noOrcamento) {
       const titulo = document.getElementById('wallet-header-title');
-      if (titulo) titulo.textContent = 'Orçamento';
+      if (titulo) titulo.textContent = 'Gerenciar despesas';
       document.getElementById('wallet-header-actions')?.classList.remove('hidden');
     }
   }

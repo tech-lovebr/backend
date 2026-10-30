@@ -13137,6 +13137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (marcador.checked) convidadosMarcadosNaPlanta().add(g.name || '');
         else convidadosMarcadosNaPlanta().delete(g.name || '');
         card.classList.toggle('is-marcado', marcador.checked);
+        atualizarTituloDosMarcados();
       });
       card.classList.toggle('is-marcado', marcador.checked);
       card.appendChild(marcador);
@@ -13169,6 +13170,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       container.appendChild(card);
     });
+    atualizarTituloDosMarcados();
+  }
+
+  /** Título da lista: "Convidados (2)" com a quantidade marcada nas caixinhas. */
+  function atualizarTituloDosMarcados() {
+    const titulo = document.getElementById('floorplan-convidados-titulo');
+    if (!titulo) return;
+    const marcados = [...convidadosMarcadosNaPlanta()].filter(Boolean).length;
+    titulo.textContent = marcados ? `Convidados (${marcados})` : 'Convidados';
   }
 
   // ==========================================

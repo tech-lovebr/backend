@@ -14950,3 +14950,18 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
   html body #tab-overview .home-kpis:not(#love-h-a):not(#love-h-b) { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
   html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) { margin-bottom: 28px; }
 }
+
+/* ==========================================================================
+   Celular, Home: Benefícios vem antes da Lista de convidados; o cartão
+   "Monte sua lista..." (Continuar) fica logo depois da caixa de convidados,
+   que perde o botão "Ver lista" (ele aparece no menu do Continuar).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview #home-atalhos-celular:not(#love-h-a):not(#love-h-b) { display: contents !important; }
+  html body #tab-overview #home-atalhos-celular > :is(.home-aviso-mensagens, .is-beneficios):not(#love-h-a) { order: 6; }
+  html body #tab-overview .home-kpis > :is(.home-kpi-titulo:has(+ div #kpi-invites-sent), div:has(#kpi-invites-sent)):not(#love-h-a):not(#love-h-b) { order: 7; }
+  html body #tab-overview #home-atalhos-celular > .home-contatos:not(#love-h-a) { order: 8; }
+  html body #tab-overview #home-atalhos-celular > .is-beneficios:not(#love-h-a) { margin-top: 8px !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid + div { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid { padding-bottom: 18px !important; }
+}

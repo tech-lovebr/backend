@@ -11720,7 +11720,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ------------------------------------------------------------------
-  // Celular: menu "Adicionar manualmente" / "Importar contatos". Importar abre
+  // Celular: menu "Adicionar manual" / "Importar contatos". Importar abre
   // os contatos do celular (Contact Picker, Android/Chrome); onde o navegador
   // não deixa (Safari do iPhone), escolhe um arquivo de contatos (.vcf).
   // ------------------------------------------------------------------
@@ -11747,10 +11747,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const menu = document.createElement('div');
     menu.className = 'menu-add-convidado';
     menu.setAttribute('role', 'menu');
-    menu.innerHTML = `
+    // Na Home (Continuar), primeiro o atalho para a lista.
+    menu.innerHTML = `${naHome ? `
+      <button type="button" role="menuitem" data-add="lista">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>
+        <span>Ver lista</span>
+      </button>` : ''}
       <button type="button" role="menuitem" data-add="manual">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
-        <span>Adicionar manualmente</span>
+        <span>Adicionar manual</span>
       </button>
       <button type="button" role="menuitem" data-add="contatos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>
@@ -11768,6 +11773,10 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.style.top = `${Math.round(topo)}px`;
     menu.style.left = `${Math.round(Math.min(Math.max(8, esquerda), window.innerWidth - larg - 8))}px`;
 
+    menu.querySelector('[data-add="lista"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      window.loveIrPara?.('rsvp', 'all');
+    });
     menu.querySelector('[data-add="manual"]')?.addEventListener('click', () => {
       fecharMenuAddConvidado();
       if (naHome) { window.loveIrPara?.('rsvp', 'all'); setTimeout(() => abrirFichaDoConvidado(null), 80); }

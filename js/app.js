@@ -2692,6 +2692,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const carteira = activeEvent.wallet || {};
       const arrecadado = pagos || ((Number(carteira.saldoDisponivel) || 0) + (Number(carteira.totalSacado) || 0));
       kpiArrecadado.textContent = `R$ ${arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      // Celular: a mesma caixa em duas colunas (saldo | presentes recebidos).
+      const arrecadadoCel = document.getElementById('kpi-arrecadado-celular');
+      if (arrecadadoCel) arrecadadoCel.textContent = kpiArrecadado.textContent;
+      const recebidosCel = document.getElementById('kpi-presentes-recebidos');
+      if (recebidosCel) {
+        const recebidos = Array.isArray(activeEvent.receivedGifts) && activeEvent.receivedGifts.length
+          ? activeEvent.receivedGifts.length : (Number(activeEvent.presentesRecebidos) || 0);
+        recebidosCel.textContent = String(recebidos);
+      }
     }
     if (kpiRsvp) kpiRsvp.textContent = `${activeEvent.convidadosConfirmados}`;
     if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados ?? 0} adultos • ${activeEvent.criancasConfirmadas ?? 0} crianças confirmadas`;

@@ -14794,3 +14794,32 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
   body[data-theme="dark"] #tab-overview .home-kpis > div:has(#kpi-invites-sent) #kpi-invites-sent,
   body[data-theme="dark"] #tab-overview .home-kpis > div:has(#kpi-invites-sent) #kpi-rsvp-confirmed { color: #fff !important; }
 }
+
+/* ==========================================================================
+   Celular, Home: títulos de seção "Presentes" e "Lista de convidados" (como
+   em Benefícios) antes de cada caixa, e a caixa Presentes no mesmo formato
+   da de Convidados: duas colunas (Saldo arrecadado | Presentes recebidos),
+   número em cima e nome embaixo, e o botão primário embaixo.
+   ========================================================================== */
+.home-kpi-titulo, .home-presentes-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview .home-kpis > .home-kpi-titulo:not(#love-h-a):not(#love-h-b) { display: flex !important; order: 5; margin: 8px 0 -4px !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) > div:first-child { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) .home-presentes-celular {
+    display: grid; grid-template-columns: 1fr 1fr; padding: 18px 0 16px;
+  }
+  html body #tab-overview .home-presentes-celular > div { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 0 12px; text-align: center; min-width: 0; }
+  html body #tab-overview .home-presentes-celular > div + div { border-left: 1px solid #F4F4F5; }
+  html body #tab-overview .home-presentes-valor { font-family: Inter, sans-serif; font-size: 22px; line-height: 30px; font-weight: 700; letter-spacing: -0.025em; color: #183b54; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  html body #tab-overview .home-presentes-nome { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) > div[onclick] {
+    margin: 0 16px 16px; height: 44px; padding: 0 16px !important; justify-content: center !important;
+    background: #183b54 !important; border: 0 !important; border-radius: 8px; color: #fff !important;
+  }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) > div[onclick] span { color: #fff !important; font-size: 14px; font-weight: 600 !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) > div[onclick] svg { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) > div[onclick]:active { background: #122c3f !important; }
+  body[data-theme="dark"] #tab-overview .home-presentes-valor { color: #fff; }
+  body[data-theme="dark"] #tab-overview .home-presentes-nome { color: #A1A1AA; }
+  body[data-theme="dark"] #tab-overview .home-presentes-celular > div + div { border-left-color: #333333; }
+}

@@ -69,7 +69,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261029_kpiconv">
+  <link rel="stylesheet" href="css/styles.css?v=20261029_kpipres">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -2586,6 +2586,8 @@
               <!-- 2 Cards de Métricas / KPIs (Presentes | Convidados & Confirmados Unificado) -->
               <div class="home-kpis grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
                 
+                <!-- Celular: título da seção, como em Benefícios -->
+                <div class="home-kpi-titulo home-atalhos-titulo"><h3>Presentes</h3><span aria-hidden="true"></span></div>
                 <!-- Card 1: Presentes (Arrecadação / Saldo) -->
                 <div class="bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
                   <div class="p-4 sm:p-5 space-y-3">
@@ -2597,12 +2599,19 @@
                       <span id="kpi-total-arrecadado" class="text-2xl sm:text-[25px] font-bold text-zinc-900 tracking-tight font-sans">R$ 14.850,00</span>
                     </div>
                   </div>
+                  <!-- Celular: número em cima e nome embaixo, em duas colunas -->
+                  <div class="home-presentes-celular">
+                    <div><span id="kpi-arrecadado-celular" class="home-presentes-valor">R$ 14.850,00</span><span class="home-presentes-nome">Saldo arrecadado</span></div>
+                    <div><span id="kpi-presentes-recebidos" class="home-presentes-valor">0</span><span class="home-presentes-nome">Presentes recebidos</span></div>
+                  </div>
                   <div onclick="document.querySelector('[data-rail-tab=\'wallet\']')?.click()" class="px-4 sm:px-5 py-2.5 bg-[#FAFAFA] hover:bg-[#F4F4F5] border-t border-[#EAEAEA] flex items-center justify-between text-xs font-semibold text-zinc-800 hover:text-zinc-950 transition-all cursor-pointer font-sans group/btn">
                     <span class="font-medium text-zinc-800 group-hover/btn:text-zinc-950">Sacar disponível</span>
                     <svg class="w-3.5 h-3.5 text-zinc-600 group-hover/btn:text-zinc-950 group-hover/btn:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                   </div>
                 </div>
 
+                <!-- Celular: título da seção, como em Benefícios -->
+                <div class="home-kpi-titulo home-atalhos-titulo"><h3>Lista de convidados</h3><span aria-hidden="true"></span></div>
                 <!-- Card 2: Convidados & Confirmados Unificado (1 Único Botão) -->
                 <div class="bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
                   <div class="grid grid-cols-2 divide-x divide-zinc-100 p-4 sm:p-5">
@@ -5761,7 +5770,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261029_kpiconv"></script>
+  <script src="js/app.js?v=20261029_kpipres"></script>
   <script src="js/carteira.js?v=20261024_gateways"></script>
   <script src="js/checklist.js?v=20261026_telacheia"></script>
   <script src="js/pedidos-orcamento.js?v=20261029_selcategoria"></script>

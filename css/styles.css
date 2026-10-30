@@ -15275,3 +15275,13 @@ html body #gifts-listas-prontas .lista-pronta-lottie:not(#love-h-a) { display: b
    de 64px: 54px, com a sobra dividida em cima e embaixo para os cards não
    mudarem de altura. O traço no arquivo foi ajustado para seguir com 2px. */
 html body :is(.presentes-vazio, #gifts-listas-prontas) .lista-pronta-lottie.presente-lottie:not(#love-h-a):not(#love-h-b) { width: 54px; height: 54px; margin: 5px auto 11px; }
+
+/* Celular, Criar/Editar presente: rótulos (Nome do presente, Adicionar imagem,
+   Descrição, Valor total) iguais aos de Adicionar convidado — 13px/500,
+   #71717A; "Permitir valor extra" e "Habilitar crowdfunding" na cor padrão
+   dos textos (#18181B). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #form-add-gift label.block:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 13px !important; font-weight: 500 !important; line-height: 19.5px !important; letter-spacing: -0.13px !important; color: #71717A !important; }
+  html body #form-add-gift :is(.gift-texto-celular, .gift-contribuicao-texto > span:first-child):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #18181B !important; }
+  body[data-theme="dark"] #form-add-gift :is(.gift-texto-celular, .gift-contribuicao-texto > span:first-child) { color: #FFFFFF !important; }
+}

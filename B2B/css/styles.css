@@ -11954,3 +11954,29 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-valor { color: #EBF4FF !important; }
   body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-colunas > div + div { border-left-color: #333333 !important; }
 }
+
+/* Dashboard no celular: faixa azul no topo (o azul do sidebar em degradê,
+   igual à faixa do Admin) atrás do cabeçalho e da caixa do Olá, como a foto
+   na Home do anfitrião; logo e ícones brancos por cima. Atalhos sem caixa. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a):not(#love-h-b) {
+    --faixa-h: 160px;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%) top / 100% var(--faixa-h) no-repeat local,
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%) top / 100% var(--faixa-h) no-repeat local,
+      #F4F6F7;
+  }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto .b2b-topbar:not(#love-h-a):not(#love-h-b) { background: transparent !important; border-bottom-color: transparent !important; box-shadow: none !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto .logo-claro:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto .logo-escuro:not(#love-h-a):not(#love-h-b) { display: block !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto :is(#notif-trigger, #btn-menu-celular):not(#love-h-a):not(#love-h-b) { color: #FFFFFF !important; background: transparent !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto :is(#notif-trigger, #btn-menu-celular) svg *:not(#love-h-a) { stroke: #FFFFFF !important; }
+  html body[data-page="dashboard"] .dashboard-greeting:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: 16px; }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) { box-shadow: none !important; outline: none !important; border: 0 !important; background: transparent !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-content {
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .35) 0%, rgba(42, 120, 214, 0) 55%) top / 100% 160px no-repeat local,
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%) top / 100% 160px no-repeat local,
+      #1C2125 !important;
+  }
+}

@@ -838,6 +838,7 @@ async function initOportunidades() {
   // cadastrar um (Minhas propostas continua funcionando).
   if (!(await opTemProdutos())) {
     document.getElementById('op-sem-produtos').hidden = false;
+    if (typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
     document.getElementById('op-conteudo').hidden = true;
   }
   opLigarEventos();

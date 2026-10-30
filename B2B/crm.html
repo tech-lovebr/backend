@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=824">
+  <link rel="stylesheet" href="css/styles.css?v=827">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -103,7 +103,13 @@
           <!-- Sem produto cadastrado, não dá para buscar eventos pela categoria. -->
           <div class="op-vazio op-sem-produtos" id="op-sem-produtos" hidden>
             <p>Cadastre um produto para encontrar eventos buscando a sua categoria de negócio.</p>
-            <a href="produtos" class="btn-secondary builder-toolbar-btn">Criar produto</a>
+            <div class="produtos-vazio-cards">
+              <a href="produtos?add=1" class="produtos-vazio-criar">
+                <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
+                <strong>Cadastrar novo produto</strong>
+                <span class="produtos-vazio-criar-sub">Crie um produto ou serviço do zero</span>
+              </a>
+            </div>
           </div>
           <div id="op-conteudo">
             <!-- Filtros rápidos: categoria, cidade, orçamento e os atalhos
@@ -398,6 +404,6 @@
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="js/crm.js?v=36"></script>
   <script src="js/cliente-pagina.js?v=1"></script>
-  <script src="js/oportunidades.js?v=26"></script>
+  <script src="js/oportunidades.js?v=27"></script>
 </body>
 </html>

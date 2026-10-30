@@ -4318,3 +4318,109 @@ function renderAdvancedTab(el) {
     </div>
   `;
 }
+
+/* -------------------- Construtor no celular --------------------
+   Prévia em tela cheia; tocar num elemento abre uma gaveta pequena com o
+   essencial (só Conteúdo). Sem adicionar, mover, duplicar ou apagar.
+   Salva sozinho; se o site já está no ar, publica junto. */
+const AVISO_CONSTRUTOR_CELULAR = 'Atenção, para usar todos os recursos de edição, acesse o construtor pelo computador (desktop).';
+let timerSalvarNoCelular = null;
+
+function construtorNoCelular() {
+  return typeof hubNoCelular === 'function' && hubNoCelular() && !!document.getElementById('site-builder-root');
+}
+
+function siteJaPublicado() {
+  const chave = currentPageKey === 'checkout' ? CHECKOUT_PUBLISHED_KEY : BUILDER_PUBLISHED_KEY;
+  try { return !!localStorage.getItem(chave); } catch (e) { return false; }
+}
+
+function salvarSozinhoNoCelular() {
+  clearTimeout(timerSalvarNoCelular);
+  timerSalvarNoCelular = setTimeout(async () => {
+    if (!construtorNoCelular()) return;
+    const publicado = siteJaPublicado();
+    if (persistBuilderState(true) === false) return;
+    if (publicado) {
+      const r = await publishBuilderState();
+      if (r === 'erro') showToast('Não foi possível atualizar o site no ar. Tente de novo.', true);
+    }
+  }, 800);
+}
+
+function marcarSelecaoNoCelular() {
+  if (!construtorNoCelular()) return;
+  const sel = findSelected();
+  document.body.classList.toggle('construtor-com-selecao', !!sel);
+}
+
+(function prepararConstrutorNoCelular() {
+  const pushOriginal = pushHistory;
+  pushHistory = function () {
+    pushOriginal.apply(this, arguments);
+    if (construtorNoCelular()) salvarSozinhoNoCelular();
+  };
+
+  const sortablesOriginal = initSortables;
+  initSortables = function (canvas) {
+    if (construtorNoCelular()) { destroySortables(); return; }
+    return sortablesOriginal.apply(this, arguments);
+  };
+
+  const painelOriginal = renderLeftPanel;
+  renderLeftPanel = function () {
+    if (construtorNoCelular()) {
+      const sel = findSelected();
+      // Seções e colunas mexem em layout: no celular só elementos e cabeçalho.
+      if (sel && (sel.kind === 'section' || sel.kind === 'column')) {
+        selectedId = null;
+        applySelectionClasses();
+      } else if (sel) {
+        inspectorActiveTab = 'content';
+      }
+    }
+    const r = painelOriginal.apply(this, arguments);
+    marcarSelecaoNoCelular();
+    return r;
+  };
+
+  function ligar() {
+    if (!construtorNoCelular()) {
+      document.body.classList.remove('construtor-celular', 'construtor-com-selecao');
+      return;
+    }
+    document.body.classList.add('construtor-celular');
+    document.body.classList.toggle('construtor-publicado', siteJaPublicado());
+    const aviso = document.querySelector('.builder-narrow-notice');
+    if (aviso && !aviso.dataset.celular) {
+      aviso.dataset.celular = '1';
+      const icone = aviso.querySelector('svg');
+      aviso.textContent = '';
+      if (icone) aviso.appendChild(icone);
+      aviso.appendChild(document.createTextNode(AVISO_CONSTRUTOR_CELULAR));
+    }
+    const botaoCelular = document.querySelector('#builder-device-toggle .builder-device-btn[data-device="mobile"]');
+    if (botaoCelular && currentDevice !== 'mobile') botaoCelular.click();
+    const publicar = document.getElementById('builder-publish');
+    if (publicar && !publicar.dataset.celular) {
+      publicar.dataset.celular = '1';
+      publicar.addEventListener('click', () => {
+        setTimeout(() => document.body.classList.toggle('construtor-publicado', siteJaPublicado()), 300);
+      });
+    }
+    renderLeftPanel();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('site-builder-root')) return;
+    ligar();
+    if (typeof MQ_CELULAR_HUB !== 'undefined') {
+      const mq = window.matchMedia(MQ_CELULAR_HUB);
+      if (mq.addEventListener) mq.addEventListener('change', ligar);
+    }
+    // Tocar fora da gaveta (na prévia vazia) fecha.
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('construtor-com-selecao')) deselect();
+    });
+  });
+})();

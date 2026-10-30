@@ -11760,3 +11760,76 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   html body #lead-add-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
   body[data-theme="dark"] #lead-add-celular { color: #FFFFFF !important; }
 }
+
+/* ==========================================================================
+   Construtor no celular — prévia em tela cheia + gaveta do elemento tocado
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.construtor-celular .builder-narrow-notice:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; padding: 10px 12px;
+    font-size: 13px; line-height: 1.4; font-weight: 500; border-radius: 8px; flex-shrink: 0;
+  }
+  html body.construtor-celular .builder-narrow-notice svg:not(#love-h-a) { width: 16px; height: 16px; margin-top: 1px; }
+  html body.construtor-celular .builder-wrap:not(#love-h-a):not(#love-h-b) {
+    display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;
+    margin: 0 -16px; border: none; border-radius: 0; box-shadow: none; background: #FFFFFF;
+  }
+  html body.construtor-celular .builder-body:not(#love-h-a) { flex: 1 1 auto; min-height: 0; display: block; position: relative; }
+  html body.construtor-celular .builder-canvas-viewport:not(#love-h-a):not(#love-h-b) {
+    padding: 0; background: #FFFFFF; height: 100%; width: 100%; display: block; overflow: hidden;
+  }
+  html body.construtor-celular .builder-canvas-frame:not(#love-h-a):not(#love-h-b) {
+    max-width: none; width: 100%; height: 100%; border: none; border-radius: 0; box-shadow: none; margin: 0;
+  }
+  html body.construtor-celular .builder-canvas-scroll:not(#love-h-a) { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  /* Sem mover, duplicar, apagar nem redimensionar. */
+  html body.construtor-celular .builder-block-toolbar:not(#love-h-a),
+  html body.construtor-celular .builder-column-resizer:not(#love-h-a) { display: none !important; }
+
+  /* Seletor de página: 20px na cor primária, com a seta. */
+  html body.construtor-celular #site-titulo-pagina:not(#love-h-a) { display: none !important; }
+  html body.construtor-celular #builder-page-select-btn:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; gap: 6px; padding: 0; background: transparent; border: none;
+  }
+  html body.construtor-celular #builder-page-select-label:not(#love-h-a):not(#love-h-b) {
+    display: inline !important; line-height: 1.2 !important; height: auto !important; font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+  }
+  html body.construtor-celular #builder-page-select-btn .site-seletor-seta:not(#love-h-a) {
+    display: block; width: 20px; height: 20px; color: #183b54; flex-shrink: 0;
+  }
+  /* Ações do cabeçalho: só "Publicar" enquanto o site não está no ar. */
+  html body.construtor-celular .site-cabecalho-acoes:not(#love-h-a):not(#love-h-b) { display: flex; margin-left: auto; align-items: center; }
+  html body.construtor-celular .site-cabecalho-acoes > :not(.builder-toolbar-right):not(#love-h-a),
+  html body.construtor-celular .builder-toolbar-right > :not(#builder-publish):not(#love-h-a) { display: none !important; }
+  html body.construtor-celular .builder-toolbar-right:not(#love-h-a) { display: flex; gap: 0; }
+  html body.construtor-celular #builder-publish:not(#love-h-a):not(#love-h-b) {
+    height: 36px !important; min-height: 36px !important; padding: 0 14px; border-radius: 8px; background: #FFFFFF; color: #183b54;
+    border: 1px solid #E4E4E7; font-size: 14px; font-weight: 600; box-shadow: none;
+  }
+  html body.construtor-celular.construtor-publicado #builder-publish:not(#love-h-a) { display: none !important; }
+
+  /* Gaveta do elemento tocado. */
+  html body.construtor-celular #builder-elements-panel:not(#love-h-a):not(#love-h-b) {
+    display: none; position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 130; width: auto;
+    max-height: 60dvh; border: none; border-radius: 10px 10px 0 0; background: #FFFFFF;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08); padding-top: 16px; padding-bottom: env(safe-area-inset-bottom, 0px);
+    flex-direction: column; overflow: hidden;
+  }
+  html body.construtor-celular.construtor-com-selecao #builder-elements-panel:not(#love-h-a):not(#love-h-b) { display: flex; }
+  html body.construtor-celular #builder-elements-panel:not(#love-h-a)::before {
+    content: ''; position: absolute; top: 6px; left: 50%; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px; background: #D4D4D8;
+  }
+  html body.construtor-celular #builder-elements-panel .inspector-tabs:not(#love-h-a),
+  html body.construtor-celular #builder-elements-panel .builder-panel-tabs:not(#love-h-a) { display: none; }
+  html body.construtor-celular #builder-elements-panel .inspector-body:not(#love-h-a) { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  html body.construtor-celular #builder-elements-panel :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(#love-h-a) { font-size: 16px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-theme="dark"].construtor-celular .builder-wrap:not(#love-h-a):not(#love-h-b),
+  html body[data-theme="dark"].construtor-celular .builder-canvas-viewport:not(#love-h-a):not(#love-h-b) { background: #1E1E1E; }
+  html body[data-theme="dark"].construtor-celular #builder-elements-panel:not(#love-h-a):not(#love-h-b) { background: #252525; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4); }
+  html body[data-theme="dark"].construtor-celular #builder-elements-panel:not(#love-h-a)::before { background: #52525B; }
+  html body[data-theme="dark"].construtor-celular #builder-page-select-label:not(#love-h-a):not(#love-h-b),
+  html body[data-theme="dark"].construtor-celular #builder-page-select-btn .site-seletor-seta:not(#love-h-a) { color: #E4E4E7; }
+  html body[data-theme="dark"].construtor-celular #builder-publish:not(#love-h-a):not(#love-h-b) { background: #252525; color: #E4E4E7; border-color: #404040; }
+}

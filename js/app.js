@@ -2533,6 +2533,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // Formata uma data ISO ("2025-10-18") como "18 de Outubro de 2025"
   // Celular, Home: a foto do convite (capa) colada no topo, com a caixa
   // "Olá, nome!" e quantos dias faltam para o evento.
+  // Texto da contagem (capa da Home no celular e cabeçalho no computador).
+  // Leva em conta o horário de início: no último dia mostra as horas que
+  // faltam ("Faltam 5 horas"), e na última hora, os minutos.
+  function textoDaContagem(ev) {
+    const iso = ev ? ((ev.eventDetails && ev.eventDetails.date) || ev.date || '') : '';
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+    if (!m) return '';
+    const hm = /^(\d{1,2}):(\d{2})/.exec(String((ev.eventDetails && ev.eventDetails.time) || ''));
+    const agora = new Date();
+    const inicio = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), hm ? Number(hm[1]) : 0, hm ? Number(hm[2]) : 0);
+    const hoje = new Date(agora); hoje.setHours(0, 0, 0, 0);
+    const dia = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    const dias = Math.round((dia.getTime() - hoje.getTime()) / 86400000);
+    const falta = inicio.getTime() - agora.getTime();
+    if (falta <= 0) return dias === 0 ? 'O seu evento é hoje!' : 'O seu evento já aconteceu';
+    if (hm && falta < 86400000) {
+      const horas = Math.floor(falta / 3600000);
+      if (horas >= 1) return horas === 1 ? 'Falta 1 hora para o seu evento' : `Faltam ${horas} horas para o seu evento`;
+      const minutos = Math.max(1, Math.ceil(falta / 60000));
+      return minutos === 1 ? 'Falta 1 minuto para o seu evento' : `Faltam ${minutos} minutos para o seu evento`;
+    }
+    return dias > 1 ? `Faltam ${dias} dias para o seu evento` : dias === 1 ? 'Falta 1 dia para o seu evento' : 'O seu evento é hoje!';
+  }
+  // Atualiza a contagem a cada minuto (horas e minutos mudam com a página aberta).
+  setInterval(() => {
+    try {
+      const t = textoDaContagem(getActiveEvent());
+      if (!t) return;
+      const cel = document.getElementById('home-capa-celular-dias');
+      if (cel) cel.textContent = t;
+      if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = t;
+    } catch (e) { /* sem evento */ }
+  }, 60000);
+
   function atualizarCapaDaHomeCelular() {
     const caixa = document.getElementById('home-capa-celular');
     if (!caixa) return;
@@ -2554,16 +2588,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fotoEl) fotoEl.style.backgroundImage = foto ? `url("${String(foto).replace(/"/g, '%22')}")` : '';
     const dias = document.getElementById('home-capa-celular-dias');
     if (dias) {
-      const iso = ev ? ((ev.eventDetails && ev.eventDetails.date) || ev.date || '') : '';
-      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
-      let texto = '';
-      if (m) {
-        const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
-        const dia = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-        const n = Math.round((dia.getTime() - hoje.getTime()) / 86400000);
-        texto = n > 1 ? `Faltam ${n} dias para o seu evento` : n === 1 ? 'Falta 1 dia para o seu evento' : n === 0 ? 'O seu evento é hoje!' : 'O seu evento já aconteceu';
-      }
-      dias.textContent = texto || 'Defina a data do seu evento';
+      dias.textContent = textoDaContagem(ev) || 'Defina a data do seu evento';
     }
   }
   window.loveAtualizarCapaDaHome = atualizarCapaDaHomeCelular;
@@ -2588,30 +2613,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 4. ATUALIZAÇÃO COMPLETA DOS DADOS DA COMEMORAÇÃO ATIVA
   // ==========================================
-  // Calcula sempre a partir da data real do evento — nunca um número
-  // guardado (que fica desatualizado a cada dia que passa).
-  function calcularDiasRestantes(dataEvento) {
-    if (!dataEvento) return null;
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const data = new Date(`${String(dataEvento).slice(0, 10)}T00:00:00`);
-    if (isNaN(data.getTime())) return null;
-    return Math.round((data - hoje) / 86400000);
-  }
-
   function updateAllCelebrationData() {
     const activeEvent = getActiveEvent();
 
     // 1. Header Superior
     if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = activeEvent.title;
     if (elements.dashHeader.countdownBadge) {
-      const dias = calcularDiasRestantes(activeEvent.date);
-      // Mesmo texto da capa da Home no celular.
-      elements.dashHeader.countdownBadge.textContent = dias === null ? ''
-        : dias > 1 ? `Faltam ${dias} dias para o seu evento`
-        : dias === 1 ? 'Falta 1 dia para o seu evento'
-        : dias === 0 ? 'O seu evento é hoje!'
-        : 'O seu evento já aconteceu';
+      // Mesmo texto da capa da Home no celular (dias, ou horas no último dia).
+      elements.dashHeader.countdownBadge.textContent = textoDaContagem(activeEvent);
     }
     if (elements.dashHeader.slugBadge) elements.dashHeader.slugBadge.textContent = `love.com.br/${activeEvent.slug}`;
     if (elements.dashHeader.shareUrlInput) {

@@ -14767,3 +14767,30 @@ body[data-theme="dark"] .ajuda-contatos-folha ol { color: #FFFFFF; }
 body[data-theme="dark"] .ajuda-contatos-folha .ajuda-passo-texto { color: #FFFFFF; }
 body[data-theme="dark"] .ajuda-passo-num, body[data-theme="dark"] .ios-dica { color: #A9C1DD; }
 body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
+
+/* ==========================================================================
+   Celular, Home: caixa Convidados e Confirmados no formato "número em cima,
+   nome embaixo" (sem Lista geral / Presenças RSVP), centralizado, e o
+   "Ver lista" vira um botão cheio na cor primária logo abaixo.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid { padding: 18px 16px 16px !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid > div {
+    display: flex !important; flex-direction: column-reverse; align-items: center; justify-content: flex-end; gap: 2px; padding-left: 12px !important; padding-right: 12px !important; text-align: center;
+  }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid > div > * { margin: 0 !important; padding: 0 !important; justify-content: center; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid p { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid h4 { font-size: 13px !important; font-weight: 500 !important; color: #52525B !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) #kpi-invites-sent,
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) #kpi-rsvp-confirmed { font-size: 26px !important; line-height: 1.15 !important; color: #183b54 !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid + div {
+    margin: 0 16px 16px; height: 44px; padding: 0 16px !important; justify-content: center !important;
+    background: #183b54 !important; border: 0 !important; border-radius: 8px; color: #fff !important;
+  }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid + div span { color: #fff !important; font-size: 14px; font-weight: 600 !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid + div svg { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid + div:active { background: #122c3f !important; }
+  body[data-theme="dark"] #tab-overview .home-kpis > div:has(#kpi-invites-sent) > .grid h4 { color: #A1A1AA !important; }
+  body[data-theme="dark"] #tab-overview .home-kpis > div:has(#kpi-invites-sent) #kpi-invites-sent,
+  body[data-theme="dark"] #tab-overview .home-kpis > div:has(#kpi-invites-sent) #kpi-rsvp-confirmed { color: #fff !important; }
+}

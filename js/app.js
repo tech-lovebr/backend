@@ -10090,7 +10090,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (aberto && titulo) titulo.textContent = 'Recados recebidos';
     document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', noCelular || !aberto);
-    const semPresentes = !((ev && ev.giftList) || []).length;
     const termo = recadosBusca.trim().toLowerCase();
     const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
     const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -10123,7 +10122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="w-full overflow-x-auto">
           <table class="love-tabela recados-tabela w-full text-left border-collapse font-sans">
             <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th>Recado</th></tr></thead>
-            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + (semPresentes ? 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.<br>Parece que ainda não existe nenhum presente adicionado. <button type="button" class="recados-link" data-recados-ir-presentes>Que tal adicionar um presente?</button>' : 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.')}</td></tr>`}</tbody>
+            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.'}</td></tr>`}</tbody>
           </table>
         </div>
         <div class="guests-pagination recados-paginacao">

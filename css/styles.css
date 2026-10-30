@@ -15106,3 +15106,12 @@ html body .floorplan-seat-dot.tem-restricao:not(#love-h-a):not(#love-h-b) { back
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .ficha-convidado.is-editando .ficha-cabeca:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
+
+/* Celular, barra de baixo: Início, Convidados, Presentes, Convite, Mensagens. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"]:not(#love-h-a):not(#love-h-b) { order: 1 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="rsvp"]:not(#love-h-a):not(#love-h-b) { order: 2 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="gifts"]:not(#love-h-a):not(#love-h-b) { order: 3 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="edit-site"]:not(#love-h-a):not(#love-h-b) { order: 4 !important; }
+  html body .sidebar-icon-rail .rail-chat-btn:not(#love-h-a):not(#love-h-b) { order: 5 !important; }
+}

@@ -12351,3 +12351,28 @@ html body #op-propostas-card[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c
   html body[data-theme="dark"][data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
   body[data-theme="dark"][data-page="dashboard"] #greeting-date { color: #D4D4D8 !important; }
 }
+
+/* Banner da home: sem as setas; troca sozinho (e no celular, arrastando). */
+html body .dash-ads-nav:not(#love-h-a):not(#love-h-b) { display: none !important; }
+html body .dash-ads-carousel:not(#love-h-a) { touch-action: pan-y; }
+
+/* Oportunidades no celular: arrastar a linha para a esquerda mostra
+   "Enviar proposta" na cor primária e, passando de 35%, abre a proposta. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #op-grade.op-posts:not(#love-h-a) { overflow-x: clip; }
+  html body #op-grade .op-post:not(#love-h-a) { position: relative; touch-action: pan-y; }
+  html body #op-grade .op-post.op-arrastando:not(#love-h-a) { background: #FFFFFF; }
+  html body #op-grade .op-post:not(#love-h-a)::after {
+    content: "Enviar proposta"; position: absolute; top: 0; bottom: 0; left: 100%; width: 100%;
+    display: flex; align-items: center; padding-left: 24px;
+    background: #183b54; color: #FFFFFF; font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+    opacity: .85; transition: opacity .15s ease; pointer-events: none;
+  }
+  html body #op-grade .op-post.op-arraste-pronto:not(#love-h-a)::after { opacity: 1; }
+  body[data-theme="dark"] #op-grade .op-post.op-arrastando { background: #252525 !important; }
+
+  /* Filtrar por: campos de 40px (antes cada um esticava até 140px). */
+  html body .op-filtrar-menu:not(#love-h-a):not(#love-h-b) { gap: 12px; padding: 16px; width: min(300px, calc(100vw - 32px)); }
+  html body .op-filtrar-campo:not(#love-h-a):not(#love-h-b) { gap: 6px; }
+  html body .op-filtrar-campo .op-filtro-select:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; height: 40px; }
+}

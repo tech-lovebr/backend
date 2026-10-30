@@ -360,6 +360,63 @@ async function initAdsCarousel() {
   if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); goTo(current + 1); startAutoplay(); });
   dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAutoplay(); }));
 
+  // Celular: arrastar a imagem para o lado passa para o próximo (ou o
+  // anterior) banner, com a imagem acompanhando o dedo.
+  let toque = null;
+  let arrastouAgora = 0;
+  const vizinho = dx => (current + (dx < 0 ? 1 : -1) + slides.length) % slides.length;
+  const limpar = slide => {
+    slide.style.transition = 'none'; slide.style.transform = ''; slide.style.opacity = ''; slide.style.visibility = '';
+    requestAnimationFrame(() => requestAnimationFrame(() => { slide.style.transition = ''; }));
+  };
+  const posicionar = (dx, w, animar, lado) => {
+    const atual = slides[current];
+    const viz = slides[vizinho(lado)];
+    slides.forEach(sl => { if (sl !== atual && sl !== viz && sl.style.transform) limpar(sl); });
+    [atual, viz].forEach(sl => { sl.style.transition = animar ? 'transform .25s ease' : 'none'; sl.style.opacity = '1'; sl.style.visibility = 'visible'; });
+    atual.style.transform = `translateX(${dx}px)`;
+    viz.style.transform = `translateX(${dx + (lado < 0 ? w : -w)}px)`;
+  };
+  root.addEventListener('touchstart', e => {
+    if (slides.length < 2 || e.touches.length !== 1) return;
+    toque = { x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, lateral: null, w: root.clientWidth };
+  }, { passive: true });
+  root.addEventListener('touchmove', e => {
+    if (!toque) return;
+    const dx = e.touches[0].clientX - toque.x;
+    const dy = e.touches[0].clientY - toque.y;
+    if (toque.lateral === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      toque.lateral = Math.abs(dx) > Math.abs(dy);
+      if (!toque.lateral) { toque = null; return; }
+      clearInterval(timer);
+    }
+    e.preventDefault();
+    toque.dx = dx;
+    posicionar(dx, toque.w, false, dx || -1);
+  }, { passive: false });
+  const soltar = () => {
+    if (!toque) return;
+    const { dx, w, lateral } = toque;
+    toque = null;
+    if (!lateral) return;
+    arrastouAgora = Date.now();
+    const lado = dx || -1;
+    const passou = Math.abs(dx) > Math.min(60, w * 0.2);
+    posicionar(passou ? (lado < 0 ? -w : w) : 0, w, true, lado);
+    setTimeout(() => {
+      const atual = slides[current];
+      const viz = slides[vizinho(lado)];
+      if (passou) goTo(vizinho(lado));
+      limpar(atual); limpar(viz);
+      startAutoplay();
+    }, 260);
+  };
+  root.addEventListener('touchend', soltar);
+  root.addEventListener('touchcancel', soltar);
+  // Depois de arrastar, o toque não abre o link do banner.
+  root.addEventListener('click', e => { if (Date.now() - arrastouAgora < 500) e.preventDefault(); }, true);
+
   goTo(0);
   startAutoplay();
 }

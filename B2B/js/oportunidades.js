@@ -716,6 +716,60 @@ function opMostrarAba(aba) {
   document.querySelectorAll('[data-op-painel]').forEach(s => { s.hidden = s.dataset.opPainel !== aba; });
 }
 
+/* Celular: arrastar a oportunidade da direita para a esquerda abre a proposta
+   em tela cheia, com a análise do pedido por baixo (já respondida: só a análise). */
+let opArrasteAcabou = 0;
+function opLigarArrasteParaProposta(grade) {
+  const LIMITE = 0.35;
+  let t = null;
+  const voltar = (linha, animar) => {
+    linha.style.transition = animar ? 'transform .2s ease' : 'none';
+    linha.style.transform = '';
+    linha.classList.remove('op-arrastando', 'op-arraste-pronto');
+  };
+  grade.addEventListener('touchstart', e => {
+    if (typeof hubNoCelular === 'function' && !hubNoCelular()) return;
+    if (e.touches.length !== 1 || e.target.closest('[data-op-salvar-linha]')) return;
+    const linha = e.target.closest('.op-post');
+    if (!linha) return;
+    t = { linha, x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, lateral: null, w: linha.offsetWidth };
+  }, { passive: true });
+  grade.addEventListener('touchmove', e => {
+    if (!t) return;
+    const dx = e.touches[0].clientX - t.x;
+    const dy = e.touches[0].clientY - t.y;
+    if (t.lateral === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      t.lateral = dx < 0 && Math.abs(dx) > Math.abs(dy);
+      if (!t.lateral) { t = null; return; }
+      t.linha.classList.add('op-arrastando');
+      t.linha.style.transition = 'none';
+    }
+    e.preventDefault();
+    t.dx = Math.min(0, dx);
+    t.linha.style.transform = `translateX(${t.dx}px)`;
+    t.linha.classList.toggle('op-arraste-pronto', -t.dx > t.w * LIMITE);
+  }, { passive: false });
+  const fim = () => {
+    if (!t) return;
+    const { linha, dx, w, lateral } = t;
+    t = null;
+    if (!lateral) return;
+    opArrasteAcabou = Date.now();
+    if (-dx <= w * LIMITE) { voltar(linha, true); return; }
+    linha.style.transition = 'transform .2s ease';
+    linha.style.transform = `translateX(${-w}px)`;
+    setTimeout(() => {
+      const id = linha.dataset.opPedido;
+      voltar(linha, false);
+      opAbrirDetalhe(id);
+      if (!opMinhaProposta(id)) opAbrirProposta();
+    }, 200);
+  };
+  grade.addEventListener('touchend', fim);
+  grade.addEventListener('touchcancel', fim);
+}
+
 function opLigarEventos() {
   document.querySelectorAll('[data-op-aba]').forEach(b => b.addEventListener('click', () => opMostrarAba(b.dataset.opAba)));
   document.querySelectorAll('[data-op-cat]').forEach(b => b.addEventListener('click', () => {
@@ -745,7 +799,9 @@ function opLigarEventos() {
 
   document.getElementById('op-busca')?.addEventListener('input', opRenderPedidos);
   const grade = document.getElementById('op-grade');
+  opLigarArrasteParaProposta(grade);
   grade.addEventListener('click', e => {
+    if (Date.now() - opArrasteAcabou < 500) return;
     const salvar = e.target.closest('[data-op-salvar-linha]');
     if (salvar) { e.stopPropagation(); opAlternarSalva(salvar.dataset.opSalvarLinha); return; }
     const c = e.target.closest('[data-op-pedido]');

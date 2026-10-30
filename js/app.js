@@ -9324,13 +9324,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="lista-pronta-qtd">Crie um presente do zero</span>
               </button>
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="lista">
-                <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></span>
+                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/lista-pronta.lottie" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar lista pronta</strong>
                 <span class="lista-pronta-qtd">Escolha uma das nossas listas</span>
               </button>
             </div>
           </div>
         `;
+        carregarPlayerLottie();
         container.querySelector('[data-vazio="presente"]')?.addEventListener('click', () => openGiftDrawer());
         container.querySelector('[data-vazio="lista"]')?.addEventListener('click', () => irParaListasProntas(true));
       }

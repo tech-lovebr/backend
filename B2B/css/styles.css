@@ -10962,7 +10962,7 @@ html body .forms-vazio:not(#love-h-a) { min-height: calc(100vh - 300px); justify
 html body[data-page="produtos"] #category-tabs:not(#love-h-a) { margin-bottom: 0 !important; }
 html body .produtos-barra-caixa:not(#love-h-a) {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  margin: 0 0 24px; padding: 14px 16px !important; border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
+  margin: 0 0 24px; padding: 14px 16px !important;
 }
 html body .produtos-barra-caixa .produtos-busca:not(#love-h-a) { width: 280px; max-width: 100%; margin: 0; }
 html body .produtos-total:not(#love-h-a) { margin: 0; font-size: 14px; color: #52525B; }
@@ -10988,7 +10988,7 @@ html body .parcelas-opcoes .parcelas-card-sub:not(#love-h-a) { margin-top: 2px; 
 
 /* Caixas grudadas nas abas (Meus produtos, Suas informações): a regra geral
    das caixas devolvia a borda e os cantos de cima — aqui ganha dela. */
-html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
 }
 
@@ -12058,4 +12058,14 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg { background: #252525 !important; color: #EBF4FF !important; }
   body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-valor { color: #EBF4FF !important; }
   body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-colunas > div + div { border-left-color: #333333 !important; }
+}
+
+/* Meus produtos: 3 por linha no desktop (mesmo com a tela menor), 2 no celular. */
+html body[data-page="produtos"] #products-grid:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="produtos"] #products-grid:not(#love-h-a):not(#love-h-b) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+/* Sem as abas, a caixa da busca fica a 24px do título (padrão de respiro). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="produtos"] .b2b-header-bar + #produtos-barra-caixa:not(#love-h-a):not(#love-h-b) { margin-top: 4px; }
 }

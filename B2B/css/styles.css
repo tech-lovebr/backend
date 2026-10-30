@@ -12418,3 +12418,25 @@ html body .dash-ads-carousel:not(#love-h-a) { touch-action: pan-y; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .b2b-content > .b2b-header-bar > a.chat-oportunidades-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: inline-flex !important; align-items: center; text-decoration: none; }
 }
+
+/* Celular: rodapé só na Home — "© ano Love Hub Ltda." e, embaixo,
+   Privacidade e Termos e condições, centralizado e pequeno. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content > .b2b-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: block !important; flex-shrink: 0; margin: 8px -16px 0 !important; padding: 20px 16px 24px !important;
+    background: transparent !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; text-align: center;
+  }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-bottom:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-direction: column; align-items: center; gap: 8px; margin: 0; padding: 0; border: 0;
+  }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-bottom p:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 12px !important; color: #71717A !important; }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-frase:not(#love-h-a) { display: none; }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-legal-links:not(#love-h-a):not(#love-h-b) { display: flex !important; justify-content: center; gap: 16px; }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-legal-links a:not(#love-h-a):not(#love-h-b) { font-size: 12px !important; font-weight: 500; color: #52525B !important; text-decoration: none; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-content > .b2b-footer { border-top-color: #333333 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-footer .b2b-footer-bottom p { color: #A1A1AA !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-footer .b2b-footer-legal-links a { color: #D4D4D8 !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 16px !important; }
+}

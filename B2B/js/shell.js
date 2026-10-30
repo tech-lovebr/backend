@@ -479,7 +479,7 @@ async function loadShell() {
     // embaixo, Privacidade e Termos e condições.
     footer.innerHTML = `
       <div class="b2b-footer-bottom b2b-footer-bottom--enxuto">
-        <p>© ${year} Love Hub Ltda. Feito com amor para momentos inesquecíveis.</p>
+        <p>© ${year} Love Hub Ltda.<span class="b2b-footer-frase"> Feito com amor para momentos inesquecíveis.</span></p>
         <div class="b2b-footer-legal-links">
           <a href="privacidade">Privacidade</a>
           <a href="termos">Termos e condições</a>

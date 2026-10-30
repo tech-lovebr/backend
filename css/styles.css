@@ -15280,3 +15280,7 @@ html body #gifts-listas-prontas .lista-pronta-lottie:not(#love-h-a) { display: b
   html body #form-add-gift :is(.gift-texto-celular, .gift-contribuicao-texto > span:first-child):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #18181B !important; }
   body[data-theme="dark"] #form-add-gift :is(.gift-texto-celular, .gift-contribuicao-texto > span:first-child) { color: #FFFFFF !important; }
 }
+
+/* Mapa do evento vazio: ícone animado de adicionar no lugar da moldura,
+   no mesmo tamanho, cor (#D4D4D8) e traço (2,5px) do de Meus convidados. */
+html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#love-h-b) { display: block; width: 140px; height: 140px; margin: 0 auto 4px; flex-shrink: 0; }

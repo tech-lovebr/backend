@@ -13520,7 +13520,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const q = (n) => `${Math.round(n * zoomDaPlanta * 100) / 100}px`;
       canvas.style.setProperty('background-size', `${q(50)} ${q(50)}, ${q(50)} ${q(50)}, ${q(10)} ${q(10)}, ${q(10)} ${q(10)}`, 'important');
     }
-    if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia' && x.type !== 'config') ? 'none' : 'flex';
+    const mapaVazio = !elements.some(x => x.type !== 'guia' && x.type !== 'config');
+    if (emptyHint) emptyHint.style.display = mapaVazio ? 'flex' : 'none';
+    if (mapaVazio) carregarPlayerLottie();
     // Camada com todos os elementos, na escala que faz tudo caber na largura.
     escalaDaPlanta = escalaParaCaber(canvas, elements);
     let camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));

@@ -12069,3 +12069,33 @@ html body[data-page="produtos"] #products-grid:not(#love-h-a) { grid-template-co
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body[data-page="produtos"] .b2b-header-bar + #produtos-barra-caixa:not(#love-h-a):not(#love-h-b) { margin-top: 4px; }
 }
+
+/* Dashboard: o topo da Home usa a imagem de capa da empresa (Configurações ›
+   Imagem de capa), como a foto do convite na Home do anfitrião. Sem capa,
+   fica o azul do sidebar em degradê. No celular a faixa é um elemento no
+   topo da área que rola (js: homeDoDesktop), atrás do cabeçalho e do Olá. */
+html body[data-page="dashboard"].tem-capa-empresa .dash-home-faixa:not(#love-h-a):not(#love-h-b) {
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0) 50%),
+    var(--capa-empresa) center / cover no-repeat,
+    #E8EEF4;
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a):not(#love-h-b) { position: relative; background: #F4F6F7; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-content { background: #1C2125 !important; }
+  html body[data-page="dashboard"] .b2b-content > .dash-home-faixa:not(#love-h-a) {
+    position: absolute; top: 0; left: 0; right: 0; height: 160px; border-radius: 0; pointer-events: none;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%),
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%);
+  }
+  html body[data-page="dashboard"].tem-capa-empresa .b2b-content > .dash-home-faixa:not(#love-h-a):not(#love-h-b) {
+    height: 200px;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0) 120px),
+      var(--capa-empresa) center / cover no-repeat,
+      #E8EEF4;
+  }
+  html body[data-page="dashboard"] .b2b-content > #shell-topbar.topo-rola-junto:not(#love-h-a):not(#love-h-b),
+  html body[data-page="dashboard"] .b2b-content > .dashboard-greeting:not(#love-h-a):not(#love-h-b) { position: relative; }
+}

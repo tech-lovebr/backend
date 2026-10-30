@@ -582,7 +582,18 @@ async function renderAvisoServicosSuspensos() {
   aviso.hidden = false;
 }
 
+/* Fundo do topo da Home: a imagem de capa da empresa (Configurações ›
+   Imagem de capa, fornecedores.logo_url). Sem capa, fica o azul em degradê. */
+function aplicarCapaDaEmpresa() {
+  const capa = String((B2B_DATA.professional && B2B_DATA.professional.logo) || '').trim();
+  const ok = /^(https?:|data:image\/|blob:)/.test(capa);
+  document.body.classList.toggle('tem-capa-empresa', ok);
+  if (ok) document.body.style.setProperty('--capa-empresa', `url("${capa.replace(/["\\]/g, encodeURIComponent)}")`);
+  else document.body.style.removeProperty('--capa-empresa');
+}
+
 function renderGreeting() {
+  aplicarCapaDaEmpresa();
   const now = new Date();
   const dateStr = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
   setText('greeting-date', capitalize(dateStr));
@@ -875,12 +886,16 @@ document.addEventListener('DOMContentLoaded', () => {
       faixa.after(caixa);
       caixa.append(texto, atalhos);
       ola.classList.add('home-desktop');
-    } else if (caixa.parentElement === ola) {
-      ola.classList.remove('home-desktop');
-      devolver(texto, casaTexto);
-      devolver(atalhos, casaAtalhos);
-      faixa.remove();
-      caixa.remove();
+    } else {
+      if (caixa.parentElement === ola) {
+        ola.classList.remove('home-desktop');
+        devolver(texto, casaTexto);
+        devolver(atalhos, casaAtalhos);
+        caixa.remove();
+      }
+      // Celular: a faixa fica no topo da área que rola, atrás do cabeçalho e do Olá.
+      const conteudo = document.querySelector('.b2b-content');
+      if (conteudo && faixa.parentElement !== conteudo) conteudo.prepend(faixa);
     }
   };
   ajustar();

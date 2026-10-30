@@ -14842,3 +14842,111 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
   .mesa-celular-aviso svg { width: 20px; height: 20px; flex-shrink: 0; }
   .mesa-celular-aviso span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
+
+/* ==========================================================================
+   Desktop, Home inspirada no celular (pedido de 2026-10-29). Para voltar ao
+   desktop anterior basta apagar este bloco. Só desktop; o celular não muda.
+   - Topo: foto do convite larga com a caixa "Olá, nome!" + dias que faltam
+     por cima, e os 6 atalhos redondos com o nome embaixo.
+   - Coluna da esquerda: títulos de seção (Presentes / Lista de convidados)
+     e as duas caixas no formato número em cima, nome embaixo e botão
+     primário; depois Benefícios em bolinhas.
+   - Coluna da direita: link do convite e Guia de primeiros passos.
+   - Saem: saudação com pílulas, carrossel, Benefícios & Serviços (marcas)
+     e Mais Recursos.
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #tab-overview :is(.home-saudacao, #dashboard-promo-carousel, .home-beneficios, .home-mais-recursos, .home-contatos, .home-aviso-mensagens):not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  /* ---- Topo: foto + caixa do Olá ---- */
+  html body #tab-overview .home-capa-celular:not(#love-h-a) { display: block; position: relative; margin: 0 0 28px; }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a) {
+    height: 260px; border-radius: 10px; background: #E8EEF4 center / cover no-repeat; position: relative; overflow: hidden;
+  }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a)::after {
+    content: ""; position: absolute; inset: auto 0 0 0; height: 50%; background: linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0) 100%);
+  }
+  html body #tab-overview .home-capa-celular-caixa:not(#love-h-a) {
+    position: relative; margin: -80px 32px 0; padding: 24px 28px;
+    display: grid; grid-template-columns: minmax(220px, auto) 1fr; align-items: center; gap: 12px 32px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left;
+  }
+  html body #tab-overview .home-capa-celular-ola:not(#love-h-a) { grid-column: 1; align-self: end; margin: 0; font-family: Inter, sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.2; color: #18181B; }
+  html body #tab-overview .home-capa-celular-dias:not(#love-h-a) { grid-column: 1; align-self: start; margin: -6px 0 0; font-family: Inter, sans-serif; font-size: 15px; color: #52525B; font-variant-numeric: tabular-nums; }
+  html body #tab-overview .home-capa-celular-atalhos:not(#love-h-a) {
+    grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px;
+    padding-left: 32px; border-left: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  /* ---- Atalhos redondos (topo e Benefícios) ---- */
+  html body #tab-overview .home-atalho:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0; background: transparent; border: 0; cursor: pointer; font-family: Inter, sans-serif; min-width: 0; }
+  html body #tab-overview .home-atalho-bola:not(#love-h-a) {
+    width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    background: #EAF0F5; color: #183b54; box-shadow: inset 0 0 0 1px transparent; transition: box-shadow .15s ease, color .15s ease;
+  }
+  html body #tab-overview .home-atalho-bola svg:not(#love-h-a) { width: 24px; height: 24px; }
+  html body #tab-overview .home-atalho-nome:not(#love-h-a) { font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center; transition: color .15s ease; }
+  html body #tab-overview .home-atalho:not(#love-h-a):hover .home-atalho-bola { box-shadow: inset 0 0 0 1px #183b54; }
+  html body #tab-overview .home-atalho:not(#love-h-a):hover .home-atalho-nome { color: #181D24; }
+  html body #tab-overview .is-beneficios .home-atalho-bola:not(#love-h-a) { width: 64px; height: 64px; background: #537bae; color: #FFFFFF; }
+  html body #tab-overview .is-beneficios .home-atalho-bola svg:not(#love-h-a) { width: 28px; height: 28px; }
+  html body #tab-overview .is-beneficios .home-atalho:not(#love-h-a):hover .home-atalho-bola { box-shadow: inset 0 0 0 2px #183b54; }
+
+  /* ---- Títulos de seção com a linha ao lado (como Benefícios no celular) ---- */
+  html body #tab-overview .home-atalhos-titulo:not(#love-h-a) { display: flex; align-items: center; gap: 14px; margin: 0 0 16px; }
+  html body #tab-overview .home-atalhos-titulo h3:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; }
+  html body #tab-overview .home-atalhos-titulo span:not(#love-h-a) { flex: 1 1 auto; height: 1px; background: #E4E4E7; }
+
+  /* ---- Presentes | Lista de convidados: título em cima de cada caixa ---- */
+  html body #tab-overview .home-kpis:not(#love-h-a) { display: grid !important; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; grid-auto-flow: column; gap: 0 20px !important; margin-top: 0 !important; }
+  html body #tab-overview .home-kpis > .home-kpi-titulo:not(#love-h-a):not(#love-h-b) { display: flex !important; }
+  html body #tab-overview .home-kpis > div:is(:has(#kpi-total-arrecadado), :has(#kpi-invites-sent)):not(#love-h-a) { border-radius: 10px !important; box-shadow: none !important; }
+  /* Presentes: duas colunas (Saldo arrecadado | Presentes recebidos) */
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) > div:first-child { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) .home-presentes-celular { display: grid; grid-template-columns: 1fr 1fr; padding: 24px 0 20px; }
+  html body #tab-overview .home-presentes-celular > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
+  html body #tab-overview .home-presentes-celular > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
+  html body #tab-overview .home-presentes-valor:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  html body #tab-overview .home-presentes-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  /* Convidados: número em cima, nome embaixo, sem Lista geral / Presenças RSVP */
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid { padding: 24px 0 20px !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid > div {
+    display: flex !important; flex-direction: column-reverse; align-items: center; justify-content: flex-end; gap: 4px; padding: 0 12px !important; text-align: center;
+  }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid > div > * { margin: 0 !important; padding: 0 !important; justify-content: center; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid p { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid h4 { font-size: 13px !important; font-weight: 500 !important; color: #52525B !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) :is(#kpi-invites-sent, #kpi-rsvp-confirmed) { font-size: 28px !important; line-height: 1.15 !important; color: #183b54 !important; font-variant-numeric: tabular-nums; }
+  /* Botão primário embaixo das duas caixas (Sacar disponível / Ver lista) */
+  html body #tab-overview .home-kpis > div:is(:has(#kpi-total-arrecadado), :has(#kpi-invites-sent)):not(#love-h-a) > div[onclick] {
+    margin: 0 20px 20px; height: 42px; padding: 0 16px !important; justify-content: center !important;
+    background: #183b54 !important; border: 0 !important; border-radius: 8px; color: #FFFFFF !important; transition: background-color .15s ease;
+  }
+  html body #tab-overview .home-kpis > div:is(:has(#kpi-total-arrecadado), :has(#kpi-invites-sent)):not(#love-h-a) > div[onclick]:hover { background: #122c3f !important; }
+  html body #tab-overview .home-kpis > div:is(:has(#kpi-total-arrecadado), :has(#kpi-invites-sent)):not(#love-h-a) > div[onclick] span { color: #FFFFFF !important; font-size: 14px; font-weight: 600 !important; }
+  html body #tab-overview .home-kpis > div:is(:has(#kpi-total-arrecadado), :has(#kpi-invites-sent)):not(#love-h-a) > div[onclick] svg { display: none !important; }
+
+  /* ---- Benefícios em bolinhas ---- */
+  html body #tab-overview #home-atalhos-celular:not(#love-h-a) { display: flex; flex-direction: column; gap: 28px; margin-top: 8px; font-family: Inter, sans-serif; }
+  html body #tab-overview #home-atalhos-celular .home-atalhos-grade:not(#love-h-a) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+
+  /* ---- Coluna da direita: começa na altura das caixas (abaixo dos títulos) ---- */
+  html body #tab-overview > .grid > .lg\:col-span-4:not(#love-h-a) { padding-top: 43px; }
+  html body #tab-overview #home-link-convite:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+
+  /* ---- Escuro ---- */
+  body[data-theme="dark"] #tab-overview .home-capa-celular-caixa { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-ola, body[data-theme="dark"] #tab-overview .home-atalhos-titulo h3 { color: #FFFFFF !important; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-dias, body[data-theme="dark"] #tab-overview .home-atalho-nome { color: #D4D4D8 !important; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-atalhos { border-left-color: #333333 !important; }
+  body[data-theme="dark"] #tab-overview .home-capa-celular-atalhos .home-atalho-bola { background: #252525 !important; color: #EBF4FF !important; }
+  body[data-theme="dark"] #tab-overview .home-atalhos-titulo span { background: #333333 !important; }
+  body[data-theme="dark"] #tab-overview .home-presentes-valor, body[data-theme="dark"] #tab-overview :is(#kpi-invites-sent, #kpi-rsvp-confirmed) { color: #FFFFFF !important; }
+  body[data-theme="dark"] #tab-overview .home-presentes-nome { color: #A1A1AA !important; }
+  body[data-theme="dark"] #tab-overview .home-presentes-celular > div + div { border-left-color: #333333 !important; }
+}
+/* Desktop estreito (até 1279px): Presentes e Lista de convidados uma embaixo da outra, para o valor caber. */
+@media (min-width: 769px) and (max-width: 1279px) and (hover: hover), (min-width: 769px) and (max-width: 1279px) and (pointer: fine) {
+  html body #tab-overview .home-kpis:not(#love-h-a):not(#love-h-b) { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a) { margin-bottom: 28px; }
+}

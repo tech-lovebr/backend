@@ -14856,7 +14856,7 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
      e Mais Recursos.
    ========================================================================== */
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
-  html body #tab-overview :is(.home-saudacao, #dashboard-promo-carousel, .home-beneficios, .home-mais-recursos, .home-contatos, .home-aviso-mensagens):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #tab-overview :is(.home-saudacao, #dashboard-promo-carousel, .home-beneficios, .home-mais-recursos, .home-aviso-mensagens):not(#love-h-a):not(#love-h-b) { display: none !important; }
 
   /* ---- Topo: foto + caixa do Olá ---- */
   html body #tab-overview .home-capa-celular:not(#love-h-a) { display: block; position: relative; margin: 0 0 28px; }
@@ -14931,7 +14931,7 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
   html body #tab-overview #home-atalhos-celular .home-atalhos-grade:not(#love-h-a) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 
   /* ---- Coluna da direita: começa na altura das caixas (abaixo dos títulos) ---- */
-  html body #tab-overview > .grid > .lg\:col-span-4:not(#love-h-a) { padding-top: 43px; }
+  html body #tab-overview > .grid > .lg\:col-span-4:not(#love-h-a) { padding-top: 0; }
   html body #tab-overview #home-link-convite:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
 
   /* ---- Escuro ---- */
@@ -14965,3 +14965,62 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
   html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid + div { display: none !important; }
   html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a) > .grid { padding-bottom: 18px !important; }
 }
+
+/* ==========================================================================
+   Desktop, Home (segue o celular): uma coluna só na esquerda, na ordem
+   Presentes → Benefícios → Lista de convidados (sem "Ver lista") → "Monte
+   sua lista de convidados a partir dos seus contatos". Link do convite logo
+   abaixo da caixa do Olá. Sem "Faltam X dias" no cabeçalho (já está no Olá).
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #dash-event-countdown-badge:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  html body #tab-overview > .grid > .lg\:col-span-8:not(#love-h-a) { display: flex; flex-direction: column; }
+  html body #tab-overview > .grid > .lg\:col-span-8 > *:not(#love-h-a) { margin-top: 0 !important; }
+  html body #tab-overview .home-kpis:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #tab-overview #home-atalhos-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: contents !important; }
+  html body #tab-overview .home-kpis > .home-kpi-titulo:first-child:not(#love-h-a):not(#love-h-b) { order: 1; }
+  html body #tab-overview .home-kpis > div:has(#kpi-total-arrecadado):not(#love-h-a):not(#love-h-b):not(#love-h-c) { order: 2; margin: 0 0 32px !important; }
+  html body #tab-overview #home-atalhos-celular > .is-beneficios:not(#love-h-a):not(#love-h-b) { order: 3; margin: 0 0 32px !important; }
+  html body #tab-overview .home-kpis > .home-kpi-titulo:not(:first-child):not(#love-h-a):not(#love-h-b) { order: 4; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a):not(#love-h-b):not(#love-h-c) { order: 5; margin: 0 0 20px !important; }
+  html body #tab-overview #home-atalhos-celular > .home-contatos:not(#love-h-a):not(#love-h-b) { order: 6; }
+
+  /* Lista de convidados sem o botão "Ver lista" (fica no menu do Continuar) */
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a):not(#love-h-b) > div[onclick] { display: none !important; }
+  html body #tab-overview .home-kpis > div:has(#kpi-invites-sent):not(#love-h-a):not(#love-h-b) > .grid { padding-bottom: 24px !important; }
+
+  /* Cartão dos contatos na horizontal: desenho à esquerda, texto e botão à direita */
+  html body #tab-overview .home-contatos:not(#love-h-a) {
+    display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 40px;
+    padding: 28px 40px; text-align: left;
+  }
+  html body #tab-overview .home-contatos-ilustra:not(#love-h-a) { grid-column: 1; grid-row: 1 / span 2; margin: 0; }
+  html body #tab-overview .home-contatos h3:not(#love-h-a) { grid-column: 2; align-self: end; max-width: 360px; margin: 0 0 20px; font-size: 20px; }
+  html body #tab-overview .home-contatos-continuar:not(#love-h-a) { grid-column: 2; align-self: start; justify-self: start; width: auto; min-width: 160px; height: 44px; padding: 0 24px; font-size: 15px; transition: background-color .15s ease; }
+  html body #tab-overview .home-contatos-continuar:not(#love-h-a):hover { background: #122c3f; }
+}
+
+/* Computador: janela "Importar seus contatos" (centralizada, não folha de baixo) */
+.ajuda-contatos.is-computador .ajuda-contatos-folha {
+  left: 50%; right: auto; top: 50%; bottom: auto; width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); overflow-y: auto;
+  transform: translate(-50%, -50%); padding: 28px; border-radius: 10px;
+}
+.ajuda-contatos.is-computador .ajuda-contatos-folha p { font-size: 14px; margin-bottom: 16px; }
+.ajuda-origens { display: flex; flex-direction: column; margin: 0 0 24px; border: 1px solid #E4E4E7; border-radius: 10px; }
+.ajuda-origem { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; }
+.ajuda-origem + .ajuda-origem { border-top: 1px solid #F4F4F5; }
+.ajuda-origem strong { font-size: 14px; font-weight: 600; color: #18181B; }
+.ajuda-origem span { font-size: 13px; line-height: 1.5; color: #52525B; }
+.ajuda-origem b { font-weight: 600; color: #18181B; }
+.ajuda-origem a { color: #183b54; font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+.ajuda-contatos-acoes { display: flex; align-items: center; justify-content: flex-end; gap: 20px; }
+.ajuda-contatos.is-computador .ajuda-contatos-ok { width: auto; height: 40px; padding: 0 20px; font-size: 14px; transition: background-color .15s ease; }
+.ajuda-contatos.is-computador .ajuda-contatos-ok:hover { background: #122c3f; }
+.ajuda-contatos-cancelar { padding: 0; border: 0; background: transparent; box-shadow: none; font-family: inherit; font-size: 14px; font-weight: 500; color: #52525B; cursor: pointer; }
+.ajuda-contatos-cancelar:hover { color: #181D24; }
+body[data-theme="dark"] .ajuda-origens { border-color: #404040; }
+body[data-theme="dark"] .ajuda-origem + .ajuda-origem { border-top-color: #333333; }
+body[data-theme="dark"] .ajuda-origem :is(strong, b) { color: #FFFFFF; }
+body[data-theme="dark"] .ajuda-origem span, body[data-theme="dark"] .ajuda-contatos-cancelar { color: #A1A1AA; }
+body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }

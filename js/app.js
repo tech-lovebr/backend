@@ -11793,7 +11793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return new Promise((resolve) => {
       const entrada = document.createElement('input');
       entrada.type = 'file';
-      entrada.accept = '.vcf,text/vcard,text/x-vcard';
+      entrada.accept = '.vcf,.csv,text/vcard,text/x-vcard,text/csv';
       entrada.hidden = true;
       document.body.appendChild(entrada);
       const fim = (/** @type {string|null} */ v) => { entrada.remove(); resolve(v); };
@@ -11805,6 +11805,76 @@ document.addEventListener('DOMContentLoaded', () => {
       entrada.addEventListener('cancel', () => fim(null));
       entrada.click();
     });
+  }
+
+  /**
+   * Contatos de um CSV exportado da agenda (Google Contatos, Outlook ou
+   * planilha simples) → [nome, telefone, e-mail]. Nome: coluna "Name/Nome"
+   * ou First + Middle + Last; telefone e e-mail: a primeira coluna que tiver.
+   * @param {string} texto @returns {string[][]}
+   */
+  function contatosDoCsvDaAgenda(texto) {
+    const linhas = lerCsv(texto);
+    if (linhas.length < 2) return [];
+    const norm = (/** @type {string} */ s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+    const cab = linhas[0].map(norm);
+    const achar = (/** @type {(c: string) => boolean} */ teste) => cab.findIndex(teste);
+    const iNome = achar(c => c === 'name' || c === 'nome' || c === 'nomecompleto' || c === 'convidado' || c === 'displayname');
+    const iPrimeiro = achar(c => c === 'firstname' || c === 'givenname' || c === 'primeironome');
+    const iMeio = achar(c => c === 'middlename' || c === 'additionalname');
+    const iUltimo = achar(c => c === 'lastname' || c === 'familyname' || c === 'sobrenome');
+    const iTel = achar(c => /(phone|telefone|celular|mobile|whatsapp)/.test(c) && !/(type|label|tipo|phonetic)/.test(c));
+    const iEmail = achar(c => /(email|mail)/.test(c) && !/(type|label|tipo)/.test(c));
+    // Google separa vários números/e-mails na mesma célula com " ::: ".
+    const primeiro = (/** @type {string|undefined} */ v) => String(v || '').split(':::')[0].trim();
+    return linhas.slice(1).map(l => {
+      const nome = iNome >= 0 && l[iNome] ? l[iNome] : [iPrimeiro, iMeio, iUltimo].filter(i => i >= 0).map(i => l[i] || '').filter(Boolean).join(' ');
+      return [String(nome || '').trim(), iTel >= 0 ? primeiro(l[iTel]) : '', iEmail >= 0 ? primeiro(l[iEmail]) : ''];
+    }).filter(([nome]) => nome);
+  }
+
+  /**
+   * Computador: janela que explica como baixar os contatos (Google, iPhone/
+   * Mac pelo iCloud, Outlook) e escolher o arquivo (.vcf ou .csv).
+   * @param {boolean} irParaLista
+   */
+  function mostrarImportarNoComputador(irParaLista) {
+    document.getElementById('ajuda-contatos')?.remove();
+    const tela = document.createElement('div');
+    tela.id = 'ajuda-contatos';
+    tela.className = 'ajuda-contatos is-computador';
+    tela.innerHTML = `
+      <div class="ajuda-contatos-fundo" data-fechar></div>
+      <div class="ajuda-contatos-folha" role="dialog" aria-modal="true" aria-labelledby="ajuda-contatos-titulo">
+        <h3 id="ajuda-contatos-titulo">Importar seus contatos</h3>
+        <p>No computador, o navegador não abre a agenda direto. Baixe seus contatos em um arquivo e escolha ele aqui: a Love traz nome, telefone e e-mail, sem repetir quem já está na lista.</p>
+        <div class="ajuda-origens">
+          <div class="ajuda-origem">
+            <strong>Google Contatos (Android)</strong>
+            <span>Em <a href="https://contacts.google.com" target="_blank" rel="noopener">contacts.google.com</a>, clique em <b>Exportar</b> e escolha <b>CSV do Google</b> ou <b>vCard</b>.</span>
+          </div>
+          <div class="ajuda-origem">
+            <strong>iPhone ou Mac</strong>
+            <span>Em <a href="https://www.icloud.com/contacts" target="_blank" rel="noopener">icloud.com/contacts</a>, selecione os contatos e use <b>Exportar vCard</b>.</span>
+          </div>
+          <div class="ajuda-origem">
+            <strong>Outlook</strong>
+            <span>Em Pessoas, abra <b>Gerenciar contatos › Exportar contatos</b> (arquivo CSV).</span>
+          </div>
+        </div>
+        <div class="ajuda-contatos-acoes">
+          <button type="button" class="ajuda-contatos-cancelar" data-fechar>Cancelar</button>
+          <button type="button" class="ajuda-contatos-ok" data-arquivo>Escolher arquivo</button>
+        </div>
+      </div>`;
+    document.body.appendChild(tela);
+    tela.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (alvo.closest('[data-arquivo]')) { tela.remove(); importarContatosParaALista(irParaLista, true); }
+      else if (alvo.closest('[data-fechar]')) tela.remove();
+    });
+    const fecharNoEsc = (/** @type {KeyboardEvent} */ e) => { if (e.key === 'Escape') { tela.remove(); document.removeEventListener('keydown', fecharNoEsc); } };
+    document.addEventListener('keydown', fecharNoEsc);
   }
 
   /** Contatos de um arquivo vCard → [nome, telefone, e-mail]. @param {string} texto @returns {string[][]} */
@@ -11967,12 +12037,14 @@ document.addEventListener('DOMContentLoaded', () => {
         linhas = (lista || []).map((/** @type {any} */ c) => [(c.name || [])[0] || '', (c.tel || [])[0] || '', (c.email || [])[0] || '']);
       } catch (err) { console.error('Não foi possível abrir os contatos:', err); return; }
     } else if (!usarArquivo) {
-      mostrarAjudaDosContatos(irParaLista);
+      // Computador: o navegador não abre a agenda; explica como exportar e escolher o arquivo.
+      if (!window.matchMedia(MQ_CELULAR_CONVIDADOS).matches) mostrarImportarNoComputador(irParaLista);
+      else mostrarAjudaDosContatos(irParaLista);
       return;
     } else {
       const texto = await escolherArquivoDeContatos();
       if (texto === null) return;
-      linhas = contatosDoVcf(texto);
+      linhas = /BEGIN:VCARD/i.test(texto) ? contatosDoVcf(texto) : contatosDoCsvDaAgenda(texto);
     }
     if (!linhas.length) return;
     // Telefone do celular vem com +55 / 0 na frente: fica só DDD + número.

@@ -15055,3 +15055,9 @@ body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
     background: #EBF4FF !important; color: #183b54 !important; box-shadow: none !important;
   }
 }
+
+/* Desktop, Home: foto de capa mais perto do cabeçalho (24px de respiro). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .dashboard-main-area:has(#tab-overview.active):not(#love-h-a):not(#love-h-b) { padding-top: 94px !important; }
+  html body #tab-overview.active:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+}

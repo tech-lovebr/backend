@@ -9319,12 +9319,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="presentes-vazio-texto">Sua lista está vazia. <b>Que tal adicionar presentes?</b></p>
             <div class="presentes-vazio-cards">
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="presente">
-                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/adicionar-presente.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
+                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/adicionar-presente.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar presente</strong>
                 <span class="lista-pronta-qtd">Crie um presente do zero</span>
               </button>
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="lista">
-                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/lista-pronta.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>
+                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/lista-pronta.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar lista pronta</strong>
                 <span class="lista-pronta-qtd">Escolha uma das nossas listas</span>
               </button>

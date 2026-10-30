@@ -15271,3 +15271,7 @@ html body #gifts-listas-prontas .lista-pronta-lottie:not(#love-h-a) { display: b
   body[data-theme="dark"] :is(.ficha-convidado.is-editando .ficha-topo, #drawer-add-gift > .gift-drawer-cab) { background: #252525 !important; }
   body[data-theme="dark"] .ficha-convidado.is-editando :is(.ficha-campo, .ficha-add-acomp) { background: #252525 !important; border-color: #404040 !important; }
 }
+/* Presentinho animado (Adicionar presente) um pouco mais baixo que a caixa
+   de 64px: 54px, com a sobra dividida em cima e embaixo para os cards não
+   mudarem de altura. O traço no arquivo foi ajustado para seguir com 2px. */
+html body :is(.presentes-vazio, #gifts-listas-prontas) .lista-pronta-lottie.presente-lottie:not(#love-h-a):not(#love-h-b) { width: 54px; height: 54px; margin: 5px auto 11px; }

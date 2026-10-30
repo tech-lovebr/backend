@@ -122,6 +122,10 @@ async function initFirstProductModal() {
 
   if (count) return;
 
+  // Aparece só uma vez por empresa (neste navegador).
+  const chaveVisto = `b2b-primeiro-produto-visto-${empresaId(session)}`;
+  try { if (localStorage.getItem(chaveVisto)) return; localStorage.setItem(chaveVisto, '1'); } catch (e) { /* sem armazenamento: mostra */ }
+
   modal.classList.add('show');
   const close = () => modal.classList.remove('show');
   document.getElementById('first-product-close-btn')?.addEventListener('click', close);

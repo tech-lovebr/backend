@@ -12293,3 +12293,15 @@ html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):not(#love-h-
 html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):hover,
 html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):focus-visible { text-decoration: underline; text-underline-offset: 3px; }
 body[data-theme="dark"] .produtos-vazio-texto .produtos-vazio-link { color: #FFFFFF !important; }
+
+/* Home do Hub: "Olá, empresa!" e a data na mesma fonte do "Olá, nome!" do
+   anfitrião — Plus Jakarta Sans normal (400), 26px, cinza #52525B. */
+html body[data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 26px !important; font-weight: 400 !important; letter-spacing: -0.025em !important; line-height: 1.2 !important; color: #52525B !important;
+}
+html body[data-page="dashboard"] .dash-home-caixa #greeting-date:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+}
+html body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-date { color: #D4D4D8 !important; }

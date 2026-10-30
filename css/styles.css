@@ -15208,3 +15208,15 @@ html body #rsvp-empty-state .rsvp-vazio-link:not(#love-h-a):not(#love-h-b) {
 html body #rsvp-empty-state .rsvp-vazio-link:hover:not(#love-h-a):not(#love-h-b) { color: #122c3f; text-decoration: underline; }
 html body #rsvp-empty-state .rsvp-vazio-link:focus-visible:not(#love-h-a):not(#love-h-b) { outline: none; text-decoration: underline; }
 body[data-theme="dark"] #rsvp-empty-state .rsvp-vazio-link { color: #FFFFFF; }
+
+/* Celular, ficha de Adicionar/Editar convidado: cabeçalho igual ao de
+   "Adicione uma lista" (Presentes) — seta de voltar no mesmo lugar e o título
+   à esquerda, ao lado dela, em 20px/700. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .ficha-convidado .ficha-topo .ficha-voltar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-left: -6px; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; }
+  html body .ficha-convidado .ficha-topo .ficha-voltar svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 20px; height: 20px; }
+  html body .ficha-convidado .ficha-topo .ficha-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    text-align: left; font-size: 20px; font-weight: 700 !important; line-height: 26px; letter-spacing: -0.4px !important; color: #18181B;
+  }
+  body[data-theme="dark"] .ficha-convidado .ficha-topo .ficha-titulo { color: #FFFFFF; }
+}

@@ -15096,3 +15096,7 @@ body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
   .mesa-celular-tampo.formato-bistro strong { font-size: 18px; }
   .mesa-celular-tampo.formato-bistro span { max-width: 64px; font-size: 10px; }
 }
+
+/* Mapa do evento: a cor da restrição alimentar fica só dentro do assento
+   (o desenho), sem pintar o quadrado de fundo maior em volta. */
+html body .floorplan-seat-dot.tem-restricao:not(#love-h-a):not(#love-h-b) { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }

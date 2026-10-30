@@ -10854,7 +10854,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       else if (acao === 'editar') { fichaEditando = true; desenharFichaDoConvidado(); }
       else if (acao === 'salvar') salvarFichaDoConvidado();
-      else if (acao === 'add-acomp') { const linha = adicionarAcompanhanteNaFicha({}); linha?.querySelector('input')?.focus(); }
+      else if (acao === 'add-acomp') {
+        const linha = adicionarAcompanhanteNaFicha({});
+        // Celular: não abre o teclado; ele só sobe quando tocar no campo do nome.
+        if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) linha?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        else linha?.querySelector('input')?.focus();
+      }
       else if (acao === 'detalhes') {
         fichaEditando = true;
         desenharFichaDoConvidado();

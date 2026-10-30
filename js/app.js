@@ -21734,6 +21734,11 @@ document.addEventListener('DOMContentLoaded', () => {
     card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
     card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
     linha.classList.toggle('is-aberta', x < 0);
+    // Abrir/Remover só existem enquanto a linha está aberta ou fechando;
+    // fechada, nada fica aparecendo embaixo do card.
+    if (x < 0) linha.classList.add('acoes-visiveis');
+    else if (!animar) linha.classList.remove('acoes-visiveis');
+    else setTimeout(() => { if (!linha.classList.contains('is-aberta')) linha.classList.remove('acoes-visiveis'); }, 420);
   }
   function fecharLinhaDaConversa() {
     if (linhaDaConversaAberta) moverLinhaDaConversa(linhaDaConversaAberta, 0, true);

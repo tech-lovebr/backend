@@ -15046,3 +15046,12 @@ body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
   body[data-theme="dark"] #tab-overview .home-aviso-mensagens .home-aviso-mensagens-titulo { color: #FFFFFF !important; }
   body[data-theme="dark"] #tab-overview .home-aviso-mensagens :is(.home-aviso-mensagens-mao, .home-aviso-mensagens-link) { color: #EBF4FF !important; }
 }
+
+/* Celular: aba ativa da barra de baixo em azul clarinho, a mesma cor do
+   ícone do logo no topo do celular (icon-white1.png, #EBF4FF). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.mobile-center-edit.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background: #EBF4FF !important; color: #183b54 !important; box-shadow: none !important;
+  }
+}

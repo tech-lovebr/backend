@@ -15067,3 +15067,18 @@ body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #b2b-chat-contacts-list .conv-linha:not(.acoes-visiveis) > .conv-acoes:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
 }
+
+/* Celular, Mapa do evento: situação do RSVP embaixo do nome de cada pessoa
+   na lista da mesa (Confirmado / Pendente / Recusado). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .mesa-celular-nome .mesa-celular-situacao {
+    align-self: flex-start; display: inline-flex; align-items: center; height: 22px; margin-top: 4px; padding: 0 8px;
+    border-radius: 6px; font-style: normal; font-size: 12px; font-weight: 500; line-height: 1;
+    background: #F4F4F5; color: #52525B;
+  }
+  .mesa-celular-situacao.is-confirmed { background: #E7F6EE; color: #0E7A50; }
+  .mesa-celular-situacao.is-declined { background: #FBEFF3; color: #A33A5E; }
+  body[data-theme="dark"] .mesa-celular-situacao { background: #2A2A2A; color: #D4D4D8; }
+  body[data-theme="dark"] .mesa-celular-situacao.is-confirmed { background: rgba(47, 203, 126, 0.16); color: #5FE0A0; }
+  body[data-theme="dark"] .mesa-celular-situacao.is-declined { background: rgba(199, 48, 91, 0.18); color: #F08AA8; }
+}

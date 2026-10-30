@@ -15405,9 +15405,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="mesa-celular-lista">${listaPessoas.length ? listaPessoas.map(({ nome }, n) => {
             const pp = pessoas.find(x => x.name.toLowerCase() === nome.toLowerCase());
             const sub = pp && !pp.isPrimary && pp.host ? `Acompanhante de ${pp.host}` : '';
+            // Situação do RSVP embaixo do nome (acompanhante segue o titular).
+            const situacao = pp ? ({ confirmed: 'confirmed', declined: 'declined' }[pp.status] || 'pending') : '';
+            const selo = situacao ? `<em class="mesa-celular-situacao is-${situacao}">${{ confirmed: 'Confirmado', declined: 'Recusado', pending: 'Pendente' }[situacao]}</em>` : '';
             return `<div class="mesa-celular-pessoa">
               <span class="mesa-celular-numero">${n + 1}</span>
-              <span class="mesa-celular-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}</span>
+              <span class="mesa-celular-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}${selo}</span>
               <button type="button" class="mesa-celular-tirar" data-tirar="${escaparHtml(nome)}" aria-label="Tirar ${escaparHtml(nome)} desta mesa">${XIS}</button>
             </div>`;
           }).join('') : '<p class="mesa-celular-vazio">Ninguém nesta mesa ainda. Toque em um lugar vazio ou em “Adicionar convidados”.</p>'}</div>

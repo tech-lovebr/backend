@@ -11801,19 +11801,56 @@ document.addEventListener('DOMContentLoaded', () => {
     return linhas;
   }
 
-  /** @param {boolean} irParaLista */
-  async function importarContatosParaALista(irParaLista) {
+  /**
+   * O navegador não deixa abrir a agenda (Safari do iPhone sem o ajuste
+   * "Contact Picker API"): explica como ligar, em vez de abrir os Arquivos.
+   * @param {boolean} irParaLista
+   */
+  function mostrarAjudaDosContatos(irParaLista) {
+    document.getElementById('ajuda-contatos')?.remove();
+    const ehIphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const tela = document.createElement('div');
+    tela.id = 'ajuda-contatos';
+    tela.className = 'ajuda-contatos';
+    tela.innerHTML = `
+      <div class="ajuda-contatos-fundo" data-fechar></div>
+      <div class="ajuda-contatos-folha" role="dialog" aria-modal="true" aria-labelledby="ajuda-contatos-titulo">
+        <h3 id="ajuda-contatos-titulo">${ehIphone ? 'Abrir os contatos do iPhone' : 'Abrir os contatos do celular'}</h3>
+        ${ehIphone ? `
+          <p>O Safari só deixa a Love abrir seus contatos com um ajuste ligado. É rápido:</p>
+          <ol>
+            <li>Abra <strong>Ajustes › Apps › Safari › Avançado › Feature Flags</strong>.</li>
+            <li>Ative <strong>Contact Picker API</strong>.</li>
+            <li>Volte aqui e toque em <strong>Importar contatos</strong> de novo.</li>
+          </ol>` : `
+          <p>Este navegador não deixa abrir a agenda do celular. Abra a Love no <strong>Chrome</strong> para escolher seus contatos.</p>`}
+        <button type="button" class="ajuda-contatos-ok" data-fechar>Entendi</button>
+        <button type="button" class="ajuda-contatos-arquivo" data-arquivo>Prefiro escolher um arquivo de contatos (.vcf)</button>
+      </div>`;
+    document.body.appendChild(tela);
+    tela.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (alvo.closest('[data-arquivo]')) { tela.remove(); importarContatosParaALista(irParaLista, true); }
+      else if (alvo.closest('[data-fechar]')) tela.remove();
+    });
+  }
+
+  /** @param {boolean} irParaLista @param {boolean} [usarArquivo] */
+  async function importarContatosParaALista(irParaLista, usarArquivo = false) {
     const ev = getActiveEvent();
     if (!ev) return;
     if (!Array.isArray(ev.guests)) ev.guests = [];
     /** @type {string[][]} */
     let linhas = [];
     const nav = /** @type {any} */ (navigator);
-    if (nav.contacts && typeof nav.contacts.select === 'function') {
+    if (!usarArquivo && nav.contacts && typeof nav.contacts.select === 'function') {
       try {
         const lista = await nav.contacts.select(['name', 'tel', 'email'], { multiple: true });
         linhas = (lista || []).map((/** @type {any} */ c) => [(c.name || [])[0] || '', (c.tel || [])[0] || '', (c.email || [])[0] || '']);
       } catch (err) { console.error('Não foi possível abrir os contatos:', err); return; }
+    } else if (!usarArquivo) {
+      mostrarAjudaDosContatos(irParaLista);
+      return;
     } else {
       const texto = await escolherArquivoDeContatos();
       if (texto === null) return;

@@ -10500,7 +10500,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const semNinguem = !(activeEvent.guests || []).length;
         const tituloVazio = document.getElementById('rsvp-vazio-titulo');
         const textoVazio = document.getElementById('rsvp-vazio-texto');
-        if (tituloVazio) tituloVazio.textContent = semNinguem ? 'Adicione os seus primeiros convidados' : 'Nenhum convidado encontrado com este filtro.';
+        // Lista vazia: o título é um link que já abre a ficha de "Adicionar convidado" (manual).
+        if (tituloVazio) {
+          tituloVazio.textContent = '';
+          if (semNinguem) {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'rsvp-vazio-link'; b.textContent = 'Adicione os seus primeiros convidados';
+            b.addEventListener('click', () => abrirFichaDoConvidado(null));
+            tituloVazio.appendChild(b);
+          } else tituloVazio.textContent = 'Nenhum convidado encontrado com este filtro.';
+        }
         if (textoVazio) { textoVazio.textContent = 'Cadastre a sua lista de convidados para enviar convites e acompanhar as confirmações de presença em tempo real.'; textoVazio.hidden = !semNinguem; }
         if (semNinguem) carregarPlayerLottie();
         emptyStateEl.classList.remove('hidden');

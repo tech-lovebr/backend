@@ -11693,3 +11693,70 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card :is(textarea, .field-textarea):not(#love-h-a):not(#love-h-b) { font-size: 16px !important; }
   body[data-theme="dark"] .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card { background: #1A1A1A !important; }
 }
+
+/* ==========================================================================
+   Celular do Hub: lista vazia (js/utils.js: desenharVazioNoCelular), como
+   Meus convidados vazio do anfitrião — caixa branca de no mínimo 420px,
+   cantos 10px, borda preta a 6%, tudo no centro; animação de 140px; título
+   clicável na primária; texto 13px #71717A.
+   ========================================================================== */
+.vazio-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dash-card.lista-celular.tem-vazio-celular > :is(.overflow-x-auto, .leads-table-wrap):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular > .vazio-celular:not([hidden]):not(#love-h-a):not(#love-h-b),
+  html body #conv-list > .vazio-celular:not(#love-h-a):not(#love-h-b) {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; text-align: center;
+    min-height: 420px; margin: 16px; padding: 24px 20px; box-sizing: border-box;
+    background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03);
+    font-family: Inter, sans-serif;
+  }
+  html body .vazio-celular .vazio-celular-lottie:not(#love-h-a) { display: block; width: 140px; height: 140px; margin: 0 0 12px; }
+  html body .vazio-celular .vazio-celular-icone:not(#love-h-a) { display: block; width: 72px; height: 72px; margin: 0 0 16px; }
+  html body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b) {
+    margin: 0; padding: 0; background: none; border: 0; font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: #18181B;
+  }
+  html body .vazio-celular button.vazio-celular-titulo:not(#love-h-a):not(#love-h-b) { color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  html body .vazio-celular .vazio-celular-texto:not(#love-h-a) { max-width: 280px; margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
+  html body .vazio-celular .vazio-celular-nenhum:not(#love-h-a) { margin: 0; font-size: 14px; color: #71717A; }
+  body[data-theme="dark"] .vazio-celular { background: #252525 !important; border-color: #404040 !important; }
+  body[data-theme="dark"] .vazio-celular .vazio-celular-titulo { color: #FFFFFF !important; }
+}
+
+/* ==========================================================================
+   Celular do Hub: gaveta de opções que sobe de baixo (js/utils.js:
+   abrirGavetaDeOpcoes). Cantos de 10px em cima, alça cinza, itens de 48px,
+   sombra só na gaveta. E o "+" de Clientes, que abre essa gaveta.
+   ========================================================================== */
+.so-celular-clientes { display: none; }
+.gaveta-opcoes { position: fixed; inset: 0; z-index: 140; font-family: Inter, sans-serif; }
+.gaveta-opcoes-fundo { position: absolute; inset: 0; background: rgba(24, 29, 36, 0.32); opacity: 0; transition: opacity .2s ease; }
+.gaveta-opcoes-folha {
+  position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto;
+  padding: 8px 8px calc(12px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box;
+  background: #FFFFFF; border-radius: 10px 10px 0 0; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(100%); transition: transform .22s cubic-bezier(.2, .8, .2, 1);
+}
+.gaveta-opcoes.is-aberta .gaveta-opcoes-fundo { opacity: 1; }
+.gaveta-opcoes.is-aberta .gaveta-opcoes-folha { transform: translateY(0); }
+.gaveta-opcoes-alca { display: block; width: 36px; height: 4px; margin: 2px auto 10px; border-radius: 2px; background: #D4D4D8; }
+.gaveta-opcoes-titulo { margin: 0; padding: 4px 12px 8px; font-size: 13px; font-weight: 500; color: #71717A; }
+.gaveta-opcoes-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; height: 48px; padding: 0 12px; margin: 0;
+  background: transparent; border: 0; border-radius: 8px; font-family: inherit; font-size: 16px; font-weight: 500; color: #18181B;
+  text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.gaveta-opcoes-item:active { background: #F4F6F7; }
+.gaveta-opcoes-item svg { width: 22px; height: 22px; flex-shrink: 0; color: #3F3F46; }
+body[data-theme="dark"] .gaveta-opcoes-folha { background: #252525; }
+body[data-theme="dark"] .gaveta-opcoes-item { color: #FFFFFF; }
+body[data-theme="dark"] .gaveta-opcoes-item svg { color: #D4D4D8; }
+body[data-theme="dark"] .gaveta-opcoes-item:active { background: #333333; }
+body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content:has([data-leads-painel="leads"]:not([hidden])) > .b2b-header-bar > #lead-add-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: auto; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body #lead-add-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
+  body[data-theme="dark"] #lead-add-celular { color: #FFFFFF !important; }
+}

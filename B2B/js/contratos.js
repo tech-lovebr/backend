@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Barras das tabelas (busca, Filtrar por, Exportar) — padrão do Admin.
   financeContratosEstado = montarBarraTabela(document.getElementById('finance-contratos-card'), {
     placeholder: 'Pesquisar cliente...',
-    celular: { nome: 1, info: 2, singular: 'contrato', plural: 'contratos' },
+    celular: { nome: 1, info: 2, singular: 'contrato', plural: 'contratos', vazio: { titulo: 'Nenhum contrato ainda', texto: 'Os pagamentos dos seus contratos aparecem aqui.' } },
     filtros: [{ chave: 'status', rotulo: 'Quitação', opcoes: () => Object.entries(CONTRATO_STATUS_INFO).map(([k, v]) => [k, v.label]) }],
     exportar: () => tabelaExportarCSV('gestao-de-pagamentos', [
       { titulo: 'Cliente', valor: r => r.client_name },
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   paymentLinksEstado = montarBarraTabela(document.getElementById('payment-links-card'), {
     placeholder: 'Pesquisar por valor ou data...',
-    celular: { nome: 2, info: 4, singular: 'link', plural: 'links', semIniciais: true, editarSel: '[data-link-row]', rotuloEditar: 'Abrir' },
+    celular: { nome: 2, info: 4, singular: 'link', plural: 'links', vazio: { titulo: 'Nenhum link de cobrança', texto: 'Os links que você criar para receber aparecem aqui.' }, semIniciais: true, editarSel: '[data-link-row]', rotuloEditar: 'Abrir' },
     filtros: [{ chave: 'situacao', rotulo: 'Situação', opcoes: () => [['pago', 'Pago'], ['pendente', 'Aguardando pagamento']] }],
     exportar: () => tabelaExportarCSV('links-de-cobranca', [
       { titulo: 'Criado em', valor: l => formatLinkDate(l.created_at) },

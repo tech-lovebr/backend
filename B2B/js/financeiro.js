@@ -139,7 +139,7 @@ function initNotasFiscaisActions() {
   // Barra da tabela: busca, Filtrar por (mês) e Exportar.
   notasFiscaisEstado = montarBarraTabela(document.getElementById('notas-fiscais-card'), {
     placeholder: 'Pesquisar cliente ou nº da nota...',
-    celular: { nome: 2, info: 4, singular: 'nota', plural: 'notas' },
+    celular: { nome: 2, info: 4, singular: 'nota', plural: 'notas', vazio: { titulo: 'Nenhuma nota fiscal ainda', texto: 'As notas emitidas pelos contratos aparecem aqui.', nenhum: 'Nenhuma nota encontrada' } },
     filtros: [{ chave: 'mes', rotulo: 'Mês', opcoes: () => [...new Set(bNotasFiscais.map(mesDaNota).filter(Boolean))].sort().reverse()
       .map(m => { const [y, mm] = m.split('-'); return [m, `${capitalize(new Date(+y, +mm - 1, 1).toLocaleDateString('pt-BR', { month: 'long' }))} de ${y}`]; }) }],
     exportar: () => tabelaExportarCSV('notas-fiscais', [
@@ -447,7 +447,7 @@ function initOrcamentosLista() {
   orcamentosPaginacao = montarPaginacaoTabela(document.getElementById('orcamentos-table-card'), () => renderOrcamentos());
   orcamentosTabelaEstado = montarBarraTabela(document.getElementById('orcamentos-table-card'), {
     placeholder: 'Pesquisar cliente ou serviço...',
-    celular: { nome: 2, info: 6, singular: 'orçamento', plural: 'orçamentos', editarSel: '[data-orcamento-linha]', rotuloEditar: 'Abrir' },
+    celular: { nome: 2, info: 6, singular: 'orçamento', plural: 'orçamentos', vazio: { titulo: 'Crie seu primeiro orçamento', texto: 'Os orçamentos enviados aos clientes aparecem aqui.', abrirSel: '#orcamento-novo-btn' }, editarSel: '[data-orcamento-linha]', rotuloEditar: 'Abrir' },
     filtros: [{ chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(ORCAMENTO_STATUS).map(([k, v]) => [k, v.label]) }],
     exportar: () => tabelaExportarCSV('orcamentos', [
       { titulo: 'Nº', valor: r => r.numero || '' },

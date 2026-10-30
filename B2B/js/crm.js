@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Importar e Exportar (o que está filtrado/buscado no momento).
   leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
     placeholder: 'Pesquisar cliente, e-mail ou CPF...',
-    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
+    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-vazio', titulo: 'Adicione seu primeiro cliente', texto: 'Quem você cadastrar ou quem pedir orçamento pelo chat aparece aqui.', abrirSel: '#lead-add-celular' }, nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
     filtros: [
       { chave: 'tipo', rotulo: 'Tipo do evento', opcoes: () => [...new Set(crmLeads.map(l => l.tipo_evento).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },
@@ -848,3 +848,52 @@ async function deleteLeadComment(commentId) {
   await supabaseClient.from('leads').update({ comentarios: lead.comentarios }).eq('id', id);
   renderLeadComments(lead);
 }
+
+/* -------------------- Celular: "+" de Clientes --------------------
+   Gaveta de baixo com "Adicionar manualmente" (abre a ficha de Adicionar) e
+   "Importar contatos" (contatos do celular ou arquivo .vcf; .csv vai para o
+   importar de planilha que já existe). */
+async function importarContatosComoClientes() {
+  const escolhidos = await escolherContatosDoCelular();
+  if (!escolhidos) return;
+  if (escolhidos.csv) {
+    const entrada = document.getElementById('lead-import-file');
+    if (entrada && typeof DataTransfer !== 'undefined') {
+      const dt = new DataTransfer();
+      dt.items.add(escolhidos.csv);
+      entrada.files = dt.files;
+      entrada.dispatchEvent(new Event('change'));
+    }
+    return;
+  }
+  if (!escolhidos.length) { showToast('Nenhum contato com nome para importar.', true); return; }
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const leads = escolhidos.map(c => {
+    const lead = { fornecedor_id: empresaId(session), status: 'novo', name: maiusculaNoNome(c.nome) };
+    if (c.email) lead.email = c.email;
+    const tel = String(c.telefone || '').replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '').slice(0, 11);
+    if (tel) lead.whatsapp = formatPhoneDigits(tel);
+    return lead;
+  });
+  let { error } = await supabaseClient.from('leads').insert(leads);
+  if (error && /column|schema cache/i.test(error.message || '')) {
+    ({ error } = await supabaseClient.from('leads').insert(leads.map(({ whatsapp, ...resto }) => resto)));
+  }
+  if (error) { showToast('Não foi possível importar os contatos. Tente de novo.', true); return; }
+  await loadLeads();
+  renderLeadsTable();
+  if (leads.length === 1) avisarAdicionado(leads[0].name, '1 lead importado.');
+  else showToast(`${leads.length} clientes importados.`, false, 'sucesso');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('#lead-add-celular')) return;
+  abrirGavetaDeOpcoes({
+    titulo: 'Adicionar cliente',
+    opcoes: [
+      { rotulo: 'Adicionar manualmente', icone: ICONE_GAVETA_MANUAL, aoTocar: () => document.getElementById('lead-add-btn')?.click() },
+      { rotulo: 'Importar contatos', icone: ICONE_GAVETA_CONTATOS, aoTocar: importarContatosComoClientes }
+    ]
+  });
+});

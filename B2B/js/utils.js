@@ -1089,6 +1089,7 @@ function montarBarraTabela(card, opts) {
 
   const avisar = () => { if (opts.aoMudar) opts.aoMudar(estado); };
   if (opts.celular) {
+    opts.celular._estado = estado;
     listaNoCelular(card, opts.celular);
     // Girou o celular / mudou a largura: redesenha (com ou sem páginas).
     window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', avisar);
@@ -1483,9 +1484,60 @@ function listaNoCelular(card, cfg) {
     });
     const texto = `${n} ${n === 1 ? cfg.singular : cfg.plural}`;
     if (total.textContent !== texto) total.textContent = texto;
+    desenharVazioNoCelular(card, cfg, n);
   };
   marcar();
   new MutationObserver(marcar).observe(tbody, { childList: true });
+}
+
+/* ==========================================================================
+   Celular: lista vazia como Meus convidados vazio do anfitrião — caixa
+   branca (mín. 420px, cantos 10px, borda preta a 6%) com a animação Lottie
+   de 140px, título curto clicável (#183b54, abre o Adicionar) e um texto de
+   13px #71717A. Com busca/filtro sem resultado: só "Nenhum ... encontrado".
+   cfg.vazio = { lottie, icone, titulo, texto, abrirSel, nenhum }
+   ========================================================================== */
+const ICONE_VAZIO_DOCUMENTO = '<svg class="vazio-celular-icone" viewBox="0 0 64 64" fill="none" stroke="#D4D4D8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h20l10 10v36a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z"/><path d="M38 8v10h10M24 30h16M24 38h16M24 46h10"/></svg>';
+
+function carregarPlayerLottieHub() {
+  if (window.customElements?.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.id = 'love-dotlottie-wc';
+  s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
+  document.head.appendChild(s);
+}
+
+function desenharVazioNoCelular(card, cfg, n) {
+  const v = cfg.vazio;
+  if (!v) return;
+  let caixa = card.querySelector(':scope > .vazio-celular');
+  const procurando = !!(cfg._estado && (cfg._estado.busca || Object.values(cfg._estado.filtros || {}).some(Boolean)));
+  const modo = n > 0 ? '' : (procurando ? 'busca' : 'vazio');
+  card.classList.toggle('tem-vazio-celular', !!modo);
+  if (!modo) { if (caixa) caixa.hidden = true; return; }
+  if (!caixa) {
+    caixa = document.createElement('div');
+    caixa.className = 'vazio-celular';
+    const barra = card.querySelector(':scope > .tabela-barra');
+    card.insertBefore(caixa, barra ? barra.nextSibling : card.firstChild);
+  }
+  caixa.hidden = false;
+  if (caixa.dataset.modo === modo) return;
+  caixa.dataset.modo = modo;
+  if (modo === 'busca') {
+    caixa.innerHTML = `<p class="vazio-celular-nenhum">${escapeHtml(v.nenhum || `Nenhum ${cfg.singular} encontrado`)}</p>`;
+    return;
+  }
+  const arte = v.lottie
+    ? `<dotlottie-wc class="vazio-celular-lottie" src="assets/lottie/${escapeHtml(v.lottie)}.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>`
+    : (v.icone || ICONE_VAZIO_DOCUMENTO);
+  const podeAbrir = v.abrirSel && document.querySelector(v.abrirSel);
+  caixa.innerHTML = `${arte}
+    ${podeAbrir ? `<button type="button" class="vazio-celular-titulo is-link">${escapeHtml(v.titulo)}</button>` : `<p class="vazio-celular-titulo">${escapeHtml(v.titulo)}</p>`}
+    ${v.texto ? `<p class="vazio-celular-texto">${escapeHtml(v.texto)}</p>` : ''}`;
+  caixa.querySelector('button.vazio-celular-titulo')?.addEventListener('click', () => document.querySelector(v.abrirSel)?.click());
+  if (v.lottie && hubNoCelular()) carregarPlayerLottieHub();
 }
 
 /* ==========================================================================
@@ -1661,3 +1713,90 @@ function prepararFichasDoCelular() {
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepararFichasDoCelular);
 else prepararFichasDoCelular();
+
+/* ==========================================================================
+   Celular: gaveta de opções que sobe de baixo (no lugar dos menus e pop-ups
+   de escolha). Cantos de 10px em cima, alça cinza, itens de 48px; sombra só
+   na gaveta. abrirGavetaDeOpcoes({ titulo, opcoes: [{ rotulo, icone, aoTocar }] })
+   ========================================================================== */
+function fecharGavetaDeOpcoes() {
+  const g = document.querySelector('.gaveta-opcoes');
+  if (!g) return;
+  g.classList.remove('is-aberta');
+  setTimeout(() => g.remove(), 220);
+}
+function abrirGavetaDeOpcoes({ titulo = '', opcoes = [] } = {}) {
+  document.querySelector('.gaveta-opcoes')?.remove();
+  const g = document.createElement('div');
+  g.className = 'gaveta-opcoes';
+  g.innerHTML = `
+    <div class="gaveta-opcoes-fundo" data-gaveta-fechar></div>
+    <div class="gaveta-opcoes-folha" role="dialog" aria-modal="true"${titulo ? ` aria-label="${escapeHtml(titulo)}"` : ''}>
+      <span class="gaveta-opcoes-alca" aria-hidden="true"></span>
+      ${titulo ? `<p class="gaveta-opcoes-titulo">${escapeHtml(titulo)}</p>` : ''}
+      ${opcoes.map((o, i) => `<button type="button" class="gaveta-opcoes-item" data-gaveta-opcao="${i}">${o.icone || ''}<span>${escapeHtml(o.rotulo)}</span></button>`).join('')}
+    </div>`;
+  document.body.appendChild(g);
+  requestAnimationFrame(() => g.classList.add('is-aberta'));
+  g.addEventListener('click', (e) => {
+    if (e.target.closest('[data-gaveta-fechar]')) { fecharGavetaDeOpcoes(); return; }
+    const b = e.target.closest('[data-gaveta-opcao]');
+    if (!b) return;
+    fecharGavetaDeOpcoes();
+    opcoes[Number(b.dataset.gavetaOpcao)]?.aoTocar?.();
+  });
+  // Puxar a alça para baixo fecha.
+  const folha = g.querySelector('.gaveta-opcoes-folha');
+  let y0 = null;
+  folha.addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; }, { passive: true });
+  folha.addEventListener('touchend', (e) => {
+    if (y0 !== null && e.changedTouches[0].clientY - y0 > 60) fecharGavetaDeOpcoes();
+    y0 = null;
+  });
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharGavetaDeOpcoes(); });
+
+const ICONE_GAVETA_MANUAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>';
+const ICONE_GAVETA_CONTATOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>';
+
+/* Contatos de um arquivo .vcf → [{ nome, telefone, email }]. */
+function contatosDoVcf(texto) {
+  const cartoes = String(texto || '').replace(/\r\n[ \t]/g, '').split(/BEGIN:VCARD/i).slice(1);
+  return cartoes.map(c => {
+    const campo = (re) => { const m = c.match(re); return m ? m[1].trim() : ''; };
+    let nome = campo(/^FN[^:\n]*:(.+)$/im);
+    if (!nome) { const n = campo(/^N[^:\n]*:(.+)$/im).split(';'); nome = [n[1], n[0]].filter(Boolean).join(' '); }
+    return { nome: nome.replace(/\,/g, ','), telefone: campo(/^TEL[^:\n]*:(.+)$/im), email: campo(/^EMAIL[^:\n]*:(.+)$/im) };
+  }).filter(c => c.nome);
+}
+
+/* Celular: contatos do aparelho (Contact Picker, Android/Chrome); onde o
+   navegador não deixa (Safari do iPhone), escolhe um arquivo .vcf/.csv.
+   Devolve [{ nome, telefone, email }] ou null (cancelou / arquivo CSV → csv). */
+async function escolherContatosDoCelular() {
+  if (navigator.contacts && typeof navigator.contacts.select === 'function') {
+    try {
+      const lista = await navigator.contacts.select(['name', 'tel', 'email'], { multiple: true });
+      return (lista || []).map(c => ({ nome: (c.name || [])[0] || '', telefone: (c.tel || [])[0] || '', email: (c.email || [])[0] || '' })).filter(c => c.nome);
+    } catch (e) { return null; }
+  }
+  return new Promise((resolve) => {
+    const entrada = document.createElement('input');
+    entrada.type = 'file';
+    entrada.accept = '.vcf,.csv,text/vcard,text/x-vcard,text/csv';
+    entrada.hidden = true;
+    document.body.appendChild(entrada);
+    const fim = (v) => { entrada.remove(); resolve(v); };
+    entrada.addEventListener('change', async () => {
+      const f = entrada.files && entrada.files[0];
+      if (!f) return fim(null);
+      try {
+        const texto = await f.text();
+        if (/\.csv$/i.test(f.name) || /csv/i.test(f.type)) return fim({ csv: f });
+        fim(contatosDoVcf(texto));
+      } catch (e) { fim(null); }
+    });
+    entrada.addEventListener('cancel', () => fim(null));
+    entrada.click();
+  });
+}

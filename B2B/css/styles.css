@@ -11871,3 +11871,86 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-news-card):not(#love-h-a) { order: 5; }
   html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-help-section:not(#love-h-a) { order: 6; margin-top: 0; }
 }
+
+/* ==========================================================================
+   Dashboard no celular, como a Home do anfitrião:
+   - caixa do "Olá, empresa!" (Inter 22/600) com os atalhos redondos dentro
+     (Cobrar, Orçamento, Construtor: bola 56px #EAF0F5, ícone 26px #183b54,
+     nome 13/500 #3F3F46);
+   - caixa do saldo como a de Presentes (valor 28/700 #183b54 em cima, nome
+     13/500 embaixo e botão primário de 44px);
+   - carrossel antes de Sua agenda;
+   - cabeçalho rola junto (js: cabecalhoRolaNoCelular).
+   Desktop não muda.
+   ========================================================================== */
+.dash-saldo-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content > #shell-topbar.topo-rola-junto:not(#love-h-a) { flex-shrink: 0; margin: 0 calc(-1 * var(--b2b-content-pad-x, 16px)); }
+
+  /* Caixa do Olá + atalhos (as duas partes formam uma caixa só) */
+  html body[data-page="dashboard"] .dashboard-greeting:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 0; padding: 20px 12px 20px; text-align: center;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-bottom: 0; border-radius: 10px 10px 0 0;
+  }
+  html body[data-page="dashboard"] .dashboard-greeting > :not(.dashboard-greeting-text):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b) {
+    margin: 0; font-family: Inter, sans-serif !important; font-size: 22px !important; font-weight: 600 !important; letter-spacing: -0.025em !important; line-height: 1.25; color: #18181B;
+    white-space: normal; text-align: center;
+  }
+  html body[data-page="dashboard"] #greeting-date:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B; text-align: center;
+  }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
+    order: 1; position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 8px;
+    padding: 20px 12px 18px; background: #FFFFFF; border: 1px solid #E4E4E7; border-top: 0; border-radius: 0 0 10px 10px;
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions:not(#love-h-a)::before {
+    content: ""; position: absolute; top: 0; left: 12px; right: 12px; height: 1px; background: rgba(0, 0, 0, 0.06);
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(.dashboard-quick-action-mobile-hide):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
+    min-height: 44px; height: auto; width: auto; padding: 0; margin: 0;
+    background: transparent; border: 0; border-radius: 0; box-shadow: none;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center;
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
+    box-sizing: border-box; width: 56px; height: 56px; padding: 15px; border-radius: 50%;
+    background: #EAF0F5; color: #183b54; flex-shrink: 0; transition: box-shadow .15s ease;
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(#love-h-a):active svg { box-shadow: inset 0 0 0 1px #183b54; }
+
+  /* Caixa do saldo */
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-saldo-total:not(#love-h-a):not(#love-h-b) {
+    order: 2; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; overflow: hidden;
+  }
+  html body[data-page="dashboard"] .dash-saldo-total > :not(.dash-saldo-celular):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] .dash-saldo-celular:not(#love-h-a) { display: block; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas:not(#love-h-a) { display: grid; grid-template-columns: 1fr 1fr; padding: 24px 0 20px; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
+  html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a) {
+    font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: center; height: 44px; margin: 0 16px 16px; padding: 0 16px;
+    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):active { background: #122c3f; }
+
+  /* Carrossel antes de Sua agenda */
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-ads-card:not(#love-h-a):not(#love-h-b) { display: block; order: 3; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(#agenda-list):not(#love-h-a):not(#love-h-b) { order: 4; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-analytics-card):not(#love-h-a):not(#love-h-b) { order: 5; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-news-card):not(#love-h-a):not(#love-h-b) { order: 6; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-help-section:not(#love-h-a):not(#love-h-b) { order: 7; }
+
+  body[data-theme="dark"][data-page="dashboard"] :is(.dashboard-greeting, .dashboard-quick-actions, .dash-saldo-total) { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"][data-page="dashboard"] #greeting-title { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="dashboard"] :is(#greeting-date, .dash-saldo-celular-nome, .dashboard-quick-action-btn) { color: #D4D4D8 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dashboard-quick-action-btn svg { background: #252525 !important; color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dashboard-quick-actions::before { background: #333333 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-valor { color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-colunas > div + div { border-left-color: #333333 !important; }
+}

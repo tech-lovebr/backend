@@ -619,6 +619,7 @@ async function renderSaldoTotal() {
   }
   const sinal = t => (t.type === 'credit' ? 1 : -1) * Number(t.amount || 0);
   valorEl.textContent = formatCurrency(transacoes.reduce((soma, t) => soma + sinal(t), 0));
+  setText('dash-saldo-celular-saldo', valorEl.textContent);
 
   // Faturamento (créditos) de cada um dos últimos 30 dias.
   const DIA = 24 * 60 * 60 * 1000;
@@ -634,6 +635,7 @@ async function renderSaldoTotal() {
     dias.push({ data: inicio, valor });
   }
   const temFaturamento = dias.some(d => d.valor > 0);
+  setText('dash-saldo-celular-faturamento', formatCurrency(dias.reduce((soma, d) => soma + d.valor, 0)));
 
   let pontos;
   if (!temFaturamento) {
@@ -824,3 +826,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const saldo = document.querySelector('.dash-saldo-total');
   if (saldo && 'ResizeObserver' in window) new ResizeObserver(alinharCarrosselComSaldo).observe(saldo);
 });
+
+/* Celular: no Dashboard o cabeçalho rola junto com a página (sem ficar
+   preso no topo). Ele entra no começo da área que rola e volta para o
+   lugar no computador. */
+(function cabecalhoRolaNoCelular() {
+  const topo = document.getElementById('shell-topbar');
+  const conteudo = document.querySelector('.b2b-content');
+  if (!topo || !conteudo || typeof MQ_CELULAR_HUB === 'undefined') return;
+  const casa = { pai: topo.parentElement, depois: topo.nextSibling };
+  const ajustar = () => {
+    if (hubNoCelular()) {
+      if (topo.parentElement !== conteudo) conteudo.insertBefore(topo, conteudo.firstChild);
+      topo.classList.add('topo-rola-junto');
+    } else if (topo.parentElement === conteudo) {
+      topo.classList.remove('topo-rola-junto');
+      casa.pai.insertBefore(topo, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+    }
+  };
+  ajustar();
+  document.addEventListener('DOMContentLoaded', ajustar);
+  window.addEventListener('load', ajustar);
+  window.addEventListener('resize', ajustar);
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', ajustar);
+})();

@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=804">
+  <link rel="stylesheet" href="css/styles.css?v=806">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -67,6 +67,14 @@
               <p class="dash-saldo-total-rotulo">Saldo total · Todos os saldos</p>
               <p class="dash-saldo-total-valor" id="dash-saldo-total-valor">—</p>
               <div class="dash-saldo-total-grafico" id="dash-saldo-total-grafico"></div>
+              <!-- Celular: caixa como a de Presentes no anfitrião (valor em cima, nome embaixo e botão). -->
+              <div class="dash-saldo-celular">
+                <div class="dash-saldo-celular-colunas">
+                  <div><span class="dash-saldo-celular-valor" id="dash-saldo-celular-saldo">—</span><span class="dash-saldo-celular-nome">Saldo</span></div>
+                  <div><span class="dash-saldo-celular-valor" id="dash-saldo-celular-faturamento">—</span><span class="dash-saldo-celular-nome">Faturamento em 30 dias</span></div>
+                </div>
+                <a href="pagamentos" class="dash-saldo-celular-botao">Ver financeiro</a>
+              </div>
             </div>
 
             <div class="dashboard-quick-actions">
@@ -342,6 +350,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=66"></script>
-  <script src="js/dashboard.js?v=69"></script>
+  <script src="js/dashboard.js?v=71"></script>
 </body>
 </html>

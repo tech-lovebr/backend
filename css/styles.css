@@ -15153,3 +15153,17 @@ html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { di
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #recados-raiz .recados-total-celular:not(#love-h-a):not(#love-h-b) { padding: 0 16px 12px; }
 }
+
+/* Celular: o título no topo de cada tela fica sempre na mesma altura, com ou
+   sem botão à direita (a linha do título tem a altura do botão, 44px). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard div:has(> :is(#gifts-header-title, #b2b-toolbar-title, #rsvp-header-title, #wallet-header-title)):not(#love-h-a):not(#love-h-b) { min-height: 44px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard .floorplan-toolbar-esq:not(#love-h-a):not(#love-h-b) { min-height: 44px; }
+  html body #view-event-os-dashboard .floorplan-toolbar-esq > .floorplan-page-name:not(#love-h-a):not(#love-h-b) { line-height: 26px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Convite digital: o botão do título tinha 1px de borda e empurrava o texto. */
+  html body #view-event-os-dashboard #builder-page-select-btn:not(#love-h-a):not(#love-h-b) { border-left-width: 0 !important; border-right-width: 0 !important; }
+}

@@ -12781,7 +12781,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ZOOM_MAXIMO_DA_PLANTA = 2.5;
   const plantaNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
   // Preenchido por iniciarPlantaNoCelular(): abre a gaveta da mesa (editar/convidados) no celular.
-  let abrirMesaNoCelularRef = /** @type {((id: string) => void)|null} */ (null);
+  let abrirMesaNoCelularRef = /** @type {((id: string, modo?: string) => void)|null} */ (null);
   /** @param {HTMLElement} canvas @param {any[]} elements */
   function escalaParaCaber(canvas, elements) {
     // Com zoom no celular a planta fica mais larga que a tela: a conta de
@@ -13636,13 +13636,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const alvo = lista.find(x => x.id === id);
     if (!alvo) return;
     if (acao === 'convidados') {
-      if (alvo.type === 'mesa' && plantaNoCelular() && abrirMesaNoCelularRef) { abrirMesaNoCelularRef(id); return; }
+      if (alvo.type === 'mesa' && plantaNoCelular() && abrirMesaNoCelularRef) { abrirMesaNoCelularRef(id, 'lista'); return; }
       if (botao) abrirListaDaMesa(botao, alvo);
       return;
     }
     if (acao === 'editar') {
       if (alvo.type === 'mesa') {
-        if (plantaNoCelular() && abrirMesaNoCelularRef) abrirMesaNoCelularRef(id);
+        if (plantaNoCelular() && abrirMesaNoCelularRef) abrirMesaNoCelularRef(id, 'editar');
         else openFloorplanTableModal(id);
       }
       else if (alvo.type === 'texto') editarTextoDaPlanta(id);
@@ -15141,6 +15141,9 @@ document.addEventListener('DOMContentLoaded', () => {
     tela.setAttribute('aria-modal', 'true');
     document.body.append(fundoMesa, tela);
     let mesaId = '';
+    // "lista" (ícone de lista): só a mesa e quem está nela.
+    // "editar" (lápis): também nome, formato, lugares, cor e as ações.
+    let modoMesa = 'lista';
     let escolhendo = false;
     let buscaEscolha = '';
 
@@ -15167,9 +15170,10 @@ document.addEventListener('DOMContentLoaded', () => {
       escolhendo = false;
       document.body.classList.remove('mesa-celular-aberta');
     };
-    /** @param {string} id */
-    function abrirMesa(id) {
+    /** @param {string} id @param {string} [modo] */
+    function abrirMesa(id, modo) {
       mesaId = id;
+      modoMesa = modo === 'editar' ? 'editar' : 'lista';
       escolhendo = false;
       buscaEscolha = '';
       tela.classList.add('is-aberta');
@@ -15192,6 +15196,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!alvo) return;
       if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaMesaY > 40) fecharMesa();
     });
+
+    // "Gregory Henderson" -> "Gregory H." (nome e a inicial do sobrenome).
+    /** @param {string} nome */
+    const nomeCurto = (nome) => {
+      const partes = String(nome).trim().split(/\s+/);
+      return partes.length > 1 ? `${partes[0]} ${(partes[partes.length - 1][0] || '').toUpperCase()}.` : partes[0];
+    };
+    // Aviso verde no topo da tela, por cima da gaveta, ao pôr alguém na mesa.
+    const avisoMesa = document.createElement('div');
+    avisoMesa.className = 'mesa-celular-aviso';
+    avisoMesa.setAttribute('role', 'status');
+    avisoMesa.setAttribute('aria-live', 'polite');
+    document.body.appendChild(avisoMesa);
+    let avisoMesaTempo = 0;
+    /** @param {string} texto */
+    function avisarNaMesa(texto) {
+      avisoMesa.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span>${escaparHtml(texto)}</span>`;
+      avisoMesa.classList.remove('is-visivel');
+      void avisoMesa.offsetWidth;
+      avisoMesa.classList.add('is-visivel');
+      clearTimeout(avisoMesaTempo);
+      avisoMesaTempo = window.setTimeout(() => avisoMesa.classList.remove('is-visivel'), 2600);
+    }
 
     const ICONES_FORMATO = /** @type {Record<string, string>} */ ({});
     menuItens.querySelectorAll('[data-mesa-formato]').forEach(b => {
@@ -15266,7 +15293,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="mesa-celular-lugares">${lugares}</div>
           </div>
 
-          <div class="mesa-celular-cartao">
+          ${modoMesa === 'editar' ? `<div class="mesa-celular-cartao">
             <label class="mesa-celular-rotulo" for="mesa-celular-nome">Nome da mesa</label>
             <input type="text" id="mesa-celular-nome" class="mesa-celular-campo" maxlength="50" placeholder="Ex.: Mesa da família" value="${escaparHtml(m.name || '')}">
             <p class="mesa-celular-rotulo">Formato</p>
@@ -15288,7 +15315,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button type="button" data-acao="duplicar">Duplicar</button>
               <button type="button" data-acao="excluir">Excluir mesa</button>
             </div>
-          </div>
+          </div>` : ''}
 
           <div class="mesa-celular-cabeca">
             <h3>Convidados</h3>
@@ -15335,6 +15362,8 @@ document.addEventListener('DOMContentLoaded', () => {
         moverPessoasParaMesa([escolher.trim().toLowerCase()], mesaId);
         escolhendo = false;
         desenharMesa();
+        const mm = mesaAtual();
+        if (mm) avisarNaMesa(`${nomeCurto(escolher)} foi adicionado à Mesa ${mm.number}`);
         return;
       }
       if (formato) { mudarMesa(m => { m.formato = formato; }); desenharMesa(); return; }

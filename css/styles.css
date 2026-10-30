@@ -14823,3 +14823,22 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
   body[data-theme="dark"] #tab-overview .home-presentes-nome { color: #A1A1AA; }
   body[data-theme="dark"] #tab-overview .home-presentes-celular > div + div { border-left-color: #333333; }
 }
+
+/* ==========================================================================
+   Celular, Mapa do evento: aviso verde no topo ao pôr alguém na mesa
+   ("Gregory H. foi adicionado à Mesa 1"), por cima da gaveta da mesa.
+   ========================================================================== */
+.mesa-celular-aviso { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .mesa-celular-aviso {
+    display: flex; align-items: center; gap: 10px; position: fixed; z-index: 90;
+    left: 16px; right: 16px; top: calc(env(safe-area-inset-top, 0px) + 12px); max-width: 480px; margin: 0 auto;
+    padding: 12px 14px; border-radius: 8px; background: #1E7A55; color: #FFFFFF;
+    font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.3;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    opacity: 0; transform: translateY(-12px); pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+  }
+  .mesa-celular-aviso.is-visivel { opacity: 1; transform: translateY(0); }
+  .mesa-celular-aviso svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .mesa-celular-aviso span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}

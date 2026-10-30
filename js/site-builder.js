@@ -707,10 +707,33 @@ function applyGlobalStyleVars() {
   node.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 }
 
+/**
+ * Guarda a página no cache do navegador. Se não couber (o celular aceita uns
+ * 5 MB), apaga a cópia antiga para ela não ficar no lugar da nova — o banco
+ * continua sendo gravado e a última versão fica em memória (Home usa).
+ * @param {string} pageKey @param {any} state @returns {boolean}
+ */
+function guardarPaginaNoCache(pageKey, state) {
+  if (pageKey === 'convite') window.__loveConviteAtual = { evento: getActiveEventUuid(), state };
+  try {
+    localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(state));
+    return true;
+  } catch (e) {
+    try { localStorage.removeItem(pageStorageKey(pageKey)); } catch (e2) { /* sem armazenamento */ }
+    return false;
+  }
+}
+
 function persistBuilderState(silent) {
-  localStorage.setItem(pageStorageKey(currentPageKey), JSON.stringify(builderState));
+  guardarPaginaNoCache(currentPageKey, builderState);
   hasUnsavedChanges = false;
-  persistBuilderStateRemote(currentPageKey, builderState);
+  persistBuilderStateRemote(currentPageKey, builderState).then((ok) => {
+    if (ok === false) {
+      hasUnsavedChanges = true;
+      showToast('Não foi possível salvar. Confira a internet e tente de novo.');
+    }
+  });
+  if (typeof window.loveAtualizarCapaDaHome === 'function') { try { window.loveAtualizarCapaDaHome(); } catch (e) { /* Home fora da tela */ } }
   if (!silent) showToast('Alterações salvas!');
   // Guia de primeiros passos: salvar o Save the Date risca "Escolher Save the Date".
   if (!silent && currentPageKey === 'savethedate' && typeof window.markPlatformTaskAchieved === 'function') {
@@ -733,6 +756,7 @@ async function persistBuilderStateRemote(pageKey, state) {
     .from('convite_digital_pages')
     .upsert({ evento_id: eventId, page_key: pageKey, state, updated_at: agora, ...dadosExtras }, { onConflict: 'evento_id,page_key' });
   if (error) console.error('Erro ao salvar Convite Digital no Supabase:', error);
+  return !error;
 }
 
 // "Publicar": grava a cópia publicada (published_state) que a página pública
@@ -770,6 +794,10 @@ async function publicarConviteNoAr(btn) {
   }
   btn.textContent = resultado;
   btn.dataset.resultado = resultado;
+  // Celular: o botão é só o ícone, então o resultado aparece num aviso.
+  if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+    showToast(resultado === 'Publicado' ? 'Convite publicado! As alterações já estão no ar.' : resultado === 'Link já em uso' ? 'Esse link já está em uso. Troque o link do evento e publique de novo.' : 'Não foi possível publicar. Tente de novo.');
+  }
   setTimeout(() => {
     btn.textContent = textoOriginal;
     btn.disabled = false;
@@ -944,7 +972,7 @@ async function syncBuilderStateFromSupabase(pageKey) {
   if (pageKey === currentPageKey) atualizarBotoesDaPagina();
 
   if (row && row.state && Object.keys(row.state).length) {
-    localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(row.state));
+    guardarPaginaNoCache(pageKey, row.state);
     if (pageKey === currentPageKey) {
       builderState = row.state;
       if (pageKey === 'savethedate') normalizarSaveTheDate(builderState);
@@ -2229,14 +2257,12 @@ function wireCanvasEvents(canvas) {
       fileInput.onchange = (ev) => {
         const file = ev.target.files && ev.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev2) => {
-          section.bgImage = ev2.target.result;
+        readFileAsDataUrl(file, (dataUrl) => {
+          section.bgImage = dataUrl;
           pushHistory();
           renderCanvas();
           renderLeftPanel();
-        };
-        reader.readAsDataURL(file);
+        });
         fileInput.value = '';
       };
       fileInput.click();
@@ -3293,9 +3319,44 @@ function wireGiftsBlockInspector(section, body) {
 /* -------------------- Inspector: Elemento -------------------- */
 
 function readFileAsDataUrl(file, cb) {
+  if (file && /^image\//.test(file.type || '') && !/svg/.test(file.type)) { reduzirImagem(file, cb); return; }
   const reader = new FileReader();
   reader.onload = () => cb(reader.result);
   reader.readAsDataURL(file);
+}
+
+/**
+ * Foto escolhida no celular/computador → no máximo 1600px no lado maior
+ * (JPEG 82%; PNG continua PNG por causa da transparência). Uma foto de 4 MB
+ * vira ~300 KB: cabe no cache do navegador e o convite salva de verdade.
+ * @param {File} file @param {(dataUrl: string) => void} cb
+ */
+function reduzirImagem(file, cb) {
+  const original = () => {
+    const leitor = new FileReader();
+    leitor.onload = () => cb(String(leitor.result));
+    leitor.readAsDataURL(file);
+  };
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    const LADO = 1600;
+    const escala = Math.min(1, LADO / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+    const w = Math.max(1, Math.round(img.naturalWidth * escala));
+    const h = Math.max(1, Math.round(img.naturalHeight * escala));
+    const tela = document.createElement('canvas');
+    tela.width = w;
+    tela.height = h;
+    const ctx = tela.getContext('2d');
+    if (!ctx) { original(); return; }
+    const png = /png/i.test(file.type);
+    if (!png) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(img, 0, 0, w, h);
+    try { cb(png ? tela.toDataURL('image/png') : tela.toDataURL('image/jpeg', 0.82)); } catch (e) { original(); }
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); original(); };
+  img.src = url;
 }
 
 function imageUploadZoneHtml(src, inputAttrs) {
@@ -4091,8 +4152,7 @@ function initSiteBuilder() {
   if (publishBtn) publishBtn.addEventListener('click', async () => {
     persistBuilderState(true);
     const keys = pagePublishedKeys(currentPageKey);
-    localStorage.setItem(keys.flag, '1');
-    localStorage.setItem(keys.state, JSON.stringify(builderState));
+    try { localStorage.setItem(keys.flag, '1'); localStorage.setItem(keys.state, JSON.stringify(builderState)); } catch (e) { /* sem espaço no navegador: o banco vale */ }
     const paginaDoClique = currentPageKey;
     const sucesso = await publicarConviteNoAr(publishBtn);
     // Primeira publicação com sucesso: some o "Publicar" dessa página —
@@ -4560,21 +4620,19 @@ function ligarImagemDasInformacoes(container) {
     input.onchange = () => {
       const arquivo = input.files && input.files[0];
       if (!arquivo) return;
-      const leitor = new FileReader();
-      leitor.onload = (ev) => {
+      readFileAsDataUrl(arquivo, (dataUrl) => {
         const conv = estadoDoConvite();
         if (!conv) return;
-        conv.informacoesImagem = ev.target.result;
+        conv.informacoesImagem = dataUrl;
         // Grava junto com o convite (mesmo caminho da capa), sem mexer nela.
         if (conv === builderState) {
           persistBuilderState(false);
         } else {
-          try { localStorage.setItem(pageStorageKey('convite'), JSON.stringify(conv)); } catch (err) { /* sem armazenamento */ }
+          guardarPaginaNoCache('convite', conv);
           persistBuilderStateRemote('convite', conv);
         }
         renderInformacoesPreview();
-      };
-      leitor.readAsDataURL(arquivo);
+      });
       input.value = '';
     };
     input.click();
@@ -5522,8 +5580,9 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
       renderCanvas();
       persistBuilderState(false);
     } else {
-      try { localStorage.setItem(pageStorageKey('convite'), JSON.stringify(conv)); } catch (err) { /* sem armazenamento */ }
+      guardarPaginaNoCache('convite', conv);
       persistBuilderStateRemote('convite', conv);
+      if (typeof window.loveAtualizarCapaDaHome === 'function') { try { window.loveAtualizarCapaDaHome(); } catch (e) { /* Home fora da tela */ } }
     }
   };
 
@@ -5575,16 +5634,14 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
   fileInput.onchange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
+    readFileAsDataUrl(file, (dataUrl) => {
       const target = targetSection;
       if (target) {
-        target.bgImage = ev.target.result;
+        target.bgImage = dataUrl;
         salvarCapa();
         rerenderFn();
       }
-    };
-    reader.readAsDataURL(file);
+    });
     fileInput.value = '';
   };
 }

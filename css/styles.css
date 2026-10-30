@@ -15167,3 +15167,14 @@ html body #recados-raiz .recados-vazio-lottie:not(#love-h-a):not(#love-h-b) { di
   /* Convite digital: o botão do título tinha 1px de borda e empurrava o texto. */
   html body #view-event-os-dashboard #builder-page-select-btn:not(#love-h-a):not(#love-h-b) { border-left-width: 0 !important; border-right-width: 0 !important; }
 }
+
+/* Celular, Convite digital: avisos ("Alterações salvas", "Convite publicado")
+   no topo da tela, fora da barra de baixo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #builder-toast.toast:not(#love-h-a) {
+    left: 16px; right: 16px; bottom: auto; top: calc(env(safe-area-inset-top, 0px) + 12px); max-width: 480px; margin: 0 auto;
+    padding: 12px 14px; border-radius: 8px; background: #181D24; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.3;
+    transform: translateY(-12px); z-index: 300;
+  }
+  html body #builder-toast.toast.show:not(#love-h-a) { transform: translateY(0); }
+}

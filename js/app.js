@@ -2579,7 +2579,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const w = /** @type {any} */ (window);
       const chave = typeof w.pageStorageKey === 'function' ? w.pageStorageKey('convite') : '';
-      const convite = chave ? JSON.parse(localStorage.getItem(chave) || 'null') : null;
+      // A versão mais nova do convite fica em memória (o cache pode não caber no celular).
+      const emMemoria = w.__loveConviteAtual && typeof w.getLoveActiveEventId === 'function' && w.__loveConviteAtual.evento === (/^[0-9a-f-]{36}$/i.test(String(w.getLoveActiveEventId() || '')) ? w.getLoveActiveEventId() : null) ? w.__loveConviteAtual.state : null;
+      const convite = emMemoria || (chave ? JSON.parse(localStorage.getItem(chave) || 'null') : null);
       const capa = convite && Array.isArray(convite.sections) ? convite.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock && s.bgImage) : null;
       if (capa) foto = capa.bgImage;
     } catch (e) { /* sem convite salvo */ }

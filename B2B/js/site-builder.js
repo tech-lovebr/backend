@@ -679,9 +679,16 @@ function applyGlobalStyleVars() {
 
 function persistBuilderState(silent) {
   const storageKey = currentPageKey === 'checkout' ? CHECKOUT_STORAGE_KEY : BUILDER_STORAGE_KEY;
-  localStorage.setItem(storageKey, JSON.stringify(builderState));
+  // Não cabe no cache (fotos grandes no celular): avisa e continua com
+  // "alterações não salvas" — antes dava erro calado e parecia salvo.
+  if (!guardarNoCache(storageKey, builderState)) {
+    hasUnsavedChanges = true;
+    showToast('Não foi possível salvar. O navegador ficou sem espaço; tente uma foto menor ou publique o site.', true);
+    return false;
+  }
   hasUnsavedChanges = false;
   if (!silent) showToast('Alterações salvas!');
+  return true;
 }
 
 // Devolve 'ok' quando publicou de verdade (ou quando não há sessão — mantém
@@ -691,9 +698,10 @@ function persistBuilderState(silent) {
 async function publishBuilderState() {
   const snapshot = JSON.stringify(builderState);
   const isCheckout = currentPageKey === 'checkout';
-  localStorage.setItem(isCheckout ? CHECKOUT_STORAGE_KEY : BUILDER_STORAGE_KEY, snapshot);
-  localStorage.setItem(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY, snapshot);
-  localStorage.setItem(isCheckout ? CHECKOUT_PUBLISHED_KEY : BUILDER_PUBLISHED_KEY, '1');
+  // Cache do navegador: se não couber, apaga a cópia velha e segue para o banco.
+  guardarNoCache(isCheckout ? CHECKOUT_STORAGE_KEY : BUILDER_STORAGE_KEY, snapshot);
+  guardarNoCache(isCheckout ? CHECKOUT_PUBLISHED_STATE_KEY : BUILDER_PUBLISHED_STATE_KEY, snapshot);
+  guardarNoCache(isCheckout ? CHECKOUT_PUBLISHED_KEY : BUILDER_PUBLISHED_KEY, '1');
   hasUnsavedChanges = false;
 
   // O checkout e o site principal precisam ficar visíveis pra quem não está
@@ -704,11 +712,16 @@ async function publishBuilderState() {
   if (!session) return 'ok';
 
   if (isCheckout) {
-    await supabaseClient.from('checkout_pages').upsert({
+    const { error: erroCheckout } = await supabaseClient.from('checkout_pages').upsert({
       fornecedor_id: empresaId(session),
       state: builderState,
       updated_at: new Date().toISOString()
     });
+    if (erroCheckout) {
+      hasUnsavedChanges = true;
+      showToast('Não foi possível salvar. Confira a internet e tente de novo.', true);
+      return 'erro';
+    }
     return 'ok';
   }
 
@@ -724,6 +737,7 @@ async function publishBuilderState() {
     updated_at: new Date().toISOString()
   });
   if (error) {
+    hasUnsavedChanges = true;
     showToast(/ALTERACAO_BLOQUEADA/.test(error.message || '')
       ? 'Por segurança, só é possível alterar a URL a cada 14 dias.'
       : (error.code === '23505' ? 'Essa URL já está em uso por outro fornecedor.' : 'Não foi possível publicar o site.'), true);
@@ -762,7 +776,7 @@ function wireUnsavedChangesGuard() {
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
   document.getElementById('unsaved-changes-save-btn').addEventListener('click', () => {
-    persistBuilderState(true);
+    if (persistBuilderState(true) === false) { closeModal(); return; }
     const href = pendingNavigationHref;
     closeModal();
     if (href) window.location.href = href;
@@ -3421,7 +3435,9 @@ function wireColumnInspector(column, body) {
 
 /* -------------------- Inspector: Elemento -------------------- */
 
+// Mesmo de js/utils.js: foto reduzida (máx. 1600px) ao escolher.
 function readFileAsDataUrl(file, cb) {
+  if (file && /^image\//.test(file.type || '') && !/svg|gif/i.test(file.type) && typeof reduzirImagem === 'function') { reduzirImagem(file, cb); return; }
   const reader = new FileReader();
   reader.onload = () => cb(reader.result);
   reader.readAsDataURL(file);

@@ -228,7 +228,7 @@ function initProfileForm() {
       showToast('A razão social e o CNPJ não podem ser alterados depois de preenchidos.', true);
       return;
     }
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     if (antes.company && antes.company !== p.company) {
       // A URL do site acompanha o nome da empresa.
       if (typeof atualizarUrlDoSitePeloNome === 'function') {
@@ -527,7 +527,7 @@ function initCompanyForm() {
       const descricaoPerfil = document.getElementById('profile-description');
       if (descricaoPerfil) descricaoPerfil.value = p.description;
     }
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     salvarEmpresaNoBanco(p);
     resetSalvarTopoLabel();
     showToast('Informações da empresa atualizadas.');
@@ -954,7 +954,7 @@ function renderProfileAvatarPicker() {
     p.profilePhotoScale = 1;
     p.profilePhotoOffsetX = 0;
     p.profilePhotoOffsetY = 0;
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     syncFornecedorAvatar(p);
     renderProfileAvatarPicker();
     if (typeof initUserCard === 'function') initUserCard();
@@ -980,11 +980,11 @@ function closeProfileAvatarAdjustModal() {
   if (typeof initUserCard === 'function') initUserCard();
   // A foto (com o enquadramento) vira o avatar_url que o anfitrião vê.
   const p = B2B_DATA.professional;
-  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+  guardarNoCache(PROFILE_STORAGE_KEY, p);
   syncFornecedorAvatar(p).then(url => {
     if (!url) return;
     Object.assign(p, { profilePhoto: url, profilePhotoScale: 1, profilePhotoOffsetX: 0, profilePhotoOffsetY: 0 });
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     renderProfileAvatarPicker();
     if (typeof initUserCard === 'function') initUserCard();
   });
@@ -1113,7 +1113,7 @@ function renderProfileLogoPicker() {
     p.logoScale = 1;
     p.logoOffsetX = 0;
     p.logoOffsetY = 0;
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     syncFornecedorCapa(p);
     renderProfileLogoPicker();
   });
@@ -1138,11 +1138,11 @@ function closeProfileLogoAdjustModal() {
   // A capa (com o enquadramento) vira o logo_url: a capa da página da
   // empresa no love.com.br.
   const p = B2B_DATA.professional;
-  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+  guardarNoCache(PROFILE_STORAGE_KEY, p);
   syncFornecedorCapa(p).then(url => {
     if (!url) return;
     Object.assign(p, { logo: url, logoScale: 1, logoOffsetX: 0, logoOffsetY: 0 });
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     renderProfileLogoPicker();
   });
 }
@@ -1718,7 +1718,7 @@ function initBankDetailsForm() {
     if (aceite && !aceite.checked) return mostrarMsgForm('bank-details-msg', 'Marque a confirmação para salvar.', true);
     p.pixKeyType = typeSelect.value;
     p.pixKey = key;
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     // Grava no banco (pix_key / pix_key_type), que é de onde o Hub lê.
     const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
     const { error } = session

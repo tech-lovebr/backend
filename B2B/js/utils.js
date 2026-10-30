@@ -840,10 +840,56 @@ function citiesForState(uf) {
   return state ? state.cities : [];
 }
 
+/* Foto escolhida (celular ou computador) → no máximo 1600px no lado maior,
+   JPEG 82% (PNG continua PNG por causa da transparência; SVG e GIF ficam como
+   estão). Uma foto de 5 MB vira ~300 KB e cabe no cache do navegador — igual
+   ao anfitrião (js/site-builder.js da raiz: reduzirImagem). */
 function readFileAsDataUrl(file, cb) {
+  if (file && /^image\//.test(file.type || '') && !/svg|gif/i.test(file.type)) { reduzirImagem(file, cb); return; }
   const reader = new FileReader();
   reader.onload = () => cb(reader.result);
   reader.readAsDataURL(file);
+}
+
+function reduzirImagem(file, cb) {
+  const original = () => {
+    const leitor = new FileReader();
+    leitor.onload = () => cb(String(leitor.result));
+    leitor.readAsDataURL(file);
+  };
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    const LADO = 1600;
+    const escala = Math.min(1, LADO / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+    const w = Math.max(1, Math.round(img.naturalWidth * escala));
+    const h = Math.max(1, Math.round(img.naturalHeight * escala));
+    const tela = document.createElement('canvas');
+    tela.width = w;
+    tela.height = h;
+    const ctx = tela.getContext('2d');
+    if (!ctx) { original(); return; }
+    const png = /png/i.test(file.type);
+    if (!png) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(img, 0, 0, w, h);
+    try { cb(png ? tela.toDataURL('image/png') : tela.toDataURL('image/jpeg', 0.82)); } catch (e) { original(); }
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); original(); };
+  img.src = url;
+}
+
+/* Guarda no cache do navegador sem nunca travar quem chama. Se não couber
+   (o celular aceita uns 5 MB), apaga a cópia antiga para ela não ficar no
+   lugar da nova; o banco continua sendo gravado. Devolve true se guardou. */
+function guardarNoCache(chave, valor) {
+  try {
+    localStorage.setItem(chave, typeof valor === 'string' ? valor : JSON.stringify(valor));
+    return true;
+  } catch (e) {
+    try { localStorage.removeItem(chave); } catch (e2) { /* sem armazenamento */ }
+    return false;
+  }
 }
 
 function wireImageDropZone(zoneEl, onFile) {

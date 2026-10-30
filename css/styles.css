@@ -14856,7 +14856,7 @@ body[data-theme="dark"] .ajuda-pontos span.is-atual { background: #EBF4FF; }
      e Mais Recursos.
    ========================================================================== */
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
-  html body #tab-overview :is(.home-saudacao, #dashboard-promo-carousel, .home-beneficios, .home-mais-recursos, .home-aviso-mensagens):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #tab-overview :is(.home-saudacao, #dashboard-promo-carousel, .home-beneficios, .home-mais-recursos):not(#love-h-a):not(#love-h-b) { display: none !important; }
 
   /* ---- Topo: foto + caixa do Olá ---- */
   html body #tab-overview .home-capa-celular:not(#love-h-a) { display: block; position: relative; margin: 0 0 28px; }
@@ -15024,3 +15024,25 @@ body[data-theme="dark"] .ajuda-origem + .ajuda-origem { border-top-color: #33333
 body[data-theme="dark"] .ajuda-origem :is(strong, b) { color: #FFFFFF; }
 body[data-theme="dark"] .ajuda-origem span, body[data-theme="dark"] .ajuda-contatos-cancelar { color: #A1A1AA; }
 body[data-theme="dark"] .ajuda-origem a { color: #EBF4FF; }
+
+/* ==========================================================================
+   Desktop, Home: aviso "N fornecedores te mandaram mensagem!" na coluna da
+   direita, acima do Guia de primeiros passos (só quando há mensagem nova).
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #tab-overview .home-aviso-mensagens:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center; gap: 14px; width: 100%; padding: 16px 18px; box-sizing: border-box;
+    background: #F7F8FA; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; text-align: left; cursor: pointer;
+    font-family: Inter, sans-serif; transition: border-color .15s ease;
+  }
+  html body #tab-overview .home-aviso-mensagens:not([hidden]):not(#love-h-a):hover { border-color: #181D24; }
+  html body #tab-overview .home-aviso-mensagens .home-aviso-mensagens-mao:not(#love-h-a) { flex: 0 0 auto; width: 32px; height: 32px; color: #183b54; transform: rotate(-12deg); }
+  html body #tab-overview .home-aviso-mensagens .home-aviso-mensagens-texto:not(#love-h-a) { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  html body #tab-overview .home-aviso-mensagens .home-aviso-mensagens-titulo:not(#love-h-a) { font-size: 15px; font-weight: 500; line-height: 1.3; color: #18181B; }
+  html body #tab-overview .home-aviso-mensagens .home-aviso-mensagens-link:not(#love-h-a) { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: #183b54; }
+  html body #tab-overview .home-aviso-mensagens .home-aviso-mensagens-link svg:not(#love-h-a) { width: 16px; height: 16px; }
+  html body #tab-overview .home-aviso-mensagens .home-aviso-mensagens-ponto:not(#love-h-a) { flex: 0 0 auto; align-self: flex-start; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: #c7305b; }
+  body[data-theme="dark"] #tab-overview .home-aviso-mensagens { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"] #tab-overview .home-aviso-mensagens .home-aviso-mensagens-titulo { color: #FFFFFF !important; }
+  body[data-theme="dark"] #tab-overview .home-aviso-mensagens :is(.home-aviso-mensagens-mao, .home-aviso-mensagens-link) { color: #EBF4FF !important; }
+}

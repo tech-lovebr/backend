@@ -21204,6 +21204,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return b2bConversationsData.reduce((acc, c) => acc + (c.unread || 0), 0);
   }
 
+  // O aviso "N fornecedores te mandaram mensagem!" fica, no computador, na
+  // coluna da direita logo acima do Guia de primeiros passos; no celular,
+  // antes dos atalhos (dentro de #home-atalhos-celular).
+  (function lugarDoAvisoDeMensagens() {
+    const mq = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+    const posicionar = () => {
+      const aviso = document.getElementById('home-aviso-mensagens');
+      const guia = document.getElementById('quick-start-guide-widget');
+      const atalhos = document.getElementById('home-atalhos-celular');
+      if (!aviso || !guia || !atalhos) return;
+      if (mq.matches) { if (aviso.parentElement !== atalhos) atalhos.prepend(aviso); }
+      else if (aviso.nextElementSibling !== guia) guia.before(aviso);
+    };
+    posicionar();
+    mq.addEventListener?.('change', posicionar);
+    window.addEventListener('resize', posicionar, { passive: true });
+  })();
+
   function atualizarContadoresDoChat() {
     const total = totalNaoLidasDoChat();
     // Home (celular): "2 fornecedores te mandaram mensagem!" antes dos atalhos.

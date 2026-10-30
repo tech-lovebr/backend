@@ -1285,3 +1285,15 @@ document.addEventListener('shell:ready', () => {
   ligarBarraDeBaixo();
   montarMenuDoCelular();
 });
+
+/* Faixa central de 1280px (como no anfitrião): a largura da área de
+   conteúdo vai para --largura-conteudo; o CSS transforma o que passa de
+   1280px em margem dos dois lados (ver "Desktop: espaço como no anfitrião"). */
+(function medirLarguraDoConteudo() {
+  const conteudo = document.querySelector('.b2b-content');
+  if (!conteudo) return;
+  const medir = () => conteudo.style.setProperty('--largura-conteudo', `${Math.round(conteudo.getBoundingClientRect().width)}px`);
+  medir();
+  if (typeof ResizeObserver === 'function') new ResizeObserver(medir).observe(conteudo);
+  else window.addEventListener('resize', medir);
+})();

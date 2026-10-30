@@ -12099,3 +12099,29 @@ html body[data-page="dashboard"].tem-capa-empresa .dash-home-faixa:not(#love-h-a
   html body[data-page="dashboard"] .b2b-content > #shell-topbar.topo-rola-junto:not(#love-h-a):not(#love-h-b),
   html body[data-page="dashboard"] .b2b-content > .dashboard-greeting:not(#love-h-a):not(#love-h-b) { position: relative; }
 }
+
+/* ==========================================================================
+   Desktop: espaço como no anfitrião (index). Margem de 32px entre o sidebar
+   e o conteúdo em todas as telas (o Dashboard tinha 88px) e, em tela
+   grande, só o conteúdo numa faixa centralizada de até 1280px
+   (--love-conteudo-max); o cabeçalho continua de ponta a ponta. Ficam de
+   fora o Construtor do site e Mensagens (usam a tela toda).
+   ========================================================================== */
+:root { --love-conteudo-max: 1280px; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="dashboard"]:not(#love-h-a) {
+    --b2b-dashboard-pad-x: var(--b2b-content-pad-x);
+    --b2b-dashboard-pad-y: var(--b2b-content-pad-y);
+  }
+  /* Faixa central: o que passa de 1280px vira margem dos dois lados do
+     conteúdo; cabeçalho, descrição e rodapé voltam até a borda (32px). */
+  html body:not([data-page="paginas-site"]):not([data-page="chat"]) .b2b-content:not(#love-h-a) {
+    --faixa-extra: max(0px, (var(--largura-conteudo, 0px) - 2 * var(--b2b-content-pad-x) - var(--love-conteudo-max)) / 2);
+  }
+  html body:not([data-page="paginas-site"]):not([data-page="chat"]) .b2b-content:not(#love-h-a):not(#love-h-b) {
+    padding-left: calc(var(--b2b-content-pad-x) + var(--faixa-extra)); padding-right: calc(var(--b2b-content-pad-x) + var(--faixa-extra));
+  }
+  html body:not([data-page="paginas-site"]):not([data-page="chat"]) .b2b-content > :is(.b2b-header-bar, .b2b-header-bar + p, .b2b-footer):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    margin-left: calc(-1 * (var(--b2b-content-pad-x) + var(--faixa-extra))); margin-right: calc(-1 * (var(--b2b-content-pad-x) + var(--faixa-extra)));
+  }
+}
